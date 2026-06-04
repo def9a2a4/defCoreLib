@@ -1,0 +1,533 @@
+package anon.def9a2a4.corelib;
+
+import org.bukkit.Material;
+import org.bukkit.Particle;
+import org.bukkit.Sound;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
+import org.bukkit.util.Transformation;
+import org.bukkit.util.Vector;
+import org.jspecify.annotations.Nullable;
+
+import java.util.*;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
+
+/**
+ * Data-driven definition of a custom head block.
+ * <p>
+ * A block definition is layered:
+ * <ol>
+ *   <li>Base config — texture, drops, display entities, light, particles, etc.</li>
+ *   <li>States (optional) — any/all of the above can be overridden per state</li>
+ *   <li>State transitions (optional) — extensible trigger system</li>
+ *   <li>Redstone (optional, tiered) — NONE / BINARY / LEVEL sensitivity</li>
+ * </ol>
+ *
+ * Create instances via {@link #builder(String, String)}.
+ */
+public final class CustomHeadBlock {
+
+    // ──────────────────────────────────────────────────────────────────────
+    // Nested data records
+    // ──────────────────────────────────────────────────────────────────────
+
+    /** A value that is either fixed or linearly interpolated from redstone power level. */
+    public record Scaling(double base, double perPower) {
+        public static Scaling fixed(double value) { return new Scaling(value, 0); }
+        public double resolve(int power) { return base + perPower * power; }
+        public int resolveInt(int power) { return (int) Math.round(resolve(power)); }
+    }
+
+    /** How to read redstone power for this block. */
+    public enum PowerReader {
+        /** Standard {@code block.getBlockPower()} at the skull location. */
+        DIRECT,
+        /** Orientation-aware: wall heads read through the wall behind, floor heads read below. */
+        EXTENDED
+    }
+
+    /** How sensitive this block is to redstone power. */
+    public enum Sensitivity {
+        /** Block ignores redstone entirely. Never ticked for power. */
+        NONE,
+        /** Only checks powered/unpowered. Cheaper than reading exact level. */
+        BINARY,
+        /** Reads exact power level 0-15. */
+        LEVEL
+    }
+
+    /** GUI type opened on right-click. */
+    public enum InteractGUI {
+        WORKBENCH, ANVIL, ENCHANTING, SMITHING, LOOM, STONECUTTER, GRINDSTONE, CARTOGRAPHY, ENDERCHEST
+    }
+
+    /** Inclusive range of redstone power levels. */
+    public record PowerRange(int min, int max) {
+        public static final PowerRange ANY = new PowerRange(0, 15);
+        public static final PowerRange ZERO = new PowerRange(0, 0);
+        public static final PowerRange POWERED = new PowerRange(1, 15);
+        public boolean contains(int power) { return power >= min && power <= max; }
+    }
+
+    /** Light block to place/remove when this config is active. */
+    public record LightConfig(int level, int offsetX, int offsetY, int offsetZ) {}
+
+    /** Particle effect configuration. Count and speed support power-based scaling. */
+    public record ParticleConfig(
+            Particle type,
+            Scaling count,
+            Scaling speed,
+            int intervalTicks,
+            Vector floorOffset,
+            Map<BlockFace, Vector> wallOffsets
+    ) {}
+
+    /** An ItemDisplay entity attached to the block. */
+    public record DisplayEntityConfig(
+            String itemTexture,
+            Transformation transform,
+            @Nullable String tagSuffix
+    ) {}
+
+    /** Redstone configuration. */
+    public record RedstoneConfig(
+            Sensitivity sensitivity,
+            PowerReader reader,
+            /** Power level → texture override (for LEVEL sensitivity). */
+            Map<Integer, String> textures,
+            /** Power range → texture override (for BINARY/LEVEL sensitivity). */
+            Map<PowerRange, String> textureRanges
+    ) {}
+
+    /** A condition that triggers a state transition. Sealed for extensibility. */
+    public sealed interface Trigger {
+        /** Right-click with a specific item (null = any item or empty hand). */
+        record Interact(@Nullable Material item) implements Trigger {}
+        /** Redstone power enters the given range. */
+        record RedstonePower(PowerRange range) implements Trigger {}
+        // Future: record EntityNearby(EntityType type, double radius) implements Trigger {}
+        // Future: record TimePassed(int ticks) implements Trigger {}
+    }
+
+    /** Particle effect played during a state transition (one-shot, not ongoing). */
+    public record TransitionParticle(Particle type, int count, double spread) {}
+
+    /** A state transition with optional sound and particle effects. */
+    public record StateTransition(
+            Trigger trigger,
+            String fromState,
+            String toState,
+            @Nullable Sound sound,
+            float volume,
+            float pitch,
+            @Nullable TransitionParticle particle
+    ) {}
+
+    /** Conditional drop rule. */
+    public record DropRule(
+            @Nullable String inState,
+            @Nullable Material requiredTool,
+            @Nullable Boolean silkTouch,
+            List<ItemDrop> drops
+    ) {
+        /** Convenience: drop the block's own item. */
+        public static DropRule self() { return new DropRule(null, null, null, List.of()); }
+        /** Check if this rule is the "drop self" sentinel. */
+        public boolean isSelfDrop() { return drops.isEmpty() && inState == null && requiredTool == null && silkTouch == null; }
+    }
+
+    /** An item to drop. */
+    public record ItemDrop(Material material, int amount) {}
+
+    /** Placement restrictions. */
+    public record PlacementConfig(Set<BlockFace> allowedFaces, boolean requireSolid) {}
+
+    /** Storage (custom inventory) configuration. */
+    public record StorageConfig(int slots) {}
+
+    /**
+     * Visual/behavioral overrides for a specific state.
+     * Null fields mean "inherit from base config."
+     */
+    public record StateConfig(
+            @Nullable String texture,
+            @Nullable Map<BlockFace, String> directionalTextures,
+            @Nullable LightConfig light,
+            @Nullable ParticleConfig particles,
+            @Nullable List<DisplayEntityConfig> displayEntities,
+            boolean clearLight,
+            boolean clearParticles,
+            boolean clearDisplayEntities
+    ) {}
+
+    // ──────────────────────────────────────────────────────────────────────
+    // Fields
+    // ──────────────────────────────────────────────────────────────────────
+
+    private final String namespace;
+    private final String typeId;
+
+    // Base config
+    private final String texture;
+    private final @Nullable Map<BlockFace, String> directionalTextures;
+    private final @Nullable LightConfig light;
+    private final @Nullable ParticleConfig particles;
+    private final List<DisplayEntityConfig> displayEntities;
+    private final @Nullable InteractGUI interactGUI;
+    private final @Nullable StorageConfig storage;
+    private final @Nullable PlacementConfig placement;
+    private final List<DropRule> dropRules;
+    private final boolean cancelPistons;
+    private final boolean needsChunkScan;
+    private final boolean reactsToNeighbors;
+    private final @Nullable Integer tickInterval;
+
+    // States
+    private final @Nullable String defaultState;
+    private final Map<String, StateConfig> states;
+    private final List<StateTransition> transitions;
+
+    // Redstone
+    private final @Nullable RedstoneConfig redstone;
+
+    // Escape hatches
+    private final @Nullable BiConsumer<Block, BlockFace> onNeighborChange;
+    private final @Nullable Consumer<Block> onTick;
+
+    private CustomHeadBlock(Builder b) {
+        this.namespace = b.namespace;
+        this.typeId = b.typeId;
+        this.texture = b.texture;
+        this.directionalTextures = b.directionalTextures;
+        this.light = b.light;
+        this.particles = b.particles;
+        this.displayEntities = List.copyOf(b.displayEntities);
+        this.interactGUI = b.interactGUI;
+        this.storage = b.storage;
+        this.placement = b.placement;
+        this.dropRules = List.copyOf(b.dropRules);
+        this.cancelPistons = b.cancelPistons;
+        this.needsChunkScan = b.needsChunkScan;
+        this.reactsToNeighbors = b.reactsToNeighbors;
+        this.tickInterval = b.tickInterval;
+        this.defaultState = b.defaultState;
+        this.states = Map.copyOf(b.states);
+        this.transitions = List.copyOf(b.transitions);
+        this.redstone = b.redstone;
+        this.onNeighborChange = b.onNeighborChange;
+        this.onTick = b.onTick;
+    }
+
+    // ──────────────────────────────────────────────────────────────────────
+    // Accessors
+    // ──────────────────────────────────────────────────────────────────────
+
+    public String namespace() { return namespace; }
+    public String typeId() { return typeId; }
+    public String fullId() { return namespace + ":" + typeId; }
+
+    public String texture() { return texture; }
+    public @Nullable Map<BlockFace, String> directionalTextures() { return directionalTextures; }
+    public @Nullable LightConfig light() { return light; }
+    public @Nullable ParticleConfig particles() { return particles; }
+    public List<DisplayEntityConfig> displayEntities() { return displayEntities; }
+    public @Nullable InteractGUI interactGUI() { return interactGUI; }
+    public @Nullable StorageConfig storage() { return storage; }
+    public @Nullable PlacementConfig placement() { return placement; }
+    public List<DropRule> dropRules() { return dropRules; }
+    public boolean cancelPistons() { return cancelPistons; }
+    public boolean needsChunkScan() { return needsChunkScan; }
+    public boolean reactsToNeighbors() { return reactsToNeighbors; }
+    public @Nullable Integer tickInterval() { return tickInterval; }
+
+    public boolean hasStates() { return !states.isEmpty(); }
+    public @Nullable String defaultState() { return defaultState; }
+    public Map<String, StateConfig> states() { return states; }
+    public List<StateTransition> transitions() { return transitions; }
+
+    public @Nullable RedstoneConfig redstone() { return redstone; }
+    public Sensitivity sensitivity() { return redstone != null ? redstone.sensitivity() : Sensitivity.NONE; }
+
+    public @Nullable BiConsumer<Block, BlockFace> onNeighborChange() { return onNeighborChange; }
+    public @Nullable Consumer<Block> onTick() { return onTick; }
+
+    public boolean hasDisplayEntities() { return !displayEntities.isEmpty() || states.values().stream().anyMatch(s -> s.displayEntities() != null); }
+    public boolean hasLight() { return light != null || states.values().stream().anyMatch(s -> s.light() != null); }
+    public boolean hasParticles() { return particles != null || states.values().stream().anyMatch(s -> s.particles() != null); }
+
+    // ──────────────────────────────────────────────────────────────────────
+    // Resolution: given current state + power, resolve effective config
+    // ──────────────────────────────────────────────────────────────────────
+
+    /** Resolve the effective texture for the current state and power level. */
+    public String resolveTexture(@Nullable String state, int power) {
+        // Redstone texture overrides take priority
+        if (redstone != null) {
+            String rsTex = resolveRedstoneTexture(power);
+            if (rsTex != null) return rsTex;
+        }
+        // State override
+        if (state != null) {
+            StateConfig sc = states.get(state);
+            if (sc != null && sc.texture() != null) return sc.texture();
+        }
+        return texture;
+    }
+
+    /** Resolve the effective light config for the current state. */
+    public @Nullable LightConfig resolveLight(@Nullable String state) {
+        if (state != null) {
+            StateConfig sc = states.get(state);
+            if (sc != null) {
+                if (sc.clearLight()) return null;
+                if (sc.light() != null) return sc.light();
+            }
+        }
+        return light;
+    }
+
+    /** Resolve the effective particle config for the current state. */
+    public @Nullable ParticleConfig resolveParticles(@Nullable String state) {
+        if (state != null) {
+            StateConfig sc = states.get(state);
+            if (sc != null) {
+                if (sc.clearParticles()) return null;
+                if (sc.particles() != null) return sc.particles();
+            }
+        }
+        return particles;
+    }
+
+    /** Resolve the effective display entities for the current state. */
+    public List<DisplayEntityConfig> resolveDisplayEntities(@Nullable String state) {
+        if (state != null) {
+            StateConfig sc = states.get(state);
+            if (sc != null) {
+                if (sc.clearDisplayEntities()) return List.of();
+                if (sc.displayEntities() != null) return sc.displayEntities();
+            }
+        }
+        return displayEntities;
+    }
+
+    private @Nullable String resolveRedstoneTexture(int power) {
+        if (redstone == null) return null;
+        // Exact power match first
+        String exact = redstone.textures().get(power);
+        if (exact != null) return exact;
+        // Range match
+        for (var entry : redstone.textureRanges().entrySet()) {
+            if (entry.getKey().contains(power)) return entry.getValue();
+        }
+        return null;
+    }
+
+    /** Find the first matching transition for the given trigger and current state. */
+    public @Nullable StateTransition findTransition(Trigger trigger, String currentState) {
+        for (StateTransition t : transitions) {
+            if (!t.fromState().equals(currentState)) continue;
+            if (matchesTrigger(t.trigger(), trigger)) return t;
+        }
+        return null;
+    }
+
+    private static boolean matchesTrigger(Trigger defined, Trigger actual) {
+        return switch (defined) {
+            case Trigger.Interact(var item) -> {
+                if (!(actual instanceof Trigger.Interact(var actualItem))) yield false;
+                yield item == null || item == actualItem;
+            }
+            case Trigger.RedstonePower(var range) -> {
+                if (!(actual instanceof Trigger.RedstonePower(var actualRange))) yield false;
+                // The actual trigger carries the current power in min==max
+                yield range.contains(actualRange.min());
+            }
+        };
+    }
+
+    // ──────────────────────────────────────────────────────────────────────
+    // Builder
+    // ──────────────────────────────────────────────────────────────────────
+
+    public static Builder builder(String namespace, String typeId) {
+        return new Builder(namespace, typeId);
+    }
+
+    public static final class Builder {
+        private final String namespace;
+        private final String typeId;
+
+        private String texture = "";
+        private @Nullable Map<BlockFace, String> directionalTextures;
+        private @Nullable LightConfig light;
+        private @Nullable ParticleConfig particles;
+        private final List<DisplayEntityConfig> displayEntities = new ArrayList<>();
+        private @Nullable InteractGUI interactGUI;
+        private @Nullable StorageConfig storage;
+        private @Nullable PlacementConfig placement;
+        private final List<DropRule> dropRules = new ArrayList<>();
+        private boolean cancelPistons;
+        private boolean needsChunkScan;
+        private boolean reactsToNeighbors;
+        private @Nullable Integer tickInterval;
+
+        private @Nullable String defaultState;
+        private final LinkedHashMap<String, StateConfig> states = new LinkedHashMap<>();
+        private final List<StateTransition> transitions = new ArrayList<>();
+
+        private @Nullable RedstoneConfig redstone;
+
+        private @Nullable BiConsumer<Block, BlockFace> onNeighborChange;
+        private @Nullable Consumer<Block> onTick;
+
+        private Builder(String namespace, String typeId) {
+            this.namespace = Objects.requireNonNull(namespace);
+            this.typeId = Objects.requireNonNull(typeId);
+        }
+
+        // --- Base config ---
+
+        public Builder texture(String base64) { this.texture = base64; return this; }
+        public Builder directionalTextures(Map<BlockFace, String> textures) { this.directionalTextures = textures; return this; }
+        public Builder light(int level, int offsetX, int offsetY, int offsetZ) { this.light = new LightConfig(level, offsetX, offsetY, offsetZ); return this; }
+        public Builder particles(ParticleConfig config) { this.particles = config; return this; }
+        public Builder displayEntities(List<DisplayEntityConfig> configs) { this.displayEntities.addAll(configs); return this; }
+        public Builder interactGUI(InteractGUI gui) { this.interactGUI = gui; return this; }
+        public Builder storage(int slots) { this.storage = new StorageConfig(slots); return this; }
+        public Builder placement(PlacementConfig config) { this.placement = config; return this; }
+        public Builder drops(DropRule... rules) { this.dropRules.addAll(List.of(rules)); return this; }
+        public Builder cancelPistons(boolean cancel) { this.cancelPistons = cancel; return this; }
+        public Builder needsChunkScan(boolean scan) { this.needsChunkScan = scan; return this; }
+        public Builder reactsToNeighbors(boolean reacts) { this.reactsToNeighbors = reacts; return this; }
+        public Builder tickInterval(int ticks) { this.tickInterval = ticks; return this; }
+
+        // --- States ---
+
+        /** Declare a state with no overrides (inherits everything from base). */
+        public Builder state(String name) {
+            this.states.put(name, new StateConfig(null, null, null, null, null, false, false, false));
+            if (defaultState == null) defaultState = name;
+            return this;
+        }
+
+        /** Declare a state with overrides configured via a lambda. */
+        public Builder state(String name, Consumer<StateBuilder> config) {
+            StateBuilder sb = new StateBuilder();
+            config.accept(sb);
+            this.states.put(name, sb.build());
+            if (defaultState == null) defaultState = name;
+            return this;
+        }
+
+        public Builder defaultState(String name) { this.defaultState = name; return this; }
+
+        // --- Transitions ---
+
+        public Builder transition(Trigger trigger, String from, String to) {
+            this.transitions.add(new StateTransition(trigger, from, to, null, 1f, 1f, null));
+            return this;
+        }
+
+        public Builder transition(Trigger trigger, String from, String to, Sound sound) {
+            this.transitions.add(new StateTransition(trigger, from, to, sound, 1f, 1f, null));
+            return this;
+        }
+
+        public Builder transition(StateTransition transition) {
+            this.transitions.add(transition);
+            return this;
+        }
+
+        // --- Redstone ---
+
+        public Builder redstone(Sensitivity sensitivity, PowerReader reader) {
+            this.redstone = new RedstoneConfig(sensitivity, reader, Map.of(), Map.of());
+            return this;
+        }
+
+        /** Set power→texture map for LEVEL sensitivity. */
+        public Builder redstoneTextures(Map<Integer, String> textures) {
+            if (this.redstone == null) throw new IllegalStateException("Call redstone() first");
+            this.redstone = new RedstoneConfig(redstone.sensitivity(), redstone.reader(), Map.copyOf(textures), redstone.textureRanges());
+            return this;
+        }
+
+        /** Set power range→texture map (e.g., for BINARY: {0→off, 1-15→on}). */
+        public Builder redstoneTextureRanges(Map<PowerRange, String> ranges) {
+            if (this.redstone == null) throw new IllegalStateException("Call redstone() first");
+            this.redstone = new RedstoneConfig(redstone.sensitivity(), redstone.reader(), redstone.textures(), Map.copyOf(ranges));
+            return this;
+        }
+
+        // --- Escape hatches ---
+
+        public Builder onNeighborChange(BiConsumer<Block, BlockFace> handler) {
+            this.onNeighborChange = handler;
+            this.reactsToNeighbors = true;
+            return this;
+        }
+
+        public Builder onTick(Consumer<Block> handler) { this.onTick = handler; return this; }
+
+        public CustomHeadBlock build() {
+            Objects.requireNonNull(texture, "texture is required");
+            if (!states.isEmpty() && defaultState == null) {
+                throw new IllegalStateException("States defined but no default state set");
+            }
+            if (defaultState != null && !states.containsKey(defaultState)) {
+                throw new IllegalStateException("Default state '" + defaultState + "' not found in states");
+            }
+            return new CustomHeadBlock(this);
+        }
+    }
+
+    /** Builder for state overrides. */
+    public static final class StateBuilder {
+        private @Nullable String texture;
+        private @Nullable Map<BlockFace, String> directionalTextures;
+        private @Nullable LightConfig light;
+        private @Nullable ParticleConfig particles;
+        private @Nullable List<DisplayEntityConfig> displayEntities;
+        private boolean clearLight;
+        private boolean clearParticles;
+        private boolean clearDisplayEntities;
+
+        public StateBuilder texture(String base64) { this.texture = base64; return this; }
+        public StateBuilder directionalTextures(Map<BlockFace, String> textures) { this.directionalTextures = textures; return this; }
+        public StateBuilder light(int level, int offsetX, int offsetY, int offsetZ) { this.light = new LightConfig(level, offsetX, offsetY, offsetZ); return this; }
+        public StateBuilder noLight() { this.clearLight = true; return this; }
+        public StateBuilder particles(ParticleConfig config) { this.particles = config; return this; }
+        public StateBuilder noParticles() { this.clearParticles = true; return this; }
+        public StateBuilder displayEntities(List<DisplayEntityConfig> configs) { this.displayEntities = configs; return this; }
+        public StateBuilder noDisplayEntities() { this.clearDisplayEntities = true; return this; }
+
+        StateConfig build() {
+            return new StateConfig(texture, directionalTextures, light, particles, displayEntities,
+                    clearLight, clearParticles, clearDisplayEntities);
+        }
+    }
+
+    // ──────────────────────────────────────────────────────────────────────
+    // Trigger factory methods
+    // ──────────────────────────────────────────────────────────────────────
+
+    public static final class Triggers {
+        private Triggers() {}
+
+        /** Match right-click with a specific item. */
+        public static Trigger interact(Material item) { return new Trigger.Interact(item); }
+
+        /** Match right-click with any item or empty hand. */
+        public static Trigger interact() { return new Trigger.Interact(null); }
+
+        /** Match redstone power entering the given range. */
+        public static Trigger redstonePower(int min, int max) { return new Trigger.RedstonePower(new PowerRange(min, max)); }
+
+        /** Match redstone power being exactly zero. */
+        public static Trigger redstoneOff() { return new Trigger.RedstonePower(PowerRange.ZERO); }
+
+        /** Match redstone power being any nonzero value. */
+        public static Trigger redstoneOn() { return new Trigger.RedstonePower(PowerRange.POWERED); }
+    }
+}
