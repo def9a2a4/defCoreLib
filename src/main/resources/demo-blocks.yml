@@ -1,0 +1,263 @@
+# DefCoreLib Demo Blocks
+# Each block exercises different features of the CustomHeadBlock system.
+# Give items with: /corelib give <id>
+
+namespace: demo
+
+blocks:
+
+  # ─── 1. Candle ───────────────────────────────────────────────────────
+  # Stateful: unlit/lit. Toggle with flint & steel or bare hand.
+  # Features: states, transitions, light, orientation-aware particles, sounds.
+  candle:
+    name: "&fDemo Candle"
+    lore:
+      - "&7Right-click with flint & steel to light"
+      - "&7Right-click again to extinguish"
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMmI3ZGJjZGE0NTRlYTdiMzhhYmM2NmNkZmVkOGU0ZTZjMDEyOTRmNmE5NjJlYzY2ZWYyMjY1MTBhZTM3MTcxYiJ9fX0="
+    drops: self
+    default_state: unlit
+    states:
+      unlit: {}
+      lit:
+        texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTlhYmUzMjQyZDRhN2YxNWE4OWQ0YzY4NTg3OTRkYTFlODBhOWFhNWY0NjNiOGM3ZTc5MjMzYTE3MTJlZDM2MCJ9fX0="
+        light: { level: 14, offset: [0, 1, 0] }
+        particles:
+          type: SMALL_FLAME
+          count: 1
+          speed: 0
+          interval: 5
+          floor_offset: [0, 0.55, 0]
+          wall_offsets:
+            NORTH: [0, 0.8, 0.25]
+            SOUTH: [0, 0.8, -0.25]
+            EAST: [-0.25, 0.8, 0]
+            WEST: [0.25, 0.8, 0]
+    transitions:
+      - trigger: { type: interact, item: FLINT_AND_STEEL }
+        from: unlit
+        to: lit
+        sound: ITEM_FLINTANDSTEEL_USE
+      - trigger: { type: interact }
+        from: lit
+        to: unlit
+        sound: BLOCK_CANDLE_EXTINGUISH
+
+  # ─── 2. Pumpkin ──────────────────────────────────────────────────────
+  # Always-glowing. No states, no redstone.
+  # Features: light with no states (always on).
+  pumpkin:
+    name: "&6Demo Jack O'Lantern"
+    lore: ["&7Always glowing"]
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjc1MmE5YTlhZWMwZjE2MTgwYjhjYjAwMDMwNTFiYjUyOWQ3YTMyMTIwMWZlZTc3NjdhZTBjMmJhNmFmOTE0OSJ9fX0="
+    drops: self
+    light: { level: 14, offset: [0, 1, 0] }
+
+  # ─── 3. Workbench ────────────────────────────────────────────────────
+  # Opens crafting table GUI on right-click.
+  # Features: interactGUI.
+  workbench:
+    name: "&eDemo Workbench"
+    lore: ["&7Right-click to open crafting table"]
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzdlZDVlZjUzMzAwNzczNWVlNDQwZTg0ZjU1M2ViZDY4ODYxZTAyZmM1MmE1ZmY5M2MyN2I1ODQyOTdiMzUwYSJ9fX0="
+    drops: self
+    interact_gui: WORKBENCH
+
+  # ─── 4. Digital Display ──────────────────────────────────────────────
+  # 16-level redstone display. Texture changes per power 0-15.
+  # Features: Sensitivity.LEVEL, PowerReader.EXTENDED, per-power textures.
+  digital_display:
+    name: "&bDemo Digital Display"
+    lore: ["&7Shows redstone power 0-15", "&7Reads through walls"]
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGIzZmE3NjE5ZTFlZTliNGU1NmFjMDViZWI3MzAxMjc2ZGE5YTkxOGQ0MjhjZDE4Mzg4MWEzMmEwN2FjZWM4YyJ9fX0="
+    drops: self
+    needs_chunk_scan: true
+    redstone:
+      sensitivity: LEVEL
+      reader: EXTENDED
+      textures:
+        0: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGIzZmE3NjE5ZTFlZTliNGU1NmFjMDViZWI3MzAxMjc2ZGE5YTkxOGQ0MjhjZDE4Mzg4MWEzMmEwN2FjZWM4YyJ9fX0="
+        1: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTNmYTBhMTQ4MjIxYTQ5Y2MwOGRmZjU3ZDg3YjhhZWVlZjllZjc3MTBkMzIzMTIwNTMyYmFkMjg0NjAwNmUwMSJ9fX0="
+        2: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzY2MjRlNDlkYjg3NjUyYTA0ZDNhYWIyNmU2ZWUxMWYxYTBiY2MwZDIxOTk2NDJiYTkwNWRhNDY1MDczZmZjMyJ9fX0="
+        3: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDdhNTJhNGVhZWU5NzdmNGNkZGJkNmI1ODQxMGI2N2M1MzZjM2Q5MjJkMjI4ODZjZjA1ZTVhZDVhMDg3OThhNCJ9fX0="
+        4: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzY4Nzk0NWZjMjFmODA2NjJiM2Y2MzI0MDQ2Y2NmNDJjOGYwMmRiYmIyYWQ0NDM0ZWQ2NDI4ZWYzOTUwYWExNCJ9fX0="
+        5: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzZmODNjM2RiMTNkMjJlZmIxZTUyNDU2OGJiN2Y2OGRmZmU4ZWNjY2UxZDAwZjg3YWE1OGI1ZWZkZjg5YWI1MSJ9fX0="
+        6: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjA3NjBiNTMyMzAzNWQxNDg2NWVjZGY5NTVjOTIwNmNiOGRkNTBkOWU5M2Y2ZDU5NmU3MjUwZGU1NDVjZGE1ZSJ9fX0="
+        7: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjQ2ZDlhMGZiYWZlNzcwZDgwMGZmNGNhM2RiNTVmMTU5ZGI4ZDZjOGM3ZDU4NGE0NTg5NjAxMDM2NWM0MDZlZSJ9fX0="
+        8: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZmRiZGFjM2VjYzhmMDUzOTMyYTE3MDc2ZDVkNTM0MjE0N2YxODcyYzk3ODMwZmQ0NWY4YzUxMzc0ZjEwNGQ5ZCJ9fX0="
+        9: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvY2I0Y2E3YjI1M2NhZGNhNGJlZDI2NzQxNTA4MjRjMjVkZTg2ZDI0ZTQ2NDY3MDU5MGIwNzYyNjA4ZmYzNTkwMCJ9fX0="
+        10: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOGU4ZjI1NzdkYzI5YThhNmM4NGEyNjkwYzE1NGY2Nzc0YmZhZmZiYTQzMTBhNDk1YjJmYWQ2Mzk1MDZiY2ZhNyJ9fX0="
+        11: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMmExMWQ5MjkxMmJhYTIyNDdlNDFhMzFkN2JiMWQyYzE2MzVhOGVkZTA3ODkzYWFhNjE1NjBlODA2OGFjMDIwMyJ9fX0="
+        12: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDcxOGFhYWFlOGVjNTk2NzdjYWIyYWI2NGJkMTcxZjdkZWVmNGU0OTkwYjlmZDBkOGQxZWEzMDc3NTgyOWExNiJ9fX0="
+        13: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzEwYzExOGQxYTUxYjg1MDliNGU1MjUwNjhjNTcwYzIxNjhhNTY4MTE1M2VhYmM2NDdhNWIxMzJiMjM3ZjM5MSJ9fX0="
+        14: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNWE5OTBkNjEzYmE1NTNkZGM1NTAxZTA0MzZiYWFiYzE3Y2UyMmViNGRjNjU2ZDAxZTc3NzUxOWY4YzlhZjIzYSJ9fX0="
+        15: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTNlNWEwZDIzMmJlZGUzMDI1M2NkYzMxN2FiMTIxYTc3N2Y5Yjg2NDNiZWVkZThlOGNhOGIzYjA1NDQ3NDZiMyJ9fX0="
+
+  # ─── 5. Binary Indicator ─────────────────────────────────────────────
+  # On/off redstone indicator. Reads through walls.
+  # Features: Sensitivity.BINARY, PowerReader.EXTENDED, range-based textures.
+  binary_indicator:
+    name: "&cDemo Binary Indicator"
+    lore: ["&7Red=off, Green=on", "&7Reads through walls"]
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWY2MDY2NGI0MzQ1YmU3NWQwNGIzM2FiNzAzZjg5MjI5MDA1YTU0ZGE3ZjZmNDg1NjQ2NDQyYTdhMjkwZTc1OSJ9fX0="
+    drops: self
+    needs_chunk_scan: true
+    redstone:
+      sensitivity: BINARY
+      reader: EXTENDED
+      texture_ranges:
+        "0": "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWY2MDY2NGI0MzQ1YmU3NWQwNGIzM2FiNzAzZjg5MjI5MDA1YTU0ZGE3ZjZmNDg1NjQ2NDQyYTdhMjkwZTc1OSJ9fX0="
+        "1-15": "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzk1ZDFhOTY4ZDA5ODA4OGMxNGJkZGQ4NDM0MTA3OTczYmIzZGI5ZDZiMmJlN2QzZmJhMDAyNDFjNDYzZmNmNiJ9fX0="
+
+  # ─── 6. Redstone Candle ──────────────────────────────────────────────
+  # Both manual toggle AND redstone. Redstone powers it on, manual click toggles.
+  # Features: combining interaction + redstone triggers on same states.
+  redstone_candle:
+    name: "&dDemo Redstone Candle"
+    lore: ["&7Flint & steel or redstone to light", "&7Click or remove power to extinguish"]
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMmI3ZGJjZGE0NTRlYTdiMzhhYmM2NmNkZmVkOGU0ZTZjMDEyOTRmNmE5NjJlYzY2ZWYyMjY1MTBhZTM3MTcxYiJ9fX0="
+    drops: self
+    needs_chunk_scan: true
+    default_state: unlit
+    states:
+      unlit: {}
+      lit:
+        texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTlhYmUzMjQyZDRhN2YxNWE4OWQ0YzY4NTg3OTRkYTFlODBhOWFhNWY0NjNiOGM3ZTc5MjMzYTE3MTJlZDM2MCJ9fX0="
+        light: { level: 14, offset: [0, 1, 0] }
+        particles:
+          type: SMALL_FLAME
+          count: 1
+          speed: 0
+          interval: 5
+          floor_offset: [0, 0.55, 0]
+          wall_offsets:
+            NORTH: [0, 0.8, 0.25]
+            SOUTH: [0, 0.8, -0.25]
+            EAST: [-0.25, 0.8, 0]
+            WEST: [0.25, 0.8, 0]
+    transitions:
+      - trigger: { type: interact, item: FLINT_AND_STEEL }
+        from: unlit
+        to: lit
+        sound: ITEM_FLINTANDSTEEL_USE
+      - trigger: { type: interact }
+        from: lit
+        to: unlit
+        sound: BLOCK_CANDLE_EXTINGUISH
+      - trigger: { type: redstone, range: "1-15" }
+        from: unlit
+        to: lit
+      - trigger: { type: redstone, range: "0" }
+        from: lit
+        to: unlit
+    redstone:
+      sensitivity: BINARY
+      reader: DIRECT
+
+  # ─── 7. Signal Meter ─────────────────────────────────────────────────
+  # Particles scale with power. Off when unpowered, increasing dust when powered.
+  # Features: Scaling on particle count/speed, states + redstone combined.
+  signal_meter:
+    name: "&aDemo Signal Meter"
+    lore: ["&7Particles scale with redstone power", "&7Reads through walls"]
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzFkMDlhYTA3MTNjYzlhM2YzYzY4MDkyM2IxZjdiMjE2N2Y2NzMyMmZiN2U1ZjczMDE4ODEyZmVmNWZlMWEzYSJ9fX0="
+    drops: self
+    needs_chunk_scan: true
+    default_state: off
+    states:
+      off: {}
+      on:
+        texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTBmODE5MDc3MGUwMjY3N2Q0NDYzODQ5ZGExNWYzZmY3NTBmYjg3YTdiMDZjYzcxN2VhZjFmYTliMzczMzdlYiJ9fX0="
+        particles:
+          type: DUST
+          count: { base: 2, per_power: 2 }
+          speed: { base: 0.01, per_power: 0.005 }
+          interval: 3
+          floor_offset: [0, 0.7, 0]
+    transitions:
+      - trigger: { type: redstone, range: "1-15" }
+        from: off
+        to: on
+      - trigger: { type: redstone, range: "0" }
+        from: on
+        to: off
+    redstone:
+      sensitivity: LEVEL
+      reader: EXTENDED
+
+  # ─── 8. Pillar ───────────────────────────────────────────────────────
+  # Block with a display entity floating above it.
+  # Features: display entities, cancel_pistons.
+  pillar:
+    name: "&9Demo Pillar"
+    lore: ["&7Block with floating display entity", "&7Cannot be pushed by pistons"]
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzdlZDVlZjUzMzAwNzczNWVlNDQwZTg0ZjU1M2ViZDY4ODYxZTAyZmM1MmE1ZmY5M2MyN2I1ODQyOTdiMzUwYSJ9fX0="
+    drops: self
+    cancel_pistons: true
+    display_entities:
+      - texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjU0OGJhYjNjNDhkYzg1ZWQzMzI4YWQ4YWM4NzE5ZDBjMTM0ODM5NzFkODE4ZWU2ZDIwOTc0ZDkxYTZlYjVlZiJ9fX0="
+        tag: top
+        transform:
+          translation: [0, 0.35, 0]
+          scale: [0.6, 0.6, 0.6]
+
+  # ─── 9. Alarm ────────────────────────────────────────────────────────
+  # 3-state cycle: off → alert → panic → off.
+  # Each state has different visuals. Panic adds light + heavy particles.
+  # Features: multi-state cycling, transition particles, transition sounds.
+  alarm:
+    name: "&cDemo Alarm"
+    lore: ["&7Right-click to cycle: off -> alert -> panic -> off"]
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWY2MDY2NGI0MzQ1YmU3NWQwNGIzM2FiNzAzZjg5MjI5MDA1YTU0ZGE3ZjZmNDg1NjQ2NDQyYTdhMjkwZTc1OSJ9fX0="
+    drops: self
+    default_state: off
+    states:
+      off: {}
+      alert:
+        texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzk1ZDFhOTY4ZDA5ODA4OGMxNGJkZGQ4NDM0MTA3OTczYmIzZGI5ZDZiMmJlN2QzZmJhMDAyNDFjNDYzZmNmNiJ9fX0="
+        particles:
+          type: ENTITY_EFFECT
+          count: 3
+          speed: 0.1
+          interval: 10
+          floor_offset: [0, 0.8, 0]
+      panic:
+        texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTBmODE5MDc3MGUwMjY3N2Q0NDYzODQ5ZGExNWYzZmY3NTBmYjg3YTdiMDZjYzcxN2VhZjFmYTliMzczMzdlYiJ9fX0="
+        light: { level: 15, offset: [0, 1, 0] }
+        particles:
+          type: ENTITY_EFFECT
+          count: 8
+          speed: 0.3
+          interval: 3
+          floor_offset: [0, 0.8, 0]
+    transitions:
+      - trigger: { type: interact }
+        from: off
+        to: alert
+        sound: BLOCK_NOTE_BLOCK_BELL
+      - trigger: { type: interact }
+        from: alert
+        to: panic
+        sound: ENTITY_WARDEN_ANGRY
+      - trigger: { type: interact }
+        from: panic
+        to: off
+        sound: BLOCK_BEACON_DEACTIVATE
+        particle: { type: LARGE_SMOKE, count: 10, spread: 0.3 }
+
+  # ─── 10. Enchanting Pedestal ─────────────────────────────────────────
+  # Opens enchanting GUI + always-on soul flame particles.
+  # Features: interactGUI combined with always-on particles.
+  enchant_pedestal:
+    name: "&5Demo Enchanting Pedestal"
+    lore: ["&7Right-click to enchant", "&7Soul fire particles"]
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjc1MmE5YTlhZWMwZjE2MTgwYjhjYjAwMDMwNTFiYjUyOWQ3YTMyMTIwMWZlZTc3NjdhZTBjMmJhNmFmOTE0OSJ9fX0="
+    drops: self
+    needs_chunk_scan: true
+    interact_gui: ENCHANTING
+    particles:
+      type: SOUL_FIRE_FLAME
+      count: 2
+      speed: 0
+      interval: 8
+      floor_offset: [0, 0.9, 0]

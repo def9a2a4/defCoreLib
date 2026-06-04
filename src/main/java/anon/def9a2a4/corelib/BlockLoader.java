@@ -1,0 +1,364 @@
+package anon.def9a2a4.corelib;
+
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import org.bukkit.Material;
+import org.bukkit.Particle;
+import org.bukkit.Sound;
+import org.bukkit.block.BlockFace;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.util.Transformation;
+import org.bukkit.util.Vector;
+import org.jspecify.annotations.Nullable;
+import org.joml.AxisAngle4f;
+import org.joml.Vector3f;
+
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.*;
+import java.util.logging.Logger;
+
+/**
+ * Loads {@link CustomHeadBlock} definitions from YAML files.
+ * This is the data-driven entry point — plugins define blocks in YAML,
+ * and this loader turns them into registered CustomHeadBlock instances.
+ */
+public final class BlockLoader {
+
+    private static final LegacyComponentSerializer LEGACY = LegacyComponentSerializer.legacyAmpersand();
+
+    private BlockLoader() {}
+
+    /**
+     * Load all block definitions from a YAML input stream and register them.
+     * @return number of blocks loaded
+     */
+    public static int load(InputStream input, CustomBlockRegistry registry, Logger logger) {
+        YamlConfiguration yaml = YamlConfiguration.loadConfiguration(new InputStreamReader(input));
+        String namespace = yaml.getString("namespace", "custom");
+        ConfigurationSection blocks = yaml.getConfigurationSection("blocks");
+        if (blocks == null) return 0;
+
+        int count = 0;
+        for (String id : blocks.getKeys(false)) {
+            ConfigurationSection sec = blocks.getConfigurationSection(id);
+            if (sec == null) continue;
+            try {
+                CustomHeadBlock block = parseBlock(namespace, id, sec);
+                registry.register(block);
+                count++;
+            } catch (Exception e) {
+                logger.warning("Failed to load block '" + id + "': " + e.getMessage());
+            }
+        }
+        return count;
+    }
+
+    private static CustomHeadBlock parseBlock(String namespace, String id, ConfigurationSection sec) {
+        CustomHeadBlock.Builder b = CustomHeadBlock.builder(namespace, id);
+
+        // Base texture (required)
+        b.texture(requireString(sec, "texture"));
+
+        // Drops
+        String drops = sec.getString("drops");
+        if ("self".equals(drops)) {
+            b.drops(CustomHeadBlock.DropRule.self());
+        }
+
+        // Flags
+        if (sec.getBoolean("needs_chunk_scan")) b.needsChunkScan(true);
+        if (sec.getBoolean("cancel_pistons")) b.cancelPistons(true);
+
+        // Interact GUI
+        String gui = sec.getString("interact_gui");
+        if (gui != null) {
+            b.interactGUI(CustomHeadBlock.InteractGUI.valueOf(gui.toUpperCase()));
+        }
+
+        // Base light
+        ConfigurationSection lightSec = sec.getConfigurationSection("light");
+        if (lightSec != null) {
+            b.light(parseLight(lightSec).level(),
+                    parseLight(lightSec).offsetX(), parseLight(lightSec).offsetY(), parseLight(lightSec).offsetZ());
+        }
+
+        // Base particles
+        ConfigurationSection particleSec = sec.getConfigurationSection("particles");
+        if (particleSec != null) {
+            b.particles(parseParticles(particleSec));
+        }
+
+        // Display entities
+        List<?> displayList = sec.getList("display_entities");
+        if (displayList != null) {
+            b.displayEntities(parseDisplayEntities(sec.getMapList("display_entities")));
+        }
+
+        // States
+        ConfigurationSection statesSec = sec.getConfigurationSection("states");
+        if (statesSec != null) {
+            for (String stateName : statesSec.getKeys(false)) {
+                ConfigurationSection stateSec = statesSec.getConfigurationSection(stateName);
+                if (stateSec == null || stateSec.getKeys(false).isEmpty()) {
+                    b.state(stateName);
+                } else {
+                    b.state(stateName, sb -> parseStateOverrides(sb, stateSec));
+                }
+            }
+        }
+
+        String defaultState = sec.getString("default_state");
+        if (defaultState != null) b.defaultState(defaultState);
+
+        // Transitions
+        List<Map<?, ?>> transitionsList = sec.getMapList("transitions");
+        for (Map<?, ?> tMap : transitionsList) {
+            b.transition(parseTransition(tMap));
+        }
+
+        // Redstone
+        ConfigurationSection rsSec = sec.getConfigurationSection("redstone");
+        if (rsSec != null) {
+            parseRedstone(b, rsSec);
+        }
+
+        // Name and lore are stored as item metadata — we attach them via PDC at item creation.
+        // The block definition stores them for the give command.
+        // (Handled in give command, reading from the YAML source.)
+
+        return b.build();
+    }
+
+    // ── Parsers ──────────────────────────────────────────────────────────
+
+    private static void parseStateOverrides(CustomHeadBlock.StateBuilder sb, ConfigurationSection sec) {
+        String tex = sec.getString("texture");
+        if (tex != null) sb.texture(tex);
+
+        ConfigurationSection lightSec = sec.getConfigurationSection("light");
+        if (lightSec != null) {
+            CustomHeadBlock.LightConfig lc = parseLight(lightSec);
+            sb.light(lc.level(), lc.offsetX(), lc.offsetY(), lc.offsetZ());
+        }
+
+        ConfigurationSection particleSec = sec.getConfigurationSection("particles");
+        if (particleSec != null) {
+            sb.particles(parseParticles(particleSec));
+        }
+    }
+
+    private static CustomHeadBlock.LightConfig parseLight(ConfigurationSection sec) {
+        int level = sec.getInt("level", 14);
+        List<Integer> offset = sec.getIntegerList("offset");
+        int ox = offset.size() > 0 ? offset.get(0) : 0;
+        int oy = offset.size() > 1 ? offset.get(1) : 0;
+        int oz = offset.size() > 2 ? offset.get(2) : 0;
+        return new CustomHeadBlock.LightConfig(level, ox, oy, oz);
+    }
+
+    private static CustomHeadBlock.ParticleConfig parseParticles(ConfigurationSection sec) {
+        Particle type = Particle.valueOf(sec.getString("type", "FLAME").toUpperCase());
+        CustomHeadBlock.Scaling count = parseScaling(sec.get("count"), 1);
+        CustomHeadBlock.Scaling speed = parseScaling(sec.get("speed"), 0);
+        int interval = sec.getInt("interval", 5);
+        Vector floorOffset = parseVector(sec.get("floor_offset"), new Vector(0, 0.5, 0));
+
+        Map<BlockFace, Vector> wallOffsets = new HashMap<>();
+        ConfigurationSection wallSec = sec.getConfigurationSection("wall_offsets");
+        if (wallSec != null) {
+            for (String faceStr : wallSec.getKeys(false)) {
+                BlockFace face = BlockFace.valueOf(faceStr.toUpperCase());
+                wallOffsets.put(face, parseVector(wallSec.get(faceStr), new Vector(0, 0.5, 0)));
+            }
+        }
+
+        return new CustomHeadBlock.ParticleConfig(type, count, speed, interval, floorOffset, wallOffsets);
+    }
+
+    private static CustomHeadBlock.Scaling parseScaling(Object obj, double defaultVal) {
+        if (obj == null) return CustomHeadBlock.Scaling.fixed(defaultVal);
+        if (obj instanceof Number n) return CustomHeadBlock.Scaling.fixed(n.doubleValue());
+        if (obj instanceof Map<?, ?> map) {
+            double base = toDouble(map.get("base"), defaultVal);
+            double perPower = toDouble(map.get("per_power"), 0);
+            return new CustomHeadBlock.Scaling(base, perPower);
+        }
+        return CustomHeadBlock.Scaling.fixed(defaultVal);
+    }
+
+    private static Vector parseVector(Object obj, Vector defaultVal) {
+        if (obj instanceof List<?> list && list.size() >= 3) {
+            return new Vector(toDouble(list.get(0), 0), toDouble(list.get(1), 0), toDouble(list.get(2), 0));
+        }
+        return defaultVal;
+    }
+
+    private static List<CustomHeadBlock.DisplayEntityConfig> parseDisplayEntities(List<Map<?, ?>> list) {
+        List<CustomHeadBlock.DisplayEntityConfig> result = new ArrayList<>();
+        for (Map<?, ?> map : list) {
+            String tex = String.valueOf(map.get("texture"));
+            String tag = map.get("tag") != null ? String.valueOf(map.get("tag")) : null;
+
+            Transformation transform;
+            Object tObj = map.get("transform");
+            if (tObj instanceof Map<?, ?> tMap) {
+                Vector3f translation = parseVector3f(tMap.get("translation"), new Vector3f(0, 0, 0));
+                Vector3f scale = parseVector3f(tMap.get("scale"), new Vector3f(1, 1, 1));
+                transform = new Transformation(
+                        translation,
+                        new AxisAngle4f(0, 0, 0, 1),
+                        scale,
+                        new AxisAngle4f(0, 0, 0, 1));
+            } else {
+                transform = new Transformation(
+                        new Vector3f(0, 0, 0),
+                        new AxisAngle4f(0, 0, 0, 1),
+                        new Vector3f(1, 1, 1),
+                        new AxisAngle4f(0, 0, 0, 1));
+            }
+
+            result.add(new CustomHeadBlock.DisplayEntityConfig(tex, transform, tag));
+        }
+        return result;
+    }
+
+    private static CustomHeadBlock.StateTransition parseTransition(Map<?, ?> map) {
+        Map<?, ?> triggerMap = (Map<?, ?>) map.get("trigger");
+        CustomHeadBlock.Trigger trigger = parseTrigger(triggerMap);
+
+        String from = String.valueOf(map.get("from"));
+        String to = String.valueOf(map.get("to"));
+
+        Sound sound = null;
+        Object soundObj = map.get("sound");
+        if (soundObj != null) {
+            try {
+                sound = Sound.valueOf(String.valueOf(soundObj).toUpperCase());
+            } catch (IllegalArgumentException ignored) {}
+        }
+
+        CustomHeadBlock.TransitionParticle transParticle = null;
+        Object pObj = map.get("particle");
+        if (pObj instanceof Map<?, ?> pMap) {
+            Particle pType = Particle.valueOf(String.valueOf(pMap.get("type")).toUpperCase());
+            int pCount = toInt(pMap.get("count"), 5);
+            double pSpread = toDouble(pMap.get("spread"), 0.2);
+            transParticle = new CustomHeadBlock.TransitionParticle(pType, pCount, pSpread);
+        }
+
+        return new CustomHeadBlock.StateTransition(trigger, from, to, sound, 1f, 1f, transParticle);
+    }
+
+    private static CustomHeadBlock.Trigger parseTrigger(Map<?, ?> map) {
+        String type = String.valueOf(map.get("type"));
+        return switch (type) {
+            case "interact" -> {
+                Object itemObj = map.get("item");
+                if (itemObj != null) {
+                    yield new CustomHeadBlock.Trigger.Interact(Material.valueOf(String.valueOf(itemObj).toUpperCase()));
+                }
+                yield new CustomHeadBlock.Trigger.Interact(null);
+            }
+            case "redstone" -> {
+                String range = String.valueOf(map.get("range"));
+                yield new CustomHeadBlock.Trigger.RedstonePower(parseRange(range));
+            }
+            default -> throw new IllegalArgumentException("Unknown trigger type: " + type);
+        };
+    }
+
+    private static void parseRedstone(CustomHeadBlock.Builder b, ConfigurationSection sec) {
+        CustomHeadBlock.Sensitivity sens = CustomHeadBlock.Sensitivity.valueOf(
+                sec.getString("sensitivity", "NONE").toUpperCase());
+        CustomHeadBlock.PowerReader reader = CustomHeadBlock.PowerReader.valueOf(
+                sec.getString("reader", "DIRECT").toUpperCase());
+        b.redstone(sens, reader);
+
+        // Per-power textures (exact match)
+        ConfigurationSection texSec = sec.getConfigurationSection("textures");
+        if (texSec != null) {
+            Map<Integer, String> textures = new HashMap<>();
+            for (String key : texSec.getKeys(false)) {
+                textures.put(Integer.parseInt(key), texSec.getString(key));
+            }
+            b.redstoneTextures(textures);
+        }
+
+        // Range-based textures
+        ConfigurationSection rangeSec = sec.getConfigurationSection("texture_ranges");
+        if (rangeSec != null) {
+            Map<CustomHeadBlock.PowerRange, String> ranges = new HashMap<>();
+            for (String key : rangeSec.getKeys(false)) {
+                ranges.put(parseRange(key), rangeSec.getString(key));
+            }
+            b.redstoneTextureRanges(ranges);
+        }
+    }
+
+    private static CustomHeadBlock.PowerRange parseRange(String s) {
+        s = s.trim();
+        if (s.contains("-")) {
+            String[] parts = s.split("-", 2);
+            return new CustomHeadBlock.PowerRange(Integer.parseInt(parts[0].trim()), Integer.parseInt(parts[1].trim()));
+        }
+        int val = Integer.parseInt(s);
+        return new CustomHeadBlock.PowerRange(val, val);
+    }
+
+    // ── Utility ──────────────────────────────────────────────────────────
+
+    private static String requireString(ConfigurationSection sec, String path) {
+        String v = sec.getString(path);
+        if (v == null || v.isBlank()) throw new IllegalArgumentException("Missing required field: " + path);
+        return v;
+    }
+
+    private static double toDouble(Object obj, double defaultVal) {
+        if (obj instanceof Number n) return n.doubleValue();
+        if (obj instanceof String s) {
+            try { return Double.parseDouble(s); } catch (NumberFormatException e) { return defaultVal; }
+        }
+        return defaultVal;
+    }
+
+    private static int toInt(Object obj, int defaultVal) {
+        if (obj instanceof Number n) return n.intValue();
+        if (obj instanceof String s) {
+            try { return Integer.parseInt(s); } catch (NumberFormatException e) { return defaultVal; }
+        }
+        return defaultVal;
+    }
+
+    private static Vector3f parseVector3f(Object obj, Vector3f defaultVal) {
+        if (obj instanceof List<?> list && list.size() >= 3) {
+            return new Vector3f(
+                    (float) toDouble(list.get(0), 0),
+                    (float) toDouble(list.get(1), 0),
+                    (float) toDouble(list.get(2), 0));
+        }
+        return defaultVal;
+    }
+
+    /**
+     * Load a block definition's name as a Component (for item creation).
+     * Reads from the original YAML source since CustomHeadBlock doesn't store display names.
+     */
+    public static @Nullable Component loadName(ConfigurationSection blockSec) {
+        String name = blockSec.getString("name");
+        if (name == null) return null;
+        return LEGACY.deserialize(name).decoration(net.kyori.adventure.text.format.TextDecoration.ITALIC, false);
+    }
+
+    /**
+     * Load a block definition's lore as Components.
+     */
+    public static List<Component> loadLore(ConfigurationSection blockSec) {
+        List<String> lore = blockSec.getStringList("lore");
+        return lore.stream()
+                .map(s -> LEGACY.deserialize(s).decoration(net.kyori.adventure.text.format.TextDecoration.ITALIC, false))
+                .map(c -> (Component) c)
+                .toList();
+    }
+}
