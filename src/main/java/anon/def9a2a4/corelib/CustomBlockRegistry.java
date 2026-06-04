@@ -50,9 +50,14 @@ public class CustomBlockRegistry {
     private final Map<LocationKey, RedstoneTracked> redstoneTracked = new HashMap<>();
     // Particle tracking: locations with active particle effects
     private final Map<LocationKey, ParticleTracked> particleTracked = new HashMap<>();
+    // Neighbor-reactive blocks: fast lookup set for BlockPhysicsEvent filtering
+    private final Set<LocationKey> neighborReactiveBlocks = new HashSet<>();
+    // Tick tracking: blocks with periodic onTick callbacks
+    private final Map<LocationKey, TickTracked> tickTracked = new HashMap<>();
 
     private @Nullable BukkitTask redstoneTask;
     private @Nullable BukkitTask particleTask;
+    private @Nullable BukkitTask customTickTask;
     private @Nullable BukkitTask hintSaveTask;
 
     CustomBlockRegistry(JavaPlugin plugin) {
@@ -65,6 +70,28 @@ public class CustomBlockRegistry {
 
     public void register(CustomHeadBlock type) {
         types.put(type.fullId(), type);
+        // Rescan already-loaded chunks that may contain blocks of this type
+        rescanLoadedChunks(type);
+    }
+
+    /** Scan all loaded, hinted chunks for blocks of the given type. */
+    private void rescanLoadedChunks(CustomHeadBlock type) {
+        for (World world : Bukkit.getWorlds()) {
+            Set<String> hints = chunkHints.get(world.getUID());
+            if (hints == null) continue;
+            for (Chunk chunk : world.getLoadedChunks()) {
+                if (!hints.contains(chunkKey(chunk))) continue;
+                for (BlockState tile : chunk.getTileEntities()) {
+                    if (!(tile instanceof Skull skull)) continue;
+                    String id = skull.getPersistentDataContainer().get(BLOCK_TYPE_KEY, PersistentDataType.STRING);
+                    if (!type.fullId().equals(id)) continue;
+
+                    Block block = skull.getBlock();
+                    String state = skull.getPersistentDataContainer().get(STATE_KEY, PersistentDataType.STRING);
+                    restoreBlock(block, type, state);
+                }
+            }
+        }
     }
 
     public void unregister(String fullId) {
@@ -79,7 +106,7 @@ public class CustomBlockRegistry {
         if (block.getType() != Material.PLAYER_HEAD && block.getType() != Material.PLAYER_WALL_HEAD) {
             return null;
         }
-        Skull skull = (Skull) block.getState();
+        if (!(block.getState() instanceof Skull skull)) return null;
         String typeId = skull.getPersistentDataContainer().get(BLOCK_TYPE_KEY, PersistentDataType.STRING);
         if (typeId == null) return null;
         return types.get(typeId);
@@ -87,6 +114,11 @@ public class CustomBlockRegistry {
 
     public Collection<CustomHeadBlock> allTypes() {
         return Collections.unmodifiableCollection(types.values());
+    }
+
+    /** Fast check: is the block at this location neighbor-reactive? Used by BlockPhysicsEvent. */
+    boolean isNeighborReactive(Block block) {
+        return neighborReactiveBlocks.contains(LocationKey.of(block));
     }
 
     // ──────────────────────────────────────────────────────────────────────
@@ -103,6 +135,9 @@ public class CustomBlockRegistry {
         }
         skull.update();
         markChunkDirty(block);
+        if (type.reactsToNeighbors()) {
+            neighborReactiveBlocks.add(LocationKey.of(block));
+        }
     }
 
     /** Read current state from a skull's PDC. */
@@ -154,47 +189,61 @@ public class CustomBlockRegistry {
     void onChunkLoad(Chunk chunk) {
         if (!chunkMayHaveCustomBlocks(chunk)) return;
 
-        boolean foundAny = false;
+        boolean foundAnyPdc = false; // true if ANY skull has a corelib PDC key (even unrecognized)
         for (BlockState tile : chunk.getTileEntities()) {
             if (!(tile instanceof Skull skull)) continue;
             String typeId = skull.getPersistentDataContainer().get(BLOCK_TYPE_KEY, PersistentDataType.STRING);
             if (typeId == null) continue;
 
+            foundAnyPdc = true; // Don't remove hint — a plugin for this type may load later
+
             CustomHeadBlock type = types.get(typeId);
             if (type == null) continue;
 
-            foundAny = true;
             Block block = skull.getBlock();
             String state = skull.getPersistentDataContainer().get(STATE_KEY, PersistentDataType.STRING);
-
-            // Restore light blocks
-            CustomHeadBlock.LightConfig lc = type.resolveLight(state);
-            if (lc != null) {
-                ensureLightBlock(block, lc);
-            }
-
-            // Restore particle tracking
-            CustomHeadBlock.ParticleConfig pc = type.resolveParticles(state);
-            if (pc != null) {
-                trackParticles(block, type, pc);
-            }
-
-            // Register for redstone tracking
-            if (type.sensitivity() != CustomHeadBlock.Sensitivity.NONE) {
-                int power = readPower(block, type);
-                trackRedstone(block, type, power);
-            }
-
-            // Dispatch to block type
-            if (type.needsChunkScan()) {
-                type.resolveDisplayEntities(state); // ensure displays are noted
-                // Plugin-specific restore happens here via onChunkLoad lifecycle
-                // (Not called here — CoreLibPlugin dispatches events separately)
-            }
+            restoreBlock(block, type, state);
         }
 
-        if (!foundAny) {
+        // Only remove hint if the chunk has zero skulls with ANY corelib PDC entry
+        if (!foundAnyPdc) {
             removeChunkHint(chunk);
+        }
+    }
+
+    /** Restore a single block's runtime state (light, particles, redstone tracking). */
+    private void restoreBlock(Block block, CustomHeadBlock type, @Nullable String state) {
+        // Restore light blocks
+        CustomHeadBlock.LightConfig lc = type.resolveLight(state);
+        if (lc != null) {
+            ensureLightBlock(block, lc);
+        }
+
+        // Restore particle tracking
+        CustomHeadBlock.ParticleConfig pc = type.resolveParticles(state);
+        if (pc != null) {
+            trackParticles(block, type, pc);
+        }
+
+        // Register for redstone tracking
+        if (type.sensitivity() != CustomHeadBlock.Sensitivity.NONE) {
+            int power = readPower(block, type);
+            trackRedstone(block, type, power);
+        }
+
+        // Track neighbor-reactive blocks
+        if (type.reactsToNeighbors()) {
+            neighborReactiveBlocks.add(LocationKey.of(block));
+        }
+
+        // Register for tick tracking
+        if (type.onTick() != null && type.tickInterval() != null) {
+            tickTracked.put(LocationKey.of(block), new TickTracked(block, type));
+        }
+
+        // Dispatch chunk load callback for plugin-specific restore
+        if (type.onChunkLoadCallback() != null) {
+            type.onChunkLoadCallback().accept(block, state);
         }
     }
 
@@ -202,6 +251,17 @@ public class CustomBlockRegistry {
         int chunkX = chunk.getX();
         int chunkZ = chunk.getZ();
         World world = chunk.getWorld();
+
+        // Dispatch chunk unload callbacks
+        for (BlockState tile : chunk.getTileEntities()) {
+            if (!(tile instanceof Skull skull)) continue;
+            String typeId = skull.getPersistentDataContainer().get(BLOCK_TYPE_KEY, PersistentDataType.STRING);
+            if (typeId == null) continue;
+            CustomHeadBlock type = types.get(typeId);
+            if (type != null && type.onChunkUnloadCallback() != null) {
+                type.onChunkUnloadCallback().accept(skull.getBlock());
+            }
+        }
 
         // Remove redstone tracking for blocks in this chunk
         redstoneTracked.entrySet().removeIf(e -> {
@@ -216,6 +276,18 @@ public class CustomBlockRegistry {
             return loc.worldId().equals(world.getUID())
                     && (loc.x() >> 4) == chunkX && (loc.z() >> 4) == chunkZ;
         });
+
+        // Remove neighbor-reactive tracking for blocks in this chunk
+        neighborReactiveBlocks.removeIf(loc ->
+                loc.worldId().equals(world.getUID())
+                        && (loc.x() >> 4) == chunkX && (loc.z() >> 4) == chunkZ);
+
+        // Remove tick tracking for blocks in this chunk
+        tickTracked.entrySet().removeIf(e -> {
+            LocationKey loc = e.getKey();
+            return loc.worldId().equals(world.getUID())
+                    && (loc.x() >> 4) == chunkX && (loc.z() >> 4) == chunkZ;
+        });
     }
 
     // ──────────────────────────────────────────────────────────────────────
@@ -224,8 +296,9 @@ public class CustomBlockRegistry {
 
     /** Apply the resolved config for a block's current state + power. */
     void applyConfig(Block block, CustomHeadBlock type, @Nullable String state, int power) {
-        // Texture
-        String texture = type.resolveTexture(state, power);
+        // Texture (with directional support)
+        BlockFace facing = getSkullFacing(block);
+        String texture = type.resolveTexture(state, power, facing);
         HeadUtil.applyTexture(block, texture);
 
         // Light
@@ -251,10 +324,12 @@ public class CustomBlockRegistry {
         LocationKey key = LocationKey.of(block);
         redstoneTracked.remove(key);
         particleTracked.remove(key);
+        neighborReactiveBlocks.remove(key);
+        tickTracked.remove(key);
 
-        // Remove display entities
+        // Remove display entities (use location-specific prefix to avoid hitting nearby blocks)
         if (type.hasDisplayEntities()) {
-            String tagPrefix = DisplayUtil.typeTagPrefix(type.namespace(), type.typeId());
+            String tagPrefix = DisplayUtil.blockTagPrefix(type.namespace(), type.typeId(), block.getLocation());
             DisplayUtil.removeByTag(block.getLocation(), tagPrefix, 1.5);
         }
 
@@ -392,6 +467,25 @@ public class CustomBlockRegistry {
         }
     }
 
+    // ──────────────────────────────────────────────────────────────────────
+    // Custom block ticking
+    // ──────────────────────────────────────────────────────────────────────
+
+    void tickCustomBlocks() {
+        int currentTick = Bukkit.getServer().getCurrentTick();
+        for (var entry : tickTracked.values()) {
+            Block block = entry.block;
+            if (!block.getChunk().isLoaded()) continue;
+
+            CustomHeadBlock type = entry.type;
+            Integer interval = type.tickInterval();
+            if (interval == null || type.onTick() == null) continue;
+            if (currentTick % interval != 0) continue;
+
+            type.onTick().accept(block);
+        }
+    }
+
     private Vector getOrientedOffset(Block block, CustomHeadBlock.ParticleConfig pc) {
         if (block.getType() == Material.PLAYER_WALL_HEAD && block.getBlockData() instanceof Directional dir) {
             BlockFace facing = dir.getFacing();
@@ -450,6 +544,9 @@ public class CustomBlockRegistry {
         // Particle tick — every tick
         particleTask = Bukkit.getScheduler().runTaskTimer(plugin, this::tickParticles, 1L, 1L);
 
+        // Custom block tick — every tick (individual intervals checked inside)
+        customTickTask = Bukkit.getScheduler().runTaskTimer(plugin, this::tickCustomBlocks, 1L, 1L);
+
         // Hint save — every 5 minutes
         hintSaveTask = Bukkit.getScheduler().runTaskTimer(plugin, this::saveAllHints, 6000L, 6000L);
     }
@@ -457,6 +554,7 @@ public class CustomBlockRegistry {
     void shutdown() {
         if (redstoneTask != null) redstoneTask.cancel();
         if (particleTask != null) particleTask.cancel();
+        if (customTickTask != null) customTickTask.cancel();
         if (hintSaveTask != null) hintSaveTask.cancel();
         saveAllHints();
     }
@@ -467,6 +565,36 @@ public class CustomBlockRegistry {
 
     private File hintFile(UUID worldId) {
         return new File(plugin.getDataFolder(), "hints/" + worldId + ".yml");
+    }
+
+    void loadHintsForWorld(UUID worldId) {
+        File file = hintFile(worldId);
+        if (!file.exists()) return;
+        YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
+        List<String> chunks = yaml.getStringList("chunks");
+        if (!chunks.isEmpty()) {
+            chunkHints.computeIfAbsent(worldId, k -> ConcurrentHashMap.newKeySet()).addAll(chunks);
+        }
+    }
+
+    void saveHintsForWorld(UUID worldId) {
+        if (!dirtyHintWorlds.contains(worldId)) return;
+        Set<String> hints = chunkHints.get(worldId);
+        File file = hintFile(worldId);
+        if (hints == null || hints.isEmpty()) {
+            if (file.exists()) file.delete();
+            dirtyHintWorlds.remove(worldId);
+            return;
+        }
+        file.getParentFile().mkdirs();
+        YamlConfiguration yaml = new YamlConfiguration();
+        yaml.set("chunks", new ArrayList<>(hints));
+        try {
+            yaml.save(file);
+            dirtyHintWorlds.remove(worldId);
+        } catch (IOException e) {
+            plugin.getLogger().log(Level.SEVERE, "Failed to save chunk hints for world " + worldId, e);
+        }
     }
 
     void loadAllHints() {
@@ -516,6 +644,13 @@ public class CustomBlockRegistry {
     // Internal tracking records
     // ──────────────────────────────────────────────────────────────────────
 
+    private static @Nullable BlockFace getSkullFacing(Block block) {
+        if (block.getType() == Material.PLAYER_WALL_HEAD && block.getBlockData() instanceof Directional dir) {
+            return dir.getFacing();
+        }
+        return null; // floor head has no directional facing
+    }
+
     private record LocationKey(UUID worldId, int x, int y, int z) {
         static LocationKey of(Block block) {
             return new LocationKey(block.getWorld().getUID(), block.getX(), block.getY(), block.getZ());
@@ -541,6 +676,15 @@ public class CustomBlockRegistry {
             this.block = block;
             this.type = type;
             this.config = config;
+        }
+    }
+
+    private static final class TickTracked {
+        final Block block;
+        final CustomHeadBlock type;
+        TickTracked(Block block, CustomHeadBlock type) {
+            this.block = block;
+            this.type = type;
         }
     }
 }

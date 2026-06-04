@@ -61,6 +61,18 @@ public final class BlockLoader {
         // Base texture (required)
         b.texture(requireString(sec, "texture"));
 
+        // Name and lore
+        String nameStr = sec.getString("name");
+        if (nameStr != null) {
+            b.name(LEGACY.deserialize(nameStr).decoration(net.kyori.adventure.text.format.TextDecoration.ITALIC, false));
+        }
+        List<String> loreStrs = sec.getStringList("lore");
+        if (!loreStrs.isEmpty()) {
+            b.lore(loreStrs.stream()
+                    .map(s -> (Component) LEGACY.deserialize(s).decoration(net.kyori.adventure.text.format.TextDecoration.ITALIC, false))
+                    .toList());
+        }
+
         // Drops
         String drops = sec.getString("drops");
         if ("self".equals(drops)) {
@@ -80,8 +92,8 @@ public final class BlockLoader {
         // Base light
         ConfigurationSection lightSec = sec.getConfigurationSection("light");
         if (lightSec != null) {
-            b.light(parseLight(lightSec).level(),
-                    parseLight(lightSec).offsetX(), parseLight(lightSec).offsetY(), parseLight(lightSec).offsetZ());
+            CustomHeadBlock.LightConfig lc = parseLight(lightSec);
+            b.light(lc.level(), lc.offsetX(), lc.offsetY(), lc.offsetZ());
         }
 
         // Base particles
@@ -341,24 +353,4 @@ public final class BlockLoader {
         return defaultVal;
     }
 
-    /**
-     * Load a block definition's name as a Component (for item creation).
-     * Reads from the original YAML source since CustomHeadBlock doesn't store display names.
-     */
-    public static @Nullable Component loadName(ConfigurationSection blockSec) {
-        String name = blockSec.getString("name");
-        if (name == null) return null;
-        return LEGACY.deserialize(name).decoration(net.kyori.adventure.text.format.TextDecoration.ITALIC, false);
-    }
-
-    /**
-     * Load a block definition's lore as Components.
-     */
-    public static List<Component> loadLore(ConfigurationSection blockSec) {
-        List<String> lore = blockSec.getStringList("lore");
-        return lore.stream()
-                .map(s -> LEGACY.deserialize(s).decoration(net.kyori.adventure.text.format.TextDecoration.ITALIC, false))
-                .map(c -> (Component) c)
-                .toList();
-    }
 }

@@ -1,5 +1,6 @@
 package anon.def9a2a4.corelib;
 
+import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
@@ -168,6 +169,10 @@ public final class CustomHeadBlock {
     private final String namespace;
     private final String typeId;
 
+    // Item display
+    private final @Nullable Component name;
+    private final List<Component> lore;
+
     // Base config
     private final String texture;
     private final @Nullable Map<BlockFace, String> directionalTextures;
@@ -194,10 +199,14 @@ public final class CustomHeadBlock {
     // Escape hatches
     private final @Nullable BiConsumer<Block, BlockFace> onNeighborChange;
     private final @Nullable Consumer<Block> onTick;
+    private final @Nullable BiConsumer<Block, String> onChunkLoadCallback;
+    private final @Nullable Consumer<Block> onChunkUnloadCallback;
 
     private CustomHeadBlock(Builder b) {
         this.namespace = b.namespace;
         this.typeId = b.typeId;
+        this.name = b.name;
+        this.lore = b.lore != null ? List.copyOf(b.lore) : List.of();
         this.texture = b.texture;
         this.directionalTextures = b.directionalTextures;
         this.light = b.light;
@@ -217,6 +226,8 @@ public final class CustomHeadBlock {
         this.redstone = b.redstone;
         this.onNeighborChange = b.onNeighborChange;
         this.onTick = b.onTick;
+        this.onChunkLoadCallback = b.onChunkLoadCallback;
+        this.onChunkUnloadCallback = b.onChunkUnloadCallback;
     }
 
     // ──────────────────────────────────────────────────────────────────────
@@ -226,6 +237,9 @@ public final class CustomHeadBlock {
     public String namespace() { return namespace; }
     public String typeId() { return typeId; }
     public String fullId() { return namespace + ":" + typeId; }
+
+    public @Nullable Component name() { return name; }
+    public List<Component> lore() { return lore; }
 
     public String texture() { return texture; }
     public @Nullable Map<BlockFace, String> directionalTextures() { return directionalTextures; }
@@ -251,17 +265,25 @@ public final class CustomHeadBlock {
 
     public @Nullable BiConsumer<Block, BlockFace> onNeighborChange() { return onNeighborChange; }
     public @Nullable Consumer<Block> onTick() { return onTick; }
+    public @Nullable BiConsumer<Block, String> onChunkLoadCallback() { return onChunkLoadCallback; }
+    public @Nullable Consumer<Block> onChunkUnloadCallback() { return onChunkUnloadCallback; }
 
     public boolean hasDisplayEntities() { return !displayEntities.isEmpty() || states.values().stream().anyMatch(s -> s.displayEntities() != null); }
     public boolean hasLight() { return light != null || states.values().stream().anyMatch(s -> s.light() != null); }
     public boolean hasParticles() { return particles != null || states.values().stream().anyMatch(s -> s.particles() != null); }
 
+    /** Create an ItemStack for this block type with correct texture, name, lore, and PDC. */
+    public org.bukkit.inventory.ItemStack createItem(int amount) {
+        return HeadUtil.createHead(texture, amount, name, lore,
+                Map.of(CustomBlockRegistry.BLOCK_TYPE_KEY, fullId()));
+    }
+
     // ──────────────────────────────────────────────────────────────────────
     // Resolution: given current state + power, resolve effective config
     // ──────────────────────────────────────────────────────────────────────
 
-    /** Resolve the effective texture for the current state and power level. */
-    public String resolveTexture(@Nullable String state, int power) {
+    /** Resolve the effective texture for the current state, power level, and orientation. */
+    public String resolveTexture(@Nullable String state, int power, @Nullable BlockFace facing) {
         // Redstone texture overrides take priority
         if (redstone != null) {
             String rsTex = resolveRedstoneTexture(power);
@@ -270,9 +292,26 @@ public final class CustomHeadBlock {
         // State override
         if (state != null) {
             StateConfig sc = states.get(state);
-            if (sc != null && sc.texture() != null) return sc.texture();
+            if (sc != null) {
+                // Directional texture within state
+                if (facing != null && sc.directionalTextures() != null) {
+                    String dirTex = sc.directionalTextures().get(facing);
+                    if (dirTex != null) return dirTex;
+                }
+                if (sc.texture() != null) return sc.texture();
+            }
+        }
+        // Base directional texture
+        if (facing != null && directionalTextures != null) {
+            String dirTex = directionalTextures.get(facing);
+            if (dirTex != null) return dirTex;
         }
         return texture;
+    }
+
+    /** Convenience overload without facing (backwards compatible). */
+    public String resolveTexture(@Nullable String state, int power) {
+        return resolveTexture(state, power, null);
     }
 
     /** Resolve the effective light config for the current state. */
@@ -358,6 +397,9 @@ public final class CustomHeadBlock {
         private final String namespace;
         private final String typeId;
 
+        private @Nullable Component name;
+        private @Nullable List<Component> lore;
+
         private String texture = "";
         private @Nullable Map<BlockFace, String> directionalTextures;
         private @Nullable LightConfig light;
@@ -380,11 +422,18 @@ public final class CustomHeadBlock {
 
         private @Nullable BiConsumer<Block, BlockFace> onNeighborChange;
         private @Nullable Consumer<Block> onTick;
+        private @Nullable BiConsumer<Block, String> onChunkLoadCallback;
+        private @Nullable Consumer<Block> onChunkUnloadCallback;
 
         private Builder(String namespace, String typeId) {
             this.namespace = Objects.requireNonNull(namespace);
             this.typeId = Objects.requireNonNull(typeId);
         }
+
+        // --- Item display ---
+
+        public Builder name(Component name) { this.name = name; return this; }
+        public Builder lore(List<Component> lore) { this.lore = lore; return this; }
 
         // --- Base config ---
 
@@ -469,6 +518,8 @@ public final class CustomHeadBlock {
         }
 
         public Builder onTick(Consumer<Block> handler) { this.onTick = handler; return this; }
+        public Builder onChunkLoad(BiConsumer<Block, String> handler) { this.onChunkLoadCallback = handler; return this; }
+        public Builder onChunkUnload(Consumer<Block> handler) { this.onChunkUnloadCallback = handler; return this; }
 
         public CustomHeadBlock build() {
             Objects.requireNonNull(texture, "texture is required");

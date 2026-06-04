@@ -10,8 +10,6 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.block.Skull;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -26,16 +24,16 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
+
 import java.util.List;
-import java.util.Map;
+
 
 public class CoreLibPlugin extends JavaPlugin implements Listener {
 
     private static CoreLibPlugin instance;
     private CustomBlockRegistry registry;
-    private YamlConfiguration demoYaml;
 
     @Override
     public void onEnable() {
@@ -45,12 +43,12 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         getServer().getPluginManager().registerEvents(this, this);
 
         // Load demo blocks from YAML
-        InputStream demoStream = getResource("demo-blocks.yml");
-        if (demoStream != null) {
-            demoYaml = YamlConfiguration.loadConfiguration(new InputStreamReader(demoStream));
-            int count = BlockLoader.load(getResource("demo-blocks.yml"), registry, getLogger());
-            getLogger().info("Loaded " + count + " demo blocks");
-        }
+        try (InputStream demoStream = getResource("demo-blocks.yml")) {
+            if (demoStream != null) {
+                int count = BlockLoader.load(demoStream, registry, getLogger());
+                getLogger().info("Loaded " + count + " demo blocks");
+            }
+        } catch (IOException ignored) {}
 
         getLogger().info("DefCoreLib enabled");
     }
@@ -89,7 +87,7 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
     // Block placement — detect custom block items, write PDC, apply config
     // ──────────────────────────────────────────────────────────────────────
 
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onBlockPlace(BlockPlaceEvent event) {
         Block block = event.getBlockPlaced();
         if (block.getType() != Material.PLAYER_HEAD && block.getType() != Material.PLAYER_WALL_HEAD) {
@@ -104,6 +102,29 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
 
         CustomHeadBlock type = registry.getType(typeId);
         if (type == null) return;
+
+        // Check placement restrictions
+        if (type.placement() != null) {
+            CustomHeadBlock.PlacementConfig pc = type.placement();
+            BlockFace placedOn = getAttachmentFace(block);
+            if (!pc.allowedFaces().isEmpty() && !pc.allowedFaces().contains(placedOn)) {
+                event.setCancelled(true);
+                event.getPlayer().sendMessage(
+                        net.kyori.adventure.text.Component.text("Cannot place this block here",
+                                net.kyori.adventure.text.format.NamedTextColor.RED));
+                return;
+            }
+            if (pc.requireSolid()) {
+                Block support = block.getRelative(placedOn);
+                if (!support.getType().isSolid()) {
+                    event.setCancelled(true);
+                    event.getPlayer().sendMessage(
+                            net.kyori.adventure.text.Component.text("Requires a solid block",
+                                    net.kyori.adventure.text.format.NamedTextColor.RED));
+                    return;
+                }
+            }
+        }
 
         // Write PDC to the placed skull
         registry.markBlock(block, type);
@@ -144,6 +165,9 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
 
         String state = registry.getState(block);
 
+        // Read power BEFORE cleanup removes redstone tracking
+        int power = type.sensitivity() != CustomHeadBlock.Sensitivity.NONE ? registry.readPower(block, type) : 0;
+
         // Cleanup
         registry.onBlockRemoved(block, type);
 
@@ -162,10 +186,7 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
                 if (rule.requiredTool() != null && tool.getType() != rule.requiredTool()) continue;
 
                 if (rule.isSelfDrop()) {
-                    // Drop the block's own item
-                    ItemStack drop = HeadUtil.createHead(type.resolveTexture(state, 0), 1,
-                            null, null,
-                            java.util.Map.of(CustomBlockRegistry.BLOCK_TYPE_KEY, type.fullId()));
+                    ItemStack drop = type.createItem(1);
                     block.getWorld().dropItemNaturally(block.getLocation().add(0.5, 0.5, 0.5), drop);
                 } else {
                     for (CustomHeadBlock.ItemDrop itemDrop : rule.drops()) {
@@ -222,6 +243,55 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         }
     }
 
+    // Fire destruction — custom blocks consumed by fire, no drops
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onBlockBurn(BlockBurnEvent event) {
+        CustomHeadBlock type = registry.getTypeFromBlock(event.getBlock());
+        if (type != null) {
+            registry.onBlockRemoved(event.getBlock(), type);
+        }
+    }
+
+    // Prevent wall-mounted custom skulls from popping off when support block is removed
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    public void onPhysicsCancelForCustomSkulls(BlockPhysicsEvent event) {
+        Block block = event.getBlock();
+        if (block.getType() != Material.PLAYER_HEAD && block.getType() != Material.PLAYER_WALL_HEAD) return;
+        CustomHeadBlock type = registry.getTypeFromBlock(block);
+        if (type != null) {
+            event.setCancelled(true);
+        }
+    }
+
+    // Creative middle-click — return correct custom item
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onPickBlock(io.papermc.paper.event.player.PlayerPickBlockEvent event) {
+        Block block = event.getBlock();
+        CustomHeadBlock type = registry.getTypeFromBlock(block);
+        if (type == null) return;
+
+        event.setCancelled(true);
+        Player player = event.getPlayer();
+        ItemStack customItem = type.createItem(1);
+        int targetSlot = event.getTargetSlot();
+        player.getInventory().setItem(targetSlot, customItem);
+        player.getInventory().setHeldItemSlot(targetSlot);
+    }
+
+    // ──────────────────────────────────────────────────────────────────────
+    // World lifecycle — load/save chunk hints per world
+    // ──────────────────────────────────────────────────────────────────────
+
+    @EventHandler
+    public void onWorldLoad(org.bukkit.event.world.WorldLoadEvent event) {
+        registry.loadHintsForWorld(event.getWorld().getUID());
+    }
+
+    @EventHandler
+    public void onWorldUnload(org.bukkit.event.world.WorldUnloadEvent event) {
+        registry.saveHintsForWorld(event.getWorld().getUID());
+    }
+
     // ──────────────────────────────────────────────────────────────────────
     // Interaction — GUI + state transitions
     // ──────────────────────────────────────────────────────────────────────
@@ -265,6 +335,16 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         }
     }
 
+    /** Determine which face a skull block is attached to. */
+    private static BlockFace getAttachmentFace(Block block) {
+        if (block.getType() == Material.PLAYER_WALL_HEAD) {
+            if (block.getBlockData() instanceof org.bukkit.block.data.Directional dir) {
+                return dir.getFacing().getOppositeFace(); // mounted on the opposite face
+            }
+        }
+        return BlockFace.DOWN; // floor head sits on the block below
+    }
+
     private void openGUI(Player player, CustomHeadBlock.InteractGUI gui) {
         switch (gui) {
             case WORKBENCH -> player.openWorkbench(null, true);
@@ -283,14 +363,20 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
     // Neighbor changes — only for blocks that declared reactsToNeighbors
     // ──────────────────────────────────────────────────────────────────────
 
+    private static final BlockFace[] CARDINAL_FACES = {
+            BlockFace.NORTH, BlockFace.SOUTH, BlockFace.EAST, BlockFace.WEST, BlockFace.UP, BlockFace.DOWN
+    };
+
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onBlockPhysics(BlockPhysicsEvent event) {
-        // Check all 6 neighbors of the changed block
         Block changed = event.getBlock();
-        for (BlockFace face : new BlockFace[]{BlockFace.NORTH, BlockFace.SOUTH, BlockFace.EAST, BlockFace.WEST, BlockFace.UP, BlockFace.DOWN}) {
+        // Fast path: check if any neighbor is in the reactive set before doing expensive lookups
+        for (BlockFace face : CARDINAL_FACES) {
             Block neighbor = changed.getRelative(face);
+            if (!registry.isNeighborReactive(neighbor)) continue;
+            // Only now do the expensive getTypeFromBlock lookup
             CustomHeadBlock type = registry.getTypeFromBlock(neighbor);
-            if (type != null && type.reactsToNeighbors() && type.onNeighborChange() != null) {
+            if (type != null && type.onNeighborChange() != null) {
                 type.onNeighborChange().accept(neighbor, face.getOppositeFace());
             }
         }
@@ -325,7 +411,15 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
                     return true;
                 }
                 String blockId = args[1];
-                int amount = args.length >= 3 ? Integer.parseInt(args[2]) : 1;
+                int amount = 1;
+                if (args.length >= 3) {
+                    try {
+                        amount = Math.max(1, Math.min(64, Integer.parseInt(args[2])));
+                    } catch (NumberFormatException e) {
+                        sender.sendMessage(Component.text("Invalid amount: " + args[2], NamedTextColor.RED));
+                        return true;
+                    }
+                }
 
                 // Try with namespace prefix, fall back to searching all namespaces
                 CustomHeadBlock type = registry.getType(blockId);
@@ -343,20 +437,7 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
                     return true;
                 }
 
-                // Read name/lore from YAML if available
-                Component displayName = null;
-                List<Component> lore = List.of();
-                if (demoYaml != null) {
-                    ConfigurationSection blockSec = demoYaml.getConfigurationSection("blocks." + type.typeId());
-                    if (blockSec != null) {
-                        displayName = BlockLoader.loadName(blockSec);
-                        lore = BlockLoader.loadLore(blockSec);
-                    }
-                }
-
-                ItemStack item = HeadUtil.createHead(
-                        type.texture(), amount, displayName, lore,
-                        Map.of(CustomBlockRegistry.BLOCK_TYPE_KEY, type.fullId()));
+                ItemStack item = type.createItem(amount);
 
                 player.getInventory().addItem(item);
                 sender.sendMessage(Component.text("Gave " + amount + "x " + type.fullId(), NamedTextColor.GREEN));
