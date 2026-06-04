@@ -1,0 +1,11 @@
+name: DefCoreLib
+main: anon.def9a2a4.corelib.CoreLibPlugin
+version: ${version}
+api-version: 1.21
+author: def9a2a4
+description: Shared core library for def plugins
+commands:
+  corelib:
+    description: DefCoreLib admin commands
+    usage: /corelib <give|list> [args...]
+    permission: corelib.admin
