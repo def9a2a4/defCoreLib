@@ -40,6 +40,8 @@ public final class BlockLoader {
         ConfigurationSection blocks = yaml.getConfigurationSection("blocks");
         if (blocks == null) return 0;
 
+        // Parse and register all blocks (recipes store block IDs as strings,
+        // resolved at recipe registration time in CustomBlockRegistry)
         int count = 0;
         for (String id : blocks.getKeys(false)) {
             ConfigurationSection sec = blocks.getConfigurationSection(id);
@@ -136,11 +138,83 @@ public final class BlockLoader {
             parseRedstone(b, rsSec);
         }
 
-        // Name and lore are stored as item metadata — we attach them via PDC at item creation.
-        // The block definition stores them for the give command.
-        // (Handled in give command, reading from the YAML source.)
+        // Recipes
+        ConfigurationSection recipesSec = sec.getConfigurationSection("recipes");
+        if (recipesSec != null) {
+            parseRecipes(b, recipesSec, namespace);
+        }
 
         return b.build();
+    }
+
+    private static void parseRecipes(CustomHeadBlock.Builder b, ConfigurationSection sec, String namespace) {
+        ConfigurationSection craftSec = sec.getConfigurationSection("craft");
+        if (craftSec != null) {
+            // Shaped recipes
+            int shapedIdx = 0;
+            for (Map<?, ?> m : craftSec.getMapList("shaped")) {
+                String id = m.get("id") != null ? String.valueOf(m.get("id")) : "shaped_" + shapedIdx++;
+                int amount = toInt(m.get("amount"), 1);
+                List<String> pattern = new ArrayList<>();
+                if (m.get("pattern") instanceof List<?> pl) {
+                    for (Object row : pl) pattern.add(String.valueOf(row));
+                }
+                Map<Character, CustomHeadBlock.IngredientSpec> key = new HashMap<>();
+                if (m.get("key") instanceof Map<?, ?> km) {
+                    for (Map.Entry<?, ?> e : km.entrySet()) {
+                        String k = String.valueOf(e.getKey());
+                        if (k.length() != 1) continue;
+                        if (e.getValue() instanceof Map<?, ?> iv) {
+                            key.put(k.charAt(0), parseIngredient(iv, namespace));
+                        }
+                    }
+                }
+                b.shapedRecipe(new CustomHeadBlock.ShapedRecipeDef(id, amount, pattern, key));
+            }
+
+            // Shapeless recipes
+            int shapelessIdx = 0;
+            for (Map<?, ?> m : craftSec.getMapList("shapeless")) {
+                String id = m.get("id") != null ? String.valueOf(m.get("id")) : "shapeless_" + shapelessIdx++;
+                int amount = toInt(m.get("amount"), 1);
+                List<CustomHeadBlock.IngredientSpec> ingredients = new ArrayList<>();
+                if (m.get("ingredients") instanceof List<?> il) {
+                    for (Object o : il) {
+                        if (o instanceof Map<?, ?> im) {
+                            ingredients.add(parseIngredient(im, namespace));
+                        }
+                    }
+                }
+                b.shapelessRecipe(new CustomHeadBlock.ShapelessRecipeDef(id, amount, ingredients));
+            }
+        }
+
+        // Stonecutter recipes
+        int stonecutIdx = 0;
+        for (Map<?, ?> m : sec.getMapList("stonecutter")) {
+            String id = m.get("id") != null ? String.valueOf(m.get("id")) : "sc_" + stonecutIdx++;
+            int amount = toInt(m.get("amount"), 1);
+            if (m.get("input") instanceof Map<?, ?> im) {
+                CustomHeadBlock.IngredientSpec input = parseIngredient(im, namespace);
+                b.stonecutterRecipe(new CustomHeadBlock.StonecutterRecipeDef(id, amount, input));
+            }
+        }
+    }
+
+    private static CustomHeadBlock.IngredientSpec parseIngredient(Map<?, ?> map, String namespace) {
+        Object matObj = map.get("material");
+        Object blockObj = map.get("block");
+        if (matObj != null) {
+            Material mat = Material.matchMaterial(String.valueOf(matObj).toUpperCase(java.util.Locale.ROOT));
+            return new CustomHeadBlock.IngredientSpec(mat, null);
+        }
+        if (blockObj != null) {
+            String blockId = String.valueOf(blockObj);
+            // If no namespace prefix, prepend the file's namespace
+            if (!blockId.contains(":")) blockId = namespace + ":" + blockId;
+            return new CustomHeadBlock.IngredientSpec(null, blockId);
+        }
+        throw new IllegalArgumentException("Ingredient must have 'material' or 'block' key");
     }
 
     // ── Parsers ──────────────────────────────────────────────────────────
@@ -186,7 +260,18 @@ public final class BlockLoader {
             }
         }
 
-        return new CustomHeadBlock.ParticleConfig(type, count, speed, interval, floorOffset, wallOffsets);
+        // Parse particle-specific data (e.g., DustOptions for DUST type)
+        Object data = null;
+        if (type == Particle.DUST) {
+            List<Integer> color = sec.getIntegerList("color");
+            float size = (float) sec.getDouble("size", 1.0);
+            int r = color.size() > 0 ? color.get(0) : 255;
+            int g = color.size() > 1 ? color.get(1) : 255;
+            int b = color.size() > 2 ? color.get(2) : 255;
+            data = new Particle.DustOptions(org.bukkit.Color.fromRGB(r, g, b), size);
+        }
+
+        return new CustomHeadBlock.ParticleConfig(type, count, speed, interval, floorOffset, wallOffsets, data);
     }
 
     private static CustomHeadBlock.Scaling parseScaling(Object obj, double defaultVal) {
@@ -237,10 +322,18 @@ public final class BlockLoader {
     }
 
     private static CustomHeadBlock.StateTransition parseTransition(Map<?, ?> map) {
-        Map<?, ?> triggerMap = (Map<?, ?>) map.get("trigger");
+        Object triggerObj = map.get("trigger");
+        if (!(triggerObj instanceof Map<?, ?> triggerMap)) {
+            throw new IllegalArgumentException("Transition missing 'trigger' map");
+        }
         CustomHeadBlock.Trigger trigger = parseTrigger(triggerMap);
 
-        String from = String.valueOf(map.get("from"));
+        Object fromObj = map.get("from");
+        Object toObj = map.get("to");
+        if (fromObj == null || toObj == null) {
+            throw new IllegalArgumentException("Transition missing 'from' or 'to' state");
+        }
+        String from = String.valueOf(fromObj);
         String to = String.valueOf(map.get("to"));
 
         Sound sound = null;

@@ -2,12 +2,9 @@ package anon.def9a2a4.corelib;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
-import org.bukkit.Chunk;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.block.Skull;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -28,6 +25,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import java.util.List;
+import java.util.Map;
 
 
 public class CoreLibPlugin extends JavaPlugin implements Listener {
@@ -49,6 +47,9 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
                 getLogger().info("Loaded " + count + " demo blocks");
             }
         } catch (IOException ignored) {}
+
+        // Register recipes after all blocks are loaded
+        registry.finalizeLoading();
 
         getLogger().info("DefCoreLib enabled");
     }
@@ -135,6 +136,9 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
 
         // Schedule for next tick to ensure block state is fully initialized
         getServer().getScheduler().runTask(this, () -> {
+            // Guard: block may have been broken between placement and this tick
+            if (registry.getTypeFromBlock(block) == null) return;
+
             registry.applyConfig(block, type, state, power);
 
             // Register for redstone tracking if needed
@@ -171,12 +175,13 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         // Cleanup
         registry.onBlockRemoved(block, type);
 
-        // Handle drops
+        // Handle drops (skip in creative mode)
+        event.setDropItems(false); // always suppress vanilla head drop
+        Player player = event.getPlayer();
+        if (player.getGameMode() == org.bukkit.GameMode.CREATIVE) return;
+
         List<CustomHeadBlock.DropRule> rules = type.dropRules();
         if (!rules.isEmpty()) {
-            event.setDropItems(false);
-
-            Player player = event.getPlayer();
             ItemStack tool = player.getInventory().getItemInMainHand();
             boolean silk = tool.containsEnchantment(org.bukkit.enchantments.Enchantment.SILK_TOUCH);
 
@@ -199,22 +204,26 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         }
     }
 
-    // Explosion cleanup
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    // Explosion cleanup — remove custom blocks from blast list, drop correct items
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onEntityExplode(EntityExplodeEvent event) {
-        for (Block block : event.blockList()) {
-            CustomHeadBlock type = registry.getTypeFromBlock(block);
-            if (type != null) {
-                registry.onBlockRemoved(block, type);
-            }
-        }
+        handleExplosion(event.blockList());
     }
 
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onBlockExplode(BlockExplodeEvent event) {
-        for (Block block : event.blockList()) {
+        handleExplosion(event.blockList());
+    }
+
+    private void handleExplosion(List<Block> blockList) {
+        java.util.Iterator<Block> it = blockList.iterator();
+        while (it.hasNext()) {
+            Block block = it.next();
             CustomHeadBlock type = registry.getTypeFromBlock(block);
             if (type != null) {
+                it.remove(); // prevent vanilla skull drop
+                block.getWorld().dropItemNaturally(
+                        block.getLocation().add(0.5, 0.5, 0.5), type.createItem(1));
                 registry.onBlockRemoved(block, type);
             }
         }
@@ -252,13 +261,28 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         }
     }
 
-    // Prevent wall-mounted custom skulls from popping off when support block is removed
+    // Water/lava flow destroying custom heads
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onBlockFromTo(org.bukkit.event.block.BlockFromToEvent event) {
+        Block to = event.getToBlock();
+        CustomHeadBlock type = registry.getTypeFromBlock(to);
+        if (type != null) {
+            registry.onBlockRemoved(to, type);
+        }
+    }
+
+    // Prevent wall-mounted custom skulls from popping off when support block is removed,
+    // but allow other physics (redstone propagation) to proceed normally
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onPhysicsCancelForCustomSkulls(BlockPhysicsEvent event) {
         Block block = event.getBlock();
         if (block.getType() != Material.PLAYER_HEAD && block.getType() != Material.PLAYER_WALL_HEAD) return;
         CustomHeadBlock type = registry.getTypeFromBlock(block);
-        if (type != null) {
+        if (type == null) return;
+        // Only cancel if the support block is gone (prevents pop-off without suppressing redstone)
+        BlockFace attachment = getAttachmentFace(block);
+        Block support = block.getRelative(attachment);
+        if (!support.getType().isSolid()) {
             event.setCancelled(true);
         }
     }
@@ -274,8 +298,72 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         Player player = event.getPlayer();
         ItemStack customItem = type.createItem(1);
         int targetSlot = event.getTargetSlot();
+
+        // Don't overwrite existing items — find an empty hotbar slot or swap safely
+        ItemStack existing = player.getInventory().getItem(targetSlot);
+        if (existing != null && existing.getType() != Material.AIR) {
+            // Check if player already has this item in hotbar
+            for (int i = 0; i < 9; i++) {
+                ItemStack hotbar = player.getInventory().getItem(i);
+                if (hotbar != null && hotbar.isSimilar(customItem)) {
+                    player.getInventory().setHeldItemSlot(i);
+                    return;
+                }
+            }
+            // Find empty hotbar slot
+            int emptySlot = -1;
+            for (int i = 0; i < 9; i++) {
+                ItemStack hotbar = player.getInventory().getItem(i);
+                if (hotbar == null || hotbar.getType() == Material.AIR) {
+                    emptySlot = i;
+                    break;
+                }
+            }
+            if (emptySlot != -1) {
+                targetSlot = emptySlot;
+            }
+            // If no empty slot in creative, overwrite is acceptable (matches vanilla behavior)
+        }
+
         player.getInventory().setItem(targetSlot, customItem);
         player.getInventory().setHeldItemSlot(targetSlot);
+    }
+
+    // ──────────────────────────────────────────────────────────────────────
+    // Recipe validation — verify custom block ingredients by PDC, not ExactChoice
+    // ──────────────────────────────────────────────────────────────────────
+
+    @EventHandler(priority = EventPriority.HIGH)
+    public void onPrepareCraft(org.bukkit.event.inventory.PrepareItemCraftEvent event) {
+        if (event.getRecipe() == null) return;
+        if (!(event.getRecipe() instanceof org.bukkit.Keyed keyed)) return;
+
+        Map<Character, String> headIngredients = registry.getHeadIngredients(keyed.getKey());
+        if (headIngredients == null) return; // not one of our recipes with head ingredients
+
+        // Validate that all PLAYER_HEAD items in the grid have the correct block_type PDC
+        org.bukkit.inventory.ItemStack[] matrix = event.getInventory().getMatrix();
+        for (ItemStack item : matrix) {
+            if (item == null || item.getType() != Material.PLAYER_HEAD) continue;
+            String blockType = null;
+            if (item.getItemMeta() != null) {
+                blockType = item.getItemMeta().getPersistentDataContainer()
+                        .get(CustomBlockRegistry.BLOCK_TYPE_KEY, PersistentDataType.STRING);
+            }
+            // Check if this head matches any required block ingredient
+            boolean matchesAny = false;
+            for (String requiredId : headIngredients.values()) {
+                if (requiredId.equals(blockType)) {
+                    matchesAny = true;
+                    break;
+                }
+            }
+            if (!matchesAny) {
+                // A player head is in the grid but doesn't match any required custom block
+                event.getInventory().setResult(null);
+                return;
+            }
+        }
     }
 
     // ──────────────────────────────────────────────────────────────────────
@@ -296,7 +384,7 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
     // Interaction — GUI + state transitions
     // ──────────────────────────────────────────────────────────────────────
 
-    @EventHandler(priority = EventPriority.HIGH)
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onPlayerInteract(PlayerInteractEvent event) {
         if (event.getAction() != Action.RIGHT_CLICK_BLOCK) return;
         if (event.getHand() != EquipmentSlot.HAND) return;
@@ -357,6 +445,184 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
             case CARTOGRAPHY -> player.openCartographyTable(null, true);
             case ENDERCHEST -> player.openInventory(player.getEnderChest());
         }
+    }
+
+    // ──────────────────────────────────────────────────────────────────────
+    // Stonecutter interception for head-to-head recipes
+    // ──────────────────────────────────────────────────────────────────────
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onStonecutterClick(org.bukkit.event.inventory.InventoryClickEvent event) {
+        // Handle clicks in our custom selection menu (InventoryHolder pattern)
+        if (event.getInventory().getHolder() instanceof StonecutterSelectHolder holder) {
+            event.setCancelled(true);
+            if (!(event.getWhoClicked() instanceof Player player)) return;
+
+            int slot = event.getRawSlot();
+            if (slot < 0 || slot >= holder.recipes().size()) return;
+
+            var recipe = holder.recipes().get(slot);
+            handleStonecutterCraft(player, holder.inputBlockId(), recipe);
+            return;
+        }
+
+        // Handle clicks in the vanilla stonecutter
+        if (event.getInventory().getType() != org.bukkit.event.inventory.InventoryType.STONECUTTER) return;
+        if (!(event.getInventory() instanceof org.bukkit.inventory.StonecutterInventory inv)) return;
+        if (!(event.getWhoClicked() instanceof Player player)) return;
+
+        int slot = event.getRawSlot();
+        if (slot == 1) {
+            // Clicking the result slot — check if it's our hint item
+            ItemStack result = inv.getResult();
+            if (result != null && result.getType() == Material.STONECUTTER && result.hasItemMeta()) {
+                String tag = result.getItemMeta().getPersistentDataContainer()
+                        .get(CustomBlockRegistry.BLOCK_TYPE_KEY, PersistentDataType.STRING);
+                if (tag != null && tag.startsWith("_sc_hint:")) {
+                    event.setCancelled(true);
+                    openStonecutterSelectMenu(player, tag.substring("_sc_hint:".length()));
+                    return;
+                }
+            }
+        }
+
+        // Input changed — schedule hint update
+        getServer().getScheduler().runTask(this, () -> updateStonecutterHint(inv));
+    }
+
+    @EventHandler
+    public void onStonecutterDrag(org.bukkit.event.inventory.InventoryDragEvent event) {
+        if (event.getInventory().getType() != org.bukkit.event.inventory.InventoryType.STONECUTTER) return;
+        if (!(event.getInventory() instanceof org.bukkit.inventory.StonecutterInventory inv)) return;
+
+        if (event.getRawSlots().contains(0)) {
+            getServer().getScheduler().runTask(this, () -> updateStonecutterHint(inv));
+        }
+    }
+
+    private void updateStonecutterHint(org.bukkit.inventory.StonecutterInventory inv) {
+        ItemStack input = inv.getInputItem();
+        if (input == null || input.getType() != Material.PLAYER_HEAD || !input.hasItemMeta()) {
+            clearStonecutterHint(inv);
+            return;
+        }
+
+        String blockId = input.getItemMeta().getPersistentDataContainer()
+                .get(CustomBlockRegistry.BLOCK_TYPE_KEY, PersistentDataType.STRING);
+        if (blockId == null) { clearStonecutterHint(inv); return; }
+
+        var recipes = registry.getStonecutterRecipesForInput(blockId);
+        if (recipes.isEmpty()) { clearStonecutterHint(inv); return; }
+
+        ItemStack hint = new ItemStack(Material.STONECUTTER);
+        var meta = hint.getItemMeta();
+        if (meta != null) {
+            meta.displayName(Component.text("Click to select output", NamedTextColor.GREEN));
+            meta.lore(List.of(
+                    Component.text(recipes.size() + " recipes available", NamedTextColor.GRAY),
+                    Component.empty(),
+                    Component.text("Click to open selection menu", NamedTextColor.YELLOW)));
+            meta.getPersistentDataContainer().set(CustomBlockRegistry.BLOCK_TYPE_KEY,
+                    PersistentDataType.STRING, "_sc_hint:" + blockId);
+            hint.setItemMeta(meta);
+        }
+        inv.setResult(hint);
+    }
+
+    private void clearStonecutterHint(org.bukkit.inventory.StonecutterInventory inv) {
+        ItemStack result = inv.getResult();
+        if (result == null) return;
+        if (result.getType() == Material.STONECUTTER && result.hasItemMeta()) {
+            String tag = result.getItemMeta().getPersistentDataContainer()
+                    .get(CustomBlockRegistry.BLOCK_TYPE_KEY, PersistentDataType.STRING);
+            if (tag != null && tag.startsWith("_sc_hint:")) {
+                inv.setResult(null);
+            }
+        }
+    }
+
+    private void openStonecutterSelectMenu(Player player, String inputBlockId) {
+        var recipes = registry.getStonecutterRecipesForInput(inputBlockId);
+        if (recipes.isEmpty()) {
+            player.sendMessage(Component.text("No stonecutter recipes available.", NamedTextColor.RED));
+            return;
+        }
+
+        StonecutterSelectHolder holder = new StonecutterSelectHolder(inputBlockId, recipes);
+
+        CustomHeadBlock inputType = registry.getType(inputBlockId);
+        Component title = Component.text("Stonecutter", NamedTextColor.DARK_PURPLE);
+        if (inputType != null && inputType.name() != null) {
+            title = title.append(Component.text(": ")).append(inputType.name());
+        }
+
+        // Items area (up to 45) + bottom row for navigation/info
+        int itemSlots = Math.min(recipes.size(), 45);
+        int rows = Math.max(1, (itemSlots + 8) / 9) + 1; // +1 row for bottom bar
+        int size = rows * 9;
+
+        org.bukkit.inventory.Inventory inv = getServer().createInventory(holder, size, title);
+        holder.setInventory(inv);
+
+        // Populate output items
+        for (int i = 0; i < itemSlots; i++) {
+            var recipe = recipes.get(i);
+            CustomHeadBlock outputType = registry.getType(recipe.outputBlockId());
+            if (outputType == null) continue;
+            inv.setItem(i, outputType.createItem(recipe.amount()));
+        }
+
+        // Bottom bar: filler + input display + close button
+        int bottomStart = size - 9;
+        ItemStack filler = new ItemStack(Material.GRAY_STAINED_GLASS_PANE);
+        var fillerMeta = filler.getItemMeta();
+        if (fillerMeta != null) { fillerMeta.displayName(Component.empty()); filler.setItemMeta(fillerMeta); }
+        for (int i = bottomStart; i < size; i++) inv.setItem(i, filler);
+
+        // Input item display (center of bottom row)
+        if (inputType != null) inv.setItem(bottomStart + 4, inputType.createItem(1));
+
+        player.openInventory(inv);
+    }
+
+    private void handleStonecutterCraft(Player player, String inputBlockId,
+                                         CustomBlockRegistry.HeadStonecutterRecipe recipe) {
+        // Find input in player's inventory
+        int inputSlot = -1;
+        for (int i = 0; i < player.getInventory().getSize(); i++) {
+            ItemStack item = player.getInventory().getItem(i);
+            if (item == null || item.getType() != Material.PLAYER_HEAD || !item.hasItemMeta()) continue;
+            String itemBlockId = item.getItemMeta().getPersistentDataContainer()
+                    .get(CustomBlockRegistry.BLOCK_TYPE_KEY, PersistentDataType.STRING);
+            if (inputBlockId.equals(itemBlockId)) {
+                inputSlot = i;
+                break;
+            }
+        }
+
+        if (inputSlot == -1) {
+            player.sendMessage(Component.text("You need the input item in your inventory.", NamedTextColor.RED));
+            return;
+        }
+
+        // Consume 1 input
+        ItemStack inputItem = player.getInventory().getItem(inputSlot);
+        if (inputItem.getAmount() > 1) {
+            inputItem.setAmount(inputItem.getAmount() - 1);
+        } else {
+            player.getInventory().setItem(inputSlot, null);
+        }
+
+        // Give result
+        CustomHeadBlock outputType = registry.getType(recipe.outputBlockId());
+        if (outputType == null) return;
+        ItemStack result = outputType.createItem(recipe.amount());
+        var leftover = player.getInventory().addItem(result);
+        for (ItemStack lf : leftover.values()) {
+            player.getWorld().dropItemNaturally(player.getLocation(), lf);
+        }
+
+        player.playSound(player.getLocation(), org.bukkit.Sound.UI_STONECUTTER_TAKE_RESULT, 1f, 1f);
     }
 
     // ──────────────────────────────────────────────────────────────────────
@@ -439,7 +705,10 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
 
                 ItemStack item = type.createItem(amount);
 
-                player.getInventory().addItem(item);
+                var overflow = player.getInventory().addItem(item);
+                for (ItemStack lf : overflow.values()) {
+                    player.getWorld().dropItemNaturally(player.getLocation(), lf);
+                }
                 sender.sendMessage(Component.text("Gave " + amount + "x " + type.fullId(), NamedTextColor.GREEN));
             }
             default -> sender.sendMessage(Component.text("Unknown subcommand: " + args[0], NamedTextColor.RED));

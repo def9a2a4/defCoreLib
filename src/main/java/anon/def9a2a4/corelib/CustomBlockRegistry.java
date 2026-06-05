@@ -54,6 +54,8 @@ public class CustomBlockRegistry {
     private final Set<LocationKey> neighborReactiveBlocks = new HashSet<>();
     // Tick tracking: blocks with periodic onTick callbacks
     private final Map<LocationKey, TickTracked> tickTracked = new HashMap<>();
+    // All known custom block locations: fast lookup for physics cancellation
+    private final Set<LocationKey> customBlockLocations = new HashSet<>();
 
     private @Nullable BukkitTask redstoneTask;
     private @Nullable BukkitTask particleTask;
@@ -121,6 +123,11 @@ public class CustomBlockRegistry {
         return neighborReactiveBlocks.contains(LocationKey.of(block));
     }
 
+    /** Fast check: is this a known custom block location? Used to avoid expensive getState() in physics events. */
+    boolean isCustomBlock(Block block) {
+        return customBlockLocations.contains(LocationKey.of(block));
+    }
+
     // ──────────────────────────────────────────────────────────────────────
     // PDC operations on placed skull blocks
     // ──────────────────────────────────────────────────────────────────────
@@ -134,6 +141,7 @@ public class CustomBlockRegistry {
             pdc.set(STATE_KEY, PersistentDataType.STRING, type.defaultState());
         }
         skull.update();
+        customBlockLocations.add(LocationKey.of(block));
         markChunkDirty(block);
         if (type.reactsToNeighbors()) {
             neighborReactiveBlocks.add(LocationKey.of(block));
@@ -231,6 +239,9 @@ public class CustomBlockRegistry {
             trackRedstone(block, type, power);
         }
 
+        // Track custom block location for fast physics checks
+        customBlockLocations.add(LocationKey.of(block));
+
         // Track neighbor-reactive blocks
         if (type.reactsToNeighbors()) {
             neighborReactiveBlocks.add(LocationKey.of(block));
@@ -288,6 +299,11 @@ public class CustomBlockRegistry {
             return loc.worldId().equals(world.getUID())
                     && (loc.x() >> 4) == chunkX && (loc.z() >> 4) == chunkZ;
         });
+
+        // Remove custom block locations for blocks in this chunk
+        customBlockLocations.removeIf(loc ->
+                loc.worldId().equals(world.getUID())
+                        && (loc.x() >> 4) == chunkX && (loc.z() >> 4) == chunkZ);
     }
 
     // ──────────────────────────────────────────────────────────────────────
@@ -326,6 +342,7 @@ public class CustomBlockRegistry {
         particleTracked.remove(key);
         neighborReactiveBlocks.remove(key);
         tickTracked.remove(key);
+        customBlockLocations.remove(key);
 
         // Remove display entities (use location-specific prefix to avoid hitting nearby blocks)
         if (type.hasDisplayEntities()) {
@@ -462,8 +479,13 @@ public class CustomBlockRegistry {
             int count = pc.count().resolveInt(power);
             double speed = pc.speed().resolve(power);
 
-            block.getWorld().spawnParticle(pc.type(), x, y, z,
-                    count, 0.05, 0.05, 0.05, speed);
+            if (pc.data() != null) {
+                block.getWorld().spawnParticle(pc.type(), x, y, z,
+                        count, 0.05, 0.05, 0.05, speed, pc.data());
+            } else {
+                block.getWorld().spawnParticle(pc.type(), x, y, z,
+                        count, 0.05, 0.05, 0.05, speed);
+            }
         }
     }
 
@@ -501,7 +523,7 @@ public class CustomBlockRegistry {
 
     private void ensureLightBlock(Block block, CustomHeadBlock.LightConfig lc) {
         Block target = block.getRelative(lc.offsetX(), lc.offsetY(), lc.offsetZ());
-        if (target.getType() == Material.AIR || target.getType() == Material.LIGHT) {
+        if (target.getType().isAir() || target.getType() == Material.LIGHT) {
             target.setType(Material.LIGHT);
             if (target.getBlockData() instanceof Levelled levelled) {
                 levelled.setLevel(lc.level());
@@ -551,11 +573,17 @@ public class CustomBlockRegistry {
         hintSaveTask = Bukkit.getScheduler().runTaskTimer(plugin, this::saveAllHints, 6000L, 6000L);
     }
 
+    /** Call after all blocks are loaded to register recipes with Bukkit. */
+    void finalizeLoading() {
+        registerRecipes();
+    }
+
     void shutdown() {
         if (redstoneTask != null) redstoneTask.cancel();
         if (particleTask != null) particleTask.cancel();
         if (customTickTask != null) customTickTask.cancel();
         if (hintSaveTask != null) hintSaveTask.cancel();
+        unregisterRecipes();
         saveAllHints();
     }
 
@@ -638,6 +666,126 @@ public class CustomBlockRegistry {
             }
         }
         dirtyHintWorlds.clear();
+    }
+
+    // ──────────────────────────────────────────────────────────────────────
+    // Recipe registration
+    // ──────────────────────────────────────────────────────────────────────
+
+    private final List<org.bukkit.NamespacedKey> registeredRecipeKeys = new ArrayList<>();
+    // Recipes that have custom block ingredients — keyed by recipe NamespacedKey
+    // Maps recipe key → map of (ingredient slot char → required block ID)
+    private final Map<org.bukkit.NamespacedKey, Map<Character, String>> headIngredientRecipes = new HashMap<>();
+
+    /** Record for head-input stonecutter recipes (not registered with Bukkit). */
+    public record HeadStonecutterRecipe(String inputBlockId, String outputBlockId, int amount) {}
+    private final List<HeadStonecutterRecipe> headStonecutterRecipes = new ArrayList<>();
+
+    /** Register all recipes for all registered block types. Call after all blocks are loaded. */
+    @SuppressWarnings("deprecation")
+    void registerRecipes() {
+        for (CustomHeadBlock type : types.values()) {
+            if (!type.hasRecipes()) continue;
+            String prefix = type.namespace() + "_" + type.typeId() + "_";
+
+            // Shaped recipes
+            for (CustomHeadBlock.ShapedRecipeDef r : type.shapedRecipes()) {
+                org.bukkit.NamespacedKey key = new org.bukkit.NamespacedKey(plugin, prefix + r.id());
+                org.bukkit.inventory.ItemStack result = type.createItem(r.amount());
+                org.bukkit.inventory.ShapedRecipe recipe = new org.bukkit.inventory.ShapedRecipe(key, result);
+                recipe.shape(r.pattern().toArray(new String[0]));
+                Map<Character, String> headIngredients = new HashMap<>();
+                for (var entry : r.key().entrySet()) {
+                    CustomHeadBlock.IngredientSpec spec = entry.getValue();
+                    if (spec.isMaterial()) {
+                        recipe.setIngredient(entry.getKey(), spec.material());
+                    } else if (spec.isBlock()) {
+                        // Use MaterialChoice instead of ExactChoice to avoid profile completion issues.
+                        // PDC validation happens in PrepareItemCraftEvent listener.
+                        recipe.setIngredient(entry.getKey(),
+                                new org.bukkit.inventory.RecipeChoice.MaterialChoice(Material.PLAYER_HEAD));
+                        headIngredients.put(entry.getKey(), spec.blockId());
+                    }
+                }
+                Bukkit.addRecipe(recipe);
+                registeredRecipeKeys.add(key);
+                if (!headIngredients.isEmpty()) {
+                    headIngredientRecipes.put(key, headIngredients);
+                }
+            }
+
+            // Shapeless recipes
+            for (CustomHeadBlock.ShapelessRecipeDef r : type.shapelessRecipes()) {
+                org.bukkit.NamespacedKey key = new org.bukkit.NamespacedKey(plugin, prefix + r.id());
+                org.bukkit.inventory.ItemStack result = type.createItem(r.amount());
+                org.bukkit.inventory.ShapelessRecipe recipe = new org.bukkit.inventory.ShapelessRecipe(key, result);
+                boolean hasHeadIngredients = false;
+                for (CustomHeadBlock.IngredientSpec spec : r.ingredients()) {
+                    if (spec.isMaterial()) {
+                        recipe.addIngredient(spec.material());
+                    } else if (spec.isBlock()) {
+                        recipe.addIngredient(
+                                new org.bukkit.inventory.RecipeChoice.MaterialChoice(Material.PLAYER_HEAD));
+                        hasHeadIngredients = true;
+                    }
+                }
+                Bukkit.addRecipe(recipe);
+                registeredRecipeKeys.add(key);
+                // For shapeless recipes with head ingredients, store the required block IDs
+                // (order-independent, so we store as a list check in the craft listener)
+                if (hasHeadIngredients) {
+                    // Store ingredient specs on the recipe def for lookup during craft validation
+                    Map<Character, String> specMap = new HashMap<>();
+                    int idx = 0;
+                    for (CustomHeadBlock.IngredientSpec spec : r.ingredients()) {
+                        if (spec.isBlock()) {
+                            specMap.put((char) ('0' + idx), spec.blockId());
+                        }
+                        idx++;
+                    }
+                    headIngredientRecipes.put(key, specMap);
+                }
+            }
+
+            // Stonecutter recipes
+            for (CustomHeadBlock.StonecutterRecipeDef r : type.stonecutterRecipes()) {
+                CustomHeadBlock.IngredientSpec input = r.input();
+                if (input.isMaterial()) {
+                    // Material input — use Bukkit API
+                    org.bukkit.NamespacedKey key = new org.bukkit.NamespacedKey(plugin, prefix + "sc_" + r.id());
+                    org.bukkit.inventory.ItemStack result = type.createItem(r.amount());
+                    org.bukkit.inventory.StonecuttingRecipe recipe = new org.bukkit.inventory.StonecuttingRecipe(
+                            key, result, new org.bukkit.inventory.RecipeChoice.MaterialChoice(input.material()));
+                    Bukkit.addRecipe(recipe);
+                    registeredRecipeKeys.add(key);
+                } else if (input.isBlock()) {
+                    // Block input — store for custom GUI interception (Bukkit API can't handle ExactChoice in stonecutter)
+                    headStonecutterRecipes.add(new HeadStonecutterRecipe(input.blockId(), type.fullId(), r.amount()));
+                }
+            }
+        }
+    }
+
+    /** Remove all previously registered recipes. */
+    void unregisterRecipes() {
+        for (org.bukkit.NamespacedKey key : registeredRecipeKeys) {
+            Bukkit.removeRecipe(key);
+        }
+        registeredRecipeKeys.clear();
+        headIngredientRecipes.clear();
+        headStonecutterRecipes.clear();
+    }
+
+    /** Get head ingredient requirements for a recipe key (for PrepareItemCraftEvent validation). */
+    @Nullable Map<Character, String> getHeadIngredients(org.bukkit.NamespacedKey recipeKey) {
+        return headIngredientRecipes.get(recipeKey);
+    }
+
+    /** Get head-input stonecutter recipes matching an input block ID. */
+    public List<HeadStonecutterRecipe> getStonecutterRecipesForInput(String inputBlockId) {
+        return headStonecutterRecipes.stream()
+                .filter(r -> r.inputBlockId().equals(inputBlockId))
+                .toList();
     }
 
     // ──────────────────────────────────────────────────────────────────────

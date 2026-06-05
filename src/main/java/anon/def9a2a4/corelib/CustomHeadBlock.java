@@ -81,7 +81,8 @@ public final class CustomHeadBlock {
             Scaling speed,
             int intervalTicks,
             Vector floorOffset,
-            Map<BlockFace, Vector> wallOffsets
+            Map<BlockFace, Vector> wallOffsets,
+            @Nullable Object data  // e.g. Particle.DustOptions for DUST type
     ) {}
 
     /** An ItemDisplay entity attached to the block. */
@@ -147,6 +148,23 @@ public final class CustomHeadBlock {
     /** Storage (custom inventory) configuration. */
     public record StorageConfig(int slots) {}
 
+    // ── Recipe records ───────────────────────────────────────────────────
+
+    /** An ingredient: either a material or a reference to another custom block by fullId. */
+    public record IngredientSpec(@Nullable Material material, @Nullable String blockId) {
+        public boolean isMaterial() { return material != null; }
+        public boolean isBlock() { return blockId != null; }
+    }
+
+    /** Shaped crafting recipe definition. */
+    public record ShapedRecipeDef(String id, int amount, List<String> pattern, Map<Character, IngredientSpec> key) {}
+
+    /** Shapeless crafting recipe definition. */
+    public record ShapelessRecipeDef(String id, int amount, List<IngredientSpec> ingredients) {}
+
+    /** Stonecutter recipe definition. Material inputs use Bukkit API; block inputs use custom GUI interception. */
+    public record StonecutterRecipeDef(String id, int amount, IngredientSpec input) {}
+
     /**
      * Visual/behavioral overrides for a specific state.
      * Null fields mean "inherit from base config."
@@ -179,6 +197,9 @@ public final class CustomHeadBlock {
     private final @Nullable LightConfig light;
     private final @Nullable ParticleConfig particles;
     private final List<DisplayEntityConfig> displayEntities;
+    private final List<ShapedRecipeDef> shapedRecipes;
+    private final List<ShapelessRecipeDef> shapelessRecipes;
+    private final List<StonecutterRecipeDef> stonecutterRecipes;
     private final @Nullable InteractGUI interactGUI;
     private final @Nullable StorageConfig storage;
     private final @Nullable PlacementConfig placement;
@@ -212,6 +233,9 @@ public final class CustomHeadBlock {
         this.light = b.light;
         this.particles = b.particles;
         this.displayEntities = List.copyOf(b.displayEntities);
+        this.shapedRecipes = List.copyOf(b.shapedRecipes);
+        this.shapelessRecipes = List.copyOf(b.shapelessRecipes);
+        this.stonecutterRecipes = List.copyOf(b.stonecutterRecipes);
         this.interactGUI = b.interactGUI;
         this.storage = b.storage;
         this.placement = b.placement;
@@ -246,6 +270,10 @@ public final class CustomHeadBlock {
     public @Nullable LightConfig light() { return light; }
     public @Nullable ParticleConfig particles() { return particles; }
     public List<DisplayEntityConfig> displayEntities() { return displayEntities; }
+    public List<ShapedRecipeDef> shapedRecipes() { return shapedRecipes; }
+    public List<ShapelessRecipeDef> shapelessRecipes() { return shapelessRecipes; }
+    public List<StonecutterRecipeDef> stonecutterRecipes() { return stonecutterRecipes; }
+    public boolean hasRecipes() { return !shapedRecipes.isEmpty() || !shapelessRecipes.isEmpty() || !stonecutterRecipes.isEmpty(); }
     public @Nullable InteractGUI interactGUI() { return interactGUI; }
     public @Nullable StorageConfig storage() { return storage; }
     public @Nullable PlacementConfig placement() { return placement; }
@@ -405,6 +433,9 @@ public final class CustomHeadBlock {
         private @Nullable LightConfig light;
         private @Nullable ParticleConfig particles;
         private final List<DisplayEntityConfig> displayEntities = new ArrayList<>();
+        private final List<ShapedRecipeDef> shapedRecipes = new ArrayList<>();
+        private final List<ShapelessRecipeDef> shapelessRecipes = new ArrayList<>();
+        private final List<StonecutterRecipeDef> stonecutterRecipes = new ArrayList<>();
         private @Nullable InteractGUI interactGUI;
         private @Nullable StorageConfig storage;
         private @Nullable PlacementConfig placement;
@@ -442,6 +473,9 @@ public final class CustomHeadBlock {
         public Builder light(int level, int offsetX, int offsetY, int offsetZ) { this.light = new LightConfig(level, offsetX, offsetY, offsetZ); return this; }
         public Builder particles(ParticleConfig config) { this.particles = config; return this; }
         public Builder displayEntities(List<DisplayEntityConfig> configs) { this.displayEntities.addAll(configs); return this; }
+        public Builder shapedRecipe(ShapedRecipeDef recipe) { this.shapedRecipes.add(recipe); return this; }
+        public Builder shapelessRecipe(ShapelessRecipeDef recipe) { this.shapelessRecipes.add(recipe); return this; }
+        public Builder stonecutterRecipe(StonecutterRecipeDef recipe) { this.stonecutterRecipes.add(recipe); return this; }
         public Builder interactGUI(InteractGUI gui) { this.interactGUI = gui; return this; }
         public Builder storage(int slots) { this.storage = new StorageConfig(slots); return this; }
         public Builder placement(PlacementConfig config) { this.placement = config; return this; }
