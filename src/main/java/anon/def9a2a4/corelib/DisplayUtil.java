@@ -2,10 +2,14 @@ package anon.def9a2a4.corelib;
 
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.block.data.BlockData;
+import org.bukkit.entity.BlockDisplay;
+import org.bukkit.entity.Display;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.ItemDisplay;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Transformation;
+import org.joml.Matrix4f;
 import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -43,23 +47,45 @@ public final class DisplayUtil {
     }
 
     /**
-     * Find ItemDisplay entities near a block location that have a tag starting with the given prefix.
+     * Spawn a BlockDisplay entity at a block's center.
+     *
+     * @param blockLoc      the block location (integer coords)
+     * @param data          the block data to display
+     * @param transform     the display transformation matrix
+     * @param scoreboardTag a scoreboard tag for identification and cleanup
+     * @return the spawned display entity
+     */
+    public static BlockDisplay spawnBlock(Location blockLoc, BlockData data,
+                                          Matrix4f transform, String scoreboardTag) {
+        World world = blockLoc.getWorld();
+        Location spawnLoc = blockLoc.getBlock().getLocation().add(0.5, 0.5, 0.5);
+        return world.spawn(spawnLoc, BlockDisplay.class, display -> {
+            display.setBlock(data);
+            display.setPersistent(true);
+            display.setTransformationMatrix(transform);
+            display.addScoreboardTag(scoreboardTag);
+        });
+    }
+
+    /**
+     * Find Display entities near a block location that have a tag starting with the given prefix.
+     * Matches both ItemDisplay and BlockDisplay.
      *
      * @param blockLoc  the block location
      * @param tagPrefix the scoreboard tag prefix to match
      * @param radius    search radius from block center
      * @return matching display entities
      */
-    public static List<ItemDisplay> findByTag(Location blockLoc, String tagPrefix, double radius) {
+    public static List<Display> findByTag(Location blockLoc, String tagPrefix, double radius) {
         World world = blockLoc.getWorld();
         if (world == null) return List.of();
 
         Location center = blockLoc.getBlock().getLocation().add(0.5, 0.5, 0.5);
         Collection<Entity> nearby = world.getNearbyEntities(center, radius, radius, radius);
 
-        List<ItemDisplay> result = new ArrayList<>();
+        List<Display> result = new ArrayList<>();
         for (Entity entity : nearby) {
-            if (!(entity instanceof ItemDisplay display)) continue;
+            if (!(entity instanceof Display display)) continue;
             for (String tag : display.getScoreboardTags()) {
                 if (tag.startsWith(tagPrefix)) {
                     result.add(display);
@@ -71,7 +97,7 @@ public final class DisplayUtil {
     }
 
     /**
-     * Remove all ItemDisplay entities near a block location matching a tag prefix.
+     * Remove all Display entities near a block location matching a tag prefix.
      *
      * @param blockLoc  the block location
      * @param tagPrefix the scoreboard tag prefix to match
@@ -79,8 +105,8 @@ public final class DisplayUtil {
      * @return number of entities removed
      */
     public static int removeByTag(Location blockLoc, String tagPrefix, double radius) {
-        List<ItemDisplay> displays = findByTag(blockLoc, tagPrefix, radius);
-        for (ItemDisplay display : displays) {
+        List<Display> displays = findByTag(blockLoc, tagPrefix, radius);
+        for (Display display : displays) {
             display.remove();
         }
         return displays.size();
@@ -100,7 +126,7 @@ public final class DisplayUtil {
                                  @Nullable Location fallbackLoc,
                                  @Nullable String fallbackTagPrefix) {
         Entity entity = world.getEntity(entityId);
-        if (entity instanceof ItemDisplay) {
+        if (entity instanceof Display) {
             entity.remove();
             return true;
         }

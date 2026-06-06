@@ -13,12 +13,15 @@ import org.bukkit.block.data.Directional;
 import org.bukkit.block.data.Levelled;
 import org.bukkit.configuration.file.YamlConfiguration;
 
+import org.bukkit.entity.Display;
+import org.bukkit.entity.ItemDisplay;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
+import org.joml.Matrix4f;
 import org.jspecify.annotations.Nullable;
 
 import java.io.File;
@@ -56,11 +59,17 @@ public class CustomBlockRegistry {
     private final Map<LocationKey, TickTracked> tickTracked = new HashMap<>();
     // All known custom block locations: fast lookup for physics cancellation
     private final Set<LocationKey> customBlockLocations = new HashSet<>();
+    // Animation tracking: display entities with active animations
+    private final Map<LocationKey, List<AnimationTracked>> animationTracked = new HashMap<>();
 
     private @Nullable BukkitTask redstoneTask;
     private @Nullable BukkitTask particleTask;
     private @Nullable BukkitTask customTickTask;
+    private @Nullable BukkitTask animationTask;
     private @Nullable BukkitTask hintSaveTask;
+
+    // Reusable work matrix for animation tick (avoids allocation per frame)
+    private final Matrix4f animationWorkMatrix = new Matrix4f();
 
     CustomBlockRegistry(JavaPlugin plugin) {
         this.plugin = plugin;
@@ -252,6 +261,9 @@ public class CustomBlockRegistry {
             tickTracked.put(LocationKey.of(block), new TickTracked(block, type));
         }
 
+        // Re-register animation tracking for persisted display entities
+        trackAnimations(block, type, state);
+
         // Dispatch chunk load callback for plugin-specific restore
         if (type.onChunkLoadCallback() != null) {
             type.onChunkLoadCallback().accept(block, state);
@@ -305,6 +317,13 @@ public class CustomBlockRegistry {
                 loc.worldId().equals(world.getUID())
                         && (loc.x() >> 4) == chunkX && (loc.z() >> 4) == chunkZ);
 
+        // Remove animation tracking for blocks in this chunk
+        animationTracked.entrySet().removeIf(e -> {
+            LocationKey loc = e.getKey();
+            return loc.worldId().equals(world.getUID())
+                    && (loc.x() >> 4) == chunkX && (loc.z() >> 4) == chunkZ;
+        });
+
         // Save open storages in this chunk
         saveStoragesInChunk(world, chunkX, chunkZ);
     }
@@ -342,11 +361,26 @@ public class CustomBlockRegistry {
             String tagPrefix = DisplayUtil.blockTagPrefix(type.namespace(), type.typeId(), block.getLocation());
             DisplayUtil.removeByTag(block.getLocation(), tagPrefix, 1.5);
             List<CustomHeadBlock.DisplayEntityConfig> displays = type.resolveDisplayEntities(state);
+            List<AnimationTracked> anims = null;
             for (var dec : displays) {
                 ItemStack displayItem = HeadUtil.createHead(dec.itemTexture(), 1);
                 String tag = DisplayUtil.blockTag(type.namespace(), type.typeId(),
                         block.getLocation(), dec.tagSuffix());
-                DisplayUtil.spawn(block.getLocation(), displayItem, dec.transform(), tag);
+                var display = DisplayUtil.spawn(block.getLocation(), displayItem, dec.transform(), tag);
+                if (dec.interpolationDuration() != 0) {
+                    display.setInterpolationDuration(dec.interpolationDuration());
+                }
+                if (dec.animation() != null) {
+                    if (anims == null) anims = new ArrayList<>();
+                    anims.add(new AnimationTracked(display, dec.animation(),
+                            Bukkit.getServer().getCurrentTick(),
+                            transformToMatrix(dec.transform())));
+                }
+            }
+            if (anims != null) {
+                animationTracked.put(key, anims);
+            } else {
+                animationTracked.remove(key);
             }
         }
     }
@@ -359,6 +393,7 @@ public class CustomBlockRegistry {
         neighborReactiveBlocks.remove(key);
         tickTracked.remove(key);
         customBlockLocations.remove(key);
+        animationTracked.remove(key);
 
         // Remove display entities (use location-specific prefix to avoid hitting nearby blocks)
         if (type.hasDisplayEntities()) {
@@ -522,6 +557,61 @@ public class CustomBlockRegistry {
         }
     }
 
+    // ──────────────────────────────────────────────────────────────────────
+    // Animation ticking
+    // ──────────────────────────────────────────────────────────────────────
+
+    void tickAnimations() {
+        long currentTick = Bukkit.getServer().getCurrentTick();
+        for (var entry : animationTracked.values()) {
+            for (var tracked : entry) {
+                if (!tracked.display.isValid()) continue;
+                long tickAge = currentTick - tracked.startTick;
+                tracked.animation.apply(tracked.baseTransform, tickAge, animationWorkMatrix);
+                tracked.display.setTransformationMatrix(animationWorkMatrix);
+            }
+        }
+    }
+
+    /** Re-register animation tracking for existing display entities (after chunk load). */
+    private void trackAnimations(Block block, CustomHeadBlock type, @Nullable String state) {
+        List<CustomHeadBlock.DisplayEntityConfig> displays = type.resolveDisplayEntities(state);
+        if (displays == null || displays.isEmpty()) return;
+
+        // Check if any display entity has an animation
+        boolean hasAnimations = false;
+        for (var dec : displays) {
+            if (dec.animation() != null) { hasAnimations = true; break; }
+        }
+        if (!hasAnimations) return;
+
+        // Find existing display entities by tag
+        String tagPrefix = DisplayUtil.blockTagPrefix(type.namespace(), type.typeId(), block.getLocation());
+        List<Display> found = DisplayUtil.findByTag(block.getLocation(), tagPrefix, 1.5);
+        if (found.isEmpty()) return;
+
+        long startTick = Bukkit.getServer().getCurrentTick();
+        List<AnimationTracked> anims = new ArrayList<>();
+
+        // Match found displays to configs by tag suffix
+        for (var dec : displays) {
+            if (dec.animation() == null) continue;
+            String expectedTag = DisplayUtil.blockTag(type.namespace(), type.typeId(),
+                    block.getLocation(), dec.tagSuffix());
+            for (var display : found) {
+                if (display.getScoreboardTags().contains(expectedTag)) {
+                    anims.add(new AnimationTracked(display, dec.animation(), startTick,
+                            transformToMatrix(dec.transform())));
+                    break;
+                }
+            }
+        }
+
+        if (!anims.isEmpty()) {
+            animationTracked.put(LocationKey.of(block), anims);
+        }
+    }
+
     private Vector getOrientedOffset(Block block, CustomHeadBlock.ParticleConfig pc) {
         if (block.getType() == Material.PLAYER_WALL_HEAD && block.getBlockData() instanceof Directional dir) {
             BlockFace facing = dir.getFacing();
@@ -583,6 +673,9 @@ public class CustomBlockRegistry {
         // Custom block tick — every tick (individual intervals checked inside)
         customTickTask = Bukkit.getScheduler().runTaskTimer(plugin, this::tickCustomBlocks, 1L, 1L);
 
+        // Animation tick — every tick
+        animationTask = Bukkit.getScheduler().runTaskTimer(plugin, this::tickAnimations, 1L, 1L);
+
         // Hint save — every 5 minutes
         hintSaveTask = Bukkit.getScheduler().runTaskTimer(plugin, this::saveAllHints, 6000L, 6000L);
     }
@@ -596,6 +689,7 @@ public class CustomBlockRegistry {
         if (redstoneTask != null) redstoneTask.cancel();
         if (particleTask != null) particleTask.cancel();
         if (customTickTask != null) customTickTask.cancel();
+        if (animationTask != null) animationTask.cancel();
         if (hintSaveTask != null) hintSaveTask.cancel();
         saveAllOpenStorages();
         unregisterRecipes();
@@ -1024,7 +1118,16 @@ public class CustomBlockRegistry {
         return null; // floor head has no directional facing
     }
 
-    private record LocationKey(UUID worldId, int x, int y, int z) {
+    /** Convert Bukkit Transformation (TRS components) to a JOML Matrix4f. */
+    private static Matrix4f transformToMatrix(org.bukkit.util.Transformation t) {
+        return new Matrix4f()
+                .translate(t.getTranslation())
+                .rotate(t.getLeftRotation())
+                .scale(t.getScale())
+                .rotate(t.getRightRotation());
+    }
+
+    record LocationKey(UUID worldId, int x, int y, int z) {
         static LocationKey of(Block block) {
             return new LocationKey(block.getWorld().getUID(), block.getX(), block.getY(), block.getZ());
         }
@@ -1061,6 +1164,19 @@ public class CustomBlockRegistry {
         TickTracked(Block block, CustomHeadBlock type) {
             this.block = block;
             this.type = type;
+        }
+    }
+
+    private static final class AnimationTracked {
+        final Display display;
+        final DisplayAnimation animation;
+        final long startTick;
+        final Matrix4f baseTransform;
+        AnimationTracked(Display display, DisplayAnimation animation, long startTick, Matrix4f baseTransform) {
+            this.display = display;
+            this.animation = animation;
+            this.startTick = startTick;
+            this.baseTransform = baseTransform;
         }
     }
 }

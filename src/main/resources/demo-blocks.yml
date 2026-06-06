@@ -331,3 +331,54 @@ blocks:
         from: active
         to: inactive
         sound: BLOCK_BEACON_DEACTIVATE
+
+  # ─── 14. Spinning Crystal ────────────────────────────────────────────
+  # Features: animated display entity (rotate + bob compose).
+  spinning_crystal:
+    name: "&bSpinning Crystal"
+    lore: ["&7An animated display entity demo"]
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzQ4MmQxYmE0YmRhYzk5MGY2ZWE5ODc3MDM1ODdmZDc5ZmU1NTU1NTM2MzI1MTk4NDY3OWQ0ZjI3OWNjMGMyYSJ9fX0="
+    drops: self
+    display_entities:
+      - texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODdkODg1YjMyYjBkZDJkNmI3ZjFiNTgyYTM0MTg2ZjhhNTM3M2M0NjU4OWEyNzM0MjMxMTFmMGEwODk4YWQ2NSJ9fX0="
+        tag: crystal
+        transform: { translation: [0, 0.8, 0], scale: [0.35, 0.35, 0.35] }
+        animation:
+          type: compose
+          layers:
+            - { type: rotate, axis: [0, 1, 0], speed: 3.0 }
+            - { type: bob, amplitude: 0.08, period: 50 }
+        interpolation: 2
+
+  # ─── 15. Pulsing Orb ─────────────────────────────────────────────────
+  # Features: animated display entity (pulse scale), state-based animation change.
+  pulsing_orb:
+    name: "&dPulsing Orb"
+    lore: ["&7Right-click to toggle pulse speed"]
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzQ4MmQxYmE0YmRhYzk5MGY2ZWE5ODc3MDM1ODdmZDc5ZmU1NTU1NTM2MzI1MTk4NDY3OWQ0ZjI3OWNjMGMyYSJ9fX0="
+    drops: self
+    default_state: slow
+    states:
+      slow:
+        display_entities:
+          - texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODdkODg1YjMyYjBkZDJkNmI3ZjFiNTgyYTM0MTg2ZjhhNTM3M2M0NjU4OWEyNzM0MjMxMTFmMGEwODk4YWQ2NSJ9fX0="
+            tag: orb
+            transform: { translation: [0, 0.7, 0], scale: [0.4, 0.4, 0.4] }
+            animation: { type: pulse, min_scale: 0.8, max_scale: 1.2, period: 60 }
+            interpolation: 3
+      fast:
+        display_entities:
+          - texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODdkODg1YjMyYjBkZDJkNmI3ZjFiNTgyYTM0MTg2ZjhhNTM3M2M0NjU4OWEyNzM0MjMxMTFmMGEwODk4YWQ2NSJ9fX0="
+            tag: orb
+            transform: { translation: [0, 0.7, 0], scale: [0.4, 0.4, 0.4] }
+            animation: { type: pulse, min_scale: 0.6, max_scale: 1.4, period: 15 }
+            interpolation: 2
+    transitions:
+      - trigger: { type: interact }
+        from: slow
+        to: fast
+        sound: BLOCK_BEACON_ACTIVATE
+      - trigger: { type: interact }
+        from: fast
+        to: slow
+        sound: BLOCK_BEACON_DEACTIVATE

@@ -377,9 +377,55 @@ public final class BlockLoader {
                         new AxisAngle4f(0, 0, 0, 1));
             }
 
-            result.add(new CustomHeadBlock.DisplayEntityConfig(tex, transform, tag));
+            DisplayAnimation animation = null;
+            Object animObj = map.get("animation");
+            if (animObj instanceof Map<?, ?> animMap) {
+                animation = parseAnimation(animMap);
+            }
+
+            int interpolation = toInt((Object) map.get("interpolation"), 2);
+
+            result.add(new CustomHeadBlock.DisplayEntityConfig(
+                    tex, transform, tag, animation, interpolation));
         }
         return result;
+    }
+
+    @SuppressWarnings("unchecked")
+    private static DisplayAnimation parseAnimation(Map<?, ?> map) {
+        String type = String.valueOf(map.get("type"));
+        return switch (type) {
+            case "rotate" -> {
+                Vector3f axis = parseVector3f(map.get("axis"), new Vector3f(0, 1, 0));
+                float speed = (float) toDouble((Object) map.get("speed"), 1.0);
+                yield Animations.rotate(axis, speed);
+            }
+            case "bob" -> {
+                float amplitude = (float) toDouble((Object) map.get("amplitude"), 0.1);
+                int period = toInt((Object) map.get("period"), 40);
+                yield Animations.bob(amplitude, period);
+            }
+            case "pulse" -> {
+                float min = (float) toDouble((Object) map.get("min_scale"), 0.8);
+                float max = (float) toDouble((Object) map.get("max_scale"), 1.2);
+                int period = toInt((Object) map.get("period"), 40);
+                yield Animations.pulse(min, max, period);
+            }
+            case "orbit" -> {
+                float radius = (float) toDouble((Object) map.get("radius"), 0.5);
+                int period = toInt((Object) map.get("period"), 40);
+                Vector3f axis = parseVector3f(map.get("axis"), new Vector3f(0, 1, 0));
+                yield Animations.orbit(radius, period, axis);
+            }
+            case "compose" -> {
+                List<Map<?, ?>> layers = (List<Map<?, ?>>) map.get("layers");
+                DisplayAnimation[] anims = layers.stream()
+                        .map(BlockLoader::parseAnimation)
+                        .toArray(DisplayAnimation[]::new);
+                yield Animations.compose(anims);
+            }
+            default -> throw new IllegalArgumentException("Unknown animation type: " + type);
+        };
     }
 
     private static CustomHeadBlock.StateTransition parseTransition(Map<?, ?> map) {

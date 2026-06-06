@@ -94,7 +94,9 @@ public final class CustomHeadBlock {
     public record DisplayEntityConfig(
             String itemTexture,
             Transformation transform,
-            @Nullable String tagSuffix
+            @Nullable String tagSuffix,
+            @Nullable DisplayAnimation animation,
+            int interpolationDuration
     ) {}
 
     /** Redstone configuration. */
