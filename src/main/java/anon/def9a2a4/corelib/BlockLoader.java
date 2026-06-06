@@ -282,6 +282,11 @@ public final class BlockLoader {
 
         if (sec.getBoolean("no_display_entities")) {
             sb.noDisplayEntities();
+        } else {
+            List<?> displayList = sec.getList("display_entities");
+            if (displayList != null) {
+                sb.displayEntities(parseDisplayEntities(sec.getMapList("display_entities")));
+            }
         }
     }
 

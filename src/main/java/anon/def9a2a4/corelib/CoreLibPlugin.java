@@ -287,6 +287,7 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
     public void onPhysicsCancelForCustomSkulls(BlockPhysicsEvent event) {
         Block block = event.getBlock();
         if (block.getType() != Material.PLAYER_HEAD && block.getType() != Material.PLAYER_WALL_HEAD) return;
+        if (!registry.isCustomBlock(block)) return; // fast set check before expensive PDC read
         CustomHeadBlock type = registry.getTypeFromBlock(block);
         if (type == null) return;
         // Only cancel if the support block is gone (prevents pop-off without suppressing redstone)
