@@ -822,10 +822,12 @@ public class CustomBlockRegistry {
 
     // advancement key string → list of recipe NamespacedKeys gated by that advancement
     private final Map<String, List<org.bukkit.NamespacedKey>> advancementRecipes = new HashMap<>();
+    private final Set<org.bukkit.NamespacedKey> gatedRecipeKeys = new HashSet<>();
 
     /** Track that a recipe key requires an advancement. Called during recipe registration. */
     void trackAdvancementRecipe(String advancementKey, org.bukkit.NamespacedKey recipeKey) {
         advancementRecipes.computeIfAbsent(advancementKey, k -> new ArrayList<>()).add(recipeKey);
+        gatedRecipeKeys.add(recipeKey);
     }
 
     /** Sync recipe discovery for a player based on their advancement progress. */
@@ -849,8 +851,7 @@ public class CustomBlockRegistry {
 
         // Recipes without an advancement requirement: always discover
         for (org.bukkit.NamespacedKey key : registeredRecipeKeys) {
-            boolean gated = advancementRecipes.values().stream().anyMatch(list -> list.contains(key));
-            if (!gated) {
+            if (!gatedRecipeKeys.contains(key)) {
                 player.discoverRecipe(key);
             }
         }

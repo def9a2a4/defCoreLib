@@ -231,6 +231,7 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
             CustomHeadBlock type = registry.getTypeFromBlock(block);
             if (type != null) {
                 it.remove(); // prevent vanilla skull drop
+                if (type.storage() != null) registry.dropStorage(block);
                 block.getWorld().dropItemNaturally(
                         block.getLocation().add(0.5, 0.5, 0.5), type.createItem(1));
                 registry.onBlockRemoved(block, type);
@@ -267,6 +268,7 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
     public void onBlockBurn(BlockBurnEvent event) {
         CustomHeadBlock type = registry.getTypeFromBlock(event.getBlock());
         if (type != null) {
+            if (type.storage() != null) registry.dropStorage(event.getBlock());
             registry.onBlockRemoved(event.getBlock(), type);
         }
     }
@@ -277,6 +279,7 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         Block to = event.getToBlock();
         CustomHeadBlock type = registry.getTypeFromBlock(to);
         if (type != null) {
+            if (type.storage() != null) registry.dropStorage(to);
             registry.onBlockRemoved(to, type);
         }
     }
