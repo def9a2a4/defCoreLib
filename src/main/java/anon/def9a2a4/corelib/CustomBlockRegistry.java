@@ -826,7 +826,9 @@ public class CustomBlockRegistry {
 
     /** Track that a recipe key requires an advancement. Called during recipe registration. */
     void trackAdvancementRecipe(String advancementKey, org.bukkit.NamespacedKey recipeKey) {
-        advancementRecipes.computeIfAbsent(advancementKey, k -> new ArrayList<>()).add(recipeKey);
+        // Normalize: if no namespace prefix, prepend "minecraft:"
+        String normalized = advancementKey.contains(":") ? advancementKey : "minecraft:" + advancementKey;
+        advancementRecipes.computeIfAbsent(normalized, k -> new ArrayList<>()).add(recipeKey);
         gatedRecipeKeys.add(recipeKey);
     }
 
