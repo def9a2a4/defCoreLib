@@ -304,6 +304,9 @@ public class CustomBlockRegistry {
         customBlockLocations.removeIf(loc ->
                 loc.worldId().equals(world.getUID())
                         && (loc.x() >> 4) == chunkX && (loc.z() >> 4) == chunkZ);
+
+        // Save open storages in this chunk
+        saveStoragesInChunk(world, chunkX, chunkZ);
     }
 
     // ──────────────────────────────────────────────────────────────────────
@@ -594,6 +597,7 @@ public class CustomBlockRegistry {
         if (particleTask != null) particleTask.cancel();
         if (customTickTask != null) customTickTask.cancel();
         if (hintSaveTask != null) hintSaveTask.cancel();
+        saveAllOpenStorages();
         unregisterRecipes();
         saveAllHints();
     }
@@ -886,26 +890,49 @@ public class CustomBlockRegistry {
         StorageHolder holder = openStorages.get(key);
 
         if (holder == null) {
-            // First open: deserialize from PDC or create empty
             CustomHeadBlock.StorageConfig config = type.storage();
             if (config == null) return;
 
-            org.bukkit.inventory.Inventory inv = createStorageInventory(config, type, block.getLocation());
+            holder = new StorageHolder(block.getLocation());
+            org.bukkit.inventory.Inventory inv = createStorageInventory(config, type, holder);
+            holder.setInventory(inv);
             loadInventoryFromPDC(block, inv);
-            holder = new StorageHolder(block.getLocation(), inv);
             openStorages.put(key, holder);
         }
 
         player.openInventory(holder.getInventory());
     }
 
-    /** Save storage inventory back to PDC when last viewer closes. */
+    /** Save storage inventory to PDC. Called on every close; remove from cache when last viewer gone. */
     void onStorageClosed(StorageHolder holder) {
-        LocationKey key = LocationKey.of(holder.location());
+        saveInventoryToPDC(holder.location(), holder.getInventory());
         if (holder.getInventory().getViewers().isEmpty()) {
-            saveInventoryToPDC(holder.location(), holder.getInventory());
-            openStorages.remove(key);
+            openStorages.remove(LocationKey.of(holder.location()));
         }
+    }
+
+    /** Save all open storages (called during shutdown and chunk unload). */
+    void saveAllOpenStorages() {
+        for (var holder : openStorages.values()) {
+            saveInventoryToPDC(holder.location(), holder.getInventory());
+            new ArrayList<>(holder.getInventory().getViewers()).forEach(v -> v.closeInventory());
+        }
+        openStorages.clear();
+    }
+
+    /** Save open storages in a specific chunk. */
+    void saveStoragesInChunk(World world, int chunkX, int chunkZ) {
+        openStorages.entrySet().removeIf(e -> {
+            LocationKey loc = e.getKey();
+            if (loc.worldId().equals(world.getUID())
+                    && (loc.x() >> 4) == chunkX && (loc.z() >> 4) == chunkZ) {
+                StorageHolder holder = e.getValue();
+                saveInventoryToPDC(holder.location(), holder.getInventory());
+                new ArrayList<>(holder.getInventory().getViewers()).forEach(v -> v.closeInventory());
+                return true;
+            }
+            return false;
+        });
     }
 
     /** Drop all storage contents and clean up when block is broken. */
@@ -915,19 +942,17 @@ public class CustomBlockRegistry {
 
         org.bukkit.inventory.Inventory inv;
         if (holder != null) {
-            // Close all viewers
-            new ArrayList<>(holder.getInventory().getViewers()).forEach(
-                    v -> v.closeInventory());
+            new ArrayList<>(holder.getInventory().getViewers()).forEach(v -> v.closeInventory());
             inv = holder.getInventory();
         } else {
-            // Load from PDC
             CustomHeadBlock type = getTypeFromBlock(block);
             if (type == null || type.storage() == null) return;
-            inv = createStorageInventory(type.storage(), type, block.getLocation());
+            holder = new StorageHolder(block.getLocation());
+            inv = createStorageInventory(type.storage(), type, holder);
+            holder.setInventory(inv);
             loadInventoryFromPDC(block, inv);
         }
 
-        // Drop all items
         for (ItemStack item : inv.getContents()) {
             if (item != null && item.getType() != Material.AIR) {
                 block.getWorld().dropItemNaturally(block.getLocation().add(0.5, 0.5, 0.5), item);
@@ -936,15 +961,15 @@ public class CustomBlockRegistry {
     }
 
     private org.bukkit.inventory.Inventory createStorageInventory(
-            CustomHeadBlock.StorageConfig config, CustomHeadBlock type, org.bukkit.Location loc) {
+            CustomHeadBlock.StorageConfig config, CustomHeadBlock type, StorageHolder holder) {
         net.kyori.adventure.text.Component title = type.name() != null
                 ? type.name()
                 : net.kyori.adventure.text.Component.text(type.fullId());
 
         return switch (config.layout()) {
-            case HOPPER -> Bukkit.createInventory(null, org.bukkit.event.inventory.InventoryType.HOPPER, title);
-            case DROPPER -> Bukkit.createInventory(null, org.bukkit.event.inventory.InventoryType.DROPPER, title);
-            default -> Bukkit.createInventory(null, config.layout().slots, title);
+            case HOPPER -> Bukkit.createInventory(holder, org.bukkit.event.inventory.InventoryType.HOPPER, title);
+            case DROPPER -> Bukkit.createInventory(holder, org.bukkit.event.inventory.InventoryType.DROPPER, title);
+            default -> Bukkit.createInventory(holder, config.layout().slots, title);
         };
     }
 
