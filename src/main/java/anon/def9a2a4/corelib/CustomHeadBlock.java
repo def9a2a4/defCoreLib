@@ -498,7 +498,7 @@ public final class CustomHeadBlock {
         public Builder cancelPistons(boolean cancel) { this.cancelPistons = cancel; return this; }
 
         public Builder reactsToNeighbors(boolean reacts) { this.reactsToNeighbors = reacts; return this; }
-        public Builder tickInterval(int ticks) { this.tickInterval = ticks; return this; }
+        public Builder tickInterval(int ticks) { this.tickInterval = Math.max(1, ticks); return this; }
 
         // --- States ---
 
@@ -579,6 +579,14 @@ public final class CustomHeadBlock {
             }
             if (defaultState != null && !states.containsKey(defaultState)) {
                 throw new IllegalStateException("Default state '" + defaultState + "' not found in states");
+            }
+            for (StateTransition t : transitions) {
+                if (!states.containsKey(t.fromState())) {
+                    throw new IllegalStateException("Transition references unknown state '" + t.fromState() + "'");
+                }
+                if (!states.containsKey(t.toState())) {
+                    throw new IllegalStateException("Transition references unknown state '" + t.toState() + "'");
+                }
             }
             return new CustomHeadBlock(this);
         }

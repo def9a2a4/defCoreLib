@@ -12,7 +12,7 @@ import org.bukkit.block.Skull;
 import org.bukkit.block.data.Directional;
 import org.bukkit.block.data.Levelled;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Player;
+
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
@@ -428,7 +428,7 @@ public class CustomBlockRegistry {
     void tickRedstone() {
         for (var entry : redstoneTracked.values()) {
             Block block = entry.block;
-            if (!block.getChunk().isLoaded()) continue;
+            if (!block.getWorld().isChunkLoaded(block.getX() >> 4, block.getZ() >> 4)) continue;
 
             CustomHeadBlock type = entry.type;
             int newPower = readPower(block, type);
@@ -439,8 +439,6 @@ public class CustomBlockRegistry {
             };
 
             if (!changed) continue;
-
-            int oldPower = entry.lastPower;
             entry.lastPower = newPower;
 
             // Check for redstone-triggered state transitions
@@ -472,7 +470,7 @@ public class CustomBlockRegistry {
         int currentTick = Bukkit.getServer().getCurrentTick();
         for (var entry : particleTracked.values()) {
             Block block = entry.block;
-            if (!block.getChunk().isLoaded()) continue;
+            if (!block.getWorld().isChunkLoaded(block.getX() >> 4, block.getZ() >> 4)) continue;
 
             CustomHeadBlock.ParticleConfig pc = entry.config;
             if (currentTick % pc.intervalTicks() != 0) continue;
@@ -510,7 +508,7 @@ public class CustomBlockRegistry {
         int currentTick = Bukkit.getServer().getCurrentTick();
         for (var entry : tickTracked.values()) {
             Block block = entry.block;
-            if (!block.getChunk().isLoaded()) continue;
+            if (!block.getWorld().isChunkLoaded(block.getX() >> 4, block.getZ() >> 4)) continue;
 
             CustomHeadBlock type = entry.type;
             Integer interval = type.tickInterval();

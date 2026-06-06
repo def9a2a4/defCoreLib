@@ -262,7 +262,7 @@ public final class BlockLoader {
         Particle type = Particle.valueOf(sec.getString("type", "FLAME").toUpperCase());
         CustomHeadBlock.Scaling count = parseScaling(sec.get("count"), 1);
         CustomHeadBlock.Scaling speed = parseScaling(sec.get("speed"), 0);
-        int interval = sec.getInt("interval", 5);
+        int interval = Math.max(1, sec.getInt("interval", 5));
         Vector floorOffset = parseVector(sec.get("floor_offset"), new Vector(0, 0.5, 0));
 
         Map<BlockFace, Vector> wallOffsets = new HashMap<>();
