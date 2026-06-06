@@ -217,6 +217,11 @@ public final class CustomHeadBlock {
     // Redstone
     private final @Nullable RedstoneConfig redstone;
 
+    // Cached capability checks
+    private final boolean _hasDisplayEntities;
+    private final boolean _hasLight;
+    private final boolean _hasParticles;
+
     // Escape hatches
     private final @Nullable BiConsumer<Block, BlockFace> onNeighborChange;
     private final @Nullable Consumer<Block> onTick;
@@ -252,6 +257,11 @@ public final class CustomHeadBlock {
         this.onTick = b.onTick;
         this.onChunkLoadCallback = b.onChunkLoadCallback;
         this.onChunkUnloadCallback = b.onChunkUnloadCallback;
+
+        // Cache capability checks (avoid streaming states on every call)
+        this._hasDisplayEntities = !displayEntities.isEmpty() || states.values().stream().anyMatch(s -> s.displayEntities() != null);
+        this._hasLight = light != null || states.values().stream().anyMatch(s -> s.light() != null);
+        this._hasParticles = particles != null || states.values().stream().anyMatch(s -> s.particles() != null);
     }
 
     // ──────────────────────────────────────────────────────────────────────
@@ -296,9 +306,9 @@ public final class CustomHeadBlock {
     public @Nullable BiConsumer<Block, String> onChunkLoadCallback() { return onChunkLoadCallback; }
     public @Nullable Consumer<Block> onChunkUnloadCallback() { return onChunkUnloadCallback; }
 
-    public boolean hasDisplayEntities() { return !displayEntities.isEmpty() || states.values().stream().anyMatch(s -> s.displayEntities() != null); }
-    public boolean hasLight() { return light != null || states.values().stream().anyMatch(s -> s.light() != null); }
-    public boolean hasParticles() { return particles != null || states.values().stream().anyMatch(s -> s.particles() != null); }
+    public boolean hasDisplayEntities() { return _hasDisplayEntities; }
+    public boolean hasLight() { return _hasLight; }
+    public boolean hasParticles() { return _hasParticles; }
 
     /** Create an ItemStack for this block type with correct texture, name, lore, and PDC. */
     public org.bukkit.inventory.ItemStack createItem(int amount) {
@@ -428,7 +438,7 @@ public final class CustomHeadBlock {
         private @Nullable Component name;
         private @Nullable List<Component> lore;
 
-        private String texture = "";
+        private @Nullable String texture;
         private @Nullable Map<BlockFace, String> directionalTextures;
         private @Nullable LightConfig light;
         private @Nullable ParticleConfig particles;
@@ -556,7 +566,9 @@ public final class CustomHeadBlock {
         public Builder onChunkUnload(Consumer<Block> handler) { this.onChunkUnloadCallback = handler; return this; }
 
         public CustomHeadBlock build() {
-            Objects.requireNonNull(texture, "texture is required");
+            if (texture == null || texture.isBlank()) {
+                throw new IllegalStateException("texture is required and must not be blank");
+            }
             if (!states.isEmpty() && defaultState == null) {
                 throw new IllegalStateException("States defined but no default state set");
             }

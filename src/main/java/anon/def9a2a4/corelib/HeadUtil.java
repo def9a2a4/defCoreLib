@@ -43,29 +43,13 @@ public final class HeadUtil {
             JsonObject obj = JsonParser.parseString(json).getAsJsonObject();
             JsonObject skin = obj.getAsJsonObject("textures").getAsJsonObject("SKIN");
             String url = skin.get("url").getAsString();
-            return textureIdFromUrl(url).map(id -> new TextureInfo(url, id));
+            int idx = url.lastIndexOf('/');
+            if (idx < 0 || idx + 1 >= url.length()) return Optional.empty();
+            String textureId = url.substring(idx + 1);
+            return Optional.of(new TextureInfo(url, textureId));
         } catch (Exception e) {
             return Optional.empty();
         }
-    }
-
-    /**
-     * Extract the texture ID (hex hash) from a Minecraft skin URL.
-     * The texture ID is the final path segment of the URL.
-     */
-    public static Optional<String> textureIdFromUrl(String url) {
-        if (url == null) return Optional.empty();
-        int idx = url.lastIndexOf('/');
-        if (idx < 0 || idx + 1 >= url.length()) return Optional.empty();
-        return Optional.of(url.substring(idx + 1));
-    }
-
-    /**
-     * Generate a deterministic UUID from a texture ID.
-     * Used for item stackability and avoiding skull flicker when reapplying the same texture.
-     */
-    public static UUID uuidFromTextureId(String textureId) {
-        return UUID.nameUUIDFromBytes(textureId.getBytes(StandardCharsets.UTF_8));
     }
 
     /**
@@ -145,21 +129,4 @@ public final class HeadUtil {
         return null;
     }
 
-    /**
-     * Read the texture ID from a placed skull block's profile URL.
-     */
-    public static Optional<String> getBlockTextureId(Block block) {
-        if (block.getType() != Material.PLAYER_HEAD && block.getType() != Material.PLAYER_WALL_HEAD) {
-            return Optional.empty();
-        }
-        Skull skull = (Skull) block.getState();
-        PlayerProfile profile = skull.getPlayerProfile();
-        if (profile == null) return Optional.empty();
-        for (ProfileProperty prop : profile.getProperties()) {
-            if ("textures".equals(prop.getName())) {
-                return parseTexture(prop.getValue()).map(TextureInfo::textureId);
-            }
-        }
-        return Optional.empty();
-    }
 }

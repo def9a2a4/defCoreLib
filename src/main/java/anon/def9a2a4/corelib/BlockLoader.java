@@ -205,7 +205,9 @@ public final class BlockLoader {
         Object matObj = map.get("material");
         Object blockObj = map.get("block");
         if (matObj != null) {
-            Material mat = Material.matchMaterial(String.valueOf(matObj).toUpperCase(java.util.Locale.ROOT));
+            String matName = String.valueOf(matObj).toUpperCase(java.util.Locale.ROOT);
+            Material mat = Material.matchMaterial(matName);
+            if (mat == null) throw new IllegalArgumentException("Unknown material: " + matName);
             return new CustomHeadBlock.IngredientSpec(mat, null);
         }
         if (blockObj != null) {
@@ -223,15 +225,27 @@ public final class BlockLoader {
         String tex = sec.getString("texture");
         if (tex != null) sb.texture(tex);
 
-        ConfigurationSection lightSec = sec.getConfigurationSection("light");
-        if (lightSec != null) {
-            CustomHeadBlock.LightConfig lc = parseLight(lightSec);
-            sb.light(lc.level(), lc.offsetX(), lc.offsetY(), lc.offsetZ());
+        if (sec.getBoolean("no_light")) {
+            sb.noLight();
+        } else {
+            ConfigurationSection lightSec = sec.getConfigurationSection("light");
+            if (lightSec != null) {
+                CustomHeadBlock.LightConfig lc = parseLight(lightSec);
+                sb.light(lc.level(), lc.offsetX(), lc.offsetY(), lc.offsetZ());
+            }
         }
 
-        ConfigurationSection particleSec = sec.getConfigurationSection("particles");
-        if (particleSec != null) {
-            sb.particles(parseParticles(particleSec));
+        if (sec.getBoolean("no_particles")) {
+            sb.noParticles();
+        } else {
+            ConfigurationSection particleSec = sec.getConfigurationSection("particles");
+            if (particleSec != null) {
+                sb.particles(parseParticles(particleSec));
+            }
+        }
+
+        if (sec.getBoolean("no_display_entities")) {
+            sb.noDisplayEntities();
         }
     }
 

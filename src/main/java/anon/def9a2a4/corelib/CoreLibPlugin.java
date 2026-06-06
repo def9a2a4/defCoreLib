@@ -225,6 +225,7 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
                 block.getWorld().dropItemNaturally(
                         block.getLocation().add(0.5, 0.5, 0.5), type.createItem(1));
                 registry.onBlockRemoved(block, type);
+                block.setType(Material.AIR); // actually remove the block from the world
             }
         }
     }
