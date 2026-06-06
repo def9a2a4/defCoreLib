@@ -24,6 +24,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.io.IOException;
 import java.io.InputStream;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -144,15 +145,6 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
             // Register for redstone tracking if needed
             if (type.sensitivity() != CustomHeadBlock.Sensitivity.NONE) {
                 registry.trackRedstone(block, type, power);
-            }
-
-            // Spawn display entities if base config has them
-            List<CustomHeadBlock.DisplayEntityConfig> displays = type.resolveDisplayEntities(state);
-            for (CustomHeadBlock.DisplayEntityConfig dec : displays) {
-                ItemStack displayItem = HeadUtil.createHead(dec.itemTexture(), 1);
-                String tag = DisplayUtil.blockTag(type.namespace(), type.typeId(),
-                        block.getLocation(), dec.tagSuffix());
-                DisplayUtil.spawn(block.getLocation(), displayItem, dec.transform(), tag);
             }
         });
     }
@@ -342,7 +334,9 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         Map<Character, String> headIngredients = registry.getHeadIngredients(keyed.getKey());
         if (headIngredients == null) return; // not one of our recipes with head ingredients
 
-        // Validate that all PLAYER_HEAD items in the grid have the correct block_type PDC
+        // Validate PLAYER_HEAD items by consuming from required ingredients list.
+        // This correctly handles recipes needing multiple different head types.
+        List<String> remaining = new ArrayList<>(headIngredients.values());
         org.bukkit.inventory.ItemStack[] matrix = event.getInventory().getMatrix();
         for (ItemStack item : matrix) {
             if (item == null || item.getType() != Material.PLAYER_HEAD) continue;
@@ -351,16 +345,7 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
                 blockType = item.getItemMeta().getPersistentDataContainer()
                         .get(CustomBlockRegistry.BLOCK_TYPE_KEY, PersistentDataType.STRING);
             }
-            // Check if this head matches any required block ingredient
-            boolean matchesAny = false;
-            for (String requiredId : headIngredients.values()) {
-                if (requiredId.equals(blockType)) {
-                    matchesAny = true;
-                    break;
-                }
-            }
-            if (!matchesAny) {
-                // A player head is in the grid but doesn't match any required custom block
+            if (!remaining.remove(blockType)) {
                 event.getInventory().setResult(null);
                 return;
             }
@@ -634,7 +619,7 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
             BlockFace.NORTH, BlockFace.SOUTH, BlockFace.EAST, BlockFace.WEST, BlockFace.UP, BlockFace.DOWN
     };
 
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = false)
     public void onBlockPhysics(BlockPhysicsEvent event) {
         Block changed = event.getBlock();
         // Fast path: check if any neighbor is in the reactive set before doing expensive lookups

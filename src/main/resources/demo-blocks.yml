@@ -96,7 +96,7 @@ blocks:
     lore: ["&7Shows redstone power 0-15", "&7Reads through walls"]
     texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGIzZmE3NjE5ZTFlZTliNGU1NmFjMDViZWI3MzAxMjc2ZGE5YTkxOGQ0MjhjZDE4Mzg4MWEzMmEwN2FjZWM4YyJ9fX0="
     drops: self
-    needs_chunk_scan: true
+
     redstone:
       sensitivity: LEVEL
       reader: EXTENDED
@@ -126,7 +126,7 @@ blocks:
     lore: ["&7Red=off, Green=on", "&7Reads through walls"]
     texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWY2MDY2NGI0MzQ1YmU3NWQwNGIzM2FiNzAzZjg5MjI5MDA1YTU0ZGE3ZjZmNDg1NjQ2NDQyYTdhMjkwZTc1OSJ9fX0="
     drops: self
-    needs_chunk_scan: true
+
     redstone:
       sensitivity: BINARY
       reader: EXTENDED
@@ -142,7 +142,7 @@ blocks:
     lore: ["&7Flint & steel or redstone to light", "&7Click or remove power to extinguish"]
     texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMmI3ZGJjZGE0NTRlYTdiMzhhYmM2NmNkZmVkOGU0ZTZjMDEyOTRmNmE5NjJlYzY2ZWYyMjY1MTBhZTM3MTcxYiJ9fX0="
     drops: self
-    needs_chunk_scan: true
+
     default_state: unlit
     states:
       unlit: {}
@@ -187,7 +187,7 @@ blocks:
     lore: ["&7Particles scale with redstone power", "&7Reads through walls"]
     texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzFkMDlhYTA3MTNjYzlhM2YzYzY4MDkyM2IxZjdiMjE2N2Y2NzMyMmZiN2U1ZjczMDE4ODEyZmVmNWZlMWEzYSJ9fX0="
     drops: self
-    needs_chunk_scan: true
+
     default_state: off
     states:
       off: {}
@@ -280,7 +280,7 @@ blocks:
     lore: ["&7Right-click to enchant", "&7Soul fire particles"]
     texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjc1MmE5YTlhZWMwZjE2MTgwYjhjYjAwMDMwNTFiYjUyOWQ3YTMyMTIwMWZlZTc3NjdhZTBjMmJhNmFmOTE0OSJ9fX0="
     drops: self
-    needs_chunk_scan: true
+
     interact_gui: ENCHANTING
     particles:
       type: SOUL_FIRE_FLAME

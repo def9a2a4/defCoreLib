@@ -333,6 +333,19 @@ public class CustomBlockRegistry {
         } else {
             particleTracked.remove(key);
         }
+
+        // Display entities
+        if (type.hasDisplayEntities()) {
+            String tagPrefix = DisplayUtil.blockTagPrefix(type.namespace(), type.typeId(), block.getLocation());
+            DisplayUtil.removeByTag(block.getLocation(), tagPrefix, 1.5);
+            List<CustomHeadBlock.DisplayEntityConfig> displays = type.resolveDisplayEntities(state);
+            for (var dec : displays) {
+                ItemStack displayItem = HeadUtil.createHead(dec.itemTexture(), 1);
+                String tag = DisplayUtil.blockTag(type.namespace(), type.typeId(),
+                        block.getLocation(), dec.tagSuffix());
+                DisplayUtil.spawn(block.getLocation(), displayItem, dec.transform(), tag);
+            }
+        }
     }
 
     /** Handle block removal: clean up displays, light, particles, redstone tracking. */
@@ -690,77 +703,82 @@ public class CustomBlockRegistry {
 
             // Shaped recipes
             for (CustomHeadBlock.ShapedRecipeDef r : type.shapedRecipes()) {
-                org.bukkit.NamespacedKey key = new org.bukkit.NamespacedKey(plugin, prefix + r.id());
-                org.bukkit.inventory.ItemStack result = type.createItem(r.amount());
-                org.bukkit.inventory.ShapedRecipe recipe = new org.bukkit.inventory.ShapedRecipe(key, result);
-                recipe.shape(r.pattern().toArray(new String[0]));
-                Map<Character, String> headIngredients = new HashMap<>();
-                for (var entry : r.key().entrySet()) {
-                    CustomHeadBlock.IngredientSpec spec = entry.getValue();
-                    if (spec.isMaterial()) {
-                        recipe.setIngredient(entry.getKey(), spec.material());
-                    } else if (spec.isBlock()) {
-                        // Use MaterialChoice instead of ExactChoice to avoid profile completion issues.
-                        // PDC validation happens in PrepareItemCraftEvent listener.
-                        recipe.setIngredient(entry.getKey(),
-                                new org.bukkit.inventory.RecipeChoice.MaterialChoice(Material.PLAYER_HEAD));
-                        headIngredients.put(entry.getKey(), spec.blockId());
+                try {
+                    org.bukkit.NamespacedKey key = new org.bukkit.NamespacedKey(plugin, prefix + r.id());
+                    org.bukkit.inventory.ItemStack result = type.createItem(r.amount());
+                    org.bukkit.inventory.ShapedRecipe recipe = new org.bukkit.inventory.ShapedRecipe(key, result);
+                    recipe.shape(r.pattern().toArray(new String[0]));
+                    Map<Character, String> headIngredients = new HashMap<>();
+                    for (var entry : r.key().entrySet()) {
+                        CustomHeadBlock.IngredientSpec spec = entry.getValue();
+                        if (spec.isMaterial()) {
+                            recipe.setIngredient(entry.getKey(), spec.material());
+                        } else if (spec.isBlock()) {
+                            recipe.setIngredient(entry.getKey(),
+                                    new org.bukkit.inventory.RecipeChoice.MaterialChoice(Material.PLAYER_HEAD));
+                            headIngredients.put(entry.getKey(), spec.blockId());
+                        }
                     }
-                }
-                Bukkit.addRecipe(recipe);
-                registeredRecipeKeys.add(key);
-                if (!headIngredients.isEmpty()) {
-                    headIngredientRecipes.put(key, headIngredients);
+                    Bukkit.addRecipe(recipe);
+                    registeredRecipeKeys.add(key);
+                    if (!headIngredients.isEmpty()) {
+                        headIngredientRecipes.put(key, headIngredients);
+                    }
+                } catch (Exception e) {
+                    plugin.getLogger().warning("Failed to register shaped recipe '" + prefix + r.id() + "': " + e.getMessage());
                 }
             }
 
             // Shapeless recipes
             for (CustomHeadBlock.ShapelessRecipeDef r : type.shapelessRecipes()) {
-                org.bukkit.NamespacedKey key = new org.bukkit.NamespacedKey(plugin, prefix + r.id());
-                org.bukkit.inventory.ItemStack result = type.createItem(r.amount());
-                org.bukkit.inventory.ShapelessRecipe recipe = new org.bukkit.inventory.ShapelessRecipe(key, result);
-                boolean hasHeadIngredients = false;
-                for (CustomHeadBlock.IngredientSpec spec : r.ingredients()) {
-                    if (spec.isMaterial()) {
-                        recipe.addIngredient(spec.material());
-                    } else if (spec.isBlock()) {
-                        recipe.addIngredient(
-                                new org.bukkit.inventory.RecipeChoice.MaterialChoice(Material.PLAYER_HEAD));
-                        hasHeadIngredients = true;
-                    }
-                }
-                Bukkit.addRecipe(recipe);
-                registeredRecipeKeys.add(key);
-                // For shapeless recipes with head ingredients, store the required block IDs
-                // (order-independent, so we store as a list check in the craft listener)
-                if (hasHeadIngredients) {
-                    // Store ingredient specs on the recipe def for lookup during craft validation
-                    Map<Character, String> specMap = new HashMap<>();
-                    int idx = 0;
+                try {
+                    org.bukkit.NamespacedKey key = new org.bukkit.NamespacedKey(plugin, prefix + r.id());
+                    org.bukkit.inventory.ItemStack result = type.createItem(r.amount());
+                    org.bukkit.inventory.ShapelessRecipe recipe = new org.bukkit.inventory.ShapelessRecipe(key, result);
+                    boolean hasHeadIngredients = false;
                     for (CustomHeadBlock.IngredientSpec spec : r.ingredients()) {
-                        if (spec.isBlock()) {
-                            specMap.put((char) ('0' + idx), spec.blockId());
+                        if (spec.isMaterial()) {
+                            recipe.addIngredient(spec.material());
+                        } else if (spec.isBlock()) {
+                            recipe.addIngredient(
+                                    new org.bukkit.inventory.RecipeChoice.MaterialChoice(Material.PLAYER_HEAD));
+                            hasHeadIngredients = true;
                         }
-                        idx++;
                     }
-                    headIngredientRecipes.put(key, specMap);
+                    Bukkit.addRecipe(recipe);
+                    registeredRecipeKeys.add(key);
+                    if (hasHeadIngredients) {
+                        Map<Character, String> specMap = new HashMap<>();
+                        int idx = 0;
+                        for (CustomHeadBlock.IngredientSpec spec : r.ingredients()) {
+                            if (spec.isBlock()) {
+                                specMap.put((char) ('0' + idx), spec.blockId());
+                            }
+                            idx++;
+                        }
+                        headIngredientRecipes.put(key, specMap);
+                    }
+                } catch (Exception e) {
+                    plugin.getLogger().warning("Failed to register shapeless recipe '" + prefix + r.id() + "': " + e.getMessage());
                 }
             }
 
             // Stonecutter recipes
             for (CustomHeadBlock.StonecutterRecipeDef r : type.stonecutterRecipes()) {
-                CustomHeadBlock.IngredientSpec input = r.input();
-                if (input.isMaterial()) {
-                    // Material input — use Bukkit API
-                    org.bukkit.NamespacedKey key = new org.bukkit.NamespacedKey(plugin, prefix + "sc_" + r.id());
-                    org.bukkit.inventory.ItemStack result = type.createItem(r.amount());
-                    org.bukkit.inventory.StonecuttingRecipe recipe = new org.bukkit.inventory.StonecuttingRecipe(
-                            key, result, new org.bukkit.inventory.RecipeChoice.MaterialChoice(input.material()));
-                    Bukkit.addRecipe(recipe);
-                    registeredRecipeKeys.add(key);
-                } else if (input.isBlock()) {
-                    // Block input — store for custom GUI interception (Bukkit API can't handle ExactChoice in stonecutter)
-                    headStonecutterRecipes.add(new HeadStonecutterRecipe(input.blockId(), type.fullId(), r.amount()));
+                try {
+                    CustomHeadBlock.IngredientSpec input = r.input();
+                    if (input.isMaterial()) {
+                        org.bukkit.NamespacedKey key = new org.bukkit.NamespacedKey(plugin, prefix + "sc_" + r.id());
+                        org.bukkit.inventory.ItemStack result = type.createItem(r.amount());
+                        org.bukkit.inventory.StonecuttingRecipe recipe = new org.bukkit.inventory.StonecuttingRecipe(
+                                key, result, new org.bukkit.inventory.RecipeChoice.MaterialChoice(input.material()));
+                        Bukkit.addRecipe(recipe);
+                        registeredRecipeKeys.add(key);
+                    } else if (input.isBlock()) {
+                        headStonecutterRecipes.add(new HeadStonecutterRecipe(input.blockId(), type.fullId(), r.amount()));
+                    }
+                } catch (Exception e) {
+                    plugin.getLogger().warning("Failed to register stonecutter recipe '" + prefix + r.id() + "': " + e.getMessage());
                 }
             }
         }

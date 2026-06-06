@@ -10,7 +10,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.util.Transformation;
 import org.bukkit.util.Vector;
-import org.jspecify.annotations.Nullable;
+
 import org.joml.AxisAngle4f;
 import org.joml.Vector3f;
 
@@ -82,7 +82,7 @@ public final class BlockLoader {
         }
 
         // Flags
-        if (sec.getBoolean("needs_chunk_scan")) b.needsChunkScan(true);
+
         if (sec.getBoolean("cancel_pistons")) b.cancelPistons(true);
 
         // Interact GUI
@@ -418,12 +418,17 @@ public final class BlockLoader {
 
     private static CustomHeadBlock.PowerRange parseRange(String s) {
         s = s.trim();
-        if (s.contains("-")) {
-            String[] parts = s.split("-", 2);
-            return new CustomHeadBlock.PowerRange(Integer.parseInt(parts[0].trim()), Integer.parseInt(parts[1].trim()));
+        try {
+            if (s.contains("-")) {
+                String[] parts = s.split("-", 2);
+                return new CustomHeadBlock.PowerRange(
+                        Integer.parseInt(parts[0].trim()), Integer.parseInt(parts[1].trim()));
+            }
+            int val = Integer.parseInt(s);
+            return new CustomHeadBlock.PowerRange(val, val);
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("Invalid power range: '" + s + "'", e);
         }
-        int val = Integer.parseInt(s);
-        return new CustomHeadBlock.PowerRange(val, val);
     }
 
     // ── Utility ──────────────────────────────────────────────────────────

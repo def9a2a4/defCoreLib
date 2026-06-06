@@ -63,8 +63,13 @@ public final class CustomHeadBlock {
         WORKBENCH, ANVIL, ENCHANTING, SMITHING, LOOM, STONECUTTER, GRINDSTONE, CARTOGRAPHY, ENDERCHEST
     }
 
-    /** Inclusive range of redstone power levels. */
+    /** Inclusive range of redstone power levels. Self-correcting: clamps to 0-15, swaps if inverted. */
     public record PowerRange(int min, int max) {
+        public PowerRange {
+            min = Math.clamp(min, 0, 15);
+            max = Math.clamp(max, 0, 15);
+            if (min > max) { int tmp = min; min = max; max = tmp; }
+        }
         public static final PowerRange ANY = new PowerRange(0, 15);
         public static final PowerRange ZERO = new PowerRange(0, 0);
         public static final PowerRange POWERED = new PowerRange(1, 15);
@@ -205,7 +210,7 @@ public final class CustomHeadBlock {
     private final @Nullable PlacementConfig placement;
     private final List<DropRule> dropRules;
     private final boolean cancelPistons;
-    private final boolean needsChunkScan;
+
     private final boolean reactsToNeighbors;
     private final @Nullable Integer tickInterval;
 
@@ -246,7 +251,7 @@ public final class CustomHeadBlock {
         this.placement = b.placement;
         this.dropRules = List.copyOf(b.dropRules);
         this.cancelPistons = b.cancelPistons;
-        this.needsChunkScan = b.needsChunkScan;
+
         this.reactsToNeighbors = b.reactsToNeighbors;
         this.tickInterval = b.tickInterval;
         this.defaultState = b.defaultState;
@@ -289,7 +294,7 @@ public final class CustomHeadBlock {
     public @Nullable PlacementConfig placement() { return placement; }
     public List<DropRule> dropRules() { return dropRules; }
     public boolean cancelPistons() { return cancelPistons; }
-    public boolean needsChunkScan() { return needsChunkScan; }
+
     public boolean reactsToNeighbors() { return reactsToNeighbors; }
     public @Nullable Integer tickInterval() { return tickInterval; }
 
@@ -451,7 +456,7 @@ public final class CustomHeadBlock {
         private @Nullable PlacementConfig placement;
         private final List<DropRule> dropRules = new ArrayList<>();
         private boolean cancelPistons;
-        private boolean needsChunkScan;
+
         private boolean reactsToNeighbors;
         private @Nullable Integer tickInterval;
 
@@ -491,7 +496,7 @@ public final class CustomHeadBlock {
         public Builder placement(PlacementConfig config) { this.placement = config; return this; }
         public Builder drops(DropRule... rules) { this.dropRules.addAll(List.of(rules)); return this; }
         public Builder cancelPistons(boolean cancel) { this.cancelPistons = cancel; return this; }
-        public Builder needsChunkScan(boolean scan) { this.needsChunkScan = scan; return this; }
+
         public Builder reactsToNeighbors(boolean reacts) { this.reactsToNeighbors = reacts; return this; }
         public Builder tickInterval(int ticks) { this.tickInterval = ticks; return this; }
 
