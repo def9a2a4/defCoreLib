@@ -449,6 +449,28 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
 
         if (transition != null) {
             event.setCancelled(true);
+
+            // Consume held item if transition requires it
+            if (transition.consumeItem()) {
+                ItemStack held = event.getPlayer().getInventory().getItemInMainHand();
+                int needed = transition.consumeAmount();
+                if (held.getAmount() < needed) return; // not enough items
+
+                if (held.getType().getMaxDurability() > 0 && held.getItemMeta() instanceof org.bukkit.inventory.meta.Damageable dmg) {
+                    // Damageable item (flint & steel, shears): damage instead of consuming
+                    dmg.setDamage(dmg.getDamage() + needed);
+                    held.setItemMeta(dmg);
+                    if (dmg.getDamage() >= held.getType().getMaxDurability()) {
+                        event.getPlayer().getInventory().setItemInMainHand(null);
+                        event.getPlayer().playSound(event.getPlayer().getLocation(),
+                                org.bukkit.Sound.ENTITY_ITEM_BREAK, 1f, 1f);
+                    }
+                } else {
+                    // Stackable item: reduce amount
+                    held.setAmount(held.getAmount() - needed);
+                }
+            }
+
             registry.transitionState(block, type, currentState, transition);
         }
     }

@@ -120,7 +120,7 @@ public final class CustomHeadBlock {
     /** Particle effect played during a state transition (one-shot, not ongoing). */
     public record TransitionParticle(Particle type, int count, double spread) {}
 
-    /** A state transition with optional sound and particle effects. */
+    /** A state transition with optional sound, particle, and item consumption effects. */
     public record StateTransition(
             Trigger trigger,
             String fromState,
@@ -128,7 +128,9 @@ public final class CustomHeadBlock {
             @Nullable Sound sound,
             float volume,
             float pitch,
-            @Nullable TransitionParticle particle
+            @Nullable TransitionParticle particle,
+            boolean consumeItem,
+            int consumeAmount
     ) {}
 
     /** Conditional drop rule. */
@@ -554,12 +556,12 @@ public final class CustomHeadBlock {
         // --- Transitions ---
 
         public Builder transition(Trigger trigger, String from, String to) {
-            this.transitions.add(new StateTransition(trigger, from, to, null, 1f, 1f, null));
+            this.transitions.add(new StateTransition(trigger, from, to, null, 1f, 1f, null, false, 0));
             return this;
         }
 
         public Builder transition(Trigger trigger, String from, String to, Sound sound) {
-            this.transitions.add(new StateTransition(trigger, from, to, sound, 1f, 1f, null));
+            this.transitions.add(new StateTransition(trigger, from, to, sound, 1f, 1f, null, false, 0));
             return this;
         }
 

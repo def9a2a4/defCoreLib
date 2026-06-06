@@ -300,3 +300,34 @@ blocks:
     drops: self
     storage: { layout: HOPPER }
     interact_sound: { sound: BLOCK_IRON_TRAPDOOR_OPEN, volume: 0.5, pitch: 1.5 }
+
+  # ─── 13. Altar ───────────────────────────────────────────────────────
+  # Features: item consumption on interact, state-dependent light + particles.
+  altar:
+    name: "&5Altar"
+    lore: ["&7Right-click with diamond to activate", "&7Right-click again to deactivate"]
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzQ4MmQxYmE0YmRhYzk5MGY2ZWE5ODc3MDM1ODdmZDc5ZmU1NTU1NTM2MzI1MTk4NDY3OWQ0ZjI3OWNjMGMyYSJ9fX0="
+    drops: self
+    default_state: inactive
+    states:
+      inactive: {}
+      active:
+        texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvM2Y0ODc2YjZhNWQ2ZGQ3ODVlMDkxZmQxMzRhMjFjOTFkMGE5Y2FjNWE2MjJlNDQ4YjVmZmNiNjVlZjQ1Mjc4In19fQ=="
+        light: { level: 14, offset: [0, 1, 0] }
+        particles:
+          type: ENCHANT
+          count: 5
+          speed: 0.5
+          interval: 3
+          floor_offset: [0, 1.0, 0]
+    transitions:
+      - trigger: { type: interact, item: DIAMOND }
+        from: inactive
+        to: active
+        consume: true
+        consume_amount: 1
+        sound: BLOCK_ENCHANTMENT_TABLE_USE
+      - trigger: { type: interact }
+        from: active
+        to: inactive
+        sound: BLOCK_BEACON_DEACTIVATE

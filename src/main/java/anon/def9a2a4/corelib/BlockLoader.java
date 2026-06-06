@@ -411,8 +411,11 @@ public final class BlockLoader {
 
         float volume = (float) toDouble(map.get("volume"), 1.0);
         float pitch = (float) toDouble(map.get("pitch"), 1.0);
+        boolean consume = Boolean.TRUE.equals(map.get("consume"));
+        int consumeAmount = toInt(map.get("consume_amount"), 1);
 
-        return new CustomHeadBlock.StateTransition(trigger, from, to, sound, volume, pitch, transParticle);
+        return new CustomHeadBlock.StateTransition(trigger, from, to, sound, volume, pitch, transParticle,
+                consume, consumeAmount);
     }
 
     private static CustomHeadBlock.Trigger parseTrigger(Map<?, ?> map) {
