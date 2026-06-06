@@ -244,6 +244,7 @@ blocks:
         texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzk1ZDFhOTY4ZDA5ODA4OGMxNGJkZGQ4NDM0MTA3OTczYmIzZGI5ZDZiMmJlN2QzZmJhMDAyNDFjNDYzZmNmNiJ9fX0="
         particles:
           type: ENTITY_EFFECT
+          color: [255, 200, 0]
           count: 3
           speed: 0.1
           interval: 10
@@ -253,6 +254,7 @@ blocks:
         light: { level: 15, offset: [0, 1, 0] }
         particles:
           type: ENTITY_EFFECT
+          color: [255, 50, 50]
           count: 8
           speed: 0.3
           interval: 3

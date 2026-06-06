@@ -274,7 +274,7 @@ public final class BlockLoader {
             }
         }
 
-        // Parse particle-specific data (e.g., DustOptions for DUST type)
+        // Parse particle-specific data for types that require it
         Object data = null;
         if (type == Particle.DUST) {
             List<Integer> color = sec.getIntegerList("color");
@@ -283,6 +283,12 @@ public final class BlockLoader {
             int g = color.size() > 1 ? color.get(1) : 255;
             int b = color.size() > 2 ? color.get(2) : 255;
             data = new Particle.DustOptions(org.bukkit.Color.fromRGB(r, g, b), size);
+        } else if (type == Particle.ENTITY_EFFECT) {
+            List<Integer> color = sec.getIntegerList("color");
+            int r = color.size() > 0 ? color.get(0) : 255;
+            int g = color.size() > 1 ? color.get(1) : 255;
+            int b = color.size() > 2 ? color.get(2) : 255;
+            data = org.bukkit.Color.fromRGB(r, g, b);
         }
 
         return new CustomHeadBlock.ParticleConfig(type, count, speed, interval, floorOffset, wallOffsets, data);

@@ -5,7 +5,7 @@ api-version: 1.21
 author: def9a2a4
 description: Shared core library for def plugins
 commands:
-  corelib:
+  defcorelib:
     description: DefCoreLib admin commands
-    usage: /corelib <give|list> [args...]
+    usage: /defcorelib <give|give_demo|list> [args...]
     permission: corelib.admin

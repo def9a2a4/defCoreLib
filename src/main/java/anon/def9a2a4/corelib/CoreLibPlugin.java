@@ -640,9 +640,9 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (!command.getName().equalsIgnoreCase("corelib")) return false;
+        if (!command.getName().equalsIgnoreCase("defcorelib")) return false;
         if (args.length == 0) {
-            sender.sendMessage(Component.text("Usage: /corelib <give|list>", NamedTextColor.YELLOW));
+            sender.sendMessage(Component.text("Usage: /defcorelib <give|give_demo|list>", NamedTextColor.YELLOW));
             return true;
         }
 
@@ -659,7 +659,7 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
                     return true;
                 }
                 if (args.length < 2) {
-                    sender.sendMessage(Component.text("Usage: /corelib give <id> [amount]", NamedTextColor.YELLOW));
+                    sender.sendMessage(Component.text("Usage: /defcorelib give <id> [amount]", NamedTextColor.YELLOW));
                     return true;
                 }
                 String blockId = args[1];
@@ -697,6 +697,21 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
                 }
                 sender.sendMessage(Component.text("Gave " + amount + "x " + type.fullId(), NamedTextColor.GREEN));
             }
+            case "give_demo" -> {
+                if (!(sender instanceof Player player)) {
+                    sender.sendMessage(Component.text("Must be a player", NamedTextColor.RED));
+                    return true;
+                }
+                int count = 0;
+                for (CustomHeadBlock type : registry.allTypes()) {
+                    var overflow = player.getInventory().addItem(type.createItem(1));
+                    for (ItemStack lf : overflow.values()) {
+                        player.getWorld().dropItemNaturally(player.getLocation(), lf);
+                    }
+                    count++;
+                }
+                sender.sendMessage(Component.text("Gave " + count + " demo blocks", NamedTextColor.GREEN));
+            }
             default -> sender.sendMessage(Component.text("Unknown subcommand: " + args[0], NamedTextColor.RED));
         }
         return true;
@@ -704,9 +719,9 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
 
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
-        if (!command.getName().equalsIgnoreCase("corelib")) return List.of();
+        if (!command.getName().equalsIgnoreCase("defcorelib")) return List.of();
         if (args.length == 1) {
-            return List.of("give", "list").stream()
+            return List.of("give", "give_demo", "list").stream()
                     .filter(s -> s.startsWith(args[0].toLowerCase()))
                     .toList();
         }
