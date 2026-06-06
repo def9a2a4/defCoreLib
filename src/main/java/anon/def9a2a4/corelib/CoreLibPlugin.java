@@ -131,6 +131,12 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         // Write PDC to the placed skull
         registry.markBlock(block, type);
 
+        // Play place sound
+        if (type.placeSound() != null) {
+            var s = type.placeSound();
+            block.getWorld().playSound(block.getLocation().add(0.5, 0.5, 0.5), s.sound(), s.volume(), s.pitch());
+        }
+
         // Apply initial config
         String state = type.defaultState();
         int power = type.sensitivity() != CustomHeadBlock.Sensitivity.NONE ? registry.readPower(block, type) : 0;
@@ -160,6 +166,17 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         if (type == null) return;
 
         String state = registry.getState(block);
+
+        // Drop storage contents before cleanup
+        if (type.storage() != null) {
+            registry.dropStorage(block);
+        }
+
+        // Play break sound
+        if (type.breakSound() != null) {
+            var s = type.breakSound();
+            block.getWorld().playSound(block.getLocation().add(0.5, 0.5, 0.5), s.sound(), s.volume(), s.pitch());
+        }
 
         // Read power BEFORE cleanup removes redstone tracking
         int power = type.sensitivity() != CustomHeadBlock.Sensitivity.NONE ? registry.readPower(block, type) : 0;
@@ -367,6 +384,20 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
     }
 
     // ──────────────────────────────────────────────────────────────────────
+    // Advancement-based recipe unlocking
+    // ──────────────────────────────────────────────────────────────────────
+
+    @EventHandler
+    public void onPlayerJoin(org.bukkit.event.player.PlayerJoinEvent event) {
+        registry.syncRecipeDiscovery(event.getPlayer());
+    }
+
+    @EventHandler
+    public void onAdvancementDone(org.bukkit.event.player.PlayerAdvancementDoneEvent event) {
+        registry.discoverForAdvancement(event.getPlayer(), event.getAdvancement().getKey().toString());
+    }
+
+    // ──────────────────────────────────────────────────────────────────────
     // Interaction — GUI + state transitions
     // ──────────────────────────────────────────────────────────────────────
 
@@ -381,10 +412,23 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         CustomHeadBlock type = registry.getTypeFromBlock(block);
         if (type == null) return;
 
+        // Play interact sound (before any GUI/transition handling)
+        if (type.interactSound() != null) {
+            var s = type.interactSound();
+            block.getWorld().playSound(block.getLocation().add(0.5, 0.5, 0.5), s.sound(), s.volume(), s.pitch());
+        }
+
         // GUI interaction
         if (type.interactGUI() != null) {
             event.setCancelled(true);
             openGUI(event.getPlayer(), type.interactGUI());
+            return;
+        }
+
+        // Storage interaction
+        if (type.storage() != null) {
+            event.setCancelled(true);
+            registry.openStorage(block, event.getPlayer(), type);
             return;
         }
 
@@ -430,6 +474,18 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
             case GRINDSTONE -> player.openGrindstone(null, true);
             case CARTOGRAPHY -> player.openCartographyTable(null, true);
             case ENDERCHEST -> player.openInventory(player.getEnderChest());
+        }
+    }
+
+    // ──────────────────────────────────────────────────────────────────────
+    // Storage inventory close — save back to PDC
+    // ──────────────────────────────────────────────────────────────────────
+
+    @EventHandler
+    public void onInventoryClose(org.bukkit.event.inventory.InventoryCloseEvent event) {
+        if (event.getInventory().getHolder() instanceof StorageHolder holder) {
+            // Delay by 1 tick so Bukkit finishes removing the viewer first
+            getServer().getScheduler().runTask(this, () -> registry.onStorageClosed(holder));
         }
     }
 

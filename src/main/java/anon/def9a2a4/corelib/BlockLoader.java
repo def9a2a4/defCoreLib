@@ -82,8 +82,32 @@ public final class BlockLoader {
         }
 
         // Flags
-
         if (sec.getBoolean("cancel_pistons")) b.cancelPistons(true);
+
+        // Sounds
+        ConfigurationSection placeSoundSec = sec.getConfigurationSection("place_sound");
+        if (placeSoundSec != null) b.placeSound(parseSoundConfig(placeSoundSec));
+        ConfigurationSection breakSoundSec = sec.getConfigurationSection("break_sound");
+        if (breakSoundSec != null) b.breakSound(parseSoundConfig(breakSoundSec));
+        ConfigurationSection interactSoundSec = sec.getConfigurationSection("interact_sound");
+        if (interactSoundSec != null) b.interactSound(parseSoundConfig(interactSoundSec));
+
+        // Placement restrictions
+        ConfigurationSection placementSec = sec.getConfigurationSection("placement");
+        if (placementSec != null) {
+            Set<BlockFace> faces = new HashSet<>();
+            for (String f : placementSec.getStringList("allowed_faces")) {
+                faces.add(BlockFace.valueOf(f.toUpperCase()));
+            }
+            b.placement(new CustomHeadBlock.PlacementConfig(faces, placementSec.getBoolean("require_solid")));
+        }
+
+        // Storage
+        ConfigurationSection storageSec = sec.getConfigurationSection("storage");
+        if (storageSec != null) {
+            String layoutStr = storageSec.getString("layout", "CHEST_3ROW");
+            b.storage(CustomHeadBlock.InventoryLayout.valueOf(layoutStr.toUpperCase()));
+        }
 
         // Interact GUI
         String gui = sec.getString("interact_gui");
@@ -108,6 +132,12 @@ public final class BlockLoader {
         List<?> displayList = sec.getList("display_entities");
         if (displayList != null) {
             b.displayEntities(parseDisplayEntities(sec.getMapList("display_entities")));
+        }
+
+        // Directional textures
+        ConfigurationSection dirTexSec = sec.getConfigurationSection("directional_textures");
+        if (dirTexSec != null) {
+            b.directionalTextures(parseDirectionalTextures(dirTexSec));
         }
 
         // States
@@ -148,6 +178,9 @@ public final class BlockLoader {
     }
 
     private static void parseRecipes(CustomHeadBlock.Builder b, ConfigurationSection sec, String namespace) {
+        String unlockAdv = sec.getString("unlock_advancement");
+        if (unlockAdv != null) b.unlockAdvancement(unlockAdv);
+
         ConfigurationSection craftSec = sec.getConfigurationSection("craft");
         if (craftSec != null) {
             // Shaped recipes
@@ -224,6 +257,9 @@ public final class BlockLoader {
     private static void parseStateOverrides(CustomHeadBlock.StateBuilder sb, ConfigurationSection sec) {
         String tex = sec.getString("texture");
         if (tex != null) sb.texture(tex);
+
+        ConfigurationSection dirTexSec = sec.getConfigurationSection("directional_textures");
+        if (dirTexSec != null) sb.directionalTextures(parseDirectionalTextures(dirTexSec));
 
         if (sec.getBoolean("no_light")) {
             sb.noLight();
@@ -373,7 +409,10 @@ public final class BlockLoader {
             transParticle = new CustomHeadBlock.TransitionParticle(pType, pCount, pSpread);
         }
 
-        return new CustomHeadBlock.StateTransition(trigger, from, to, sound, 1f, 1f, transParticle);
+        float volume = (float) toDouble(map.get("volume"), 1.0);
+        float pitch = (float) toDouble(map.get("pitch"), 1.0);
+
+        return new CustomHeadBlock.StateTransition(trigger, from, to, sound, volume, pitch, transParticle);
     }
 
     private static CustomHeadBlock.Trigger parseTrigger(Map<?, ?> map) {
@@ -420,6 +459,21 @@ public final class BlockLoader {
             }
             b.redstoneTextureRanges(ranges);
         }
+    }
+
+    private static CustomHeadBlock.SoundConfig parseSoundConfig(ConfigurationSection sec) {
+        Sound sound = Sound.valueOf(sec.getString("sound", "BLOCK_STONE_BREAK").toUpperCase());
+        float volume = (float) sec.getDouble("volume", 1.0);
+        float pitch = (float) sec.getDouble("pitch", 1.0);
+        return new CustomHeadBlock.SoundConfig(sound, volume, pitch);
+    }
+
+    private static Map<BlockFace, String> parseDirectionalTextures(ConfigurationSection sec) {
+        Map<BlockFace, String> map = new HashMap<>();
+        for (String key : sec.getKeys(false)) {
+            map.put(BlockFace.valueOf(key.toUpperCase()), sec.getString(key));
+        }
+        return map;
     }
 
     private static CustomHeadBlock.PowerRange parseRange(String s) {

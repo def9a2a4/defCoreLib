@@ -698,6 +698,7 @@ public class CustomBlockRegistry {
         for (CustomHeadBlock type : types.values()) {
             if (!type.hasRecipes()) continue;
             String prefix = type.namespace() + "_" + type.typeId() + "_";
+            int keysBefore = registeredRecipeKeys.size();
 
             // Shaped recipes
             for (CustomHeadBlock.ShapedRecipeDef r : type.shapedRecipes()) {
@@ -779,6 +780,13 @@ public class CustomBlockRegistry {
                     plugin.getLogger().warning("Failed to register stonecutter recipe '" + prefix + r.id() + "': " + e.getMessage());
                 }
             }
+
+            // Track advancement requirement for all recipes registered for this type
+            if (type.unlockAdvancement() != null) {
+                for (int i = keysBefore; i < registeredRecipeKeys.size(); i++) {
+                    trackAdvancementRecipe(type.unlockAdvancement(), registeredRecipeKeys.get(i));
+                }
+            }
         }
     }
 
@@ -805,6 +813,179 @@ public class CustomBlockRegistry {
     }
 
     // ──────────────────────────────────────────────────────────────────────
+    // Advancement-based recipe unlocking
+    // ──────────────────────────────────────────────────────────────────────
+
+    // advancement key string → list of recipe NamespacedKeys gated by that advancement
+    private final Map<String, List<org.bukkit.NamespacedKey>> advancementRecipes = new HashMap<>();
+
+    /** Track that a recipe key requires an advancement. Called during recipe registration. */
+    void trackAdvancementRecipe(String advancementKey, org.bukkit.NamespacedKey recipeKey) {
+        advancementRecipes.computeIfAbsent(advancementKey, k -> new ArrayList<>()).add(recipeKey);
+    }
+
+    /** Sync recipe discovery for a player based on their advancement progress. */
+    void syncRecipeDiscovery(org.bukkit.entity.Player player) {
+        for (var entry : advancementRecipes.entrySet()) {
+            String advKey = entry.getKey();
+            org.bukkit.NamespacedKey nsKey = parseAdvancementKey(advKey);
+            if (nsKey == null) continue;
+
+            org.bukkit.advancement.Advancement adv = Bukkit.getAdvancement(nsKey);
+            boolean done = adv != null && player.getAdvancementProgress(adv).isDone();
+
+            for (org.bukkit.NamespacedKey recipeKey : entry.getValue()) {
+                if (done) {
+                    player.discoverRecipe(recipeKey);
+                } else {
+                    player.undiscoverRecipe(recipeKey);
+                }
+            }
+        }
+
+        // Recipes without an advancement requirement: always discover
+        for (org.bukkit.NamespacedKey key : registeredRecipeKeys) {
+            boolean gated = advancementRecipes.values().stream().anyMatch(list -> list.contains(key));
+            if (!gated) {
+                player.discoverRecipe(key);
+            }
+        }
+    }
+
+    /** Discover recipes unlocked by a specific advancement. */
+    void discoverForAdvancement(org.bukkit.entity.Player player, String advancementKey) {
+        List<org.bukkit.NamespacedKey> keys = advancementRecipes.get(advancementKey);
+        if (keys == null) return;
+        for (org.bukkit.NamespacedKey key : keys) {
+            player.discoverRecipe(key);
+        }
+    }
+
+    private static org.bukkit.@Nullable NamespacedKey parseAdvancementKey(String key) {
+        try {
+            if (key.contains(":")) {
+                String[] parts = key.split(":", 2);
+                return new org.bukkit.NamespacedKey(parts[0], parts[1]);
+            }
+            return new org.bukkit.NamespacedKey("minecraft", key);
+        } catch (IllegalArgumentException e) {
+            return null;
+        }
+    }
+
+    // ──────────────────────────────────────────────────────────────────────
+    // Storage (custom inventories)
+    // ──────────────────────────────────────────────────────────────────────
+
+    static final org.bukkit.NamespacedKey INVENTORY_KEY = new org.bukkit.NamespacedKey("corelib", "inventory");
+    private final Map<LocationKey, StorageHolder> openStorages = new HashMap<>();
+
+    /** Open the storage inventory for a block. Supports multiple viewers. */
+    void openStorage(Block block, org.bukkit.entity.Player player, CustomHeadBlock type) {
+        LocationKey key = LocationKey.of(block);
+        StorageHolder holder = openStorages.get(key);
+
+        if (holder == null) {
+            // First open: deserialize from PDC or create empty
+            CustomHeadBlock.StorageConfig config = type.storage();
+            if (config == null) return;
+
+            org.bukkit.inventory.Inventory inv = createStorageInventory(config, type, block.getLocation());
+            loadInventoryFromPDC(block, inv);
+            holder = new StorageHolder(block.getLocation(), inv);
+            openStorages.put(key, holder);
+        }
+
+        player.openInventory(holder.getInventory());
+    }
+
+    /** Save storage inventory back to PDC when last viewer closes. */
+    void onStorageClosed(StorageHolder holder) {
+        LocationKey key = LocationKey.of(holder.location());
+        if (holder.getInventory().getViewers().isEmpty()) {
+            saveInventoryToPDC(holder.location(), holder.getInventory());
+            openStorages.remove(key);
+        }
+    }
+
+    /** Drop all storage contents and clean up when block is broken. */
+    void dropStorage(Block block) {
+        LocationKey key = LocationKey.of(block);
+        StorageHolder holder = openStorages.remove(key);
+
+        org.bukkit.inventory.Inventory inv;
+        if (holder != null) {
+            // Close all viewers
+            new ArrayList<>(holder.getInventory().getViewers()).forEach(
+                    v -> v.closeInventory());
+            inv = holder.getInventory();
+        } else {
+            // Load from PDC
+            CustomHeadBlock type = getTypeFromBlock(block);
+            if (type == null || type.storage() == null) return;
+            inv = createStorageInventory(type.storage(), type, block.getLocation());
+            loadInventoryFromPDC(block, inv);
+        }
+
+        // Drop all items
+        for (ItemStack item : inv.getContents()) {
+            if (item != null && item.getType() != Material.AIR) {
+                block.getWorld().dropItemNaturally(block.getLocation().add(0.5, 0.5, 0.5), item);
+            }
+        }
+    }
+
+    private org.bukkit.inventory.Inventory createStorageInventory(
+            CustomHeadBlock.StorageConfig config, CustomHeadBlock type, org.bukkit.Location loc) {
+        net.kyori.adventure.text.Component title = type.name() != null
+                ? type.name()
+                : net.kyori.adventure.text.Component.text(type.fullId());
+
+        return switch (config.layout()) {
+            case HOPPER -> Bukkit.createInventory(null, org.bukkit.event.inventory.InventoryType.HOPPER, title);
+            case DROPPER -> Bukkit.createInventory(null, org.bukkit.event.inventory.InventoryType.DROPPER, title);
+            default -> Bukkit.createInventory(null, config.layout().slots, title);
+        };
+    }
+
+    private void loadInventoryFromPDC(Block block, org.bukkit.inventory.Inventory inv) {
+        if (!(block.getState() instanceof org.bukkit.block.Skull skull)) return;
+        String data = skull.getPersistentDataContainer().get(INVENTORY_KEY, PersistentDataType.STRING);
+        if (data == null) return;
+        try {
+            byte[] bytes = java.util.Base64.getDecoder().decode(data);
+            var stream = new java.io.ByteArrayInputStream(bytes);
+            var ois = new org.bukkit.util.io.BukkitObjectInputStream(stream);
+            int size = ois.readInt();
+            for (int i = 0; i < size; i++) {
+                inv.setItem(i, (ItemStack) ois.readObject());
+            }
+            ois.close();
+        } catch (Exception e) {
+            plugin.getLogger().warning("Failed to load inventory: " + e.getMessage());
+        }
+    }
+
+    private void saveInventoryToPDC(org.bukkit.Location loc, org.bukkit.inventory.Inventory inv) {
+        Block block = loc.getBlock();
+        if (!(block.getState() instanceof org.bukkit.block.Skull skull)) return;
+        try {
+            var stream = new java.io.ByteArrayOutputStream();
+            var oos = new org.bukkit.util.io.BukkitObjectOutputStream(stream);
+            oos.writeInt(inv.getSize());
+            for (int i = 0; i < inv.getSize(); i++) {
+                oos.writeObject(inv.getItem(i));
+            }
+            oos.close();
+            String data = java.util.Base64.getEncoder().encodeToString(stream.toByteArray());
+            skull.getPersistentDataContainer().set(INVENTORY_KEY, PersistentDataType.STRING, data);
+            skull.update();
+        } catch (Exception e) {
+            plugin.getLogger().warning("Failed to save inventory: " + e.getMessage());
+        }
+    }
+
+    // ──────────────────────────────────────────────────────────────────────
     // Internal tracking records
     // ──────────────────────────────────────────────────────────────────────
 
@@ -818,6 +999,9 @@ public class CustomBlockRegistry {
     private record LocationKey(UUID worldId, int x, int y, int z) {
         static LocationKey of(Block block) {
             return new LocationKey(block.getWorld().getUID(), block.getX(), block.getY(), block.getZ());
+        }
+        static LocationKey of(org.bukkit.Location loc) {
+            return new LocationKey(loc.getWorld().getUID(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
         }
     }
 

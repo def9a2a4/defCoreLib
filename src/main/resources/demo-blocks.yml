@@ -1,21 +1,22 @@
 # DefCoreLib Demo Blocks
 # Each block exercises different features of the CustomHeadBlock system.
-# Give items with: /corelib give <id>
+# Give all items with: /defcorelib give_demo
 
 namespace: demo
 
 blocks:
 
   # ─── 1. Candle ───────────────────────────────────────────────────────
-  # Stateful: unlit/lit. Toggle with flint & steel or bare hand.
-  # Features: states, transitions, light, orientation-aware particles, sounds.
+  # Features: states, transitions, light, orientation-aware particles, sounds, recipes.
   candle:
-    name: "&fDemo Candle"
+    name: "&fCandle"
     lore:
       - "&7Right-click with flint & steel to light"
       - "&7Right-click again to extinguish"
     texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMmI3ZGJjZGE0NTRlYTdiMzhhYmM2NmNkZmVkOGU0ZTZjMDEyOTRmNmE5NjJlYzY2ZWYyMjY1MTBhZTM3MTcxYiJ9fX0="
     drops: self
+    break_sound: { sound: BLOCK_CANDLE_BREAK, volume: 1.0, pitch: 1.0 }
+    place_sound: { sound: BLOCK_CANDLE_PLACE, volume: 1.0, pitch: 1.0 }
     recipes:
       craft:
         shaped:
@@ -32,7 +33,7 @@ blocks:
     states:
       unlit: {}
       lit:
-        texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTlhYmUzMjQyZDRhN2YxNWE4OWQ0YzY4NTg3OTRkYTFlODBhOWFhNWY0NjNiOGM3ZTc5MjMzYTE3MTJlZDM2MCJ9fX0="
+        texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjFlOGQ0ZDlmNWZiMWQ4OTM3ZjhjMzA1NmY1ZTllMDU4ZTAwZmMxY2VjMTgwNDVkNDAzYjRmZDIwN2I3ZTI4NCJ9fX0="
         light: { level: 14, offset: [0, 1, 0] }
         particles:
           type: SMALL_FLAME
@@ -55,53 +56,51 @@ blocks:
         to: unlit
         sound: BLOCK_CANDLE_EXTINGUISH
 
-  # ─── 2. Pumpkin ──────────────────────────────────────────────────────
-  # Always-glowing. No states, no redstone.
-  # Features: light with no states (always on).
-  pumpkin:
-    name: "&6Demo Jack O'Lantern"
+  # ─── 2. Jack O'Lantern ──────────────────────────────────────────────
+  # Features: always-on light, no states.
+  jack_o_lantern:
+    name: "&6Jack O'Lantern"
     lore: ["&7Always glowing"]
     texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjc1MmE5YTlhZWMwZjE2MTgwYjhjYjAwMDMwNTFiYjUyOWQ3YTMyMTIwMWZlZTc3NjdhZTBjMmJhNmFmOTE0OSJ9fX0="
     drops: self
     light: { level: 14, offset: [0, 1, 0] }
+    break_sound: { sound: BLOCK_WOOD_BREAK, volume: 0.7, pitch: 1.2 }
     recipes:
       craft:
         shapeless:
-          - id: "pumpkin_from_candle"
+          - id: "lantern_from_candle"
             amount: 1
             ingredients:
               - { block: "demo:candle" }
               - { material: PUMPKIN }
       stonecutter:
-        # Head-to-head: convert a candle into a pumpkin via stonecutter custom GUI
-        - id: "pumpkin_from_candle_sc"
+        - id: "lantern_from_candle_sc"
           amount: 1
           input: { block: "demo:candle" }
 
-  # ─── 3. Workbench ────────────────────────────────────────────────────
-  # Opens crafting table GUI on right-click.
-  # Features: interactGUI.
-  workbench:
-    name: "&eDemo Workbench"
+  # ─── 3. Crafting Table ──────────────────────────────────────────────
+  # Features: interactGUI, interact sound.
+  crafting_table:
+    name: "&eMini Crafting Table"
     lore: ["&7Right-click to open crafting table"]
-    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzdlZDVlZjUzMzAwNzczNWVlNDQwZTg0ZjU1M2ViZDY4ODYxZTAyZmM1MmE1ZmY5M2MyN2I1ODQyOTdiMzUwYSJ9fX0="
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGMzNjA0NTIwOGY5YjVkZGNmOGM0NDMzZTQyNGIxY2ExN2I5NGY2Yjk2MjAyZmIxZTUyNzBlZThkNTM4ODFiMSJ9fX0="
     drops: self
     interact_gui: WORKBENCH
+    interact_sound: { sound: BLOCK_WOOD_PLACE, volume: 0.5, pitch: 1.2 }
 
-  # ─── 4. Digital Display ──────────────────────────────────────────────
-  # 16-level redstone display. Texture changes per power 0-15.
+  # ─── 4. Redstone Display ────────────────────────────────────────────
   # Features: Sensitivity.LEVEL, PowerReader.EXTENDED, per-power textures.
-  digital_display:
-    name: "&bDemo Digital Display"
+  # Uses mini_redstone_lamp texture — changes with power.
+  redstone_display:
+    name: "&bRedstone Display"
     lore: ["&7Shows redstone power 0-15", "&7Reads through walls"]
-    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGIzZmE3NjE5ZTFlZTliNGU1NmFjMDViZWI3MzAxMjc2ZGE5YTkxOGQ0MjhjZDE4Mzg4MWEzMmEwN2FjZWM4YyJ9fX0="
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYWFjMTNhMzE2YWFjOGE3MWU4NzMxMGNmYWRiY2JmMzdhNmRjNDcyZTAyNjM2NGViOWI0NTMyYjdjZmYyNjgzNiJ9fX0="
     drops: self
-
     redstone:
       sensitivity: LEVEL
       reader: EXTENDED
       textures:
-        0: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGIzZmE3NjE5ZTFlZTliNGU1NmFjMDViZWI3MzAxMjc2ZGE5YTkxOGQ0MjhjZDE4Mzg4MWEzMmEwN2FjZWM4YyJ9fX0="
+        0: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYWFjMTNhMzE2YWFjOGE3MWU4NzMxMGNmYWRiY2JmMzdhNmRjNDcyZTAyNjM2NGViOWI0NTMyYjdjZmYyNjgzNiJ9fX0="
         1: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTNmYTBhMTQ4MjIxYTQ5Y2MwOGRmZjU3ZDg3YjhhZWVlZjllZjc3MTBkMzIzMTIwNTMyYmFkMjg0NjAwNmUwMSJ9fX0="
         2: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzY2MjRlNDlkYjg3NjUyYTA0ZDNhYWIyNmU2ZWUxMWYxYTBiY2MwZDIxOTk2NDJiYTkwNWRhNDY1MDczZmZjMyJ9fX0="
         3: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDdhNTJhNGVhZWU5NzdmNGNkZGJkNmI1ODQxMGI2N2M1MzZjM2Q5MjJkMjI4ODZjZjA1ZTVhZDVhMDg3OThhNCJ9fX0="
@@ -119,35 +118,31 @@ blocks:
         15: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTNlNWEwZDIzMmJlZGUzMDI1M2NkYzMxN2FiMTIxYTc3N2Y5Yjg2NDNiZWVkZThlOGNhOGIzYjA1NDQ3NDZiMyJ9fX0="
 
   # ─── 5. Binary Indicator ─────────────────────────────────────────────
-  # On/off redstone indicator. Reads through walls.
-  # Features: Sensitivity.BINARY, PowerReader.EXTENDED, range-based textures.
+  # Features: Sensitivity.BINARY, range-based textures.
   binary_indicator:
-    name: "&cDemo Binary Indicator"
-    lore: ["&7Red=off, Green=on", "&7Reads through walls"]
-    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWY2MDY2NGI0MzQ1YmU3NWQwNGIzM2FiNzAzZjg5MjI5MDA1YTU0ZGE3ZjZmNDg1NjQ2NDQyYTdhMjkwZTc1OSJ9fX0="
+    name: "&cBinary Indicator"
+    lore: ["&7Off/On based on redstone", "&7Reads through walls"]
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYWNjNzg5ZjIzMDc5NGY5MGUzM2M0ZjlhZDAwNjk0YmMyYTJmZjVlOGI5YjM3NWRjMzUzMjQwMWIyODFmM2U1OCJ9fX0="
     drops: self
-
     redstone:
       sensitivity: BINARY
       reader: EXTENDED
       texture_ranges:
-        "0": "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWY2MDY2NGI0MzQ1YmU3NWQwNGIzM2FiNzAzZjg5MjI5MDA1YTU0ZGE3ZjZmNDg1NjQ2NDQyYTdhMjkwZTc1OSJ9fX0="
-        "1-15": "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzk1ZDFhOTY4ZDA5ODA4OGMxNGJkZGQ4NDM0MTA3OTczYmIzZGI5ZDZiMmJlN2QzZmJhMDAyNDFjNDYzZmNmNiJ9fX0="
+        "0": "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYWNjNzg5ZjIzMDc5NGY5MGUzM2M0ZjlhZDAwNjk0YmMyYTJmZjVlOGI5YjM3NWRjMzUzMjQwMWIyODFmM2U1OCJ9fX0="
+        "1-15": "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGEyNjQ4YTllNTM2MTNmMGFiMTI2NmI3MjkxOGY0MDc4OGY4NGUxNjBhNTIzNDhjZDY3MTM4NDEwMjYyZjM5ZiJ9fX0="
 
   # ─── 6. Redstone Candle ──────────────────────────────────────────────
-  # Both manual toggle AND redstone. Redstone powers it on, manual click toggles.
   # Features: combining interaction + redstone triggers on same states.
   redstone_candle:
-    name: "&dDemo Redstone Candle"
+    name: "&dRedstone Candle"
     lore: ["&7Flint & steel or redstone to light", "&7Click or remove power to extinguish"]
     texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMmI3ZGJjZGE0NTRlYTdiMzhhYmM2NmNkZmVkOGU0ZTZjMDEyOTRmNmE5NjJlYzY2ZWYyMjY1MTBhZTM3MTcxYiJ9fX0="
     drops: self
-
     default_state: unlit
     states:
       unlit: {}
       lit:
-        texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTlhYmUzMjQyZDRhN2YxNWE4OWQ0YzY4NTg3OTRkYTFlODBhOWFhNWY0NjNiOGM3ZTc5MjMzYTE3MTJlZDM2MCJ9fX0="
+        texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjFlOGQ0ZDlmNWZiMWQ4OTM3ZjhjMzA1NmY1ZTllMDU4ZTAwZmMxY2VjMTgwNDVkNDAzYjRmZDIwN2I3ZTI4NCJ9fX0="
         light: { level: 14, offset: [0, 1, 0] }
         particles:
           type: SMALL_FLAME
@@ -155,11 +150,6 @@ blocks:
           speed: 0
           interval: 5
           floor_offset: [0, 0.55, 0]
-          wall_offsets:
-            NORTH: [0, 0.8, 0.25]
-            SOUTH: [0, 0.8, -0.25]
-            EAST: [-0.25, 0.8, 0]
-            WEST: [0.25, 0.8, 0]
     transitions:
       - trigger: { type: interact, item: FLINT_AND_STEEL }
         from: unlit
@@ -180,19 +170,17 @@ blocks:
       reader: DIRECT
 
   # ─── 7. Signal Meter ─────────────────────────────────────────────────
-  # Particles scale with power. Off when unpowered, increasing dust when powered.
   # Features: Scaling on particle count/speed, states + redstone combined.
   signal_meter:
-    name: "&aDemo Signal Meter"
-    lore: ["&7Particles scale with redstone power", "&7Reads through walls"]
-    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzFkMDlhYTA3MTNjYzlhM2YzYzY4MDkyM2IxZjdiMjE2N2Y2NzMyMmZiN2U1ZjczMDE4ODEyZmVmNWZlMWEzYSJ9fX0="
+    name: "&aSignal Meter"
+    lore: ["&7Particles scale with redstone power"]
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGEyNjQ4YTllNTM2MTNmMGFiMTI2NmI3MjkxOGY0MDc4OGY4NGUxNjBhNTIzNDhjZDY3MTM4NDEwMjYyZjM5ZiJ9fX0="
     drops: self
-
     default_state: off
     states:
       off: {}
       on:
-        texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTBmODE5MDc3MGUwMjY3N2Q0NDYzODQ5ZGExNWYzZmY3NTBmYjg3YTdiMDZjYzcxN2VhZjFmYTliMzczMzdlYiJ9fX0="
+        texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzk5MzY2YTNmMjMzNTZkNDRjYjNhNzIyZjgxODdjN2QwN2JhOTc1MDFmNzZkMTVmMmIzMTFlN2ZmZTVhNGRhYyJ9fX0="
         particles:
           type: DUST
           count: { base: 2, per_power: 2 }
@@ -213,35 +201,34 @@ blocks:
       reader: EXTENDED
 
   # ─── 8. Pillar ───────────────────────────────────────────────────────
-  # Block with a display entity floating above it.
   # Features: display entities, cancel_pistons.
   pillar:
-    name: "&9Demo Pillar"
+    name: "&9Crystal Pillar"
     lore: ["&7Block with floating display entity", "&7Cannot be pushed by pistons"]
-    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzdlZDVlZjUzMzAwNzczNWVlNDQwZTg0ZjU1M2ViZDY4ODYxZTAyZmM1MmE1ZmY5M2MyN2I1ODQyOTdiMzUwYSJ9fX0="
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzNmYjdjOTJmZTE2NDlkNzZjNGFkOTc5ZWZjZDJjNDYwYjJlOTBiMjMyMGEyMzNlZjg1MTMzZGQ1NmJlZDg2YSJ9fX0="
     drops: self
     cancel_pistons: true
+    break_sound: { sound: BLOCK_AMETHYST_BLOCK_BREAK, volume: 1.0, pitch: 1.0 }
+    place_sound: { sound: BLOCK_AMETHYST_BLOCK_PLACE, volume: 1.0, pitch: 1.0 }
     display_entities:
-      - texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjU0OGJhYjNjNDhkYzg1ZWQzMzI4YWQ4YWM4NzE5ZDBjMTM0ODM5NzFkODE4ZWU2ZDIwOTc0ZDkxYTZlYjVlZiJ9fX0="
+      - texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvM2Y0ODc2YjZhNWQ2ZGQ3ODVlMDkxZmQxMzRhMjFjOTFkMGE5Y2FjNWE2MjJlNDQ4YjVmZmNiNjVlZjQ1Mjc4In19fQ=="
         tag: top
         transform:
           translation: [0, 0.35, 0]
           scale: [0.6, 0.6, 0.6]
 
   # ─── 9. Alarm ────────────────────────────────────────────────────────
-  # 3-state cycle: off → alert → panic → off.
-  # Each state has different visuals. Panic adds light + heavy particles.
-  # Features: multi-state cycling, transition particles, transition sounds.
+  # Features: multi-state cycling, transition particles, transition sounds with volume/pitch.
   alarm:
-    name: "&cDemo Alarm"
+    name: "&cAlarm"
     lore: ["&7Right-click to cycle: off -> alert -> panic -> off"]
-    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWY2MDY2NGI0MzQ1YmU3NWQwNGIzM2FiNzAzZjg5MjI5MDA1YTU0ZGE3ZjZmNDg1NjQ2NDQyYTdhMjkwZTc1OSJ9fX0="
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYWNjNzg5ZjIzMDc5NGY5MGUzM2M0ZjlhZDAwNjk0YmMyYTJmZjVlOGI5YjM3NWRjMzUzMjQwMWIyODFmM2U1OCJ9fX0="
     drops: self
     default_state: off
     states:
       off: {}
       alert:
-        texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzk1ZDFhOTY4ZDA5ODA4OGMxNGJkZGQ4NDM0MTA3OTczYmIzZGI5ZDZiMmJlN2QzZmJhMDAyNDFjNDYzZmNmNiJ9fX0="
+        texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjI2MmU3MDljNzlkNTM4MzI4MTUyOWQ0MDc0Yzk2N2ZhNDAzNDBmN2YyNmY5ODY3ZmFhZTkwZDM1MTc3NzQzZSJ9fX0="
         particles:
           type: ENTITY_EFFECT
           color: [255, 200, 0]
@@ -250,7 +237,7 @@ blocks:
           interval: 10
           floor_offset: [0, 0.8, 0]
       panic:
-        texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTBmODE5MDc3MGUwMjY3N2Q0NDYzODQ5ZGExNWYzZmY3NTBmYjg3YTdiMDZjYzcxN2VhZjFmYTliMzczMzdlYiJ9fX0="
+        texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWI3NzE5OGI2YzcwMDM2ZmU0YWMzNTk2MWFlMDcxZGMzY2RkMDE3NmVhMzdmMDkxMzU4MmEwMTVlMGIzNzNjMCJ9fX0="
         light: { level: 15, offset: [0, 1, 0] }
         particles:
           type: ENTITY_EFFECT
@@ -264,10 +251,14 @@ blocks:
         from: off
         to: alert
         sound: BLOCK_NOTE_BLOCK_BELL
+        volume: 0.8
+        pitch: 1.5
       - trigger: { type: interact }
         from: alert
         to: panic
         sound: ENTITY_WARDEN_ANGRY
+        volume: 0.6
+        pitch: 1.0
       - trigger: { type: interact }
         from: panic
         to: off
@@ -275,14 +266,12 @@ blocks:
         particle: { type: LARGE_SMOKE, count: 10, spread: 0.3 }
 
   # ─── 10. Enchanting Pedestal ─────────────────────────────────────────
-  # Opens enchanting GUI + always-on soul flame particles.
-  # Features: interactGUI combined with always-on particles.
+  # Features: interactGUI + always-on particles.
   enchant_pedestal:
-    name: "&5Demo Enchanting Pedestal"
+    name: "&5Enchanting Pedestal"
     lore: ["&7Right-click to enchant", "&7Soul fire particles"]
-    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjc1MmE5YTlhZWMwZjE2MTgwYjhjYjAwMDMwNTFiYjUyOWQ3YTMyMTIwMWZlZTc3NjdhZTBjMmJhNmFmOTE0OSJ9fX0="
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzQ4MmQxYmE0YmRhYzk5MGY2ZWE5ODc3MDM1ODdmZDc5ZmU1NTU1NTM2MzI1MTk4NDY3OWQ0ZjI3OWNjMGMyYSJ9fX0="
     drops: self
-
     interact_gui: ENCHANTING
     particles:
       type: SOUL_FIRE_FLAME
@@ -290,3 +279,24 @@ blocks:
       speed: 0
       interval: 8
       floor_offset: [0, 0.9, 0]
+
+  # ─── 11. Storage Barrel ──────────────────────────────────────────────
+  # Features: custom inventory (3-row chest layout), multi-player, PDC persistence.
+  storage_barrel:
+    name: "&6Storage Barrel"
+    lore: ["&7Right-click to open storage", "&73 rows of inventory"]
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjg4NGFkYTRjNzRjMGY5NjE0NjkyNjJkOTU2OTc3YmFmYjBiMmQ3ZmVkOWM3YmRmMzVmNDUxOTllOWY2ZGRiYiJ9fX0="
+    drops: self
+    storage: { layout: CHEST_3ROW }
+    interact_sound: { sound: BLOCK_BARREL_OPEN, volume: 1.0, pitch: 1.0 }
+    break_sound: { sound: BLOCK_WOOD_BREAK, volume: 0.7, pitch: 1.0 }
+
+  # ─── 12. Hopper Crate ───────────────────────────────────────────────
+  # Features: hopper-style inventory (5 slots), different layout.
+  hopper_crate:
+    name: "&7Hopper Crate"
+    lore: ["&7Right-click to open", "&75-slot hopper layout"]
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODAxYjUwMzhiZDE3M2I4ZjE4MDYyZWQyMmJjOGNjOTdlODBiYmZmNWY4OTM3YjExMzJlYjg2NTU1ZWM2YjA3NCJ9fX0="
+    drops: self
+    storage: { layout: HOPPER }
+    interact_sound: { sound: BLOCK_IRON_TRAPDOOR_OPEN, volume: 0.5, pitch: 1.5 }

@@ -147,11 +147,22 @@ public final class CustomHeadBlock {
     /** An item to drop. */
     public record ItemDrop(Material material, int amount) {}
 
+    /** Sound effect with volume and pitch. */
+    public record SoundConfig(Sound sound, float volume, float pitch) {}
+
     /** Placement restrictions. */
     public record PlacementConfig(Set<BlockFace> allowedFaces, boolean requireSolid) {}
 
+    /** Inventory layout for storage blocks. */
+    public enum InventoryLayout {
+        CHEST_1ROW(9), CHEST_2ROW(18), CHEST_3ROW(27), CHEST_4ROW(36), CHEST_5ROW(45), CHEST_6ROW(54),
+        DROPPER(9), HOPPER(5);
+        public final int slots;
+        InventoryLayout(int slots) { this.slots = slots; }
+    }
+
     /** Storage (custom inventory) configuration. */
-    public record StorageConfig(int slots) {}
+    public record StorageConfig(InventoryLayout layout) {}
 
     // ── Recipe records ───────────────────────────────────────────────────
 
@@ -210,6 +221,10 @@ public final class CustomHeadBlock {
     private final @Nullable PlacementConfig placement;
     private final List<DropRule> dropRules;
     private final boolean cancelPistons;
+    private final @Nullable SoundConfig placeSound;
+    private final @Nullable SoundConfig breakSound;
+    private final @Nullable SoundConfig interactSound;
+    private final @Nullable String unlockAdvancement;
 
     private final boolean reactsToNeighbors;
     private final @Nullable Integer tickInterval;
@@ -251,6 +266,10 @@ public final class CustomHeadBlock {
         this.placement = b.placement;
         this.dropRules = List.copyOf(b.dropRules);
         this.cancelPistons = b.cancelPistons;
+        this.placeSound = b.placeSound;
+        this.breakSound = b.breakSound;
+        this.interactSound = b.interactSound;
+        this.unlockAdvancement = b.unlockAdvancement;
 
         this.reactsToNeighbors = b.reactsToNeighbors;
         this.tickInterval = b.tickInterval;
@@ -294,6 +313,10 @@ public final class CustomHeadBlock {
     public @Nullable PlacementConfig placement() { return placement; }
     public List<DropRule> dropRules() { return dropRules; }
     public boolean cancelPistons() { return cancelPistons; }
+    public @Nullable SoundConfig placeSound() { return placeSound; }
+    public @Nullable SoundConfig breakSound() { return breakSound; }
+    public @Nullable SoundConfig interactSound() { return interactSound; }
+    public @Nullable String unlockAdvancement() { return unlockAdvancement; }
 
     public boolean reactsToNeighbors() { return reactsToNeighbors; }
     public @Nullable Integer tickInterval() { return tickInterval; }
@@ -456,6 +479,10 @@ public final class CustomHeadBlock {
         private @Nullable PlacementConfig placement;
         private final List<DropRule> dropRules = new ArrayList<>();
         private boolean cancelPistons;
+        private @Nullable SoundConfig placeSound;
+        private @Nullable SoundConfig breakSound;
+        private @Nullable SoundConfig interactSound;
+        private @Nullable String unlockAdvancement;
 
         private boolean reactsToNeighbors;
         private @Nullable Integer tickInterval;
@@ -492,10 +519,14 @@ public final class CustomHeadBlock {
         public Builder shapelessRecipe(ShapelessRecipeDef recipe) { this.shapelessRecipes.add(recipe); return this; }
         public Builder stonecutterRecipe(StonecutterRecipeDef recipe) { this.stonecutterRecipes.add(recipe); return this; }
         public Builder interactGUI(InteractGUI gui) { this.interactGUI = gui; return this; }
-        public Builder storage(int slots) { this.storage = new StorageConfig(slots); return this; }
+        public Builder storage(InventoryLayout layout) { this.storage = new StorageConfig(layout); return this; }
         public Builder placement(PlacementConfig config) { this.placement = config; return this; }
         public Builder drops(DropRule... rules) { this.dropRules.addAll(List.of(rules)); return this; }
         public Builder cancelPistons(boolean cancel) { this.cancelPistons = cancel; return this; }
+        public Builder placeSound(SoundConfig sound) { this.placeSound = sound; return this; }
+        public Builder breakSound(SoundConfig sound) { this.breakSound = sound; return this; }
+        public Builder interactSound(SoundConfig sound) { this.interactSound = sound; return this; }
+        public Builder unlockAdvancement(String advancement) { this.unlockAdvancement = advancement; return this; }
 
         public Builder reactsToNeighbors(boolean reacts) { this.reactsToNeighbors = reacts; return this; }
         public Builder tickInterval(int ticks) { this.tickInterval = Math.max(1, ticks); return this; }
