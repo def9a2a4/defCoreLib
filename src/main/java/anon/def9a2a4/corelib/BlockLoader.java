@@ -391,9 +391,19 @@ public final class BlockLoader {
             if (tObj instanceof Map<?, ?> tMap) {
                 Vector3f translation = parseVector3f(tMap.get("translation"), new Vector3f(0, 0, 0));
                 Vector3f scale = parseVector3f(tMap.get("scale"), new Vector3f(1, 1, 1));
+                // left_rotation: [angle_degrees, axis_x, axis_y, axis_z]
+                AxisAngle4f leftRotation = new AxisAngle4f(0, 0, 0, 1);
+                Object lrObj = tMap.get("left_rotation");
+                if (lrObj instanceof List<?> lr && lr.size() >= 4) {
+                    leftRotation = new AxisAngle4f(
+                            (float) Math.toRadians(toDouble(lr.get(0), 0)),
+                            (float) toDouble(lr.get(1), 0),
+                            (float) toDouble(lr.get(2), 0),
+                            (float) toDouble(lr.get(3), 0));
+                }
                 transform = new Transformation(
                         translation,
-                        new AxisAngle4f(0, 0, 0, 1),
+                        leftRotation,
                         scale,
                         new AxisAngle4f(0, 0, 0, 1));
             } else {

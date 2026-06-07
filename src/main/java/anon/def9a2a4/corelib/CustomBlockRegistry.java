@@ -142,12 +142,13 @@ public class CustomBlockRegistry {
     // ──────────────────────────────────────────────────────────────────────
 
     /** Write block type and initial state to a placed skull's PDC. */
-    public void markBlock(Block block, CustomHeadBlock type) {
+    public void markBlock(Block block, CustomHeadBlock type, @Nullable String initialState) {
         if (!(block.getState() instanceof Skull skull)) return;
         PersistentDataContainer pdc = skull.getPersistentDataContainer();
         pdc.set(BLOCK_TYPE_KEY, PersistentDataType.STRING, type.fullId());
-        if (type.defaultState() != null) {
-            pdc.set(STATE_KEY, PersistentDataType.STRING, type.defaultState());
+        String effectiveState = initialState != null ? initialState : type.defaultState();
+        if (effectiveState != null) {
+            pdc.set(STATE_KEY, PersistentDataType.STRING, effectiveState);
         }
         skull.update();
         customBlockLocations.add(LocationKey.of(block));

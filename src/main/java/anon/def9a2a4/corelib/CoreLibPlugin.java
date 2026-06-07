@@ -129,16 +129,7 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
             }
         }
 
-        // Write PDC to the placed skull
-        registry.markBlock(block, type);
-
-        // Play place sound
-        if (type.placeSound() != null) {
-            var s = type.placeSound();
-            block.getWorld().playSound(block.getLocation().add(0.5, 0.5, 0.5), s.sound(), s.volume(), s.pitch());
-        }
-
-        // Apply initial config — use placement face to pick starting state if mapped
+        // Resolve initial state (placement face may override default)
         String resolvedState = type.defaultState();
         var psm = type.placementStateMap();
         if (psm != null) {
@@ -146,6 +137,15 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
             if (mapped != null) resolvedState = mapped;
         }
         final String state = resolvedState;
+
+        // Write PDC to the placed skull (with correct initial state)
+        registry.markBlock(block, type, state);
+
+        // Play place sound
+        if (type.placeSound() != null) {
+            var s = type.placeSound();
+            block.getWorld().playSound(block.getLocation().add(0.5, 0.5, 0.5), s.sound(), s.volume(), s.pitch());
+        }
         int power = type.sensitivity() != CustomHeadBlock.Sensitivity.NONE ? registry.readPower(block, type) : 0;
 
         // Schedule for next tick to ensure block state is fully initialized
