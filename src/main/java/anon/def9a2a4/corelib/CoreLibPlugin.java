@@ -33,12 +33,15 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
 
     private static CoreLibPlugin instance;
     private CustomBlockRegistry registry;
+    private MechanismRegistry mechanismRegistry;
 
     @Override
     public void onEnable() {
         instance = this;
         registry = new CustomBlockRegistry(this);
         registry.startTasks();
+        mechanismRegistry = new MechanismRegistry(this, registry);
+        mechanismRegistry.startTasks();
         getServer().getPluginManager().registerEvents(this, this);
 
         // Load demo blocks from YAML
@@ -49,6 +52,9 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
             }
         } catch (IOException ignored) {}
 
+        // Register door demo (mechanism system demo)
+        new DoorDemo(this, registry, mechanismRegistry).register();
+
         // Register recipes after all blocks are loaded
         registry.finalizeLoading();
 
@@ -57,6 +63,9 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
 
     @Override
     public void onDisable() {
+        if (mechanismRegistry != null) {
+            mechanismRegistry.shutdown();
+        }
         if (registry != null) {
             registry.shutdown();
         }
@@ -69,6 +78,10 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
 
     public CustomBlockRegistry getRegistry() {
         return registry;
+    }
+
+    public MechanismRegistry getMechanismRegistry() {
+        return mechanismRegistry;
     }
 
     // ──────────────────────────────────────────────────────────────────────
@@ -721,6 +734,58 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
             CustomHeadBlock type = registry.getTypeFromBlock(neighbor);
             if (type != null && type.onNeighborChange() != null) {
                 type.onNeighborChange().accept(neighbor, face.getOppositeFace());
+            }
+        }
+    }
+
+    // ──────────────────────────────────────────────────────────────────────
+    // Mechanism entity protection + interaction
+    // ──────────────────────────────────────────────────────────────────────
+
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    public void onEntityDamage(org.bukkit.event.entity.EntityDamageEvent event) {
+        for (String tag : event.getEntity().getScoreboardTags()) {
+            if (tag.startsWith("corelib:mech:")) {
+                event.setCancelled(true);
+                return;
+            }
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGH)
+    public void onEntityInteract(org.bukkit.event.player.PlayerInteractEntityEvent event) {
+        if (!(event.getRightClicked() instanceof org.bukkit.entity.Shulker shulker)) return;
+        MechanismRegistry.ColliderRef ref = mechanismRegistry.getColliderRef(shulker);
+        if (ref == null) return;
+
+        event.setCancelled(true);
+        Mechanism mech = ref.mechanism();
+        int blockIndex = ref.blockIndex();
+        MechanismBlockData mb = mech.getBlock(blockIndex);
+
+        // Storage access
+        if (mb.storage() != null) {
+            event.getPlayer().openInventory(mb.storage());
+            return;
+        }
+
+        // Custom block state transitions (interact trigger)
+        if (mb.customTypeId == null) return;
+        CustomHeadBlock type = registry.getType(mb.customTypeId);
+        if (type == null) return;
+
+        String currentState = mb.customState();
+        if (currentState == null) return;
+
+        var trigger = new CustomHeadBlock.Trigger.Interact(
+            event.getPlayer().getInventory().getItemInMainHand().getType() == Material.AIR
+                ? null : event.getPlayer().getInventory().getItemInMainHand().getType());
+        var transition = type.findTransition(trigger, currentState);
+        if (transition != null) {
+            mech.setBlockState(blockIndex, transition.toState());
+            if (transition.sound() != null) {
+                shulker.getWorld().playSound(shulker.getLocation(),
+                    transition.sound(), transition.volume(), transition.pitch());
             }
         }
     }
