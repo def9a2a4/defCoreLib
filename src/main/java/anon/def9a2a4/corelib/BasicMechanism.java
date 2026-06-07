@@ -6,7 +6,6 @@ import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.block.Block;
 import org.bukkit.block.Container;
-import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Display;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.ItemDisplay;
@@ -27,29 +26,31 @@ import java.util.UUID;
  */
 final class BasicMechanism implements Mechanism {
 
-    // Compensates for ArmorStand passenger riding offset (entity height).
-    // Matches BlockShips' customDisplayOffset. Empirically tuned.
-    static final float RIDE_OFFSET = 1.975f;
-
     private final UUID id;
     private final String type;
     private Location pivot;
     private float currentYaw = 0f;
     private Matrix4f currentTransform = new Matrix4f(); // identity
 
-    final ArmorStand vehicle;
+    final Entity vehicle;
+    final float rideOffset; // passenger riding offset — varies by vehicle entity type
     final List<List<Display>> displaysPerBlock;
     final List<ColliderPair> colliders;
     final List<MechanismBlockData> blocks;
     final CustomBlockRegistry registry;
     final @Nullable MechanismSerializer serializer;
     final long startTick;
+    final boolean ownsVehicle; // true if we spawned it (should remove on destroy)
+
+    // Auto-follow: track vehicle movement for passive vehicles (minecarts on rails)
+    private Location previousVehicleLoc;
+    private float previousVehicleYaw;
 
     // Back-reference set by MechanismRegistry after construction
     MechanismRegistry mechanismRegistry;
 
     BasicMechanism(UUID id, String type, Location pivot,
-                   ArmorStand vehicle,
+                   Entity vehicle, float rideOffset, boolean ownsVehicle,
                    List<List<Display>> displaysPerBlock,
                    List<ColliderPair> colliders,
                    List<MechanismBlockData> blocks,
@@ -59,12 +60,16 @@ final class BasicMechanism implements Mechanism {
         this.type = type;
         this.pivot = pivot;
         this.vehicle = vehicle;
+        this.rideOffset = rideOffset;
+        this.ownsVehicle = ownsVehicle;
         this.displaysPerBlock = displaysPerBlock;
         this.colliders = colliders;
         this.blocks = blocks;
         this.registry = registry;
         this.serializer = serializer;
         this.startTick = Bukkit.getServer().getCurrentTick();
+        this.previousVehicleLoc = pivot.clone();
+        this.previousVehicleYaw = 0f;
     }
 
     // ──────────────────────────────────────────────────────────────────────
@@ -103,11 +108,20 @@ final class BasicMechanism implements Mechanism {
         for (int i = 0; i < blocks.size(); i++) {
             MechanismBlockData mb = blocks.get(i);
             Matrix4f dm = new Matrix4f(rot).mul(mb.localTransform);
-            dm.m31(dm.m31() - RIDE_OFFSET); // compensate ArmorStand passenger riding offset
+            dm.m31(dm.m31() - rideOffset); // compensate vehicle passenger riding offset
 
-            // Primary display (index 0)
+            // Primary display (index 0): BlockDisplay uses corner rendering (-0.5 XZ),
+            // ItemDisplay uses center rendering (no XZ shift)
             List<Display> group = displaysPerBlock.get(i);
-            group.get(0).setTransformationMatrix(dm);
+            Display primary = group.get(0);
+            if (primary instanceof org.bukkit.entity.BlockDisplay) {
+                Matrix4f bdm = new Matrix4f(dm);
+                bdm.m30(bdm.m30() - 0.5f);
+                bdm.m32(bdm.m32() - 0.5f);
+                primary.setTransformationMatrix(bdm);
+            } else {
+                primary.setTransformationMatrix(dm);
+            }
 
             // Additional displays: rot * localTransform * decTransform
             // Skip animated ones — tickMechanisms() handles those
@@ -181,6 +195,8 @@ final class BasicMechanism implements Mechanism {
             MechanismBlockData mb = blocks.get(i);
             Vector3f worldOffset = rotation.transformPosition(
                 mb.localTransform.getTranslation(new Vector3f()), new Vector3f());
+            // localTransform uses center-to-center offsets (integers after rotation).
+            // Use Math.round to handle floating-point epsilon from trig (e.g., 1.9999999f → 2).
             Location blockLoc = pivot.clone().add(
                 Math.round(worldOffset.x), Math.round(worldOffset.y), Math.round(worldOffset.z));
             Block target = blockLoc.getBlock();
@@ -259,7 +275,33 @@ final class BasicMechanism implements Mechanism {
             cp.carrier().remove();
             cp.shulker().remove();
         }
-        vehicle.remove();
+        if (ownsVehicle) {
+            vehicle.remove();
+        } else {
+            // Eject display passengers from the vehicle without removing it
+            for (var group : displaysPerBlock) {
+                for (Display d : group) vehicle.removePassenger(d);
+            }
+        }
+    }
+
+    /**
+     * Check if the vehicle has moved/rotated since last tick and update transforms.
+     * Used for passive vehicles (minecarts on rails) that move on their own.
+     * For consumer-driven mechanisms (door demo), the vehicle stays put and this is a no-op.
+     */
+    void updateFromVehicle() {
+        if (!vehicle.isValid()) return;
+        Location loc = vehicle.getLocation();
+        float yaw = loc.getYaw();
+        double distSq = loc.distanceSquared(previousVehicleLoc);
+        boolean moved = distSq > 0.0001 || Math.abs(yaw - previousVehicleYaw) > 0.1f;
+        if (!moved) return;
+
+        this.pivot = loc.clone();
+        rotate(yaw);
+        previousVehicleLoc = loc.clone();
+        previousVehicleYaw = yaw;
     }
 
     Matrix4f currentTransform() { return currentTransform; }

@@ -8,6 +8,7 @@ import org.bukkit.block.Container;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.BlockDisplay;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Display;
 import org.bukkit.entity.ItemDisplay;
 import org.bukkit.entity.Shulker;
@@ -47,18 +48,52 @@ public class MechanismRegistry {
     // Assembly
     // ──────────────────────────────────────────────────────────────────────
 
+    /** Default ride offset for ArmorStand vehicles. Empirically tuned (matches BlockShips). */
+    public static final float ARMORSTAND_RIDE_OFFSET = 1.975f;
+
+    /**
+     * Assemble a mechanism from world blocks, spawning a new ArmorStand as the vehicle.
+     */
     public Mechanism assembleMechanism(String type, List<Block> blocks, Location pivot,
                                        @Nullable MechanismSerializer serializer) {
         UUID mechId = UUID.randomUUID();
+        ArmorStand vehicle = pivot.getWorld().spawn(pivot, ArmorStand.class, as -> {
+            as.setInvisible(true); as.setGravity(false); as.setSilent(true);
+            as.setPersistent(true); as.setRotation(0, 0);
+            as.addScoreboardTag("corelib:mech:" + mechId + ":vehicle");
+        });
+        return assembleCore(mechId, type, blocks, pivot, vehicle, ARMORSTAND_RIDE_OFFSET,
+            true, serializer);
+    }
+
+    /**
+     * Assemble a mechanism from world blocks, using an existing entity as the vehicle.
+     * The caller retains ownership of the vehicle entity (it won't be removed on disassemble).
+     */
+    public Mechanism assembleMechanism(String type, List<Block> blocks, Entity existingVehicle,
+                                       float rideOffset, @Nullable MechanismSerializer serializer) {
+        UUID mechId = UUID.randomUUID();
+        Location pivot = existingVehicle.getLocation();
+        existingVehicle.addScoreboardTag("corelib:mech:" + mechId + ":vehicle");
+        return assembleCore(mechId, type, blocks, pivot, existingVehicle, rideOffset,
+            false, serializer);
+    }
+
+    private Mechanism assembleCore(UUID mechId, String type, List<Block> blocks, Location pivot,
+                                    Entity vehicle, float rideOffset, boolean ownsVehicle,
+                                    @Nullable MechanismSerializer serializer) {
         List<MechanismBlockData> blockData = new ArrayList<>();
 
         // 1. Snapshot each block
         for (Block block : blocks) {
             BlockData bd = block.getBlockData();
+            // Center-to-center offset: always integers for grid-aligned blocks + centered pivot.
+            // Using block center (X+0.5, Z+0.5) minus pivot (which is also at +0.5 in XZ).
+            // This ensures rotation by 90° multiples produces exact integers (no rounding needed).
             Matrix4f local = new Matrix4f().translation(
-                block.getX() - (float) pivot.getX(),
+                (block.getX() + 0.5f) - (float) pivot.getX(),
                 block.getY() - (float) pivot.getY(),
-                block.getZ() - (float) pivot.getZ());
+                (block.getZ() + 0.5f) - (float) pivot.getZ());
 
             String customType = null, customState = null;
             List<CustomHeadBlock.DisplayEntityConfig> decs = null;
@@ -101,18 +136,8 @@ public class MechanismRegistry {
             if (b.getType() != Material.AIR) b.setType(Material.AIR, false);
         }
 
-        // 3. Spawn entities — displays at Y+2.5 to avoid 1-tick ground flash
+        // 3. Spawn display + collider entities
         Location spawnLoc = pivot.clone().add(0, 2.5, 0);
-
-        ArmorStand vehicle = pivot.getWorld().spawn(pivot, ArmorStand.class, as -> {
-            as.setInvisible(true); as.setGravity(false); as.setSilent(true);
-            as.setPersistent(true); as.setRotation(0, 0);
-            as.addScoreboardTag("corelib:mech:" + mechId + ":vehicle");
-        });
-
-        // No parent intermediary — displays mount directly on vehicle.
-        // This avoids stacking riding offsets (parent-on-vehicle + display-on-parent).
-
         List<List<Display>> displaysPerBlock = new ArrayList<>();
         List<ColliderPair> colliders = new ArrayList<>();
 
@@ -150,10 +175,9 @@ public class MechanismRegistry {
             }
             displaysPerBlock.add(group);
 
-            // Collider: carrier ArmorStand + Shulker passenger
+            // Collider: marker ArmorStand carrier + Shulker passenger
             if (mb.hasCollision) {
                 final int blockIdx = i;
-                // Compute initial carrier position (same math as rotate())
                 Vector3f initOff = mb.localTransform.getTranslation(new Vector3f());
                 Location carrierLoc = pivot.clone().add(initOff.x, initOff.y, initOff.z);
 
@@ -172,21 +196,20 @@ public class MechanismRegistry {
                     s.addScoreboardTag("corelib:mech:" + mechId + ":" + blockIdx + ":collider");
                 });
                 carrier.addPassenger(shulker);
-                ColliderPair cp = new ColliderPair(carrier, shulker, i);
-                colliders.add(cp);
+                colliders.add(new ColliderPair(carrier, shulker, i));
             }
         }
 
         // 4. Create mechanism, register colliders
-        BasicMechanism mech = new BasicMechanism(mechId, type, pivot, vehicle,
-            displaysPerBlock, colliders, blockData, registry, serializer);
+        BasicMechanism mech = new BasicMechanism(mechId, type, pivot, vehicle, rideOffset,
+            ownsVehicle, displaysPerBlock, colliders, blockData, registry, serializer);
         mech.mechanismRegistry = this;
 
         for (ColliderPair cp : colliders) {
             colliderIndex.put(cp.shulker().getUniqueId(), new ColliderRef(mech, cp.blockIndex()));
         }
 
-        // 5. 1-tick delay: mount displays directly on vehicle, set initial transforms
+        // 5. 1-tick delay: mount displays on vehicle, set initial transforms
         Bukkit.getScheduler().runTaskLater(plugin, () -> {
             for (var group : displaysPerBlock) {
                 for (Display d : group) vehicle.addPassenger(d);
@@ -219,6 +242,9 @@ public class MechanismRegistry {
     private void tickMechanisms() {
         long currentTick = Bukkit.getServer().getCurrentTick();
         for (BasicMechanism mech : activeMechanisms.values()) {
+            // Auto-follow: update transforms if vehicle moved (e.g., minecart on rails)
+            mech.updateFromVehicle();
+
             for (int i = 0; i < mech.blockCount(); i++) {
                 List<Display> displays = mech.displaysPerBlock.get(i);
                 if (displays.isEmpty() || !displays.get(0).isValid()) continue;
@@ -238,7 +264,8 @@ public class MechanismRegistry {
                         Matrix4f base = new Matrix4f(mech.currentTransform())
                             .mul(mb.localTransform)
                             .mul(BasicMechanism.transformToMatrix(dec.transform()));
-                        base.m31(base.m31() - BasicMechanism.RIDE_OFFSET);
+                        // Additional displays are always ItemDisplay (center-rendered) — no XZ shift
+                        base.m31(base.m31() - mech.rideOffset);
                         long tickAge = currentTick - mech.startTick;
                         dec.animation().apply(base, tickAge, workMatrix);
                         display.setTransformationMatrix(workMatrix);
