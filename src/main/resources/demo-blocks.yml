@@ -441,108 +441,127 @@ blocks:
     default_state: floor_stopped
     placement_state_map:
       DOWN: floor_stopped
-      NORTH: wall_ns_stopped
-      SOUTH: wall_ns_stopped
-      EAST: wall_ew_stopped
-      WEST: wall_ew_stopped
+      NORTH: wall_n_stopped
+      SOUTH: wall_s_stopped
+      EAST: wall_e_stopped
+      WEST: wall_w_stopped
     states:
-      # Uniform scale [1,1,1] = proportional mini-banner (2x prev size, not paper-thin).
-      # Each blade's left_rotation maps banner height (model Y) to radial direction,
-      # and banner face (model Z) to the correct outward direction.
-      # ── Floor: banners lay flat (face up), extend radially in XZ, spin around Y
+      # Scale 0.75 = 75% of normal banner. LR rotations derived from wall_n (reference).
+      # Floor: composed R_X(90°) with wall_n LRs (flips face to visual-up via Y-inversion).
+      # wall_s: composed R_Y(180°) with wall_n LRs (flips face from +Z to -Z).
+      # wall_w: same as old wall_ew (face +X). wall_e: composed R_Y(180°) (face -X).
+      # ── Floor: banners lay flat (face up), extend radially in XZ, spin around Y ──
       floor_stopped:
         display_entities:
-          - { material: WHITE_BANNER, tag: blade_a, transform: { translation: [0.5, 0.55, 0],   scale: [1, 1, 1], left_rotation: [-120, 1, 1, 1] } }
-          - { material: WHITE_BANNER, tag: blade_b, transform: { translation: [0, 0.55, 0.5],   scale: [1, 1, 1], left_rotation: [180, 0, 1, 1] } }
-          - { material: WHITE_BANNER, tag: blade_c, transform: { translation: [-0.5, 0.55, 0],  scale: [1, 1, 1], left_rotation: [-120, 1, -1, -1] } }
-          - { material: WHITE_BANNER, tag: blade_d, transform: { translation: [0, 0.55, -0.5],  scale: [1, 1, 1], left_rotation: [-90, 1, 0, 0] } }
+          - { material: WHITE_BANNER, tag: blade_a, transform: { translation: [0.375, 0.55, 0],    scale: [0.75, 0.75, 0.75], left_rotation: [120, 1, 1, -1] } }
+          - { material: WHITE_BANNER, tag: blade_b, transform: { translation: [0, 0.55, 0.375],    scale: [0.75, 0.75, 0.75], left_rotation: [90, 1, 0, 0] } }
+          - { material: WHITE_BANNER, tag: blade_c, transform: { translation: [-0.375, 0.55, 0],   scale: [0.75, 0.75, 0.75], left_rotation: [120, 1, -1, 1] } }
+          - { material: WHITE_BANNER, tag: blade_d, transform: { translation: [0, 0.55, -0.375],   scale: [0.75, 0.75, 0.75], left_rotation: [180, 0, 1, -1] } }
       floor_slow:
         display_entities:
-          - { material: WHITE_BANNER, tag: blade_a, transform: { translation: [0.5, 0.55, 0],   scale: [1, 1, 1], left_rotation: [-120, 1, 1, 1] },     animation: { type: rotate, axis: [0,1,0], speed: 1.5 }, interpolation: 2 }
-          - { material: WHITE_BANNER, tag: blade_b, transform: { translation: [0, 0.55, 0.5],   scale: [1, 1, 1], left_rotation: [180, 0, 1, 1] },      animation: { type: rotate, axis: [0,1,0], speed: 1.5 }, interpolation: 2 }
-          - { material: WHITE_BANNER, tag: blade_c, transform: { translation: [-0.5, 0.55, 0],  scale: [1, 1, 1], left_rotation: [-120, 1, -1, -1] },    animation: { type: rotate, axis: [0,1,0], speed: 1.5 }, interpolation: 2 }
-          - { material: WHITE_BANNER, tag: blade_d, transform: { translation: [0, 0.55, -0.5],  scale: [1, 1, 1], left_rotation: [-90, 1, 0, 0] },       animation: { type: rotate, axis: [0,1,0], speed: 1.5 }, interpolation: 2 }
+          - { material: WHITE_BANNER, tag: blade_a, transform: { translation: [0.375, 0.55, 0],    scale: [0.75, 0.75, 0.75], left_rotation: [120, 1, 1, -1] },  animation: { type: rotate, axis: [0,1,0], speed: 1.5 }, interpolation: 2 }
+          - { material: WHITE_BANNER, tag: blade_b, transform: { translation: [0, 0.55, 0.375],    scale: [0.75, 0.75, 0.75], left_rotation: [90, 1, 0, 0] },   animation: { type: rotate, axis: [0,1,0], speed: 1.5 }, interpolation: 2 }
+          - { material: WHITE_BANNER, tag: blade_c, transform: { translation: [-0.375, 0.55, 0],   scale: [0.75, 0.75, 0.75], left_rotation: [120, 1, -1, 1] }, animation: { type: rotate, axis: [0,1,0], speed: 1.5 }, interpolation: 2 }
+          - { material: WHITE_BANNER, tag: blade_d, transform: { translation: [0, 0.55, -0.375],   scale: [0.75, 0.75, 0.75], left_rotation: [180, 0, 1, -1] }, animation: { type: rotate, axis: [0,1,0], speed: 1.5 }, interpolation: 2 }
       floor_fast:
         display_entities:
-          - { material: WHITE_BANNER, tag: blade_a, transform: { translation: [0.5, 0.55, 0],   scale: [1, 1, 1], left_rotation: [-120, 1, 1, 1] },     animation: { type: rotate, axis: [0,1,0], speed: 5.0 }, interpolation: 1 }
-          - { material: WHITE_BANNER, tag: blade_b, transform: { translation: [0, 0.55, 0.5],   scale: [1, 1, 1], left_rotation: [180, 0, 1, 1] },      animation: { type: rotate, axis: [0,1,0], speed: 5.0 }, interpolation: 1 }
-          - { material: WHITE_BANNER, tag: blade_c, transform: { translation: [-0.5, 0.55, 0],  scale: [1, 1, 1], left_rotation: [-120, 1, -1, -1] },    animation: { type: rotate, axis: [0,1,0], speed: 5.0 }, interpolation: 1 }
-          - { material: WHITE_BANNER, tag: blade_d, transform: { translation: [0, 0.55, -0.5],  scale: [1, 1, 1], left_rotation: [-90, 1, 0, 0] },       animation: { type: rotate, axis: [0,1,0], speed: 5.0 }, interpolation: 1 }
-      # ── N/S wall: banners face ±Z (viewer), height extends radially in XY, spin around Z
-      wall_ns_stopped:
+          - { material: WHITE_BANNER, tag: blade_a, transform: { translation: [0.375, 0.55, 0],    scale: [0.75, 0.75, 0.75], left_rotation: [120, 1, 1, -1] },  animation: { type: rotate, axis: [0,1,0], speed: 5.0 }, interpolation: 1 }
+          - { material: WHITE_BANNER, tag: blade_b, transform: { translation: [0, 0.55, 0.375],    scale: [0.75, 0.75, 0.75], left_rotation: [90, 1, 0, 0] },   animation: { type: rotate, axis: [0,1,0], speed: 5.0 }, interpolation: 1 }
+          - { material: WHITE_BANNER, tag: blade_c, transform: { translation: [-0.375, 0.55, 0],   scale: [0.75, 0.75, 0.75], left_rotation: [120, 1, -1, 1] }, animation: { type: rotate, axis: [0,1,0], speed: 5.0 }, interpolation: 1 }
+          - { material: WHITE_BANNER, tag: blade_d, transform: { translation: [0, 0.55, -0.375],   scale: [0.75, 0.75, 0.75], left_rotation: [180, 0, 1, -1] }, animation: { type: rotate, axis: [0,1,0], speed: 5.0 }, interpolation: 1 }
+      # ── North wall (skull on north face, viewer from south): face +Z, spin Z ──
+      wall_n_stopped:
         display_entities:
-          - { material: WHITE_BANNER, tag: blade_a, transform: { translation: [0.5, 0, 0],  scale: [1, 1, 1], left_rotation: [-90, 0, 0, 1] },  wall_offset: 0.25 }
-          - { material: WHITE_BANNER, tag: blade_b, transform: { translation: [0, 0.5, 0],  scale: [1, 1, 1] },                                  wall_offset: 0.25 }
-          - { material: WHITE_BANNER, tag: blade_c, transform: { translation: [-0.5, 0, 0], scale: [1, 1, 1], left_rotation: [90, 0, 0, 1] },   wall_offset: 0.25 }
-          - { material: WHITE_BANNER, tag: blade_d, transform: { translation: [0, -0.5, 0], scale: [1, 1, 1], left_rotation: [180, 0, 0, 1] },  wall_offset: 0.25 }
-      wall_ns_slow:
+          - { material: WHITE_BANNER, tag: blade_a, transform: { translation: [0.375, 0, 0],  scale: [0.75, 0.75, 0.75], left_rotation: [-90, 0, 0, 1] },  wall_offset: 0.25 }
+          - { material: WHITE_BANNER, tag: blade_b, transform: { translation: [0, 0.375, 0],  scale: [0.75, 0.75, 0.75] },                                  wall_offset: 0.25 }
+          - { material: WHITE_BANNER, tag: blade_c, transform: { translation: [-0.375, 0, 0], scale: [0.75, 0.75, 0.75], left_rotation: [90, 0, 0, 1] },   wall_offset: 0.25 }
+          - { material: WHITE_BANNER, tag: blade_d, transform: { translation: [0, -0.375, 0], scale: [0.75, 0.75, 0.75], left_rotation: [180, 0, 0, 1] },  wall_offset: 0.25 }
+      wall_n_slow:
         display_entities:
-          - { material: WHITE_BANNER, tag: blade_a, transform: { translation: [0.5, 0, 0],  scale: [1, 1, 1], left_rotation: [-90, 0, 0, 1] },  animation: { type: rotate, axis: [0,0,1], speed: 1.5 }, interpolation: 2, wall_offset: 0.25 }
-          - { material: WHITE_BANNER, tag: blade_b, transform: { translation: [0, 0.5, 0],  scale: [1, 1, 1] },                                  animation: { type: rotate, axis: [0,0,1], speed: 1.5 }, interpolation: 2, wall_offset: 0.25 }
-          - { material: WHITE_BANNER, tag: blade_c, transform: { translation: [-0.5, 0, 0], scale: [1, 1, 1], left_rotation: [90, 0, 0, 1] },   animation: { type: rotate, axis: [0,0,1], speed: 1.5 }, interpolation: 2, wall_offset: 0.25 }
-          - { material: WHITE_BANNER, tag: blade_d, transform: { translation: [0, -0.5, 0], scale: [1, 1, 1], left_rotation: [180, 0, 0, 1] },  animation: { type: rotate, axis: [0,0,1], speed: 1.5 }, interpolation: 2, wall_offset: 0.25 }
-      wall_ns_fast:
+          - { material: WHITE_BANNER, tag: blade_a, transform: { translation: [0.375, 0, 0],  scale: [0.75, 0.75, 0.75], left_rotation: [-90, 0, 0, 1] },  animation: { type: rotate, axis: [0,0,1], speed: 1.5 }, interpolation: 2, wall_offset: 0.25 }
+          - { material: WHITE_BANNER, tag: blade_b, transform: { translation: [0, 0.375, 0],  scale: [0.75, 0.75, 0.75] },                                  animation: { type: rotate, axis: [0,0,1], speed: 1.5 }, interpolation: 2, wall_offset: 0.25 }
+          - { material: WHITE_BANNER, tag: blade_c, transform: { translation: [-0.375, 0, 0], scale: [0.75, 0.75, 0.75], left_rotation: [90, 0, 0, 1] },   animation: { type: rotate, axis: [0,0,1], speed: 1.5 }, interpolation: 2, wall_offset: 0.25 }
+          - { material: WHITE_BANNER, tag: blade_d, transform: { translation: [0, -0.375, 0], scale: [0.75, 0.75, 0.75], left_rotation: [180, 0, 0, 1] },  animation: { type: rotate, axis: [0,0,1], speed: 1.5 }, interpolation: 2, wall_offset: 0.25 }
+      wall_n_fast:
         display_entities:
-          - { material: WHITE_BANNER, tag: blade_a, transform: { translation: [0.5, 0, 0],  scale: [1, 1, 1], left_rotation: [-90, 0, 0, 1] },  animation: { type: rotate, axis: [0,0,1], speed: 5.0 }, interpolation: 1, wall_offset: 0.25 }
-          - { material: WHITE_BANNER, tag: blade_b, transform: { translation: [0, 0.5, 0],  scale: [1, 1, 1] },                                  animation: { type: rotate, axis: [0,0,1], speed: 5.0 }, interpolation: 1, wall_offset: 0.25 }
-          - { material: WHITE_BANNER, tag: blade_c, transform: { translation: [-0.5, 0, 0], scale: [1, 1, 1], left_rotation: [90, 0, 0, 1] },   animation: { type: rotate, axis: [0,0,1], speed: 5.0 }, interpolation: 1, wall_offset: 0.25 }
-          - { material: WHITE_BANNER, tag: blade_d, transform: { translation: [0, -0.5, 0], scale: [1, 1, 1], left_rotation: [180, 0, 0, 1] },  animation: { type: rotate, axis: [0,0,1], speed: 5.0 }, interpolation: 1, wall_offset: 0.25 }
-      # ── E/W wall: banners face ±X (viewer), height extends radially in YZ, spin around X
-      wall_ew_stopped:
+          - { material: WHITE_BANNER, tag: blade_a, transform: { translation: [0.375, 0, 0],  scale: [0.75, 0.75, 0.75], left_rotation: [-90, 0, 0, 1] },  animation: { type: rotate, axis: [0,0,1], speed: 5.0 }, interpolation: 1, wall_offset: 0.25 }
+          - { material: WHITE_BANNER, tag: blade_b, transform: { translation: [0, 0.375, 0],  scale: [0.75, 0.75, 0.75] },                                  animation: { type: rotate, axis: [0,0,1], speed: 5.0 }, interpolation: 1, wall_offset: 0.25 }
+          - { material: WHITE_BANNER, tag: blade_c, transform: { translation: [-0.375, 0, 0], scale: [0.75, 0.75, 0.75], left_rotation: [90, 0, 0, 1] },   animation: { type: rotate, axis: [0,0,1], speed: 5.0 }, interpolation: 1, wall_offset: 0.25 }
+          - { material: WHITE_BANNER, tag: blade_d, transform: { translation: [0, -0.375, 0], scale: [0.75, 0.75, 0.75], left_rotation: [180, 0, 0, 1] },  animation: { type: rotate, axis: [0,0,1], speed: 5.0 }, interpolation: 1, wall_offset: 0.25 }
+      # ── South wall (skull on south face, viewer from north): face -Z, spin Z ──
+      wall_s_stopped:
         display_entities:
-          - { material: WHITE_BANNER, tag: blade_a, transform: { translation: [0, 0.5, 0],  scale: [1, 1, 1], left_rotation: [-90, 0, 1, 0] },   wall_offset: 0.25 }
-          - { material: WHITE_BANNER, tag: blade_b, transform: { translation: [0, 0, 0.5],  scale: [1, 1, 1], left_rotation: [120, 1, 1, 1] },   wall_offset: 0.25 }
-          - { material: WHITE_BANNER, tag: blade_c, transform: { translation: [0, -0.5, 0], scale: [1, 1, 1], left_rotation: [180, 1, 0, 1] },   wall_offset: 0.25 }
-          - { material: WHITE_BANNER, tag: blade_d, transform: { translation: [0, 0, -0.5], scale: [1, 1, 1], left_rotation: [-120, 1, -1, 1] }, wall_offset: 0.25 }
-      wall_ew_slow:
+          - { material: WHITE_BANNER, tag: blade_a, transform: { translation: [0.375, 0, 0],  scale: [0.75, 0.75, 0.75], left_rotation: [180, 1, -1, 0] },  wall_offset: 0.25 }
+          - { material: WHITE_BANNER, tag: blade_b, transform: { translation: [0, 0.375, 0],  scale: [0.75, 0.75, 0.75], left_rotation: [180, 0, 1, 0] },   wall_offset: 0.25 }
+          - { material: WHITE_BANNER, tag: blade_c, transform: { translation: [-0.375, 0, 0], scale: [0.75, 0.75, 0.75], left_rotation: [180, 1, 1, 0] },   wall_offset: 0.25 }
+          - { material: WHITE_BANNER, tag: blade_d, transform: { translation: [0, -0.375, 0], scale: [0.75, 0.75, 0.75], left_rotation: [180, 1, 0, 0] },   wall_offset: 0.25 }
+      wall_s_slow:
         display_entities:
-          - { material: WHITE_BANNER, tag: blade_a, transform: { translation: [0, 0.5, 0],  scale: [1, 1, 1], left_rotation: [-90, 0, 1, 0] },   animation: { type: rotate, axis: [1,0,0], speed: 1.5 }, interpolation: 2, wall_offset: 0.25 }
-          - { material: WHITE_BANNER, tag: blade_b, transform: { translation: [0, 0, 0.5],  scale: [1, 1, 1], left_rotation: [120, 1, 1, 1] },   animation: { type: rotate, axis: [1,0,0], speed: 1.5 }, interpolation: 2, wall_offset: 0.25 }
-          - { material: WHITE_BANNER, tag: blade_c, transform: { translation: [0, -0.5, 0], scale: [1, 1, 1], left_rotation: [180, 1, 0, 1] },   animation: { type: rotate, axis: [1,0,0], speed: 1.5 }, interpolation: 2, wall_offset: 0.25 }
-          - { material: WHITE_BANNER, tag: blade_d, transform: { translation: [0, 0, -0.5], scale: [1, 1, 1], left_rotation: [-120, 1, -1, 1] }, animation: { type: rotate, axis: [1,0,0], speed: 1.5 }, interpolation: 2, wall_offset: 0.25 }
-      wall_ew_fast:
+          - { material: WHITE_BANNER, tag: blade_a, transform: { translation: [0.375, 0, 0],  scale: [0.75, 0.75, 0.75], left_rotation: [180, 1, -1, 0] },  animation: { type: rotate, axis: [0,0,1], speed: 1.5 }, interpolation: 2, wall_offset: 0.25 }
+          - { material: WHITE_BANNER, tag: blade_b, transform: { translation: [0, 0.375, 0],  scale: [0.75, 0.75, 0.75], left_rotation: [180, 0, 1, 0] },   animation: { type: rotate, axis: [0,0,1], speed: 1.5 }, interpolation: 2, wall_offset: 0.25 }
+          - { material: WHITE_BANNER, tag: blade_c, transform: { translation: [-0.375, 0, 0], scale: [0.75, 0.75, 0.75], left_rotation: [180, 1, 1, 0] },   animation: { type: rotate, axis: [0,0,1], speed: 1.5 }, interpolation: 2, wall_offset: 0.25 }
+          - { material: WHITE_BANNER, tag: blade_d, transform: { translation: [0, -0.375, 0], scale: [0.75, 0.75, 0.75], left_rotation: [180, 1, 0, 0] },   animation: { type: rotate, axis: [0,0,1], speed: 1.5 }, interpolation: 2, wall_offset: 0.25 }
+      wall_s_fast:
         display_entities:
-          - { material: WHITE_BANNER, tag: blade_a, transform: { translation: [0, 0.5, 0],  scale: [1, 1, 1], left_rotation: [-90, 0, 1, 0] },   animation: { type: rotate, axis: [1,0,0], speed: 5.0 }, interpolation: 1, wall_offset: 0.25 }
-          - { material: WHITE_BANNER, tag: blade_b, transform: { translation: [0, 0, 0.5],  scale: [1, 1, 1], left_rotation: [120, 1, 1, 1] },   animation: { type: rotate, axis: [1,0,0], speed: 5.0 }, interpolation: 1, wall_offset: 0.25 }
-          - { material: WHITE_BANNER, tag: blade_c, transform: { translation: [0, -0.5, 0], scale: [1, 1, 1], left_rotation: [180, 1, 0, 1] },   animation: { type: rotate, axis: [1,0,0], speed: 5.0 }, interpolation: 1, wall_offset: 0.25 }
-          - { material: WHITE_BANNER, tag: blade_d, transform: { translation: [0, 0, -0.5], scale: [1, 1, 1], left_rotation: [-120, 1, -1, 1] }, animation: { type: rotate, axis: [1,0,0], speed: 5.0 }, interpolation: 1, wall_offset: 0.25 }
+          - { material: WHITE_BANNER, tag: blade_a, transform: { translation: [0.375, 0, 0],  scale: [0.75, 0.75, 0.75], left_rotation: [180, 1, -1, 0] },  animation: { type: rotate, axis: [0,0,1], speed: 5.0 }, interpolation: 1, wall_offset: 0.25 }
+          - { material: WHITE_BANNER, tag: blade_b, transform: { translation: [0, 0.375, 0],  scale: [0.75, 0.75, 0.75], left_rotation: [180, 0, 1, 0] },   animation: { type: rotate, axis: [0,0,1], speed: 5.0 }, interpolation: 1, wall_offset: 0.25 }
+          - { material: WHITE_BANNER, tag: blade_c, transform: { translation: [-0.375, 0, 0], scale: [0.75, 0.75, 0.75], left_rotation: [180, 1, 1, 0] },   animation: { type: rotate, axis: [0,0,1], speed: 5.0 }, interpolation: 1, wall_offset: 0.25 }
+          - { material: WHITE_BANNER, tag: blade_d, transform: { translation: [0, -0.375, 0], scale: [0.75, 0.75, 0.75], left_rotation: [180, 1, 0, 0] },   animation: { type: rotate, axis: [0,0,1], speed: 5.0 }, interpolation: 1, wall_offset: 0.25 }
+      # ── West wall (skull on west face, viewer from east): face +X, spin X ──
+      wall_w_stopped:
+        display_entities:
+          - { material: WHITE_BANNER, tag: blade_a, transform: { translation: [0, 0.375, 0],  scale: [0.75, 0.75, 0.75], left_rotation: [-90, 0, 1, 0] },   wall_offset: 0.25 }
+          - { material: WHITE_BANNER, tag: blade_b, transform: { translation: [0, 0, 0.375],  scale: [0.75, 0.75, 0.75], left_rotation: [120, 1, 1, 1] },   wall_offset: 0.25 }
+          - { material: WHITE_BANNER, tag: blade_c, transform: { translation: [0, -0.375, 0], scale: [0.75, 0.75, 0.75], left_rotation: [180, 1, 0, 1] },   wall_offset: 0.25 }
+          - { material: WHITE_BANNER, tag: blade_d, transform: { translation: [0, 0, -0.375], scale: [0.75, 0.75, 0.75], left_rotation: [-120, 1, -1, 1] }, wall_offset: 0.25 }
+      wall_w_slow:
+        display_entities:
+          - { material: WHITE_BANNER, tag: blade_a, transform: { translation: [0, 0.375, 0],  scale: [0.75, 0.75, 0.75], left_rotation: [-90, 0, 1, 0] },   animation: { type: rotate, axis: [1,0,0], speed: 1.5 }, interpolation: 2, wall_offset: 0.25 }
+          - { material: WHITE_BANNER, tag: blade_b, transform: { translation: [0, 0, 0.375],  scale: [0.75, 0.75, 0.75], left_rotation: [120, 1, 1, 1] },   animation: { type: rotate, axis: [1,0,0], speed: 1.5 }, interpolation: 2, wall_offset: 0.25 }
+          - { material: WHITE_BANNER, tag: blade_c, transform: { translation: [0, -0.375, 0], scale: [0.75, 0.75, 0.75], left_rotation: [180, 1, 0, 1] },   animation: { type: rotate, axis: [1,0,0], speed: 1.5 }, interpolation: 2, wall_offset: 0.25 }
+          - { material: WHITE_BANNER, tag: blade_d, transform: { translation: [0, 0, -0.375], scale: [0.75, 0.75, 0.75], left_rotation: [-120, 1, -1, 1] }, animation: { type: rotate, axis: [1,0,0], speed: 1.5 }, interpolation: 2, wall_offset: 0.25 }
+      wall_w_fast:
+        display_entities:
+          - { material: WHITE_BANNER, tag: blade_a, transform: { translation: [0, 0.375, 0],  scale: [0.75, 0.75, 0.75], left_rotation: [-90, 0, 1, 0] },   animation: { type: rotate, axis: [1,0,0], speed: 5.0 }, interpolation: 1, wall_offset: 0.25 }
+          - { material: WHITE_BANNER, tag: blade_b, transform: { translation: [0, 0, 0.375],  scale: [0.75, 0.75, 0.75], left_rotation: [120, 1, 1, 1] },   animation: { type: rotate, axis: [1,0,0], speed: 5.0 }, interpolation: 1, wall_offset: 0.25 }
+          - { material: WHITE_BANNER, tag: blade_c, transform: { translation: [0, -0.375, 0], scale: [0.75, 0.75, 0.75], left_rotation: [180, 1, 0, 1] },   animation: { type: rotate, axis: [1,0,0], speed: 5.0 }, interpolation: 1, wall_offset: 0.25 }
+          - { material: WHITE_BANNER, tag: blade_d, transform: { translation: [0, 0, -0.375], scale: [0.75, 0.75, 0.75], left_rotation: [-120, 1, -1, 1] }, animation: { type: rotate, axis: [1,0,0], speed: 5.0 }, interpolation: 1, wall_offset: 0.25 }
+      # ── East wall (skull on east face, viewer from west): face -X, spin X ──
+      # Derived from wall_w by composing R_Y(180°) to flip face from +X to -X
+      wall_e_stopped:
+        display_entities:
+          - { material: WHITE_BANNER, tag: blade_a, transform: { translation: [0, 0.375, 0],  scale: [0.75, 0.75, 0.75], left_rotation: [90, 0, 1, 0] },    wall_offset: 0.25 }
+          - { material: WHITE_BANNER, tag: blade_b, transform: { translation: [0, 0, 0.375],  scale: [0.75, 0.75, 0.75], left_rotation: [-120, 1, 1, 1] },  wall_offset: 0.25 }
+          - { material: WHITE_BANNER, tag: blade_c, transform: { translation: [0, -0.375, 0], scale: [0.75, 0.75, 0.75], left_rotation: [180, 1, 0, -1] },  wall_offset: 0.25 }
+          - { material: WHITE_BANNER, tag: blade_d, transform: { translation: [0, 0, -0.375], scale: [0.75, 0.75, 0.75], left_rotation: [120, 1, -1, 1] },  wall_offset: 0.25 }
+      wall_e_slow:
+        display_entities:
+          - { material: WHITE_BANNER, tag: blade_a, transform: { translation: [0, 0.375, 0],  scale: [0.75, 0.75, 0.75], left_rotation: [90, 0, 1, 0] },    animation: { type: rotate, axis: [1,0,0], speed: 1.5 }, interpolation: 2, wall_offset: 0.25 }
+          - { material: WHITE_BANNER, tag: blade_b, transform: { translation: [0, 0, 0.375],  scale: [0.75, 0.75, 0.75], left_rotation: [-120, 1, 1, 1] },  animation: { type: rotate, axis: [1,0,0], speed: 1.5 }, interpolation: 2, wall_offset: 0.25 }
+          - { material: WHITE_BANNER, tag: blade_c, transform: { translation: [0, -0.375, 0], scale: [0.75, 0.75, 0.75], left_rotation: [180, 1, 0, -1] },  animation: { type: rotate, axis: [1,0,0], speed: 1.5 }, interpolation: 2, wall_offset: 0.25 }
+          - { material: WHITE_BANNER, tag: blade_d, transform: { translation: [0, 0, -0.375], scale: [0.75, 0.75, 0.75], left_rotation: [120, 1, -1, 1] },  animation: { type: rotate, axis: [1,0,0], speed: 1.5 }, interpolation: 2, wall_offset: 0.25 }
+      wall_e_fast:
+        display_entities:
+          - { material: WHITE_BANNER, tag: blade_a, transform: { translation: [0, 0.375, 0],  scale: [0.75, 0.75, 0.75], left_rotation: [90, 0, 1, 0] },    animation: { type: rotate, axis: [1,0,0], speed: 5.0 }, interpolation: 1, wall_offset: 0.25 }
+          - { material: WHITE_BANNER, tag: blade_b, transform: { translation: [0, 0, 0.375],  scale: [0.75, 0.75, 0.75], left_rotation: [-120, 1, 1, 1] },  animation: { type: rotate, axis: [1,0,0], speed: 5.0 }, interpolation: 1, wall_offset: 0.25 }
+          - { material: WHITE_BANNER, tag: blade_c, transform: { translation: [0, -0.375, 0], scale: [0.75, 0.75, 0.75], left_rotation: [180, 1, 0, -1] },  animation: { type: rotate, axis: [1,0,0], speed: 5.0 }, interpolation: 1, wall_offset: 0.25 }
+          - { material: WHITE_BANNER, tag: blade_d, transform: { translation: [0, 0, -0.375], scale: [0.75, 0.75, 0.75], left_rotation: [120, 1, -1, 1] },  animation: { type: rotate, axis: [1,0,0], speed: 5.0 }, interpolation: 1, wall_offset: 0.25 }
     transitions:
-      - trigger: { type: interact }
-        from: floor_stopped
-        to: floor_slow
-        sound: BLOCK_WOOD_BUTTON_CLICK_ON
-      - trigger: { type: interact }
-        from: floor_slow
-        to: floor_fast
-        sound: BLOCK_WOOD_BUTTON_CLICK_ON
-      - trigger: { type: interact }
-        from: floor_fast
-        to: floor_stopped
-        sound: BLOCK_WOOD_BUTTON_CLICK_OFF
-      - trigger: { type: interact }
-        from: wall_ns_stopped
-        to: wall_ns_slow
-        sound: BLOCK_WOOD_BUTTON_CLICK_ON
-      - trigger: { type: interact }
-        from: wall_ns_slow
-        to: wall_ns_fast
-        sound: BLOCK_WOOD_BUTTON_CLICK_ON
-      - trigger: { type: interact }
-        from: wall_ns_fast
-        to: wall_ns_stopped
-        sound: BLOCK_WOOD_BUTTON_CLICK_OFF
-      - trigger: { type: interact }
-        from: wall_ew_stopped
-        to: wall_ew_slow
-        sound: BLOCK_WOOD_BUTTON_CLICK_ON
-      - trigger: { type: interact }
-        from: wall_ew_slow
-        to: wall_ew_fast
-        sound: BLOCK_WOOD_BUTTON_CLICK_ON
-      - trigger: { type: interact }
-        from: wall_ew_fast
-        to: wall_ew_stopped
-        sound: BLOCK_WOOD_BUTTON_CLICK_OFF
+      - { trigger: { type: interact }, from: floor_stopped, to: floor_slow, sound: BLOCK_WOOD_BUTTON_CLICK_ON }
+      - { trigger: { type: interact }, from: floor_slow, to: floor_fast, sound: BLOCK_WOOD_BUTTON_CLICK_ON }
+      - { trigger: { type: interact }, from: floor_fast, to: floor_stopped, sound: BLOCK_WOOD_BUTTON_CLICK_OFF }
+      - { trigger: { type: interact }, from: wall_n_stopped, to: wall_n_slow, sound: BLOCK_WOOD_BUTTON_CLICK_ON }
+      - { trigger: { type: interact }, from: wall_n_slow, to: wall_n_fast, sound: BLOCK_WOOD_BUTTON_CLICK_ON }
+      - { trigger: { type: interact }, from: wall_n_fast, to: wall_n_stopped, sound: BLOCK_WOOD_BUTTON_CLICK_OFF }
+      - { trigger: { type: interact }, from: wall_s_stopped, to: wall_s_slow, sound: BLOCK_WOOD_BUTTON_CLICK_ON }
+      - { trigger: { type: interact }, from: wall_s_slow, to: wall_s_fast, sound: BLOCK_WOOD_BUTTON_CLICK_ON }
+      - { trigger: { type: interact }, from: wall_s_fast, to: wall_s_stopped, sound: BLOCK_WOOD_BUTTON_CLICK_OFF }
+      - { trigger: { type: interact }, from: wall_w_stopped, to: wall_w_slow, sound: BLOCK_WOOD_BUTTON_CLICK_ON }
+      - { trigger: { type: interact }, from: wall_w_slow, to: wall_w_fast, sound: BLOCK_WOOD_BUTTON_CLICK_ON }
+      - { trigger: { type: interact }, from: wall_w_fast, to: wall_w_stopped, sound: BLOCK_WOOD_BUTTON_CLICK_OFF }
+      - { trigger: { type: interact }, from: wall_e_stopped, to: wall_e_slow, sound: BLOCK_WOOD_BUTTON_CLICK_ON }
+      - { trigger: { type: interact }, from: wall_e_slow, to: wall_e_fast, sound: BLOCK_WOOD_BUTTON_CLICK_ON }
+      - { trigger: { type: interact }, from: wall_e_fast, to: wall_e_stopped, sound: BLOCK_WOOD_BUTTON_CLICK_OFF }
 
   # ─── 20. Pulsing Orb ─────────────────────────────────────────────────
   # Features: animated display entity (pulse scale), state-based animation change.
