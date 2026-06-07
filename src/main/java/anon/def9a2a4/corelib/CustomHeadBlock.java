@@ -158,6 +158,12 @@ public final class CustomHeadBlock {
     /** Sound effect with volume and pitch. */
     public record SoundConfig(Sound sound, float volume, float pitch) {}
 
+    /** Callback for state transitions — receives both old and new state. */
+    @FunctionalInterface
+    public interface StateChangeHandler {
+        void accept(Block block, String oldState, String newState);
+    }
+
     /** Placement restrictions. */
     public record PlacementConfig(Set<BlockFace> allowedFaces, boolean requireSolid) {}
 
@@ -258,6 +264,8 @@ public final class CustomHeadBlock {
     private final @Nullable Consumer<Block> onTick;
     private final @Nullable BiConsumer<Block, String> onChunkLoadCallback;
     private final @Nullable Consumer<Block> onChunkUnloadCallback;
+    private final @Nullable StateChangeHandler onStateChanged;
+    private final @Nullable BiConsumer<Block, String> onBlockRemoved;
 
     private CustomHeadBlock(Builder b) {
         this.namespace = b.namespace;
@@ -293,6 +301,8 @@ public final class CustomHeadBlock {
         this.onTick = b.onTick;
         this.onChunkLoadCallback = b.onChunkLoadCallback;
         this.onChunkUnloadCallback = b.onChunkUnloadCallback;
+        this.onStateChanged = b.onStateChanged;
+        this.onBlockRemoved = b.onBlockRemoved;
 
         // Cache capability checks (avoid streaming states on every call)
         this._hasDisplayEntities = !displayEntities.isEmpty() || states.values().stream().anyMatch(s -> s.displayEntities() != null);
@@ -346,6 +356,8 @@ public final class CustomHeadBlock {
     public @Nullable Consumer<Block> onTick() { return onTick; }
     public @Nullable BiConsumer<Block, String> onChunkLoadCallback() { return onChunkLoadCallback; }
     public @Nullable Consumer<Block> onChunkUnloadCallback() { return onChunkUnloadCallback; }
+    public @Nullable StateChangeHandler onStateChanged() { return onStateChanged; }
+    public @Nullable BiConsumer<Block, String> onBlockRemoved() { return onBlockRemoved; }
 
     public boolean hasDisplayEntities() { return _hasDisplayEntities; }
     public boolean hasLight() { return _hasLight; }
@@ -511,6 +523,8 @@ public final class CustomHeadBlock {
         private @Nullable Consumer<Block> onTick;
         private @Nullable BiConsumer<Block, String> onChunkLoadCallback;
         private @Nullable Consumer<Block> onChunkUnloadCallback;
+        private @Nullable StateChangeHandler onStateChanged;
+        private @Nullable BiConsumer<Block, String> onBlockRemoved;
 
         private Builder(String namespace, String typeId) {
             this.namespace = Objects.requireNonNull(namespace);
@@ -620,6 +634,8 @@ public final class CustomHeadBlock {
         public Builder onTick(Consumer<Block> handler) { this.onTick = handler; return this; }
         public Builder onChunkLoad(BiConsumer<Block, String> handler) { this.onChunkLoadCallback = handler; return this; }
         public Builder onChunkUnload(Consumer<Block> handler) { this.onChunkUnloadCallback = handler; return this; }
+        public Builder onStateChanged(StateChangeHandler handler) { this.onStateChanged = handler; return this; }
+        public Builder onBlockRemoved(BiConsumer<Block, String> handler) { this.onBlockRemoved = handler; return this; }
 
         public CustomHeadBlock build() {
             if (texture == null || texture.isBlank()) {

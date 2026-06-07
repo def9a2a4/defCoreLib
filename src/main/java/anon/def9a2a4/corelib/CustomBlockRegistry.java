@@ -230,7 +230,7 @@ public class CustomBlockRegistry {
     }
 
     /** Restore a single block's runtime state (light, particles, redstone tracking). */
-    private void restoreBlock(Block block, CustomHeadBlock type, @Nullable String state) {
+    public void restoreBlock(Block block, CustomHeadBlock type, @Nullable String state) {
         // Restore light blocks
         CustomHeadBlock.LightConfig lc = type.resolveLight(state);
         if (lc != null) {
@@ -334,7 +334,7 @@ public class CustomBlockRegistry {
     // ──────────────────────────────────────────────────────────────────────
 
     /** Apply the resolved config for a block's current state + power. */
-    void applyConfig(Block block, CustomHeadBlock type, @Nullable String state, int power) {
+    public void applyConfig(Block block, CustomHeadBlock type, @Nullable String state, int power) {
         // Texture (with directional support)
         BlockFace facing = getSkullFacing(block);
         String texture = type.resolveTexture(state, power, facing);
@@ -393,7 +393,13 @@ public class CustomBlockRegistry {
     }
 
     /** Handle block removal: clean up displays, light, particles, redstone tracking. */
-    void onBlockRemoved(Block block, CustomHeadBlock type) {
+    public void onBlockRemoved(Block block, CustomHeadBlock type) {
+        // Notify consumer before cleanup
+        if (type.onBlockRemoved() != null) {
+            String state = getState(block);
+            type.onBlockRemoved().accept(block, state);
+        }
+
         LocationKey key = LocationKey.of(block);
         redstoneTracked.remove(key);
         particleTracked.remove(key);
@@ -435,6 +441,11 @@ public class CustomBlockRegistry {
         // Re-apply visual config
         int power = type.sensitivity() != CustomHeadBlock.Sensitivity.NONE ? readPower(block, type) : 0;
         applyConfig(block, type, transition.toState(), power);
+
+        // Notify consumer
+        if (type.onStateChanged() != null) {
+            type.onStateChanged().accept(block, fromState, transition.toState());
+        }
     }
 
     // ──────────────────────────────────────────────────────────────────────
@@ -1077,7 +1088,7 @@ public class CustomBlockRegistry {
         };
     }
 
-    private void loadInventoryFromPDC(Block block, org.bukkit.inventory.Inventory inv) {
+    public void loadInventoryFromPDC(Block block, org.bukkit.inventory.Inventory inv) {
         if (!(block.getState() instanceof org.bukkit.block.Skull skull)) return;
         String data = skull.getPersistentDataContainer().get(INVENTORY_KEY, PersistentDataType.STRING);
         if (data == null) return;
