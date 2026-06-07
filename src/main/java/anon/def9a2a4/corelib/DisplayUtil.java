@@ -37,7 +37,7 @@ public final class DisplayUtil {
     public static ItemDisplay spawn(Location blockLoc, ItemStack displayItem,
                                     Transformation transform, String scoreboardTag) {
         World world = blockLoc.getWorld();
-        Location spawnLoc = blockLoc.getBlock().getLocation().add(0.5, 0.5, 0.5);
+        Location spawnLoc = blockLoc.clone().add(0.5, 0.5, 0.5);
         return world.spawn(spawnLoc, ItemDisplay.class, display -> {
             display.setItemStack(displayItem);
             display.setPersistent(true);

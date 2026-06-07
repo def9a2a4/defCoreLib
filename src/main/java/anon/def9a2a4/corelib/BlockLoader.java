@@ -75,10 +75,14 @@ public final class BlockLoader {
                     .toList());
         }
 
-        // Drops
-        String drops = sec.getString("drops");
-        if ("self".equals(drops)) {
+        // Drops — either "self" (string) or a list of conditional rules
+        String dropStr = sec.getString("drops");
+        if ("self".equals(dropStr)) {
             b.drops(CustomHeadBlock.DropRule.self());
+        } else {
+            for (Map<?, ?> entry : sec.getMapList("drops")) {
+                b.drops(parseDropRule(entry));
+            }
         }
 
         // Flags
@@ -368,7 +372,18 @@ public final class BlockLoader {
     private static List<CustomHeadBlock.DisplayEntityConfig> parseDisplayEntities(List<Map<?, ?>> list) {
         List<CustomHeadBlock.DisplayEntityConfig> result = new ArrayList<>();
         for (Map<?, ?> map : list) {
-            String tex = String.valueOf(map.get("texture"));
+            // Resolve display item: either skull texture or arbitrary material
+            Object texObj = map.get("texture");
+            Object matObj = map.get("material");
+            org.bukkit.inventory.ItemStack displayItem;
+            if (matObj != null) {
+                Material mat = Material.valueOf(String.valueOf(matObj).toUpperCase(java.util.Locale.ROOT));
+                displayItem = new org.bukkit.inventory.ItemStack(mat);
+            } else if (texObj != null) {
+                displayItem = HeadUtil.createHead(String.valueOf(texObj), 1);
+            } else {
+                throw new IllegalArgumentException("display entity requires 'texture' or 'material'");
+            }
             String tag = map.get("tag") != null ? String.valueOf(map.get("tag")) : null;
 
             Transformation transform;
@@ -396,9 +411,10 @@ public final class BlockLoader {
             }
 
             int interpolation = toInt((Object) map.get("interpolation"), 2);
+            float wallOffset = (float) toDouble((Object) map.get("wall_offset"), 0);
 
             result.add(new CustomHeadBlock.DisplayEntityConfig(
-                    tex, transform, tag, animation, interpolation));
+                    displayItem, transform, tag, animation, interpolation, wallOffset));
         }
         return result;
     }
@@ -571,6 +587,27 @@ public final class BlockLoader {
             try { return Double.parseDouble(s); } catch (NumberFormatException e) { return defaultVal; }
         }
         return defaultVal;
+    }
+
+    private static CustomHeadBlock.DropRule parseDropRule(Map<?, ?> m) {
+        String inState = m.get("in_state") != null ? String.valueOf(m.get("in_state")) : null;
+        Boolean silkTouch = m.get("silk_touch") instanceof Boolean b ? b : null;
+        Material requiredTool = m.get("required_tool") != null
+                ? Material.matchMaterial(String.valueOf(m.get("required_tool"))) : null;
+
+        List<CustomHeadBlock.ItemDrop> itemDrops = new ArrayList<>();
+        Object itemsObj = m.get("items");
+        if (itemsObj instanceof List<?> il) {
+            for (Object item : il) {
+                if (item instanceof Map<?, ?> im) {
+                    Material mat = Material.matchMaterial(String.valueOf(im.get("material")));
+                    int amount = toInt(im.get("amount"), 1);
+                    if (mat != null) itemDrops.add(new CustomHeadBlock.ItemDrop(mat, amount));
+                }
+            }
+        }
+        // empty itemDrops with "items: self" or no items key → isSelfDrop() = true
+        return new CustomHeadBlock.DropRule(inState, requiredTool, silkTouch, itemDrops);
     }
 
     private static int toInt(Object obj, int defaultVal) {

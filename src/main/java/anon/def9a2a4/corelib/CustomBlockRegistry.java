@@ -363,10 +363,16 @@ public class CustomBlockRegistry {
             List<CustomHeadBlock.DisplayEntityConfig> displays = type.resolveDisplayEntities(state);
             List<AnimationTracked> anims = null;
             for (var dec : displays) {
-                ItemStack displayItem = HeadUtil.createHead(dec.itemTexture(), 1);
+                ItemStack displayItem = dec.displayItem();
                 String tag = DisplayUtil.blockTag(type.namespace(), type.typeId(),
                         block.getLocation(), dec.tagSuffix());
-                var display = DisplayUtil.spawn(block.getLocation(), displayItem, dec.transform(), tag);
+                org.bukkit.Location spawnBase = block.getLocation();
+                if (dec.wallOffset() != 0 && block.getType() == Material.PLAYER_WALL_HEAD
+                        && block.getBlockData() instanceof Directional wallDir) {
+                    Vector wallFacing = wallDir.getFacing().getDirection();
+                    spawnBase = spawnBase.clone().add(wallFacing.multiply(dec.wallOffset()));
+                }
+                var display = DisplayUtil.spawn(spawnBase, displayItem, dec.transform(), tag);
                 if (dec.interpolationDuration() != 0) {
                     display.setInterpolationDuration(dec.interpolationDuration());
                 }

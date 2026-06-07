@@ -90,13 +90,17 @@ public final class CustomHeadBlock {
             @Nullable Object data  // e.g. Particle.DustOptions for DUST type
     ) {}
 
-    /** An ItemDisplay entity attached to the block. */
+    /** An ItemDisplay entity attached to the block.
+     *  The {@code displayItem} is resolved at parse time — either from a skull
+     *  texture (base64) or an arbitrary material (e.g. WHITE_BANNER).
+     *  {@code wallOffset} pushes the display toward the viewer on wall-mounted heads. */
     public record DisplayEntityConfig(
-            String itemTexture,
+            org.bukkit.inventory.ItemStack displayItem,
             Transformation transform,
             @Nullable String tagSuffix,
             @Nullable DisplayAnimation animation,
-            int interpolationDuration
+            int interpolationDuration,
+            float wallOffset
     ) {}
 
     /** Redstone configuration. */
@@ -144,8 +148,8 @@ public final class CustomHeadBlock {
     ) {
         /** Convenience: drop the block's own item. */
         public static DropRule self() { return new DropRule(null, null, null, List.of()); }
-        /** Check if this rule is the "drop self" sentinel. */
-        public boolean isSelfDrop() { return drops.isEmpty() && inState == null && requiredTool == null && silkTouch == null; }
+        /** True when this rule drops the block's own item (empty drops list = drop self). */
+        public boolean isSelfDrop() { return drops.isEmpty(); }
     }
 
     /** An item to drop. */
