@@ -1,5 +1,15 @@
 # DefCoreLib TODO
 
+
+Demos:
+
+- migrate pipes, redstonedisplays, headsmith
+- "VerticalSlabs!11!" plugin - simple vertical slabs with the defcorelib system. wall heads with rotated slab display entities
+- "redstone cables" -- reuse some code from pipes. a redstone cable that transmits redstone power instantly, without changing power level
+- create-type mod (part of the core lib or no?). rotational power for drills, grindstones, and moving around doors and stuff. minecarts with build blocks on them
+  - key question -- how to glue? enchanted slimeball "slime glue", particle display?
+
+
 ## Done
 
 - [x] Custom player heads (HeadUtil — textures, items, skull blocks)
