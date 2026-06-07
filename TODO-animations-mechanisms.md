@@ -53,19 +53,20 @@ public interface Mechanism {
     void disassemble();        // restore blocks to world
     void destroy();            // remove all entities without restoring
 
-    // --- Entity access ---
-    ArmorStand vehicle();
-    List<List<Display>> displays();   // outer = per block, inner = primary + display_entities
-    List<ColliderPair> colliders();
-    void setVehicle(Entity newVehicle);
+    // --- Read-only entity access ---
+    boolean hasCollision(int blockIndex);
+    Display primaryDisplay(int blockIndex);
 }
 
-record ColliderPair(ArmorStand carrier, Shulker shulker, int blockIndex) {}
+// ColliderPair is package-private — consumers use hasCollision(int) on the interface.
+// BasicMechanism exposes vehicle(), displays(), colliders(), setVehicle() directly
+// for advanced consumers who downcast.
 ```
 
 ### MechanismBlockData
 
-Not a record — needs mutable fields for state transitions:
+Not a record — needs mutable fields for state transitions.
+Mutable fields are package-private with public getters. Only `BasicMechanism.setBlockState()` mutates.
 
 ```java
 public final class MechanismBlockData {
@@ -74,10 +75,15 @@ public final class MechanismBlockData {
     public final boolean hasCollision;
     public final float collisionScale;
     public final @Nullable String customTypeId;
-    public String customState;                // mutable — setBlockState()
-    public @Nullable List<DisplayEntityConfig> displayEntityConfigs;
-    public @Nullable ParticleConfig particles;
-    public @Nullable Inventory storage;       // deep-copied ItemStack[] at assembly
+    String customState;                       // pkg-private, mutable via setBlockState()
+    @Nullable List<DisplayEntityConfig> displayEntityConfigs;
+    @Nullable ParticleConfig particles;
+    @Nullable Inventory storage;
+
+    public String customState() { return customState; }
+    public @Nullable List<DisplayEntityConfig> displayEntityConfigs() { return displayEntityConfigs; }
+    public @Nullable ParticleConfig particles() { return particles; }
+    public @Nullable Inventory storage() { return storage; }
 }
 ```
 
