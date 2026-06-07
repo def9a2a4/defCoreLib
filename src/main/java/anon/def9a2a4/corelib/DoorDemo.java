@@ -68,7 +68,8 @@ final class DoorDemo {
         // Reuse existing mechanism if planks are already assembled
         // (happens when close animation is interrupted mid-rotation)
         Mechanism mech = activeDoors.get(key);
-        if (mech == null) {
+        boolean freshAssembly = (mech == null);
+        if (freshAssembly) {
             List<Block> planks = floodFill(head, Material.OAK_PLANKS, 256);
             if (planks.isEmpty()) return;
             mech = mechRegistry.assembleMechanism("demo:door", planks,
@@ -79,8 +80,8 @@ final class DoorDemo {
         float startYaw = mech.getCurrentYaw();
         float targetYaw = 90f;
         int duration = 20;
+        int timerDelay = freshAssembly ? 2 : 0; // delay 2 waits for passenger mount
         final Mechanism m = mech;
-        // Delay 2: must start AFTER the 1-tick delayed passenger mounting in assembleMechanism
         BukkitTask task = Bukkit.getScheduler().runTaskTimer(plugin, new Runnable() {
             int tick = 0;
             @Override public void run() {
@@ -91,12 +92,11 @@ final class DoorDemo {
                 if (tick >= duration) {
                     BukkitTask t = activeTasks.remove(key);
                     if (t != null) t.cancel();
-                    // Disassemble: planks become solid blocks at rotated position
                     m.disassemble();
                     activeDoors.remove(key);
                 }
             }
-        }, 2, 1);
+        }, timerDelay, 1);
         activeTasks.put(key, task);
     }
 
@@ -104,38 +104,42 @@ final class DoorDemo {
         var key = CustomBlockRegistry.LocationKey.of(head);
         cancelExistingTask(key);
 
-        // Reuse existing mechanism if planks are still assembled
-        // (happens when open animation is interrupted mid-rotation)
         Mechanism mech = activeDoors.get(key);
-        if (mech == null) {
-            // Mechanism was already disassembled after opening — planks are solid blocks
-            // at their rotated positions. Re-assemble and rotate back.
+        float targetYaw;
+        int timerDelay;
+        if (mech != null) {
+            // Mid-animation interrupt: rotate back to 0° (original assembly position)
+            targetYaw = 0f;
+            timerDelay = 0; // already mounted
+        } else {
+            // Fully opened + disassembled: re-assemble rotated planks, rotate to -90°
             List<Block> planks = floodFill(head, Material.OAK_PLANKS, 256);
             if (planks.isEmpty()) return;
             mech = mechRegistry.assembleMechanism("demo:door", planks,
                 head.getLocation().add(0.5, 0, 0.5), null);
             activeDoors.put(key, mech);
+            targetYaw = -90f;
+            timerDelay = 2; // wait for passenger mount
         }
 
-        float startYaw = mech.getCurrentYaw(); // pick up from current position (may be mid-rotation)
-        float targetYaw = -90f;  // rotate back to original positions
+        float startYaw = mech.getCurrentYaw();
         int duration = 20;
+        final Mechanism m = mech;
         BukkitTask task = Bukkit.getScheduler().runTaskTimer(plugin, new Runnable() {
             int tick = 0;
             @Override public void run() {
                 tick++;
                 float yaw = (tick >= duration) ? targetYaw
                     : startYaw + (targetYaw - startYaw) * ((float) tick / duration);
-                mech.rotate(yaw);
+                m.rotate(yaw);
                 if (tick >= duration) {
                     BukkitTask t = activeTasks.remove(key);
                     if (t != null) t.cancel();
-                    // Disassemble at -90°: planks snap back to original positions
-                    mech.disassemble();
+                    m.disassemble();
                     activeDoors.remove(key);
                 }
             }
-        }, 0, 1);
+        }, timerDelay, 1);
         activeTasks.put(key, task);
     }
 
