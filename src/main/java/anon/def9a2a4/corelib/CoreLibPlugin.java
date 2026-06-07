@@ -34,6 +34,7 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
     private static CoreLibPlugin instance;
     private CustomBlockRegistry registry;
     private MechanismRegistry mechanismRegistry;
+    private MinecartShipManager minecartShipManager;
 
     @Override
     public void onEnable() {
@@ -52,8 +53,11 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
             }
         } catch (IOException ignored) {}
 
-        // Register door demo (mechanism system demo)
+        // Register mechanism demos
         new DoorDemo(this, registry, mechanismRegistry).register();
+        minecartShipManager = new MinecartShipManager(this, registry, mechanismRegistry);
+        minecartShipManager.register();
+        getServer().getPluginManager().registerEvents(minecartShipManager, this);
 
         // Register recipes after all blocks are loaded
         registry.finalizeLoading();
@@ -63,6 +67,9 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
 
     @Override
     public void onDisable() {
+        if (minecartShipManager != null) {
+            minecartShipManager.shutdown();
+        }
         if (mechanismRegistry != null) {
             mechanismRegistry.shutdown();
         }

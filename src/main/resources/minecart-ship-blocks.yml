@@ -1,0 +1,96 @@
+# Blocks that can be picked up by the minecart ship scanner.
+# Use exact material names (e.g., OAK_PLANKS) or wildcards (e.g., OAK_* matches all OAK_ blocks).
+# Only block materials are accepted; items are ignored.
+
+allowed_blocks:
+  # Wood (all variants via wildcards)
+  - "OAK_*"
+  - "SPRUCE_*"
+  - "BIRCH_*"
+  - "JUNGLE_*"
+  - "ACACIA_*"
+  - "DARK_OAK_*"
+  - "MANGROVE_*"
+  - "CHERRY_*"
+  - "BAMBOO_*"
+  - "CRIMSON_*"
+  - "WARPED_*"
+
+  # Stone & brick
+  - "STONE"
+  - "STONE_BRICKS"
+  - "STONE_BRICK_*"
+  - "COBBLESTONE"
+  - "COBBLESTONE_*"
+  - "SMOOTH_STONE"
+  - "SMOOTH_STONE_SLAB"
+  - "BRICKS"
+  - "BRICK_*"
+  - "DEEPSLATE_*"
+  - "POLISHED_*"
+
+  # Glass
+  - "*_GLASS"
+  - "*_GLASS_PANE"
+  - "GLASS"
+  - "GLASS_PANE"
+  - "TINTED_GLASS"
+
+  # Wool & carpet
+  - "*_WOOL"
+  - "*_CARPET"
+
+  # Concrete
+  - "*_CONCRETE"
+
+  # Copper
+  - "*_COPPER"
+  - "COPPER_BLOCK"
+  - "COPPER_*"
+
+  # Metal blocks
+  - "IRON_BLOCK"
+  - "GOLD_BLOCK"
+  - "DIAMOND_BLOCK"
+  - "EMERALD_BLOCK"
+  - "NETHERITE_BLOCK"
+  - "IRON_BARS"
+
+  # Functional blocks
+  - "CRAFTING_TABLE"
+  - "FURNACE"
+  - "BLAST_FURNACE"
+  - "SMOKER"
+  - "BARREL"
+  - "CHEST"
+  - "TRAPPED_CHEST"
+  - "BOOKSHELF"
+  - "CHISELED_BOOKSHELF"
+  - "LECTERN"
+  - "ANVIL"
+  - "LOOM"
+  - "CARTOGRAPHY_TABLE"
+  - "SMITHING_TABLE"
+  - "FLETCHING_TABLE"
+  - "COMPOSTER"
+  - "GRINDSTONE"
+  - "STONECUTTER"
+  - "JUKEBOX"
+  - "NOTE_BLOCK"
+
+  # Lighting
+  - "GLOWSTONE"
+  - "SEA_LANTERN"
+  - "SHROOMLIGHT"
+  - "*_LANTERN"
+  - "*_TORCH"
+
+  # Decorative
+  - "HAY_BLOCK"
+  - "LODESTONE"
+  - "BELL"
+  - "CHAIN"
+  - "LADDER"
+  - "*_BED"
+  - "*_BANNER"
+  - "FLOWER_POT"
