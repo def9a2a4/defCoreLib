@@ -395,11 +395,14 @@ public final class BlockLoader {
                 AxisAngle4f leftRotation = new AxisAngle4f(0, 0, 0, 1);
                 Object lrObj = tMap.get("left_rotation");
                 if (lrObj instanceof List<?> lr && lr.size() >= 4) {
+                    float ax = (float) toDouble(lr.get(1), 0);
+                    float ay = (float) toDouble(lr.get(2), 0);
+                    float az = (float) toDouble(lr.get(3), 0);
+                    float len = (float) Math.sqrt(ax * ax + ay * ay + az * az);
+                    if (len > 0) { ax /= len; ay /= len; az /= len; }
                     leftRotation = new AxisAngle4f(
                             (float) Math.toRadians(toDouble(lr.get(0), 0)),
-                            (float) toDouble(lr.get(1), 0),
-                            (float) toDouble(lr.get(2), 0),
-                            (float) toDouble(lr.get(3), 0));
+                            ax, ay, az);
                 }
                 transform = new Transformation(
                         translation,
