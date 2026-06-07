@@ -491,21 +491,21 @@ blocks:
       # ── South wall (skull on south face, viewer from north): face -Z, spin Z ──
       wall_s_stopped:
         display_entities:
-          - { material: WHITE_BANNER, tag: blade_a, transform: { translation: [0.375, 0, 0],  scale: [0.75, 0.75, 0.75], left_rotation: [180, -1, 1, 0] }, wall_offset: 0.25 }
+          - { material: WHITE_BANNER, tag: blade_a, transform: { translation: [0.375, 0, 0],  scale: [0.75, 0.75, 0.75], left_rotation: [180, 1, 1, 0] },  wall_offset: 0.25 }
           - { material: WHITE_BANNER, tag: blade_b, transform: { translation: [0, 0.375, 0],  scale: [0.75, 0.75, 0.75], left_rotation: [180, 0, 1, 0] },   wall_offset: 0.25 }
-          - { material: WHITE_BANNER, tag: blade_c, transform: { translation: [-0.375, 0, 0], scale: [0.75, 0.75, 0.75], left_rotation: [180, 1, 1, 0] },  wall_offset: 0.25 }
+          - { material: WHITE_BANNER, tag: blade_c, transform: { translation: [-0.375, 0, 0], scale: [0.75, 0.75, 0.75], left_rotation: [180, 1, -1, 0] }, wall_offset: 0.25 }
           - { material: WHITE_BANNER, tag: blade_d, transform: { translation: [0, -0.375, 0], scale: [0.75, 0.75, 0.75], left_rotation: [180, 1, 0, 0] },  wall_offset: 0.25 }
       wall_s_slow:
         display_entities:
-          - { material: WHITE_BANNER, tag: blade_a, transform: { translation: [0.375, 0, 0],  scale: [0.75, 0.75, 0.75], left_rotation: [180, -1, 1, 0] }, animation: { type: rotate, axis: [0,0,1], speed: 1.5 }, interpolation: 2, wall_offset: 0.25 }
+          - { material: WHITE_BANNER, tag: blade_a, transform: { translation: [0.375, 0, 0],  scale: [0.75, 0.75, 0.75], left_rotation: [180, 1, 1, 0] },  animation: { type: rotate, axis: [0,0,1], speed: 1.5 }, interpolation: 2, wall_offset: 0.25 }
           - { material: WHITE_BANNER, tag: blade_b, transform: { translation: [0, 0.375, 0],  scale: [0.75, 0.75, 0.75], left_rotation: [180, 0, 1, 0] },   animation: { type: rotate, axis: [0,0,1], speed: 1.5 }, interpolation: 2, wall_offset: 0.25 }
-          - { material: WHITE_BANNER, tag: blade_c, transform: { translation: [-0.375, 0, 0], scale: [0.75, 0.75, 0.75], left_rotation: [180, 1, 1, 0] },  animation: { type: rotate, axis: [0,0,1], speed: 1.5 }, interpolation: 2, wall_offset: 0.25 }
+          - { material: WHITE_BANNER, tag: blade_c, transform: { translation: [-0.375, 0, 0], scale: [0.75, 0.75, 0.75], left_rotation: [180, 1, -1, 0] }, animation: { type: rotate, axis: [0,0,1], speed: 1.5 }, interpolation: 2, wall_offset: 0.25 }
           - { material: WHITE_BANNER, tag: blade_d, transform: { translation: [0, -0.375, 0], scale: [0.75, 0.75, 0.75], left_rotation: [180, 1, 0, 0] },  animation: { type: rotate, axis: [0,0,1], speed: 1.5 }, interpolation: 2, wall_offset: 0.25 }
       wall_s_fast:
         display_entities:
-          - { material: WHITE_BANNER, tag: blade_a, transform: { translation: [0.375, 0, 0],  scale: [0.75, 0.75, 0.75], left_rotation: [180, -1, 1, 0] }, animation: { type: rotate, axis: [0,0,1], speed: 5.0 }, interpolation: 1, wall_offset: 0.25 }
+          - { material: WHITE_BANNER, tag: blade_a, transform: { translation: [0.375, 0, 0],  scale: [0.75, 0.75, 0.75], left_rotation: [180, 1, 1, 0] },  animation: { type: rotate, axis: [0,0,1], speed: 5.0 }, interpolation: 1, wall_offset: 0.25 }
           - { material: WHITE_BANNER, tag: blade_b, transform: { translation: [0, 0.375, 0],  scale: [0.75, 0.75, 0.75], left_rotation: [180, 0, 1, 0] },   animation: { type: rotate, axis: [0,0,1], speed: 5.0 }, interpolation: 1, wall_offset: 0.25 }
-          - { material: WHITE_BANNER, tag: blade_c, transform: { translation: [-0.375, 0, 0], scale: [0.75, 0.75, 0.75], left_rotation: [180, 1, 1, 0] },  animation: { type: rotate, axis: [0,0,1], speed: 5.0 }, interpolation: 1, wall_offset: 0.25 }
+          - { material: WHITE_BANNER, tag: blade_c, transform: { translation: [-0.375, 0, 0], scale: [0.75, 0.75, 0.75], left_rotation: [180, 1, -1, 0] }, animation: { type: rotate, axis: [0,0,1], speed: 5.0 }, interpolation: 1, wall_offset: 0.25 }
           - { material: WHITE_BANNER, tag: blade_d, transform: { translation: [0, -0.375, 0], scale: [0.75, 0.75, 0.75], left_rotation: [180, 1, 0, 0] },  animation: { type: rotate, axis: [0,0,1], speed: 5.0 }, interpolation: 1, wall_offset: 0.25 }
       # ── West wall (skull on west face, viewer from east): face +X, spin X ──
       wall_w_stopped:
