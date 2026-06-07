@@ -27,6 +27,10 @@ import java.util.UUID;
  */
 final class BasicMechanism implements Mechanism {
 
+    // Compensates for ArmorStand passenger riding offset (entity height).
+    // Matches BlockShips' customDisplayOffset. Empirically tuned.
+    static final float RIDE_OFFSET = 1.975f;
+
     private final UUID id;
     private final String type;
     private Location pivot;
@@ -34,7 +38,6 @@ final class BasicMechanism implements Mechanism {
     private Matrix4f currentTransform = new Matrix4f(); // identity
 
     final ArmorStand vehicle;
-    final Display parent;
     final List<List<Display>> displaysPerBlock;
     final List<ColliderPair> colliders;
     final List<MechanismBlockData> blocks;
@@ -46,7 +49,7 @@ final class BasicMechanism implements Mechanism {
     MechanismRegistry mechanismRegistry;
 
     BasicMechanism(UUID id, String type, Location pivot,
-                   ArmorStand vehicle, Display parent,
+                   ArmorStand vehicle,
                    List<List<Display>> displaysPerBlock,
                    List<ColliderPair> colliders,
                    List<MechanismBlockData> blocks,
@@ -56,7 +59,6 @@ final class BasicMechanism implements Mechanism {
         this.type = type;
         this.pivot = pivot;
         this.vehicle = vehicle;
-        this.parent = parent;
         this.displaysPerBlock = displaysPerBlock;
         this.colliders = colliders;
         this.blocks = blocks;
@@ -101,6 +103,7 @@ final class BasicMechanism implements Mechanism {
         for (int i = 0; i < blocks.size(); i++) {
             MechanismBlockData mb = blocks.get(i);
             Matrix4f dm = new Matrix4f(rot).mul(mb.localTransform);
+            dm.m31(dm.m31() - RIDE_OFFSET); // compensate ArmorStand passenger riding offset
 
             // Primary display (index 0)
             List<Display> group = displaysPerBlock.get(i);
@@ -256,7 +259,6 @@ final class BasicMechanism implements Mechanism {
             cp.carrier().remove();
             cp.shulker().remove();
         }
-        parent.remove();
         vehicle.remove();
     }
 

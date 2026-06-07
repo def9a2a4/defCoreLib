@@ -101,7 +101,7 @@ public class MechanismRegistry {
             if (b.getType() != Material.AIR) b.setType(Material.AIR, false);
         }
 
-        // 3. Spawn entities
+        // 3. Spawn entities — displays at Y+2.5 to avoid 1-tick ground flash
         Location spawnLoc = pivot.clone().add(0, 2.5, 0);
 
         ArmorStand vehicle = pivot.getWorld().spawn(pivot, ArmorStand.class, as -> {
@@ -110,12 +110,8 @@ public class MechanismRegistry {
             as.addScoreboardTag("corelib:mech:" + mechId + ":vehicle");
         });
 
-        BlockDisplay parentDisplay = pivot.getWorld().spawn(spawnLoc, BlockDisplay.class, d -> {
-            d.setBlock(Bukkit.createBlockData(Material.AIR));
-            d.setTeleportDuration(0); d.setViewRange(64f);
-            d.setPersistent(true); d.setGravity(false);
-            d.addScoreboardTag("corelib:mech:" + mechId + ":parent");
-        });
+        // No parent intermediary — displays mount directly on vehicle.
+        // This avoids stacking riding offsets (parent-on-vehicle + display-on-parent).
 
         List<List<Display>> displaysPerBlock = new ArrayList<>();
         List<ColliderPair> colliders = new ArrayList<>();
@@ -154,17 +150,25 @@ public class MechanismRegistry {
             }
             displaysPerBlock.add(group);
 
-            // Collider
+            // Collider: carrier ArmorStand + Shulker passenger
             if (mb.hasCollision) {
                 final int blockIdx = i;
-                ArmorStand carrier = pivot.getWorld().spawn(spawnLoc, ArmorStand.class, as -> {
+                // Compute initial carrier position (same math as rotate())
+                Vector3f initOff = mb.localTransform.getTranslation(new Vector3f());
+                Location carrierLoc = pivot.clone().add(initOff.x, initOff.y, initOff.z);
+
+                ArmorStand carrier = pivot.getWorld().spawn(carrierLoc, ArmorStand.class, as -> {
                     as.setInvisible(true); as.setGravity(false); as.setSilent(true);
-                    as.setSmall(true); as.setPersistent(true);
+                    as.setPersistent(true); as.setInvulnerable(true);
+                    as.setMarker(true); // zero height → shulker at exact carrier position
                     as.addScoreboardTag("corelib:mech:" + mechId + ":" + blockIdx + ":carrier");
                 });
-                Shulker shulker = pivot.getWorld().spawn(spawnLoc, Shulker.class, s -> {
+                Shulker shulker = pivot.getWorld().spawn(carrierLoc, Shulker.class, s -> {
                     s.setAI(false); s.setInvisible(true); s.setGravity(false);
                     s.setSilent(true); s.setPersistent(true);
+                    s.setCollidable(true);
+                    s.setPeek(0);
+                    s.setAttachedFace(org.bukkit.block.BlockFace.DOWN);
                     s.addScoreboardTag("corelib:mech:" + mechId + ":" + blockIdx + ":collider");
                 });
                 carrier.addPassenger(shulker);
@@ -174,7 +178,7 @@ public class MechanismRegistry {
         }
 
         // 4. Create mechanism, register colliders
-        BasicMechanism mech = new BasicMechanism(mechId, type, pivot, vehicle, parentDisplay,
+        BasicMechanism mech = new BasicMechanism(mechId, type, pivot, vehicle,
             displaysPerBlock, colliders, blockData, registry, serializer);
         mech.mechanismRegistry = this;
 
@@ -182,12 +186,11 @@ public class MechanismRegistry {
             colliderIndex.put(cp.shulker().getUniqueId(), new ColliderRef(mech, cp.blockIndex()));
         }
 
-        // 5. 1-tick delay: mount passengers, set initial transforms
+        // 5. 1-tick delay: mount displays directly on vehicle, set initial transforms
         Bukkit.getScheduler().runTaskLater(plugin, () -> {
             for (var group : displaysPerBlock) {
-                for (Display d : group) parentDisplay.addPassenger(d);
+                for (Display d : group) vehicle.addPassenger(d);
             }
-            vehicle.addPassenger(parentDisplay);
             mech.rotate(0);
         }, 1L);
 
@@ -235,6 +238,7 @@ public class MechanismRegistry {
                         Matrix4f base = new Matrix4f(mech.currentTransform())
                             .mul(mb.localTransform)
                             .mul(BasicMechanism.transformToMatrix(dec.transform()));
+                        base.m31(base.m31() - BasicMechanism.RIDE_OFFSET);
                         long tickAge = currentTick - mech.startTick;
                         dec.animation().apply(base, tickAge, workMatrix);
                         display.setTransformationMatrix(workMatrix);
