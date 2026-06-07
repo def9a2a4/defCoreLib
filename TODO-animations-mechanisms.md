@@ -121,6 +121,7 @@ ArmorStand vehicle (invisible, yaw frozen at 0°, at pivot)
 
 ```java
 void rotate(float yaw) {
+    checkMainThread();
     this.currentYaw = yaw;
     // Negate for JOML convention
     Matrix4f rot = new Matrix4f().rotateY((float) Math.toRadians(-yaw));
@@ -128,9 +129,23 @@ void rotate(float yaw) {
 
     // Update each display group's transform
     for (int i = 0; i < blocks.size(); i++) {
-        Matrix4f dm = new Matrix4f(rot).mul(blocks.get(i).localTransform);
-        for (Display d : displaysPerBlock.get(i)) {
-            d.setTransformationMatrix(dm);
+        MechanismBlockData mb = blocks.get(i);
+        Matrix4f dm = new Matrix4f(rot).mul(mb.localTransform);
+
+        // Primary display (index 0): rot * localTransform
+        displaysPerBlock.get(i).get(0).setTransformationMatrix(dm);
+
+        // Additional displays (index 1+): rot * localTransform * decTransform
+        // Skip animated ones — tickMechanisms() handles those each tick
+        if (mb.displayEntityConfigs != null) {
+            for (int d = 0; d < mb.displayEntityConfigs.size(); d++) {
+                int displayIdx = d + 1;
+                if (displayIdx >= displaysPerBlock.get(i).size()) break;
+                var dec = mb.displayEntityConfigs.get(d);
+                if (dec.animation() != null) continue; // tick loop handles animated
+                Matrix4f extra = new Matrix4f(dm).mul(transformToMatrix(dec.transform()));
+                displaysPerBlock.get(i).get(displayIdx).setTransformationMatrix(extra);
+            }
         }
     }
 
@@ -183,33 +198,160 @@ void setBlockState(int index, String newState) {
 ### Assembly
 
 ```java
-public Mechanism assembleMechanism(String type, List<Block> blocks, Location pivot) {
+public Mechanism assembleMechanism(String type, List<Block> blocks, Location pivot,
+                                   @Nullable MechanismSerializer serializer) {
+    UUID mechId = UUID.randomUUID();
     List<MechanismBlockData> blockData = new ArrayList<>();
 
     // 1. Snapshot each block
     for (Block block : blocks) {
-        // ... snapshot BlockData, localTransform, custom state, particles,
-        //     displayEntityConfigs, container inventory (deep-copy ItemStack[])
-        // For custom heads: call registry.onBlockRemoved(block, chb) to clean tracking
+        BlockData bd = block.getBlockData();
+        Matrix4f local = new Matrix4f().translation(
+            block.getX() - (float) pivot.getX(),
+            block.getY() - (float) pivot.getY(),
+            block.getZ() - (float) pivot.getZ());
+
+        String customType = null, customState = null;
+        List<DisplayEntityConfig> decs = null;
+        ParticleConfig particles = null;
+        Inventory storage = null;
+
+        CustomHeadBlock chb = registry.getTypeFromBlock(block);
+        if (chb != null) {
+            customType = chb.fullId();
+            customState = registry.getState(block);
+            decs = chb.resolveDisplayEntities(customState);
+            particles = chb.resolveParticles(customState);
+            // Snapshot container inventory (deep-copy)
+            if (chb.storage() != null) {
+                storage = Bukkit.createInventory(null, chb.storage().layout().slots);
+                registry.loadInventoryFromPDC(block, storage);
+                for (int s = 0; s < storage.getSize(); s++) {
+                    ItemStack item = storage.getItem(s);
+                    if (item != null) storage.setItem(s, item.clone());
+                }
+            }
+            registry.onBlockRemoved(block, chb); // clean all static tracking
+        } else if (block.getState() instanceof Container c) {
+            Inventory orig = c.getInventory();
+            storage = Bukkit.createInventory(null, orig.getSize());
+            for (int s = 0; s < orig.getSize(); s++) {
+                ItemStack item = orig.getItem(s);
+                if (item != null) storage.setItem(s, item.clone());
+            }
+        }
+
+        blockData.add(new MechanismBlockData(bd, local, true, 1.0f,
+            customType, customState, decs, particles, storage));
     }
 
     // 2. Two-pass block removal (prevents item drops from attachables losing support)
-    //    Pass 1: remove attachable blocks (banners, signs, torches, buttons, etc.)
-    //    Pass 2: remove solid blocks
-    //    (copy attachable detection from BlockShips BlockStructureScanner.java)
+    //    Pass 1: remove attachable blocks (banners, signs, torches, etc.)
+    for (Block b : blocks) if (FragileBlocks.isAttachable(b.getType())) b.setType(Material.AIR, false);
+    //    Pass 2: remove remaining solid blocks
+    for (Block b : blocks) if (b.getType() != Material.AIR) b.setType(Material.AIR, false);
 
-    // 3. Spawn entities
-    //    - Vehicle: invisible ArmorStand at pivot, yaw=0
-    //    - Parent: BlockDisplay(AIR), invisible
-    //    - Per block: primary display + additional displays from display_entities config
-    //      -> BlockDisplay for vanilla blocks, ItemDisplay for custom heads
-    //      -> Spawn all at Y+2.5 offset to avoid ground flash
-    //    - Per collision block: carrier ArmorStand + Shulker passenger
-    //    - Tag everything: "corelib:mech:{uuid}:{index}:{role}"
+    // 3. Spawn entities — all at Y+2.5 offset to avoid 1-tick ground flash
+    Location spawnLoc = pivot.clone().add(0, 2.5, 0);
 
-    // 4. 1-tick delay: mount displays to parent, parent to vehicle, call rotate(0)
+    ArmorStand vehicle = pivot.getWorld().spawn(pivot, ArmorStand.class, as -> {
+        as.setInvisible(true); as.setGravity(false); as.setSilent(true);
+        as.setPersistent(true); as.setRotation(0, 0); // yaw frozen at 0
+        as.addScoreboardTag("corelib:mech:" + mechId + ":vehicle");
+    });
 
-    // 5. Register in activeMechanisms, return mechanism
+    BlockDisplay parent = pivot.getWorld().spawn(spawnLoc, BlockDisplay.class, d -> {
+        d.setBlock(Bukkit.createBlockData(Material.AIR));
+        d.setTeleportDuration(0); d.setViewRange(64f);
+        d.setPersistent(true); d.setGravity(false);
+        d.addScoreboardTag("corelib:mech:" + mechId + ":parent");
+    });
+
+    List<List<Display>> displaysPerBlock = new ArrayList<>();
+    List<ColliderPair> colliders = new ArrayList<>();
+
+    for (int i = 0; i < blockData.size(); i++) {
+        MechanismBlockData mb = blockData.get(i);
+        List<Display> group = new ArrayList<>();
+
+        // Primary display
+        Display primary;
+        if (mb.customTypeId != null) {
+            CustomHeadBlock chbType = registry.getType(mb.customTypeId);
+            String tex = chbType.resolveTexture(mb.customState, 0, null);
+            primary = spawnMechDisplay(spawnLoc, HeadUtil.createHead(tex, 1), mechId, i, "display");
+        } else {
+            primary = spawnMechBlockDisplay(spawnLoc, mb.blockData, mechId, i, "display");
+        }
+        group.add(primary);
+
+        // Additional displays from display_entities config
+        if (mb.displayEntityConfigs != null) {
+            for (int d = 0; d < mb.displayEntityConfigs.size(); d++) {
+                var dec = mb.displayEntityConfigs.get(d);
+                ItemStack item = HeadUtil.createHead(dec.itemTexture(), 1);
+                Display extra = spawnMechDisplay(spawnLoc, item, mechId, i, "extra_" + d);
+                if (dec.interpolationDuration() != 0)
+                    extra.setInterpolationDuration(dec.interpolationDuration());
+                group.add(extra);
+            }
+        }
+        displaysPerBlock.add(group);
+
+        // Collider: carrier ArmorStand + Shulker passenger
+        if (mb.hasCollision) {
+            ArmorStand carrier = pivot.getWorld().spawn(spawnLoc, ArmorStand.class, as -> {
+                as.setInvisible(true); as.setGravity(false); as.setSilent(true);
+                as.setSmall(true); as.setPersistent(true);
+                as.addScoreboardTag("corelib:mech:" + mechId + ":" + i + ":carrier");
+            });
+            Shulker shulker = pivot.getWorld().spawn(spawnLoc, Shulker.class, s -> {
+                s.setAI(false); s.setInvisible(true); s.setGravity(false);
+                s.setSilent(true); s.setPersistent(true);
+                s.addScoreboardTag("corelib:mech:" + mechId + ":" + i + ":collider");
+            });
+            carrier.addPassenger(shulker);
+            colliders.add(new ColliderPair(carrier, shulker, i));
+            colliderIndex.put(shulker.getUniqueId(), new ColliderRef(mech, i));
+        }
+    }
+
+    // 4. 1-tick delay: mount passengers, set initial transforms
+    BasicMechanism mech = new BasicMechanism(mechId, type, pivot, vehicle, parent,
+        displaysPerBlock, colliders, blockData, registry, serializer);
+    Bukkit.getScheduler().runTaskLater(plugin, () -> {
+        for (var group : displaysPerBlock)
+            for (Display d : group) parent.addPassenger(d);
+        vehicle.addPassenger(parent);
+        mech.rotate(0); // sets all transforms to identity * localTransform [* decTransform]
+    }, 1L);
+
+    activeMechanisms.put(mechId, mech);
+    return mech;
+}
+
+// Helper: spawn ItemDisplay with standard mechanism properties
+private ItemDisplay spawnMechDisplay(Location loc, ItemStack item,
+                                      UUID mechId, int blockIdx, String role) {
+    return loc.getWorld().spawn(loc, ItemDisplay.class, d -> {
+        d.setItemStack(item);
+        d.setTeleportDuration(0); d.setShadowRadius(0f); d.setShadowStrength(0f);
+        d.setViewRange(64f); d.setPersistent(true); d.setGravity(false);
+        d.setInterpolationDuration(2);
+        d.addScoreboardTag("corelib:mech:" + mechId + ":" + blockIdx + ":" + role);
+    });
+}
+
+// Helper: spawn BlockDisplay for vanilla blocks
+private BlockDisplay spawnMechBlockDisplay(Location loc, BlockData data,
+                                            UUID mechId, int blockIdx, String role) {
+    return loc.getWorld().spawn(loc, BlockDisplay.class, d -> {
+        d.setBlock(data);
+        d.setTeleportDuration(0); d.setShadowRadius(0f); d.setShadowStrength(0f);
+        d.setViewRange(64f); d.setPersistent(true); d.setGravity(false);
+        d.setInterpolationDuration(2);
+        d.addScoreboardTag("corelib:mech:" + mechId + ":" + blockIdx + ":" + role);
+    });
 }
 ```
 
@@ -272,6 +414,28 @@ private void placeBlock(Block target, MechanismBlockData mb, float snappedYaw) {
 }
 ```
 
+### `dropBlockAsItem()` — used when disassembly target is obstructed by a solid block
+
+```java
+private void dropBlockAsItem(Location loc, MechanismBlockData mb) {
+    ItemStack drop;
+    if (mb.customTypeId != null) {
+        CustomHeadBlock type = registry.getType(mb.customTypeId);
+        drop = (type != null) ? type.createItem(1) : new ItemStack(mb.blockData.getMaterial());
+    } else {
+        drop = new ItemStack(mb.blockData.getMaterial());
+    }
+    loc.getWorld().dropItemNaturally(loc.clone().add(0.5, 0.5, 0.5), drop);
+    // Container inventory: also drop all stored items
+    if (mb.storage != null) {
+        for (ItemStack item : mb.storage.getContents()) {
+            if (item != null && !item.getType().isAir())
+                loc.getWorld().dropItemNaturally(loc.clone().add(0.5, 0.5, 0.5), item);
+        }
+    }
+}
+```
+
 ### FragileBlocks
 
 Copy from BlockShips `FragileBlocks.java`. Static `Set<Material>` containing ~80 materials:
@@ -320,7 +484,10 @@ void tickMechanisms() {
                     Display display = displays.get(displayIdx);
                     if (!display.isValid()) continue;
 
+                    // Must include localTransform — without it, animated displays
+                    // cluster at the pivot instead of at their respective blocks
                     Matrix4f base = new Matrix4f(mech.currentTransform)
+                        .mul(mb.localTransform)
                         .mul(transformToMatrix(dec.transform()));
                     long tickAge = currentTick - mech.startTick;
                     dec.animation().apply(base, tickAge, workMatrix);
@@ -378,19 +545,31 @@ public void onEntityDamage(EntityDamageEvent event) {
 
 ### Required API changes
 
-**`CustomHeadBlock.java`** — two new callbacks:
+**`CustomHeadBlock.java`** — two new callbacks + a functional interface:
 ```java
-private final @Nullable BiConsumer<Block, String> onStateChanged;    // (block, newState)
-private final @Nullable Consumer<Block> onBlockRemoved;              // (block)
+@FunctionalInterface
+public interface StateChangeHandler {
+    void accept(Block block, String oldState, String newState);
+}
+
+private final @Nullable StateChangeHandler onStateChanged;
+private final @Nullable BiConsumer<Block, String> onBlockRemoved;  // (block, lastState)
 // + builder methods + accessors
 ```
+
+`onStateChanged` receives both old and new state — enables delta logic (e.g., sound only on `closed→open`).
+`onBlockRemoved` receives the block's last known state — enables cleanup based on what state the block was in.
 
 **`CustomBlockRegistry.java`** — visibility + callback wiring:
 - `restoreBlock()`: private → **public**
 - `applyConfig()`: package-private → **public**
 - `onBlockRemoved()`: package-private → **public**
-- At end of `transitionState()`: invoke `type.onStateChanged()` if non-null
-- At start of `onBlockRemoved()`: invoke `type.onBlockRemoved()` callback if non-null
+- At end of `transitionState()`: invoke `type.onStateChanged().accept(block, fromState, toState)` if non-null
+- At start of `onBlockRemoved()`: read state from PDC, invoke `type.onBlockRemoved().accept(block, state)` if non-null
+
+**Thread safety:** `BasicMechanism` mutating methods (`move`, `rotate`, `setBlockState`, `disassemble`,
+`destroy`) call `checkMainThread()` at entry — throws `IllegalStateException` if `!Bukkit.isPrimaryThread()`.
+Read-only accessors (`id`, `pivot`, `blockCount`, `getCurrentYaw`, `getBlock`) are safe from any thread.
 
 ---
 
@@ -421,25 +600,63 @@ Already generalized to `Display` supertype. `spawnBlock()` added for BlockDispla
 
 ## Part 5: Door Demo
 
-### Block type
+### Wiring
 
-Custom head block `demo:door_controller` registered from `DoorDemo.java` inside defCoreLib:
+`DoorDemo.java` is instantiated in `CoreLibPlugin.onEnable()` with constructor injection:
 
 ```java
-CustomHeadBlock.builder("demo", "door_controller")
-    .name(Component.text("Door Controller"))
-    .texture("...hinge_texture...")
-    .drops(DropRule.self())
-    .defaultState("closed")
-    .states(Map.of("closed", StateConfig.empty(), "open", StateConfig.empty()))
-    .redstone(new RedstoneConfig(Sensitivity.BINARY, PowerReader.EXTENDED, Map.of(), Map.of()))
-    .transitions(/* closed→open on power 1-15, open→closed on power 0 */)
-    .onStateChanged((block, newState) -> {
-        if ("open".equals(newState)) openDoor(block);
-        else closeDoor(block);
-    })
-    .onBlockRemoved(block -> cleanupDoor(block))
-    .build();
+// CoreLibPlugin.onEnable():
+MechanismRegistry mechRegistry = new MechanismRegistry(this, registry);
+mechRegistry.startTasks();  // register tickMechanisms() timer
+DoorDemo doorDemo = new DoorDemo(this, registry, mechRegistry);
+doorDemo.register();
+```
+
+```java
+// DoorDemo.java
+class DoorDemo {
+    private final JavaPlugin plugin;
+    private final CustomBlockRegistry registry;
+    private final MechanismRegistry mechRegistry;
+    private final Map<LocationKey, Mechanism> activeDoors = new HashMap<>();
+    private final Map<LocationKey, BukkitTask> activeTasks = new HashMap<>();
+
+    DoorDemo(JavaPlugin plugin, CustomBlockRegistry registry, MechanismRegistry mechRegistry) {
+        this.plugin = plugin;
+        this.registry = registry;
+        this.mechRegistry = mechRegistry;
+    }
+
+    void register() {
+        registry.register(buildDoorController());
+    }
+    // ... openDoor, closeDoor, cleanupDoor, floodFill methods below
+}
+```
+
+### Block type
+
+```java
+private CustomHeadBlock buildDoorController() {
+    return CustomHeadBlock.builder("demo", "door_controller")
+        .name(Component.text("Door Controller"))
+        .texture("...hinge_texture...")
+        .drops(DropRule.self())
+        .defaultState("closed")
+        .states(Map.of("closed", StateConfig.empty(), "open", StateConfig.empty()))
+        .redstone(new RedstoneConfig(Sensitivity.BINARY, PowerReader.EXTENDED, Map.of(), Map.of()))
+        .transitions(List.of(
+            new StateTransition(new Trigger.RedstonePower(PowerRange.POWERED),
+                "closed", "open", null, 1f, 1f, null, false, 0),
+            new StateTransition(new Trigger.RedstonePower(PowerRange.ZERO),
+                "open", "closed", null, 1f, 1f, null, false, 0)))
+        .onStateChanged((block, oldState, newState) -> {
+            if ("open".equals(newState)) openDoor(block);
+            else if ("closed".equals(newState)) closeDoor(block);
+        })
+        .onBlockRemoved((block, state) -> cleanupDoor(block))
+        .build();
+}
 ```
 
 ### BFS flood fill
@@ -484,12 +701,16 @@ void openDoor(Block head) {
     LocationKey key = LocationKey.of(head);
     cancelExistingTask(key);  // cancel any in-progress animation
 
-    List<Block> planks = floodFill(head, Material.OAK_PLANKS, 256);
-    if (planks.isEmpty()) return;  // no mechanism created, state stays "open" harmlessly
-
-    Mechanism mech = mechanismRegistry.assembleMechanism("demo:door", planks,
-        head.getLocation().add(0.5, 0, 0.5));
-    activeDoors.put(key, mech);
+    // Reuse existing mechanism if planks are already assembled
+    // (happens when close animation is interrupted mid-rotation)
+    Mechanism mech = activeDoors.get(key);
+    if (mech == null) {
+        List<Block> planks = floodFill(head, Material.OAK_PLANKS, 256);
+        if (planks.isEmpty()) return;  // no mechanism created, state stays "open" harmlessly
+        mech = mechanismRegistry.assembleMechanism("demo:door", planks,
+            head.getLocation().add(0.5, 0, 0.5), null);
+        activeDoors.put(key, mech);
+    }
 
     float startYaw = mech.getCurrentYaw();
     float targetYaw = 90f;
