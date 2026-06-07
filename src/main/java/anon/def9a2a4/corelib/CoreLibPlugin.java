@@ -105,10 +105,11 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         CustomHeadBlock type = registry.getType(typeId);
         if (type == null) return;
 
+        BlockFace placedOn = getAttachmentFace(block);
+
         // Check placement restrictions
         if (type.placement() != null) {
             CustomHeadBlock.PlacementConfig pc = type.placement();
-            BlockFace placedOn = getAttachmentFace(block);
             if (!pc.allowedFaces().isEmpty() && !pc.allowedFaces().contains(placedOn)) {
                 event.setCancelled(true);
                 event.getPlayer().sendMessage(
@@ -137,8 +138,14 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
             block.getWorld().playSound(block.getLocation().add(0.5, 0.5, 0.5), s.sound(), s.volume(), s.pitch());
         }
 
-        // Apply initial config
-        String state = type.defaultState();
+        // Apply initial config — use placement face to pick starting state if mapped
+        String resolvedState = type.defaultState();
+        var psm = type.placementStateMap();
+        if (psm != null) {
+            String mapped = psm.get(placedOn);
+            if (mapped != null) resolvedState = mapped;
+        }
+        final String state = resolvedState;
         int power = type.sensitivity() != CustomHeadBlock.Sensitivity.NONE ? registry.readPower(block, type) : 0;
 
         // Schedule for next tick to ensure block state is fully initialized

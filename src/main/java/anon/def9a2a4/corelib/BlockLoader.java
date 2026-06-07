@@ -102,6 +102,18 @@ public final class BlockLoader {
             b.placement(new CustomHeadBlock.PlacementConfig(faces, placementSec.getBoolean("require_solid")));
         }
 
+        // Placement face → initial state map
+        ConfigurationSection psmSec = sec.getConfigurationSection("placement_state_map");
+        if (psmSec != null) {
+            Map<BlockFace, String> psm = new HashMap<>();
+            for (String faceStr : psmSec.getKeys(false)) {
+                BlockFace face = BlockFace.valueOf(faceStr.toUpperCase());
+                String stateName = psmSec.getString(faceStr);
+                if (stateName != null) psm.put(face, stateName);
+            }
+            if (!psm.isEmpty()) b.placementStateMap(psm);
+        }
+
         // Storage
         ConfigurationSection storageSec = sec.getConfigurationSection("storage");
         if (storageSec != null) {

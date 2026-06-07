@@ -350,6 +350,165 @@ blocks:
             - { type: bob, amplitude: 0.08, period: 50 }
         interpolation: 2
 
+  # ─── 16. Windmill ────────────────────────────────────────────────────────────
+  # Features: orientation-aware placement (placement_state_map), multi-entity
+  # rigid-body rotation (pre-multiply R × base), state-based speed toggle.
+  # Floor → blades spin around Y. N/S wall → around Z. E/W wall → around X.
+  # Note: wall blades are centered at block center (no per-face offset support yet),
+  # so they sit half-inside the wall — acceptable for a demo.
+  windmill:
+    name: "&aWindmill"
+    lore:
+      - "&7Right-click to toggle spin speed"
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzNmYjdjOTJmZTE2NDlkNzZjNGFkOTc5ZWZjZDJjNDYwYjJlOTBiMjMyMGEyMzNlZjg1MTMzZGQ1NmJlZDg2YSJ9fX0="
+    drops: self
+    break_sound: { sound: BLOCK_WOOD_BREAK, volume: 0.8, pitch: 1.0 }
+    place_sound: { sound: BLOCK_WOOD_PLACE, volume: 0.8, pitch: 1.2 }
+    default_state: floor_stopped
+    placement_state_map:
+      DOWN: floor_stopped
+      NORTH: wall_ns_stopped
+      SOUTH: wall_ns_stopped
+      EAST: wall_ew_stopped
+      WEST: wall_ew_stopped
+    states:
+      # ── Floor placement: blades in XZ plane, spin around Y ──────────────
+      floor_stopped:
+        display_entities:
+          - texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzNmYjdjOTJmZTE2NDlkNzZjNGFkOTc5ZWZjZDJjNDYwYjJlOTBiMjMyMGEyMzNlZjg1MTMzZGQ1NmJlZDg2YSJ9fX0="
+            tag: blade_a
+            transform: { translation: [0, 0.55, 0], scale: [0.7, 0.1, 0.1] }
+          - texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzNmYjdjOTJmZTE2NDlkNzZjNGFkOTc5ZWZjZDJjNDYwYjJlOTBiMjMyMGEyMzNlZjg1MTMzZGQ1NmJlZDg2YSJ9fX0="
+            tag: blade_b
+            transform: { translation: [0, 0.55, 0], scale: [0.1, 0.1, 0.7] }
+      floor_slow:
+        display_entities:
+          - texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzNmYjdjOTJmZTE2NDlkNzZjNGFkOTc5ZWZjZDJjNDYwYjJlOTBiMjMyMGEyMzNlZjg1MTMzZGQ1NmJlZDg2YSJ9fX0="
+            tag: blade_a
+            transform: { translation: [0, 0.55, 0], scale: [0.7, 0.1, 0.1] }
+            animation: { type: rotate, axis: [0, 1, 0], speed: 1.5 }
+            interpolation: 2
+          - texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzNmYjdjOTJmZTE2NDlkNzZjNGFkOTc5ZWZjZDJjNDYwYjJlOTBiMjMyMGEyMzNlZjg1MTMzZGQ1NmJlZDg2YSJ9fX0="
+            tag: blade_b
+            transform: { translation: [0, 0.55, 0], scale: [0.1, 0.1, 0.7] }
+            animation: { type: rotate, axis: [0, 1, 0], speed: 1.5 }
+            interpolation: 2
+      floor_fast:
+        display_entities:
+          - texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzNmYjdjOTJmZTE2NDlkNzZjNGFkOTc5ZWZjZDJjNDYwYjJlOTBiMjMyMGEyMzNlZjg1MTMzZGQ1NmJlZDg2YSJ9fX0="
+            tag: blade_a
+            transform: { translation: [0, 0.55, 0], scale: [0.7, 0.1, 0.1] }
+            animation: { type: rotate, axis: [0, 1, 0], speed: 5.0 }
+            interpolation: 1
+          - texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzNmYjdjOTJmZTE2NDlkNzZjNGFkOTc5ZWZjZDJjNDYwYjJlOTBiMjMyMGEyMzNlZjg1MTMzZGQ1NmJlZDg2YSJ9fX0="
+            tag: blade_b
+            transform: { translation: [0, 0.55, 0], scale: [0.1, 0.1, 0.7] }
+            animation: { type: rotate, axis: [0, 1, 0], speed: 5.0 }
+            interpolation: 1
+      # ── N/S wall placement: blades in XY plane, spin around Z ───────────
+      wall_ns_stopped:
+        display_entities:
+          - texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzNmYjdjOTJmZTE2NDlkNzZjNGFkOTc5ZWZjZDJjNDYwYjJlOTBiMjMyMGEyMzNlZjg1MTMzZGQ1NmJlZDg2YSJ9fX0="
+            tag: blade_a
+            transform: { translation: [0, 0, 0], scale: [0.7, 0.1, 0.1] }
+          - texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzNmYjdjOTJmZTE2NDlkNzZjNGFkOTc5ZWZjZDJjNDYwYjJlOTBiMjMyMGEyMzNlZjg1MTMzZGQ1NmJlZDg2YSJ9fX0="
+            tag: blade_b
+            transform: { translation: [0, 0, 0], scale: [0.1, 0.7, 0.1] }
+      wall_ns_slow:
+        display_entities:
+          - texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzNmYjdjOTJmZTE2NDlkNzZjNGFkOTc5ZWZjZDJjNDYwYjJlOTBiMjMyMGEyMzNlZjg1MTMzZGQ1NmJlZDg2YSJ9fX0="
+            tag: blade_a
+            transform: { translation: [0, 0, 0], scale: [0.7, 0.1, 0.1] }
+            animation: { type: rotate, axis: [0, 0, 1], speed: 1.5 }
+            interpolation: 2
+          - texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzNmYjdjOTJmZTE2NDlkNzZjNGFkOTc5ZWZjZDJjNDYwYjJlOTBiMjMyMGEyMzNlZjg1MTMzZGQ1NmJlZDg2YSJ9fX0="
+            tag: blade_b
+            transform: { translation: [0, 0, 0], scale: [0.1, 0.7, 0.1] }
+            animation: { type: rotate, axis: [0, 0, 1], speed: 1.5 }
+            interpolation: 2
+      wall_ns_fast:
+        display_entities:
+          - texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzNmYjdjOTJmZTE2NDlkNzZjNGFkOTc5ZWZjZDJjNDYwYjJlOTBiMjMyMGEyMzNlZjg1MTMzZGQ1NmJlZDg2YSJ9fX0="
+            tag: blade_a
+            transform: { translation: [0, 0, 0], scale: [0.7, 0.1, 0.1] }
+            animation: { type: rotate, axis: [0, 0, 1], speed: 5.0 }
+            interpolation: 1
+          - texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzNmYjdjOTJmZTE2NDlkNzZjNGFkOTc5ZWZjZDJjNDYwYjJlOTBiMjMyMGEyMzNlZjg1MTMzZGQ1NmJlZDg2YSJ9fX0="
+            tag: blade_b
+            transform: { translation: [0, 0, 0], scale: [0.1, 0.7, 0.1] }
+            animation: { type: rotate, axis: [0, 0, 1], speed: 5.0 }
+            interpolation: 1
+      # ── E/W wall placement: blades in YZ plane, spin around X ───────────
+      wall_ew_stopped:
+        display_entities:
+          - texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzNmYjdjOTJmZTE2NDlkNzZjNGFkOTc5ZWZjZDJjNDYwYjJlOTBiMjMyMGEyMzNlZjg1MTMzZGQ1NmJlZDg2YSJ9fX0="
+            tag: blade_a
+            transform: { translation: [0, 0, 0], scale: [0.1, 0.7, 0.1] }
+          - texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzNmYjdjOTJmZTE2NDlkNzZjNGFkOTc5ZWZjZDJjNDYwYjJlOTBiMjMyMGEyMzNlZjg1MTMzZGQ1NmJlZDg2YSJ9fX0="
+            tag: blade_b
+            transform: { translation: [0, 0, 0], scale: [0.1, 0.1, 0.7] }
+      wall_ew_slow:
+        display_entities:
+          - texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzNmYjdjOTJmZTE2NDlkNzZjNGFkOTc5ZWZjZDJjNDYwYjJlOTBiMjMyMGEyMzNlZjg1MTMzZGQ1NmJlZDg2YSJ9fX0="
+            tag: blade_a
+            transform: { translation: [0, 0, 0], scale: [0.1, 0.7, 0.1] }
+            animation: { type: rotate, axis: [1, 0, 0], speed: 1.5 }
+            interpolation: 2
+          - texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzNmYjdjOTJmZTE2NDlkNzZjNGFkOTc5ZWZjZDJjNDYwYjJlOTBiMjMyMGEyMzNlZjg1MTMzZGQ1NmJlZDg2YSJ9fX0="
+            tag: blade_b
+            transform: { translation: [0, 0, 0], scale: [0.1, 0.1, 0.7] }
+            animation: { type: rotate, axis: [1, 0, 0], speed: 1.5 }
+            interpolation: 2
+      wall_ew_fast:
+        display_entities:
+          - texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzNmYjdjOTJmZTE2NDlkNzZjNGFkOTc5ZWZjZDJjNDYwYjJlOTBiMjMyMGEyMzNlZjg1MTMzZGQ1NmJlZDg2YSJ9fX0="
+            tag: blade_a
+            transform: { translation: [0, 0, 0], scale: [0.1, 0.7, 0.1] }
+            animation: { type: rotate, axis: [1, 0, 0], speed: 5.0 }
+            interpolation: 1
+          - texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzNmYjdjOTJmZTE2NDlkNzZjNGFkOTc5ZWZjZDJjNDYwYjJlOTBiMjMyMGEyMzNlZjg1MTMzZGQ1NmJlZDg2YSJ9fX0="
+            tag: blade_b
+            transform: { translation: [0, 0, 0], scale: [0.1, 0.1, 0.7] }
+            animation: { type: rotate, axis: [1, 0, 0], speed: 5.0 }
+            interpolation: 1
+    transitions:
+      - trigger: { type: interact }
+        from: floor_stopped
+        to: floor_slow
+        sound: BLOCK_WOOD_BUTTON_CLICK_ON
+      - trigger: { type: interact }
+        from: floor_slow
+        to: floor_fast
+        sound: BLOCK_WOOD_BUTTON_CLICK_ON
+      - trigger: { type: interact }
+        from: floor_fast
+        to: floor_stopped
+        sound: BLOCK_WOOD_BUTTON_CLICK_OFF
+      - trigger: { type: interact }
+        from: wall_ns_stopped
+        to: wall_ns_slow
+        sound: BLOCK_WOOD_BUTTON_CLICK_ON
+      - trigger: { type: interact }
+        from: wall_ns_slow
+        to: wall_ns_fast
+        sound: BLOCK_WOOD_BUTTON_CLICK_ON
+      - trigger: { type: interact }
+        from: wall_ns_fast
+        to: wall_ns_stopped
+        sound: BLOCK_WOOD_BUTTON_CLICK_OFF
+      - trigger: { type: interact }
+        from: wall_ew_stopped
+        to: wall_ew_slow
+        sound: BLOCK_WOOD_BUTTON_CLICK_ON
+      - trigger: { type: interact }
+        from: wall_ew_slow
+        to: wall_ew_fast
+        sound: BLOCK_WOOD_BUTTON_CLICK_ON
+      - trigger: { type: interact }
+        from: wall_ew_fast
+        to: wall_ew_stopped
+        sound: BLOCK_WOOD_BUTTON_CLICK_OFF
+
   # ─── 15. Pulsing Orb ─────────────────────────────────────────────────
   # Features: animated display entity (pulse scale), state-based animation change.
   pulsing_orb:

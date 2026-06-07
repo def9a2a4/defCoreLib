@@ -25,12 +25,23 @@ public interface DisplayAnimation {
 final class Animations {
     private Animations() {}
 
-    /** Continuous rotation around an axis. */
+    /** Continuous rotation around an axis.
+     *
+     * <p>Uses pre-multiply (R × base) so the entire display — including its
+     * translation offset from the block center — rotates as a rigid body.
+     * This is required for anisotropic-scale displays (e.g. blade-shaped) to
+     * maintain their shape while rotating, and for multiple displays that
+     * should orbit together as a unit.
+     *
+     * <p>For displays whose translation lies on the rotation axis (e.g. a
+     * crystal at [0, 0.8, 0] rotating around Y), pre- and post-multiply are
+     * visually equivalent — the center is unaffected by the rotation.
+     */
     static DisplayAnimation rotate(Vector3f axis, float degreesPerTick) {
         float radiansPerTick = (float) Math.toRadians(degreesPerTick);
         Vector3f norm = new Vector3f(axis).normalize();
         return (base, tickAge, output) -> {
-            output.set(base).rotate(radiansPerTick * tickAge, norm.x, norm.y, norm.z);
+            new Matrix4f().rotate(radiansPerTick * tickAge, norm.x, norm.y, norm.z).mul(base, output);
         };
     }
 

@@ -241,6 +241,9 @@ public final class CustomHeadBlock {
     // Redstone
     private final @Nullable RedstoneConfig redstone;
 
+    // Placement-face → initial state mapping
+    private final @Nullable Map<BlockFace, String> placementStateMap;
+
     // Cached capability checks
     private final boolean _hasDisplayEntities;
     private final boolean _hasLight;
@@ -281,6 +284,7 @@ public final class CustomHeadBlock {
         this.states = Map.copyOf(b.states);
         this.transitions = List.copyOf(b.transitions);
         this.redstone = b.redstone;
+        this.placementStateMap = b.placementStateMap != null ? Map.copyOf(b.placementStateMap) : null;
         this.onNeighborChange = b.onNeighborChange;
         this.onTick = b.onTick;
         this.onChunkLoadCallback = b.onChunkLoadCallback;
@@ -332,6 +336,7 @@ public final class CustomHeadBlock {
 
     public @Nullable RedstoneConfig redstone() { return redstone; }
     public Sensitivity sensitivity() { return redstone != null ? redstone.sensitivity() : Sensitivity.NONE; }
+    public @Nullable Map<BlockFace, String> placementStateMap() { return placementStateMap; }
 
     public @Nullable BiConsumer<Block, BlockFace> onNeighborChange() { return onNeighborChange; }
     public @Nullable Consumer<Block> onTick() { return onTick; }
@@ -496,6 +501,7 @@ public final class CustomHeadBlock {
         private final List<StateTransition> transitions = new ArrayList<>();
 
         private @Nullable RedstoneConfig redstone;
+        private @Nullable Map<BlockFace, String> placementStateMap;
 
         private @Nullable BiConsumer<Block, BlockFace> onNeighborChange;
         private @Nullable Consumer<Block> onTick;
@@ -586,6 +592,12 @@ public final class CustomHeadBlock {
             return this;
         }
 
+        /** Map placement attachment faces to initial states (overrides defaultState at placement time). */
+        public Builder placementStateMap(Map<BlockFace, String> map) {
+            this.placementStateMap = map;
+            return this;
+        }
+
         /** Set power range→texture map (e.g., for BINARY: {0→off, 1-15→on}). */
         public Builder redstoneTextureRanges(Map<PowerRange, String> ranges) {
             if (this.redstone == null) throw new IllegalStateException("Call redstone() first");
@@ -621,6 +633,13 @@ public final class CustomHeadBlock {
                 }
                 if (!states.containsKey(t.toState())) {
                     throw new IllegalStateException("Transition references unknown state '" + t.toState() + "'");
+                }
+            }
+            if (placementStateMap != null) {
+                for (String s : placementStateMap.values()) {
+                    if (!states.containsKey(s)) {
+                        throw new IllegalStateException("placementStateMap references unknown state '" + s + "'");
+                    }
                 }
             }
             return new CustomHeadBlock(this);
