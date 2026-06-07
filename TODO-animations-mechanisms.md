@@ -1,77 +1,15 @@
-# Design: Animations + Mechanisms (v3)
+# Design: Animations + Mechanisms (v4)
 
-## Part 1: Display Entity Animations
+## Part 1: Display Entity Animations ✅ COMPLETE
 
-### API
+Implemented and committed. Key files:
+- `DisplayAnimation.java` — `@FunctionalInterface` + `Animations` factory (rotate, bob, pulse, orbit, compose)
+- `CustomHeadBlock.DisplayEntityConfig` — gained `animation` + `interpolationDuration` fields
+- `BlockLoader.java` — recursive `parseAnimation(Map)`, `display_entities` in state overrides
+- `CustomBlockRegistry.java` — `animationTracked` map, `tickAnimations()` per tick, chunk load re-registration
+- `DisplayUtil.java` — generalized to `Display` supertype, added `spawnBlock()` for BlockDisplay
 
-```java
-// New file: DisplayAnimation.java
-@FunctionalInterface
-public interface DisplayAnimation {
-    /** Apply animation to a base transform. tickAge = ticks since animation started.
-     *  Mutates output (not base). */
-    void apply(Matrix4f base, long tickAge, Matrix4f output);
-}
-
-// Factory methods (same pattern as Triggers class)
-public final class Animations {
-    public static DisplayAnimation rotate(Vector3f axis, float degreesPerTick) { ... }
-    public static DisplayAnimation bob(float amplitude, int periodTicks) { ... }
-    public static DisplayAnimation pulse(float minScale, float maxScale, int periodTicks) { ... }
-    public static DisplayAnimation orbit(float radius, int periodTicks, Vector3f axis) { ... }
-    public static DisplayAnimation compose(DisplayAnimation... layers) { ... }
-}
-```
-
-Animation is an imperative transform: `(base, tickAge) → writes output`. Works identically in static and mechanism mode — just receives a different base matrix. The animation doesn't know which mode it's in.
-
-### Data model changes
-
-```java
-// Extend existing DisplayEntityConfig:
-record DisplayEntityConfig(
-    String itemTexture,
-    Transformation transform,
-    @Nullable String tagSuffix,
-    @Nullable DisplayAnimation animation,  // NEW
-    int interpolationDuration              // NEW: default 2
-) {}
-```
-
-### YAML format
-
-```yaml
-display_entities:
-  - texture: "crystal_base64..."
-    tag: crystal
-    transform: { translation: [0, 0.5, 0], scale: [0.5, 0.5, 0.5] }
-    animation:
-      type: compose
-      layers:
-        - { type: rotate, axis: [0, 1, 0], speed: 3.0 }
-        - { type: bob, amplitude: 0.1, period: 40 }
-    interpolation: 4
-```
-
-### Registry changes
-
-- All animation tracking lives in `CustomBlockRegistry` (alongside existing tracking maps — `LocationKey` is private)
-- New tracking map: `Map<LocationKey, List<AnimationTracked>> animationTracked`
-- `AnimationTracked`: display entity reference, animation, startTick, base Matrix4f
-- New tick method: `tickAnimations()` — every tick, evaluate animation, call `display.setTransformationMatrix(result)` (confirmed working in Paper via BlockShips)
-- `DisplayUtil.spawn()`: if animation present, set `interpolationDuration` at spawn
-- On block removal: `onBlockRemoved()` must also clean `animationTracked`
-- On chunk unload: clean `animationTracked` entries (same `removeIf` pattern as other maps)
-- On chunk load: find existing display entities via `DisplayUtil.findByTag()`, re-register in `animationTracked` with fresh `startTick` (phase reset is fine for periodic animations like rotate/bob/pulse)
-
-Note: display entities persist naturally via Minecraft entity NBT (`setPersistent(true)`). Only the plugin's tracking map needs restoration on chunk load.
-
-### Files
-- New: `DisplayAnimation.java` (~100 lines: interface + Animations factory)
-- Modified: `CustomHeadBlock.java` (DisplayEntityConfig fields)
-- Modified: `BlockLoader.java` (parse animation config via recursive `parseAnimation(Map)`)
-- Modified: `CustomBlockRegistry.java` (animationTracked map, tickAnimations, cleanup in onBlockRemoved + onChunkUnload, re-registration in onChunkLoad/restoreBlock)
-- Modified: `DisplayUtil.java` (interpolation params at spawn)
+Pre-multiply fix applied to `Animations.rotate()` for rigid-body rotation of anisotropic-scale displays.
 
 ---
 
@@ -79,289 +17,312 @@ Note: display entities persist naturally via Minecraft entity NBT (`setPersisten
 
 ### Design principles
 
-1. **CoreLib creates the full passenger chain** (vehicle → parent → displays) by default, matching BlockShips' battle-tested approach
-2. **Consumer moves the mechanism via `move()`/`rotate()`** — one call moves displays AND colliders
-3. **Animations and particles tick independently** of consumer movement calls
-4. **Custom head blocks inside mechanisms keep working** — state transitions, particles, animations — via a **separate mechanism-aware code path** (no world Skull exists)
-5. **Persistence via YAML** with consumer hook for extra data
-6. **Shulker collision is axis-aligned** — colliders only match visuals at 90° increments (inherent Minecraft limitation, same as BlockShips)
+1. **Passenger chain** (vehicle → parent → displays) matching BlockShips' battle-tested approach
+2. **Consumer moves via `move()`/`rotate()`** — one call moves displays AND colliders
+3. **Yaw-only** — no pitch. Simplifies disassembly (90° snap). Pitch can be added later.
+4. **Animations and particles tick independently** of consumer movement calls
+5. **Custom head blocks inside mechanisms keep working** via a separate code path (no world Skull)
+6. **Multiple displays per block** — `List<List<Display>>`, supports `display_entities` configs
+7. **No redstone inside mechanisms** — state only changes via `setBlockState()` / player interaction
+8. **Shulker collision is axis-aligned** — colliders only match visuals at 90° increments
+9. **Persistence deferred** — not in initial pass, but tag format + data structures ready for bolt-on
 
 ### Core API
 
 ```java
-// Mechanism.java — the handle returned by assembly
+// Mechanism.java
 public interface Mechanism {
     UUID id();
-    String type();             // consumer-provided: "blockships:ship", "doors:iron_door"
+    String type();             // consumer-provided: "demo:door", "blockships:ship"
     Location pivot();
     int blockCount();
+    float getCurrentYaw();
 
-    // --- Movement (moves displays + colliders together) ---
-    void move(Location position, float yaw, float pitch);
-    void teleport(Location position);
-    void rotate(float yaw, float pitch);
+    // --- Movement ---
+    void move(Location position, float yaw);  // teleport vehicle + rotate
+    void rotate(float yaw);                   // pivot stays, only transform updates
 
-    // --- Per-block state (for custom head blocks) ---
+    // --- Per-block state ---
     MechanismBlockData getBlock(int index);
-    @Nullable String getBlockState(int index);
     void setBlockState(int index, String state);
 
-    // --- Animation support ---
-    void applyAnimation(int blockIndex, Matrix4f baseTransform, long tickAge, Matrix4f output);
-
-    // --- Storage (containers inside mechanisms) ---
+    // --- Storage ---
     @Nullable Inventory getStorage(int blockIndex);
 
     // --- Lifecycle ---
-    void disassemble();        // restore blocks to world, resume static tracking
-    void destroy();            // remove all entities without restoring blocks
+    void disassemble();        // restore blocks to world
+    void destroy();            // remove all entities without restoring
 
-    // --- Entity access (for advanced consumers) ---
+    // --- Entity access ---
     ArmorStand vehicle();
-    List<Display> displays();
+    List<List<Display>> displays();   // outer = per block, inner = primary + display_entities
     List<ColliderPair> colliders();
-
-    // --- Re-parenting (e.g., attach to a minecart) ---
     void setVehicle(Entity newVehicle);
 }
 
-// Block snapshot — state is mutable (transitions), rest is final
-record MechanismBlockData(
-    BlockData blockData,
-    Matrix4f localTransform,
-    boolean hasCollision,
-    float collisionScale,
-    @Nullable String customTypeId,
-    String customState,                    // mutable via setBlockState()
-    @Nullable DisplayAnimation animation,
-    @Nullable ParticleConfig particles,
-    @Nullable Inventory storage            // NEW: snapshotted container contents
-) {}
-
-// Carrier + shulker pair for collision
 record ColliderPair(ArmorStand carrier, Shulker shulker, int blockIndex) {}
 ```
 
-### How `move()` works internally
+### MechanismBlockData
+
+Not a record — needs mutable fields for state transitions:
 
 ```java
-void move(Location position, float yaw, float pitch) {
-    // 1. Teleport vehicle — must use TeleportCompat pattern!
-    //    Pre-1.21.9: entity.teleport() silently fails with passengers.
-    //    Eject passengers, teleport, re-add. (BlockShips TeleportCompat.java:75-101)
-    TeleportCompat.teleport(vehicle, position);
-
-    // 2. Compute rotation matrix from yaw + pitch
-    Matrix4f rotation = computeRotation(yaw, pitch);
-    this.currentTransform = rotation;
-
-    // 3. Reposition all colliders (NOT passengers — independent carriers)
-    for (ColliderPair cp : colliders) {
-        Vector3f worldOffset = rotation.transformPosition(
-            blocks.get(cp.blockIndex).localTransform.getTranslation(new Vector3f()));
-        TeleportCompat.teleport(cp.carrier,
-            position.clone().add(worldOffset.x, worldOffset.y, worldOffset.z));
-    }
+public final class MechanismBlockData {
+    public final BlockData blockData;
+    public final Matrix4f localTransform;     // offset from pivot
+    public final boolean hasCollision;
+    public final float collisionScale;
+    public final @Nullable String customTypeId;
+    public String customState;                // mutable — setBlockState()
+    public @Nullable List<DisplayEntityConfig> displayEntityConfigs;
+    public @Nullable ParticleConfig particles;
+    public @Nullable Inventory storage;       // deep-copied ItemStack[] at assembly
 }
 ```
 
-`currentTransform` initialized to identity matrix in constructor (not null — avoids NPE before first `move()` call).
+### Yaw sign convention
+
+**JOML vs Minecraft yaw:** JOML `rotateY(+angle)` is CCW from above (right-hand rule).
+Minecraft positive yaw is CW from above. Must negate:
+
+```java
+Matrix4f rot = new Matrix4f().rotateY((float) Math.toRadians(-yaw));
+```
+
+BlockShips does the same negation (ShipInstance.java:1347).
+
+### Entity chain (from BlockShips)
+
+```
+ArmorStand vehicle (invisible, yaw frozen at 0°, at pivot)
+  └─ BlockDisplay parent (AIR, invisible, coordinate anchor)
+      ├─ Display block[0] primary (BlockDisplay for vanilla, ItemDisplay for custom head)
+      ├─ Display block[0] extra[0] (from display_entities config, if any)
+      ├─ Display block[1] primary
+      └─ ...
+```
+
+**Critical patterns:**
+- **1-tick delay** for passenger mounting (`runTaskLater(plugin, 1L)`) — mounting in same tick causes issues
+- **Vehicle yaw frozen at 0** — all rotation via display transforms, avoids ArmorStand jitter
+- **Spawn displays at Y+2.5 offset** — prevents 1-tick flash at ground level before mounting
+- **All displays get:** `setTeleportDuration(0)`, `setShadowRadius(0f)`, `setShadowStrength(0f)`,
+  `setViewRange(64f)`, `setPersistent(true)`, `setGravity(false)`, `setInterpolationDuration(2)`
+- **Colliders are independent** (NOT passengers) — carrier ArmorStands teleported via TeleportCompat
+
+### How `rotate()` works
+
+```java
+void rotate(float yaw) {
+    this.currentYaw = yaw;
+    // Negate for JOML convention
+    Matrix4f rot = new Matrix4f().rotateY((float) Math.toRadians(-yaw));
+    this.currentTransform = rot;
+
+    // Update each display group's transform
+    for (int i = 0; i < blocks.size(); i++) {
+        Matrix4f dm = new Matrix4f(rot).mul(blocks.get(i).localTransform);
+        for (Display d : displaysPerBlock.get(i)) {
+            d.setTransformationMatrix(dm);
+        }
+    }
+
+    // Reposition collider carriers (independent entities)
+    for (ColliderPair cp : colliders) {
+        Vector3f worldOff = rot.transformPosition(
+            blocks.get(cp.blockIndex()).localTransform.getTranslation(new Vector3f()),
+            new Vector3f());
+        TeleportCompat.teleport(cp.carrier(),
+            pivot.clone().add(worldOff.x, worldOff.y, worldOff.z));
+    }
+}
+
+void move(Location pos, float yaw) {
+    TeleportCompat.teleport(vehicle, pos);
+    this.pivot = pos;
+    rotate(yaw);
+}
+```
+
+`currentTransform` initialized to identity in constructor (avoids NPE before first rotate).
 
 ### Mechanism state transitions (separate from static applyConfig)
-
-Static blocks use `applyConfig()` which calls `HeadUtil.applyTexture(block, ...)` — requires a Skull in the world. Mechanism blocks have no world Skull. State transitions in mechanisms use a **separate code path**:
 
 ```java
 void setBlockState(int index, String newState) {
     MechanismBlockData mb = blocks.get(index);
-    if (mb.customTypeId() == null) return;
-    CustomHeadBlock type = registry.getType(mb.customTypeId());
+    if (mb.customTypeId == null) return;
+    CustomHeadBlock type = registry.getType(mb.customTypeId);
 
-    // 1. Update state in MechanismBlockData (not PDC — no skull exists)
     mb.customState = newState;
 
-    // 2. Update display entity IN-PLACE (do NOT remove+respawn — breaks passenger chain)
-    Display display = displays.get(index);
-    if (display instanceof ItemDisplay id) {
-        String texture = type.resolveTexture(newState, 0, null);
-        id.setItemStack(HeadUtil.createHead(texture, 1));
+    // Update primary display (skull texture)
+    Display primary = displaysPerBlock.get(index).get(0);
+    if (primary instanceof ItemDisplay id) {
+        String tex = type.resolveTexture(newState, 0, null);
+        id.setItemStack(HeadUtil.createHead(tex, 1));
     }
 
-    // 3. Update particle config for this block
-    ParticleConfig pc = type.resolveParticles(newState);
-    mb.particles = pc;  // mechanism tick will use updated config
+    // Update configs for tick loop
+    mb.particles = type.resolveParticles(newState);
+    mb.displayEntityConfigs = type.resolveDisplayEntities(newState);
 
-    // 4. Update animation config
-    // Animation resolves per-state from DisplayEntityConfig
-    List<DisplayEntityConfig> decs = type.resolveDisplayEntities(newState);
-    // ... update animation reference if changed
-
-    // No light blocks (no static world position)
-    // No skull texture (no skull)
-    // No PDC writes (no PDC)
-}
-```
-
-### Independent particle + animation ticks
-
-Particles and animations tick on their own schedule, NOT inside `move()`. This means they keep running even when the mechanism is stationary.
-
-```java
-// In MechanismRegistry.tickMechanisms() — runs every tick
-for (Mechanism mech : activeMechanisms) {
-    // Particles
-    for (int i = 0; i < mech.blockCount(); i++) {
-        ParticleConfig pc = mech.getBlock(i).particles();
-        if (pc == null) continue;
-        // Use cached transform from last move() call (initialized to identity)
-        Vector3f worldPos = mech.currentTransform.transformPosition(
-            mech.getBlock(i).localTransform.getTranslation(new Vector3f()));
-        Location loc = mech.pivot().clone().add(worldPos.x, worldPos.y, worldPos.z);
-        // spawn particle at loc + oriented offset
-    }
-
-    // Animations
-    for (int i = 0; i < mech.blockCount(); i++) {
-        DisplayAnimation anim = mech.getBlock(i).animation();
-        if (anim == null) continue;
-        Matrix4f base = new Matrix4f(mech.currentTransform).mul(mech.getBlock(i).localTransform());
-        anim.apply(base, tickAge, workMatrix);
-        mech.displays().get(i).setTransformationMatrix(workMatrix);
-    }
+    // NOTE: if display entity count changes between states, additional displays
+    // are NOT spawned/removed in this initial implementation. Only the primary
+    // display and the config references are updated. Known limitation.
 }
 ```
 
 ### Assembly
 
 ```java
-public Mechanism assembleMechanism(String type, List<Block> blocks, Location pivot,
-                                    @Nullable MechanismSerializer serializer) {
+public Mechanism assembleMechanism(String type, List<Block> blocks, Location pivot) {
     List<MechanismBlockData> blockData = new ArrayList<>();
 
     // 1. Snapshot each block
     for (Block block : blocks) {
-        BlockData bd = block.getBlockData();
-        Matrix4f local = computeLocalTransform(block, pivot);
-
-        // Check if it's a custom head block
-        String customType = null, customState = null;
-        DisplayAnimation animation = null;
-        ParticleConfig particles = null;
-        Inventory storage = null;
-        CustomHeadBlock chb = getTypeFromBlock(block);
-        if (chb != null) {
-            customType = chb.fullId();
-            customState = getState(block);
-            // Read resolved config from current state
-            particles = chb.resolveParticles(customState);
-            // animation from resolved DisplayEntityConfig
-            List<DisplayEntityConfig> decs = chb.resolveDisplayEntities(customState);
-            if (decs != null && !decs.isEmpty()) {
-                animation = decs.get(0).animation(); // TODO: per-display animation
-            }
-            // Snapshot container inventory if storage block
-            if (chb.storage() != null) {
-                storage = snapshotInventory(block, chb);
-            }
-            // Remove from ALL static tracking maps
-            onBlockRemoved(block, chb);
-        } else if (block.getState() instanceof Container container) {
-            // Vanilla container (chest, barrel, etc.)
-            storage = snapshotVanillaInventory(container);
-        }
-
-        blockData.add(new MechanismBlockData(bd, local, true, 1.0f,
-            customType, customState, animation, particles, storage));
-        block.setType(Material.AIR);
+        // ... snapshot BlockData, localTransform, custom state, particles,
+        //     displayEntityConfigs, container inventory (deep-copy ItemStack[])
+        // For custom heads: call registry.onBlockRemoved(block, chb) to clean tracking
     }
 
-    // 2. Spawn entities
-    ArmorStand vehicle = spawnVehicle(pivot);
-    Display parent = spawnInvisibleParent(pivot);
-    List<Display> displays = new ArrayList<>();
-    List<ColliderPair> colliders = new ArrayList<>();
-    UUID mechId = UUID.randomUUID();
+    // 2. Two-pass block removal (prevents item drops from attachables losing support)
+    //    Pass 1: remove attachable blocks (banners, signs, torches, buttons, etc.)
+    //    Pass 2: remove solid blocks
+    //    (copy attachable detection from BlockShips BlockStructureScanner.java)
 
-    for (int i = 0; i < blockData.size(); i++) {
-        MechanismBlockData mb = blockData.get(i);
+    // 3. Spawn entities
+    //    - Vehicle: invisible ArmorStand at pivot, yaw=0
+    //    - Parent: BlockDisplay(AIR), invisible
+    //    - Per block: primary display + additional displays from display_entities config
+    //      -> BlockDisplay for vanilla blocks, ItemDisplay for custom heads
+    //      -> Spawn all at Y+2.5 offset to avoid ground flash
+    //    - Per collision block: carrier ArmorStand + Shulker passenger
+    //    - Tag everything: "corelib:mech:{uuid}:{index}:{role}"
 
-        // Spawn display (BlockDisplay for vanilla, ItemDisplay for custom heads)
-        Display display = spawnMechanismDisplay(mb, pivot, mechId, i);
-        parent.addPassenger(display);
-        displays.add(display);
+    // 4. 1-tick delay: mount displays to parent, parent to vehicle, call rotate(0)
 
-        // Spawn collider if needed
-        if (mb.hasCollision()) {
-            ArmorStand carrier = spawnCarrier(pivot, mechId, i);
-            Shulker shulker = spawnColliderShulker(carrier, mb.collisionScale(), mechId, i);
-            colliders.add(new ColliderPair(carrier, shulker, i));
-        }
-    }
-
-    vehicle.addPassenger(parent);
-
-    // 3. Create mechanism, register, return
-    BasicMechanism mech = new BasicMechanism(mechId, type, pivot, vehicle, parent,
-        displays, colliders, blockData, serializer);
-    mech.currentTransform = new Matrix4f(); // identity — avoids NPE before first move()
-    mechanismRegistry.put(mechId, mech);
-    return mech;
+    // 5. Register in activeMechanisms, return mechanism
 }
 ```
 
-### Disassembly
+### Disassembly — three-tier placement
 
 ```java
 void disassemble() {
-    // 1. Snap rotation to nearest 90°
     float snappedYaw = Math.round(currentYaw / 90f) * 90f;
-    Matrix4f rotation = computeRotation(snappedYaw, 0);
+    Matrix4f rotation = new Matrix4f().rotateY((float) Math.toRadians(-snappedYaw));
 
-    // 2. Place blocks back
     for (int i = 0; i < blocks.size(); i++) {
         MechanismBlockData mb = blocks.get(i);
-        Vector3f worldOffset = rotation.transformPosition(mb.localTransform().getTranslation(new Vector3f()));
+        Vector3f worldOffset = rotation.transformPosition(
+            mb.localTransform.getTranslation(new Vector3f()), new Vector3f());
         Location blockLoc = pivot.clone().add(
             Math.round(worldOffset.x), Math.round(worldOffset.y), Math.round(worldOffset.z));
-        Block block = blockLoc.getBlock();
+        Block target = blockLoc.getBlock();
 
-        // Place with rotated block data
-        block.setBlockData(rotateBlockData(mb.blockData(), snappedYaw));
-
-        // Restore custom head block state
-        if (mb.customTypeId() != null) {
-            CustomHeadBlock type = registry.getType(mb.customTypeId());
-            if (type != null) {
-                // markBlock + restoreBlock + applyConfig handles all 11 restoration items:
-                // PDC, texture, light, display entities, redstone, particles,
-                // neighbor, tick, location tracking, chunk hints
-                registry.markBlock(block, type);
-                if (mb.customState() != null) registry.setState(block, mb.customState());
-                int power = registry.readPower(block, type);
-                registry.applyConfig(block, type, mb.customState(), power);
-                registry.restoreBlock(block, type, mb.customState());
-                // Restore container inventory to skull PDC
-                if (mb.storage() != null && type.storage() != null) {
-                    registry.restoreInventoryToPDC(block, mb.storage());
-                }
-            }
-        } else if (mb.storage() != null && block.getState() instanceof Container container) {
-            // Restore vanilla container inventory
-            container.getSnapshotInventory().setContents(mb.storage().getContents());
-            container.update();
+        if (target.getType().isAir() || target.getType() == Material.WATER
+                || target.getType() == Material.LAVA) {
+            // AIR / liquid: place directly
+            placeBlock(target, mb, snappedYaw);
+        } else if (FragileBlocks.isFragile(target.getType())) {
+            // FRAGILE (grass, flowers, leaves, etc.): break world block, place ours
+            target.breakNaturally();  // drops the fragile block's items
+            placeBlock(target, mb, snappedYaw);
+        } else {
+            // SOLID: world block wins — play small explosion, drop mechanism block as item
+            target.getWorld().spawnParticle(Particle.EXPLOSION,
+                blockLoc.clone().add(0.5, 0.5, 0.5), 1);
+            dropBlockAsItem(blockLoc, mb);
         }
     }
 
-    // 3. Remove all entities
-    displays.forEach(Entity::remove);
+    // Remove all entities
+    for (var displayGroup : displaysPerBlock) displayGroup.forEach(Entity::remove);
     colliders.forEach(cp -> { cp.carrier().remove(); cp.shulker().remove(); });
     parent.remove();
     vehicle.remove();
 
-    // 4. Clean up
     mechanismRegistry.remove(id);
-    deletePersistenceFile();
-    if (serializer != null) serializer.onDisassemble(this);
+}
+
+private void placeBlock(Block target, MechanismBlockData mb, float snappedYaw) {
+    target.setBlockData(rotateBlockData(mb.blockData, snappedYaw));
+    if (mb.customTypeId != null) {
+        CustomHeadBlock type = registry.getType(mb.customTypeId);
+        if (type != null) {
+            registry.markBlock(target, type);
+            if (mb.customState != null) registry.setState(target, mb.customState);
+            int power = registry.readPower(target, type);
+            registry.applyConfig(target, type, mb.customState, power);
+            registry.restoreBlock(target, type, mb.customState);
+            if (mb.storage != null) registry.restoreInventoryToPDC(target, mb.storage);
+        }
+    } else if (mb.storage != null && target.getState() instanceof Container c) {
+        c.getSnapshotInventory().setContents(mb.storage.getContents());
+        c.update();
+    }
+}
+```
+
+### FragileBlocks
+
+Copy from BlockShips `FragileBlocks.java`. Static `Set<Material>` containing ~80 materials:
+grasses, flowers, crops, mushrooms, leaves, saplings, snow, cobweb, fire, lily pad, sugar cane,
+cactus, bamboo, vines, etc. Static `isFragile(Material)` check.
+
+### `rotateBlockData()`
+
+Copy from BlockShips `BlockStructureScanner.java:104-170`. Handles:
+- **Directional** (stairs, chests, furnaces) — rotate facing
+- **Orientable** (logs, pillars) — swap X↔Z axis on 90/270°
+- **Rotatable** (floor heads, banners, signs) — 16-step rotation (22.5° per step)
+- **MultipleFacing** (fences, walls) — rotate all connected faces
+
+For the door demo (OAK_PLANKS), rotation is a no-op. But needed for general mechanisms.
+
+### Independent particle + animation ticks
+
+```java
+void tickMechanisms() {
+    long currentTick = Bukkit.getServer().getCurrentTick();
+    for (BasicMechanism mech : activeMechanisms.values()) {
+        for (int i = 0; i < mech.blockCount(); i++) {
+            // Skip invalid entities (chunk unloaded, etc.)
+            List<Display> displays = mech.displaysPerBlock.get(i);
+            if (displays.isEmpty() || !displays.get(0).isValid()) continue;
+
+            MechanismBlockData mb = mech.blocks.get(i);
+
+            // Particles
+            if (mb.particles != null) {
+                Vector3f worldPos = mech.currentTransform.transformPosition(
+                    mb.localTransform.getTranslation(new Vector3f()), new Vector3f());
+                Location loc = mech.pivot().clone().add(worldPos.x, worldPos.y, worldPos.z);
+                // spawn particle at loc (respecting interval, count, speed)
+            }
+
+            // Animations (on additional displays from display_entities config)
+            if (mb.displayEntityConfigs != null) {
+                for (int d = 0; d < mb.displayEntityConfigs.size(); d++) {
+                    var dec = mb.displayEntityConfigs.get(d);
+                    if (dec.animation() == null) continue;
+                    // +1 because index 0 in displaysPerBlock is the primary display
+                    int displayIdx = d + 1;
+                    if (displayIdx >= displays.size()) continue;
+                    Display display = displays.get(displayIdx);
+                    if (!display.isValid()) continue;
+
+                    Matrix4f base = new Matrix4f(mech.currentTransform)
+                        .mul(transformToMatrix(dec.transform()));
+                    long tickAge = currentTick - mech.startTick;
+                    dec.animation().apply(base, tickAge, workMatrix);
+                    display.setTransformationMatrix(workMatrix);
+                }
+            }
+        }
+    }
 }
 ```
 
@@ -381,18 +342,16 @@ public void onEntityInteract(PlayerInteractEntityEvent event) {
     int blockIndex = ref.blockIndex();
     MechanismBlockData mb = mech.getBlock(blockIndex);
 
-    // Storage access (containers inside mechanisms)
-    if (mb.storage() != null) {
-        event.getPlayer().openInventory(mb.storage());
+    // Storage
+    if (mb.storage != null) {
+        event.getPlayer().openInventory(mb.storage);
         return;
     }
 
     // Custom block state transitions
-    String typeId = mb.customTypeId();
-    if (typeId == null) return;
-    CustomHeadBlock type = registry.getType(typeId);
+    if (mb.customTypeId == null) return;
+    CustomHeadBlock type = registry.getType(mb.customTypeId);
     if (type == null) return;
-
     // ... handle interact GUI, state transitions via mech.setBlockState()
 }
 ```
@@ -402,8 +361,7 @@ public void onEntityInteract(PlayerInteractEntityEvent event) {
 ```java
 @EventHandler
 public void onEntityDamage(EntityDamageEvent event) {
-    Entity entity = event.getEntity();
-    for (String tag : entity.getScoreboardTags()) {
+    for (String tag : event.getEntity().getScoreboardTags()) {
         if (tag.startsWith("corelib:mech:")) {
             event.setCancelled(true);
             return;
@@ -412,183 +370,244 @@ public void onEntityDamage(EntityDamageEvent event) {
 }
 ```
 
+### Required API changes
+
+**`CustomHeadBlock.java`** — two new callbacks:
+```java
+private final @Nullable BiConsumer<Block, String> onStateChanged;    // (block, newState)
+private final @Nullable Consumer<Block> onBlockRemoved;              // (block)
+// + builder methods + accessors
+```
+
+**`CustomBlockRegistry.java`** — visibility + callback wiring:
+- `restoreBlock()`: private → **public**
+- `applyConfig()`: package-private → **public**
+- `onBlockRemoved()`: package-private → **public**
+- At end of `transitionState()`: invoke `type.onStateChanged()` if non-null
+- At start of `onBlockRemoved()`: invoke `type.onBlockRemoved()` callback if non-null
+
 ---
 
-## Part 3: Mechanism Persistence
+## Part 3: Mechanism Persistence (DEFERRED)
 
-### Per-mechanism YAML file
+Not implemented in initial pass. Structure code for easy bolt-on later:
 
-`plugins/DefCoreLib/mechanisms/{world}/{uuid}.yml`
-```yaml
-id: "550e8400-..."
-type: "blockships:custom_ship"
-pivot: [100.5, 64.0, 200.5]
-yaw: 90.0
-pitch: 0.0
-entity_count: 47
-blocks:
-  - blockdata: "minecraft:oak_log[axis=y]"
-    transform: [1,0,0,-1, 0,1,0,0, 0,0,1,0, 0,0,0,1]
-    collision: true
-    collision_scale: 1.0
-    custom_type: null
-    custom_state: null
-  - blockdata: "minecraft:player_head"
-    transform: [1,0,0,0, 0,1,0,1, 0,0,1,0, 0,0,0,1]
-    collision: true
-    collision_scale: 1.0
-    custom_type: "headsmith:candle"
-    custom_state: "lit"
-inventories:
-  5: "base64item1|base64item2||base64item4"
-```
+- **Tag format** on all entities from day one: `corelib:mech:{uuid}:{blockIndex}:{role}`
+  (roles: `vehicle`, `parent`, `display`, `carrier`, `collider`)
+- **`MechanismSerializer` interface** exists from the start (consumers can register early)
+- **`BasicMechanism`** stores all data needed for serialization (blocks, pivot, yaw, type)
 
-Container inventories serialized via `ItemStack.serializeAsBytes()` → Base64, pipe-delimited per slot (matching BlockShips format).
+When persistence is added later, copy from BlockShips:
+- Per-mechanism YAML at `mechanisms/{world}/{uuid}.yml`
+- Chunk index at `mechanisms/{world}/chunks.yml`
+- Inventory serialization: `ItemStack.serializeAsBytes()` → Base64, pipe-delimited per slot
+- Single-threaded I/O executor for writes
+- Two-pass entity recovery: chunk entities by tag, then `getNearbyEntities(loc, 32, 32, 32)` fallback
+- Late-binding: `pendingMechanisms` map for consumer plugins not yet loaded
 
-### Chunk index
+---
 
-`plugins/DefCoreLib/mechanisms/{world}/chunks.yml`
+## Part 4: DisplayUtil generalization ✅ COMPLETE
 
-Tracks **vehicle chunk only** (not multi-chunk). When vehicle chunk loads, recovery starts. Other chunks recovered incrementally as they load.
+Already generalized to `Display` supertype. `spawnBlock()` added for BlockDisplay.
 
-```yaml
-chunks:
-  "6,12": ["uuid1"]
-  "8,3": ["uuid2", "uuid3"]
-```
+---
 
-Updated when mechanism moves across chunk boundaries via `move()`.
+## Part 5: Door Demo
 
-### I/O executor
+### Block type
 
-Single-threaded executor (`Executors.newSingleThreadExecutor()`) serializes all writes — prevents race conditions from concurrent mechanism movements updating `chunks.yml`. Same pattern as BlockShips' `ShipWorldData`.
-
-### Consumer serialization
+Custom head block `demo:door_controller` registered from `DoorDemo.java` inside defCoreLib:
 
 ```java
-public interface MechanismSerializer {
-    /** Serialize consumer-specific data into the YAML section. */
-    void save(Mechanism mech, ConfigurationSection section);
+CustomHeadBlock.builder("demo", "door_controller")
+    .name(Component.text("Door Controller"))
+    .texture("...hinge_texture...")
+    .drops(DropRule.self())
+    .defaultState("closed")
+    .states(Map.of("closed", StateConfig.empty(), "open", StateConfig.empty()))
+    .redstone(new RedstoneConfig(Sensitivity.BINARY, PowerReader.EXTENDED, Map.of(), Map.of()))
+    .transitions(/* closed→open on power 1-15, open→closed on power 0 */)
+    .onStateChanged((block, newState) -> {
+        if ("open".equals(newState)) openDoor(block);
+        else closeDoor(block);
+    })
+    .onBlockRemoved(block -> cleanupDoor(block))
+    .build();
+```
 
-    /** Restore consumer-specific data from the YAML section. */
-    void restore(Mechanism mech, ConfigurationSection section);
+### BFS flood fill
 
-    /** Called when all entities recovered after server restart. */
-    void onRecoveryComplete(Mechanism mech);
+6-direction cardinal only (use `CARDINAL_FACES` constant, NOT `BlockFace.values()`).
+Seeds from head's 6 neighbors, BFS through `OAK_PLANKS`, max 256 blocks, head excluded.
 
-    /** Called when mechanism is disassembled. */
-    default void onDisassemble(Mechanism mech) {}
+```java
+private static final BlockFace[] CARDINAL_FACES = {
+    BlockFace.NORTH, BlockFace.SOUTH, BlockFace.EAST, BlockFace.WEST,
+    BlockFace.UP, BlockFace.DOWN
+};
+
+List<Block> floodFill(Block origin, Material target, int maxBlocks) {
+    Set<Block> visited = new HashSet<>();
+    Queue<Block> queue = new ArrayDeque<>();
+    visited.add(origin); // exclude head itself
+    for (BlockFace face : CARDINAL_FACES) queue.add(origin.getRelative(face));
+    List<Block> result = new ArrayList<>();
+    while (!queue.isEmpty() && result.size() < maxBlocks) {
+        Block b = queue.poll();
+        if (!visited.add(b) || b.getType() != target) continue;
+        result.add(b);
+        for (BlockFace face : CARDINAL_FACES) queue.add(b.getRelative(face));
+    }
+    return result;
 }
 ```
 
-Uses `ConfigurationSection` instead of `Map<String, Object>` — type-safe, supports `getItemStack()`, `getString()`, etc.
+### Pivot
 
-### Late-binding for missing consumer plugins
+`head.getLocation().add(0.5, 0, 0.5)` — block center in XZ, floor Y. Preserves grid alignment
+at 90° snaps (±0.5 local offsets rotate to ±0.5 → integer positions).
 
-If a mechanism's consumer plugin isn't loaded yet (e.g., BlockShips loads after CoreLib):
+### Smooth rotation
 
-1. CoreLib loads YAML, recovers entities, creates mechanism in `pendingMechanisms` map keyed by type string
-2. When consumer calls `registry.registerMechanismType("blockships:ship", serializer)`, CoreLib hands over all pending mechanisms
-3. Consumer calls `serializer.restore()` and `serializer.onRecoveryComplete()` on each
-
-Note: recovery completion (entity count match) is deferred until a serializer is registered — avoids firing `onRecoveryComplete` with no serializer.
-
-### Save timing
-
-- **Periodic:** async snapshot (main thread) → write (I/O executor), same pattern as chunk hints
-- **On shutdown:** synchronous save all (await executor termination)
-- **On vehicle chunk unload:** save mechanism state
-
-### Recovery sequence
-
-1. **Plugin enable:** load all chunk indices
-2. **Chunk load:** check index → load YAML async → scan chunk entities by tag
-3. **Fallback:** `getNearbyEntities(vehicleLoc, 32, 32, 32)` for cross-chunk entity drift (BlockShips two-pass pattern)
-4. **Incremental:** pending carrier/shulker maps for cross-chunk pairing
-5. **Complete:** entity count matches AND serializer registered → call serializer.onRecoveryComplete()
-
-Entity tag format: `corelib:mech:{uuid}:{blockIndex}:{role}` — roles: display, carrier, collider, vehicle, parent
-
----
-
-## Part 4: DisplayUtil generalization
-
-Currently `DisplayUtil` only handles `ItemDisplay`. Mechanisms need `BlockDisplay` too.
-
-### Changes
+20-tick `runTaskTimer`. Final tick forces exact target angle (90° or 0°).
+Picks up from `mech.getCurrentYaw()` to handle mid-animation interrupts.
 
 ```java
-// Generalize findByTag and removeByTag to Display supertype:
-public static List<Display> findByTag(Location blockLoc, String tagPrefix, double radius)
-public static int removeByTag(Location blockLoc, String tagPrefix, double radius)
+void openDoor(Block head) {
+    LocationKey key = LocationKey.of(head);
+    cancelExistingTask(key);  // cancel any in-progress animation
 
-// Add BlockDisplay spawn method:
-public static BlockDisplay spawnBlock(Location loc, BlockData data,
-                                       Matrix4f transform, String scoreboardTag)
+    List<Block> planks = floodFill(head, Material.OAK_PLANKS, 256);
+    if (planks.isEmpty()) return;  // no mechanism created, state stays "open" harmlessly
 
-// Existing ItemDisplay spawn stays as-is
+    Mechanism mech = mechanismRegistry.assembleMechanism("demo:door", planks,
+        head.getLocation().add(0.5, 0, 0.5));
+    activeDoors.put(key, mech);
+
+    float startYaw = mech.getCurrentYaw();
+    float targetYaw = 90f;
+    int duration = 20;
+    BukkitTask task = Bukkit.getScheduler().runTaskTimer(plugin, new Runnable() {
+        int tick = 0;
+        public void run() {
+            tick++;
+            float yaw = (tick >= duration) ? targetYaw
+                : startYaw + (targetYaw - startYaw) * ((float) tick / duration);
+            mech.rotate(yaw);
+            if (tick >= duration) activeTasks.remove(key).cancel();
+        }
+    }, 0, 1);
+    activeTasks.put(key, task);
+}
+
+void closeDoor(Block head) {
+    LocationKey key = LocationKey.of(head);
+    cancelExistingTask(key);
+
+    Mechanism mech = activeDoors.get(key);
+    if (mech == null) return;  // null guard: no mechanism to close
+
+    float startYaw = mech.getCurrentYaw();
+    float targetYaw = 0f;
+    int duration = 20;
+    BukkitTask task = Bukkit.getScheduler().runTaskTimer(plugin, new Runnable() {
+        int tick = 0;
+        public void run() {
+            tick++;
+            float yaw = (tick >= duration) ? targetYaw
+                : startYaw + (targetYaw - startYaw) * ((float) tick / duration);
+            mech.rotate(yaw);
+            if (tick >= duration) {
+                activeTasks.remove(key).cancel();
+                mech.disassemble();
+                activeDoors.remove(key);
+            }
+        }
+    }, 0, 1);
+    activeTasks.put(key, task);
+}
+
+void cleanupDoor(Block head) {
+    LocationKey key = LocationKey.of(head);
+    cancelExistingTask(key);
+    Mechanism mech = activeDoors.remove(key);
+    if (mech != null) mech.disassemble();
+}
+
+void cancelExistingTask(LocationKey key) {
+    BukkitTask task = activeTasks.remove(key);
+    if (task != null) task.cancel();
+}
+```
+
+### State tracking
+
+```java
+private final Map<LocationKey, Mechanism> activeDoors = new HashMap<>();
+private final Map<LocationKey, BukkitTask> activeTasks = new HashMap<>();
 ```
 
 ---
 
 ## Implementation order
 
-1. **DisplayUtil generalization** — BlockDisplay support, generalize to Display supertype (~20 lines changed)
-2. **DisplayAnimation + Animations** — functional interface, factory methods (~100 lines)
-3. **Animation YAML parsing** — BlockLoader additions, recursive parseAnimation (~30 lines)
-4. **Animation tick** — animationTracked map, tickAnimations, cleanup in onBlockRemoved/onChunkUnload, re-registration in restoreBlock/onChunkLoad (~80 lines)
-5. **TeleportCompat** — eject-teleport-readd utility (~30 lines)
-6. **MechanismBlockData** — record with storage field (~25 lines)
-7. **Mechanism interface** — API contract with storage access (~50 lines)
-8. **BasicMechanism** — implementation: passenger chain, move/rotate (using TeleportCompat), collider positioning, currentTransform init to identity (~250 lines)
-9. **Mechanism state transitions** — separate code path: update MechanismBlockData state + display item in-place, no skull/PDC (~60 lines)
-10. **Assembly** — block snapshot (including container inventory + resolved particles/animation), entity spawn, passenger mounting (~120 lines)
-11. **Disassembly** — block restore via existing markBlock/restoreBlock/applyConfig, container inventory restore, entity cleanup (~100 lines)
-12. **Mechanism particle + animation ticks** — independent of move() (~60 lines)
-13. **Entity protection** — EntityDamageEvent cancellation for mechanism-tagged entities (~15 lines)
-14. **Mechanism interaction** — PlayerInteractEntityEvent on shulker colliders, storage access, state transitions via setBlockState (~50 lines)
-15. **Mechanism persistence** — YAML save/load, inventory serialization, single-threaded I/O executor (~140 lines)
-16. **Chunk index + recovery** — vehicle-chunk tracking, two-pass entity search, incremental pairing (~160 lines)
-17. **Late-binding** — pending mechanism registration, deferred completion callback (~30 lines)
-18. **MechanismSerializer interface** — consumer hook (~15 lines)
+1. ~~DisplayUtil generalization~~ ✅
+2. ~~DisplayAnimation + Animations~~ ✅
+3. ~~Animation YAML parsing~~ ✅
+4. ~~Animation tick~~ ✅
+5. **`CustomHeadBlock` callbacks** — add `onStateChanged` + `onBlockRemoved` (~20 lines)
+6. **`CustomBlockRegistry` visibility** — make `restoreBlock`, `applyConfig`, `onBlockRemoved` public;
+   wire `onStateChanged` at end of `transitionState()`, `onBlockRemoved` callback at start of `onBlockRemoved()` (~15 lines)
+7. **TeleportCompat** — eject-teleport-readd utility, version detection (~30 lines)
+8. **FragileBlocks** — copy from BlockShips, static `Set<Material>` + `isFragile()` (~130 lines)
+9. **`rotateBlockData()`** — copy from BlockShips, handles Directional/Orientable/Rotatable/MultipleFacing (~70 lines)
+10. **MechanismBlockData** — mutable class, not record (~35 lines)
+11. **Mechanism interface** + ColliderPair record (~50 lines)
+12. **BasicMechanism** — rotate (negated yaw), move, setBlockState, disassemble (three-tier), destroy (~300 lines)
+13. **MechanismRegistry** — assembly (two-pass removal, 1-tick mount, spawn offset), tick (isValid checks),
+    collider index (~350 lines)
+14. **MechanismSerializer interface** — consumer hook, stub for persistence (~15 lines)
+15. **CoreLibPlugin wiring** — EntityDamageEvent protection, PlayerInteractEntityEvent on shulkers (~40 lines)
+16. **DoorDemo** — block registration, BFS, rotation scheduling, task management, cleanup (~150 lines)
 
-### New files (~750 lines)
-- `DisplayAnimation.java` — interface + Animations factory
-- `Mechanism.java` — interface
-- `BasicMechanism.java` — implementation
-- `MechanismBlockData.java` — record (with mutable state + storage)
-- `MechanismSerializer.java` — consumer hook interface
-- `MechanismRegistry.java` — tracking, persistence, recovery, ticks
-- `TeleportCompat.java` — passenger-safe teleport utility
+### New files (~1050 lines)
+- `TeleportCompat.java` (~30) — passenger-safe teleport
+- `FragileBlocks.java` (~130) — fragile block set (from BlockShips)
+- `Mechanism.java` (~50) — public API interface
+- `MechanismBlockData.java` (~35) — mutable block snapshot
+- `BasicMechanism.java` (~300) — implementation
+- `MechanismRegistry.java` (~350) — assembly, tracking, ticks
+- `MechanismSerializer.java` (~15) — consumer hook interface
+- `DoorDemo.java` (~150) — door controller demo
 
 ### Modified files
-- `DisplayUtil.java` — generalize to Display, add BlockDisplay
-- `CustomHeadBlock.java` — DisplayEntityConfig animation field
-- `BlockLoader.java` — parse animation config
-- `CustomBlockRegistry.java` — animationTracked map + tick + cleanup, assembleMechanism delegation
-- `CoreLibPlugin.java` — EntityDamageEvent, PlayerInteractEntityEvent, mechanism chunk load
-
-### Estimated total: ~1050 lines new + ~120 lines modified
+- `CustomHeadBlock.java` — `onStateChanged` + `onBlockRemoved` callbacks
+- `CustomBlockRegistry.java` — public visibility, callback wiring
+- `CoreLibPlugin.java` — EntityDamageEvent, PlayerInteractEntityEvent, DoorDemo wiring
 
 ## Verification
 
-### Animations
-- Demo block with rotating display → smooth rotation
-- Composed bob+rotate → bobs while rotating
-- Break block → animation stops, tracking cleaned
-- Chunk unload + reload → animation resumes (display entity persists, tracking re-registered)
+### Animations ✅
+- Rotating crystal: smooth rotation
+- Composed bob+rotate: bobs while rotating
+- Break block: animation stops, tracking cleaned
+- Chunk reload: animation resumes
 
-### Mechanisms
-- `assembleMechanism()` → blocks disappear, displays + colliders appear as passenger chain
-- `mech.move(loc, yaw, 0)` → everything moves together (TeleportCompat handles passengers)
-- `mech.rotate(90, 0)` → everything rotates together
-- Candle inside mechanism → toggleable via shulker click, particles at correct position
-- Animated display inside mechanism → keeps animating while mechanism moves
-- Container inside mechanism → openable via shulker click, items persist
-- `mech.disassemble()` → blocks restored with correct state, container contents restored
-- Explosion near mechanism → entities protected (damage cancelled)
-- State transition in mechanism → display updated in-place (no remove+respawn)
-- Server restart → entities recovered, mechanism resumes
-- Ship spanning chunks → two-pass recovery + incremental pairing
-- Consumer plugin loads late → pending mechanisms handed over after registration
-- Attach to minecart via `mech.setVehicle()` → displays follow minecart
+### Mechanisms (door demo)
+- Place door controller, surround with oak planks
+- Apply redstone → planks disappear, door rotates 90° CW over 1 second
+- Remove redstone → door rotates back, planks restored to world
+- Shulker colliders block movement through closed door
+- Rapid toggle (power on/off/on) → animation cancels cleanly, no conflicting tasks
+- Break controller while open → disassemble at current yaw, planks restored
+- Break controller while animating → task cancelled, disassemble immediately
+- Planks obstructed while open → three-tier: air=place, fragile=break+place, solid=explosion+drop
+- No planks found on power-on → state says "open" but no mechanism, power-off is harmless (null guard)
+- Server restart → entities lost (persistence deferred), entities tagged for future recovery
+
+### Known limitations (initial pass)
+- `setBlockState()` does not handle display entity count changes between states
+- No persistence — mechanisms lost on server restart
+- No crash recovery during assembly (blocks removed before entities fully spawned)
+- Shared planks between adjacent doors: first-come-first-served, no conflict detection
