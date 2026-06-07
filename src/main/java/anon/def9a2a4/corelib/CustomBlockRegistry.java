@@ -371,7 +371,7 @@ public class CustomBlockRegistry {
                 if (dec.wallOffset() != 0 && block.getType() == Material.PLAYER_WALL_HEAD
                         && block.getBlockData() instanceof Directional wallDir) {
                     Vector wallFacing = wallDir.getFacing().getDirection();
-                    spawnBase = spawnBase.clone().add(wallFacing.multiply(dec.wallOffset()));
+                    spawnBase = spawnBase.clone().subtract(wallFacing.multiply(dec.wallOffset()));
                 }
                 var display = DisplayUtil.spawn(spawnBase, displayItem, dec.transform(), tag);
                 if (dec.interpolationDuration() != 0) {
