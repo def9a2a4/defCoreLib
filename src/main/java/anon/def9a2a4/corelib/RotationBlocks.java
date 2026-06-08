@@ -22,7 +22,7 @@ final class RotationBlocks {
         // Overlay callbacks onto YAML-loaded blocks
         overlayStandard(registry, network, "rotation:shaft",   RotationNetwork.NodeRole.TRANSMITTER, 0, false);
         overlayStandard(registry, network, "rotation:gear",    RotationNetwork.NodeRole.TRANSMITTER, 0, true);
-        overlayGearbox(registry, network);
+        overlayClutch(registry, network);
 
         // Demo windmill is a passive source — detected at network boundary, no callbacks needed
         network.registerPassiveSource("demo:windmill", 1);
@@ -53,11 +53,11 @@ final class RotationBlocks {
     }
 
     // ──────────────────────────────────────────────────────────────────────
-    // Gearbox: same as standard + redstone lock/unlock in onNeighborChange
+    // Clutch: same as standard + redstone lock/unlock in onNeighborChange
     // ──────────────────────────────────────────────────────────────────────
 
-    private static void overlayGearbox(CustomBlockRegistry registry, RotationNetwork network) {
-        String blockId = "rotation:gearbox";
+    private static void overlayClutch(CustomBlockRegistry registry, RotationNetwork network) {
+        String blockId = "rotation:clutch";
         CustomHeadBlock block = registry.getType(blockId);
         if (block == null) {
             registry.getPlugin().getLogger().warning("RotationBlocks: block '" + blockId + "' not found — skipping overlay");

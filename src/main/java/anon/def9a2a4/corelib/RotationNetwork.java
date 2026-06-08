@@ -299,12 +299,14 @@ public class RotationNetwork {
         checkAxisNeighbor(pos, node.axis(), result);
         checkAxisNeighbor(neg, node.axis(), result);
 
-        // Perpendicular: gear-like nodes connect to gear-like neighbors on different axes
+        // Gear-to-gear: connects to ANY adjacent gear (all 6 faces, any axis)
         if (node.gearLike()) {
-            for (CustomBlockRegistry.LocationKey perpKey : perpendicularNeighbors(k, node.axis())) {
-                RotationNode other = nodes.get(perpKey);
-                if (other != null && other.gearLike() && other.axis() != node.axis() && !isLocked(other)) {
-                    result.add(perpKey);
+            for (BlockFace face : CARDINAL_FACES) {
+                CustomBlockRegistry.LocationKey neighbor = faceNeighbor(k, face);
+                if (result.contains(neighbor)) continue; // already added by along-axis check
+                RotationNode other = nodes.get(neighbor);
+                if (other != null && other.gearLike() && !isLocked(other)) {
+                    result.add(neighbor);
                 }
             }
         }
