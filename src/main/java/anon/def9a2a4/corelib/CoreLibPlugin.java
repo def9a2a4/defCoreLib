@@ -805,7 +805,7 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!command.getName().equalsIgnoreCase("defcorelib")) return false;
         if (args.length == 0) {
-            sender.sendMessage(Component.text("Usage: /defcorelib <give|give_demo|list>", NamedTextColor.YELLOW));
+            sender.sendMessage(Component.text("Usage: /defcorelib <give|give_demo|list|colliders>", NamedTextColor.YELLOW));
             return true;
         }
 
@@ -875,6 +875,12 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
                 }
                 sender.sendMessage(Component.text("Gave " + count + " demo blocks", NamedTextColor.GREEN));
             }
+            case "colliders" -> {
+                boolean enabled = !mechanismRegistry.isColliderGlowEnabled();
+                mechanismRegistry.setColliderGlow(enabled);
+                sender.sendMessage(Component.text("Collider glow " + (enabled ? "ON" : "OFF"),
+                    enabled ? NamedTextColor.GREEN : NamedTextColor.RED));
+            }
             default -> sender.sendMessage(Component.text("Unknown subcommand: " + args[0], NamedTextColor.RED));
         }
         return true;
@@ -884,7 +890,7 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         if (!command.getName().equalsIgnoreCase("defcorelib")) return List.of();
         if (args.length == 1) {
-            return List.of("give", "give_demo", "list").stream()
+            return List.of("give", "give_demo", "list", "colliders").stream()
                     .filter(s -> s.startsWith(args[0].toLowerCase()))
                     .toList();
         }

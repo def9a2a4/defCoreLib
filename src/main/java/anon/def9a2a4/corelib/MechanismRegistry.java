@@ -35,6 +35,7 @@ public class MechanismRegistry {
     private final Map<UUID, ColliderRef> colliderIndex = new HashMap<>(); // shulker UUID → ref
 
     private @Nullable BukkitTask tickTask;
+    private boolean colliderGlowEnabled = false;
 
     // Reusable work matrix for animation tick
     private final Matrix4f workMatrix = new Matrix4f();
@@ -205,6 +206,7 @@ public class MechanismRegistry {
                     s.setCollidable(true);
                     s.setPeek(0);
                     s.setAttachedFace(org.bukkit.block.BlockFace.DOWN);
+                    s.setGlowing(colliderGlowEnabled);
                     s.addScoreboardTag("corelib:mech:" + mechId + ":" + blockIdx + ":collider");
                 });
                 carrier.addPassenger(shulker);
@@ -250,6 +252,20 @@ public class MechanismRegistry {
         }
         activeMechanisms.clear();
         colliderIndex.clear();
+    }
+
+    /** Toggle collider debug glow on all active (and future) mechanism shulkers. */
+    public void setColliderGlow(boolean enabled) {
+        this.colliderGlowEnabled = enabled;
+        for (BasicMechanism mech : activeMechanisms.values()) {
+            for (ColliderPair cp : mech.colliders) {
+                if (cp.shulker().isValid()) cp.shulker().setGlowing(enabled);
+            }
+        }
+    }
+
+    public boolean isColliderGlowEnabled() {
+        return colliderGlowEnabled;
     }
 
     private void tickMechanisms() {
