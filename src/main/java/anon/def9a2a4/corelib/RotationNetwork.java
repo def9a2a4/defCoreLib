@@ -90,6 +90,23 @@ public class RotationNetwork {
         this.maxNetworkSize = max;
     }
 
+    /** Returns [supply, demand, blockCount] for the network containing this node, or null. */
+    public int @Nullable [] getNetworkStats(CustomBlockRegistry.LocationKey key) {
+        Integer netId = nodeNetworkId.get(key);
+        if (netId == null) return null;
+        NetworkState state = networks.get(netId);
+        Set<CustomBlockRegistry.LocationKey> members = networkMembers.get(netId);
+        if (state == null || members == null) return null;
+        return new int[]{ state.supply(), state.demand(), members.size() };
+    }
+
+    /** Returns all nodes in the same network as this key, or null. */
+    public @Nullable Set<CustomBlockRegistry.LocationKey> getNetworkMembers(CustomBlockRegistry.LocationKey key) {
+        Integer netId = nodeNetworkId.get(key);
+        if (netId == null) return null;
+        return networkMembers.get(netId);
+    }
+
     // ──────────────────────────────────────────────────────────────────────
     // Recalculation
     // ──────────────────────────────────────────────────────────────────────

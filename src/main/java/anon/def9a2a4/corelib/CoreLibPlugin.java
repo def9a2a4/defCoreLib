@@ -455,6 +455,7 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
     public void onPlayerInteract(PlayerInteractEvent event) {
         if (event.getAction() != Action.RIGHT_CLICK_BLOCK) return;
         if (event.getHand() != EquipmentSlot.HAND) return;
+        if (event.getPlayer().isSneaking()) return; // sneak+right-click = place block
 
         Block block = event.getClickedBlock();
         if (block == null) return;
@@ -832,7 +833,7 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!command.getName().equalsIgnoreCase("defcorelib")) return false;
         if (args.length == 0) {
-            sender.sendMessage(Component.text("Usage: /defcorelib <give|give_demo|list|colliders>", NamedTextColor.YELLOW));
+            sender.sendMessage(Component.text("Usage: /defcorelib <give|give_demo|give_demo_rotation|list|colliders>", NamedTextColor.YELLOW));
             return true;
         }
 
@@ -902,6 +903,23 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
                 }
                 sender.sendMessage(Component.text("Gave " + count + " demo blocks", NamedTextColor.GREEN));
             }
+            case "give_demo_rotation" -> {
+                if (!(sender instanceof Player player)) {
+                    sender.sendMessage(Component.text("Must be a player", NamedTextColor.RED));
+                    return true;
+                }
+                int count = 0;
+                for (CustomHeadBlock type : registry.allTypes()) {
+                    if (type.namespace().equals("rotation")) {
+                        var overflow = player.getInventory().addItem(type.createItem(1));
+                        for (ItemStack lf : overflow.values()) {
+                            player.getWorld().dropItemNaturally(player.getLocation(), lf);
+                        }
+                        count++;
+                    }
+                }
+                sender.sendMessage(Component.text("Gave " + count + " rotation blocks", NamedTextColor.GREEN));
+            }
             case "colliders" -> {
                 boolean enabled = !mechanismRegistry.isColliderGlowEnabled();
                 mechanismRegistry.setColliderGlow(enabled);
@@ -917,7 +935,7 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         if (!command.getName().equalsIgnoreCase("defcorelib")) return List.of();
         if (args.length == 1) {
-            return List.of("give", "give_demo", "list", "colliders").stream()
+            return List.of("give", "give_demo", "give_demo_rotation", "list", "colliders").stream()
                     .filter(s -> s.startsWith(args[0].toLowerCase()))
                     .toList();
         }
