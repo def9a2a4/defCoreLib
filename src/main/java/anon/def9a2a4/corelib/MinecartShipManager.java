@@ -95,12 +95,18 @@ final class MinecartShipManager implements Listener {
             org.bukkit.configuration.file.YamlConfiguration.loadConfiguration(configFile);
         List<String> materialNames = config.getStringList("allowed_blocks");
         Set<Material> mats = EnumSet.noneOf(Material.class);
-        for (String name : materialNames) {
+        for (String rawName : materialNames) {
+            String name = rawName.trim();
+            if (name.isEmpty()) continue;
             boolean startWild = name.startsWith("*");
             boolean endWild = name.endsWith("*");
             int matchesBefore = mats.size();
             if (startWild || endWild) {
                 String pattern = name.replace("*", "").toUpperCase();
+                if (pattern.isEmpty()) {
+                    plugin.getLogger().warning("Minecart ship config: '" + name + "' is too broad (matches all blocks), skipping");
+                    continue;
+                }
                 for (Material mat : Material.values()) {
                     if (!mat.isBlock()) continue;
                     String n = mat.name();

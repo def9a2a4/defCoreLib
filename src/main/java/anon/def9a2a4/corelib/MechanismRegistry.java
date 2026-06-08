@@ -85,12 +85,12 @@ public class MechanismRegistry {
         List<MechanismBlockData> blockData = new ArrayList<>();
 
         // 1. Snapshot each block
+        // Snap pivot XZ to nearest block center so offsets are always integers.
+        // This guarantees rotation by 90° gives exact integers.
+        float snapX = (float)(Math.floor(pivot.getX()) + 0.5);
+        float snapZ = (float)(Math.floor(pivot.getZ()) + 0.5);
         for (Block block : blocks) {
             BlockData bd = block.getBlockData();
-            // Center-to-center offset: snap pivot XZ to nearest block center so offsets
-            // are always integers. This guarantees rotation by 90° gives exact integers.
-            float snapX = (float)(Math.floor(pivot.getX()) + 0.5);
-            float snapZ = (float)(Math.floor(pivot.getZ()) + 0.5);
             Matrix4f local = new Matrix4f().translation(
                 (block.getX() + 0.5f) - snapX,
                 block.getY() - (float) pivot.getY(),
