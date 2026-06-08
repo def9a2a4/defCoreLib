@@ -42,6 +42,7 @@ final class BasicMechanism implements Mechanism {
     final @Nullable MechanismSerializer serializer;
     final long startTick;
     final boolean ownsVehicle; // true if we spawned it (should remove on destroy)
+    final float assemblyYaw; // vehicle yaw at assembly — delta base for updateFromVehicle
 
     // Auto-follow: track vehicle movement for passive vehicles (minecarts on rails)
     private Location previousVehicleLoc;
@@ -71,8 +72,9 @@ final class BasicMechanism implements Mechanism {
         this.registry = registry;
         this.serializer = serializer;
         this.startTick = Bukkit.getServer().getCurrentTick();
+        this.assemblyYaw = vehicle.getLocation().getYaw();
         this.previousVehicleLoc = pivot.clone();
-        this.previousVehicleYaw = 0f;
+        this.previousVehicleYaw = assemblyYaw;
     }
 
     // ──────────────────────────────────────────────────────────────────────
@@ -303,7 +305,11 @@ final class BasicMechanism implements Mechanism {
         if (!moved) return;
 
         this.pivot = loc.clone();
-        rotate(yaw);
+        // Teleport parent to follow vehicle (for non-passenger parent, e.g., minecart path)
+        if (!ownsVehicle) {
+            TeleportCompat.teleport(parent, loc);
+        }
+        rotate(yaw - assemblyYaw);
         previousVehicleLoc = loc.clone();
         previousVehicleYaw = yaw;
     }

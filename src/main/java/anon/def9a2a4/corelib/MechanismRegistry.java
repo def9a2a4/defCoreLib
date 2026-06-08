@@ -223,12 +223,20 @@ public class MechanismRegistry {
             colliderIndex.put(cp.shulker().getUniqueId(), new ColliderRef(mech, cp.blockIndex()));
         }
 
-        // 5. 1-tick delay: mount displays on parent, parent on vehicle, set initial transforms
+        // 5. 1-tick delay: mount displays on parent, set initial transforms.
+        //    For owned vehicles (ArmorStand): parent mounts on vehicle as passenger.
+        //    For external vehicles (minecarts): parent is teleported each tick instead,
+        //    because minecarts silently reject addPassenger for non-living entities at NMS level.
         Bukkit.getScheduler().runTaskLater(plugin, () -> {
             for (var group : displaysPerBlock) {
                 for (Display d : group) parentDisplay.addPassenger(d);
             }
-            vehicle.addPassenger(parentDisplay);
+            if (ownsVehicle) {
+                vehicle.addPassenger(parentDisplay);
+            } else {
+                // Teleport parent to vehicle position; updateFromVehicle() will maintain this each tick
+                TeleportCompat.teleport(parentDisplay, vehicle.getLocation());
+            }
             mech.rotate(0);
         }, 1L);
 

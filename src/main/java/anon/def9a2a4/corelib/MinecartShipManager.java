@@ -41,7 +41,7 @@ final class MinecartShipManager implements Listener {
     };
 
     /** Ride offset for Minecart passengers. Needs empirical tuning. */
-    private static final float MINECART_RIDE_OFFSET = 0.5625f;
+    private static final float MINECART_RIDE_OFFSET = 0f;
 
     private final JavaPlugin plugin;
     private final CustomBlockRegistry registry;
