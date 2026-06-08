@@ -276,6 +276,34 @@ public class MechanismRegistry {
         return colliderGlowEnabled;
     }
 
+    /**
+     * Remove orphaned mechanism entities from a chunk. These are entities tagged
+     * corelib:mech:* from previous sessions where the mechanism was not properly
+     * cleaned up. All mechanism entities have setPersistent(true), so they never
+     * despawn naturally — this cleanup prevents permanent entity leaks.
+     */
+    public void cleanupOrphanedEntities(org.bukkit.Chunk chunk) {
+        for (Entity entity : chunk.getEntities()) {
+            for (String tag : entity.getScoreboardTags()) {
+                if (!tag.startsWith("corelib:mech:")) continue;
+                // Tag format: "corelib:mech:{uuid}:{index}:{role}" or "corelib:mech:{uuid}:{role}"
+                // Extract the UUID (3rd colon-separated part, but UUID contains hyphens not colons)
+                // Split by ":" gives ["corelib", "mech", "{uuid}", ...]
+                String[] parts = tag.split(":");
+                if (parts.length < 3) continue;
+                try {
+                    UUID mechId = UUID.fromString(parts[2]);
+                    if (!activeMechanisms.containsKey(mechId)) {
+                        entity.remove();
+                    }
+                } catch (IllegalArgumentException ignored) {
+                    // Not a valid UUID — might be a different tag format, skip
+                }
+                break; // only check first matching tag per entity
+            }
+        }
+    }
+
     private void tickMechanisms() {
         long currentTick = Bukkit.getServer().getCurrentTick();
         for (BasicMechanism mech : activeMechanisms.values()) {

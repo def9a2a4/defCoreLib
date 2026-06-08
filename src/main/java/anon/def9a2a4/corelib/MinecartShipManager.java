@@ -4,16 +4,21 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.Chunk;
+import org.bukkit.World;
 import org.bukkit.entity.Display;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Minecart;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.minecart.RideableMinecart;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.vehicle.VehicleDestroyEvent;
 import org.bukkit.event.vehicle.VehicleEnterEvent;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
@@ -82,8 +87,25 @@ final class MinecartShipManager implements Listener {
         // Load allowed materials from config
         loadAllowedMaterials();
 
+        // Scan already-loaded chunks for surviving ship minecarts (post-reload recovery)
+        for (World world : Bukkit.getWorlds()) {
+            for (Chunk chunk : world.getLoadedChunks()) {
+                scanChunkForMinecarts(chunk);
+            }
+        }
+
         // Start tick task for activator rail detection
         tickTask = Bukkit.getScheduler().runTaskTimer(plugin, this::tick, 1L, 1L);
+    }
+
+    /** Scan a chunk for ship minecarts and re-register any found. */
+    void scanChunkForMinecarts(Chunk chunk) {
+        for (Entity entity : chunk.getEntities()) {
+            if (!(entity instanceof Minecart minecart)) continue;
+            if (tracked.containsKey(minecart.getUniqueId())) continue;
+            if (!minecart.getScoreboardTags().contains("corelib:minecart_ship")) continue;
+            tracked.put(minecart.getUniqueId(), new MinecartState(minecart));
+        }
     }
 
     private void loadAllowedMaterials() {
@@ -219,7 +241,17 @@ final class MinecartShipManager implements Listener {
     // Assembly / Disassembly
     // ──────────────────────────────────────────────────────────────────────
 
+    private void snapAndStop(Minecart minecart) {
+        org.bukkit.Location center = minecart.getLocation().getBlock().getLocation().add(0.5, 0, 0.5);
+        center.setYaw(minecart.getLocation().getYaw());
+        center.setPitch(0);
+        minecart.teleport(center);
+        minecart.setVelocity(new org.bukkit.util.Vector(0, 0, 0));
+    }
+
     private void assemble(MinecartState state) {
+        snapAndStop(state.minecart);
+
         org.bukkit.Location above = state.minecart.getLocation().clone().add(0, 1, 0);
         if (above.getBlock().getType().isAir()) return;
 
@@ -233,6 +265,7 @@ final class MinecartShipManager implements Listener {
 
     private void disassemble(MinecartState state) {
         if (state.mechanism == null) return;
+        snapAndStop(state.minecart);
         state.mechanism.disassemble();
         state.mechanism = null;
     }
@@ -269,6 +302,20 @@ final class MinecartShipManager implements Listener {
         if (!tracked.containsKey(minecart.getUniqueId())) return;
         if (event.getEntered() instanceof Display) return; // allow mechanism displays to mount
         event.setCancelled(true);
+    }
+
+    @EventHandler(priority = EventPriority.HIGH)
+    public void onMinecartInteract(PlayerInteractEntityEvent event) {
+        if (event.getHand() != EquipmentSlot.HAND) return;
+        if (!(event.getRightClicked() instanceof Minecart minecart)) return;
+        MinecartState state = tracked.get(minecart.getUniqueId());
+        if (state == null) return;
+        event.setCancelled(true);
+        if (state.mechanism == null) {
+            assemble(state);
+        } else {
+            disassemble(state);
+        }
     }
 
     // ──────────────────────────────────────────────────────────────────────

@@ -114,6 +114,20 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         registry.onChunkUnload(event.getChunk());
     }
 
+    // Paper EntitiesLoadEvent: fires when entities finish loading into a chunk.
+    // ChunkLoadEvent does NOT guarantee entities are ready on Paper (async entity loading).
+    @EventHandler
+    public void onEntitiesLoad(io.papermc.paper.event.world.EntitiesLoadEvent event) {
+        // Re-discover ship minecarts surviving server restart
+        if (minecartShipManager != null) {
+            minecartShipManager.scanChunkForMinecarts(event.getChunk());
+        }
+        // Clean up orphaned mechanism entities from previous sessions
+        if (mechanismRegistry != null) {
+            mechanismRegistry.cleanupOrphanedEntities(event.getChunk());
+        }
+    }
+
     // ──────────────────────────────────────────────────────────────────────
     // Block placement — detect custom block items, write PDC, apply config
     // ──────────────────────────────────────────────────────────────────────
