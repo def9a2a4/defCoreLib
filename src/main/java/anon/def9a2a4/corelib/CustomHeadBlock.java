@@ -224,6 +224,7 @@ public final class CustomHeadBlock {
 
     // Base config
     private final String texture;
+    private final @Nullable String itemTexture; // optional: different texture for item in hand
     private final @Nullable Map<BlockFace, String> directionalTextures;
     private final @Nullable LightConfig light;
     private final @Nullable ParticleConfig particles;
@@ -278,6 +279,7 @@ public final class CustomHeadBlock {
         this.name = b.name;
         this.lore = b.lore != null ? List.copyOf(b.lore) : List.of();
         this.texture = b.texture;
+        this.itemTexture = b.itemTexture;
         this.directionalTextures = b.directionalTextures;
         this.light = b.light;
         this.particles = b.particles;
@@ -329,6 +331,7 @@ public final class CustomHeadBlock {
     public List<Component> lore() { return lore; }
 
     public String texture() { return texture; }
+    public @Nullable String itemTexture() { return itemTexture; }
     public @Nullable Map<BlockFace, String> directionalTextures() { return directionalTextures; }
     public @Nullable LightConfig light() { return light; }
     public @Nullable ParticleConfig particles() { return particles; }
@@ -374,7 +377,8 @@ public final class CustomHeadBlock {
 
     /** Create an ItemStack for this block type with correct texture, name, lore, and PDC. */
     public org.bukkit.inventory.ItemStack createItem(int amount) {
-        return HeadUtil.createHead(texture, amount, name, lore,
+        String tex = itemTexture != null ? itemTexture : texture;
+        return HeadUtil.createHead(tex, amount, name, lore,
                 Map.of(CustomBlockRegistry.BLOCK_TYPE_KEY, fullId()));
     }
 
@@ -500,6 +504,7 @@ public final class CustomHeadBlock {
         b.name = name;
         b.lore = lore.isEmpty() ? null : new ArrayList<>(lore);
         b.texture = texture;
+        b.itemTexture = itemTexture;
         b.directionalTextures = directionalTextures;
         b.light = light;
         b.particles = particles;
@@ -542,6 +547,7 @@ public final class CustomHeadBlock {
         private @Nullable List<Component> lore;
 
         private @Nullable String texture;
+        private @Nullable String itemTexture;
         private @Nullable Map<BlockFace, String> directionalTextures;
         private @Nullable LightConfig light;
         private @Nullable ParticleConfig particles;
@@ -591,6 +597,7 @@ public final class CustomHeadBlock {
         // --- Base config ---
 
         public Builder texture(String base64) { this.texture = base64; return this; }
+        public Builder itemTexture(String base64) { this.itemTexture = base64; return this; }
         public Builder directionalTextures(Map<BlockFace, String> textures) { this.directionalTextures = textures; return this; }
         public Builder light(int level, int offsetX, int offsetY, int offsetZ) { this.light = new LightConfig(level, offsetX, offsetY, offsetZ); return this; }
         public Builder particles(ParticleConfig config) { this.particles = config; return this; }

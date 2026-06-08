@@ -60,8 +60,10 @@ public final class BlockLoader {
     private static CustomHeadBlock parseBlock(String namespace, String id, ConfigurationSection sec) {
         CustomHeadBlock.Builder b = CustomHeadBlock.builder(namespace, id);
 
-        // Base texture (required)
+        // Base texture (required) + optional item texture
         b.texture(requireString(sec, "texture"));
+        String itemTex = sec.getString("item_texture");
+        if (itemTex != null) b.itemTexture(itemTex);
 
         // Name and lore
         String nameStr = sec.getString("name");
