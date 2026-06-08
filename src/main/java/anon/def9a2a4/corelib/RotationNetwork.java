@@ -70,6 +70,9 @@ public class RotationNetwork {
                         NodeRole role, int powerUnits, boolean gearLike) {
         CustomBlockRegistry.LocationKey key = CustomBlockRegistry.LocationKey.of(block);
         nodes.put(key, new RotationNode(key, blockTypeId, axis, role, powerUnits, gearLike));
+        logger.info("[Rotation] addNode: " + blockTypeId + " axis=" + axis
+            + " at " + key.x() + "," + key.y() + "," + key.z()
+            + " (total nodes: " + nodes.size() + ")");
         recalculate(key);
     }
 
@@ -225,6 +228,9 @@ public class RotationNetwork {
             networkMembers.put(netId, members);
             NetworkState netState = new NetworkState(supply, demand);
             networks.put(netId, netState);
+
+            logger.info("[Rotation] Network #" + netId + ": " + members.size() + " blocks, "
+                + supply + "/" + demand + " SU, " + (netState.powered() ? "POWERED" : "unpowered"));
 
             // 3. Update block states for nodes whose powered state changed
             boolean powered = netState.powered();

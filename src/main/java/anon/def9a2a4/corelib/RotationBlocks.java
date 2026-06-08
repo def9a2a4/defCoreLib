@@ -48,6 +48,7 @@ final class RotationBlocks {
             .onChunkLoad((b, state) -> network.addNode(b, blockId,
                 RotationNetwork.axisFromState(state), role, power, gearLike))
             .onChunkUnload(b -> network.removeNode(CustomBlockRegistry.LocationKey.of(b)))
+            .onBlockRemoved((b, state) -> network.removeNode(CustomBlockRegistry.LocationKey.of(b)))
             .build());
     }
 
@@ -82,6 +83,7 @@ final class RotationBlocks {
             .onChunkLoad((b, state) -> network.addNode(b, blockId,
                 RotationNetwork.axisFromState(state), RotationNetwork.NodeRole.TRANSMITTER, 0, false))
             .onChunkUnload(b -> network.removeNode(CustomBlockRegistry.LocationKey.of(b)))
+            .onBlockRemoved((b, state) -> network.removeNode(CustomBlockRegistry.LocationKey.of(b)))
             .build());
     }
 
