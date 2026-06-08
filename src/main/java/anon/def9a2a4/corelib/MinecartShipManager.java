@@ -4,6 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.entity.Display;
 import org.bukkit.entity.Minecart;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.minecart.RideableMinecart;
@@ -266,7 +267,7 @@ final class MinecartShipManager implements Listener {
     public void onMinecartEnter(VehicleEnterEvent event) {
         if (!(event.getVehicle() instanceof Minecart minecart)) return;
         if (!tracked.containsKey(minecart.getUniqueId())) return;
-        // Prevent riding the ship minecart directly
+        if (event.getEntered() instanceof Display) return; // allow mechanism displays to mount
         event.setCancelled(true);
     }
 
