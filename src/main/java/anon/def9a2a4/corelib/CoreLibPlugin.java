@@ -35,6 +35,7 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
     private CustomBlockRegistry registry;
     private MechanismRegistry mechanismRegistry;
     private MinecartShipManager minecartShipManager;
+    private RotationNetwork rotationNetwork;
 
     @Override
     public void onEnable() {
@@ -52,6 +53,10 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
                 getLogger().info("Loaded " + count + " demo blocks");
             }
         } catch (IOException ignored) {}
+
+        // Register rotation power system blocks
+        rotationNetwork = new RotationNetwork(this, registry);
+        RotationBlocks.register(registry, rotationNetwork);
 
         // Register mechanism demos
         new DoorDemo(this, registry, mechanismRegistry).register();
@@ -89,6 +94,10 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
 
     public MechanismRegistry getMechanismRegistry() {
         return mechanismRegistry;
+    }
+
+    public RotationNetwork getRotationNetwork() {
+        return rotationNetwork;
     }
 
     // ──────────────────────────────────────────────────────────────────────
@@ -178,6 +187,16 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
             // Register for redstone tracking if needed
             if (type.sensitivity() != CustomHeadBlock.Sensitivity.NONE) {
                 registry.trackRedstone(block, type, power);
+            }
+
+            // Register tick tracking (mirrors restoreBlock — needed for engine/drill onTick)
+            if (type.onTick() != null && type.tickInterval() != null) {
+                registry.trackTick(block, type);
+            }
+
+            // Fire chunk load callback (mirrors restoreBlock — needed for rotation network addNode)
+            if (type.onChunkLoadCallback() != null) {
+                type.onChunkLoadCallback().accept(block, state);
             }
         });
     }
@@ -447,6 +466,14 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         if (type.interactSound() != null) {
             var s = type.interactSound();
             block.getWorld().playSound(block.getLocation().add(0.5, 0.5, 0.5), s.sound(), s.volume(), s.pitch());
+        }
+
+        // Custom interact callback (engine fuel, grindstone, etc.)
+        if (type.onInteract() != null) {
+            if (type.onInteract().apply(block, event)) {
+                event.setCancelled(true);
+                return;
+            }
         }
 
         // GUI interaction
