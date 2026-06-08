@@ -87,13 +87,14 @@ public class MechanismRegistry {
         // 1. Snapshot each block
         for (Block block : blocks) {
             BlockData bd = block.getBlockData();
-            // Center-to-center offset: always integers for grid-aligned blocks + centered pivot.
-            // Using block center (X+0.5, Z+0.5) minus pivot (which is also at +0.5 in XZ).
-            // This ensures rotation by 90° multiples produces exact integers (no rounding needed).
+            // Center-to-center offset: snap pivot XZ to nearest block center so offsets
+            // are always integers. This guarantees rotation by 90° gives exact integers.
+            float snapX = (float)(Math.floor(pivot.getX()) + 0.5);
+            float snapZ = (float)(Math.floor(pivot.getZ()) + 0.5);
             Matrix4f local = new Matrix4f().translation(
-                (block.getX() + 0.5f) - (float) pivot.getX(),
+                (block.getX() + 0.5f) - snapX,
                 block.getY() - (float) pivot.getY(),
-                (block.getZ() + 0.5f) - (float) pivot.getZ());
+                (block.getZ() + 0.5f) - snapZ);
 
             String customType = null, customState = null;
             List<CustomHeadBlock.DisplayEntityConfig> decs = null;
@@ -138,6 +139,17 @@ public class MechanismRegistry {
 
         // 3. Spawn display + collider entities
         Location spawnLoc = pivot.clone().add(0, 2.5, 0);
+
+        // Parent BlockDisplay(AIR): invisible intermediary for multi-passenger support.
+        // Minecarts only allow one passenger, so displays mount on parent, parent on vehicle.
+        // BlockDisplay→Display passenger offset is zero (confirmed by BlockShips pattern).
+        BlockDisplay parentDisplay = pivot.getWorld().spawn(spawnLoc, BlockDisplay.class, d -> {
+            d.setBlock(Bukkit.createBlockData(Material.AIR));
+            d.setTeleportDuration(0); d.setViewRange(64f);
+            d.setPersistent(true); d.setGravity(false);
+            d.addScoreboardTag("corelib:mech:" + mechId + ":parent");
+        });
+
         List<List<Display>> displaysPerBlock = new ArrayList<>();
         List<ColliderPair> colliders = new ArrayList<>();
 
@@ -201,19 +213,20 @@ public class MechanismRegistry {
         }
 
         // 4. Create mechanism, register colliders
-        BasicMechanism mech = new BasicMechanism(mechId, type, pivot, vehicle, rideOffset,
-            ownsVehicle, displaysPerBlock, colliders, blockData, registry, serializer);
+        BasicMechanism mech = new BasicMechanism(mechId, type, pivot, vehicle, parentDisplay,
+            rideOffset, ownsVehicle, displaysPerBlock, colliders, blockData, registry, serializer);
         mech.mechanismRegistry = this;
 
         for (ColliderPair cp : colliders) {
             colliderIndex.put(cp.shulker().getUniqueId(), new ColliderRef(mech, cp.blockIndex()));
         }
 
-        // 5. 1-tick delay: mount displays on vehicle, set initial transforms
+        // 5. 1-tick delay: mount displays on parent, parent on vehicle, set initial transforms
         Bukkit.getScheduler().runTaskLater(plugin, () -> {
             for (var group : displaysPerBlock) {
-                for (Display d : group) vehicle.addPassenger(d);
+                for (Display d : group) parentDisplay.addPassenger(d);
             }
+            vehicle.addPassenger(parentDisplay);
             mech.rotate(0);
         }, 1L);
 

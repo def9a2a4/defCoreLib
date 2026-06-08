@@ -96,15 +96,25 @@ final class MinecartShipManager implements Listener {
         List<String> materialNames = config.getStringList("allowed_blocks");
         Set<Material> mats = EnumSet.noneOf(Material.class);
         for (String name : materialNames) {
-            // Support wildcards: "OAK_*" matches all materials starting with OAK_
-            if (name.endsWith("*")) {
-                String prefix = name.substring(0, name.length() - 1);
+            boolean startWild = name.startsWith("*");
+            boolean endWild = name.endsWith("*");
+            int matchesBefore = mats.size();
+            if (startWild || endWild) {
+                String pattern = name.replace("*", "").toUpperCase();
                 for (Material mat : Material.values()) {
-                    if (mat.isBlock() && mat.name().startsWith(prefix)) mats.add(mat);
+                    if (!mat.isBlock()) continue;
+                    String n = mat.name();
+                    boolean match = (startWild && endWild) ? n.contains(pattern)
+                        : startWild ? n.endsWith(pattern)
+                        : n.startsWith(pattern);
+                    if (match) mats.add(mat);
                 }
             } else {
                 Material mat = Material.getMaterial(name.toUpperCase());
                 if (mat != null && mat.isBlock()) mats.add(mat);
+            }
+            if (mats.size() == matchesBefore) {
+                plugin.getLogger().warning("Minecart ship config: '" + name + "' matched 0 blocks");
             }
         }
         allowedMaterials = Set.copyOf(mats);
@@ -169,7 +179,7 @@ final class MinecartShipManager implements Listener {
         while (it.hasNext()) {
             MinecartState state = it.next().getValue();
             if (!state.minecart.isValid() || state.minecart.isDead()) {
-                if (state.mechanism != null) state.mechanism.destroy();
+                if (state.mechanism != null) state.mechanism.disassemble();
                 it.remove();
                 continue;
             }

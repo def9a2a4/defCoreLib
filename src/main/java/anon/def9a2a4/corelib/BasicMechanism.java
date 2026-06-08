@@ -33,6 +33,7 @@ final class BasicMechanism implements Mechanism {
     private Matrix4f currentTransform = new Matrix4f(); // identity
 
     final Entity vehicle;
+    final org.bukkit.entity.BlockDisplay parent; // invisible intermediary — all displays mount here
     final float rideOffset; // passenger riding offset — varies by vehicle entity type
     final List<List<Display>> displaysPerBlock;
     final List<ColliderPair> colliders;
@@ -50,7 +51,8 @@ final class BasicMechanism implements Mechanism {
     MechanismRegistry mechanismRegistry;
 
     BasicMechanism(UUID id, String type, Location pivot,
-                   Entity vehicle, float rideOffset, boolean ownsVehicle,
+                   Entity vehicle, org.bukkit.entity.BlockDisplay parent,
+                   float rideOffset, boolean ownsVehicle,
                    List<List<Display>> displaysPerBlock,
                    List<ColliderPair> colliders,
                    List<MechanismBlockData> blocks,
@@ -60,6 +62,7 @@ final class BasicMechanism implements Mechanism {
         this.type = type;
         this.pivot = pivot;
         this.vehicle = vehicle;
+        this.parent = parent;
         this.rideOffset = rideOffset;
         this.ownsVehicle = ownsVehicle;
         this.displaysPerBlock = displaysPerBlock;
@@ -110,14 +113,13 @@ final class BasicMechanism implements Mechanism {
             Matrix4f dm = new Matrix4f(rot).mul(mb.localTransform);
             dm.m31(dm.m31() - rideOffset); // compensate vehicle passenger riding offset
 
-            // Primary display (index 0): BlockDisplay uses corner rendering (-0.5 XZ),
-            // ItemDisplay uses center rendering (no XZ shift)
+            // Primary display (index 0): BlockDisplay uses corner rendering — shift -0.5 XZ
+            // in LOCAL space (post-multiply) so the shift rotates with the block.
+            // ItemDisplay renders centered — no XZ shift needed.
             List<Display> group = displaysPerBlock.get(i);
             Display primary = group.get(0);
             if (primary instanceof org.bukkit.entity.BlockDisplay) {
-                Matrix4f bdm = new Matrix4f(dm);
-                bdm.m30(bdm.m30() - 0.5f);
-                bdm.m32(bdm.m32() - 0.5f);
+                Matrix4f bdm = new Matrix4f(dm).translate(-0.5f, 0f, -0.5f);
                 primary.setTransformationMatrix(bdm);
             } else {
                 primary.setTransformationMatrix(dm);
@@ -275,13 +277,9 @@ final class BasicMechanism implements Mechanism {
             cp.carrier().remove();
             cp.shulker().remove();
         }
+        parent.remove(); // Entity.remove() implicitly ejects from vehicle
         if (ownsVehicle) {
             vehicle.remove();
-        } else {
-            // Eject display passengers from the vehicle without removing it
-            for (var group : displaysPerBlock) {
-                for (Display d : group) vehicle.removePassenger(d);
-            }
         }
     }
 
@@ -294,6 +292,12 @@ final class BasicMechanism implements Mechanism {
         if (!vehicle.isValid()) return;
         Location loc = vehicle.getLocation();
         float yaw = loc.getYaw();
+        // Guard: distanceSquared throws if worlds differ (e.g., entity teleported cross-world)
+        if (!loc.getWorld().equals(previousVehicleLoc.getWorld())) {
+            previousVehicleLoc = loc.clone();
+            previousVehicleYaw = yaw;
+            return;
+        }
         double distSq = loc.distanceSquared(previousVehicleLoc);
         boolean moved = distSq > 0.0001 || Math.abs(yaw - previousVehicleYaw) > 0.1f;
         if (!moved) return;
