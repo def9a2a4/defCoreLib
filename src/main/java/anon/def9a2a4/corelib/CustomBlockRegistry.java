@@ -75,6 +75,8 @@ public class CustomBlockRegistry {
         this.plugin = plugin;
     }
 
+    JavaPlugin getPlugin() { return plugin; }
+
     // ──────────────────────────────────────────────────────────────────────
     // Type registration
     // ──────────────────────────────────────────────────────────────────────

@@ -32,12 +32,15 @@ public class RotationNetwork {
                         NodeRole role, int powerUnits, boolean gearLike) {}
 
     record NetworkState(int supply, int demand) {
-        boolean powered() { return supply >= demand; }
+        boolean powered() { return supply >= demand && supply > 0; }
     }
 
     private final CustomBlockRegistry registry;
     private final JavaPlugin plugin;
     private final Logger logger;
+
+    // Passive sources: YAML-only blocks detected at network boundary (e.g. demo:windmill)
+    private final Map<String, Integer> passiveSourceTypes = new HashMap<>();
 
     // Graph state
     private final Map<CustomBlockRegistry.LocationKey, RotationNode> nodes = new HashMap<>();
@@ -88,6 +91,12 @@ public class RotationNetwork {
 
     public void setMaxNetworkSize(int max) {
         this.maxNetworkSize = max;
+    }
+
+    /** Register a YAML-only block type as a passive rotation source.
+     *  These blocks provide power when adjacent to a network node, without needing Java callbacks. */
+    public void registerPassiveSource(String blockTypeId, int powerUnits) {
+        passiveSourceTypes.put(blockTypeId, powerUnits);
     }
 
     /** Returns [supply, demand, blockCount] for the network containing this node, or null. */
@@ -190,6 +199,25 @@ public class RotationNetwork {
                 for (CustomBlockRegistry.LocationKey neighbor : getConnections(node)) {
                     if (!nodeNetworkId.containsKey(neighbor)) {
                         queue.add(neighbor);
+                    }
+                }
+            }
+
+            // Scan boundary for passive sources (YAML-only blocks like windmills)
+            if (!passiveSourceTypes.isEmpty()) {
+                Set<CustomBlockRegistry.LocationKey> countedSources = new HashSet<>();
+                for (CustomBlockRegistry.LocationKey loc : members) {
+                    for (org.bukkit.block.BlockFace face : CARDINAL_FACES) {
+                        CustomBlockRegistry.LocationKey neighbor = faceNeighbor(loc, face);
+                        if (nodes.containsKey(neighbor)) continue; // already a network node
+                        if (!countedSources.add(neighbor)) continue; // already counted
+                        Block nb = toBlock(neighbor);
+                        if (nb == null) continue;
+                        CustomHeadBlock type = registry.getTypeFromBlock(nb);
+                        if (type != null) {
+                            Integer passivePower = passiveSourceTypes.get(type.fullId());
+                            if (passivePower != null) supply += passivePower;
+                        }
                     }
                 }
             }
@@ -326,6 +354,15 @@ public class RotationNetwork {
     // ──────────────────────────────────────────────────────────────────────
     // Helpers
     // ──────────────────────────────────────────────────────────────────────
+
+    private static final BlockFace[] CARDINAL_FACES = {
+        BlockFace.NORTH, BlockFace.SOUTH, BlockFace.EAST, BlockFace.WEST, BlockFace.UP, BlockFace.DOWN
+    };
+
+    private static CustomBlockRegistry.LocationKey faceNeighbor(CustomBlockRegistry.LocationKey k, BlockFace face) {
+        return new CustomBlockRegistry.LocationKey(k.worldId(),
+            k.x() + face.getModX(), k.y() + face.getModY(), k.z() + face.getModZ());
+    }
 
     private @Nullable Block toBlock(CustomBlockRegistry.LocationKey key) {
         World world = Bukkit.getWorld(key.worldId());

@@ -54,7 +54,13 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
             }
         } catch (IOException ignored) {}
 
-        // Register rotation power system blocks
+        // Load rotation blocks from YAML, then overlay Java callbacks
+        try (InputStream rotStream = getResource("rotation-blocks.yml")) {
+            if (rotStream != null) {
+                int count = BlockLoader.load(rotStream, registry, getLogger());
+                getLogger().info("Loaded " + count + " rotation blocks");
+            }
+        } catch (IOException ignored) {}
         rotationNetwork = new RotationNetwork(this, registry);
         RotationBlocks.register(registry, rotationNetwork);
 
@@ -117,7 +123,7 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
     // Paper EntitiesLoadEvent: fires when entities finish loading into a chunk.
     // ChunkLoadEvent does NOT guarantee entities are ready on Paper (async entity loading).
     @EventHandler
-    public void onEntitiesLoad(io.papermc.paper.event.world.EntitiesLoadEvent event) {
+    public void onEntitiesLoad(org.bukkit.event.world.EntitiesLoadEvent event) {
         // Re-discover ship minecarts surviving server restart
         if (minecartShipManager != null) {
             minecartShipManager.scanChunkForMinecarts(event.getChunk());

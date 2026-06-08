@@ -1,0 +1,195 @@
+# Rotation Power System Blocks
+# Visual definitions only — Java callbacks added via toBuilder() overlay in RotationBlocks.java.
+# Namespace "rotation" so give_demo_rotation can filter by it.
+#
+# Head model origin: centered in XZ, bottom in Y. Default "face" direction is +Z.
+# For wall-axis display entities, left_rotation orients the head to face along the
+# rotation axis, and translation centers the scaled model at block center.
+
+namespace: rotation
+
+# ── Textures ──────────────────────────────────────────────────────────────────
+# Shaft:   Cut Copper (e28bc2df)
+# Gear:    Copper Gear (1e5edfe9)
+# Gearbox: Copper Block (1c265803)
+#
+# Other copper textures available:
+#   Chiselled Copper (2edd2482): eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMmVkZDI0ODI1YzIxNzMwM2YyNmFmNTUyNjU3MGEyMTRhZWMyOWI5Mjk3YTY4NzcxNTFiYTUwZmNlZGZmN2ZmMSJ9fX0=
+#   Copper Grate (9dbf76a0):     eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOWRiZjc2YTA5NWMxNjAyNGU5YmFhNDhmNjAyZWIxODljMzdlYjNiZDUxMDcwZTE1YWI0OWFiMjE2YjA3YjFiMSJ9fX0=
+#   Cut Copper 2 (a2962713):     eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTI5NjI3MTNhZGE1NGM0MWQ1NDcyNDE0NWNhZTJkNmFiYzhhM2NhZWFmM2E3YzJiZDcxOTk1ODYwYWE4Mjc4OCJ9fX0=
+#   Copper Bulb Powered (83acdc): eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODNhY2RjZWQ0ZjVhNDhlNzRlZGFkZDAxNGM1ZGU3ZGFmOWVmYjEyMWNlYWZiNmMxNWNkYjEzODc1NTk0ZmNkOSJ9fX0=
+
+blocks:
+
+  # ─── Shaft ──────────────────────────────────────────────────────────────
+  # Transmitter: passes rotation power along its axis.
+  # Display: Cut Copper head, 2x length along axis, 0.66x width.
+  # Head faces along rotation axis; translation centers it at block center.
+  shaft:
+    name: "&eShaft"
+    lore:
+      - "&7Transmits rotational power"
+    # Cut Copper
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTI4YmMyZGYzZGZmNWVjM2QxNDNhMmNlZWNiOTM4MjE4MzUxNmU5ZmFkZDdlNDA5YTVlYjQxNTUxNTc0YTI1ZiJ9fX0="
+    drops: self
+    default_state: idle_y
+    placement_state_map:
+      DOWN: idle_y
+      NORTH: idle_z
+      SOUTH: idle_z
+      EAST: idle_x
+      WEST: idle_x
+    states:
+      # Y-axis: default head orientation, translate down to center
+      idle_y:
+        display_entities:
+          - texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTI4YmMyZGYzZGZmNWVjM2QxNDNhMmNlZWNiOTM4MjE4MzUxNmU5ZmFkZDdlNDA5YTVlYjQxNTUxNTc0YTI1ZiJ9fX0="
+            tag: rod
+            transform: { translation: [0, -0.5, 0], scale: [0.66, 2.0, 0.66] }
+      spinning_y:
+        display_entities:
+          - texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTI4YmMyZGYzZGZmNWVjM2QxNDNhMmNlZWNiOTM4MjE4MzUxNmU5ZmFkZDdlNDA5YTVlYjQxNTUxNTc0YTI1ZiJ9fX0="
+            tag: rod
+            transform: { translation: [0, -0.5, 0], scale: [0.66, 2.0, 0.66] }
+            animation: { type: rotate, axis: [0, 1, 0], speed: 3.0 }
+            interpolation: 2
+      # X-axis: rotate head 90° around Z so height→X, translate to center
+      idle_x:
+        display_entities:
+          - texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTI4YmMyZGYzZGZmNWVjM2QxNDNhMmNlZWNiOTM4MjE4MzUxNmU5ZmFkZDdlNDA5YTVlYjQxNTUxNTc0YTI1ZiJ9fX0="
+            tag: rod
+            transform: { translation: [0.5, 0, 0], scale: [0.66, 2.0, 0.66], left_rotation: [90, 0, 0, 1] }
+      spinning_x:
+        display_entities:
+          - texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTI4YmMyZGYzZGZmNWVjM2QxNDNhMmNlZWNiOTM4MjE4MzUxNmU5ZmFkZDdlNDA5YTVlYjQxNTUxNTc0YTI1ZiJ9fX0="
+            tag: rod
+            transform: { translation: [0.5, 0, 0], scale: [0.66, 2.0, 0.66], left_rotation: [90, 0, 0, 1] }
+            animation: { type: rotate, axis: [1, 0, 0], speed: 3.0 }
+            interpolation: 2
+      # Z-axis: rotate head -90° around X so height→Z, translate to center
+      idle_z:
+        display_entities:
+          - texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTI4YmMyZGYzZGZmNWVjM2QxNDNhMmNlZWNiOTM4MjE4MzUxNmU5ZmFkZDdlNDA5YTVlYjQxNTUxNTc0YTI1ZiJ9fX0="
+            tag: rod
+            transform: { translation: [0, 0, -0.5], scale: [0.66, 2.0, 0.66], left_rotation: [-90, 1, 0, 0] }
+      spinning_z:
+        display_entities:
+          - texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTI4YmMyZGYzZGZmNWVjM2QxNDNhMmNlZWNiOTM4MjE4MzUxNmU5ZmFkZDdlNDA5YTVlYjQxNTUxNTc0YTI1ZiJ9fX0="
+            tag: rod
+            transform: { translation: [0, 0, -0.5], scale: [0.66, 2.0, 0.66], left_rotation: [-90, 1, 0, 0] }
+            animation: { type: rotate, axis: [0, 0, 1], speed: 3.0 }
+            interpolation: 2
+
+  # ─── Gear ───────────────────────────────────────────────────────────────
+  # Transmitter: connects perpendicular gears + along-axis like a shaft.
+  # Display: Copper Gear head, two overlapping discs at 45° offset (8-pointed star).
+  # 0.25 depth along axis, 1.7 width in both perpendicular directions.
+  # Head faces along rotation axis for wall placements.
+  gear:
+    name: "&6Gear"
+    lore:
+      - "&7Transfers power along axis"
+      - "&7Connects perpendicular gears"
+    # Copper Gear
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWU1ZWRmZTkwMTU2Y2U5YjViNmI4MDc5M2RjMmNiZmU4NTBkZGVjODU2Yzk5ZWViZGUzMTc3NWNjZTk1NjA0MSJ9fX0="
+    drops: self
+    default_state: idle_y
+    placement_state_map:
+      DOWN: idle_y
+      NORTH: idle_z
+      SOUTH: idle_z
+      EAST: idle_x
+      WEST: idle_x
+    states:
+      # Y-axis gear: flat disc in XZ plane. Head default orientation, translate down to center thin axis.
+      idle_y:
+        display_entities:
+          - texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWU1ZWRmZTkwMTU2Y2U5YjViNmI4MDc5M2RjMmNiZmU4NTBkZGVjODU2Yzk5ZWViZGUzMTc3NWNjZTk1NjA0MSJ9fX0="
+            tag: disc_a
+            transform: { translation: [0, -0.0625, 0], scale: [1.7, 0.25, 1.7] }
+          - texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWU1ZWRmZTkwMTU2Y2U5YjViNmI4MDc5M2RjMmNiZmU4NTBkZGVjODU2Yzk5ZWViZGUzMTc3NWNjZTk1NjA0MSJ9fX0="
+            tag: disc_b
+            transform: { translation: [0, -0.0625, 0], scale: [1.7, 0.25, 1.7], left_rotation: [45, 0, 1, 0] }
+      spinning_y:
+        display_entities:
+          - texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWU1ZWRmZTkwMTU2Y2U5YjViNmI4MDc5M2RjMmNiZmU4NTBkZGVjODU2Yzk5ZWViZGUzMTc3NWNjZTk1NjA0MSJ9fX0="
+            tag: disc_a
+            transform: { translation: [0, -0.0625, 0], scale: [1.7, 0.25, 1.7] }
+            animation: { type: rotate, axis: [0, 1, 0], speed: 2.0 }
+            interpolation: 2
+          - texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWU1ZWRmZTkwMTU2Y2U5YjViNmI4MDc5M2RjMmNiZmU4NTBkZGVjODU2Yzk5ZWViZGUzMTc3NWNjZTk1NjA0MSJ9fX0="
+            tag: disc_b
+            transform: { translation: [0, -0.0625, 0], scale: [1.7, 0.25, 1.7], left_rotation: [45, 0, 1, 0] }
+            animation: { type: rotate, axis: [0, 1, 0], speed: 2.0 }
+            interpolation: 2
+      # X-axis gear: flat disc in YZ plane. Rotate head 90° around Z so thin axis→X.
+      idle_x:
+        display_entities:
+          - texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWU1ZWRmZTkwMTU2Y2U5YjViNmI4MDc5M2RjMmNiZmU4NTBkZGVjODU2Yzk5ZWViZGUzMTc3NWNjZTk1NjA0MSJ9fX0="
+            tag: disc_a
+            transform: { translation: [0.0625, 0, 0], scale: [1.7, 0.25, 1.7], left_rotation: [90, 0, 0, 1] }
+          - texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWU1ZWRmZTkwMTU2Y2U5YjViNmI4MDc5M2RjMmNiZmU4NTBkZGVjODU2Yzk5ZWViZGUzMTc3NWNjZTk1NjA0MSJ9fX0="
+            tag: disc_b
+            transform: { translation: [0.0625, 0, 0], scale: [1.7, 0.25, 1.7], left_rotation: [135, 0, 0, 1] }
+      spinning_x:
+        display_entities:
+          - texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWU1ZWRmZTkwMTU2Y2U5YjViNmI4MDc5M2RjMmNiZmU4NTBkZGVjODU2Yzk5ZWViZGUzMTc3NWNjZTk1NjA0MSJ9fX0="
+            tag: disc_a
+            transform: { translation: [0.0625, 0, 0], scale: [1.7, 0.25, 1.7], left_rotation: [90, 0, 0, 1] }
+            animation: { type: rotate, axis: [1, 0, 0], speed: 2.0 }
+            interpolation: 2
+          - texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWU1ZWRmZTkwMTU2Y2U5YjViNmI4MDc5M2RjMmNiZmU4NTBkZGVjODU2Yzk5ZWViZGUzMTc3NWNjZTk1NjA0MSJ9fX0="
+            tag: disc_b
+            transform: { translation: [0.0625, 0, 0], scale: [1.7, 0.25, 1.7], left_rotation: [135, 0, 0, 1] }
+            animation: { type: rotate, axis: [1, 0, 0], speed: 2.0 }
+            interpolation: 2
+      # Z-axis gear: flat disc in XY plane. Rotate head -90° around X so thin axis→Z.
+      idle_z:
+        display_entities:
+          - texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWU1ZWRmZTkwMTU2Y2U5YjViNmI4MDc5M2RjMmNiZmU4NTBkZGVjODU2Yzk5ZWViZGUzMTc3NWNjZTk1NjA0MSJ9fX0="
+            tag: disc_a
+            transform: { translation: [0, 0, -0.0625], scale: [1.7, 0.25, 1.7], left_rotation: [-90, 1, 0, 0] }
+          - texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWU1ZWRmZTkwMTU2Y2U5YjViNmI4MDc5M2RjMmNiZmU4NTBkZGVjODU2Yzk5ZWViZGUzMTc3NWNjZTk1NjA0MSJ9fX0="
+            tag: disc_b
+            transform: { translation: [0, 0, -0.0625], scale: [1.7, 0.25, 1.7], left_rotation: [-45, 1, 0, 0] }
+      spinning_z:
+        display_entities:
+          - texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWU1ZWRmZTkwMTU2Y2U5YjViNmI4MDc5M2RjMmNiZmU4NTBkZGVjODU2Yzk5ZWViZGUzMTc3NWNjZTk1NjA0MSJ9fX0="
+            tag: disc_a
+            transform: { translation: [0, 0, -0.0625], scale: [1.7, 0.25, 1.7], left_rotation: [-90, 1, 0, 0] }
+            animation: { type: rotate, axis: [0, 0, 1], speed: 2.0 }
+            interpolation: 2
+          - texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWU1ZWRmZTkwMTU2Y2U5YjViNmI4MDc5M2RjMmNiZmU4NTBkZGVjODU2Yzk5ZWViZGUzMTc3NWNjZTk1NjA0MSJ9fX0="
+            tag: disc_b
+            transform: { translation: [0, 0, -0.0625], scale: [1.7, 0.25, 1.7], left_rotation: [-45, 1, 0, 0] }
+            animation: { type: rotate, axis: [0, 0, 1], speed: 2.0 }
+            interpolation: 2
+
+  # ─── Gearbox ────────────────────────────────────────────────────────────
+  # Transmitter: like a shaft, but stops when powered by redstone.
+  # No display entities — just uses the head texture.
+  gearbox:
+    name: "&cGearbox"
+    lore:
+      - "&7Like a shaft, but stops"
+      - "&7when powered by redstone"
+    # Copper Block
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWMyNjU4MDNkMWNjMmUzMWY3OTUxZmZlY2JlZjUwZTA3OGMzNjYyOWQ1ZDA5MDc4YjkxYmE0ZGNkNDRjYTI5YyJ9fX0="
+    drops: self
+    default_state: idle_y
+    placement_state_map:
+      DOWN: idle_y
+      NORTH: idle_z
+      SOUTH: idle_z
+      EAST: idle_x
+      WEST: idle_x
+    states:
+      idle_x: {}
+      idle_y: {}
+      idle_z: {}
+      spinning_x: {}
+      spinning_y: {}
+      spinning_z: {}
+      locked_x: {}
+      locked_y: {}
+      locked_z: {}

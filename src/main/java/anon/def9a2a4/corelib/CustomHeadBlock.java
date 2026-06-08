@@ -493,6 +493,47 @@ public final class CustomHeadBlock {
         return new Builder(namespace, typeId);
     }
 
+    /** Create a Builder pre-populated with all fields from this block. Useful for overlaying
+     *  Java callbacks onto YAML-loaded blocks without duplicating visual definitions. */
+    public Builder toBuilder() {
+        Builder b = new Builder(namespace, typeId);
+        b.name = name;
+        b.lore = lore.isEmpty() ? null : new ArrayList<>(lore);
+        b.texture = texture;
+        b.directionalTextures = directionalTextures;
+        b.light = light;
+        b.particles = particles;
+        b.displayEntities.addAll(displayEntities);
+        b.shapedRecipes.addAll(shapedRecipes);
+        b.shapelessRecipes.addAll(shapelessRecipes);
+        b.stonecutterRecipes.addAll(stonecutterRecipes);
+        b.interactGUI = interactGUI;
+        b.storage = storage;
+        b.placement = placement;
+        b.dropRules.addAll(dropRules);
+        b.cancelPistons = cancelPistons;
+        b.placeSound = placeSound;
+        b.breakSound = breakSound;
+        b.interactSound = interactSound;
+        b.unlockAdvancement = unlockAdvancement;
+        b.reactsToNeighbors = reactsToNeighbors;
+        b.tickInterval = tickInterval;
+        b.defaultState = defaultState;
+        b.states.putAll(states);
+        b.transitions.addAll(transitions);
+        b.redstone = redstone;
+        b.placementStateMap = placementStateMap != null ? new java.util.HashMap<>(placementStateMap) : null;
+        b.drillable = drillable;
+        b.onNeighborChange = onNeighborChange;
+        b.onTick = onTick;
+        b.onChunkLoadCallback = onChunkLoadCallback;
+        b.onChunkUnloadCallback = onChunkUnloadCallback;
+        b.onStateChanged = onStateChanged;
+        b.onBlockRemoved = onBlockRemoved;
+        b.onInteract = onInteract;
+        return b;
+    }
+
     public static final class Builder {
         private final String namespace;
         private final String typeId;
