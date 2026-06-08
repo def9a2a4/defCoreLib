@@ -305,9 +305,15 @@ final class BasicMechanism implements Mechanism {
         if (!moved) return;
 
         this.pivot = loc.clone();
-        // Teleport parent to follow vehicle (for non-passenger parent, e.g., minecart path)
+        // Teleport parent to follow vehicle (for non-passenger parent, e.g., minecart path).
+        // Zero out yaw/pitch — all rotation is handled via display transform matrices (deltaYaw).
+        // If we pass the vehicle's yaw here, displays would double-rotate (parent entity yaw +
+        // transform rotation), since passenger displays inherit the parent's entity orientation.
         if (!ownsVehicle) {
-            TeleportCompat.teleport(parent, loc);
+            Location parentLoc = loc.clone();
+            parentLoc.setYaw(0);
+            parentLoc.setPitch(0);
+            TeleportCompat.teleport(parent, parentLoc);
         }
         rotate(yaw - assemblyYaw);
         previousVehicleLoc = loc.clone();
