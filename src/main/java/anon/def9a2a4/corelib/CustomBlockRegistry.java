@@ -259,7 +259,7 @@ public class CustomBlockRegistry {
 
         // Register for tick tracking
         if (type.onTick() != null && type.tickInterval() != null) {
-            tickTracked.put(LocationKey.of(block), new TickTracked(block, type));
+            trackTick(block, type);
         }
 
         // Re-register animation tracking for persisted display entities
@@ -520,6 +520,10 @@ public class CustomBlockRegistry {
 
     void trackParticles(Block block, CustomHeadBlock type, CustomHeadBlock.ParticleConfig config) {
         particleTracked.put(LocationKey.of(block), new ParticleTracked(block, type, config));
+    }
+
+    void trackTick(Block block, CustomHeadBlock type) {
+        tickTracked.put(LocationKey.of(block), new TickTracked(block, type));
     }
 
     void tickParticles() {

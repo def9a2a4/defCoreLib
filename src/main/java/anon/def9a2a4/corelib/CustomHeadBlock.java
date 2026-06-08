@@ -12,6 +12,7 @@ import org.jspecify.annotations.Nullable;
 
 import java.util.*;
 import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
 /**
@@ -259,6 +260,9 @@ public final class CustomHeadBlock {
     private final boolean _hasLight;
     private final boolean _hasParticles;
 
+    // Flags
+    private final boolean drillable;
+
     // Escape hatches
     private final @Nullable BiConsumer<Block, BlockFace> onNeighborChange;
     private final @Nullable Consumer<Block> onTick;
@@ -266,6 +270,7 @@ public final class CustomHeadBlock {
     private final @Nullable Consumer<Block> onChunkUnloadCallback;
     private final @Nullable StateChangeHandler onStateChanged;
     private final @Nullable BiConsumer<Block, String> onBlockRemoved;
+    private final @Nullable BiFunction<Block, org.bukkit.event.player.PlayerInteractEvent, Boolean> onInteract;
 
     private CustomHeadBlock(Builder b) {
         this.namespace = b.namespace;
@@ -297,12 +302,14 @@ public final class CustomHeadBlock {
         this.transitions = List.copyOf(b.transitions);
         this.redstone = b.redstone;
         this.placementStateMap = b.placementStateMap != null ? Map.copyOf(b.placementStateMap) : null;
+        this.drillable = b.drillable;
         this.onNeighborChange = b.onNeighborChange;
         this.onTick = b.onTick;
         this.onChunkLoadCallback = b.onChunkLoadCallback;
         this.onChunkUnloadCallback = b.onChunkUnloadCallback;
         this.onStateChanged = b.onStateChanged;
         this.onBlockRemoved = b.onBlockRemoved;
+        this.onInteract = b.onInteract;
 
         // Cache capability checks (avoid streaming states on every call)
         this._hasDisplayEntities = !displayEntities.isEmpty() || states.values().stream().anyMatch(s -> s.displayEntities() != null);
@@ -358,6 +365,8 @@ public final class CustomHeadBlock {
     public @Nullable Consumer<Block> onChunkUnloadCallback() { return onChunkUnloadCallback; }
     public @Nullable StateChangeHandler onStateChanged() { return onStateChanged; }
     public @Nullable BiConsumer<Block, String> onBlockRemoved() { return onBlockRemoved; }
+    public @Nullable BiFunction<Block, org.bukkit.event.player.PlayerInteractEvent, Boolean> onInteract() { return onInteract; }
+    public boolean drillable() { return drillable; }
 
     public boolean hasDisplayEntities() { return _hasDisplayEntities; }
     public boolean hasLight() { return _hasLight; }
@@ -519,12 +528,14 @@ public final class CustomHeadBlock {
         private @Nullable RedstoneConfig redstone;
         private @Nullable Map<BlockFace, String> placementStateMap;
 
+        private boolean drillable = true;
         private @Nullable BiConsumer<Block, BlockFace> onNeighborChange;
         private @Nullable Consumer<Block> onTick;
         private @Nullable BiConsumer<Block, String> onChunkLoadCallback;
         private @Nullable Consumer<Block> onChunkUnloadCallback;
         private @Nullable StateChangeHandler onStateChanged;
         private @Nullable BiConsumer<Block, String> onBlockRemoved;
+        private @Nullable BiFunction<Block, org.bukkit.event.player.PlayerInteractEvent, Boolean> onInteract;
 
         private Builder(String namespace, String typeId) {
             this.namespace = Objects.requireNonNull(namespace);
@@ -636,6 +647,8 @@ public final class CustomHeadBlock {
         public Builder onChunkUnload(Consumer<Block> handler) { this.onChunkUnloadCallback = handler; return this; }
         public Builder onStateChanged(StateChangeHandler handler) { this.onStateChanged = handler; return this; }
         public Builder onBlockRemoved(BiConsumer<Block, String> handler) { this.onBlockRemoved = handler; return this; }
+        public Builder onInteract(BiFunction<Block, org.bukkit.event.player.PlayerInteractEvent, Boolean> handler) { this.onInteract = handler; return this; }
+        public Builder drillable(boolean drillable) { this.drillable = drillable; return this; }
 
         public CustomHeadBlock build() {
             if (texture == null || texture.isBlank()) {
