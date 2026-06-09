@@ -27,10 +27,10 @@ final class RotationBlocks {
         overlayWaterWheel(registry, network);
         overlayEngine(registry, network, fuelManager);
         overlayGrindstone(registry, network, grindRecipes);
+        overlayGenerator(registry, network);
 
         // Passive sources — detected at network boundary, no callbacks needed
         network.registerPassiveSource("demo:windmill", 1);
-        network.registerPassiveSource("rotation:generator", 1);
         network.registerPassiveSource("rotation:large_windmill", 5);
     }
 
@@ -270,6 +270,44 @@ final class RotationBlocks {
                 // Grindstone is always Y-axis, floor only. axisFromState("idle") returns Y.
                 network.addNode(b, blockId, RotationNetwork.Axis.Y,
                     RotationNetwork.NodeRole.CONSUMER, 1, false);
+            })
+            .onChunkUnload(b -> network.removeNode(CustomBlockRegistry.LocationKey.of(b)))
+            .onBlockRemoved((b, state) -> network.removeNode(CustomBlockRegistry.LocationKey.of(b)))
+            .build());
+    }
+
+    // ──────────────────────────────────────────────────────────────────────
+    // Generator: source, turns off when receiving redstone power
+    // ──────────────────────────────────────────────────────────────────────
+
+    private static void overlayGenerator(CustomBlockRegistry registry, RotationNetwork network) {
+        String blockId = "rotation:generator";
+        CustomHeadBlock block = registry.getType(blockId);
+        if (block == null) { warn(registry, blockId); return; }
+        registry.register(block.toBuilder()
+            .drillable(false)
+            .reactsToNeighbors(true)
+            .onNeighborChange((b, face) -> {
+                boolean rsPowered = b.getBlockPower() > 0;
+                String state = registry.getState(b);
+                if (state == null) return;
+                String axis = state.substring(state.lastIndexOf('_') + 1);
+                // Inverted: redstone ON = idle (disabled), OFF = spinning (active)
+                String target = rsPowered ? "idle_" + axis : "spinning_" + axis;
+                if (!target.equals(state)) {
+                    registry.setState(b, target);
+                    CustomHeadBlock type = registry.getTypeFromBlock(b);
+                    if (type != null) registry.applyConfig(b, type, target, 0);
+                }
+                recalcIfKnown(b, network);
+            })
+            .onInteract((b, event) -> debugInteract(b, event, network, registry))
+            .onChunkLoad((b, state) -> {
+                boolean spinning = state != null && state.startsWith("spinning_");
+                RotationNetwork.Axis axis = RotationNetwork.axisFromState(state != null ? state : "spinning_y");
+                network.addNode(b, blockId, axis,
+                    spinning ? RotationNetwork.NodeRole.SOURCE : RotationNetwork.NodeRole.TRANSMITTER,
+                    spinning ? 1 : 0, false);
             })
             .onChunkUnload(b -> network.removeNode(CustomBlockRegistry.LocationKey.of(b)))
             .onBlockRemoved((b, state) -> network.removeNode(CustomBlockRegistry.LocationKey.of(b)))
