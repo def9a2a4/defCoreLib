@@ -259,8 +259,8 @@ blocks:
     lore:
       - "&7Produces 5 SU when fueled"
       - "&7Right-click with fuel to power"
-    # Copper Bulb Powered (83acdced)
-    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODNhY2RjZWQ0ZjVhNDhlNzRlZGFkZDAxNGM1ZGU3ZGFmOWVmYjEyMWNlYWZiNmMxNWNkYjEzODc1NTk0ZmNkOSJ9fX0="
+    # Bronze Ship Engine (9172c1e7)
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTE3MmMxZTcyOWUwY2EwMDE5M2FiNWQ0M2U4OTNmYWJlZGY1YTgwZmM2NDcyNTgxNzZlODUwMjQzMjg4NTkyNSJ9fX0="
     drops: self
     default_state: idle_y
     placement_state_map:
@@ -303,8 +303,8 @@ blocks:
     lore:
       - "&7Produces 1 SU constantly"
       - "&7No fuel required"
-    # Copper Grate (9dbf76a0)
-    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOWRiZjc2YTA5NWMxNjAyNGU5YmFhNDhmNjAyZWIxODljMzdlYjNiZDUxMDcwZTE1YWI0OWFiMjE2YjA3YjFiMSJ9fX0="
+    # Copper Bulb Powered (83acdced)
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODNhY2RjZWQ0ZjVhNDhlNzRlZGFkZDAxNGM1ZGU3ZGFmOWVmYjEyMWNlYWZiNmMxNWNkYjEzODc1NTk0ZmNkOSJ9fX0="
     drops: self
     default_state: spinning_y
     placement_state_map:
@@ -344,18 +344,20 @@ blocks:
     lore:
       - "&7Grinds items when powered"
       - "&7Right-click with item"
-    # Cut Copper 2 (a2962713)
-    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTI5NjI3MTNhZGE1NGM0MWQ1NDcyNDE0NWNhZTJkNmFiYzhhM2NhZWFmM2E3YzJiZDcxOTk1ODYwYWE4Mjc4OCJ9fX0="
+    # Stone Slabs (151e7016)
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTUxZTcwMTY5ZWEwMGYwNGE5NDM5MjIxY2YzMzc3MDg0NDE1OWRkNzc1ZmM4ODMwZTMxMWZkOWI1Y2NkMjk2OSJ9fX0="
     drops: self
     placement:
       allowed_faces: [DOWN]
     default_state: idle
     states:
+      # Two slabs stacked — bottom static, top rotates when spinning.
+      # Full block height: base at bottom, top shifted up half a block.
       idle:
         display_entities:
-          - { material: SMOOTH_STONE_SLAB, tag: base_slab, transform: { translation: [0, -0.15, 0], scale: [0.8, 0.3, 0.8] } }
-          - { material: SMOOTH_STONE_SLAB, tag: top_slab,  transform: { translation: [0, 0.1, 0],  scale: [0.8, 0.3, 0.8] } }
+          - { material: SMOOTH_STONE_SLAB, tag: base_slab, transform: { translation: [0, -0.25, 0], scale: [0.8, 1.0, 0.8] } }
+          - { material: SMOOTH_STONE_SLAB, tag: top_slab,  transform: { translation: [0, 0.25, 0],  scale: [0.8, 1.0, 0.8] } }
       spinning:
         display_entities:
-          - { material: SMOOTH_STONE_SLAB, tag: base_slab, transform: { translation: [0, -0.15, 0], scale: [0.8, 0.3, 0.8] } }
-          - { material: SMOOTH_STONE_SLAB, tag: top_slab,  transform: { translation: [0, 0.1, 0],  scale: [0.8, 0.3, 0.8] }, animation: { type: rotate, axis: [0,1,0], speed: 2.0 }, interpolation: 2 }
+          - { material: SMOOTH_STONE_SLAB, tag: base_slab, transform: { translation: [0, -0.25, 0], scale: [0.8, 1.0, 0.8] } }
+          - { material: SMOOTH_STONE_SLAB, tag: top_slab,  transform: { translation: [0, 0.25, 0],  scale: [0.8, 1.0, 0.8] }, animation: { type: rotate, axis: [0,1,0], speed: 2.0 }, interpolation: 2 }

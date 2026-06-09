@@ -1,0 +1,24 @@
+# Grindstone grinding recipes
+# input: material name (uppercase)
+# output: material name
+# amount: number of output items per grind
+
+recipes:
+  - input: BONE
+    output: BONE_MEAL
+    amount: 3
+  - input: BLAZE_ROD
+    output: BLAZE_POWDER
+    amount: 3
+  - input: SUGAR_CANE
+    output: SUGAR
+    amount: 2
+  - input: COBBLESTONE
+    output: GRAVEL
+    amount: 1
+  - input: GRAVEL
+    output: SAND
+    amount: 1
+  - input: WHEAT
+    output: SUGAR
+    amount: 1
