@@ -123,7 +123,8 @@ blocks:
             transform: { translation: [0, 0.125, 0], scale: [1.7, 0.5, 1.7], left_rotation: [45, 0, 1, 0] }
             animation: { type: rotate, axis: [0, 1, 0], speed: 2.0 }
             interpolation: 2
-      # X-axis gear: orient 90° around Z, disc_b composed R_Z(90°)×R_X(45°). wall_offset for surface gap.
+      # X-axis gear: same scale as floor, LR [90,0,0,1] tilts head to face along X.
+      # disc_b: R_Z(90) × R_Y(45) — 45° around model-Y, becomes rotation around X in world.
       idle_x:
         display_entities:
           - texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTM1NDhjNmJkZGYwMGQ1MDI5MjEyYjc0NjFkZGNhYTcyZTkyOGQ0M2YzYWIwMmEyYWJmNjgwYTYzZDI1MWVjNSJ9fX0="
@@ -132,7 +133,7 @@ blocks:
             wall_offset: 0.125
           - texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTM1NDhjNmJkZGYwMGQ1MDI5MjEyYjc0NjFkZGNhYTcyZTkyOGQ0M2YzYWIwMmEyYWJmNjgwYTYzZDI1MWVjNSJ9fX0="
             tag: disc_b
-            transform: { translation: [0, 0, 0], scale: [1.7, 0.5, 1.7], left_rotation: [98.4, 0.3574, 0.3574, 0.8629] }
+            transform: { translation: [0, 0, 0], scale: [1.7, 0.5, 1.7], left_rotation: [98.42, -0.3574, 0.3574, 0.8629] }
             wall_offset: 0.125
       spinning_x:
         display_entities:
@@ -144,11 +145,12 @@ blocks:
             wall_offset: 0.125
           - texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTM1NDhjNmJkZGYwMGQ1MDI5MjEyYjc0NjFkZGNhYTcyZTkyOGQ0M2YzYWIwMmEyYWJmNjgwYTYzZDI1MWVjNSJ9fX0="
             tag: disc_b
-            transform: { translation: [0, 0, 0], scale: [1.7, 0.5, 1.7], left_rotation: [98.4, 0.3574, 0.3574, 0.8629] }
+            transform: { translation: [0, 0, 0], scale: [1.7, 0.5, 1.7], left_rotation: [98.42, -0.3574, 0.3574, 0.8629] }
             animation: { type: rotate, axis: [1, 0, 0], speed: 2.0 }
             interpolation: 2
             wall_offset: 0.125
-      # Z-axis gear: orient -90° around X, disc_b composed R_X(-90°)×R_Z(45°). wall_offset for surface gap.
+      # Z-axis gear: same scale as floor, LR [-90,1,0,0] tilts head to face along Z.
+      # disc_b: R_X(-90) × R_Y(45) — 45° around model-Y, becomes rotation around Z in world.
       idle_z:
         display_entities:
           - texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTM1NDhjNmJkZGYwMGQ1MDI5MjEyYjc0NjFkZGNhYTcyZTkyOGQ0M2YzYWIwMmEyYWJmNjgwYTYzZDI1MWVjNSJ9fX0="
@@ -157,7 +159,7 @@ blocks:
             wall_offset: 0.125
           - texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTM1NDhjNmJkZGYwMGQ1MDI5MjEyYjc0NjFkZGNhYTcyZTkyOGQ0M2YzYWIwMmEyYWJmNjgwYTYzZDI1MWVjNSJ9fX0="
             tag: disc_b
-            transform: { translation: [0, 0, 0], scale: [1.7, 0.5, 1.7], left_rotation: [98.4, -0.8629, 0.3574, 0.3574] }
+            transform: { translation: [0, 0, 0], scale: [1.7, 0.5, 1.7], left_rotation: [98.42, -0.8629, 0.3574, -0.3574] }
             wall_offset: 0.125
       spinning_z:
         display_entities:
@@ -169,7 +171,7 @@ blocks:
             wall_offset: 0.125
           - texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTM1NDhjNmJkZGYwMGQ1MDI5MjEyYjc0NjFkZGNhYTcyZTkyOGQ0M2YzYWIwMmEyYWJmNjgwYTYzZDI1MWVjNSJ9fX0="
             tag: disc_b
-            transform: { translation: [0, 0, 0], scale: [1.7, 0.5, 1.7], left_rotation: [98.4, -0.8629, 0.3574, 0.3574] }
+            transform: { translation: [0, 0, 0], scale: [1.7, 0.5, 1.7], left_rotation: [98.42, -0.8629, 0.3574, -0.3574] }
             animation: { type: rotate, axis: [0, 0, 1], speed: 2.0 }
             interpolation: 2
             wall_offset: 0.125
@@ -201,3 +203,159 @@ blocks:
       locked_x: {}
       locked_y: {}
       locked_z: {}
+
+  # ─── Water Wheel ────────────────────────────────────────────────────────
+  # Source: 2 SU. Wall only. Spins when water is on perpendicular faces.
+  # Display: 4 OAK_SLAB paddles at 90° intervals.
+  water_wheel:
+    name: "&bWater Wheel"
+    lore:
+      - "&7Produces 2 SU when adjacent to water"
+      - "&7Place on a wall"
+    # Chiselled Copper
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMmVkZDI0ODI1YzIxNzMwM2YyNmFmNTUyNjU3MGEyMTRhZWMyOWI5Mjk3YTY4NzcxNTFiYTUwZmNlZGZmN2ZmMSJ9fX0="
+    drops: self
+    placement:
+      allowed_faces: [NORTH, SOUTH, EAST, WEST]
+    default_state: idle_z
+    placement_state_map:
+      NORTH: idle_z
+      SOUTH: idle_z
+      EAST: idle_x
+      WEST: idle_x
+    states:
+      # Z-axis (N/S wall): paddles in XY plane
+      idle_z:
+        display_entities:
+          - { material: OAK_SLAB, tag: paddle_a, transform: { translation: [0.35, 0, 0],  scale: [0.6, 0.6, 0.15] }, wall_offset: 0.25 }
+          - { material: OAK_SLAB, tag: paddle_b, transform: { translation: [0, 0.35, 0],  scale: [0.15, 0.6, 0.6] }, wall_offset: 0.25 }
+          - { material: OAK_SLAB, tag: paddle_c, transform: { translation: [-0.35, 0, 0], scale: [0.6, 0.6, 0.15] }, wall_offset: 0.25 }
+          - { material: OAK_SLAB, tag: paddle_d, transform: { translation: [0, -0.35, 0], scale: [0.15, 0.6, 0.6] }, wall_offset: 0.25 }
+      spinning_z:
+        display_entities:
+          - { material: OAK_SLAB, tag: paddle_a, transform: { translation: [0.35, 0, 0],  scale: [0.6, 0.6, 0.15] }, animation: { type: rotate, axis: [0,0,1], speed: 1.5 }, interpolation: 2, wall_offset: 0.25 }
+          - { material: OAK_SLAB, tag: paddle_b, transform: { translation: [0, 0.35, 0],  scale: [0.15, 0.6, 0.6] }, animation: { type: rotate, axis: [0,0,1], speed: 1.5 }, interpolation: 2, wall_offset: 0.25 }
+          - { material: OAK_SLAB, tag: paddle_c, transform: { translation: [-0.35, 0, 0], scale: [0.6, 0.6, 0.15] }, animation: { type: rotate, axis: [0,0,1], speed: 1.5 }, interpolation: 2, wall_offset: 0.25 }
+          - { material: OAK_SLAB, tag: paddle_d, transform: { translation: [0, -0.35, 0], scale: [0.15, 0.6, 0.6] }, animation: { type: rotate, axis: [0,0,1], speed: 1.5 }, interpolation: 2, wall_offset: 0.25 }
+      # X-axis (E/W wall): paddles in YZ plane
+      idle_x:
+        display_entities:
+          - { material: OAK_SLAB, tag: paddle_a, transform: { translation: [0, 0.35, 0],  scale: [0.15, 0.6, 0.6] }, wall_offset: 0.25 }
+          - { material: OAK_SLAB, tag: paddle_b, transform: { translation: [0, 0, 0.35],  scale: [0.6, 0.15, 0.6] }, wall_offset: 0.25 }
+          - { material: OAK_SLAB, tag: paddle_c, transform: { translation: [0, -0.35, 0], scale: [0.15, 0.6, 0.6] }, wall_offset: 0.25 }
+          - { material: OAK_SLAB, tag: paddle_d, transform: { translation: [0, 0, -0.35], scale: [0.6, 0.15, 0.6] }, wall_offset: 0.25 }
+      spinning_x:
+        display_entities:
+          - { material: OAK_SLAB, tag: paddle_a, transform: { translation: [0, 0.35, 0],  scale: [0.15, 0.6, 0.6] }, animation: { type: rotate, axis: [1,0,0], speed: 1.5 }, interpolation: 2, wall_offset: 0.25 }
+          - { material: OAK_SLAB, tag: paddle_b, transform: { translation: [0, 0, 0.35],  scale: [0.6, 0.15, 0.6] }, animation: { type: rotate, axis: [1,0,0], speed: 1.5 }, interpolation: 2, wall_offset: 0.25 }
+          - { material: OAK_SLAB, tag: paddle_c, transform: { translation: [0, -0.35, 0], scale: [0.15, 0.6, 0.6] }, animation: { type: rotate, axis: [1,0,0], speed: 1.5 }, interpolation: 2, wall_offset: 0.25 }
+          - { material: OAK_SLAB, tag: paddle_d, transform: { translation: [0, 0, -0.35], scale: [0.6, 0.15, 0.6] }, animation: { type: rotate, axis: [1,0,0], speed: 1.5 }, interpolation: 2, wall_offset: 0.25 }
+
+  # ─── Engine ─────────────────────────────────────────────────────────────
+  # Source: 5 SU. Needs fuel (coal, charcoal, etc). Any orientation.
+  # No display entities — smoke particles when running.
+  engine:
+    name: "&4Engine"
+    lore:
+      - "&7Produces 5 SU when fueled"
+      - "&7Right-click with fuel to power"
+    # Copper Bulb Powered (83acdced)
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODNhY2RjZWQ0ZjVhNDhlNzRlZGFkZDAxNGM1ZGU3ZGFmOWVmYjEyMWNlYWZiNmMxNWNkYjEzODc1NTk0ZmNkOSJ9fX0="
+    drops: self
+    default_state: idle_y
+    placement_state_map:
+      DOWN: idle_y
+      NORTH: idle_z
+      SOUTH: idle_z
+      EAST: idle_x
+      WEST: idle_x
+    states:
+      idle_x: {}
+      idle_y: {}
+      idle_z: {}
+      running_x:
+        particles:
+          type: CAMPFIRE_COSY_SMOKE
+          count: 1
+          speed: 0.02
+          interval: 10
+          floor_offset: [0, 0.8, 0]
+      running_y:
+        particles:
+          type: CAMPFIRE_COSY_SMOKE
+          count: 1
+          speed: 0.02
+          interval: 10
+          floor_offset: [0, 0.8, 0]
+      running_z:
+        particles:
+          type: CAMPFIRE_COSY_SMOKE
+          count: 1
+          speed: 0.02
+          interval: 10
+          floor_offset: [0, 0.8, 0]
+
+  # ─── Redstone Generator ────────────────────────────────────────────────
+  # Source: 1 SU. Always on, no fuel. Expensive to craft.
+  # No display entities — redstone particles always active.
+  generator:
+    name: "&5Redstone Generator"
+    lore:
+      - "&7Produces 1 SU constantly"
+      - "&7No fuel required"
+    # Copper Grate (9dbf76a0)
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOWRiZjc2YTA5NWMxNjAyNGU5YmFhNDhmNjAyZWIxODljMzdlYjNiZDUxMDcwZTE1YWI0OWFiMjE2YjA3YjFiMSJ9fX0="
+    drops: self
+    default_state: spinning_y
+    placement_state_map:
+      DOWN: spinning_y
+      NORTH: spinning_z
+      SOUTH: spinning_z
+      EAST: spinning_x
+      WEST: spinning_x
+    states:
+      spinning_x:
+        particles:
+          type: ELECTRIC_SPARK
+          count: 1
+          speed: 0.01
+          interval: 8
+          floor_offset: [0, 0.5, 0]
+      spinning_y:
+        particles:
+          type: ELECTRIC_SPARK
+          count: 1
+          speed: 0.01
+          interval: 8
+          floor_offset: [0, 0.5, 0]
+      spinning_z:
+        particles:
+          type: ELECTRIC_SPARK
+          count: 1
+          speed: 0.01
+          interval: 8
+          floor_offset: [0, 0.5, 0]
+
+  # ─── Grindstone ─────────────────────────────────────────────────────────
+  # Consumer: 1 SU. Floor only. Right-click with item to grind.
+  # Display: two smooth stone slabs — bottom static, top spins when powered.
+  grindstone:
+    name: "&7Grindstone"
+    lore:
+      - "&7Grinds items when powered"
+      - "&7Right-click with item"
+    # Cut Copper 2 (a2962713)
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTI5NjI3MTNhZGE1NGM0MWQ1NDcyNDE0NWNhZTJkNmFiYzhhM2NhZWFmM2E3YzJiZDcxOTk1ODYwYWE4Mjc4OCJ9fX0="
+    drops: self
+    placement:
+      allowed_faces: [DOWN]
+    default_state: idle
+    states:
+      idle:
+        display_entities:
+          - { material: SMOOTH_STONE_SLAB, tag: base_slab, transform: { translation: [0, -0.15, 0], scale: [0.8, 0.3, 0.8] } }
+          - { material: SMOOTH_STONE_SLAB, tag: top_slab,  transform: { translation: [0, 0.1, 0],  scale: [0.8, 0.3, 0.8] } }
+      spinning:
+        display_entities:
+          - { material: SMOOTH_STONE_SLAB, tag: base_slab, transform: { translation: [0, -0.15, 0], scale: [0.8, 0.3, 0.8] } }
+          - { material: SMOOTH_STONE_SLAB, tag: top_slab,  transform: { translation: [0, 0.1, 0],  scale: [0.8, 0.3, 0.8] }, animation: { type: rotate, axis: [0,1,0], speed: 2.0 }, interpolation: 2 }
