@@ -31,6 +31,7 @@ final class RotationBlocks {
         // Passive sources — detected at network boundary, no callbacks needed
         network.registerPassiveSource("demo:windmill", 1);
         network.registerPassiveSource("rotation:generator", 1);
+        network.registerPassiveSource("rotation:large_windmill", 5);
     }
 
     // ──────────────────────────────────────────────────────────────────────

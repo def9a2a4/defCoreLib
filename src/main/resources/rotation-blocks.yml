@@ -77,12 +77,12 @@ blocks:
 
   # ─── Gear ───────────────────────────────────────────────────────────────
   # Transmitter: connects perpendicular gears + along-axis like a shaft.
-  # Display: two overlapping discs at 45° offset around rotation axis.
-  # 0.5 depth (model-space Y scale), 1.7 width perpendicular. 0.125 from surface.
-  # disc_b LR = compose(orientation_LR, 45°_around_rotation_axis):
-  #   Y-axis: [45, 0, 1, 0] (just 45° around Y, no orientation needed)
-  #   X-axis: R_Z(90°) × R_X(45°) = [98.4, 0.3574, 0.3574, 0.8629]
-  #   Z-axis: R_X(-90°) × R_Z(45°) = [98.4, -0.8629, 0.3574, 0.3574]
+  # Display: shaft rod + two overlapping discs at 45° offset.
+  # 0.4 depth (0.2 blocks thick), 1.7 width. disc_b offset 0.01 in rotation axis.
+  # disc_b LR = compose(orientation_LR, R_Y(45°)):
+  #   Y: [45, 0, 1, 0]
+  #   X: R_Z(90) × R_Y(45) = [98.42, -0.3574, 0.3574, 0.8629]
+  #   Z: R_X(-90) × R_Y(45) = [98.42, -0.8629, 0.3574, -0.3574]
   gear:
     name: "&6Gear"
     lore:
@@ -101,80 +101,105 @@ blocks:
       EAST: idle_x
       WEST: idle_x
     states:
-      # Y-axis gear: flat disc in XZ plane. 0.125 above surface.
+      # ── Y-axis gear (floor): shifted down, shaft rod through center ──
       idle_y:
         display_entities:
-          # Copper Gear modified (53548c6b)
+          - texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTI4YmMyZGYzZGZmNWVjM2QxNDNhMmNlZWNiOTM4MjE4MzUxNmU5ZmFkZDdlNDA5YTVlYjQxNTUxNTc0YTI1ZiJ9fX0="
+            tag: shaft_rod
+            transform: { translation: [0, 0.5, 0], scale: [0.66, 2.0, 0.66] }
           - texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTM1NDhjNmJkZGYwMGQ1MDI5MjEyYjc0NjFkZGNhYTcyZTkyOGQ0M2YzYWIwMmEyYWJmNjgwYTYzZDI1MWVjNSJ9fX0="
             tag: disc_a
-            transform: { translation: [0, 0.125, 0], scale: [1.7, 0.5, 1.7] }
+            transform: { translation: [0, -0.1, 0], scale: [1.7, 0.4, 1.7] }
           - texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTM1NDhjNmJkZGYwMGQ1MDI5MjEyYjc0NjFkZGNhYTcyZTkyOGQ0M2YzYWIwMmEyYWJmNjgwYTYzZDI1MWVjNSJ9fX0="
             tag: disc_b
-            transform: { translation: [0, 0.125, 0], scale: [1.7, 0.5, 1.7], left_rotation: [45, 0, 1, 0] }
+            transform: { translation: [0, -0.09, 0], scale: [1.7, 0.4, 1.7], left_rotation: [45, 0, 1, 0] }
       spinning_y:
         display_entities:
+          - texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTI4YmMyZGYzZGZmNWVjM2QxNDNhMmNlZWNiOTM4MjE4MzUxNmU5ZmFkZDdlNDA5YTVlYjQxNTUxNTc0YTI1ZiJ9fX0="
+            tag: shaft_rod
+            transform: { translation: [0, 0.5, 0], scale: [0.66, 2.0, 0.66] }
+            animation: { type: rotate, axis: [0, 1, 0], speed: 2.0 }
+            interpolation: 2
           - texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTM1NDhjNmJkZGYwMGQ1MDI5MjEyYjc0NjFkZGNhYTcyZTkyOGQ0M2YzYWIwMmEyYWJmNjgwYTYzZDI1MWVjNSJ9fX0="
             tag: disc_a
-            transform: { translation: [0, 0.125, 0], scale: [1.7, 0.5, 1.7] }
+            transform: { translation: [0, -0.1, 0], scale: [1.7, 0.4, 1.7] }
             animation: { type: rotate, axis: [0, 1, 0], speed: 2.0 }
             interpolation: 2
           - texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTM1NDhjNmJkZGYwMGQ1MDI5MjEyYjc0NjFkZGNhYTcyZTkyOGQ0M2YzYWIwMmEyYWJmNjgwYTYzZDI1MWVjNSJ9fX0="
             tag: disc_b
-            transform: { translation: [0, 0.125, 0], scale: [1.7, 0.5, 1.7], left_rotation: [45, 0, 1, 0] }
+            transform: { translation: [0, -0.09, 0], scale: [1.7, 0.4, 1.7], left_rotation: [45, 0, 1, 0] }
             animation: { type: rotate, axis: [0, 1, 0], speed: 2.0 }
             interpolation: 2
-      # X-axis gear: same scale as floor, LR [90,0,0,1] tilts head to face along X.
-      # disc_b: R_Z(90) × R_Y(45) — 45° around model-Y, becomes rotation around X in world.
+      # ── X-axis gear (E/W wall): disc_b offset 0.01 in X ──
       idle_x:
         display_entities:
+          - texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTI4YmMyZGYzZGZmNWVjM2QxNDNhMmNlZWNiOTM4MjE4MzUxNmU5ZmFkZDdlNDA5YTVlYjQxNTUxNTc0YTI1ZiJ9fX0="
+            tag: shaft_rod
+            transform: { translation: [-0.5, 0, 0], scale: [0.66, 2.0, 0.66], left_rotation: [90, 0, 0, 1] }
+            wall_offset: 0.05
           - texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTM1NDhjNmJkZGYwMGQ1MDI5MjEyYjc0NjFkZGNhYTcyZTkyOGQ0M2YzYWIwMmEyYWJmNjgwYTYzZDI1MWVjNSJ9fX0="
             tag: disc_a
-            transform: { translation: [0, 0, 0], scale: [1.7, 0.5, 1.7], left_rotation: [90, 0, 0, 1] }
-            wall_offset: 0.125
+            transform: { translation: [0, 0, 0], scale: [1.7, 0.4, 1.7], left_rotation: [90, 0, 0, 1] }
+            wall_offset: 0.05
           - texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTM1NDhjNmJkZGYwMGQ1MDI5MjEyYjc0NjFkZGNhYTcyZTkyOGQ0M2YzYWIwMmEyYWJmNjgwYTYzZDI1MWVjNSJ9fX0="
             tag: disc_b
-            transform: { translation: [0, 0, 0], scale: [1.7, 0.5, 1.7], left_rotation: [98.42, -0.3574, 0.3574, 0.8629] }
-            wall_offset: 0.125
+            transform: { translation: [0.01, 0, 0], scale: [1.7, 0.4, 1.7], left_rotation: [98.42, -0.3574, 0.3574, 0.8629] }
+            wall_offset: 0.05
       spinning_x:
         display_entities:
+          - texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTI4YmMyZGYzZGZmNWVjM2QxNDNhMmNlZWNiOTM4MjE4MzUxNmU5ZmFkZDdlNDA5YTVlYjQxNTUxNTc0YTI1ZiJ9fX0="
+            tag: shaft_rod
+            transform: { translation: [-0.5, 0, 0], scale: [0.66, 2.0, 0.66], left_rotation: [90, 0, 0, 1] }
+            animation: { type: rotate, axis: [1, 0, 0], speed: 2.0 }
+            interpolation: 2
+            wall_offset: 0.05
           - texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTM1NDhjNmJkZGYwMGQ1MDI5MjEyYjc0NjFkZGNhYTcyZTkyOGQ0M2YzYWIwMmEyYWJmNjgwYTYzZDI1MWVjNSJ9fX0="
             tag: disc_a
-            transform: { translation: [0, 0, 0], scale: [1.7, 0.5, 1.7], left_rotation: [90, 0, 0, 1] }
+            transform: { translation: [0, 0, 0], scale: [1.7, 0.4, 1.7], left_rotation: [90, 0, 0, 1] }
             animation: { type: rotate, axis: [1, 0, 0], speed: 2.0 }
             interpolation: 2
-            wall_offset: 0.125
+            wall_offset: 0.05
           - texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTM1NDhjNmJkZGYwMGQ1MDI5MjEyYjc0NjFkZGNhYTcyZTkyOGQ0M2YzYWIwMmEyYWJmNjgwYTYzZDI1MWVjNSJ9fX0="
             tag: disc_b
-            transform: { translation: [0, 0, 0], scale: [1.7, 0.5, 1.7], left_rotation: [98.42, -0.3574, 0.3574, 0.8629] }
+            transform: { translation: [0.01, 0, 0], scale: [1.7, 0.4, 1.7], left_rotation: [98.42, -0.3574, 0.3574, 0.8629] }
             animation: { type: rotate, axis: [1, 0, 0], speed: 2.0 }
             interpolation: 2
-            wall_offset: 0.125
-      # Z-axis gear: same scale as floor, LR [-90,1,0,0] tilts head to face along Z.
-      # disc_b: R_X(-90) × R_Y(45) — 45° around model-Y, becomes rotation around Z in world.
+            wall_offset: 0.05
+      # ── Z-axis gear (N/S wall): disc_b offset 0.01 in Z ──
       idle_z:
         display_entities:
+          - texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTI4YmMyZGYzZGZmNWVjM2QxNDNhMmNlZWNiOTM4MjE4MzUxNmU5ZmFkZDdlNDA5YTVlYjQxNTUxNTc0YTI1ZiJ9fX0="
+            tag: shaft_rod
+            transform: { translation: [0, 0, -0.5], scale: [0.66, 2.0, 0.66], left_rotation: [-90, 1, 0, 0] }
+            wall_offset: 0.05
           - texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTM1NDhjNmJkZGYwMGQ1MDI5MjEyYjc0NjFkZGNhYTcyZTkyOGQ0M2YzYWIwMmEyYWJmNjgwYTYzZDI1MWVjNSJ9fX0="
             tag: disc_a
-            transform: { translation: [0, 0, 0], scale: [1.7, 0.5, 1.7], left_rotation: [-90, 1, 0, 0] }
-            wall_offset: 0.125
+            transform: { translation: [0, 0, 0], scale: [1.7, 0.4, 1.7], left_rotation: [-90, 1, 0, 0] }
+            wall_offset: 0.05
           - texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTM1NDhjNmJkZGYwMGQ1MDI5MjEyYjc0NjFkZGNhYTcyZTkyOGQ0M2YzYWIwMmEyYWJmNjgwYTYzZDI1MWVjNSJ9fX0="
             tag: disc_b
-            transform: { translation: [0, 0, 0], scale: [1.7, 0.5, 1.7], left_rotation: [98.42, -0.8629, 0.3574, -0.3574] }
-            wall_offset: 0.125
+            transform: { translation: [0, 0, 0.01], scale: [1.7, 0.4, 1.7], left_rotation: [98.42, -0.8629, 0.3574, -0.3574] }
+            wall_offset: 0.05
       spinning_z:
         display_entities:
+          - texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTI4YmMyZGYzZGZmNWVjM2QxNDNhMmNlZWNiOTM4MjE4MzUxNmU5ZmFkZDdlNDA5YTVlYjQxNTUxNTc0YTI1ZiJ9fX0="
+            tag: shaft_rod
+            transform: { translation: [0, 0, -0.5], scale: [0.66, 2.0, 0.66], left_rotation: [-90, 1, 0, 0] }
+            animation: { type: rotate, axis: [0, 0, 1], speed: 2.0 }
+            interpolation: 2
+            wall_offset: 0.05
           - texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTM1NDhjNmJkZGYwMGQ1MDI5MjEyYjc0NjFkZGNhYTcyZTkyOGQ0M2YzYWIwMmEyYWJmNjgwYTYzZDI1MWVjNSJ9fX0="
             tag: disc_a
-            transform: { translation: [0, 0, 0], scale: [1.7, 0.5, 1.7], left_rotation: [-90, 1, 0, 0] }
+            transform: { translation: [0, 0, 0], scale: [1.7, 0.4, 1.7], left_rotation: [-90, 1, 0, 0] }
             animation: { type: rotate, axis: [0, 0, 1], speed: 2.0 }
             interpolation: 2
-            wall_offset: 0.125
+            wall_offset: 0.05
           - texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTM1NDhjNmJkZGYwMGQ1MDI5MjEyYjc0NjFkZGNhYTcyZTkyOGQ0M2YzYWIwMmEyYWJmNjgwYTYzZDI1MWVjNSJ9fX0="
             tag: disc_b
-            transform: { translation: [0, 0, 0], scale: [1.7, 0.5, 1.7], left_rotation: [98.42, -0.8629, 0.3574, -0.3574] }
+            transform: { translation: [0, 0, 0.01], scale: [1.7, 0.4, 1.7], left_rotation: [98.42, -0.8629, 0.3574, -0.3574] }
             animation: { type: rotate, axis: [0, 0, 1], speed: 2.0 }
             interpolation: 2
-            wall_offset: 0.125
+            wall_offset: 0.05
 
   # ─── Clutch ─────────────────────────────────────────────────────────────
   # Transmitter: like a shaft, but disconnects when powered by redstone.
@@ -253,7 +278,7 @@ blocks:
 
   # ─── Engine ─────────────────────────────────────────────────────────────
   # Source: 5 SU. Needs fuel (coal, charcoal, etc). Any orientation.
-  # No display entities — smoke particles when running.
+  # Shaft display entity shows rotation direction. Smoke particles when running.
   engine:
     name: "&4Engine"
     lore:
@@ -270,10 +295,30 @@ blocks:
       EAST: idle_x
       WEST: idle_x
     states:
-      idle_x: {}
-      idle_y: {}
-      idle_z: {}
+      # Idle: static shaft display showing axis direction
+      idle_x:
+        display_entities:
+          - texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTI4YmMyZGYzZGZmNWVjM2QxNDNhMmNlZWNiOTM4MjE4MzUxNmU5ZmFkZDdlNDA5YTVlYjQxNTUxNTc0YTI1ZiJ9fX0="
+            tag: rod
+            transform: { translation: [-0.5, 0, 0], scale: [0.66, 2.0, 0.66], left_rotation: [90, 0, 0, 1] }
+      idle_y:
+        display_entities:
+          - texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTI4YmMyZGYzZGZmNWVjM2QxNDNhMmNlZWNiOTM4MjE4MzUxNmU5ZmFkZDdlNDA5YTVlYjQxNTUxNTc0YTI1ZiJ9fX0="
+            tag: rod
+            transform: { translation: [0, 0.5, 0], scale: [0.66, 2.0, 0.66] }
+      idle_z:
+        display_entities:
+          - texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTI4YmMyZGYzZGZmNWVjM2QxNDNhMmNlZWNiOTM4MjE4MzUxNmU5ZmFkZDdlNDA5YTVlYjQxNTUxNTc0YTI1ZiJ9fX0="
+            tag: rod
+            transform: { translation: [0, 0, -0.5], scale: [0.66, 2.0, 0.66], left_rotation: [-90, 1, 0, 0] }
+      # Running: spinning shaft + smoke particles
       running_x:
+        display_entities:
+          - texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTI4YmMyZGYzZGZmNWVjM2QxNDNhMmNlZWNiOTM4MjE4MzUxNmU5ZmFkZDdlNDA5YTVlYjQxNTUxNTc0YTI1ZiJ9fX0="
+            tag: rod
+            transform: { translation: [-0.5, 0, 0], scale: [0.66, 2.0, 0.66], left_rotation: [90, 0, 0, 1] }
+            animation: { type: rotate, axis: [1, 0, 0], speed: 3.0 }
+            interpolation: 2
         particles:
           type: CAMPFIRE_COSY_SMOKE
           count: 1
@@ -281,6 +326,12 @@ blocks:
           interval: 10
           floor_offset: [0, 0.8, 0]
       running_y:
+        display_entities:
+          - texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTI4YmMyZGYzZGZmNWVjM2QxNDNhMmNlZWNiOTM4MjE4MzUxNmU5ZmFkZDdlNDA5YTVlYjQxNTUxNTc0YTI1ZiJ9fX0="
+            tag: rod
+            transform: { translation: [0, 0.5, 0], scale: [0.66, 2.0, 0.66] }
+            animation: { type: rotate, axis: [0, 1, 0], speed: 3.0 }
+            interpolation: 2
         particles:
           type: CAMPFIRE_COSY_SMOKE
           count: 1
@@ -288,6 +339,12 @@ blocks:
           interval: 10
           floor_offset: [0, 0.8, 0]
       running_z:
+        display_entities:
+          - texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTI4YmMyZGYzZGZmNWVjM2QxNDNhMmNlZWNiOTM4MjE4MzUxNmU5ZmFkZDdlNDA5YTVlYjQxNTUxNTc0YTI1ZiJ9fX0="
+            tag: rod
+            transform: { translation: [0, 0, -0.5], scale: [0.66, 2.0, 0.66], left_rotation: [-90, 1, 0, 0] }
+            animation: { type: rotate, axis: [0, 0, 1], speed: 3.0 }
+            interpolation: 2
         particles:
           type: CAMPFIRE_COSY_SMOKE
           count: 1
@@ -296,13 +353,13 @@ blocks:
           floor_offset: [0, 0.8, 0]
 
   # ─── Redstone Generator ────────────────────────────────────────────────
-  # Source: 1 SU. Always on, no fuel. Expensive to craft.
-  # No display entities — redstone particles always active.
+  # Source: 1 SU. Always on unless receiving redstone power. Expensive to craft.
+  # Shaft display entity shows rotation direction. Spark particles when active.
   generator:
     name: "&5Redstone Generator"
     lore:
       - "&7Produces 1 SU constantly"
-      - "&7No fuel required"
+      - "&7Turns off when redstone powered"
     # Copper Bulb Powered (83acdced)
     texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODNhY2RjZWQ0ZjVhNDhlNzRlZGFkZDAxNGM1ZGU3ZGFmOWVmYjEyMWNlYWZiNmMxNWNkYjEzODc1NTk0ZmNkOSJ9fX0="
     drops: self
@@ -314,7 +371,30 @@ blocks:
       EAST: spinning_x
       WEST: spinning_x
     states:
+      # Idle: static shaft, no particles (redstone-disabled)
+      idle_x:
+        display_entities:
+          - texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTI4YmMyZGYzZGZmNWVjM2QxNDNhMmNlZWNiOTM4MjE4MzUxNmU5ZmFkZDdlNDA5YTVlYjQxNTUxNTc0YTI1ZiJ9fX0="
+            tag: rod
+            transform: { translation: [-0.5, 0, 0], scale: [0.66, 2.0, 0.66], left_rotation: [90, 0, 0, 1] }
+      idle_y:
+        display_entities:
+          - texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTI4YmMyZGYzZGZmNWVjM2QxNDNhMmNlZWNiOTM4MjE4MzUxNmU5ZmFkZDdlNDA5YTVlYjQxNTUxNTc0YTI1ZiJ9fX0="
+            tag: rod
+            transform: { translation: [0, 0.5, 0], scale: [0.66, 2.0, 0.66] }
+      idle_z:
+        display_entities:
+          - texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTI4YmMyZGYzZGZmNWVjM2QxNDNhMmNlZWNiOTM4MjE4MzUxNmU5ZmFkZDdlNDA5YTVlYjQxNTUxNTc0YTI1ZiJ9fX0="
+            tag: rod
+            transform: { translation: [0, 0, -0.5], scale: [0.66, 2.0, 0.66], left_rotation: [-90, 1, 0, 0] }
+      # Spinning: rotating shaft + spark particles
       spinning_x:
+        display_entities:
+          - texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTI4YmMyZGYzZGZmNWVjM2QxNDNhMmNlZWNiOTM4MjE4MzUxNmU5ZmFkZDdlNDA5YTVlYjQxNTUxNTc0YTI1ZiJ9fX0="
+            tag: rod
+            transform: { translation: [-0.5, 0, 0], scale: [0.66, 2.0, 0.66], left_rotation: [90, 0, 0, 1] }
+            animation: { type: rotate, axis: [1, 0, 0], speed: 3.0 }
+            interpolation: 2
         particles:
           type: ELECTRIC_SPARK
           count: 1
@@ -322,6 +402,12 @@ blocks:
           interval: 8
           floor_offset: [0, 0.5, 0]
       spinning_y:
+        display_entities:
+          - texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTI4YmMyZGYzZGZmNWVjM2QxNDNhMmNlZWNiOTM4MjE4MzUxNmU5ZmFkZDdlNDA5YTVlYjQxNTUxNTc0YTI1ZiJ9fX0="
+            tag: rod
+            transform: { translation: [0, 0.5, 0], scale: [0.66, 2.0, 0.66] }
+            animation: { type: rotate, axis: [0, 1, 0], speed: 3.0 }
+            interpolation: 2
         particles:
           type: ELECTRIC_SPARK
           count: 1
@@ -329,6 +415,12 @@ blocks:
           interval: 8
           floor_offset: [0, 0.5, 0]
       spinning_z:
+        display_entities:
+          - texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTI4YmMyZGYzZGZmNWVjM2QxNDNhMmNlZWNiOTM4MjE4MzUxNmU5ZmFkZDdlNDA5YTVlYjQxNTUxNTc0YTI1ZiJ9fX0="
+            tag: rod
+            transform: { translation: [0, 0, -0.5], scale: [0.66, 2.0, 0.66], left_rotation: [-90, 1, 0, 0] }
+            animation: { type: rotate, axis: [0, 0, 1], speed: 3.0 }
+            interpolation: 2
         particles:
           type: ELECTRIC_SPARK
           count: 1
@@ -352,12 +444,63 @@ blocks:
     default_state: idle
     states:
       # Two slabs stacked — bottom static, top rotates when spinning.
-      # Full block height: base at bottom, top shifted up half a block.
+      # Shifted up 0.25 from center. Receives power from shaft on top (UP face).
       idle:
         display_entities:
-          - { material: SMOOTH_STONE_SLAB, tag: base_slab, transform: { translation: [0, -0.25, 0], scale: [0.8, 1.0, 0.8] } }
-          - { material: SMOOTH_STONE_SLAB, tag: top_slab,  transform: { translation: [0, 0.25, 0],  scale: [0.8, 1.0, 0.8] } }
+          - { material: SMOOTH_STONE_SLAB, tag: base_slab, transform: { translation: [0, 0.0, 0], scale: [0.8, 1.0, 0.8] } }
+          - { material: SMOOTH_STONE_SLAB, tag: top_slab,  transform: { translation: [0, 0.5, 0],  scale: [0.8, 1.0, 0.8] } }
       spinning:
         display_entities:
-          - { material: SMOOTH_STONE_SLAB, tag: base_slab, transform: { translation: [0, -0.25, 0], scale: [0.8, 1.0, 0.8] } }
-          - { material: SMOOTH_STONE_SLAB, tag: top_slab,  transform: { translation: [0, 0.25, 0],  scale: [0.8, 1.0, 0.8] }, animation: { type: rotate, axis: [0,1,0], speed: 2.0 }, interpolation: 2 }
+          - { material: SMOOTH_STONE_SLAB, tag: base_slab, transform: { translation: [0, 0.0, 0], scale: [0.8, 1.0, 0.8] } }
+          - { material: SMOOTH_STONE_SLAB, tag: top_slab,  transform: { translation: [0, 0.5, 0],  scale: [0.8, 1.0, 0.8] }, animation: { type: rotate, axis: [0,1,0], speed: 2.0 }, interpolation: 2 }
+
+  # ─── Large Windmill ─────────────────────────────────────────────────────
+  # Source: 5 SU. Always spinning. 3x scale of demo:windmill banners.
+  # Same left_rotations, scale 0.75→2.25, translations 0.375→1.125, Y -0.2→-0.6.
+  large_windmill:
+    name: "&2Large Windmill"
+    lore:
+      - "&7Produces 5 units of rotation power"
+      - "&7Always spinning"
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjg4NGFkYTRjNzRjMGY5NjE0NjkyNjJkOTU2OTc3YmFmYjBiMmQ3ZmVkOWM3YmRmMzVmNDUxOTllOWY2ZGRiYiJ9fX0="
+    drops: self
+    break_sound: { sound: BLOCK_WOOD_BREAK, volume: 0.8, pitch: 0.8 }
+    place_sound: { sound: BLOCK_WOOD_PLACE, volume: 0.8, pitch: 0.8 }
+    default_state: floor
+    placement_state_map:
+      DOWN: floor
+      NORTH: wall_s
+      SOUTH: wall_n
+      EAST: wall_e
+      WEST: wall_w
+    states:
+      floor:
+        display_entities:
+          - { material: WHITE_BANNER, tag: blade_a, transform: { translation: [1.125, -0.6, 0],    scale: [2.25, 2.25, 2.25], left_rotation: [120, 1, 1, -1] },  animation: { type: rotate, axis: [0,1,0], speed: 1.5 }, interpolation: 2 }
+          - { material: WHITE_BANNER, tag: blade_b, transform: { translation: [0, -0.6, 1.125],    scale: [2.25, 2.25, 2.25], left_rotation: [90, 1, 0, 0] },   animation: { type: rotate, axis: [0,1,0], speed: 1.5 }, interpolation: 2 }
+          - { material: WHITE_BANNER, tag: blade_c, transform: { translation: [-1.125, -0.6, 0],   scale: [2.25, 2.25, 2.25], left_rotation: [120, 1, -1, 1] }, animation: { type: rotate, axis: [0,1,0], speed: 1.5 }, interpolation: 2 }
+          - { material: WHITE_BANNER, tag: blade_d, transform: { translation: [0, -0.6, -1.125],   scale: [2.25, 2.25, 2.25], left_rotation: [180, 0, 1, -1] }, animation: { type: rotate, axis: [0,1,0], speed: 1.5 }, interpolation: 2 }
+      wall_n:
+        display_entities:
+          - { material: WHITE_BANNER, tag: blade_a, transform: { translation: [1.125, 0, 0],  scale: [2.25, 2.25, 2.25], left_rotation: [-90, 0, 0, 1] },  animation: { type: rotate, axis: [0,0,1], speed: 1.5 }, interpolation: 2, wall_offset: 0.25 }
+          - { material: WHITE_BANNER, tag: blade_b, transform: { translation: [0, 1.125, 0],  scale: [2.25, 2.25, 2.25] },                                  animation: { type: rotate, axis: [0,0,1], speed: 1.5 }, interpolation: 2, wall_offset: 0.25 }
+          - { material: WHITE_BANNER, tag: blade_c, transform: { translation: [-1.125, 0, 0], scale: [2.25, 2.25, 2.25], left_rotation: [90, 0, 0, 1] },   animation: { type: rotate, axis: [0,0,1], speed: 1.5 }, interpolation: 2, wall_offset: 0.25 }
+          - { material: WHITE_BANNER, tag: blade_d, transform: { translation: [0, -1.125, 0], scale: [2.25, 2.25, 2.25], left_rotation: [180, 0, 0, 1] },  animation: { type: rotate, axis: [0,0,1], speed: 1.5 }, interpolation: 2, wall_offset: 0.25 }
+      wall_s:
+        display_entities:
+          - { material: WHITE_BANNER, tag: blade_a, transform: { translation: [1.125, 0, 0],  scale: [2.25, 2.25, 2.25], left_rotation: [180, 1, 1, 0] },  animation: { type: rotate, axis: [0,0,1], speed: 1.5 }, interpolation: 2, wall_offset: 0.25 }
+          - { material: WHITE_BANNER, tag: blade_b, transform: { translation: [0, 1.125, 0],  scale: [2.25, 2.25, 2.25], left_rotation: [180, 0, 1, 0] },   animation: { type: rotate, axis: [0,0,1], speed: 1.5 }, interpolation: 2, wall_offset: 0.25 }
+          - { material: WHITE_BANNER, tag: blade_c, transform: { translation: [-1.125, 0, 0], scale: [2.25, 2.25, 2.25], left_rotation: [180, 1, -1, 0] }, animation: { type: rotate, axis: [0,0,1], speed: 1.5 }, interpolation: 2, wall_offset: 0.25 }
+          - { material: WHITE_BANNER, tag: blade_d, transform: { translation: [0, -1.125, 0], scale: [2.25, 2.25, 2.25], left_rotation: [180, 1, 0, 0] },  animation: { type: rotate, axis: [0,0,1], speed: 1.5 }, interpolation: 2, wall_offset: 0.25 }
+      wall_w:
+        display_entities:
+          - { material: WHITE_BANNER, tag: blade_a, transform: { translation: [0, 1.125, 0],  scale: [2.25, 2.25, 2.25], left_rotation: [-90, 0, 1, 0] },   animation: { type: rotate, axis: [1,0,0], speed: 1.5 }, interpolation: 2, wall_offset: 0.25 }
+          - { material: WHITE_BANNER, tag: blade_b, transform: { translation: [0, 0, 1.125],  scale: [2.25, 2.25, 2.25], left_rotation: [120, 1, -1, -1] }, animation: { type: rotate, axis: [1,0,0], speed: 1.5 }, interpolation: 2, wall_offset: 0.25 }
+          - { material: WHITE_BANNER, tag: blade_c, transform: { translation: [0, -1.125, 0], scale: [2.25, 2.25, 2.25], left_rotation: [180, 1, 0, -1] },  animation: { type: rotate, axis: [1,0,0], speed: 1.5 }, interpolation: 2, wall_offset: 0.25 }
+          - { material: WHITE_BANNER, tag: blade_d, transform: { translation: [0, 0, -1.125], scale: [2.25, 2.25, 2.25], left_rotation: [-120, 1, 1, -1] }, animation: { type: rotate, axis: [1,0,0], speed: 1.5 }, interpolation: 2, wall_offset: 0.25 }
+      wall_e:
+        display_entities:
+          - { material: WHITE_BANNER, tag: blade_a, transform: { translation: [0, 1.125, 0],  scale: [2.25, 2.25, 2.25], left_rotation: [180, 0, 1, 1] },   animation: { type: rotate, axis: [1,0,0], speed: 1.5 }, interpolation: 2, wall_offset: 0.25 }
+          - { material: WHITE_BANNER, tag: blade_b, transform: { translation: [0, 0, 1.125],  scale: [2.25, 2.25, 2.25], left_rotation: [120, -1, -1, -1] }, animation: { type: rotate, axis: [1,0,0], speed: 1.5 }, interpolation: 2, wall_offset: 0.25 }
+          - { material: WHITE_BANNER, tag: blade_c, transform: { translation: [0, -1.125, 0], scale: [2.25, 2.25, 2.25], left_rotation: [180, -1, 0, -1] },  animation: { type: rotate, axis: [1,0,0], speed: 1.5 }, interpolation: 2, wall_offset: 0.25 }
+          - { material: WHITE_BANNER, tag: blade_d, transform: { translation: [0, 0, -1.125], scale: [2.25, 2.25, 2.25], left_rotation: [-120, -1, 1, -1] }, animation: { type: rotate, axis: [1,0,0], speed: 1.5 }, interpolation: 2, wall_offset: 0.25 }
