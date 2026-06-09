@@ -18,14 +18,19 @@ final class RotationBlocks {
 
     private RotationBlocks() {}
 
-    static void register(CustomBlockRegistry registry, RotationNetwork network) {
+    static void register(CustomBlockRegistry registry, RotationNetwork network,
+                         EngineFuelManager fuelManager, GrindRecipes grindRecipes) {
         // Overlay callbacks onto YAML-loaded blocks
         overlayStandard(registry, network, "rotation:shaft",   RotationNetwork.NodeRole.TRANSMITTER, 0, false);
         overlayStandard(registry, network, "rotation:gear",    RotationNetwork.NodeRole.TRANSMITTER, 0, true);
         overlayClutch(registry, network);
+        overlayWaterWheel(registry, network);
+        overlayEngine(registry, network, fuelManager);
+        overlayGrindstone(registry, network, grindRecipes);
 
-        // Demo windmill is a passive source — detected at network boundary, no callbacks needed
+        // Passive sources — detected at network boundary, no callbacks needed
         network.registerPassiveSource("demo:windmill", 1);
+        network.registerPassiveSource("rotation:generator", 1);
     }
 
     // ──────────────────────────────────────────────────────────────────────
@@ -85,6 +90,195 @@ final class RotationBlocks {
             .onChunkUnload(b -> network.removeNode(CustomBlockRegistry.LocationKey.of(b)))
             .onBlockRemoved((b, state) -> network.removeNode(CustomBlockRegistry.LocationKey.of(b)))
             .build());
+    }
+
+    // ──────────────────────────────────────────────────────────────────────
+    // Water Wheel: source, perpendicular water detection
+    // ──────────────────────────────────────────────────────────────────────
+
+    private static void overlayWaterWheel(CustomBlockRegistry registry, RotationNetwork network) {
+        String blockId = "rotation:water_wheel";
+        CustomHeadBlock block = registry.getType(blockId);
+        if (block == null) { warn(registry, blockId); return; }
+        registry.register(block.toBuilder()
+            .drillable(false)
+            .reactsToNeighbors(true)
+            .onNeighborChange((b, face) -> {
+                String state = registry.getState(b);
+                if (state == null) return;
+                RotationNetwork.Axis axis = RotationNetwork.axisFromState(state);
+                boolean hasWater = hasPerpendicularWater(b, axis);
+                String axisStr = state.substring(state.lastIndexOf('_') + 1);
+                String target = (hasWater ? "spinning_" : "idle_") + axisStr;
+                if (!target.equals(state)) {
+                    registry.setState(b, target);
+                    CustomHeadBlock type = registry.getTypeFromBlock(b);
+                    if (type != null) registry.applyConfig(b, type, target, 0);
+                }
+                recalcIfKnown(b, network);
+            })
+            .onInteract((b, event) -> debugInteract(b, event, network, registry))
+            .onChunkLoad((b, state) -> {
+                RotationNetwork.Axis axis = RotationNetwork.axisFromState(state);
+                boolean spinning = state.startsWith("spinning_");
+                network.addNode(b, blockId, axis,
+                    spinning ? RotationNetwork.NodeRole.SOURCE : RotationNetwork.NodeRole.TRANSMITTER,
+                    spinning ? 2 : 0, false);
+            })
+            .onChunkUnload(b -> network.removeNode(CustomBlockRegistry.LocationKey.of(b)))
+            .onBlockRemoved((b, state) -> network.removeNode(CustomBlockRegistry.LocationKey.of(b)))
+            .build());
+    }
+
+    private static boolean hasPerpendicularWater(Block block, RotationNetwork.Axis axis) {
+        org.bukkit.block.BlockFace[] faces = switch (axis) {
+            case X -> new org.bukkit.block.BlockFace[]{
+                org.bukkit.block.BlockFace.NORTH, org.bukkit.block.BlockFace.SOUTH,
+                org.bukkit.block.BlockFace.UP, org.bukkit.block.BlockFace.DOWN};
+            case Z -> new org.bukkit.block.BlockFace[]{
+                org.bukkit.block.BlockFace.EAST, org.bukkit.block.BlockFace.WEST,
+                org.bukkit.block.BlockFace.UP, org.bukkit.block.BlockFace.DOWN};
+            default -> new org.bukkit.block.BlockFace[]{
+                org.bukkit.block.BlockFace.NORTH, org.bukkit.block.BlockFace.SOUTH,
+                org.bukkit.block.BlockFace.EAST, org.bukkit.block.BlockFace.WEST};
+        };
+        for (var f : faces) {
+            Block neighbor = block.getRelative(f);
+            if (neighbor.getType() == org.bukkit.Material.WATER) return true;
+            if (neighbor.getBlockData() instanceof org.bukkit.block.data.Waterlogged wl && wl.isWaterlogged())
+                return true;
+        }
+        return false;
+    }
+
+    // ──────────────────────────────────────────────────────────────────────
+    // Engine: source with fuel management
+    // ──────────────────────────────────────────────────────────────────────
+
+    private static void overlayEngine(CustomBlockRegistry registry, RotationNetwork network,
+                                      EngineFuelManager fuelManager) {
+        String blockId = "rotation:engine";
+        CustomHeadBlock block = registry.getType(blockId);
+        if (block == null) { warn(registry, blockId); return; }
+        registry.register(block.toBuilder()
+            .drillable(false)
+            .reactsToNeighbors(true)
+            .tickInterval(20)
+            .onNeighborChange((b, face) -> recalcIfKnown(b, network))
+            .onInteract((b, event) -> {
+                // Add fuel on right-click
+                var held = event.getPlayer().getInventory().getItemInMainHand();
+                if (held.getType().isAir()) return debugInteract(b, event, network, registry);
+                int fuelValue = fuelManager.getFuelValue(held.getType());
+                if (fuelValue <= 0) return debugInteract(b, event, network, registry);
+
+                // Consume 1 item, add fuel
+                held.setAmount(held.getAmount() - 1);
+                var key = CustomBlockRegistry.LocationKey.of(b);
+                fuelManager.addFuel(key, fuelValue);
+
+                // Transition to running if idle
+                String state = registry.getState(b);
+                if (state != null && state.startsWith("idle_")) {
+                    String axis = state.substring(state.lastIndexOf('_') + 1);
+                    String target = "running_" + axis;
+                    registry.setState(b, target);
+                    CustomHeadBlock type = registry.getTypeFromBlock(b);
+                    if (type != null) registry.applyConfig(b, type, target, 0);
+                    // Re-add as SOURCE
+                    network.removeNode(key);
+                    network.addNode(b, blockId, RotationNetwork.axisFromState(target),
+                        RotationNetwork.NodeRole.SOURCE, 5, false);
+                }
+
+                event.getPlayer().sendActionBar(net.kyori.adventure.text.Component.text(
+                    "Fuel: " + fuelManager.getFuel(key) + " ticks",
+                    net.kyori.adventure.text.format.NamedTextColor.GOLD));
+                return true;
+            })
+            .onTick(b -> {
+                String state = registry.getState(b);
+                if (state == null || !state.startsWith("running_")) return;
+                var key = CustomBlockRegistry.LocationKey.of(b);
+                int remaining = fuelManager.tick(key);
+                if (remaining <= 0) {
+                    // Out of fuel — transition to idle
+                    String axis = state.substring(state.lastIndexOf('_') + 1);
+                    String target = "idle_" + axis;
+                    registry.setState(b, target);
+                    CustomHeadBlock type = registry.getTypeFromBlock(b);
+                    if (type != null) registry.applyConfig(b, type, target, 0);
+                    // Re-add as non-source
+                    network.removeNode(key);
+                    network.addNode(b, blockId, RotationNetwork.axisFromState(target),
+                        RotationNetwork.NodeRole.TRANSMITTER, 0, false);
+                }
+            })
+            .onChunkLoad((b, state) -> {
+                fuelManager.readFromPDC(b);
+                boolean running = state != null && state.startsWith("running_");
+                RotationNetwork.Axis axis = RotationNetwork.axisFromState(state != null ? state : "idle_y");
+                network.addNode(b, blockId, axis,
+                    running ? RotationNetwork.NodeRole.SOURCE : RotationNetwork.NodeRole.TRANSMITTER,
+                    running ? 5 : 0, false);
+            })
+            .onChunkUnload(b -> {
+                fuelManager.writeToPDC(b);
+                fuelManager.remove(CustomBlockRegistry.LocationKey.of(b));
+                network.removeNode(CustomBlockRegistry.LocationKey.of(b));
+            })
+            .onBlockRemoved((b, state) -> {
+                fuelManager.remove(CustomBlockRegistry.LocationKey.of(b));
+                network.removeNode(CustomBlockRegistry.LocationKey.of(b));
+            })
+            .build());
+    }
+
+    // ──────────────────────────────────────────────────────────────────────
+    // Grindstone: consumer with interact-based grinding
+    // ──────────────────────────────────────────────────────────────────────
+
+    private static void overlayGrindstone(CustomBlockRegistry registry, RotationNetwork network,
+                                          GrindRecipes grindRecipes) {
+        String blockId = "rotation:grindstone";
+        CustomHeadBlock block = registry.getType(blockId);
+        if (block == null) { warn(registry, blockId); return; }
+        registry.register(block.toBuilder()
+            .drillable(false)
+            .reactsToNeighbors(true)
+            .onNeighborChange((b, face) -> recalcIfKnown(b, network))
+            .onInteract((b, event) -> {
+                String state = registry.getState(b);
+                if (!"spinning".equals(state)) return debugInteract(b, event, network, registry);
+
+                var held = event.getPlayer().getInventory().getItemInMainHand();
+                if (held.getType().isAir()) return debugInteract(b, event, network, registry);
+
+                var result = grindRecipes.getResult(held.getType());
+                if (result == null) return debugInteract(b, event, network, registry);
+
+                // Consume 1 input, drop result
+                held.setAmount(held.getAmount() - 1);
+                b.getWorld().dropItemNaturally(
+                    b.getLocation().add(0.5, 1.0, 0.5), result);
+                b.getWorld().playSound(b.getLocation().add(0.5, 0.5, 0.5),
+                    org.bukkit.Sound.BLOCK_GRINDSTONE_USE, 1f, 1f);
+                return true;
+            })
+            .onChunkLoad((b, state) -> {
+                // Grindstone is always Y-axis, floor only. axisFromState("idle") returns Y.
+                network.addNode(b, blockId, RotationNetwork.Axis.Y,
+                    RotationNetwork.NodeRole.CONSUMER, 1, false);
+            })
+            .onChunkUnload(b -> network.removeNode(CustomBlockRegistry.LocationKey.of(b)))
+            .onBlockRemoved((b, state) -> network.removeNode(CustomBlockRegistry.LocationKey.of(b)))
+            .build());
+    }
+
+    // ──────────────────────────────────────────────────────────────────────
+
+    private static void warn(CustomBlockRegistry registry, String blockId) {
+        registry.getPlugin().getLogger().warning("RotationBlocks: block '" + blockId + "' not found — skipping overlay");
     }
 
     // ──────────────────────────────────────────────────────────────────────

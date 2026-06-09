@@ -62,7 +62,15 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
             }
         } catch (IOException ignored) {}
         rotationNetwork = new RotationNetwork(this, registry);
-        RotationBlocks.register(registry, rotationNetwork);
+        EngineFuelManager fuelManager = new EngineFuelManager();
+        GrindRecipes grindRecipes = new GrindRecipes();
+        try (InputStream grindStream = getResource("grind-recipes.yml")) {
+            if (grindStream != null) {
+                int rc = grindRecipes.load(grindStream, getLogger());
+                getLogger().info("Loaded " + rc + " grind recipes");
+            }
+        } catch (IOException ignored) {}
+        RotationBlocks.register(registry, rotationNetwork, fuelManager, grindRecipes);
 
         // Register mechanism demos
         new DoorDemo(this, registry, mechanismRegistry).register();

@@ -342,11 +342,16 @@ public class RotationNetwork {
         if (current == null) return;
 
         // Extract axis from state name (e.g. "idle_x" → "x")
+        // Axis-less states (e.g. grindstone "idle"/"spinning") toggle directly.
         int lastUnderscore = current.lastIndexOf('_');
-        if (lastUnderscore < 0) return; // axis-less state (e.g. grindstone "idle") — handle separately
-        String axis = current.substring(lastUnderscore + 1);
-
-        String target = (powered ? "spinning_" : "idle_") + axis;
+        String target;
+        if (lastUnderscore < 0) {
+            // No axis suffix — toggle between "idle" and "spinning"
+            target = powered ? "spinning" : "idle";
+        } else {
+            String axis = current.substring(lastUnderscore + 1);
+            target = (powered ? "spinning_" : "idle_") + axis;
+        }
         if (target.equals(current)) return;
 
         CustomHeadBlock type = registry.getTypeFromBlock(block);
@@ -417,6 +422,7 @@ public class RotationNetwork {
 
     public static Axis axisFromState(String state) {
         int i = state.lastIndexOf('_');
+        // Axis-less states (e.g. grindstone "idle") default to Y — correct for floor-only blocks
         if (i < 0) return Axis.Y;
         String suffix = state.substring(i + 1);
         return switch (suffix) {
