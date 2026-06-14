@@ -252,6 +252,160 @@ power:
   grindstone: 1
 ```
 
+---
+
+## Phase 2: Direction, Speed, and Rotator Block
+
+### Direction propagation
+
+Currently the network is an undirected power graph (powered/unpowered). Direction makes the
+network feel like a REAL mechanical system — gears reverse direction, shaft side determines
+which way a machine rotates.
+
+**Rules:**
+- **Sources** have inherent direction (CW by default, or from placement orientation)
+- **Shafts** (along-axis connections, same axis) → preserve direction
+- **Gears** (perpendicular connections, different axes, both gear-like) → REVERSE direction
+- **Contradictions** (same node reached via two paths with opposite directions) → network
+  jammed (treat as unpowered). This naturally prevents impossible gear configurations.
+
+**Data model additions to `RotationNetwork.java`:**
+```java
+enum SpinDirection { CW, CCW;
+    SpinDirection reversed() { return this == CW ? CCW : CW; }
+}
+
+// Per-node computed direction (rebuilt during BFS):
+private final Map<LocationKey, SpinDirection> nodeDirection = new HashMap<>();
+
+// Public API:
+public SpinDirection getDirection(LocationKey key) {
+    return nodeDirection.getOrDefault(key, SpinDirection.CW);
+}
+```
+
+**BFS changes in `doRecalculate()`:**
+During BFS, track direction alongside network membership. Seed first node as CW (or from
+source's inherent direction). For each edge:
+```
+isGearConnection = both nodes are gearLike AND have different axes
+neighborDir = isGearConnection ? myDir.reversed() : myDir
+if neighbor already visited with opposite direction → jammed = true
+```
+
+Helper: `isGearToGearConnection(RotationNode a, RotationNode b)` — returns true if both are
+gear-like AND have different axes. Along-axis connections between gears (same axis) still
+preserve direction (they're acting as shaft extensions, not meshing).
+
+Clear `nodeDirection` entries when networks are rebuilt (same as other maps).
+
+### Speed (RPM)
+
+MVP: all sources produce a fixed RPM (e.g., windmill=16, water_wheel=24, engine=32).
+Shafts preserve RPM. Gears preserve RPM (no ratios yet — 1:1 gearing).
+
+Speed affects:
+- Display animation rate of spinning blocks (faster RPM = faster `rotate` speed parameter)
+- Rotator block animation duration (higher RPM = faster 90° turn)
+- Future: drill break speed, grindstone processing time
+
+**Data model:**
+```java
+// Add to NetworkState:
+record NetworkState(int supply, int demand, int rpm) {
+    boolean powered() { return supply >= demand && supply > 0; }
+}
+
+// Public API:
+public int getRPM(LocationKey key) {
+    Integer netId = nodeNetworkId.get(key);
+    if (netId == null) return 0;
+    NetworkState state = networks.get(netId);
+    return (state != null && state.powered()) ? state.rpm() : 0;
+}
+```
+
+RPM computation during BFS: take the maximum RPM of all sources in the network. Or weighted
+average. Or: RPM = source RPM for single-source networks, min RPM for multi-source (bottleneck).
+Start with max for simplicity.
+
+### Rotator block
+
+A rotation CONSUMER that rotates connected blocks 90° per redstone pulse in the shaft's
+spin direction.
+
+**Block type:** `rotation:rotator`
+- Role: CONSUMER, 4 SU demand
+- States: `unpowered_y`, `powered_y` (and `_x`, `_z` per axis)
+- Placement: same `placementStateMap` as shaft/gear
+- Redstone: `Sensitivity.BINARY`, `PowerReader.DIRECT`
+- Transitions: `unpowered_y → powered_y` on POWERED, `powered_y → unpowered_y` on ZERO
+  (per axis — 6 transitions total)
+
+**Behavior:**
+- `onStateChanged("powered_*")`: check `network.isPowered()`, if yes → rotate 90°
+  in `network.getDirection()`. If no power → ignore.
+- Direction: `CW → +90°`, `CCW → -90°`
+- BFS flood fill connected blocks (which materials? configurable allow list, or same as
+  minecart ship? or any non-air solid block within N blocks?)
+- Assemble → animate over 20 ticks (or `40 / (rpm / 16)` for speed-proportional) → disassemble
+- Fire-and-forget: blocks are solid at their new position after each pulse
+- The rotator block itself stays in place (like the door controller)
+
+**Registration in `RotationBlocks.java`:**
+```java
+// Per axis, 2 states each:
+.state("unpowered_y")
+.state("powered_y")
+// ... x, z variants
+.transition(new Trigger.RedstonePower(PowerRange.POWERED), "unpowered_y", "powered_y")
+.transition(new Trigger.RedstonePower(PowerRange.ZERO), "powered_y", "unpowered_y")
+// ... per axis
+.onStateChanged((block, oldState, newState) -> {
+    if (!newState.startsWith("powered_")) return;
+    var key = LocationKey.of(block);
+    if (!network.isPowered(key)) return;
+    SpinDirection dir = network.getDirection(key);
+    float targetYaw = (dir == SpinDirection.CW) ? 90f : -90f;
+    // BFS, assemble, animate, disassemble (same as DoorDemo.openDoor pattern)
+})
+.onChunkLoad((b, state) -> network.addNode(b, "rotation:rotator", axisFromState(state), CONSUMER, 4, false))
+.onBlockRemoved((b, state) -> { network.removeNode(LocationKey.of(b)); cleanupRotator(b); })
+```
+
+**Connected blocks detection:**
+The rotator needs to know which blocks to rotate. Options:
+1. BFS flood fill of adjacent non-air blocks (like door demo with OAK_PLANKS but any solid)
+2. Configurable allow list (like minecart ship)
+3. Only blocks "glued" with a specific item (slime-like mechanic)
+
+Start with option 1 (any solid block, max 64 blocks) for simplicity. The rotator itself is
+excluded from the BFS.
+
+**Animation duration:**
+Base = 20 ticks. With RPM: `duration = max(5, 320 / rpm)`. At 16 RPM: 20 ticks. At 32 RPM:
+10 ticks. At 64 RPM: 5 ticks. Faster networks = faster rotation.
+
+### Implementation order
+
+1. Add `SpinDirection` enum + direction tracking in BFS (~40 lines in RotationNetwork)
+2. Add `getDirection()` + `getRPM()` public API (~15 lines)
+3. Add rotator block registration in RotationBlocks (~80 lines)
+4. Add rotation logic (BFS + assemble + animate + disassemble) — reuse DoorDemo pattern (~100 lines)
+5. Add `rotation:rotator` to `rotation-blocks.yml` with display entity config
+
+### Verification
+
+1. Place rotator + shaft from north side, power shaft → redstone pulse → blocks rotate 90° CW
+2. Move shaft to south side → redstone pulse → blocks rotate 90° CCW
+3. Add gear between shaft and rotator → direction reverses
+4. Two gears (double reversal) → same direction as no gear
+5. No rotation power → redstone pulse does nothing
+6. Contradictory gear paths → network jammed, rotator doesn't work
+7. Fast network (engine, 32 RPM) → rotation animation is faster
+8. Multiple pulses → blocks step through 90°, 180°, 270°, 360° (back to start)
+9. Door demo regression: still works (doesn't use direction)
+
 ## Display entities — deferred
 Placeholder skull textures with rotate animations initially. Tuned in-game after network logic works.
 - **Shaft:** single small skull, rotate animation matching axis
