@@ -40,6 +40,23 @@ public class CustomBlockRegistry {
     static final NamespacedKey BLOCK_TYPE_KEY = new NamespacedKey("corelib", "block_type");
     static final NamespacedKey STATE_KEY = new NamespacedKey("corelib", "state");
 
+    // PDC keys for captured blade banner data (stored on both items and skulls)
+    static final NamespacedKey[] BLADE_KEYS = {
+            new NamespacedKey("corelib", "blade_0"),
+            new NamespacedKey("corelib", "blade_1"),
+            new NamespacedKey("corelib", "blade_2"),
+            new NamespacedKey("corelib", "blade_3")
+    };
+
+    /** Copy blade PDC data between two PersistentDataContainers. */
+    static void copyBladePdc(org.bukkit.persistence.PersistentDataContainer src,
+                             org.bukkit.persistence.PersistentDataContainer dst) {
+        for (NamespacedKey key : BLADE_KEYS) {
+            byte[] data = src.get(key, org.bukkit.persistence.PersistentDataType.BYTE_ARRAY);
+            if (data != null) dst.set(key, org.bukkit.persistence.PersistentDataType.BYTE_ARRAY, data);
+        }
+    }
+
     private final JavaPlugin plugin;
 
     // Type registration: fullId → definition
@@ -367,6 +384,10 @@ public class CustomBlockRegistry {
             List<AnimationTracked> anims = null;
             for (var dec : displays) {
                 ItemStack displayItem = dec.displayItem();
+                if (type.displayItemResolver() != null && dec.tagSuffix() != null) {
+                    ItemStack resolved = type.displayItemResolver().apply(block, dec.tagSuffix());
+                    if (resolved != null) displayItem = resolved;
+                }
                 String tag = DisplayUtil.blockTag(type.namespace(), type.typeId(),
                         block.getLocation(), dec.tagSuffix());
                 org.bukkit.Location spawnBase = block.getLocation();
@@ -832,7 +853,10 @@ public class CustomBlockRegistry {
                     Map<Character, String> headIngredients = new HashMap<>();
                     for (var entry : r.key().entrySet()) {
                         CustomHeadBlock.IngredientSpec spec = entry.getValue();
-                        if (spec.isMaterial()) {
+                        if (spec.isTag()) {
+                            recipe.setIngredient(entry.getKey(),
+                                    new org.bukkit.inventory.RecipeChoice.MaterialChoice(spec.tag()));
+                        } else if (spec.isMaterial()) {
                             recipe.setIngredient(entry.getKey(), spec.material());
                         } else if (spec.isBlock()) {
                             recipe.setIngredient(entry.getKey(),

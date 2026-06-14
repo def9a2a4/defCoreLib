@@ -32,6 +32,10 @@ final class RotationBlocks {
         // Passive sources — detected at network boundary, no callbacks needed
         network.registerPassiveSource("demo:windmill", 1);
         network.registerPassiveSource("rotation:large_windmill", 5);
+
+        // Windmill blade resolver — allows crafted banners to replace default WHITE_BANNER
+        overlayWindmillResolver(registry, "demo:windmill");
+        overlayWindmillResolver(registry, "rotation:large_windmill");
     }
 
     // ──────────────────────────────────────────────────────────────────────
@@ -311,6 +315,37 @@ final class RotationBlocks {
             })
             .onChunkUnload(b -> network.removeNode(CustomBlockRegistry.LocationKey.of(b)))
             .onBlockRemoved((b, state) -> network.removeNode(CustomBlockRegistry.LocationKey.of(b)))
+            .build());
+    }
+
+    // ──────────────────────────────────────────────────────────────────────
+
+    // ──────────────────────────────────────────────────────────────────────
+    // Windmill: displayItemResolver for custom banner blades
+    // ──────────────────────────────────────────────────────────────────────
+
+    private static void overlayWindmillResolver(CustomBlockRegistry registry, String blockId) {
+        CustomHeadBlock block = registry.getType(blockId);
+        if (block == null) { warn(registry, blockId); return; }
+        registry.register(block.toBuilder()
+            .displayItemResolver((b, suffix) -> {
+                // blade_a → 0, blade_b → 1, blade_c → 2, blade_d → 3
+                if (suffix == null || !suffix.startsWith("blade_") || suffix.length() < 7) return null;
+                int idx = suffix.charAt(6) - 'a';
+                if (idx < 0 || idx > 3) return null;
+                if (!(b.getState() instanceof org.bukkit.block.Skull skull)) return null;
+                byte[] data = skull.getPersistentDataContainer().get(
+                        CustomBlockRegistry.BLADE_KEYS[idx],
+                        org.bukkit.persistence.PersistentDataType.BYTE_ARRAY);
+                if (data == null) return null;
+                try {
+                    return org.bukkit.inventory.ItemStack.deserializeBytes(data);
+                } catch (Exception e) {
+                    registry.getPlugin().getLogger().warning(
+                            "Failed to deserialize blade data for " + blockId + ": " + e.getMessage());
+                    return null;
+                }
+            })
             .build());
     }
 

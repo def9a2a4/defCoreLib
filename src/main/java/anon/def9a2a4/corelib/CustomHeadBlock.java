@@ -181,10 +181,12 @@ public final class CustomHeadBlock {
 
     // ── Recipe records ───────────────────────────────────────────────────
 
-    /** An ingredient: either a material or a reference to another custom block by fullId. */
-    public record IngredientSpec(@Nullable Material material, @Nullable String blockId) {
+    /** An ingredient: a material, a reference to another custom block by fullId, or a material tag. */
+    public record IngredientSpec(@Nullable Material material, @Nullable String blockId, @Nullable org.bukkit.Tag<Material> tag) {
+        public IngredientSpec(@Nullable Material material, @Nullable String blockId) { this(material, blockId, null); }
         public boolean isMaterial() { return material != null; }
         public boolean isBlock() { return blockId != null; }
+        public boolean isTag() { return tag != null; }
     }
 
     /** Shaped crafting recipe definition. */
@@ -272,6 +274,7 @@ public final class CustomHeadBlock {
     private final @Nullable StateChangeHandler onStateChanged;
     private final @Nullable BiConsumer<Block, String> onBlockRemoved;
     private final @Nullable BiFunction<Block, org.bukkit.event.player.PlayerInteractEvent, Boolean> onInteract;
+    private final @Nullable java.util.function.BiFunction<Block, String, org.bukkit.inventory.ItemStack> displayItemResolver;
 
     private CustomHeadBlock(Builder b) {
         this.namespace = b.namespace;
@@ -312,6 +315,7 @@ public final class CustomHeadBlock {
         this.onStateChanged = b.onStateChanged;
         this.onBlockRemoved = b.onBlockRemoved;
         this.onInteract = b.onInteract;
+        this.displayItemResolver = b.displayItemResolver;
 
         // Cache capability checks (avoid streaming states on every call)
         this._hasDisplayEntities = !displayEntities.isEmpty() || states.values().stream().anyMatch(s -> s.displayEntities() != null);
@@ -370,6 +374,7 @@ public final class CustomHeadBlock {
     public @Nullable BiConsumer<Block, String> onBlockRemoved() { return onBlockRemoved; }
     public @Nullable BiFunction<Block, org.bukkit.event.player.PlayerInteractEvent, Boolean> onInteract() { return onInteract; }
     public boolean drillable() { return drillable; }
+    public @Nullable BiFunction<Block, String, org.bukkit.inventory.ItemStack> displayItemResolver() { return displayItemResolver; }
 
     public boolean hasDisplayEntities() { return _hasDisplayEntities; }
     public boolean hasLight() { return _hasLight; }
@@ -536,6 +541,7 @@ public final class CustomHeadBlock {
         b.onStateChanged = onStateChanged;
         b.onBlockRemoved = onBlockRemoved;
         b.onInteract = onInteract;
+        b.displayItemResolver = displayItemResolver;
         return b;
     }
 
@@ -583,6 +589,7 @@ public final class CustomHeadBlock {
         private @Nullable StateChangeHandler onStateChanged;
         private @Nullable BiConsumer<Block, String> onBlockRemoved;
         private @Nullable BiFunction<Block, org.bukkit.event.player.PlayerInteractEvent, Boolean> onInteract;
+        private @Nullable BiFunction<Block, String, org.bukkit.inventory.ItemStack> displayItemResolver;
 
         private Builder(String namespace, String typeId) {
             this.namespace = Objects.requireNonNull(namespace);
@@ -697,6 +704,7 @@ public final class CustomHeadBlock {
         public Builder onBlockRemoved(BiConsumer<Block, String> handler) { this.onBlockRemoved = handler; return this; }
         public Builder onInteract(BiFunction<Block, org.bukkit.event.player.PlayerInteractEvent, Boolean> handler) { this.onInteract = handler; return this; }
         public Builder drillable(boolean drillable) { this.drillable = drillable; return this; }
+        public Builder displayItemResolver(BiFunction<Block, String, org.bukkit.inventory.ItemStack> resolver) { this.displayItemResolver = resolver; return this; }
 
         public CustomHeadBlock build() {
             if (texture == null || texture.isBlank()) {

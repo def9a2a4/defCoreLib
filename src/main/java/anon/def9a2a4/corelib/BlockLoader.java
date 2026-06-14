@@ -267,7 +267,17 @@ public final class BlockLoader {
             if (!blockId.contains(":")) blockId = namespace + ":" + blockId;
             return new CustomHeadBlock.IngredientSpec(null, blockId);
         }
-        throw new IllegalArgumentException("Ingredient must have 'material' or 'block' key");
+        Object tagObj = map.get("tag");
+        if (tagObj != null) {
+            String tagName = String.valueOf(tagObj).toLowerCase(java.util.Locale.ROOT);
+            org.bukkit.Tag<Material> tag = org.bukkit.Bukkit.getTag(
+                    org.bukkit.Tag.REGISTRY_ITEMS,
+                    org.bukkit.NamespacedKey.minecraft(tagName),
+                    Material.class);
+            if (tag == null) throw new IllegalArgumentException("Unknown item tag: " + tagName);
+            return new CustomHeadBlock.IngredientSpec(null, null, tag);
+        }
+        throw new IllegalArgumentException("Ingredient must have 'material', 'block', or 'tag' key");
     }
 
     // ── Parsers ──────────────────────────────────────────────────────────

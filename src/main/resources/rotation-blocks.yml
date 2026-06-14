@@ -504,3 +504,10 @@ blocks:
           - { material: WHITE_BANNER, tag: blade_b, transform: { translation: [0, 0, 1.25],  scale: [2.25, 2.25, 2.25], left_rotation: [120, 1, 1, 1] },   animation: { type: rotate, axis: [1,0,0], speed: 1.5 }, interpolation: 2, wall_offset: 0.25 }
           - { material: WHITE_BANNER, tag: blade_c, transform: { translation: [0, -1.25, 0], scale: [2.25, 2.25, 2.25], left_rotation: [180, 1, 0, 1] },   animation: { type: rotate, axis: [1,0,0], speed: 1.5 }, interpolation: 2, wall_offset: 0.25 }
           - { material: WHITE_BANNER, tag: blade_d, transform: { translation: [0, 0, -1.25], scale: [2.25, 2.25, 2.25], left_rotation: [-120, 1, -1, 1] }, animation: { type: rotate, axis: [1,0,0], speed: 1.5 }, interpolation: 2, wall_offset: 0.25 }
+    recipes:
+      craft:
+        shaped:
+          - pattern: [" B ", "BIB", " B "]
+            key:
+              B: { tag: banners }
+              I: { material: IRON_BLOCK }

@@ -562,6 +562,13 @@ blocks:
       - { trigger: { type: interact }, from: wall_e_stopped, to: wall_e_slow, sound: BLOCK_WOOD_BUTTON_CLICK_ON }
       - { trigger: { type: interact }, from: wall_e_slow, to: wall_e_fast, sound: BLOCK_WOOD_BUTTON_CLICK_ON }
       - { trigger: { type: interact }, from: wall_e_fast, to: wall_e_stopped, sound: BLOCK_WOOD_BUTTON_CLICK_OFF }
+    recipes:
+      craft:
+        shaped:
+          - pattern: [" B ", "BSB", " B "]
+            key:
+              B: { tag: banners }
+              S: { material: STICK }
 
   # ─── 20. Pulsing Orb ─────────────────────────────────────────────────
   # Features: animated display entity (pulse scale), state-based animation change.

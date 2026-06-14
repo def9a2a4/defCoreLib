@@ -198,6 +198,15 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         // Write PDC to the placed skull (with correct initial state)
         registry.markBlock(block, type, state);
 
+        // Copy blade banner data from item → skull (for windmill custom banners)
+        if (type.displayItemResolver() != null
+                && block.getState() instanceof org.bukkit.block.Skull skull) {
+            CustomBlockRegistry.copyBladePdc(
+                    meta.getPersistentDataContainer(),
+                    skull.getPersistentDataContainer());
+            skull.update();
+        }
+
         // Play place sound
         if (type.placeSound() != null) {
             var s = type.placeSound();
@@ -274,7 +283,7 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
                 if (rule.requiredTool() != null && tool.getType() != rule.requiredTool()) continue;
 
                 if (rule.isSelfDrop()) {
-                    ItemStack drop = type.createItem(1);
+                    ItemStack drop = enrichItemWithBladeData(block, type, type.createItem(1));
                     block.getWorld().dropItemNaturally(block.getLocation().add(0.5, 0.5, 0.5), drop);
                 } else {
                     for (CustomHeadBlock.ItemDrop itemDrop : rule.drops()) {
@@ -306,8 +315,9 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
             if (type != null) {
                 it.remove(); // prevent vanilla skull drop
                 if (type.storage() != null) registry.dropStorage(block);
+                ItemStack drop = enrichItemWithBladeData(block, type, type.createItem(1));
                 block.getWorld().dropItemNaturally(
-                        block.getLocation().add(0.5, 0.5, 0.5), type.createItem(1));
+                        block.getLocation().add(0.5, 0.5, 0.5), drop);
                 registry.onBlockRemoved(block, type);
                 block.setType(Material.AIR); // actually remove the block from the world
             }
@@ -384,7 +394,7 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
 
         event.setCancelled(true);
         Player player = event.getPlayer();
-        ItemStack customItem = type.createItem(1);
+        ItemStack customItem = enrichItemWithBladeData(block, type, type.createItem(1));
         int targetSlot = event.getTargetSlot();
 
         // Don't overwrite existing items — find an empty hotbar slot or swap safely
@@ -427,24 +437,95 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         if (!(event.getRecipe() instanceof org.bukkit.Keyed keyed)) return;
 
         Map<Character, String> headIngredients = registry.getHeadIngredients(keyed.getKey());
-        if (headIngredients == null) return; // not one of our recipes with head ingredients
-
-        // Validate PLAYER_HEAD items by consuming from required ingredients list.
-        // This correctly handles recipes needing multiple different head types.
-        List<String> remaining = new ArrayList<>(headIngredients.values());
-        org.bukkit.inventory.ItemStack[] matrix = event.getInventory().getMatrix();
-        for (ItemStack item : matrix) {
-            if (item == null || item.getType() != Material.PLAYER_HEAD) continue;
-            String blockType = null;
-            if (item.getItemMeta() != null) {
-                blockType = item.getItemMeta().getPersistentDataContainer()
-                        .get(CustomBlockRegistry.BLOCK_TYPE_KEY, PersistentDataType.STRING);
-            }
-            if (!remaining.remove(blockType)) {
-                event.getInventory().setResult(null);
-                return;
+        if (headIngredients != null) {
+            // Validate PLAYER_HEAD items by consuming from required ingredients list.
+            // This correctly handles recipes needing multiple different head types.
+            List<String> remaining = new ArrayList<>(headIngredients.values());
+            org.bukkit.inventory.ItemStack[] matrix = event.getInventory().getMatrix();
+            for (ItemStack item : matrix) {
+                if (item == null || item.getType() != Material.PLAYER_HEAD) continue;
+                String blockType = null;
+                if (item.getItemMeta() != null) {
+                    blockType = item.getItemMeta().getPersistentDataContainer()
+                            .get(CustomBlockRegistry.BLOCK_TYPE_KEY, PersistentDataType.STRING);
+                }
+                if (!remaining.remove(blockType)) {
+                    event.getInventory().setResult(null);
+                    return;
+                }
             }
         }
+
+        // Capture banner ingredients onto the result item (for windmill blades etc.)
+        captureBannerIngredients(event.getInventory());
+    }
+
+    @EventHandler(priority = EventPriority.HIGH)
+    public void onCraftItem(org.bukkit.event.inventory.CraftItemEvent event) {
+        // Re-capture banners on actual craft (Bukkit creates a fresh result from the recipe)
+        captureBannerIngredients(event.getInventory());
+    }
+
+    /** If the crafted result is a custom block with a displayItemResolver, capture banner
+     *  items from the crafting matrix onto the result's PDC. */
+    private void captureBannerIngredients(org.bukkit.inventory.CraftingInventory inv) {
+        ItemStack result = inv.getResult();
+        if (result == null || result.getType() != Material.PLAYER_HEAD) return;
+        if (!(result.getItemMeta() instanceof org.bukkit.inventory.meta.SkullMeta meta)) return;
+
+        String typeId = meta.getPersistentDataContainer()
+                .get(CustomBlockRegistry.BLOCK_TYPE_KEY, PersistentDataType.STRING);
+        if (typeId == null) return;
+        CustomHeadBlock type = registry.getType(typeId);
+        if (type == null || type.displayItemResolver() == null) return;
+
+        // Matrix is 1-indexed (slot 0 = result): slots 1-9 are the 3x3 grid
+        // Slot layout: 1=TL 2=TC 3=TR 4=ML 5=MC 6=MR 7=BL 8=BC 9=BR
+        // getMatrix() returns 0-indexed array of length 9: [0]=TL .. [8]=BR
+        ItemStack[] matrix = inv.getMatrix();
+        // Map: top-center(1) → blade_0, middle-right(5) → blade_1,
+        //       bottom-center(7) → blade_2, middle-left(3) → blade_3
+        int[] bannerSlots = {1, 5, 7, 3}; // 0-indexed matrix positions
+
+        boolean hasBanners = false;
+        byte[][] bladeData = new byte[4][];
+        for (int i = 0; i < 4; i++) {
+            ItemStack banner = matrix[bannerSlots[i]];
+            if (banner != null && banner.getType().name().endsWith("_BANNER")) {
+                bladeData[i] = banner.asQuantity(1).serializeAsBytes();
+                hasBanners = true;
+            }
+        }
+        if (!hasBanners) return;
+
+        ItemStack newResult = result.clone();
+        var newMeta = newResult.getItemMeta();
+        var pdc = newMeta.getPersistentDataContainer();
+        for (int i = 0; i < 4; i++) {
+            if (bladeData[i] != null) {
+                pdc.set(CustomBlockRegistry.BLADE_KEYS[i], PersistentDataType.BYTE_ARRAY, bladeData[i]);
+            }
+        }
+        newResult.setItemMeta(newMeta);
+        inv.setResult(newResult);
+    }
+
+    /** Copy blade PDC from a placed skull block onto an item (for drops / pick-block). */
+    private ItemStack enrichItemWithBladeData(Block block, CustomHeadBlock type, ItemStack item) {
+        if (type.displayItemResolver() == null) return item;
+        if (!(block.getState() instanceof org.bukkit.block.Skull skull)) return item;
+        var skullPdc = skull.getPersistentDataContainer();
+        boolean hasAny = false;
+        for (var key : CustomBlockRegistry.BLADE_KEYS) {
+            if (skullPdc.has(key, PersistentDataType.BYTE_ARRAY)) { hasAny = true; break; }
+        }
+        if (!hasAny) return item;
+
+        ItemStack enriched = item.clone();
+        var meta = enriched.getItemMeta();
+        CustomBlockRegistry.copyBladePdc(skullPdc, meta.getPersistentDataContainer());
+        enriched.setItemMeta(meta);
+        return enriched;
     }
 
     // ──────────────────────────────────────────────────────────────────────
