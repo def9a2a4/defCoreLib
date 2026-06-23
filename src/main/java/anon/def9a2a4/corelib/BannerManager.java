@@ -2,13 +2,17 @@ package anon.def9a2a4.corelib;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Display;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.ItemDisplay;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -25,10 +29,15 @@ import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.Transformation;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -38,9 +47,64 @@ public class BannerManager implements Listener {
     private static final String TAG_PREFIX = "corelib:banner:";
     private static final double SEARCH_RADIUS = 2.5;
     private static final float LARGE_SCALE = 2.2f;
-    private static final float EXTRA_LARGE_SCALE = 3.0f;
+    private static final float EXTRA_LARGE_SCALE = 3.6f;
     private static final float NORMAL_SCALE = 1.0f;
     private static final float HALF_PI = (float) (Math.PI / 2.0);
+
+    private final JavaPlugin plugin;
+    private float bedOffsetTowardHead = 0.75f;
+    private float bedYOffset = -0.0375f;
+    private float bedScaleX = 1.0f;
+    private float bedScaleY = 1.78f;
+    private float bedScaleZ = 1.0f;
+
+    public BannerManager(JavaPlugin plugin) {
+        this.plugin = plugin;
+        copyDefaultConfig();
+        loadBedConfig();
+    }
+
+    private void copyDefaultConfig() {
+        File configFile = new File(plugin.getDataFolder(), "banner-config.yml");
+        if (!configFile.exists()) {
+            plugin.getDataFolder().mkdirs();
+            try (InputStream in = plugin.getResource("banner-config.yml")) {
+                if (in != null) Files.copy(in, configFile.toPath());
+            } catch (IOException ignored) {}
+        }
+    }
+
+    private void loadBedConfig() {
+        File configFile = new File(plugin.getDataFolder(), "banner-config.yml");
+        if (!configFile.exists()) return;
+        YamlConfiguration cfg = YamlConfiguration.loadConfiguration(configFile);
+        bedOffsetTowardHead = (float) cfg.getDouble("bed-banner.offset-toward-head", bedOffsetTowardHead);
+        bedYOffset = (float) cfg.getDouble("bed-banner.y-offset", bedYOffset);
+        bedScaleX = (float) cfg.getDouble("bed-banner.scale-x", bedScaleX);
+        bedScaleY = (float) cfg.getDouble("bed-banner.scale-y", bedScaleY);
+        bedScaleZ = (float) cfg.getDouble("bed-banner.scale-z", bedScaleZ);
+    }
+
+    public void reloadBedConfig() {
+        loadBedConfig();
+        for (World world : Bukkit.getWorlds()) {
+            for (Entity entity : world.getEntities()) {
+                if (!(entity instanceof ItemDisplay display)) continue;
+                for (String tag : display.getScoreboardTags()) {
+                    if (!tag.startsWith(TAG_PREFIX) || !tag.endsWith(":bed")) continue;
+                    int[] coords = parseCoords(tag);
+                    if (coords == null) continue;
+                    Block block = world.getBlockAt(coords[0], coords[1], coords[2]);
+                    Block foot = resolveBedFoot(block);
+                    if (foot == null) continue;
+                    org.bukkit.block.data.type.Bed bedData =
+                            (org.bukkit.block.data.type.Bed) foot.getBlockData();
+                    display.setTransformation(bedBannerTransform(bedData.getFacing()));
+                    break;
+                }
+            }
+        }
+    }
 
     // ── Placement ────────────────────────────────────────────────────────
 
@@ -207,19 +271,20 @@ public class BannerManager implements Listener {
                 Sound.BLOCK_WOOL_PLACE, 1f, 1f);
     }
 
-    private static Transformation bedBannerTransform(BlockFace facing) {
-        float yawRad = (float) Math.toRadians(-faceToYaw(facing));
+    private Transformation bedBannerTransform(BlockFace facing) {
+        BlockFace opposite = facing.getOppositeFace();
+        float yawRad = (float) Math.toRadians(-faceToYaw(opposite));
         Quaternionf rotation = new Quaternionf()
                 .rotateY(yawRad)
-                .rotateX(-HALF_PI);
+                .rotateX(HALF_PI);
 
-        float dx = facing.getModX() * 0.25f;
-        float dz = facing.getModZ() * 0.25f;
+        float dx = facing.getModX() * bedOffsetTowardHead;
+        float dz = facing.getModZ() * bedOffsetTowardHead;
 
         return new Transformation(
-                new Vector3f(dx, 0.0625f, dz),
+                new Vector3f(dx, bedYOffset, dz),
                 rotation,
-                new Vector3f(NORMAL_SCALE, NORMAL_SCALE, NORMAL_SCALE),
+                new Vector3f(bedScaleX, bedScaleY, bedScaleZ),
                 new Quaternionf());
     }
 
@@ -363,7 +428,7 @@ public class BannerManager implements Listener {
         return new Quaternionf()
                 .rotateY(yawRad)
                 .rotateZ(-HALF_PI)
-                .rotateX(-HALF_PI);
+                .rotateX(HALF_PI);
     }
 
     private static Quaternionf flagBackRotation(BlockFace face) {
@@ -371,11 +436,11 @@ public class BannerManager implements Listener {
         return new Quaternionf()
                 .rotateY(yawRad)
                 .rotateZ(HALF_PI)
-                .rotateX(-HALF_PI);
+                .rotateX(HALF_PI);
     }
 
     private static Vector3f flagTranslation(BlockFace face, float scale) {
-        float outward = 0.5f * scale + 0.5f;
+        float outward = 0.5f * scale + 0.125f;
         return new Vector3f(face.getModX() * outward, 0, face.getModZ() * outward);
     }
 
@@ -389,7 +454,7 @@ public class BannerManager implements Listener {
 
     private static Transformation wallTransform(BlockFace face, float scale) {
         float yaw = faceToYaw(face) + 180;
-        Quaternionf rotation = new Quaternionf().rotateY((float) Math.toRadians(yaw));
+        Quaternionf rotation = new Quaternionf().rotateY((float) Math.toRadians(-yaw));
         Vector3f offset = new Vector3f(-face.getModX() * 0.6f, -1.25f * scale + 0.25f, -face.getModZ() * 0.6f);
         return new Transformation(offset, rotation, new Vector3f(scale, scale, scale), new Quaternionf());
     }
