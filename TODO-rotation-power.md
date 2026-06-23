@@ -258,8 +258,10 @@ power:
 
 ### Wrench item
 
-Copper axe with enchantment glint (`ItemMeta.setEnchantmentGlintOverride(true)`). Right-clicking
-any rotation source toggles its spin direction CW↔CCW. Added to `give_demo_rotation` command.
+Copper axe with enchantment glint (`ItemMeta.setEnchantmentGlintOverride(true)`) and a PDC tag
+`NamespacedKey("rotation", "wrench")` set to `"true"` to identify it. Created as a standalone
+item (not a CustomHeadBlock). Added to `give_demo_rotation` command. Right-clicking any rotation
+source toggles its spin direction CW↔CCW. Right-clicking non-sources shows debug info.
 
 ### Source direction storage
 
@@ -295,17 +297,26 @@ public @Nullable SpinDirection getDirection(LocationKey key) {
 }
 ```
 
-**BFS direction resolution (single-pass + post-pass):**
-1. BFS from root, tentatively assign root = CW, propagate through edges (gears reverse)
-2. Post-pass: find all sources in component (including passive from boundary scan)
-3. First source = anchor. Compare computed vs stored direction → `flip` boolean
-4. If flip, invert all node directions in the component
-5. Check remaining sources: `(computedDir XOR flip)` must equal stored direction. Mismatch → jammed
+**`getConnections()` change:**
+Currently returns `List<LocationKey>`. Change to return `List<Connection>` where:
+```java
+record Connection(LocationKey neighbor, boolean gearMesh) {}
+```
+`gearMesh = true` for gear-to-gear perpendicular connections, `false` for along-axis connections.
+BFS uses this + axis comparison to decide direction:
+- `!gearMesh` (along-axis) → preserve direction
+- `gearMesh && same axis` → REVERSE (meshing teeth)
+- `gearMesh && different axes` (bevel) → PRESERVE (corner transmission)
 
-`getConnections()` returns edge metadata (along-axis vs gear-mesh). BFS uses it to decide:
-- Along-axis edge → preserve direction
-- Gear-mesh edge, same axis → REVERSE (meshing teeth)
-- Gear-mesh edge, different axes (bevel) → PRESERVE (corner transmission)
+**BFS direction resolution (single-pass + post-pass):**
+1. BFS from root, tentatively assign root = CW, propagate through edges using rules above
+2. Post-pass: find all sources in component. For active sources (nodes), use their BFS-computed
+   direction. For passive sources (windmill, not nodes), use the adjacent network node's
+   direction as the passive source's effective direction.
+3. First source = anchor. Compare its effective direction vs its stored PDC direction → `flip`
+4. If flip, invert all node directions in the component
+5. Check remaining sources: each source's `(effectiveDir XOR flip)` must equal its stored
+   PDC direction. Mismatch → jammed
 
 **`NetworkState` change:**
 ```java
@@ -316,23 +327,25 @@ record NetworkState(int supply, int demand, boolean jammed) {
 
 ### Animation direction
 
-Direction baked into animation at creation time (not runtime tickAge negation — that would
-break non-rotation animations like bob/pulse). Animations are pre-parsed from YAML by
-`BlockLoader.parseAnimation()`, so direction is applied via wrapping.
+Animations are pre-parsed from YAML by `BlockLoader.parseAnimation()` at startup, so direction
+can't be injected at parse time. Instead, wrap at runtime in `applyConfig()`.
 
-- `DisplayAnimation.withDirection(int mult)` returns a new animation that delegates to the
-  original but multiplies tickAge by `mult`. Only affects rotate animations.
+- `DisplayAnimation.withDirection(int mult)` — returns a new animation that delegates to the
+  original but multiplies tickAge by `mult` (negative = reverse rotation). Safe because only
+  rotation-network blocks get direction overrides, and those blocks only use rotate animations.
 - `CustomBlockRegistry` stores `Map<LocationKey, SpinDirection> animationDirection`
-- `updateBlockState()` writes direction to map. `applyConfig()` reads it and wraps the
-  animation with `withDirection()` when creating `AnimationTracked`
-- Cleanup in `onBlockRemoved()` and `onChunkUnload()` (match existing pattern for other maps)
+- Sequencing: `updateBlockState()` writes direction to map BEFORE calling `applyConfig()`,
+  because `applyConfig()` reads the map when creating new `AnimationTracked` entries
+- Cleanup: remove from `animationDirection` in `onBlockRemoved()` and `onChunkUnload()`
+  (match existing pattern for `animationTracked` and other per-block maps)
 
 ### Wrench interaction (`RotationBlocks.java`)
 
 - Check held item: copper axe with glint override → source blocks: `toggleSourceDirection()`,
   non-source blocks: `debugInteract()` (wrench doubles as diagnostic tool)
 - `toggleSourceDirection()`: read PDC, flip, write PDC, `skull.update()`, recalculate
-- For passive sources (windmill): `toBuilder()` overlay with wrench-only `onInteract`
+- For passive sources (`demo:windmill` and `rotation:large_windmill`): `toBuilder()` overlay
+  with wrench-only `onInteract`
 - Non-wrench right-click on any rotation block → `debugInteract()` as usual
 - Debug output gains direction: `"3/5 SU | Powered ✓ | CW"`
 
