@@ -95,7 +95,6 @@ public class LargeBannerRecipes implements Listener {
         }
 
         meta.lore(lore);
-        meta.setEnchantmentGlintOverride(true);
         result.setItemMeta(meta);
         inv.setResult(result);
     }
