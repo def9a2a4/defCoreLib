@@ -341,17 +341,20 @@ public class RotationNetwork {
         String current = registry.getState(block);
         if (current == null) return;
 
-        // Extract axis from state name (e.g. "idle_x" → "x")
-        // Axis-less states (e.g. grindstone "idle"/"spinning") toggle directly.
-        int lastUnderscore = current.lastIndexOf('_');
-        String target;
-        if (lastUnderscore < 0) {
-            // No axis suffix — toggle between "idle" and "spinning"
-            target = powered ? "spinning" : "idle";
+        // Extract suffix (e.g. "east_x" from "idle_east_x") and rebuild with idle/spinning prefix.
+        String suffix;
+        if (current.startsWith("idle_")) {
+            suffix = current.substring(5);
+        } else if (current.startsWith("spinning_")) {
+            suffix = current.substring(9);
+        } else if (current.equals("idle") || current.equals("spinning")) {
+            suffix = null;
         } else {
-            String axis = current.substring(lastUnderscore + 1);
-            target = (powered ? "spinning_" : "idle_") + axis;
+            return;
         }
+        String target = suffix != null
+                ? (powered ? "spinning_" : "idle_") + suffix
+                : (powered ? "spinning" : "idle");
         if (target.equals(current)) return;
 
         CustomHeadBlock type = registry.getTypeFromBlock(block);
