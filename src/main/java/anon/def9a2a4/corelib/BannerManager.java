@@ -38,8 +38,11 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public class BannerManager implements Listener {
@@ -50,13 +53,18 @@ public class BannerManager implements Listener {
     private static final float EXTRA_LARGE_SCALE = 3.6f;
     private static final float NORMAL_SCALE = 1.0f;
     private static final float HALF_PI = (float) (Math.PI / 2.0);
-
     private final JavaPlugin plugin;
     private float bedOffsetTowardHead = 0.75f;
     private float bedYOffset = -0.0375f;
     private float bedScaleX = 1.0f;
     private float bedScaleY = 1.78f;
     private float bedScaleZ = 1.0f;
+    private float flagDepth = 1.0f;
+    private float flagFaceGap = 0.0f;
+    private float flagOutwardOffsetNormal = 0.125f;
+    private float flagOutwardOffsetLarge = 0.125f;
+    private float flagOutwardOffsetExtraLarge = 0.125f;
+    private float flagTilt = 0.0f;
 
     public BannerManager(JavaPlugin plugin) {
         this.plugin = plugin;
@@ -83,26 +91,49 @@ public class BannerManager implements Listener {
         bedScaleX = (float) cfg.getDouble("bed-banner.scale-x", bedScaleX);
         bedScaleY = (float) cfg.getDouble("bed-banner.scale-y", bedScaleY);
         bedScaleZ = (float) cfg.getDouble("bed-banner.scale-z", bedScaleZ);
+        flagDepth = (float) cfg.getDouble("flag-banner.depth", flagDepth);
+        flagFaceGap = (float) cfg.getDouble("flag-banner.face-gap", flagFaceGap);
+        flagOutwardOffsetNormal = (float) cfg.getDouble("flag-banner.outward-offset.normal", flagOutwardOffsetNormal);
+        flagOutwardOffsetLarge = (float) cfg.getDouble("flag-banner.outward-offset.large", flagOutwardOffsetLarge);
+        flagOutwardOffsetExtraLarge = (float) cfg.getDouble("flag-banner.outward-offset.extra-large", flagOutwardOffsetExtraLarge);
+        flagTilt = (float) cfg.getDouble("flag-banner.tilt", flagTilt);
     }
 
-    public void reloadBedConfig() {
+    public void reloadConfig() {
         loadBedConfig();
+        Map<String, List<ItemDisplay>> flagGroups = new HashMap<>();
         for (World world : Bukkit.getWorlds()) {
             for (Entity entity : world.getEntities()) {
                 if (!(entity instanceof ItemDisplay display)) continue;
+                String face = extractFace(display);
+                if (face == null) continue;
                 for (String tag : display.getScoreboardTags()) {
-                    if (!tag.startsWith(TAG_PREFIX) || !tag.endsWith(":bed")) continue;
-                    int[] coords = parseCoords(tag);
-                    if (coords == null) continue;
-                    Block block = world.getBlockAt(coords[0], coords[1], coords[2]);
-                    Block foot = resolveBedFoot(block);
-                    if (foot == null) continue;
-                    org.bukkit.block.data.type.Bed bedData =
-                            (org.bukkit.block.data.type.Bed) foot.getBlockData();
-                    display.setTransformation(bedBannerTransform(bedData.getFacing()));
+                    if (!tag.startsWith(TAG_PREFIX)) continue;
+                    if (face.equals("bed")) {
+                        int[] coords = parseCoords(tag);
+                        if (coords == null) break;
+                        Block block = world.getBlockAt(coords[0], coords[1], coords[2]);
+                        Block foot = resolveBedFoot(block);
+                        if (foot == null) break;
+                        org.bukkit.block.data.type.Bed bedData =
+                                (org.bukkit.block.data.type.Bed) foot.getBlockData();
+                        display.setTransformation(bedBannerTransform(bedData.getFacing()));
+                    } else if (face.startsWith("rot")) {
+                        flagGroups.computeIfAbsent(tag, k -> new ArrayList<>()).add(display);
+                    }
                     break;
                 }
             }
+        }
+        for (var entry : flagGroups.entrySet()) {
+            List<ItemDisplay> pair = entry.getValue();
+            if (pair.isEmpty()) continue;
+            String suffix = extractFace(pair.get(0));
+            int step = Integer.parseInt(suffix.substring(3));
+            float yaw = stepToYaw(step);
+            float scale = pair.get(0).getTransformation().getScale().x();
+            pair.get(0).setTransformation(flagTransform(yaw, scale));
+            if (pair.size() >= 2) pair.get(1).setTransformation(flagBackTransform(yaw, scale));
         }
     }
 
@@ -147,8 +178,12 @@ public class BannerManager implements Listener {
     }
 
     private void placeFlag(Player player, Block block, BlockFace clickedFace, ItemStack banner, float scale) {
-        BlockFace face = resolveHorizontalFace(clickedFace, player);
-        String tag = TAG_PREFIX + blockKey(block) + ":" + face.name().toLowerCase();
+        float rawYaw = (player.getLocation().getYaw() + 180f) % 360f;
+        if (rawYaw < 0) rawYaw += 360f;
+        int step = yawToStep(rawYaw);
+        float yaw = stepToYaw(step);
+
+        String tag = TAG_PREFIX + blockKey(block) + ":rot" + step;
 
         if (!DisplayUtil.findByTag(block.getLocation(), tag, SEARCH_RADIUS).isEmpty()) {
             player.sendMessage(Component.text("A banner is already on this side", NamedTextColor.RED));
@@ -157,7 +192,7 @@ public class BannerManager implements Listener {
 
         ItemStack displayBanner = banner.asQuantity(1);
 
-        spawnPair(block.getLocation(), flagTransform(face, scale), flagBackTransform(face, scale),
+        spawnPair(block.getLocation(), flagTransform(yaw, scale), flagBackTransform(yaw, scale),
                 displayBanner, tag);
 
         consumeItem(player, banner);
@@ -170,7 +205,7 @@ public class BannerManager implements Listener {
         Transformation transform;
 
         if (clickedFace == BlockFace.UP || clickedFace == BlockFace.DOWN) {
-            float yaw = player.getLocation().getYaw();
+            float yaw = stepToYaw(yawToStep(player.getLocation().getYaw()));
             face = clickedFace;
             transform = standingTransform(yaw, scale, clickedFace);
         } else {
@@ -407,41 +442,52 @@ public class BannerManager implements Listener {
     // ── Transforms ───────────────────────────────────────────────────────
     // These are starting values — tune in-game as needed.
 
-    private static Transformation flagTransform(BlockFace face, float scale) {
+    private Transformation flagTransform(float yaw, float scale) {
         return new Transformation(
-                flagTranslation(face, scale),
-                flagRotation(face),
-                new Vector3f(scale, scale, scale),
+                flagTranslation(yaw, scale, -1),
+                flagRotation(yaw),
+                new Vector3f(scale, scale, scale * flagDepth),
                 new Quaternionf());
     }
 
-    private static Transformation flagBackTransform(BlockFace face, float scale) {
+    private Transformation flagBackTransform(float yaw, float scale) {
         return new Transformation(
-                flagTranslation(face, scale),
-                flagBackRotation(face),
-                new Vector3f(scale, scale, scale),
+                flagTranslation(yaw, scale, +1),
+                flagBackRotation(yaw),
+                new Vector3f(scale, scale, scale * flagDepth),
                 new Quaternionf());
     }
 
-    private static Quaternionf flagRotation(BlockFace face) {
-        float yawRad = (float) Math.toRadians(-faceToYaw(face));
+    private Quaternionf flagRotation(float yaw) {
+        float yawRad = (float) Math.toRadians(-yaw + flagTilt);
         return new Quaternionf()
                 .rotateY(yawRad)
                 .rotateZ(-HALF_PI)
                 .rotateX(HALF_PI);
     }
 
-    private static Quaternionf flagBackRotation(BlockFace face) {
-        float yawRad = (float) Math.toRadians(-faceToYaw(face));
+    private Quaternionf flagBackRotation(float yaw) {
+        float yawRad = (float) Math.toRadians(-yaw - flagTilt);
         return new Quaternionf()
                 .rotateY(yawRad)
                 .rotateZ(HALF_PI)
                 .rotateX(HALF_PI);
     }
 
-    private static Vector3f flagTranslation(BlockFace face, float scale) {
-        float outward = 0.5f * scale + 0.125f;
-        return new Vector3f(face.getModX() * outward, 0, face.getModZ() * outward);
+    private float flagOutwardOffset(float scale) {
+        if (scale >= EXTRA_LARGE_SCALE) return flagOutwardOffsetExtraLarge;
+        if (scale >= LARGE_SCALE) return flagOutwardOffsetLarge;
+        return flagOutwardOffsetNormal;
+    }
+
+    private Vector3f flagTranslation(float yaw, float scale, int thicknessSign) {
+        float yawRad = (float) Math.toRadians(yaw);
+        float dirX = -(float) Math.sin(yawRad);
+        float dirZ = (float) Math.cos(yawRad);
+        float outward = 0.5f * scale + flagOutwardOffset(scale);
+        float tx = dirX * outward + thicknessSign * dirZ * flagFaceGap;
+        float tz = dirZ * outward - thicknessSign * dirX * flagFaceGap;
+        return new Vector3f(tx, 0, tz);
     }
 
     private static Transformation standingTransform(float yaw, float scale, BlockFace clickedFace) {
@@ -479,20 +525,13 @@ public class BannerManager implements Listener {
                 || mat == Material.IRON_BARS;
     }
 
-    private static BlockFace resolveHorizontalFace(BlockFace clickedFace, Player player) {
-        if (clickedFace == BlockFace.NORTH || clickedFace == BlockFace.SOUTH
-                || clickedFace == BlockFace.EAST || clickedFace == BlockFace.WEST) {
-            return clickedFace;
-        }
-        return yawToFace(player.getLocation().getYaw());
+    private static int yawToStep(float yaw) {
+        yaw = ((yaw % 360) + 360) % 360;
+        return Math.round(yaw / 22.5f) % 16;
     }
 
-    private static BlockFace yawToFace(float yaw) {
-        yaw = ((yaw % 360) + 360) % 360;
-        if (yaw >= 315 || yaw < 45) return BlockFace.SOUTH;
-        if (yaw < 135) return BlockFace.WEST;
-        if (yaw < 225) return BlockFace.NORTH;
-        return BlockFace.EAST;
+    private static float stepToYaw(int step) {
+        return ((step % 16 + 16) % 16) * 22.5f;
     }
 
     private static float faceToYaw(BlockFace face) {

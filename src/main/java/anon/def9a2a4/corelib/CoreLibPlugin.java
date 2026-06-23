@@ -1054,7 +1054,7 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
                     enabled ? NamedTextColor.GREEN : NamedTextColor.RED));
             }
             case "reloadbanners" -> {
-                bannerManager.reloadBedConfig();
+                bannerManager.reloadConfig();
                 sender.sendMessage(Component.text("Banner config reloaded", NamedTextColor.GREEN));
             }
             default -> sender.sendMessage(Component.text("Unknown subcommand: " + args[0], NamedTextColor.RED));

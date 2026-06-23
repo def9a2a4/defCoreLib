@@ -10,3 +10,16 @@ bed-banner:
   scale-x: 1.199
   scale-y: 0.9
   scale-z: 2.0
+
+flag-banner:
+  # Visual thickness of each banner face (Z-scale multiplier)
+  depth: 1.0
+  # Shift front/back faces toward each other along thickness axis (blocks)
+  face-gap: 0.0
+  # Distance from fence center beyond half banner width (blocks)
+  outward-offset:
+    normal: 0.125
+    large: 0.125
+    extra-large: 0.125
+  # Extra Y-rotation to compensate for banner model tilt (degrees)
+  tilt: 0.0
