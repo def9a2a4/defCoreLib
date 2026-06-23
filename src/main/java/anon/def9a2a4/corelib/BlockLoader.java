@@ -343,21 +343,32 @@ public final class BlockLoader {
             }
         }
 
-        // Parse particle-specific data for types that require it
+        // Parse particle-specific data for types that require it. Driven by the particle's
+        // declared data type so enum aliases (e.g. BLOCK_CRACK -> Particle.BLOCK) are handled.
         Object data = null;
-        if (type == Particle.DUST) {
+        Class<?> dataType = type.getDataType();
+        if (dataType == Particle.DustOptions.class) {
             List<Integer> color = sec.getIntegerList("color");
             float size = (float) sec.getDouble("size", 1.0);
             int r = color.size() > 0 ? color.get(0) : 255;
             int g = color.size() > 1 ? color.get(1) : 255;
             int b = color.size() > 2 ? color.get(2) : 255;
             data = new Particle.DustOptions(org.bukkit.Color.fromRGB(r, g, b), size);
-        } else if (type == Particle.ENTITY_EFFECT) {
+        } else if (dataType == org.bukkit.Color.class) {
             List<Integer> color = sec.getIntegerList("color");
             int r = color.size() > 0 ? color.get(0) : 255;
             int g = color.size() > 1 ? color.get(1) : 255;
             int b = color.size() > 2 ? color.get(2) : 255;
             data = org.bukkit.Color.fromRGB(r, g, b);
+        } else if (dataType == org.bukkit.block.data.BlockData.class) {
+            // BLOCK / BLOCK_CRACK / BLOCK_MARKER / FALLING_DUST / DUST_PILLAR ...
+            Material mat = Material.matchMaterial(sec.getString("block", "STRIPPED_OAK_LOG"));
+            if (mat == null || !mat.isBlock()) mat = Material.STRIPPED_OAK_LOG;
+            data = mat.createBlockData();
+        } else if (dataType == org.bukkit.inventory.ItemStack.class) {
+            Material mat = Material.matchMaterial(sec.getString("item", "STONE"));
+            if (mat == null || !mat.isItem()) mat = Material.STONE;
+            data = new org.bukkit.inventory.ItemStack(mat);
         }
 
         return new CustomHeadBlock.ParticleConfig(type, count, speed, interval, floorOffset, wallOffsets, data);
