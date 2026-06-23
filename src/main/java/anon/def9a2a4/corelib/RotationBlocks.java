@@ -3,9 +3,15 @@ package anon.def9a2a4.corelib;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.Particle;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
+import org.bukkit.block.Skull;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.persistence.PersistentDataType;
 
 import java.util.Set;
 
@@ -28,6 +34,7 @@ final class RotationBlocks {
         overlayEngine(registry, network, fuelManager);
         overlayGrindstone(registry, network, grindRecipes);
         overlayGenerator(registry, network);
+        overlayDrill(registry, network);
 
         // Passive sources — detected at network boundary, no callbacks needed
         network.registerPassiveSource("demo:windmill", 1);
@@ -319,6 +326,91 @@ final class RotationBlocks {
     }
 
     // ──────────────────────────────────────────────────────────────────────
+    // Drill: consumer, breaks block in facing direction every 40 ticks
+    // ──────────────────────────────────────────────────────────────────────
+
+    private static final NamespacedKey DRILL_FACING_KEY = new NamespacedKey("rotation", "drill_facing");
+
+    private static final Set<Material> DRILL_BLACKLIST = Set.of(
+        Material.OBSIDIAN, Material.CRYING_OBSIDIAN, Material.SPAWNER,
+        Material.MOVING_PISTON, Material.REINFORCED_DEEPSLATE
+    );
+
+    private static final ItemStack NETHERITE_PICK = new ItemStack(Material.NETHERITE_PICKAXE);
+
+    private static void overlayDrill(CustomBlockRegistry registry, RotationNetwork network) {
+        String blockId = "rotation:drill";
+        CustomHeadBlock block = registry.getType(blockId);
+        if (block == null) { warn(registry, blockId); return; }
+        registry.register(block.toBuilder()
+            .drillable(false)
+            .reactsToNeighbors(true)
+            .tickInterval(40)
+            .onNeighborChange((b, face) -> recalcIfKnown(b, network))
+            .onInteract((b, event) -> debugInteract(b, event, network, registry))
+            .onTick(b -> drillTick(b, registry, network))
+            .onChunkLoad((b, state) -> {
+                storeFacingIfAbsent(b);
+                network.addNode(b, blockId, RotationNetwork.axisFromState(state),
+                    RotationNetwork.NodeRole.CONSUMER, 1, false);
+            })
+            .onChunkUnload(b -> network.removeNode(CustomBlockRegistry.LocationKey.of(b)))
+            .onBlockRemoved((b, state) -> network.removeNode(CustomBlockRegistry.LocationKey.of(b)))
+            .build());
+    }
+
+    private static void drillTick(Block drill, CustomBlockRegistry registry, RotationNetwork network) {
+        var key = CustomBlockRegistry.LocationKey.of(drill);
+        if (!network.isPowered(key)) return;
+
+        BlockFace facing = readFacing(drill);
+        if (facing == null) return;
+        Block target = drill.getRelative(facing);
+
+        if (target.getType().isAir()) return;
+        if (target.getType().getHardness() < 0 || DRILL_BLACKLIST.contains(target.getType())) return;
+
+        // Custom block path — check drillable, cleanup, drop item
+        CustomHeadBlock targetType = registry.getTypeFromBlock(target);
+        if (targetType != null) {
+            if (!targetType.drillable()) return;
+            if (targetType.storage() != null) registry.dropStorage(target);
+            ItemStack drop = targetType.createItem(1);
+            registry.onBlockRemoved(target, targetType);
+            target.getWorld().dropItemNaturally(target.getLocation().add(0.5, 0.5, 0.5), drop);
+            target.setType(Material.AIR);
+            return;
+        }
+
+        // Vanilla block path — drops as if mined with netherite pickaxe
+        target.breakNaturally(NETHERITE_PICK);
+    }
+
+    private static void storeFacingIfAbsent(Block block) {
+        if (!(block.getState() instanceof Skull skull)) return;
+        if (skull.getPersistentDataContainer().has(DRILL_FACING_KEY)) return;
+
+        BlockFace facing;
+        if (block.getType() == Material.PLAYER_WALL_HEAD
+                && block.getBlockData() instanceof org.bukkit.block.data.Directional dir) {
+            facing = dir.getFacing();
+        } else {
+            facing = BlockFace.DOWN;
+        }
+        skull.getPersistentDataContainer().set(DRILL_FACING_KEY, PersistentDataType.STRING, facing.name());
+        skull.update();
+    }
+
+    private static @org.jetbrains.annotations.Nullable BlockFace readFacing(Block block) {
+        if (!(block.getState() instanceof Skull skull)) return null;
+        String val = skull.getPersistentDataContainer().get(DRILL_FACING_KEY, PersistentDataType.STRING);
+        if (val == null) return null;
+        try {
+            return BlockFace.valueOf(val);
+        } catch (IllegalArgumentException e) {
+            return null;
+        }
+    }
 
     // ──────────────────────────────────────────────────────────────────────
     // Windmill: displayItemResolver for custom banner blades

@@ -37,6 +37,9 @@ public class BannerManager implements Listener {
 
     private static final String TAG_PREFIX = "corelib:banner:";
     private static final double SEARCH_RADIUS = 2.5;
+    private static final float LARGE_SCALE = 2.2f;
+    private static final float NORMAL_SCALE = 1.0f;
+    private static final float HALF_PI = (float) (Math.PI / 2.0);
 
     // ── Placement ────────────────────────────────────────────────────────
 
@@ -73,7 +76,7 @@ public class BannerManager implements Listener {
             return;
         }
 
-        float scale = isLarge ? 2.0f : 1.0f;
+        float scale = isLarge ? LARGE_SCALE : NORMAL_SCALE;
         ItemStack displayBanner = banner.asQuantity(1);
 
         spawnPair(block.getLocation(), flagTransform(face, scale), flagBackTransform(face, scale),
@@ -86,19 +89,15 @@ public class BannerManager implements Listener {
 
     private void placeLargeBanner(Player player, Block clicked, BlockFace clickedFace, ItemStack banner) {
         BlockFace face;
-        Transformation front, back;
+        Transformation transform;
 
         if (clickedFace == BlockFace.UP || clickedFace == BlockFace.DOWN) {
-            // Standing banner — orient by player yaw
             float yaw = player.getLocation().getYaw();
             face = clickedFace;
-            front = standingTransform(yaw, 2.0f);
-            back = standingBackTransform(yaw, 2.0f);
+            transform = standingTransform(yaw, LARGE_SCALE);
         } else {
-            // Wall banner
             face = clickedFace;
-            front = wallTransform(clickedFace, 2.0f);
-            back = wallBackTransform(clickedFace, 2.0f);
+            transform = wallTransform(clickedFace, LARGE_SCALE);
         }
 
         String tag = TAG_PREFIX + blockKey(clicked) + ":" + face.name().toLowerCase();
@@ -109,7 +108,7 @@ public class BannerManager implements Listener {
         }
 
         ItemStack displayBanner = banner.asQuantity(1);
-        spawnPair(clicked.getLocation(), front, back, displayBanner, tag);
+        DisplayUtil.spawn(clicked.getLocation(), displayBanner, transform, tag);
 
         consumeItem(player, banner);
         clicked.getWorld().playSound(clicked.getLocation().add(0.5, 0.5, 0.5),
@@ -245,47 +244,35 @@ public class BannerManager implements Listener {
     }
 
     private static Quaternionf flagRotation(BlockFace face) {
-        return switch (face) {
-            case NORTH -> new Quaternionf().rotateX((float) Math.toRadians(90));
-            case SOUTH -> new Quaternionf().rotateX((float) Math.toRadians(-90));
-            case EAST -> new Quaternionf().rotateZ((float) Math.toRadians(-90));
-            case WEST -> new Quaternionf().rotateZ((float) Math.toRadians(90));
-            default -> new Quaternionf();
-        };
+        float yawRad = (float) Math.toRadians(-faceToYaw(face));
+        return new Quaternionf()
+                .rotateY(yawRad)
+                .rotateX(-HALF_PI);
     }
 
     private static Quaternionf flagBackRotation(BlockFace face) {
-        return new Quaternionf().rotateY((float) Math.toRadians(180)).mul(flagRotation(face));
+        float yawRad = (float) Math.toRadians(-faceToYaw(face));
+        return new Quaternionf()
+                .rotateY(yawRad)
+                .rotateX(-HALF_PI)
+                .rotateY((float) Math.PI);
     }
 
     private static Vector3f flagTranslation(BlockFace face) {
-        float offset = 0.3f;
+        float offset = 0.5f;
         return new Vector3f(face.getModX() * offset, 0, face.getModZ() * offset);
     }
 
     private static Transformation standingTransform(float yaw, float scale) {
         Quaternionf rotation = new Quaternionf().rotateY((float) Math.toRadians(-yaw));
-        return new Transformation(new Vector3f(0, 0.5f, 0), rotation,
-                new Vector3f(scale, scale, scale), new Quaternionf());
-    }
-
-    private static Transformation standingBackTransform(float yaw, float scale) {
-        Quaternionf rotation = new Quaternionf().rotateY((float) Math.toRadians(-yaw + 180));
-        return new Transformation(new Vector3f(0, 0.5f, 0), rotation,
+        return new Transformation(new Vector3f(0, 1.6f, 0), rotation,
                 new Vector3f(scale, scale, scale), new Quaternionf());
     }
 
     private static Transformation wallTransform(BlockFace face, float scale) {
-        float yaw = faceToYaw(face);
-        Quaternionf rotation = new Quaternionf().rotateY((float) Math.toRadians(yaw));
-        Vector3f offset = new Vector3f(face.getModX() * 0.4f, 0, face.getModZ() * 0.4f);
-        return new Transformation(offset, rotation, new Vector3f(scale, scale, scale), new Quaternionf());
-    }
-
-    private static Transformation wallBackTransform(BlockFace face, float scale) {
         float yaw = faceToYaw(face) + 180;
         Quaternionf rotation = new Quaternionf().rotateY((float) Math.toRadians(yaw));
-        Vector3f offset = new Vector3f(face.getModX() * 0.4f, 0, face.getModZ() * 0.4f);
+        Vector3f offset = new Vector3f(face.getModX() * 0.4f, -2.5f, face.getModZ() * 0.4f);
         return new Transformation(offset, rotation, new Vector3f(scale, scale, scale), new Quaternionf());
     }
 

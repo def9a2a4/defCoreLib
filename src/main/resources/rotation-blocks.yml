@@ -454,6 +454,80 @@ blocks:
           - { material: SMOOTH_STONE_SLAB, tag: base_slab, transform: { translation: [0, 0.0, 0], scale: [0.8, 1.0, 0.8] } }
           - { material: SMOOTH_STONE_SLAB, tag: top_slab,  transform: { translation: [0, 0.5, 0],  scale: [0.8, 1.0, 0.8] }, animation: { type: rotate, axis: [0,1,0], speed: 2.0 }, interpolation: 2 }
 
+  # ─── Drill ──────────────────────────────────────────────────────────────
+  # Consumer: 1 SU. Breaks the block in its facing direction every 2s.
+  # Display: shaft rod, same as shaft block. Head: Netherite Block.
+  drill:
+    name: "&8Drill"
+    lore:
+      - "&7Breaks blocks when powered"
+      - "&7Mines in facing direction"
+    # Netherite Block (45b87e91)
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDViODdlOTFlYjVlMzE1Y2YzYjZkZDNhY2NlNmIxYTI1ZTk4ZjQ2MTBhODJlOTBhZDA1YzU3Y2VkMjBkNWU4NyJ9fX0="
+    drops: self
+    default_state: idle_y
+    placement_state_map:
+      DOWN: idle_y
+      NORTH: idle_z
+      SOUTH: idle_z
+      EAST: idle_x
+      WEST: idle_x
+    states:
+      idle_y:
+        display_entities:
+          - texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTI4YmMyZGYzZGZmNWVjM2QxNDNhMmNlZWNiOTM4MjE4MzUxNmU5ZmFkZDdlNDA5YTVlYjQxNTUxNTc0YTI1ZiJ9fX0="
+            tag: rod
+            transform: { translation: [0, 0.5, 0], scale: [0.66, 2.0, 0.66] }
+      spinning_y:
+        display_entities:
+          - texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTI4YmMyZGYzZGZmNWVjM2QxNDNhMmNlZWNiOTM4MjE4MzUxNmU5ZmFkZDdlNDA5YTVlYjQxNTUxNTc0YTI1ZiJ9fX0="
+            tag: rod
+            transform: { translation: [0, 0.5, 0], scale: [0.66, 2.0, 0.66] }
+            animation: { type: rotate, axis: [0, 1, 0], speed: 3.0 }
+            interpolation: 2
+        particles:
+          type: BLOCK_CRACK
+          count: 2
+          speed: 0.05
+          interval: 8
+          floor_offset: [0, -0.5, 0]
+      idle_x:
+        display_entities:
+          - texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTI4YmMyZGYzZGZmNWVjM2QxNDNhMmNlZWNiOTM4MjE4MzUxNmU5ZmFkZDdlNDA5YTVlYjQxNTUxNTc0YTI1ZiJ9fX0="
+            tag: rod
+            transform: { translation: [-0.5, 0, 0], scale: [0.66, 2.0, 0.66], left_rotation: [90, 0, 0, 1] }
+      spinning_x:
+        display_entities:
+          - texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTI4YmMyZGYzZGZmNWVjM2QxNDNhMmNlZWNiOTM4MjE4MzUxNmU5ZmFkZDdlNDA5YTVlYjQxNTUxNTc0YTI1ZiJ9fX0="
+            tag: rod
+            transform: { translation: [-0.5, 0, 0], scale: [0.66, 2.0, 0.66], left_rotation: [90, 0, 0, 1] }
+            animation: { type: rotate, axis: [1, 0, 0], speed: 3.0 }
+            interpolation: 2
+        particles:
+          type: BLOCK_CRACK
+          count: 2
+          speed: 0.05
+          interval: 8
+          floor_offset: [0, 0, 0]
+      idle_z:
+        display_entities:
+          - texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTI4YmMyZGYzZGZmNWVjM2QxNDNhMmNlZWNiOTM4MjE4MzUxNmU5ZmFkZDdlNDA5YTVlYjQxNTUxNTc0YTI1ZiJ9fX0="
+            tag: rod
+            transform: { translation: [0, 0, -0.5], scale: [0.66, 2.0, 0.66], left_rotation: [-90, 1, 0, 0] }
+      spinning_z:
+        display_entities:
+          - texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTI4YmMyZGYzZGZmNWVjM2QxNDNhMmNlZWNiOTM4MjE4MzUxNmU5ZmFkZDdlNDA5YTVlYjQxNTUxNTc0YTI1ZiJ9fX0="
+            tag: rod
+            transform: { translation: [0, 0, -0.5], scale: [0.66, 2.0, 0.66], left_rotation: [-90, 1, 0, 0] }
+            animation: { type: rotate, axis: [0, 0, 1], speed: 3.0 }
+            interpolation: 2
+        particles:
+          type: BLOCK_CRACK
+          count: 2
+          speed: 0.05
+          interval: 8
+          floor_offset: [0, 0, 0]
+
   # ─── Large Windmill ─────────────────────────────────────────────────────
   # Source: 5 SU. Always spinning. 3x scale of demo:windmill banners.
   # Same left_rotations, scale 0.75→2.25, blade origins 1.25 from center, Y -0.6.
