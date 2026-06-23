@@ -182,7 +182,7 @@ public final class CustomHeadBlock {
     // ── Recipe records ───────────────────────────────────────────────────
 
     /** An ingredient: a material, a reference to another custom block by fullId, or a material tag. */
-    public record IngredientSpec(@Nullable Material material, @Nullable String blockId, @Nullable org.bukkit.Tag<Material> tag) {
+    public record IngredientSpec(@Nullable Material material, @Nullable String blockId, org.bukkit.@Nullable Tag<Material> tag) {
         public IngredientSpec(@Nullable Material material, @Nullable String blockId) { this(material, blockId, null); }
         public boolean isMaterial() { return material != null; }
         public boolean isBlock() { return blockId != null; }
@@ -274,7 +274,7 @@ public final class CustomHeadBlock {
     private final @Nullable StateChangeHandler onStateChanged;
     private final @Nullable BiConsumer<Block, String> onBlockRemoved;
     private final @Nullable BiFunction<Block, org.bukkit.event.player.PlayerInteractEvent, Boolean> onInteract;
-    private final @Nullable java.util.function.BiFunction<Block, String, org.bukkit.inventory.ItemStack> displayItemResolver;
+    private final java.util.function.@Nullable BiFunction<Block, String, org.bukkit.inventory.ItemStack> displayItemResolver;
 
     private CustomHeadBlock(Builder b) {
         this.namespace = b.namespace;

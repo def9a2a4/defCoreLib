@@ -78,6 +78,11 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         minecartShipManager.register();
         getServer().getPluginManager().registerEvents(minecartShipManager, this);
 
+        // Banner systems
+        getServer().getPluginManager().registerEvents(new BannerManager(), this);
+        LargeBannerRecipes largeBannerRecipes = new LargeBannerRecipes(this);
+        getServer().getPluginManager().registerEvents(largeBannerRecipes, this);
+
         // Register recipes after all blocks are loaded
         registry.finalizeLoading();
 
@@ -264,6 +269,9 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         // Read power BEFORE cleanup removes redstone tracking
         int power = type.sensitivity() != CustomHeadBlock.Sensitivity.NONE ? registry.readPower(block, type) : 0;
 
+        // Enrich self-drop item BEFORE cleanup (skull PDC must be readable)
+        ItemStack selfDropItem = enrichItemWithBladeData(block, type, type.createItem(1));
+
         // Cleanup
         registry.onBlockRemoved(block, type);
 
@@ -283,8 +291,7 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
                 if (rule.requiredTool() != null && tool.getType() != rule.requiredTool()) continue;
 
                 if (rule.isSelfDrop()) {
-                    ItemStack drop = enrichItemWithBladeData(block, type, type.createItem(1));
-                    block.getWorld().dropItemNaturally(block.getLocation().add(0.5, 0.5, 0.5), drop);
+                    block.getWorld().dropItemNaturally(block.getLocation().add(0.5, 0.5, 0.5), selfDropItem);
                 } else {
                     for (CustomHeadBlock.ItemDrop itemDrop : rule.drops()) {
                         ItemStack drop = new ItemStack(itemDrop.material(), itemDrop.amount());
