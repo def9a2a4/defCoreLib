@@ -254,108 +254,123 @@ power:
 
 ---
 
-## Phase 2: Direction and Reverser
+## Phase 2: Direction
+
+### Wrench item
+
+Copper axe with enchantment glint (`ItemMeta.setEnchantmentGlintOverride(true)`). Right-clicking
+any rotation source toggles its spin direction CW↔CCW. Added to `give_demo_rotation` command.
+
+### Source direction storage
+
+Sources store direction in PDC: `NamespacedKey("rotation", "spin_dir")`, value `"cw"`/`"ccw"`,
+default `"cw"`. Written on wrench toggle, read during BFS post-pass.
+
+- Active sources (engine, generator, water wheel): read from skull PDC
+- Passive sources (windmill): read from skull PDC during boundary scan
+- Windmill needs `toBuilder()` overlay for wrench-only `onInteract`
 
 ### Direction propagation
 
-Currently the network is an undirected power graph (powered/unpowered). Direction makes the
-network feel like a REAL mechanical system — gears reverse direction, shaft side determines
-which way a machine rotates.
-
 **Rules:**
-- **Sources** have inherent direction (CW by default)
-- **Shafts** (along-axis connections) → preserve direction
-- **Gears** (perpendicular connections, both gear-like) → REVERSE direction
-- **Gearbox reverser** (redstone-powered) → REVERSE direction of transmission
+- **Sources** have stored direction (CW default, toggled by wrench)
+- **Along-axis connections** (shaft-like, same axis) → PRESERVE direction
+- **Same-axis gear mesh** (both gearLike, same axis, adjacent perpendicular to axis) → REVERSE
+  (counter-rotate, like real meshing gears)
+- **Bevel gear** (both gearLike, different axes) → PRESERVE (transmit around corner)
 - **Contradictions** (same node reached via two paths with opposite directions) → network
   jammed (treat as unpowered). Naturally prevents impossible gear configurations.
+- Two sources with conflicting directions (through gear topology) → jammed
 
 **Data model additions to `RotationNetwork.java`:**
 ```java
-enum SpinDirection { CW, CCW;
-    SpinDirection reversed() { return this == CW ? CCW : CW; }
+public enum SpinDirection { CW, CCW;
+    public SpinDirection reversed() { return this == CW ? CCW : CW; }
 }
 
-// Per-node computed direction (rebuilt during BFS):
 private final Map<LocationKey, SpinDirection> nodeDirection = new HashMap<>();
 
-// Public API:
-public SpinDirection getDirection(LocationKey key) {
-    return nodeDirection.getOrDefault(key, SpinDirection.CW);
+public @Nullable SpinDirection getDirection(LocationKey key) {
+    return nodeDirection.get(key);
 }
 ```
 
-**BFS changes in `doRecalculate()`:**
-During BFS, track direction alongside network membership. Seed source nodes as CW. For each edge:
+**BFS direction resolution (single-pass + post-pass):**
+1. BFS from root, tentatively assign root = CW, propagate through edges (gears reverse)
+2. Post-pass: find all sources in component (including passive from boundary scan)
+3. First source = anchor. Compare computed vs stored direction → `flip` boolean
+4. If flip, invert all node directions in the component
+5. Check remaining sources: `(computedDir XOR flip)` must equal stored direction. Mismatch → jammed
+
+`getConnections()` returns edge metadata (along-axis vs gear-mesh). BFS uses it to decide:
+- Along-axis edge → preserve direction
+- Gear-mesh edge, same axis → REVERSE (meshing teeth)
+- Gear-mesh edge, different axes (bevel) → PRESERVE (corner transmission)
+
+**`NetworkState` change:**
+```java
+record NetworkState(int supply, int demand, boolean jammed) {
+    boolean powered() { return !jammed && supply >= demand && supply > 0; }
+}
 ```
-isReversingConnection = gear-to-gear (both gearLike, different axes)
-                     OR reverser node (gearbox with redstone power)
-neighborDir = isReversingConnection ? myDir.reversed() : myDir
-if neighbor already visited with opposite direction → jammed = true
-```
 
-Helper: `isGearToGearConnection(RotationNode a, RotationNode b)` — returns true if both are
-gear-like AND have different axes. Along-axis connections between gears (same axis) preserve
-direction (acting as shaft extensions, not meshing).
+### Animation direction
 
-Clear `nodeDirection` entries when networks are rebuilt (same as other maps).
+Direction baked into animation at creation time (not runtime tickAge negation — that would
+break non-rotation animations like bob/pulse). Animations are pre-parsed from YAML by
+`BlockLoader.parseAnimation()`, so direction is applied via wrapping.
 
-**Runtime animation flip:**
-Direction affects display entity animation. CW uses normal tickAge, CCW uses negated tickAge.
-Add `animationDirectionOverride` to `CustomBlockRegistry` — when set for a block location,
-`DisplayAnimation` uses the override to flip rotation direction without changing state/config.
+- `DisplayAnimation.withDirection(int mult)` returns a new animation that delegates to the
+  original but multiplies tickAge by `mult`. Only affects rotate animations.
+- `CustomBlockRegistry` stores `Map<LocationKey, SpinDirection> animationDirection`
+- `updateBlockState()` writes direction to map. `applyConfig()` reads it and wraps the
+  animation with `withDirection()` when creating `AnimationTracked`
+- Cleanup in `onBlockRemoved()` and `onChunkUnload()` (match existing pattern for other maps)
 
-### Gearbox reverser block
+### Wrench interaction (`RotationBlocks.java`)
 
-`rotation:reverser` — a TRANSMITTER that reverses direction when redstone-powered, passes
-through normally when unpowered. Distinct from clutch (which disconnects entirely).
+- Check held item: copper axe with glint override → source blocks: `toggleSourceDirection()`,
+  non-source blocks: `debugInteract()` (wrench doubles as diagnostic tool)
+- `toggleSourceDirection()`: read PDC, flip, write PDC, `skull.update()`, recalculate
+- For passive sources (windmill): `toBuilder()` overlay with wrench-only `onInteract`
+- Non-wrench right-click on any rotation block → `debugInteract()` as usual
+- Debug output gains direction: `"3/5 SU | Powered ✓ | CW"`
 
-- States: `idle_{axis}`, `spinning_{axis}`, `reversing_{axis}` (reversing = powered + spinning)
-- `onNeighborChange`: check `block.getBlockPower() > 0` → set reversing flag, recalculate
-- BFS treats reverser with redstone as a direction-reversing edge (like gear mesh)
-- Without redstone: behaves identically to a shaft
+### Gearbox reverser block (deferred)
 
-### Rotator block
+`rotation:reverser` — TRANSMITTER that reverses direction when redstone-powered, passes
+through normally when unpowered. Distinct from clutch (which disconnects).
 
-A rotation CONSUMER that rotates connected blocks 90° per redstone pulse in the network's
-spin direction.
+### Rotator block (deferred)
 
-**Block type:** `rotation:rotator`
-- Role: CONSUMER, 4 SU demand
-- States: `unpowered_{axis}`, `powered_{axis}`
-- Placement: same `placementStateMap` as shaft/gear
-- Redstone transitions: `unpowered → powered` on POWERED, `powered → unpowered` on ZERO
-
-**Behavior:**
-- `onStateChanged("powered_*")`: check `network.isPowered()`, if yes → rotate 90°
-  in `network.getDirection()`. If no power → ignore.
-- Direction: `CW → +90°`, `CCW → -90°`
-- BFS flood fill connected solid blocks (max 64), rotator itself excluded
-- Assemble → animate over 20 ticks → disassemble (reuse DoorDemo pattern)
-- Fire-and-forget: blocks are solid at their new position after each pulse
+CONSUMER (4 SU) that rotates connected solid blocks 90° per redstone pulse in the network's
+spin direction. CW → +90°, CCW → -90°. BFS flood fill, max 64 blocks. Reuse DoorDemo pattern.
 
 ### Implementation order
 
-1. Add `SpinDirection` enum + direction tracking in BFS (~40 lines in RotationNetwork)
-2. Add `getDirection()` public API (~10 lines)
-3. Add runtime animation direction flip in DisplayAnimation/CustomBlockRegistry (~20 lines)
-4. Add reverser block registration in RotationBlocks (~60 lines)
-5. Add reverser to `rotation-blocks.yml`
-6. Add rotator block registration in RotationBlocks (~80 lines)
-7. Add rotation logic (BFS + assemble + animate + disassemble) — reuse DoorDemo pattern (~100 lines)
-8. Add rotator to `rotation-blocks.yml`
+1. Wrench item creation + give command
+2. `SpinDirection` enum + `nodeDirection` map in RotationNetwork
+3. BFS direction tracking + post-pass anchor logic + jammed detection
+4. `getDirection()` public API
+5. `directionMultiplier` in `Animations.rotate()` + `animationDirection` map in CustomBlockRegistry
+6. Wrench interaction in RotationBlocks (active sources)
+7. Windmill `toBuilder()` overlay for wrench interaction
+8. Direction in `debugInteract()` output
 
 ### Verification
 
 1. Shaft chain from source → all spin CW (default)
-2. Add gear between perpendicular shafts → downstream reverses to CCW
-3. Two gears (double reversal) → back to CW
-4. Reverser unpowered → direction passes through. Powered → direction reverses
-5. Contradictory paths (gear loop with odd number of reversals) → network jammed
-6. Rotator + CW network → redstone pulse → blocks rotate +90°
-7. Rotator + CCW network → redstone pulse → blocks rotate -90°
-8. No rotation power → redstone pulse does nothing
-9. Multiple pulses → blocks step through 90°, 180°, 270°, 360°
+2. Wrench-click source → flips to CCW, all downstream reverses visually
+3. Same-axis gears adjacent → counter-rotate (CW/CCW)
+4. Bevel gears (different axes) → same direction (preserve)
+5. Two same-axis gear reversals → back to original direction
+6. Two sources same direction through shaft → works
+7. Two sources conflicting direction → jammed, everything stops
+8. Add gear to resolve conflict → unjams
+9. Wrench on windmill (passive source) → toggles, network updates
+10. Wrench on non-source → shows debug info
+11. Debug right-click shows CW/CCW
+12. Chunk reload → direction rebuilt correctly from BFS + PDC
 
 ## Display entities — deferred
 Placeholder skull textures with rotate animations initially. Tuned in-game after network logic works.
