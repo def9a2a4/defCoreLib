@@ -13,6 +13,10 @@ import org.bukkit.block.Skull;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
 
+import org.bukkit.entity.Player;
+
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -326,7 +330,7 @@ final class RotationBlocks {
     }
 
     // ──────────────────────────────────────────────────────────────────────
-    // Drill: consumer, breaks block in facing direction every 40 ticks
+    // Drill: consumer, breaks block in facing direction with break animation
     // ──────────────────────────────────────────────────────────────────────
 
     private static final NamespacedKey DRILL_FACING_KEY = new NamespacedKey("rotation", "drill_facing");
@@ -338,14 +342,22 @@ final class RotationBlocks {
 
     private static final ItemStack NETHERITE_PICK = new ItemStack(Material.NETHERITE_PICKAXE);
 
+    private static final int DRILL_TICK_INTERVAL = 4;
+    private static final int DRILL_BREAK_STAGES = 10;
+    private static final double DRILL_ANIM_RADIUS = 48.0;
+
+    private record DrillState(int progress, Material targetMaterial) {}
+    private static final Map<CustomBlockRegistry.LocationKey, DrillState> drillProgress = new HashMap<>();
+
     private static void overlayDrill(CustomBlockRegistry registry, RotationNetwork network) {
         String blockId = "rotation:drill";
         CustomHeadBlock block = registry.getType(blockId);
         if (block == null) { warn(registry, blockId); return; }
         registry.register(block.toBuilder()
             .drillable(false)
+            .cancelPistons(true)
             .reactsToNeighbors(true)
-            .tickInterval(40)
+            .tickInterval(DRILL_TICK_INTERVAL)
             .onNeighborChange((b, face) -> recalcIfKnown(b, network))
             .onInteract((b, event) -> debugInteract(b, event, network, registry))
             .onTick(b -> drillTick(b, registry, network))
@@ -354,36 +366,79 @@ final class RotationBlocks {
                 network.addNode(b, blockId, RotationNetwork.axisFromState(state),
                     RotationNetwork.NodeRole.CONSUMER, 1, false);
             })
-            .onChunkUnload(b -> network.removeNode(CustomBlockRegistry.LocationKey.of(b)))
-            .onBlockRemoved((b, state) -> network.removeNode(CustomBlockRegistry.LocationKey.of(b)))
+            .onChunkUnload(b -> {
+                drillProgress.remove(CustomBlockRegistry.LocationKey.of(b));
+                network.removeNode(CustomBlockRegistry.LocationKey.of(b));
+            })
+            .onBlockRemoved((b, state) -> {
+                var k = CustomBlockRegistry.LocationKey.of(b);
+                if (drillProgress.remove(k) != null) clearBreakAnimation(b, readFacing(b));
+                network.removeNode(k);
+            })
             .build());
     }
 
     private static void drillTick(Block drill, CustomBlockRegistry registry, RotationNetwork network) {
         var key = CustomBlockRegistry.LocationKey.of(drill);
-        if (!network.isPowered(key)) return;
+
+        if (!network.isPowered(key)) {
+            if (drillProgress.remove(key) != null) clearBreakAnimation(drill, readFacing(drill));
+            return;
+        }
 
         BlockFace facing = readFacing(drill);
         if (facing == null) return;
         Block target = drill.getRelative(facing);
+        Material targetMat = target.getType();
 
-        if (target.getType().isAir()) return;
-        if (target.getType().getHardness() < 0 || DRILL_BLACKLIST.contains(target.getType())) return;
-
-        // Custom block path — check drillable, cleanup, drop item
-        CustomHeadBlock targetType = registry.getTypeFromBlock(target);
-        if (targetType != null) {
-            if (!targetType.drillable()) return;
-            if (targetType.storage() != null) registry.dropStorage(target);
-            ItemStack drop = targetType.createItem(1);
-            registry.onBlockRemoved(target, targetType);
-            target.getWorld().dropItemNaturally(target.getLocation().add(0.5, 0.5, 0.5), drop);
-            target.setType(Material.AIR);
+        if (targetMat.isAir()) {
+            drillProgress.remove(key);
+            return;
+        }
+        if (target.isLiquid() || targetMat.getHardness() < 0 || DRILL_BLACKLIST.contains(targetMat)) {
+            if (drillProgress.remove(key) != null) clearBreakAnimation(drill, facing);
             return;
         }
 
-        // Vanilla block path — drops as if mined with netherite pickaxe
-        target.breakNaturally(NETHERITE_PICK);
+        CustomHeadBlock targetType = registry.getTypeFromBlock(target);
+        if (targetType != null && !targetType.drillable()) {
+            if (drillProgress.remove(key) != null) clearBreakAnimation(drill, facing);
+            return;
+        }
+
+        DrillState state = drillProgress.get(key);
+        int progress = (state != null && state.targetMaterial == targetMat) ? state.progress + 1 : 1;
+
+        if (progress >= DRILL_BREAK_STAGES) {
+            drillProgress.remove(key);
+            if (targetType != null) {
+                if (targetType.storage() != null) registry.dropStorage(target);
+                ItemStack drop = targetType.createItem(1);
+                registry.onBlockRemoved(target, targetType);
+                target.getWorld().dropItemNaturally(target.getLocation().add(0.5, 0.5, 0.5), drop);
+                target.setType(Material.AIR);
+            } else {
+                target.breakNaturally(NETHERITE_PICK);
+            }
+            return;
+        }
+
+        drillProgress.put(key, new DrillState(progress, targetMat));
+        Location targetLoc = target.getLocation();
+        int sourceId = key.hashCode();
+        float animProgress = (float) progress / DRILL_BREAK_STAGES;
+        for (Player p : targetLoc.getNearbyPlayers(DRILL_ANIM_RADIUS)) {
+            p.sendBlockDamage(targetLoc, animProgress, sourceId);
+        }
+    }
+
+    private static void clearBreakAnimation(Block drill, @org.jetbrains.annotations.Nullable BlockFace facing) {
+        if (facing == null) return;
+        Location targetLoc = drill.getRelative(facing).getLocation();
+        int sourceId = CustomBlockRegistry.LocationKey.of(drill).hashCode();
+        for (Player p : targetLoc.getNearbyPlayers(DRILL_ANIM_RADIUS)) {
+            p.sendBlockDamage(targetLoc, 0.0f, sourceId);
+        }
     }
 
     private static void storeFacingIfAbsent(Block block) {
