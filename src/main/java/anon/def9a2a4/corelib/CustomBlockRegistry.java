@@ -13,9 +13,16 @@ import org.bukkit.block.data.Directional;
 import org.bukkit.block.data.Levelled;
 import org.bukkit.configuration.file.YamlConfiguration;
 
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextDecoration;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
+
 import org.bukkit.entity.Display;
 import org.bukkit.entity.ItemDisplay;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.BannerMeta;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -55,6 +62,69 @@ public class CustomBlockRegistry {
             byte[] data = src.get(key, org.bukkit.persistence.PersistentDataType.BYTE_ARRAY);
             if (data != null) dst.set(key, org.bukkit.persistence.PersistentDataType.BYTE_ARRAY, data);
         }
+    }
+
+    // ──────────────────────────────────────────────────────────────────────
+    // Sail (blade banner) lore generation
+    // ──────────────────────────────────────────────────────────────────────
+
+    /** Human-readable label for a sail banner: its custom name if it has one,
+     *  otherwise the base colour name plus a pattern count (e.g. "Light Blue Banner (2 patterns)"). */
+    static String describeBanner(ItemStack banner) {
+        ItemMeta meta = banner.getItemMeta();
+        if (meta != null && meta.hasDisplayName()) {
+            return PlainTextComponentSerializer.plainText().serialize(meta.displayName());
+        }
+        // Base colour from the material: LIGHT_BLUE_BANNER → "Light Blue Banner"
+        String raw = banner.getType().name();
+        if (raw.endsWith("_BANNER")) raw = raw.substring(0, raw.length() - "_BANNER".length());
+        StringBuilder label = new StringBuilder();
+        for (String word : raw.split("_")) {
+            if (word.isEmpty()) continue;
+            if (label.length() > 0) label.append(' ');
+            label.append(Character.toUpperCase(word.charAt(0)))
+                 .append(word.substring(1).toLowerCase(Locale.ROOT));
+        }
+        label.append(" Banner");
+        if (meta instanceof BannerMeta bm && !bm.getPatterns().isEmpty()) {
+            int n = bm.getPatterns().size();
+            label.append(" (").append(n).append(n == 1 ? " pattern)" : " patterns)");
+        }
+        return label.toString();
+    }
+
+    /** Header line that introduces the sail listing (used for both rendering and idempotent stripping). */
+    private static final String SAIL_HEADER = "Sails:";
+
+    /** Build the sail lore block: a "Sails:" header followed by one line per banner, in blade order
+     *  (nulls ignored). Returns an empty list when there are no banners. */
+    static List<Component> sailLoreLines(List<ItemStack> banners) {
+        List<Component> lines = new ArrayList<>();
+        for (ItemStack banner : banners) {
+            if (banner == null) continue;
+            lines.add(Component.text(" • " + describeBanner(banner), NamedTextColor.GRAY)
+                    .decoration(TextDecoration.ITALIC, false));
+        }
+        if (lines.isEmpty()) return List.of();
+        lines.add(0, Component.text(SAIL_HEADER, NamedTextColor.GRAY)
+                .decoration(TextDecoration.ITALIC, false));
+        return lines;
+    }
+
+    /** Append the sail lore block to the given meta, replacing any prior block (idempotent).
+     *  The sail block is always appended last, so everything from the "Sails:" header onward is stale. */
+    static void applySailLore(ItemMeta meta, List<ItemStack> banners) {
+        List<Component> sailLines = sailLoreLines(banners);
+        if (sailLines.isEmpty()) return;
+        List<Component> lore = meta.hasLore() ? new ArrayList<>(meta.lore()) : new ArrayList<>();
+        for (int i = 0; i < lore.size(); i++) {
+            if (PlainTextComponentSerializer.plainText().serialize(lore.get(i)).equals(SAIL_HEADER)) {
+                lore.subList(i, lore.size()).clear();
+                break;
+            }
+        }
+        lore.addAll(sailLines);
+        meta.lore(lore);
     }
 
     private final JavaPlugin plugin;
@@ -555,6 +625,8 @@ public class CustomBlockRegistry {
             Block block = entry.block;
             if (!block.getWorld().isChunkLoaded(block.getX() >> 4, block.getZ() >> 4)) continue;
 
+            if (entry.failed) continue;
+
             CustomHeadBlock.ParticleConfig pc = entry.config;
             if (currentTick % pc.intervalTicks() != 0) continue;
 
@@ -573,12 +645,21 @@ public class CustomBlockRegistry {
             int count = pc.count().resolveInt(power);
             double speed = pc.speed().resolve(power);
 
-            if (pc.data() != null) {
-                block.getWorld().spawnParticle(pc.type(), x, y, z,
-                        count, 0.05, 0.05, 0.05, speed, pc.data());
-            } else {
-                block.getWorld().spawnParticle(pc.type(), x, y, z,
-                        count, 0.05, 0.05, 0.05, speed);
+            try {
+                if (pc.data() != null) {
+                    block.getWorld().spawnParticle(pc.type(), x, y, z,
+                            count, 0.05, 0.05, 0.05, speed, pc.data());
+                } else {
+                    block.getWorld().spawnParticle(pc.type(), x, y, z,
+                            count, 0.05, 0.05, 0.05, speed);
+                }
+            } catch (IllegalArgumentException ex) {
+                // Misconfigured particle (e.g. missing required data). Disable this entry so it
+                // degrades to a single warning instead of flooding the log every tick.
+                entry.failed = true;
+                plugin.getLogger().warning("Disabling particle " + pc.type() + " at "
+                        + block.getX() + "," + block.getY() + "," + block.getZ()
+                        + " — " + ex.getMessage());
             }
         }
     }
@@ -1199,6 +1280,7 @@ public class CustomBlockRegistry {
         final Block block;
         final CustomHeadBlock type;
         final CustomHeadBlock.ParticleConfig config;
+        boolean failed; // set true after a spawn error to stop per-tick log spam
         ParticleTracked(Block block, CustomHeadBlock type, CustomHeadBlock.ParticleConfig config) {
             this.block = block;
             this.type = type;

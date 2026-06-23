@@ -496,10 +496,12 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
 
         boolean hasBanners = false;
         byte[][] bladeData = new byte[4][];
+        java.util.List<ItemStack> banners = new java.util.ArrayList<>();
         for (int i = 0; i < 4; i++) {
             ItemStack banner = matrix[bannerSlots[i]];
             if (banner != null && banner.getType().name().endsWith("_BANNER")) {
                 bladeData[i] = banner.asQuantity(1).serializeAsBytes();
+                banners.add(banner.asQuantity(1));
                 hasBanners = true;
             }
         }
@@ -513,6 +515,7 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
                 pdc.set(CustomBlockRegistry.BLADE_KEYS[i], PersistentDataType.BYTE_ARRAY, bladeData[i]);
             }
         }
+        CustomBlockRegistry.applySailLore(newMeta, banners);
         newResult.setItemMeta(newMeta);
         inv.setResult(newResult);
     }
@@ -531,6 +534,12 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         ItemStack enriched = item.clone();
         var meta = enriched.getItemMeta();
         CustomBlockRegistry.copyBladePdc(skullPdc, meta.getPersistentDataContainer());
+        java.util.List<ItemStack> banners = new java.util.ArrayList<>();
+        for (var key : CustomBlockRegistry.BLADE_KEYS) {
+            byte[] data = skullPdc.get(key, PersistentDataType.BYTE_ARRAY);
+            if (data != null) banners.add(ItemStack.deserializeBytes(data));
+        }
+        CustomBlockRegistry.applySailLore(meta, banners);
         enriched.setItemMeta(meta);
         return enriched;
     }

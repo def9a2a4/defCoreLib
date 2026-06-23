@@ -38,6 +38,7 @@ public class BannerManager implements Listener {
     private static final String TAG_PREFIX = "corelib:banner:";
     private static final double SEARCH_RADIUS = 2.5;
     private static final float LARGE_SCALE = 2.2f;
+    private static final float EXTRA_LARGE_SCALE = 3.0f;
     private static final float NORMAL_SCALE = 1.0f;
     private static final float HALF_PI = (float) (Math.PI / 2.0);
 
@@ -52,22 +53,36 @@ public class BannerManager implements Listener {
         if (clicked == null) return;
 
         ItemStack held = event.getPlayer().getInventory().getItemInMainHand();
+
+        if (held.getType() == Material.SHEARS) {
+            if (tryShearsBannerRemoval(event.getPlayer(), clicked)) {
+                event.setCancelled(true);
+            }
+            return;
+        }
+
         if (!LargeBannerRecipes.isBanner(held.getType())) return;
 
-        boolean isLarge = LargeBannerRecipes.isLargeBanner(held);
+        boolean isExtraLarge = LargeBannerRecipes.isExtraLargeBanner(held);
+        boolean isLarge = !isExtraLarge && LargeBannerRecipes.isLargeBanner(held);
         boolean isFenceHost = isFlagHost(clicked.getType());
         boolean sneaking = event.getPlayer().isSneaking();
 
-        if (isFenceHost && !sneaking) {
+        if (sneaking && isBed(clicked.getType()) && !isLarge && !isExtraLarge) {
             event.setCancelled(true);
-            placeFlag(event.getPlayer(), clicked, event.getBlockFace(), held, isLarge);
-        } else if (isLarge) {
+            placeBedBanner(event.getPlayer(), clicked, held);
+        } else if (isFenceHost && !sneaking) {
             event.setCancelled(true);
-            placeLargeBanner(event.getPlayer(), clicked, event.getBlockFace(), held);
+            float scale = isExtraLarge ? EXTRA_LARGE_SCALE : (isLarge ? LARGE_SCALE : NORMAL_SCALE);
+            placeFlag(event.getPlayer(), clicked, event.getBlockFace(), held, scale);
+        } else if (isExtraLarge || isLarge) {
+            event.setCancelled(true);
+            float scale = isExtraLarge ? EXTRA_LARGE_SCALE : LARGE_SCALE;
+            placeLargeBanner(event.getPlayer(), clicked, event.getBlockFace(), held, scale);
         }
     }
 
-    private void placeFlag(Player player, Block block, BlockFace clickedFace, ItemStack banner, boolean isLarge) {
+    private void placeFlag(Player player, Block block, BlockFace clickedFace, ItemStack banner, float scale) {
         BlockFace face = resolveHorizontalFace(clickedFace, player);
         String tag = TAG_PREFIX + blockKey(block) + ":" + face.name().toLowerCase();
 
@@ -76,7 +91,6 @@ public class BannerManager implements Listener {
             return;
         }
 
-        float scale = isLarge ? LARGE_SCALE : NORMAL_SCALE;
         ItemStack displayBanner = banner.asQuantity(1);
 
         spawnPair(block.getLocation(), flagTransform(face, scale), flagBackTransform(face, scale),
@@ -87,17 +101,17 @@ public class BannerManager implements Listener {
                 Sound.BLOCK_WOOL_PLACE, 1f, 1f);
     }
 
-    private void placeLargeBanner(Player player, Block clicked, BlockFace clickedFace, ItemStack banner) {
+    private void placeLargeBanner(Player player, Block clicked, BlockFace clickedFace, ItemStack banner, float scale) {
         BlockFace face;
         Transformation transform;
 
         if (clickedFace == BlockFace.UP || clickedFace == BlockFace.DOWN) {
             float yaw = player.getLocation().getYaw();
             face = clickedFace;
-            transform = standingTransform(yaw, LARGE_SCALE);
+            transform = standingTransform(yaw, scale, clickedFace);
         } else {
             face = clickedFace;
-            transform = wallTransform(clickedFace, LARGE_SCALE);
+            transform = wallTransform(clickedFace, scale);
         }
 
         String tag = TAG_PREFIX + blockKey(clicked) + ":" + face.name().toLowerCase();
@@ -108,7 +122,8 @@ public class BannerManager implements Listener {
         }
 
         ItemStack displayBanner = banner.asQuantity(1);
-        DisplayUtil.spawn(clicked.getLocation(), displayBanner, transform, tag);
+        Block spawnBlock = clicked.getRelative(face);
+        DisplayUtil.spawn(spawnBlock.getLocation(), displayBanner, transform, tag);
 
         consumeItem(player, banner);
         clicked.getWorld().playSound(clicked.getLocation().add(0.5, 0.5, 0.5),
@@ -127,16 +142,112 @@ public class BannerManager implements Listener {
         }
     }
 
+    // ── Shears removal ────────────────────────────────────────────────────
+
+    private boolean tryShearsBannerRemoval(Player player, Block clicked) {
+        String prefix = TAG_PREFIX + blockKey(clicked);
+        List<Display> entities = DisplayUtil.findByTag(clicked.getLocation(), prefix, SEARCH_RADIUS);
+        if (entities.isEmpty()) return false;
+
+        Set<String> droppedFaces = new HashSet<>();
+        for (Display entity : entities) {
+            if (entity instanceof ItemDisplay itemDisplay) {
+                String face = extractFace(entity);
+                if (face != null && droppedFaces.add(face)) {
+                    ItemStack bannerItem = itemDisplay.getItemStack();
+                    if (bannerItem != null && player.getGameMode() != GameMode.CREATIVE) {
+                        clicked.getWorld().dropItemNaturally(
+                                clicked.getLocation().add(0.5, 0.5, 0.5), bannerItem.asQuantity(1));
+                    }
+                }
+            }
+            entity.remove();
+        }
+
+        if (player.getGameMode() != GameMode.CREATIVE) {
+            ItemStack shears = player.getInventory().getItemInMainHand();
+            if (shears.getItemMeta() instanceof org.bukkit.inventory.meta.Damageable dmg) {
+                dmg.setDamage(dmg.getDamage() + 1);
+                shears.setItemMeta(dmg);
+                if (dmg.getDamage() >= shears.getType().getMaxDurability()) {
+                    player.getInventory().setItemInMainHand(null);
+                    player.playSound(player.getLocation(), Sound.ENTITY_ITEM_BREAK, 1f, 1f);
+                }
+            }
+        }
+
+        clicked.getWorld().playSound(clicked.getLocation().add(0.5, 0.5, 0.5),
+                Sound.BLOCK_WOOL_BREAK, 1f, 1f);
+        return true;
+    }
+
+    // ── Bed banners ─────────────────────────────────────────────────────
+
+    private void placeBedBanner(Player player, Block clicked, ItemStack banner) {
+        Block foot = resolveBedFoot(clicked);
+        if (foot == null) return;
+
+        org.bukkit.block.data.type.Bed bedData =
+                (org.bukkit.block.data.type.Bed) foot.getBlockData();
+        BlockFace facing = bedData.getFacing();
+
+        String tag = TAG_PREFIX + blockKey(foot) + ":bed";
+
+        if (!DisplayUtil.findByTag(foot.getLocation(), tag, SEARCH_RADIUS).isEmpty()) {
+            player.sendMessage(Component.text("This bed already has a banner", NamedTextColor.RED));
+            return;
+        }
+
+        ItemStack displayBanner = banner.asQuantity(1);
+        Transformation transform = bedBannerTransform(facing);
+        DisplayUtil.spawn(foot.getLocation(), displayBanner, transform, tag);
+
+        consumeItem(player, banner);
+        foot.getWorld().playSound(foot.getLocation().add(0.5, 0.5, 0.5),
+                Sound.BLOCK_WOOL_PLACE, 1f, 1f);
+    }
+
+    private static Transformation bedBannerTransform(BlockFace facing) {
+        float yawRad = (float) Math.toRadians(-faceToYaw(facing));
+        Quaternionf rotation = new Quaternionf()
+                .rotateY(yawRad)
+                .rotateX(-HALF_PI);
+
+        float dx = facing.getModX() * 0.25f;
+        float dz = facing.getModZ() * 0.25f;
+
+        return new Transformation(
+                new Vector3f(dx, 0.0625f, dz),
+                rotation,
+                new Vector3f(NORMAL_SCALE, NORMAL_SCALE, NORMAL_SCALE),
+                new Quaternionf());
+    }
+
+    private static Block resolveBedFoot(Block block) {
+        if (!(block.getBlockData() instanceof org.bukkit.block.data.type.Bed bedData)) return null;
+        if (bedData.getPart() == org.bukkit.block.data.type.Bed.Part.FOOT) return block;
+        return block.getRelative(bedData.getFacing().getOppositeFace());
+    }
+
     // ── Cleanup ──────────────────────────────────────────────────────────
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onBlockBreak(BlockBreakEvent event) {
-        handleRemoval(event.getBlock(), event.getPlayer().getGameMode() != GameMode.CREATIVE);
+        boolean drop = event.getPlayer().getGameMode() != GameMode.CREATIVE;
+        if (isBed(event.getBlock().getType())) {
+            Block foot = resolveBedFoot(event.getBlock());
+            if (foot != null) handleRemoval(foot, drop);
+        }
+        handleRemoval(event.getBlock(), drop);
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onEntityExplode(EntityExplodeEvent event) {
         for (Block block : event.blockList()) {
+            if (isBed(block.getType())) {
+                Block foot = resolveBedFoot(block);
+                if (foot != null) handleRemoval(foot, true);
+            }
             handleRemoval(block, true);
         }
     }
@@ -144,6 +255,10 @@ public class BannerManager implements Listener {
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onBlockExplode(BlockExplodeEvent event) {
         for (Block block : event.blockList()) {
+            if (isBed(block.getType())) {
+                Block foot = resolveBedFoot(block);
+                if (foot != null) handleRemoval(foot, true);
+            }
             handleRemoval(block, true);
         }
     }
@@ -229,7 +344,7 @@ public class BannerManager implements Listener {
 
     private static Transformation flagTransform(BlockFace face, float scale) {
         return new Transformation(
-                flagTranslation(face),
+                flagTranslation(face, scale),
                 flagRotation(face),
                 new Vector3f(scale, scale, scale),
                 new Quaternionf());
@@ -237,7 +352,7 @@ public class BannerManager implements Listener {
 
     private static Transformation flagBackTransform(BlockFace face, float scale) {
         return new Transformation(
-                flagTranslation(face),
+                flagTranslation(face, scale),
                 flagBackRotation(face),
                 new Vector3f(scale, scale, scale),
                 new Quaternionf());
@@ -247,6 +362,7 @@ public class BannerManager implements Listener {
         float yawRad = (float) Math.toRadians(-faceToYaw(face));
         return new Quaternionf()
                 .rotateY(yawRad)
+                .rotateZ(-HALF_PI)
                 .rotateX(-HALF_PI);
     }
 
@@ -254,29 +370,35 @@ public class BannerManager implements Listener {
         float yawRad = (float) Math.toRadians(-faceToYaw(face));
         return new Quaternionf()
                 .rotateY(yawRad)
-                .rotateX(-HALF_PI)
-                .rotateY((float) Math.PI);
+                .rotateZ(HALF_PI)
+                .rotateX(-HALF_PI);
     }
 
-    private static Vector3f flagTranslation(BlockFace face) {
-        float offset = 0.5f;
-        return new Vector3f(face.getModX() * offset, 0, face.getModZ() * offset);
+    private static Vector3f flagTranslation(BlockFace face, float scale) {
+        float outward = 0.5f * scale + 0.5f;
+        return new Vector3f(face.getModX() * outward, 0, face.getModZ() * outward);
     }
 
-    private static Transformation standingTransform(float yaw, float scale) {
+    private static Transformation standingTransform(float yaw, float scale, BlockFace clickedFace) {
         Quaternionf rotation = new Quaternionf().rotateY((float) Math.toRadians(-yaw));
-        return new Transformation(new Vector3f(0, 1.6f, 0), rotation,
+        float adjustment = 0.75f * (scale - LARGE_SCALE);
+        float yOffset = clickedFace == BlockFace.UP ? 0.6f - adjustment : 2.6f - adjustment;
+        return new Transformation(new Vector3f(0, yOffset, 0), rotation,
                 new Vector3f(scale, scale, scale), new Quaternionf());
     }
 
     private static Transformation wallTransform(BlockFace face, float scale) {
         float yaw = faceToYaw(face) + 180;
         Quaternionf rotation = new Quaternionf().rotateY((float) Math.toRadians(yaw));
-        Vector3f offset = new Vector3f(face.getModX() * 0.4f, -2.5f, face.getModZ() * 0.4f);
+        Vector3f offset = new Vector3f(-face.getModX() * 0.6f, -1.25f * scale + 0.25f, -face.getModZ() * 0.6f);
         return new Transformation(offset, rotation, new Vector3f(scale, scale, scale), new Quaternionf());
     }
 
     // ── Helpers ──────────────────────────────────────────────────────────
+
+    private static boolean isBed(Material mat) {
+        return mat.name().endsWith("_BED");
+    }
 
     private static boolean isFlagHost(Material mat) {
         String name = mat.name();
