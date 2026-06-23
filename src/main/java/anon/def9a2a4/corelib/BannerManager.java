@@ -87,7 +87,10 @@ public class BannerManager implements Listener {
 
     private void loadBedConfig() {
         File configFile = new File(plugin.getDataFolder(), "banner-config.yml");
-        if (!configFile.exists()) return;
+        if (!configFile.exists()) {
+            plugin.getLogger().warning("banner-config.yml not found, using defaults");
+            return;
+        }
         YamlConfiguration cfg = YamlConfiguration.loadConfiguration(configFile);
         bedOffsetTowardHead = (float) cfg.getDouble("bed-banner.offset-toward-head", bedOffsetTowardHead);
         bedYOffset = (float) cfg.getDouble("bed-banner.y-offset", bedYOffset);
