@@ -13,9 +13,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.inventory.PrepareItemCraftEvent;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.CraftingInventory;
-import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.Keyed;
 import org.bukkit.inventory.RecipeChoice;
@@ -96,10 +94,8 @@ public class LargeBannerRecipes implements Listener {
             lore.add(Component.text("Large", NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false));
         }
 
-        meta.setEnchantmentGlintOverride(true);
-        meta.addEnchant(Enchantment.UNBREAKING, 1, true);
-        meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
         meta.lore(lore);
+        meta.setEnchantmentGlintOverride(true);
         result.setItemMeta(meta);
         inv.setResult(result);
     }

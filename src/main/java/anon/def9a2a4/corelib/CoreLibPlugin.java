@@ -36,6 +36,7 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
     private MechanismRegistry mechanismRegistry;
     private MinecartShipManager minecartShipManager;
     private RotationNetwork rotationNetwork;
+    private BannerManager bannerManager;
 
     @Override
     public void onEnable() {
@@ -79,7 +80,8 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         getServer().getPluginManager().registerEvents(minecartShipManager, this);
 
         // Banner systems
-        getServer().getPluginManager().registerEvents(new BannerManager(), this);
+        bannerManager = new BannerManager(this);
+        getServer().getPluginManager().registerEvents(bannerManager, this);
         LargeBannerRecipes largeBannerRecipes = new LargeBannerRecipes(this);
         getServer().getPluginManager().registerEvents(largeBannerRecipes, this);
 
@@ -958,7 +960,7 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!command.getName().equalsIgnoreCase("defcorelib")) return false;
         if (args.length == 0) {
-            sender.sendMessage(Component.text("Usage: /defcorelib <give|give_demo|give_demo_rotation|list|colliders>", NamedTextColor.YELLOW));
+            sender.sendMessage(Component.text("Usage: /defcorelib <give|give_demo|give_demo_rotation|list|colliders|reloadbanners>", NamedTextColor.YELLOW));
             return true;
         }
 
@@ -1051,6 +1053,10 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
                 sender.sendMessage(Component.text("Collider glow " + (enabled ? "ON" : "OFF"),
                     enabled ? NamedTextColor.GREEN : NamedTextColor.RED));
             }
+            case "reloadbanners" -> {
+                bannerManager.reloadBedConfig();
+                sender.sendMessage(Component.text("Banner config reloaded", NamedTextColor.GREEN));
+            }
             default -> sender.sendMessage(Component.text("Unknown subcommand: " + args[0], NamedTextColor.RED));
         }
         return true;
@@ -1060,7 +1066,7 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         if (!command.getName().equalsIgnoreCase("defcorelib")) return List.of();
         if (args.length == 1) {
-            return List.of("give", "give_demo", "give_demo_rotation", "list", "colliders").stream()
+            return List.of("give", "give_demo", "give_demo_rotation", "list", "colliders", "reloadbanners").stream()
                     .filter(s -> s.startsWith(args[0].toLowerCase()))
                     .toList();
         }

@@ -1,0 +1,12 @@
+bed-banner:
+  # Offset from foot-block center toward head (blocks)
+  offset-toward-head: 0.75
+  # Height above bed surface (blocks)
+  y-offset: -0.0375
+  # Scale in banner's local coordinate space:
+  #   X = banner width  -> maps to across-the-bed direction
+  #   Y = banner height -> maps to along-the-bed direction (foot-to-head)
+  #   Z = banner depth  -> maps to world vertical (up/down)
+  scale-x: 1.0
+  scale-y: 1.78
+  scale-z: 1.0

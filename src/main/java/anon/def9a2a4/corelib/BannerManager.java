@@ -446,7 +446,7 @@ public class BannerManager implements Listener {
 
     private static Transformation standingTransform(float yaw, float scale, BlockFace clickedFace) {
         Quaternionf rotation = new Quaternionf().rotateY((float) Math.toRadians(-yaw));
-        float adjustment = 0.75f * (scale - LARGE_SCALE);
+        float adjustment = -0.5f * (scale - LARGE_SCALE);
         float yOffset = clickedFace == BlockFace.UP ? 0.6f - adjustment : 2.6f - adjustment;
         return new Transformation(new Vector3f(0, yOffset, 0), rotation,
                 new Vector3f(scale, scale, scale), new Quaternionf());
@@ -455,7 +455,14 @@ public class BannerManager implements Listener {
     private static Transformation wallTransform(BlockFace face, float scale) {
         float yaw = faceToYaw(face) + 180;
         Quaternionf rotation = new Quaternionf().rotateY((float) Math.toRadians(-yaw));
-        Vector3f offset = new Vector3f(-face.getModX() * 0.6f, -1.25f * scale + 0.25f, -face.getModZ() * 0.6f);
+        float wallOffset = 0.6f;
+        float yOffset = -1.25f * scale + 0.25f;
+        if (scale > LARGE_SCALE) {
+            wallOffset += 0.0625f;
+            yOffset -= 0.0625f;
+            scale *= 0.999f;
+        }
+        Vector3f offset = new Vector3f(-face.getModX() * wallOffset, yOffset, -face.getModZ() * wallOffset);
         return new Transformation(offset, rotation, new Vector3f(scale, scale, scale), new Quaternionf());
     }
 
