@@ -60,11 +60,14 @@ public class BannerManager implements Listener {
     private float bedScaleY = 1.78f;
     private float bedScaleZ = 1.0f;
     private float flagDepth = 1.0f;
-    private float flagFaceGap = 0.0f;
+    private float flagFaceGapNormal = 0.0f;
+    private float flagFaceGapLarge = 0.0f;
+    private float flagFaceGapExtraLarge = 0.0f;
     private float flagOutwardOffsetNormal = 0.125f;
     private float flagOutwardOffsetLarge = 0.125f;
     private float flagOutwardOffsetExtraLarge = 0.125f;
-    private float flagTilt = 0.0f;
+    private float flagSplayTilt = 0.0f;
+    private float flagUnifiedTilt = 0.0f;
 
     public BannerManager(JavaPlugin plugin) {
         this.plugin = plugin;
@@ -92,11 +95,14 @@ public class BannerManager implements Listener {
         bedScaleY = (float) cfg.getDouble("bed-banner.scale-y", bedScaleY);
         bedScaleZ = (float) cfg.getDouble("bed-banner.scale-z", bedScaleZ);
         flagDepth = (float) cfg.getDouble("flag-banner.depth", flagDepth);
-        flagFaceGap = (float) cfg.getDouble("flag-banner.face-gap", flagFaceGap);
+        flagFaceGapNormal = (float) cfg.getDouble("flag-banner.face-gap.normal", flagFaceGapNormal);
+        flagFaceGapLarge = (float) cfg.getDouble("flag-banner.face-gap.large", flagFaceGapLarge);
+        flagFaceGapExtraLarge = (float) cfg.getDouble("flag-banner.face-gap.extra-large", flagFaceGapExtraLarge);
         flagOutwardOffsetNormal = (float) cfg.getDouble("flag-banner.outward-offset.normal", flagOutwardOffsetNormal);
         flagOutwardOffsetLarge = (float) cfg.getDouble("flag-banner.outward-offset.large", flagOutwardOffsetLarge);
         flagOutwardOffsetExtraLarge = (float) cfg.getDouble("flag-banner.outward-offset.extra-large", flagOutwardOffsetExtraLarge);
-        flagTilt = (float) cfg.getDouble("flag-banner.tilt", flagTilt);
+        flagSplayTilt = (float) cfg.getDouble("flag-banner.splay-tilt", flagSplayTilt);
+        flagUnifiedTilt = (float) cfg.getDouble("flag-banner.unified-tilt", flagUnifiedTilt);
     }
 
     public void reloadConfig() {
@@ -459,7 +465,7 @@ public class BannerManager implements Listener {
     }
 
     private Quaternionf flagRotation(float yaw) {
-        float yawRad = (float) Math.toRadians(-yaw + flagTilt);
+        float yawRad = (float) Math.toRadians(-yaw + flagUnifiedTilt + flagSplayTilt);
         return new Quaternionf()
                 .rotateY(yawRad)
                 .rotateZ(-HALF_PI)
@@ -467,11 +473,17 @@ public class BannerManager implements Listener {
     }
 
     private Quaternionf flagBackRotation(float yaw) {
-        float yawRad = (float) Math.toRadians(-yaw - flagTilt);
+        float yawRad = (float) Math.toRadians(-yaw + flagUnifiedTilt - flagSplayTilt);
         return new Quaternionf()
                 .rotateY(yawRad)
                 .rotateZ(HALF_PI)
                 .rotateX(HALF_PI);
+    }
+
+    private float flagFaceGap(float scale) {
+        if (scale >= EXTRA_LARGE_SCALE) return flagFaceGapExtraLarge;
+        if (scale >= LARGE_SCALE) return flagFaceGapLarge;
+        return flagFaceGapNormal;
     }
 
     private float flagOutwardOffset(float scale) {
@@ -485,8 +497,9 @@ public class BannerManager implements Listener {
         float dirX = -(float) Math.sin(yawRad);
         float dirZ = (float) Math.cos(yawRad);
         float outward = 0.5f * scale + flagOutwardOffset(scale);
-        float tx = dirX * outward + thicknessSign * dirZ * flagFaceGap;
-        float tz = dirZ * outward - thicknessSign * dirX * flagFaceGap;
+        float gap = flagFaceGap(scale);
+        float tx = dirX * outward + thicknessSign * dirZ * gap;
+        float tz = dirZ * outward - thicknessSign * dirX * gap;
         return new Vector3f(tx, 0, tz);
     }
 

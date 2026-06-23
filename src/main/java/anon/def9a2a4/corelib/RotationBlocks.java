@@ -430,6 +430,18 @@ final class RotationBlocks {
         for (Player p : targetLoc.getNearbyPlayers(DRILL_ANIM_RADIUS)) {
             p.sendBlockDamage(targetLoc, animProgress, sourceId);
         }
+
+        spawnDrillParticles(target, facing.getOppositeFace());
+    }
+
+    private static void spawnDrillParticles(Block target, BlockFace contactFace) {
+        Location center = target.getLocation().add(0.5, 0.5, 0.5);
+        center.add(contactFace.getModX() * 0.5, contactFace.getModY() * 0.5, contactFace.getModZ() * 0.5);
+        target.getWorld().spawnParticle(
+            Particle.BLOCK, center, 4,
+            0.25, 0.25, 0.25, 0.0,
+            target.getBlockData()
+        );
     }
 
     private static void clearBreakAnimation(Block drill, @org.jetbrains.annotations.Nullable BlockFace facing) {
