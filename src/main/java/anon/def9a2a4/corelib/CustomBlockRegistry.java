@@ -96,35 +96,33 @@ public class CustomBlockRegistry {
     /** Header line that introduces the sail listing (used for both rendering and idempotent stripping). */
     private static final String SAIL_HEADER = "Sails:";
 
-    /** Build the sail lore block: a "Sails:" header followed by one line per banner, in blade order
-     *  (nulls ignored). Returns an empty list when there are no banners. */
+    /** Build the sail lore block: a "Sails:" header followed by one line per distinct banner, in
+     *  first-seen order, with an "Nx" prefix when a banner appears more than once (nulls ignored).
+     *  Returns an empty list when there are no banners. */
     static List<Component> sailLoreLines(List<ItemStack> banners) {
-        List<Component> lines = new ArrayList<>();
+        Map<String, Integer> counts = new LinkedHashMap<>();
         for (ItemStack banner : banners) {
             if (banner == null) continue;
-            lines.add(Component.text(" • " + describeBanner(banner), NamedTextColor.GRAY)
+            counts.merge(describeBanner(banner), 1, Integer::sum);
+        }
+        if (counts.isEmpty()) return List.of();
+        List<Component> lines = new ArrayList<>();
+        lines.add(Component.text(SAIL_HEADER, NamedTextColor.GRAY)
+                .decoration(TextDecoration.ITALIC, false));
+        for (Map.Entry<String, Integer> e : counts.entrySet()) {
+            String prefix = e.getValue() > 1 ? e.getValue() + "x " : "";
+            lines.add(Component.text(" • " + prefix + e.getKey(), NamedTextColor.GRAY)
                     .decoration(TextDecoration.ITALIC, false));
         }
-        if (lines.isEmpty()) return List.of();
-        lines.add(0, Component.text(SAIL_HEADER, NamedTextColor.GRAY)
-                .decoration(TextDecoration.ITALIC, false));
         return lines;
     }
 
-    /** Append the sail lore block to the given meta, replacing any prior block (idempotent).
-     *  The sail block is always appended last, so everything from the "Sails:" header onward is stale. */
+    /** Replace the item's lore entirely with the sail lore block. Non-sail (YAML) lore is dropped.
+     *  If there are no banners, the existing lore is left untouched. */
     static void applySailLore(ItemMeta meta, List<ItemStack> banners) {
         List<Component> sailLines = sailLoreLines(banners);
         if (sailLines.isEmpty()) return;
-        List<Component> lore = meta.hasLore() ? new ArrayList<>(meta.lore()) : new ArrayList<>();
-        for (int i = 0; i < lore.size(); i++) {
-            if (PlainTextComponentSerializer.plainText().serialize(lore.get(i)).equals(SAIL_HEADER)) {
-                lore.subList(i, lore.size()).clear();
-                break;
-            }
-        }
-        lore.addAll(sailLines);
-        meta.lore(lore);
+        meta.lore(sailLines);
     }
 
     private final JavaPlugin plugin;
