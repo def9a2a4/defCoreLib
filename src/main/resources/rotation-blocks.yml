@@ -115,10 +115,10 @@ blocks:
             transform: { translation: [0, 0.5, 0], scale: [0.66, 2.0, 0.66] }
           - texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTM1NDhjNmJkZGYwMGQ1MDI5MjEyYjc0NjFkZGNhYTcyZTkyOGQ0M2YzYWIwMmEyYWJmNjgwYTYzZDI1MWVjNSJ9fX0="
             tag: disc_a
-            transform: { translation: [0, -0.3, 0], scale: [1.7, 0.4, 1.7] }
+            transform: { translation: [0, -0.29, 0], scale: [1.7, 0.4, 1.7] }
           - texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTM1NDhjNmJkZGYwMGQ1MDI5MjEyYjc0NjFkZGNhYTcyZTkyOGQ0M2YzYWIwMmEyYWJmNjgwYTYzZDI1MWVjNSJ9fX0="
             tag: disc_b
-            transform: { translation: [0, -0.29, 0], scale: [1.7, 0.4, 1.7], left_rotation: [45, 0, 1, 0] }
+            transform: { translation: [0, -0.28, 0], scale: [1.7, 0.4, 1.7], left_rotation: [45, 0, 1, 0] }
       spinning_y:
         display_entities:
           - texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTI4YmMyZGYzZGZmNWVjM2QxNDNhMmNlZWNiOTM4MjE4MzUxNmU5ZmFkZDdlNDA5YTVlYjQxNTUxNTc0YTI1ZiJ9fX0="
@@ -128,12 +128,12 @@ blocks:
             interpolation: 2
           - texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTM1NDhjNmJkZGYwMGQ1MDI5MjEyYjc0NjFkZGNhYTcyZTkyOGQ0M2YzYWIwMmEyYWJmNjgwYTYzZDI1MWVjNSJ9fX0="
             tag: disc_a
-            transform: { translation: [0, -0.3, 0], scale: [1.7, 0.4, 1.7] }
+            transform: { translation: [0, -0.29, 0], scale: [1.7, 0.4, 1.7] }
             animation: { type: rotate, axis: [0, 1, 0], speed: 2.0 }
             interpolation: 2
           - texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTM1NDhjNmJkZGYwMGQ1MDI5MjEyYjc0NjFkZGNhYTcyZTkyOGQ0M2YzYWIwMmEyYWJmNjgwYTYzZDI1MWVjNSJ9fX0="
             tag: disc_b
-            transform: { translation: [0, -0.29, 0], scale: [1.7, 0.4, 1.7], left_rotation: [45, 0, 1, 0] }
+            transform: { translation: [0, -0.28, 0], scale: [1.7, 0.4, 1.7], left_rotation: [45, 0, 1, 0] }
             animation: { type: rotate, axis: [0, 1, 0], speed: 2.0 }
             interpolation: 2
       # ── X-axis gear (E/W wall): disc pulled to the wall; shaft_rod = standalone shaft ──
@@ -144,10 +144,10 @@ blocks:
             transform: { translation: [-0.5, 0, 0], scale: [0.66, 2.0, 0.66], left_rotation: [90, 0, 0, 1] }
           - texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTM1NDhjNmJkZGYwMGQ1MDI5MjEyYjc0NjFkZGNhYTcyZTkyOGQ0M2YzYWIwMmEyYWJmNjgwYTYzZDI1MWVjNSJ9fX0="
             tag: disc_a
-            transform: { translation: [0.3, 0, 0], scale: [1.7, 0.4, 1.7], left_rotation: [90, 0, 0, 1] }
+            transform: { translation: [-0.45, 0, 0], scale: [1.7, 0.4, 1.7], left_rotation: [90, 0, 0, 1] }
           - texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTM1NDhjNmJkZGYwMGQ1MDI5MjEyYjc0NjFkZGNhYTcyZTkyOGQ0M2YzYWIwMmEyYWJmNjgwYTYzZDI1MWVjNSJ9fX0="
             tag: disc_b
-            transform: { translation: [0.29, 0, 0], scale: [1.7, 0.4, 1.7], left_rotation: [98.42, -0.3574, 0.3574, 0.8629] }
+            transform: { translation: [-0.46, 0, 0], scale: [1.7, 0.4, 1.7], left_rotation: [98.42, -0.3574, 0.3574, 0.8629] }
       spinning_x:
         display_entities:
           - texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTI4YmMyZGYzZGZmNWVjM2QxNDNhMmNlZWNiOTM4MjE4MzUxNmU5ZmFkZDdlNDA5YTVlYjQxNTUxNTc0YTI1ZiJ9fX0="
@@ -157,12 +157,12 @@ blocks:
             interpolation: 2
           - texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTM1NDhjNmJkZGYwMGQ1MDI5MjEyYjc0NjFkZGNhYTcyZTkyOGQ0M2YzYWIwMmEyYWJmNjgwYTYzZDI1MWVjNSJ9fX0="
             tag: disc_a
-            transform: { translation: [0.3, 0, 0], scale: [1.7, 0.4, 1.7], left_rotation: [90, 0, 0, 1] }
+            transform: { translation: [-0.45, 0, 0], scale: [1.7, 0.4, 1.7], left_rotation: [90, 0, 0, 1] }
             animation: { type: rotate, axis: [1, 0, 0], speed: 2.0 }
             interpolation: 2
           - texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTM1NDhjNmJkZGYwMGQ1MDI5MjEyYjc0NjFkZGNhYTcyZTkyOGQ0M2YzYWIwMmEyYWJmNjgwYTYzZDI1MWVjNSJ9fX0="
             tag: disc_b
-            transform: { translation: [0.29, 0, 0], scale: [1.7, 0.4, 1.7], left_rotation: [98.42, -0.3574, 0.3574, 0.8629] }
+            transform: { translation: [-0.46, 0, 0], scale: [1.7, 0.4, 1.7], left_rotation: [98.42, -0.3574, 0.3574, 0.8629] }
             animation: { type: rotate, axis: [1, 0, 0], speed: 2.0 }
             interpolation: 2
       idle_east_x:
@@ -172,10 +172,10 @@ blocks:
             transform: { translation: [-0.5, 0, 0], scale: [0.66, 2.0, 0.66], left_rotation: [90, 0, 0, 1] }
           - texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTM1NDhjNmJkZGYwMGQ1MDI5MjEyYjc0NjFkZGNhYTcyZTkyOGQ0M2YzYWIwMmEyYWJmNjgwYTYzZDI1MWVjNSJ9fX0="
             tag: disc_a
-            transform: { translation: [-0.3, 0, 0], scale: [1.7, 0.4, 1.7], left_rotation: [-90, 0, 0, 1] }
+            transform: { translation: [0.45, 0, 0], scale: [1.7, 0.4, 1.7], left_rotation: [-90, 0, 0, 1] }
           - texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTM1NDhjNmJkZGYwMGQ1MDI5MjEyYjc0NjFkZGNhYTcyZTkyOGQ0M2YzYWIwMmEyYWJmNjgwYTYzZDI1MWVjNSJ9fX0="
             tag: disc_b
-            transform: { translation: [-0.29, 0, 0], scale: [1.7, 0.4, 1.7], left_rotation: [98.42, 0.3574, 0.3574, -0.8629] }
+            transform: { translation: [0.46, 0, 0], scale: [1.7, 0.4, 1.7], left_rotation: [98.42, 0.3574, 0.3574, -0.8629] }
       spinning_east_x:
         display_entities:
           - texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTI4YmMyZGYzZGZmNWVjM2QxNDNhMmNlZWNiOTM4MjE4MzUxNmU5ZmFkZDdlNDA5YTVlYjQxNTUxNTc0YTI1ZiJ9fX0="
@@ -185,12 +185,12 @@ blocks:
             interpolation: 2
           - texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTM1NDhjNmJkZGYwMGQ1MDI5MjEyYjc0NjFkZGNhYTcyZTkyOGQ0M2YzYWIwMmEyYWJmNjgwYTYzZDI1MWVjNSJ9fX0="
             tag: disc_a
-            transform: { translation: [-0.3, 0, 0], scale: [1.7, 0.4, 1.7], left_rotation: [-90, 0, 0, 1] }
+            transform: { translation: [0.45, 0, 0], scale: [1.7, 0.4, 1.7], left_rotation: [-90, 0, 0, 1] }
             animation: { type: rotate, axis: [1, 0, 0], speed: 2.0 }
             interpolation: 2
           - texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTM1NDhjNmJkZGYwMGQ1MDI5MjEyYjc0NjFkZGNhYTcyZTkyOGQ0M2YzYWIwMmEyYWJmNjgwYTYzZDI1MWVjNSJ9fX0="
             tag: disc_b
-            transform: { translation: [-0.29, 0, 0], scale: [1.7, 0.4, 1.7], left_rotation: [98.42, 0.3574, 0.3574, -0.8629] }
+            transform: { translation: [0.46, 0, 0], scale: [1.7, 0.4, 1.7], left_rotation: [98.42, 0.3574, 0.3574, -0.8629] }
             animation: { type: rotate, axis: [1, 0, 0], speed: 2.0 }
             interpolation: 2
       # ── Z-axis gear (N/S wall): disc pulled to the wall; shaft_rod = standalone shaft ──
@@ -201,10 +201,10 @@ blocks:
             transform: { translation: [0, 0, -0.5], scale: [0.66, 2.0, 0.66], left_rotation: [-90, 1, 0, 0] }
           - texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTM1NDhjNmJkZGYwMGQ1MDI5MjEyYjc0NjFkZGNhYTcyZTkyOGQ0M2YzYWIwMmEyYWJmNjgwYTYzZDI1MWVjNSJ9fX0="
             tag: disc_a
-            transform: { translation: [0, 0, 0.3], scale: [1.7, 0.4, 1.7], left_rotation: [-90, 1, 0, 0] }
+            transform: { translation: [0, 0, -0.45], scale: [1.7, 0.4, 1.7], left_rotation: [-90, 1, 0, 0] }
           - texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTM1NDhjNmJkZGYwMGQ1MDI5MjEyYjc0NjFkZGNhYTcyZTkyOGQ0M2YzYWIwMmEyYWJmNjgwYTYzZDI1MWVjNSJ9fX0="
             tag: disc_b
-            transform: { translation: [0, 0, 0.29], scale: [1.7, 0.4, 1.7], left_rotation: [98.42, -0.8629, 0.3574, -0.3574] }
+            transform: { translation: [0, 0, -0.46], scale: [1.7, 0.4, 1.7], left_rotation: [98.42, -0.8629, 0.3574, -0.3574] }
       spinning_z:
         display_entities:
           - texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTI4YmMyZGYzZGZmNWVjM2QxNDNhMmNlZWNiOTM4MjE4MzUxNmU5ZmFkZDdlNDA5YTVlYjQxNTUxNTc0YTI1ZiJ9fX0="
@@ -214,12 +214,12 @@ blocks:
             interpolation: 2
           - texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTM1NDhjNmJkZGYwMGQ1MDI5MjEyYjc0NjFkZGNhYTcyZTkyOGQ0M2YzYWIwMmEyYWJmNjgwYTYzZDI1MWVjNSJ9fX0="
             tag: disc_a
-            transform: { translation: [0, 0, 0.3], scale: [1.7, 0.4, 1.7], left_rotation: [-90, 1, 0, 0] }
+            transform: { translation: [0, 0, -0.45], scale: [1.7, 0.4, 1.7], left_rotation: [-90, 1, 0, 0] }
             animation: { type: rotate, axis: [0, 0, 1], speed: 2.0 }
             interpolation: 2
           - texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTM1NDhjNmJkZGYwMGQ1MDI5MjEyYjc0NjFkZGNhYTcyZTkyOGQ0M2YzYWIwMmEyYWJmNjgwYTYzZDI1MWVjNSJ9fX0="
             tag: disc_b
-            transform: { translation: [0, 0, 0.29], scale: [1.7, 0.4, 1.7], left_rotation: [98.42, -0.8629, 0.3574, -0.3574] }
+            transform: { translation: [0, 0, -0.46], scale: [1.7, 0.4, 1.7], left_rotation: [98.42, -0.8629, 0.3574, -0.3574] }
             animation: { type: rotate, axis: [0, 0, 1], speed: 2.0 }
             interpolation: 2
       idle_south_z:
@@ -229,10 +229,10 @@ blocks:
             transform: { translation: [0, 0, -0.5], scale: [0.66, 2.0, 0.66], left_rotation: [-90, 1, 0, 0] }
           - texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTM1NDhjNmJkZGYwMGQ1MDI5MjEyYjc0NjFkZGNhYTcyZTkyOGQ0M2YzYWIwMmEyYWJmNjgwYTYzZDI1MWVjNSJ9fX0="
             tag: disc_a
-            transform: { translation: [0, 0, -0.3], scale: [1.7, 0.4, 1.7], left_rotation: [90, 1, 0, 0] }
+            transform: { translation: [0, 0, 0.45], scale: [1.7, 0.4, 1.7], left_rotation: [90, 1, 0, 0] }
           - texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTM1NDhjNmJkZGYwMGQ1MDI5MjEyYjc0NjFkZGNhYTcyZTkyOGQ0M2YzYWIwMmEyYWJmNjgwYTYzZDI1MWVjNSJ9fX0="
             tag: disc_b
-            transform: { translation: [0, 0, -0.29], scale: [1.7, 0.4, 1.7], left_rotation: [98.42, 0.8629, 0.3574, 0.3574] }
+            transform: { translation: [0, 0, 0.46], scale: [1.7, 0.4, 1.7], left_rotation: [98.42, 0.8629, 0.3574, 0.3574] }
       spinning_south_z:
         display_entities:
           - texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTI4YmMyZGYzZGZmNWVjM2QxNDNhMmNlZWNiOTM4MjE4MzUxNmU5ZmFkZDdlNDA5YTVlYjQxNTUxNTc0YTI1ZiJ9fX0="
@@ -242,12 +242,12 @@ blocks:
             interpolation: 2
           - texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTM1NDhjNmJkZGYwMGQ1MDI5MjEyYjc0NjFkZGNhYTcyZTkyOGQ0M2YzYWIwMmEyYWJmNjgwYTYzZDI1MWVjNSJ9fX0="
             tag: disc_a
-            transform: { translation: [0, 0, -0.3], scale: [1.7, 0.4, 1.7], left_rotation: [90, 1, 0, 0] }
+            transform: { translation: [0, 0, 0.45], scale: [1.7, 0.4, 1.7], left_rotation: [90, 1, 0, 0] }
             animation: { type: rotate, axis: [0, 0, 1], speed: 2.0 }
             interpolation: 2
           - texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTM1NDhjNmJkZGYwMGQ1MDI5MjEyYjc0NjFkZGNhYTcyZTkyOGQ0M2YzYWIwMmEyYWJmNjgwYTYzZDI1MWVjNSJ9fX0="
             tag: disc_b
-            transform: { translation: [0, 0, -0.29], scale: [1.7, 0.4, 1.7], left_rotation: [98.42, 0.8629, 0.3574, 0.3574] }
+            transform: { translation: [0, 0, 0.46], scale: [1.7, 0.4, 1.7], left_rotation: [98.42, 0.8629, 0.3574, 0.3574] }
             animation: { type: rotate, axis: [0, 0, 1], speed: 2.0 }
             interpolation: 2
 
