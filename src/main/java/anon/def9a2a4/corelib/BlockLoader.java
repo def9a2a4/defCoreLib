@@ -37,6 +37,18 @@ public final class BlockLoader {
     public static int load(InputStream input, CustomBlockRegistry registry, Logger logger) {
         YamlConfiguration yaml = YamlConfiguration.loadConfiguration(new InputStreamReader(input));
         String namespace = yaml.getString("namespace", "custom");
+
+        // Optional named-texture registry: alias -> base64. Display/block textures may
+        // reference these as "@alias" instead of embedding the full base64 string.
+        Map<String, String> textures = new HashMap<>();
+        ConfigurationSection texSec = yaml.getConfigurationSection("textures");
+        if (texSec != null) {
+            for (String alias : texSec.getKeys(false)) {
+                String val = texSec.getString(alias);
+                if (val != null) textures.put(alias, val);
+            }
+        }
+
         ConfigurationSection blocks = yaml.getConfigurationSection("blocks");
         if (blocks == null) return 0;
 
@@ -47,7 +59,7 @@ public final class BlockLoader {
             ConfigurationSection sec = blocks.getConfigurationSection(id);
             if (sec == null) continue;
             try {
-                CustomHeadBlock block = parseBlock(namespace, id, sec);
+                CustomHeadBlock block = parseBlock(namespace, id, sec, textures);
                 registry.register(block);
                 count++;
             } catch (Exception e) {
@@ -57,13 +69,14 @@ public final class BlockLoader {
         return count;
     }
 
-    private static CustomHeadBlock parseBlock(String namespace, String id, ConfigurationSection sec) {
+    private static CustomHeadBlock parseBlock(String namespace, String id, ConfigurationSection sec,
+                                              Map<String, String> textures) {
         CustomHeadBlock.Builder b = CustomHeadBlock.builder(namespace, id);
 
         // Base texture (required) + optional item texture
-        b.texture(requireString(sec, "texture"));
+        b.texture(resolveTexture(requireString(sec, "texture"), textures));
         String itemTex = sec.getString("item_texture");
-        if (itemTex != null) b.itemTexture(itemTex);
+        if (itemTex != null) b.itemTexture(resolveTexture(itemTex, textures));
 
         // Name and lore
         String nameStr = sec.getString("name");
@@ -149,13 +162,13 @@ public final class BlockLoader {
         // Display entities
         List<?> displayList = sec.getList("display_entities");
         if (displayList != null) {
-            b.displayEntities(parseDisplayEntities(sec.getMapList("display_entities")));
+            b.displayEntities(parseDisplayEntities(sec.getMapList("display_entities"), textures));
         }
 
         // Directional textures
         ConfigurationSection dirTexSec = sec.getConfigurationSection("directional_textures");
         if (dirTexSec != null) {
-            b.directionalTextures(parseDirectionalTextures(dirTexSec));
+            b.directionalTextures(parseDirectionalTextures(dirTexSec, textures));
         }
 
         // States
@@ -166,7 +179,7 @@ public final class BlockLoader {
                 if (stateSec == null || stateSec.getKeys(false).isEmpty()) {
                     b.state(stateName);
                 } else {
-                    b.state(stateName, sb -> parseStateOverrides(sb, stateSec));
+                    b.state(stateName, sb -> parseStateOverrides(sb, stateSec, textures));
                 }
             }
         }
@@ -282,12 +295,13 @@ public final class BlockLoader {
 
     // ── Parsers ──────────────────────────────────────────────────────────
 
-    private static void parseStateOverrides(CustomHeadBlock.StateBuilder sb, ConfigurationSection sec) {
+    private static void parseStateOverrides(CustomHeadBlock.StateBuilder sb, ConfigurationSection sec,
+                                            Map<String, String> textures) {
         String tex = sec.getString("texture");
-        if (tex != null) sb.texture(tex);
+        if (tex != null) sb.texture(resolveTexture(tex, textures));
 
         ConfigurationSection dirTexSec = sec.getConfigurationSection("directional_textures");
-        if (dirTexSec != null) sb.directionalTextures(parseDirectionalTextures(dirTexSec));
+        if (dirTexSec != null) sb.directionalTextures(parseDirectionalTextures(dirTexSec, textures));
 
         if (sec.getBoolean("no_light")) {
             sb.noLight();
@@ -313,7 +327,7 @@ public final class BlockLoader {
         } else {
             List<?> displayList = sec.getList("display_entities");
             if (displayList != null) {
-                sb.displayEntities(parseDisplayEntities(sec.getMapList("display_entities")));
+                sb.displayEntities(parseDisplayEntities(sec.getMapList("display_entities"), textures));
             }
         }
     }
@@ -392,7 +406,8 @@ public final class BlockLoader {
         return defaultVal;
     }
 
-    private static List<CustomHeadBlock.DisplayEntityConfig> parseDisplayEntities(List<Map<?, ?>> list) {
+    private static List<CustomHeadBlock.DisplayEntityConfig> parseDisplayEntities(List<Map<?, ?>> list,
+                                                                                  Map<String, String> textures) {
         List<CustomHeadBlock.DisplayEntityConfig> result = new ArrayList<>();
         for (Map<?, ?> map : list) {
             // Resolve display item: either skull texture or arbitrary material
@@ -403,7 +418,7 @@ public final class BlockLoader {
                 Material mat = Material.valueOf(String.valueOf(matObj).toUpperCase(java.util.Locale.ROOT));
                 displayItem = new org.bukkit.inventory.ItemStack(mat);
             } else if (texObj != null) {
-                displayItem = HeadUtil.createHead(String.valueOf(texObj), 1);
+                displayItem = HeadUtil.createHead(resolveTexture(String.valueOf(texObj), textures), 1);
             } else {
                 throw new IllegalArgumentException("display entity requires 'texture' or 'material'");
             }
@@ -586,12 +601,28 @@ public final class BlockLoader {
         return new CustomHeadBlock.SoundConfig(sound, volume, pitch);
     }
 
-    private static Map<BlockFace, String> parseDirectionalTextures(ConfigurationSection sec) {
+    private static Map<BlockFace, String> parseDirectionalTextures(ConfigurationSection sec,
+                                                                   Map<String, String> textures) {
         Map<BlockFace, String> map = new HashMap<>();
         for (String key : sec.getKeys(false)) {
-            map.put(BlockFace.valueOf(key.toUpperCase()), sec.getString(key));
+            map.put(BlockFace.valueOf(key.toUpperCase()), resolveTexture(sec.getString(key), textures));
         }
         return map;
+    }
+
+    /**
+     * Resolve a texture reference. Values beginning with "@" are looked up in the file's
+     * named-texture registry; any other value is returned as-is (literal base64).
+     * Throws on an unknown alias so the block fails to load with a clear message.
+     */
+    private static String resolveTexture(String value, Map<String, String> textures) {
+        if (value == null || !value.startsWith("@")) return value;
+        String key = value.substring(1);
+        String resolved = textures.get(key);
+        if (resolved == null) {
+            throw new IllegalArgumentException("Unknown texture alias: @" + key);
+        }
+        return resolved;
     }
 
     private static CustomHeadBlock.PowerRange parseRange(String s) {
