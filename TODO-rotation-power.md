@@ -259,17 +259,31 @@ power:
 ### Wrench item
 
 Copper axe with enchantment glint (`ItemMeta.setEnchantmentGlintOverride(true)`) and a PDC tag
-`NamespacedKey("rotation", "wrench")` set to `"true"` to identify it. Created as a standalone
-item (not a CustomHeadBlock). Added to `give_demo_rotation` command. Right-clicking any rotation
-source toggles its spin direction CW↔CCW. Right-clicking non-sources shows debug info.
+`NamespacedKey("rotation", "wrench")` as the real identifier (glint alone matches any enchanted
+copper axe). Unbreakable (`meta.setUnbreakable(true)` + `HIDE_UNBREAKABLE` flag), display name
+"Rotation Wrench". Created via `RotationBlocks.createWrench()` (not a CustomHeadBlock). Added
+to `give_demo_rotation` command as a special case after the block loop.
+
+**Interactions:**
+- Right-click source with wrench → toggle CW↔CCW, show ActionBar `"Direction: CW → CCW"`,
+  play `BLOCK_COPPER_PLACE` at pitch 1.5, spawn `WAX_ON` particles
+- Sneak + wrench on any rotation block → inspect only (debug info + direction, no toggle).
+  Wrench check runs BEFORE the sneak bail-out in `onPlayerInteract`
+- Right-click non-source with wrench → `debugInteract()` (wrench doubles as diagnostic)
+- Wrench on water wheel → `"Direction set by water flow (CW)"` in AQUA, no toggle
 
 ### Source direction storage
 
-Sources store direction in PDC: `NamespacedKey("rotation", "spin_dir")`, value `"cw"`/`"ccw"`,
-default `"cw"`. Written on wrench toggle, read during BFS post-pass.
+Sources store direction in PDC: `NamespacedKey("rotation", "spin_dir")`, value `"cw"`/`"ccw"`/absent.
+Written on wrench toggle, read during BFS post-pass.
 
-- Active sources (engine, generator, water wheel): read from skull PDC
+- **Absent = flexible:** un-wrenched sources agree with whatever direction the network computes.
+  Only sources explicitly wrenched get a stored value. This prevents a default-CW windmill from
+  jamming a CCW network the player intentionally set up.
+- Active sources (engine, generator): read from skull PDC
 - Passive sources (windmill): read from skull PDC during boundary scan
+- **Water wheel:** direction derived from water position, NOT stored in PDC. Determined by which
+  perpendicular face has water (first in NESW priority). Not wrench-toggleable.
 - Windmill needs `toBuilder()` overlay for wrench-only `onInteract`
 
 ### Direction propagation
@@ -309,14 +323,22 @@ BFS uses this + axis comparison to decide direction:
 - `gearMesh && different axes` (bevel) → PRESERVE (corner transmission)
 
 **BFS direction resolution (single-pass + post-pass):**
-1. BFS from root, tentatively assign root = CW, propagate through edges using rules above
+1. BFS from root, tentatively assign root = CW, propagate through edges using rules above.
+   **Cycle detection:** when BFS encounters an already-visited node, check if the direction
+   it would assign via the current edge matches the already-assigned direction. Mismatch →
+   `jammed = true` immediately. This catches contradictions in cyclic topologies.
 2. Post-pass: find all sources in component. For active sources (nodes), use their BFS-computed
-   direction. For passive sources (windmill, not nodes), use the adjacent network node's
-   direction as the passive source's effective direction.
-3. First source = anchor. Compare its effective direction vs its stored PDC direction → `flip`
-4. If flip, invert all node directions in the component
-5. Check remaining sources: each source's `(effectiveDir XOR flip)` must equal its stored
-   PDC direction. Mismatch → jammed
+   direction. For passive sources (windmill, not nodes), derive direction from the adjacent
+   network node's direction + edge type. **Guard:** skip passive sources in unloaded chunks
+   (`world.isChunkLoaded(x >> 4, z >> 4)`).
+3. Collect sources with explicit stored direction (non-null PDC value). Sources with absent
+   direction (flexible) are skipped — they agree with whatever the BFS computed.
+4. First explicit source = anchor. Compare its effective direction vs stored → `flip` boolean.
+   If no explicit sources exist, `flip = false` (network keeps BFS-default CW).
+5. If flip, invert all node directions in the component.
+6. Check remaining explicit sources: `(effectiveDir XOR flip)` must equal stored direction.
+   Mismatch → jammed. **Anchor determinism:** if multiple explicit sources, pick the one with
+   lowest LocationKey coordinates to ensure consistent results across rebuilds.
 
 **`NetworkState` change:**
 ```java
@@ -330,24 +352,39 @@ record NetworkState(int supply, int demand, boolean jammed) {
 Animations are pre-parsed from YAML by `BlockLoader.parseAnimation()` at startup, so direction
 can't be injected at parse time. Instead, wrap at runtime in `applyConfig()`.
 
-- `DisplayAnimation.withDirection(int mult)` — returns a new animation that delegates to the
-  original but multiplies tickAge by `mult` (negative = reverse rotation). Safe because only
-  rotation-network blocks get direction overrides, and those blocks only use rotate animations.
+- `DisplayAnimation.reversed(DisplayAnimation original)` — static method, returns a new lambda
+  that delegates to the original with negated tickAge. Safe because rotation-network blocks
+  only use rotate animations (no bob/pulse to accidentally flip).
 - `CustomBlockRegistry` stores `Map<LocationKey, SpinDirection> animationDirection`
 - Sequencing: `updateBlockState()` writes direction to map BEFORE calling `applyConfig()`,
   because `applyConfig()` reads the map when creating new `AnimationTracked` entries
+- **Direction-only change (no state change):** when wrench toggle flips direction but the block
+  is already spinning, `updateBlockState()` sees `target.equals(current)` and would skip.
+  Fix: after BFS direction pass, compare new direction vs `animationDirection` map. For blocks
+  where direction changed, swap the animation lambda in-place on the existing `AnimationTracked`
+  entry (no entity respawn, no flicker, just `tracked.animation = reversed(tracked.animation)`).
+  Requires `AnimationTracked.animation` to be non-final.
 - Cleanup: remove from `animationDirection` in `onBlockRemoved()` and `onChunkUnload()`
   (match existing pattern for `animationTracked` and other per-block maps)
 
 ### Wrench interaction (`RotationBlocks.java`)
 
-- Check held item: copper axe with glint override → source blocks: `toggleSourceDirection()`,
-  non-source blocks: `debugInteract()` (wrench doubles as diagnostic tool)
-- `toggleSourceDirection()`: read PDC, flip, write PDC, `skull.update()`, recalculate
+- `isWrench(ItemStack)`: check PDC tag, NOT glint (avoids false positives from enchanted axes)
+- `toggleSourceDirection()`: read PDC, flip (absent→CCW on first toggle, then CW↔CCW), write
+  PDC, `skull.update()`, recalculate. Show feedback (ActionBar + sound + particles).
 - For passive sources (`demo:windmill` and `rotation:large_windmill`): `toBuilder()` overlay
   with wrench-only `onInteract`
 - Non-wrench right-click on any rotation block → `debugInteract()` as usual
-- Debug output gains direction: `"3/5 SU | Powered ✓ | CW"`
+- Debug output gains direction + jammed state: `"3/5 SU | JAMMED (2 CW, 1 CCW) | 12 blocks"`
+  For jammed networks, highlight conflicting sources with `ANGRY_VILLAGER` particles (red)
+  and majority-direction sources with `HAPPY_VILLAGER` (green)
+
+### Re-entrancy with direction
+
+Pending recalcs from state changes during BFS may target nodes in the same network that was just
+rebuilt. With non-deterministic anchoring this could cause direction flicker. Fix: before
+processing a pending recalc, check if `nodeNetworkId.containsKey(pending)` — if the node's
+network was already rebuilt in this batch, skip it.
 
 ### Gearbox reverser block (deferred)
 
@@ -373,17 +410,21 @@ spin direction. CW → +90°, CCW → -90°. BFS flood fill, max 64 blocks. Reus
 ### Verification
 
 1. Shaft chain from source → all spin CW (default)
-2. Wrench-click source → flips to CCW, all downstream reverses visually
-3. Same-axis gears adjacent → counter-rotate (CW/CCW)
-4. Bevel gears (different axes) → same direction (preserve)
+2. Wrench-click source → flips to CCW, all downstream reverses visually (no entity flicker)
+3. Same-axis gears adjacent → counter-rotate (direction reverses)
+4. Bevel gears (different axes) → same direction (preserves)
 5. Two same-axis gear reversals → back to original direction
 6. Two sources same direction through shaft → works
-7. Two sources conflicting direction → jammed, everything stops
-8. Add gear to resolve conflict → unjams
-9. Wrench on windmill (passive source) → toggles, network updates
-10. Wrench on non-source → shows debug info
-11. Debug right-click shows CW/CCW
-12. Chunk reload → direction rebuilt correctly from BFS + PDC
+7. Two sources conflicting direction → jammed, everything stops, debug shows conflict
+8. Gear loop with odd reversals (cyclic contradiction) → jammed
+9. Un-wrenched windmill in CCW network → flexible, no jam
+10. Wrench on windmill → sets explicit direction, now can jam if conflicting
+11. Wrench on water wheel → shows "direction set by water flow", no toggle
+12. Sneak+wrench → inspect only, no toggle
+13. Wrench on non-source → shows debug info
+14. Debug right-click shows CW/CCW + jammed diagnosis with particles
+15. Chunk reload → direction rebuilt correctly from BFS + PDC
+16. Direction change while already spinning → animation swaps in-place, no respawn
 
 ## Display entities — deferred
 Placeholder skull textures with rotate animations initially. Tuned in-game after network logic works.
@@ -410,9 +451,6 @@ A rotation CONSUMER block that assembles and rotates a mechanism structure. When
 
 ### Fan
 A rotation CONSUMER that pushes entities in its facing direction when powered. Uses velocity vectors on nearby entities within a cone. Could also: push items into fire for smelting, push items into water for washing (recipe system like grindstone).
-
-### Clutch
-Manual toggle version of gearbox. Right-click to connect/disconnect (no redstone). Same node type as gearbox but uses `onInteract` to toggle `locked_` state instead of `onNeighborChange` checking redstone.
 
 ### Sounds
 - Ambient: spinning blocks play a quiet looping sound every N ticks (piggyback on existing `ParticleConfig` tick interval). Different per block type (gear grinding, shaft creaking, drill crunching).

@@ -1,3 +1,7 @@
+# 2026-06-23 06:08
+
+- [ ] adjust gear and drill textures to be symmetric
+
 # DefCoreLib TODO
 
 
