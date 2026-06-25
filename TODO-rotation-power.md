@@ -267,10 +267,16 @@ to `give_demo_rotation` command as a special case after the block loop.
 **Interactions:**
 - Right-click source with wrench → toggle CW↔CCW, show ActionBar `"Direction: CW → CCW"`,
   play `BLOCK_COPPER_PLACE` at pitch 1.5, spawn `WAX_ON` particles
-- Sneak + wrench on any rotation block → inspect only (debug info + direction, no toggle).
-  Wrench check runs BEFORE the sneak bail-out in `onPlayerInteract`
+- Sneak + wrench on any rotation block → inspect only (debug info + direction, no toggle)
 - Right-click non-source with wrench → `debugInteract()` (wrench doubles as diagnostic)
 - Wrench on water wheel → `"Direction set by water flow (CW)"` in AQUA, no toggle
+- Wrench on generator → same as engine (toggle CW↔CCW)
+
+**Sneak+wrench handling in CoreLibPlugin:** The sneak bail-out at line 585 returns before
+`onInteract` dispatch. Fix: check `isWrench(mainHand)` inside the sneak branch — if holding
+wrench, dispatch to `type.onInteract()` and cancel event; otherwise return as normal. This
+keeps non-wrench sneak behavior unchanged (place blocks). The `onInteract` callback checks
+`isSneaking()` to distinguish inspect (sneak) from toggle (no sneak).
 
 ### Source direction storage
 
@@ -292,8 +298,12 @@ Written on wrench toggle, read during BFS post-pass.
 - **Sources** have stored direction (CW default, toggled by wrench)
 - **Along-axis connections** (shaft-like, same axis) → PRESERVE direction
 - **Same-axis gear mesh** (both gearLike, same axis, adjacent perpendicular to axis) → REVERSE
-  (counter-rotate, like real meshing gears)
-- **Bevel gear** (both gearLike, different axes) → PRESERVE (transmit around corner)
+  (counter-rotate, like real meshing gears). Examples: two wall gears stacked vertically (both
+  X-axis, adjacent along Y), two floor gears side by side (both Y-axis, adjacent along X).
+- **Bevel gear** (both gearLike, different axes) → PRESERVE (transmit around corner).
+  Example: wall gear (X-axis) next to floor gear (Y-axis).
+- Note: two floor gears stacked vertically (both Y-axis, adjacent along Y) connect via the
+  along-axis path, not gear mesh — they share a virtual shaft and rotate the same direction.
 - **Contradictions** (same node reached via two paths with opposite directions) → network
   jammed (treat as unpowered). Naturally prevents impossible gear configurations.
 - Two sources with conflicting directions (through gear topology) → jammed
@@ -314,13 +324,13 @@ public @Nullable SpinDirection getDirection(LocationKey key) {
 **`getConnections()` change:**
 Currently returns `List<LocationKey>`. Change to return `List<Connection>` where:
 ```java
-record Connection(LocationKey neighbor, boolean gearMesh) {}
+record Connection(LocationKey neighbor, boolean reverses) {}
 ```
-`gearMesh = true` for gear-to-gear perpendicular connections, `false` for along-axis connections.
-BFS uses this + axis comparison to decide direction:
-- `!gearMesh` (along-axis) → preserve direction
-- `gearMesh && same axis` → REVERSE (meshing teeth)
-- `gearMesh && different axes` (bevel) → PRESERVE (corner transmission)
+`reverses = true` for same-axis gear mesh, `false` for along-axis and bevel connections. The
+`reverses` flag is computed in `getConnections()` directly: gear-to-gear with `other.axis() ==
+node.axis()` → `reverses = true`, everything else → `reverses = false`. BFS uses `reverses`
+without needing axis comparison at propagation time. Dedup at line 306 changes to
+`result.stream().anyMatch(c -> c.neighbor().equals(neighbor))`.
 
 **BFS direction resolution (single-pass + post-pass):**
 1. BFS from root, tentatively assign root = CW, propagate through edges using rules above.
@@ -338,7 +348,16 @@ BFS uses this + axis comparison to decide direction:
 5. If flip, invert all node directions in the component.
 6. Check remaining explicit sources: `(effectiveDir XOR flip)` must equal stored direction.
    Mismatch → jammed. **Anchor determinism:** if multiple explicit sources, pick the one with
-   lowest LocationKey coordinates to ensure consistent results across rebuilds.
+   lowest LocationKey coordinates to ensure consistent results across rebuilds. Use inline
+   `Comparator.comparing(LocationKey::worldId).thenComparingInt(LocationKey::x)
+   .thenComparingInt(LocationKey::y).thenComparingInt(LocationKey::z)` — don't modify the
+   LocationKey record.
+7. **Passive source multi-adjacency:** a passive source may border multiple network nodes. Use
+   the first adjacent node found via `CARDINAL_FACES` iteration order (deterministic). The edge
+   is always along-axis (passive sources aren't gearLike), so direction = PRESERVE.
+8. **Jammed diagnosis:** uses tentative BFS-assigned directions to determine each source's
+   faction, even though the network is jammed (BFS assigns directions before discovering the
+   contradiction via post-pass).
 
 **`NetworkState` change:**
 ```java
@@ -352,28 +371,35 @@ record NetworkState(int supply, int demand, boolean jammed) {
 Animations are pre-parsed from YAML by `BlockLoader.parseAnimation()` at startup, so direction
 can't be injected at parse time. Instead, wrap at runtime in `applyConfig()`.
 
-- `DisplayAnimation.reversed(DisplayAnimation original)` — static method, returns a new lambda
+- `Animations.reversed(DisplayAnimation original)` — static method, returns a new lambda
   that delegates to the original with negated tickAge. Safe because rotation-network blocks
   only use rotate animations (no bob/pulse to accidentally flip).
 - `CustomBlockRegistry` stores `Map<LocationKey, SpinDirection> animationDirection`
-- Sequencing: `updateBlockState()` writes direction to map BEFORE calling `applyConfig()`,
-  because `applyConfig()` reads the map when creating new `AnimationTracked` entries
+- Add `boolean reversed` field to `AnimationTracked` (non-final). Keep `animation` final.
+  In `tickAnimations()`: `if (tracked.reversed) tickAge = -tickAge;` before applying.
+- In `applyConfig()`: after creating AnimationTracked, set `reversed` from
+  `animationDirection.getOrDefault(key, CW) == CCW`.
+- Sequencing: `doRecalculate()` calls `registry.setAnimationDirection(loc, dir)` BEFORE
+  `updateBlockState()`, because `updateBlockState()` → `applyConfig()` reads the map.
 - **Direction-only change (no state change):** when wrench toggle flips direction but the block
   is already spinning, `updateBlockState()` sees `target.equals(current)` and would skip.
-  Fix: after BFS direction pass, compare new direction vs `animationDirection` map. For blocks
-  where direction changed, swap the animation lambda in-place on the existing `AnimationTracked`
-  entry (no entity respawn, no flicker, just `tracked.animation = reversed(tracked.animation)`).
-  Requires `AnimationTracked.animation` to be non-final.
+  Fix: `registry.updateAnimationDirection(loc, dir)` called after `updateBlockState()` — flips
+  `tracked.reversed` in-place on existing `AnimationTracked` entries (no entity respawn, no
+  flicker). Public method: `updateAnimationDirection(key, dir)` stores in map + iterates
+  `animationTracked.get(key)` to set `reversed` flag.
 - Cleanup: remove from `animationDirection` in `onBlockRemoved()` and `onChunkUnload()`
-  (match existing pattern for `animationTracked` and other per-block maps)
+  (match existing `removeIf` pattern for `animationTracked` and other per-block maps)
 
 ### Wrench interaction (`RotationBlocks.java`)
 
 - `isWrench(ItemStack)`: check PDC tag, NOT glint (avoids false positives from enchanted axes)
 - `toggleSourceDirection()`: read PDC, flip (absent→CCW on first toggle, then CW↔CCW), write
   PDC, `skull.update()`, recalculate. Show feedback (ActionBar + sound + particles).
+  First toggle sets CCW because the default effective direction is CW — toggling means the
+  opposite.
 - For passive sources (`demo:windmill` and `rotation:large_windmill`): `toBuilder()` overlay
   with wrench-only `onInteract`
+- Generator (`rotation:generator`): active SOURCE, same wrench treatment as engine (toggle + PDC)
 - Non-wrench right-click on any rotation block → `debugInteract()` as usual
 - Debug output gains direction + jammed state: `"3/5 SU | JAMMED (2 CW, 1 CCW) | 12 blocks"`
   For jammed networks, highlight conflicting sources with `ANGRY_VILLAGER` particles (red)
@@ -402,7 +428,7 @@ spin direction. CW → +90°, CCW → -90°. BFS flood fill, max 64 blocks. Reus
 2. `SpinDirection` enum + `nodeDirection` map in RotationNetwork
 3. BFS direction tracking + post-pass anchor logic + jammed detection
 4. `getDirection()` public API
-5. `directionMultiplier` in `Animations.rotate()` + `animationDirection` map in CustomBlockRegistry
+5. `Animations.reversed()` wrapper + `AnimationTracked.reversed` flag + `animationDirection` map in CustomBlockRegistry
 6. Wrench interaction in RotationBlocks (active sources)
 7. Windmill `toBuilder()` overlay for wrench interaction
 8. Direction in `debugInteract()` output
@@ -425,6 +451,8 @@ spin direction. CW → +90°, CCW → -90°. BFS flood fill, max 64 blocks. Reus
 14. Debug right-click shows CW/CCW + jammed diagnosis with particles
 15. Chunk reload → direction rebuilt correctly from BFS + PDC
 16. Direction change while already spinning → animation swaps in-place, no respawn
+17. Wrench on generator → toggles direction like engine
+18. Same-axis gears along axis (stacked floor gears) → same direction (shaft-like)
 
 ## Display entities — deferred
 Placeholder skull textures with rotate animations initially. Tuned in-game after network logic works.
