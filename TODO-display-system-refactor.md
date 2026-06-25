@@ -27,7 +27,7 @@ YAML anchors for readability, self-documentation, and reachability from Java).
 
 ---
 
-## Phase 1 — Named texture registry  ✅ DONE (one gap to close)
+## Phase 1 — Named texture registry  ✅ DONE (live-server smoke test pending)
 
 Top-level `textures:` map (alias → base64) in a block YAML; `texture` / `item_texture` /
 display / directional values use `@alias`, resolved to full base64 at parse time. Values
@@ -50,20 +50,14 @@ not starting with `@` pass through unchanged (backward compatible). Unknown `@al
   transforms / states / animations / recipes untouched.
 - **`BlockLoader.java`: PASS except one missed consumption point** (below).
 
-### ⚠️ Remaining fix — redstone textures not routed through resolveTexture
-`parseRedstone()` (`BlockLoader.java:569-595`) reads `redstone.textures.<power>` (L581) and
-`redstone.texture_ranges.<range>` (L591) as raw strings — these are genuine head textures
-(consumed via `CustomHeadBlock.resolveRedstoneTexture` → `HeadUtil.createHead`), so an
-`@alias` there would be passed literally → broken head, no error. **Impact is latent today**
-(only `demo-blocks.yml` uses redstone textures, with literal base64), but the feature is
-inconsistent.
+### ✅ Fixed — redstone textures now routed through resolveTexture
+`parseRedstone()` (`BlockLoader.java`) previously read `redstone.textures.<power>` and
+`redstone.texture_ranges.<range>` as raw strings, so `@alias` would not resolve there.
 
-- [ ] Add `Map<String,String> textures` param to `parseRedstone`; update its call site (~L199).
-- [ ] **Rename the param to `textureAliases`** to avoid shadowing the existing local
-      `Map<Integer,String> textures` at L579.
-- [ ] Wrap both reads: `resolveTexture(texSec.getString(key), textureAliases)` (L581) and
-      `resolveTexture(rangeSec.getString(key), textureAliases)` (L591).
-- [ ] Re-run `gradle compileJava`.
+- [x] Added `Map<String,String> textureAliases` param to `parseRedstone` (named to avoid
+      shadowing the local `Map<Integer,String> textures`); updated the call site.
+- [x] Wrapped both reads in `resolveTexture(..., textureAliases)`.
+- [x] `gradle compileJava` — clean (only pre-existing `Sound.valueOf` deprecation warnings).
 
 ### Live-server verification (pending — needs a running server)
 - [ ] Deploy jar; `/corelib give` each rotation block; place in all orientations

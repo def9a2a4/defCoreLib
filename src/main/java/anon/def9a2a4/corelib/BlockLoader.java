@@ -196,7 +196,7 @@ public final class BlockLoader {
         // Redstone
         ConfigurationSection rsSec = sec.getConfigurationSection("redstone");
         if (rsSec != null) {
-            parseRedstone(b, rsSec);
+            parseRedstone(b, rsSec, textures);
         }
 
         // Recipes
@@ -566,7 +566,8 @@ public final class BlockLoader {
         };
     }
 
-    private static void parseRedstone(CustomHeadBlock.Builder b, ConfigurationSection sec) {
+    private static void parseRedstone(CustomHeadBlock.Builder b, ConfigurationSection sec,
+                                      Map<String, String> textureAliases) {
         CustomHeadBlock.Sensitivity sens = CustomHeadBlock.Sensitivity.valueOf(
                 sec.getString("sensitivity", "NONE").toUpperCase());
         CustomHeadBlock.PowerReader reader = CustomHeadBlock.PowerReader.valueOf(
@@ -578,7 +579,7 @@ public final class BlockLoader {
         if (texSec != null) {
             Map<Integer, String> textures = new HashMap<>();
             for (String key : texSec.getKeys(false)) {
-                textures.put(Integer.parseInt(key), texSec.getString(key));
+                textures.put(Integer.parseInt(key), resolveTexture(texSec.getString(key), textureAliases));
             }
             b.redstoneTextures(textures);
         }
@@ -588,7 +589,7 @@ public final class BlockLoader {
         if (rangeSec != null) {
             Map<CustomHeadBlock.PowerRange, String> ranges = new HashMap<>();
             for (String key : rangeSec.getKeys(false)) {
-                ranges.put(parseRange(key), rangeSec.getString(key));
+                ranges.put(parseRange(key), resolveTexture(rangeSec.getString(key), textureAliases));
             }
             b.redstoneTextureRanges(ranges);
         }
