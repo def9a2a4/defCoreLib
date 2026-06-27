@@ -48,6 +48,28 @@ Demos:
 - [ ] **DynLight integration** — soft dependency, custom blocks declare dynamic light via DynLight API.
 - [ ] **Connected/multi-block structures** — generalize Ropes' vertical chain pattern. Shared lifecycle across linked blocks.
 
+## Banner subsystem follow-ups (from 2026-06 deep review)
+
+- [ ] **Windmill banner tiering** *(reminder — design later)* — large windmill craftable **only**
+  with large banners; add a **huge windmill** tier craftable with huge banners. Today any banner
+  works as a blade and a tiered banner bakes its tier PDC + auto-name into the sail lore
+  ("Large White Banner") — strip the tier PDC/auto-name from captured blades when this is built.
+- [ ] **Unified event dispatcher + caching (F3)** — ~42 `@EventHandler`s across 4 `Listener`
+  classes; 11 event types handled by 2+ classes (break/explode/piston/flow/etc.). Route through one
+  dispatcher with a shared per-event cache + unified chunk/location index so hot handlers
+  (BlockFromTo, piston, physics) short-circuit O(1). **Hard constraints (don't build naively):**
+  keep multiple handlers per *actually-used* priority bucket (MONITOR cleanup must run after other
+  plugins' cancels — don't collapse to one priority); preserve per-callback `ignoreCancelled`; the
+  index **must** include banner-entity chunks (banner displays are entities, never in `chunkHints`,
+  else false-negative "empty" → missed cleanup); memoize only pure reads in a stack-scoped
+  EventContext (re-entrancy via `skull.update()`); the real win is extending existing fast-paths
+  (`isNeighborReactive`/`isCustomBlock`) to BlockFromTo + the banner radius-scan. Folds in the
+  deferred banner per-chunk perf gate.
+- [ ] **Remove banner reload tooling** — `reloadConfig` / `/defcorelib reloadbanners` and the
+  `banner-config.yml` load path are dev-only; delete once positions are finalized. (Known minor
+  bugs while it lives: reload swaps flag front/back faces, can CCE on a stale bed cast, and skips
+  large wall/standing banners — not worth fixing given planned removal.)
+
 ## Infrastructure
 
 - [ ] Push to GitHub, verify CI workflows
