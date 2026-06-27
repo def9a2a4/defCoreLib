@@ -37,6 +37,7 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
     private MinecartShipManager minecartShipManager;
     private RotationNetwork rotationNetwork;
     private BannerManager bannerManager;
+    private LargeBannerRecipes largeBannerRecipes;
 
     @Override
     public void onEnable() {
@@ -82,7 +83,7 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         // Banner systems
         bannerManager = new BannerManager(this);
         getServer().getPluginManager().registerEvents(bannerManager, this);
-        LargeBannerRecipes largeBannerRecipes = new LargeBannerRecipes(this);
+        largeBannerRecipes = new LargeBannerRecipes(this);
         getServer().getPluginManager().registerEvents(largeBannerRecipes, this);
 
         // Register recipes after all blocks are loaded
@@ -93,6 +94,9 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
 
     @Override
     public void onDisable() {
+        if (largeBannerRecipes != null) {
+            largeBannerRecipes.unregister();
+        }
         if (minecartShipManager != null) {
             minecartShipManager.shutdown();
         }

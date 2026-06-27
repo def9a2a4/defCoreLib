@@ -35,9 +35,6 @@ import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -50,47 +47,36 @@ public class BannerManager implements Listener {
     private static final String TAG_PREFIX = "corelib:banner:";
     private static final double SEARCH_RADIUS = 2.5;
     private static final float LARGE_SCALE = 2.2f;
-    private static final float EXTRA_LARGE_SCALE = 3.6f;
+    private static final float HUGE_SCALE = 3.6f;
     private static final float NORMAL_SCALE = 1.0f;
     private static final float HALF_PI = (float) (Math.PI / 2.0);
     private final JavaPlugin plugin;
-    private float bedOffsetTowardHead = 0.75f;
-    private float bedYOffset = -0.0375f;
-    private float bedScaleX = 1.0f;
-    private float bedScaleY = 1.78f;
-    private float bedScaleZ = 1.0f;
+    // Tuned defaults (baked in; the optional dev-only banner-config.yml can override at runtime).
+    private float bedOffsetTowardHead = 0.701f;
+    private float bedYOffset = -0.05f;
+    private float bedScaleX = 1.199f;
+    private float bedScaleY = 0.9f;
+    private float bedScaleZ = 2.0f;
     private float flagDepth = 1.0f;
-    private float flagFaceGapNormal = 0.0f;
-    private float flagFaceGapLarge = 0.0f;
-    private float flagFaceGapExtraLarge = 0.0f;
-    private float flagOutwardOffsetNormal = 0.125f;
-    private float flagOutwardOffsetLarge = 0.125f;
-    private float flagOutwardOffsetExtraLarge = 0.125f;
-    private float flagSplayTilt = 0.0f;
+    private float flagFaceGapNormal = 0.0245f;
+    private float flagFaceGapLarge = 0.052f;
+    private float flagFaceGapExtraLarge = 0.085f;
+    private float flagOutwardOffsetNormal = -0.04f;
+    private float flagOutwardOffsetLarge = -0.124f;
+    private float flagOutwardOffsetExtraLarge = -0.124f;
+    private float flagSplayTilt = 0.45f;
     private float flagUnifiedTilt = 0.0f;
 
     public BannerManager(JavaPlugin plugin) {
         this.plugin = plugin;
-        copyDefaultConfig();
         loadBedConfig();
     }
 
-    private void copyDefaultConfig() {
-        File configFile = new File(plugin.getDataFolder(), "banner-config.yml");
-        if (!configFile.exists()) {
-            plugin.getDataFolder().mkdirs();
-            try (InputStream in = plugin.getResource("banner-config.yml")) {
-                if (in != null) Files.copy(in, configFile.toPath());
-            } catch (IOException ignored) {}
-        }
-    }
-
     private void loadBedConfig() {
+        // Optional dev-only tuning file; not shipped/created for users — baked defaults are used
+        // unless a banner-config.yml is manually placed in the data folder.
         File configFile = new File(plugin.getDataFolder(), "banner-config.yml");
-        if (!configFile.exists()) {
-            plugin.getLogger().warning("banner-config.yml not found, using defaults");
-            return;
-        }
+        if (!configFile.exists()) return;
         YamlConfiguration cfg = YamlConfiguration.loadConfiguration(configFile);
         bedOffsetTowardHead = (float) cfg.getDouble("bed-banner.offset-toward-head", bedOffsetTowardHead);
         bedYOffset = (float) cfg.getDouble("bed-banner.y-offset", bedYOffset);
@@ -167,21 +153,21 @@ public class BannerManager implements Listener {
 
         if (!LargeBannerRecipes.isBanner(held.getType())) return;
 
-        boolean isExtraLarge = LargeBannerRecipes.isExtraLargeBanner(held);
-        boolean isLarge = !isExtraLarge && LargeBannerRecipes.isLargeBanner(held);
+        boolean isHuge = LargeBannerRecipes.isHugeBanner(held);
+        boolean isLarge = !isHuge && LargeBannerRecipes.isLargeBanner(held);
         boolean isFenceHost = isFlagHost(clicked.getType());
         boolean sneaking = event.getPlayer().isSneaking();
 
-        if (sneaking && isBed(clicked.getType()) && !isLarge && !isExtraLarge) {
+        if (sneaking && isBed(clicked.getType()) && !isLarge && !isHuge) {
             event.setCancelled(true);
             placeBedBanner(event.getPlayer(), clicked, held);
         } else if (isFenceHost && !sneaking) {
             event.setCancelled(true);
-            float scale = isExtraLarge ? EXTRA_LARGE_SCALE : (isLarge ? LARGE_SCALE : NORMAL_SCALE);
+            float scale = isHuge ? HUGE_SCALE : (isLarge ? LARGE_SCALE : NORMAL_SCALE);
             placeFlag(event.getPlayer(), clicked, event.getBlockFace(), held, scale);
-        } else if (isExtraLarge || isLarge) {
+        } else if (isHuge || isLarge) {
             event.setCancelled(true);
-            float scale = isExtraLarge ? EXTRA_LARGE_SCALE : LARGE_SCALE;
+            float scale = isHuge ? HUGE_SCALE : LARGE_SCALE;
             placeLargeBanner(event.getPlayer(), clicked, event.getBlockFace(), held, scale);
         }
     }
@@ -253,7 +239,7 @@ public class BannerManager implements Listener {
     // ── Shears removal ────────────────────────────────────────────────────
 
     private boolean tryShearsBannerRemoval(Player player, Block clicked) {
-        String prefix = TAG_PREFIX + blockKey(clicked);
+        String prefix = TAG_PREFIX + blockKey(clicked) + ":";
         List<Display> entities = DisplayUtil.findByTag(clicked.getLocation(), prefix, SEARCH_RADIUS);
         if (entities.isEmpty()) return false;
 
@@ -263,7 +249,8 @@ public class BannerManager implements Listener {
                 String face = extractFace(entity);
                 if (face != null && droppedFaces.add(face)) {
                     ItemStack bannerItem = itemDisplay.getItemStack();
-                    if (bannerItem != null && player.getGameMode() != GameMode.CREATIVE) {
+                    // Shears always recover the banner item, even in creative.
+                    if (bannerItem != null) {
                         clicked.getWorld().dropItemNaturally(
                                 clicked.getLocation().add(0.5, 0.5, 0.5), bannerItem.asQuantity(1));
                     }
@@ -397,7 +384,7 @@ public class BannerManager implements Listener {
     }
 
     private void handleRemoval(Block block, boolean drop) {
-        String prefix = TAG_PREFIX + blockKey(block);
+        String prefix = TAG_PREFIX + blockKey(block) + ":";
         List<Display> entities = DisplayUtil.findByTag(block.getLocation(), prefix, SEARCH_RADIUS);
         if (entities.isEmpty()) return;
 
@@ -428,7 +415,10 @@ public class BannerManager implements Listener {
                 int[] coords = parseCoords(tag);
                 if (coords == null) continue;
                 Block block = entity.getWorld().getBlockAt(coords[0], coords[1], coords[2]);
-                if (!isFlagHost(block.getType()) && !block.getType().isSolid()) {
+                Material hostType = block.getType();
+                // Bed banners are hosted on a (non-flag-host) bed; keep them regardless of the
+                // version-dependent isSolid() value for beds.
+                if (!isFlagHost(hostType) && !isBed(hostType) && !hostType.isSolid()) {
                     entity.remove();
                 }
                 break;
@@ -484,13 +474,13 @@ public class BannerManager implements Listener {
     }
 
     private float flagFaceGap(float scale) {
-        if (scale >= EXTRA_LARGE_SCALE) return flagFaceGapExtraLarge;
+        if (scale >= HUGE_SCALE) return flagFaceGapExtraLarge;
         if (scale >= LARGE_SCALE) return flagFaceGapLarge;
         return flagFaceGapNormal;
     }
 
     private float flagOutwardOffset(float scale) {
-        if (scale >= EXTRA_LARGE_SCALE) return flagOutwardOffsetExtraLarge;
+        if (scale >= HUGE_SCALE) return flagOutwardOffsetExtraLarge;
         if (scale >= LARGE_SCALE) return flagOutwardOffsetLarge;
         return flagOutwardOffsetNormal;
     }

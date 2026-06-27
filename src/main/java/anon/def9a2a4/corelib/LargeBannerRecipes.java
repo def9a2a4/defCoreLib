@@ -1,9 +1,9 @@
 package anon.def9a2a4.corelib;
 
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -27,7 +27,7 @@ import java.util.List;
 public class LargeBannerRecipes implements Listener {
 
     static final NamespacedKey LARGE_BANNER_KEY = new NamespacedKey("corelib", "large_banner");
-    static final NamespacedKey EXTRA_LARGE_BANNER_KEY = new NamespacedKey("corelib", "extra_large_banner");
+    static final NamespacedKey HUGE_BANNER_KEY = new NamespacedKey("corelib", "huge_banner");
 
     private static final List<Material> BANNER_MATERIALS = List.of(
             Material.WHITE_BANNER, Material.ORANGE_BANNER, Material.MAGENTA_BANNER,
@@ -49,6 +49,12 @@ public class LargeBannerRecipes implements Listener {
         Bukkit.addRecipe(recipe);
     }
 
+    /** Unregister the recipe on plugin disable so a server /reload doesn't fail with a
+     *  duplicate-key error when the constructor re-adds it. */
+    void unregister() {
+        Bukkit.removeRecipe(recipeKey);
+    }
+
     @EventHandler(priority = EventPriority.NORMAL)
     public void onPrepareCraft(PrepareItemCraftEvent event) {
         modifyResult(event.getInventory());
@@ -68,35 +74,56 @@ public class LargeBannerRecipes implements Listener {
         ItemStack banner = matrix[4]; // center slot
         if (banner == null || !isBanner(banner.getType())) return;
 
-        if (isExtraLargeBanner(banner)) {
+        if (isHugeBanner(banner)) {
             inv.setResult(null);
             return;
         }
 
-        boolean upgradeToExtraLarge = isLargeBanner(banner);
+        boolean upgradeToHuge = isLargeBanner(banner);
+        String newTier = upgradeToHuge ? "Huge" : "Large";
         String color = colorName(banner.getType());
 
         ItemStack result = banner.asQuantity(1);
         var meta = result.getItemMeta();
-        List<Component> lore = meta.hasLore() ? new ArrayList<>(meta.lore()) : new ArrayList<>();
-
-        if (upgradeToExtraLarge) {
-            meta.getPersistentDataContainer().remove(LARGE_BANNER_KEY);
-            meta.getPersistentDataContainer().set(EXTRA_LARGE_BANNER_KEY, PersistentDataType.BYTE, (byte) 1);
-            meta.displayName(Component.text("Extra Large " + color + " Banner",
-                    NamedTextColor.WHITE).decoration(TextDecoration.ITALIC, false));
-            lore.removeIf(c -> c instanceof TextComponent tc && tc.content().equals("Large"));
-            lore.add(Component.text("Extra Large", NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false));
+        var pdc = meta.getPersistentDataContainer();
+        if (upgradeToHuge) {
+            pdc.remove(LARGE_BANNER_KEY);
+            pdc.set(HUGE_BANNER_KEY, PersistentDataType.BYTE, (byte) 1);
         } else {
-            meta.getPersistentDataContainer().set(LARGE_BANNER_KEY, PersistentDataType.BYTE, (byte) 1);
-            meta.displayName(Component.text("Large " + color + " Banner",
-                    NamedTextColor.WHITE).decoration(TextDecoration.ITALIC, false));
-            lore.add(Component.text("Large", NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false));
+            pdc.set(LARGE_BANNER_KEY, PersistentDataType.BYTE, (byte) 1);
         }
+
+        // Only (re)generate the display name when it's absent or one of our auto-generated tier
+        // names — never clobber a genuine player-given (anvil) name.
+        if (!meta.hasDisplayName() || isAutoTierName(meta.displayName(), color)) {
+            meta.displayName(Component.text(newTier + " " + color + " Banner",
+                    NamedTextColor.WHITE).decoration(TextDecoration.ITALIC, false));
+        }
+
+        // Rebuild the tier lore line deterministically: strip any prior tier label, add the new one,
+        // preserving all other (user) lore.
+        List<Component> lore = meta.hasLore() ? new ArrayList<>(meta.lore()) : new ArrayList<>();
+        lore.removeIf(LargeBannerRecipes::isTierLoreLine);
+        lore.add(Component.text(newTier, NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false));
 
         meta.lore(lore);
         result.setItemMeta(meta);
         inv.setResult(result);
+    }
+
+    /** A lore line is one of our tier labels ("Large"/"Huge"), tolerant of formatting/whitespace. */
+    private static boolean isTierLoreLine(Component line) {
+        String text = PlainTextComponentSerializer.plainText().serialize(line).trim();
+        return text.equalsIgnoreCase("Large") || text.equalsIgnoreCase("Huge");
+    }
+
+    /** True if {@code name} matches a name this plugin would auto-generate for some tier of this
+     *  colour (e.g. "Large Red Banner" / "Huge Red Banner"), so it is safe to overwrite. */
+    private static boolean isAutoTierName(Component name, String color) {
+        if (name == null) return false;
+        String text = PlainTextComponentSerializer.plainText().serialize(name).trim();
+        return text.equalsIgnoreCase("Large " + color + " Banner")
+                || text.equalsIgnoreCase("Huge " + color + " Banner");
     }
 
     static boolean isBanner(Material mat) {
@@ -110,11 +137,11 @@ public class LargeBannerRecipes implements Listener {
                 .has(LARGE_BANNER_KEY, PersistentDataType.BYTE);
     }
 
-    static boolean isExtraLargeBanner(ItemStack item) {
+    static boolean isHugeBanner(ItemStack item) {
         if (item == null || !isBanner(item.getType())) return false;
         if (!item.hasItemMeta()) return false;
         return item.getItemMeta().getPersistentDataContainer()
-                .has(EXTRA_LARGE_BANNER_KEY, PersistentDataType.BYTE);
+                .has(HUGE_BANNER_KEY, PersistentDataType.BYTE);
     }
 
     private static String colorName(Material bannerMat) {
