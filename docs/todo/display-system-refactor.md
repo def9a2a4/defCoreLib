@@ -68,92 +68,118 @@ not starting with `@` pass through unchanged (backward compatible). Unknown `@al
 
 ---
 
-## Phase 2 — Auto-derived spin states (normalized speed)  (planned, detailed)
+## Phase 2 — De-dup spin states via `copy_from` + state-level `animation`  (planned, detailed)
 
 Every active (`spinning_*` / `running_*`) state is a byte-for-byte copy of its `idle_*` twin
-plus an `animation: { type: rotate, axis, speed }` on (most of) its display entities; the
-windmill repeats an identical `animation:` on all 4 blades of every orientation state. Phase 2
-removes this with small YAML sugar, **auto-derives the rotation axis**, and **normalizes every
-spin to a single configurable default speed (3.0)** (per decision — speeds had drifted: gear
-discs 2.0, gear floor-rod 2.0 vs wall-rod 3.0, water wheel 1.25, grindstone 2.0, windmill 1.5,
-rest 3.0).
+plus a rotate `animation:` on its display entities; the windmill repeats an identical
+`animation:` on all 4 blades of every orientation state. Phase 2 removes this duplication and
+**normalizes every spin to 3.0** (speeds had drifted: gear discs 2.0, gear floor-rod 2.0 vs
+wall-rod 3.0, water wheel 1.25, grindstone 2.0, windmill 1.5, rest 3.0).
 
-Design refined by two adversarial critiques: normalized speed kills the per-entity-speed map
-and its silent-missing-tag footgun; axis derivation is pinned to the existing last-underscore
-convention; the interpolation default is locked.
+Design after three critique rounds. Decisive insight (two independent agents): display entities
+**already** support a per-entity `animation:` field (rotate/bob/pulse/orbit/compose via
+`parseAnimation`), so we do **not** invent a bespoke `spin` key — we reuse `animation` at a new
+scope. Net new vocabulary: **one key (`copy_from`)**, and **no special cases**.
 
-### YAML sugar (handled in `BlockLoader`)
-- **`spin_speed: <n>`** — optional top-level per-file default rotation speed, **default 3.0**.
-  The single configurable knob.
-- **`like: <stateName>`** — inherit a sibling state's `display_entities` verbatim
-  (single-level, same-block).
-- **`spin: true | <number>`** on a state — rotate all that state's display entities (inherited
-  via `like` or listed inline) around the derived axis. `true` → use `spin_speed`; a number →
-  that speed. Entities flagged `static: true` are skipped.
-- **`static: true`** on a display entity — never rotates even when its state spins
-  (grindstone's fixed base slab).
-- **`spin_axis: [x,y,z]`** — explicit axis override. Default: derived from the state-name
-  **last-underscore** suffix (`_x`→[1,0,0], `_z`→[0,0,1], `_y`/none→[0,1,0]), mirroring
-  `RotationNetwork.axisFromState` (so `spinning_east_x`→X, `spinning_south_z`→Z, grindstone
-  `spinning`→Y).
+### How spin geometry works
+The rotation pivot is **always the block center** (the display's anchor); you specify only the
+axis *direction*. `Animations.rotate` pre-multiplies `R × base`, so an entity translated onto
+the axis spins in place (gear discs pulled to the wall), while an off-axis entity orbits the
+center (windmill blades sweep). There is no separate pivot field.
 
-`like` only sets display entities; `particles`/`light`/`texture` overrides parse as today
-(engine/generator keep inline `particles:`). `like` + own `display_entities` = load error.
-Axis derivation only fires when `spin` is present (opt-in), so demo-blocks / minecart-ships
-are unaffected — no naming footgun.
+### YAML keys (handled in `BlockLoader`)
+- **`copy_from: <stateName>`** — inherit a sibling state's raw `display_entities` verbatim
+  (single-level, same-block). Other keys (`particles`, `light`, …) parse as today.
+- **State-level `animation: { … }`** — parsed by the **existing** `parseAnimation` (any type:
+  rotate/bob/pulse/orbit/compose). Applied to every resolved entity that has **no animation of
+  its own**.
+- **Per-entity `animation: none`** — opt out; that entity stays static.
+
+`copy_from` (entity list) and `animation` (what animates) are orthogonal — three combos cover
+everything, no special cases:
 
 ```yaml
-spin_speed: 3.0          # top level
-# shaft / gear / drill / engine / generator / water_wheel: collapse each active state
-spinning_x: { like: idle_x, spin: true }                     # axis [1,0,0] from "_x"
-running_y:  { like: idle_y, spin: true, particles: { … } }   # engine keeps particles
-# grindstone: base stays static
-idle:      { display_entities: [ {…, tag: base_slab, static: true}, {…, tag: top_slab} ] }
-spinning:  { like: idle, spin: true }                        # only top_slab spins
-# windmill: spin WITHOUT like — dedupes 4 inline animation blocks per state
-floor:     { display_entities: [ …blades w/o animation… ], spin: true, spin_axis: [0,1,0] }
+# shaft / gear / drill / engine / generator / water_wheel — each active state → one line
+spinning_x: { copy_from: idle_x, animation: { type: rotate, axis: [1, 0, 0], speed: 3.0 } }
+running_y:  { copy_from: idle_y, animation: { type: rotate, axis: [0, 1, 0], speed: 3.0 }, particles: { … } }
+
+# windmill — inline blades (no idle twin), one state animation; no copy_from
+floor: { display_entities: [ …4 blades, no per-blade animation… ], animation: { type: rotate, axis: [0, 1, 0], speed: 3.0 } }
+
+# grindstone — NOT a special case anymore: base opts out, top inherits the state animation
+spinning:
+  copy_from: idle          # idle's base_slab carries `animation: none`; top_slab carries nothing
+  animation: { type: rotate, axis: [0, 1, 0], speed: 3.0 }
 ```
 
-### Code changes — all in `BlockLoader.java` (no `CustomHeadBlock` change)
-Loader **materializes** inherited+animated entities into the state's `DisplayEntityConfig`
-list at parse time; runtime path (`resolveDisplayEntities`, ticker, `Animations.rotate`)
-unchanged.
-1. `load()` — read `spin_speed` (default 3.0); thread it + `textures` into `parseBlock`.
-   *(Optional: bundle into a small `LoadContext` record instead of more bare params.)*
-2. State loop — `parseStateOverrides(sb, stateSec, statesSec, stateName, textures, spinSpeed)`.
-3. `parseStateOverrides` — resolve `like` (validate unknown/self/chain → throw); pick display
-   maps (target's or own); parse; if `spin` is `true`/number, attach rotation via `applySpin`
-   at `spinAxis(sec, stateName)`. Keep texture/light/particles parsing.
-4. `applySpin(entities, maps, axis, speed)` — rebuild each immutable `DisplayEntityConfig`
-   with `Animations.rotate(axis, speed)` unless `maps.get(i).get("static") == true`. **Index-
-   based** (not tag-based) → no tag-keyed lookup, no missing-tag footgun.
-5. `spinAxis(sec, stateName)` — `spin_axis` override else last-underscore suffix → unit vector;
-   local helper, comment that it mirrors `RotationNetwork.axisFromState`.
+### Semantics (pinned down)
+1. **Fill-only.** State-level `animation` applies only to entities with no animation of their
+   own. An entity with its own `animation: {…}` keeps it; `animation: none` stays static. No
+   overwrite, no implicit compose.
+2. **`copy_from` inherits raw, pre-animation entities** — from the sibling's raw
+   `display_entities` map-list (order-independent; not the built `StateConfig`); copies only
+   `display_entities`, never the target's state-level `animation`/particles.
+3. A bare active state with neither key is legal and renders its own inline entities (or
+   nothing) statically — e.g. generator `idle_*`.
+
+### Validation (loud failure at load → block skipped + logged)
+- `copy_from`: throw on unknown target / self / a target that itself has `copy_from` (no chains)
+  / a target with no/empty `display_entities` / `copy_from` + own `display_entities`. Message
+  names block + state + bad target.
+- State-level rotate `animation`: throw on missing / non-length-3 / **zero-length** axis, or
+  missing speed (prevents the silent `[0,1,0]`-default and silent-1.0 de-normalization).
+- **`Animations.rotate` hardening**: zero-axis guard (a zero vector normalizes to NaN today →
+  invisible display every tick). Benefits all callers.
+
+### Code changes — `BlockLoader.java` (+ a guard in `DisplayAnimation.java`)
+Loader **materializes** the animated entities into the state's `DisplayEntityConfig` list at
+parse time; runtime (`resolveDisplayEntities`, ticker, `Animations.rotate`) unchanged. No
+`CustomHeadBlock` change: `DisplayEntityConfig.animation` is already nullable, and
+`animation: none` (a string, not a map) already parses to a null animation — the opt-out is
+detected from the raw map, no record change.
+1. State loop — pass siblings + name:
+   `parseStateOverrides(sb, stateSec, statesSec, stateName, textures)`.
+2. `parseStateOverrides` — resolve the display map-list (validated `copy_from` target's, or the
+   state's own); parse via `parseDisplayEntities`; if a state-level `animation:` map is present,
+   validate + `parseAnimation` it once, then rebuild each `DisplayEntityConfig` whose raw map has
+   no `animation` key (not a map, not `"none"`) with that animation. Index against the raw
+   map-list to detect own/none. Keep texture/light/particles parsing.
+3. `Animations.rotate` — zero-axis guard.
 
 ### YAML changes — `rotation-blocks.yml`
-- Add `spin_speed: 3.0`.
-- Replace each `spinning_*` / `running_*` block with `{ like: <idle>, spin: true }`
-  (+ `particles:` for engine/generator).
-- Grindstone: mark idle `base_slab` `static: true`; `spinning: { like: idle, spin: true }`.
-- Windmill: strip inline `animation:` from every blade in all 5 states; add `spin: true` +
-  per-state `spin_axis` (floor `[0,1,0]`, N/S `[0,0,1]`, E/W `[1,0,0]`).
-- ~120+ lines and every hand-written animation axis/speed removed. **Clutch** untouched.
+- Replace each `spinning_*` / `running_*` state in shaft, gear, drill, engine, generator,
+  water_wheel with `{ copy_from: <idle>, animation: { type: rotate, axis: […], speed: 3.0 } }`
+  (+ keep `particles:` for engine/generator). ~110 lines + all hand-written quaternion+animation
+  blocks removed.
+- **Grindstone** — add `animation: none` to idle `base_slab`; both active states →
+  `copy_from: idle` + state-level rotate at 3.0. (No longer hand-written.)
+- **Windmill** (`large_windmill`) — strip inline per-blade `animation:`; add one state-level
+  `animation: { type: rotate, axis: <state axis>, speed: 3.0 }` per state (floor `[0,1,0]`, N/S
+  `[0,0,1]`, E/W `[1,0,0]`). Normalizes 1.5 → 3.0.
+- **Clutch** — untouched (no display entities).
 
-> Deliberate, user-requested **visual normalization** (gear discs, gear floor-rod, water
-> wheel, grindstone, windmill speed up to 3.0), not byte-for-byte preservation. Structure
-> (transforms, textures, tags, wall offsets, which entities animate) preserved exactly.
+> Deliberate, user-requested **visual normalization** (gear discs/floor-rod, water wheel,
+> grindstone, windmill speed up to 3.0), not byte-for-byte preservation. Structure (transforms,
+> textures, tags, wall offsets, which entities animate) preserved exactly.
 
 ### Verification
 1. `gradle compileJava -q` — clean.
-2. **Materialization check (no server)** — throwaway main loads `rotation-blocks.yml`; assert
-   per state: item/transform/tag/wallOffset match the source idle (or inline) entity;
-   `interpolationDuration == 2` everywhere (locks the default-2 dependence); non-null rotate
-   on exactly the non-`static` entities; axis = expected derived (spot-check `spinning_east_x`
-   →X, `spinning_south_z`→Z, grindstone→Y, windmill walls→explicit); speed 3.0 everywhere.
-3. **Live-server smoke test** — place all rotation blocks in all orientations; power them;
-   confirm uniform spin, grindstone base still, windmill blades spin, particles play.
-4. **Negative tests** — `like` unknown / self / + `display_entities` / chained each fail to
-   load with a clear message (only that block skipped).
+2. **Materialization check (no server)** — throwaway main loads `rotation-blocks.yml`; for each
+   active/windmill state assert: each entity's item/transform/tag/wallOffset matches its source
+   (idle or inline) entity; `interpolationDuration == 2`; a rotate animation on every spinning
+   entity and **null on `animation: none` entities** (grindstone base); the animation equals
+   `Animations.rotate(axis, speed)` (sample `apply()` at a few ticks). Remove after.
+3. **Negative tests** — `copy_from` unknown / self / chained / + own `display_entities` /
+   empty-target, and `animation` with missing/zero axis or missing speed, each fail to load with
+   a clear message (only that block skipped).
+4. **Live-server smoke test** — place every rotation block in all orientations; power them;
+   confirm uniform 3.0 spin, grindstone base stays still, windmill blades spin, particles play.
+   **Call out the generator**: its `default_state`/`placement_state_map` point at `spinning_*`,
+   so it must spawn already-spinning.
+
+### Out of scope (future, noted so the design doesn't preclude it)
+- Inherit display_entities **and add** more → a future `additional_display_entities:` key (kept
+  an error for now; the error message can hint at this).
 
 ---
 

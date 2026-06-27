@@ -497,3 +497,87 @@ on integer-valued offsets, so sub-pixel drift in the pivot doesn't affect block 
 7. Activate on powered activator rail while cart is moving → should snap and assemble
    correctly (tests snapAndStop + 1-tick delay)
 8. Toggle collider glow, verify colliders align with display blocks during rotation
+
+
+## Additional Issues (Review 2026-06-25)
+
+Deep review with three parallel agents. Issues below are independent of the off-center
+pivot bug above; they can be fixed separately.
+
+### 1. Float precision in snap computation (LOW)
+
+`MechanismRegistry.java:91-92` casts to `float` prematurely:
+
+```java
+float snapX = (float)(Math.floor(pivot.getX()) + 0.5);
+float snapZ = (float)(Math.floor(pivot.getZ()) + 0.5);
+```
+
+Float mantissa is 24 bits (~7 decimal digits). At coordinates beyond ~8M blocks,
+`floor(X) + 0.5` can't represent the `.5` offset — the snap silently rounds to an
+integer, breaking the integer-offset invariant that `disassemble()` depends on.
+
+**Fix:** Use `double` for snapping, cast to `float` only at Matrix4f construction:
+
+```java
+double snapX = Math.floor(pivot.getX()) + 0.5;
+double snapZ = Math.floor(pivot.getZ()) + 0.5;
+// ...
+Matrix4f local = new Matrix4f().translation(
+    (float)((block.getX() + 0.5) - snapX),
+    (float)(block.getY() - pivot.getY()),
+    (float)((block.getZ() + 0.5) - snapZ));
+```
+
+Same pattern applies to the cross-world re-snap in the pivot fix (Change 5).
+
+### 2. Flood fill silent truncation (LOW)
+
+`MinecartShipManager.java:330`: when `result.size() >= maxBlocks` (256), the ship is
+silently truncated — no warning, no feedback to the player.
+
+**Fix:** Log a warning after the loop if the limit was hit, or send a message to
+the nearest player. Consider making the limit configurable in `minecart-ship-blocks.yml`.
+
+### 3. tickMechanisms() iteration safety (LATENT)
+
+`MechanismRegistry.java:309` iterates `activeMechanisms.values()` directly. Currently
+safe because `updateFromVehicle()` never removes mechanisms. But `shutdown()` (line 258)
+already defensively copies with `new ArrayList<>(...)`, suggesting awareness of the risk.
+
+If future code adds validity-based cleanup during tick, this would throw
+`ConcurrentModificationException`.
+
+**Fix:** Defensive copy: `for (BasicMechanism mech : new ArrayList<>(activeMechanisms.values()))`.
+
+### 4. Matrix allocation in tick loop (PERF)
+
+`MechanismRegistry.java:329-331` allocates a new `Matrix4f` for `base` per animated
+display per block per tick. Only `workMatrix` (line 41) is reused.
+
+Negligible for <10 mechanisms but noticeable at 50+ (relevant for BlockShips migration).
+
+**Fix:** Pre-allocate `workBase` alongside `workMatrix`.
+
+### 5. Vehicle validity check at assembly (DEFENSIVE)
+
+`assembleMechanism(Entity existingVehicle, ...)` at line 74 doesn't verify the vehicle
+is valid/alive. A dead or removed entity silently produces a broken mechanism.
+
+**Fix:** Guard at entry: `if (!existingVehicle.isValid()) throw new IllegalArgumentException(...)`.
+
+### 6. Particle ticking not implemented (FEATURE GAP)
+
+`MechanismRegistry.java:340`: `// TODO: particle ticking for mechanism blocks`.
+`ParticleConfig` is resolved and stored on `MechanismBlockData` but never spawned
+during the tick loop. Blocks that declare particles in their YAML config won't
+emit them while assembled into a mechanism.
+
+### 7. Minor cleanup
+
+- `MechanismBlockData.collisionScale` — stored (always `1.0f`) but never read anywhere.
+  Placeholder for future shulker scaling; harmless but should be documented or removed.
+- `RotationNetwork.perpendicularNeighbors()` (line 397) — dead code, never called.
+- `MINECART_RIDE_OFFSET = 0f` — previously flagged as needing tuning in
+  `blockships-integration.md`, but agents confirmed 0f is correct for the external-vehicle
+  path (parent follows via teleport, not as passenger). Not a bug.

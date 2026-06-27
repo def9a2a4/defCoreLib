@@ -269,7 +269,7 @@ to `give_demo_rotation` command as a special case after the block loop.
   play `BLOCK_COPPER_PLACE` at pitch 1.5, spawn `WAX_ON` particles
 - Sneak + wrench on any rotation block → inspect only (debug info + direction, no toggle)
 - Right-click non-source with wrench → `debugInteract()` (wrench doubles as diagnostic)
-- Wrench on water wheel → `"Direction set by water flow (CW)"` in AQUA, no toggle
+- Wrench on water wheel → `"Water wheels are always flexible"` in AQUA, no toggle
 - Wrench on generator → same as engine (toggle CW↔CCW)
 
 **Sneak+wrench handling in CoreLibPlugin:** The sneak bail-out at line 585 returns before
@@ -288,8 +288,8 @@ Written on wrench toggle, read during BFS post-pass.
   jamming a CCW network the player intentionally set up.
 - Active sources (engine, generator): read from skull PDC
 - Passive sources (windmill): read from skull PDC during boundary scan
-- **Water wheel:** direction derived from water position, NOT stored in PDC. Determined by which
-  perpendicular face has water (first in NESW priority). Not wrench-toggleable.
+- **Water wheel:** always flexible (deferred). Direction mapping from water position to CW/CCW
+  is unspecified — water wheels agree with whatever the network computes. Not wrench-toggleable.
 - Windmill needs `toBuilder()` overlay for wrench-only `onInteract`
 
 ### Direction propagation
@@ -307,6 +307,12 @@ Written on wrench toggle, read during BFS post-pass.
 - **Contradictions** (same node reached via two paths with opposite directions) → network
   jammed (treat as unpowered). Naturally prevents impossible gear configurations.
 - Two sources with conflicting directions (through gear topology) → jammed
+- **Jammed = unpowered.** `powered()` returns false, blocks transition to `idle_*` states,
+  animations stop. Engine fuel continues burning (engine doesn't know about jam — it only
+  checks its own fuel state). This punishes leaving jams unresolved.
+- **Isolated passive source** (no adjacent network nodes): forms its own 1-node network with
+  default CW direction (or stored direction if previously wrenched). Post-pass step 7 finding
+  zero adjacent nodes → use stored direction or CW fallback.
 
 **Data model additions to `RotationNetwork.java`:**
 ```java
@@ -340,11 +346,16 @@ without needing axis comparison at propagation time. Dedup at line 306 changes t
 2. Post-pass: find all sources in component. For active sources (nodes), use their BFS-computed
    direction. For passive sources (windmill, not nodes), derive direction from the adjacent
    network node's direction + edge type. **Guard:** skip passive sources in unloaded chunks
-   (`world.isChunkLoaded(x >> 4, z >> 4)`).
+   (`world.isChunkLoaded(x >> 4, z >> 4)`). Active sources in unloaded chunks are simply
+   absent from `nodes` (removed on chunk unload) — BFS can't reach them, matching Phase 1
+   behavior. Their stored PDC direction is inaccessible but irrelevant since they're not in
+   the graph.
 3. Collect sources with explicit stored direction (non-null PDC value). Sources with absent
    direction (flexible) are skipped — they agree with whatever the BFS computed.
-4. First explicit source = anchor. Compare its effective direction vs stored → `flip` boolean.
-   If no explicit sources exist, `flip = false` (network keeps BFS-default CW).
+4. First explicit source (by LocationKey order) = anchor. Compare its effective direction vs
+   stored → `flip` boolean. If no explicit sources exist, `flip = false` (network keeps
+   BFS-default CW). Note: if the BFS root is the anchor source, the flip handles it naturally
+   — root was tentatively CW, anchor says CCW, flip inverts everything including the root.
 5. If flip, invert all node directions in the component.
 6. Check remaining explicit sources: `(effectiveDir XOR flip)` must equal stored direction.
    Mismatch → jammed. **Anchor determinism:** if multiple explicit sources, pick the one with
@@ -354,7 +365,8 @@ without needing axis comparison at propagation time. Dedup at line 306 changes t
    LocationKey record.
 7. **Passive source multi-adjacency:** a passive source may border multiple network nodes. Use
    the first adjacent node found via `CARDINAL_FACES` iteration order (deterministic). The edge
-   is always along-axis (passive sources aren't gearLike), so direction = PRESERVE.
+   is always along-axis (passive sources aren't gearLike), so direction = PRESERVE. On jammed
+   networks this assignment is irrelevant — jammed = unpowered regardless of direction.
 8. **Jammed diagnosis:** uses tentative BFS-assigned directions to determine each source's
    faction, even though the network is jammed (BFS assigns directions before discovering the
    contradiction via post-pass).
@@ -375,8 +387,9 @@ can't be injected at parse time. Instead, wrap at runtime in `applyConfig()`.
   that delegates to the original with negated tickAge. Safe because rotation-network blocks
   only use rotate animations (no bob/pulse to accidentally flip).
 - `CustomBlockRegistry` stores `Map<LocationKey, SpinDirection> animationDirection`
-- Add `boolean reversed` field to `AnimationTracked` (non-final). Keep `animation` final.
-  In `tickAnimations()`: `if (tracked.reversed) tickAge = -tickAge;` before applying.
+- Add mutable `boolean reversed` field to `AnimationTracked` (a `private static final class`,
+  not a record — all other fields stay final). In `tickAnimations()`:
+  `if (tracked.reversed) tickAge = -tickAge;` before applying.
 - In `applyConfig()`: after creating AnimationTracked, set `reversed` from
   `animationDirection.getOrDefault(key, CW) == CCW`.
 - Sequencing: `doRecalculate()` calls `registry.setAnimationDirection(loc, dir)` BEFORE
@@ -424,6 +437,8 @@ spin direction. CW → +90°, CCW → -90°. BFS flood fill, max 64 blocks. Reus
 
 ### Implementation order
 
+0. Remove dead code: `perpendicularNeighbors()` in RotationNetwork.java (never called,
+   superseded by inline logic in `getConnections()`)
 1. Wrench item creation + give command
 2. `SpinDirection` enum + `nodeDirection` map in RotationNetwork
 3. BFS direction tracking + post-pass anchor logic + jammed detection
@@ -445,7 +460,7 @@ spin direction. CW → +90°, CCW → -90°. BFS flood fill, max 64 blocks. Reus
 8. Gear loop with odd reversals (cyclic contradiction) → jammed
 9. Un-wrenched windmill in CCW network → flexible, no jam
 10. Wrench on windmill → sets explicit direction, now can jam if conflicting
-11. Wrench on water wheel → shows "direction set by water flow", no toggle
+11. Wrench on water wheel → shows "water wheels are always flexible", no toggle
 12. Sneak+wrench → inspect only, no toggle
 13. Wrench on non-source → shows debug info
 14. Debug right-click shows CW/CCW + jammed diagnosis with particles
@@ -453,6 +468,16 @@ spin direction. CW → +90°, CCW → -90°. BFS flood fill, max 64 blocks. Reus
 16. Direction change while already spinning → animation swaps in-place, no respawn
 17. Wrench on generator → toggles direction like engine
 18. Same-axis gears along axis (stacked floor gears) → same direction (shaft-like)
+19. Break one source in jammed pair → network unjams, reorients to remaining source
+20. Direction through clutch → preserves (along-axis connection)
+21. Jammed network + chunk reload → stays jammed with same direction data
+22. Wrench flexible source to conflict with existing explicit source → triggers jam
+23. Wrench direction while block is idle → reversed flag persists, applied on next spin
+
+### Migration
+
+Existing Phase 1 worlds with no PDC direction data: all sources are treated as flexible
+(absent = agree with network), default direction is CW. No migration step needed.
 
 ## Display entities — deferred
 Placeholder skull textures with rotate animations initially. Tuned in-game after network logic works.
