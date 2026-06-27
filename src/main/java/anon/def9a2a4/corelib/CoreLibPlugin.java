@@ -168,12 +168,9 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onBlockPlace(BlockPlaceEvent event) {
         Block block = event.getBlockPlaced();
-        if (block.getType() != Material.PLAYER_HEAD && block.getType() != Material.PLAYER_WALL_HEAD) {
-            return;
-        }
-
         ItemStack item = event.getItemInHand();
-        if (!(item.getItemMeta() instanceof org.bukkit.inventory.meta.SkullMeta meta)) return;
+        org.bukkit.inventory.meta.ItemMeta meta = item.getItemMeta();
+        if (meta == null) return;
 
         String typeId = meta.getPersistentDataContainer().get(CustomBlockRegistry.BLOCK_TYPE_KEY, PersistentDataType.STRING);
         if (typeId == null) return;
@@ -181,9 +178,23 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         CustomHeadBlock type = registry.getType(typeId);
         if (type == null) return;
 
-        BlockFace placedOn = getAttachmentFace(block);
+        boolean isAlreadySkull = block.getType() == Material.PLAYER_HEAD
+                || block.getType() == Material.PLAYER_WALL_HEAD;
 
-        // Check placement restrictions
+        // Compute attachment face
+        BlockFace placedOn;
+        if (isAlreadySkull) {
+            placedOn = getAttachmentFace(block);
+        } else {
+            BlockFace clickedFace = event.getBlockAgainst().getFace(block);
+            if (clickedFace != null && clickedFace != BlockFace.UP && clickedFace != BlockFace.DOWN) {
+                placedOn = clickedFace.getOppositeFace();
+            } else {
+                placedOn = BlockFace.DOWN;
+            }
+        }
+
+        // Check placement restrictions (before skull conversion so cancellation reverts cleanly)
         if (type.placement() != null) {
             CustomHeadBlock.PlacementConfig pc = type.placement();
             if (!pc.allowedFaces().isEmpty() && !pc.allowedFaces().contains(placedOn)) {
@@ -205,6 +216,20 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
             }
         }
 
+        // Convert non-skull blocks to skulls (e.g., slab items with item_material)
+        if (!isAlreadySkull) {
+            BlockFace clickedFace = event.getBlockAgainst().getFace(block);
+            if (clickedFace != null && clickedFace != BlockFace.UP && clickedFace != BlockFace.DOWN) {
+                block.setType(Material.PLAYER_WALL_HEAD, false);
+                if (block.getBlockData() instanceof org.bukkit.block.data.Directional dir) {
+                    dir.setFacing(clickedFace);
+                    block.setBlockData(dir, false);
+                }
+            } else {
+                block.setType(Material.PLAYER_HEAD, false);
+            }
+        }
+
         // Resolve initial state (placement face may override default)
         String resolvedState = type.defaultState();
         var psm = type.placementStateMap();
@@ -219,9 +244,10 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
 
         // Copy blade banner data from item → skull (for windmill custom banners)
         if (type.displayItemResolver() != null
+                && meta instanceof org.bukkit.inventory.meta.SkullMeta skullMeta
                 && block.getState() instanceof org.bukkit.block.Skull skull) {
             CustomBlockRegistry.copyBladePdc(
-                    meta.getPersistentDataContainer(),
+                    skullMeta.getPersistentDataContainer(),
                     skull.getPersistentDataContainer());
             skull.update();
         }

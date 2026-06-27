@@ -77,6 +77,9 @@ public final class BlockLoader {
         b.texture(resolveTexture(requireString(sec, "texture"), textures));
         String itemTex = sec.getString("item_texture");
         if (itemTex != null) b.itemTexture(resolveTexture(itemTex, textures));
+        String itemMat = sec.getString("item_material");
+        if (itemMat != null) b.itemMaterial(Material.valueOf(itemMat.toUpperCase(java.util.Locale.ROOT)));
+        if (sec.getBoolean("item_glint")) b.itemGlint(true);
 
         // Name and lore
         String nameStr = sec.getString("name");

@@ -12,6 +12,8 @@ blocks:
   oak:
     name: "&fOak Vertical Slab"
     texture: "@slab_placeholder"
+    item_material: OAK_SLAB
+    item_glint: true
     drops: self
     place_sound: { sound: BLOCK_WOOD_PLACE, volume: 1.0, pitch: 1.0 }
     break_sound: { sound: BLOCK_WOOD_BREAK, volume: 1.0, pitch: 1.0 }
@@ -27,24 +29,24 @@ blocks:
     states:
       north:
         display_entities:
-          - block_data: "minecraft:oak_planks"
+          - block_data: "minecraft:oak_slab"
             tag: slab
-            transform: { scale: [1, 1, 0.5], translation: [0, -0.5, -0.25] }
+            transform: { scale: [1, 1, 0.5], translation: [-0.5, -0.5, -0.5] }
       south:
         display_entities:
-          - block_data: "minecraft:oak_planks"
+          - block_data: "minecraft:oak_slab"
             tag: slab
-            transform: { scale: [1, 1, 0.5], translation: [0, -0.5, 0.25] }
+            transform: { scale: [1, 1, 0.5], translation: [-0.5, -0.5, 0.0] }
       east:
         display_entities:
-          - block_data: "minecraft:oak_planks"
+          - block_data: "minecraft:oak_slab"
             tag: slab
-            transform: { scale: [0.5, 1, 1], translation: [0.25, -0.5, 0] }
+            transform: { scale: [0.5, 1, 1], translation: [0.0, -0.5, -0.5] }
       west:
         display_entities:
-          - block_data: "minecraft:oak_planks"
+          - block_data: "minecraft:oak_slab"
             tag: slab
-            transform: { scale: [0.5, 1, 1], translation: [-0.25, -0.5, 0] }
+            transform: { scale: [0.5, 1, 1], translation: [-0.5, -0.5, -0.5] }
     recipes:
       craft:
         shaped:
@@ -62,6 +64,8 @@ blocks:
   cobblestone:
     name: "&fCobblestone Vertical Slab"
     texture: "@slab_placeholder"
+    item_material: COBBLESTONE_SLAB
+    item_glint: true
     drops: self
     place_sound: { sound: BLOCK_STONE_PLACE, volume: 1.0, pitch: 1.0 }
     break_sound: { sound: BLOCK_STONE_BREAK, volume: 1.0, pitch: 1.0 }
@@ -77,24 +81,24 @@ blocks:
     states:
       north:
         display_entities:
-          - block_data: "minecraft:cobblestone"
+          - block_data: "minecraft:cobblestone_slab"
             tag: slab
-            transform: { scale: [1, 1, 0.5], translation: [0, -0.5, -0.25] }
+            transform: { scale: [1, 1, 0.5], translation: [-0.5, -0.5, -0.5] }
       south:
         display_entities:
-          - block_data: "minecraft:cobblestone"
+          - block_data: "minecraft:cobblestone_slab"
             tag: slab
-            transform: { scale: [1, 1, 0.5], translation: [0, -0.5, 0.25] }
+            transform: { scale: [1, 1, 0.5], translation: [-0.5, -0.5, 0.0] }
       east:
         display_entities:
-          - block_data: "minecraft:cobblestone"
+          - block_data: "minecraft:cobblestone_slab"
             tag: slab
-            transform: { scale: [0.5, 1, 1], translation: [0.25, -0.5, 0] }
+            transform: { scale: [0.5, 1, 1], translation: [0.0, -0.5, -0.5] }
       west:
         display_entities:
-          - block_data: "minecraft:cobblestone"
+          - block_data: "minecraft:cobblestone_slab"
             tag: slab
-            transform: { scale: [0.5, 1, 1], translation: [-0.25, -0.5, 0] }
+            transform: { scale: [0.5, 1, 1], translation: [-0.5, -0.5, -0.5] }
     recipes:
       craft:
         shaped:
@@ -112,6 +116,8 @@ blocks:
   smooth_stone:
     name: "&fSmooth Stone Vertical Slab"
     texture: "@slab_placeholder"
+    item_material: SMOOTH_STONE_SLAB
+    item_glint: true
     drops: self
     place_sound: { sound: BLOCK_STONE_PLACE, volume: 1.0, pitch: 1.0 }
     break_sound: { sound: BLOCK_STONE_BREAK, volume: 1.0, pitch: 1.0 }
@@ -127,24 +133,24 @@ blocks:
     states:
       north:
         display_entities:
-          - block_data: "minecraft:smooth_stone"
+          - block_data: "minecraft:smooth_stone_slab"
             tag: slab
-            transform: { scale: [1, 1, 0.5], translation: [0, -0.5, -0.25] }
+            transform: { scale: [1, 1, 0.5], translation: [-0.5, -0.5, -0.5] }
       south:
         display_entities:
-          - block_data: "minecraft:smooth_stone"
+          - block_data: "minecraft:smooth_stone_slab"
             tag: slab
-            transform: { scale: [1, 1, 0.5], translation: [0, -0.5, 0.25] }
+            transform: { scale: [1, 1, 0.5], translation: [-0.5, -0.5, 0.0] }
       east:
         display_entities:
-          - block_data: "minecraft:smooth_stone"
+          - block_data: "minecraft:smooth_stone_slab"
             tag: slab
-            transform: { scale: [0.5, 1, 1], translation: [0.25, -0.5, 0] }
+            transform: { scale: [0.5, 1, 1], translation: [0.0, -0.5, -0.5] }
       west:
         display_entities:
-          - block_data: "minecraft:smooth_stone"
+          - block_data: "minecraft:smooth_stone_slab"
             tag: slab
-            transform: { scale: [0.5, 1, 1], translation: [-0.25, -0.5, 0] }
+            transform: { scale: [0.5, 1, 1], translation: [-0.5, -0.5, -0.5] }
     recipes:
       craft:
         shaped:
