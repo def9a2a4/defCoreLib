@@ -1,0 +1,159 @@
+# Vertical Slabs
+# Half-blocks placed on N/S/E/W faces using BlockDisplay entities.
+
+namespace: verticalslabs
+
+textures:
+  slab_placeholder: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzNmYjdjOTJmZTE2NDlkNzZjNGFkOTc5ZWZjZDJjNDYwYjJlOTBiMjMyMGEyMzNlZjg1MTMzZGQ1NmJlZDg2YSJ9fX0="
+
+blocks:
+
+  # ─── Oak Vertical Slab ──────────────────────────────────────────────
+  oak:
+    name: "&fOak Vertical Slab"
+    texture: "@slab_placeholder"
+    drops: self
+    place_sound: { sound: BLOCK_WOOD_PLACE, volume: 1.0, pitch: 1.0 }
+    break_sound: { sound: BLOCK_WOOD_BREAK, volume: 1.0, pitch: 1.0 }
+    placement:
+      allowed_faces: [NORTH, SOUTH, EAST, WEST]
+      require_solid: true
+    default_state: north
+    placement_state_map:
+      NORTH: north
+      SOUTH: south
+      EAST: east
+      WEST: west
+    states:
+      north:
+        display_entities:
+          - block_data: "minecraft:oak_planks"
+            tag: slab
+            transform: { scale: [1, 1, 0.5], translation: [0, -0.5, -0.25] }
+      south:
+        display_entities:
+          - block_data: "minecraft:oak_planks"
+            tag: slab
+            transform: { scale: [1, 1, 0.5], translation: [0, -0.5, 0.25] }
+      east:
+        display_entities:
+          - block_data: "minecraft:oak_planks"
+            tag: slab
+            transform: { scale: [0.5, 1, 1], translation: [0.25, -0.5, 0] }
+      west:
+        display_entities:
+          - block_data: "minecraft:oak_planks"
+            tag: slab
+            transform: { scale: [0.5, 1, 1], translation: [-0.25, -0.5, 0] }
+    recipes:
+      craft:
+        shaped:
+          - id: "oak_vslab_craft"
+            amount: 6
+            pattern: ["P", "P", "P"]
+            key:
+              P: { material: OAK_PLANKS }
+      stonecutter:
+        - id: "oak_vslab_from_planks"
+          amount: 2
+          input: { material: OAK_PLANKS }
+
+  # ─── Cobblestone Vertical Slab ──────────────────────────────────────
+  cobblestone:
+    name: "&fCobblestone Vertical Slab"
+    texture: "@slab_placeholder"
+    drops: self
+    place_sound: { sound: BLOCK_STONE_PLACE, volume: 1.0, pitch: 1.0 }
+    break_sound: { sound: BLOCK_STONE_BREAK, volume: 1.0, pitch: 1.0 }
+    placement:
+      allowed_faces: [NORTH, SOUTH, EAST, WEST]
+      require_solid: true
+    default_state: north
+    placement_state_map:
+      NORTH: north
+      SOUTH: south
+      EAST: east
+      WEST: west
+    states:
+      north:
+        display_entities:
+          - block_data: "minecraft:cobblestone"
+            tag: slab
+            transform: { scale: [1, 1, 0.5], translation: [0, -0.5, -0.25] }
+      south:
+        display_entities:
+          - block_data: "minecraft:cobblestone"
+            tag: slab
+            transform: { scale: [1, 1, 0.5], translation: [0, -0.5, 0.25] }
+      east:
+        display_entities:
+          - block_data: "minecraft:cobblestone"
+            tag: slab
+            transform: { scale: [0.5, 1, 1], translation: [0.25, -0.5, 0] }
+      west:
+        display_entities:
+          - block_data: "minecraft:cobblestone"
+            tag: slab
+            transform: { scale: [0.5, 1, 1], translation: [-0.25, -0.5, 0] }
+    recipes:
+      craft:
+        shaped:
+          - id: "cobble_vslab_craft"
+            amount: 6
+            pattern: ["C", "C", "C"]
+            key:
+              C: { material: COBBLESTONE }
+      stonecutter:
+        - id: "cobble_vslab_from_cobble"
+          amount: 2
+          input: { material: COBBLESTONE }
+
+  # ─── Smooth Stone Vertical Slab ─────────────────────────────────────
+  smooth_stone:
+    name: "&fSmooth Stone Vertical Slab"
+    texture: "@slab_placeholder"
+    drops: self
+    place_sound: { sound: BLOCK_STONE_PLACE, volume: 1.0, pitch: 1.0 }
+    break_sound: { sound: BLOCK_STONE_BREAK, volume: 1.0, pitch: 1.0 }
+    placement:
+      allowed_faces: [NORTH, SOUTH, EAST, WEST]
+      require_solid: true
+    default_state: north
+    placement_state_map:
+      NORTH: north
+      SOUTH: south
+      EAST: east
+      WEST: west
+    states:
+      north:
+        display_entities:
+          - block_data: "minecraft:smooth_stone"
+            tag: slab
+            transform: { scale: [1, 1, 0.5], translation: [0, -0.5, -0.25] }
+      south:
+        display_entities:
+          - block_data: "minecraft:smooth_stone"
+            tag: slab
+            transform: { scale: [1, 1, 0.5], translation: [0, -0.5, 0.25] }
+      east:
+        display_entities:
+          - block_data: "minecraft:smooth_stone"
+            tag: slab
+            transform: { scale: [0.5, 1, 1], translation: [0.25, -0.5, 0] }
+      west:
+        display_entities:
+          - block_data: "minecraft:smooth_stone"
+            tag: slab
+            transform: { scale: [0.5, 1, 1], translation: [-0.25, -0.5, 0] }
+    recipes:
+      craft:
+        shaped:
+          - id: "smooth_vslab_craft"
+            amount: 6
+            pattern: ["S", "S", "S"]
+            key:
+              S: { material: SMOOTH_STONE }
+      stonecutter:
+        - id: "smooth_vslab_from_smooth"
+          amount: 2
+          input: { material: SMOOTH_STONE }

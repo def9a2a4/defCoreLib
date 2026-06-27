@@ -56,6 +56,14 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
             }
         } catch (IOException ignored) {}
 
+        // Load vertical slabs from YAML
+        try (InputStream slabStream = getResource("slabs.yml")) {
+            if (slabStream != null) {
+                int count = BlockLoader.load(slabStream, registry, getLogger());
+                getLogger().info("Loaded " + count + " vertical slabs");
+            }
+        } catch (IOException ignored) {}
+
         // Load rotation blocks from YAML, then overlay Java callbacks
         try (InputStream rotStream = getResource("rotation-blocks.yml")) {
             if (rotStream != null) {
