@@ -34,7 +34,7 @@ private final Map<LocationKey, Integer> externalPowerOverrides = new HashMap<>()
 
 ### 1b. Public API methods
 
-**File**: `CustomBlockRegistry.java` — add after `trackTick()` (line 618)
+**File**: `CustomBlockRegistry.java` — add after `trackTick()` (line 616)
 
 ```java
 /**
@@ -177,12 +177,12 @@ tasks {
 .PHONY: build clean server server-plugin-copy server-start
 
 build:
-	./gradlew shadowJar
+	gradle shadowJar
 	mkdir -p bin
 	cp build/libs/RedstoneCables.jar bin/
 
 clean:
-	./gradlew clean
+	gradle clean
 	rm -rf bin
 
 server-plugin-copy:
@@ -229,30 +229,37 @@ power state.
 ```java
 package anon.def9a2a4.cables;
 
-import org.bukkit.Location;
+import anon.def9a2a4.corelib.CustomBlockRegistry.LocationKey;
 import java.util.*;
 
 final class CableNetwork {
 
-    private final Set<Location> members = new HashSet<>();
+    private final Set<LocationKey> members = new HashSet<>();
     private int powerLevel = 0;
 
-    // Edges: cables that have at least one non-cable neighbor
-    // inputEdges: cable locations adjacent to a vanilla/CoreLib power source
-    // outputEdges: cable locations adjacent to a CoreLib redstone-sensitive block
-    private final Set<Location> inputEdges = new HashSet<>();
-    private final Set<Location> outputEdges = new HashSet<>();
+    private final Set<LocationKey> inputEdges = new HashSet<>();
+    private final Set<LocationKey> outputEdges = new HashSet<>();
 
-    Set<Location> members() { return members; }
+    Set<LocationKey> members() { return members; }
     int powerLevel() { return powerLevel; }
     void setPowerLevel(int level) { this.powerLevel = level; }
-    Set<Location> inputEdges() { return inputEdges; }
-    Set<Location> outputEdges() { return outputEdges; }
+    Set<LocationKey> inputEdges() { return inputEdges; }
+    Set<LocationKey> outputEdges() { return outputEdges; }
+
+    void addMember(LocationKey key) { members.add(key); }
+    void removeMember(LocationKey key) {
+        members.remove(key);
+        inputEdges.remove(key);
+        outputEdges.remove(key);
+    }
 
     boolean isEmpty() { return members.isEmpty(); }
     int size() { return members.size(); }
 }
 ```
+
+Uses CoreLib's immutable `LocationKey` record instead of mutable `Location`.
+`removeMember` also cleans up edge sets to maintain the subset invariant.
 
 **Why separate from CableManager?** Networks are rebuilt on structural changes (cable
 place/break). Keeping them as objects lets the tick loop iterate networks, not
@@ -270,88 +277,137 @@ Tracks all cables, manages network graph, runs power tick.
 ### Data structures
 
 ```java
-private final Map<Location, CableNetwork> cableToNetwork = new HashMap<>();
+private final Map<LocationKey, CableNetwork> cableToNetwork = new HashMap<>();
 private final Set<CableNetwork> networks = new HashSet<>();
+private BukkitTask tickTask;
 ```
 
-No separate `Map<Location, CableData>` — cables are omnidirectional with no per-cable
-config. The network membership IS the cable data.
+Uses CoreLib's immutable `LocationKey` record as map key (not mutable `Location`).
+No separate `Map<LocationKey, CableData>` — cables are omnidirectional with no
+per-cable config. The network membership IS the cable data.
 
 ### Key methods
 
-#### `registerCable(Location loc)`
+#### `registerCable(Block block)`
 
-Called on cable placement.
-
-1. `loc = normalizeLocation(loc)` (block-aligned, copied from Pipes'
-   `PipeManager.normalizeLocation` — `loc.getBlock().getLocation()`)
-2. Build or merge network:
-   - Check all 6 neighbors for existing cables
-   - If 0 neighbors are cables: create new single-member `CableNetwork`
-   - If 1+ neighbors are cables and all in same network: add `loc` to that network
-   - If neighbors span multiple networks: merge all into one, reclassify edges
-3. Classify `loc`'s edges: check 6 neighbors for power sources / CoreLib blocks
-4. Put `cableToNetwork.put(loc, network)`
-
-#### `unregisterCable(Location loc)`
-
-Called on cable break.
-
-1. Remove `loc` from its network
-2. If the network now has 0 members: remove it entirely
-3. Otherwise: the break may split one network into multiple. Run BFS from each
-   neighbor that was a cable. If BFS reaches all remaining members, network stays
-   intact. If not, split into separate `CableNetwork` objects.
-4. Reclassify edges for affected networks (the broken cable's neighbors may have
-   become input/output edges)
-5. Clear external power overrides for any CoreLib blocks that were only reachable
-   through the removed cable's network
-
-#### `rebuildNetwork(Location seed)` — BFS flood fill
-
-```
-Queue<Location> queue = [seed]
-Set<Location> visited = {}
-CableNetwork network = new CableNetwork()
-
-while queue not empty:
-    loc = queue.poll()
-    if loc in visited: continue
-    visited.add(loc)
-    network.members().add(loc)
-
-    for each of 6 BlockFace directions:
-        neighbor = loc.getRelative(face)
-        neighborNorm = normalizeLocation(neighbor)
-
-        if neighborNorm is a cable (in cableToNetwork):
-            queue.add(neighborNorm)
-        else:
-            classifyEdge(loc, neighbor, face, network)
-```
-
-#### `classifyEdge(Location cableLoc, Block neighbor, BlockFace face, CableNetwork net)`
-
-Determines if `cableLoc` is an input edge, output edge, or both.
+Called on cable placement / chunk load.
 
 ```java
-// Input: neighbor provides power to the cable
-int power = neighbor.getBlockPower();
-if (power > 0) {
-    net.inputEdges().add(cableLoc);
+LocationKey key = LocationKey.of(block);
+if (cableToNetwork.containsKey(key)) return; // already registered
+
+// Find which existing networks our neighbors belong to
+Set<CableNetwork> neighborNets = new HashSet<>();
+for (BlockFace face : ALL_FACES) {
+    LocationKey nk = LocationKey.of(block.getRelative(face));
+    CableNetwork net = cableToNetwork.get(nk);
+    if (net != null) neighborNets.add(net);
 }
 
-// Also check if neighbor is a CoreLib custom block with redstone sensitivity
+CableNetwork target;
+if (neighborNets.isEmpty()) {
+    target = new CableNetwork();
+    networks.add(target);
+} else {
+    Iterator<CableNetwork> it = neighborNets.iterator();
+    target = it.next();
+    // Merge remaining networks into target
+    while (it.hasNext()) {
+        CableNetwork absorbed = it.next();
+        for (LocationKey m : absorbed.members()) {
+            target.addMember(m);
+            cableToNetwork.put(m, target);
+        }
+        target.inputEdges().addAll(absorbed.inputEdges());
+        target.outputEdges().addAll(absorbed.outputEdges());
+        networks.remove(absorbed);
+    }
+}
+
+target.addMember(key);
+cableToNetwork.put(key, target);
+classifyEdges(key, block, target);
+```
+
+#### `unregisterCable(Block block)`
+
+Called on cable break / chunk unload.
+
+```java
+LocationKey key = LocationKey.of(block);
+CableNetwork oldNetwork = cableToNetwork.remove(key);
+if (oldNetwork == null) return;
+
+oldNetwork.removeMember(key);
+
+if (oldNetwork.isEmpty()) {
+    networks.remove(oldNetwork);
+    return;
+}
+
+handleNetworkSplit(key, block, oldNetwork);
+```
+
+#### `rebuildNetworkFrom(LocationKey seed, Set<LocationKey> validMembers)` — bounded BFS
+
+BFS is bounded to `validMembers` — NOT the global `cableToNetwork` map. This
+prevents accidentally absorbing cables from adjacent but separate networks during
+split-rebuild.
+
+```java
+Queue<LocationKey> queue = new ArrayDeque<>();
+Set<LocationKey> visited = new HashSet<>();
+CableNetwork network = new CableNetwork();
+
+queue.add(seed);
+while (!queue.isEmpty()) {
+    LocationKey loc = queue.poll();
+    if (!visited.add(loc)) continue;
+    if (network.size() >= maxNetworkSize) {
+        plugin.getLogger().warning("Network at " + loc + " exceeds max size " + maxNetworkSize);
+        break;
+    }
+
+    network.addMember(loc);
+    Block block = loc.toBlock(world);
+
+    for (BlockFace face : ALL_FACES) {
+        Block neighbor = block.getRelative(face);
+        LocationKey nk = LocationKey.of(neighbor);
+
+        if (validMembers.contains(nk)) {
+            queue.add(nk);
+        } else {
+            classifyEdge(loc, block, neighbor, face, network);
+        }
+    }
+}
+return network;
+```
+
+`LocationKey.toBlock(World)` is a helper: `world.getBlockAt(x, y, z)`.
+
+#### `classifyEdge(LocationKey cableKey, Block cableBlock, Block neighbor, BlockFace face, CableNetwork net)`
+
+Determines if `cableKey` is an input edge, output edge, or both.
+
+```java
+// Input: does the cable RECEIVE power from this face?
+// getBlockPower(face) returns the power level the cable block receives FROM
+// the given face direction. This is the correct API — neighbor.getBlockPower()
+// would return the power the NEIGHBOR receives, which is wrong (a lever
+// receives 0 power but outputs 15).
+int power = cableBlock.getBlockPower(face);
+if (power > 0) {
+    net.inputEdges().add(cableKey);
+}
+
+// Output: is the neighbor a CoreLib custom block that accepts redstone?
 CustomBlockRegistry registry = CoreLibPlugin.getInstance().getRegistry();
 CustomHeadBlock type = registry.getTypeFromBlock(neighbor);
 if (type != null && type.sensitivity() != CustomHeadBlock.Sensitivity.NONE) {
-    net.outputEdges().add(cableLoc);
-    // This cable is ALSO an input if the CoreLib block outputs power
-    // (but CoreLib blocks don't output power, so skip for v1)
+    net.outputEdges().add(cableKey);
 }
-
-// Vanilla power sources: redstone block, lever, button, etc.
-// block.getBlockPower() already handles these
 ```
 
 A cable location can be in BOTH `inputEdges` and `outputEdges` (e.g., a cable between
@@ -360,16 +416,20 @@ a lever and a redstone display).
 #### `tickPower()` — called every 2 ticks
 
 ```java
-for (CableNetwork network : networks) {
+// Iterate a copy — tickPower can trigger cascading physics events that cause
+// structural changes (register/unregister), which would ConcurrentModificationException
+for (CableNetwork network : new ArrayList<>(networks)) {
+    if (!networks.contains(network)) continue; // stale from concurrent structural change
+
     // Read max power across all input edges
     int maxPower = 0;
-    for (Location inputLoc : network.inputEdges()) {
-        Block cableBlock = inputLoc.getBlock();
+    for (LocationKey inputKey : network.inputEdges()) {
+        Block cableBlock = inputKey.toBlock(world);
         for (BlockFace face : ALL_FACES) {
-            Block neighbor = cableBlock.getRelative(face);
-            Location neighborNorm = normalizeLocation(neighbor.getLocation());
-            if (cableToNetwork.containsKey(neighborNorm)) continue; // skip other cables
-            int power = neighbor.getBlockPower();
+            LocationKey nk = LocationKey.of(cableBlock.getRelative(face));
+            if (cableToNetwork.containsKey(nk)) continue; // skip other cables
+            // Read power the cable receives FROM this face
+            int power = cableBlock.getBlockPower(face);
             maxPower = Math.max(maxPower, power);
         }
     }
@@ -377,127 +437,178 @@ for (CableNetwork network : networks) {
     if (maxPower == network.powerLevel()) continue; // no change
 
     network.setPowerLevel(maxPower);
-
-    // Update visuals for all cables in network
     updateNetworkVisuals(network);
+    pushPowerToOutputs(network, maxPower);
+}
+```
 
-    // Push power to output edges via CoreLib API
-    CustomBlockRegistry registry = CoreLibPlugin.getInstance().getRegistry();
-    for (Location outputLoc : network.outputEdges()) {
-        Block cableBlock = outputLoc.getBlock();
-        for (BlockFace face : ALL_FACES) {
-            Block neighbor = cableBlock.getRelative(face);
-            if (cableToNetwork.containsKey(normalizeLocation(neighbor.getLocation()))) continue;
-            CustomHeadBlock type = registry.getTypeFromBlock(neighbor);
-            if (type != null && type.sensitivity() != CustomHeadBlock.Sensitivity.NONE) {
-                if (maxPower > 0) {
-                    registry.externalPowerOverride(neighbor, maxPower);
-                } else {
-                    registry.clearExternalPowerOverride(neighbor);
-                }
+#### `pushPowerToOutputs(CableNetwork network, int power)`
+
+```java
+CustomBlockRegistry registry = CoreLibPlugin.getInstance().getRegistry();
+for (LocationKey outputKey : network.outputEdges()) {
+    Block cableBlock = outputKey.toBlock(world);
+    for (BlockFace face : ALL_FACES) {
+        Block neighbor = cableBlock.getRelative(face);
+        if (cableToNetwork.containsKey(LocationKey.of(neighbor))) continue;
+        CustomHeadBlock type = registry.getTypeFromBlock(neighbor);
+        if (type != null && type.sensitivity() != CustomHeadBlock.Sensitivity.NONE) {
+            if (power > 0) {
+                registry.externalPowerOverride(neighbor, power);
+            } else {
+                registry.clearExternalPowerOverride(neighbor);
             }
         }
     }
 }
 ```
 
-**Tick scheduling**: `Bukkit.getScheduler().runTaskTimer(plugin, this::tickPower, 20, 2)`
-— matches CoreLib's `tickRedstone()` interval. The 20-tick startup delay ensures
-CoreLib's registry is populated.
+**Tick scheduling**: `tickTask = Bukkit.getScheduler().runTaskTimer(plugin, this::tickPower, 2, 2)`
+— matches CoreLib's `tickRedstone()` interval. Store the `BukkitTask` for cancellation
+in `shutdown()`.
 
 #### `updateNetworkVisuals(CableNetwork network)`
 
 Swap skull texture for all cables in the network:
 
 ```java
-String texture = network.powerLevel() > 0 ? POWERED_TEXTURE : UNPOWERED_TEXTURE;
-for (Location loc : network.members()) {
-    Block block = loc.getBlock();
-    if (block.getState() instanceof Skull skull) {
-        HeadUtil.setTexture(skull, texture);
-    }
+String texture = network.powerLevel() > 0 ? poweredTexture : unpoweredTexture;
+for (LocationKey key : network.members()) {
+    Block block = key.toBlock(world);
+    HeadUtil.applyTexture(block, texture);
 }
 ```
 
+`HeadUtil.applyTexture(Block, String)` handles the Skull cast and `skull.update()`
+internally.
+
 This is O(network size) but only runs on power CHANGES, not every tick.
 
-#### `onNeighborChange(Location cableLoc)`
+#### `onNeighborChange(Block cableBlock)`
 
 Called when a non-cable block adjacent to a cable changes (lever toggled, block
 placed/broken). Does NOT rebuild the network structure — just reclassifies edges
 and triggers a power recalculation.
 
 ```java
-CableNetwork network = cableToNetwork.get(normalizeLocation(cableLoc));
+LocationKey key = LocationKey.of(cableBlock);
+CableNetwork network = cableToNetwork.get(key);
 if (network == null) return;
 
-// Reclassify this cable's edges
-reclassifyEdges(cableLoc, network);
-
-// Force immediate power tick for responsiveness
+reclassifyEdges(key, cableBlock, network);
 tickSingleNetwork(network);
 ```
 
-#### `normalizeLocation(Location loc)` — from Pipes
+#### `reclassifyEdges(LocationKey key, Block cableBlock, CableNetwork network)`
 
 ```java
-static Location normalizeLocation(Location loc) {
-    return new Location(loc.getWorld(),
-        loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
+network.inputEdges().remove(key);
+network.outputEdges().remove(key);
+
+for (BlockFace face : ALL_FACES) {
+    Block neighbor = cableBlock.getRelative(face);
+    LocationKey nk = LocationKey.of(neighbor);
+    if (cableToNetwork.containsKey(nk)) continue; // skip cables
+    classifyEdge(key, cableBlock, neighbor, face, network);
 }
 ```
 
 ### Network split detection on cable break
 
-When a cable is removed, its former neighbors may end up in separate networks. Naive
-approach: rebuild all affected networks from scratch. Optimized approach: BFS from one
-neighbor; if it reaches all other cable neighbors, the network is intact. If not, the
-unreached neighbors seed new networks.
+When a cable is removed, its former neighbors may end up in separate networks.
+Optimized approach: BFS from one neighbor; if it reaches all remaining members,
+the network is intact. If not, the unreached members seed new networks.
+
+The BFS is always bounded to `oldNetwork.members()` — never the global
+`cableToNetwork` map — to prevent accidentally absorbing adjacent but separate
+networks.
 
 ```java
-void handleCableBreak(Location removed, CableNetwork oldNetwork) {
-    oldNetwork.members().remove(removed);
-
-    List<Location> cableNeighbors = new ArrayList<>();
+void handleNetworkSplit(LocationKey removed, Block removedBlock, CableNetwork oldNetwork) {
+    // Find which neighbors were cables in this network
+    List<LocationKey> cableNeighbors = new ArrayList<>();
     for (BlockFace face : ALL_FACES) {
-        Location n = normalizeLocation(removed.getBlock().getRelative(face).getLocation());
-        if (oldNetwork.members().contains(n)) cableNeighbors.add(n);
+        LocationKey nk = LocationKey.of(removedBlock.getRelative(face));
+        if (oldNetwork.members().contains(nk)) cableNeighbors.add(nk);
     }
 
     if (cableNeighbors.isEmpty()) {
-        // Isolated cable removed — delete empty network
+        // Was the only cable — network already emptied in unregisterCable
         networks.remove(oldNetwork);
         return;
     }
 
-    // BFS from first neighbor
-    Set<Location> reached = bfs(cableNeighbors.get(0), oldNetwork.members());
+    // Quick check: BFS from first neighbor, bounded to remaining members
+    Set<LocationKey> reached = bfs(cableNeighbors.get(0), oldNetwork.members());
 
     if (reached.size() == oldNetwork.members().size()) {
-        // Network stays connected — just reclassify edges near the break
-        reclassifyAllEdges(oldNetwork);
+        // Still connected — reclassify edges near the break point
+        for (LocationKey nk : cableNeighbors) {
+            reclassifyEdges(nk, nk.toBlock(world), oldNetwork);
+        }
         return;
     }
 
-    // Split: create new networks from unreached components
+    // Split: rebuild all components from scratch, bounded to old member set
     networks.remove(oldNetwork);
-    Set<Location> remaining = new HashSet<>(oldNetwork.members());
+    // Clear overrides for all output edges of the old network
+    clearNetworkOverrides(oldNetwork);
 
+    Set<LocationKey> remaining = new HashSet<>(oldNetwork.members());
     while (!remaining.isEmpty()) {
-        Location seed = remaining.iterator().next();
-        CableNetwork newNet = rebuildNetwork(seed);
-        // rebuildNetwork removes from remaining via visited set
+        LocationKey seed = remaining.iterator().next();
+        CableNetwork newNet = rebuildNetworkFrom(seed, remaining);
         remaining.removeAll(newNet.members());
         networks.add(newNet);
-        for (Location m : newNet.members()) cableToNetwork.put(m, newNet);
+        for (LocationKey m : newNet.members()) cableToNetwork.put(m, newNet);
     }
 }
 ```
 
 ### Max network size
 
-Config-controlled cap (default 256). If `rebuildNetwork` BFS exceeds this, stop
-growing. Log a warning. This prevents lag from accidental mega-networks.
+Config-controlled cap (default 256). Enforced in `rebuildNetworkFrom` BFS (see above).
+
+### `isCable(LocationKey key)`
+
+```java
+boolean isCable(LocationKey key) { return cableToNetwork.containsKey(key); }
+```
+
+Used by `CableListener` to check adjacency.
+
+### `clearNetworkOverrides(CableNetwork network)`
+
+```java
+void clearNetworkOverrides(CableNetwork network) {
+    CustomBlockRegistry registry = CoreLibPlugin.getInstance().getRegistry();
+    for (LocationKey outputKey : network.outputEdges()) {
+        Block cableBlock = outputKey.toBlock(world);
+        for (BlockFace face : ALL_FACES) {
+            Block neighbor = cableBlock.getRelative(face);
+            if (cableToNetwork.containsKey(LocationKey.of(neighbor))) continue;
+            registry.clearExternalPowerOverride(neighbor);
+        }
+    }
+}
+```
+
+### `shutdown()`
+
+Called from `CablesPlugin.onDisable()`.
+
+```java
+void shutdown() {
+    if (tickTask != null) tickTask.cancel();
+    // Clear all power overrides so CoreLib blocks don't stay permanently powered
+    for (CableNetwork net : networks) {
+        clearNetworkOverrides(net);
+    }
+    cableToNetwork.clear();
+    networks.clear();
+    pendingUnloads.clear();
+}
+```
 
 ---
 
@@ -512,32 +623,50 @@ with two states (unpowered / powered) and lifecycle callbacks.
 @Override
 public void onEnable() {
     saveDefaultConfig();
+    String unpoweredTexture = getConfig().getString("textures.unpowered");
+    String poweredTexture = getConfig().getString("textures.powered");
+    int maxNetworkSize = getConfig().getInt("max-network-size", 256);
 
     CustomBlockRegistry registry = CoreLibPlugin.getInstance().getRegistry();
-    cableManager = new CableManager(this);
+    cableManager = new CableManager(this, unpoweredTexture, poweredTexture, maxNetworkSize);
 
     CustomHeadBlock cableType = CustomHeadBlock.builder("cables", "cable")
-        .texture(UNPOWERED_TEXTURE)
+        .texture(unpoweredTexture)
         .name(Component.text("Redstone Cable", NamedTextColor.RED))
         .lore(List.of(Component.text("Transmits redstone instantly", NamedTextColor.GRAY)))
         .drops(DropRule.self())
         .cancelPistons(true)
         .reactsToNeighbors(true)
         .onNeighborChange((block, face) -> cableManager.onNeighborChange(block))
-        .onBlockRemoved((block, state) -> cableManager.unregisterCable(block.getLocation()))
-        .onChunkLoad((block, state) -> cableManager.registerCable(block.getLocation()))
-        .onChunkUnload(block -> cableManager.onChunkUnload(block.getLocation()))
+        .onBlockRemoved((block, state) -> cableManager.unregisterCable(block))
+        .onChunkLoad((block, state) -> cableManager.registerCable(block))
+        .onChunkUnload(block -> cableManager.onChunkUnload(block))
+        .shapedRecipe(new CustomHeadBlock.ShapedRecipeDef(
+            "cable_craft", 8,
+            List.of("RCR", "CRC", "RCR"),
+            Map.of(
+                'R', new CustomHeadBlock.IngredientSpec(Material.REDSTONE, null),
+                'C', new CustomHeadBlock.IngredientSpec(Material.COPPER_INGOT, null)
+            )
+        ))
         .build();
 
     registry.register(cableType);
     cableManager.startTasks();
+
+    getServer().getPluginManager().registerEvents(new CableListener(cableManager), this);
+}
+
+@Override
+public void onDisable() {
+    cableManager.shutdown();
 }
 ```
 
 **Why no states?** State-based texture swapping (powered/unpowered) would cause
 `applyConfig()` to remove and re-spawn display entities every time power changes.
 Instead, `updateNetworkVisuals()` swaps the skull texture directly via
-`HeadUtil.setTexture()` — much cheaper.
+`HeadUtil.applyTexture()` — much cheaper.
 
 **Why `reactsToNeighbors(true)`?** When a lever adjacent to a cable is toggled,
 `BlockPhysicsEvent` fires. CoreLib checks `isNeighborReactive()` and calls the
@@ -566,19 +695,9 @@ player.getInventory().addItem(cableItem);
 
 ### Recipe
 
-Registered via CoreLib's builder:
-```java
-.shapedRecipe(new ShapedRecipeDef(
-    "cable_craft", 8,
-    List.of("RCR", "CRC", "RCR"),
-    Map.of(
-        'R', new ShapedRecipeDef.MaterialIngredient(Material.REDSTONE),
-        'C', new ShapedRecipeDef.MaterialIngredient(Material.COPPER_INGOT)
-    )
-))
-```
-
-Yields 8 cables. Copper + redstone thematic.
+Registered via CoreLib's builder (see `onEnable()` above). Uses
+`CustomHeadBlock.IngredientSpec(Material, blockId)` — pass `null` for blockId when
+using vanilla materials. Yields 8 cables. Copper + redstone thematic.
 
 ---
 
@@ -604,20 +723,38 @@ reclassifies edges.
 
 ### What CableListener DOES handle
 
+Pistons moving blocks adjacent to cables don't reliably fire `BlockPhysicsEvent` on
+the cable. `cancelPistons(true)` only prevents the cable itself from being pushed —
+if a piston pushes a lever away from a cable, the cable's edge classification goes
+stale. CableListener catches this:
+
 ```java
-@EventHandler
-public void onBlockBreak(BlockBreakEvent event) {
-    // When a non-cable block adjacent to a cable is broken, reclassify.
-    // CoreLib only fires onNeighborChange for its own custom blocks,
-    // but BlockPhysicsEvent covers vanilla block removals too.
-    // This may not be needed — test whether BlockPhysicsEvent is sufficient.
+@EventHandler(ignoreCancelled = true)
+public void onPistonExtend(BlockPistonExtendEvent event) {
+    reclassifyIfAdjacentToCable(event.getBlocks());
+}
+
+@EventHandler(ignoreCancelled = true)
+public void onPistonRetract(BlockPistonRetractEvent event) {
+    reclassifyIfAdjacentToCable(event.getBlocks());
+}
+
+private void reclassifyIfAdjacentToCable(List<Block> movedBlocks) {
+    Set<LocationKey> cablesToReclassify = new HashSet<>();
+    for (Block moved : movedBlocks) {
+        for (BlockFace face : CableManager.ALL_FACES) {
+            LocationKey nk = LocationKey.of(moved.getRelative(face));
+            if (cableManager.isCable(nk)) cablesToReclassify.add(nk);
+        }
+    }
+    for (LocationKey key : cablesToReclassify) {
+        cableManager.onNeighborChange(key.toBlock(movedBlocks.get(0).getWorld()));
+    }
 }
 ```
 
-**Likely outcome**: `CableListener` is empty or very thin. CoreLib + `reactsToNeighbors`
-+ `onNeighborChange` handles the vast majority. Only add handlers if testing reveals
-gaps (e.g., if vanilla block placement adjacent to a cable doesn't trigger
-`BlockPhysicsEvent` on the cable).
+All other events (placement, breaking, explosions, fire, chunk load/unload) are
+covered by CoreLib + `reactsToNeighbors` + `onNeighborChange`.
 
 ---
 
@@ -633,22 +770,64 @@ CoreLib's chunk hint system + `onChunkLoad` callback handles this:
 
 ### Chunk unload
 
-1. CoreLib calls `onChunkUnloadCallback` → `cableManager.onChunkUnload(loc)`
-2. Remove cable from its network. If network becomes empty, remove it.
-3. If network splits across chunk boundary, that's fine — remaining cables in loaded
-   chunks form their own network. When the chunk reloads, they merge back.
+CoreLib calls `onChunkUnloadCallback` per cable. To avoid O(cables × network_size)
+cost from calling `handleNetworkSplit` one cable at a time, `onChunkUnload` collects
+cables into a pending set and defers the split check:
+
+```java
+private final Set<LocationKey> pendingUnloads = new HashSet<>();
+
+void onChunkUnload(Block block) {
+    LocationKey key = LocationKey.of(block);
+    CableNetwork net = cableToNetwork.remove(key);
+    if (net == null) return;
+    net.removeMember(key);
+    if (net.isEmpty()) {
+        networks.remove(net);
+    } else {
+        pendingUnloads.addAll(net.members());
+    }
+}
+```
+
+At the start of `tickPower()`, process pending unloads in bulk:
+
+```java
+if (!pendingUnloads.isEmpty()) {
+    Set<CableNetwork> affected = new HashSet<>();
+    for (LocationKey key : pendingUnloads) {
+        CableNetwork net = cableToNetwork.get(key);
+        if (net != null) affected.add(net);
+    }
+    pendingUnloads.clear();
+    for (CableNetwork net : affected) {
+        // Rebuild from scratch — members already removed
+        networks.remove(net);
+        clearNetworkOverrides(net);
+        Set<LocationKey> remaining = new HashSet<>(net.members());
+        while (!remaining.isEmpty()) {
+            LocationKey seed = remaining.iterator().next();
+            CableNetwork newNet = rebuildNetworkFrom(seed, remaining);
+            remaining.removeAll(newNet.members());
+            networks.add(newNet);
+            for (LocationKey m : newNet.members()) cableToNetwork.put(m, newNet);
+        }
+    }
+}
+```
 
 ### Cross-chunk networks
 
-A cable network can span chunk boundaries. When one chunk unloads:
-- Cables in that chunk are removed from the network
-- The network may split; `handleCableBreak` logic applies to each unloaded cable
-- Power recalculates for surviving sub-networks
-- On chunk reload, networks re-merge naturally via `registerCable()`
+A cable network can span chunk boundaries. When one chunk unloads, cables in that
+chunk are removed and remaining members re-form into one or more sub-networks. On
+chunk reload, `registerCable()` merges them back naturally.
 
-This means cross-chunk networks temporarily lose connectivity at chunk boundaries,
-which is acceptable — it matches vanilla redstone behavior where unloaded chunks
-don't process signals.
+Cross-chunk networks temporarily lose connectivity at chunk boundaries — acceptable,
+matches vanilla redstone behavior where unloaded chunks don't process signals.
+
+**Known limitation**: If chunk A has the lever and chunk C has the output, and the
+connecting chunk B unloads, the output block in C loses power even though C is still
+loaded. Power restores when B reloads.
 
 ---
 
@@ -659,7 +838,7 @@ don't process signals.
 - **Unpowered**: grey/dark cable texture (base64 head texture, source from
   minecraft-heads.com — search for "cable" or "wire" themed heads)
 - **Powered**: red/glowing cable texture (second base64 head)
-- Swap via `HeadUtil.setTexture(skull, texture)` in `updateNetworkVisuals()`
+- Swap via `HeadUtil.applyTexture(block, texture)` in `updateNetworkVisuals()`
 
 No display entities for v1. The skull head itself IS the visual. This keeps it simple
 and avoids display entity spawn/despawn overhead on power toggles.
@@ -718,15 +897,22 @@ recipe:
 
 ### Structural invariants
 
-- Every cable location maps to exactly one `CableNetwork`
+- Every cable `LocationKey` maps to exactly one `CableNetwork` via `cableToNetwork`
 - Every `CableNetwork` in `networks` has at least 1 member
-- `inputEdges` and `outputEdges` are subsets of `members`
+- `inputEdges` and `outputEdges` are subsets of `members` (enforced by `removeMember`)
 - On cable place/break, networks are rebuilt synchronously (no stale references)
+- `unregisterCable` removes from `cableToNetwork` FIRST, before network split logic
+- Network merge updates `cableToNetwork` for ALL absorbed members and removes old
+  networks from `networks` — no orphaned network objects
+- BFS during split is bounded to `oldNetwork.members()`, never the global
+  `cableToNetwork` map — prevents cross-network absorption
 
-### Race conditions
+### Race conditions / reentrancy
 
 - All cable operations run on the main server thread (Bukkit scheduler). No
   thread safety concerns.
+- `tickPower()` iterates a COPY of `networks` (`new ArrayList<>(networks)`) to
+  tolerate structural changes from cascading physics events during texture updates.
 - `tickPower()` and `registerCable()`/`unregisterCable()` never run concurrently
   because both are main-thread tasks.
 
@@ -825,6 +1011,13 @@ recipe:
 11. **Multiple inputs**: Two levers into same network → power = max of both
 12. **Power removal**: Remove all levers → network power drops to 0, textures revert,
     CoreLib blocks receive power 0
+13. **Adjacent network isolation**: Two parallel cable lines 1 block apart with
+    different power sources → break a cable in line A → line B must be unaffected
+    (no cross-network absorption)
+14. **Plugin disable**: `/reload` → CoreLib blocks adjacent to cables must lose power
+    override (not stay permanently powered)
+15. **Piston edge case**: Place lever next to cable, push lever away with piston →
+    cable network should lose power
 
 ---
 
