@@ -659,3 +659,62 @@ blocks:
             key:
               B: { tag: banners }
               I: { material: IRON_BLOCK }
+
+  # ─── Huge Windmill ──────────────────────────────────────────────────────
+  # Source: 15 SU. Always spinning. 4x scale of demo:windmill banners.
+  # Same left_rotations as large_windmill, scale 2.25→3.0, blade origins 1.25→1.667, Y -0.25→-0.333.
+  # Crafted only with Huge banners (enforced in Java via bannerTier).
+  huge_windmill:
+    name: "&bHuge Windmill"
+    lore:
+      - "&7Produces 15 units of rotation power"
+      - "&7Always spinning"
+    texture: "@large_windmill"
+    drops: self
+    break_sound: { sound: BLOCK_WOOD_BREAK, volume: 0.8, pitch: 0.8 }
+    place_sound: { sound: BLOCK_WOOD_PLACE, volume: 0.8, pitch: 0.8 }
+    default_state: floor
+    placement_state_map:
+      DOWN: floor
+      NORTH: wall_s
+      SOUTH: wall_n
+      EAST: wall_e
+      WEST: wall_w
+    states:
+      floor:
+        display_entities:
+          - { material: WHITE_BANNER, tag: blade_a, transform: { translation: [1.667, -0.333, 0],    scale: [3.0, 3.0, 3.0], left_rotation: [120, 1, 1, -1] },  animation: { type: rotate, axis: [0,1,0], speed: 1.5 }, interpolation: 2 }
+          - { material: WHITE_BANNER, tag: blade_b, transform: { translation: [0, -0.333, 1.667],    scale: [3.0, 3.0, 3.0], left_rotation: [90, 1, 0, 0] },   animation: { type: rotate, axis: [0,1,0], speed: 1.5 }, interpolation: 2 }
+          - { material: WHITE_BANNER, tag: blade_c, transform: { translation: [-1.667, -0.333, 0],   scale: [3.0, 3.0, 3.0], left_rotation: [120, 1, -1, 1] }, animation: { type: rotate, axis: [0,1,0], speed: 1.5 }, interpolation: 2 }
+          - { material: WHITE_BANNER, tag: blade_d, transform: { translation: [0, -0.333, -1.667],   scale: [3.0, 3.0, 3.0], left_rotation: [180, 0, 1, -1] }, animation: { type: rotate, axis: [0,1,0], speed: 1.5 }, interpolation: 2 }
+      wall_n:
+        display_entities:
+          - { material: WHITE_BANNER, tag: blade_a, transform: { translation: [1.667, 0, 0],  scale: [3.0, 3.0, 3.0], left_rotation: [-90, 0, 0, 1] },  animation: { type: rotate, axis: [0,0,1], speed: 1.5 }, interpolation: 2, wall_offset: 0.25 }
+          - { material: WHITE_BANNER, tag: blade_b, transform: { translation: [0, 1.667, 0],  scale: [3.0, 3.0, 3.0] },                                  animation: { type: rotate, axis: [0,0,1], speed: 1.5 }, interpolation: 2, wall_offset: 0.25 }
+          - { material: WHITE_BANNER, tag: blade_c, transform: { translation: [-1.667, 0, 0], scale: [3.0, 3.0, 3.0], left_rotation: [90, 0, 0, 1] },   animation: { type: rotate, axis: [0,0,1], speed: 1.5 }, interpolation: 2, wall_offset: 0.25 }
+          - { material: WHITE_BANNER, tag: blade_d, transform: { translation: [0, -1.667, 0], scale: [3.0, 3.0, 3.0], left_rotation: [180, 0, 0, 1] },  animation: { type: rotate, axis: [0,0,1], speed: 1.5 }, interpolation: 2, wall_offset: 0.25 }
+      wall_s:
+        display_entities:
+          - { material: WHITE_BANNER, tag: blade_a, transform: { translation: [1.667, 0, 0],  scale: [3.0, 3.0, 3.0], left_rotation: [180, 1, 1, 0] },  animation: { type: rotate, axis: [0,0,1], speed: 1.5 }, interpolation: 2, wall_offset: 0.25 }
+          - { material: WHITE_BANNER, tag: blade_b, transform: { translation: [0, 1.667, 0],  scale: [3.0, 3.0, 3.0], left_rotation: [180, 0, 1, 0] },   animation: { type: rotate, axis: [0,0,1], speed: 1.5 }, interpolation: 2, wall_offset: 0.25 }
+          - { material: WHITE_BANNER, tag: blade_c, transform: { translation: [-1.667, 0, 0], scale: [3.0, 3.0, 3.0], left_rotation: [180, 1, -1, 0] }, animation: { type: rotate, axis: [0,0,1], speed: 1.5 }, interpolation: 2, wall_offset: 0.25 }
+          - { material: WHITE_BANNER, tag: blade_d, transform: { translation: [0, -1.667, 0], scale: [3.0, 3.0, 3.0], left_rotation: [180, 1, 0, 0] },  animation: { type: rotate, axis: [0,0,1], speed: 1.5 }, interpolation: 2, wall_offset: 0.25 }
+      wall_w:
+        display_entities:
+          - { material: WHITE_BANNER, tag: blade_a, transform: { translation: [0, 1.667, 0],  scale: [3.0, 3.0, 3.0], left_rotation: [-90, 0, 1, 0] },   animation: { type: rotate, axis: [1,0,0], speed: 1.5 }, interpolation: 2, wall_offset: 0.25 }
+          - { material: WHITE_BANNER, tag: blade_b, transform: { translation: [0, 0, 1.667],  scale: [3.0, 3.0, 3.0], left_rotation: [120, 1, -1, -1] }, animation: { type: rotate, axis: [1,0,0], speed: 1.5 }, interpolation: 2, wall_offset: 0.25 }
+          - { material: WHITE_BANNER, tag: blade_c, transform: { translation: [0, -1.667, 0], scale: [3.0, 3.0, 3.0], left_rotation: [180, 1, 0, -1] },  animation: { type: rotate, axis: [1,0,0], speed: 1.5 }, interpolation: 2, wall_offset: 0.25 }
+          - { material: WHITE_BANNER, tag: blade_d, transform: { translation: [0, 0, -1.667], scale: [3.0, 3.0, 3.0], left_rotation: [-120, 1, 1, -1] }, animation: { type: rotate, axis: [1,0,0], speed: 1.5 }, interpolation: 2, wall_offset: 0.25 }
+      wall_e:
+        display_entities:
+          - { material: WHITE_BANNER, tag: blade_a, transform: { translation: [0, 1.667, 0],  scale: [3.0, 3.0, 3.0], left_rotation: [90, 0, 1, 0] },    animation: { type: rotate, axis: [1,0,0], speed: 1.5 }, interpolation: 2, wall_offset: 0.25 }
+          - { material: WHITE_BANNER, tag: blade_b, transform: { translation: [0, 0, 1.667],  scale: [3.0, 3.0, 3.0], left_rotation: [120, 1, 1, 1] },   animation: { type: rotate, axis: [1,0,0], speed: 1.5 }, interpolation: 2, wall_offset: 0.25 }
+          - { material: WHITE_BANNER, tag: blade_c, transform: { translation: [0, -1.667, 0], scale: [3.0, 3.0, 3.0], left_rotation: [180, 1, 0, 1] },   animation: { type: rotate, axis: [1,0,0], speed: 1.5 }, interpolation: 2, wall_offset: 0.25 }
+          - { material: WHITE_BANNER, tag: blade_d, transform: { translation: [0, 0, -1.667], scale: [3.0, 3.0, 3.0], left_rotation: [-120, 1, -1, 1] }, animation: { type: rotate, axis: [1,0,0], speed: 1.5 }, interpolation: 2, wall_offset: 0.25 }
+    recipes:
+      craft:
+        shaped:
+          - pattern: [" B ", "BIB", " B "]
+            key:
+              B: { tag: banners }
+              I: { material: DIAMOND_BLOCK }

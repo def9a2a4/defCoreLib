@@ -18,12 +18,12 @@ flag-banner:
   face-gap:
     normal: 0.0245
     large: 0.052
-    extra-large: 0.085
+    huge: 0.085
   # Distance from fence center beyond half banner width (blocks)
   outward-offset:
     normal: -0.04
     large: -0.124
-    extra-large: -0.124
+    huge: -0.124
   # Tilt both faces toward/away from each other (degrees)
   splay-tilt: 0.45
   # Rotate both faces together in the same direction (degrees)

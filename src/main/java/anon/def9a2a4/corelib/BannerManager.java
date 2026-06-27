@@ -60,10 +60,10 @@ public class BannerManager implements Listener {
     private float flagDepth = 1.0f;
     private float flagFaceGapNormal = 0.0245f;
     private float flagFaceGapLarge = 0.052f;
-    private float flagFaceGapExtraLarge = 0.085f;
+    private float flagFaceGapHuge = 0.085f;
     private float flagOutwardOffsetNormal = -0.04f;
     private float flagOutwardOffsetLarge = -0.124f;
-    private float flagOutwardOffsetExtraLarge = -0.124f;
+    private float flagOutwardOffsetHuge = -0.124f;
     private float flagSplayTilt = 0.45f;
     private float flagUnifiedTilt = 0.0f;
 
@@ -86,10 +86,10 @@ public class BannerManager implements Listener {
         flagDepth = (float) cfg.getDouble("flag-banner.depth", flagDepth);
         flagFaceGapNormal = (float) cfg.getDouble("flag-banner.face-gap.normal", flagFaceGapNormal);
         flagFaceGapLarge = (float) cfg.getDouble("flag-banner.face-gap.large", flagFaceGapLarge);
-        flagFaceGapExtraLarge = (float) cfg.getDouble("flag-banner.face-gap.extra-large", flagFaceGapExtraLarge);
+        flagFaceGapHuge = (float) cfg.getDouble("flag-banner.face-gap.huge", flagFaceGapHuge);
         flagOutwardOffsetNormal = (float) cfg.getDouble("flag-banner.outward-offset.normal", flagOutwardOffsetNormal);
         flagOutwardOffsetLarge = (float) cfg.getDouble("flag-banner.outward-offset.large", flagOutwardOffsetLarge);
-        flagOutwardOffsetExtraLarge = (float) cfg.getDouble("flag-banner.outward-offset.extra-large", flagOutwardOffsetExtraLarge);
+        flagOutwardOffsetHuge = (float) cfg.getDouble("flag-banner.outward-offset.huge", flagOutwardOffsetHuge);
         flagSplayTilt = (float) cfg.getDouble("flag-banner.splay-tilt", flagSplayTilt);
         flagUnifiedTilt = (float) cfg.getDouble("flag-banner.unified-tilt", flagUnifiedTilt);
     }
@@ -474,13 +474,13 @@ public class BannerManager implements Listener {
     }
 
     private float flagFaceGap(float scale) {
-        if (scale >= HUGE_SCALE) return flagFaceGapExtraLarge;
+        if (scale >= HUGE_SCALE) return flagFaceGapHuge;
         if (scale >= LARGE_SCALE) return flagFaceGapLarge;
         return flagFaceGapNormal;
     }
 
     private float flagOutwardOffset(float scale) {
-        if (scale >= HUGE_SCALE) return flagOutwardOffsetExtraLarge;
+        if (scale >= HUGE_SCALE) return flagOutwardOffsetHuge;
         if (scale >= LARGE_SCALE) return flagOutwardOffsetLarge;
         return flagOutwardOffsetNormal;
     }

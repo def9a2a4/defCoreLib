@@ -491,6 +491,7 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         if (typeId == null) return;
         CustomHeadBlock type = registry.getType(typeId);
         if (type == null || type.displayItemResolver() == null) return;
+        BannerTier requiredTier = type.bannerTier();
 
         // Matrix is 1-indexed (slot 0 = result): slots 1-9 are the 3x3 grid
         // Slot layout: 1=TL 2=TC 3=TR 4=ML 5=MC 6=MR 7=BL 8=BC 9=BR
@@ -506,8 +507,15 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         for (int i = 0; i < 4; i++) {
             ItemStack banner = matrix[bannerSlots[i]];
             if (banner != null && banner.getType().name().endsWith("_BANNER")) {
-                bladeData[i] = banner.asQuantity(1).serializeAsBytes();
-                banners.add(banner.asQuantity(1));
+                // Tier-gated windmills only craft with the matching banner tier.
+                if (requiredTier != null && !LargeBannerRecipes.matches(banner, requiredTier)) {
+                    inv.setResult(null);
+                    return;
+                }
+                // Strip the tier marker/auto-name so the blade renders/labels as its base colour.
+                ItemStack blade = LargeBannerRecipes.stripTier(banner.asQuantity(1));
+                bladeData[i] = blade.serializeAsBytes();
+                banners.add(blade);
                 hasBanners = true;
             }
         }

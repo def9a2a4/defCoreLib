@@ -275,6 +275,7 @@ public final class CustomHeadBlock {
     private final @Nullable BiConsumer<Block, String> onBlockRemoved;
     private final @Nullable BiFunction<Block, org.bukkit.event.player.PlayerInteractEvent, Boolean> onInteract;
     private final java.util.function.@Nullable BiFunction<Block, String, org.bukkit.inventory.ItemStack> displayItemResolver;
+    private final @Nullable BannerTier bannerTier;
 
     private CustomHeadBlock(Builder b) {
         this.namespace = b.namespace;
@@ -316,6 +317,7 @@ public final class CustomHeadBlock {
         this.onBlockRemoved = b.onBlockRemoved;
         this.onInteract = b.onInteract;
         this.displayItemResolver = b.displayItemResolver;
+        this.bannerTier = b.bannerTier;
 
         // Cache capability checks (avoid streaming states on every call)
         this._hasDisplayEntities = !displayEntities.isEmpty() || states.values().stream().anyMatch(s -> s.displayEntities() != null);
@@ -375,6 +377,8 @@ public final class CustomHeadBlock {
     public @Nullable BiFunction<Block, org.bukkit.event.player.PlayerInteractEvent, Boolean> onInteract() { return onInteract; }
     public boolean drillable() { return drillable; }
     public @Nullable BiFunction<Block, String, org.bukkit.inventory.ItemStack> displayItemResolver() { return displayItemResolver; }
+    /** Required banner tier for banner-blade crafting ingredients, or {@code null} for no gating. */
+    public @Nullable BannerTier bannerTier() { return bannerTier; }
 
     public boolean hasDisplayEntities() { return _hasDisplayEntities; }
     public boolean hasLight() { return _hasLight; }
@@ -542,6 +546,7 @@ public final class CustomHeadBlock {
         b.onBlockRemoved = onBlockRemoved;
         b.onInteract = onInteract;
         b.displayItemResolver = displayItemResolver;
+        b.bannerTier = bannerTier;
         return b;
     }
 
@@ -590,6 +595,7 @@ public final class CustomHeadBlock {
         private @Nullable BiConsumer<Block, String> onBlockRemoved;
         private @Nullable BiFunction<Block, org.bukkit.event.player.PlayerInteractEvent, Boolean> onInteract;
         private @Nullable BiFunction<Block, String, org.bukkit.inventory.ItemStack> displayItemResolver;
+        private @Nullable BannerTier bannerTier;
 
         private Builder(String namespace, String typeId) {
             this.namespace = Objects.requireNonNull(namespace);
@@ -705,6 +711,7 @@ public final class CustomHeadBlock {
         public Builder onInteract(BiFunction<Block, org.bukkit.event.player.PlayerInteractEvent, Boolean> handler) { this.onInteract = handler; return this; }
         public Builder drillable(boolean drillable) { this.drillable = drillable; return this; }
         public Builder displayItemResolver(BiFunction<Block, String, org.bukkit.inventory.ItemStack> resolver) { this.displayItemResolver = resolver; return this; }
+        public Builder bannerTier(BannerTier tier) { this.bannerTier = tier; return this; }
 
         public CustomHeadBlock build() {
             if (texture == null || texture.isBlank()) {

@@ -43,10 +43,14 @@ final class RotationBlocks {
         // Passive sources — detected at network boundary, no callbacks needed
         network.registerPassiveSource("demo:windmill", 1);
         network.registerPassiveSource("rotation:large_windmill", 5);
+        network.registerPassiveSource("rotation:huge_windmill", 15);
 
-        // Windmill blade resolver — allows crafted banners to replace default WHITE_BANNER
-        overlayWindmillResolver(registry, "demo:windmill");
-        overlayWindmillResolver(registry, "rotation:large_windmill");
+        // Windmill blade resolver — allows crafted banners to replace default WHITE_BANNER.
+        // Each tier is craftable only with the matching banner tier (enforced in
+        // CoreLibPlugin.captureBannerIngredients via the block's bannerTier).
+        overlayWindmillResolver(registry, "demo:windmill", BannerTier.NORMAL);
+        overlayWindmillResolver(registry, "rotation:large_windmill", BannerTier.LARGE);
+        overlayWindmillResolver(registry, "rotation:huge_windmill", BannerTier.HUGE);
     }
 
     // ──────────────────────────────────────────────────────────────────────
@@ -483,10 +487,11 @@ final class RotationBlocks {
     // Windmill: displayItemResolver for custom banner blades
     // ──────────────────────────────────────────────────────────────────────
 
-    private static void overlayWindmillResolver(CustomBlockRegistry registry, String blockId) {
+    private static void overlayWindmillResolver(CustomBlockRegistry registry, String blockId, BannerTier tier) {
         CustomHeadBlock block = registry.getType(blockId);
         if (block == null) { warn(registry, blockId); return; }
         registry.register(block.toBuilder()
+            .bannerTier(tier)
             .displayItemResolver((b, suffix) -> {
                 // blade_a → 0, blade_b → 1, blade_c → 2, blade_d → 3
                 if (suffix == null || !suffix.startsWith("blade_") || suffix.length() < 7) return null;

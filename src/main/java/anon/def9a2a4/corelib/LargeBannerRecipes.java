@@ -144,6 +144,36 @@ public class LargeBannerRecipes implements Listener {
                 .has(HUGE_BANNER_KEY, PersistentDataType.BYTE);
     }
 
+    /** Does this banner satisfy the required tier? NORMAL = a banner with no tier marker. */
+    static boolean matches(ItemStack item, BannerTier tier) {
+        return switch (tier) {
+            case NORMAL -> isBanner(item.getType()) && !isLargeBanner(item) && !isHugeBanner(item);
+            case LARGE -> isLargeBanner(item);
+            case HUGE -> isHugeBanner(item);
+        };
+    }
+
+    /** Return a copy of the banner with its tier marker and auto-generated tier name/lore removed,
+     *  so a captured blade renders/labels as its plain base colour. No-op for plain banners. */
+    static ItemStack stripTier(ItemStack banner) {
+        ItemStack out = banner.clone();
+        if (!out.hasItemMeta()) return out;
+        var meta = out.getItemMeta();
+        var pdc = meta.getPersistentDataContainer();
+        pdc.remove(LARGE_BANNER_KEY);
+        pdc.remove(HUGE_BANNER_KEY);
+        if (meta.hasDisplayName() && isAutoTierName(meta.displayName(), colorName(out.getType()))) {
+            meta.displayName(null);
+        }
+        if (meta.hasLore()) {
+            List<Component> lore = new ArrayList<>(meta.lore());
+            lore.removeIf(LargeBannerRecipes::isTierLoreLine);
+            meta.lore(lore.isEmpty() ? null : lore);
+        }
+        out.setItemMeta(meta);
+        return out;
+    }
+
     private static String colorName(Material bannerMat) {
         String raw = bannerMat.name().replace("_BANNER", "");
         String[] parts = raw.split("_");
