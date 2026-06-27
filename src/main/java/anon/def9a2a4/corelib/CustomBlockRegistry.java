@@ -18,6 +18,7 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 
+import org.bukkit.entity.BlockDisplay;
 import org.bukkit.entity.Display;
 import org.bukkit.entity.ItemDisplay;
 import org.bukkit.inventory.ItemStack;
@@ -475,6 +476,30 @@ public class CustomBlockRegistry {
                             transformToMatrix(dec.transform())));
                 }
             }
+            // Block display entities
+            List<CustomHeadBlock.BlockDisplayEntityConfig> blockDisplays = type.resolveBlockDisplayEntities(state);
+            for (var bdc : blockDisplays) {
+                String tag = DisplayUtil.blockTag(type.namespace(), type.typeId(),
+                        block.getLocation(), bdc.tagSuffix());
+                org.bukkit.Location spawnBase = block.getLocation();
+                if (bdc.wallOffset() != 0 && block.getType() == Material.PLAYER_WALL_HEAD
+                        && block.getBlockData() instanceof Directional wallDir) {
+                    Vector wallFacing = wallDir.getFacing().getDirection();
+                    spawnBase = spawnBase.clone().subtract(wallFacing.multiply(bdc.wallOffset()));
+                }
+                Matrix4f matrix = transformToMatrix(bdc.transform());
+                var display = DisplayUtil.spawnBlock(spawnBase, bdc.blockData(), matrix, tag);
+                if (bdc.interpolationDuration() != 0) {
+                    display.setInterpolationDuration(bdc.interpolationDuration());
+                }
+                if (bdc.animation() != null) {
+                    if (anims == null) anims = new ArrayList<>();
+                    anims.add(new AnimationTracked(display, bdc.animation(),
+                            Bukkit.getServer().getCurrentTick(),
+                            transformToMatrix(bdc.transform())));
+                }
+            }
+
             if (anims != null) {
                 animationTracked.put(key, anims);
             } else {
@@ -700,16 +725,12 @@ public class CustomBlockRegistry {
     /** Re-register animation tracking for existing display entities (after chunk load). */
     private void trackAnimations(Block block, CustomHeadBlock type, @Nullable String state) {
         List<CustomHeadBlock.DisplayEntityConfig> displays = type.resolveDisplayEntities(state);
-        if (displays == null || displays.isEmpty()) return;
+        List<CustomHeadBlock.BlockDisplayEntityConfig> blockDisplays = type.resolveBlockDisplayEntities(state);
 
-        // Check if any display entity has an animation
-        boolean hasAnimations = false;
-        for (var dec : displays) {
-            if (dec.animation() != null) { hasAnimations = true; break; }
-        }
-        if (!hasAnimations) return;
+        boolean hasItemAnims = displays.stream().anyMatch(d -> d.animation() != null);
+        boolean hasBlockAnims = blockDisplays.stream().anyMatch(d -> d.animation() != null);
+        if (!hasItemAnims && !hasBlockAnims) return;
 
-        // Find existing display entities by tag
         String tagPrefix = DisplayUtil.blockTagPrefix(type.namespace(), type.typeId(), block.getLocation());
         List<Display> found = DisplayUtil.findByTag(block.getLocation(), tagPrefix, 1.5);
         if (found.isEmpty()) return;
@@ -717,7 +738,7 @@ public class CustomBlockRegistry {
         long startTick = Bukkit.getServer().getCurrentTick();
         List<AnimationTracked> anims = new ArrayList<>();
 
-        // Match found displays to configs by tag suffix
+        // ItemDisplay animations
         for (var dec : displays) {
             if (dec.animation() == null) continue;
             String expectedTag = DisplayUtil.blockTag(type.namespace(), type.typeId(),
@@ -726,6 +747,20 @@ public class CustomBlockRegistry {
                 if (display.getScoreboardTags().contains(expectedTag)) {
                     anims.add(new AnimationTracked(display, dec.animation(), startTick,
                             transformToMatrix(dec.transform())));
+                    break;
+                }
+            }
+        }
+
+        // BlockDisplay animations
+        for (var bdc : blockDisplays) {
+            if (bdc.animation() == null) continue;
+            String expectedTag = DisplayUtil.blockTag(type.namespace(), type.typeId(),
+                    block.getLocation(), bdc.tagSuffix());
+            for (var display : found) {
+                if (display instanceof BlockDisplay && display.getScoreboardTags().contains(expectedTag)) {
+                    anims.add(new AnimationTracked(display, bdc.animation(), startTick,
+                            transformToMatrix(bdc.transform())));
                     break;
                 }
             }

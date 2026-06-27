@@ -162,7 +162,9 @@ public final class BlockLoader {
         // Display entities
         List<?> displayList = sec.getList("display_entities");
         if (displayList != null) {
-            b.displayEntities(parseDisplayEntities(sec.getMapList("display_entities"), textures));
+            List<Map<?, ?>> displayMaps = sec.getMapList("display_entities");
+            b.displayEntities(parseDisplayEntities(displayMaps, textures));
+            b.blockDisplayEntities(parseBlockDisplayEntities(displayMaps));
         }
 
         // Directional textures
@@ -327,7 +329,9 @@ public final class BlockLoader {
         } else {
             List<?> displayList = sec.getList("display_entities");
             if (displayList != null) {
-                sb.displayEntities(parseDisplayEntities(sec.getMapList("display_entities"), textures));
+                List<Map<?, ?>> displayMaps = sec.getMapList("display_entities");
+                sb.displayEntities(parseDisplayEntities(displayMaps, textures));
+                sb.blockDisplayEntities(parseBlockDisplayEntities(displayMaps));
             }
         }
     }
@@ -406,11 +410,42 @@ public final class BlockLoader {
         return defaultVal;
     }
 
+    private static Transformation parseTransform(Map<?, ?> map) {
+        Object tObj = map.get("transform");
+        if (tObj instanceof Map<?, ?> tMap) {
+            Vector3f translation = parseVector3f(tMap.get("translation"), new Vector3f(0, 0, 0));
+            Vector3f scale = parseVector3f(tMap.get("scale"), new Vector3f(1, 1, 1));
+            AxisAngle4f leftRotation = new AxisAngle4f(0, 0, 0, 1);
+            Object lrObj = tMap.get("left_rotation");
+            if (lrObj instanceof List<?> lr && lr.size() >= 4) {
+                float ax = (float) toDouble(lr.get(1), 0);
+                float ay = (float) toDouble(lr.get(2), 0);
+                float az = (float) toDouble(lr.get(3), 0);
+                float len = (float) Math.sqrt(ax * ax + ay * ay + az * az);
+                if (len > 0) { ax /= len; ay /= len; az /= len; }
+                leftRotation = new AxisAngle4f(
+                        (float) Math.toRadians(toDouble(lr.get(0), 0)),
+                        ax, ay, az);
+            }
+            return new Transformation(
+                    translation,
+                    leftRotation,
+                    scale,
+                    new AxisAngle4f(0, 0, 0, 1));
+        }
+        return new Transformation(
+                new Vector3f(0, 0, 0),
+                new AxisAngle4f(0, 0, 0, 1),
+                new Vector3f(1, 1, 1),
+                new AxisAngle4f(0, 0, 0, 1));
+    }
+
     private static List<CustomHeadBlock.DisplayEntityConfig> parseDisplayEntities(List<Map<?, ?>> list,
                                                                                   Map<String, String> textures) {
         List<CustomHeadBlock.DisplayEntityConfig> result = new ArrayList<>();
         for (Map<?, ?> map : list) {
-            // Resolve display item: either skull texture or arbitrary material
+            if (map.get("block_data") != null) continue;
+
             Object texObj = map.get("texture");
             Object matObj = map.get("material");
             org.bukkit.inventory.ItemStack displayItem;
@@ -420,40 +455,10 @@ public final class BlockLoader {
             } else if (texObj != null) {
                 displayItem = HeadUtil.createHead(resolveTexture(String.valueOf(texObj), textures), 1);
             } else {
-                throw new IllegalArgumentException("display entity requires 'texture' or 'material'");
+                throw new IllegalArgumentException("display entity requires 'texture', 'material', or 'block_data'");
             }
             String tag = map.get("tag") != null ? String.valueOf(map.get("tag")) : null;
-
-            Transformation transform;
-            Object tObj = map.get("transform");
-            if (tObj instanceof Map<?, ?> tMap) {
-                Vector3f translation = parseVector3f(tMap.get("translation"), new Vector3f(0, 0, 0));
-                Vector3f scale = parseVector3f(tMap.get("scale"), new Vector3f(1, 1, 1));
-                // left_rotation: [angle_degrees, axis_x, axis_y, axis_z]
-                AxisAngle4f leftRotation = new AxisAngle4f(0, 0, 0, 1);
-                Object lrObj = tMap.get("left_rotation");
-                if (lrObj instanceof List<?> lr && lr.size() >= 4) {
-                    float ax = (float) toDouble(lr.get(1), 0);
-                    float ay = (float) toDouble(lr.get(2), 0);
-                    float az = (float) toDouble(lr.get(3), 0);
-                    float len = (float) Math.sqrt(ax * ax + ay * ay + az * az);
-                    if (len > 0) { ax /= len; ay /= len; az /= len; }
-                    leftRotation = new AxisAngle4f(
-                            (float) Math.toRadians(toDouble(lr.get(0), 0)),
-                            ax, ay, az);
-                }
-                transform = new Transformation(
-                        translation,
-                        leftRotation,
-                        scale,
-                        new AxisAngle4f(0, 0, 0, 1));
-            } else {
-                transform = new Transformation(
-                        new Vector3f(0, 0, 0),
-                        new AxisAngle4f(0, 0, 0, 1),
-                        new Vector3f(1, 1, 1),
-                        new AxisAngle4f(0, 0, 0, 1));
-            }
+            Transformation transform = parseTransform(map);
 
             DisplayAnimation animation = null;
             Object animObj = map.get("animation");
@@ -466,6 +471,32 @@ public final class BlockLoader {
 
             result.add(new CustomHeadBlock.DisplayEntityConfig(
                     displayItem, transform, tag, animation, interpolation, wallOffset));
+        }
+        return result;
+    }
+
+    private static List<CustomHeadBlock.BlockDisplayEntityConfig> parseBlockDisplayEntities(List<Map<?, ?>> list) {
+        List<CustomHeadBlock.BlockDisplayEntityConfig> result = new ArrayList<>();
+        for (Map<?, ?> map : list) {
+            Object blockDataObj = map.get("block_data");
+            if (blockDataObj == null) continue;
+
+            org.bukkit.block.data.BlockData blockData =
+                    org.bukkit.Bukkit.createBlockData(String.valueOf(blockDataObj));
+            String tag = map.get("tag") != null ? String.valueOf(map.get("tag")) : null;
+            Transformation transform = parseTransform(map);
+
+            DisplayAnimation animation = null;
+            Object animObj = map.get("animation");
+            if (animObj instanceof Map<?, ?> animMap) {
+                animation = parseAnimation(animMap);
+            }
+
+            int interpolation = toInt((Object) map.get("interpolation"), 2);
+            float wallOffset = (float) toDouble((Object) map.get("wall_offset"), 0);
+
+            result.add(new CustomHeadBlock.BlockDisplayEntityConfig(
+                    blockData, transform, tag, animation, interpolation, wallOffset));
         }
         return result;
     }

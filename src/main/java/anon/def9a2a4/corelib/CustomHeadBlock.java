@@ -104,6 +104,17 @@ public final class CustomHeadBlock {
             float wallOffset
     ) {}
 
+    /** A BlockDisplay entity attached to the block.
+     *  Renders actual 3D block geometry at any scale via BlockDisplay. */
+    public record BlockDisplayEntityConfig(
+            org.bukkit.block.data.BlockData blockData,
+            Transformation transform,
+            @Nullable String tagSuffix,
+            @Nullable DisplayAnimation animation,
+            int interpolationDuration,
+            float wallOffset
+    ) {}
+
     /** Redstone configuration. */
     public record RedstoneConfig(
             Sensitivity sensitivity,
@@ -208,6 +219,7 @@ public final class CustomHeadBlock {
             @Nullable LightConfig light,
             @Nullable ParticleConfig particles,
             @Nullable List<DisplayEntityConfig> displayEntities,
+            @Nullable List<BlockDisplayEntityConfig> blockDisplayEntities,
             boolean clearLight,
             boolean clearParticles,
             boolean clearDisplayEntities
@@ -231,6 +243,7 @@ public final class CustomHeadBlock {
     private final @Nullable LightConfig light;
     private final @Nullable ParticleConfig particles;
     private final List<DisplayEntityConfig> displayEntities;
+    private final List<BlockDisplayEntityConfig> blockDisplayEntities;
     private final List<ShapedRecipeDef> shapedRecipes;
     private final List<ShapelessRecipeDef> shapelessRecipes;
     private final List<StonecutterRecipeDef> stonecutterRecipes;
@@ -288,6 +301,7 @@ public final class CustomHeadBlock {
         this.light = b.light;
         this.particles = b.particles;
         this.displayEntities = List.copyOf(b.displayEntities);
+        this.blockDisplayEntities = List.copyOf(b.blockDisplayEntities);
         this.shapedRecipes = List.copyOf(b.shapedRecipes);
         this.shapelessRecipes = List.copyOf(b.shapelessRecipes);
         this.stonecutterRecipes = List.copyOf(b.stonecutterRecipes);
@@ -320,7 +334,8 @@ public final class CustomHeadBlock {
         this.bannerTier = b.bannerTier;
 
         // Cache capability checks (avoid streaming states on every call)
-        this._hasDisplayEntities = !displayEntities.isEmpty() || states.values().stream().anyMatch(s -> s.displayEntities() != null);
+        this._hasDisplayEntities = !displayEntities.isEmpty() || !blockDisplayEntities.isEmpty()
+                || states.values().stream().anyMatch(s -> s.displayEntities() != null || s.blockDisplayEntities() != null);
         this._hasLight = light != null || states.values().stream().anyMatch(s -> s.light() != null);
         this._hasParticles = particles != null || states.values().stream().anyMatch(s -> s.particles() != null);
     }
@@ -342,6 +357,7 @@ public final class CustomHeadBlock {
     public @Nullable LightConfig light() { return light; }
     public @Nullable ParticleConfig particles() { return particles; }
     public List<DisplayEntityConfig> displayEntities() { return displayEntities; }
+    public List<BlockDisplayEntityConfig> blockDisplayEntities() { return blockDisplayEntities; }
     public List<ShapedRecipeDef> shapedRecipes() { return shapedRecipes; }
     public List<ShapelessRecipeDef> shapelessRecipes() { return shapelessRecipes; }
     public List<StonecutterRecipeDef> stonecutterRecipes() { return stonecutterRecipes; }
@@ -463,6 +479,19 @@ public final class CustomHeadBlock {
         return displayEntities;
     }
 
+    /** Resolve the effective block display entities for the current state.
+     *  {@code clearDisplayEntities} clears both ItemDisplay and BlockDisplay lists. */
+    public List<BlockDisplayEntityConfig> resolveBlockDisplayEntities(@Nullable String state) {
+        if (state != null) {
+            StateConfig sc = states.get(state);
+            if (sc != null) {
+                if (sc.clearDisplayEntities()) return List.of();
+                if (sc.blockDisplayEntities() != null) return sc.blockDisplayEntities();
+            }
+        }
+        return blockDisplayEntities;
+    }
+
     private @Nullable String resolveRedstoneTexture(int power) {
         if (redstone == null) return null;
         // Exact power match first
@@ -518,6 +547,7 @@ public final class CustomHeadBlock {
         b.light = light;
         b.particles = particles;
         b.displayEntities.addAll(displayEntities);
+        b.blockDisplayEntities.addAll(blockDisplayEntities);
         b.shapedRecipes.addAll(shapedRecipes);
         b.shapelessRecipes.addAll(shapelessRecipes);
         b.stonecutterRecipes.addAll(stonecutterRecipes);
@@ -563,6 +593,7 @@ public final class CustomHeadBlock {
         private @Nullable LightConfig light;
         private @Nullable ParticleConfig particles;
         private final List<DisplayEntityConfig> displayEntities = new ArrayList<>();
+        private final List<BlockDisplayEntityConfig> blockDisplayEntities = new ArrayList<>();
         private final List<ShapedRecipeDef> shapedRecipes = new ArrayList<>();
         private final List<ShapelessRecipeDef> shapelessRecipes = new ArrayList<>();
         private final List<StonecutterRecipeDef> stonecutterRecipes = new ArrayList<>();
@@ -615,6 +646,7 @@ public final class CustomHeadBlock {
         public Builder light(int level, int offsetX, int offsetY, int offsetZ) { this.light = new LightConfig(level, offsetX, offsetY, offsetZ); return this; }
         public Builder particles(ParticleConfig config) { this.particles = config; return this; }
         public Builder displayEntities(List<DisplayEntityConfig> configs) { this.displayEntities.addAll(configs); return this; }
+        public Builder blockDisplayEntities(List<BlockDisplayEntityConfig> configs) { this.blockDisplayEntities.addAll(configs); return this; }
         public Builder shapedRecipe(ShapedRecipeDef recipe) { this.shapedRecipes.add(recipe); return this; }
         public Builder shapelessRecipe(ShapelessRecipeDef recipe) { this.shapelessRecipes.add(recipe); return this; }
         public Builder stonecutterRecipe(StonecutterRecipeDef recipe) { this.stonecutterRecipes.add(recipe); return this; }
@@ -635,7 +667,7 @@ public final class CustomHeadBlock {
 
         /** Declare a state with no overrides (inherits everything from base). */
         public Builder state(String name) {
-            this.states.put(name, new StateConfig(null, null, null, null, null, false, false, false));
+            this.states.put(name, new StateConfig(null, null, null, null, null, null, false, false, false));
             if (defaultState == null) defaultState = name;
             return this;
         }
@@ -749,6 +781,7 @@ public final class CustomHeadBlock {
         private @Nullable LightConfig light;
         private @Nullable ParticleConfig particles;
         private @Nullable List<DisplayEntityConfig> displayEntities;
+        private @Nullable List<BlockDisplayEntityConfig> blockDisplayEntities;
         private boolean clearLight;
         private boolean clearParticles;
         private boolean clearDisplayEntities;
@@ -760,11 +793,12 @@ public final class CustomHeadBlock {
         public StateBuilder particles(ParticleConfig config) { this.particles = config; return this; }
         public StateBuilder noParticles() { this.clearParticles = true; return this; }
         public StateBuilder displayEntities(List<DisplayEntityConfig> configs) { this.displayEntities = configs; return this; }
+        public StateBuilder blockDisplayEntities(List<BlockDisplayEntityConfig> configs) { this.blockDisplayEntities = configs; return this; }
         public StateBuilder noDisplayEntities() { this.clearDisplayEntities = true; return this; }
 
         StateConfig build() {
             return new StateConfig(texture, directionalTextures, light, particles, displayEntities,
-                    clearLight, clearParticles, clearDisplayEntities);
+                    blockDisplayEntities, clearLight, clearParticles, clearDisplayEntities);
         }
     }
 

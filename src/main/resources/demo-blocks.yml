@@ -602,3 +602,17 @@ blocks:
         from: fast
         to: slow
         sound: BLOCK_BEACON_DEACTIVATE
+
+  # ─── Block Display Test ──────────────────────────────────────────────
+  # Features: block_data display entity (BlockDisplay).
+  block_display_test:
+    name: "&aBlock Display Test"
+    lore: ["&7Tests BlockDisplay entity rendering"]
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzNmYjdjOTJmZTE2NDlkNzZjNGFkOTc5ZWZjZDJjNDYwYjJlOTBiMjMyMGEyMzNlZjg1MTMzZGQ1NmJlZDg2YSJ9fX0="
+    drops: self
+    display_entities:
+      - block_data: "minecraft:diamond_block"
+        tag: overlay
+        transform:
+          translation: [0, 0.5, 0]
+          scale: [0.5, 0.5, 0.5]
