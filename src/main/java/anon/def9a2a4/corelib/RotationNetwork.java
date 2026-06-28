@@ -207,10 +207,16 @@ public class RotationNetwork {
             }
 
             // Scan boundary for passive sources (YAML-only blocks like windmills)
+            // Only count a passive source if it connects along the adjacent node's axis
+            // (same rule as checkAxisNeighbor — axis must match and adjacency must be along it)
             if (!passiveSourceTypes.isEmpty()) {
                 Set<CustomBlockRegistry.LocationKey> countedSources = new HashSet<>();
                 for (CustomBlockRegistry.LocationKey loc : members) {
+                    RotationNode memberNode = nodes.get(loc);
+                    if (memberNode == null) continue;
+                    Axis nodeAxis = memberNode.axis();
                     for (org.bukkit.block.BlockFace face : CARDINAL_FACES) {
+                        if (axisFromFace(face) != nodeAxis) continue; // not along node's axis
                         CustomBlockRegistry.LocationKey neighbor = faceNeighbor(loc, face);
                         if (nodes.containsKey(neighbor)) continue; // already a network node
                         if (!countedSources.add(neighbor)) continue; // already counted
@@ -219,7 +225,12 @@ public class RotationNetwork {
                         CustomHeadBlock type = registry.getTypeFromBlock(nb);
                         if (type != null) {
                             Integer passivePower = passiveSourceTypes.get(type.fullId());
-                            if (passivePower != null) supply += passivePower;
+                            if (passivePower != null) {
+                                String passiveState = registry.getState(nb);
+                                if (passiveState != null && axisFromState(passiveState) == nodeAxis) {
+                                    supply += passivePower;
+                                }
+                            }
                         }
                     }
                 }
