@@ -184,7 +184,7 @@ public final class BlockLoader {
                 if (stateSec == null || stateSec.getKeys(false).isEmpty()) {
                     b.state(stateName);
                 } else {
-                    b.state(stateName, sb -> parseStateOverrides(sb, stateSec, textures));
+                    b.state(stateName, sb -> parseStateOverrides(sb, stateSec, statesSec, stateName, textures));
                 }
             }
         }
@@ -301,6 +301,7 @@ public final class BlockLoader {
     // ── Parsers ──────────────────────────────────────────────────────────
 
     private static void parseStateOverrides(CustomHeadBlock.StateBuilder sb, ConfigurationSection sec,
+                                            ConfigurationSection statesSec, String stateName,
                                             Map<String, String> textures) {
         String tex = sec.getString("texture");
         if (tex != null) sb.texture(resolveTexture(tex, textures));
@@ -327,16 +328,148 @@ public final class BlockLoader {
             }
         }
 
+        parseStateDisplays(sb, sec, statesSec, stateName, textures);
+    }
+
+    /**
+     * Resolve a state's display entities, supporting {@code copy_from} (inherit a sibling
+     * state's display_entities verbatim) and a state-level {@code animation} that is applied
+     * to every resolved entity lacking its own animation. Both item and block displays are
+     * handled. Materialized at parse time, so the runtime path is unchanged.
+     */
+    private static void parseStateDisplays(CustomHeadBlock.StateBuilder sb, ConfigurationSection sec,
+                                           ConfigurationSection statesSec, String stateName,
+                                           Map<String, String> textures) {
+        String copyFrom = sec.getString("copy_from");
+        // A nested mapping read off a ConfigurationSection comes back as a (Memory)Section,
+        // not a java.util.Map — so detect both forms.
+        boolean hasStateAnim = sec.isConfigurationSection("animation")
+                || (sec.get("animation") instanceof Map<?, ?>);
+
+        if (copyFrom == null && !hasStateAnim) {
+            // No inheritance/animation sugar — preserve the original behavior.
+            if (sec.getBoolean("no_display_entities")) {
+                sb.noDisplayEntities();
+            } else {
+                List<?> displayList = sec.getList("display_entities");
+                if (displayList != null) {
+                    List<Map<?, ?>> displayMaps = sec.getMapList("display_entities");
+                    sb.displayEntities(parseDisplayEntities(displayMaps, textures));
+                    sb.blockDisplayEntities(parseBlockDisplayEntities(displayMaps));
+                }
+            }
+            return;
+        }
+
         if (sec.getBoolean("no_display_entities")) {
-            sb.noDisplayEntities();
+            throw new IllegalArgumentException("state '" + stateName
+                    + "' cannot combine 'copy_from'/'animation' with 'no_display_entities'");
+        }
+
+        // Resolve the raw display_entities map-list (from copy_from target, or this state's own).
+        List<Map<?, ?>> displayMaps;
+        if (copyFrom != null) {
+            if (sec.contains("display_entities")) {
+                throw new IllegalArgumentException("state '" + stateName
+                        + "' cannot set both 'copy_from' and 'display_entities'");
+            }
+            if (copyFrom.equals(stateName)) {
+                throw new IllegalArgumentException("state '" + stateName + "' cannot copy_from itself");
+            }
+            ConfigurationSection target = statesSec.getConfigurationSection(copyFrom);
+            if (target == null) {
+                throw new IllegalArgumentException("state '" + stateName
+                        + "' copy_from unknown state '" + copyFrom + "'");
+            }
+            if (target.contains("copy_from")) {
+                throw new IllegalArgumentException("state '" + stateName + "' copy_from '" + copyFrom
+                        + "', which itself uses copy_from (chains not allowed)");
+            }
+            List<?> targetList = target.getList("display_entities");
+            if (targetList == null || targetList.isEmpty()) {
+                throw new IllegalArgumentException("state '" + stateName + "' copy_from '" + copyFrom
+                        + "', which has no display_entities");
+            }
+            displayMaps = target.getMapList("display_entities");
         } else {
-            List<?> displayList = sec.getList("display_entities");
-            if (displayList != null) {
-                List<Map<?, ?>> displayMaps = sec.getMapList("display_entities");
-                sb.displayEntities(parseDisplayEntities(displayMaps, textures));
-                sb.blockDisplayEntities(parseBlockDisplayEntities(displayMaps));
+            displayMaps = sec.getMapList("display_entities");
+        }
+
+        List<CustomHeadBlock.DisplayEntityConfig> items = parseDisplayEntities(displayMaps, textures);
+        List<CustomHeadBlock.BlockDisplayEntityConfig> blocks = parseBlockDisplayEntities(displayMaps);
+
+        if (hasStateAnim) {
+            Map<?, ?> animMap = sec.isConfigurationSection("animation")
+                    ? sec.getConfigurationSection("animation").getValues(false)
+                    : (Map<?, ?>) sec.get("animation");
+            DisplayAnimation stateAnim = parseStateAnimation(animMap, stateName);
+            items = fillItemAnimation(items, partitionMaps(displayMaps, false), stateAnim);
+            blocks = fillBlockAnimation(blocks, partitionMaps(displayMaps, true), stateAnim);
+        }
+
+        sb.displayEntities(items);
+        sb.blockDisplayEntities(blocks);
+    }
+
+    /** Validate a state-level animation map (strict for rotate — parseAnimation defaults would
+     *  otherwise silently accept a missing/zero axis or speed), then build it. */
+    private static DisplayAnimation parseStateAnimation(Map<?, ?> animMap, String stateName) {
+        if ("rotate".equals(String.valueOf(animMap.get("type")))) {
+            Object axisObj = animMap.get("axis");
+            if (!(axisObj instanceof List<?> axisList) || axisList.size() != 3) {
+                throw new IllegalArgumentException("state '" + stateName
+                        + "' rotate animation requires a length-3 'axis'");
+            }
+            double ax = toDouble(axisList.get(0), 0), ay = toDouble(axisList.get(1), 0), az = toDouble(axisList.get(2), 0);
+            if (ax * ax + ay * ay + az * az < 1.0e-9) {
+                throw new IllegalArgumentException("state '" + stateName + "' rotate animation 'axis' must be non-zero");
+            }
+            if (animMap.get("speed") == null) {
+                throw new IllegalArgumentException("state '" + stateName + "' rotate animation requires 'speed'");
             }
         }
+        return parseAnimation(animMap);
+    }
+
+    /** Sublist of display maps matching one kind: block displays (block_data present) or item displays. */
+    private static List<Map<?, ?>> partitionMaps(List<Map<?, ?>> maps, boolean blockKind) {
+        List<Map<?, ?>> out = new ArrayList<>();
+        for (Map<?, ?> m : maps) {
+            if ((m.get("block_data") != null) == blockKind) out.add(m);
+        }
+        return out;
+    }
+
+    /** Fill the state animation into each item display that has no animation of its own.
+     *  {@code itemMaps} must be the {@code block_data == null} partition, aligned 1:1 with {@code items}. */
+    private static List<CustomHeadBlock.DisplayEntityConfig> fillItemAnimation(
+            List<CustomHeadBlock.DisplayEntityConfig> items, List<Map<?, ?>> itemMaps, DisplayAnimation anim) {
+        List<CustomHeadBlock.DisplayEntityConfig> out = new ArrayList<>(items.size());
+        for (int i = 0; i < items.size(); i++) {
+            CustomHeadBlock.DisplayEntityConfig c = items.get(i);
+            boolean fill = c.animation() == null && i < itemMaps.size() && !itemMaps.get(i).containsKey("animation");
+            out.add(fill
+                    ? new CustomHeadBlock.DisplayEntityConfig(c.displayItem(), c.transform(), c.tagSuffix(),
+                            anim, c.interpolationDuration(), c.wallOffset())
+                    : c);
+        }
+        return out;
+    }
+
+    /** Fill the state animation into each block display that has no animation of its own.
+     *  {@code blockMaps} must be the {@code block_data != null} partition, aligned 1:1 with {@code blocks}. */
+    private static List<CustomHeadBlock.BlockDisplayEntityConfig> fillBlockAnimation(
+            List<CustomHeadBlock.BlockDisplayEntityConfig> blocks, List<Map<?, ?>> blockMaps, DisplayAnimation anim) {
+        List<CustomHeadBlock.BlockDisplayEntityConfig> out = new ArrayList<>(blocks.size());
+        for (int i = 0; i < blocks.size(); i++) {
+            CustomHeadBlock.BlockDisplayEntityConfig c = blocks.get(i);
+            boolean fill = c.animation() == null && i < blockMaps.size() && !blockMaps.get(i).containsKey("animation");
+            out.add(fill
+                    ? new CustomHeadBlock.BlockDisplayEntityConfig(c.blockData(), c.transform(), c.tagSuffix(),
+                            anim, c.interpolationDuration(), c.wallOffset())
+                    : c);
+        }
+        return out;
     }
 
     private static CustomHeadBlock.LightConfig parseLight(ConfigurationSection sec) {

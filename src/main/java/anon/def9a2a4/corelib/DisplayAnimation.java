@@ -39,7 +39,7 @@ final class Animations {
      */
     static DisplayAnimation rotate(Vector3f axis, float degreesPerTick) {
         float radiansPerTick = (float) Math.toRadians(degreesPerTick);
-        Vector3f norm = new Vector3f(axis).normalize();
+        Vector3f norm = normalizedAxis(axis);
         return (base, tickAge, output) -> {
             new Matrix4f().rotate(radiansPerTick * tickAge, norm.x, norm.y, norm.z).mul(base, output);
         };
@@ -68,7 +68,7 @@ final class Animations {
     /** Circular orbit around an axis. */
     static DisplayAnimation orbit(float radius, int periodTicks, Vector3f axis) {
         float omega = (float) (2.0 * Math.PI / periodTicks);
-        Vector3f norm = new Vector3f(axis).normalize();
+        Vector3f norm = normalizedAxis(axis);
         // Build a local coordinate frame: tangent + bitangent perpendicular to axis
         Vector3f tangent = new Vector3f();
         if (Math.abs(norm.y) < 0.9f) {
@@ -99,5 +99,14 @@ final class Animations {
                 layers[i].apply(temp, tickAge, output);
             }
         };
+    }
+
+    /** Normalize a rotation axis, rejecting a zero/degenerate vector (which would
+     *  normalize to NaN and produce an invisible display every tick). */
+    private static Vector3f normalizedAxis(Vector3f axis) {
+        if (axis.lengthSquared() < 1.0e-12f) {
+            throw new IllegalArgumentException("animation axis must be non-zero, got " + axis);
+        }
+        return new Vector3f(axis).normalize();
     }
 }
