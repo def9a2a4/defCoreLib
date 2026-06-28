@@ -333,6 +333,8 @@ Written on wrench toggle, read during BFS post-pass.
 - **Isolated passive source** (no adjacent network nodes): spins independently via its YAML
   default state — it is not part of any network and has no direction assignment. Its stored PDC
   direction (if previously wrenched) only takes effect once a network node is placed adjacent.
+  Once it becomes adjacent to a network, its animation direction is set by the boundary-scan
+  reversal pass above; when it disconnects, it resets to the default (CW).
 
 **Data model additions to `RotationNetwork.java`:**
 ```java
@@ -397,6 +399,9 @@ in Phase 1 code and is load-bearing.
    **Axis validation:** during boundary scan, only count a passive source if it shares the same
    axis as the adjacent network node AND the adjacency is along that axis (matching
    `checkAxisNeighbor` rules). A Y-axis windmill next to an X-axis shaft does not connect.
+   After determining the passive source's direction, call
+   `registry.setAnimationDirection(passiveLoc, dir)` so its blades visually match — this is
+   the only place a passive source's animation direction is set (it is not a node).
 8. **Jammed diagnosis:** uses tentative BFS-assigned directions to determine each source's
    faction, even though the network is jammed (BFS assigns directions before discovering the
    contradiction via post-pass).
@@ -426,6 +431,15 @@ can't be injected at parse time. Instead, wrap at runtime in `applyConfig()`.
   handles it — no entity respawn, no flicker.
 - Cleanup: remove from `animationDirection` in `onBlockRemoved()` and `onChunkUnload()`
   (match existing `removeIf` pattern for `animationTracked` and other per-block maps)
+- **Passive sources (windmills) also get their animation reversed.** They aren't graph
+  nodes (`registerPassiveSource`, found by the boundary scan), so `doRecalculate` never
+  iterates them. After the post-pass derives a passive source's direction (propagation
+  step 7), call `registry.setAnimationDirection(passiveLoc, dir)` so the windmill's own
+  blades reverse to match the network — otherwise downstream reverses while the windmill
+  keeps spinning CW. The wrench-on-windmill path already triggers `recalculate` on the
+  adjacent network, which re-derives and re-applies this. When a windmill stops being
+  adjacent to any network, reset it (`setAnimationDirection(loc, CW)`) so no stale reversal
+  persists. (On a jammed network this is cosmetic — direction is arbitrary — but harmless.)
 
 ### Wrench interaction (`RotationBlocks.java`)
 
@@ -483,6 +497,8 @@ spin direction. CW → +90°, CCW → -90°. BFS flood fill, max 64 blocks. Reus
 6. Wrench interaction in RotationBlocks (active sources)
 7. Windmill `toBuilder()` overlay for wrench interaction (all 3: demo:windmill,
    rotation:large_windmill, rotation:huge_windmill)
+7b. Apply `setAnimationDirection` to passive sources using the direction derived in the
+   boundary-scan/post-pass (and reset on disconnect).
 8. Direction in `debugInteract()` output
 9. `rotation-config.yml` creation + loading (extract hardcoded values)
 
@@ -511,6 +527,10 @@ spin direction. CW → +90°, CCW → -90°. BFS flood fill, max 64 blocks. Reus
 21. Jammed network + chunk reload → stays jammed with same direction data
 22. Wrench flexible source to conflict with existing explicit source → triggers jam
 23. Wrench direction while block is idle → reversed flag persists, applied on next spin
+24. Wrench a windmill feeding a network → the windmill's **own** blades reverse, not just
+    downstream blocks. Disconnect it → blades return to default CW.
+25. Sneak-place a block against a shaft/gear → placement still works (`onInteract`
+    non-regression; non-sneak right-click still shows debug).
 
 ### Migration
 
