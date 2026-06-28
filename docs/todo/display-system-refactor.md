@@ -68,7 +68,29 @@ not starting with `@` pass through unchanged (backward compatible). Unknown `@al
 
 ---
 
-## Phase 2 — De-dup spin states via `copy_from` + state-level `animation`  (final-reviewed, ready to implement)
+## Phase 2 — De-dup spin states via `copy_from` + state-level `animation`  ✅ DONE (live-server smoke test pending)
+
+### Implemented
+- **`DisplayAnimation.java`** — added a `normalizedAxis` helper with a zero-axis guard
+  (rejects a degenerate axis that would normalize to NaN); used by `rotate` and `orbit`.
+- **`BlockLoader.java`** — `parseStateOverrides` now takes `(sb, sec, statesSec, stateName,
+  textures)` and delegates display handling to a new `parseStateDisplays`, which supports
+  `copy_from` (inherit a sibling state's raw `display_entities`) and a state-level `animation`
+  applied fill-only to every resolved item **and** block display lacking its own (`animation:
+  none` opts out). Helpers: `parseStateAnimation` (strict validation — `parseAnimation` won't
+  throw), `partitionMaps` (splits item vs `block_data` maps so each zips 1:1 with its config
+  list), `fillItemAnimation`/`fillBlockAnimation` (rebuild all six record components). All
+  validation throws → block skipped + logged. States without the new keys take the original path.
+- **`rotation-blocks.yml`** — all 22 active states (shaft/gear/water_wheel/engine/generator/
+  grindstone/drill) collapsed to `copy_from` + one-line state animation (engine/generator keep
+  `particles:`); grindstone `base_slab` carries `animation: none`; both windmills stripped of
+  per-blade animation + given one state-level animation each. 721 → 565 lines.
+- **Verification done:** Python materialization-equivalence proof (every entity's
+  item/material/transform/tag/wall_offset/interpolation preserved, animation on the same
+  entities with identical axes, all speeds normalized to 3.0); `gradle build` clean; jar
+  packages the YAML. **Live-server smoke test still pending** (needs a running server).
+
+### Design (as implemented)
 
 Every active (`spinning_*` / `running_*`) state is a byte-for-byte copy of its `idle_*` twin
 plus a rotate `animation:` on its display entities; the windmill repeats an identical
