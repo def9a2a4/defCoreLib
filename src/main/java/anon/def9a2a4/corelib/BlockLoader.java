@@ -665,6 +665,9 @@ public final class BlockLoader {
             }
             case "compose" -> {
                 List<Map<?, ?>> layers = (List<Map<?, ?>>) map.get("layers");
+                if (layers == null || layers.isEmpty()) {
+                    throw new IllegalArgumentException("compose animation requires a non-empty 'layers' list");
+                }
                 DisplayAnimation[] anims = layers.stream()
                         .map(BlockLoader::parseAnimation)
                         .toArray(DisplayAnimation[]::new);

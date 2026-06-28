@@ -47,7 +47,7 @@ final class Animations {
 
     /** Vertical bob (sine wave on Y axis). */
     static DisplayAnimation bob(float amplitude, int periodTicks) {
-        float omega = (float) (2.0 * Math.PI / periodTicks);
+        float omega = omega(periodTicks);
         return (base, tickAge, output) -> {
             float dy = amplitude * (float) Math.sin(omega * tickAge);
             output.set(base).translate(0, dy, 0);
@@ -58,7 +58,7 @@ final class Animations {
     static DisplayAnimation pulse(float minScale, float maxScale, int periodTicks) {
         float mid = (minScale + maxScale) * 0.5f;
         float amp = (maxScale - minScale) * 0.5f;
-        float omega = (float) (2.0 * Math.PI / periodTicks);
+        float omega = omega(periodTicks);
         return (base, tickAge, output) -> {
             float s = mid + amp * (float) Math.sin(omega * tickAge);
             output.set(base).scale(s);
@@ -67,7 +67,7 @@ final class Animations {
 
     /** Circular orbit around an axis. */
     static DisplayAnimation orbit(float radius, int periodTicks, Vector3f axis) {
-        float omega = (float) (2.0 * Math.PI / periodTicks);
+        float omega = omega(periodTicks);
         Vector3f norm = normalizedAxis(axis);
         // Build a local coordinate frame: tangent + bitangent perpendicular to axis
         Vector3f tangent = new Vector3f();
@@ -90,6 +90,9 @@ final class Animations {
 
     /** Layer multiple animations: each receives the previous output as its base. */
     static DisplayAnimation compose(DisplayAnimation... layers) {
+        if (layers.length == 0) {
+            throw new IllegalArgumentException("compose animation requires at least one layer");
+        }
         if (layers.length == 1) return layers[0];
         return (base, tickAge, output) -> {
             layers[0].apply(base, tickAge, output);
@@ -99,6 +102,15 @@ final class Animations {
                 layers[i].apply(temp, tickAge, output);
             }
         };
+    }
+
+    /** Angular frequency for a periodic animation, rejecting a non-positive period
+     *  (which would divide by zero → NaN → an invisible display every tick). */
+    private static float omega(int periodTicks) {
+        if (periodTicks <= 0) {
+            throw new IllegalArgumentException("animation period must be positive, got " + periodTicks);
+        }
+        return (float) (2.0 * Math.PI / periodTicks);
     }
 
     /** Normalize a rotation axis, rejecting a zero/degenerate vector (which would
