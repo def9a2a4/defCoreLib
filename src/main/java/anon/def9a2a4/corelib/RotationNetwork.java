@@ -39,7 +39,7 @@ public class RotationNetwork {
     private final JavaPlugin plugin;
     private final Logger logger;
 
-    // Passive sources: YAML-only blocks detected at network boundary (e.g. demo:windmill)
+    // Passive sources: YAML-only blocks detected at network boundary (e.g. rotation:windmill)
     private final Map<String, Integer> passiveSourceTypes = new HashMap<>();
 
     // Graph state

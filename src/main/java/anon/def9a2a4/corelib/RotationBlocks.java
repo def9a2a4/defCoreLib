@@ -41,14 +41,14 @@ final class RotationBlocks {
         overlayDrill(registry, network);
 
         // Passive sources — detected at network boundary, no callbacks needed
-        network.registerPassiveSource("demo:windmill", 1);
+        network.registerPassiveSource("rotation:windmill", 1);
         network.registerPassiveSource("rotation:large_windmill", 5);
         network.registerPassiveSource("rotation:huge_windmill", 15);
 
         // Windmill blade resolver — allows crafted banners to replace default WHITE_BANNER.
         // Each tier is craftable only with the matching banner tier (enforced in
         // CoreLibPlugin.captureBannerIngredients via the block's bannerTier).
-        overlayWindmillResolver(registry, "demo:windmill", BannerTier.NORMAL);
+        overlayWindmillResolver(registry, "rotation:windmill", BannerTier.NORMAL);
         overlayWindmillResolver(registry, "rotation:large_windmill", BannerTier.LARGE);
         overlayWindmillResolver(registry, "rotation:huge_windmill", BannerTier.HUGE);
     }
