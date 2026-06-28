@@ -31,22 +31,22 @@ blocks:
         display_entities:
           - block_data: "minecraft:oak_slab"
             tag: slab
-            transform: { left_rotation: [-90, 1, 0, 0], translation: [-0.5, -0.5, 0.0] }
+            transform: { left_rotation: [-90, 1, 0, 0], scale: [1, 1.004, 1], translation: [-0.5, -0.5, 0.001] }
       south:
         display_entities:
           - block_data: "minecraft:oak_slab"
             tag: slab
-            transform: { left_rotation: [-90, 1, 0, 0], translation: [-0.5, -0.5, 0.5] }
+            transform: { left_rotation: [-90, 1, 0, 0], scale: [1, 1.004, 1], translation: [-0.5, -0.5, 0.501] }
       east:
         display_entities:
           - block_data: "minecraft:oak_slab"
             tag: slab
-            transform: { left_rotation: [90, 0, 0, 1], translation: [0.5, -0.5, -0.5] }
+            transform: { left_rotation: [90, 0, 0, 1], scale: [1, 1.004, 1], translation: [0.501, -0.5, -0.5] }
       west:
         display_entities:
           - block_data: "minecraft:oak_slab"
             tag: slab
-            transform: { left_rotation: [90, 0, 0, 1], translation: [0.0, -0.5, -0.5] }
+            transform: { left_rotation: [90, 0, 0, 1], scale: [1, 1.004, 1], translation: [0.001, -0.5, -0.5] }
     recipes:
       craft:
         shaped:
@@ -83,22 +83,22 @@ blocks:
         display_entities:
           - block_data: "minecraft:cobblestone_slab"
             tag: slab
-            transform: { left_rotation: [-90, 1, 0, 0], translation: [-0.5, -0.5, 0.0] }
+            transform: { left_rotation: [-90, 1, 0, 0], scale: [1, 1.004, 1], translation: [-0.5, -0.5, 0.001] }
       south:
         display_entities:
           - block_data: "minecraft:cobblestone_slab"
             tag: slab
-            transform: { left_rotation: [-90, 1, 0, 0], translation: [-0.5, -0.5, 0.5] }
+            transform: { left_rotation: [-90, 1, 0, 0], scale: [1, 1.004, 1], translation: [-0.5, -0.5, 0.501] }
       east:
         display_entities:
           - block_data: "minecraft:cobblestone_slab"
             tag: slab
-            transform: { left_rotation: [90, 0, 0, 1], translation: [0.5, -0.5, -0.5] }
+            transform: { left_rotation: [90, 0, 0, 1], scale: [1, 1.004, 1], translation: [0.501, -0.5, -0.5] }
       west:
         display_entities:
           - block_data: "minecraft:cobblestone_slab"
             tag: slab
-            transform: { left_rotation: [90, 0, 0, 1], translation: [0.0, -0.5, -0.5] }
+            transform: { left_rotation: [90, 0, 0, 1], scale: [1, 1.004, 1], translation: [0.001, -0.5, -0.5] }
     recipes:
       craft:
         shaped:
@@ -135,22 +135,22 @@ blocks:
         display_entities:
           - block_data: "minecraft:smooth_stone_slab"
             tag: slab
-            transform: { left_rotation: [-90, 1, 0, 0], translation: [-0.5, -0.5, 0.0] }
+            transform: { left_rotation: [-90, 1, 0, 0], scale: [1, 1.004, 1], translation: [-0.5, -0.5, 0.001] }
       south:
         display_entities:
           - block_data: "minecraft:smooth_stone_slab"
             tag: slab
-            transform: { left_rotation: [-90, 1, 0, 0], translation: [-0.5, -0.5, 0.5] }
+            transform: { left_rotation: [-90, 1, 0, 0], scale: [1, 1.004, 1], translation: [-0.5, -0.5, 0.501] }
       east:
         display_entities:
           - block_data: "minecraft:smooth_stone_slab"
             tag: slab
-            transform: { left_rotation: [90, 0, 0, 1], translation: [0.5, -0.5, -0.5] }
+            transform: { left_rotation: [90, 0, 0, 1], scale: [1, 1.004, 1], translation: [0.501, -0.5, -0.5] }
       west:
         display_entities:
           - block_data: "minecraft:smooth_stone_slab"
             tag: slab
-            transform: { left_rotation: [90, 0, 0, 1], translation: [0.0, -0.5, -0.5] }
+            transform: { left_rotation: [90, 0, 0, 1], scale: [1, 1.004, 1], translation: [0.001, -0.5, -0.5] }
     recipes:
       craft:
         shaped:
