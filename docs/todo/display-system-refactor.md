@@ -231,7 +231,40 @@ is detected from the raw map, no record change.
 
 ---
 
-## Phase 3 — Axis-orientation composition  (planned, deepest)
+## Phase 2b — Directional rotation (animation reversal)  🔒 BLOCKED (not started)
+
+The display slice of the CW/CCW directional-rotation feature that other agents are adding to
+the rotation **network** (`rotation-power.md` → "Animation direction"). This sub-phase is the
+rendering half only; it is **blocked on the network directionality landing** (BFS that assigns
+each node a spin direction, gear-mesh reversal, jammed detection, the wrench item). Do not start
+until that exists.
+
+Goal: a powered block can spin CW or CCW, and flipping direction must **not** despawn/respawn
+the display (no flicker), even while it's already spinning.
+
+Design (all runtime — the parse-time materialization from Phase 2 is untouched):
+- **`Animations.reversed(DisplayAnimation original)`** — returns a wrapper that delegates with a
+  negated `tickAge`. Safe because rotation blocks only use `rotate` animations (reversing
+  bob/pulse is meaningless; don't apply it there).
+- **`AnimationTracked.reversed`** — add a *mutable* `boolean` to the `private static final class`
+  (today all fields are final; this is the one mutable addition). In `tickAnimations()`:
+  `if (tracked.reversed) tickAge = -tickAge;` before `animation.apply(...)`.
+- **`CustomBlockRegistry.animationDirection`** — `Map<LocationKey, SpinDirection>`. In
+  `applyConfig`, after creating each `AnimationTracked`, set `reversed` from this map. Populate it
+  from the network *before* `updateBlockState` runs (so the respawn picks up direction).
+- **`updateAnimationDirection(key, dir)`** — flips `reversed` in place on the existing tracked
+  entries for a block (no respawn) — this is the no-flicker path used when direction changes but
+  the block is already in its spinning state (`updateBlockState` would otherwise no-op).
+- Cleanup: drop the key from `animationDirection` in `onBlockRemoved`/`onChunkUnload` alongside
+  the existing per-block maps.
+
+Status: **0% implemented** (verified — no `Animations.reversed`, `reversed` flag,
+`animationDirection`, or `SpinDirection` exist). Full design + network sequencing live in
+`rotation-power.md`.
+
+---
+
+## Phase 3 — Axis-orientation composition  🅿️ DEFERRED — save for later (planned, deepest)
 
 Define each part once in a canonical floor/Y frame; loader composes the per-axis
 orientation rotation automatically, removing hand-computed quaternions like

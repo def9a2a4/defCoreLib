@@ -1,7 +1,7 @@
 # Rotation Power System (Basic Create Mod)
 
 ## Context
-Adding a rotation power network to defCoreLib — power sources (windmill, water wheel, engine), transmission (shaft, gear, gearbox), and consumers (drill, grindstone). Hybrid architecture: `RotationNetwork` manages graph/power, blocks are `CustomHeadBlock` for visuals.
+Adding a rotation power network to defCoreLib — power sources (windmill, water wheel, engine, generator), transmission (shaft, gear, clutch), and consumers (drill, grindstone). Hybrid architecture: `RotationNetwork` manages graph/power, blocks are `CustomHeadBlock` for visuals.
 
 ## Architecture
 
@@ -22,7 +22,7 @@ Chunk load → onChunkLoadCallback → addNode → recalculate
 
 - **Same package, not subpackage.** MechanismRegistry already lives in `anon.def9a2a4.corelib`. Follow this pattern. Eliminates all visibility issues.
 - **Axis in state name:** `{status}_{axis}` — `idle_x`, `spinning_y`, `locked_z`. Derived from placement face.
-- **Power model:** Additive units. BFS connected component, sum supply/demand. `supply >= demand` → powered.
+- **Power model:** Additive units. BFS connected component, sum supply/demand. `supply >= demand && supply > 0` → powered.
 - **State updates:** Direct `setState()` + `applyConfig()`. No new Trigger variant.
 - **Persistence:** Rebuild from chunk scan. Axis encoded in state name, persists in PDC.
 - **Windmill = passive source:** Always spins, never receives state updates from network. BFS discovers it as a source.
@@ -66,7 +66,7 @@ public class RotationNetwork {
     record RotationNode(LocationKey key, String blockTypeId, Axis axis,
                         NodeRole role, int powerUnits, boolean gearLike)
     record NetworkState(int supply, int demand) {
-        boolean powered() { return supply >= demand; }
+        boolean powered() { return supply >= demand && supply > 0; }
     }
 
     Map<LocationKey, RotationNode> nodes = new HashMap<>();
@@ -90,17 +90,19 @@ private @Nullable Block toBlock(LocationKey key) {
 - Gear-to-gear: all 6 adjacent faces. Both must be `gearLike`, not locked. Already-connected
   along-axis neighbors are skipped (so same-axis gears on their shared axis connect as shaft-like,
   not gear mesh — this ordering is load-bearing for Phase 2 direction reversal).
-- Locked gearbox: excluded from all connections.
+- Locked clutch: excluded from all connections.
 
 **Recalculation (handles both add and remove):**
 ```
 recalculate(changed):
   if changed has old network:
     dirty = all members of old network
-    clear old network from indexes
+    clear old network from indexes (nodeNetworkId, nodeDirection, networkPassiveSources)
+    reset animationDirection for old networkPassiveSources entries
   else (freshly added):
     dirty = {changed} + members of any adjacent networks
-    clear those networks from indexes
+    clear those networks from indexes (nodeNetworkId, nodeDirection, networkPassiveSources)
+    reset animationDirection for old networkPassiveSources entries
   remove non-existent nodes from dirty
 
   for each unassigned node in dirty:
@@ -110,7 +112,8 @@ recalculate(changed):
 
   for each node whose powered state changed:
     if role != SOURCE:
-      setState(powered ? "spinning_" : "idle_" + axis)
+      extract suffix from current state (e.g. "east_x" from "idle_east_x")
+      setState((powered ? "spinning_" : "idle_") + suffix)
       applyConfig()
 ```
 
@@ -118,7 +121,8 @@ recalculate(changed):
 ```
 removeNodesInChunk(worldId, chunkX, chunkZ):
   collect affected nodes and network IDs
-  remove nodes from map
+  remove nodes from map + nodeDirection entries for removed nodes
+  reset animationDirection for networkPassiveSources of affected networks
   single rebuildFromDirty() on remaining members of affected networks
 ```
 
@@ -128,12 +132,14 @@ Static `register(CustomBlockRegistry, RotationNetwork)`. Namespace: `"rotation"`
 
 | Block | Role | Power | States | Tick | Special |
 |-------|------|-------|--------|------|---------|
-| windmill | SOURCE | 1 | spinning_{x,y,z} only | - | Passive source. Always spins. |
-| water_wheel | SOURCE | 2 | idle/spinning per axis | - | onNeighborChange checks adjacent water |
-| engine | SOURCE | 5 | idle/running per axis | 20 | onInteract: add fuel. onTick: consume fuel |
+| windmill (demo) | SOURCE | 1 | spinning_{x,y,z} only | - | Passive source. Always spins. |
+| large_windmill | SOURCE | 5 | spinning per axis | - | Passive source. Banner-gated (LARGE tier). |
+| huge_windmill | SOURCE | 15 | spinning per axis | - | Passive source. Banner-gated (HUGE tier). |
+| water_wheel | SOURCE | 2 | idle/spinning per axis | - | onNeighborChange checks adjacent water (incl. waterlogged) |
+| engine | SOURCE | 5 | idle/running per axis | 20 | onInteract: add fuel. onTick: consume fuel via EngineFuelManager |
 | shaft | TRANSMITTER | 0 | idle/spinning per axis | - | Display: skull rod texture |
 | gear | TRANSMITTER | 0 | idle/spinning per axis | - | gearLike=true. Display: skull gear texture |
-| gearbox | TRANSMITTER | 0 | idle/spinning/locked per axis | - | onNeighborChange checks redstone |
+| clutch | TRANSMITTER | 0 | idle/spinning/locked per axis | - | onNeighborChange checks redstone |
 | drill | CONSUMER | 1 | idle/spinning per axis | 4 | Staged breaking: 10 stages × 4-tick interval = 2s per block. Shows crack animation. |
 | generator | SOURCE | 1 | idle/spinning per axis | - | Inverted redstone: unpowered=spinning, powered=idle |
 | grindstone | CONSUMER | 1 | idle/spinning | - | Floor-only. onInteract: grind recipes |
@@ -165,9 +171,9 @@ NamespacedKey FUEL_KEY = new NamespacedKey("rotation", "fuel_ticks");
 // onInteract: consume fuel item, add ticks. If idle → running + recalculate
 ```
 
-**Gearbox:** `onNeighborChange` checks `block.getBlockPower() > 0` → locked/unlocked + recalculate.
+**Clutch:** `onNeighborChange` checks `block.getBlockPower() > 0` → locked/unlocked + recalculate.
 
-**Water wheel:** `onNeighborChange` checks 6 neighbors for `Material.WATER` → spinning/idle + recalculate.
+**Water wheel:** `onNeighborChange` checks 6 neighbors for `Material.WATER` or `Waterlogged` blocks → spinning/idle + recalculate. Phase 2 adds `onInteract` for wrench handling (show "Water wheels are always flexible" message) and `debugInteract()` fallthrough.
 
 ### 3. `GrindRecipes.java` (~60 lines)
 Loads `grind-recipes.yml` → `Map<Material, ItemStack>`.
@@ -186,56 +192,15 @@ recipes:
     amount: 2
 ```
 
-## Known bugs to fix in implementation  ✅ ALL DONE
+## Known bugs — all fixed in Phase 1
 
-### Re-entrant recalculate
-`skull.update()` inside `setState()` fires `BlockPhysicsEvent` → neighbor's `onNeighborChange` → nested `recalculate()` while outer is mid-iteration.
-
-**Fix: guard flag + pending queue.**
-```java
-private boolean recalculating = false;
-private final Set<LocationKey> pendingRecalcs = new HashSet<>();
-
-void recalculate(LocationKey changed) {
-    if (recalculating) { pendingRecalcs.add(changed); return; }
-    recalculating = true;
-    try {
-        doRecalculate(changed);
-        while (!pendingRecalcs.isEmpty()) {
-            Set<LocationKey> batch = new HashSet<>(pendingRecalcs);
-            pendingRecalcs.clear();
-            for (LocationKey pending : batch) doRecalculate(pending);
-        }
-    } finally { recalculating = false; }
-}
-```
-
-### State string operator precedence
-`powered ? "spinning_" : "idle_" + axis` → `+` binds to false branch only.
-**Fix:** `(powered ? "spinning_" : "idle_") + axis`
-
-### Grindstone has no axis in state name
-`state.lastIndexOf('_')` returns -1 for `"idle"` → parser returns `"idle"` as axis.
-**Fix:** grindstone's `updateBlockState` must handle axis-less states. Special-case blocks where `role == CONSUMER && !state.contains("_")`.
-
-### Drill breakNaturally bypasses events
-`block.breakNaturally()` does NOT fire `BlockBreakEvent`. Custom head blocks won't get `onBlockRemoved` cleanup.
-**Fix:** before breaking, check if target is custom block → call `registry.onBlockRemoved(target, type)` then `target.setType(Material.AIR)`. Only use `breakNaturally()` for vanilla blocks.
-
-### Drill vs custom blocks: configurable per-block
-Add `boolean drillable` to `CustomHeadBlock.Builder` (default `true`). Drill checks `type.drillable()` before breaking. Rotation blocks themselves set `.drillable(false)`.
-
-### Water wheel: waterlogged blocks
-`Material.WATER` check misses waterlogged blocks. Add fallback:
-```java
-|| (block.getBlockData() instanceof Waterlogged wl && wl.isWaterlogged())
-```
-
-### Engine fuel: avoid excessive skull.update()
-Keep fuel counter in `Map<LocationKey, Integer>` in memory. Only write to PDC on chunk unload or when fuel hits zero. Read from PDC on chunk load.
-
-### Network size cap
-Hard cap, configurable (default 256). BFS stops adding nodes after cap. Nodes beyond cap are unreachable. Config key: `rotation.max-network-size`.
+All identified during planning, fixed during implementation:
+- **Re-entrant recalculate:** guard flag + pending queue in `recalculate()`
+- **State string handling:** `updateBlockState()` uses suffix extraction (handles both `idle_x` and `idle`)
+- **Drill vs custom blocks:** checks `drillable()` flag; calls `onBlockRemoved()` before breaking custom blocks
+- **Water wheel waterlogged:** checks `Waterlogged` interface alongside `Material.WATER`
+- **Engine fuel:** `EngineFuelManager` keeps counters in memory, writes PDC only on chunk unload
+- **Network size cap:** hard cap (default 256) enforced in BFS
 
 ## Configuration (`rotation-config.yml`) — Phase 2
 
@@ -251,6 +216,11 @@ fuel:
   COAL: 200
   CHARCOAL: 160
   COAL_BLOCK: 1600
+  LAVA_BUCKET: 2000
+  BLAZE_ROD: 300
+  STICK: 25
+  # Also: all *_LOG/*_WOOD/*_STEM/*_HYPHAE → 150, all *_PLANKS → 75
+  # (registered dynamically in EngineFuelManager via Material.values() scan)
 power:
   windmill: 1
   large_windmill: 5
@@ -343,6 +313,7 @@ public enum SpinDirection { CW, CCW;
 }
 
 private final Map<LocationKey, SpinDirection> nodeDirection = new HashMap<>();
+private final Map<Integer, Set<LocationKey>> networkPassiveSources = new HashMap<>();
 
 public @Nullable SpinDirection getDirection(LocationKey key) {
     return nodeDirection.get(key);
@@ -360,7 +331,9 @@ record Connection(LocationKey neighbor, boolean reverses) {}
 `reverses` flag is computed in `getConnections()` directly: gear-to-gear with `other.axis() ==
 node.axis()` → `reverses = true`, everything else → `reverses = false`. BFS uses `reverses`
 without needing axis comparison at propagation time. Dedup changes to
-`result.stream().anyMatch(c -> c.neighbor().equals(neighbor))`. Along-axis connections are
+`result.stream().anyMatch(c -> c.neighbor().equals(neighbor))`. All callers of
+`getConnections()` (BFS loop AND dirty-set-building in `doRecalculate()`) must update to use
+`Connection.neighbor()`. Along-axis connections are
 intentionally checked before gear-to-gear so that two same-axis gears along their shared axis
 are treated as shaft-like (`reverses=false`), not gear mesh. This ordering is already present
 in Phase 1 code and is load-bearing.
@@ -401,7 +374,8 @@ in Phase 1 code and is load-bearing.
    `checkAxisNeighbor` rules). A Y-axis windmill next to an X-axis shaft does not connect.
    After determining the passive source's direction, call
    `registry.setAnimationDirection(passiveLoc, dir)` so its blades visually match — this is
-   the only place a passive source's animation direction is set (it is not a node).
+   the only place a passive source's animation direction is set (it is not a node). Add it to
+   the network's `networkPassiveSources` set so it can be reset on network teardown.
 8. **Jammed diagnosis:** uses tentative BFS-assigned directions to determine each source's
    faction, even though the network is jammed (BFS assigns directions before discovering the
    contradiction via post-pass).
@@ -464,7 +438,9 @@ can't be injected at parse time. Instead, wrap at runtime in `applyConfig()`.
 - Non-wrench right-click on any rotation block → `debugInteract()` as usual
 - Debug output gains direction + jammed state: `"3/5 SU | JAMMED (2 CW, 1 CCW) | 12 blocks"`
   For jammed networks, highlight conflicting sources with `ANGRY_VILLAGER` particles (red)
-  and majority-direction sources with `HAPPY_VILLAGER` (green)
+  and majority-direction sources with `HAPPY_VILLAGER` (green).
+  `getNetworkStats()` (currently `int[3]`) is extended to also return jammed boolean and
+  per-source direction counts. Use a new `NetworkDebugInfo` record instead of raw `int[]`.
 
 ### Re-entrancy with direction
 
@@ -490,8 +466,8 @@ spin direction. CW → +90°, CCW → -90°. BFS flood fill, max 64 blocks. Reus
 1. Wrench item creation + give command
 2. `SpinDirection` enum + `Connection` record + `nodeDirection` map in RotationNetwork;
    update `getConnections()` return type to `List<Connection>` with `reverses` classification
-3. BFS direction tracking + post-pass anchor logic + jammed detection + passive source axis
-   validation in boundary scan
+3. BFS direction tracking + post-pass anchor logic + jammed detection (passive source axis
+   validation already implemented in Phase 1 boundary scan)
 4. `getDirection()` public API
 5. `AnimationTracked.reversed` flag + `setAnimationDirection()` + `animationDirection` map in CustomBlockRegistry
 6. Wrench interaction in RotationBlocks (active sources)

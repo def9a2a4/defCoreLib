@@ -45,6 +45,12 @@ Demos:
 
 - [ ] **Animated display entities** — rotate, bob, pulse, orbit, compose. Data-driven via YAML. `DisplayAnimation` functional interface + `Animations` factory. Tick-driven with interpolation. ~150 lines.
 - [ ] **Moveable mechanisms** — BlockShips-style: blocks → display entities + shulker colliders. Movement, collision, disassembly. `Mechanism` interface + `BasicMechanism` impl. Persistence via YAML + chunk index. ~850 lines.
+- [ ] **Mechanism × custom-block BlockDisplay** — a `CustomHeadBlock` that carries its own
+  `blockDisplayEntities` (e.g. a vertical slab) assembled into a *moving* mechanism won't carry
+  those block-displays: the mechanism assembly/move/disassembly loops handle ItemDisplay (and the
+  mechanism's own native BlockDisplays) but not a custom block's attached `blockDisplayEntities`.
+  ~30 lines (parallel loop in `MechanismRegistry`). Low priority — dormant until a
+  BlockDisplay-based custom block is placed on a mechanism.
 - [ ] **DynLight integration** — soft dependency, custom blocks declare dynamic light via DynLight API.
 - [ ] **Connected/multi-block structures** — generalize Ropes' vertical chain pattern. Shared lifecycle across linked blocks.
 
