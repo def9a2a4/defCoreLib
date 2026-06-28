@@ -28,7 +28,7 @@ Chunk load → onChunkLoadCallback → addNode → recalculate
 - **Windmill = passive source:** Always spins, never receives state updates from network. BFS discovers it as a source.
 - **Visuals:** Custom skull textures for display entities (3D head models via HeadUtil).
 
-## Prerequisites: corelib changes
+## Prerequisites: corelib changes  ✅ DONE
 
 ### A. Add `onInteract` escape hatch to `CustomHeadBlock`
 Engine (add fuel) and grindstone (grind items) need custom interact handling.
@@ -87,7 +87,9 @@ private @Nullable Block toBlock(LocationKey key) {
 
 **Connection rules:**
 - Along-axis: 2 neighbors along axis direction. Neighbor must share same axis and not be locked.
-- Perpendicular (gear-to-gear only): 4 neighbors in perpendicular plane. Both must be `gearLike`, have different axes, not locked.
+- Gear-to-gear: all 6 adjacent faces. Both must be `gearLike`, not locked. Already-connected
+  along-axis neighbors are skipped (so same-axis gears on their shared axis connect as shaft-like,
+  not gear mesh — this ordering is load-bearing for Phase 2 direction reversal).
 - Locked gearbox: excluded from all connections.
 
 **Recalculation (handles both add and remove):**
@@ -132,7 +134,8 @@ Static `register(CustomBlockRegistry, RotationNetwork)`. Namespace: `"rotation"`
 | shaft | TRANSMITTER | 0 | idle/spinning per axis | - | Display: skull rod texture |
 | gear | TRANSMITTER | 0 | idle/spinning per axis | - | gearLike=true. Display: skull gear texture |
 | gearbox | TRANSMITTER | 0 | idle/spinning/locked per axis | - | onNeighborChange checks redstone |
-| drill | CONSUMER | 1 | idle/spinning per axis | 40 | onTick: breakNaturally() in facing dir |
+| drill | CONSUMER | 1 | idle/spinning per axis | 4 | Staged breaking: 10 stages × 4-tick interval = 2s per block. Shows crack animation. |
+| generator | SOURCE | 1 | idle/spinning per axis | - | Inverted redstone: unpowered=spinning, powered=idle |
 | grindstone | CONSUMER | 1 | idle/spinning | - | Floor-only. onInteract: grind recipes |
 
 **Common placementStateMap (all axis-aware blocks):**
@@ -147,11 +150,11 @@ Map.of(DOWN, "idle_y", NORTH, "idle_z", SOUTH, "idle_z", EAST, "idle_x", WEST, "
 
 **Drill facing:** stored in PDC (`NamespacedKey("rotation", "facing")`) at placement. Wall heads: `Directional.getFacing()`. Floor heads: player's cardinal facing.
 
-**Drill blacklist:**
+**Drill blacklist:** two-layer guard. First, `hardness < 0` rejects all indestructible blocks
+(BEDROCK, BARRIER, END_PORTAL_FRAME, COMMAND_BLOCKs, STRUCTURE_BLOCK, JIGSAW). Second, explicit
+blacklist for high-hardness blocks that shouldn't be drillable:
 ```java
-Set.of(BEDROCK, OBSIDIAN, CRYING_OBSIDIAN, END_PORTAL_FRAME, BARRIER,
-       COMMAND_BLOCK, CHAIN_COMMAND_BLOCK, REPEATING_COMMAND_BLOCK,
-       STRUCTURE_BLOCK, JIGSAW, REINFORCED_DEEPSLATE)
+Set.of(OBSIDIAN, CRYING_OBSIDIAN, SPAWNER, MOVING_PISTON, REINFORCED_DEEPSLATE)
 ```
 
 **Engine fuel:**
@@ -183,7 +186,7 @@ recipes:
     amount: 2
 ```
 
-## Known bugs to fix in implementation
+## Known bugs to fix in implementation  ✅ ALL DONE
 
 ### Re-entrant recalculate
 `skull.update()` inside `setState()` fires `BlockPhysicsEvent` → neighbor's `onNeighborChange` → nested `recalculate()` while outer is mid-iteration.
@@ -234,20 +237,27 @@ Keep fuel counter in `Map<LocationKey, Integer>` in memory. Only write to PDC on
 ### Network size cap
 Hard cap, configurable (default 256). BFS stops adding nodes after cap. Nodes beyond cap are unreachable. Config key: `rotation.max-network-size`.
 
-## Configuration (`rotation-config.yml`)
+## Configuration (`rotation-config.yml`) — Phase 2
+
+Currently all values are hardcoded in Java. Create config file and loading in Phase 2.
+
 ```yaml
 max-network-size: 256
 drill:
-  tick-interval: 40
-  blacklist: [BEDROCK, OBSIDIAN, CRYING_OBSIDIAN, END_PORTAL_FRAME, BARRIER]
+  tick-interval: 4
+  break-stages: 10
+  blacklist: [OBSIDIAN, CRYING_OBSIDIAN, SPAWNER, MOVING_PISTON, REINFORCED_DEEPSLATE]
 fuel:
   COAL: 200
   CHARCOAL: 160
   COAL_BLOCK: 1600
 power:
   windmill: 1
+  large_windmill: 5
+  huge_windmill: 15
   water_wheel: 2
   engine: 5
+  generator: 1
   drill: 1
   grindstone: 1
 ```
@@ -280,12 +290,11 @@ C S -     S = stick
 - Wrench on water wheel → `"Water wheels are always flexible"` in AQUA, no toggle
 - Wrench on generator → same as engine (toggle CW↔CCW)
 
-**Sneak+wrench handling in CoreLibPlugin:** The sneak bail-out at line 585 returns before
-`onInteract` dispatch. Fix: check `isWrench(mainHand)` inside the sneak branch — if holding
-wrench AND `type.onInteract() != null`, dispatch to `type.onInteract()` and cancel event;
-otherwise return as normal. This
-keeps non-wrench sneak behavior unchanged (place blocks). The `onInteract` callback checks
-`isSneaking()` to distinguish inspect (sneak) from toggle (no sneak).
+**Sneak+wrench handling in CoreLibPlugin:** The sneak bail-out in `onPlayerInteract()` returns
+before `onInteract` dispatch. Fix: check `isWrench(mainHand)` inside the sneak branch — if
+holding wrench AND `type.onInteract() != null`, dispatch to `type.onInteract()` and cancel event;
+otherwise return as normal. This keeps non-wrench sneak behavior unchanged (place blocks). The
+`onInteract` callback checks `isSneaking()` to distinguish inspect (sneak) from toggle (no sneak).
 
 ### Source direction storage
 
@@ -316,9 +325,11 @@ Written on wrench toggle, read during BFS post-pass.
 - **Contradictions** (same node reached via two paths with opposite directions) → network
   jammed (treat as unpowered). Naturally prevents impossible gear configurations.
 - Two sources with conflicting directions (through gear topology) → jammed
-- **Jammed = unpowered.** `powered()` returns false, blocks transition to `idle_*` states,
-  animations stop. Engine fuel continues burning (engine doesn't know about jam — it only
-  checks its own fuel state). This punishes leaving jams unresolved.
+- **Jammed = unpowered.** `powered()` returns false, transmitters and consumers transition to
+  `idle_*` states, animations stop. **Sources keep their running/spinning state** and continue
+  animating (and burning fuel for engines) — `updateBlockState()` skips `role == SOURCE`. This
+  creates a visible cue (sources spinning, nothing else moving) and punishes leaving jams
+  unresolved.
 - **Isolated passive source** (no adjacent network nodes): spins independently via its YAML
   default state — it is not part of any network and has no direction assignment. Its stored PDC
   direction (if previously wrenched) only takes effect once a network node is placed adjacent.
@@ -337,17 +348,20 @@ public @Nullable SpinDirection getDirection(LocationKey key) {
 ```
 
 **`getConnections()` change:**
-Currently returns `List<LocationKey>`. Change to return `List<Connection>` where:
+Currently returns `List<LocationKey>`. Phase 1 already connects gears to ANY adjacent gear
+regardless of axis (same-axis and bevel alike). Phase 2 changes the return type to
+`List<Connection>` to classify each edge:
 ```java
 record Connection(LocationKey neighbor, boolean reverses) {}
 ```
 `reverses = true` for same-axis gear mesh, `false` for along-axis and bevel connections. The
 `reverses` flag is computed in `getConnections()` directly: gear-to-gear with `other.axis() ==
 node.axis()` → `reverses = true`, everything else → `reverses = false`. BFS uses `reverses`
-without needing axis comparison at propagation time. Dedup at line 306 changes to
+without needing axis comparison at propagation time. Dedup changes to
 `result.stream().anyMatch(c -> c.neighbor().equals(neighbor))`. Along-axis connections are
 intentionally checked before gear-to-gear so that two same-axis gears along their shared axis
-are treated as shaft-like (`reverses=false`), not gear mesh. This ordering is load-bearing.
+are treated as shaft-like (`reverses=false`), not gear mesh. This ordering is already present
+in Phase 1 code and is load-bearing.
 
 **BFS direction resolution (single-pass + post-pass):**
 1. BFS from root, tentatively assign root = CW, propagate through edges using rules above.
@@ -429,9 +443,9 @@ can't be injected at parse time. Instead, wrap at runtime in `applyConfig()`.
   PDC, `skull.update()`, recalculate. Show feedback (ActionBar + sound + particles).
   First toggle sets CCW because the default effective direction is CW — toggling means the
   opposite.
-- For passive sources (`demo:windmill` and `rotation:large_windmill`): combine with existing
-  `overlayWindmillResolver` into a single `toBuilder()` chain that sets both
-  `displayItemResolver` and wrench-only `onInteract`
+- For passive sources (`demo:windmill`, `rotation:large_windmill`, and `rotation:huge_windmill`):
+  combine with existing `overlayWindmillResolver` into a single `toBuilder()` chain that sets
+  both `displayItemResolver` and wrench-only `onInteract`
 - Generator (`rotation:generator`): active SOURCE, same wrench treatment as engine (toggle + PDC)
 - Non-wrench right-click on any rotation block → `debugInteract()` as usual
 - Debug output gains direction + jammed state: `"3/5 SU | JAMMED (2 CW, 1 CCW) | 12 blocks"`
@@ -460,13 +474,17 @@ spin direction. CW → +90°, CCW → -90°. BFS flood fill, max 64 blocks. Reus
 0. Remove dead code: `perpendicularNeighbors()` in RotationNetwork.java (never called,
    superseded by inline logic in `getConnections()`)
 1. Wrench item creation + give command
-2. `SpinDirection` enum + `nodeDirection` map in RotationNetwork
-3. BFS direction tracking + post-pass anchor logic + jammed detection
+2. `SpinDirection` enum + `Connection` record + `nodeDirection` map in RotationNetwork;
+   update `getConnections()` return type to `List<Connection>` with `reverses` classification
+3. BFS direction tracking + post-pass anchor logic + jammed detection + passive source axis
+   validation in boundary scan
 4. `getDirection()` public API
 5. `AnimationTracked.reversed` flag + `setAnimationDirection()` + `animationDirection` map in CustomBlockRegistry
 6. Wrench interaction in RotationBlocks (active sources)
-7. Windmill `toBuilder()` overlay for wrench interaction
+7. Windmill `toBuilder()` overlay for wrench interaction (all 3: demo:windmill,
+   rotation:large_windmill, rotation:huge_windmill)
 8. Direction in `debugInteract()` output
+9. `rotation-config.yml` creation + loading (extract hardcoded values)
 
 ### Verification
 
@@ -499,23 +517,26 @@ spin direction. CW → +90°, CCW → -90°. BFS flood fill, max 64 blocks. Reus
 Existing Phase 1 worlds with no PDC direction data: all sources are treated as flexible
 (absent = agree with network), default direction is CW. No migration step needed.
 
-## Display entities — deferred
-Placeholder skull textures with rotate animations initially. Tuned in-game after network logic works.
+## Display entities  ✅ DONE
+Defined in `rotation-blocks.yml` via the display-system refactor (Phases 1+2: `@alias` textures,
+`copy_from` + state-level animation). All spin speeds normalized to 3.0.
 - **Shaft:** single small skull, rotate animation matching axis
-- **Gear:** larger skull, rotate animation matching axis
+- **Gear:** rod + two discs with composed quaternion rotations, rotate animation matching axis
 - **Drill:** skull with rotate animation (spinning states only)
-- **Grindstone:** two displays (base + top), top rotates around Y
+- **Grindstone:** two displays (base + top), top rotates around Y, base opts out via `animation: none`
+- **Windmills:** 4 banner blades per orientation, single state-level rotate animation
+- **Engine/Generator:** rod + housing, particles on running states
 
-## Implementation order (Phase 1)
-1. Corelib prerequisites (onInteract, placement tracking fix, drillable flag)
-2. RotationNetwork.java (graph + BFS + state propagation + guard + cap)
-3. RotationBlocks.java — shaft + windmill only (MVP)
-4. CoreLibPlugin wiring
-5. Test: windmill → shaft → shaft → spinning propagates
-6. Remaining blocks (gear, gearbox, water_wheel, engine, drill, grindstone)
-7. GrindRecipes + YAML config
-8. rotation-config.yml loading
-9. Visual tuning
+## Implementation order (Phase 1)  ✅ DONE
+1. ~~Corelib prerequisites (onInteract, placement tracking fix, drillable flag)~~
+2. ~~RotationNetwork.java (graph + BFS + state propagation + guard + cap)~~
+3. ~~RotationBlocks.java — shaft + windmill only (MVP)~~
+4. ~~CoreLibPlugin wiring~~
+5. ~~Test: windmill → shaft → shaft → spinning propagates~~
+6. ~~Remaining blocks (gear, gearbox, water_wheel, engine, drill, grindstone, generator)~~
+7. ~~GrindRecipes + YAML config~~
+8. ~~rotation-config.yml loading~~ (deferred to Phase 2 — values hardcoded for now)
+9. ~~Visual tuning~~
 
 ## Future enhancements
 
@@ -545,17 +566,17 @@ Identical to drill mechanically but: only breaks wood-type blocks, drops planks 
 ### Pump
 Moves water/lava source blocks. Places a waterlogged block or source block in its facing direction, consuming from behind. Needs careful anti-grief considerations (worldguard integration, claim checks).
 
-## Verification (Phase 1)
-1. Place windmill → always spinning
-2. Place shaft adjacent along same axis → starts spinning
-3. Chain of 5 shafts → all spin. Break middle → downstream stops
-4. Gear between perpendicular shafts → power transfers
-5. Clutch + redstone → downstream stops. Remove → resumes
-6. Drill breaks block in facing direction every 2s
-7. Drill does NOT break blocks with `drillable: false`
-8. Grindstone powered + right-click bone → 3 bone meal
-9. Engine + coal → runs 10s, stops, downstream stops
-10. Water wheel with/without water → produces/stops
-11. Network cap: 257th shaft doesn't receive power
-12. Chunk unload/reload → network rebuilds correctly
-13. Re-entrant recalculate doesn't corrupt state
+## Verification (Phase 1)  ✅ DONE
+1. ~~Place windmill → always spinning~~
+2. ~~Place shaft adjacent along same axis → starts spinning~~
+3. ~~Chain of 5 shafts → all spin. Break middle → downstream stops~~
+4. ~~Gear between perpendicular shafts → power transfers~~
+5. ~~Clutch + redstone → downstream stops. Remove → resumes~~
+6. ~~Drill breaks block in facing direction every 2s~~
+7. ~~Drill does NOT break blocks with `drillable: false`~~
+8. ~~Grindstone powered + right-click bone → 3 bone meal~~
+9. ~~Engine + coal → runs 10s, stops, downstream stops~~
+10. ~~Water wheel with/without water → produces/stops~~
+11. ~~Network cap: 257th shaft doesn't receive power~~
+12. ~~Chunk unload/reload → network rebuilds correctly~~
+13. ~~Re-entrant recalculate doesn't corrupt state~~
