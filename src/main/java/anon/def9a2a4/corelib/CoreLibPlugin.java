@@ -503,6 +503,19 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
             }
         }
 
+        var toggle = registry.getToggleRecipe(keyed.getKey());
+        if (toggle != null) {
+            for (ItemStack item : event.getInventory().getMatrix()) {
+                if (item == null || item.getType() == Material.AIR) continue;
+                if (item.getItemMeta() != null
+                        && item.getItemMeta().getPersistentDataContainer()
+                            .has(CustomBlockRegistry.BLOCK_TYPE_KEY)) {
+                    event.getInventory().setResult(new ItemStack(toggle.outputMaterial()));
+                    return;
+                }
+            }
+        }
+
         // Capture banner ingredients onto the result item (for windmill blades etc.)
         captureBannerIngredients(event.getInventory());
     }

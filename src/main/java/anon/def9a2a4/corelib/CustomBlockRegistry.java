@@ -949,6 +949,9 @@ public class CustomBlockRegistry {
     public record HeadStonecutterRecipe(String inputBlockId, String outputBlockId, int amount) {}
     private final List<HeadStonecutterRecipe> headStonecutterRecipes = new ArrayList<>();
 
+    record ToggleRecipeInfo(String blockId, Material outputMaterial) {}
+    private final Map<org.bukkit.NamespacedKey, ToggleRecipeInfo> toggleRecipes = new HashMap<>();
+
     /** Register all recipes for all registered block types. Call after all blocks are loaded. */
     @SuppressWarnings("deprecation")
     void registerRecipes() {
@@ -1017,6 +1020,12 @@ public class CustomBlockRegistry {
                         }
                         headIngredientRecipes.put(key, specMap);
                     }
+                    if (type.itemMaterial() != null
+                            && r.ingredients().size() == 1
+                            && r.ingredients().get(0).isMaterial()
+                            && r.ingredients().get(0).material() == type.itemMaterial()) {
+                        toggleRecipes.put(key, new ToggleRecipeInfo(type.fullId(), type.itemMaterial()));
+                    }
                 } catch (Exception e) {
                     plugin.getLogger().warning("Failed to register shapeless recipe '" + prefix + r.id() + "': " + e.getMessage());
                 }
@@ -1058,11 +1067,16 @@ public class CustomBlockRegistry {
         registeredRecipeKeys.clear();
         headIngredientRecipes.clear();
         headStonecutterRecipes.clear();
+        toggleRecipes.clear();
     }
 
     /** Get head ingredient requirements for a recipe key (for PrepareItemCraftEvent validation). */
     @Nullable Map<Character, String> getHeadIngredients(org.bukkit.NamespacedKey recipeKey) {
         return headIngredientRecipes.get(recipeKey);
+    }
+
+    @Nullable ToggleRecipeInfo getToggleRecipe(org.bukkit.NamespacedKey recipeKey) {
+        return toggleRecipes.get(recipeKey);
     }
 
     /** Get head-input stonecutter recipes matching an input block ID. */
