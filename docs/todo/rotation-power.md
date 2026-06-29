@@ -467,10 +467,13 @@ implemented as an edge-level property in `getConnections()`: an along-axis edge 
 lower (−axis) endpoint is a powered reverser. This is symmetric (both endpoints compute the same
 flag) and gives exactly one direction flip across the block.
 
-### Rotator block (deferred)
+### Rotator block  ✅ DONE (being refined)
 
-CONSUMER (4 SU) that rotates connected solid blocks 90° per redstone pulse in the network's
-spin direction. CW → +90°, CCW → -90°. BFS flood fill, max 64 blocks. Reuse DoorDemo pattern.
+CONSUMER that rotates connected solid blocks in the network's spin direction (CW/CCW).
+Implemented in `RotationRotator.java`, registered in `CoreLibPlugin.onEnable` — uses
+`MechanismRegistry` for the swing and `getNetworkStats()`/`transientDemand` for "demand only
+while swinging." (Originally specced as 4 SU, 90°/redstone-pulse, BFS flood-fill max 64, DoorDemo
+pattern — being refined separately; consult `RotationRotator.java` for current behavior.)
 
 ### Implementation order  ✅ DONE
 
@@ -538,7 +541,7 @@ large_windmill uses 2.0 and huge_windmill uses 1.0 (scaled inversely with size).
 3. ~~RotationBlocks.java — shaft + windmill only (MVP)~~
 4. ~~CoreLibPlugin wiring~~
 5. ~~Test: windmill → shaft → shaft → spinning propagates~~
-6. ~~Remaining blocks (gear, gearbox, water_wheel, engine, drill, grindstone, generator)~~
+6. ~~Remaining blocks (gear, clutch, water_wheel, engine, drill, grindstone, generator)~~
 7. ~~GrindRecipes + YAML config~~
 8. ~~rotation-config.yml loading~~
 9. ~~Visual tuning~~
@@ -641,11 +644,12 @@ record (members, passiveSources, state, dirMap), plus `emitJammedEffects()` and
 
 ### Dead code / incomplete
 
-#### I1. Remove `getNetworkStats()` (`RotationNetwork.java:174`)
+#### I1. ~~Remove `getNetworkStats()`~~ — WITHDRAWN (it is used)
 
-Returns `int[3]`. Superseded by `NetworkDebugInfo` record. No callers (`debugInteract` uses
-`getNetworkDebugInfo` at RotationBlocks:681,704). Referenced in javadoc for `transientDemand`
-(lines 65, 191) but not actually called.
+Earlier flagged as dead code, but `getNetworkStats()` (`RotationNetwork.java:176`) **is** called
+by `RotationRotator.java:114` and `RotationBlocks.java:398`, and backs the rotator's
+`transientDemand` swing-demand model. Keep it. (Debug output separately uses `NetworkDebugInfo`;
+the two coexist.)
 
 #### I2. Wire in `removeNodesInChunk()` (`RotationNetwork.java:469`)
 
@@ -679,8 +683,8 @@ undocumented.
 - ~~This doc references `demo:windmill`~~ — fixed: doc now uses `rotation:windmill`
 - Class javadoc (lines 27-28) says gears connect to "4 neighbors in perpendicular plane" — code
   connects all 6 adjacent gears (same-axis gear mesh + bevel). **Fix in code, not doc.**
-- `RotationBlocks.java:29` comment says "gearbox" — should say "clutch/reverser". **Fix in code,
-  not doc.**
+- ~~`RotationBlocks.java:29` comment says "gearbox"~~ — fixed: no `gearbox` reference remains in
+  `RotationBlocks.java`.
 
 ### Investigated — not bugs (do not re-chase)
 
@@ -781,21 +785,16 @@ but each below changes scope or behavior and is your call.
    facing, or the drill spins around Y while drilling sideways. Keep DOWN, or invest in cardinal?
    → Recommendation: keep DOWN.
 
-3. **`getNetworkStats()` — keep or remove (I1).** It has no callers today, but lines 65/191
-   document it as the deferred **Rotator**'s `transientDemand` read API. Remove now (YAGNI, and
-   also clean the 65/191 javadoc) or keep as Rotator scaffolding (and drop I1)?
-   → Recommendation: keep + drop I1, since the Rotator is the next feature.
-
-4. **Build the Rotator next?** It's marked deferred. If yes, #3 resolves to "keep." If it's not
-   coming soon, removing `getNetworkStats` is cleaner.
-
-5. **Optional cleanup scope.** Do the elegance refactors now or defer? **E2 (cache locked +
+3. **Optional cleanup scope.** Do the elegance refactors now or defer? **E2 (cache locked +
    reverser-powered state)** is the real perf win (~1500 world reads/recalc on big networks) and
    I'd do it regardless. E1/E3/E4 (helper extraction, shared overlay builder, decompose
    `doRecalculate`) and I2 (`removeNodesInChunk` O(1) unload) / I3 (debug windmill count) are
    nice-to-have — do now or leave as backlog?
 
-6. **Wrench recipe reload-safety (N2).** The recipe registers fine on startup but isn't
+4. **Wrench recipe reload-safety (N2).** The recipe registers fine on startup but isn't
    reload-idempotent (a `/reload` re-adds the same key). Add the `Bukkit.removeRecipe` guard, or
    not worth it?
    → Recommendation: add the one-line guard.
+
+(Resolved since this list was written: `getNetworkStats` keep-vs-remove and "build the Rotator?"
+— the Rotator is now implemented in `RotationRotator.java` and uses `getNetworkStats`.)

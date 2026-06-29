@@ -20,8 +20,11 @@ selection layer (replacing per-consumer flood-fill) so doors, drawbridges, and m
 all answer "which blocks move together?" the same way.
 
 Locked design decisions:
-- **Reverser** (not clutch) for redstone open/close — clutch only disconnects.
-- **Restore real blocks** at rest (door closed/open = real blocks; mechanism exists only mid-swing).
+- **Reverser** (not clutch) flips the network spin **direction** — clutch only disconnects. The
+  reverser/wrench chooses *which way* a rotator turns; a **redstone pulse on the rotator** chooses
+  *when* (the trigger; updated from the original "direction = open/close" model).
+- **Restore real blocks** at rest (the structure is real blocks between pulses; a mechanism exists
+  only mid-swing).
 - **Speed locked at swing-start** from `K · surplus / mass`; **not** recomputed if power changes
   mid-swing.
 - Demand **registered only while swinging** ("power consumed while rotating"). This makes
@@ -34,20 +37,17 @@ Locked design decisions:
 - **Direction is already built** in `RotationNetwork`: `getDirection`, `nodeDirection`, BFS
   direction propagation, `getNetworkStats`, `isPowered`. Spin animations are materialized
   (display-system Phase 2).
-- **Mechanism system exists** (`MechanismRegistry.assembleMechanism`, `Mechanism.rotate`,
-  `disassemble`, `DoorDemo`) but is **yaw-only** (`BasicMechanism` hardcodes `rotateY`).
-- The pending windmill passive-source reversal fix + verification items 24/25 may still be unlanded.
+- **Mechanism system** (`MechanismRegistry.assembleMechanism`, `Mechanism.rotate`, `disassemble`,
+  `DoorDemo`) is now **axis-generalized** (rotates about an arbitrary cardinal axis; default Y).
 
 ---
 
-## Phase 0 — Verify/fix the direction system (small prerequisite)
+## Phase 0 — Direction system ✅ (verified)
 
-Both Phase 1 and 2 build on direction, so de-risk it first.
-
-- Confirm in-game: source→gear reversal, jammed networks, per-node direction.
-- Land the pending **windmill passive-source reversal** fix + verification items 24/25.
-
-**Why first:** bugs in direction cascade into both the reverser and the rotator.
+Direction is fully built and the windmill passive-source reversal fix is **already in code**
+(`RotationNetwork.doRecalculate` derives passive-source directions in the boundary scan and calls
+`registry.setAnimationDirection`, with `resetPassiveSources` on teardown). Remaining: the in-game
+verification items (24/25) are the user's to run.
 
 ---
 
@@ -103,41 +103,45 @@ reverses; reverser+clutch combos behave; existing networks unaffected.
   `(-0.5,-0.5,-0.5)`, collider, disassembly), touching `MechanismRegistry`, `BasicMechanism`,
   `DoorDemo`, `MinecartShipManager`, `RotationRotator`. Needs in-game iteration. See Remaining issues.
 
-### 2b. The `rotation:rotator` block + control loop
+### 2b. The `rotation:rotator` block — **stateless, redstone-pulse-triggered** ✅ (as implemented)
 
-- CONSUMER; axis from placement (**floor → door (Y)**, **wall → drawbridge (X/Z)**).
-- **Demand registered only while swinging** (0 at rest) → loads the network during a swing.
-- **State machine:** PDC stores `open|closed` + `target ∈ {90, 180, 270}`. Direction
-  CW = open/raise, CCW = close/lower. A swing fires **only when direction disagrees with the
-  rest-state**.
-- **Rotation loop = per-tick `BukkitTask`** (DoorDemo style), **not** the network `onTick`
-  interval. On swing-start: read surplus + mass once, **lock** `delta = clamp(K · surplus / mass,
-  MIN_DEG, MAX_DEG)` for the whole swing; do **not** recompute if power changes mid-swing.
-  Direction *may* flip mid-swing (reverse the swing) at the frozen speed magnitude.
-- **Swing-guard:** `activeRotators` / `activeTasks` maps keyed by hinge `LocationKey` so a standing
-  direction-disagreement doesn't re-assemble each tick. Reuse DoorDemo's `cancelExistingTask`.
-- **Selection (v1):** oak-planks `floodFill` (reuse `DoorDemo.floodFill` verbatim), exclude the
-  hinge + any `rotation:*` block, cap 256.
-- **Restore real blocks:** assemble → rotate to target → `disassemble` (snap 90°, real blocks);
-  at rest = real blocks (survives restart, no mechanism persistence needed).
-- **Target menu:** interact-GUI; ★ **wrench-first dispatch** so it doesn't clobber the wrench
-  debug or sneak-to-place.
-- **Underpowered** (`surplus ≤ 0` at start): no swing + feedback sound/particle.
-- **Cleanup:** `onBlockRemoved` / `onChunkUnload` → cancel + `disassemble`;
-  `cleanupOrphanedEntities` covers server-stop mid-swing.
-- Block boilerplate: YAML + texture + recipe + give command.
+The original open/closed direction-polled state machine was replaced (it auto-rotated on power-up
+and the open/closed bookkeeping caused a re-trigger bug — see Remaining issues #fixed). The shipped
+model, per the user:
 
-### ★ Drawbridge caveat
+- CONSUMER node, power 0; axis from placement (**floor → door (Y)**, **wall → drawbridge (X/Z)**).
+  **No open/closed state.**
+- **Trigger = a redstone rising edge (off→on)** on the rotator block, detected in
+  `onNeighborChange` via a `lastPowered` map (updated before the edge check → idempotent on
+  repeated same-tick neighbor events; initialised on chunk-load). Holding redstone on does nothing
+  after the first edge.
+- On a pulse: if it has rotation power and **surplus > 0**, flood-fill the oak-plank structure and
+  rotate it **once** by the target angle in the network's **current spin direction**
+  (`CW → +angle, CCW → −angle`). To rotate the other way, reverse the network (reverser / wrench)
+  and pulse again. Each pulse = one rotation; then real blocks are restored.
+- **Speed locked at start** to `clamp(K · surplus / blockCount, MIN, MAX)`; while swinging it
+  registers `addTransientDemand` (transient-demand overlay → contending rotators see reduced
+  surplus, no network recalc).
+- **Swing-guard:** `activeTasks` keyed by hinge `LocationKey`; a pulse mid-swing is ignored. The
+  guard is held **through `disassemble()`** (removed last) so the block-place physics can't
+  re-enter `trigger()`.
+- **Selection (v1):** oak-planks `floodFill`, excluding the hinge + any `rotation:*` block, cap 256.
+- **Angle menu:** right-click cycles `target ∈ {90,180,270}` (PDC); wrench → status readout.
+- **No power / surplus ≤ 0:** smoke + fail sound, no swing.
+- **Cleanup:** `onBlockRemoved` / `onChunkUnload` → cancel + `disassemble` + clear transient +
+  `lastPowered.remove`; `cleanupOrphanedEntities` covers server-stop mid-swing.
 
-With oak-planks flood-fill, a plank bridge inside a **plank** wall leaks (can't tell bridge from
-wall). So Phase-2 drawbridges work only for plank structures bounded by non-plank; they become
-fully robust after **glue** (Phase 3). Doors (planks in a stone frame) are fully usable in Phase 2.
-**Treat "robust drawbridges" as a Phase-3 deliverable.**
+### ★ Drawbridge caveat (selection)
 
-**Verify:** floor door opens/closes via the reverser at speed ∝ surplus/mass; enlarge the door →
-slower; two doors on one network → the second starts slower (contention via consumed demand); wall
-drawbridge raises/lowers; break / chunk-unload mid-swing → no orphan entities; underpowered → no
-move + feedback.
+With oak-planks flood-fill, a plank bridge inside a **plank** wall leaks. So Phase-2 drawbridges
+work only for plank structures bounded by non-plank; **glue** (Phase 3) makes them robust. Doors
+(planks in a stone frame) are fully usable. (Separate from the drawbridge **origin** geometry bug
+in 2a.)
+
+**Verify (in-game):** powered door does **not** move until a redstone pulse; each off→on edge
+rotates it once by the target angle in the network direction; reverse the network → pulse → rotates
+back; enlarge the door / add a second door on one network → slower (surplus/mass + contention);
+break / chunk-unload mid-swing → no orphan entities; no-power pulse → feedback only.
 
 ---
 
@@ -238,18 +242,31 @@ ride; reload → the anchor still remembers its set; hit the cap → message.
 
 ---
 
-## Risks / gaps to keep in mind
+## Remaining issues (after Phase 0–2 shipped)
 
-1. **Direction is built but unverified on this path** — Phase 0 verifies it and lands the windmill
-   fix before anything builds on it.
-2. **The axis-generalization (2a) is the bulk of Phase 2**, not a free precondition: rideOffset,
-   the axis-conditional corner-shift, and off-world swing each break naively.
-3. **Robust drawbridges depend on glue (Phase 3)** — Phase 2 ships doors + isolated-structure
-   drawbridges only.
-4. **The reverser fix is a regression risk** to the shipped direction BFS — re-test existing
-   spinning networks after it.
-5. Per-block **boilerplate** (YAML/texture/recipe/give) for both the reverser and the rotator.
-6. **Door bookkeeping in PDC** (open/closed + target angle) — restore-real-blocks makes geometry
-   implicit, but the hinge still needs to remember its state across reload.
-7. **Reverser ↔ clutch coexistence** on one network (both redstone transmitters).
-8. **Underpowered/stall UX** — define the no-power-to-open feedback.
+### Open
+1. **★ Drawbridge rotation origin (deferred geometry fix).** Wall (X/Z) rotators visibly drift ~0.5
+   block because `localTransform` is center-XZ / bottom-Y. Needs the "center-everything" change
+   (see 2a) across `MechanismRegistry` + `BasicMechanism` + `DoorDemo` + `MinecartShipManager` +
+   `RotationRotator`, with in-game iteration. Risk: must keep the working Y-door and minecart paths
+   exact. **The naive center-Y-only fix is wrong** (breaks both).
+2. **Phase 3 — Glue (not started).** The anchor-owned block-selection layer below; until it lands,
+   selection is oak-planks flood-fill, so same-material doors/drawbridges over-grab.
+3. **Placeholder textures.** Reverser uses `@copper_gear`, rotator uses `@iron_block` — both need
+   distinct hinge/gearbox head textures.
+4. **Tuning constants are hardcoded** in `RotationRotator` (`SPEED_K=8`, `MIN_DEG=1.5`,
+   `MAX_DEG=9`, `SWING_DEMAND=2`) — dial in live, then consider moving to `rotation-config.yml`.
+
+### Design notes / minor
+5. **UX (intended):** a pulse rotates in the network's *current* direction, so one button always
+   rotates the same way; to swing a door back you reverse the network (reverser/wrench) between
+   pulses. Build open/close logic on top (e.g. redstone that also flips a reverser).
+6. **Right-click hijack:** right-clicking the rotator with a block in hand cycles the angle instead
+   of placing (sneak-right-click still places). Could gate the angle-cycle to empty-hand later.
+7. **Reverser ↔ clutch** coexist on one network (both redstone transmitters) — verified by design.
+
+### Fixed during implementation (for the record)
+- *Extra single-block rotation after a swing* — caused by the old open/closed state being re-read
+  during disassembly's block-place physics; eliminated by the stateless pulse model + holding the
+  swing-guard through `disassemble()`.
+- *Auto-rotate on power-up* — gone; the trigger is now a redstone edge, not network power.
