@@ -24,9 +24,12 @@ pipe data should be wiped. No legacy tag migration or chunk hint seeding is need
 
 ## Part 1: defCoreLib — New APIs
 
+> **Note**: All line numbers in this plan are approximate and may have drifted since
+> the plan was written. Verify against current source during implementation.
+
 ### 1a. New `DisplayTransformResolver` interface
 
-**File**: `CustomHeadBlock.java` — add after the `StateChangeHandler` interface (~line 267)
+**File**: `CustomHeadBlock.java` — add after the `StateChangeHandler` interface
 
 ```java
 @FunctionalInterface
@@ -167,24 +170,32 @@ public interface StateResolver {
 
 ### 1g. Wire resolver into `CustomBlockRegistry.applyConfig()`
 
-**File**: `CustomBlockRegistry.java`, inside `applyConfig()` at line 360-392
+**File**: `CustomBlockRegistry.java`, inside `applyConfig()` (line numbers approximate,
+verify during implementation)
 
-The existing display entity spawn loop uses a static transform from config. Add
-resolver call before spawning. **Preserve existing `displayItemResolver` logic.**
+The existing display entity spawn loop uses `for (var dec : displays)` with no index
+variable. **Convert to an indexed loop** to provide `displayIndex` to the resolver:
 
 ```java
-// Inside the display entity spawn loop, BEFORE the spawn call:
-Transformation transform = dec.transform();
-if (type.displayTransformResolver() != null) {
-    Transformation resolved = type.displayTransformResolver()
-            .resolve(block, state, dec, i);
-    if (resolved != null) transform = resolved;
+// CHANGE: for (var dec : displays) → indexed loop
+for (int i = 0; i < displays.size(); i++) {
+    var dec = displays.get(i);
+
+    // INSERT before the spawn call:
+    Transformation transform = dec.transform();
+    if (type.displayTransformResolver() != null) {
+        Transformation resolved = type.displayTransformResolver()
+                .resolve(block, state, dec, i);
+        if (resolved != null) transform = resolved;
+    }
+
+    // ... existing spawn code uses `transform` instead of `dec.transform()` ...
 }
 ```
 
-This is a 4-line insertion into the existing loop, not a replacement. The existing
-`displayItemResolver` check, wallOffset logic, animation tracking, and
-`interpolationDuration` all stay untouched.
+This preserves the existing `displayItemResolver` check, wallOffset logic, animation
+tracking, and `interpolationDuration`. Only the loop header changes and the transform
+variable is extracted.
 
 ### 1h. `resolveDisplayTransforms()` helper
 
@@ -217,12 +228,18 @@ void resolveDisplayTransforms(Block block, CustomHeadBlock type, @Nullable Strin
 
 ### 1i. Wire resolver into neighbor change handler
 
-**File**: `CoreLibPlugin.java`, neighbor change handler (~line 888)
+**File**: `CoreLibPlugin.java`, inside `onBlockPhysics()` handler (the `BlockPhysicsEvent`
+listener that iterates cardinal faces and dispatches `onNeighborChange`)
 
-After the existing `onNeighborChange` dispatch, add:
+After the existing `onNeighborChange` dispatch within the neighbor loop, add:
 
 ```java
-if (type.displayTransformResolver() != null) {
+// Inside the existing loop over CARDINAL_FACES in onBlockPhysics():
+if (type != null && type.onNeighborChange() != null) {
+    type.onNeighborChange().accept(neighbor, face.getOppositeFace());
+}
+// ADD THIS — re-resolve dynamic display transforms:
+if (type != null && type.displayTransformResolver() != null) {
     String state = registry.getState(neighbor);
     registry.resolveDisplayTransforms(neighbor, type, state);
 }
@@ -288,6 +305,8 @@ if (type.stateResolver() != null) {
 }
 
 // Apply block type override BEFORE markBlock (so tile entity exists for PDC write)
+// Verify: current PipeListener.onBlockPlace() lines 130-160 show how vertical
+// texture orientation works after WALL_HEAD → HEAD conversion.
 if (forcePlayerHead && block.getType() == Material.PLAYER_WALL_HEAD) {
     block.setType(Material.PLAYER_HEAD, false);
     if (block.getBlockData() instanceof Rotatable rotatable) {
@@ -318,36 +337,48 @@ CoreLib currently lacks this. Paper fires `BlockDestroyEvent` for `/fill`, `/set
 physics-based destruction, etc. Without it, custom blocks destroyed by commands leave
 orphaned display entities.
 
+`onBlockRemoved(Block, CustomHeadBlock)` is cleanup-only (removes tracking, display
+entities, fires callback). Drops are handled upstream by each destruction type — this
+handler intentionally does NOT drop items (same pattern as fire/water handlers).
+
 ```java
 @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 public void onBlockDestroy(BlockDestroyEvent event) {
     Block block = event.getBlock();
     CustomHeadBlock type = registry.getTypeFromBlock(block);
     if (type == null) return;
-    String state = registry.getState(block);
-    registry.onBlockRemoved(block, type, state, false); // no item drop
+    registry.onBlockRemoved(block, type);
 }
 ```
 
-### 1n. Add `onPistonPush` callback (piston break-and-drop)
+### 1n. Add `breakOnPiston` flag (piston break-and-drop)
 
-**File**: `CustomHeadBlock.java` — new optional callback
+**File**: `CustomHeadBlock.java` — new boolean field
 
 Pipes' current behavior: break the pipe, drop the item, let the piston proceed. CoreLib's
-`cancelPistons` flag cancels the entire piston event (nothing moves). Add a new callback
-that fires per-block and lets the consumer decide:
+`cancelPistons` flag cancels the entire piston event (nothing moves). A new
+`breakOnPiston` flag provides the alternative: break-and-drop, then let the piston proceed.
+
+The `onBlockRemoved` callback already fires during cleanup, so no separate piston
+callback is needed — Pipes' `onBlockRemoved` handler handles pipe-specific cleanup
+(removing from `pipes` map, invalidating path cache, updating adjacent displays).
 
 ```java
-// Field:
-private final @Nullable BiConsumer<Block, String> onPistonPush;
+// Field + accessor (same pattern as cancelPistons):
+private final boolean breakOnPiston;
+public boolean breakOnPiston() { return breakOnPiston; }
 
 // Builder:
-public Builder onPistonPush(BiConsumer<Block, String> handler) {
-    this.onPistonPush = handler; return this;
+private boolean breakOnPiston;
+public Builder breakOnPiston(boolean value) {
+    this.breakOnPiston = value; return this;
 }
 ```
 
-**File**: `CoreLibPlugin.java` — modify piston handlers (lines 385-404)
+**File**: `CoreLibPlugin.java` — modify piston handlers (line numbers approximate)
+
+Three-state behavior per block: cancel event, break-and-drop, or default (no custom handling).
+Drops follow the same upstream pattern as `onBlockBreak`:
 
 ```java
 public void onPistonExtend(BlockPistonExtendEvent event) {
@@ -358,9 +389,20 @@ public void onPistonExtend(BlockPistonExtendEvent event) {
             event.setCancelled(true);
             return;
         }
-        if (type.onPistonPush() != null) {
+        if (type.breakOnPiston()) {
+            // 1. Drop item (evaluate DropRule, same as break handler)
             String state = registry.getState(block);
-            registry.onBlockRemoved(block, type, state, true); // drop item
+            for (var rule : type.dropRules()) {
+                if (rule.inState() != null && !rule.inState().equals(state)) continue;
+                if (rule.isSelfDrop()) {
+                    block.getWorld().dropItemNaturally(
+                            block.getLocation(), type.createItem(1));
+                }
+                break;
+            }
+            // 2. Cleanup (remove tracking, display entities, fire onBlockRemoved callback)
+            registry.onBlockRemoved(block, type);
+            // 3. Clear block so piston can proceed
             block.setType(Material.AIR, false);
         }
     }
@@ -411,8 +453,10 @@ for (PipeVariant variant : variantRegistry.getAll()) {
     String typeId = variant.getId();  // e.g. "copper_pipe", "iron_corner_pipe"
     boolean isCorner = variant.getBehaviorType() == BehaviorType.CORNER;
 
+    DisplayConfig.TextureSet textures = displayConfig.getTextureSet(variant.getTextureSetId());
+
     var builder = CustomHeadBlock.builder("pipes", typeId)
-        .texture(displayConfig.getHeadTexture(variant, "horizontal"))
+        .texture(textures.getHeadTexture(BlockFace.NORTH))
         .name(variant.getDisplayName())
         .drops(CustomHeadBlock.DropRule.self());
 
@@ -446,9 +490,7 @@ for (PipeVariant variant : variantRegistry.getAll()) {
         PipeManager mgr = getManager(block.getWorld());
         if (mgr != null) mgr.onPipeChunkUnload(block, variant);
     });
-    builder.onPistonPush((block, state) -> {
-        // break-and-drop, let piston proceed (current Pipes behavior)
-    });
+    builder.breakOnPiston(true);  // drop item + cleanup + let piston proceed
 
     // Dynamic display transform resolver
     builder.displayTransformResolver((block, state, config, displayIndex) -> {
@@ -457,15 +499,43 @@ for (PipeVariant variant : variantRegistry.getAll()) {
         return mgr.resolveTransform(block, state, config, displayIndex, variant);
     });
 
-    // Recipes
+    // Shaped recipes (crafting table)
     for (var recipe : variant.getRecipes()) {
-        builder.shapedRecipe(convertRecipe(recipe, typeId));
+        builder.shapedRecipe(convertRecipe(recipe));
+    }
+
+    // Conversion recipes (shapeless: pipe + catalyst → different pipe)
+    for (var conv : variant.getConversionRecipes()) {
+        builder.shapelessRecipe(new ShapelessRecipeDef(
+                conv.getKey(), conv.getResultAmount(),
+                List.of(
+                    new IngredientSpec(null, "pipes:" + conv.getFromVariantId(), null),
+                    new IngredientSpec(conv.getCatalyst(), null, null))));
     }
 
     CustomHeadBlock type = builder.build();
     registry.register(type);
 }
+
+/**
+ * Convert Pipes' RecipeDefinition to CoreLib's ShapedRecipeDef.
+ */
+private ShapedRecipeDef convertRecipe(RecipeDefinition recipe) {
+    Map<Character, IngredientSpec> key = new HashMap<>();
+    for (var entry : recipe.getIngredients().entrySet()) {
+        key.put(entry.getKey(), new IngredientSpec(entry.getValue(), null, null));
+    }
+    return new ShapedRecipeDef(
+            recipe.getKey(), recipe.getResultAmount(),
+            List.of(recipe.getShape()), key);
+}
 ```
+
+**Recipe timing**: CoreLib calls `finalizeLoading()` → `registerRecipes()` during its
+own `onEnable()`, before Pipes' `onEnable()` runs. Verify that `registry.register()`
+handles recipe registration for late-registered blocks, or call
+`registry.registerRecipes()` explicitly from Pipes' `onEnable()` after all blocks are
+registered.
 
 ### 2b. State definitions — regular pipes
 
@@ -473,9 +543,12 @@ for (PipeVariant variant : variantRegistry.getAll()) {
 
 ```java
 private void buildRegularStates(CustomHeadBlock.Builder builder,
-        PipeVariant variant, DisplayConfig config) {
-    String hHead = config.getHeadTexture(variant, "horizontal");
-    String hDisplay = config.getDisplayTexture(variant, "horizontal");
+        PipeVariant variant, DisplayConfig displayConfig) {
+    DisplayConfig.TextureSet textures = displayConfig.getTextureSet(variant.getTextureSetId());
+
+    // Horizontal states share the same textures
+    String hHead = textures.getHeadTexture(BlockFace.NORTH);
+    String hDisplay = textures.getItemDisplayTexture(BlockFace.NORTH);
     ItemStack hDisplayItem = HeadUtil.createHead(hDisplay, 1);
     var hConfig = new CustomHeadBlock.DisplayEntityConfig(
             hDisplayItem, identityTransform(), "main", null, 0, 0);
@@ -486,16 +559,18 @@ private void buildRegularStates(CustomHeadBlock.Builder builder,
                 .displayEntities(List.of(hConfig)));
     }
 
-    String upHead = config.getHeadTexture(variant, "up");
-    String upDisplay = config.getDisplayTexture(variant, "up");
+    // UP state
+    String upHead = textures.getHeadTexture(BlockFace.UP);
+    String upDisplay = textures.getItemDisplayTexture(BlockFace.UP);
     ItemStack upItem = HeadUtil.createHead(upDisplay, 1);
     builder.state("up", s -> s
             .texture(upHead)
             .displayEntities(List.of(new CustomHeadBlock.DisplayEntityConfig(
                     upItem, identityTransform(), "main", null, 0, 0))));
 
-    String downHead = config.getHeadTexture(variant, "down");
-    String downDisplay = config.getDisplayTexture(variant, "down");
+    // DOWN state
+    String downHead = textures.getHeadTexture(BlockFace.DOWN);
+    String downDisplay = textures.getItemDisplayTexture(BlockFace.DOWN);
     ItemStack downItem = HeadUtil.createHead(downDisplay, 1);
     builder.state("down", s -> s
             .texture(downHead)
@@ -515,12 +590,16 @@ The display entities use `identityTransform()` as a placeholder — the
 
 ```java
 private void buildCornerStates(CustomHeadBlock.Builder builder,
-        PipeVariant variant, DisplayConfig config) {
-    String baseTexture = config.getCornerDisplayTexture(variant);
+        PipeVariant variant, DisplayConfig displayConfig) {
+    DisplayConfig.TextureSet textures = displayConfig.getTextureSet(variant.getTextureSetId());
+
+    // Base display item (same for all directions)
+    String baseTexture = textures.getItemDisplayTexture(BlockFace.NORTH);
     ItemStack baseItem = HeadUtil.createHead(baseTexture, 1);
 
+    // Horizontal states
     for (String dir : List.of("north", "south", "east", "west")) {
-        String dirTexture = config.getCornerDirectionalTexture(variant, "horizontal");
+        String dirTexture = textures.getDirectionalDisplayTexture(BlockFace.NORTH);
         ItemStack dirItem = HeadUtil.createHead(dirTexture, 1);
 
         var baseConfig = new CustomHeadBlock.DisplayEntityConfig(
@@ -529,18 +608,19 @@ private void buildCornerStates(CustomHeadBlock.Builder builder,
                 dirItem, identityTransform(), "dir", null, 0, 0);
 
         builder.state(dir, s -> s
-                .texture(config.getHeadTexture(variant, "horizontal"))
+                .texture(textures.getHeadTexture(BlockFace.NORTH))
                 .displayEntities(List.of(baseConfig, dirConfig)));
     }
 
-    String downDirTexture = config.getCornerDirectionalTexture(variant, "down");
+    // DOWN state
+    String downDirTexture = textures.getDirectionalDisplayTexture(BlockFace.DOWN);
     ItemStack downDirItem = HeadUtil.createHead(downDirTexture, 1);
     var downBase = new CustomHeadBlock.DisplayEntityConfig(
             baseItem, identityTransform(), "base", null, 0, 0);
     var downDir = new CustomHeadBlock.DisplayEntityConfig(
             downDirItem, identityTransform(), "dir", null, 0, 0);
     builder.state("down", s -> s
-            .texture(config.getHeadTexture(variant, "down"))
+            .texture(textures.getHeadTexture(BlockFace.DOWN))
             .displayEntities(List.of(downBase, downDir)));
 
     builder.defaultState("north");
@@ -630,9 +710,14 @@ Transformation resolveTransform(Block block, String state,
 
 ### 3c. Neighbor categorization — use CoreLib registry
 
-Both `categorizeSourceBlock()` and `categorizeDestinationBlock()` currently call
-`getPipeData(location)` to check if a neighbor is a pipe. After migration, use
-CoreLib's registry:
+**Only `categorizeSourceBlock()` and `categorizeDestinationBlock()` switch to CoreLib
+registry** — they need to identify arbitrary custom blocks as neighbors. The transfer
+system (`findDestination()`, `transferItems()`, `getPipeData()`) keeps using the local
+`pipes` map for chain-following. This is a performance-critical hot path (~300-500
+hashmap lookups/tick) where O(1) map access beats block access + PDC reads per hop.
+
+Both categorize methods currently call `getPipeData(location)` to check if a neighbor
+is a pipe. After migration, use CoreLib's registry:
 
 ```java
 private String categorizeSourceBlock(Block sourceBlock, BlockFace currentFacing) {
@@ -804,7 +889,7 @@ CoreLib tracks display entities by tag — UUIDs are no longer needed.
 | File | Change |
 |------|--------|
 | `PipesPlugin.java` | Replace item/recipe init with CoreLib block type registration. Remove `loadItems()`, `createPipeItem()`, `getHeadItemForDirection()`, `getDisplayItem()`, `getDirectionalDisplayItem()`. Keep config loading, command handling, bStats init. |
-| `PipeManager.java` | Remove display spawn/remove/update/chunk-scan methods. Add callback methods + `resolveTransform()`. Modify categorize methods to use CoreLib registry. Simplify PipeData. Keep transfer + transform + path + task code (`startTasks`, `stopTasks`, `restartTasks`, `shutdown`, debug particles). |
+| `PipeManager.java` | Remove display spawn/remove/update/chunk-scan methods (`spawnDisplayEntities()`, `updateDisplayEntity()`, `updateCornerDisplayEntities()`, `removeDisplayEntities()`, `removeDisplaysByTag()`, `scanChunk()`, `scanForExistingPipes()`). Add callback methods + `resolveTransform()`. Modify `categorizeSourceBlock()` / `categorizeDestinationBlock()` to use CoreLib registry. Simplify PipeData (remove UUID list). Keep transfer + transform + path + task code (`startTasks`, `stopTasks`, `restartTasks`, `shutdown`, `findDestination`, `transferItems`, `getPipeData`, debug particles). |
 | `CauldronConversionListener.java` | Update `plugin.getVariant(item)` to use CoreLib's `BLOCK_TYPE_KEY` PDC to identify pipe items instead of variant-specific PDC keys. Update item creation to use `registry.getType("pipes:" + typeId).createItem()`. |
 | `ConversionRecipeCraftListener.java` | Same PDC key update as CauldronConversionListener. Conversion recipe registration moves here or to PipesPlugin (since RecipeManager is deleted). Keep catalyst retention logic. |
 
@@ -812,7 +897,7 @@ CoreLib tracks display entities by tag — UUIDs are no longer needed.
 
 | File | Why |
 |------|-----|
-| `WorldManager.java` | Per-world PipeManager lifecycle stays as-is |
+| `WorldManager.java` | Per-world PipeManager lifecycle stays as-is. `initWorld()` still creates PipeManager and calls `startTasks()`, but `scanForExistingPipes()` is removed (CoreLib handles chunk scanning via `restoreBlock()`). |
 | `VariantRegistry.java` | Loads variant definitions from config.yml |
 | `PipeVariant.java` | Variant data model |
 | `BehaviorType.java` | Enum |
@@ -838,7 +923,8 @@ After migration:
 3. Refresh displays — iterate all pipes, call `resolveDisplayTransforms()` per pipe
 4. `restartTasks()` — unchanged (transfer intervals, debug particles)
 5. Re-evaluate world filters — unchanged (WorldManager)
-6. Recipes — need to investigate CoreLib's recipe API for hot-reload support
+6. Recipes — CoreLib has `ShapedRecipeDef`/`ShapelessRecipeDef` with Bukkit registration.
+   Verify hot-reload support (unregister old keys, re-register with new config values)
 7. Cauldron conversions — unchanged
 
 ### `/pipes give`
@@ -854,8 +940,8 @@ skull with PDC.
 
 ### `/pipes delete_all`
 
-Iterate pipe map, for each: call `registry.onBlockRemoved(block, type, state, false)`,
-then `block.setType(AIR)`.
+Iterate pipe map, for each: call `registry.onBlockRemoved(block, type)` (cleanup — no
+drops), then `block.setType(AIR)`.
 
 ### `/pipes cleanup`
 
@@ -913,7 +999,7 @@ are harder to obtain).
 1. **CoreLib**: Add `DisplayTransformResolver` interface + field + builder + accessor
 2. **CoreLib**: Add `StateResolverResult` record + `StateResolver` interface + field + builder
 3. **CoreLib**: Add `onBlockPlaced` callback + field + builder + accessor
-4. **CoreLib**: Add `onPistonPush` callback + modify piston handlers
+4. **CoreLib**: Add `breakOnPiston` flag + modify piston handlers
 5. **CoreLib**: Add `BlockDestroyEvent` handler
 6. **CoreLib**: Add `resolveDisplayTransforms()` helper to `CustomBlockRegistry`
 7. **CoreLib**: Wire resolver into `applyConfig()` (4-line insertion, preserve displayItemResolver)
@@ -937,9 +1023,9 @@ are harder to obtain).
 
 | File | Change |
 |------|--------|
-| `CustomHeadBlock.java` | New `DisplayTransformResolver`, `StateResolver`, `StateResolverResult`, `onBlockPlaced`, `onPistonPush`. Fields, constructor params, accessors, builder methods. (~60 lines) |
+| `CustomHeadBlock.java` | New `DisplayTransformResolver`, `StateResolver`, `StateResolverResult`, `onBlockPlaced`, `breakOnPiston`. Fields, constructor params, accessors, builder methods. (~60 lines) |
 | `CustomBlockRegistry.java` | New `resolveDisplayTransforms()` helper. 4-line insertion in `applyConfig()` for resolver call. (~30 lines) |
-| `CoreLibPlugin.java` | `stateResolver` + `forcePlayerHead` in placement handler. `onBlockPlaced` after applyConfig. Resolver call in neighbor change handler. Resolver call in `EntitiesLoadEvent`. `BlockDestroyEvent` handler. Modified piston handlers for `onPistonPush`. (~50 lines) |
+| `CoreLibPlugin.java` | `stateResolver` + `forcePlayerHead` in placement handler. `onBlockPlaced` after applyConfig. Resolver call in `onBlockPhysics` neighbor loop. Resolver call in `EntitiesLoadEvent`. `BlockDestroyEvent` handler. Modified piston handlers for `breakOnPiston`. (~50 lines) |
 
 ## Files modified (Pipes)
 

@@ -25,6 +25,9 @@
 - [ ] **[next]** **Batched recipe reload** — `registerRecipesBatched(batchSize, onComplete)` via
   BukkitRunnable. Process N recipes/tick to avoid lag with HeadSmith's ~3000 heads. Registration is
   currently synchronous (`CustomBlockRegistry.registerRecipes`). Unblocks the HeadSmith migration.
+- [ ] **Off-center pivot rotation fix** — delta-tracked snapped pivot; 4 code changes to
+  `MechanismRegistry` + `BasicMechanism` + cross-world guard. Fully designed in
+  [minecarts.md](minecarts.md) (Changes 1-4). Prerequisite for mechanism stabilization.
 
 ## Consumer plugins (open)
 
@@ -43,12 +46,14 @@
   minecart demos), but **not done**: off-center pivot rotation bug open ([minecarts.md](minecarts.md)),
   particle ticking unimplemented (`MechanismRegistry` ~line 340), BlockShips pre-Phase-1 bugs
   ([blockships-integration.md](blockships-integration.md)). Stabilize before calling complete.
-- [ ] **Mechanism × custom-block BlockDisplay** — a `CustomHeadBlock` carrying its own
-  `blockDisplayEntities` (e.g. a vertical slab) assembled into a *moving* mechanism won't carry those
-  block-displays: the assembly/move/disassembly loops handle ItemDisplay (and the mechanism's own
-  native BlockDisplays) but not a custom block's attached `blockDisplayEntities`. ~30 lines (parallel
-  loop in `MechanismRegistry`). Low priority — dormant until a BlockDisplay-based custom block is
-  placed on a mechanism.
+- [ ] **Custom blocks in mechanisms** — DefCoreLib custom blocks (gears, windmills, etc.) on minecart
+  mechanisms. `assembleCore` already handles custom blocks when present (snapshots type/state/displays/
+  particles/inventory, re-spawns display entities with animations), but `MinecartShipManager`'s
+  material allow-list flood fill blocks `PLAYER_HEAD`. Becomes natural when glue replaces flood-fill
+  ([rotation-mechanisms.md](rotation-mechanisms.md) Phase 3) — glue selects by anchor-owned offsets,
+  not material. Needs testing: custom state round-trip, animation playback on assembled mechanism.
+  Includes the sub-case of `blockDisplayEntities` (e.g. vertical slabs) which need a parallel loop
+  in `MechanismRegistry` (~30 lines).
 - [ ] **DynLight integration** — soft dependency; custom blocks declare dynamic light via DynLight API.
 - [ ] **Connected/multi-block structures** — generalize Ropes' vertical chain pattern. Shared lifecycle
   across linked blocks.

@@ -536,6 +536,8 @@ These should be fixed before starting integration work:
 
 5. **Dead code** — `perpendicularNeighbors()` in RotationNetwork.java (lines 397-415) is never called.
 
+6. **Float precision in snap computation** — `MechanismRegistry.assembleCore()` lines 91-92: `float snapX = (float)(Math.floor(pivot.getX()) + 0.5)` — float mantissa (24 bits) can't represent the `.5` offset at coordinates beyond ~8M blocks, breaking the integer-offset invariant that `disassemble()` depends on. Fix: use `double` for snapping, cast to `float` only at Matrix4f construction.
+
 ---
 
 ## Verification Plan
