@@ -413,49 +413,29 @@ blocks:
   # ─── Grindstone ─────────────────────────────────────────────────────────
   # Consumer: 1 SU. WALL only — mounts on a block and pulls from it if it's a
   # container; outputs into the container below (or drops below). Batch size
-  # scales with surplus SU. Right-click with item to grind manually (fallback).
-  # Display: two smooth stone slabs forming a vertical grinding wheel that spins
-  # around the wall axis (Z on N/S walls, X on E/W walls).
+  # scales with surplus SU. Powered from a shaft on top (Y axis). Right-click
+  # with an item to grind manually (fallback when there's no host container).
+  # Display: two smooth stone slabs — bottom static, top spins around Y.
   grindstone:
     name: "&7Grindstone"
     lore:
       - "&7Mounts on a container and grinds its contents when powered"
-      - "&7Grinds faster with more rotation power; outputs below"
+      - "&7Powered from the top; grinds faster with more power; outputs below"
       - "&7Right-click with item to grind manually"
     # Stone Slabs (151e7016)
     texture: "@stone_slabs"
     drops: self
     placement:
       allowed_faces: [NORTH, SOUTH, EAST, WEST]
-    default_state: idle_z
-    placement_state_map:
-      NORTH: idle_z
-      SOUTH: idle_south_z
-      EAST: idle_east_x
-      WEST: idle_x
+    default_state: idle
     states:
-      # Z-axis wheel (NORTH / SOUTH walls) — two slabs straddling the block on Z.
-      idle_z:
+      # Two slabs stacked — bottom static, top rotates around Y when spinning.
+      # Receives power from a shaft on top (UP face).
+      idle:
         display_entities:
-          - { material: SMOOTH_STONE_SLAB, tag: base_slab, transform: { translation: [0, 0, -0.15], scale: [0.8, 1.0, 0.8], left_rotation: [-90, 1, 0, 0] }, animation: none }
-          - { material: SMOOTH_STONE_SLAB, tag: top_slab,  transform: { translation: [0, 0,  0.15], scale: [0.8, 1.0, 0.8], left_rotation: [-90, 1, 0, 0] } }
-      spinning_z: { copy_from: idle_z, animation: { type: rotate, axis: [0, 0, 1], speed: 3.0 } }
-      idle_south_z:
-        display_entities:
-          - { material: SMOOTH_STONE_SLAB, tag: base_slab, transform: { translation: [0, 0,  0.15], scale: [0.8, 1.0, 0.8], left_rotation: [90, 1, 0, 0] }, animation: none }
-          - { material: SMOOTH_STONE_SLAB, tag: top_slab,  transform: { translation: [0, 0, -0.15], scale: [0.8, 1.0, 0.8], left_rotation: [90, 1, 0, 0] } }
-      spinning_south_z: { copy_from: idle_south_z, animation: { type: rotate, axis: [0, 0, 1], speed: 3.0 } }
-      # X-axis wheel (EAST / WEST walls) — two slabs straddling the block on X.
-      idle_x:
-        display_entities:
-          - { material: SMOOTH_STONE_SLAB, tag: base_slab, transform: { translation: [-0.15, 0, 0], scale: [0.8, 1.0, 0.8], left_rotation: [90, 0, 0, 1] }, animation: none }
-          - { material: SMOOTH_STONE_SLAB, tag: top_slab,  transform: { translation: [ 0.15, 0, 0], scale: [0.8, 1.0, 0.8], left_rotation: [90, 0, 0, 1] } }
-      spinning_x: { copy_from: idle_x, animation: { type: rotate, axis: [1, 0, 0], speed: 3.0 } }
-      idle_east_x:
-        display_entities:
-          - { material: SMOOTH_STONE_SLAB, tag: base_slab, transform: { translation: [ 0.15, 0, 0], scale: [0.8, 1.0, 0.8], left_rotation: [-90, 0, 0, 1] }, animation: none }
-          - { material: SMOOTH_STONE_SLAB, tag: top_slab,  transform: { translation: [-0.15, 0, 0], scale: [0.8, 1.0, 0.8], left_rotation: [-90, 0, 0, 1] } }
-      spinning_east_x: { copy_from: idle_east_x, animation: { type: rotate, axis: [1, 0, 0], speed: 3.0 } }
+          - { material: SMOOTH_STONE_SLAB, tag: base_slab, transform: { translation: [0, 0.0, 0], scale: [0.8, 1.0, 0.8] }, animation: none }
+          - { material: SMOOTH_STONE_SLAB, tag: top_slab,  transform: { translation: [0, 0.5, 0],  scale: [0.8, 1.0, 0.8] } }
+      spinning: { copy_from: idle, animation: { type: rotate, axis: [0, 1, 0], speed: 3.0 } }
 
   # ─── Drill ──────────────────────────────────────────────────────────────
   # Consumer: 1 SU. Breaks the block in its facing direction every 2s.

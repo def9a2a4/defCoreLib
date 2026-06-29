@@ -20,15 +20,16 @@ import java.util.*;
 /**
  * Rotator: the bridge between the rotation-power network and the mechanism system.
  *
- * <p>A CONSUMER block (floor → door about Y, wall → drawbridge about X/Z). When the network's
- * spin direction disagrees with the door's rest state, it flood-fills its oak-plank structure,
- * assembles a mechanism, and swings it to a target angle, then restores real blocks. Spin
- * direction CW = open/raise, CCW = close/lower. Swing speed is locked at start to
- * {@code clamp(K * surplus / mass)} and is not recomputed mid-swing; the rotator registers
- * transient network demand only while swinging, so contending rotators slow each other down.
+ * <p>A CONSUMER block (floor → door about Y, wall → drawbridge about X/Z). It is <b>stateless</b> —
+ * it has no "open"/"closed". On a <b>redstone rising edge</b> (off→on) it checks it has rotation
+ * power, flood-fills its oak-plank structure, and rotates it once by the target angle (right-click
+ * to cycle 90/180/270) in the network's current spin direction: CW → +angle, CCW → −angle. Reverse
+ * the network (a redstone reverser, or wrench the source) to rotate the other way; each pulse is
+ * one rotation, then real blocks are restored.
  *
- * <p>v1: block selection is an oak-plank flood-fill (glue replaces this later); a door inside a
- * plank wall will over-grab — use a non-plank frame until glue lands.
+ * <p>Swing speed is locked at start to {@code clamp(K * surplus / mass)}; while swinging the rotator
+ * registers transient network demand so contending rotators slow each other down. v1: block
+ * selection is an oak-plank flood-fill (glue replaces this later).
  */
 final class RotationRotator {
 
@@ -49,7 +50,6 @@ final class RotationRotator {
     private static final int SWING_DEMAND = 2;
 
     private static final NamespacedKey TARGET_KEY = new NamespacedKey("rotation", "rotator_target");
-    private static final NamespacedKey OPEN_KEY = new NamespacedKey("rotation", "rotator_open");
 
     private final JavaPlugin plugin;
     private final CustomBlockRegistry registry;
@@ -58,6 +58,8 @@ final class RotationRotator {
 
     private final Map<CustomBlockRegistry.LocationKey, Mechanism> activeRotators = new HashMap<>();
     private final Map<CustomBlockRegistry.LocationKey, BukkitTask> activeTasks = new HashMap<>();
+    // Last redstone-power state, for off→on rising-edge detection.
+    private final Map<CustomBlockRegistry.LocationKey, Boolean> lastPowered = new HashMap<>();
 
     RotationRotator(JavaPlugin plugin, CustomBlockRegistry registry,
                     RotationNetwork network, MechanismRegistry mechRegistry) {
@@ -76,41 +78,46 @@ final class RotationRotator {
         registry.register(block.toBuilder()
             .drillable(false)
             .reactsToNeighbors(true)
-            .tickInterval(4) // poll for direction changes (e.g. a reverser toggled elsewhere)
-            .onNeighborChange((b, face) -> { recalc(b); tryActuate(b); })
-            .onTick(this::tryActuate)
+            .onNeighborChange((b, face) -> onNeighborChange(b))
             .onInteract(this::onInteract)
-            .onChunkLoad((b, state) -> network.addNode(b, ROTATOR_ID,
-                RotationNetwork.axisFromState(state), RotationNetwork.NodeRole.CONSUMER, 0, false))
+            .onChunkLoad((b, state) -> {
+                network.addNode(b, ROTATOR_ID, RotationNetwork.axisFromState(state),
+                    RotationNetwork.NodeRole.CONSUMER, 0, false);
+                lastPowered.put(CustomBlockRegistry.LocationKey.of(b), b.getBlockPower() > 0);
+            })
             .onChunkUnload(b -> { cleanup(b); network.removeNode(CustomBlockRegistry.LocationKey.of(b)); })
             .onBlockRemoved((b, state) -> { cleanup(b); network.removeNode(CustomBlockRegistry.LocationKey.of(b)); })
             .build());
     }
 
     // ──────────────────────────────────────────────────────────────────────
-    // Actuation
+    // Trigger: redstone rising edge → one rotation
     // ──────────────────────────────────────────────────────────────────────
 
-    /** Polled (onTick) and on local neighbor changes: start a swing if the network direction
-     *  now disagrees with the door's rest state and isn't already mid-swing. */
-    private void tryActuate(Block head) {
+    private void onNeighborChange(Block head) {
+        recalc(head);
         var key = CustomBlockRegistry.LocationKey.of(head);
-        if (activeTasks.containsKey(key)) return; // already swinging — finish first, then re-evaluate
+        boolean now = head.getBlockPower() > 0;
+        boolean was = lastPowered.getOrDefault(key, false);
+        lastPowered.put(key, now); // update first → repeated same-tick neighbor events are idempotent
+        if (now && !was) trigger(head); // off→on rising edge
+    }
+
+    private void trigger(Block head) {
+        var key = CustomBlockRegistry.LocationKey.of(head);
+        if (activeTasks.containsKey(key)) return; // already swinging — ignore this pulse
 
         RotationNetwork.SpinDirection dir = network.getDirection(key);
-        if (dir == null || !network.isPowered(key)) return;
-
-        boolean desiredOpen = (dir == RotationNetwork.SpinDirection.CW);
-        if (desiredOpen == readOpen(head)) return; // already at the desired rest state
+        if (dir == null || !network.isPowered(key)) { feedbackNoPower(head); return; }
 
         // Read surplus BEFORE registering our own transient demand, so it excludes us.
         int[] stats = network.getNetworkStats(key);
         if (stats == null) return;
         int surplus = stats[0] - stats[1];
-        if (surplus <= 0) { feedbackUnderpowered(head); return; }
+        if (surplus <= 0) { feedbackNoPower(head); return; }
 
         List<Block> planks = floodFill(head, STRUCTURE_MATERIAL, MAX_BLOCKS);
-        if (planks.isEmpty()) { writeOpen(head, desiredOpen); return; } // nothing to move — just flip the flag
+        if (planks.isEmpty()) return;
 
         RotationNetwork.RotationNode node = network.getNode(key);
         if (node == null) return;
@@ -122,14 +129,14 @@ final class RotationRotator {
         int mass = Math.max(1, mech.blockCount());
         float speed = clamp(SPEED_K * surplus / mass, MIN_DEG, MAX_DEG);
         int targetAngle = readTarget(head);
-        float target = desiredOpen ? targetAngle : -targetAngle;
+        float target = (dir == RotationNetwork.SpinDirection.CW) ? targetAngle : -targetAngle;
         network.addTransientDemand(key, SWING_DEMAND);
 
-        startSwing(key, head, mech, speed, target, desiredOpen);
+        startSwing(key, mech, speed, target);
     }
 
-    private void startSwing(CustomBlockRegistry.LocationKey key, Block head, Mechanism mech,
-                            float speed, float target, boolean desiredOpen) {
+    private void startSwing(CustomBlockRegistry.LocationKey key, Mechanism mech,
+                            float speed, float target) {
         float limit = Math.abs(target);
         float sign = Math.signum(target);
         BukkitTask task = Bukkit.getScheduler().runTaskTimer(plugin, new Runnable() {
@@ -139,12 +146,13 @@ final class RotationRotator {
                 boolean done = angle >= limit;
                 mech.rotate(done ? target : sign * angle);
                 if (done) {
-                    BukkitTask t = activeTasks.remove(key);
-                    if (t != null) t.cancel();
+                    // Order matters: keep the activeTasks guard up THROUGH disassembly so the
+                    // block-place physics it fires can't re-enter trigger() and start a new swing.
                     mech.disassemble();
                     activeRotators.remove(key);
                     network.clearTransientDemand(key);
-                    writeOpen(head, desiredOpen);
+                    BukkitTask t = activeTasks.remove(key);
+                    if (t != null) t.cancel();
                 }
             }
         }, 2L, 1L); // 2-tick delay lets the display passengers mount before the first rotate
@@ -156,6 +164,7 @@ final class RotationRotator {
         BukkitTask task = activeTasks.remove(key);
         if (task != null) task.cancel();
         network.clearTransientDemand(key);
+        lastPowered.remove(key);
         Mechanism mech = activeRotators.remove(key);
         if (mech != null) mech.disassemble();
     }
@@ -166,14 +175,14 @@ final class RotationRotator {
 
     private boolean onInteract(Block head, org.bukkit.event.player.PlayerInteractEvent event) {
         var player = event.getPlayer();
+        var key = CustomBlockRegistry.LocationKey.of(head);
         if (RotationBlocks.isWrench(player.getInventory().getItemInMainHand())) {
-            // Wrench → status readout (rotator is a consumer, not a wrench-toggled source)
-            RotationNetwork.SpinDirection dir = network.getDirection(
-                CustomBlockRegistry.LocationKey.of(head));
+            RotationNetwork.SpinDirection dir = network.getDirection(key);
             player.sendActionBar(Component.text(
-                "Rotator: " + (readOpen(head) ? "open" : "closed") + ", target " + readTarget(head)
-                    + "° | " + (network.isPowered(CustomBlockRegistry.LocationKey.of(head))
-                        ? "powered" + (dir != null ? " " + dir : "") : "unpowered"),
+                "Rotator: target " + readTarget(head) + "° | "
+                    + (network.isPowered(key)
+                        ? "powered" + (dir != null ? " " + dir : "") : "unpowered")
+                    + " | pulse redstone to rotate",
                 NamedTextColor.GOLD));
             return true;
         }
@@ -183,13 +192,13 @@ final class RotationRotator {
             default -> 90;
         };
         writeTarget(head, next);
-        player.sendActionBar(Component.text("Rotator target: " + next + "°", NamedTextColor.LIGHT_PURPLE));
+        player.sendActionBar(Component.text("Rotator angle: " + next + "°", NamedTextColor.LIGHT_PURPLE));
         head.getWorld().playSound(head.getLocation().add(0.5, 0.5, 0.5),
             Sound.BLOCK_COPPER_PLACE, 0.6f, 1.4f);
         return true;
     }
 
-    private void feedbackUnderpowered(Block head) {
+    private void feedbackNoPower(Block head) {
         head.getWorld().spawnParticle(Particle.SMOKE,
             head.getLocation().add(0.5, 1.0, 0.5), 4, 0.15, 0.1, 0.15, 0.01);
         head.getWorld().playSound(head.getLocation().add(0.5, 0.5, 0.5),
@@ -232,18 +241,6 @@ final class RotationRotator {
             for (BlockFace face : CARDINAL_FACES) queue.add(b.getRelative(face));
         }
         return result;
-    }
-
-    private boolean readOpen(Block head) {
-        if (!(head.getState() instanceof Skull skull)) return false;
-        Byte v = skull.getPersistentDataContainer().get(OPEN_KEY, PersistentDataType.BYTE);
-        return v != null && v != 0;
-    }
-
-    private void writeOpen(Block head, boolean open) {
-        if (!(head.getState() instanceof Skull skull)) return;
-        skull.getPersistentDataContainer().set(OPEN_KEY, PersistentDataType.BYTE, (byte) (open ? 1 : 0));
-        skull.update();
     }
 
     private int readTarget(Block head) {

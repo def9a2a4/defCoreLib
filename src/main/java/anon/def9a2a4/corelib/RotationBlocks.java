@@ -336,8 +336,7 @@ final class RotationBlocks {
                 if (isWrench(event.getPlayer().getInventory().getItemInMainHand()))
                     return wrenchInteract(b, event, network, registry);
                 String state = registry.getState(b);
-                if (state == null || !state.startsWith("spinning"))
-                    return debugInteract(b, event, network, registry);
+                if (!"spinning".equals(state)) return debugInteract(b, event, network, registry);
 
                 var held = event.getPlayer().getInventory().getItemInMainHand();
                 if (held.getType().isAir()) return debugInteract(b, event, network, registry);
@@ -355,8 +354,10 @@ final class RotationBlocks {
             .onTick(b -> grindstoneTick(b, network, grindRecipes))
             .onChunkLoad((b, state) -> {
                 storeFacingIfAbsent(b);
-                // Wall-mounted: rotation axis follows the wall (Z on N/S, X on E/W).
-                network.addNode(b, blockId, RotationNetwork.axisFromState(state),
+                // Wall-mounted, but powered from the top: rotation axis is Y, so the
+                // network connects ±Y and a shaft above drives it. Facing (for the host
+                // container behind it) is read separately from the wall head's data.
+                network.addNode(b, blockId, RotationNetwork.Axis.Y,
                     RotationNetwork.NodeRole.CONSUMER, grindstonePower, false);
             })
             .onChunkUnload(b -> network.removeNode(CustomBlockRegistry.LocationKey.of(b)))
