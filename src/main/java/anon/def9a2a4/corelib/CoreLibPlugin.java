@@ -1042,7 +1042,7 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!command.getName().equalsIgnoreCase("defcorelib")) return false;
         if (args.length == 0) {
-            sender.sendMessage(Component.text("Usage: /defcorelib <give|give_demo|give_demo_rotation|list|colliders|reloadbanners>", NamedTextColor.YELLOW));
+            sender.sendMessage(Component.text("Usage: /defcorelib <give|give_demo|give_demo_rotation|list|colliders|reloadbanners|cleanorphans>", NamedTextColor.YELLOW));
             return true;
         }
 
@@ -1144,6 +1144,27 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
                 bannerManager.reloadConfig();
                 sender.sendMessage(Component.text("Banner config reloaded", NamedTextColor.GREEN));
             }
+            case "cleanorphans" -> {
+                boolean confirm = args.length >= 2 && args[1].equalsIgnoreCase("confirm");
+                CustomBlockRegistry.OrphanScanResult result = registry.scanOrphanedDisplays(confirm);
+                if (confirm) {
+                    sender.sendMessage(Component.text("Removed " + result.orphans() + " orphaned display "
+                            + (result.orphans() == 1 ? "entity" : "entities") + ".", NamedTextColor.GREEN));
+                } else if (result.orphans() == 0) {
+                    sender.sendMessage(Component.text("No orphaned displays found ("
+                            + result.live() + " live checked).", NamedTextColor.GREEN));
+                } else {
+                    String skipped = result.skippedUnloaded() > 0
+                            ? ", " + result.skippedUnloaded() + " in unloaded chunks skipped" : "";
+                    sender.sendMessage(Component.text("Found " + result.orphans() + " orphaned display "
+                            + (result.orphans() == 1 ? "entity" : "entities") + " (" + result.live()
+                            + " live checked" + skipped + "). Run /defcorelib cleanorphans confirm to remove.",
+                            NamedTextColor.YELLOW));
+                    for (String sample : result.samples()) {
+                        sender.sendMessage(Component.text("  " + sample, NamedTextColor.GRAY));
+                    }
+                }
+            }
             default -> sender.sendMessage(Component.text("Unknown subcommand: " + args[0], NamedTextColor.RED));
         }
         return true;
@@ -1153,8 +1174,13 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         if (!command.getName().equalsIgnoreCase("defcorelib")) return List.of();
         if (args.length == 1) {
-            return List.of("give", "give_demo", "give_demo_rotation", "list", "colliders", "reloadbanners").stream()
+            return List.of("give", "give_demo", "give_demo_rotation", "list", "colliders", "reloadbanners", "cleanorphans").stream()
                     .filter(s -> s.startsWith(args[0].toLowerCase()))
+                    .toList();
+        }
+        if (args.length == 2 && args[0].equalsIgnoreCase("cleanorphans")) {
+            return List.of("confirm").stream()
+                    .filter(s -> s.startsWith(args[1].toLowerCase()))
                     .toList();
         }
         if (args.length == 2 && args[0].equalsIgnoreCase("give")) {

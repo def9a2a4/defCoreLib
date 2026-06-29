@@ -217,6 +217,88 @@ public class CustomBlockRegistry {
         return Collections.unmodifiableCollection(types.values());
     }
 
+    // ──────────────────────────────────────────────────────────────────────
+    // Orphaned display-entity cleanup (admin command: /defcorelib cleanorphans)
+    // ──────────────────────────────────────────────────────────────────────
+
+    /** Outcome of an orphan scan. {@code samples} holds up to ~10 human-readable lines. */
+    record OrphanScanResult(int orphans, int live, int skippedUnloaded, List<String> samples) {}
+
+    /** Owning custom block reference encoded in a block-attached display entity's tag. */
+    private record DisplayOwnerTag(String fullId, int x, int y, int z) {}
+
+    /**
+     * Scan every loaded world for block-attached display entities whose parent custom block is
+     * gone or has been replaced by a different block, optionally despawning them.
+     *
+     * <p>Identity is verified against the skull's raw {@link #BLOCK_TYPE_KEY} PDC string rather
+     * than the live type registry, so a display whose type merely isn't registered right now
+     * (plugin load order) is NOT treated as orphaned. Banner ({@code corelib:banner:}) and
+     * mechanism ({@code corelib:mech:}) display tags are skipped. A display whose owner sits in an
+     * unloaded chunk is counted but never removed.
+     *
+     * @param remove if true, despawn each orphan; if false, only count (preview)
+     */
+    OrphanScanResult scanOrphanedDisplays(boolean remove) {
+        int orphans = 0, live = 0, skippedUnloaded = 0;
+        List<String> samples = new ArrayList<>();
+        for (World world : Bukkit.getWorlds()) {
+            for (Display display : world.getEntitiesByClass(Display.class)) {
+                DisplayOwnerTag owner = parseBlockDisplayTag(display);
+                if (owner == null) continue;
+                if (!world.isChunkLoaded(owner.x() >> 4, owner.z() >> 4)) {
+                    skippedUnloaded++;
+                    continue;
+                }
+                if (isOwnerPresent(world, owner)) {
+                    live++;
+                    continue;
+                }
+                orphans++;
+                if (samples.size() < 10) {
+                    samples.add(world.getName() + " " + owner.x() + "," + owner.y() + "," + owner.z()
+                            + " " + owner.fullId());
+                }
+                if (remove) display.remove();
+            }
+        }
+        return new OrphanScanResult(orphans, live, skippedUnloaded, samples);
+    }
+
+    /** Extract the owning custom block reference from a block-attached display tag, or null if the
+     *  entity carries no such tag. Format: {@code corelib:{ns}:{type}:{x}_{y}_{z}[:{suffix}]}. */
+    private @Nullable DisplayOwnerTag parseBlockDisplayTag(Display display) {
+        for (String tag : display.getScoreboardTags()) {
+            if (!tag.startsWith("corelib:")) continue;
+            if (tag.startsWith("corelib:banner:") || tag.startsWith("corelib:mech:")) continue;
+            String[] parts = tag.split(":");
+            if (parts.length < 4) continue;
+            String[] coords = parts[3].split("_");
+            if (coords.length != 3) continue;
+            try {
+                int x = Integer.parseInt(coords[0]);
+                int y = Integer.parseInt(coords[1]);
+                int z = Integer.parseInt(coords[2]);
+                return new DisplayOwnerTag(parts[1] + ":" + parts[2], x, y, z);
+            } catch (NumberFormatException ignored) {
+                // Not a block-display tag (some other corelib tag shape) — keep scanning.
+            }
+        }
+        return null;
+    }
+
+    /** True if the block at the owner location is still the custom block named by the tag,
+     *  verified against the skull's raw {@link #BLOCK_TYPE_KEY} PDC (not the type registry). */
+    private boolean isOwnerPresent(World world, DisplayOwnerTag owner) {
+        Block block = world.getBlockAt(owner.x(), owner.y(), owner.z());
+        if (block.getType() != Material.PLAYER_HEAD && block.getType() != Material.PLAYER_WALL_HEAD) {
+            return false;
+        }
+        if (!(block.getState() instanceof Skull skull)) return false;
+        String fullId = skull.getPersistentDataContainer().get(BLOCK_TYPE_KEY, PersistentDataType.STRING);
+        return owner.fullId().equals(fullId);
+    }
+
     /** Fast check: is the block at this location neighbor-reactive? Used by BlockPhysicsEvent. */
     boolean isNeighborReactive(Block block) {
         return neighborReactiveBlocks.contains(LocationKey.of(block));
