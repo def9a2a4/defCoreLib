@@ -711,39 +711,39 @@ blocks:
     states:
       idle_floor:
         display_entities:
-          - { material: WHITE_BANNER, tag: blade_a, transform: { translation: [0.375, -0.2, 0],    scale: [0.75, 0.75, 0.75], left_rotation: [120, 1, 1, -1] } }
-          - { material: WHITE_BANNER, tag: blade_b, transform: { translation: [0, -0.2, 0.375],    scale: [0.75, 0.75, 0.75], left_rotation: [90, 1, 0, 0] } }
-          - { material: WHITE_BANNER, tag: blade_c, transform: { translation: [-0.375, -0.2, 0],   scale: [0.75, 0.75, 0.75], left_rotation: [120, 1, -1, 1] } }
-          - { material: WHITE_BANNER, tag: blade_d, transform: { translation: [0, -0.2, -0.375],   scale: [0.75, 0.75, 0.75], left_rotation: [180, 0, 1, -1] } }
-      spinning_floor: { copy_from: idle_floor, animation: { type: rotate, axis: [0, 1, 0], speed: 3.0 } }
+          - { material: WHITE_BANNER, tag: blade_a, transform: { translation: [0.1875, 0.05, 0],     scale: [0.375, 0.375, 0.375], left_rotation: [120, 1, 1, -1] } }
+          - { material: WHITE_BANNER, tag: blade_b, transform: { translation: [0, 0.05, 0.1875],     scale: [0.375, 0.375, 0.375], left_rotation: [90, 1, 0, 0] } }
+          - { material: WHITE_BANNER, tag: blade_c, transform: { translation: [-0.1875, 0.05, 0],    scale: [0.375, 0.375, 0.375], left_rotation: [120, 1, -1, 1] } }
+          - { material: WHITE_BANNER, tag: blade_d, transform: { translation: [0, 0.05, -0.1875],    scale: [0.375, 0.375, 0.375], left_rotation: [180, 0, 1, -1] } }
+      spinning_floor: { copy_from: idle_floor, animation: { type: rotate, axis: [0, 1, 0], speed: 6.0 } }
       idle_wall_n:
         display_entities:
-          - { material: WHITE_BANNER, tag: blade_a, transform: { translation: [0.375, 0, 0],  scale: [0.75, 0.75, 0.75], left_rotation: [-90, 0, 0, 1] }, wall_offset: 0.25 }
-          - { material: WHITE_BANNER, tag: blade_b, transform: { translation: [0, 0.375, 0],  scale: [0.75, 0.75, 0.75] }, wall_offset: 0.25 }
-          - { material: WHITE_BANNER, tag: blade_c, transform: { translation: [-0.375, 0, 0], scale: [0.75, 0.75, 0.75], left_rotation: [90, 0, 0, 1] }, wall_offset: 0.25 }
-          - { material: WHITE_BANNER, tag: blade_d, transform: { translation: [0, -0.375, 0], scale: [0.75, 0.75, 0.75], left_rotation: [180, 0, 0, 1] }, wall_offset: 0.25 }
-      spinning_wall_n: { copy_from: idle_wall_n, animation: { type: rotate, axis: [0, 0, 1], speed: 3.0 } }
+          - { material: WHITE_BANNER, tag: blade_a, transform: { translation: [0.1875, 0, 0],  scale: [0.375, 0.375, 0.375], left_rotation: [-90, 0, 0, 1] }, wall_offset: 0.0 }
+          - { material: WHITE_BANNER, tag: blade_b, transform: { translation: [0, 0.1875, 0],  scale: [0.375, 0.375, 0.375] }, wall_offset: 0.0 }
+          - { material: WHITE_BANNER, tag: blade_c, transform: { translation: [-0.1875, 0, 0], scale: [0.375, 0.375, 0.375], left_rotation: [90, 0, 0, 1] }, wall_offset: 0.0 }
+          - { material: WHITE_BANNER, tag: blade_d, transform: { translation: [0, -0.1875, 0], scale: [0.375, 0.375, 0.375], left_rotation: [180, 0, 0, 1] }, wall_offset: 0.0 }
+      spinning_wall_n: { copy_from: idle_wall_n, animation: { type: rotate, axis: [0, 0, 1], speed: 6.0 } }
       idle_wall_s:
         display_entities:
-          - { material: WHITE_BANNER, tag: blade_a, transform: { translation: [0.375, 0, 0],  scale: [0.75, 0.75, 0.75], left_rotation: [180, 1, 1, 0] }, wall_offset: 0.25 }
-          - { material: WHITE_BANNER, tag: blade_b, transform: { translation: [0, 0.375, 0],  scale: [0.75, 0.75, 0.75], left_rotation: [180, 0, 1, 0] }, wall_offset: 0.25 }
-          - { material: WHITE_BANNER, tag: blade_c, transform: { translation: [-0.375, 0, 0], scale: [0.75, 0.75, 0.75], left_rotation: [180, 1, -1, 0] }, wall_offset: 0.25 }
-          - { material: WHITE_BANNER, tag: blade_d, transform: { translation: [0, -0.375, 0], scale: [0.75, 0.75, 0.75], left_rotation: [180, 1, 0, 0] }, wall_offset: 0.25 }
-      spinning_wall_s: { copy_from: idle_wall_s, animation: { type: rotate, axis: [0, 0, 1], speed: 3.0 } }
+          - { material: WHITE_BANNER, tag: blade_a, transform: { translation: [0.1875, 0, 0],  scale: [0.375, 0.375, 0.375], left_rotation: [180, 1, 1, 0] }, wall_offset: 0.0 }
+          - { material: WHITE_BANNER, tag: blade_b, transform: { translation: [0, 0.1875, 0],  scale: [0.375, 0.375, 0.375], left_rotation: [180, 0, 1, 0] }, wall_offset: 0.0 }
+          - { material: WHITE_BANNER, tag: blade_c, transform: { translation: [-0.1875, 0, 0], scale: [0.375, 0.375, 0.375], left_rotation: [180, 1, -1, 0] }, wall_offset: 0.0 }
+          - { material: WHITE_BANNER, tag: blade_d, transform: { translation: [0, -0.1875, 0], scale: [0.375, 0.375, 0.375], left_rotation: [180, 1, 0, 0] }, wall_offset: 0.0 }
+      spinning_wall_s: { copy_from: idle_wall_s, animation: { type: rotate, axis: [0, 0, 1], speed: 6.0 } }
       idle_wall_w:
         display_entities:
-          - { material: WHITE_BANNER, tag: blade_a, transform: { translation: [0, 0.375, 0],  scale: [0.75, 0.75, 0.75], left_rotation: [-90, 0, 1, 0] }, wall_offset: 0.25 }
-          - { material: WHITE_BANNER, tag: blade_b, transform: { translation: [0, 0, 0.375],  scale: [0.75, 0.75, 0.75], left_rotation: [120, 1, -1, -1] }, wall_offset: 0.25 }
-          - { material: WHITE_BANNER, tag: blade_c, transform: { translation: [0, -0.375, 0], scale: [0.75, 0.75, 0.75], left_rotation: [180, 1, 0, -1] }, wall_offset: 0.25 }
-          - { material: WHITE_BANNER, tag: blade_d, transform: { translation: [0, 0, -0.375], scale: [0.75, 0.75, 0.75], left_rotation: [-120, 1, 1, -1] }, wall_offset: 0.25 }
-      spinning_wall_w: { copy_from: idle_wall_w, animation: { type: rotate, axis: [1, 0, 0], speed: 3.0 } }
+          - { material: WHITE_BANNER, tag: blade_a, transform: { translation: [0, 0.1875, 0],  scale: [0.375, 0.375, 0.375], left_rotation: [-90, 0, 1, 0] }, wall_offset: 0.0 }
+          - { material: WHITE_BANNER, tag: blade_b, transform: { translation: [0, 0, 0.1875],  scale: [0.375, 0.375, 0.375], left_rotation: [120, 1, -1, -1] }, wall_offset: 0.0 }
+          - { material: WHITE_BANNER, tag: blade_c, transform: { translation: [0, -0.1875, 0], scale: [0.375, 0.375, 0.375], left_rotation: [180, 1, 0, -1] }, wall_offset: 0.0 }
+          - { material: WHITE_BANNER, tag: blade_d, transform: { translation: [0, 0, -0.1875], scale: [0.375, 0.375, 0.375], left_rotation: [-120, 1, 1, -1] }, wall_offset: 0.0 }
+      spinning_wall_w: { copy_from: idle_wall_w, animation: { type: rotate, axis: [1, 0, 0], speed: 6.0 } }
       idle_wall_e:
         display_entities:
-          - { material: WHITE_BANNER, tag: blade_a, transform: { translation: [0, 0.375, 0],  scale: [0.75, 0.75, 0.75], left_rotation: [90, 0, 1, 0] }, wall_offset: 0.25 }
-          - { material: WHITE_BANNER, tag: blade_b, transform: { translation: [0, 0, 0.375],  scale: [0.75, 0.75, 0.75], left_rotation: [120, 1, 1, 1] }, wall_offset: 0.25 }
-          - { material: WHITE_BANNER, tag: blade_c, transform: { translation: [0, -0.375, 0], scale: [0.75, 0.75, 0.75], left_rotation: [180, 1, 0, 1] }, wall_offset: 0.25 }
-          - { material: WHITE_BANNER, tag: blade_d, transform: { translation: [0, 0, -0.375], scale: [0.75, 0.75, 0.75], left_rotation: [-120, 1, -1, 1] }, wall_offset: 0.25 }
-      spinning_wall_e: { copy_from: idle_wall_e, animation: { type: rotate, axis: [1, 0, 0], speed: 3.0 } }
+          - { material: WHITE_BANNER, tag: blade_a, transform: { translation: [0, 0.1875, 0],  scale: [0.375, 0.375, 0.375], left_rotation: [90, 0, 1, 0] }, wall_offset: 0.0 }
+          - { material: WHITE_BANNER, tag: blade_b, transform: { translation: [0, 0, 0.1875],  scale: [0.375, 0.375, 0.375], left_rotation: [120, 1, 1, 1] }, wall_offset: 0.0 }
+          - { material: WHITE_BANNER, tag: blade_c, transform: { translation: [0, -0.1875, 0], scale: [0.375, 0.375, 0.375], left_rotation: [180, 1, 0, 1] }, wall_offset: 0.0 }
+          - { material: WHITE_BANNER, tag: blade_d, transform: { translation: [0, 0, -0.1875], scale: [0.375, 0.375, 0.375], left_rotation: [-120, 1, -1, 1] }, wall_offset: 0.0 }
+      spinning_wall_e: { copy_from: idle_wall_e, animation: { type: rotate, axis: [1, 0, 0], speed: 6.0 } }
     recipes:
       craft:
         shaped:

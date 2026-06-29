@@ -494,6 +494,12 @@ final class RotationBlocks {
 
         // Beam: a 1-wide column from the fan extending fanRange blocks along `unit`.
         Location center = fan.getLocation().add(0.5, 0.5, 0.5);
+
+        // Airflow feedback: a single directed puff just off the fan, drifting down the beam.
+        Location p = center.clone().add(unit.clone().multiply(0.5));
+        // count=0 → offset args act as the particle velocity; extra = drift speed.
+        fan.getWorld().spawnParticle(Particle.CLOUD, p, 0, unit.getX(), unit.getY(), unit.getZ(), 0.1);
+
         Location far = center.clone().add(unit.clone().multiply(fanRange));
         org.bukkit.util.BoundingBox box = org.bukkit.util.BoundingBox.of(center.toVector(), far.toVector());
         // Inflate the two perpendicular axes to ~1 block wide (axis along `unit` stays the beam length).
