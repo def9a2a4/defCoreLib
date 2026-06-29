@@ -273,7 +273,7 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         }
 
         // States declared as playerHeadStates need PLAYER_HEAD block type (e.g. vertical pipes)
-        if (type.playerHeadStates().contains(resolvedState)
+        if (resolvedState != null && type.playerHeadStates().contains(resolvedState)
                 && block.getType() == Material.PLAYER_WALL_HEAD) {
             block.setType(Material.PLAYER_HEAD, false);
             if (block.getBlockData() instanceof org.bukkit.block.data.Rotatable rotatable) {
@@ -438,11 +438,19 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
             }
             if (type.breakOnPiston()) {
                 String state = registry.getState(block);
+                if (type.storage() != null) registry.dropStorage(block);
+                ItemStack drop = enrichItemWithBladeData(block, type, type.createItem(1));
                 for (var rule : type.dropRules()) {
                     if (rule.inState() != null && !rule.inState().equals(state)) continue;
                     if (rule.isSelfDrop()) {
                         block.getWorld().dropItemNaturally(
-                                block.getLocation().add(0.5, 0.5, 0.5), type.createItem(1));
+                                block.getLocation().add(0.5, 0.5, 0.5), drop);
+                    } else {
+                        for (CustomHeadBlock.ItemDrop itemDrop : rule.drops()) {
+                            block.getWorld().dropItemNaturally(
+                                    block.getLocation().add(0.5, 0.5, 0.5),
+                                    new ItemStack(itemDrop.material(), itemDrop.amount()));
+                        }
                     }
                     break;
                 }
@@ -479,6 +487,7 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         Block block = event.getBlock();
         CustomHeadBlock type = registry.getTypeFromBlock(block);
         if (type == null) return;
+        if (type.storage() != null) registry.dropStorage(block);
         registry.onBlockRemoved(block, type);
     }
 

@@ -178,7 +178,7 @@ public final class CustomHeadBlock {
 
     @FunctionalInterface
     public interface DisplayTransformResolver {
-        @Nullable Transformation resolve(Block block, String state,
+        @Nullable Transformation resolve(Block block, @Nullable String state,
                                           DisplayEntityConfig config, int displayIndex);
     }
 
@@ -838,6 +838,9 @@ public final class CustomHeadBlock {
                         throw new IllegalStateException("placementStateMap references unknown state '" + s + "'");
                     }
                 }
+            }
+            if (cancelPistons && breakOnPiston) {
+                throw new IllegalStateException("cancelPistons and breakOnPiston are mutually exclusive");
             }
             return new CustomHeadBlock(this);
         }
