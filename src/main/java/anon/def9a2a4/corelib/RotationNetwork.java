@@ -1,7 +1,10 @@
 package anon.def9a2a4.corelib;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
+import org.bukkit.Particle;
+import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -202,6 +205,17 @@ public class RotationNetwork {
     }
 
     private void doRecalculate(CustomBlockRegistry.LocationKey changed) {
+        // Snapshot which nodes are currently in jammed networks (for transition detection)
+        Set<CustomBlockRegistry.LocationKey> previouslyJammed = new HashSet<>();
+        Integer changedNet = nodeNetworkId.get(changed);
+        if (changedNet != null) {
+            NetworkState oldState = networks.get(changedNet);
+            if (oldState != null && oldState.jammed()) {
+                Set<CustomBlockRegistry.LocationKey> m = networkMembers.get(changedNet);
+                if (m != null) previouslyJammed.addAll(m);
+            }
+        }
+
         // 1. Determine dirty set — clear old network indexes + directions
         Set<CustomBlockRegistry.LocationKey> dirty = new HashSet<>();
         Integer oldNetId = nodeNetworkId.get(changed);
@@ -218,22 +232,24 @@ public class RotationNetwork {
             networks.remove(oldNetId);
         } else {
             dirty.add(changed);
-            RotationNode node = nodes.get(changed);
-            if (node != null) {
-                for (Connection conn : getConnections(node)) {
-                    Integer nid = nodeNetworkId.get(conn.neighbor());
-                    if (nid != null && !dirty.containsAll(networkMembers.getOrDefault(nid, Set.of()))) {
-                        Set<CustomBlockRegistry.LocationKey> nMembers = networkMembers.remove(nid);
-                        if (nMembers != null) {
-                            dirty.addAll(nMembers);
-                            for (CustomBlockRegistry.LocationKey dk : nMembers) {
-                                nodeNetworkId.remove(dk);
-                                nodeDirection.remove(dk);
-                            }
+        }
+
+        // Always dirty neighbor networks (handles clutch unlock, new node, etc.)
+        RotationNode changedNode = nodes.get(changed);
+        if (changedNode != null) {
+            for (Connection conn : getConnections(changedNode)) {
+                Integer nid = nodeNetworkId.get(conn.neighbor());
+                if (nid != null && !dirty.containsAll(networkMembers.getOrDefault(nid, Set.of()))) {
+                    Set<CustomBlockRegistry.LocationKey> nMembers = networkMembers.remove(nid);
+                    if (nMembers != null) {
+                        dirty.addAll(nMembers);
+                        for (CustomBlockRegistry.LocationKey dk : nMembers) {
+                            nodeNetworkId.remove(dk);
+                            nodeDirection.remove(dk);
                         }
-                        resetPassiveSources(nid);
-                        networks.remove(nid);
                     }
+                    resetPassiveSources(nid);
+                    networks.remove(nid);
                 }
             }
         }
@@ -379,6 +395,22 @@ public class RotationNetwork {
                 + (jammed ? ", JAMMED" : "")
                 + ", " + (netState.powered() ? "POWERED" : "unpowered"));
 
+            // Smoke + sound on transition to jammed
+            if (jammed && !members.stream().allMatch(previouslyJammed::contains)) {
+                boolean playedSound = false;
+                for (CustomBlockRegistry.LocationKey loc : members) {
+                    Block b = toBlock(loc);
+                    if (b == null) continue;
+                    World w = b.getWorld();
+                    Location center = b.getLocation().add(0.5, 0.5, 0.5);
+                    w.spawnParticle(Particle.CAMPFIRE_COSY_SMOKE, center, 3, 0.2, 0.2, 0.2, 0.01);
+                    if (!playedSound) {
+                        w.playSound(center, Sound.BLOCK_ANVIL_LAND, 0.5f, 0.5f);
+                        playedSound = true;
+                    }
+                }
+            }
+
             boolean powered = netState.powered();
             for (CustomBlockRegistry.LocationKey loc : members) {
                 updateBlockState(loc, powered);
@@ -477,8 +509,9 @@ public class RotationNetwork {
                 if (result.stream().anyMatch(c -> c.neighbor().equals(neighbor))) continue;
                 RotationNode other = nodes.get(neighbor);
                 if (other != null && other.gearLike() && !isLocked(other)) {
-                    // Same-axis gear mesh reverses direction; bevel (different axis) preserves
-                    result.add(new Connection(neighbor, other.axis() == node.axis()));
+                    boolean sameAxis = other.axis() == node.axis();
+                    boolean reverses = sameAxis || bevelReverses(node.axis(), other.axis(), face);
+                    result.add(new Connection(neighbor, reverses));
                 }
             }
         }
@@ -564,6 +597,20 @@ public class RotationNetwork {
             case Y -> new CustomBlockRegistry.LocationKey(k.worldId(), k.x(), k.y() + offset, k.z());
             case Z -> new CustomBlockRegistry.LocationKey(k.worldId(), k.x(), k.y(), k.z() + offset);
         };
+    }
+
+    private static int axisComponent(Axis axis, int dx, int dy, int dz) {
+        return switch (axis) { case X -> dx; case Y -> dy; case Z -> dz; };
+    }
+
+    private static boolean bevelReverses(Axis a, Axis b, BlockFace face) {
+        int dx = face.getModX(), dy = face.getModY(), dz = face.getModZ();
+        int dA = axisComponent(a, dx, dy, dz);
+        int dB = axisComponent(b, dx, dy, dz);
+        int remOrd = 3 - a.ordinal() - b.ordinal();
+        int dRem = axisComponent(Axis.values()[remOrd], dx, dy, dz);
+        int cross = (b.ordinal() == (a.ordinal() + 1) % 3) ? dRem : -dRem;
+        return (dA - dB + cross) > 0;
     }
 
     public static Axis axisFromFace(BlockFace face) {
