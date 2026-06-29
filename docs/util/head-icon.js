@@ -1,21 +1,25 @@
 // Renders a Minecraft player-head texture as a small isometric icon on a 2D canvas.
-// Ported from HeadSmith's head-renderer.js (the canvas-only isometric path — no Three.js),
-// adapted to take an already-decoded textures.minecraft.net URL instead of base64.
+// Ported from HeadSmith's head-renderer.js (the canvas-only isometric path — no Three.js).
+// Skins are loaded from the locally-vendored docs/assets/skins/<hash>.png (same-origin,
+// so no CORS proxy is needed); the <hash> is the last path segment of the texture URL.
 
-const CORS_PROXY = 'https://corsproxy.io/?';
+const skinCache = new Map();   // localPath -> Promise<HTMLImageElement>
 
-const skinCache = new Map();   // url -> Promise<HTMLImageElement>
+// textures.minecraft.net/texture/<hash> -> ./assets/skins/<hash>.png
+function localSkinPath(textureUrl) {
+  return `./assets/skins/${textureUrl.split('/').pop()}.png`;
+}
 
-function loadSkin(url) {
-  if (skinCache.has(url)) return skinCache.get(url);
+function loadSkin(textureUrl) {
+  const src = localSkinPath(textureUrl);
+  if (skinCache.has(src)) return skinCache.get(src);
   const p = new Promise((resolve, reject) => {
     const img = new Image();
-    img.crossOrigin = 'anonymous';
     img.onload = () => resolve(img);
-    img.onerror = () => reject(new Error('Failed to load texture: ' + url));
-    img.src = CORS_PROXY + encodeURIComponent(url);
+    img.onerror = () => reject(new Error('Missing skin asset: ' + src));
+    img.src = src;
   });
-  skinCache.set(url, p);
+  skinCache.set(src, p);
   return p;
 }
 

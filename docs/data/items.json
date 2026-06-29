@@ -43,6 +43,25 @@
           },
           "amount": 1
         }
+      ],
+      "variants": [
+        {
+          "group": "states",
+          "label": "lit",
+          "textureUrl": "http://textures.minecraft.net/texture/f1e8d4d9f5fb1d8937f8c3056f5e9e058e00fc1cec18045d403b4fd207b7e284"
+        }
+      ],
+      "transitions": [
+        {
+          "from": "unlit",
+          "to": "lit",
+          "trigger": "interact:FLINT_AND_STEEL"
+        },
+        {
+          "from": "lit",
+          "to": "unlit",
+          "trigger": "interact"
+        }
       ]
     },
     {
@@ -81,7 +100,9 @@
           },
           "amount": 1
         }
-      ]
+      ],
+      "variants": [],
+      "transitions": []
     },
     {
       "namespace": "demo",
@@ -96,7 +117,9 @@
         "textureUrl": "http://textures.minecraft.net/texture/4c36045208f9b5ddcf8c4433e424b1ca17b94f6b96202fb1e5270ee8d53881b1"
       },
       "glint": false,
-      "recipes": []
+      "recipes": [],
+      "variants": [],
+      "transitions": []
     },
     {
       "namespace": "demo",
@@ -112,7 +135,90 @@
         "textureUrl": "http://textures.minecraft.net/texture/aac13a316aac8a71e87310cfadbcbf37a6dc472e026364eb9b4532b7cff26836"
       },
       "glint": false,
-      "recipes": []
+      "recipes": [],
+      "variants": [
+        {
+          "group": "power",
+          "label": "Power 0",
+          "textureUrl": "http://textures.minecraft.net/texture/aac13a316aac8a71e87310cfadbcbf37a6dc472e026364eb9b4532b7cff26836"
+        },
+        {
+          "group": "power",
+          "label": "Power 1",
+          "textureUrl": "http://textures.minecraft.net/texture/93fa0a148221a49cc08dff57d87b8aeeef9ef7710d323120532bad2846006e01"
+        },
+        {
+          "group": "power",
+          "label": "Power 2",
+          "textureUrl": "http://textures.minecraft.net/texture/76624e49db87652a04d3aab26e6ee11f1a0bcc0d2199642ba905da465073ffc3"
+        },
+        {
+          "group": "power",
+          "label": "Power 3",
+          "textureUrl": "http://textures.minecraft.net/texture/47a52a4eaee977f4cddbd6b58410b67c536c3d922d22886cf05e5ad5a08798a4"
+        },
+        {
+          "group": "power",
+          "label": "Power 4",
+          "textureUrl": "http://textures.minecraft.net/texture/7687945fc21f80662b3f6324046ccf42c8f02dbbb2ad4434ed6428ef3950aa14"
+        },
+        {
+          "group": "power",
+          "label": "Power 5",
+          "textureUrl": "http://textures.minecraft.net/texture/36f83c3db13d22efb1e524568bb7f68dffe8eccce1d00f87aa58b5efdf89ab51"
+        },
+        {
+          "group": "power",
+          "label": "Power 6",
+          "textureUrl": "http://textures.minecraft.net/texture/f0760b5323035d14865ecdf955c9206cb8dd50d9e93f6d596e7250de545cda5e"
+        },
+        {
+          "group": "power",
+          "label": "Power 7",
+          "textureUrl": "http://textures.minecraft.net/texture/246d9a0fbafe770d800ff4ca3db55f159db8d6c8c7d584a45896010365c406ee"
+        },
+        {
+          "group": "power",
+          "label": "Power 8",
+          "textureUrl": "http://textures.minecraft.net/texture/fdbdac3ecc8f053932a17076d5d5342147f1872c97830fd45f8c51374f104d9d"
+        },
+        {
+          "group": "power",
+          "label": "Power 9",
+          "textureUrl": "http://textures.minecraft.net/texture/cb4ca7b253cadca4bed2674150824c25de86d24e464670590b0762608ff35900"
+        },
+        {
+          "group": "power",
+          "label": "Power 10",
+          "textureUrl": "http://textures.minecraft.net/texture/8e8f2577dc29a8a6c84a2690c154f6774bfaffba4310a495b2fad639506bcfa7"
+        },
+        {
+          "group": "power",
+          "label": "Power 11",
+          "textureUrl": "http://textures.minecraft.net/texture/2a11d92912baa2247e41a31d7bb1d2c1635a8ede07893aaa61560e8068ac0203"
+        },
+        {
+          "group": "power",
+          "label": "Power 12",
+          "textureUrl": "http://textures.minecraft.net/texture/d718aaaae8ec59677cab2ab64bd171f7deef4e4990b9fd0d8d1ea30775829a16"
+        },
+        {
+          "group": "power",
+          "label": "Power 13",
+          "textureUrl": "http://textures.minecraft.net/texture/310c118d1a51b8509b4e525068c570c2168a5681153eabc647a5b132b237f391"
+        },
+        {
+          "group": "power",
+          "label": "Power 14",
+          "textureUrl": "http://textures.minecraft.net/texture/5a990d613ba553ddc5501e0436baabc17ce22eb4dc656d01e777519f8c9af23a"
+        },
+        {
+          "group": "power",
+          "label": "Power 15",
+          "textureUrl": "http://textures.minecraft.net/texture/53e5a0d232bede30253cdc317ab121a777f9b8643beede8e8ca8b3b0544746b3"
+        }
+      ],
+      "transitions": []
     },
     {
       "namespace": "demo",
@@ -128,7 +234,20 @@
         "textureUrl": "http://textures.minecraft.net/texture/acc789f230794f90e33c4f9ad00694bc2a2ff5e8b9b375dc3532401b281f3e58"
       },
       "glint": false,
-      "recipes": []
+      "recipes": [],
+      "variants": [
+        {
+          "group": "power",
+          "label": "0",
+          "textureUrl": "http://textures.minecraft.net/texture/acc789f230794f90e33c4f9ad00694bc2a2ff5e8b9b375dc3532401b281f3e58"
+        },
+        {
+          "group": "power",
+          "label": "1-15",
+          "textureUrl": "http://textures.minecraft.net/texture/4a2648a9e53613f0ab1266b72918f40788f84e160a52348cd67138410262f39f"
+        }
+      ],
+      "transitions": []
     },
     {
       "namespace": "demo",
@@ -144,7 +263,36 @@
         "textureUrl": "http://textures.minecraft.net/texture/2b7dbcda454ea7b38abc66cdfed8e4e6c01294f6a962ec66ef226510ae37171b"
       },
       "glint": false,
-      "recipes": []
+      "recipes": [],
+      "variants": [
+        {
+          "group": "states",
+          "label": "lit",
+          "textureUrl": "http://textures.minecraft.net/texture/f1e8d4d9f5fb1d8937f8c3056f5e9e058e00fc1cec18045d403b4fd207b7e284"
+        }
+      ],
+      "transitions": [
+        {
+          "from": "unlit",
+          "to": "lit",
+          "trigger": "interact:FLINT_AND_STEEL"
+        },
+        {
+          "from": "lit",
+          "to": "unlit",
+          "trigger": "interact"
+        },
+        {
+          "from": "unlit",
+          "to": "lit",
+          "trigger": "redstone"
+        },
+        {
+          "from": "lit",
+          "to": "unlit",
+          "trigger": "redstone"
+        }
+      ]
     },
     {
       "namespace": "demo",
@@ -159,7 +307,26 @@
         "textureUrl": "http://textures.minecraft.net/texture/4a2648a9e53613f0ab1266b72918f40788f84e160a52348cd67138410262f39f"
       },
       "glint": false,
-      "recipes": []
+      "recipes": [],
+      "variants": [
+        {
+          "group": "states",
+          "label": "on",
+          "textureUrl": "http://textures.minecraft.net/texture/399366a3f23356d44cb3a722f8187c7d07ba97501f76d15f2b311e7ffe5a4dac"
+        }
+      ],
+      "transitions": [
+        {
+          "from": "off",
+          "to": "on",
+          "trigger": "redstone"
+        },
+        {
+          "from": "on",
+          "to": "off",
+          "trigger": "redstone"
+        }
+      ]
     },
     {
       "namespace": "demo",
@@ -175,7 +342,9 @@
         "textureUrl": "http://textures.minecraft.net/texture/33fb7c92fe1649d76c4ad979efcd2c460b2e90b2320a233ef85133dd56bed86a"
       },
       "glint": false,
-      "recipes": []
+      "recipes": [],
+      "variants": [],
+      "transitions": []
     },
     {
       "namespace": "demo",
@@ -190,7 +359,36 @@
         "textureUrl": "http://textures.minecraft.net/texture/acc789f230794f90e33c4f9ad00694bc2a2ff5e8b9b375dc3532401b281f3e58"
       },
       "glint": false,
-      "recipes": []
+      "recipes": [],
+      "variants": [
+        {
+          "group": "states",
+          "label": "alert",
+          "textureUrl": "http://textures.minecraft.net/texture/6262e709c79d5383281529d4074c967fa40340f7f26f9867faae90d35177743e"
+        },
+        {
+          "group": "states",
+          "label": "panic",
+          "textureUrl": "http://textures.minecraft.net/texture/1b77198b6c70036fe4ac35961ae071dc3cdd0176ea37f0913582a015e0b373c0"
+        }
+      ],
+      "transitions": [
+        {
+          "from": "off",
+          "to": "alert",
+          "trigger": "interact"
+        },
+        {
+          "from": "alert",
+          "to": "panic",
+          "trigger": "interact"
+        },
+        {
+          "from": "panic",
+          "to": "off",
+          "trigger": "interact"
+        }
+      ]
     },
     {
       "namespace": "demo",
@@ -206,7 +404,9 @@
         "textureUrl": "http://textures.minecraft.net/texture/c482d1ba4bdac990f6ea987703587fd79fe55555363251984679d4f279cc0c2a"
       },
       "glint": false,
-      "recipes": []
+      "recipes": [],
+      "variants": [],
+      "transitions": []
     },
     {
       "namespace": "demo",
@@ -222,7 +422,9 @@
         "textureUrl": "http://textures.minecraft.net/texture/2884ada4c74c0f961469262d956977bafb0b2d7fed9c7bdf35f45199e9f6ddbb"
       },
       "glint": false,
-      "recipes": []
+      "recipes": [],
+      "variants": [],
+      "transitions": []
     },
     {
       "namespace": "demo",
@@ -238,7 +440,9 @@
         "textureUrl": "http://textures.minecraft.net/texture/801b5038bd173b8f18062ed22bc8cc97e80bbff5f8937b1132eb86555ec6b074"
       },
       "glint": false,
-      "recipes": []
+      "recipes": [],
+      "variants": [],
+      "transitions": []
     },
     {
       "namespace": "demo",
@@ -254,7 +458,26 @@
         "textureUrl": "http://textures.minecraft.net/texture/c482d1ba4bdac990f6ea987703587fd79fe55555363251984679d4f279cc0c2a"
       },
       "glint": false,
-      "recipes": []
+      "recipes": [],
+      "variants": [
+        {
+          "group": "states",
+          "label": "active",
+          "textureUrl": "http://textures.minecraft.net/texture/3f4876b6a5d6dd785e091fd134a21c91d0a9cac5a622e448b5ffcb65ef45278"
+        }
+      ],
+      "transitions": [
+        {
+          "from": "inactive",
+          "to": "active",
+          "trigger": "interact:DIAMOND"
+        },
+        {
+          "from": "active",
+          "to": "inactive",
+          "trigger": "interact"
+        }
+      ]
     },
     {
       "namespace": "demo",
@@ -270,7 +493,30 @@
         "textureUrl": "http://textures.minecraft.net/texture/2b7dbcda454ea7b38abc66cdfed8e4e6c01294f6a962ec66ef226510ae37171b"
       },
       "glint": false,
-      "recipes": []
+      "recipes": [],
+      "variants": [
+        {
+          "group": "facing",
+          "label": "NORTH",
+          "textureUrl": "http://textures.minecraft.net/texture/f1e8d4d9f5fb1d8937f8c3056f5e9e058e00fc1cec18045d403b4fd207b7e284"
+        },
+        {
+          "group": "facing",
+          "label": "SOUTH",
+          "textureUrl": "http://textures.minecraft.net/texture/2b7dbcda454ea7b38abc66cdfed8e4e6c01294f6a962ec66ef226510ae37171b"
+        },
+        {
+          "group": "facing",
+          "label": "EAST",
+          "textureUrl": "http://textures.minecraft.net/texture/f1e8d4d9f5fb1d8937f8c3056f5e9e058e00fc1cec18045d403b4fd207b7e284"
+        },
+        {
+          "group": "facing",
+          "label": "WEST",
+          "textureUrl": "http://textures.minecraft.net/texture/2b7dbcda454ea7b38abc66cdfed8e4e6c01294f6a962ec66ef226510ae37171b"
+        }
+      ],
+      "transitions": []
     },
     {
       "namespace": "demo",
@@ -286,7 +532,9 @@
         "textureUrl": "http://textures.minecraft.net/texture/801b5038bd173b8f18062ed22bc8cc97e80bbff5f8937b1132eb86555ec6b074"
       },
       "glint": false,
-      "recipes": []
+      "recipes": [],
+      "variants": [],
+      "transitions": []
     },
     {
       "namespace": "demo",
@@ -302,7 +550,9 @@
         "textureUrl": "http://textures.minecraft.net/texture/33fb7c92fe1649d76c4ad979efcd2c460b2e90b2320a233ef85133dd56bed86a"
       },
       "glint": false,
-      "recipes": []
+      "recipes": [],
+      "variants": [],
+      "transitions": []
     },
     {
       "namespace": "demo",
@@ -342,7 +592,9 @@
           },
           "amount": 1
         }
-      ]
+      ],
+      "variants": [],
+      "transitions": []
     },
     {
       "namespace": "demo",
@@ -357,7 +609,9 @@
         "textureUrl": "http://textures.minecraft.net/texture/c482d1ba4bdac990f6ea987703587fd79fe55555363251984679d4f279cc0c2a"
       },
       "glint": false,
-      "recipes": []
+      "recipes": [],
+      "variants": [],
+      "transitions": []
     },
     {
       "namespace": "demo",
@@ -372,7 +626,20 @@
         "textureUrl": "http://textures.minecraft.net/texture/c482d1ba4bdac990f6ea987703587fd79fe55555363251984679d4f279cc0c2a"
       },
       "glint": false,
-      "recipes": []
+      "recipes": [],
+      "variants": [],
+      "transitions": [
+        {
+          "from": "slow",
+          "to": "fast",
+          "trigger": "interact"
+        },
+        {
+          "from": "fast",
+          "to": "slow",
+          "trigger": "interact"
+        }
+      ]
     },
     {
       "namespace": "demo",
@@ -387,7 +654,9 @@
         "textureUrl": "http://textures.minecraft.net/texture/33fb7c92fe1649d76c4ad979efcd2c460b2e90b2320a233ef85133dd56bed86a"
       },
       "glint": false,
-      "recipes": []
+      "recipes": [],
+      "variants": [],
+      "transitions": []
     },
     {
       "namespace": "rotation",
@@ -402,7 +671,9 @@
         "textureUrl": "http://textures.minecraft.net/texture/e28bc2df3dff5ec3d143a2ceecb9382183516e9fadd7e409a5eb41551574a25f"
       },
       "glint": false,
-      "recipes": []
+      "recipes": [],
+      "variants": [],
+      "transitions": []
     },
     {
       "namespace": "rotation",
@@ -418,7 +689,9 @@
         "textureUrl": "http://textures.minecraft.net/texture/1e5edfe90156ce9b5b6b80793dc2cbfe850ddec856c99eebde31775cce956041"
       },
       "glint": false,
-      "recipes": []
+      "recipes": [],
+      "variants": [],
+      "transitions": []
     },
     {
       "namespace": "rotation",
@@ -434,7 +707,9 @@
         "textureUrl": "http://textures.minecraft.net/texture/1c265803d1cc2e31f7951ffecbef50e078c36629d5d09078b91ba4dcd44ca29c"
       },
       "glint": false,
-      "recipes": []
+      "recipes": [],
+      "variants": [],
+      "transitions": []
     },
     {
       "namespace": "rotation",
@@ -450,7 +725,9 @@
         "textureUrl": "http://textures.minecraft.net/texture/1e5edfe90156ce9b5b6b80793dc2cbfe850ddec856c99eebde31775cce956041"
       },
       "glint": false,
-      "recipes": []
+      "recipes": [],
+      "variants": [],
+      "transitions": []
     },
     {
       "namespace": "rotation",
@@ -467,7 +744,9 @@
         "textureUrl": "http://textures.minecraft.net/texture/7ff9817d767d2ede7181a057aa26f08f7ecf4651dec97de5b54eede1dd2b42c7"
       },
       "glint": false,
-      "recipes": []
+      "recipes": [],
+      "variants": [],
+      "transitions": []
     },
     {
       "namespace": "rotation",
@@ -483,7 +762,9 @@
         "textureUrl": "http://textures.minecraft.net/texture/2edd24825c217303f26af5526570a214aec29b9297a6877151ba50fcedff7ff1"
       },
       "glint": false,
-      "recipes": []
+      "recipes": [],
+      "variants": [],
+      "transitions": []
     },
     {
       "namespace": "rotation",
@@ -499,7 +780,9 @@
         "textureUrl": "http://textures.minecraft.net/texture/9172c1e729e0ca00193ab5d43e893fabedf5a80fc647258176e8502432885925"
       },
       "glint": false,
-      "recipes": []
+      "recipes": [],
+      "variants": [],
+      "transitions": []
     },
     {
       "namespace": "rotation",
@@ -515,7 +798,9 @@
         "textureUrl": "http://textures.minecraft.net/texture/83acdced4f5a48e74edadd014c5de7daf9efb121ceafb6c15cdb13875594fcd9"
       },
       "glint": false,
-      "recipes": []
+      "recipes": [],
+      "variants": [],
+      "transitions": []
     },
     {
       "namespace": "rotation",
@@ -523,15 +808,18 @@
       "fullId": "rotation:grindstone",
       "name": "&7Grindstone",
       "lore": [
-        "&7Grinds items when powered",
-        "&7Right-click with item"
+        "&7Mounts on a container and grinds its contents when powered",
+        "&7Powered from the top; grinds faster with more power; outputs below",
+        "&7Right-click with item to grind manually"
       ],
       "icon": {
         "type": "head",
         "textureUrl": "http://textures.minecraft.net/texture/151e70169ea00f04a9439221cf33770844159dd775fc8830e311fd9b5ccd2969"
       },
       "glint": false,
-      "recipes": []
+      "recipes": [],
+      "variants": [],
+      "transitions": []
     },
     {
       "namespace": "rotation",
@@ -571,7 +859,9 @@
           },
           "amount": 1
         }
-      ]
+      ],
+      "variants": [],
+      "transitions": []
     },
     {
       "namespace": "rotation",
@@ -607,7 +897,9 @@
           },
           "amount": 1
         }
-      ]
+      ],
+      "variants": [],
+      "transitions": []
     },
     {
       "namespace": "rotation",
@@ -643,7 +935,9 @@
           },
           "amount": 1
         }
-      ]
+      ],
+      "variants": [],
+      "transitions": []
     },
     {
       "namespace": "rotation",
@@ -679,7 +973,48 @@
           },
           "amount": 1
         }
-      ]
+      ],
+      "variants": [],
+      "transitions": []
+    },
+    {
+      "namespace": "rotation",
+      "id": "fan",
+      "fullId": "rotation:fan",
+      "name": "&fFan",
+      "lore": [
+        "&7Consumes rotation power to blow entities",
+        "&7Pushes mobs, players & items away from its mount",
+        "&7Stronger with more surplus power; fixed range"
+      ],
+      "icon": {
+        "type": "head",
+        "textureUrl": "http://textures.minecraft.net/texture/2884ada4c74c0f961469262d956977bafb0b2d7fed9c7bdf35f45199e9f6ddbb"
+      },
+      "glint": false,
+      "recipes": [
+        {
+          "type": "shaped",
+          "pattern": [
+            " B ",
+            "BCB",
+            " B "
+          ],
+          "key": {
+            "B": {
+              "kind": "tag",
+              "value": "banners"
+            },
+            "C": {
+              "kind": "material",
+              "value": "COPPER_BLOCK"
+            }
+          },
+          "amount": 1
+        }
+      ],
+      "variants": [],
+      "transitions": []
     },
     {
       "namespace": "verticalslabs",
@@ -703,7 +1038,9 @@
           ],
           "amount": 1
         }
-      ]
+      ],
+      "variants": [],
+      "transitions": []
     },
     {
       "namespace": "verticalslabs",
@@ -727,7 +1064,9 @@
           ],
           "amount": 1
         }
-      ]
+      ],
+      "variants": [],
+      "transitions": []
     },
     {
       "namespace": "verticalslabs",
@@ -751,7 +1090,9 @@
           ],
           "amount": 1
         }
-      ]
+      ],
+      "variants": [],
+      "transitions": []
     },
     {
       "namespace": "verticalslabs",
@@ -775,7 +1116,9 @@
           ],
           "amount": 1
         }
-      ]
+      ],
+      "variants": [],
+      "transitions": []
     },
     {
       "namespace": "verticalslabs",
@@ -799,7 +1142,9 @@
           ],
           "amount": 1
         }
-      ]
+      ],
+      "variants": [],
+      "transitions": []
     },
     {
       "namespace": "verticalslabs",
@@ -823,7 +1168,9 @@
           ],
           "amount": 1
         }
-      ]
+      ],
+      "variants": [],
+      "transitions": []
     },
     {
       "namespace": "verticalslabs",
@@ -847,7 +1194,9 @@
           ],
           "amount": 1
         }
-      ]
+      ],
+      "variants": [],
+      "transitions": []
     },
     {
       "namespace": "verticalslabs",
@@ -871,7 +1220,9 @@
           ],
           "amount": 1
         }
-      ]
+      ],
+      "variants": [],
+      "transitions": []
     },
     {
       "namespace": "verticalslabs",
@@ -895,7 +1246,9 @@
           ],
           "amount": 1
         }
-      ]
+      ],
+      "variants": [],
+      "transitions": []
     },
     {
       "namespace": "verticalslabs",
@@ -919,7 +1272,9 @@
           ],
           "amount": 1
         }
-      ]
+      ],
+      "variants": [],
+      "transitions": []
     },
     {
       "namespace": "verticalslabs",
@@ -943,7 +1298,9 @@
           ],
           "amount": 1
         }
-      ]
+      ],
+      "variants": [],
+      "transitions": []
     },
     {
       "namespace": "verticalslabs",
@@ -967,7 +1324,9 @@
           ],
           "amount": 1
         }
-      ]
+      ],
+      "variants": [],
+      "transitions": []
     },
     {
       "namespace": "verticalslabs",
@@ -991,7 +1350,9 @@
           ],
           "amount": 1
         }
-      ]
+      ],
+      "variants": [],
+      "transitions": []
     },
     {
       "namespace": "verticalslabs",
@@ -1015,7 +1376,9 @@
           ],
           "amount": 1
         }
-      ]
+      ],
+      "variants": [],
+      "transitions": []
     },
     {
       "namespace": "verticalslabs",
@@ -1039,7 +1402,9 @@
           ],
           "amount": 1
         }
-      ]
+      ],
+      "variants": [],
+      "transitions": []
     },
     {
       "namespace": "verticalslabs",
@@ -1063,7 +1428,9 @@
           ],
           "amount": 1
         }
-      ]
+      ],
+      "variants": [],
+      "transitions": []
     },
     {
       "namespace": "verticalslabs",
@@ -1087,7 +1454,9 @@
           ],
           "amount": 1
         }
-      ]
+      ],
+      "variants": [],
+      "transitions": []
     },
     {
       "namespace": "verticalslabs",
@@ -1111,7 +1480,9 @@
           ],
           "amount": 1
         }
-      ]
+      ],
+      "variants": [],
+      "transitions": []
     },
     {
       "namespace": "verticalslabs",
@@ -1135,7 +1506,9 @@
           ],
           "amount": 1
         }
-      ]
+      ],
+      "variants": [],
+      "transitions": []
     },
     {
       "namespace": "verticalslabs",
@@ -1159,7 +1532,9 @@
           ],
           "amount": 1
         }
-      ]
+      ],
+      "variants": [],
+      "transitions": []
     },
     {
       "namespace": "verticalslabs",
@@ -1183,7 +1558,9 @@
           ],
           "amount": 1
         }
-      ]
+      ],
+      "variants": [],
+      "transitions": []
     },
     {
       "namespace": "verticalslabs",
@@ -1207,7 +1584,9 @@
           ],
           "amount": 1
         }
-      ]
+      ],
+      "variants": [],
+      "transitions": []
     },
     {
       "namespace": "verticalslabs",
@@ -1231,7 +1610,9 @@
           ],
           "amount": 1
         }
-      ]
+      ],
+      "variants": [],
+      "transitions": []
     },
     {
       "namespace": "verticalslabs",
@@ -1255,7 +1636,9 @@
           ],
           "amount": 1
         }
-      ]
+      ],
+      "variants": [],
+      "transitions": []
     },
     {
       "namespace": "verticalslabs",
@@ -1279,7 +1662,9 @@
           ],
           "amount": 1
         }
-      ]
+      ],
+      "variants": [],
+      "transitions": []
     },
     {
       "namespace": "verticalslabs",
@@ -1303,7 +1688,9 @@
           ],
           "amount": 1
         }
-      ]
+      ],
+      "variants": [],
+      "transitions": []
     },
     {
       "namespace": "verticalslabs",
@@ -1327,7 +1714,9 @@
           ],
           "amount": 1
         }
-      ]
+      ],
+      "variants": [],
+      "transitions": []
     },
     {
       "namespace": "verticalslabs",
@@ -1351,7 +1740,9 @@
           ],
           "amount": 1
         }
-      ]
+      ],
+      "variants": [],
+      "transitions": []
     },
     {
       "namespace": "verticalslabs",
@@ -1375,7 +1766,9 @@
           ],
           "amount": 1
         }
-      ]
+      ],
+      "variants": [],
+      "transitions": []
     },
     {
       "namespace": "verticalslabs",
@@ -1399,7 +1792,9 @@
           ],
           "amount": 1
         }
-      ]
+      ],
+      "variants": [],
+      "transitions": []
     },
     {
       "namespace": "verticalslabs",
@@ -1423,7 +1818,9 @@
           ],
           "amount": 1
         }
-      ]
+      ],
+      "variants": [],
+      "transitions": []
     },
     {
       "namespace": "verticalslabs",
@@ -1447,7 +1844,9 @@
           ],
           "amount": 1
         }
-      ]
+      ],
+      "variants": [],
+      "transitions": []
     },
     {
       "namespace": "verticalslabs",
@@ -1471,7 +1870,9 @@
           ],
           "amount": 1
         }
-      ]
+      ],
+      "variants": [],
+      "transitions": []
     },
     {
       "namespace": "verticalslabs",
@@ -1495,7 +1896,9 @@
           ],
           "amount": 1
         }
-      ]
+      ],
+      "variants": [],
+      "transitions": []
     },
     {
       "namespace": "verticalslabs",
@@ -1519,7 +1922,9 @@
           ],
           "amount": 1
         }
-      ]
+      ],
+      "variants": [],
+      "transitions": []
     },
     {
       "namespace": "verticalslabs",
@@ -1543,7 +1948,9 @@
           ],
           "amount": 1
         }
-      ]
+      ],
+      "variants": [],
+      "transitions": []
     },
     {
       "namespace": "verticalslabs",
@@ -1567,7 +1974,9 @@
           ],
           "amount": 1
         }
-      ]
+      ],
+      "variants": [],
+      "transitions": []
     },
     {
       "namespace": "verticalslabs",
@@ -1591,7 +2000,9 @@
           ],
           "amount": 1
         }
-      ]
+      ],
+      "variants": [],
+      "transitions": []
     },
     {
       "namespace": "verticalslabs",
@@ -1615,7 +2026,9 @@
           ],
           "amount": 1
         }
-      ]
+      ],
+      "variants": [],
+      "transitions": []
     },
     {
       "namespace": "verticalslabs",
@@ -1639,7 +2052,9 @@
           ],
           "amount": 1
         }
-      ]
+      ],
+      "variants": [],
+      "transitions": []
     },
     {
       "namespace": "verticalslabs",
@@ -1663,7 +2078,9 @@
           ],
           "amount": 1
         }
-      ]
+      ],
+      "variants": [],
+      "transitions": []
     },
     {
       "namespace": "verticalslabs",
@@ -1687,7 +2104,9 @@
           ],
           "amount": 1
         }
-      ]
+      ],
+      "variants": [],
+      "transitions": []
     },
     {
       "namespace": "verticalslabs",
@@ -1711,7 +2130,9 @@
           ],
           "amount": 1
         }
-      ]
+      ],
+      "variants": [],
+      "transitions": []
     },
     {
       "namespace": "verticalslabs",
@@ -1735,7 +2156,9 @@
           ],
           "amount": 1
         }
-      ]
+      ],
+      "variants": [],
+      "transitions": []
     },
     {
       "namespace": "verticalslabs",
@@ -1759,7 +2182,9 @@
           ],
           "amount": 1
         }
-      ]
+      ],
+      "variants": [],
+      "transitions": []
     },
     {
       "namespace": "verticalslabs",
@@ -1783,7 +2208,9 @@
           ],
           "amount": 1
         }
-      ]
+      ],
+      "variants": [],
+      "transitions": []
     },
     {
       "namespace": "verticalslabs",
@@ -1807,7 +2234,9 @@
           ],
           "amount": 1
         }
-      ]
+      ],
+      "variants": [],
+      "transitions": []
     },
     {
       "namespace": "verticalslabs",
@@ -1831,7 +2260,9 @@
           ],
           "amount": 1
         }
-      ]
+      ],
+      "variants": [],
+      "transitions": []
     },
     {
       "namespace": "verticalslabs",
@@ -1855,7 +2286,9 @@
           ],
           "amount": 1
         }
-      ]
+      ],
+      "variants": [],
+      "transitions": []
     },
     {
       "namespace": "verticalslabs",
@@ -1879,7 +2312,9 @@
           ],
           "amount": 1
         }
-      ]
+      ],
+      "variants": [],
+      "transitions": []
     },
     {
       "namespace": "verticalslabs",
@@ -1903,7 +2338,9 @@
           ],
           "amount": 1
         }
-      ]
+      ],
+      "variants": [],
+      "transitions": []
     },
     {
       "namespace": "verticalslabs",
@@ -1927,7 +2364,9 @@
           ],
           "amount": 1
         }
-      ]
+      ],
+      "variants": [],
+      "transitions": []
     },
     {
       "namespace": "verticalslabs",
@@ -1951,7 +2390,9 @@
           ],
           "amount": 1
         }
-      ]
+      ],
+      "variants": [],
+      "transitions": []
     },
     {
       "namespace": "verticalslabs",
@@ -1975,7 +2416,9 @@
           ],
           "amount": 1
         }
-      ]
+      ],
+      "variants": [],
+      "transitions": []
     },
     {
       "namespace": "verticalslabs",
@@ -1999,7 +2442,9 @@
           ],
           "amount": 1
         }
-      ]
+      ],
+      "variants": [],
+      "transitions": []
     },
     {
       "namespace": "verticalslabs",
@@ -2023,7 +2468,9 @@
           ],
           "amount": 1
         }
-      ]
+      ],
+      "variants": [],
+      "transitions": []
     },
     {
       "namespace": "verticalslabs",
@@ -2047,7 +2494,9 @@
           ],
           "amount": 1
         }
-      ]
+      ],
+      "variants": [],
+      "transitions": []
     },
     {
       "namespace": "verticalslabs",
@@ -2071,7 +2520,9 @@
           ],
           "amount": 1
         }
-      ]
+      ],
+      "variants": [],
+      "transitions": []
     },
     {
       "namespace": "verticalslabs",
@@ -2095,7 +2546,9 @@
           ],
           "amount": 1
         }
-      ]
+      ],
+      "variants": [],
+      "transitions": []
     },
     {
       "namespace": "verticalslabs",
@@ -2119,7 +2572,9 @@
           ],
           "amount": 1
         }
-      ]
+      ],
+      "variants": [],
+      "transitions": []
     },
     {
       "namespace": "verticalslabs",
@@ -2143,7 +2598,9 @@
           ],
           "amount": 1
         }
-      ]
+      ],
+      "variants": [],
+      "transitions": []
     },
     {
       "namespace": "corelib",
@@ -2179,7 +2636,9 @@
           },
           "amount": 1
         }
-      ]
+      ],
+      "variants": [],
+      "transitions": []
     },
     {
       "namespace": "rotation",
@@ -2215,7 +2674,9 @@
           },
           "amount": 1
         }
-      ]
+      ],
+      "variants": [],
+      "transitions": []
     }
   ],
   "grindRecipes": [
