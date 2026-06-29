@@ -16,6 +16,11 @@ final class RotationConfig {
     int drillBreakStages = 10;
     int grindstoneTickInterval = 20;
     int grindstoneMaxBatch = 8;
+    int fanTickInterval = 2;
+    int fanRange = 5;
+    double fanMinPush = 0.12;
+    double fanMaxPush = 0.5;
+    double fanPushPerSU = 0.08;
     Set<Material> drillBlacklist = Set.of(
             Material.OBSIDIAN, Material.CRYING_OBSIDIAN, Material.SPAWNER,
             Material.MOVING_PISTON, Material.REINFORCED_DEEPSLATE);
@@ -54,6 +59,16 @@ final class RotationConfig {
         if (grindstone != null) {
             grindstoneTickInterval = grindstone.getInt("tick-interval", grindstoneTickInterval);
             grindstoneMaxBatch = grindstone.getInt("max-batch", grindstoneMaxBatch);
+            loaded++;
+        }
+
+        ConfigurationSection fan = yaml.getConfigurationSection("fan");
+        if (fan != null) {
+            fanTickInterval = fan.getInt("tick-interval", fanTickInterval);
+            fanRange = fan.getInt("range", fanRange);
+            fanMinPush = fan.getDouble("min-push", fanMinPush);
+            fanMaxPush = fan.getDouble("max-push", fanMaxPush);
+            fanPushPerSU = fan.getDouble("push-per-su", fanPushPerSU);
             loaded++;
         }
 
@@ -123,5 +138,6 @@ final class RotationConfig {
         powerValues.put("generator", 1);
         powerValues.put("drill", 1);
         powerValues.put("grindstone", 1);
+        powerValues.put("fan", 1);
     }
 }

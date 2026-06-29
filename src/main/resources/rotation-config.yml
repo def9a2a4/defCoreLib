@@ -14,6 +14,13 @@ grindstone:
   tick-interval: 20   # fixed grind cycle length, in ticks
   max-batch: 8        # cap on items ground per cycle (batch scales with surplus SU)
 
+fan:
+  tick-interval: 2    # ticks between pushes (frequent = continuous force)
+  range: 5            # fixed beam length, in blocks
+  min-push: 0.12      # per-tick push velocity when powered with no surplus SU
+  max-push: 0.5       # cap on per-tick push velocity
+  push-per-su: 0.08   # extra push velocity per surplus SU
+
 fuel:
   COAL: 200
   CHARCOAL: 160
@@ -33,3 +40,4 @@ power:
   generator: 1
   drill: 1
   grindstone: 1
+  fan: 1

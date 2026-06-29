@@ -79,6 +79,7 @@ final class RotationBlocks {
         overlayGrindstone(registry, network, grindRecipes, config);
         overlayGenerator(registry, network, config);
         overlayDrill(registry, network, config);
+        overlayFan(registry, network, config);
 
         // Passive sources — detected at network boundary, no callbacks needed
         network.registerPassiveSource("rotation:windmill", config.getPower("windmill", 1));
@@ -425,6 +426,95 @@ final class RotationBlocks {
     }
 
     // ──────────────────────────────────────────────────────────────────────
+    // Fan: consumer that blows entities away from its mount while powered
+    // ──────────────────────────────────────────────────────────────────────
+
+    private static void overlayFan(CustomBlockRegistry registry, RotationNetwork network,
+                                   RotationConfig config) {
+        fanRange = config.fanRange;
+        fanMinPush = config.fanMinPush;
+        fanMaxPush = config.fanMaxPush;
+        fanPushPerSU = config.fanPushPerSU;
+        int fanPower = config.getPower("fan", 1);
+        String blockId = "rotation:fan";
+        CustomHeadBlock block = registry.getType(blockId);
+        if (block == null) { warn(registry, blockId); return; }
+        registry.register(block.toBuilder()
+            .drillable(false)
+            .reactsToNeighbors(true)
+            .tickInterval(config.fanTickInterval)
+            .onNeighborChange((b, face) -> recalcIfKnown(b, network))
+            .onInteract((b, event) ->
+                isWrench(event.getPlayer().getInventory().getItemInMainHand())
+                    ? wrenchInteract(b, event, network, registry)
+                    : debugInteract(b, event, network, registry))
+            .onTick(b -> fanTick(b, network))
+            .onChunkLoad((b, state) -> {
+                storeFacingIfAbsent(b);
+                // Rotation axis = the axis the blades spin about = the blow axis.
+                // Floor heads store DOWN (blow up → Y); wall heads store N/S (Z) or E/W (X).
+                network.addNode(b, blockId, fanAxis(readFacing(b)),
+                    RotationNetwork.NodeRole.CONSUMER, fanPower, false);
+            })
+            .onChunkUnload(b -> network.removeNode(CustomBlockRegistry.LocationKey.of(b)))
+            .onBlockRemoved((b, state) -> network.removeNode(CustomBlockRegistry.LocationKey.of(b)))
+            .build());
+    }
+
+    /** Direction the fan blows: outward from the mounted surface (floor → up, wall → its facing). */
+    private static BlockFace blowDirection(Block fan) {
+        BlockFace f = readFacing(fan);                 // DOWN (floor) or N/S/E/W (wall)
+        if (f == null) return BlockFace.UP;
+        return f == BlockFace.DOWN ? BlockFace.UP : f; // floor blows up; walls blow outward
+    }
+
+    /** Network/rotation axis implied by a fan's stored facing. */
+    private static RotationNetwork.Axis fanAxis(@org.jetbrains.annotations.Nullable BlockFace facing) {
+        if (facing == null) return RotationNetwork.Axis.Y;
+        return switch (facing) {
+            case EAST, WEST -> RotationNetwork.Axis.X;
+            case NORTH, SOUTH -> RotationNetwork.Axis.Z;
+            default -> RotationNetwork.Axis.Y;         // DOWN/UP (floor)
+        };
+    }
+
+    /** While powered, push mobs/players/items along a fixed-length beam; strength scales with surplus SU. */
+    private static void fanTick(Block fan, RotationNetwork network) {
+        var key = CustomBlockRegistry.LocationKey.of(fan);
+        if (!network.isPowered(key)) return;
+
+        int[] stats = network.getNetworkStats(key);
+        if (stats == null) return;
+        // stats = {supply, demand, count}; surplus headroom = supply - demand (advisory).
+        int surplus = Math.max(0, stats[0] - stats[1]);
+        double push = Math.min(fanMaxPush, fanMinPush + surplus * fanPushPerSU);
+
+        BlockFace dir = blowDirection(fan);
+        org.bukkit.util.Vector unit = dir.getDirection();   // unit-length
+
+        // Beam: a 1-wide column from the fan extending fanRange blocks along `unit`.
+        Location center = fan.getLocation().add(0.5, 0.5, 0.5);
+        Location far = center.clone().add(unit.clone().multiply(fanRange));
+        org.bukkit.util.BoundingBox box = org.bukkit.util.BoundingBox.of(center.toVector(), far.toVector());
+        // Inflate the two perpendicular axes to ~1 block wide (axis along `unit` stays the beam length).
+        box.expand(
+            unit.getX() == 0 ? 0.5 : 0,
+            unit.getY() == 0 ? 0.5 : 0,
+            unit.getZ() == 0 ? 0.5 : 0);
+
+        for (org.bukkit.entity.Entity e : fan.getWorld().getNearbyEntities(box)) {
+            // Mobs, players, dropped items only — excludes our own Display block visuals.
+            if (!(e instanceof org.bukkit.entity.LivingEntity || e instanceof org.bukkit.entity.Item)) continue;
+            org.bukkit.util.Vector v = e.getVelocity();
+            double along = v.dot(unit);
+            if (along < push) {
+                // Nudge the along-beam speed up to `push`; never accelerate past it (avoids runaway).
+                e.setVelocity(v.add(unit.clone().multiply(push - along)));
+            }
+        }
+    }
+
+    // ──────────────────────────────────────────────────────────────────────
     // Generator: source, turns off when receiving redstone power
     // ──────────────────────────────────────────────────────────────────────
 
@@ -482,6 +572,10 @@ final class RotationBlocks {
     private static int drillBreakStages;
     private static int grindstoneTickInterval;
     private static int grindstoneMaxBatch;
+    private static int fanRange;
+    private static double fanMinPush;
+    private static double fanMaxPush;
+    private static double fanPushPerSU;
 
     private record DrillState(int progress, Material targetMaterial) {}
     private static final Map<CustomBlockRegistry.LocationKey, DrillState> drillProgress = new HashMap<>();

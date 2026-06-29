@@ -683,3 +683,71 @@ blocks:
             key:
               B: { tag: banners }
               I: { material: DIAMOND_BLOCK }
+
+  # ─── Fan ────────────────────────────────────────────────────────────────
+  # Consumer: 1 SU. Spins only while powered; blows entities (mobs, players,
+  # dropped items) away from the surface it's mounted on — floor → up, wall →
+  # outward — in a ~1-wide beam. Push strength scales with surplus SU; reach is
+  # fixed (see rotation-config.yml fan.range). Blade geometry mirrors the regular
+  # windmill (0.75 scale); states are idle_/spinning_ pairs so the network can
+  # start/stop the spin by swapping the prefix while keeping orientation.
+  fan:
+    name: "&fFan"
+    lore:
+      - "&7Consumes rotation power to blow entities"
+      - "&7Pushes mobs, players & items away from its mount"
+      - "&7Stronger with more surplus power; fixed range"
+    texture: "@large_windmill"
+    drops: self
+    break_sound: { sound: BLOCK_WOOD_BREAK, volume: 0.8, pitch: 1.2 }
+    place_sound: { sound: BLOCK_WOOD_PLACE, volume: 0.8, pitch: 1.2 }
+    default_state: idle_floor
+    placement_state_map:
+      DOWN: idle_floor
+      NORTH: idle_wall_s
+      SOUTH: idle_wall_n
+      EAST: idle_wall_e
+      WEST: idle_wall_w
+    states:
+      idle_floor:
+        display_entities:
+          - { material: WHITE_BANNER, tag: blade_a, transform: { translation: [0.375, -0.2, 0],    scale: [0.75, 0.75, 0.75], left_rotation: [120, 1, 1, -1] } }
+          - { material: WHITE_BANNER, tag: blade_b, transform: { translation: [0, -0.2, 0.375],    scale: [0.75, 0.75, 0.75], left_rotation: [90, 1, 0, 0] } }
+          - { material: WHITE_BANNER, tag: blade_c, transform: { translation: [-0.375, -0.2, 0],   scale: [0.75, 0.75, 0.75], left_rotation: [120, 1, -1, 1] } }
+          - { material: WHITE_BANNER, tag: blade_d, transform: { translation: [0, -0.2, -0.375],   scale: [0.75, 0.75, 0.75], left_rotation: [180, 0, 1, -1] } }
+      spinning_floor: { copy_from: idle_floor, animation: { type: rotate, axis: [0, 1, 0], speed: 3.0 } }
+      idle_wall_n:
+        display_entities:
+          - { material: WHITE_BANNER, tag: blade_a, transform: { translation: [0.375, 0, 0],  scale: [0.75, 0.75, 0.75], left_rotation: [-90, 0, 0, 1] }, wall_offset: 0.25 }
+          - { material: WHITE_BANNER, tag: blade_b, transform: { translation: [0, 0.375, 0],  scale: [0.75, 0.75, 0.75] }, wall_offset: 0.25 }
+          - { material: WHITE_BANNER, tag: blade_c, transform: { translation: [-0.375, 0, 0], scale: [0.75, 0.75, 0.75], left_rotation: [90, 0, 0, 1] }, wall_offset: 0.25 }
+          - { material: WHITE_BANNER, tag: blade_d, transform: { translation: [0, -0.375, 0], scale: [0.75, 0.75, 0.75], left_rotation: [180, 0, 0, 1] }, wall_offset: 0.25 }
+      spinning_wall_n: { copy_from: idle_wall_n, animation: { type: rotate, axis: [0, 0, 1], speed: 3.0 } }
+      idle_wall_s:
+        display_entities:
+          - { material: WHITE_BANNER, tag: blade_a, transform: { translation: [0.375, 0, 0],  scale: [0.75, 0.75, 0.75], left_rotation: [180, 1, 1, 0] }, wall_offset: 0.25 }
+          - { material: WHITE_BANNER, tag: blade_b, transform: { translation: [0, 0.375, 0],  scale: [0.75, 0.75, 0.75], left_rotation: [180, 0, 1, 0] }, wall_offset: 0.25 }
+          - { material: WHITE_BANNER, tag: blade_c, transform: { translation: [-0.375, 0, 0], scale: [0.75, 0.75, 0.75], left_rotation: [180, 1, -1, 0] }, wall_offset: 0.25 }
+          - { material: WHITE_BANNER, tag: blade_d, transform: { translation: [0, -0.375, 0], scale: [0.75, 0.75, 0.75], left_rotation: [180, 1, 0, 0] }, wall_offset: 0.25 }
+      spinning_wall_s: { copy_from: idle_wall_s, animation: { type: rotate, axis: [0, 0, 1], speed: 3.0 } }
+      idle_wall_w:
+        display_entities:
+          - { material: WHITE_BANNER, tag: blade_a, transform: { translation: [0, 0.375, 0],  scale: [0.75, 0.75, 0.75], left_rotation: [-90, 0, 1, 0] }, wall_offset: 0.25 }
+          - { material: WHITE_BANNER, tag: blade_b, transform: { translation: [0, 0, 0.375],  scale: [0.75, 0.75, 0.75], left_rotation: [120, 1, -1, -1] }, wall_offset: 0.25 }
+          - { material: WHITE_BANNER, tag: blade_c, transform: { translation: [0, -0.375, 0], scale: [0.75, 0.75, 0.75], left_rotation: [180, 1, 0, -1] }, wall_offset: 0.25 }
+          - { material: WHITE_BANNER, tag: blade_d, transform: { translation: [0, 0, -0.375], scale: [0.75, 0.75, 0.75], left_rotation: [-120, 1, 1, -1] }, wall_offset: 0.25 }
+      spinning_wall_w: { copy_from: idle_wall_w, animation: { type: rotate, axis: [1, 0, 0], speed: 3.0 } }
+      idle_wall_e:
+        display_entities:
+          - { material: WHITE_BANNER, tag: blade_a, transform: { translation: [0, 0.375, 0],  scale: [0.75, 0.75, 0.75], left_rotation: [90, 0, 1, 0] }, wall_offset: 0.25 }
+          - { material: WHITE_BANNER, tag: blade_b, transform: { translation: [0, 0, 0.375],  scale: [0.75, 0.75, 0.75], left_rotation: [120, 1, 1, 1] }, wall_offset: 0.25 }
+          - { material: WHITE_BANNER, tag: blade_c, transform: { translation: [0, -0.375, 0], scale: [0.75, 0.75, 0.75], left_rotation: [180, 1, 0, 1] }, wall_offset: 0.25 }
+          - { material: WHITE_BANNER, tag: blade_d, transform: { translation: [0, 0, -0.375], scale: [0.75, 0.75, 0.75], left_rotation: [-120, 1, -1, 1] }, wall_offset: 0.25 }
+      spinning_wall_e: { copy_from: idle_wall_e, animation: { type: rotate, axis: [1, 0, 0], speed: 3.0 } }
+    recipes:
+      craft:
+        shaped:
+          - pattern: [" B ", "BCB", " B "]
+            key:
+              B: { tag: banners }
+              C: { material: COPPER_BLOCK }
