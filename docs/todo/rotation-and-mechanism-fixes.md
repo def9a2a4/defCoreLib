@@ -89,6 +89,18 @@ None of this is implemented yet (verified).*
   of `new Matrix4f` per block per tick. *(minecarts #4, blockships Phase 4A)*
 - [ ] **B5. Particle ticking** for assembled mechanism blocks (replace the `// TODO`). *(minecarts #6, blockships #4)*
 - [ ] **B6. Flood-fill truncation feedback** in `MinecartShipManager` — *low priority, glue obsoletes it (see conflict #3).*
+- [ ] **B7. Mechanism data-loss safety (stopgap until E2 — do soon).** Today an assembled mechanism
+  turns its real blocks to air and saves them nowhere, so shutdown/unload loses them permanently, and
+  `cleanupOrphanedEntities` **deletes** the orphaned display/collider entities rather than restoring.
+  Two parts:
+  - **Minecart-specific bug:** the minecart vehicle is never `setPersistent(true)`
+    (`MinecartShipManager` ~`:183`; contrast `MechanismRegistry.java:77` where DoorDemo's ArmorStand
+    *is* persistent). On chunk unload the minecart despawns → the whole parent/display/collider chain
+    is orphaned → cleanup deletes it. **Mark the minecart persistent.**
+  - **General stopgap:** **disassemble active mechanisms on server shutdown (and on chunk unload) to
+    restore the real blocks**, so nothing is lost. Applies to all mechanisms (doors lose blocks on
+    restart too). Mechanisms won't survive reload still-assembled — that's **E2**, which should make
+    `cleanupOrphanedEntities` **restore** instead of delete.
 
 ### Block C — Rotation-power network Phase 3 (independent track)
 *Files: `RotationNetwork`, `RotationBlocks`. All verified **not** done unless noted.*
@@ -193,6 +205,20 @@ None of this is implemented yet (verified).*
 - [ ] **F4.** Code-comment staleness in `RotationNetwork`/`RotationBlocks` ("4 neighbors", "gearbox").
 - [ ] **F5.** `MechanismBlockData.collisionScale` is stored (always `1.0f`) but never read — document
   the intent (future shulker scaling) or remove. *(minecarts.md Additional #7.)*
+- [ ] **F6. Full rename "ship minecart" → "mechanism minecart".** All in `MinecartShipManager` unless
+  noted:
+  - visible name `"Ship Minecart"` → `"Mechanism Minecart"` (`:81`)
+  - custom-block id `demo:minecart_ship` → `demo:mechanism_minecart` (`:80/:199/:293`)
+  - entity tag `corelib:minecart_ship` → `corelib:mechanism_minecart` (`:106/:184`)
+  - item PDC `NamespacedKey(…,"minecart_ship")` (`:75`)
+  - mechanism **type** string `demo:minecart_ship` (`:261`)
+  - config file `minecart-ship-blocks.yml` → `mechanism-minecart-blocks.yml` (`:112/:115` + the
+    resource file)
+  - class `MinecartShipManager` → `MechanismMinecartManager` + field + `CoreLibPlugin` wiring
+    (`:97/:99/:118/:166`), plus comments/logs.
+  - *Migration:* old demo items / tagged minecarts stop being recognized — acceptable (demo namespace,
+    persistence already broken). **★ Do this BEFORE E2**, since the mechanism-type string (`:261`) is
+    what E2 persists — renaming after would force a save-data migration.
 
 ---
 
@@ -204,3 +230,9 @@ None of this is implemented yet (verified).*
 4. **Block D** (Glue) — makes selection robust for rotator + minecart; obsoletes B6.
 5. **Block E** (BlockShips) — rebased on A/B.
 6. **Block F** — polish, ongoing.
+
+**Two off-spine notes:**
+- **B7 (data-loss stopgap) — do soon.** Independent of everything; it stops *permanent block loss*
+  on shutdown/unload. Cheap safety net to land before the big work.
+- **F6 (rename) — before E2.** Anytime otherwise, but must precede Block E2 because the mechanism-type
+  string it renames is what E2 persists.
