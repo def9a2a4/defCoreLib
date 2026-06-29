@@ -10,6 +10,10 @@ drill:
     - MOVING_PISTON
     - REINFORCED_DEEPSLATE
 
+grindstone:
+  tick-interval: 20   # fixed grind cycle length, in ticks
+  max-batch: 8        # cap on items ground per cycle (batch scales with surplus SU)
+
 fuel:
   COAL: 200
   CHARCOAL: 160

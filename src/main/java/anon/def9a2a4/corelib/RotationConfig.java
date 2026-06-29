@@ -14,6 +14,8 @@ final class RotationConfig {
     int maxNetworkSize = 256;
     int drillTickInterval = 4;
     int drillBreakStages = 10;
+    int grindstoneTickInterval = 20;
+    int grindstoneMaxBatch = 8;
     Set<Material> drillBlacklist = Set.of(
             Material.OBSIDIAN, Material.CRYING_OBSIDIAN, Material.SPAWNER,
             Material.MOVING_PISTON, Material.REINFORCED_DEEPSLATE);
@@ -45,6 +47,13 @@ final class RotationConfig {
                 }
                 drillBlacklist = Set.copyOf(set);
             }
+            loaded++;
+        }
+
+        ConfigurationSection grindstone = yaml.getConfigurationSection("grindstone");
+        if (grindstone != null) {
+            grindstoneTickInterval = grindstone.getInt("tick-interval", grindstoneTickInterval);
+            grindstoneMaxBatch = grindstone.getInt("max-batch", grindstoneMaxBatch);
             loaded++;
         }
 

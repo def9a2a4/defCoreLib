@@ -11,7 +11,9 @@ import org.bukkit.Particle;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.block.Container;
 import org.bukkit.block.Skull;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.ShapedRecipe;
@@ -26,7 +28,7 @@ import java.util.Set;
 /**
  * Overlays rotation network callbacks onto YAML-defined blocks.
  * Visual definitions live in rotation-blocks.yml — this class only adds
- * Java behavior (network add/remove/recalculate, debug interact, gearbox redstone).
+ * Java behavior (network add/remove/recalculate, debug interact, clutch/reverser redstone).
  */
 final class RotationBlocks {
 
@@ -319,18 +321,23 @@ final class RotationBlocks {
 
     private static void overlayGrindstone(CustomBlockRegistry registry, RotationNetwork network,
                                           GrindRecipes grindRecipes, RotationConfig config) {
+        grindstoneTickInterval = config.grindstoneTickInterval;
+        grindstoneMaxBatch = config.grindstoneMaxBatch;
+        int grindstonePower = config.getPower("grindstone", 1);
         String blockId = "rotation:grindstone";
         CustomHeadBlock block = registry.getType(blockId);
         if (block == null) { warn(registry, blockId); return; }
         registry.register(block.toBuilder()
             .drillable(false)
             .reactsToNeighbors(true)
+            .tickInterval(grindstoneTickInterval)
             .onNeighborChange((b, face) -> recalcIfKnown(b, network))
             .onInteract((b, event) -> {
                 if (isWrench(event.getPlayer().getInventory().getItemInMainHand()))
                     return wrenchInteract(b, event, network, registry);
                 String state = registry.getState(b);
-                if (!"spinning".equals(state)) return debugInteract(b, event, network, registry);
+                if (state == null || !state.startsWith("spinning"))
+                    return debugInteract(b, event, network, registry);
 
                 var held = event.getPlayer().getInventory().getItemInMainHand();
                 if (held.getType().isAir()) return debugInteract(b, event, network, registry);
@@ -338,22 +345,82 @@ final class RotationBlocks {
                 var result = grindRecipes.getResult(held.getType());
                 if (result == null) return debugInteract(b, event, network, registry);
 
-                // Consume 1 input, drop result
+                // Manual grind: consume 1 from hand, eject the result below.
                 held.setAmount(held.getAmount() - 1);
-                b.getWorld().dropItemNaturally(
-                    b.getLocation().add(0.5, 1.0, 0.5), result);
+                ejectGrindOutput(b, result);
                 b.getWorld().playSound(b.getLocation().add(0.5, 0.5, 0.5),
                     org.bukkit.Sound.BLOCK_GRINDSTONE_USE, 1f, 1f);
                 return true;
             })
+            .onTick(b -> grindstoneTick(b, network, grindRecipes))
             .onChunkLoad((b, state) -> {
-                // Grindstone is always Y-axis, floor only. axisFromState("idle") returns Y.
-                network.addNode(b, blockId, RotationNetwork.Axis.Y,
-                    RotationNetwork.NodeRole.CONSUMER, config.getPower("grindstone", 1), false);
+                storeFacingIfAbsent(b);
+                // Wall-mounted: rotation axis follows the wall (Z on N/S, X on E/W).
+                network.addNode(b, blockId, RotationNetwork.axisFromState(state),
+                    RotationNetwork.NodeRole.CONSUMER, grindstonePower, false);
             })
             .onChunkUnload(b -> network.removeNode(CustomBlockRegistry.LocationKey.of(b)))
             .onBlockRemoved((b, state) -> network.removeNode(CustomBlockRegistry.LocationKey.of(b)))
             .build());
+    }
+
+    /** Inventory of the container this wall-mounted grindstone is mounted on, or null. */
+    private static @org.jetbrains.annotations.Nullable Inventory hostContainer(Block grind) {
+        BlockFace facing = readFacing(grind);
+        if (facing == null) return null;
+        Block host = grind.getRelative(facing.getOppositeFace());
+        return host.getState() instanceof Container c ? c.getInventory() : null;
+    }
+
+    /**
+     * Place a grind result into the container directly below, else drop it below.
+     * Returns true if delivered (caller may consume input); false if the output
+     * container was full (stall — do not consume input).
+     */
+    private static boolean ejectGrindOutput(Block grind, ItemStack result) {
+        Block below = grind.getRelative(BlockFace.DOWN);
+        if (below.getState() instanceof Container oc) {
+            return oc.getInventory().addItem(result).isEmpty();
+        }
+        grind.getWorld().dropItemNaturally(grind.getLocation().add(0.5, -0.2, 0.5), result);
+        return true;
+    }
+
+    /** Auto-grind from the host container while powered; batch size scales with surplus SU. */
+    private static void grindstoneTick(Block grind, RotationNetwork network, GrindRecipes grindRecipes) {
+        var key = CustomBlockRegistry.LocationKey.of(grind);
+        if (!network.isPowered(key)) return;
+
+        Inventory in = hostContainer(grind);
+        if (in == null) return;
+
+        int[] stats = network.getNetworkStats(key);
+        if (stats == null) return;
+        // stats = {supply, demand, count}; surplus headroom = supply - demand.
+        int batch = Math.min(grindstoneMaxBatch, Math.max(1, stats[0] - stats[1]));
+
+        boolean ground = false;
+        for (int done = 0; done < batch; done++) {
+            int slot = -1;
+            ItemStack src = null, result = null;
+            for (int i = 0; i < in.getSize(); i++) {
+                ItemStack it = in.getItem(i);
+                if (it == null || it.getType().isAir()) continue;
+                ItemStack r = grindRecipes.getResult(it.getType());
+                if (r != null) { slot = i; src = it; result = r; break; }
+            }
+            if (slot < 0) break;                       // nothing grindable left
+            if (!ejectGrindOutput(grind, result)) break; // output full → stall, keep input
+
+            src.setAmount(src.getAmount() - 1);
+            in.setItem(slot, src.getAmount() <= 0 ? null : src);
+            ground = true;
+        }
+
+        if (ground) {
+            grind.getWorld().playSound(grind.getLocation().add(0.5, 0.5, 0.5),
+                org.bukkit.Sound.BLOCK_GRINDSTONE_USE, 0.6f, 1f);
+        }
     }
 
     // ──────────────────────────────────────────────────────────────────────
@@ -412,6 +479,8 @@ final class RotationBlocks {
     private static Set<Material> drillBlacklist;
     private static int drillTickInterval;
     private static int drillBreakStages;
+    private static int grindstoneTickInterval;
+    private static int grindstoneMaxBatch;
 
     private record DrillState(int progress, Material targetMaterial) {}
     private static final Map<CustomBlockRegistry.LocationKey, DrillState> drillProgress = new HashMap<>();

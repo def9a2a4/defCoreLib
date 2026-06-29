@@ -23,9 +23,11 @@ import java.util.logging.Logger;
  *
  * <p>Connection rules:
  * <ul>
- *   <li>Along-axis: every node connects to its 2 neighbors along its axis if they share the same axis.</li>
- *   <li>Perpendicular (gear-like nodes only): connects to 4 neighbors in the perpendicular plane
- *       if the neighbor is also gear-like and has a different axis.</li>
+ *   <li>Along-axis: every node connects to its 2 neighbors along its axis if they share the same
+ *       axis. A powered reverser on the lower endpoint flips the edge's direction.</li>
+ *   <li>Gear-to-gear (gear-like nodes only): connects to all 6 adjacent gear-like neighbors
+ *       (same-axis gear mesh reverses; bevel reversal is face-dependent via
+ *       {@code bevelReverses()}).</li>
  *   <li>Locked nodes (state starts with "locked_") are excluded from all connections.</li>
  * </ul>
  */
