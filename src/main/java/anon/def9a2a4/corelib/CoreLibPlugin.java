@@ -169,6 +169,21 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         if (mechanismRegistry != null) {
             mechanismRegistry.cleanupOrphanedEntities(event.getChunk());
         }
+        // Re-resolve dynamic display transforms now that entities are available
+        org.bukkit.Chunk chunk = event.getChunk();
+        if (registry.chunkMayHaveCustomBlocks(chunk)) {
+            for (org.bukkit.block.BlockState tile : chunk.getTileEntities()) {
+                if (!(tile instanceof org.bukkit.block.Skull skull)) continue;
+                String typeId = skull.getPersistentDataContainer()
+                        .get(CustomBlockRegistry.BLOCK_TYPE_KEY, PersistentDataType.STRING);
+                if (typeId == null) continue;
+                CustomHeadBlock type = registry.getType(typeId);
+                if (type == null || type.displayTransformResolver() == null) continue;
+                String state = skull.getPersistentDataContainer()
+                        .get(CustomBlockRegistry.STATE_KEY, PersistentDataType.STRING);
+                registry.resolveDisplayTransforms(tile.getBlock(), type, state);
+            }
+        }
     }
 
     // ──────────────────────────────────────────────────────────────────────
@@ -240,12 +255,31 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
             }
         }
 
-        // Resolve initial state (placement face may override default)
-        String resolvedState = type.defaultState();
-        var psm = type.placementStateMap();
-        if (psm != null) {
-            String mapped = psm.get(placedOn);
-            if (mapped != null) resolvedState = mapped;
+        // Resolve initial state: custom resolver takes priority over placement state map
+        String resolvedState;
+        if (type.stateResolver() != null) {
+            resolvedState = type.stateResolver().resolve(event);
+            if (resolvedState == null) {
+                event.setCancelled(true);
+                return;
+            }
+        } else {
+            resolvedState = type.defaultState();
+            var psm = type.placementStateMap();
+            if (psm != null) {
+                String mapped = psm.get(placedOn);
+                if (mapped != null) resolvedState = mapped;
+            }
+        }
+
+        // States declared as playerHeadStates need PLAYER_HEAD block type (e.g. vertical pipes)
+        if (type.playerHeadStates().contains(resolvedState)
+                && block.getType() == Material.PLAYER_WALL_HEAD) {
+            block.setType(Material.PLAYER_HEAD, false);
+            if (block.getBlockData() instanceof org.bukkit.block.data.Rotatable rotatable) {
+                rotatable.setRotation(BlockFace.NORTH);
+                block.setBlockData(rotatable, false);
+            }
         }
         final String state = resolvedState;
 
@@ -286,8 +320,10 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
                 registry.trackTick(block, type);
             }
 
-            // Fire chunk load callback (mirrors restoreBlock — needed for rotation network addNode)
-            if (type.onChunkLoadCallback() != null) {
+            // Fire placement callback (onBlockPlaced takes priority over onChunkLoadCallback)
+            if (type.onBlockPlaced() != null) {
+                type.onBlockPlaced().accept(block, state);
+            } else if (type.onChunkLoadCallback() != null) {
                 type.onChunkLoadCallback().accept(block, state);
             }
         });
@@ -384,22 +420,34 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
     // Piston handling
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onPistonExtend(BlockPistonExtendEvent event) {
-        for (Block block : event.getBlocks()) {
-            CustomHeadBlock type = registry.getTypeFromBlock(block);
-            if (type != null && type.cancelPistons()) {
-                event.setCancelled(true);
-                return;
-            }
-        }
+        handlePiston(event.getBlocks(), event);
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onPistonRetract(BlockPistonRetractEvent event) {
-        for (Block block : event.getBlocks()) {
+        handlePiston(event.getBlocks(), event);
+    }
+
+    private void handlePiston(List<Block> blocks, org.bukkit.event.Cancellable event) {
+        for (Block block : blocks) {
             CustomHeadBlock type = registry.getTypeFromBlock(block);
-            if (type != null && type.cancelPistons()) {
+            if (type == null) continue;
+            if (type.cancelPistons()) {
                 event.setCancelled(true);
                 return;
+            }
+            if (type.breakOnPiston()) {
+                String state = registry.getState(block);
+                for (var rule : type.dropRules()) {
+                    if (rule.inState() != null && !rule.inState().equals(state)) continue;
+                    if (rule.isSelfDrop()) {
+                        block.getWorld().dropItemNaturally(
+                                block.getLocation().add(0.5, 0.5, 0.5), type.createItem(1));
+                    }
+                    break;
+                }
+                registry.onBlockRemoved(block, type);
+                block.setType(Material.AIR, false);
             }
         }
     }
@@ -423,6 +471,15 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
             if (type.storage() != null) registry.dropStorage(to);
             registry.onBlockRemoved(to, type);
         }
+    }
+
+    // /fill, /setblock, physics-based destruction — cleanup without drops
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onBlockDestroy(com.destroystokyo.paper.event.block.BlockDestroyEvent event) {
+        Block block = event.getBlock();
+        CustomHeadBlock type = registry.getTypeFromBlock(block);
+        if (type == null) return;
+        registry.onBlockRemoved(block, type);
     }
 
     // Prevent wall-mounted custom skulls from popping off when support block is removed,
@@ -979,6 +1036,10 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
             CustomHeadBlock type = registry.getTypeFromBlock(neighbor);
             if (type != null && type.onNeighborChange() != null) {
                 type.onNeighborChange().accept(neighbor, face.getOppositeFace());
+            }
+            if (type != null && type.displayTransformResolver() != null) {
+                String state = registry.getState(neighbor);
+                registry.resolveDisplayTransforms(neighbor, type, state);
             }
         }
     }

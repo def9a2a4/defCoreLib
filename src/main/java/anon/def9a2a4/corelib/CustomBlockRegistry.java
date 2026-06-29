@@ -28,6 +28,7 @@ import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
+import org.bukkit.util.Transformation;
 import org.bukkit.util.Vector;
 import org.joml.Matrix4f;
 import org.jspecify.annotations.Nullable;
@@ -155,6 +156,7 @@ public class CustomBlockRegistry {
     private @Nullable BukkitTask customTickTask;
     private @Nullable BukkitTask animationTask;
     private @Nullable BukkitTask hintSaveTask;
+    private boolean finalized;
 
     // Reusable work matrix for animation tick (avoids allocation per frame)
     private final Matrix4f animationWorkMatrix = new Matrix4f();
@@ -171,8 +173,10 @@ public class CustomBlockRegistry {
 
     public void register(CustomHeadBlock type) {
         types.put(type.fullId(), type);
-        // Rescan already-loaded chunks that may contain blocks of this type
         rescanLoadedChunks(type);
+        if (finalized) {
+            registerRecipesForType(type);
+        }
     }
 
     /** Scan all loaded, hinted chunks for blocks of the given type. */
@@ -537,11 +541,18 @@ public class CustomBlockRegistry {
             DisplayUtil.removeByTag(block.getLocation(), tagPrefix, 1.5);
             List<CustomHeadBlock.DisplayEntityConfig> displays = type.resolveDisplayEntities(state);
             List<AnimationTracked> anims = null;
-            for (var dec : displays) {
+            for (int i = 0; i < displays.size(); i++) {
+                var dec = displays.get(i);
                 ItemStack displayItem = dec.displayItem();
                 if (type.displayItemResolver() != null && dec.tagSuffix() != null) {
                     ItemStack resolved = type.displayItemResolver().apply(block, dec.tagSuffix());
                     if (resolved != null) displayItem = resolved;
+                }
+                Transformation transform = dec.transform();
+                if (type.displayTransformResolver() != null) {
+                    Transformation resolved = type.displayTransformResolver()
+                            .resolve(block, state, dec, i);
+                    if (resolved != null) transform = resolved;
                 }
                 String tag = DisplayUtil.blockTag(type.namespace(), type.typeId(),
                         block.getLocation(), dec.tagSuffix());
@@ -551,7 +562,7 @@ public class CustomBlockRegistry {
                     Vector wallFacing = wallDir.getFacing().getDirection();
                     spawnBase = spawnBase.clone().subtract(wallFacing.multiply(dec.wallOffset()));
                 }
-                var display = DisplayUtil.spawn(spawnBase, displayItem, dec.transform(), tag);
+                var display = DisplayUtil.spawn(spawnBase, displayItem, transform, tag);
                 if (dec.interpolationDuration() != 0) {
                     display.setInterpolationDuration(dec.interpolationDuration());
                 }
@@ -623,6 +634,29 @@ public class CustomBlockRegistry {
 
         // Remove light block
         clearLightBlock(block, type);
+    }
+
+    void resolveDisplayTransforms(Block block, CustomHeadBlock type, @Nullable String state) {
+        if (type.displayTransformResolver() == null || !type.hasDisplayEntities()) return;
+        List<CustomHeadBlock.DisplayEntityConfig> displays = type.resolveDisplayEntities(state);
+        String tagPrefix = DisplayUtil.blockTagPrefix(type.namespace(), type.typeId(), block.getLocation());
+        List<Display> existing = DisplayUtil.findByTag(block.getLocation(), tagPrefix, 1.5);
+
+        for (int i = 0; i < displays.size(); i++) {
+            var dec = displays.get(i);
+            String fullTag = DisplayUtil.blockTag(
+                    type.namespace(), type.typeId(), block.getLocation(), dec.tagSuffix());
+            Transformation resolved = type.displayTransformResolver()
+                    .resolve(block, state, dec, i);
+            if (resolved == null) continue;
+
+            for (Display d : existing) {
+                if (d.getScoreboardTags().contains(fullTag)) {
+                    d.setTransformation(resolved);
+                    break;
+                }
+            }
+        }
     }
 
     /** Transition to a new state, applying all effects. */
@@ -945,6 +979,7 @@ public class CustomBlockRegistry {
     /** Call after all blocks are loaded to register recipes with Bukkit. */
     void finalizeLoading() {
         registerRecipes();
+        finalized = true;
     }
 
     void shutdown() {
@@ -1056,108 +1091,112 @@ public class CustomBlockRegistry {
     private final Map<org.bukkit.NamespacedKey, ToggleRecipeInfo> toggleRecipes = new HashMap<>();
 
     /** Register all recipes for all registered block types. Call after all blocks are loaded. */
-    @SuppressWarnings("deprecation")
     void registerRecipes() {
         for (CustomHeadBlock type : types.values()) {
-            if (!type.hasRecipes()) continue;
-            String prefix = type.namespace() + "_" + type.typeId() + "_";
-            int keysBefore = registeredRecipeKeys.size();
+            registerRecipesForType(type);
+        }
+    }
 
-            // Shaped recipes
-            for (CustomHeadBlock.ShapedRecipeDef r : type.shapedRecipes()) {
-                try {
-                    org.bukkit.NamespacedKey key = new org.bukkit.NamespacedKey(plugin, prefix + r.id());
-                    org.bukkit.inventory.ItemStack result = type.createItem(r.amount());
-                    org.bukkit.inventory.ShapedRecipe recipe = new org.bukkit.inventory.ShapedRecipe(key, result);
-                    recipe.shape(r.pattern().toArray(new String[0]));
-                    Map<Character, String> headIngredients = new HashMap<>();
-                    for (var entry : r.key().entrySet()) {
-                        CustomHeadBlock.IngredientSpec spec = entry.getValue();
-                        if (spec.isTag()) {
-                            recipe.setIngredient(entry.getKey(),
-                                    new org.bukkit.inventory.RecipeChoice.MaterialChoice(spec.tag()));
-                        } else if (spec.isMaterial()) {
-                            recipe.setIngredient(entry.getKey(), spec.material());
-                        } else if (spec.isBlock()) {
-                            recipe.setIngredient(entry.getKey(),
-                                    new org.bukkit.inventory.RecipeChoice.MaterialChoice(Material.PLAYER_HEAD));
-                            headIngredients.put(entry.getKey(), spec.blockId());
-                        }
+    @SuppressWarnings("deprecation")
+    private void registerRecipesForType(CustomHeadBlock type) {
+        if (!type.hasRecipes()) return;
+        String prefix = type.namespace() + "_" + type.typeId() + "_";
+        int keysBefore = registeredRecipeKeys.size();
+
+        // Shaped recipes
+        for (CustomHeadBlock.ShapedRecipeDef r : type.shapedRecipes()) {
+            try {
+                org.bukkit.NamespacedKey key = new org.bukkit.NamespacedKey(plugin, prefix + r.id());
+                org.bukkit.inventory.ItemStack result = type.createItem(r.amount());
+                org.bukkit.inventory.ShapedRecipe recipe = new org.bukkit.inventory.ShapedRecipe(key, result);
+                recipe.shape(r.pattern().toArray(new String[0]));
+                Map<Character, String> headIngredients = new HashMap<>();
+                for (var entry : r.key().entrySet()) {
+                    CustomHeadBlock.IngredientSpec spec = entry.getValue();
+                    if (spec.isTag()) {
+                        recipe.setIngredient(entry.getKey(),
+                                new org.bukkit.inventory.RecipeChoice.MaterialChoice(spec.tag()));
+                    } else if (spec.isMaterial()) {
+                        recipe.setIngredient(entry.getKey(), spec.material());
+                    } else if (spec.isBlock()) {
+                        recipe.setIngredient(entry.getKey(),
+                                new org.bukkit.inventory.RecipeChoice.MaterialChoice(Material.PLAYER_HEAD));
+                        headIngredients.put(entry.getKey(), spec.blockId());
                     }
-                    Bukkit.addRecipe(recipe);
-                    registeredRecipeKeys.add(key);
-                    if (!headIngredients.isEmpty()) {
-                        headIngredientRecipes.put(key, headIngredients);
-                    }
-                } catch (Exception e) {
-                    plugin.getLogger().warning("Failed to register shaped recipe '" + prefix + r.id() + "': " + e.getMessage());
                 }
+                Bukkit.addRecipe(recipe);
+                registeredRecipeKeys.add(key);
+                if (!headIngredients.isEmpty()) {
+                    headIngredientRecipes.put(key, headIngredients);
+                }
+            } catch (Exception e) {
+                plugin.getLogger().warning("Failed to register shaped recipe '" + prefix + r.id() + "': " + e.getMessage());
             }
+        }
 
-            // Shapeless recipes
-            for (CustomHeadBlock.ShapelessRecipeDef r : type.shapelessRecipes()) {
-                try {
-                    org.bukkit.NamespacedKey key = new org.bukkit.NamespacedKey(plugin, prefix + r.id());
-                    org.bukkit.inventory.ItemStack result = type.createItem(r.amount());
-                    org.bukkit.inventory.ShapelessRecipe recipe = new org.bukkit.inventory.ShapelessRecipe(key, result);
-                    boolean hasHeadIngredients = false;
+        // Shapeless recipes
+        for (CustomHeadBlock.ShapelessRecipeDef r : type.shapelessRecipes()) {
+            try {
+                org.bukkit.NamespacedKey key = new org.bukkit.NamespacedKey(plugin, prefix + r.id());
+                org.bukkit.inventory.ItemStack result = type.createItem(r.amount());
+                org.bukkit.inventory.ShapelessRecipe recipe = new org.bukkit.inventory.ShapelessRecipe(key, result);
+                boolean hasHeadIngredients = false;
+                for (CustomHeadBlock.IngredientSpec spec : r.ingredients()) {
+                    if (spec.isMaterial()) {
+                        recipe.addIngredient(spec.material());
+                    } else if (spec.isBlock()) {
+                        recipe.addIngredient(
+                                new org.bukkit.inventory.RecipeChoice.MaterialChoice(Material.PLAYER_HEAD));
+                        hasHeadIngredients = true;
+                    }
+                }
+                Bukkit.addRecipe(recipe);
+                registeredRecipeKeys.add(key);
+                if (hasHeadIngredients) {
+                    Map<Character, String> specMap = new HashMap<>();
+                    int idx = 0;
                     for (CustomHeadBlock.IngredientSpec spec : r.ingredients()) {
-                        if (spec.isMaterial()) {
-                            recipe.addIngredient(spec.material());
-                        } else if (spec.isBlock()) {
-                            recipe.addIngredient(
-                                    new org.bukkit.inventory.RecipeChoice.MaterialChoice(Material.PLAYER_HEAD));
-                            hasHeadIngredients = true;
+                        if (spec.isBlock()) {
+                            specMap.put((char) ('0' + idx), spec.blockId());
                         }
+                        idx++;
                     }
+                    headIngredientRecipes.put(key, specMap);
+                }
+                if (type.itemMaterial() != null
+                        && r.ingredients().size() == 1
+                        && r.ingredients().get(0).isMaterial()
+                        && r.ingredients().get(0).material() == type.itemMaterial()) {
+                    toggleRecipes.put(key, new ToggleRecipeInfo(type.fullId(), type.itemMaterial()));
+                }
+            } catch (Exception e) {
+                plugin.getLogger().warning("Failed to register shapeless recipe '" + prefix + r.id() + "': " + e.getMessage());
+            }
+        }
+
+        // Stonecutter recipes
+        for (CustomHeadBlock.StonecutterRecipeDef r : type.stonecutterRecipes()) {
+            try {
+                CustomHeadBlock.IngredientSpec input = r.input();
+                if (input.isMaterial()) {
+                    org.bukkit.NamespacedKey key = new org.bukkit.NamespacedKey(plugin, prefix + "sc_" + r.id());
+                    org.bukkit.inventory.ItemStack result = type.createItem(r.amount());
+                    org.bukkit.inventory.StonecuttingRecipe recipe = new org.bukkit.inventory.StonecuttingRecipe(
+                            key, result, new org.bukkit.inventory.RecipeChoice.MaterialChoice(input.material()));
                     Bukkit.addRecipe(recipe);
                     registeredRecipeKeys.add(key);
-                    if (hasHeadIngredients) {
-                        Map<Character, String> specMap = new HashMap<>();
-                        int idx = 0;
-                        for (CustomHeadBlock.IngredientSpec spec : r.ingredients()) {
-                            if (spec.isBlock()) {
-                                specMap.put((char) ('0' + idx), spec.blockId());
-                            }
-                            idx++;
-                        }
-                        headIngredientRecipes.put(key, specMap);
-                    }
-                    if (type.itemMaterial() != null
-                            && r.ingredients().size() == 1
-                            && r.ingredients().get(0).isMaterial()
-                            && r.ingredients().get(0).material() == type.itemMaterial()) {
-                        toggleRecipes.put(key, new ToggleRecipeInfo(type.fullId(), type.itemMaterial()));
-                    }
-                } catch (Exception e) {
-                    plugin.getLogger().warning("Failed to register shapeless recipe '" + prefix + r.id() + "': " + e.getMessage());
+                } else if (input.isBlock()) {
+                    headStonecutterRecipes.add(new HeadStonecutterRecipe(input.blockId(), type.fullId(), r.amount()));
                 }
+            } catch (Exception e) {
+                plugin.getLogger().warning("Failed to register stonecutter recipe '" + prefix + r.id() + "': " + e.getMessage());
             }
+        }
 
-            // Stonecutter recipes
-            for (CustomHeadBlock.StonecutterRecipeDef r : type.stonecutterRecipes()) {
-                try {
-                    CustomHeadBlock.IngredientSpec input = r.input();
-                    if (input.isMaterial()) {
-                        org.bukkit.NamespacedKey key = new org.bukkit.NamespacedKey(plugin, prefix + "sc_" + r.id());
-                        org.bukkit.inventory.ItemStack result = type.createItem(r.amount());
-                        org.bukkit.inventory.StonecuttingRecipe recipe = new org.bukkit.inventory.StonecuttingRecipe(
-                                key, result, new org.bukkit.inventory.RecipeChoice.MaterialChoice(input.material()));
-                        Bukkit.addRecipe(recipe);
-                        registeredRecipeKeys.add(key);
-                    } else if (input.isBlock()) {
-                        headStonecutterRecipes.add(new HeadStonecutterRecipe(input.blockId(), type.fullId(), r.amount()));
-                    }
-                } catch (Exception e) {
-                    plugin.getLogger().warning("Failed to register stonecutter recipe '" + prefix + r.id() + "': " + e.getMessage());
-                }
-            }
-
-            // Track advancement requirement for all recipes registered for this type
-            if (type.unlockAdvancement() != null) {
-                for (int i = keysBefore; i < registeredRecipeKeys.size(); i++) {
-                    trackAdvancementRecipe(type.unlockAdvancement(), registeredRecipeKeys.get(i));
-                }
+        // Track advancement requirement for all recipes registered for this type
+        if (type.unlockAdvancement() != null) {
+            for (int i = keysBefore; i < registeredRecipeKeys.size(); i++) {
+                trackAdvancementRecipe(type.unlockAdvancement(), registeredRecipeKeys.get(i));
             }
         }
     }

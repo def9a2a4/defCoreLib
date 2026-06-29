@@ -176,6 +176,17 @@ public final class CustomHeadBlock {
         void accept(Block block, String oldState, String newState);
     }
 
+    @FunctionalInterface
+    public interface DisplayTransformResolver {
+        @Nullable Transformation resolve(Block block, String state,
+                                          DisplayEntityConfig config, int displayIndex);
+    }
+
+    @FunctionalInterface
+    public interface StateResolver {
+        @Nullable String resolve(org.bukkit.event.block.BlockPlaceEvent event);
+    }
+
     /** Placement restrictions. */
     public record PlacementConfig(Set<BlockFace> allowedFaces, boolean requireSolid) {}
 
@@ -254,6 +265,7 @@ public final class CustomHeadBlock {
     private final @Nullable PlacementConfig placement;
     private final List<DropRule> dropRules;
     private final boolean cancelPistons;
+    private final boolean breakOnPiston;
     private final @Nullable SoundConfig placeSound;
     private final @Nullable SoundConfig breakSound;
     private final @Nullable SoundConfig interactSound;
@@ -272,6 +284,8 @@ public final class CustomHeadBlock {
 
     // Placement-face → initial state mapping
     private final @Nullable Map<BlockFace, String> placementStateMap;
+    private final @Nullable StateResolver stateResolver;
+    private final Set<String> playerHeadStates;
 
     // Cached capability checks
     private final boolean _hasDisplayEntities;
@@ -287,9 +301,11 @@ public final class CustomHeadBlock {
     private final @Nullable BiConsumer<Block, String> onChunkLoadCallback;
     private final @Nullable Consumer<Block> onChunkUnloadCallback;
     private final @Nullable StateChangeHandler onStateChanged;
+    private final @Nullable BiConsumer<Block, String> onBlockPlaced;
     private final @Nullable BiConsumer<Block, String> onBlockRemoved;
     private final @Nullable BiFunction<Block, org.bukkit.event.player.PlayerInteractEvent, Boolean> onInteract;
     private final java.util.function.@Nullable BiFunction<Block, String, org.bukkit.inventory.ItemStack> displayItemResolver;
+    private final @Nullable DisplayTransformResolver displayTransformResolver;
     private final @Nullable BannerTier bannerTier;
 
     private CustomHeadBlock(Builder b) {
@@ -314,6 +330,7 @@ public final class CustomHeadBlock {
         this.placement = b.placement;
         this.dropRules = List.copyOf(b.dropRules);
         this.cancelPistons = b.cancelPistons;
+        this.breakOnPiston = b.breakOnPiston;
         this.placeSound = b.placeSound;
         this.breakSound = b.breakSound;
         this.interactSound = b.interactSound;
@@ -326,15 +343,19 @@ public final class CustomHeadBlock {
         this.transitions = List.copyOf(b.transitions);
         this.redstone = b.redstone;
         this.placementStateMap = b.placementStateMap != null ? Map.copyOf(b.placementStateMap) : null;
+        this.stateResolver = b.stateResolver;
+        this.playerHeadStates = b.playerHeadStates;
         this.drillable = b.drillable;
         this.onNeighborChange = b.onNeighborChange;
         this.onTick = b.onTick;
         this.onChunkLoadCallback = b.onChunkLoadCallback;
         this.onChunkUnloadCallback = b.onChunkUnloadCallback;
         this.onStateChanged = b.onStateChanged;
+        this.onBlockPlaced = b.onBlockPlaced;
         this.onBlockRemoved = b.onBlockRemoved;
         this.onInteract = b.onInteract;
         this.displayItemResolver = b.displayItemResolver;
+        this.displayTransformResolver = b.displayTransformResolver;
         this.bannerTier = b.bannerTier;
 
         // Cache capability checks (avoid streaming states on every call)
@@ -373,6 +394,7 @@ public final class CustomHeadBlock {
     public @Nullable PlacementConfig placement() { return placement; }
     public List<DropRule> dropRules() { return dropRules; }
     public boolean cancelPistons() { return cancelPistons; }
+    public boolean breakOnPiston() { return breakOnPiston; }
     public @Nullable SoundConfig placeSound() { return placeSound; }
     public @Nullable SoundConfig breakSound() { return breakSound; }
     public @Nullable SoundConfig interactSound() { return interactSound; }
@@ -389,16 +411,20 @@ public final class CustomHeadBlock {
     public @Nullable RedstoneConfig redstone() { return redstone; }
     public Sensitivity sensitivity() { return redstone != null ? redstone.sensitivity() : Sensitivity.NONE; }
     public @Nullable Map<BlockFace, String> placementStateMap() { return placementStateMap; }
+    public @Nullable StateResolver stateResolver() { return stateResolver; }
+    public Set<String> playerHeadStates() { return playerHeadStates; }
 
     public @Nullable BiConsumer<Block, BlockFace> onNeighborChange() { return onNeighborChange; }
     public @Nullable Consumer<Block> onTick() { return onTick; }
     public @Nullable BiConsumer<Block, String> onChunkLoadCallback() { return onChunkLoadCallback; }
     public @Nullable Consumer<Block> onChunkUnloadCallback() { return onChunkUnloadCallback; }
     public @Nullable StateChangeHandler onStateChanged() { return onStateChanged; }
+    public @Nullable BiConsumer<Block, String> onBlockPlaced() { return onBlockPlaced; }
     public @Nullable BiConsumer<Block, String> onBlockRemoved() { return onBlockRemoved; }
     public @Nullable BiFunction<Block, org.bukkit.event.player.PlayerInteractEvent, Boolean> onInteract() { return onInteract; }
     public boolean drillable() { return drillable; }
     public @Nullable BiFunction<Block, String, org.bukkit.inventory.ItemStack> displayItemResolver() { return displayItemResolver; }
+    public @Nullable DisplayTransformResolver displayTransformResolver() { return displayTransformResolver; }
     /** Required banner tier for banner-blade crafting ingredients, or {@code null} for no gating. */
     public @Nullable BannerTier bannerTier() { return bannerTier; }
 
@@ -575,6 +601,7 @@ public final class CustomHeadBlock {
         b.placement = placement;
         b.dropRules.addAll(dropRules);
         b.cancelPistons = cancelPistons;
+        b.breakOnPiston = breakOnPiston;
         b.placeSound = placeSound;
         b.breakSound = breakSound;
         b.interactSound = interactSound;
@@ -586,15 +613,19 @@ public final class CustomHeadBlock {
         b.transitions.addAll(transitions);
         b.redstone = redstone;
         b.placementStateMap = placementStateMap != null ? new java.util.HashMap<>(placementStateMap) : null;
+        b.stateResolver = stateResolver;
+        b.playerHeadStates = playerHeadStates;
         b.drillable = drillable;
         b.onNeighborChange = onNeighborChange;
         b.onTick = onTick;
         b.onChunkLoadCallback = onChunkLoadCallback;
         b.onChunkUnloadCallback = onChunkUnloadCallback;
         b.onStateChanged = onStateChanged;
+        b.onBlockPlaced = onBlockPlaced;
         b.onBlockRemoved = onBlockRemoved;
         b.onInteract = onInteract;
         b.displayItemResolver = displayItemResolver;
+        b.displayTransformResolver = displayTransformResolver;
         b.bannerTier = bannerTier;
         return b;
     }
@@ -623,6 +654,7 @@ public final class CustomHeadBlock {
         private @Nullable PlacementConfig placement;
         private final List<DropRule> dropRules = new ArrayList<>();
         private boolean cancelPistons;
+        private boolean breakOnPiston;
         private @Nullable SoundConfig placeSound;
         private @Nullable SoundConfig breakSound;
         private @Nullable SoundConfig interactSound;
@@ -637,6 +669,8 @@ public final class CustomHeadBlock {
 
         private @Nullable RedstoneConfig redstone;
         private @Nullable Map<BlockFace, String> placementStateMap;
+        private @Nullable StateResolver stateResolver;
+        private Set<String> playerHeadStates = Set.of();
 
         private boolean drillable = true;
         private @Nullable BiConsumer<Block, BlockFace> onNeighborChange;
@@ -644,9 +678,11 @@ public final class CustomHeadBlock {
         private @Nullable BiConsumer<Block, String> onChunkLoadCallback;
         private @Nullable Consumer<Block> onChunkUnloadCallback;
         private @Nullable StateChangeHandler onStateChanged;
+        private @Nullable BiConsumer<Block, String> onBlockPlaced;
         private @Nullable BiConsumer<Block, String> onBlockRemoved;
         private @Nullable BiFunction<Block, org.bukkit.event.player.PlayerInteractEvent, Boolean> onInteract;
         private @Nullable BiFunction<Block, String, org.bukkit.inventory.ItemStack> displayItemResolver;
+        private @Nullable DisplayTransformResolver displayTransformResolver;
         private @Nullable BannerTier bannerTier;
 
         private Builder(String namespace, String typeId) {
@@ -678,6 +714,7 @@ public final class CustomHeadBlock {
         public Builder placement(PlacementConfig config) { this.placement = config; return this; }
         public Builder drops(DropRule... rules) { this.dropRules.addAll(List.of(rules)); return this; }
         public Builder cancelPistons(boolean cancel) { this.cancelPistons = cancel; return this; }
+        public Builder breakOnPiston(boolean value) { this.breakOnPiston = value; return this; }
         public Builder placeSound(SoundConfig sound) { this.placeSound = sound; return this; }
         public Builder breakSound(SoundConfig sound) { this.breakSound = sound; return this; }
         public Builder interactSound(SoundConfig sound) { this.interactSound = sound; return this; }
@@ -737,6 +774,9 @@ public final class CustomHeadBlock {
             return this;
         }
 
+        public Builder stateResolver(StateResolver resolver) { this.stateResolver = resolver; return this; }
+        public Builder playerHeadStates(String... states) { this.playerHeadStates = Set.of(states); return this; }
+
         /** Map placement attachment faces to initial states (overrides defaultState at placement time). */
         public Builder placementStateMap(Map<BlockFace, String> map) {
             this.placementStateMap = map;
@@ -762,10 +802,16 @@ public final class CustomHeadBlock {
         public Builder onChunkLoad(BiConsumer<Block, String> handler) { this.onChunkLoadCallback = handler; return this; }
         public Builder onChunkUnload(Consumer<Block> handler) { this.onChunkUnloadCallback = handler; return this; }
         public Builder onStateChanged(StateChangeHandler handler) { this.onStateChanged = handler; return this; }
+        public Builder onBlockPlaced(BiConsumer<Block, String> handler) { this.onBlockPlaced = handler; return this; }
         public Builder onBlockRemoved(BiConsumer<Block, String> handler) { this.onBlockRemoved = handler; return this; }
         public Builder onInteract(BiFunction<Block, org.bukkit.event.player.PlayerInteractEvent, Boolean> handler) { this.onInteract = handler; return this; }
         public Builder drillable(boolean drillable) { this.drillable = drillable; return this; }
         public Builder displayItemResolver(BiFunction<Block, String, org.bukkit.inventory.ItemStack> resolver) { this.displayItemResolver = resolver; return this; }
+        public Builder displayTransformResolver(DisplayTransformResolver resolver) {
+            this.displayTransformResolver = resolver;
+            this.reactsToNeighbors = true;
+            return this;
+        }
         public Builder bannerTier(BannerTier tier) { this.bannerTier = tier; return this; }
 
         public CustomHeadBlock build() {
