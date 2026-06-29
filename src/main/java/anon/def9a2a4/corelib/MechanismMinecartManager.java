@@ -181,6 +181,7 @@ final class MechanismMinecartManager implements Listener {
 
         org.bukkit.Location spawnLoc = block.getLocation().add(0.5, 0, 0.5);
         Minecart minecart = block.getWorld().spawn(spawnLoc, RideableMinecart.class, m -> {
+            m.setPersistent(true); // survive chunk unload — else it despawns and orphans the mechanism
             m.addScoreboardTag("corelib:mechanism_minecart");
             m.setDisplayBlockData(Bukkit.createBlockData(Material.LODESTONE));
             m.getPersistentDataContainer().set(mechanismMinecartKey, PersistentDataType.BYTE, (byte) 1);

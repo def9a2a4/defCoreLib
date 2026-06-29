@@ -268,9 +268,21 @@ public class MechanismRegistry {
 
     public void shutdown() {
         if (tickTask != null) tickTask.cancel();
-        // Destroy all active mechanisms (don't restore blocks on shutdown — no persistence yet)
+        // Restore real blocks for any still-assembled mechanism (e.g. an open door) so the structure
+        // isn't lost on /stop. Per-mechanism guarded: a failure falls back to removeAllEntities so we
+        // never leak persistent entities. (Full restart recovery is the deferred persistence work.)
         for (BasicMechanism mech : new ArrayList<>(activeMechanisms.values())) {
-            mech.removeAllEntities();
+            try {
+                mech.disassemble();
+            } catch (Exception e) {
+                plugin.getLogger().warning("Mechanism " + mech.id() + " failed to disassemble on "
+                    + "shutdown (" + e.getMessage() + "); removing entities without block restore");
+                try {
+                    mech.removeAllEntities();
+                } catch (Exception ignored) {
+                    // best-effort cleanup
+                }
+            }
         }
         activeMechanisms.clear();
         colliderIndex.clear();
