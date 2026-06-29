@@ -1,0 +1,2253 @@
+{
+  "namespaces": [
+    "corelib",
+    "demo",
+    "rotation",
+    "verticalslabs"
+  ],
+  "items": [
+    {
+      "namespace": "demo",
+      "id": "candle",
+      "fullId": "demo:candle",
+      "name": "&fCandle",
+      "lore": [
+        "&7Right-click with flint & steel to light",
+        "&7Right-click again to extinguish"
+      ],
+      "icon": {
+        "type": "head",
+        "textureUrl": "http://textures.minecraft.net/texture/2b7dbcda454ea7b38abc66cdfed8e4e6c01294f6a962ec66ef226510ae37171b"
+      },
+      "glint": false,
+      "recipes": [
+        {
+          "type": "shaped",
+          "pattern": [
+            "CC",
+            "CC"
+          ],
+          "key": {
+            "C": {
+              "kind": "material",
+              "value": "CANDLE"
+            }
+          },
+          "amount": 1
+        },
+        {
+          "type": "stonecutter",
+          "input": {
+            "kind": "material",
+            "value": "TORCH"
+          },
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "namespace": "demo",
+      "id": "jack_o_lantern",
+      "fullId": "demo:jack_o_lantern",
+      "name": "&6Jack O'Lantern",
+      "lore": [
+        "&7Always glowing"
+      ],
+      "icon": {
+        "type": "head",
+        "textureUrl": "http://textures.minecraft.net/texture/f752a9a9aec0f16180b8cb0003051bb529d7a321201fee7767ae0c2ba6af9149"
+      },
+      "glint": false,
+      "recipes": [
+        {
+          "type": "shapeless",
+          "ingredients": [
+            {
+              "kind": "block",
+              "value": "demo:candle"
+            },
+            {
+              "kind": "material",
+              "value": "PUMPKIN"
+            }
+          ],
+          "amount": 1
+        },
+        {
+          "type": "stonecutter",
+          "input": {
+            "kind": "block",
+            "value": "demo:candle"
+          },
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "namespace": "demo",
+      "id": "crafting_table",
+      "fullId": "demo:crafting_table",
+      "name": "&eMini Crafting Table",
+      "lore": [
+        "&7Right-click to open crafting table"
+      ],
+      "icon": {
+        "type": "head",
+        "textureUrl": "http://textures.minecraft.net/texture/4c36045208f9b5ddcf8c4433e424b1ca17b94f6b96202fb1e5270ee8d53881b1"
+      },
+      "glint": false,
+      "recipes": []
+    },
+    {
+      "namespace": "demo",
+      "id": "redstone_display",
+      "fullId": "demo:redstone_display",
+      "name": "&bRedstone Display",
+      "lore": [
+        "&7Shows redstone power 0-15",
+        "&7Reads through walls"
+      ],
+      "icon": {
+        "type": "head",
+        "textureUrl": "http://textures.minecraft.net/texture/aac13a316aac8a71e87310cfadbcbf37a6dc472e026364eb9b4532b7cff26836"
+      },
+      "glint": false,
+      "recipes": []
+    },
+    {
+      "namespace": "demo",
+      "id": "binary_indicator",
+      "fullId": "demo:binary_indicator",
+      "name": "&cBinary Indicator",
+      "lore": [
+        "&7Off/On based on redstone",
+        "&7Reads through walls"
+      ],
+      "icon": {
+        "type": "head",
+        "textureUrl": "http://textures.minecraft.net/texture/acc789f230794f90e33c4f9ad00694bc2a2ff5e8b9b375dc3532401b281f3e58"
+      },
+      "glint": false,
+      "recipes": []
+    },
+    {
+      "namespace": "demo",
+      "id": "redstone_candle",
+      "fullId": "demo:redstone_candle",
+      "name": "&dRedstone Candle",
+      "lore": [
+        "&7Flint & steel or redstone to light",
+        "&7Click or remove power to extinguish"
+      ],
+      "icon": {
+        "type": "head",
+        "textureUrl": "http://textures.minecraft.net/texture/2b7dbcda454ea7b38abc66cdfed8e4e6c01294f6a962ec66ef226510ae37171b"
+      },
+      "glint": false,
+      "recipes": []
+    },
+    {
+      "namespace": "demo",
+      "id": "signal_meter",
+      "fullId": "demo:signal_meter",
+      "name": "&aSignal Meter",
+      "lore": [
+        "&7Particles scale with redstone power"
+      ],
+      "icon": {
+        "type": "head",
+        "textureUrl": "http://textures.minecraft.net/texture/4a2648a9e53613f0ab1266b72918f40788f84e160a52348cd67138410262f39f"
+      },
+      "glint": false,
+      "recipes": []
+    },
+    {
+      "namespace": "demo",
+      "id": "pillar",
+      "fullId": "demo:pillar",
+      "name": "&9Crystal Pillar",
+      "lore": [
+        "&7Block with floating display entity",
+        "&7Cannot be pushed by pistons"
+      ],
+      "icon": {
+        "type": "head",
+        "textureUrl": "http://textures.minecraft.net/texture/33fb7c92fe1649d76c4ad979efcd2c460b2e90b2320a233ef85133dd56bed86a"
+      },
+      "glint": false,
+      "recipes": []
+    },
+    {
+      "namespace": "demo",
+      "id": "alarm",
+      "fullId": "demo:alarm",
+      "name": "&cAlarm",
+      "lore": [
+        "&7Right-click to cycle: off -> alert -> panic -> off"
+      ],
+      "icon": {
+        "type": "head",
+        "textureUrl": "http://textures.minecraft.net/texture/acc789f230794f90e33c4f9ad00694bc2a2ff5e8b9b375dc3532401b281f3e58"
+      },
+      "glint": false,
+      "recipes": []
+    },
+    {
+      "namespace": "demo",
+      "id": "enchant_pedestal",
+      "fullId": "demo:enchant_pedestal",
+      "name": "&5Enchanting Pedestal",
+      "lore": [
+        "&7Right-click to enchant",
+        "&7Soul fire particles"
+      ],
+      "icon": {
+        "type": "head",
+        "textureUrl": "http://textures.minecraft.net/texture/c482d1ba4bdac990f6ea987703587fd79fe55555363251984679d4f279cc0c2a"
+      },
+      "glint": false,
+      "recipes": []
+    },
+    {
+      "namespace": "demo",
+      "id": "storage_barrel",
+      "fullId": "demo:storage_barrel",
+      "name": "&6Storage Barrel",
+      "lore": [
+        "&7Right-click to open storage",
+        "&73 rows of inventory"
+      ],
+      "icon": {
+        "type": "head",
+        "textureUrl": "http://textures.minecraft.net/texture/2884ada4c74c0f961469262d956977bafb0b2d7fed9c7bdf35f45199e9f6ddbb"
+      },
+      "glint": false,
+      "recipes": []
+    },
+    {
+      "namespace": "demo",
+      "id": "hopper_crate",
+      "fullId": "demo:hopper_crate",
+      "name": "&7Hopper Crate",
+      "lore": [
+        "&7Right-click to open",
+        "&75-slot hopper layout"
+      ],
+      "icon": {
+        "type": "head",
+        "textureUrl": "http://textures.minecraft.net/texture/801b5038bd173b8f18062ed22bc8cc97e80bbff5f8937b1132eb86555ec6b074"
+      },
+      "glint": false,
+      "recipes": []
+    },
+    {
+      "namespace": "demo",
+      "id": "altar",
+      "fullId": "demo:altar",
+      "name": "&5Altar",
+      "lore": [
+        "&7Right-click with diamond to activate",
+        "&7Right-click again to deactivate"
+      ],
+      "icon": {
+        "type": "head",
+        "textureUrl": "http://textures.minecraft.net/texture/c482d1ba4bdac990f6ea987703587fd79fe55555363251984679d4f279cc0c2a"
+      },
+      "glint": false,
+      "recipes": []
+    },
+    {
+      "namespace": "demo",
+      "id": "wall_lamp",
+      "fullId": "demo:wall_lamp",
+      "name": "&eWall Lamp",
+      "lore": [
+        "&7Can only be placed on walls",
+        "&7Different texture per facing direction"
+      ],
+      "icon": {
+        "type": "head",
+        "textureUrl": "http://textures.minecraft.net/texture/2b7dbcda454ea7b38abc66cdfed8e4e6c01294f6a962ec66ef226510ae37171b"
+      },
+      "glint": false,
+      "recipes": []
+    },
+    {
+      "namespace": "demo",
+      "id": "dropper_box",
+      "fullId": "demo:dropper_box",
+      "name": "&7Dropper Box",
+      "lore": [
+        "&7Right-click to open",
+        "&79-slot grid inventory"
+      ],
+      "icon": {
+        "type": "head",
+        "textureUrl": "http://textures.minecraft.net/texture/801b5038bd173b8f18062ed22bc8cc97e80bbff5f8937b1132eb86555ec6b074"
+      },
+      "glint": false,
+      "recipes": []
+    },
+    {
+      "namespace": "demo",
+      "id": "loot_crate",
+      "fullId": "demo:loot_crate",
+      "name": "&6Loot Crate",
+      "lore": [
+        "&7Silk touch: drops itself",
+        "&7Otherwise: drops iron and gold"
+      ],
+      "icon": {
+        "type": "head",
+        "textureUrl": "http://textures.minecraft.net/texture/33fb7c92fe1649d76c4ad979efcd2c460b2e90b2320a233ef85133dd56bed86a"
+      },
+      "glint": false,
+      "recipes": []
+    },
+    {
+      "namespace": "demo",
+      "id": "locked_workbench",
+      "fullId": "demo:locked_workbench",
+      "name": "&5Locked Workbench",
+      "lore": [
+        "&7Right-click to open anvil",
+        "&7Recipe requires: Acquire Hardware"
+      ],
+      "icon": {
+        "type": "head",
+        "textureUrl": "http://textures.minecraft.net/texture/4c36045208f9b5ddcf8c4433e424b1ca17b94f6b96202fb1e5270ee8d53881b1"
+      },
+      "glint": false,
+      "recipes": [
+        {
+          "type": "shaped",
+          "pattern": [
+            "IWI",
+            "WAW",
+            "IWI"
+          ],
+          "key": {
+            "I": {
+              "kind": "material",
+              "value": "IRON_INGOT"
+            },
+            "W": {
+              "kind": "material",
+              "value": "OAK_PLANKS"
+            },
+            "A": {
+              "kind": "material",
+              "value": "ANVIL"
+            }
+          },
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "namespace": "demo",
+      "id": "spinning_crystal",
+      "fullId": "demo:spinning_crystal",
+      "name": "&bSpinning Crystal",
+      "lore": [
+        "&7An animated display entity demo"
+      ],
+      "icon": {
+        "type": "head",
+        "textureUrl": "http://textures.minecraft.net/texture/c482d1ba4bdac990f6ea987703587fd79fe55555363251984679d4f279cc0c2a"
+      },
+      "glint": false,
+      "recipes": []
+    },
+    {
+      "namespace": "demo",
+      "id": "pulsing_orb",
+      "fullId": "demo:pulsing_orb",
+      "name": "&dPulsing Orb",
+      "lore": [
+        "&7Right-click to toggle pulse speed"
+      ],
+      "icon": {
+        "type": "head",
+        "textureUrl": "http://textures.minecraft.net/texture/c482d1ba4bdac990f6ea987703587fd79fe55555363251984679d4f279cc0c2a"
+      },
+      "glint": false,
+      "recipes": []
+    },
+    {
+      "namespace": "demo",
+      "id": "block_display_test",
+      "fullId": "demo:block_display_test",
+      "name": "&aBlock Display Test",
+      "lore": [
+        "&7Tests BlockDisplay entity rendering"
+      ],
+      "icon": {
+        "type": "head",
+        "textureUrl": "http://textures.minecraft.net/texture/33fb7c92fe1649d76c4ad979efcd2c460b2e90b2320a233ef85133dd56bed86a"
+      },
+      "glint": false,
+      "recipes": []
+    },
+    {
+      "namespace": "rotation",
+      "id": "shaft",
+      "fullId": "rotation:shaft",
+      "name": "&eShaft",
+      "lore": [
+        "&7Transmits rotational power"
+      ],
+      "icon": {
+        "type": "head",
+        "textureUrl": "http://textures.minecraft.net/texture/e28bc2df3dff5ec3d143a2ceecb9382183516e9fadd7e409a5eb41551574a25f"
+      },
+      "glint": false,
+      "recipes": []
+    },
+    {
+      "namespace": "rotation",
+      "id": "gear",
+      "fullId": "rotation:gear",
+      "name": "&6Gear",
+      "lore": [
+        "&7Transfers power along axis",
+        "&7Connects perpendicular gears"
+      ],
+      "icon": {
+        "type": "head",
+        "textureUrl": "http://textures.minecraft.net/texture/1e5edfe90156ce9b5b6b80793dc2cbfe850ddec856c99eebde31775cce956041"
+      },
+      "glint": false,
+      "recipes": []
+    },
+    {
+      "namespace": "rotation",
+      "id": "clutch",
+      "fullId": "rotation:clutch",
+      "name": "&cClutch",
+      "lore": [
+        "&7Transmits rotation power",
+        "&7Disconnects when redstone powered"
+      ],
+      "icon": {
+        "type": "head",
+        "textureUrl": "http://textures.minecraft.net/texture/1c265803d1cc2e31f7951ffecbef50e078c36629d5d09078b91ba4dcd44ca29c"
+      },
+      "glint": false,
+      "recipes": []
+    },
+    {
+      "namespace": "rotation",
+      "id": "reverser",
+      "fullId": "rotation:reverser",
+      "name": "&dReverser",
+      "lore": [
+        "&7Transmits rotation power",
+        "&7Reverses spin direction when redstone powered"
+      ],
+      "icon": {
+        "type": "head",
+        "textureUrl": "http://textures.minecraft.net/texture/1e5edfe90156ce9b5b6b80793dc2cbfe850ddec856c99eebde31775cce956041"
+      },
+      "glint": false,
+      "recipes": []
+    },
+    {
+      "namespace": "rotation",
+      "id": "rotator",
+      "fullId": "rotation:rotator",
+      "name": "&dRotator",
+      "lore": [
+        "&7Swings an attached oak-plank door/drawbridge",
+        "&7Floor = door, wall = drawbridge",
+        "&7Right-click: cycle open angle"
+      ],
+      "icon": {
+        "type": "head",
+        "textureUrl": "http://textures.minecraft.net/texture/7ff9817d767d2ede7181a057aa26f08f7ecf4651dec97de5b54eede1dd2b42c7"
+      },
+      "glint": false,
+      "recipes": []
+    },
+    {
+      "namespace": "rotation",
+      "id": "water_wheel",
+      "fullId": "rotation:water_wheel",
+      "name": "&bWater Wheel",
+      "lore": [
+        "&7Produces 2 SU when adjacent to water",
+        "&7Place on a wall"
+      ],
+      "icon": {
+        "type": "head",
+        "textureUrl": "http://textures.minecraft.net/texture/2edd24825c217303f26af5526570a214aec29b9297a6877151ba50fcedff7ff1"
+      },
+      "glint": false,
+      "recipes": []
+    },
+    {
+      "namespace": "rotation",
+      "id": "engine",
+      "fullId": "rotation:engine",
+      "name": "&4Engine",
+      "lore": [
+        "&7Produces 5 SU when fueled",
+        "&7Right-click with fuel to power"
+      ],
+      "icon": {
+        "type": "head",
+        "textureUrl": "http://textures.minecraft.net/texture/9172c1e729e0ca00193ab5d43e893fabedf5a80fc647258176e8502432885925"
+      },
+      "glint": false,
+      "recipes": []
+    },
+    {
+      "namespace": "rotation",
+      "id": "generator",
+      "fullId": "rotation:generator",
+      "name": "&5Redstone Generator",
+      "lore": [
+        "&7Produces 1 SU constantly",
+        "&7Turns off when redstone powered"
+      ],
+      "icon": {
+        "type": "head",
+        "textureUrl": "http://textures.minecraft.net/texture/83acdced4f5a48e74edadd014c5de7daf9efb121ceafb6c15cdb13875594fcd9"
+      },
+      "glint": false,
+      "recipes": []
+    },
+    {
+      "namespace": "rotation",
+      "id": "grindstone",
+      "fullId": "rotation:grindstone",
+      "name": "&7Grindstone",
+      "lore": [
+        "&7Grinds items when powered",
+        "&7Right-click with item"
+      ],
+      "icon": {
+        "type": "head",
+        "textureUrl": "http://textures.minecraft.net/texture/151e70169ea00f04a9439221cf33770844159dd775fc8830e311fd9b5ccd2969"
+      },
+      "glint": false,
+      "recipes": []
+    },
+    {
+      "namespace": "rotation",
+      "id": "drill",
+      "fullId": "rotation:drill",
+      "name": "&8Drill",
+      "lore": [
+        "&7Breaks blocks when powered",
+        "&7Mines in facing direction"
+      ],
+      "icon": {
+        "type": "head",
+        "textureUrl": "http://textures.minecraft.net/texture/528cfd064bd48666e6a738c152a5fbb042ba72b5e92912e3e2f6951ea8f25d2e"
+      },
+      "glint": false,
+      "recipes": [
+        {
+          "type": "shaped",
+          "pattern": [
+            " N ",
+            "IDI",
+            "III"
+          ],
+          "key": {
+            "N": {
+              "kind": "material",
+              "value": "NETHERITE_INGOT"
+            },
+            "I": {
+              "kind": "material",
+              "value": "IRON_INGOT"
+            },
+            "D": {
+              "kind": "material",
+              "value": "DIAMOND"
+            }
+          },
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "namespace": "rotation",
+      "id": "windmill",
+      "fullId": "rotation:windmill",
+      "name": "&aWindmill",
+      "lore": [
+        "&7Produces 1 unit of rotation power",
+        "&7Always spinning"
+      ],
+      "icon": {
+        "type": "head",
+        "textureUrl": "http://textures.minecraft.net/texture/2884ada4c74c0f961469262d956977bafb0b2d7fed9c7bdf35f45199e9f6ddbb"
+      },
+      "glint": false,
+      "recipes": [
+        {
+          "type": "shaped",
+          "pattern": [
+            " B ",
+            "BSB",
+            " B "
+          ],
+          "key": {
+            "B": {
+              "kind": "tag",
+              "value": "banners"
+            },
+            "S": {
+              "kind": "material",
+              "value": "STICK"
+            }
+          },
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "namespace": "rotation",
+      "id": "large_windmill",
+      "fullId": "rotation:large_windmill",
+      "name": "&2Large Windmill",
+      "lore": [
+        "&7Produces 5 units of rotation power",
+        "&7Always spinning"
+      ],
+      "icon": {
+        "type": "head",
+        "textureUrl": "http://textures.minecraft.net/texture/2884ada4c74c0f961469262d956977bafb0b2d7fed9c7bdf35f45199e9f6ddbb"
+      },
+      "glint": false,
+      "recipes": [
+        {
+          "type": "shaped",
+          "pattern": [
+            " B ",
+            "BIB",
+            " B "
+          ],
+          "key": {
+            "B": {
+              "kind": "tag",
+              "value": "banners"
+            },
+            "I": {
+              "kind": "material",
+              "value": "IRON_BLOCK"
+            }
+          },
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "namespace": "rotation",
+      "id": "huge_windmill",
+      "fullId": "rotation:huge_windmill",
+      "name": "&bHuge Windmill",
+      "lore": [
+        "&7Produces 15 units of rotation power",
+        "&7Always spinning"
+      ],
+      "icon": {
+        "type": "head",
+        "textureUrl": "http://textures.minecraft.net/texture/2884ada4c74c0f961469262d956977bafb0b2d7fed9c7bdf35f45199e9f6ddbb"
+      },
+      "glint": false,
+      "recipes": [
+        {
+          "type": "shaped",
+          "pattern": [
+            " B ",
+            "BIB",
+            " B "
+          ],
+          "key": {
+            "B": {
+              "kind": "tag",
+              "value": "banners"
+            },
+            "I": {
+              "kind": "material",
+              "value": "DIAMOND_BLOCK"
+            }
+          },
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "namespace": "verticalslabs",
+      "id": "oak",
+      "fullId": "verticalslabs:oak",
+      "name": "&fOak Vertical Slab",
+      "lore": [],
+      "icon": {
+        "type": "material",
+        "material": "OAK_SLAB"
+      },
+      "glint": true,
+      "recipes": [
+        {
+          "type": "shapeless",
+          "ingredients": [
+            {
+              "kind": "material",
+              "value": "OAK_SLAB"
+            }
+          ],
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "namespace": "verticalslabs",
+      "id": "spruce",
+      "fullId": "verticalslabs:spruce",
+      "name": "&fSpruce Vertical Slab",
+      "lore": [],
+      "icon": {
+        "type": "material",
+        "material": "SPRUCE_SLAB"
+      },
+      "glint": true,
+      "recipes": [
+        {
+          "type": "shapeless",
+          "ingredients": [
+            {
+              "kind": "material",
+              "value": "SPRUCE_SLAB"
+            }
+          ],
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "namespace": "verticalslabs",
+      "id": "birch",
+      "fullId": "verticalslabs:birch",
+      "name": "&fBirch Vertical Slab",
+      "lore": [],
+      "icon": {
+        "type": "material",
+        "material": "BIRCH_SLAB"
+      },
+      "glint": true,
+      "recipes": [
+        {
+          "type": "shapeless",
+          "ingredients": [
+            {
+              "kind": "material",
+              "value": "BIRCH_SLAB"
+            }
+          ],
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "namespace": "verticalslabs",
+      "id": "jungle",
+      "fullId": "verticalslabs:jungle",
+      "name": "&fJungle Vertical Slab",
+      "lore": [],
+      "icon": {
+        "type": "material",
+        "material": "JUNGLE_SLAB"
+      },
+      "glint": true,
+      "recipes": [
+        {
+          "type": "shapeless",
+          "ingredients": [
+            {
+              "kind": "material",
+              "value": "JUNGLE_SLAB"
+            }
+          ],
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "namespace": "verticalslabs",
+      "id": "acacia",
+      "fullId": "verticalslabs:acacia",
+      "name": "&fAcacia Vertical Slab",
+      "lore": [],
+      "icon": {
+        "type": "material",
+        "material": "ACACIA_SLAB"
+      },
+      "glint": true,
+      "recipes": [
+        {
+          "type": "shapeless",
+          "ingredients": [
+            {
+              "kind": "material",
+              "value": "ACACIA_SLAB"
+            }
+          ],
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "namespace": "verticalslabs",
+      "id": "dark_oak",
+      "fullId": "verticalslabs:dark_oak",
+      "name": "&fDark Oak Vertical Slab",
+      "lore": [],
+      "icon": {
+        "type": "material",
+        "material": "DARK_OAK_SLAB"
+      },
+      "glint": true,
+      "recipes": [
+        {
+          "type": "shapeless",
+          "ingredients": [
+            {
+              "kind": "material",
+              "value": "DARK_OAK_SLAB"
+            }
+          ],
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "namespace": "verticalslabs",
+      "id": "mangrove",
+      "fullId": "verticalslabs:mangrove",
+      "name": "&fMangrove Vertical Slab",
+      "lore": [],
+      "icon": {
+        "type": "material",
+        "material": "MANGROVE_SLAB"
+      },
+      "glint": true,
+      "recipes": [
+        {
+          "type": "shapeless",
+          "ingredients": [
+            {
+              "kind": "material",
+              "value": "MANGROVE_SLAB"
+            }
+          ],
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "namespace": "verticalslabs",
+      "id": "cherry",
+      "fullId": "verticalslabs:cherry",
+      "name": "&fCherry Vertical Slab",
+      "lore": [],
+      "icon": {
+        "type": "material",
+        "material": "CHERRY_SLAB"
+      },
+      "glint": true,
+      "recipes": [
+        {
+          "type": "shapeless",
+          "ingredients": [
+            {
+              "kind": "material",
+              "value": "CHERRY_SLAB"
+            }
+          ],
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "namespace": "verticalslabs",
+      "id": "pale_oak",
+      "fullId": "verticalslabs:pale_oak",
+      "name": "&fPale Oak Vertical Slab",
+      "lore": [],
+      "icon": {
+        "type": "material",
+        "material": "PALE_OAK_SLAB"
+      },
+      "glint": true,
+      "recipes": [
+        {
+          "type": "shapeless",
+          "ingredients": [
+            {
+              "kind": "material",
+              "value": "PALE_OAK_SLAB"
+            }
+          ],
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "namespace": "verticalslabs",
+      "id": "bamboo",
+      "fullId": "verticalslabs:bamboo",
+      "name": "&fBamboo Vertical Slab",
+      "lore": [],
+      "icon": {
+        "type": "material",
+        "material": "BAMBOO_SLAB"
+      },
+      "glint": true,
+      "recipes": [
+        {
+          "type": "shapeless",
+          "ingredients": [
+            {
+              "kind": "material",
+              "value": "BAMBOO_SLAB"
+            }
+          ],
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "namespace": "verticalslabs",
+      "id": "bamboo_mosaic",
+      "fullId": "verticalslabs:bamboo_mosaic",
+      "name": "&fBamboo Mosaic Vertical Slab",
+      "lore": [],
+      "icon": {
+        "type": "material",
+        "material": "BAMBOO_MOSAIC_SLAB"
+      },
+      "glint": true,
+      "recipes": [
+        {
+          "type": "shapeless",
+          "ingredients": [
+            {
+              "kind": "material",
+              "value": "BAMBOO_MOSAIC_SLAB"
+            }
+          ],
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "namespace": "verticalslabs",
+      "id": "crimson",
+      "fullId": "verticalslabs:crimson",
+      "name": "&fCrimson Vertical Slab",
+      "lore": [],
+      "icon": {
+        "type": "material",
+        "material": "CRIMSON_SLAB"
+      },
+      "glint": true,
+      "recipes": [
+        {
+          "type": "shapeless",
+          "ingredients": [
+            {
+              "kind": "material",
+              "value": "CRIMSON_SLAB"
+            }
+          ],
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "namespace": "verticalslabs",
+      "id": "warped",
+      "fullId": "verticalslabs:warped",
+      "name": "&fWarped Vertical Slab",
+      "lore": [],
+      "icon": {
+        "type": "material",
+        "material": "WARPED_SLAB"
+      },
+      "glint": true,
+      "recipes": [
+        {
+          "type": "shapeless",
+          "ingredients": [
+            {
+              "kind": "material",
+              "value": "WARPED_SLAB"
+            }
+          ],
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "namespace": "verticalslabs",
+      "id": "stone",
+      "fullId": "verticalslabs:stone",
+      "name": "&fStone Vertical Slab",
+      "lore": [],
+      "icon": {
+        "type": "material",
+        "material": "STONE_SLAB"
+      },
+      "glint": true,
+      "recipes": [
+        {
+          "type": "shapeless",
+          "ingredients": [
+            {
+              "kind": "material",
+              "value": "STONE_SLAB"
+            }
+          ],
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "namespace": "verticalslabs",
+      "id": "cobblestone",
+      "fullId": "verticalslabs:cobblestone",
+      "name": "&fCobblestone Vertical Slab",
+      "lore": [],
+      "icon": {
+        "type": "material",
+        "material": "COBBLESTONE_SLAB"
+      },
+      "glint": true,
+      "recipes": [
+        {
+          "type": "shapeless",
+          "ingredients": [
+            {
+              "kind": "material",
+              "value": "COBBLESTONE_SLAB"
+            }
+          ],
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "namespace": "verticalslabs",
+      "id": "mossy_cobblestone",
+      "fullId": "verticalslabs:mossy_cobblestone",
+      "name": "&fMossy Cobblestone Vertical Slab",
+      "lore": [],
+      "icon": {
+        "type": "material",
+        "material": "MOSSY_COBBLESTONE_SLAB"
+      },
+      "glint": true,
+      "recipes": [
+        {
+          "type": "shapeless",
+          "ingredients": [
+            {
+              "kind": "material",
+              "value": "MOSSY_COBBLESTONE_SLAB"
+            }
+          ],
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "namespace": "verticalslabs",
+      "id": "smooth_stone",
+      "fullId": "verticalslabs:smooth_stone",
+      "name": "&fSmooth Stone Vertical Slab",
+      "lore": [],
+      "icon": {
+        "type": "material",
+        "material": "SMOOTH_STONE_SLAB"
+      },
+      "glint": true,
+      "recipes": [
+        {
+          "type": "shapeless",
+          "ingredients": [
+            {
+              "kind": "material",
+              "value": "SMOOTH_STONE_SLAB"
+            }
+          ],
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "namespace": "verticalslabs",
+      "id": "stone_brick",
+      "fullId": "verticalslabs:stone_brick",
+      "name": "&fStone Brick Vertical Slab",
+      "lore": [],
+      "icon": {
+        "type": "material",
+        "material": "STONE_BRICK_SLAB"
+      },
+      "glint": true,
+      "recipes": [
+        {
+          "type": "shapeless",
+          "ingredients": [
+            {
+              "kind": "material",
+              "value": "STONE_BRICK_SLAB"
+            }
+          ],
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "namespace": "verticalslabs",
+      "id": "mossy_stone_brick",
+      "fullId": "verticalslabs:mossy_stone_brick",
+      "name": "&fMossy Stone Brick Vertical Slab",
+      "lore": [],
+      "icon": {
+        "type": "material",
+        "material": "MOSSY_STONE_BRICK_SLAB"
+      },
+      "glint": true,
+      "recipes": [
+        {
+          "type": "shapeless",
+          "ingredients": [
+            {
+              "kind": "material",
+              "value": "MOSSY_STONE_BRICK_SLAB"
+            }
+          ],
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "namespace": "verticalslabs",
+      "id": "granite",
+      "fullId": "verticalslabs:granite",
+      "name": "&fGranite Vertical Slab",
+      "lore": [],
+      "icon": {
+        "type": "material",
+        "material": "GRANITE_SLAB"
+      },
+      "glint": true,
+      "recipes": [
+        {
+          "type": "shapeless",
+          "ingredients": [
+            {
+              "kind": "material",
+              "value": "GRANITE_SLAB"
+            }
+          ],
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "namespace": "verticalslabs",
+      "id": "polished_granite",
+      "fullId": "verticalslabs:polished_granite",
+      "name": "&fPolished Granite Vertical Slab",
+      "lore": [],
+      "icon": {
+        "type": "material",
+        "material": "POLISHED_GRANITE_SLAB"
+      },
+      "glint": true,
+      "recipes": [
+        {
+          "type": "shapeless",
+          "ingredients": [
+            {
+              "kind": "material",
+              "value": "POLISHED_GRANITE_SLAB"
+            }
+          ],
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "namespace": "verticalslabs",
+      "id": "diorite",
+      "fullId": "verticalslabs:diorite",
+      "name": "&fDiorite Vertical Slab",
+      "lore": [],
+      "icon": {
+        "type": "material",
+        "material": "DIORITE_SLAB"
+      },
+      "glint": true,
+      "recipes": [
+        {
+          "type": "shapeless",
+          "ingredients": [
+            {
+              "kind": "material",
+              "value": "DIORITE_SLAB"
+            }
+          ],
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "namespace": "verticalslabs",
+      "id": "polished_diorite",
+      "fullId": "verticalslabs:polished_diorite",
+      "name": "&fPolished Diorite Vertical Slab",
+      "lore": [],
+      "icon": {
+        "type": "material",
+        "material": "POLISHED_DIORITE_SLAB"
+      },
+      "glint": true,
+      "recipes": [
+        {
+          "type": "shapeless",
+          "ingredients": [
+            {
+              "kind": "material",
+              "value": "POLISHED_DIORITE_SLAB"
+            }
+          ],
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "namespace": "verticalslabs",
+      "id": "andesite",
+      "fullId": "verticalslabs:andesite",
+      "name": "&fAndesite Vertical Slab",
+      "lore": [],
+      "icon": {
+        "type": "material",
+        "material": "ANDESITE_SLAB"
+      },
+      "glint": true,
+      "recipes": [
+        {
+          "type": "shapeless",
+          "ingredients": [
+            {
+              "kind": "material",
+              "value": "ANDESITE_SLAB"
+            }
+          ],
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "namespace": "verticalslabs",
+      "id": "polished_andesite",
+      "fullId": "verticalslabs:polished_andesite",
+      "name": "&fPolished Andesite Vertical Slab",
+      "lore": [],
+      "icon": {
+        "type": "material",
+        "material": "POLISHED_ANDESITE_SLAB"
+      },
+      "glint": true,
+      "recipes": [
+        {
+          "type": "shapeless",
+          "ingredients": [
+            {
+              "kind": "material",
+              "value": "POLISHED_ANDESITE_SLAB"
+            }
+          ],
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "namespace": "verticalslabs",
+      "id": "sandstone",
+      "fullId": "verticalslabs:sandstone",
+      "name": "&fSandstone Vertical Slab",
+      "lore": [],
+      "icon": {
+        "type": "material",
+        "material": "SANDSTONE_SLAB"
+      },
+      "glint": true,
+      "recipes": [
+        {
+          "type": "shapeless",
+          "ingredients": [
+            {
+              "kind": "material",
+              "value": "SANDSTONE_SLAB"
+            }
+          ],
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "namespace": "verticalslabs",
+      "id": "smooth_sandstone",
+      "fullId": "verticalslabs:smooth_sandstone",
+      "name": "&fSmooth Sandstone Vertical Slab",
+      "lore": [],
+      "icon": {
+        "type": "material",
+        "material": "SMOOTH_SANDSTONE_SLAB"
+      },
+      "glint": true,
+      "recipes": [
+        {
+          "type": "shapeless",
+          "ingredients": [
+            {
+              "kind": "material",
+              "value": "SMOOTH_SANDSTONE_SLAB"
+            }
+          ],
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "namespace": "verticalslabs",
+      "id": "cut_sandstone",
+      "fullId": "verticalslabs:cut_sandstone",
+      "name": "&fCut Sandstone Vertical Slab",
+      "lore": [],
+      "icon": {
+        "type": "material",
+        "material": "CUT_SANDSTONE_SLAB"
+      },
+      "glint": true,
+      "recipes": [
+        {
+          "type": "shapeless",
+          "ingredients": [
+            {
+              "kind": "material",
+              "value": "CUT_SANDSTONE_SLAB"
+            }
+          ],
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "namespace": "verticalslabs",
+      "id": "red_sandstone",
+      "fullId": "verticalslabs:red_sandstone",
+      "name": "&fRed Sandstone Vertical Slab",
+      "lore": [],
+      "icon": {
+        "type": "material",
+        "material": "RED_SANDSTONE_SLAB"
+      },
+      "glint": true,
+      "recipes": [
+        {
+          "type": "shapeless",
+          "ingredients": [
+            {
+              "kind": "material",
+              "value": "RED_SANDSTONE_SLAB"
+            }
+          ],
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "namespace": "verticalslabs",
+      "id": "smooth_red_sandstone",
+      "fullId": "verticalslabs:smooth_red_sandstone",
+      "name": "&fSmooth Red Sandstone Vertical Slab",
+      "lore": [],
+      "icon": {
+        "type": "material",
+        "material": "SMOOTH_RED_SANDSTONE_SLAB"
+      },
+      "glint": true,
+      "recipes": [
+        {
+          "type": "shapeless",
+          "ingredients": [
+            {
+              "kind": "material",
+              "value": "SMOOTH_RED_SANDSTONE_SLAB"
+            }
+          ],
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "namespace": "verticalslabs",
+      "id": "cut_red_sandstone",
+      "fullId": "verticalslabs:cut_red_sandstone",
+      "name": "&fCut Red Sandstone Vertical Slab",
+      "lore": [],
+      "icon": {
+        "type": "material",
+        "material": "CUT_RED_SANDSTONE_SLAB"
+      },
+      "glint": true,
+      "recipes": [
+        {
+          "type": "shapeless",
+          "ingredients": [
+            {
+              "kind": "material",
+              "value": "CUT_RED_SANDSTONE_SLAB"
+            }
+          ],
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "namespace": "verticalslabs",
+      "id": "brick",
+      "fullId": "verticalslabs:brick",
+      "name": "&fBrick Vertical Slab",
+      "lore": [],
+      "icon": {
+        "type": "material",
+        "material": "BRICK_SLAB"
+      },
+      "glint": true,
+      "recipes": [
+        {
+          "type": "shapeless",
+          "ingredients": [
+            {
+              "kind": "material",
+              "value": "BRICK_SLAB"
+            }
+          ],
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "namespace": "verticalslabs",
+      "id": "mud_brick",
+      "fullId": "verticalslabs:mud_brick",
+      "name": "&fMud Brick Vertical Slab",
+      "lore": [],
+      "icon": {
+        "type": "material",
+        "material": "MUD_BRICK_SLAB"
+      },
+      "glint": true,
+      "recipes": [
+        {
+          "type": "shapeless",
+          "ingredients": [
+            {
+              "kind": "material",
+              "value": "MUD_BRICK_SLAB"
+            }
+          ],
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "namespace": "verticalslabs",
+      "id": "nether_brick",
+      "fullId": "verticalslabs:nether_brick",
+      "name": "&fNether Brick Vertical Slab",
+      "lore": [],
+      "icon": {
+        "type": "material",
+        "material": "NETHER_BRICK_SLAB"
+      },
+      "glint": true,
+      "recipes": [
+        {
+          "type": "shapeless",
+          "ingredients": [
+            {
+              "kind": "material",
+              "value": "NETHER_BRICK_SLAB"
+            }
+          ],
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "namespace": "verticalslabs",
+      "id": "red_nether_brick",
+      "fullId": "verticalslabs:red_nether_brick",
+      "name": "&fRed Nether Brick Vertical Slab",
+      "lore": [],
+      "icon": {
+        "type": "material",
+        "material": "RED_NETHER_BRICK_SLAB"
+      },
+      "glint": true,
+      "recipes": [
+        {
+          "type": "shapeless",
+          "ingredients": [
+            {
+              "kind": "material",
+              "value": "RED_NETHER_BRICK_SLAB"
+            }
+          ],
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "namespace": "verticalslabs",
+      "id": "quartz",
+      "fullId": "verticalslabs:quartz",
+      "name": "&fQuartz Vertical Slab",
+      "lore": [],
+      "icon": {
+        "type": "material",
+        "material": "QUARTZ_SLAB"
+      },
+      "glint": true,
+      "recipes": [
+        {
+          "type": "shapeless",
+          "ingredients": [
+            {
+              "kind": "material",
+              "value": "QUARTZ_SLAB"
+            }
+          ],
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "namespace": "verticalslabs",
+      "id": "smooth_quartz",
+      "fullId": "verticalslabs:smooth_quartz",
+      "name": "&fSmooth Quartz Vertical Slab",
+      "lore": [],
+      "icon": {
+        "type": "material",
+        "material": "SMOOTH_QUARTZ_SLAB"
+      },
+      "glint": true,
+      "recipes": [
+        {
+          "type": "shapeless",
+          "ingredients": [
+            {
+              "kind": "material",
+              "value": "SMOOTH_QUARTZ_SLAB"
+            }
+          ],
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "namespace": "verticalslabs",
+      "id": "prismarine",
+      "fullId": "verticalslabs:prismarine",
+      "name": "&fPrismarine Vertical Slab",
+      "lore": [],
+      "icon": {
+        "type": "material",
+        "material": "PRISMARINE_SLAB"
+      },
+      "glint": true,
+      "recipes": [
+        {
+          "type": "shapeless",
+          "ingredients": [
+            {
+              "kind": "material",
+              "value": "PRISMARINE_SLAB"
+            }
+          ],
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "namespace": "verticalslabs",
+      "id": "prismarine_brick",
+      "fullId": "verticalslabs:prismarine_brick",
+      "name": "&fPrismarine Brick Vertical Slab",
+      "lore": [],
+      "icon": {
+        "type": "material",
+        "material": "PRISMARINE_BRICK_SLAB"
+      },
+      "glint": true,
+      "recipes": [
+        {
+          "type": "shapeless",
+          "ingredients": [
+            {
+              "kind": "material",
+              "value": "PRISMARINE_BRICK_SLAB"
+            }
+          ],
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "namespace": "verticalslabs",
+      "id": "dark_prismarine",
+      "fullId": "verticalslabs:dark_prismarine",
+      "name": "&fDark Prismarine Vertical Slab",
+      "lore": [],
+      "icon": {
+        "type": "material",
+        "material": "DARK_PRISMARINE_SLAB"
+      },
+      "glint": true,
+      "recipes": [
+        {
+          "type": "shapeless",
+          "ingredients": [
+            {
+              "kind": "material",
+              "value": "DARK_PRISMARINE_SLAB"
+            }
+          ],
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "namespace": "verticalslabs",
+      "id": "end_stone_brick",
+      "fullId": "verticalslabs:end_stone_brick",
+      "name": "&fEnd Stone Brick Vertical Slab",
+      "lore": [],
+      "icon": {
+        "type": "material",
+        "material": "END_STONE_BRICK_SLAB"
+      },
+      "glint": true,
+      "recipes": [
+        {
+          "type": "shapeless",
+          "ingredients": [
+            {
+              "kind": "material",
+              "value": "END_STONE_BRICK_SLAB"
+            }
+          ],
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "namespace": "verticalslabs",
+      "id": "purpur",
+      "fullId": "verticalslabs:purpur",
+      "name": "&fPurpur Vertical Slab",
+      "lore": [],
+      "icon": {
+        "type": "material",
+        "material": "PURPUR_SLAB"
+      },
+      "glint": true,
+      "recipes": [
+        {
+          "type": "shapeless",
+          "ingredients": [
+            {
+              "kind": "material",
+              "value": "PURPUR_SLAB"
+            }
+          ],
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "namespace": "verticalslabs",
+      "id": "blackstone",
+      "fullId": "verticalslabs:blackstone",
+      "name": "&fBlackstone Vertical Slab",
+      "lore": [],
+      "icon": {
+        "type": "material",
+        "material": "BLACKSTONE_SLAB"
+      },
+      "glint": true,
+      "recipes": [
+        {
+          "type": "shapeless",
+          "ingredients": [
+            {
+              "kind": "material",
+              "value": "BLACKSTONE_SLAB"
+            }
+          ],
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "namespace": "verticalslabs",
+      "id": "polished_blackstone",
+      "fullId": "verticalslabs:polished_blackstone",
+      "name": "&fPolished Blackstone Vertical Slab",
+      "lore": [],
+      "icon": {
+        "type": "material",
+        "material": "POLISHED_BLACKSTONE_SLAB"
+      },
+      "glint": true,
+      "recipes": [
+        {
+          "type": "shapeless",
+          "ingredients": [
+            {
+              "kind": "material",
+              "value": "POLISHED_BLACKSTONE_SLAB"
+            }
+          ],
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "namespace": "verticalslabs",
+      "id": "polished_blackstone_brick",
+      "fullId": "verticalslabs:polished_blackstone_brick",
+      "name": "&fPolished Blackstone Brick Vertical Slab",
+      "lore": [],
+      "icon": {
+        "type": "material",
+        "material": "POLISHED_BLACKSTONE_BRICK_SLAB"
+      },
+      "glint": true,
+      "recipes": [
+        {
+          "type": "shapeless",
+          "ingredients": [
+            {
+              "kind": "material",
+              "value": "POLISHED_BLACKSTONE_BRICK_SLAB"
+            }
+          ],
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "namespace": "verticalslabs",
+      "id": "cobbled_deepslate",
+      "fullId": "verticalslabs:cobbled_deepslate",
+      "name": "&fCobbled Deepslate Vertical Slab",
+      "lore": [],
+      "icon": {
+        "type": "material",
+        "material": "COBBLED_DEEPSLATE_SLAB"
+      },
+      "glint": true,
+      "recipes": [
+        {
+          "type": "shapeless",
+          "ingredients": [
+            {
+              "kind": "material",
+              "value": "COBBLED_DEEPSLATE_SLAB"
+            }
+          ],
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "namespace": "verticalslabs",
+      "id": "polished_deepslate",
+      "fullId": "verticalslabs:polished_deepslate",
+      "name": "&fPolished Deepslate Vertical Slab",
+      "lore": [],
+      "icon": {
+        "type": "material",
+        "material": "POLISHED_DEEPSLATE_SLAB"
+      },
+      "glint": true,
+      "recipes": [
+        {
+          "type": "shapeless",
+          "ingredients": [
+            {
+              "kind": "material",
+              "value": "POLISHED_DEEPSLATE_SLAB"
+            }
+          ],
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "namespace": "verticalslabs",
+      "id": "deepslate_brick",
+      "fullId": "verticalslabs:deepslate_brick",
+      "name": "&fDeepslate Brick Vertical Slab",
+      "lore": [],
+      "icon": {
+        "type": "material",
+        "material": "DEEPSLATE_BRICK_SLAB"
+      },
+      "glint": true,
+      "recipes": [
+        {
+          "type": "shapeless",
+          "ingredients": [
+            {
+              "kind": "material",
+              "value": "DEEPSLATE_BRICK_SLAB"
+            }
+          ],
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "namespace": "verticalslabs",
+      "id": "deepslate_tile",
+      "fullId": "verticalslabs:deepslate_tile",
+      "name": "&fDeepslate Tile Vertical Slab",
+      "lore": [],
+      "icon": {
+        "type": "material",
+        "material": "DEEPSLATE_TILE_SLAB"
+      },
+      "glint": true,
+      "recipes": [
+        {
+          "type": "shapeless",
+          "ingredients": [
+            {
+              "kind": "material",
+              "value": "DEEPSLATE_TILE_SLAB"
+            }
+          ],
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "namespace": "verticalslabs",
+      "id": "tuff",
+      "fullId": "verticalslabs:tuff",
+      "name": "&fTuff Vertical Slab",
+      "lore": [],
+      "icon": {
+        "type": "material",
+        "material": "TUFF_SLAB"
+      },
+      "glint": true,
+      "recipes": [
+        {
+          "type": "shapeless",
+          "ingredients": [
+            {
+              "kind": "material",
+              "value": "TUFF_SLAB"
+            }
+          ],
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "namespace": "verticalslabs",
+      "id": "polished_tuff",
+      "fullId": "verticalslabs:polished_tuff",
+      "name": "&fPolished Tuff Vertical Slab",
+      "lore": [],
+      "icon": {
+        "type": "material",
+        "material": "POLISHED_TUFF_SLAB"
+      },
+      "glint": true,
+      "recipes": [
+        {
+          "type": "shapeless",
+          "ingredients": [
+            {
+              "kind": "material",
+              "value": "POLISHED_TUFF_SLAB"
+            }
+          ],
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "namespace": "verticalslabs",
+      "id": "tuff_brick",
+      "fullId": "verticalslabs:tuff_brick",
+      "name": "&fTuff Brick Vertical Slab",
+      "lore": [],
+      "icon": {
+        "type": "material",
+        "material": "TUFF_BRICK_SLAB"
+      },
+      "glint": true,
+      "recipes": [
+        {
+          "type": "shapeless",
+          "ingredients": [
+            {
+              "kind": "material",
+              "value": "TUFF_BRICK_SLAB"
+            }
+          ],
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "namespace": "verticalslabs",
+      "id": "resin_brick",
+      "fullId": "verticalslabs:resin_brick",
+      "name": "&fResin Brick Vertical Slab",
+      "lore": [],
+      "icon": {
+        "type": "material",
+        "material": "RESIN_BRICK_SLAB"
+      },
+      "glint": true,
+      "recipes": [
+        {
+          "type": "shapeless",
+          "ingredients": [
+            {
+              "kind": "material",
+              "value": "RESIN_BRICK_SLAB"
+            }
+          ],
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "namespace": "verticalslabs",
+      "id": "cut_copper",
+      "fullId": "verticalslabs:cut_copper",
+      "name": "&fCut Copper Vertical Slab",
+      "lore": [],
+      "icon": {
+        "type": "material",
+        "material": "CUT_COPPER_SLAB"
+      },
+      "glint": true,
+      "recipes": [
+        {
+          "type": "shapeless",
+          "ingredients": [
+            {
+              "kind": "material",
+              "value": "CUT_COPPER_SLAB"
+            }
+          ],
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "namespace": "verticalslabs",
+      "id": "exposed_cut_copper",
+      "fullId": "verticalslabs:exposed_cut_copper",
+      "name": "&fExposed Cut Copper Vertical Slab",
+      "lore": [],
+      "icon": {
+        "type": "material",
+        "material": "EXPOSED_CUT_COPPER_SLAB"
+      },
+      "glint": true,
+      "recipes": [
+        {
+          "type": "shapeless",
+          "ingredients": [
+            {
+              "kind": "material",
+              "value": "EXPOSED_CUT_COPPER_SLAB"
+            }
+          ],
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "namespace": "verticalslabs",
+      "id": "weathered_cut_copper",
+      "fullId": "verticalslabs:weathered_cut_copper",
+      "name": "&fWeathered Cut Copper Vertical Slab",
+      "lore": [],
+      "icon": {
+        "type": "material",
+        "material": "WEATHERED_CUT_COPPER_SLAB"
+      },
+      "glint": true,
+      "recipes": [
+        {
+          "type": "shapeless",
+          "ingredients": [
+            {
+              "kind": "material",
+              "value": "WEATHERED_CUT_COPPER_SLAB"
+            }
+          ],
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "namespace": "verticalslabs",
+      "id": "oxidized_cut_copper",
+      "fullId": "verticalslabs:oxidized_cut_copper",
+      "name": "&fOxidized Cut Copper Vertical Slab",
+      "lore": [],
+      "icon": {
+        "type": "material",
+        "material": "OXIDIZED_CUT_COPPER_SLAB"
+      },
+      "glint": true,
+      "recipes": [
+        {
+          "type": "shapeless",
+          "ingredients": [
+            {
+              "kind": "material",
+              "value": "OXIDIZED_CUT_COPPER_SLAB"
+            }
+          ],
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "namespace": "verticalslabs",
+      "id": "waxed_cut_copper",
+      "fullId": "verticalslabs:waxed_cut_copper",
+      "name": "&fWaxed Cut Copper Vertical Slab",
+      "lore": [],
+      "icon": {
+        "type": "material",
+        "material": "WAXED_CUT_COPPER_SLAB"
+      },
+      "glint": true,
+      "recipes": [
+        {
+          "type": "shapeless",
+          "ingredients": [
+            {
+              "kind": "material",
+              "value": "WAXED_CUT_COPPER_SLAB"
+            }
+          ],
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "namespace": "verticalslabs",
+      "id": "waxed_exposed_cut_copper",
+      "fullId": "verticalslabs:waxed_exposed_cut_copper",
+      "name": "&fWaxed Exposed Cut Copper Vertical Slab",
+      "lore": [],
+      "icon": {
+        "type": "material",
+        "material": "WAXED_EXPOSED_CUT_COPPER_SLAB"
+      },
+      "glint": true,
+      "recipes": [
+        {
+          "type": "shapeless",
+          "ingredients": [
+            {
+              "kind": "material",
+              "value": "WAXED_EXPOSED_CUT_COPPER_SLAB"
+            }
+          ],
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "namespace": "verticalslabs",
+      "id": "waxed_weathered_cut_copper",
+      "fullId": "verticalslabs:waxed_weathered_cut_copper",
+      "name": "&fWaxed Weathered Cut Copper Vertical Slab",
+      "lore": [],
+      "icon": {
+        "type": "material",
+        "material": "WAXED_WEATHERED_CUT_COPPER_SLAB"
+      },
+      "glint": true,
+      "recipes": [
+        {
+          "type": "shapeless",
+          "ingredients": [
+            {
+              "kind": "material",
+              "value": "WAXED_WEATHERED_CUT_COPPER_SLAB"
+            }
+          ],
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "namespace": "verticalslabs",
+      "id": "waxed_oxidized_cut_copper",
+      "fullId": "verticalslabs:waxed_oxidized_cut_copper",
+      "name": "&fWaxed Oxidized Cut Copper Vertical Slab",
+      "lore": [],
+      "icon": {
+        "type": "material",
+        "material": "WAXED_OXIDIZED_CUT_COPPER_SLAB"
+      },
+      "glint": true,
+      "recipes": [
+        {
+          "type": "shapeless",
+          "ingredients": [
+            {
+              "kind": "material",
+              "value": "WAXED_OXIDIZED_CUT_COPPER_SLAB"
+            }
+          ],
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "namespace": "corelib",
+      "id": "large_banner",
+      "fullId": "corelib:large_banner",
+      "name": "&fLarge Banner",
+      "lore": [
+        "&7A 3x larger banner.",
+        "&7Place a banner in the center, surround with wool."
+      ],
+      "icon": {
+        "type": "material",
+        "material": "WHITE_BANNER"
+      },
+      "glint": false,
+      "recipes": [
+        {
+          "type": "shaped",
+          "pattern": [
+            "WWW",
+            "WBW",
+            "WWW"
+          ],
+          "key": {
+            "W": {
+              "kind": "tag",
+              "value": "wool"
+            },
+            "B": {
+              "kind": "tag",
+              "value": "banner"
+            }
+          },
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "namespace": "rotation",
+      "id": "rotation_wrench",
+      "fullId": "rotation:rotation_wrench",
+      "name": "&6Rotation Wrench",
+      "lore": [
+        "&7Rotates rotation-power blocks.",
+        "&7Right-click a machine to turn it."
+      ],
+      "icon": {
+        "type": "material",
+        "material": "GOLDEN_AXE"
+      },
+      "glint": false,
+      "recipes": [
+        {
+          "type": "shaped",
+          "pattern": [
+            "CSC",
+            "CS ",
+            " S "
+          ],
+          "key": {
+            "C": {
+              "kind": "material",
+              "value": "COPPER_INGOT"
+            },
+            "S": {
+              "kind": "material",
+              "value": "STICK"
+            }
+          },
+          "amount": 1
+        }
+      ]
+    }
+  ],
+  "grindRecipes": [
+    {
+      "input": "BONE",
+      "output": "BONE_MEAL",
+      "amount": 3
+    },
+    {
+      "input": "BLAZE_ROD",
+      "output": "BLAZE_POWDER",
+      "amount": 3
+    },
+    {
+      "input": "SUGAR_CANE",
+      "output": "SUGAR",
+      "amount": 2
+    },
+    {
+      "input": "COBBLESTONE",
+      "output": "GRAVEL",
+      "amount": 1
+    },
+    {
+      "input": "GRAVEL",
+      "output": "SAND",
+      "amount": 1
+    },
+    {
+      "input": "WHEAT",
+      "output": "SUGAR",
+      "amount": 1
+    }
+  ]
+}

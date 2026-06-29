@@ -1,0 +1,217 @@
+@font-face {
+  font-family: 'Monocraft';
+  src: url('https://cdn.jsdelivr.net/gh/IdreesInc/Monocraft@main/dist/Monocraft-ttf/Monocraft.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  font-family: 'Monocraft', monospace;
+  background: #1a1a1a;
+  color: #e0e0e0;
+  margin: 0;
+  padding: 20px;
+}
+
+h1 {
+  text-align: center;
+  color: #fff;
+  margin-bottom: 4px;
+}
+
+.subtitle {
+  text-align: center;
+  color: #888;
+  margin: 0 auto 20px;
+  font-size: 0.85em;
+}
+
+/* ── Controls ──────────────────────────────────────────────────────────── */
+.controls {
+  max-width: 1200px;
+  margin: 0 auto 16px;
+}
+
+#search-input {
+  width: 100%;
+  padding: 12px 16px;
+  font-family: 'Monocraft', monospace;
+  font-size: 1em;
+  background: #2a2a2a;
+  border: 1px solid #3a3a3a;
+  border-radius: 8px;
+  color: #e0e0e0;
+}
+#search-input::placeholder { color: #666; }
+#search-input:focus { outline: none; border-color: #4ecca3; }
+
+.filter-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+  justify-content: center;
+}
+.pill {
+  font-family: 'Monocraft', monospace;
+  font-size: 0.8em;
+  padding: 6px 12px;
+  background: #2a2a2a;
+  border: 1px solid #3a3a3a;
+  border-radius: 999px;
+  color: #cfcfcf;
+  cursor: pointer;
+}
+.pill:hover { border-color: #4ecca3; }
+.pill.active { background: #4ecca3; color: #102; border-color: #4ecca3; }
+
+.counter {
+  text-align: center;
+  color: #888;
+  font-size: 0.8em;
+  margin: 10px 0 18px;
+}
+
+/* ── Item grid ─────────────────────────────────────────────────────────── */
+#items-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 18px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.item-card {
+  background: #2a2a2a;
+  border-radius: 12px;
+  padding: 16px;
+  border: 1px solid #3a3a3a;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.item-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.item-icon {
+  width: 56px;
+  height: 56px;
+  flex: 0 0 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  image-rendering: pixelated;
+}
+.item-icon img { image-rendering: pixelated; max-width: 100%; max-height: 100%; }
+.item-icon .placeholder { color: #555; font-size: 0.7em; text-align: center; }
+.item-icon.glint { filter: drop-shadow(0 0 4px #b46cff); }
+
+.item-title { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.item-name { font-size: 1.05em; }
+.item-id { color: #666; font-size: 0.72em; }
+
+.item-lore { color: #aaa; font-size: 0.82em; line-height: 1.5; }
+.item-lore .line { white-space: pre-wrap; }
+
+/* ── Recipes ───────────────────────────────────────────────────────────── */
+.recipes { display: flex; flex-direction: column; gap: 10px; margin-top: 4px; }
+.recipe {
+  background: #222;
+  border: 1px solid #353535;
+  border-radius: 8px;
+  padding: 10px;
+}
+.recipe-type { color: #4ecca3; font-size: 0.72em; margin-bottom: 8px; text-transform: uppercase; }
+.recipe-body { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.recipe-arrow { color: #888; font-size: 1.3em; }
+
+.craft-grid { display: grid; gap: 3px; }
+.craft-grid.cols-1 { grid-template-columns: repeat(1, 1fr); }
+.craft-grid.cols-2 { grid-template-columns: repeat(2, 1fr); }
+.craft-grid.cols-3 { grid-template-columns: repeat(3, 1fr); }
+
+.slot {
+  width: 36px;
+  height: 36px;
+  background: #1c1c1c;
+  border: 1px solid #383838;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+.slot.empty { background: #181818; border-style: dashed; }
+.slot.result { width: 44px; height: 44px; border-color: #4ecca3; }
+.slot img { image-rendering: pixelated; width: 100%; height: 100%; object-fit: contain; }
+.slot .slot-label {
+  font-size: 7px;
+  line-height: 1.05;
+  text-align: center;
+  color: #cfcfcf;
+  padding: 1px;
+  word-break: break-word;
+}
+.slot .amount {
+  position: absolute;
+  right: 1px;
+  bottom: 0;
+  font-size: 9px;
+  color: #fff;
+  text-shadow: 1px 1px 0 #000;
+}
+.slot.tag { border-color: #5a7; }
+.shapeless-list { display: flex; gap: 4px; flex-wrap: wrap; }
+
+.no-recipe { color: #666; font-size: 0.78em; font-style: italic; }
+
+/* ── Grindstone section ────────────────────────────────────────────────── */
+.section-title {
+  max-width: 1400px;
+  margin: 40px auto 14px;
+  color: #fff;
+  border-bottom: 1px solid #3a3a3a;
+  padding-bottom: 8px;
+}
+.grind-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 12px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+.grind-row {
+  background: #2a2a2a;
+  border: 1px solid #3a3a3a;
+  border-radius: 8px;
+  padding: 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+#error {
+  background: #5c1a1a;
+  color: #ff8080;
+  padding: 15px;
+  border-radius: 8px;
+  max-width: 1200px;
+  margin: 0 auto 20px;
+  display: none;
+}
+
+/* ── Minecraft color codes ─────────────────────────────────────────────── */
+.mc-0 { color: #000000; } .mc-1 { color: #0000AA; } .mc-2 { color: #00AA00; }
+.mc-3 { color: #00AAAA; } .mc-4 { color: #AA0000; } .mc-5 { color: #AA00AA; }
+.mc-6 { color: #FFAA00; } .mc-7 { color: #AAAAAA; } .mc-8 { color: #555555; }
+.mc-9 { color: #5555FF; } .mc-a { color: #55FF55; } .mc-b { color: #55FFFF; }
+.mc-c { color: #FF5555; } .mc-d { color: #FF55FF; } .mc-e { color: #FFFF55; }
+.mc-f { color: #FFFFFF; }
+.mc-l { font-weight: bold; } .mc-o { font-style: italic; }
+.mc-n { text-decoration: underline; } .mc-m { text-decoration: line-through; }

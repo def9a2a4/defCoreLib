@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DefCoreLib Catalog</title>
+  <link rel="stylesheet" href="./util/catalog.css">
+</head>
+<body>
+  <h1>DefCoreLib Catalog</h1>
+  <p class="subtitle">All custom items, what they do, and how to craft them.</p>
+
+  <div class="controls">
+    <input type="text" id="search-input" placeholder="Search items...">
+    <div class="filter-pills" id="namespace-pills"></div>
+  </div>
+
+  <div class="counter" id="counter"></div>
+  <div id="error"></div>
+  <div id="items-container"></div>
+
+  <section id="grind-section">
+    <h2 class="section-title">Grindstone Recipes</h2>
+    <div class="grind-grid" id="grind-grid"></div>
+  </section>
+
+  <script type="module" src="./util/catalog.js"></script>
+</body>
+</html>
