@@ -1,4 +1,4 @@
-# Blocks that can be picked up by the minecart ship scanner.
+# Blocks that can be picked up by the mechanism minecart scanner.
 # Supports three wildcard forms:
 #   "OAK_*"     — prefix: matches OAK_PLANKS, OAK_STAIRS, etc.
 #   "*_GLASS"   — suffix: matches RED_STAINED_GLASS, etc.

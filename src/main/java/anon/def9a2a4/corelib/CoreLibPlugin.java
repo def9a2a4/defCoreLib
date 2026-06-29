@@ -34,7 +34,7 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
     private static CoreLibPlugin instance;
     private CustomBlockRegistry registry;
     private MechanismRegistry mechanismRegistry;
-    private MinecartShipManager minecartShipManager;
+    private MechanismMinecartManager mechanismMinecartManager;
     private RotationNetwork rotationNetwork;
     private BannerManager bannerManager;
     private LargeBannerRecipes largeBannerRecipes;
@@ -94,9 +94,9 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         // Register mechanism demos
         new DoorDemo(this, registry, mechanismRegistry).register();
         new RotationRotator(this, registry, rotationNetwork, mechanismRegistry).register();
-        minecartShipManager = new MinecartShipManager(this, registry, mechanismRegistry);
-        minecartShipManager.register();
-        getServer().getPluginManager().registerEvents(minecartShipManager, this);
+        mechanismMinecartManager = new MechanismMinecartManager(this, registry, mechanismRegistry);
+        mechanismMinecartManager.register();
+        getServer().getPluginManager().registerEvents(mechanismMinecartManager, this);
 
         // Banner systems
         bannerManager = new BannerManager(this);
@@ -115,8 +115,8 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         if (largeBannerRecipes != null) {
             largeBannerRecipes.unregister();
         }
-        if (minecartShipManager != null) {
-            minecartShipManager.shutdown();
+        if (mechanismMinecartManager != null) {
+            mechanismMinecartManager.shutdown();
         }
         if (mechanismRegistry != null) {
             mechanismRegistry.shutdown();
@@ -161,9 +161,9 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
     // ChunkLoadEvent does NOT guarantee entities are ready on Paper (async entity loading).
     @EventHandler
     public void onEntitiesLoad(org.bukkit.event.world.EntitiesLoadEvent event) {
-        // Re-discover ship minecarts surviving server restart
-        if (minecartShipManager != null) {
-            minecartShipManager.scanChunkForMinecarts(event.getChunk());
+        // Re-discover mechanism minecarts surviving server restart
+        if (mechanismMinecartManager != null) {
+            mechanismMinecartManager.scanChunkForMinecarts(event.getChunk());
         }
         // Clean up orphaned mechanism entities from previous sessions
         if (mechanismRegistry != null) {

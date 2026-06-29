@@ -30,7 +30,7 @@ import java.util.*;
 import java.util.EnumSet;
 
 /**
- * Demo mechanism consumer: ship minecart.
+ * Demo mechanism consumer: mechanism minecart.
  * Place a minecart on rails, build blocks above it, push onto a powered activator rail
  * to assemble blocks into a mechanism that follows the minecart. Another activator rail
  * disassembles back to blocks.
@@ -38,7 +38,7 @@ import java.util.EnumSet;
  * Self-contained — can be spun out to a separate plugin by moving this file
  * and calling getMechanismRegistry() from the new plugin.
  */
-final class MinecartShipManager implements Listener {
+final class MechanismMinecartManager implements Listener {
 
     private static final BlockFace[] CARDINAL_FACES = {
         BlockFace.NORTH, BlockFace.SOUTH, BlockFace.EAST, BlockFace.WEST,
@@ -51,7 +51,7 @@ final class MinecartShipManager implements Listener {
     private final JavaPlugin plugin;
     private final CustomBlockRegistry registry;
     private final MechanismRegistry mechRegistry;
-    private final NamespacedKey minecartShipKey;
+    private final NamespacedKey mechanismMinecartKey;
 
     private final Map<UUID, MinecartState> tracked = new HashMap<>();
     private Set<Material> allowedMaterials = Set.of(); // loaded from config
@@ -68,26 +68,26 @@ final class MinecartShipManager implements Listener {
         }
     }
 
-    MinecartShipManager(JavaPlugin plugin, CustomBlockRegistry registry, MechanismRegistry mechRegistry) {
+    MechanismMinecartManager(JavaPlugin plugin, CustomBlockRegistry registry, MechanismRegistry mechRegistry) {
         this.plugin = plugin;
         this.registry = registry;
         this.mechRegistry = mechRegistry;
-        this.minecartShipKey = new NamespacedKey(plugin, "minecart_ship");
+        this.mechanismMinecartKey = new NamespacedKey(plugin, "mechanism_minecart");
     }
 
     void register() {
-        // Register the minecart ship item as a custom head block (item-only)
-        CustomHeadBlock minecartShipBlock = CustomHeadBlock.builder("demo", "minecart_ship")
-            .name(net.kyori.adventure.text.Component.text("Ship Minecart"))
+        // Register the mechanism minecart item as a custom head block (item-only)
+        CustomHeadBlock mechanismMinecartBlock = CustomHeadBlock.builder("demo", "mechanism_minecart")
+            .name(net.kyori.adventure.text.Component.text("Mechanism Minecart"))
             .texture("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYWNjNzg5ZjIzMDc5NGY5MGUzM2M0ZjlhZDAwNjk0YmMyYTJmZjVlOGI5YjM3NWRjMzUzMjQwMWIyODFmM2U1OCJ9fX0=")
             .drops(CustomHeadBlock.DropRule.self())
             .build();
-        registry.register(minecartShipBlock);
+        registry.register(mechanismMinecartBlock);
 
         // Load allowed materials from config
         loadAllowedMaterials();
 
-        // Scan already-loaded chunks for surviving ship minecarts (post-reload recovery)
+        // Scan already-loaded chunks for surviving mechanism minecarts (post-reload recovery)
         for (World world : Bukkit.getWorlds()) {
             for (Chunk chunk : world.getLoadedChunks()) {
                 scanChunkForMinecarts(chunk);
@@ -98,21 +98,21 @@ final class MinecartShipManager implements Listener {
         tickTask = Bukkit.getScheduler().runTaskTimer(plugin, this::tick, 1L, 1L);
     }
 
-    /** Scan a chunk for ship minecarts and re-register any found. */
+    /** Scan a chunk for mechanism minecarts and re-register any found. */
     void scanChunkForMinecarts(Chunk chunk) {
         for (Entity entity : chunk.getEntities()) {
             if (!(entity instanceof Minecart minecart)) continue;
             if (tracked.containsKey(minecart.getUniqueId())) continue;
-            if (!minecart.getScoreboardTags().contains("corelib:minecart_ship")) continue;
+            if (!minecart.getScoreboardTags().contains("corelib:mechanism_minecart")) continue;
             tracked.put(minecart.getUniqueId(), new MinecartState(minecart));
         }
     }
 
     private void loadAllowedMaterials() {
-        java.io.File configFile = new java.io.File(plugin.getDataFolder(), "minecart-ship-blocks.yml");
+        java.io.File configFile = new java.io.File(plugin.getDataFolder(), "mechanism-minecart-blocks.yml");
         if (!configFile.exists()) {
             // Write default config
-            plugin.saveResource("minecart-ship-blocks.yml", false);
+            plugin.saveResource("mechanism-minecart-blocks.yml", false);
         }
         org.bukkit.configuration.file.YamlConfiguration config =
             org.bukkit.configuration.file.YamlConfiguration.loadConfiguration(configFile);
@@ -127,7 +127,7 @@ final class MinecartShipManager implements Listener {
             if (startWild || endWild) {
                 String pattern = name.replace("*", "").toUpperCase();
                 if (pattern.isEmpty()) {
-                    plugin.getLogger().warning("Minecart ship config: '" + name + "' is too broad (matches all blocks), skipping");
+                    plugin.getLogger().warning("Mechanism minecart config: '" + name + "' is too broad (matches all blocks), skipping");
                     continue;
                 }
                 for (Material mat : Material.values()) {
@@ -143,11 +143,11 @@ final class MinecartShipManager implements Listener {
                 if (mat != null && mat.isBlock()) mats.add(mat);
             }
             if (mats.size() == matchesBefore) {
-                plugin.getLogger().warning("Minecart ship config: '" + name + "' matched 0 blocks");
+                plugin.getLogger().warning("Mechanism minecart config: '" + name + "' matched 0 blocks");
             }
         }
         allowedMaterials = Set.copyOf(mats);
-        plugin.getLogger().info("Minecart ship: loaded " + allowedMaterials.size() + " allowed block types");
+        plugin.getLogger().info("Mechanism minecart: loaded " + allowedMaterials.size() + " allowed block types");
     }
 
     void shutdown() {
@@ -162,14 +162,14 @@ final class MinecartShipManager implements Listener {
     }
 
     // ──────────────────────────────────────────────────────────────────────
-    // Placement: right-click a rail with the ship minecart item
+    // Placement: right-click a rail with the mechanism minecart item
     // ──────────────────────────────────────────────────────────────────────
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onPlaceMinecart(PlayerInteractEvent event) {
         if (event.getAction() != org.bukkit.event.block.Action.RIGHT_CLICK_BLOCK) return;
         ItemStack item = event.getItem();
-        if (!isShipMinecartItem(item)) return;
+        if (!isMechanismMinecartItem(item)) return;
 
         Block block = event.getClickedBlock();
         if (block == null) return;
@@ -181,9 +181,9 @@ final class MinecartShipManager implements Listener {
 
         org.bukkit.Location spawnLoc = block.getLocation().add(0.5, 0, 0.5);
         Minecart minecart = block.getWorld().spawn(spawnLoc, RideableMinecart.class, m -> {
-            m.addScoreboardTag("corelib:minecart_ship");
+            m.addScoreboardTag("corelib:mechanism_minecart");
             m.setDisplayBlockData(Bukkit.createBlockData(Material.LODESTONE));
-            m.getPersistentDataContainer().set(minecartShipKey, PersistentDataType.BYTE, (byte) 1);
+            m.getPersistentDataContainer().set(mechanismMinecartKey, PersistentDataType.BYTE, (byte) 1);
         });
 
         tracked.put(minecart.getUniqueId(), new MinecartState(minecart));
@@ -192,11 +192,11 @@ final class MinecartShipManager implements Listener {
         item.setAmount(item.getAmount() - 1);
     }
 
-    private boolean isShipMinecartItem(ItemStack stack) {
+    private boolean isMechanismMinecartItem(ItemStack stack) {
         if (stack == null || !stack.hasItemMeta()) return false;
         PersistentDataContainer pdc = stack.getItemMeta().getPersistentDataContainer();
         String typeId = pdc.get(CustomBlockRegistry.BLOCK_TYPE_KEY, PersistentDataType.STRING);
-        return "demo:minecart_ship".equals(typeId);
+        return "demo:mechanism_minecart".equals(typeId);
     }
 
     // ──────────────────────────────────────────────────────────────────────
@@ -258,7 +258,7 @@ final class MinecartShipManager implements Listener {
         List<Block> blocks = floodFillAllowed(above.getBlock(), 256);
         if (blocks.isEmpty()) return;
 
-        Mechanism mech = mechRegistry.assembleMechanism("demo:minecart_ship", blocks,
+        Mechanism mech = mechRegistry.assembleMechanism("demo:mechanism_minecart", blocks,
             state.minecart, MINECART_RIDE_OFFSET, null);
         state.mechanism = mech;
     }
@@ -286,11 +286,11 @@ final class MinecartShipManager implements Listener {
         }
         tracked.remove(minecart.getUniqueId());
 
-        // Drop ship minecart item instead of normal minecart
+        // Drop mechanism minecart item instead of normal minecart
         event.setCancelled(true);
         minecart.remove();
 
-        CustomHeadBlock itemType = registry.getType("demo:minecart_ship");
+        CustomHeadBlock itemType = registry.getType("demo:mechanism_minecart");
         if (itemType != null) {
             minecart.getWorld().dropItemNaturally(minecart.getLocation(), itemType.createItem(1));
         }
@@ -319,7 +319,7 @@ final class MinecartShipManager implements Listener {
     }
 
     // ──────────────────────────────────────────────────────────────────────
-    // Flood fill (data-driven allow list from minecart-ship-blocks.yml)
+    // Flood fill (data-driven allow list from mechanism-minecart-blocks.yml)
     // ──────────────────────────────────────────────────────────────────────
 
     private List<Block> floodFillAllowed(Block origin, int maxBlocks) {
