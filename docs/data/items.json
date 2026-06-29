@@ -62,7 +62,15 @@
           "to": "unlit",
           "trigger": "interact"
         }
-      ]
+      ],
+      "inHand": {
+        "kind": "head",
+        "textureUrl": "http://textures.minecraft.net/texture/2b7dbcda454ea7b38abc66cdfed8e4e6c01294f6a962ec66ef226510ae37171b"
+      },
+      "placed": {
+        "baseHead": "http://textures.minecraft.net/texture/2b7dbcda454ea7b38abc66cdfed8e4e6c01294f6a962ec66ef226510ae37171b",
+        "displayEntities": []
+      }
     },
     {
       "namespace": "demo",
@@ -102,7 +110,15 @@
         }
       ],
       "variants": [],
-      "transitions": []
+      "transitions": [],
+      "inHand": {
+        "kind": "head",
+        "textureUrl": "http://textures.minecraft.net/texture/f752a9a9aec0f16180b8cb0003051bb529d7a321201fee7767ae0c2ba6af9149"
+      },
+      "placed": {
+        "baseHead": "http://textures.minecraft.net/texture/f752a9a9aec0f16180b8cb0003051bb529d7a321201fee7767ae0c2ba6af9149",
+        "displayEntities": []
+      }
     },
     {
       "namespace": "demo",
@@ -119,7 +135,15 @@
       "glint": false,
       "recipes": [],
       "variants": [],
-      "transitions": []
+      "transitions": [],
+      "inHand": {
+        "kind": "head",
+        "textureUrl": "http://textures.minecraft.net/texture/4c36045208f9b5ddcf8c4433e424b1ca17b94f6b96202fb1e5270ee8d53881b1"
+      },
+      "placed": {
+        "baseHead": "http://textures.minecraft.net/texture/4c36045208f9b5ddcf8c4433e424b1ca17b94f6b96202fb1e5270ee8d53881b1",
+        "displayEntities": []
+      }
     },
     {
       "namespace": "demo",
@@ -218,7 +242,15 @@
           "textureUrl": "http://textures.minecraft.net/texture/53e5a0d232bede30253cdc317ab121a777f9b8643beede8e8ca8b3b0544746b3"
         }
       ],
-      "transitions": []
+      "transitions": [],
+      "inHand": {
+        "kind": "head",
+        "textureUrl": "http://textures.minecraft.net/texture/aac13a316aac8a71e87310cfadbcbf37a6dc472e026364eb9b4532b7cff26836"
+      },
+      "placed": {
+        "baseHead": "http://textures.minecraft.net/texture/aac13a316aac8a71e87310cfadbcbf37a6dc472e026364eb9b4532b7cff26836",
+        "displayEntities": []
+      }
     },
     {
       "namespace": "demo",
@@ -247,7 +279,15 @@
           "textureUrl": "http://textures.minecraft.net/texture/4a2648a9e53613f0ab1266b72918f40788f84e160a52348cd67138410262f39f"
         }
       ],
-      "transitions": []
+      "transitions": [],
+      "inHand": {
+        "kind": "head",
+        "textureUrl": "http://textures.minecraft.net/texture/acc789f230794f90e33c4f9ad00694bc2a2ff5e8b9b375dc3532401b281f3e58"
+      },
+      "placed": {
+        "baseHead": "http://textures.minecraft.net/texture/acc789f230794f90e33c4f9ad00694bc2a2ff5e8b9b375dc3532401b281f3e58",
+        "displayEntities": []
+      }
     },
     {
       "namespace": "demo",
@@ -292,7 +332,15 @@
           "to": "unlit",
           "trigger": "redstone"
         }
-      ]
+      ],
+      "inHand": {
+        "kind": "head",
+        "textureUrl": "http://textures.minecraft.net/texture/2b7dbcda454ea7b38abc66cdfed8e4e6c01294f6a962ec66ef226510ae37171b"
+      },
+      "placed": {
+        "baseHead": "http://textures.minecraft.net/texture/2b7dbcda454ea7b38abc66cdfed8e4e6c01294f6a962ec66ef226510ae37171b",
+        "displayEntities": []
+      }
     },
     {
       "namespace": "demo",
@@ -326,7 +374,15 @@
           "to": "off",
           "trigger": "redstone"
         }
-      ]
+      ],
+      "inHand": {
+        "kind": "head",
+        "textureUrl": "http://textures.minecraft.net/texture/4a2648a9e53613f0ab1266b72918f40788f84e160a52348cd67138410262f39f"
+      },
+      "placed": {
+        "baseHead": "http://textures.minecraft.net/texture/4a2648a9e53613f0ab1266b72918f40788f84e160a52348cd67138410262f39f",
+        "displayEntities": []
+      }
     },
     {
       "namespace": "demo",
@@ -344,7 +400,35 @@
       "glint": false,
       "recipes": [],
       "variants": [],
-      "transitions": []
+      "transitions": [],
+      "inHand": {
+        "kind": "head",
+        "textureUrl": "http://textures.minecraft.net/texture/33fb7c92fe1649d76c4ad979efcd2c460b2e90b2320a233ef85133dd56bed86a"
+      },
+      "placed": {
+        "baseHead": "http://textures.minecraft.net/texture/33fb7c92fe1649d76c4ad979efcd2c460b2e90b2320a233ef85133dd56bed86a",
+        "displayEntities": [
+          {
+            "kind": "head",
+            "textureUrl": "http://textures.minecraft.net/texture/3f4876b6a5d6dd785e091fd134a21c91d0a9cac5a622e448b5ffcb65ef45278",
+            "transform": {
+              "translation": [
+                0,
+                0.35,
+                0
+              ],
+              "scale": [
+                0.6,
+                0.6,
+                0.6
+              ],
+              "leftRotation": null,
+              "rightRotation": null
+            },
+            "animation": null
+          }
+        ]
+      }
     },
     {
       "namespace": "demo",
@@ -388,7 +472,15 @@
           "to": "off",
           "trigger": "interact"
         }
-      ]
+      ],
+      "inHand": {
+        "kind": "head",
+        "textureUrl": "http://textures.minecraft.net/texture/acc789f230794f90e33c4f9ad00694bc2a2ff5e8b9b375dc3532401b281f3e58"
+      },
+      "placed": {
+        "baseHead": "http://textures.minecraft.net/texture/acc789f230794f90e33c4f9ad00694bc2a2ff5e8b9b375dc3532401b281f3e58",
+        "displayEntities": []
+      }
     },
     {
       "namespace": "demo",
@@ -406,7 +498,15 @@
       "glint": false,
       "recipes": [],
       "variants": [],
-      "transitions": []
+      "transitions": [],
+      "inHand": {
+        "kind": "head",
+        "textureUrl": "http://textures.minecraft.net/texture/c482d1ba4bdac990f6ea987703587fd79fe55555363251984679d4f279cc0c2a"
+      },
+      "placed": {
+        "baseHead": "http://textures.minecraft.net/texture/c482d1ba4bdac990f6ea987703587fd79fe55555363251984679d4f279cc0c2a",
+        "displayEntities": []
+      }
     },
     {
       "namespace": "demo",
@@ -424,7 +524,15 @@
       "glint": false,
       "recipes": [],
       "variants": [],
-      "transitions": []
+      "transitions": [],
+      "inHand": {
+        "kind": "head",
+        "textureUrl": "http://textures.minecraft.net/texture/2884ada4c74c0f961469262d956977bafb0b2d7fed9c7bdf35f45199e9f6ddbb"
+      },
+      "placed": {
+        "baseHead": "http://textures.minecraft.net/texture/2884ada4c74c0f961469262d956977bafb0b2d7fed9c7bdf35f45199e9f6ddbb",
+        "displayEntities": []
+      }
     },
     {
       "namespace": "demo",
@@ -442,7 +550,15 @@
       "glint": false,
       "recipes": [],
       "variants": [],
-      "transitions": []
+      "transitions": [],
+      "inHand": {
+        "kind": "head",
+        "textureUrl": "http://textures.minecraft.net/texture/801b5038bd173b8f18062ed22bc8cc97e80bbff5f8937b1132eb86555ec6b074"
+      },
+      "placed": {
+        "baseHead": "http://textures.minecraft.net/texture/801b5038bd173b8f18062ed22bc8cc97e80bbff5f8937b1132eb86555ec6b074",
+        "displayEntities": []
+      }
     },
     {
       "namespace": "demo",
@@ -477,7 +593,15 @@
           "to": "inactive",
           "trigger": "interact"
         }
-      ]
+      ],
+      "inHand": {
+        "kind": "head",
+        "textureUrl": "http://textures.minecraft.net/texture/c482d1ba4bdac990f6ea987703587fd79fe55555363251984679d4f279cc0c2a"
+      },
+      "placed": {
+        "baseHead": "http://textures.minecraft.net/texture/c482d1ba4bdac990f6ea987703587fd79fe55555363251984679d4f279cc0c2a",
+        "displayEntities": []
+      }
     },
     {
       "namespace": "demo",
@@ -516,7 +640,15 @@
           "textureUrl": "http://textures.minecraft.net/texture/2b7dbcda454ea7b38abc66cdfed8e4e6c01294f6a962ec66ef226510ae37171b"
         }
       ],
-      "transitions": []
+      "transitions": [],
+      "inHand": {
+        "kind": "head",
+        "textureUrl": "http://textures.minecraft.net/texture/2b7dbcda454ea7b38abc66cdfed8e4e6c01294f6a962ec66ef226510ae37171b"
+      },
+      "placed": {
+        "baseHead": "http://textures.minecraft.net/texture/2b7dbcda454ea7b38abc66cdfed8e4e6c01294f6a962ec66ef226510ae37171b",
+        "displayEntities": []
+      }
     },
     {
       "namespace": "demo",
@@ -534,7 +666,15 @@
       "glint": false,
       "recipes": [],
       "variants": [],
-      "transitions": []
+      "transitions": [],
+      "inHand": {
+        "kind": "head",
+        "textureUrl": "http://textures.minecraft.net/texture/801b5038bd173b8f18062ed22bc8cc97e80bbff5f8937b1132eb86555ec6b074"
+      },
+      "placed": {
+        "baseHead": "http://textures.minecraft.net/texture/801b5038bd173b8f18062ed22bc8cc97e80bbff5f8937b1132eb86555ec6b074",
+        "displayEntities": []
+      }
     },
     {
       "namespace": "demo",
@@ -552,7 +692,15 @@
       "glint": false,
       "recipes": [],
       "variants": [],
-      "transitions": []
+      "transitions": [],
+      "inHand": {
+        "kind": "head",
+        "textureUrl": "http://textures.minecraft.net/texture/33fb7c92fe1649d76c4ad979efcd2c460b2e90b2320a233ef85133dd56bed86a"
+      },
+      "placed": {
+        "baseHead": "http://textures.minecraft.net/texture/33fb7c92fe1649d76c4ad979efcd2c460b2e90b2320a233ef85133dd56bed86a",
+        "displayEntities": []
+      }
     },
     {
       "namespace": "demo",
@@ -594,7 +742,15 @@
         }
       ],
       "variants": [],
-      "transitions": []
+      "transitions": [],
+      "inHand": {
+        "kind": "head",
+        "textureUrl": "http://textures.minecraft.net/texture/4c36045208f9b5ddcf8c4433e424b1ca17b94f6b96202fb1e5270ee8d53881b1"
+      },
+      "placed": {
+        "baseHead": "http://textures.minecraft.net/texture/4c36045208f9b5ddcf8c4433e424b1ca17b94f6b96202fb1e5270ee8d53881b1",
+        "displayEntities": []
+      }
     },
     {
       "namespace": "demo",
@@ -611,7 +767,53 @@
       "glint": false,
       "recipes": [],
       "variants": [],
-      "transitions": []
+      "transitions": [],
+      "inHand": {
+        "kind": "head",
+        "textureUrl": "http://textures.minecraft.net/texture/c482d1ba4bdac990f6ea987703587fd79fe55555363251984679d4f279cc0c2a"
+      },
+      "placed": {
+        "baseHead": "http://textures.minecraft.net/texture/c482d1ba4bdac990f6ea987703587fd79fe55555363251984679d4f279cc0c2a",
+        "displayEntities": [
+          {
+            "kind": "head",
+            "textureUrl": "http://textures.minecraft.net/texture/87d885b32b0dd2d6b7f1b582a34186f8a5373c46589a273423111f0a0898ad65",
+            "transform": {
+              "translation": [
+                0,
+                0.8,
+                0
+              ],
+              "scale": [
+                0.35,
+                0.35,
+                0.35
+              ],
+              "leftRotation": null,
+              "rightRotation": null
+            },
+            "animation": {
+              "type": "compose",
+              "layers": [
+                {
+                  "type": "rotate",
+                  "axis": [
+                    0,
+                    1,
+                    0
+                  ],
+                  "speed": 3.0
+                },
+                {
+                  "type": "bob",
+                  "amplitude": 0.08,
+                  "period": 50
+                }
+              ]
+            }
+          }
+        ]
+      }
     },
     {
       "namespace": "demo",
@@ -639,7 +841,40 @@
           "to": "slow",
           "trigger": "interact"
         }
-      ]
+      ],
+      "inHand": {
+        "kind": "head",
+        "textureUrl": "http://textures.minecraft.net/texture/c482d1ba4bdac990f6ea987703587fd79fe55555363251984679d4f279cc0c2a"
+      },
+      "placed": {
+        "baseHead": "http://textures.minecraft.net/texture/c482d1ba4bdac990f6ea987703587fd79fe55555363251984679d4f279cc0c2a",
+        "displayEntities": [
+          {
+            "kind": "head",
+            "textureUrl": "http://textures.minecraft.net/texture/87d885b32b0dd2d6b7f1b582a34186f8a5373c46589a273423111f0a0898ad65",
+            "transform": {
+              "translation": [
+                0,
+                0.7,
+                0
+              ],
+              "scale": [
+                0.4,
+                0.4,
+                0.4
+              ],
+              "leftRotation": null,
+              "rightRotation": null
+            },
+            "animation": {
+              "type": "pulse",
+              "minScale": 0.8,
+              "maxScale": 1.2,
+              "period": 60
+            }
+          }
+        ]
+      }
     },
     {
       "namespace": "demo",
@@ -656,7 +891,35 @@
       "glint": false,
       "recipes": [],
       "variants": [],
-      "transitions": []
+      "transitions": [],
+      "inHand": {
+        "kind": "head",
+        "textureUrl": "http://textures.minecraft.net/texture/33fb7c92fe1649d76c4ad979efcd2c460b2e90b2320a233ef85133dd56bed86a"
+      },
+      "placed": {
+        "baseHead": "http://textures.minecraft.net/texture/33fb7c92fe1649d76c4ad979efcd2c460b2e90b2320a233ef85133dd56bed86a",
+        "displayEntities": [
+          {
+            "kind": "block",
+            "block": "diamond_block",
+            "transform": {
+              "translation": [
+                0,
+                0.5,
+                0
+              ],
+              "scale": [
+                0.5,
+                0.5,
+                0.5
+              ],
+              "leftRotation": null,
+              "rightRotation": null
+            },
+            "animation": null
+          }
+        ]
+      }
     },
     {
       "namespace": "rotation",
@@ -673,7 +936,43 @@
       "glint": false,
       "recipes": [],
       "variants": [],
-      "transitions": []
+      "transitions": [],
+      "inHand": {
+        "kind": "head",
+        "textureUrl": "http://textures.minecraft.net/texture/e28bc2df3dff5ec3d143a2ceecb9382183516e9fadd7e409a5eb41551574a25f"
+      },
+      "placed": {
+        "baseHead": "http://textures.minecraft.net/texture/e28bc2df3dff5ec3d143a2ceecb9382183516e9fadd7e409a5eb41551574a25f",
+        "displayEntities": [
+          {
+            "kind": "head",
+            "textureUrl": "http://textures.minecraft.net/texture/e28bc2df3dff5ec3d143a2ceecb9382183516e9fadd7e409a5eb41551574a25f",
+            "transform": {
+              "translation": [
+                0,
+                0.5,
+                0
+              ],
+              "scale": [
+                0.66,
+                2.0,
+                0.66
+              ],
+              "leftRotation": null,
+              "rightRotation": null
+            },
+            "animation": {
+              "type": "rotate",
+              "axis": [
+                0,
+                1,
+                0
+              ],
+              "speed": 3.0
+            }
+          }
+        ]
+      }
     },
     {
       "namespace": "rotation",
@@ -691,7 +990,102 @@
       "glint": false,
       "recipes": [],
       "variants": [],
-      "transitions": []
+      "transitions": [],
+      "inHand": {
+        "kind": "head",
+        "textureUrl": "http://textures.minecraft.net/texture/1e5edfe90156ce9b5b6b80793dc2cbfe850ddec856c99eebde31775cce956041"
+      },
+      "placed": {
+        "baseHead": "http://textures.minecraft.net/texture/7ff9817d767d2ede7181a057aa26f08f7ecf4651dec97de5b54eede1dd2b42c7",
+        "displayEntities": [
+          {
+            "kind": "head",
+            "textureUrl": "http://textures.minecraft.net/texture/e28bc2df3dff5ec3d143a2ceecb9382183516e9fadd7e409a5eb41551574a25f",
+            "transform": {
+              "translation": [
+                0,
+                0.5,
+                0
+              ],
+              "scale": [
+                0.66,
+                2.0,
+                0.66
+              ],
+              "leftRotation": null,
+              "rightRotation": null
+            },
+            "animation": {
+              "type": "rotate",
+              "axis": [
+                0,
+                1,
+                0
+              ],
+              "speed": 3.0
+            }
+          },
+          {
+            "kind": "head",
+            "textureUrl": "http://textures.minecraft.net/texture/53548c6bddf00d5029212b7461ddcaa72e928d43f3ab02a2abf680a63d251ec5",
+            "transform": {
+              "translation": [
+                0,
+                -0.29,
+                0
+              ],
+              "scale": [
+                1.7,
+                0.4,
+                1.7
+              ],
+              "leftRotation": null,
+              "rightRotation": null
+            },
+            "animation": {
+              "type": "rotate",
+              "axis": [
+                0,
+                1,
+                0
+              ],
+              "speed": 3.0
+            }
+          },
+          {
+            "kind": "head",
+            "textureUrl": "http://textures.minecraft.net/texture/53548c6bddf00d5029212b7461ddcaa72e928d43f3ab02a2abf680a63d251ec5",
+            "transform": {
+              "translation": [
+                0,
+                -0.28,
+                0
+              ],
+              "scale": [
+                1.7,
+                0.4,
+                1.7
+              ],
+              "leftRotation": [
+                45,
+                0,
+                1,
+                0
+              ],
+              "rightRotation": null
+            },
+            "animation": {
+              "type": "rotate",
+              "axis": [
+                0,
+                1,
+                0
+              ],
+              "speed": 3.0
+            }
+          }
+        ]
+      }
     },
     {
       "namespace": "rotation",
@@ -709,7 +1103,15 @@
       "glint": false,
       "recipes": [],
       "variants": [],
-      "transitions": []
+      "transitions": [],
+      "inHand": {
+        "kind": "head",
+        "textureUrl": "http://textures.minecraft.net/texture/1c265803d1cc2e31f7951ffecbef50e078c36629d5d09078b91ba4dcd44ca29c"
+      },
+      "placed": {
+        "baseHead": "http://textures.minecraft.net/texture/1c265803d1cc2e31f7951ffecbef50e078c36629d5d09078b91ba4dcd44ca29c",
+        "displayEntities": []
+      }
     },
     {
       "namespace": "rotation",
@@ -727,7 +1129,15 @@
       "glint": false,
       "recipes": [],
       "variants": [],
-      "transitions": []
+      "transitions": [],
+      "inHand": {
+        "kind": "head",
+        "textureUrl": "http://textures.minecraft.net/texture/1e5edfe90156ce9b5b6b80793dc2cbfe850ddec856c99eebde31775cce956041"
+      },
+      "placed": {
+        "baseHead": "http://textures.minecraft.net/texture/1e5edfe90156ce9b5b6b80793dc2cbfe850ddec856c99eebde31775cce956041",
+        "displayEntities": []
+      }
     },
     {
       "namespace": "rotation",
@@ -746,7 +1156,15 @@
       "glint": false,
       "recipes": [],
       "variants": [],
-      "transitions": []
+      "transitions": [],
+      "inHand": {
+        "kind": "head",
+        "textureUrl": "http://textures.minecraft.net/texture/7ff9817d767d2ede7181a057aa26f08f7ecf4651dec97de5b54eede1dd2b42c7"
+      },
+      "placed": {
+        "baseHead": "http://textures.minecraft.net/texture/7ff9817d767d2ede7181a057aa26f08f7ecf4651dec97de5b54eede1dd2b42c7",
+        "displayEntities": []
+      }
     },
     {
       "namespace": "rotation",
@@ -764,7 +1182,124 @@
       "glint": false,
       "recipes": [],
       "variants": [],
-      "transitions": []
+      "transitions": [],
+      "inHand": {
+        "kind": "head",
+        "textureUrl": "http://textures.minecraft.net/texture/2edd24825c217303f26af5526570a214aec29b9297a6877151ba50fcedff7ff1"
+      },
+      "placed": {
+        "baseHead": "http://textures.minecraft.net/texture/2edd24825c217303f26af5526570a214aec29b9297a6877151ba50fcedff7ff1",
+        "displayEntities": [
+          {
+            "kind": "item",
+            "block": "oak_slab",
+            "transform": {
+              "translation": [
+                0.35,
+                0,
+                0
+              ],
+              "scale": [
+                0.6,
+                0.6,
+                0.15
+              ],
+              "leftRotation": null,
+              "rightRotation": null
+            },
+            "animation": {
+              "type": "rotate",
+              "axis": [
+                0,
+                0,
+                1
+              ],
+              "speed": 3.0
+            }
+          },
+          {
+            "kind": "item",
+            "block": "oak_slab",
+            "transform": {
+              "translation": [
+                0,
+                0.35,
+                0
+              ],
+              "scale": [
+                0.15,
+                0.6,
+                0.6
+              ],
+              "leftRotation": null,
+              "rightRotation": null
+            },
+            "animation": {
+              "type": "rotate",
+              "axis": [
+                0,
+                0,
+                1
+              ],
+              "speed": 3.0
+            }
+          },
+          {
+            "kind": "item",
+            "block": "oak_slab",
+            "transform": {
+              "translation": [
+                -0.35,
+                0,
+                0
+              ],
+              "scale": [
+                0.6,
+                0.6,
+                0.15
+              ],
+              "leftRotation": null,
+              "rightRotation": null
+            },
+            "animation": {
+              "type": "rotate",
+              "axis": [
+                0,
+                0,
+                1
+              ],
+              "speed": 3.0
+            }
+          },
+          {
+            "kind": "item",
+            "block": "oak_slab",
+            "transform": {
+              "translation": [
+                0,
+                -0.35,
+                0
+              ],
+              "scale": [
+                0.15,
+                0.6,
+                0.6
+              ],
+              "leftRotation": null,
+              "rightRotation": null
+            },
+            "animation": {
+              "type": "rotate",
+              "axis": [
+                0,
+                0,
+                1
+              ],
+              "speed": 3.0
+            }
+          }
+        ]
+      }
     },
     {
       "namespace": "rotation",
@@ -782,7 +1317,43 @@
       "glint": false,
       "recipes": [],
       "variants": [],
-      "transitions": []
+      "transitions": [],
+      "inHand": {
+        "kind": "head",
+        "textureUrl": "http://textures.minecraft.net/texture/9172c1e729e0ca00193ab5d43e893fabedf5a80fc647258176e8502432885925"
+      },
+      "placed": {
+        "baseHead": "http://textures.minecraft.net/texture/9172c1e729e0ca00193ab5d43e893fabedf5a80fc647258176e8502432885925",
+        "displayEntities": [
+          {
+            "kind": "head",
+            "textureUrl": "http://textures.minecraft.net/texture/e28bc2df3dff5ec3d143a2ceecb9382183516e9fadd7e409a5eb41551574a25f",
+            "transform": {
+              "translation": [
+                0,
+                0.5,
+                0
+              ],
+              "scale": [
+                0.66,
+                2.0,
+                0.66
+              ],
+              "leftRotation": null,
+              "rightRotation": null
+            },
+            "animation": {
+              "type": "rotate",
+              "axis": [
+                0,
+                1,
+                0
+              ],
+              "speed": 3.0
+            }
+          }
+        ]
+      }
     },
     {
       "namespace": "rotation",
@@ -800,7 +1371,35 @@
       "glint": false,
       "recipes": [],
       "variants": [],
-      "transitions": []
+      "transitions": [],
+      "inHand": {
+        "kind": "head",
+        "textureUrl": "http://textures.minecraft.net/texture/83acdced4f5a48e74edadd014c5de7daf9efb121ceafb6c15cdb13875594fcd9"
+      },
+      "placed": {
+        "baseHead": "http://textures.minecraft.net/texture/83acdced4f5a48e74edadd014c5de7daf9efb121ceafb6c15cdb13875594fcd9",
+        "displayEntities": [
+          {
+            "kind": "head",
+            "textureUrl": "http://textures.minecraft.net/texture/e28bc2df3dff5ec3d143a2ceecb9382183516e9fadd7e409a5eb41551574a25f",
+            "transform": {
+              "translation": [
+                0,
+                0.5,
+                0
+              ],
+              "scale": [
+                0.66,
+                2.0,
+                0.66
+              ],
+              "leftRotation": null,
+              "rightRotation": null
+            },
+            "animation": null
+          }
+        ]
+      }
     },
     {
       "namespace": "rotation",
@@ -819,7 +1418,70 @@
       "glint": false,
       "recipes": [],
       "variants": [],
-      "transitions": []
+      "transitions": [],
+      "inHand": {
+        "kind": "head",
+        "textureUrl": "http://textures.minecraft.net/texture/151e70169ea00f04a9439221cf33770844159dd775fc8830e311fd9b5ccd2969"
+      },
+      "placed": {
+        "baseHead": "http://textures.minecraft.net/texture/151e70169ea00f04a9439221cf33770844159dd775fc8830e311fd9b5ccd2969",
+        "displayEntities": [
+          {
+            "kind": "item",
+            "block": "smooth_stone_slab",
+            "transform": {
+              "translation": [
+                0,
+                0.0,
+                0
+              ],
+              "scale": [
+                0.8,
+                1.0,
+                0.8
+              ],
+              "leftRotation": null,
+              "rightRotation": null
+            },
+            "animation": {
+              "type": "rotate",
+              "axis": [
+                0,
+                1,
+                0
+              ],
+              "speed": 3.0
+            }
+          },
+          {
+            "kind": "item",
+            "block": "smooth_stone_slab",
+            "transform": {
+              "translation": [
+                0,
+                0.5,
+                0
+              ],
+              "scale": [
+                0.8,
+                1.0,
+                0.8
+              ],
+              "leftRotation": null,
+              "rightRotation": null
+            },
+            "animation": {
+              "type": "rotate",
+              "axis": [
+                0,
+                1,
+                0
+              ],
+              "speed": 3.0
+            }
+          }
+        ]
+      }
     },
     {
       "namespace": "rotation",
@@ -861,7 +1523,48 @@
         }
       ],
       "variants": [],
-      "transitions": []
+      "transitions": [],
+      "inHand": {
+        "kind": "head",
+        "textureUrl": "http://textures.minecraft.net/texture/528cfd064bd48666e6a738c152a5fbb042ba72b5e92912e3e2f6951ea8f25d2e"
+      },
+      "placed": {
+        "baseHead": "http://textures.minecraft.net/texture/bdfc6712f94b278ba6239aba04126a3baf001115f3514294d615af79d6bf4da0",
+        "displayEntities": [
+          {
+            "kind": "head",
+            "textureUrl": "http://textures.minecraft.net/texture/270041c6be799cb69b127df35574232203e2c261907b2fd58a14ee692988e073",
+            "transform": {
+              "translation": [
+                0,
+                0,
+                0
+              ],
+              "scale": [
+                0.66,
+                1.0,
+                0.66
+              ],
+              "leftRotation": [
+                -90,
+                1,
+                0,
+                0
+              ],
+              "rightRotation": null
+            },
+            "animation": {
+              "type": "rotate",
+              "axis": [
+                0,
+                0,
+                1
+              ],
+              "speed": 3.0
+            }
+          }
+        ]
+      }
     },
     {
       "namespace": "rotation",
@@ -899,7 +1602,112 @@
         }
       ],
       "variants": [],
-      "transitions": []
+      "transitions": [],
+      "inHand": {
+        "kind": "head",
+        "textureUrl": "http://textures.minecraft.net/texture/2884ada4c74c0f961469262d956977bafb0b2d7fed9c7bdf35f45199e9f6ddbb"
+      },
+      "placed": {
+        "baseHead": "http://textures.minecraft.net/texture/2884ada4c74c0f961469262d956977bafb0b2d7fed9c7bdf35f45199e9f6ddbb",
+        "displayEntities": [
+          {
+            "kind": "item",
+            "block": "white_banner",
+            "transform": {
+              "translation": [
+                0.375,
+                -0.2,
+                0
+              ],
+              "scale": [
+                0.75,
+                0.75,
+                0.75
+              ],
+              "leftRotation": [
+                120,
+                1,
+                1,
+                -1
+              ],
+              "rightRotation": null
+            },
+            "animation": null
+          },
+          {
+            "kind": "item",
+            "block": "white_banner",
+            "transform": {
+              "translation": [
+                0,
+                -0.2,
+                0.375
+              ],
+              "scale": [
+                0.75,
+                0.75,
+                0.75
+              ],
+              "leftRotation": [
+                90,
+                1,
+                0,
+                0
+              ],
+              "rightRotation": null
+            },
+            "animation": null
+          },
+          {
+            "kind": "item",
+            "block": "white_banner",
+            "transform": {
+              "translation": [
+                -0.375,
+                -0.2,
+                0
+              ],
+              "scale": [
+                0.75,
+                0.75,
+                0.75
+              ],
+              "leftRotation": [
+                120,
+                1,
+                -1,
+                1
+              ],
+              "rightRotation": null
+            },
+            "animation": null
+          },
+          {
+            "kind": "item",
+            "block": "white_banner",
+            "transform": {
+              "translation": [
+                0,
+                -0.2,
+                -0.375
+              ],
+              "scale": [
+                0.75,
+                0.75,
+                0.75
+              ],
+              "leftRotation": [
+                180,
+                0,
+                1,
+                -1
+              ],
+              "rightRotation": null
+            },
+            "animation": null
+          }
+        ]
+      }
     },
     {
       "namespace": "rotation",
@@ -937,7 +1745,112 @@
         }
       ],
       "variants": [],
-      "transitions": []
+      "transitions": [],
+      "inHand": {
+        "kind": "head",
+        "textureUrl": "http://textures.minecraft.net/texture/2884ada4c74c0f961469262d956977bafb0b2d7fed9c7bdf35f45199e9f6ddbb"
+      },
+      "placed": {
+        "baseHead": "http://textures.minecraft.net/texture/2884ada4c74c0f961469262d956977bafb0b2d7fed9c7bdf35f45199e9f6ddbb",
+        "displayEntities": [
+          {
+            "kind": "item",
+            "block": "white_banner",
+            "transform": {
+              "translation": [
+                1.25,
+                -0.25,
+                0
+              ],
+              "scale": [
+                2.25,
+                2.25,
+                2.25
+              ],
+              "leftRotation": [
+                120,
+                1,
+                1,
+                -1
+              ],
+              "rightRotation": null
+            },
+            "animation": null
+          },
+          {
+            "kind": "item",
+            "block": "white_banner",
+            "transform": {
+              "translation": [
+                0,
+                -0.25,
+                1.25
+              ],
+              "scale": [
+                2.25,
+                2.25,
+                2.25
+              ],
+              "leftRotation": [
+                90,
+                1,
+                0,
+                0
+              ],
+              "rightRotation": null
+            },
+            "animation": null
+          },
+          {
+            "kind": "item",
+            "block": "white_banner",
+            "transform": {
+              "translation": [
+                -1.25,
+                -0.25,
+                0
+              ],
+              "scale": [
+                2.25,
+                2.25,
+                2.25
+              ],
+              "leftRotation": [
+                120,
+                1,
+                -1,
+                1
+              ],
+              "rightRotation": null
+            },
+            "animation": null
+          },
+          {
+            "kind": "item",
+            "block": "white_banner",
+            "transform": {
+              "translation": [
+                0,
+                -0.25,
+                -1.25
+              ],
+              "scale": [
+                2.25,
+                2.25,
+                2.25
+              ],
+              "leftRotation": [
+                180,
+                0,
+                1,
+                -1
+              ],
+              "rightRotation": null
+            },
+            "animation": null
+          }
+        ]
+      }
     },
     {
       "namespace": "rotation",
@@ -975,7 +1888,112 @@
         }
       ],
       "variants": [],
-      "transitions": []
+      "transitions": [],
+      "inHand": {
+        "kind": "head",
+        "textureUrl": "http://textures.minecraft.net/texture/2884ada4c74c0f961469262d956977bafb0b2d7fed9c7bdf35f45199e9f6ddbb"
+      },
+      "placed": {
+        "baseHead": "http://textures.minecraft.net/texture/2884ada4c74c0f961469262d956977bafb0b2d7fed9c7bdf35f45199e9f6ddbb",
+        "displayEntities": [
+          {
+            "kind": "item",
+            "block": "white_banner",
+            "transform": {
+              "translation": [
+                1.667,
+                -0.333,
+                0
+              ],
+              "scale": [
+                3.0,
+                3.0,
+                3.0
+              ],
+              "leftRotation": [
+                120,
+                1,
+                1,
+                -1
+              ],
+              "rightRotation": null
+            },
+            "animation": null
+          },
+          {
+            "kind": "item",
+            "block": "white_banner",
+            "transform": {
+              "translation": [
+                0,
+                -0.333,
+                1.667
+              ],
+              "scale": [
+                3.0,
+                3.0,
+                3.0
+              ],
+              "leftRotation": [
+                90,
+                1,
+                0,
+                0
+              ],
+              "rightRotation": null
+            },
+            "animation": null
+          },
+          {
+            "kind": "item",
+            "block": "white_banner",
+            "transform": {
+              "translation": [
+                -1.667,
+                -0.333,
+                0
+              ],
+              "scale": [
+                3.0,
+                3.0,
+                3.0
+              ],
+              "leftRotation": [
+                120,
+                1,
+                -1,
+                1
+              ],
+              "rightRotation": null
+            },
+            "animation": null
+          },
+          {
+            "kind": "item",
+            "block": "white_banner",
+            "transform": {
+              "translation": [
+                0,
+                -0.333,
+                -1.667
+              ],
+              "scale": [
+                3.0,
+                3.0,
+                3.0
+              ],
+              "leftRotation": [
+                180,
+                0,
+                1,
+                -1
+              ],
+              "rightRotation": null
+            },
+            "animation": null
+          }
+        ]
+      }
     },
     {
       "namespace": "rotation",
@@ -1014,7 +2032,144 @@
         }
       ],
       "variants": [],
-      "transitions": []
+      "transitions": [],
+      "inHand": {
+        "kind": "head",
+        "textureUrl": "http://textures.minecraft.net/texture/2884ada4c74c0f961469262d956977bafb0b2d7fed9c7bdf35f45199e9f6ddbb"
+      },
+      "placed": {
+        "baseHead": "http://textures.minecraft.net/texture/2884ada4c74c0f961469262d956977bafb0b2d7fed9c7bdf35f45199e9f6ddbb",
+        "displayEntities": [
+          {
+            "kind": "item",
+            "block": "white_banner",
+            "transform": {
+              "translation": [
+                0.1875,
+                0.05,
+                0
+              ],
+              "scale": [
+                0.375,
+                0.375,
+                0.375
+              ],
+              "leftRotation": [
+                120,
+                1,
+                1,
+                -1
+              ],
+              "rightRotation": null
+            },
+            "animation": {
+              "type": "rotate",
+              "axis": [
+                0,
+                1,
+                0
+              ],
+              "speed": 6.0
+            }
+          },
+          {
+            "kind": "item",
+            "block": "white_banner",
+            "transform": {
+              "translation": [
+                0,
+                0.05,
+                0.1875
+              ],
+              "scale": [
+                0.375,
+                0.375,
+                0.375
+              ],
+              "leftRotation": [
+                90,
+                1,
+                0,
+                0
+              ],
+              "rightRotation": null
+            },
+            "animation": {
+              "type": "rotate",
+              "axis": [
+                0,
+                1,
+                0
+              ],
+              "speed": 6.0
+            }
+          },
+          {
+            "kind": "item",
+            "block": "white_banner",
+            "transform": {
+              "translation": [
+                -0.1875,
+                0.05,
+                0
+              ],
+              "scale": [
+                0.375,
+                0.375,
+                0.375
+              ],
+              "leftRotation": [
+                120,
+                1,
+                -1,
+                1
+              ],
+              "rightRotation": null
+            },
+            "animation": {
+              "type": "rotate",
+              "axis": [
+                0,
+                1,
+                0
+              ],
+              "speed": 6.0
+            }
+          },
+          {
+            "kind": "item",
+            "block": "white_banner",
+            "transform": {
+              "translation": [
+                0,
+                0.05,
+                -0.1875
+              ],
+              "scale": [
+                0.375,
+                0.375,
+                0.375
+              ],
+              "leftRotation": [
+                180,
+                0,
+                1,
+                -1
+              ],
+              "rightRotation": null
+            },
+            "animation": {
+              "type": "rotate",
+              "axis": [
+                0,
+                1,
+                0
+              ],
+              "speed": 6.0
+            }
+          }
+        ]
+      }
     },
     {
       "namespace": "verticalslabs",
@@ -1040,7 +2195,40 @@
         }
       ],
       "variants": [],
-      "transitions": []
+      "transitions": [],
+      "inHand": {
+        "kind": "item",
+        "block": "oak_slab"
+      },
+      "placed": {
+        "baseHead": null,
+        "displayEntities": [
+          {
+            "kind": "block",
+            "block": "oak_slab",
+            "transform": {
+              "translation": [
+                -0.5,
+                -0.5,
+                0.001
+              ],
+              "scale": [
+                1,
+                1.004,
+                1
+              ],
+              "leftRotation": [
+                -90,
+                1,
+                0,
+                0
+              ],
+              "rightRotation": null
+            },
+            "animation": null
+          }
+        ]
+      }
     },
     {
       "namespace": "verticalslabs",
@@ -1066,7 +2254,40 @@
         }
       ],
       "variants": [],
-      "transitions": []
+      "transitions": [],
+      "inHand": {
+        "kind": "item",
+        "block": "spruce_slab"
+      },
+      "placed": {
+        "baseHead": null,
+        "displayEntities": [
+          {
+            "kind": "block",
+            "block": "spruce_slab",
+            "transform": {
+              "translation": [
+                -0.5,
+                -0.5,
+                0.001
+              ],
+              "scale": [
+                1,
+                1.004,
+                1
+              ],
+              "leftRotation": [
+                -90,
+                1,
+                0,
+                0
+              ],
+              "rightRotation": null
+            },
+            "animation": null
+          }
+        ]
+      }
     },
     {
       "namespace": "verticalslabs",
@@ -1092,7 +2313,40 @@
         }
       ],
       "variants": [],
-      "transitions": []
+      "transitions": [],
+      "inHand": {
+        "kind": "item",
+        "block": "birch_slab"
+      },
+      "placed": {
+        "baseHead": null,
+        "displayEntities": [
+          {
+            "kind": "block",
+            "block": "birch_slab",
+            "transform": {
+              "translation": [
+                -0.5,
+                -0.5,
+                0.001
+              ],
+              "scale": [
+                1,
+                1.004,
+                1
+              ],
+              "leftRotation": [
+                -90,
+                1,
+                0,
+                0
+              ],
+              "rightRotation": null
+            },
+            "animation": null
+          }
+        ]
+      }
     },
     {
       "namespace": "verticalslabs",
@@ -1118,7 +2372,40 @@
         }
       ],
       "variants": [],
-      "transitions": []
+      "transitions": [],
+      "inHand": {
+        "kind": "item",
+        "block": "jungle_slab"
+      },
+      "placed": {
+        "baseHead": null,
+        "displayEntities": [
+          {
+            "kind": "block",
+            "block": "jungle_slab",
+            "transform": {
+              "translation": [
+                -0.5,
+                -0.5,
+                0.001
+              ],
+              "scale": [
+                1,
+                1.004,
+                1
+              ],
+              "leftRotation": [
+                -90,
+                1,
+                0,
+                0
+              ],
+              "rightRotation": null
+            },
+            "animation": null
+          }
+        ]
+      }
     },
     {
       "namespace": "verticalslabs",
@@ -1144,7 +2431,40 @@
         }
       ],
       "variants": [],
-      "transitions": []
+      "transitions": [],
+      "inHand": {
+        "kind": "item",
+        "block": "acacia_slab"
+      },
+      "placed": {
+        "baseHead": null,
+        "displayEntities": [
+          {
+            "kind": "block",
+            "block": "acacia_slab",
+            "transform": {
+              "translation": [
+                -0.5,
+                -0.5,
+                0.001
+              ],
+              "scale": [
+                1,
+                1.004,
+                1
+              ],
+              "leftRotation": [
+                -90,
+                1,
+                0,
+                0
+              ],
+              "rightRotation": null
+            },
+            "animation": null
+          }
+        ]
+      }
     },
     {
       "namespace": "verticalslabs",
@@ -1170,7 +2490,40 @@
         }
       ],
       "variants": [],
-      "transitions": []
+      "transitions": [],
+      "inHand": {
+        "kind": "item",
+        "block": "dark_oak_slab"
+      },
+      "placed": {
+        "baseHead": null,
+        "displayEntities": [
+          {
+            "kind": "block",
+            "block": "dark_oak_slab",
+            "transform": {
+              "translation": [
+                -0.5,
+                -0.5,
+                0.001
+              ],
+              "scale": [
+                1,
+                1.004,
+                1
+              ],
+              "leftRotation": [
+                -90,
+                1,
+                0,
+                0
+              ],
+              "rightRotation": null
+            },
+            "animation": null
+          }
+        ]
+      }
     },
     {
       "namespace": "verticalslabs",
@@ -1196,7 +2549,40 @@
         }
       ],
       "variants": [],
-      "transitions": []
+      "transitions": [],
+      "inHand": {
+        "kind": "item",
+        "block": "mangrove_slab"
+      },
+      "placed": {
+        "baseHead": null,
+        "displayEntities": [
+          {
+            "kind": "block",
+            "block": "mangrove_slab",
+            "transform": {
+              "translation": [
+                -0.5,
+                -0.5,
+                0.001
+              ],
+              "scale": [
+                1,
+                1.004,
+                1
+              ],
+              "leftRotation": [
+                -90,
+                1,
+                0,
+                0
+              ],
+              "rightRotation": null
+            },
+            "animation": null
+          }
+        ]
+      }
     },
     {
       "namespace": "verticalslabs",
@@ -1222,7 +2608,40 @@
         }
       ],
       "variants": [],
-      "transitions": []
+      "transitions": [],
+      "inHand": {
+        "kind": "item",
+        "block": "cherry_slab"
+      },
+      "placed": {
+        "baseHead": null,
+        "displayEntities": [
+          {
+            "kind": "block",
+            "block": "cherry_slab",
+            "transform": {
+              "translation": [
+                -0.5,
+                -0.5,
+                0.001
+              ],
+              "scale": [
+                1,
+                1.004,
+                1
+              ],
+              "leftRotation": [
+                -90,
+                1,
+                0,
+                0
+              ],
+              "rightRotation": null
+            },
+            "animation": null
+          }
+        ]
+      }
     },
     {
       "namespace": "verticalslabs",
@@ -1248,7 +2667,40 @@
         }
       ],
       "variants": [],
-      "transitions": []
+      "transitions": [],
+      "inHand": {
+        "kind": "item",
+        "block": "pale_oak_slab"
+      },
+      "placed": {
+        "baseHead": null,
+        "displayEntities": [
+          {
+            "kind": "block",
+            "block": "pale_oak_slab",
+            "transform": {
+              "translation": [
+                -0.5,
+                -0.5,
+                0.001
+              ],
+              "scale": [
+                1,
+                1.004,
+                1
+              ],
+              "leftRotation": [
+                -90,
+                1,
+                0,
+                0
+              ],
+              "rightRotation": null
+            },
+            "animation": null
+          }
+        ]
+      }
     },
     {
       "namespace": "verticalslabs",
@@ -1274,7 +2726,40 @@
         }
       ],
       "variants": [],
-      "transitions": []
+      "transitions": [],
+      "inHand": {
+        "kind": "item",
+        "block": "bamboo_slab"
+      },
+      "placed": {
+        "baseHead": null,
+        "displayEntities": [
+          {
+            "kind": "block",
+            "block": "bamboo_slab",
+            "transform": {
+              "translation": [
+                -0.5,
+                -0.5,
+                0.001
+              ],
+              "scale": [
+                1,
+                1.004,
+                1
+              ],
+              "leftRotation": [
+                -90,
+                1,
+                0,
+                0
+              ],
+              "rightRotation": null
+            },
+            "animation": null
+          }
+        ]
+      }
     },
     {
       "namespace": "verticalslabs",
@@ -1300,7 +2785,40 @@
         }
       ],
       "variants": [],
-      "transitions": []
+      "transitions": [],
+      "inHand": {
+        "kind": "item",
+        "block": "bamboo_mosaic_slab"
+      },
+      "placed": {
+        "baseHead": null,
+        "displayEntities": [
+          {
+            "kind": "block",
+            "block": "bamboo_mosaic_slab",
+            "transform": {
+              "translation": [
+                -0.5,
+                -0.5,
+                0.001
+              ],
+              "scale": [
+                1,
+                1.004,
+                1
+              ],
+              "leftRotation": [
+                -90,
+                1,
+                0,
+                0
+              ],
+              "rightRotation": null
+            },
+            "animation": null
+          }
+        ]
+      }
     },
     {
       "namespace": "verticalslabs",
@@ -1326,7 +2844,40 @@
         }
       ],
       "variants": [],
-      "transitions": []
+      "transitions": [],
+      "inHand": {
+        "kind": "item",
+        "block": "crimson_slab"
+      },
+      "placed": {
+        "baseHead": null,
+        "displayEntities": [
+          {
+            "kind": "block",
+            "block": "crimson_slab",
+            "transform": {
+              "translation": [
+                -0.5,
+                -0.5,
+                0.001
+              ],
+              "scale": [
+                1,
+                1.004,
+                1
+              ],
+              "leftRotation": [
+                -90,
+                1,
+                0,
+                0
+              ],
+              "rightRotation": null
+            },
+            "animation": null
+          }
+        ]
+      }
     },
     {
       "namespace": "verticalslabs",
@@ -1352,7 +2903,40 @@
         }
       ],
       "variants": [],
-      "transitions": []
+      "transitions": [],
+      "inHand": {
+        "kind": "item",
+        "block": "warped_slab"
+      },
+      "placed": {
+        "baseHead": null,
+        "displayEntities": [
+          {
+            "kind": "block",
+            "block": "warped_slab",
+            "transform": {
+              "translation": [
+                -0.5,
+                -0.5,
+                0.001
+              ],
+              "scale": [
+                1,
+                1.004,
+                1
+              ],
+              "leftRotation": [
+                -90,
+                1,
+                0,
+                0
+              ],
+              "rightRotation": null
+            },
+            "animation": null
+          }
+        ]
+      }
     },
     {
       "namespace": "verticalslabs",
@@ -1378,7 +2962,40 @@
         }
       ],
       "variants": [],
-      "transitions": []
+      "transitions": [],
+      "inHand": {
+        "kind": "item",
+        "block": "stone_slab"
+      },
+      "placed": {
+        "baseHead": null,
+        "displayEntities": [
+          {
+            "kind": "block",
+            "block": "stone_slab",
+            "transform": {
+              "translation": [
+                -0.5,
+                -0.5,
+                0.001
+              ],
+              "scale": [
+                1,
+                1.004,
+                1
+              ],
+              "leftRotation": [
+                -90,
+                1,
+                0,
+                0
+              ],
+              "rightRotation": null
+            },
+            "animation": null
+          }
+        ]
+      }
     },
     {
       "namespace": "verticalslabs",
@@ -1404,7 +3021,40 @@
         }
       ],
       "variants": [],
-      "transitions": []
+      "transitions": [],
+      "inHand": {
+        "kind": "item",
+        "block": "cobblestone_slab"
+      },
+      "placed": {
+        "baseHead": null,
+        "displayEntities": [
+          {
+            "kind": "block",
+            "block": "cobblestone_slab",
+            "transform": {
+              "translation": [
+                -0.5,
+                -0.5,
+                0.001
+              ],
+              "scale": [
+                1,
+                1.004,
+                1
+              ],
+              "leftRotation": [
+                -90,
+                1,
+                0,
+                0
+              ],
+              "rightRotation": null
+            },
+            "animation": null
+          }
+        ]
+      }
     },
     {
       "namespace": "verticalslabs",
@@ -1430,7 +3080,40 @@
         }
       ],
       "variants": [],
-      "transitions": []
+      "transitions": [],
+      "inHand": {
+        "kind": "item",
+        "block": "mossy_cobblestone_slab"
+      },
+      "placed": {
+        "baseHead": null,
+        "displayEntities": [
+          {
+            "kind": "block",
+            "block": "mossy_cobblestone_slab",
+            "transform": {
+              "translation": [
+                -0.5,
+                -0.5,
+                0.001
+              ],
+              "scale": [
+                1,
+                1.004,
+                1
+              ],
+              "leftRotation": [
+                -90,
+                1,
+                0,
+                0
+              ],
+              "rightRotation": null
+            },
+            "animation": null
+          }
+        ]
+      }
     },
     {
       "namespace": "verticalslabs",
@@ -1456,7 +3139,40 @@
         }
       ],
       "variants": [],
-      "transitions": []
+      "transitions": [],
+      "inHand": {
+        "kind": "item",
+        "block": "smooth_stone_slab"
+      },
+      "placed": {
+        "baseHead": null,
+        "displayEntities": [
+          {
+            "kind": "block",
+            "block": "smooth_stone_slab",
+            "transform": {
+              "translation": [
+                -0.5,
+                -0.5,
+                0.001
+              ],
+              "scale": [
+                1,
+                1.004,
+                1
+              ],
+              "leftRotation": [
+                -90,
+                1,
+                0,
+                0
+              ],
+              "rightRotation": null
+            },
+            "animation": null
+          }
+        ]
+      }
     },
     {
       "namespace": "verticalslabs",
@@ -1482,7 +3198,40 @@
         }
       ],
       "variants": [],
-      "transitions": []
+      "transitions": [],
+      "inHand": {
+        "kind": "item",
+        "block": "stone_brick_slab"
+      },
+      "placed": {
+        "baseHead": null,
+        "displayEntities": [
+          {
+            "kind": "block",
+            "block": "stone_brick_slab",
+            "transform": {
+              "translation": [
+                -0.5,
+                -0.5,
+                0.001
+              ],
+              "scale": [
+                1,
+                1.004,
+                1
+              ],
+              "leftRotation": [
+                -90,
+                1,
+                0,
+                0
+              ],
+              "rightRotation": null
+            },
+            "animation": null
+          }
+        ]
+      }
     },
     {
       "namespace": "verticalslabs",
@@ -1508,7 +3257,40 @@
         }
       ],
       "variants": [],
-      "transitions": []
+      "transitions": [],
+      "inHand": {
+        "kind": "item",
+        "block": "mossy_stone_brick_slab"
+      },
+      "placed": {
+        "baseHead": null,
+        "displayEntities": [
+          {
+            "kind": "block",
+            "block": "mossy_stone_brick_slab",
+            "transform": {
+              "translation": [
+                -0.5,
+                -0.5,
+                0.001
+              ],
+              "scale": [
+                1,
+                1.004,
+                1
+              ],
+              "leftRotation": [
+                -90,
+                1,
+                0,
+                0
+              ],
+              "rightRotation": null
+            },
+            "animation": null
+          }
+        ]
+      }
     },
     {
       "namespace": "verticalslabs",
@@ -1534,7 +3316,40 @@
         }
       ],
       "variants": [],
-      "transitions": []
+      "transitions": [],
+      "inHand": {
+        "kind": "item",
+        "block": "granite_slab"
+      },
+      "placed": {
+        "baseHead": null,
+        "displayEntities": [
+          {
+            "kind": "block",
+            "block": "granite_slab",
+            "transform": {
+              "translation": [
+                -0.5,
+                -0.5,
+                0.001
+              ],
+              "scale": [
+                1,
+                1.004,
+                1
+              ],
+              "leftRotation": [
+                -90,
+                1,
+                0,
+                0
+              ],
+              "rightRotation": null
+            },
+            "animation": null
+          }
+        ]
+      }
     },
     {
       "namespace": "verticalslabs",
@@ -1560,7 +3375,40 @@
         }
       ],
       "variants": [],
-      "transitions": []
+      "transitions": [],
+      "inHand": {
+        "kind": "item",
+        "block": "polished_granite_slab"
+      },
+      "placed": {
+        "baseHead": null,
+        "displayEntities": [
+          {
+            "kind": "block",
+            "block": "polished_granite_slab",
+            "transform": {
+              "translation": [
+                -0.5,
+                -0.5,
+                0.001
+              ],
+              "scale": [
+                1,
+                1.004,
+                1
+              ],
+              "leftRotation": [
+                -90,
+                1,
+                0,
+                0
+              ],
+              "rightRotation": null
+            },
+            "animation": null
+          }
+        ]
+      }
     },
     {
       "namespace": "verticalslabs",
@@ -1586,7 +3434,40 @@
         }
       ],
       "variants": [],
-      "transitions": []
+      "transitions": [],
+      "inHand": {
+        "kind": "item",
+        "block": "diorite_slab"
+      },
+      "placed": {
+        "baseHead": null,
+        "displayEntities": [
+          {
+            "kind": "block",
+            "block": "diorite_slab",
+            "transform": {
+              "translation": [
+                -0.5,
+                -0.5,
+                0.001
+              ],
+              "scale": [
+                1,
+                1.004,
+                1
+              ],
+              "leftRotation": [
+                -90,
+                1,
+                0,
+                0
+              ],
+              "rightRotation": null
+            },
+            "animation": null
+          }
+        ]
+      }
     },
     {
       "namespace": "verticalslabs",
@@ -1612,7 +3493,40 @@
         }
       ],
       "variants": [],
-      "transitions": []
+      "transitions": [],
+      "inHand": {
+        "kind": "item",
+        "block": "polished_diorite_slab"
+      },
+      "placed": {
+        "baseHead": null,
+        "displayEntities": [
+          {
+            "kind": "block",
+            "block": "polished_diorite_slab",
+            "transform": {
+              "translation": [
+                -0.5,
+                -0.5,
+                0.001
+              ],
+              "scale": [
+                1,
+                1.004,
+                1
+              ],
+              "leftRotation": [
+                -90,
+                1,
+                0,
+                0
+              ],
+              "rightRotation": null
+            },
+            "animation": null
+          }
+        ]
+      }
     },
     {
       "namespace": "verticalslabs",
@@ -1638,7 +3552,40 @@
         }
       ],
       "variants": [],
-      "transitions": []
+      "transitions": [],
+      "inHand": {
+        "kind": "item",
+        "block": "andesite_slab"
+      },
+      "placed": {
+        "baseHead": null,
+        "displayEntities": [
+          {
+            "kind": "block",
+            "block": "andesite_slab",
+            "transform": {
+              "translation": [
+                -0.5,
+                -0.5,
+                0.001
+              ],
+              "scale": [
+                1,
+                1.004,
+                1
+              ],
+              "leftRotation": [
+                -90,
+                1,
+                0,
+                0
+              ],
+              "rightRotation": null
+            },
+            "animation": null
+          }
+        ]
+      }
     },
     {
       "namespace": "verticalslabs",
@@ -1664,7 +3611,40 @@
         }
       ],
       "variants": [],
-      "transitions": []
+      "transitions": [],
+      "inHand": {
+        "kind": "item",
+        "block": "polished_andesite_slab"
+      },
+      "placed": {
+        "baseHead": null,
+        "displayEntities": [
+          {
+            "kind": "block",
+            "block": "polished_andesite_slab",
+            "transform": {
+              "translation": [
+                -0.5,
+                -0.5,
+                0.001
+              ],
+              "scale": [
+                1,
+                1.004,
+                1
+              ],
+              "leftRotation": [
+                -90,
+                1,
+                0,
+                0
+              ],
+              "rightRotation": null
+            },
+            "animation": null
+          }
+        ]
+      }
     },
     {
       "namespace": "verticalslabs",
@@ -1690,7 +3670,40 @@
         }
       ],
       "variants": [],
-      "transitions": []
+      "transitions": [],
+      "inHand": {
+        "kind": "item",
+        "block": "sandstone_slab"
+      },
+      "placed": {
+        "baseHead": null,
+        "displayEntities": [
+          {
+            "kind": "block",
+            "block": "sandstone_slab",
+            "transform": {
+              "translation": [
+                -0.5,
+                -0.5,
+                0.001
+              ],
+              "scale": [
+                1,
+                1.004,
+                1
+              ],
+              "leftRotation": [
+                -90,
+                1,
+                0,
+                0
+              ],
+              "rightRotation": null
+            },
+            "animation": null
+          }
+        ]
+      }
     },
     {
       "namespace": "verticalslabs",
@@ -1716,7 +3729,40 @@
         }
       ],
       "variants": [],
-      "transitions": []
+      "transitions": [],
+      "inHand": {
+        "kind": "item",
+        "block": "smooth_sandstone_slab"
+      },
+      "placed": {
+        "baseHead": null,
+        "displayEntities": [
+          {
+            "kind": "block",
+            "block": "smooth_sandstone_slab",
+            "transform": {
+              "translation": [
+                -0.5,
+                -0.5,
+                0.001
+              ],
+              "scale": [
+                1,
+                1.004,
+                1
+              ],
+              "leftRotation": [
+                -90,
+                1,
+                0,
+                0
+              ],
+              "rightRotation": null
+            },
+            "animation": null
+          }
+        ]
+      }
     },
     {
       "namespace": "verticalslabs",
@@ -1742,7 +3788,40 @@
         }
       ],
       "variants": [],
-      "transitions": []
+      "transitions": [],
+      "inHand": {
+        "kind": "item",
+        "block": "cut_sandstone_slab"
+      },
+      "placed": {
+        "baseHead": null,
+        "displayEntities": [
+          {
+            "kind": "block",
+            "block": "cut_sandstone_slab",
+            "transform": {
+              "translation": [
+                -0.5,
+                -0.5,
+                0.001
+              ],
+              "scale": [
+                1,
+                1.004,
+                1
+              ],
+              "leftRotation": [
+                -90,
+                1,
+                0,
+                0
+              ],
+              "rightRotation": null
+            },
+            "animation": null
+          }
+        ]
+      }
     },
     {
       "namespace": "verticalslabs",
@@ -1768,7 +3847,40 @@
         }
       ],
       "variants": [],
-      "transitions": []
+      "transitions": [],
+      "inHand": {
+        "kind": "item",
+        "block": "red_sandstone_slab"
+      },
+      "placed": {
+        "baseHead": null,
+        "displayEntities": [
+          {
+            "kind": "block",
+            "block": "red_sandstone_slab",
+            "transform": {
+              "translation": [
+                -0.5,
+                -0.5,
+                0.001
+              ],
+              "scale": [
+                1,
+                1.004,
+                1
+              ],
+              "leftRotation": [
+                -90,
+                1,
+                0,
+                0
+              ],
+              "rightRotation": null
+            },
+            "animation": null
+          }
+        ]
+      }
     },
     {
       "namespace": "verticalslabs",
@@ -1794,7 +3906,40 @@
         }
       ],
       "variants": [],
-      "transitions": []
+      "transitions": [],
+      "inHand": {
+        "kind": "item",
+        "block": "smooth_red_sandstone_slab"
+      },
+      "placed": {
+        "baseHead": null,
+        "displayEntities": [
+          {
+            "kind": "block",
+            "block": "smooth_red_sandstone_slab",
+            "transform": {
+              "translation": [
+                -0.5,
+                -0.5,
+                0.001
+              ],
+              "scale": [
+                1,
+                1.004,
+                1
+              ],
+              "leftRotation": [
+                -90,
+                1,
+                0,
+                0
+              ],
+              "rightRotation": null
+            },
+            "animation": null
+          }
+        ]
+      }
     },
     {
       "namespace": "verticalslabs",
@@ -1820,7 +3965,40 @@
         }
       ],
       "variants": [],
-      "transitions": []
+      "transitions": [],
+      "inHand": {
+        "kind": "item",
+        "block": "cut_red_sandstone_slab"
+      },
+      "placed": {
+        "baseHead": null,
+        "displayEntities": [
+          {
+            "kind": "block",
+            "block": "cut_red_sandstone_slab",
+            "transform": {
+              "translation": [
+                -0.5,
+                -0.5,
+                0.001
+              ],
+              "scale": [
+                1,
+                1.004,
+                1
+              ],
+              "leftRotation": [
+                -90,
+                1,
+                0,
+                0
+              ],
+              "rightRotation": null
+            },
+            "animation": null
+          }
+        ]
+      }
     },
     {
       "namespace": "verticalslabs",
@@ -1846,7 +4024,40 @@
         }
       ],
       "variants": [],
-      "transitions": []
+      "transitions": [],
+      "inHand": {
+        "kind": "item",
+        "block": "brick_slab"
+      },
+      "placed": {
+        "baseHead": null,
+        "displayEntities": [
+          {
+            "kind": "block",
+            "block": "brick_slab",
+            "transform": {
+              "translation": [
+                -0.5,
+                -0.5,
+                0.001
+              ],
+              "scale": [
+                1,
+                1.004,
+                1
+              ],
+              "leftRotation": [
+                -90,
+                1,
+                0,
+                0
+              ],
+              "rightRotation": null
+            },
+            "animation": null
+          }
+        ]
+      }
     },
     {
       "namespace": "verticalslabs",
@@ -1872,7 +4083,40 @@
         }
       ],
       "variants": [],
-      "transitions": []
+      "transitions": [],
+      "inHand": {
+        "kind": "item",
+        "block": "mud_brick_slab"
+      },
+      "placed": {
+        "baseHead": null,
+        "displayEntities": [
+          {
+            "kind": "block",
+            "block": "mud_brick_slab",
+            "transform": {
+              "translation": [
+                -0.5,
+                -0.5,
+                0.001
+              ],
+              "scale": [
+                1,
+                1.004,
+                1
+              ],
+              "leftRotation": [
+                -90,
+                1,
+                0,
+                0
+              ],
+              "rightRotation": null
+            },
+            "animation": null
+          }
+        ]
+      }
     },
     {
       "namespace": "verticalslabs",
@@ -1898,7 +4142,40 @@
         }
       ],
       "variants": [],
-      "transitions": []
+      "transitions": [],
+      "inHand": {
+        "kind": "item",
+        "block": "nether_brick_slab"
+      },
+      "placed": {
+        "baseHead": null,
+        "displayEntities": [
+          {
+            "kind": "block",
+            "block": "nether_brick_slab",
+            "transform": {
+              "translation": [
+                -0.5,
+                -0.5,
+                0.001
+              ],
+              "scale": [
+                1,
+                1.004,
+                1
+              ],
+              "leftRotation": [
+                -90,
+                1,
+                0,
+                0
+              ],
+              "rightRotation": null
+            },
+            "animation": null
+          }
+        ]
+      }
     },
     {
       "namespace": "verticalslabs",
@@ -1924,7 +4201,40 @@
         }
       ],
       "variants": [],
-      "transitions": []
+      "transitions": [],
+      "inHand": {
+        "kind": "item",
+        "block": "red_nether_brick_slab"
+      },
+      "placed": {
+        "baseHead": null,
+        "displayEntities": [
+          {
+            "kind": "block",
+            "block": "red_nether_brick_slab",
+            "transform": {
+              "translation": [
+                -0.5,
+                -0.5,
+                0.001
+              ],
+              "scale": [
+                1,
+                1.004,
+                1
+              ],
+              "leftRotation": [
+                -90,
+                1,
+                0,
+                0
+              ],
+              "rightRotation": null
+            },
+            "animation": null
+          }
+        ]
+      }
     },
     {
       "namespace": "verticalslabs",
@@ -1950,7 +4260,40 @@
         }
       ],
       "variants": [],
-      "transitions": []
+      "transitions": [],
+      "inHand": {
+        "kind": "item",
+        "block": "quartz_slab"
+      },
+      "placed": {
+        "baseHead": null,
+        "displayEntities": [
+          {
+            "kind": "block",
+            "block": "quartz_slab",
+            "transform": {
+              "translation": [
+                -0.5,
+                -0.5,
+                0.001
+              ],
+              "scale": [
+                1,
+                1.004,
+                1
+              ],
+              "leftRotation": [
+                -90,
+                1,
+                0,
+                0
+              ],
+              "rightRotation": null
+            },
+            "animation": null
+          }
+        ]
+      }
     },
     {
       "namespace": "verticalslabs",
@@ -1976,7 +4319,40 @@
         }
       ],
       "variants": [],
-      "transitions": []
+      "transitions": [],
+      "inHand": {
+        "kind": "item",
+        "block": "smooth_quartz_slab"
+      },
+      "placed": {
+        "baseHead": null,
+        "displayEntities": [
+          {
+            "kind": "block",
+            "block": "smooth_quartz_slab",
+            "transform": {
+              "translation": [
+                -0.5,
+                -0.5,
+                0.001
+              ],
+              "scale": [
+                1,
+                1.004,
+                1
+              ],
+              "leftRotation": [
+                -90,
+                1,
+                0,
+                0
+              ],
+              "rightRotation": null
+            },
+            "animation": null
+          }
+        ]
+      }
     },
     {
       "namespace": "verticalslabs",
@@ -2002,7 +4378,40 @@
         }
       ],
       "variants": [],
-      "transitions": []
+      "transitions": [],
+      "inHand": {
+        "kind": "item",
+        "block": "prismarine_slab"
+      },
+      "placed": {
+        "baseHead": null,
+        "displayEntities": [
+          {
+            "kind": "block",
+            "block": "prismarine_slab",
+            "transform": {
+              "translation": [
+                -0.5,
+                -0.5,
+                0.001
+              ],
+              "scale": [
+                1,
+                1.004,
+                1
+              ],
+              "leftRotation": [
+                -90,
+                1,
+                0,
+                0
+              ],
+              "rightRotation": null
+            },
+            "animation": null
+          }
+        ]
+      }
     },
     {
       "namespace": "verticalslabs",
@@ -2028,7 +4437,40 @@
         }
       ],
       "variants": [],
-      "transitions": []
+      "transitions": [],
+      "inHand": {
+        "kind": "item",
+        "block": "prismarine_brick_slab"
+      },
+      "placed": {
+        "baseHead": null,
+        "displayEntities": [
+          {
+            "kind": "block",
+            "block": "prismarine_brick_slab",
+            "transform": {
+              "translation": [
+                -0.5,
+                -0.5,
+                0.001
+              ],
+              "scale": [
+                1,
+                1.004,
+                1
+              ],
+              "leftRotation": [
+                -90,
+                1,
+                0,
+                0
+              ],
+              "rightRotation": null
+            },
+            "animation": null
+          }
+        ]
+      }
     },
     {
       "namespace": "verticalslabs",
@@ -2054,7 +4496,40 @@
         }
       ],
       "variants": [],
-      "transitions": []
+      "transitions": [],
+      "inHand": {
+        "kind": "item",
+        "block": "dark_prismarine_slab"
+      },
+      "placed": {
+        "baseHead": null,
+        "displayEntities": [
+          {
+            "kind": "block",
+            "block": "dark_prismarine_slab",
+            "transform": {
+              "translation": [
+                -0.5,
+                -0.5,
+                0.001
+              ],
+              "scale": [
+                1,
+                1.004,
+                1
+              ],
+              "leftRotation": [
+                -90,
+                1,
+                0,
+                0
+              ],
+              "rightRotation": null
+            },
+            "animation": null
+          }
+        ]
+      }
     },
     {
       "namespace": "verticalslabs",
@@ -2080,7 +4555,40 @@
         }
       ],
       "variants": [],
-      "transitions": []
+      "transitions": [],
+      "inHand": {
+        "kind": "item",
+        "block": "end_stone_brick_slab"
+      },
+      "placed": {
+        "baseHead": null,
+        "displayEntities": [
+          {
+            "kind": "block",
+            "block": "end_stone_brick_slab",
+            "transform": {
+              "translation": [
+                -0.5,
+                -0.5,
+                0.001
+              ],
+              "scale": [
+                1,
+                1.004,
+                1
+              ],
+              "leftRotation": [
+                -90,
+                1,
+                0,
+                0
+              ],
+              "rightRotation": null
+            },
+            "animation": null
+          }
+        ]
+      }
     },
     {
       "namespace": "verticalslabs",
@@ -2106,7 +4614,40 @@
         }
       ],
       "variants": [],
-      "transitions": []
+      "transitions": [],
+      "inHand": {
+        "kind": "item",
+        "block": "purpur_slab"
+      },
+      "placed": {
+        "baseHead": null,
+        "displayEntities": [
+          {
+            "kind": "block",
+            "block": "purpur_slab",
+            "transform": {
+              "translation": [
+                -0.5,
+                -0.5,
+                0.001
+              ],
+              "scale": [
+                1,
+                1.004,
+                1
+              ],
+              "leftRotation": [
+                -90,
+                1,
+                0,
+                0
+              ],
+              "rightRotation": null
+            },
+            "animation": null
+          }
+        ]
+      }
     },
     {
       "namespace": "verticalslabs",
@@ -2132,7 +4673,40 @@
         }
       ],
       "variants": [],
-      "transitions": []
+      "transitions": [],
+      "inHand": {
+        "kind": "item",
+        "block": "blackstone_slab"
+      },
+      "placed": {
+        "baseHead": null,
+        "displayEntities": [
+          {
+            "kind": "block",
+            "block": "blackstone_slab",
+            "transform": {
+              "translation": [
+                -0.5,
+                -0.5,
+                0.001
+              ],
+              "scale": [
+                1,
+                1.004,
+                1
+              ],
+              "leftRotation": [
+                -90,
+                1,
+                0,
+                0
+              ],
+              "rightRotation": null
+            },
+            "animation": null
+          }
+        ]
+      }
     },
     {
       "namespace": "verticalslabs",
@@ -2158,7 +4732,40 @@
         }
       ],
       "variants": [],
-      "transitions": []
+      "transitions": [],
+      "inHand": {
+        "kind": "item",
+        "block": "polished_blackstone_slab"
+      },
+      "placed": {
+        "baseHead": null,
+        "displayEntities": [
+          {
+            "kind": "block",
+            "block": "polished_blackstone_slab",
+            "transform": {
+              "translation": [
+                -0.5,
+                -0.5,
+                0.001
+              ],
+              "scale": [
+                1,
+                1.004,
+                1
+              ],
+              "leftRotation": [
+                -90,
+                1,
+                0,
+                0
+              ],
+              "rightRotation": null
+            },
+            "animation": null
+          }
+        ]
+      }
     },
     {
       "namespace": "verticalslabs",
@@ -2184,7 +4791,40 @@
         }
       ],
       "variants": [],
-      "transitions": []
+      "transitions": [],
+      "inHand": {
+        "kind": "item",
+        "block": "polished_blackstone_brick_slab"
+      },
+      "placed": {
+        "baseHead": null,
+        "displayEntities": [
+          {
+            "kind": "block",
+            "block": "polished_blackstone_brick_slab",
+            "transform": {
+              "translation": [
+                -0.5,
+                -0.5,
+                0.001
+              ],
+              "scale": [
+                1,
+                1.004,
+                1
+              ],
+              "leftRotation": [
+                -90,
+                1,
+                0,
+                0
+              ],
+              "rightRotation": null
+            },
+            "animation": null
+          }
+        ]
+      }
     },
     {
       "namespace": "verticalslabs",
@@ -2210,7 +4850,40 @@
         }
       ],
       "variants": [],
-      "transitions": []
+      "transitions": [],
+      "inHand": {
+        "kind": "item",
+        "block": "cobbled_deepslate_slab"
+      },
+      "placed": {
+        "baseHead": null,
+        "displayEntities": [
+          {
+            "kind": "block",
+            "block": "cobbled_deepslate_slab",
+            "transform": {
+              "translation": [
+                -0.5,
+                -0.5,
+                0.001
+              ],
+              "scale": [
+                1,
+                1.004,
+                1
+              ],
+              "leftRotation": [
+                -90,
+                1,
+                0,
+                0
+              ],
+              "rightRotation": null
+            },
+            "animation": null
+          }
+        ]
+      }
     },
     {
       "namespace": "verticalslabs",
@@ -2236,7 +4909,40 @@
         }
       ],
       "variants": [],
-      "transitions": []
+      "transitions": [],
+      "inHand": {
+        "kind": "item",
+        "block": "polished_deepslate_slab"
+      },
+      "placed": {
+        "baseHead": null,
+        "displayEntities": [
+          {
+            "kind": "block",
+            "block": "polished_deepslate_slab",
+            "transform": {
+              "translation": [
+                -0.5,
+                -0.5,
+                0.001
+              ],
+              "scale": [
+                1,
+                1.004,
+                1
+              ],
+              "leftRotation": [
+                -90,
+                1,
+                0,
+                0
+              ],
+              "rightRotation": null
+            },
+            "animation": null
+          }
+        ]
+      }
     },
     {
       "namespace": "verticalslabs",
@@ -2262,7 +4968,40 @@
         }
       ],
       "variants": [],
-      "transitions": []
+      "transitions": [],
+      "inHand": {
+        "kind": "item",
+        "block": "deepslate_brick_slab"
+      },
+      "placed": {
+        "baseHead": null,
+        "displayEntities": [
+          {
+            "kind": "block",
+            "block": "deepslate_brick_slab",
+            "transform": {
+              "translation": [
+                -0.5,
+                -0.5,
+                0.001
+              ],
+              "scale": [
+                1,
+                1.004,
+                1
+              ],
+              "leftRotation": [
+                -90,
+                1,
+                0,
+                0
+              ],
+              "rightRotation": null
+            },
+            "animation": null
+          }
+        ]
+      }
     },
     {
       "namespace": "verticalslabs",
@@ -2288,7 +5027,40 @@
         }
       ],
       "variants": [],
-      "transitions": []
+      "transitions": [],
+      "inHand": {
+        "kind": "item",
+        "block": "deepslate_tile_slab"
+      },
+      "placed": {
+        "baseHead": null,
+        "displayEntities": [
+          {
+            "kind": "block",
+            "block": "deepslate_tile_slab",
+            "transform": {
+              "translation": [
+                -0.5,
+                -0.5,
+                0.001
+              ],
+              "scale": [
+                1,
+                1.004,
+                1
+              ],
+              "leftRotation": [
+                -90,
+                1,
+                0,
+                0
+              ],
+              "rightRotation": null
+            },
+            "animation": null
+          }
+        ]
+      }
     },
     {
       "namespace": "verticalslabs",
@@ -2314,7 +5086,40 @@
         }
       ],
       "variants": [],
-      "transitions": []
+      "transitions": [],
+      "inHand": {
+        "kind": "item",
+        "block": "tuff_slab"
+      },
+      "placed": {
+        "baseHead": null,
+        "displayEntities": [
+          {
+            "kind": "block",
+            "block": "tuff_slab",
+            "transform": {
+              "translation": [
+                -0.5,
+                -0.5,
+                0.001
+              ],
+              "scale": [
+                1,
+                1.004,
+                1
+              ],
+              "leftRotation": [
+                -90,
+                1,
+                0,
+                0
+              ],
+              "rightRotation": null
+            },
+            "animation": null
+          }
+        ]
+      }
     },
     {
       "namespace": "verticalslabs",
@@ -2340,7 +5145,40 @@
         }
       ],
       "variants": [],
-      "transitions": []
+      "transitions": [],
+      "inHand": {
+        "kind": "item",
+        "block": "polished_tuff_slab"
+      },
+      "placed": {
+        "baseHead": null,
+        "displayEntities": [
+          {
+            "kind": "block",
+            "block": "polished_tuff_slab",
+            "transform": {
+              "translation": [
+                -0.5,
+                -0.5,
+                0.001
+              ],
+              "scale": [
+                1,
+                1.004,
+                1
+              ],
+              "leftRotation": [
+                -90,
+                1,
+                0,
+                0
+              ],
+              "rightRotation": null
+            },
+            "animation": null
+          }
+        ]
+      }
     },
     {
       "namespace": "verticalslabs",
@@ -2366,7 +5204,40 @@
         }
       ],
       "variants": [],
-      "transitions": []
+      "transitions": [],
+      "inHand": {
+        "kind": "item",
+        "block": "tuff_brick_slab"
+      },
+      "placed": {
+        "baseHead": null,
+        "displayEntities": [
+          {
+            "kind": "block",
+            "block": "tuff_brick_slab",
+            "transform": {
+              "translation": [
+                -0.5,
+                -0.5,
+                0.001
+              ],
+              "scale": [
+                1,
+                1.004,
+                1
+              ],
+              "leftRotation": [
+                -90,
+                1,
+                0,
+                0
+              ],
+              "rightRotation": null
+            },
+            "animation": null
+          }
+        ]
+      }
     },
     {
       "namespace": "verticalslabs",
@@ -2392,7 +5263,40 @@
         }
       ],
       "variants": [],
-      "transitions": []
+      "transitions": [],
+      "inHand": {
+        "kind": "item",
+        "block": "resin_brick_slab"
+      },
+      "placed": {
+        "baseHead": null,
+        "displayEntities": [
+          {
+            "kind": "block",
+            "block": "resin_brick_slab",
+            "transform": {
+              "translation": [
+                -0.5,
+                -0.5,
+                0.001
+              ],
+              "scale": [
+                1,
+                1.004,
+                1
+              ],
+              "leftRotation": [
+                -90,
+                1,
+                0,
+                0
+              ],
+              "rightRotation": null
+            },
+            "animation": null
+          }
+        ]
+      }
     },
     {
       "namespace": "verticalslabs",
@@ -2418,7 +5322,40 @@
         }
       ],
       "variants": [],
-      "transitions": []
+      "transitions": [],
+      "inHand": {
+        "kind": "item",
+        "block": "cut_copper_slab"
+      },
+      "placed": {
+        "baseHead": null,
+        "displayEntities": [
+          {
+            "kind": "block",
+            "block": "cut_copper_slab",
+            "transform": {
+              "translation": [
+                -0.5,
+                -0.5,
+                0.001
+              ],
+              "scale": [
+                1,
+                1.004,
+                1
+              ],
+              "leftRotation": [
+                -90,
+                1,
+                0,
+                0
+              ],
+              "rightRotation": null
+            },
+            "animation": null
+          }
+        ]
+      }
     },
     {
       "namespace": "verticalslabs",
@@ -2444,7 +5381,40 @@
         }
       ],
       "variants": [],
-      "transitions": []
+      "transitions": [],
+      "inHand": {
+        "kind": "item",
+        "block": "exposed_cut_copper_slab"
+      },
+      "placed": {
+        "baseHead": null,
+        "displayEntities": [
+          {
+            "kind": "block",
+            "block": "exposed_cut_copper_slab",
+            "transform": {
+              "translation": [
+                -0.5,
+                -0.5,
+                0.001
+              ],
+              "scale": [
+                1,
+                1.004,
+                1
+              ],
+              "leftRotation": [
+                -90,
+                1,
+                0,
+                0
+              ],
+              "rightRotation": null
+            },
+            "animation": null
+          }
+        ]
+      }
     },
     {
       "namespace": "verticalslabs",
@@ -2470,7 +5440,40 @@
         }
       ],
       "variants": [],
-      "transitions": []
+      "transitions": [],
+      "inHand": {
+        "kind": "item",
+        "block": "weathered_cut_copper_slab"
+      },
+      "placed": {
+        "baseHead": null,
+        "displayEntities": [
+          {
+            "kind": "block",
+            "block": "weathered_cut_copper_slab",
+            "transform": {
+              "translation": [
+                -0.5,
+                -0.5,
+                0.001
+              ],
+              "scale": [
+                1,
+                1.004,
+                1
+              ],
+              "leftRotation": [
+                -90,
+                1,
+                0,
+                0
+              ],
+              "rightRotation": null
+            },
+            "animation": null
+          }
+        ]
+      }
     },
     {
       "namespace": "verticalslabs",
@@ -2496,7 +5499,40 @@
         }
       ],
       "variants": [],
-      "transitions": []
+      "transitions": [],
+      "inHand": {
+        "kind": "item",
+        "block": "oxidized_cut_copper_slab"
+      },
+      "placed": {
+        "baseHead": null,
+        "displayEntities": [
+          {
+            "kind": "block",
+            "block": "oxidized_cut_copper_slab",
+            "transform": {
+              "translation": [
+                -0.5,
+                -0.5,
+                0.001
+              ],
+              "scale": [
+                1,
+                1.004,
+                1
+              ],
+              "leftRotation": [
+                -90,
+                1,
+                0,
+                0
+              ],
+              "rightRotation": null
+            },
+            "animation": null
+          }
+        ]
+      }
     },
     {
       "namespace": "verticalslabs",
@@ -2522,7 +5558,40 @@
         }
       ],
       "variants": [],
-      "transitions": []
+      "transitions": [],
+      "inHand": {
+        "kind": "item",
+        "block": "waxed_cut_copper_slab"
+      },
+      "placed": {
+        "baseHead": null,
+        "displayEntities": [
+          {
+            "kind": "block",
+            "block": "waxed_cut_copper_slab",
+            "transform": {
+              "translation": [
+                -0.5,
+                -0.5,
+                0.001
+              ],
+              "scale": [
+                1,
+                1.004,
+                1
+              ],
+              "leftRotation": [
+                -90,
+                1,
+                0,
+                0
+              ],
+              "rightRotation": null
+            },
+            "animation": null
+          }
+        ]
+      }
     },
     {
       "namespace": "verticalslabs",
@@ -2548,7 +5617,40 @@
         }
       ],
       "variants": [],
-      "transitions": []
+      "transitions": [],
+      "inHand": {
+        "kind": "item",
+        "block": "waxed_exposed_cut_copper_slab"
+      },
+      "placed": {
+        "baseHead": null,
+        "displayEntities": [
+          {
+            "kind": "block",
+            "block": "waxed_exposed_cut_copper_slab",
+            "transform": {
+              "translation": [
+                -0.5,
+                -0.5,
+                0.001
+              ],
+              "scale": [
+                1,
+                1.004,
+                1
+              ],
+              "leftRotation": [
+                -90,
+                1,
+                0,
+                0
+              ],
+              "rightRotation": null
+            },
+            "animation": null
+          }
+        ]
+      }
     },
     {
       "namespace": "verticalslabs",
@@ -2574,7 +5676,40 @@
         }
       ],
       "variants": [],
-      "transitions": []
+      "transitions": [],
+      "inHand": {
+        "kind": "item",
+        "block": "waxed_weathered_cut_copper_slab"
+      },
+      "placed": {
+        "baseHead": null,
+        "displayEntities": [
+          {
+            "kind": "block",
+            "block": "waxed_weathered_cut_copper_slab",
+            "transform": {
+              "translation": [
+                -0.5,
+                -0.5,
+                0.001
+              ],
+              "scale": [
+                1,
+                1.004,
+                1
+              ],
+              "leftRotation": [
+                -90,
+                1,
+                0,
+                0
+              ],
+              "rightRotation": null
+            },
+            "animation": null
+          }
+        ]
+      }
     },
     {
       "namespace": "verticalslabs",
@@ -2600,7 +5735,40 @@
         }
       ],
       "variants": [],
-      "transitions": []
+      "transitions": [],
+      "inHand": {
+        "kind": "item",
+        "block": "waxed_oxidized_cut_copper_slab"
+      },
+      "placed": {
+        "baseHead": null,
+        "displayEntities": [
+          {
+            "kind": "block",
+            "block": "waxed_oxidized_cut_copper_slab",
+            "transform": {
+              "translation": [
+                -0.5,
+                -0.5,
+                0.001
+              ],
+              "scale": [
+                1,
+                1.004,
+                1
+              ],
+              "leftRotation": [
+                -90,
+                1,
+                0,
+                0
+              ],
+              "rightRotation": null
+            },
+            "animation": null
+          }
+        ]
+      }
     },
     {
       "namespace": "corelib",
@@ -2638,7 +5806,15 @@
         }
       ],
       "variants": [],
-      "transitions": []
+      "transitions": [],
+      "inHand": {
+        "kind": "item",
+        "block": "white_banner"
+      },
+      "placed": {
+        "baseHead": null,
+        "displayEntities": []
+      }
     },
     {
       "namespace": "rotation",
@@ -2676,7 +5852,15 @@
         }
       ],
       "variants": [],
-      "transitions": []
+      "transitions": [],
+      "inHand": {
+        "kind": "item",
+        "block": "golden_axe"
+      },
+      "placed": {
+        "baseHead": null,
+        "displayEntities": []
+      }
     }
   ],
   "grindRecipes": [

@@ -259,6 +259,34 @@ a.slot { text-decoration: none; color: inherit; }
 .detail-section { margin-top: 24px; }
 .detail-section .section-title { margin-top: 0; }
 
+/* 3D viewers (detail page) */
+.viewers { display: flex; flex-wrap: wrap; gap: 16px; margin: 18px 0 4px; }
+.viewer {
+  background: #222;
+  border: 1px solid #353535;
+  border-radius: 10px;
+  padding: 10px;
+}
+.viewer-label { color: #4ecca3; font-size: 0.72em; text-transform: uppercase; margin-bottom: 6px; }
+.viewer-canvas {
+  width: 280px;
+  height: 280px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: grab;
+}
+.viewer-canvas:active { cursor: grabbing; }
+.viewer-canvas canvas { display: block; }
+.viewer-canvas .flat-item {
+  image-rendering: pixelated;
+  width: 128px;
+  height: 128px;
+  object-fit: contain;
+}
+.viewer-fail { color: #666; font-size: 0.8em; }
+@media (max-width: 640px) { .viewer-canvas { width: 220px; height: 220px; } }
+
 /* States / variants */
 .variant-group { margin-bottom: 18px; }
 .variant-group-title { color: #4ecca3; font-size: 0.78em; text-transform: uppercase; margin-bottom: 8px; }

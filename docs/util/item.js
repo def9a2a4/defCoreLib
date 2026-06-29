@@ -1,6 +1,8 @@
 import {
-  esc, mcText, stripColors, iconHtml, recipesHtml, hydrateHeads,
+  esc, mcText, stripColors, iconHtml, recipesHtml, hydrateHeads, materialPath,
 } from './render.js';
+import { render3DHead } from './head3d.js';
+import { renderPlaced } from './placed3d.js';
 
 const GROUP_TITLES = { states: 'States', power: 'Redstone power', facing: 'By facing' };
 const GROUP_ORDER = ['states', 'power', 'facing'];
@@ -71,6 +73,7 @@ function renderItem(item, itemsById) {
       </div>
     </div>
     ${lore}
+    <div class="viewers" id="viewers"></div>
     <div class="detail-section">
       <h2 class="section-title">Recipes</h2>
       ${recipesHtml(item, itemsById)}
@@ -78,6 +81,49 @@ function renderItem(item, itemsById) {
     ${variantsHtml(item)}
   `;
   hydrateHeads(detail);
+  mountViewers(item);
+}
+
+// Add a labelled 3D viewer panel and drive `renderFn(canvasContainer)` into it.
+function addViewer(parent, label, renderFn) {
+  const panel = document.createElement('div');
+  panel.className = 'viewer';
+  panel.innerHTML = `<div class="viewer-label">${esc(label)}</div><div class="viewer-canvas"></div>`;
+  parent.appendChild(panel);
+  const canvas = panel.querySelector('.viewer-canvas');
+  Promise.resolve(renderFn(canvas)).catch((e) => {
+    console.warn(e);
+    canvas.innerHTML = '<div class="viewer-fail">3D unavailable</div>';
+  });
+}
+
+function inHandViewer(item) {
+  const ih = item.inHand || {};
+  if (ih.kind === 'head' && ih.textureUrl) return (c) => render3DHead(ih.textureUrl, c);
+  // Vanilla item_material items: show the reliable 2D inventory icon (their 3D block
+  // form appears in the "Placed" viewer).
+  if (ih.kind === 'item' && ih.block) {
+    return (c) => { c.innerHTML = `<img class="flat-item" src="${materialPath(ih.block)}" alt="">`; };
+  }
+  return null;
+}
+
+// Show one "Block" viewer for simple head blocks; otherwise "In hand" + "Placed".
+function mountViewers(item) {
+  const host = document.getElementById('viewers');
+  const placed = item.placed || {};
+  const ih = item.inHand || {};
+  const hasEntities = (placed.displayEntities || []).length > 0;
+  const sameAppearance = ih.kind === 'head' && !hasEntities
+    && (!placed.baseHead || placed.baseHead === ih.textureUrl);
+
+  if (sameAppearance) {
+    if (ih.textureUrl) addViewer(host, 'Block', (c) => render3DHead(ih.textureUrl, c));
+    return;
+  }
+  const inHand = inHandViewer(item);
+  if (inHand) addViewer(host, 'In hand', inHand);
+  if (placed.baseHead || hasEntities) addViewer(host, 'Placed', (c) => renderPlaced(item, c));
 }
 
 async function init() {

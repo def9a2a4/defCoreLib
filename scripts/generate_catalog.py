@@ -59,6 +59,8 @@ DOCS = ROOT / "docs"
 DOCS_DATA = DOCS / "data"
 SKINS_DIR = DOCS / "assets" / "skins"
 ITEMS_DIR = DOCS / "assets" / "items"
+MODELS_DIR = DOCS / "assets" / "models"
+TEXTURES_DIR = DOCS / "assets" / "textures"
 OCTAGON_MAP = Path(__file__).resolve().parent / "octagon-textures.json"
 
 # Resource files that define craftable/placeable items (namespace + `blocks:` map).
@@ -186,13 +188,113 @@ def parse_transitions(sec: dict) -> list[dict]:
     return out
 
 
+# ── Placed display entities (3D scene) ─────────────────────────────────────
+
+def parse_transform(t) -> dict:
+    """Normalize a display-entity transform. left/right_rotation are axis-angle
+    [degrees, x, y, z]; Minecraft applies T · Rleft · S · Rright."""
+    t = t or {}
+    return {
+        "translation": list(t.get("translation") or [0, 0, 0]),
+        "scale": list(t.get("scale") or [1, 1, 1]),
+        "leftRotation": list(t["left_rotation"]) if t.get("left_rotation") else None,
+        "rightRotation": list(t["right_rotation"]) if t.get("right_rotation") else None,
+    }
+
+
+def parse_animation(a):
+    """Normalize an animation node (mirrors DisplayAnimation.java)."""
+    if not isinstance(a, dict):
+        return None
+    kind = a.get("type")
+    if kind == "rotate":
+        return {"type": "rotate", "axis": list(a.get("axis") or [0, 1, 0]), "speed": a.get("speed", 0)}
+    if kind == "bob":
+        return {"type": "bob", "amplitude": a.get("amplitude", 0), "period": a.get("period", 20)}
+    if kind == "pulse":
+        return {"type": "pulse", "minScale": a.get("min_scale", 1), "maxScale": a.get("max_scale", 1),
+                "period": a.get("period", 20)}
+    if kind == "orbit":
+        return {"type": "orbit", "radius": a.get("radius", 0), "period": a.get("period", 20),
+                "axis": list(a.get("axis") or [0, 1, 0])}
+    if kind == "compose":
+        return {"type": "compose", "layers": [parse_animation(l) for l in (a.get("layers") or []) if l]}
+    return None
+
+
+def canonical_block(name: str) -> str:
+    """Vanilla block/material id (lowercase, no namespace) with wool/banner → white."""
+    n = name.split(":")[-1].lower()
+    if n.endswith("_wool") or n == "wool":
+        return "white_wool"
+    if n.endswith("_banner") or n == "banner":
+        return "white_banner"
+    return n
+
+
+def parse_display_entity(de: dict, aliases: dict, fallback_anim) -> dict | None:
+    if not isinstance(de, dict):
+        return None
+    transform = parse_transform(de.get("transform"))
+    animation = parse_animation(de.get("animation")) or fallback_anim
+    if de.get("texture"):
+        url = texture_to_url(de["texture"], aliases)
+        if not url:
+            return None
+        return {"kind": "head", "textureUrl": url, "transform": transform, "animation": animation}
+    if de.get("block_data"):
+        return {"kind": "block", "block": canonical_block(str(de["block_data"])),
+                "transform": transform, "animation": animation}
+    if de.get("material"):
+        return {"kind": "item", "block": canonical_block(str(de["material"])),
+                "transform": transform, "animation": animation}
+    return None
+
+
+def state_display_entities(states: dict, name, base: list):
+    """A state's raw display_entities, following one level of copy_from."""
+    st = states.get(name) if name is not None else None
+    if not isinstance(st, dict):
+        return base
+    if "display_entities" in st:
+        return st["display_entities"]
+    if "copy_from" in st:
+        return state_display_entities(states, st["copy_from"], base)
+    return base
+
+
+def placed_display_entities(sec: dict, aliases: dict) -> list[dict]:
+    """Resolve the display entities to show for the placed block. Uses the default
+    state; if a sibling state is `copy_from: <default>` and adds an animation (the
+    `spinning_*` machines), apply that animation so the docs show motion."""
+    states = sec.get("states") or {}
+    base = sec.get("display_entities") or []
+    if not states:
+        raw = base
+        anim_override = None
+    else:
+        default = sec.get("default_state")
+        raw = state_display_entities(states, default, base)
+        anim_override = None
+        for st in states.values():
+            if isinstance(st, dict) and st.get("copy_from") == default and st.get("animation"):
+                anim_override = parse_animation(st["animation"])
+                break
+    out = [parse_display_entity(de, aliases, anim_override) for de in raw]
+    return [e for e in out if e]
+
+
 def parse_block(namespace: str, block_id: str, sec: dict, aliases: dict) -> dict:
     item_material = sec.get("item_material")
     if item_material:
         icon = {"type": "material", "material": str(item_material).upper()}
+        in_hand = {"kind": "item", "block": canonical_block(str(item_material))}
+        base_head = None
     else:
         url = texture_to_url(sec.get("item_texture") or sec.get("texture"), aliases)
         icon = {"type": "head", "textureUrl": url}
+        in_hand = {"kind": "head", "textureUrl": url}
+        base_head = texture_to_url(sec.get("texture"), aliases)
 
     lore = sec.get("lore") or []
     if isinstance(lore, str):
@@ -209,6 +311,8 @@ def parse_block(namespace: str, block_id: str, sec: dict, aliases: dict) -> dict
         "recipes": parse_recipes(sec.get("recipes")),
         "variants": parse_variants(sec, aliases),
         "transitions": parse_transitions(sec),
+        "inHand": in_hand,
+        "placed": {"baseHead": base_head, "displayEntities": placed_display_entities(sec, aliases)},
     }
 
 
@@ -252,6 +356,10 @@ def load_extras(path: Path) -> list[dict]:
             elif r.get("type") == "stonecutter":
                 recipes.append({"type": "stonecutter", "input": parse_ingredient(r.get("input")), "amount": r.get("amount", 1)})
         namespace = entry.get("namespace", "custom")
+        if icon["type"] == "material":
+            in_hand = {"kind": "item", "block": canonical_block(icon["material"])}
+        else:
+            in_hand = {"kind": "head", "textureUrl": icon.get("textureUrl")}
         items.append({
             "namespace": namespace,
             "id": entry["id"],
@@ -263,6 +371,8 @@ def load_extras(path: Path) -> list[dict]:
             "recipes": recipes,
             "variants": [],
             "transitions": [],
+            "inHand": in_hand,
+            "placed": {"baseHead": None, "displayEntities": []},
         })
     return items
 
@@ -299,13 +409,38 @@ def download(url: str, dest: Path) -> bool:
 
 def collect_skin_urls(items: list[dict]) -> set[str]:
     urls: set[str] = set()
+
+    def add(u):
+        if u:
+            urls.add(u)
+
     for it in items:
-        if it["icon"].get("type") == "head" and it["icon"].get("textureUrl"):
-            urls.add(it["icon"]["textureUrl"])
+        if it["icon"].get("type") == "head":
+            add(it["icon"].get("textureUrl"))
         for v in it.get("variants", []):
-            if v.get("textureUrl"):
-                urls.add(v["textureUrl"])
+            add(v.get("textureUrl"))
+        in_hand = it.get("inHand") or {}
+        if in_hand.get("kind") == "head":
+            add(in_hand.get("textureUrl"))
+        placed = it.get("placed") or {}
+        add(placed.get("baseHead"))
+        for de in placed.get("displayEntities", []):
+            if de.get("kind") == "head":
+                add(de.get("textureUrl"))
     return urls
+
+
+def collect_block_models(items: list[dict]) -> set[str]:
+    """Vanilla block/item ids used by display entities or in-hand item models."""
+    blocks: set[str] = set()
+    for it in items:
+        in_hand = it.get("inHand") or {}
+        if in_hand.get("kind") == "item" and in_hand.get("block"):
+            blocks.add(in_hand["block"])
+        for de in (it.get("placed") or {}).get("displayEntities", []):
+            if de.get("kind") in ("block", "item") and de.get("block"):
+                blocks.add(de["block"])
+    return blocks
 
 
 def collect_materials(items: list[dict], grind: list[dict]) -> set[str]:
@@ -360,7 +495,94 @@ def resolve_material_url(name: str, octagon: dict, item_list: set, block_list: s
     return wiki_invicon_url(name)
 
 
-def vendor_assets(items: list[dict], grind: list[dict]) -> None:
+# Vanilla block/item MODELS, flattened at build time so the front-end can render them
+# in three.js without a runtime model resolver. Output: a self-contained resolved model
+# (textures key -> vendored png path, plus elements) per block id.
+MODELS_BASE = MC_ASSETS_BASE.replace("/textures", "/models")
+_MODEL_CACHE: dict = {}
+
+
+def fetch_model_json(name: str):
+    """Fetch assets/.../models/<name>.json (e.g. 'block/oak_slab'), cached. None on 404."""
+    name = name.split(":")[-1]
+    if name in _MODEL_CACHE:
+        return _MODEL_CACHE[name]
+    try:
+        data = fetch_json(f"{MODELS_BASE}/{name}.json")
+    except Exception:
+        data = None
+    _MODEL_CACHE[name] = data
+    return data
+
+
+def flatten_block_model(block_id: str):
+    """Resolve the parent chain of block/<block_id> into (textures, elements).
+    Child textures override parents; the nearest `elements` wins."""
+    textures: dict = {}
+    elements = None
+    cur = f"block/{block_id}"
+    seen: set = set()
+    while cur:
+        name = cur.split(":")[-1]
+        if name in seen:
+            break
+        seen.add(name)
+        data = fetch_model_json(name)
+        if data is None:
+            break
+        for k, v in (data.get("textures") or {}).items():
+            textures.setdefault(k, v)          # child seen first → wins
+        if elements is None and data.get("elements"):
+            elements = data["elements"]
+        cur = data.get("parent")
+    if not elements:
+        return None
+    return textures, elements
+
+
+def _resolve_ref(value, textures: dict):
+    seen = set()
+    while isinstance(value, str) and value.startswith("#") and value not in seen:
+        seen.add(value)
+        value = textures.get(value[1:])
+    if isinstance(value, str) and not value.startswith("#"):
+        return value.split(":")[-1]            # 'block/oak_planks'
+    return None
+
+
+def vendor_models(items: list[dict]) -> dict:
+    """Flatten + vendor the vanilla models/textures for every block/item display entity.
+    Returns a manifest {block_id: bool} of which resolved models are available."""
+    blocks = collect_block_models(items)
+    manifest: dict = {}
+    print(f"  vendoring {len(blocks)} block/item models -> docs/assets/models/")
+    ok = 0
+    for block_id in sorted(blocks):
+        res = flatten_block_model(block_id)
+        if not res:
+            manifest[block_id] = False
+            continue
+        textures, elements = res
+        resolved = {}
+        for k, v in textures.items():
+            path = _resolve_ref(v, textures)
+            if path:
+                resolved[k] = path
+        # Vendor each referenced texture png.
+        for path in set(resolved.values()):
+            download(f"{MC_ASSETS_BASE}/{path}.png", TEXTURES_DIR / f"{path}.png")
+        MODELS_DIR.mkdir(parents=True, exist_ok=True)
+        (MODELS_DIR / f"{block_id}.json").write_text(
+            json.dumps({"textures": resolved, "elements": elements}), encoding="utf-8")
+        manifest[block_id] = True
+        ok += 1
+    missing = [b for b, v in manifest.items() if not v]
+    print(f"    {ok}/{len(blocks)} models present"
+          + (f"; no model for: {', '.join(sorted(missing))}" if missing else ""))
+    return manifest
+
+
+def vendor_assets(items: list[dict], grind: list[dict]) -> dict:
     # Head skins.
     skin_urls = collect_skin_urls(items)
     print(f"  vendoring {len(skin_urls)} head skins -> docs/assets/skins/")
@@ -392,6 +614,9 @@ def vendor_assets(items: list[dict], grind: list[dict]) -> None:
             missing.append(mat)
     print(f"    {got}/{len(materials)} materials present"
           + (f"; no texture for: {', '.join(sorted(missing))}" if missing else ""))
+
+    # Vanilla block/item models for placed display entities.
+    return vendor_models(items)
 
 
 # ── Main ───────────────────────────────────────────────────────────────────
@@ -435,7 +660,10 @@ def main() -> int:
     if args.no_assets:
         print("  (--no-assets: skipped image vendoring)")
     else:
-        vendor_assets(items, grind)
+        manifest = vendor_assets(items, grind)
+        with (DOCS_DATA / "models-manifest.json").open("w", encoding="utf-8") as f:
+            json.dump(manifest, f, indent=2, ensure_ascii=False)
+            f.write("\n")
 
     return 0
 
