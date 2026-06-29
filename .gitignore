@@ -1,6 +1,11 @@
 # Server directory
 server/*
 
+.temp/**
+
+# Vendored docs images (downloaded by scripts/generate_catalog.py; not committed for now)
+/docs/assets/
+
 # Compiled class file
 *.class
 

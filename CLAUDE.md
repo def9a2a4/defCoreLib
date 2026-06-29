@@ -1,0 +1,1 @@
+all temp files go in `.temp/` -- not in system `/tmp/` or anywhere else. don't even bother deleting files in `.temp/`
