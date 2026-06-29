@@ -742,7 +742,10 @@ boolean isConversionRecipe(NamespacedKey key) {
 ## Part 3: Pipes — `DisplayTransformResolver` implementation
 
 The existing `calculateTransformation()` method (~120 lines) and its helpers (~60 lines)
-stay in PipeManager but are wrapped in the resolver interface.
+stay in PipeManager but are wrapped in the resolver interface. The resolver closure
+in Part 2a captures `PipeManager` via `getManager()`, giving access to PipeManager's
+`displayConfig` field — the same `DisplayConfig` instance used today for scale factors,
+offsets, and adjustment tables.
 
 ### 3a. Resolver entry point
 
@@ -940,15 +943,15 @@ CoreLib tracks display entities by tag — UUIDs are no longer needed.
 | File | Change |
 |------|--------|
 | `PipesPlugin.java` | Replace item/recipe init with CoreLib block type registration. Remove `loadItems()`, `createPipeItem()`, `getHeadItemForDirection()`, `getDisplayItem()`, `getDirectionalDisplayItem()`. Keep config loading, command handling, bStats init. |
-| `PipeManager.java` | Remove display spawn/remove/update/chunk-scan methods (`spawnDisplayEntities()`, `updateDisplayEntity()`, `updateCornerDisplayEntities()`, `removeDisplayEntities()`, `removeDisplaysByTag()`, `scanChunk()`, `scanForExistingPipes()`). Add callback methods + `resolveTransform()`. Modify `categorizeSourceBlock()` / `categorizeDestinationBlock()` to use CoreLib registry. Simplify PipeData (remove UUID list). Keep transfer + transform + path + task code (`startTasks`, `stopTasks`, `restartTasks`, `shutdown`, `findDestination`, `transferItems`, `getPipeData`, debug particles). |
-| `CauldronConversionListener.java` | Update `plugin.getVariant(item)` to use CoreLib's `BLOCK_TYPE_KEY` PDC to identify pipe items instead of variant-specific PDC keys. Update item creation to use `registry.getType("pipes:" + typeId).createItem()`. |
-| `ConversionRecipeCraftListener.java` | Same PDC key update as CauldronConversionListener. Conversion recipe registration moves here or to PipesPlugin (since RecipeManager is deleted). Keep catalyst retention logic. |
+| `PipeManager.java` | Remove display spawn/remove/update/chunk-scan methods (`spawnDisplayEntities()`, `updateDisplayEntity()`, `updateCornerDisplayEntities()`, `removeDisplayEntities()`, `removeDisplaysByTag()`, `scanChunk()`, `scanForExistingPipes()`). Add callback methods + `resolveTransform()`. Modify `categorizeSourceBlock()` / `categorizeDestinationBlock()` to use CoreLib registry. Simplify PipeData (remove UUID list). Change `registerPipe()` signature from `(Location, BlockFace, List<UUID>, PipeVariant)` to `(Location, BlockFace, PipeVariant)`. Rewrite `refreshAllDisplays()` to use CoreLib's `resolveDisplayTransforms()`. Update `reloadVariants()` to use 2-arg PipeData constructor. Rewrite `cleanupOrphanedDisplays()` / `countOrphanedDisplays()` to scan for `corelib:pipes:*` entity tags instead of PipeTags. Keep transfer + transform + path + task code (`startTasks`, `stopTasks`, `restartTasks`, `shutdown`, `findDestination`, `transferItems`, `getPipeData`, debug particles). |
+| `CauldronConversionListener.java` | Replace `plugin.getVariant(item)` → `plugin.getVariantFromItem(item)` (Part 2e). Replace `plugin.getPipeItem(toVariant)` → `CoreLibPlugin.getInstance().getRegistry().getType("pipes:" + toVariant.getId()).createItem(amount)`. Async polling pattern, water level handling, particle/sound effects all stay unchanged. |
+| `ConversionRecipeCraftListener.java` | Replace `recipeManager.isConversionRecipe(key)` → `plugin.isConversionRecipe(key)` and `recipeManager.getConversionCatalyst(key)` → `plugin.getConversionCatalyst(key)` (Part 2f). Replace `plugin.isPipeItem(item)` → new `plugin.isPipeItem(item)` (Part 2e). Shift-click handling with manual matrix manipulation stays unchanged. Remove RecipeManager constructor dependency. |
 
 ### Files that stay unchanged
 
 | File | Why |
 |------|-----|
-| `WorldManager.java` | Per-world PipeManager lifecycle stays as-is. `initWorld()` still creates PipeManager and calls `startTasks()`, but `scanForExistingPipes()` is removed (CoreLib handles chunk scanning via `restoreBlock()`). |
+| `WorldManager.java` | Per-world PipeManager lifecycle stays as-is. `initWorld()` still creates PipeManager and calls `startTasks()`, but remove `manager.scanForExistingPipes()` call (CoreLib handles chunk scanning via `restoreBlock()` → `onChunkLoadCallback`). |
 | `VariantRegistry.java` | Loads variant definitions from config.yml |
 | `PipeVariant.java` | Variant data model |
 | `BehaviorType.java` | Enum |
@@ -970,13 +973,29 @@ re-evaluate world filters, sync recipe unlocks, reload cauldron conversions.
 
 After migration:
 1. Reload `config.yml` and `display.yml` — unchanged
-2. `reloadVariants()` — still needed (replaces stale PipeVariant refs in PipeData)
-3. Refresh displays — iterate all pipes, call `resolveDisplayTransforms()` per pipe
+2. `reloadVariants()` — still needed (replaces stale PipeVariant refs in PipeData).
+   Update constructor to `new PipeData(data.facing(), fresh)` (no UUIDs).
+3. Refresh displays via rewritten `refreshAllDisplays()`:
+   ```java
+   public void refreshAllDisplays() {
+       CustomBlockRegistry registry = CoreLibPlugin.getInstance().getRegistry();
+       for (Location loc : new ArrayList<>(pipes.keySet())) {
+           Block block = loc.getBlock();
+           CustomHeadBlock type = registry.getTypeFromBlock(block);
+           if (type != null) {
+               String state = registry.getState(block);
+               registry.resolveDisplayTransforms(block, type, state);
+           }
+       }
+   }
+   ```
 4. `restartTasks()` — unchanged (transfer intervals, debug particles)
 5. Re-evaluate world filters — unchanged (WorldManager)
-6. Recipes — CoreLib has `ShapedRecipeDef`/`ShapelessRecipeDef` with Bukkit registration.
-   Verify hot-reload support (unregister old keys, re-register with new config values)
-7. Cauldron conversions — unchanged
+6. Recipes — CoreLib's `unregisterRecipes()` removes ALL recipe keys; `registerRecipes()`
+   re-registers for ALL types. Call both in sequence. This also re-registers CoreLib's
+   own recipes (harmless). Clear and rebuild `conversionCatalysts` map.
+7. Sync recipe discovery — call `registry.syncRecipeDiscovery(player)` for all online players
+8. Cauldron conversions — unchanged
 
 ### `/pipes give`
 
@@ -991,14 +1010,63 @@ skull with PDC.
 
 ### `/pipes delete_all`
 
-Iterate pipe map, for each: call `registry.onBlockRemoved(block, type)` (cleanup — no
-drops), then `block.setType(AIR)`.
+Rewritten `deleteAllPipes()`:
+
+```java
+public int deleteAllPipes() {
+    CustomBlockRegistry registry = CoreLibPlugin.getInstance().getRegistry();
+    List<Location> toRemove = new ArrayList<>(pipes.keySet());
+
+    for (Location loc : toRemove) {
+        Block block = loc.getBlock();
+        CustomHeadBlock type = registry.getTypeFromBlock(block);
+        if (type != null) {
+            registry.onBlockRemoved(block, type);  // cleanup + fires onPipeRemoved callback
+        }
+        if (block.getType() == Material.PLAYER_HEAD || block.getType() == Material.PLAYER_WALL_HEAD) {
+            block.setType(Material.AIR);
+        }
+    }
+
+    return toRemove.size();
+}
+```
+
+Note: `registry.onBlockRemoved()` fires the `onBlockRemoved` callback, which calls
+`onPipeRemoved()`, which removes the entry from `pipes` map and clears sleep/cache state.
+No separate `unregisterPipe()` needed.
 
 ### `/pipes cleanup`
 
-Scan all entities for `corelib:pipes:` tags, check if corresponding skull block
-exists with PDC. Remove orphans. CoreLib has no general orphan cleanup, so this
-stays pipe-specific.
+Rewritten `cleanupOrphanedDisplays()` — scan for CoreLib-tagged entities:
+
+```java
+public int cleanupOrphanedDisplays() {
+    int removed = 0;
+    for (Entity entity : world.getEntities()) {
+        if (!(entity instanceof ItemDisplay)) continue;
+        for (String tag : entity.getScoreboardTags()) {
+            if (!tag.startsWith("corelib:pipes:")) continue;
+            // Tag format: corelib:{namespace}:{typeId}:{x}_{y}_{z}[:{suffix}]
+            // Extract location from tag and check if skull block still exists
+            Location loc = DisplayUtil.parseBlockLocation(tag, world);
+            if (loc == null) continue;
+            Block block = loc.getBlock();
+            CustomHeadBlock type = CoreLibPlugin.getInstance().getRegistry()
+                    .getTypeFromBlock(block);
+            if (type == null) {
+                entity.remove();
+                removed++;
+            }
+            break;
+        }
+    }
+    return removed;
+}
+```
+
+`countOrphanedDisplays()` follows the same scan pattern but counts without removing.
+CoreLib has no general orphan cleanup, so this stays pipe-specific.
 
 ### `/pipes recipes`
 
@@ -1084,7 +1152,7 @@ are harder to obtain).
 |------|--------|
 | `build.gradle.kts` | Add CoreLib dependency |
 | `plugin.yml` | Add `depend: [DefCoreLib]` |
-| `PipesPlugin.java` | Replace item/recipe init with CoreLib block type registration. Keep config, commands, bStats. |
+| `PipesPlugin.java` | Replace item/recipe init with CoreLib block type registration. Add `isPipeItem()`, `getVariantFromItem()` (Part 2e), `conversionCatalysts` map + accessors (Part 2f), `getPlayerFacing()` (Part 2d). Keep config, commands, bStats. |
 | `PipeManager.java` | Remove display/chunk code, add callbacks + resolver. Modify categorize methods. Simplify PipeData. Keep transfer, transform, path, tasks. |
 | `CauldronConversionListener.java` | Update item identification to use CoreLib PDC key |
 | `ConversionRecipeCraftListener.java` | Update item identification, absorb conversion recipe registration |
@@ -1120,7 +1188,10 @@ are harder to obtain).
 10. Test pistons → verify pipe breaks, drops item, piston proceeds
 11. Test `/fill` over pipes → verify BlockDestroyEvent cleanup
 12. Test fire on pipes → verify burn handler
-13. Test crafting recipes, cauldron conversion
+13. Test crafting recipes — both shaped and conversion (shapeless). Verify that CoreLib's
+    `onPrepareCraft` PDC validation works for shapeless conversion recipes (items can be
+    placed in any crafting grid slot). Test both normal-click and shift-click conversion.
+    Test cauldron conversion.
 14. Verify world filtering (place pipe in disabled world → cancelled with message)
 15. Run `/pipes reload` → verify display refresh, config reload
 16. Run `/pipes give`, `/pipes info`, `/pipes cleanup`, `/pipes delete_all`

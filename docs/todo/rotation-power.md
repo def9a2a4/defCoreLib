@@ -299,7 +299,8 @@ Written on wrench toggle, read during BFS post-pass.
 
 **Rules:**
 - **Sources** have stored direction (CW default, toggled by wrench)
-- **Along-axis connections** (shaft-like, same axis) → PRESERVE direction
+- **Along-axis connections** (shaft-like, same axis) → PRESERVE direction (unless crossing a
+  powered reverser, which flips direction once across itself)
 - **Same-axis gear mesh** (both gearLike, same axis, adjacent perpendicular to axis) → REVERSE
   (counter-rotate, like real meshing gears). Examples: two wall gears stacked vertically (both
   X-axis, adjacent along Y), two floor gears side by side (both Y-axis, adjacent along X).
