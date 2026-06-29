@@ -24,8 +24,11 @@ and flags where the plans touch the **same code** and must be coordinated.
    - Drawbridge fix is the "center-everything" change (centre-based `localTransform` incl. Y +
      block-centre pivot + corner-shift `(-0.5,-0.5,-0.5)`), needed so X/Z-axis rotators stop drifting ~0.5.
    - The **naïve "center-Y only" drawbridge fix is wrong** — it breaks Y-doors and the minecart path
-     (adds 0.5 to an on-axis offset). Do them **together**, preserving the integer-offset invariant,
-     and verify the Y-door + minecart paths stay numerically identical. → **Work Block A.**
+     (adds 0.5 to an on-axis offset). → **Work Block A.**
+   - **Not a hard technical dependency:** A1 can ship and be verified on its own; A2 then *builds on*
+     A1's snapped pivot. The reason to do them **together** is **in-game-test risk mitigation** —
+     verify the Y-door + minecart paths stay numerically identical while both edits are in flight,
+     rather than re-validating the same code region twice.
 
 2. **BlockSnapshotProvider decoupling (BlockShips Phase 1) ↔ both geometry fixes — same methods.**
    Phase 1 rewrites `assembleCore()`, `placeBlock()`, `setBlockState()`, `dropBlockAsItem()`. It will
@@ -66,6 +69,10 @@ None of this is implemented yet (verified).*
   if `|delta| > threshold`, re-snap + reset `previousVehicleLoc`. **Depends on A1** (only matters once
   pivot is delta-tracked).
 
+> **Overlap with B1:** A1 rewrites the 1-tick-delay lambda, which is the *same* lambda that needs
+> B1's `if (!vehicle.isValid()) { disassemble; return; }` guard — fold that part of B1 in while you're
+> in A1.
+
 ### Block B — Mechanism robustness (small, independent, land anytime)
 - [ ] **B1. Vehicle validity checks** — at `assembleMechanism(existingVehicle)` entry, and in the
   1-tick delay lambda (`if (!vehicle.isValid()) { disassemble/return; }`). *(minecarts #5/#9, blockships #3)*
@@ -93,6 +100,10 @@ None of this is implemented yet (verified).*
   rotation-overlay builder (~8× dup), **E4** decompose the ~210-line `doRecalculate()`.
 - [ ] **C7. I2** wire in `removeNodesInChunk()` (O(1) chunk-unload vs N recalcs — defined but unused);
   **I3** count flexible windmills in debug output; **I4** return empty bucket on lava-bucket fuel.
+- [ ] **C8. I5 — open design decision: idle water wheel transmits rotation.** A dry water wheel is a
+  0-power `TRANSMITTER`, so `shaft → dry water_wheel → shaft` still passes power through it. Decide:
+  **intended** (mechanically coupled even when still) → document it; or **should disconnect** → small
+  `getConnections()` rule change. *(rotation-power.md "Decisions needed" #1 — needs your call.)*
 
 ### Block D — Glue (shared block selection; `rotation-mechanisms.md` Phase 3, not started)
 - [ ] **D1.** `GlueManager` + anchor-owned PDC offset storage (`glue`/`unglue`/`resolveStructure`).
@@ -100,6 +111,9 @@ None of this is implemented yet (verified).*
   connectivity/cap), incl. the three interaction-conflict fixes vs `onPlayerInteract`.
 - [ ] **D3.** Retrofit Rotator/DoorDemo and `MinecartShipManager` to `resolveStructure(anchor)` with
   flood-fill fallback — **removes the Phase-2 plank-leak caveat** and the need for B6.
+  - ⚠️ **Highest-regression-risk item after A2:** this is a block-*selection* rewrite — a bug here
+    assembles/disassembles the **wrong blocks**. Verify the glue path reproduces flood-fill selection
+    (assemble/disassemble parity on doors *and* minecarts) **before** removing the flood-fill fallback.
 
 ### Block E — BlockShips integration (`blockships-integration.md`; depends on A, ideally B)
 - [ ] **E1. Phase 1 — Decouple from CustomHeadBlock**: `BlockSnapshotProvider` interface +
@@ -117,6 +131,8 @@ None of this is implemented yet (verified).*
 - [ ] **F3.** Optional: gate the Rotator's right-click angle-cycle to empty-hand (it currently hijacks
   block placement; sneak-place still works).
 - [ ] **F4.** Code-comment staleness in `RotationNetwork`/`RotationBlocks` ("4 neighbors", "gearbox").
+- [ ] **F5.** `MechanismBlockData.collisionScale` is stored (always `1.0f`) but never read — document
+  the intent (future shulker scaling) or remove. *(minecarts.md Additional #7.)*
 
 ---
 
