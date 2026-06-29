@@ -122,12 +122,17 @@ public class RotationNetwork {
     }
 
     public void recalculateAdjacentNetworks(CustomBlockRegistry.LocationKey key) {
+        // Recalc every distinct adjacent network (a passive source can border more than one).
+        // Dedup by the pre-rebuild member snapshot: recalculate() reassigns network ids, so caching
+        // the id would go stale — but the member LocationKeys are stable, so skip any face whose
+        // neighbor we've already covered via an earlier network rebuild.
+        Set<CustomBlockRegistry.LocationKey> recalced = new HashSet<>();
         for (BlockFace face : CARDINAL_FACES) {
             CustomBlockRegistry.LocationKey neighbor = faceNeighbor(key, face);
-            if (nodes.containsKey(neighbor)) {
-                recalculate(neighbor);
-                return;
-            }
+            if (!nodes.containsKey(neighbor) || recalced.contains(neighbor)) continue;
+            Set<CustomBlockRegistry.LocationKey> members = getNetworkMembers(neighbor);
+            recalculate(neighbor);
+            if (members != null) recalced.addAll(members); else recalced.add(neighbor);
         }
     }
 
@@ -233,13 +238,13 @@ public class RotationNetwork {
     }
 
     private void doRecalculate(CustomBlockRegistry.LocationKey changed) {
-        // Snapshot which nodes are currently in jammed networks (for transition detection)
+        // Snapshot which nodes are currently in jammed networks (for transition detection).
+        // Scan ALL jammed networks, not just the changed one — neighbor networks also get torn down
+        // and rebuilt below, and missing them replays the jam smoke/sound on a merge that stays jammed.
         Set<CustomBlockRegistry.LocationKey> previouslyJammed = new HashSet<>();
-        Integer changedNet = nodeNetworkId.get(changed);
-        if (changedNet != null) {
-            NetworkState oldState = networks.get(changedNet);
-            if (oldState != null && oldState.jammed()) {
-                Set<CustomBlockRegistry.LocationKey> m = networkMembers.get(changedNet);
+        for (Map.Entry<Integer, NetworkState> e : networks.entrySet()) {
+            if (e.getValue().jammed()) {
+                Set<CustomBlockRegistry.LocationKey> m = networkMembers.get(e.getKey());
                 if (m != null) previouslyJammed.addAll(m);
             }
         }
@@ -340,7 +345,6 @@ public class RotationNetwork {
                         if (axisFromFace(face) != nodeAxis) continue;
                         CustomBlockRegistry.LocationKey neighbor = faceNeighbor(loc, face);
                         if (nodes.containsKey(neighbor)) continue;
-                        if (!countedSources.add(neighbor)) continue;
                         Block nb = toBlock(neighbor);
                         if (nb == null) continue;
                         CustomHeadBlock type = registry.getTypeFromBlock(nb);
@@ -349,6 +353,9 @@ public class RotationNetwork {
                             if (passivePower != null) {
                                 String passiveState = registry.getState(nb);
                                 if (passiveState != null && axisFromState(passiveState) == nodeAxis) {
+                                    // Dedup AFTER axis validation: a wrong-axis probe must not block a
+                                    // valid one. Counts each windmill's power exactly once.
+                                    if (!countedSources.add(neighbor)) continue;
                                     supply += passivePower;
                                     // Along-axis edge = preserves direction
                                     SpinDirection adjDir = dirMap.get(loc);
@@ -634,6 +641,10 @@ public class RotationNetwork {
     private @Nullable Block toBlock(CustomBlockRegistry.LocationKey key) {
         World world = Bukkit.getWorld(key.worldId());
         if (world == null) return null;
+        // Don't sync-load an unloaded chunk. Graph nodes are always in loaded chunks (added on chunk
+        // load, removed on unload), so this only affects the passive-source boundary probe reaching
+        // into an unloaded neighbor chunk — which should be skipped, not force-loaded.
+        if (!world.isChunkLoaded(key.x() >> 4, key.z() >> 4)) return null;
         return world.getBlockAt(key.x(), key.y(), key.z());
     }
 
