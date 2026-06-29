@@ -1,7 +1,8 @@
+.temp/**
+gradlew.bat
+
 # Server directory
 server/*
-
-.temp/**
 
 # Vendored docs images (downloaded by scripts/generate_catalog.py; not committed for now)
 /docs/assets/
@@ -20,6 +21,7 @@ server/*
 
 # Package Files #
 *.jar
+!gradle/wrapper/gradle-wrapper.jar
 *.war
 *.nar
 *.ear
