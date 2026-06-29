@@ -4,6 +4,10 @@ build:
 	mkdir -p bin
 	cp build/libs/DefCoreLib*.jar bin/
 
+.PHONY: docs
+docs:
+	uv run scripts/generate_catalog.py
+
 .PHONY: clean
 clean:
 	gradle clean

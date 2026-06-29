@@ -532,10 +532,16 @@ private ShapedRecipeDef convertRecipe(RecipeDefinition recipe) {
 ```
 
 **Recipe timing**: CoreLib calls `finalizeLoading()` → `registerRecipes()` during its
-own `onEnable()`, before Pipes' `onEnable()` runs. Verify that `registry.register()`
-handles recipe registration for late-registered blocks, or call
-`registry.registerRecipes()` explicitly from Pipes' `onEnable()` after all blocks are
-registered.
+own `onEnable()`, before Pipes' `onEnable()` runs. Pipes' blocks are registered after
+this, so their recipes are not auto-registered. After all `registry.register()` calls,
+explicitly re-run recipe registration:
+
+```java
+registry.registerRecipes();  // re-registers for ALL types, including new Pipes blocks
+```
+
+This is safe — `Bukkit.addRecipe()` with a duplicate key logs a warning but doesn't
+duplicate the recipe. CoreLib's own recipes get a harmless re-registration attempt.
 
 ### 2b. State definitions — regular pipes
 
@@ -663,6 +669,72 @@ private @Nullable StateResolverResult resolvePipeFacing(BlockPlaceEvent event,
     }
     return StateResolverResult.of(facing.name().toLowerCase());
 }
+
+private BlockFace getPlayerFacing(float yaw) {
+    yaw = ((yaw % 360) + 360) % 360;
+    if (yaw >= 315 || yaw < 45) return BlockFace.SOUTH;
+    if (yaw < 135) return BlockFace.WEST;
+    if (yaw < 225) return BlockFace.NORTH;
+    return BlockFace.EAST;
+}
+```
+
+### 2e. Item identification helpers
+
+After deleting `loadItems()` and the item cache, Pipes needs CoreLib-based replacements
+for item identification (used by CauldronConversionListener and ConversionRecipeCraftListener).
+
+```java
+/**
+ * Check if an ItemStack is a pipe item (any variant).
+ */
+boolean isPipeItem(ItemStack item) {
+    if (item == null || item.getType() != Material.PLAYER_HEAD) return false;
+    if (!(item.getItemMeta() instanceof SkullMeta meta)) return false;
+    String typeId = meta.getPersistentDataContainer()
+            .get(CustomBlockRegistry.BLOCK_TYPE_KEY, PersistentDataType.STRING);
+    return typeId != null && typeId.startsWith("pipes:");
+}
+
+/**
+ * Get the PipeVariant for a pipe item, or null if not a pipe.
+ */
+@Nullable PipeVariant getVariantFromItem(ItemStack item) {
+    if (item == null || item.getType() != Material.PLAYER_HEAD) return null;
+    if (!(item.getItemMeta() instanceof SkullMeta meta)) return null;
+    String typeId = meta.getPersistentDataContainer()
+            .get(CustomBlockRegistry.BLOCK_TYPE_KEY, PersistentDataType.STRING);
+    if (typeId == null || !typeId.startsWith("pipes:")) return null;
+    String variantId = typeId.substring("pipes:".length());
+    return variantRegistry.getVariant(variantId);
+}
+```
+
+### 2f. Conversion recipe catalyst tracking
+
+`RecipeManager` is deleted, but `ConversionRecipeCraftListener` needs to know which
+recipes are conversion recipes and what their catalyst material is. Track this on
+`PipesPlugin` during block registration:
+
+```java
+// Field on PipesPlugin:
+private final Map<NamespacedKey, Material> conversionCatalysts = new HashMap<>();
+
+// Populated during block registration (Part 2a), after builder.shapelessRecipe():
+for (var conv : variant.getConversionRecipes()) {
+    String prefix = "pipes_" + typeId + "_";
+    NamespacedKey key = new NamespacedKey(this, prefix + conv.getKey());
+    conversionCatalysts.put(key, conv.getCatalyst());
+}
+
+// Accessors (used by ConversionRecipeCraftListener):
+boolean isConversionRecipe(NamespacedKey key) {
+    return conversionCatalysts.containsKey(key);
+}
+
+@Nullable Material getConversionCatalyst(NamespacedKey key) {
+    return conversionCatalysts.get(key);
+}
 ```
 
 ---
@@ -774,11 +846,8 @@ void onPipePlaced(Block block, String state, PipeVariant variant) {
     pipes.put(normalized, new PipeData(facing, variant));
     invalidatePathCache();
 
-    // Update adjacent pipes' transforms (a new block appeared next to them)
-    // CoreLib's physics handler also fires onNeighborChange on adjacent pipes,
-    // but that fires same-tick while this runs next-tick. Both resolve correctly;
-    // the updateAdjacentPipeDisplays is a safety net.
-    updateAdjacentPipeDisplays(normalized);
+    // Adjacent pipe display transforms are re-resolved by CoreLib's
+    // BlockPhysicsEvent handler (Part 1i) — no manual update needed.
 }
 ```
 
@@ -789,12 +858,12 @@ void onPipeRemoved(Block block, String state, PipeVariant variant) {
     Location normalized = normalizeLocation(block.getLocation());
     pipes.remove(normalized);
     sleepUntil.remove(normalized);
+    deadEndRecheckAt.remove(normalized);
     invalidatePathCache();
 
-    // Display entity removal handled by CoreLib (removeByTag in onBlockRemoved)
-
-    Bukkit.getScheduler().runTask(plugin, () ->
-            updateAdjacentPipeDisplays(normalized));
+    // Display entity removal handled by CoreLib (removeByTag in onBlockRemoved).
+    // Adjacent pipe display transforms re-resolved by CoreLib's BlockPhysicsEvent
+    // handler (Part 1i) — no manual update needed.
 }
 ```
 
@@ -831,26 +900,8 @@ void onPipeChunkUnload(Block block, PipeVariant variant) {
     Location normalized = normalizeLocation(block.getLocation());
     pipes.remove(normalized);
     sleepUntil.remove(normalized);
+    deadEndRecheckAt.remove(normalized);
     invalidatePathCache();  // clear cached paths that reference unloaded pipes
-}
-```
-
-### 4f. `updateAdjacentPipeDisplays(Location)`
-
-```java
-private void updateAdjacentPipeDisplays(Location changedLoc) {
-    CustomBlockRegistry registry = CoreLibPlugin.getInstance().getRegistry();
-    BlockFace[] faces = {BlockFace.NORTH, BlockFace.SOUTH, BlockFace.EAST,
-                         BlockFace.WEST, BlockFace.UP, BlockFace.DOWN};
-
-    for (BlockFace face : faces) {
-        Block adjacent = changedLoc.getBlock().getRelative(face);
-        CustomHeadBlock type = registry.getTypeFromBlock(adjacent);
-        if (type != null && type.namespace().equals("pipes")) {
-            String state = registry.getState(adjacent);
-            registry.resolveDisplayTransforms(adjacent, type, state);
-        }
-    }
 }
 ```
 

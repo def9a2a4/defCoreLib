@@ -53,7 +53,7 @@ if (type.onChunkLoadCallback() != null) {
 
 ## New files (all in `anon.def9a2a4.corelib`)
 
-### 1. `RotationNetwork.java` (~300 lines)
+### 1. `RotationNetwork.java`
 
 ```java
 public class RotationNetwork {
@@ -62,17 +62,21 @@ public class RotationNetwork {
 
     public enum Axis { X, Y, Z }
     public enum NodeRole { SOURCE, TRANSMITTER, CONSUMER }
+    public enum SpinDirection { CW, CCW; ... }  // Phase 2
 
     record RotationNode(LocationKey key, String blockTypeId, Axis axis,
                         NodeRole role, int powerUnits, boolean gearLike)
-    record NetworkState(int supply, int demand) {
-        boolean powered() { return supply >= demand && supply > 0; }
+    record Connection(LocationKey neighbor, boolean reverses) {}  // Phase 2
+    record NetworkState(int supply, int demand, boolean jammed) {
+        boolean powered() { return !jammed && supply >= demand && supply > 0; }
     }
 
     Map<LocationKey, RotationNode> nodes = new HashMap<>();
     Map<LocationKey, Integer> nodeNetworkId = new HashMap<>();
-    Map<Integer, Set<LocationKey>> networkMembers = new HashMap<>(); // reverse index
+    Map<Integer, Set<LocationKey>> networkMembers = new HashMap<>();
     Map<Integer, NetworkState> networks = new HashMap<>();
+    Map<LocationKey, SpinDirection> nodeDirection = new HashMap<>();          // Phase 2
+    Map<Integer, Set<LocationKey>> networkPassiveSources = new HashMap<>();   // Phase 2
     int nextNetworkId = 0;
 }
 ```
@@ -87,34 +91,42 @@ private @Nullable Block toBlock(LocationKey key) {
 
 **Connection rules:**
 - Along-axis: 2 neighbors along axis direction. Neighbor must share same axis and not be locked.
+  An along-axis edge reverses iff its lower (−axis) endpoint is a powered reverser — this gives
+  exactly one direction flip across a reverser and is symmetric from both endpoints.
 - Gear-to-gear: all 6 adjacent faces. Both must be `gearLike`, not locked. Already-connected
   along-axis neighbors are skipped (so same-axis gears on their shared axis connect as shaft-like,
-  not gear mesh — this ordering is load-bearing for Phase 2 direction reversal).
+  not gear mesh — this ordering is load-bearing for direction reversal). Same-axis gear mesh
+  reverses; bevel (different axes) reversal is face-dependent via `bevelReverses()`.
 - Locked clutch: excluded from all connections.
 
 **Recalculation (handles both add and remove):**
 ```
 recalculate(changed):
+  re-entrancy guard: if already recalculating, queue to pendingRecalcs and return
+  snapshot previouslyJammed set for transition detection
+
   if changed has old network:
     dirty = all members of old network
     clear old network from indexes (nodeNetworkId, nodeDirection, networkPassiveSources)
     reset animationDirection for old networkPassiveSources entries
   else (freshly added):
     dirty = {changed} + members of any adjacent networks
-    clear those networks from indexes (nodeNetworkId, nodeDirection, networkPassiveSources)
-    reset animationDirection for old networkPassiveSources entries
+    clear those networks from indexes
   remove non-existent nodes from dirty
 
   for each unassigned node in dirty:
     BFS via getConnections() → new component
-    sum supply/demand
-    assign network ID to all members
+    sum supply/demand + direction propagation (Phase 2)
+    post-pass: anchor to explicit source, flip if needed, detect jams
+    boundary scan for passive sources (axis-validated, direction-derived)
+    assign network ID, directions, animation directions to all members
 
   for each node whose powered state changed:
     if role != SOURCE:
-      extract suffix from current state (e.g. "east_x" from "idle_east_x")
       setState((powered ? "spinning_" : "idle_") + suffix)
       applyConfig()
+
+  process pendingRecalcs (skip nodes already assigned to rebuilt networks)
 ```
 
 **Batch chunk unload:**
@@ -126,13 +138,13 @@ removeNodesInChunk(worldId, chunkX, chunkZ):
   single rebuildFromDirty() on remaining members of affected networks
 ```
 
-### 2. `RotationBlocks.java` (~450 lines)
+### 2. `RotationBlocks.java`
 
 Static `register(CustomBlockRegistry, RotationNetwork)`. Namespace: `"rotation"`.
 
 | Block | Role | Power | States | Tick | Special |
 |-------|------|-------|--------|------|---------|
-| windmill (demo) | SOURCE | 1 | spinning_{x,y,z} only | - | Passive source. Always spins. |
+| windmill | SOURCE | 1 | spinning_{x,y,z} only | - | Passive source. Always spins. |
 | large_windmill | SOURCE | 5 | spinning per axis | - | Passive source. Banner-gated (LARGE tier). |
 | huge_windmill | SOURCE | 15 | spinning per axis | - | Passive source. Banner-gated (HUGE tier). |
 | water_wheel | SOURCE | 2 | idle/spinning per axis | - | onNeighborChange checks adjacent water (incl. waterlogged) |
@@ -140,6 +152,7 @@ Static `register(CustomBlockRegistry, RotationNetwork)`. Namespace: `"rotation"`
 | shaft | TRANSMITTER | 0 | idle/spinning per axis | - | Display: skull rod texture |
 | gear | TRANSMITTER | 0 | idle/spinning per axis | - | gearLike=true. Display: skull gear texture |
 | clutch | TRANSMITTER | 0 | idle/spinning/locked per axis | - | onNeighborChange checks redstone |
+| reverser | TRANSMITTER | 0 | idle/spinning per axis | - | Along-axis direction flip when redstone-powered |
 | drill | CONSUMER | 1 | idle/spinning per axis | 4 | Staged breaking: 10 stages × 4-tick interval = 2s per block. Shows crack animation. |
 | generator | SOURCE | 1 | idle/spinning per axis | - | Inverted redstone: unpowered=spinning, powered=idle |
 | grindstone | CONSUMER | 1 | idle/spinning | - | Floor-only. onInteract: grind recipes |
@@ -154,7 +167,7 @@ Map.of(DOWN, "idle_y", NORTH, "idle_z", SOUTH, "idle_z", EAST, "idle_x", WEST, "
 - `.onChunkLoad()` → `network.addNode()`
 - `.onChunkUnload()` → `network.removeNode()`
 
-**Drill facing:** stored in PDC (`NamespacedKey("rotation", "facing")`) at placement. Wall heads: `Directional.getFacing()`. Floor heads: player's cardinal facing.
+**Drill facing:** stored in PDC (`NamespacedKey("rotation", "facing")`) at placement. Wall heads: `Directional.getFacing()`. Floor heads: `BlockFace.DOWN` (drills into the ground).
 
 **Drill blacklist:** two-layer guard. First, `hardness < 0` rejects all indestructible blocks
 (BEDROCK, BARRIER, END_PORTAL_FRAME, COMMAND_BLOCKs, STRUCTURE_BLOCK, JIGSAW). Second, explicit
@@ -202,9 +215,11 @@ All identified during planning, fixed during implementation:
 - **Engine fuel:** `EngineFuelManager` keeps counters in memory, writes PDC only on chunk unload
 - **Network size cap:** hard cap (default 256) enforced in BFS
 
-## Configuration (`rotation-config.yml`) — Phase 2
+## Configuration (`rotation-config.yml`)  ✅ DONE
 
-Currently all values are hardcoded in Java. Create config file and loading in Phase 2.
+`RotationConfig.java` loads `rotation-config.yml` from resources. Defaults are hardcoded as
+fallbacks; the YAML file overrides them. `CoreLibPlugin.onEnable()` loads the config before
+creating `RotationNetwork`.
 
 ```yaml
 max-network-size: 256
@@ -234,18 +249,18 @@ power:
 
 ---
 
-## Phase 2: Direction
+## Phase 2: Direction  ✅ DONE
 
 ### Wrench item
 
-Copper axe with enchantment glint (`ItemMeta.setEnchantmentGlintOverride(true)`) and a PDC tag
+Golden axe with enchantment glint (`ItemMeta.setEnchantmentGlintOverride(true)`) and a PDC tag
 `NamespacedKey("rotation", "wrench")` as the real identifier (glint alone matches any enchanted
-copper axe). Unbreakable (`meta.setUnbreakable(true)` + `HIDE_UNBREAKABLE` flag), display name
+golden axe). Unbreakable (`meta.setUnbreakable(true)` + `HIDE_UNBREAKABLE` flag), display name
 "Rotation Wrench". Created via `RotationBlocks.createWrench()` (not a CustomHeadBlock). Added
 to `give_demo_rotation` command as a special case after the block loop.
 
-**Crafting recipe** (shaped, registered via `Bukkit.addRecipe(ShapedRecipe)` in
-`RotationBlocks.register()`):
+**Crafting recipe** (shaped, registered via `RotationBlocks.registerWrenchRecipe()` called from
+`CoreLibPlugin.onEnable()`):
 ```
 C S C     C = copper ingot
 C S -     S = stick
@@ -288,8 +303,9 @@ Written on wrench toggle, read during BFS post-pass.
 - **Same-axis gear mesh** (both gearLike, same axis, adjacent perpendicular to axis) → REVERSE
   (counter-rotate, like real meshing gears). Examples: two wall gears stacked vertically (both
   X-axis, adjacent along Y), two floor gears side by side (both Y-axis, adjacent along X).
-- **Bevel gear** (both gearLike, different axes) → PRESERVE (transmit around corner).
-  Example: wall gear (X-axis) next to floor gear (Y-axis).
+- **Bevel gear** (both gearLike, different axes) → face-dependent reversal via `bevelReverses()`
+  (symmetric scalar triple product formula). Example: wall gear (X-axis) next to floor gear
+  (Y-axis). Whether it preserves or reverses depends on which face connects them.
 - Note: two floor gears stacked vertically (both Y-axis, adjacent along Y) connect via the
   along-axis path, not gear mesh — they share a virtual shaft and rotate the same direction.
 - **Contradictions** (same node reached via two paths with opposite directions) → network
@@ -320,23 +336,16 @@ public @Nullable SpinDirection getDirection(LocationKey key) {
 }
 ```
 
-**`getConnections()` change:**
-Currently returns `List<LocationKey>`. Phase 1 already connects gears to ANY adjacent gear
-regardless of axis (same-axis and bevel alike). Phase 2 changes the return type to
-`List<Connection>` to classify each edge:
+**`getConnections()` returns `List<Connection>`:**
 ```java
 record Connection(LocationKey neighbor, boolean reverses) {}
 ```
-`reverses = true` for same-axis gear mesh, `false` for along-axis and bevel connections. The
-`reverses` flag is computed in `getConnections()` directly: gear-to-gear with `other.axis() ==
-node.axis()` → `reverses = true`, everything else → `reverses = false`. BFS uses `reverses`
-without needing axis comparison at propagation time. Dedup changes to
-`result.stream().anyMatch(c -> c.neighbor().equals(neighbor))`. All callers of
-`getConnections()` (BFS loop AND dirty-set-building in `doRecalculate()`) must update to use
-`Connection.neighbor()`. Along-axis connections are
-intentionally checked before gear-to-gear so that two same-axis gears along their shared axis
-are treated as shaft-like (`reverses=false`), not gear mesh. This ordering is already present
-in Phase 1 code and is load-bearing.
+Each edge is classified: `reverses = true` for same-axis gear mesh, face-dependent for bevel
+(via `bevelReverses()`), and for along-axis edges it depends on whether the lower (−axis)
+endpoint is a powered reverser (`isPoweredReverser()`). BFS uses `reverses` without needing
+axis comparison at propagation time. Along-axis connections are checked before gear-to-gear so
+that two same-axis gears along their shared axis are treated as shaft-like, not gear mesh. This
+ordering is load-bearing.
 
 **BFS direction resolution (single-pass + post-pass):**
 1. BFS from root, tentatively assign root = CW, propagate through edges using rules above.
@@ -380,7 +389,7 @@ in Phase 1 code and is load-bearing.
    faction, even though the network is jammed (BFS assigns directions before discovering the
    contradiction via post-pass).
 
-**`NetworkState` change:**
+**`NetworkState`** (updated from Phase 1 — added `jammed`):
 ```java
 record NetworkState(int supply, int demand, boolean jammed) {
     boolean powered() { return !jammed && supply >= demand && supply > 0; }
@@ -431,7 +440,7 @@ can't be injected at parse time. Instead, wrap at runtime in `applyConfig()`.
   PDC, `skull.update()`, recalculate. Show feedback (ActionBar + sound + particles).
   First toggle sets CCW because the default effective direction is CW — toggling means the
   opposite.
-- For passive sources (`demo:windmill`, `rotation:large_windmill`, and `rotation:huge_windmill`):
+- For passive sources (`rotation:windmill`, `rotation:large_windmill`, and `rotation:huge_windmill`):
   combine with existing `overlayWindmillResolver` into a single `toBuilder()` chain that sets
   both `displayItemResolver` and wrench-only `onInteract`
 - Generator (`rotation:generator`): active SOURCE, same wrench treatment as engine (toggle + PDC)
@@ -449,34 +458,32 @@ rebuilt. With non-deterministic anchoring this could cause direction flicker. Fi
 processing a pending recalc, check if `nodeNetworkId.containsKey(pending)` — if the node's
 network was already rebuilt in this batch, skip it.
 
-### Gearbox reverser block (deferred)
+### Reverser block  ✅ DONE
 
-`rotation:reverser` — TRANSMITTER that reverses direction when redstone-powered, passes
-through normally when unpowered. Distinct from clutch (which disconnects).
+`rotation:reverser` — TRANSMITTER that flips spin direction across itself when redstone-powered,
+passes through normally when unpowered. Distinct from clutch (which disconnects). Reversal is
+implemented as an edge-level property in `getConnections()`: an along-axis edge reverses iff its
+lower (−axis) endpoint is a powered reverser. This is symmetric (both endpoints compute the same
+flag) and gives exactly one direction flip across the block.
 
 ### Rotator block (deferred)
 
 CONSUMER (4 SU) that rotates connected solid blocks 90° per redstone pulse in the network's
 spin direction. CW → +90°, CCW → -90°. BFS flood fill, max 64 blocks. Reuse DoorDemo pattern.
 
-### Implementation order
+### Implementation order  ✅ DONE
 
-0. Remove dead code: `perpendicularNeighbors()` in RotationNetwork.java (never called,
-   superseded by inline logic in `getConnections()`)
-1. Wrench item creation + give command
-2. `SpinDirection` enum + `Connection` record + `nodeDirection` map in RotationNetwork;
-   update `getConnections()` return type to `List<Connection>` with `reverses` classification
-3. BFS direction tracking + post-pass anchor logic + jammed detection (passive source axis
-   validation already implemented in Phase 1 boundary scan)
-4. `getDirection()` public API
-5. `AnimationTracked.reversed` flag + `setAnimationDirection()` + `animationDirection` map in CustomBlockRegistry
-6. Wrench interaction in RotationBlocks (active sources)
-7. Windmill `toBuilder()` overlay for wrench interaction (all 3: demo:windmill,
-   rotation:large_windmill, rotation:huge_windmill)
-7b. Apply `setAnimationDirection` to passive sources using the direction derived in the
-   boundary-scan/post-pass (and reset on disconnect).
-8. Direction in `debugInteract()` output
-9. `rotation-config.yml` creation + loading (extract hardcoded values)
+0. ~~Remove dead code: `perpendicularNeighbors()` in RotationNetwork.java~~
+1. ~~Wrench item creation + give command~~
+2. ~~`SpinDirection` enum + `Connection` record + `nodeDirection` map in RotationNetwork~~
+3. ~~BFS direction tracking + post-pass anchor logic + jammed detection~~
+4. ~~`getDirection()` public API~~
+5. ~~`AnimationTracked.reversed` flag + `setAnimationDirection()` + `animationDirection` map in CustomBlockRegistry~~
+6. ~~Wrench interaction in RotationBlocks (active sources)~~
+7. ~~Windmill `toBuilder()` overlay for wrench interaction (all 3: rotation:windmill, rotation:large_windmill, rotation:huge_windmill)~~
+7b. ~~Apply `setAnimationDirection` to passive sources (boundary-scan/post-pass + reset on disconnect)~~
+8. ~~Direction in `debugInteract()` output~~
+9. ~~`rotation-config.yml` creation + loading (extract hardcoded values)~~
 
 ### Verification
 
@@ -515,7 +522,8 @@ Existing Phase 1 worlds with no PDC direction data: all sources are treated as f
 
 ## Display entities  ✅ DONE
 Defined in `rotation-blocks.yml` via the display-system refactor (Phases 1+2: `@alias` textures,
-`copy_from` + state-level animation). All spin speeds normalized to 3.0.
+`copy_from` + state-level animation). Spin speeds normalized to 3.0 for most blocks;
+large_windmill uses 2.0 and huge_windmill uses 1.0 (scaled inversely with size).
 - **Shaft:** single small skull, rotate animation matching axis
 - **Gear:** rod + two discs with composed quaternion rotations, rotate animation matching axis
 - **Drill:** skull with rotate animation (spinning states only)
@@ -531,7 +539,7 @@ Defined in `rotation-blocks.yml` via the display-system refactor (Phases 1+2: `@
 5. ~~Test: windmill → shaft → shaft → spinning propagates~~
 6. ~~Remaining blocks (gear, gearbox, water_wheel, engine, drill, grindstone, generator)~~
 7. ~~GrindRecipes + YAML config~~
-8. ~~rotation-config.yml loading~~ (deferred to Phase 2 — values hardcoded for now)
+8. ~~rotation-config.yml loading~~
 9. ~~Visual tuning~~
 
 ## Phase 3: Cleanup & hardening
@@ -541,7 +549,7 @@ improvements, and dead-code removal. Each item is independent and can be landed 
 
 ### Bugs
 
-#### B1. `recalculateAdjacentNetworks` early return (`RotationNetwork.java:120`)
+#### B1. `recalculateAdjacentNetworks` early return (`RotationNetwork.java:127`)
 
 The `return` inside the loop exits after recalculating only the **first** adjacent network found.
 Called from `toggleSourceDirection()` when a passive source (windmill) is wrenched. Windmills are
@@ -549,12 +557,16 @@ not graph nodes, so BFS from one adjacent network cannot cross the windmill to r
 a windmill borders two separate networks, only the first gets its direction/power updated. The
 second silently retains stale data.
 
-**Fix:** Remove the `return` on line 120. The re-entrancy guard (`pendingRecalcs` queue) handles
+**Fix:** Remove the `return` on line 127. The re-entrancy guard (`pendingRecalcs` queue) handles
 multiple concurrent `recalculate()` calls correctly.
 
-#### B2. Passive source boundary scan dedup ordering (`RotationNetwork.java:315` vs `323`)
+#### B2. Passive source boundary scan dedup ordering (`RotationNetwork.java:341` vs `349`)
 
-`countedSources.add(neighbor)` (dedup) runs at line 315, **before** axis validation at line 323.
+`countedSources.add(neighbor)` (dedup) runs at line 341, **before** the windmill axis validation
+at line 349 (`axisFromState(passiveState) == nodeAxis`). Note: there is also a face-axis filter
+at line 338 (`axisFromFace(face) != nodeAxis`) that restricts which faces a member checks — this
+is a separate, earlier filter. The bug is that dedup at line 341 falls between these two checks.
+
 If a passive source is first discovered via a member with an incompatible axis (e.g., X-axis shaft
 east of a Y-axis windmill), it is marked "already tried" and skipped when a compatible Y-axis
 member above tries to find it via `DOWN`.
@@ -564,14 +576,14 @@ windmill via WEST, adds to `countedSources`, but fails axis validation (Y≠X). 
 (0,1,0) iterates UP/DOWN, finds windmill via DOWN, but `countedSources.add()` returns false.
 Windmill is silently never counted as a power source.
 
-**Fix:** Move `countedSources.add(neighbor)` inside the success branch after line 323 (or after
-the `passiveSourceTypes.get()` check at line 320 to still cheaply skip non-passive blocks).
+**Fix:** Move `countedSources.add(neighbor)` inside the success branch after line 349 (or after
+the `passiveSourceTypes.get()` check at line 346 to still cheaply skip non-passive blocks).
 
-#### B3. `previouslyJammed` snapshot misses neighbor networks (`RotationNetwork.java:209-217`)
+#### B3. `previouslyJammed` snapshot misses neighbor networks (`RotationNetwork.java:234-243`)
 
-The snapshot only captures jammed members of the changed node's own network. Lines 237-254 also
+The snapshot only captures jammed members of the changed node's own network. Lines 263-280 also
 tear down neighbor networks. When two previously-jammed networks merge via a new connection and
-the result is still jammed, the transition-effect check at line 399
+the result is still jammed, the transition-effect check at line 425
 (`!members.stream().allMatch(previouslyJammed::contains)`) fires spuriously — smoke and anvil
 sound play again on blocks that were already jammed. Cosmetic only; network state is correct.
 
@@ -586,12 +598,12 @@ for (var entry : networks.entrySet()) {
 }
 ```
 
-#### B4. Missing `isChunkLoaded` guard in `toBlock()` (`RotationNetwork.java:588`)
+#### B4. Missing `isChunkLoaded` guard in `toBlock()` (`RotationNetwork.java:611`)
 
 `toBlock()` calls `world.getBlockAt()` without checking if the chunk is loaded. Paper's
 `getBlockAt()` synchronously loads unloaded chunks. All call sites on graph nodes (in the `nodes`
 map) are safe — nodes are added on chunk load, removed on chunk unload. The one genuinely unsafe
-call site is the passive source boundary scan (line 318), which probes neighbor blocks not in the
+call site is the passive source boundary scan (line 342), which probes neighbor blocks not in the
 graph — these could be across a chunk boundary into an unloaded chunk.
 
 **Fix:** Add `world.isChunkLoaded(key.x() >> 4, key.z() >> 4)` check in `toBlock()`, consistent
@@ -603,14 +615,14 @@ with existing patterns in `CustomBlockRegistry.java` (lines 249, 694, 740, 789).
 
 The 5-line teardown sequence (remove from `networkMembers`, clear `nodeNetworkId` +
 `nodeDirection` per member, `resetPassiveSources`, remove from `networks`) is copy-pasted three
-times: `doRecalculate` lines 222-232, lines 243-252, and `removeNodesInChunk` lines 471-481.
+times: `doRecalculate` lines 249-258, lines 269-278, and `removeNodesInChunk` lines 498-508.
 Extract into a helper returning the former member set.
 
 #### E2. Cache locked state on `RotationNode`
 
-`isLocked()` does `toBlock()` → `registry.getState()` → `startsWith("locked_")` on every neighbor
-during BFS — ~1500 world reads per recalculation of a 256-node network. The locked state is
-already known when the clutch's `onNeighborChange` fires. Add `boolean locked` field to
+`isLocked()` (line 573) does `toBlock()` → `registry.getState()` → `startsWith("locked_")` on
+every neighbor during BFS — ~1500 world reads per recalculation of a 256-node network. The locked
+state is already known when the clutch's `onNeighborChange` fires. Add `boolean locked` field to
 `RotationNode`; clutch overlay updates it before recalculating. `getConnections()` becomes a pure
 in-memory graph traversal.
 
@@ -628,17 +640,19 @@ record (members, passiveSources, state, dirMap), plus `emitJammedEffects()` and
 
 ### Dead code / incomplete
 
-#### I1. Remove `getNetworkStats()` (`RotationNetwork.java:166`)
+#### I1. Remove `getNetworkStats()` (`RotationNetwork.java:174`)
 
-Returns `int[3]`. Superseded by `NetworkDebugInfo` record. Never called anywhere.
+Returns `int[3]`. Superseded by `NetworkDebugInfo` record. No callers (`debugInteract` uses
+`getNetworkDebugInfo` at RotationBlocks:681,704). Referenced in javadoc for `transientDemand`
+(lines 65, 191) but not actually called.
 
-#### I2. Wire in `removeNodesInChunk()` (`RotationNetwork.java:447`)
+#### I2. Wire in `removeNodesInChunk()` (`RotationNetwork.java:469`)
 
 Batch chunk-unload optimization: single rebuild instead of N individual `removeNode()` calls.
 Currently chunk unloads dispatch per-block `onChunkUnloadCallback`, each triggering a separate
 recalculation. Wiring this in would reduce chunk-unload cost from O(N) recalculations to O(1).
 
-#### I3. Flexible windmill direction missing from debug output (`RotationNetwork.java:153-159`)
+#### I3. Flexible windmill direction missing from debug output (`RotationNetwork.java:145-169`)
 
 `getNetworkDebugInfo` counts passive source directions via `readStoredDirection()` (PDC).
 Un-wrenched windmills have no PDC entry so they are uncounted — debug can show
@@ -659,20 +673,20 @@ undocumented.
 
 ### Doc staleness
 
-- This doc says bevel gears "PRESERVE" direction — code now uses `bevelReverses()` symmetric
-  scalar triple product formula (face-dependent reversal)
-- This doc says "Copper axe" for wrench — code uses `GOLDEN_AXE` (no copper axe in vanilla)
-- This doc references `demo:windmill` — code uses `rotation:windmill`
-- Class javadoc (lines 26-30) says gears connect to "4 neighbors in perpendicular plane" — code
-  connects all 6 adjacent gears (same-axis gear mesh + bevel)
-- `RotationBlocks.java:29` comment says "gearbox" — should say "clutch"
+- ~~This doc says bevel gears "PRESERVE" direction~~ — fixed: doc now describes `bevelReverses()`
+- ~~This doc says "Copper axe" for wrench~~ — fixed: doc now says "Golden axe"
+- ~~This doc references `demo:windmill`~~ — fixed: doc now uses `rotation:windmill`
+- Class javadoc (lines 27-28) says gears connect to "4 neighbors in perpendicular plane" — code
+  connects all 6 adjacent gears (same-axis gear mesh + bevel). **Fix in code, not doc.**
+- `RotationBlocks.java:29` comment says "gearbox" — should say "clutch/reverser". **Fix in code,
+  not doc.**
 
 ### Investigated — not bugs (do not re-chase)
 
 These were flagged during deep review and confirmed **correct**; recorded so they aren't
 re-investigated. (B4 already owns the real `isChunkLoaded` finding.)
 
-#### N1. BFS jam detection is correct (`RotationNetwork.java:290`)
+#### N1. BFS jam detection is correct (`RotationNetwork.java:316`)
 A review flagged the contradiction check using `nodeNetworkId.containsKey(nk)` (catches only
 already-popped nodes), seeming to miss a back-edge to a queued-but-unpopped node and so fail to
 jam odd-reversal gear loops. It is actually correct: `getConnections` is **symmetric**
@@ -689,12 +703,10 @@ after `register(...)`. The wrench is craftable in-game. Minor: not reload-idempo
 if reload-safety is wanted.
 
 #### N3. Floor drill DOWN is a deliberate behavior, not a bug
-This doc says "Floor heads: player's cardinal facing" (line 157) but the code stores
-`BlockFace.DOWN` for floor drills (`storeFacingIfAbsent`, `RotationBlocks.java:537`). DOWN is
-sensible (drill into the ground), and the drill's spin axis comes from `axisFromState`, not the
-facing — a cardinal-facing floor drill would spin around Y while drilling sideways. Decision,
-not a fix: either keep DOWN (and correct the line-157 claim) or, for sideways floor drills,
-make the spin axis follow the facing too.
+The code stores `BlockFace.DOWN` for floor drills (`storeFacingIfAbsent`,
+`RotationBlocks.java:537`). DOWN is sensible (drill into the ground), and the drill's spin axis
+comes from `axisFromState`, not the facing — a cardinal-facing floor drill would spin around Y
+while drilling sideways. Doc now correctly says "Floor heads: DOWN".
 
 ### Verification (Phase 3)
 
