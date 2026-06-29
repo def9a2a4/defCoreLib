@@ -71,8 +71,16 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
                 getLogger().info("Loaded " + count + " rotation blocks");
             }
         } catch (IOException ignored) {}
+        RotationConfig rotConfig = new RotationConfig();
+        try (InputStream configStream = getResource("rotation-config.yml")) {
+            if (configStream != null) {
+                int sections = rotConfig.load(configStream, getLogger());
+                getLogger().info("Loaded rotation config (" + sections + " sections)");
+            }
+        } catch (IOException ignored) {}
         rotationNetwork = new RotationNetwork(this, registry);
-        EngineFuelManager fuelManager = new EngineFuelManager();
+        rotationNetwork.setMaxNetworkSize(rotConfig.maxNetworkSize);
+        EngineFuelManager fuelManager = new EngineFuelManager(rotConfig.fuelValues);
         GrindRecipes grindRecipes = new GrindRecipes();
         try (InputStream grindStream = getResource("grind-recipes.yml")) {
             if (grindStream != null) {
@@ -80,7 +88,8 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
                 getLogger().info("Loaded " + rc + " grind recipes");
             }
         } catch (IOException ignored) {}
-        RotationBlocks.register(registry, rotationNetwork, fuelManager, grindRecipes);
+        RotationBlocks.register(registry, rotationNetwork, fuelManager, grindRecipes, rotConfig);
+        RotationBlocks.registerWrenchRecipe();
 
         // Register mechanism demos
         new DoorDemo(this, registry, mechanismRegistry).register();
@@ -641,7 +650,21 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
     public void onPlayerInteract(PlayerInteractEvent event) {
         if (event.getAction() != Action.RIGHT_CLICK_BLOCK) return;
         if (event.getHand() != EquipmentSlot.HAND) return;
-        if (event.getPlayer().isSneaking()) return; // sneak+right-click = place block
+        if (event.getPlayer().isSneaking()) {
+            // Sneak+wrench on a rotation block → dispatch to onInteract (inspect mode)
+            Block sBlock = event.getClickedBlock();
+            if (sBlock != null) {
+                CustomHeadBlock sType = registry.getTypeFromBlock(sBlock);
+                if (sType != null && sType.onInteract() != null
+                        && RotationBlocks.isWrench(event.getPlayer().getInventory().getItemInMainHand())) {
+                    if (sType.onInteract().apply(sBlock, event)) {
+                        event.setCancelled(true);
+                    }
+                    return;
+                }
+            }
+            return; // sneak+right-click without wrench = place block
+        }
 
         Block block = event.getClickedBlock();
         if (block == null) return;
@@ -1104,7 +1127,12 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
                         count++;
                     }
                 }
-                sender.sendMessage(Component.text("Gave " + count + " rotation blocks", NamedTextColor.GREEN));
+                var wrenchOverflow = player.getInventory().addItem(RotationBlocks.createWrench());
+                for (ItemStack lf : wrenchOverflow.values()) {
+                    player.getWorld().dropItemNaturally(player.getLocation(), lf);
+                }
+                count++;
+                sender.sendMessage(Component.text("Gave " + count + " rotation blocks + wrench", NamedTextColor.GREEN));
             }
             case "colliders" -> {
                 boolean enabled = !mechanismRegistry.isColliderGlowEnabled();

@@ -147,6 +147,8 @@ public class CustomBlockRegistry {
     private final Set<LocationKey> customBlockLocations = new HashSet<>();
     // Animation tracking: display entities with active animations
     private final Map<LocationKey, List<AnimationTracked>> animationTracked = new HashMap<>();
+    // Animation direction: CW (default) or CCW per block location
+    private final Map<LocationKey, RotationNetwork.SpinDirection> animationDirection = new HashMap<>();
 
     private @Nullable BukkitTask redstoneTask;
     private @Nullable BukkitTask particleTask;
@@ -406,12 +408,14 @@ public class CustomBlockRegistry {
                 loc.worldId().equals(world.getUID())
                         && (loc.x() >> 4) == chunkX && (loc.z() >> 4) == chunkZ);
 
-        // Remove animation tracking for blocks in this chunk
-        animationTracked.entrySet().removeIf(e -> {
+        // Remove animation tracking + direction for blocks in this chunk
+        java.util.function.Predicate<Map.Entry<LocationKey, ?>> inChunk = e -> {
             LocationKey loc = e.getKey();
             return loc.worldId().equals(world.getUID())
                     && (loc.x() >> 4) == chunkX && (loc.z() >> 4) == chunkZ;
-        });
+        };
+        animationTracked.entrySet().removeIf(inChunk);
+        animationDirection.entrySet().removeIf(inChunk);
 
         // Save open storages in this chunk
         saveStoragesInChunk(world, chunkX, chunkZ);
@@ -502,6 +506,10 @@ public class CustomBlockRegistry {
 
             if (anims != null) {
                 animationTracked.put(key, anims);
+                RotationNetwork.SpinDirection dir = animationDirection.get(key);
+                if (dir == RotationNetwork.SpinDirection.CCW) {
+                    for (AnimationTracked at : anims) at.reversed = true;
+                }
             } else {
                 animationTracked.remove(key);
             }
@@ -523,6 +531,7 @@ public class CustomBlockRegistry {
         tickTracked.remove(key);
         customBlockLocations.remove(key);
         animationTracked.remove(key);
+        animationDirection.remove(key);
 
         // Remove display entities (use location-specific prefix to avoid hitting nearby blocks)
         if (type.hasDisplayEntities()) {
@@ -716,8 +725,20 @@ public class CustomBlockRegistry {
             for (var tracked : entry) {
                 if (!tracked.display.isValid()) continue;
                 long tickAge = currentTick - tracked.startTick;
+                if (tracked.reversed) tickAge = -tickAge;
                 tracked.animation.apply(tracked.baseTransform, tickAge, animationWorkMatrix);
                 tracked.display.setTransformationMatrix(animationWorkMatrix);
+            }
+        }
+    }
+
+    void setAnimationDirection(LocationKey key, RotationNetwork.SpinDirection dir) {
+        animationDirection.put(key, dir);
+        boolean reversed = (dir == RotationNetwork.SpinDirection.CCW);
+        List<AnimationTracked> tracked = animationTracked.get(key);
+        if (tracked != null) {
+            for (AnimationTracked at : tracked) {
+                at.reversed = reversed;
             }
         }
     }
@@ -1349,6 +1370,7 @@ public class CustomBlockRegistry {
         final DisplayAnimation animation;
         final long startTick;
         final Matrix4f baseTransform;
+        boolean reversed;
         AnimationTracked(Display display, DisplayAnimation animation, long startTick, Matrix4f baseTransform) {
             this.display = display;
             this.animation = animation;

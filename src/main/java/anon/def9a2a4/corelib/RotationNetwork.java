@@ -1,9 +1,12 @@
 package anon.def9a2a4.corelib;
 
 import org.bukkit.Bukkit;
+import org.bukkit.NamespacedKey;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.block.Skull;
+import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jspecify.annotations.Nullable;
 
@@ -27,12 +30,18 @@ public class RotationNetwork {
 
     public enum Axis { X, Y, Z }
     public enum NodeRole { SOURCE, TRANSMITTER, CONSUMER }
+    public enum SpinDirection {
+        CW, CCW;
+        public SpinDirection reversed() { return this == CW ? CCW : CW; }
+    }
 
     record RotationNode(CustomBlockRegistry.LocationKey key, String blockTypeId, Axis axis,
                         NodeRole role, int powerUnits, boolean gearLike) {}
 
-    record NetworkState(int supply, int demand) {
-        boolean powered() { return supply >= demand && supply > 0; }
+    record Connection(CustomBlockRegistry.LocationKey neighbor, boolean reverses) {}
+
+    record NetworkState(int supply, int demand, boolean jammed) {
+        boolean powered() { return !jammed && supply >= demand && supply > 0; }
     }
 
     private final CustomBlockRegistry registry;
@@ -46,7 +55,9 @@ public class RotationNetwork {
     private final Map<CustomBlockRegistry.LocationKey, RotationNode> nodes = new HashMap<>();
     private final Map<CustomBlockRegistry.LocationKey, Integer> nodeNetworkId = new HashMap<>();
     private final Map<Integer, Set<CustomBlockRegistry.LocationKey>> networkMembers = new HashMap<>();
+    private final Map<Integer, Set<CustomBlockRegistry.LocationKey>> networkPassiveSources = new HashMap<>();
     private final Map<Integer, NetworkState> networks = new HashMap<>();
+    private final Map<CustomBlockRegistry.LocationKey, SpinDirection> nodeDirection = new HashMap<>();
     private int nextNetworkId = 0;
 
     // Re-entrancy guard
@@ -55,6 +66,8 @@ public class RotationNetwork {
 
     // Config
     private int maxNetworkSize = 256;
+
+    static final NamespacedKey SPIN_DIR_KEY = new NamespacedKey("rotation", "spin_dir");
 
     RotationNetwork(JavaPlugin plugin, CustomBlockRegistry registry) {
         this.plugin = plugin;
@@ -92,6 +105,20 @@ public class RotationNetwork {
         return nodes.get(key);
     }
 
+    public @Nullable SpinDirection getDirection(CustomBlockRegistry.LocationKey key) {
+        return nodeDirection.get(key);
+    }
+
+    public void recalculateAdjacentNetworks(CustomBlockRegistry.LocationKey key) {
+        for (BlockFace face : CARDINAL_FACES) {
+            CustomBlockRegistry.LocationKey neighbor = faceNeighbor(key, face);
+            if (nodes.containsKey(neighbor)) {
+                recalculate(neighbor);
+                return;
+            }
+        }
+    }
+
     public void setMaxNetworkSize(int max) {
         this.maxNetworkSize = max;
     }
@@ -100,6 +127,36 @@ public class RotationNetwork {
      *  These blocks provide power when adjacent to a network node, without needing Java callbacks. */
     public void registerPassiveSource(String blockTypeId, int powerUnits) {
         passiveSourceTypes.put(blockTypeId, powerUnits);
+    }
+
+    record NetworkDebugInfo(int supply, int demand, int blockCount, boolean jammed,
+                            int cwSources, int ccwSources) {}
+
+    public @Nullable NetworkDebugInfo getNetworkDebugInfo(CustomBlockRegistry.LocationKey key) {
+        Integer netId = nodeNetworkId.get(key);
+        if (netId == null) return null;
+        NetworkState state = networks.get(netId);
+        Set<CustomBlockRegistry.LocationKey> members = networkMembers.get(netId);
+        if (state == null || members == null) return null;
+        int cw = 0, ccw = 0;
+        for (CustomBlockRegistry.LocationKey loc : members) {
+            RotationNode node = nodes.get(loc);
+            if (node != null && node.role() == NodeRole.SOURCE) {
+                SpinDirection dir = nodeDirection.get(loc);
+                if (dir == SpinDirection.CW) cw++;
+                else if (dir == SpinDirection.CCW) ccw++;
+            }
+        }
+        Set<CustomBlockRegistry.LocationKey> passives = networkPassiveSources.get(netId);
+        if (passives != null) {
+            for (CustomBlockRegistry.LocationKey ps : passives) {
+                SpinDirection stored = readStoredDirection(ps);
+                if (stored == SpinDirection.CW) cw++;
+                else if (stored == SpinDirection.CCW) ccw++;
+            }
+        }
+        return new NetworkDebugInfo(state.supply(), state.demand(), members.size(),
+                state.jammed(), cw, ccw);
     }
 
     /** Returns [supply, demand, blockCount] for the network containing this node, or null. */
@@ -135,6 +192,7 @@ public class RotationNetwork {
                 Set<CustomBlockRegistry.LocationKey> batch = new HashSet<>(pendingRecalcs);
                 pendingRecalcs.clear();
                 for (CustomBlockRegistry.LocationKey pending : batch) {
+                    if (nodeNetworkId.containsKey(pending)) continue;
                     doRecalculate(pending);
                 }
             }
@@ -144,48 +202,58 @@ public class RotationNetwork {
     }
 
     private void doRecalculate(CustomBlockRegistry.LocationKey changed) {
-        // 1. Determine dirty set
+        // 1. Determine dirty set — clear old network indexes + directions
         Set<CustomBlockRegistry.LocationKey> dirty = new HashSet<>();
         Integer oldNetId = nodeNetworkId.get(changed);
         if (oldNetId != null) {
-            // Node was in an existing network — dirty = all members
             Set<CustomBlockRegistry.LocationKey> members = networkMembers.remove(oldNetId);
             if (members != null) {
                 dirty.addAll(members);
-                for (CustomBlockRegistry.LocationKey dk : members) nodeNetworkId.remove(dk);
+                for (CustomBlockRegistry.LocationKey dk : members) {
+                    nodeNetworkId.remove(dk);
+                    nodeDirection.remove(dk);
+                }
             }
+            resetPassiveSources(oldNetId);
             networks.remove(oldNetId);
         } else {
-            // Freshly added or already removed — dirty = this + adjacent networks
             dirty.add(changed);
             RotationNode node = nodes.get(changed);
             if (node != null) {
-                for (CustomBlockRegistry.LocationKey neighbor : getConnections(node)) {
-                    Integer nid = nodeNetworkId.get(neighbor);
+                for (Connection conn : getConnections(node)) {
+                    Integer nid = nodeNetworkId.get(conn.neighbor());
                     if (nid != null && !dirty.containsAll(networkMembers.getOrDefault(nid, Set.of()))) {
                         Set<CustomBlockRegistry.LocationKey> nMembers = networkMembers.remove(nid);
                         if (nMembers != null) {
                             dirty.addAll(nMembers);
-                            for (CustomBlockRegistry.LocationKey dk : nMembers) nodeNetworkId.remove(dk);
+                            for (CustomBlockRegistry.LocationKey dk : nMembers) {
+                                nodeNetworkId.remove(dk);
+                                nodeDirection.remove(dk);
+                            }
                         }
+                        resetPassiveSources(nid);
                         networks.remove(nid);
                     }
                 }
             }
         }
 
-        // Remove nodes that no longer exist
         dirty.removeIf(k -> !nodes.containsKey(k));
 
-        // 2. BFS from each unassigned dirty node → new components
+        // 2. BFS from each unassigned dirty node → new components with direction tracking
         for (CustomBlockRegistry.LocationKey start : dirty) {
             if (nodeNetworkId.containsKey(start)) continue;
 
             int netId = nextNetworkId++;
             Set<CustomBlockRegistry.LocationKey> members = new HashSet<>();
             int supply = 0, demand = 0;
+            boolean jammed = false;
+
+            // BFS with direction propagation (tentative root = CW)
+            Map<CustomBlockRegistry.LocationKey, SpinDirection> dirMap = new HashMap<>();
             Queue<CustomBlockRegistry.LocationKey> queue = new ArrayDeque<>();
             queue.add(start);
+            dirMap.put(start, SpinDirection.CW);
 
             while (!queue.isEmpty() && members.size() < maxNetworkSize) {
                 CustomBlockRegistry.LocationKey loc = queue.poll();
@@ -199,27 +267,36 @@ public class RotationNetwork {
                 if (node.role() == NodeRole.SOURCE) supply += node.powerUnits();
                 if (node.role() == NodeRole.CONSUMER) demand += node.powerUnits();
 
-                for (CustomBlockRegistry.LocationKey neighbor : getConnections(node)) {
-                    if (!nodeNetworkId.containsKey(neighbor)) {
-                        queue.add(neighbor);
+                SpinDirection myDir = dirMap.get(loc);
+                for (Connection conn : getConnections(node)) {
+                    SpinDirection neighborDir = conn.reverses() ? myDir.reversed() : myDir;
+                    CustomBlockRegistry.LocationKey nk = conn.neighbor();
+                    if (nodeNetworkId.containsKey(nk)) {
+                        // Cycle detection: direction contradiction → jammed
+                        SpinDirection existing = dirMap.get(nk);
+                        if (existing != null && existing != neighborDir) {
+                            jammed = true;
+                        }
+                    } else if (!dirMap.containsKey(nk)) {
+                        dirMap.put(nk, neighborDir);
+                        queue.add(nk);
                     }
                 }
             }
 
-            // Scan boundary for passive sources (YAML-only blocks like windmills)
-            // Only count a passive source if it connects along the adjacent node's axis
-            // (same rule as checkAxisNeighbor — axis must match and adjacency must be along it)
+            // Scan boundary for passive sources + derive their directions
+            Set<CustomBlockRegistry.LocationKey> passiveSources = new HashSet<>();
             if (!passiveSourceTypes.isEmpty()) {
                 Set<CustomBlockRegistry.LocationKey> countedSources = new HashSet<>();
                 for (CustomBlockRegistry.LocationKey loc : members) {
                     RotationNode memberNode = nodes.get(loc);
                     if (memberNode == null) continue;
                     Axis nodeAxis = memberNode.axis();
-                    for (org.bukkit.block.BlockFace face : CARDINAL_FACES) {
-                        if (axisFromFace(face) != nodeAxis) continue; // not along node's axis
+                    for (BlockFace face : CARDINAL_FACES) {
+                        if (axisFromFace(face) != nodeAxis) continue;
                         CustomBlockRegistry.LocationKey neighbor = faceNeighbor(loc, face);
-                        if (nodes.containsKey(neighbor)) continue; // already a network node
-                        if (!countedSources.add(neighbor)) continue; // already counted
+                        if (nodes.containsKey(neighbor)) continue;
+                        if (!countedSources.add(neighbor)) continue;
                         Block nb = toBlock(neighbor);
                         if (nb == null) continue;
                         CustomHeadBlock type = registry.getTypeFromBlock(nb);
@@ -229,6 +306,12 @@ public class RotationNetwork {
                                 String passiveState = registry.getState(nb);
                                 if (passiveState != null && axisFromState(passiveState) == nodeAxis) {
                                     supply += passivePower;
+                                    // Along-axis edge = preserves direction
+                                    SpinDirection adjDir = dirMap.get(loc);
+                                    if (adjDir != null) {
+                                        passiveSources.add(neighbor);
+                                        dirMap.put(neighbor, adjDir);
+                                    }
                                 }
                             }
                         }
@@ -236,19 +319,93 @@ public class RotationNetwork {
                 }
             }
 
+            // Post-pass: anchor to explicit source directions from PDC
+            List<Map.Entry<CustomBlockRegistry.LocationKey, SpinDirection>> explicitSources = new ArrayList<>();
+            for (CustomBlockRegistry.LocationKey loc : members) {
+                RotationNode node = nodes.get(loc);
+                if (node != null && node.role() == NodeRole.SOURCE) {
+                    SpinDirection stored = readStoredDirection(loc);
+                    if (stored != null) explicitSources.add(Map.entry(loc, stored));
+                }
+            }
+            for (CustomBlockRegistry.LocationKey ps : passiveSources) {
+                SpinDirection stored = readStoredDirection(ps);
+                if (stored != null) explicitSources.add(Map.entry(ps, stored));
+            }
+
+            if (!explicitSources.isEmpty()) {
+                // Deterministic anchor: lowest LocationKey
+                explicitSources.sort(Comparator
+                        .comparing((Map.Entry<CustomBlockRegistry.LocationKey, SpinDirection> e) -> e.getKey().worldId())
+                        .thenComparingInt(e -> e.getKey().x())
+                        .thenComparingInt(e -> e.getKey().y())
+                        .thenComparingInt(e -> e.getKey().z()));
+
+                var anchor = explicitSources.get(0);
+                SpinDirection bfsDir = dirMap.getOrDefault(anchor.getKey(), SpinDirection.CW);
+                if (bfsDir != anchor.getValue()) {
+                    dirMap.replaceAll((k, v) -> v.reversed());
+                }
+
+                // Check remaining explicit sources for conflicts
+                for (int i = 1; i < explicitSources.size(); i++) {
+                    var entry = explicitSources.get(i);
+                    SpinDirection computed = dirMap.getOrDefault(entry.getKey(), SpinDirection.CW);
+                    if (computed != entry.getValue()) {
+                        jammed = true;
+                        break;
+                    }
+                }
+            }
+
+            // Store node directions + set animation directions BEFORE state updates
+            for (CustomBlockRegistry.LocationKey loc : members) {
+                SpinDirection dir = dirMap.getOrDefault(loc, SpinDirection.CW);
+                nodeDirection.put(loc, dir);
+                registry.setAnimationDirection(loc, dir);
+            }
+            for (CustomBlockRegistry.LocationKey ps : passiveSources) {
+                SpinDirection dir = dirMap.getOrDefault(ps, SpinDirection.CW);
+                registry.setAnimationDirection(ps, dir);
+            }
+
             networkMembers.put(netId, members);
-            NetworkState netState = new NetworkState(supply, demand);
+            if (!passiveSources.isEmpty()) networkPassiveSources.put(netId, passiveSources);
+            NetworkState netState = new NetworkState(supply, demand, jammed);
             networks.put(netId, netState);
 
             logger.info("[Rotation] Network #" + netId + ": " + members.size() + " blocks, "
-                + supply + "/" + demand + " SU, " + (netState.powered() ? "POWERED" : "unpowered"));
+                + supply + "/" + demand + " SU"
+                + (jammed ? ", JAMMED" : "")
+                + ", " + (netState.powered() ? "POWERED" : "unpowered"));
 
-            // 3. Update block states for nodes whose powered state changed
             boolean powered = netState.powered();
             for (CustomBlockRegistry.LocationKey loc : members) {
                 updateBlockState(loc, powered);
             }
         }
+    }
+
+    private void resetPassiveSources(int netId) {
+        Set<CustomBlockRegistry.LocationKey> oldPassives = networkPassiveSources.remove(netId);
+        if (oldPassives != null) {
+            for (CustomBlockRegistry.LocationKey ps : oldPassives) {
+                registry.setAnimationDirection(ps, SpinDirection.CW);
+            }
+        }
+    }
+
+    @Nullable SpinDirection readStoredDirection(CustomBlockRegistry.LocationKey key) {
+        Block block = toBlock(key);
+        if (block == null) return null;
+        if (!(block.getState() instanceof Skull skull)) return null;
+        String val = skull.getPersistentDataContainer().get(SPIN_DIR_KEY, PersistentDataType.STRING);
+        if (val == null) return null;
+        return switch (val) {
+            case "cw" -> SpinDirection.CW;
+            case "ccw" -> SpinDirection.CCW;
+            default -> null;
+        };
     }
 
     // ──────────────────────────────────────────────────────────────────────
@@ -269,10 +426,11 @@ public class RotationNetwork {
         }
         if (toRemove.isEmpty()) return;
 
-        // Remove nodes
+        // Remove nodes + direction entries
         for (CustomBlockRegistry.LocationKey k : toRemove) {
             nodes.remove(k);
             nodeNetworkId.remove(k);
+            nodeDirection.remove(k);
         }
 
         // Collect remaining dirty members of affected networks
@@ -282,8 +440,12 @@ public class RotationNetwork {
             if (members != null) {
                 members.removeAll(toRemove);
                 dirty.addAll(members);
-                for (CustomBlockRegistry.LocationKey dk : members) nodeNetworkId.remove(dk);
+                for (CustomBlockRegistry.LocationKey dk : members) {
+                    nodeNetworkId.remove(dk);
+                    nodeDirection.remove(dk);
+                }
             }
+            resetPassiveSources(nid);
             networks.remove(nid);
         }
 
@@ -298,26 +460,25 @@ public class RotationNetwork {
     // Connection logic
     // ──────────────────────────────────────────────────────────────────────
 
-    List<CustomBlockRegistry.LocationKey> getConnections(RotationNode node) {
+    List<Connection> getConnections(RotationNode node) {
         if (isLocked(node)) return List.of();
 
-        List<CustomBlockRegistry.LocationKey> result = new ArrayList<>(6);
+        List<Connection> result = new ArrayList<>(6);
         CustomBlockRegistry.LocationKey k = node.key();
 
-        // Along-axis: 2 neighbors
-        CustomBlockRegistry.LocationKey pos = axisNeighbor(k, node.axis(), +1);
-        CustomBlockRegistry.LocationKey neg = axisNeighbor(k, node.axis(), -1);
-        checkAxisNeighbor(pos, node.axis(), result);
-        checkAxisNeighbor(neg, node.axis(), result);
+        // Along-axis: 2 neighbors (checked first — load-bearing for reverses classification)
+        checkAxisNeighbor(axisNeighbor(k, node.axis(), +1), node.axis(), result);
+        checkAxisNeighbor(axisNeighbor(k, node.axis(), -1), node.axis(), result);
 
         // Gear-to-gear: connects to ANY adjacent gear (all 6 faces, any axis)
         if (node.gearLike()) {
             for (BlockFace face : CARDINAL_FACES) {
                 CustomBlockRegistry.LocationKey neighbor = faceNeighbor(k, face);
-                if (result.contains(neighbor)) continue; // already added by along-axis check
+                if (result.stream().anyMatch(c -> c.neighbor().equals(neighbor))) continue;
                 RotationNode other = nodes.get(neighbor);
                 if (other != null && other.gearLike() && !isLocked(other)) {
-                    result.add(neighbor);
+                    // Same-axis gear mesh reverses direction; bevel (different axis) preserves
+                    result.add(new Connection(neighbor, other.axis() == node.axis()));
                 }
             }
         }
@@ -325,10 +486,10 @@ public class RotationNetwork {
         return result;
     }
 
-    private void checkAxisNeighbor(CustomBlockRegistry.LocationKey neighborKey, Axis requiredAxis, List<CustomBlockRegistry.LocationKey> result) {
+    private void checkAxisNeighbor(CustomBlockRegistry.LocationKey neighborKey, Axis requiredAxis, List<Connection> result) {
         RotationNode other = nodes.get(neighborKey);
         if (other != null && other.axis() == requiredAxis && !isLocked(other)) {
-            result.add(neighborKey);
+            result.add(new Connection(neighborKey, false));
         }
     }
 
@@ -402,26 +563,6 @@ public class RotationNetwork {
             case X -> new CustomBlockRegistry.LocationKey(k.worldId(), k.x() + offset, k.y(), k.z());
             case Y -> new CustomBlockRegistry.LocationKey(k.worldId(), k.x(), k.y() + offset, k.z());
             case Z -> new CustomBlockRegistry.LocationKey(k.worldId(), k.x(), k.y(), k.z() + offset);
-        };
-    }
-
-    private static List<CustomBlockRegistry.LocationKey> perpendicularNeighbors(CustomBlockRegistry.LocationKey k, Axis axis) {
-        return switch (axis) {
-            case X -> List.of(
-                new CustomBlockRegistry.LocationKey(k.worldId(), k.x(), k.y() + 1, k.z()),
-                new CustomBlockRegistry.LocationKey(k.worldId(), k.x(), k.y() - 1, k.z()),
-                new CustomBlockRegistry.LocationKey(k.worldId(), k.x(), k.y(), k.z() + 1),
-                new CustomBlockRegistry.LocationKey(k.worldId(), k.x(), k.y(), k.z() - 1));
-            case Y -> List.of(
-                new CustomBlockRegistry.LocationKey(k.worldId(), k.x() + 1, k.y(), k.z()),
-                new CustomBlockRegistry.LocationKey(k.worldId(), k.x() - 1, k.y(), k.z()),
-                new CustomBlockRegistry.LocationKey(k.worldId(), k.x(), k.y(), k.z() + 1),
-                new CustomBlockRegistry.LocationKey(k.worldId(), k.x(), k.y(), k.z() - 1));
-            case Z -> List.of(
-                new CustomBlockRegistry.LocationKey(k.worldId(), k.x() + 1, k.y(), k.z()),
-                new CustomBlockRegistry.LocationKey(k.worldId(), k.x() - 1, k.y(), k.z()),
-                new CustomBlockRegistry.LocationKey(k.worldId(), k.x(), k.y() + 1, k.z()),
-                new CustomBlockRegistry.LocationKey(k.worldId(), k.x(), k.y() - 1, k.z()));
         };
     }
 

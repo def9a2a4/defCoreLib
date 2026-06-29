@@ -2,6 +2,8 @@ package anon.def9a2a4.corelib;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextDecoration;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -10,7 +12,9 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Skull;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.persistence.PersistentDataType;
 
 import org.bukkit.entity.Player;
@@ -28,29 +32,59 @@ final class RotationBlocks {
 
     private RotationBlocks() {}
 
+    private static final NamespacedKey WRENCH_KEY = new NamespacedKey("rotation", "wrench");
+    private static final NamespacedKey WRENCH_RECIPE_KEY = new NamespacedKey("rotation", "wrench_recipe");
+
+    static boolean isWrench(ItemStack item) {
+        if (item == null || item.getType() != Material.GOLDEN_AXE) return false;
+        return item.getItemMeta().getPersistentDataContainer().has(WRENCH_KEY);
+    }
+
+    static ItemStack createWrench() {
+        ItemStack wrench = new ItemStack(Material.GOLDEN_AXE);
+        var meta = wrench.getItemMeta();
+        meta.displayName(Component.text("Rotation Wrench", NamedTextColor.GOLD)
+                .decoration(TextDecoration.ITALIC, false));
+        meta.setUnbreakable(true);
+        meta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
+        meta.setEnchantmentGlintOverride(true);
+        meta.getPersistentDataContainer().set(WRENCH_KEY, PersistentDataType.BYTE, (byte) 1);
+        wrench.setItemMeta(meta);
+        return wrench;
+    }
+
+    static void registerWrenchRecipe() {
+        ShapedRecipe recipe = new ShapedRecipe(WRENCH_RECIPE_KEY, createWrench());
+        recipe.shape("CSC", "CS ", " S ");
+        recipe.setIngredient('C', Material.COPPER_INGOT);
+        recipe.setIngredient('S', Material.STICK);
+        Bukkit.addRecipe(recipe);
+    }
+
     static void register(CustomBlockRegistry registry, RotationNetwork network,
-                         EngineFuelManager fuelManager, GrindRecipes grindRecipes) {
+                         EngineFuelManager fuelManager, GrindRecipes grindRecipes,
+                         RotationConfig config) {
         // Overlay callbacks onto YAML-loaded blocks
         overlayStandard(registry, network, "rotation:shaft",   RotationNetwork.NodeRole.TRANSMITTER, 0, false);
         overlayStandard(registry, network, "rotation:gear",    RotationNetwork.NodeRole.TRANSMITTER, 0, true);
         overlayClutch(registry, network);
-        overlayWaterWheel(registry, network);
-        overlayEngine(registry, network, fuelManager);
-        overlayGrindstone(registry, network, grindRecipes);
-        overlayGenerator(registry, network);
-        overlayDrill(registry, network);
+        overlayWaterWheel(registry, network, config);
+        overlayEngine(registry, network, fuelManager, config);
+        overlayGrindstone(registry, network, grindRecipes, config);
+        overlayGenerator(registry, network, config);
+        overlayDrill(registry, network, config);
 
         // Passive sources — detected at network boundary, no callbacks needed
-        network.registerPassiveSource("rotation:windmill", 1);
-        network.registerPassiveSource("rotation:large_windmill", 5);
-        network.registerPassiveSource("rotation:huge_windmill", 15);
+        network.registerPassiveSource("rotation:windmill", config.getPower("windmill", 1));
+        network.registerPassiveSource("rotation:large_windmill", config.getPower("large_windmill", 5));
+        network.registerPassiveSource("rotation:huge_windmill", config.getPower("huge_windmill", 15));
 
         // Windmill blade resolver — allows crafted banners to replace default WHITE_BANNER.
         // Each tier is craftable only with the matching banner tier (enforced in
         // CoreLibPlugin.captureBannerIngredients via the block's bannerTier).
-        overlayWindmillResolver(registry, "rotation:windmill", BannerTier.NORMAL);
-        overlayWindmillResolver(registry, "rotation:large_windmill", BannerTier.LARGE);
-        overlayWindmillResolver(registry, "rotation:huge_windmill", BannerTier.HUGE);
+        overlayWindmillResolver(registry, "rotation:windmill", BannerTier.NORMAL, network);
+        overlayWindmillResolver(registry, "rotation:large_windmill", BannerTier.LARGE, network);
+        overlayWindmillResolver(registry, "rotation:huge_windmill", BannerTier.HUGE, network);
     }
 
     // ──────────────────────────────────────────────────────────────────────
@@ -69,7 +103,11 @@ final class RotationBlocks {
             .drillable(false)
             .reactsToNeighbors(true)
             .onNeighborChange((b, face) -> recalcIfKnown(b, network))
-            .onInteract((b, event) -> debugInteract(b, event, network, registry))
+            .onInteract((b, event) -> {
+                if (isWrench(event.getPlayer().getInventory().getItemInMainHand()))
+                    return wrenchInteract(b, event, network, registry);
+                return debugInteract(b, event, network, registry);
+            })
             .onChunkLoad((b, state) -> network.addNode(b, blockId,
                 RotationNetwork.axisFromState(state), role, power, gearLike))
             .onChunkUnload(b -> network.removeNode(CustomBlockRegistry.LocationKey.of(b)))
@@ -104,7 +142,11 @@ final class RotationBlocks {
                 }
                 recalcIfKnown(b, network);
             })
-            .onInteract((b, event) -> debugInteract(b, event, network, registry))
+            .onInteract((b, event) -> {
+                if (isWrench(event.getPlayer().getInventory().getItemInMainHand()))
+                    return wrenchInteract(b, event, network, registry);
+                return debugInteract(b, event, network, registry);
+            })
             .onChunkLoad((b, state) -> network.addNode(b, blockId,
                 RotationNetwork.axisFromState(state), RotationNetwork.NodeRole.TRANSMITTER, 0, false))
             .onChunkUnload(b -> network.removeNode(CustomBlockRegistry.LocationKey.of(b)))
@@ -116,7 +158,9 @@ final class RotationBlocks {
     // Water Wheel: source, perpendicular water detection
     // ──────────────────────────────────────────────────────────────────────
 
-    private static void overlayWaterWheel(CustomBlockRegistry registry, RotationNetwork network) {
+    private static void overlayWaterWheel(CustomBlockRegistry registry, RotationNetwork network,
+                                              RotationConfig config) {
+        int waterWheelPower = config.getPower("water_wheel", 2);
         String blockId = "rotation:water_wheel";
         CustomHeadBlock block = registry.getType(blockId);
         if (block == null) { warn(registry, blockId); return; }
@@ -137,13 +181,22 @@ final class RotationBlocks {
                 }
                 recalcIfKnown(b, network);
             })
-            .onInteract((b, event) -> debugInteract(b, event, network, registry))
+            .onInteract((b, event) -> {
+                if (isWrench(event.getPlayer().getInventory().getItemInMainHand())) {
+                    if (event.getPlayer().isSneaking())
+                        return debugInteract(b, event, network, registry);
+                    event.getPlayer().sendActionBar(
+                            Component.text("Water wheels are always flexible", NamedTextColor.AQUA));
+                    return true;
+                }
+                return debugInteract(b, event, network, registry);
+            })
             .onChunkLoad((b, state) -> {
                 RotationNetwork.Axis axis = RotationNetwork.axisFromState(state);
                 boolean spinning = state.startsWith("spinning_");
                 network.addNode(b, blockId, axis,
                     spinning ? RotationNetwork.NodeRole.SOURCE : RotationNetwork.NodeRole.TRANSMITTER,
-                    spinning ? 2 : 0, false);
+                    spinning ? waterWheelPower : 0, false);
             })
             .onChunkUnload(b -> network.removeNode(CustomBlockRegistry.LocationKey.of(b)))
             .onBlockRemoved((b, state) -> network.removeNode(CustomBlockRegistry.LocationKey.of(b)))
@@ -176,7 +229,8 @@ final class RotationBlocks {
     // ──────────────────────────────────────────────────────────────────────
 
     private static void overlayEngine(CustomBlockRegistry registry, RotationNetwork network,
-                                      EngineFuelManager fuelManager) {
+                                      EngineFuelManager fuelManager, RotationConfig config) {
+        int enginePower = config.getPower("engine", 5);
         String blockId = "rotation:engine";
         CustomHeadBlock block = registry.getType(blockId);
         if (block == null) { warn(registry, blockId); return; }
@@ -186,8 +240,9 @@ final class RotationBlocks {
             .tickInterval(20)
             .onNeighborChange((b, face) -> recalcIfKnown(b, network))
             .onInteract((b, event) -> {
-                // Add fuel on right-click
                 var held = event.getPlayer().getInventory().getItemInMainHand();
+                if (isWrench(held)) return wrenchInteract(b, event, network, registry);
+                // Add fuel on right-click
                 if (held.getType().isAir()) return debugInteract(b, event, network, registry);
                 int fuelValue = fuelManager.getFuelValue(held.getType());
                 if (fuelValue <= 0) return debugInteract(b, event, network, registry);
@@ -208,7 +263,7 @@ final class RotationBlocks {
                     // Re-add as SOURCE
                     network.removeNode(key);
                     network.addNode(b, blockId, RotationNetwork.axisFromState(target),
-                        RotationNetwork.NodeRole.SOURCE, 5, false);
+                        RotationNetwork.NodeRole.SOURCE, enginePower, false);
                 }
 
                 event.getPlayer().sendActionBar(net.kyori.adventure.text.Component.text(
@@ -240,7 +295,7 @@ final class RotationBlocks {
                 RotationNetwork.Axis axis = RotationNetwork.axisFromState(state != null ? state : "idle_y");
                 network.addNode(b, blockId, axis,
                     running ? RotationNetwork.NodeRole.SOURCE : RotationNetwork.NodeRole.TRANSMITTER,
-                    running ? 5 : 0, false);
+                    running ? enginePower : 0, false);
             })
             .onChunkUnload(b -> {
                 fuelManager.writeToPDC(b);
@@ -259,7 +314,7 @@ final class RotationBlocks {
     // ──────────────────────────────────────────────────────────────────────
 
     private static void overlayGrindstone(CustomBlockRegistry registry, RotationNetwork network,
-                                          GrindRecipes grindRecipes) {
+                                          GrindRecipes grindRecipes, RotationConfig config) {
         String blockId = "rotation:grindstone";
         CustomHeadBlock block = registry.getType(blockId);
         if (block == null) { warn(registry, blockId); return; }
@@ -268,6 +323,8 @@ final class RotationBlocks {
             .reactsToNeighbors(true)
             .onNeighborChange((b, face) -> recalcIfKnown(b, network))
             .onInteract((b, event) -> {
+                if (isWrench(event.getPlayer().getInventory().getItemInMainHand()))
+                    return wrenchInteract(b, event, network, registry);
                 String state = registry.getState(b);
                 if (!"spinning".equals(state)) return debugInteract(b, event, network, registry);
 
@@ -288,7 +345,7 @@ final class RotationBlocks {
             .onChunkLoad((b, state) -> {
                 // Grindstone is always Y-axis, floor only. axisFromState("idle") returns Y.
                 network.addNode(b, blockId, RotationNetwork.Axis.Y,
-                    RotationNetwork.NodeRole.CONSUMER, 1, false);
+                    RotationNetwork.NodeRole.CONSUMER, config.getPower("grindstone", 1), false);
             })
             .onChunkUnload(b -> network.removeNode(CustomBlockRegistry.LocationKey.of(b)))
             .onBlockRemoved((b, state) -> network.removeNode(CustomBlockRegistry.LocationKey.of(b)))
@@ -299,7 +356,9 @@ final class RotationBlocks {
     // Generator: source, turns off when receiving redstone power
     // ──────────────────────────────────────────────────────────────────────
 
-    private static void overlayGenerator(CustomBlockRegistry registry, RotationNetwork network) {
+    private static void overlayGenerator(CustomBlockRegistry registry, RotationNetwork network,
+                                            RotationConfig config) {
+        int generatorPower = config.getPower("generator", 1);
         String blockId = "rotation:generator";
         CustomHeadBlock block = registry.getType(blockId);
         if (block == null) { warn(registry, blockId); return; }
@@ -320,13 +379,17 @@ final class RotationBlocks {
                 }
                 recalcIfKnown(b, network);
             })
-            .onInteract((b, event) -> debugInteract(b, event, network, registry))
+            .onInteract((b, event) -> {
+                if (isWrench(event.getPlayer().getInventory().getItemInMainHand()))
+                    return wrenchInteract(b, event, network, registry);
+                return debugInteract(b, event, network, registry);
+            })
             .onChunkLoad((b, state) -> {
                 boolean spinning = state != null && state.startsWith("spinning_");
                 RotationNetwork.Axis axis = RotationNetwork.axisFromState(state != null ? state : "spinning_y");
                 network.addNode(b, blockId, axis,
                     spinning ? RotationNetwork.NodeRole.SOURCE : RotationNetwork.NodeRole.TRANSMITTER,
-                    spinning ? 1 : 0, false);
+                    spinning ? generatorPower : 0, false);
             })
             .onChunkUnload(b -> network.removeNode(CustomBlockRegistry.LocationKey.of(b)))
             .onBlockRemoved((b, state) -> network.removeNode(CustomBlockRegistry.LocationKey.of(b)))
@@ -339,21 +402,22 @@ final class RotationBlocks {
 
     private static final NamespacedKey DRILL_FACING_KEY = new NamespacedKey("rotation", "drill_facing");
 
-    private static final Set<Material> DRILL_BLACKLIST = Set.of(
-        Material.OBSIDIAN, Material.CRYING_OBSIDIAN, Material.SPAWNER,
-        Material.MOVING_PISTON, Material.REINFORCED_DEEPSLATE
-    );
-
     private static final ItemStack NETHERITE_PICK = new ItemStack(Material.NETHERITE_PICKAXE);
-
-    private static final int DRILL_TICK_INTERVAL = 4;
-    private static final int DRILL_BREAK_STAGES = 10;
     private static final double DRILL_ANIM_RADIUS = 48.0;
+
+    private static Set<Material> drillBlacklist;
+    private static int drillTickInterval;
+    private static int drillBreakStages;
 
     private record DrillState(int progress, Material targetMaterial) {}
     private static final Map<CustomBlockRegistry.LocationKey, DrillState> drillProgress = new HashMap<>();
 
-    private static void overlayDrill(CustomBlockRegistry registry, RotationNetwork network) {
+    private static void overlayDrill(CustomBlockRegistry registry, RotationNetwork network,
+                                      RotationConfig config) {
+        drillBlacklist = config.drillBlacklist;
+        drillTickInterval = config.drillTickInterval;
+        drillBreakStages = config.drillBreakStages;
+        int drillPower = config.getPower("drill", 1);
         String blockId = "rotation:drill";
         CustomHeadBlock block = registry.getType(blockId);
         if (block == null) { warn(registry, blockId); return; }
@@ -361,14 +425,18 @@ final class RotationBlocks {
             .drillable(false)
             .cancelPistons(true)
             .reactsToNeighbors(true)
-            .tickInterval(DRILL_TICK_INTERVAL)
+            .tickInterval(drillTickInterval)
             .onNeighborChange((b, face) -> recalcIfKnown(b, network))
-            .onInteract((b, event) -> debugInteract(b, event, network, registry))
+            .onInteract((b, event) -> {
+                if (isWrench(event.getPlayer().getInventory().getItemInMainHand()))
+                    return wrenchInteract(b, event, network, registry);
+                return debugInteract(b, event, network, registry);
+            })
             .onTick(b -> drillTick(b, registry, network))
             .onChunkLoad((b, state) -> {
                 storeFacingIfAbsent(b);
                 network.addNode(b, blockId, RotationNetwork.axisFromState(state),
-                    RotationNetwork.NodeRole.CONSUMER, 1, false);
+                    RotationNetwork.NodeRole.CONSUMER, drillPower, false);
             })
             .onChunkUnload(b -> {
                 drillProgress.remove(CustomBlockRegistry.LocationKey.of(b));
@@ -399,7 +467,7 @@ final class RotationBlocks {
             drillProgress.remove(key);
             return;
         }
-        if (target.isLiquid() || targetMat.getHardness() < 0 || DRILL_BLACKLIST.contains(targetMat)) {
+        if (target.isLiquid() || targetMat.getHardness() < 0 || drillBlacklist.contains(targetMat)) {
             if (drillProgress.remove(key) != null) clearBreakAnimation(drill, facing);
             return;
         }
@@ -413,7 +481,7 @@ final class RotationBlocks {
         DrillState state = drillProgress.get(key);
         int progress = (state != null && state.targetMaterial == targetMat) ? state.progress + 1 : 1;
 
-        if (progress >= DRILL_BREAK_STAGES) {
+        if (progress >= drillBreakStages) {
             drillProgress.remove(key);
             if (targetType != null) {
                 if (targetType.storage() != null) registry.dropStorage(target);
@@ -430,7 +498,7 @@ final class RotationBlocks {
         drillProgress.put(key, new DrillState(progress, targetMat));
         Location targetLoc = target.getLocation();
         int sourceId = key.hashCode();
-        float animProgress = (float) progress / DRILL_BREAK_STAGES;
+        float animProgress = (float) progress / drillBreakStages;
         for (Player p : targetLoc.getNearbyPlayers(DRILL_ANIM_RADIUS)) {
             p.sendBlockDamage(targetLoc, animProgress, sourceId);
         }
@@ -487,11 +555,28 @@ final class RotationBlocks {
     // Windmill: displayItemResolver for custom banner blades
     // ──────────────────────────────────────────────────────────────────────
 
-    private static void overlayWindmillResolver(CustomBlockRegistry registry, String blockId, BannerTier tier) {
+    private static void overlayWindmillResolver(CustomBlockRegistry registry, String blockId,
+                                                  BannerTier tier, RotationNetwork network) {
         CustomHeadBlock block = registry.getType(blockId);
         if (block == null) { warn(registry, blockId); return; }
         registry.register(block.toBuilder()
             .bannerTier(tier)
+            .onInteract((b, event) -> {
+                if (!isWrench(event.getPlayer().getInventory().getItemInMainHand())) return false;
+                if (event.getPlayer().isSneaking()) {
+                    // Inspect: show stored direction
+                    var key = CustomBlockRegistry.LocationKey.of(b);
+                    RotationNetwork.SpinDirection dir = network.readStoredDirection(key);
+                    String dirStr = dir == null ? "flexible (default CW)" : dir.toString();
+                    event.getPlayer().sendActionBar(
+                            Component.text("Windmill direction: " + dirStr, NamedTextColor.GOLD));
+                    return true;
+                }
+                // Toggle direction
+                toggleSourceDirection(b, CustomBlockRegistry.LocationKey.of(b),
+                        event.getPlayer(), network);
+                return true;
+            })
             .displayItemResolver((b, suffix) -> {
                 // blade_a → 0, blade_b → 1, blade_c → 2, blade_d → 3
                 if (suffix == null || !suffix.startsWith("blade_") || suffix.length() < 7) return null;
@@ -520,6 +605,55 @@ final class RotationBlocks {
     }
 
     // ──────────────────────────────────────────────────────────────────────
+    // Wrench interaction
+    // ──────────────────────────────────────────────────────────────────────
+
+    private static boolean wrenchInteract(Block block, org.bukkit.event.player.PlayerInteractEvent event,
+                                           RotationNetwork network, CustomBlockRegistry registry) {
+        Player player = event.getPlayer();
+        if (player.isSneaking()) {
+            // Sneak+wrench → inspect only (debug info + direction)
+            return debugInteract(block, event, network, registry);
+        }
+        // Non-sneak wrench on source → toggle direction
+        var key = CustomBlockRegistry.LocationKey.of(block);
+        var node = network.getNode(key);
+        if (node != null && node.role() == RotationNetwork.NodeRole.SOURCE) {
+            toggleSourceDirection(block, key, player, network);
+            return true;
+        }
+        // Non-source → just show debug info
+        return debugInteract(block, event, network, registry);
+    }
+
+    private static void toggleSourceDirection(Block block, CustomBlockRegistry.LocationKey key,
+                                               Player player, RotationNetwork network) {
+        if (!(block.getState() instanceof Skull skull)) return;
+        String val = skull.getPersistentDataContainer().get(
+                RotationNetwork.SPIN_DIR_KEY, PersistentDataType.STRING);
+        RotationNetwork.SpinDirection oldDir = val == null ? RotationNetwork.SpinDirection.CW
+                : "ccw".equals(val) ? RotationNetwork.SpinDirection.CCW : RotationNetwork.SpinDirection.CW;
+        RotationNetwork.SpinDirection newDir = oldDir.reversed();
+
+        skull.getPersistentDataContainer().set(
+                RotationNetwork.SPIN_DIR_KEY, PersistentDataType.STRING,
+                newDir == RotationNetwork.SpinDirection.CW ? "cw" : "ccw");
+        skull.update();
+
+        if (network.getNode(key) != null) {
+            network.recalculate(key);
+        } else {
+            network.recalculateAdjacentNetworks(key);
+        }
+
+        player.sendActionBar(Component.text("Direction: " + oldDir + " → " + newDir, NamedTextColor.GOLD));
+        block.getWorld().playSound(block.getLocation().add(0.5, 0.5, 0.5),
+                org.bukkit.Sound.BLOCK_COPPER_PLACE, 1f, 1.5f);
+        block.getWorld().spawnParticle(Particle.WAX_ON,
+                block.getLocation().add(0.5, 0.5, 0.5), 10, 0.3, 0.3, 0.3, 0);
+    }
+
+    // ──────────────────────────────────────────────────────────────────────
     // Shared helpers
     // ──────────────────────────────────────────────────────────────────────
 
@@ -528,7 +662,6 @@ final class RotationBlocks {
         if (network.getNode(key) != null) network.recalculate(key);
     }
 
-    /** Debug: right-click → ActionBar with network info + green particles on connected blocks. */
     private static boolean debugInteract(Block block, org.bukkit.event.player.PlayerInteractEvent event,
                                          RotationNetwork network, CustomBlockRegistry registry) {
         var key = CustomBlockRegistry.LocationKey.of(block);
@@ -541,22 +674,40 @@ final class RotationBlocks {
             info = "Not in rotation network (state: " + state + ")";
             color = NamedTextColor.RED;
         } else {
-            int[] stats = network.getNetworkStats(key);
+            var dbg = network.getNetworkDebugInfo(key);
             boolean powered = network.isPowered(key);
-            info = state + " | "
-                 + (stats != null ? stats[0] + "/" + stats[1] + " SU, " + stats[2] + " blocks" : "?")
-                 + " | " + (powered ? "POWERED" : "UNPOWERED");
-            color = powered ? NamedTextColor.GREEN : NamedTextColor.RED;
+            RotationNetwork.SpinDirection dir = network.getDirection(key);
+            String dirStr = dir != null ? " " + dir : "";
+            if (dbg != null) {
+                info = state + " | " + dbg.supply() + "/" + dbg.demand() + " SU, "
+                     + dbg.blockCount() + " blocks" + dirStr;
+                if (dbg.jammed()) {
+                    info += " | JAMMED (" + dbg.cwSources() + " CW, " + dbg.ccwSources() + " CCW)";
+                } else {
+                    info += " | " + (powered ? "POWERED" : "UNPOWERED");
+                }
+            } else {
+                info = state + " | ?" + dirStr;
+            }
+            color = dbg != null && dbg.jammed() ? NamedTextColor.YELLOW
+                    : powered ? NamedTextColor.GREEN : NamedTextColor.RED;
         }
         event.getPlayer().sendActionBar(Component.text(info, color));
 
-        // Highlight network members with particles
+        // Highlight network members with particles (jammed: red on sources, green on rest)
         if (node != null) {
             Set<CustomBlockRegistry.LocationKey> members = network.getNetworkMembers(key);
+            var dbg = network.getNetworkDebugInfo(key);
             if (members != null) {
                 World world = block.getWorld();
                 for (var loc : members) {
-                    world.spawnParticle(Particle.HAPPY_VILLAGER,
+                    var memberNode = network.getNode(loc);
+                    Particle particle = Particle.HAPPY_VILLAGER;
+                    if (dbg != null && dbg.jammed() && memberNode != null
+                            && memberNode.role() == RotationNetwork.NodeRole.SOURCE) {
+                        particle = Particle.ANGRY_VILLAGER;
+                    }
+                    world.spawnParticle(particle,
                         new Location(world, loc.x() + 0.5, loc.y() + 0.5, loc.z() + 0.5),
                         5, 0.25, 0.25, 0.25, 0);
                 }

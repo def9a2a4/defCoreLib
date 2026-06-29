@@ -1,0 +1,31 @@
+max-network-size: 256
+
+drill:
+  tick-interval: 4
+  break-stages: 10
+  blacklist:
+    - OBSIDIAN
+    - CRYING_OBSIDIAN
+    - SPAWNER
+    - MOVING_PISTON
+    - REINFORCED_DEEPSLATE
+
+fuel:
+  COAL: 200
+  CHARCOAL: 160
+  COAL_BLOCK: 1600
+  LAVA_BUCKET: 2000
+  BLAZE_ROD: 300
+  STICK: 25
+  # Also: all *_LOG/*_WOOD/*_STEM/*_HYPHAE → 150, all *_PLANKS → 75
+  # (registered dynamically via Material.values() scan)
+
+power:
+  windmill: 1
+  large_windmill: 5
+  huge_windmill: 15
+  water_wheel: 2
+  engine: 5
+  generator: 1
+  drill: 1
+  grindstone: 1
