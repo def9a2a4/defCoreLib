@@ -72,6 +72,8 @@ public class RotationNetwork {
 
     static final NamespacedKey SPIN_DIR_KEY = new NamespacedKey("rotation", "spin_dir");
 
+    private static final String REVERSER_ID = "rotation:reverser";
+
     RotationNetwork(JavaPlugin plugin, CustomBlockRegistry registry) {
         this.plugin = plugin;
         this.registry = registry;
@@ -498,9 +500,16 @@ public class RotationNetwork {
         List<Connection> result = new ArrayList<>(6);
         CustomBlockRegistry.LocationKey k = node.key();
 
-        // Along-axis: 2 neighbors (checked first — load-bearing for reverses classification)
-        checkAxisNeighbor(axisNeighbor(k, node.axis(), +1), node.axis(), result);
-        checkAxisNeighbor(axisNeighbor(k, node.axis(), -1), node.axis(), result);
+        // Along-axis: 2 neighbors (checked first — load-bearing for reverses classification).
+        // An along-axis edge reverses iff its lower (−axis) endpoint is a powered reverser.
+        // This yields exactly one direction flip across a reverser (so its two along-axis
+        // neighbours spin oppositely) and is symmetric: both endpoints compute the same flag
+        // because the lower endpoint of the shared edge is the same block from either side.
+        //   +axis edge: this node is the lower endpoint.
+        //   −axis edge: the neighbour is the lower endpoint.
+        checkAxisNeighbor(axisNeighbor(k, node.axis(), +1), node.axis(), isPoweredReverser(node), result);
+        CustomBlockRegistry.LocationKey negKey = axisNeighbor(k, node.axis(), -1);
+        checkAxisNeighbor(negKey, node.axis(), isPoweredReverser(nodes.get(negKey)), result);
 
         // Gear-to-gear: connects to ANY adjacent gear (all 6 faces, any axis)
         if (node.gearLike()) {
@@ -519,11 +528,21 @@ public class RotationNetwork {
         return result;
     }
 
-    private void checkAxisNeighbor(CustomBlockRegistry.LocationKey neighborKey, Axis requiredAxis, List<Connection> result) {
+    private void checkAxisNeighbor(CustomBlockRegistry.LocationKey neighborKey, Axis requiredAxis,
+                                   boolean reverses, List<Connection> result) {
         RotationNode other = nodes.get(neighborKey);
         if (other != null && other.axis() == requiredAxis && !isLocked(other)) {
-            result.add(new Connection(neighborKey, false));
+            result.add(new Connection(neighborKey, reverses));
         }
+    }
+
+    /** A reverser is an along-axis-only transmitter that flips spin direction once across
+     *  itself while redstone-powered. Power is read live (it changes via redstone, which fires
+     *  the reverser's onNeighborChange → recalculate, so getConnections sees the fresh value). */
+    private boolean isPoweredReverser(@Nullable RotationNode node) {
+        if (node == null || !REVERSER_ID.equals(node.blockTypeId())) return false;
+        Block b = toBlock(node.key());
+        return b != null && b.getBlockPower() > 0;
     }
 
     private boolean isLocked(RotationNode node) {

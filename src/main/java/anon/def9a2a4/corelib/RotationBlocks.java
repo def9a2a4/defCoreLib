@@ -67,6 +67,10 @@ final class RotationBlocks {
         // Overlay callbacks onto YAML-loaded blocks
         overlayStandard(registry, network, "rotation:shaft",   RotationNetwork.NodeRole.TRANSMITTER, 0, false);
         overlayStandard(registry, network, "rotation:gear",    RotationNetwork.NodeRole.TRANSMITTER, 0, true);
+        // Reverser: a plain along-axis transmitter; reversal lives entirely in
+        // RotationNetwork.getConnections (keyed off the "rotation:reverser" id + live redstone),
+        // so the standard overlay (recalc on redstone change via reactsToNeighbors) is all it needs.
+        overlayStandard(registry, network, "rotation:reverser", RotationNetwork.NodeRole.TRANSMITTER, 0, false);
         overlayClutch(registry, network);
         overlayWaterWheel(registry, network, config);
         overlayEngine(registry, network, fuelManager, config);

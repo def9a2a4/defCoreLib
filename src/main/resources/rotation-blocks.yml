@@ -191,6 +191,32 @@ blocks:
       locked_y: {}
       locked_z: {}
 
+  # ─── Reverser ───────────────────────────────────────────────────────────
+  # Transmitter: like a shaft, but REVERSES spin direction when redstone powered.
+  # Stays connected (unlike the clutch, which disconnects). Along-axis only.
+  reverser:
+    name: "&dReverser"
+    lore:
+      - "&7Transmits rotation power"
+      - "&7Reverses spin direction when redstone powered"
+    # Copper Gear (placeholder — give it a distinct head texture later)
+    texture: "@copper_gear"
+    drops: self
+    default_state: idle_y
+    placement_state_map:
+      DOWN: idle_y
+      NORTH: idle_z
+      SOUTH: idle_z
+      EAST: idle_x
+      WEST: idle_x
+    states:
+      idle_x: {}
+      idle_y: {}
+      idle_z: {}
+      spinning_x: {}
+      spinning_y: {}
+      spinning_z: {}
+
   # ─── Water Wheel ────────────────────────────────────────────────────────
   # Source: 2 SU. Wall only. Spins when water is on perpendicular faces.
   # Display: 4 OAK_SLAB paddles at 90° intervals.
