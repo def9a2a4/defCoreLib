@@ -48,6 +48,11 @@ and flags where the plans touch the **same code** and must be coordinated.
 5. **Rotation-power network Phase 3 is an independent track** (touches `RotationNetwork` /
    `RotationBlocks`, not the mechanism layer) — it can land in parallel with everything else.
 
+6. **One snap-precision fix, three references.** The `float→double` snap fix (`assembleCore` snap
+   computed in `double`, cast to `float` only at `Matrix4f` build) is part of **A1**, is required by
+   **A2**, and must be preserved by **E1**'s decoupled provider path. Do it **once in Block A**; A2 and
+   E1 inherit it. Don't re-list it as separate work.
+
 ---
 
 ## Ordered remaining work
@@ -74,8 +79,10 @@ None of this is implemented yet (verified).*
 > in A1.
 
 ### Block B — Mechanism robustness (small, independent, land anytime)
-- [ ] **B1. Vehicle validity checks** — at `assembleMechanism(existingVehicle)` entry, and in the
-  1-tick delay lambda (`if (!vehicle.isValid()) { disassemble/return; }`). *(minecarts #5/#9, blockships #3)*
+- [ ] **B1. Vehicle validity checks** — *partial: `updateFromVehicle()` already guards
+  (`if (!vehicle.isValid()) return`).* **Remaining:** the `assembleMechanism(existingVehicle)` entry
+  and the 1-tick delay lambda (`if (!vehicle.isValid()) { disassemble/return; }`). The lambda guard is
+  naturally done alongside A1 (same lambda). *(minecarts #5/#9, blockships #3)*
 - [ ] **B2. Defensive copy** in `tickMechanisms()` (`new ArrayList<>(activeMechanisms.values())`). *(minecarts #3)*
 - [ ] **B3. Collider initial-spawn XZ rounding** (`Math.round` the XZ offset for grid alignment). *(blockships #1)*
 - [ ] **B4. Object pooling** in the tick loop — pre-allocate `workBase` (and `workDec/workVec`) instead
@@ -104,9 +111,34 @@ None of this is implemented yet (verified).*
   0-power `TRANSMITTER`, so `shaft → dry water_wheel → shaft` still passes power through it. Decide:
   **intended** (mechanically coupled even when still) → document it; or **should disconnect** → small
   `getConnections()` rule change. *(rotation-power.md "Decisions needed" #1 — needs your call.)*
+- [ ] **C9. Silent network-size cap.** BFS stops at `maxNetworkSize` (256) with no feedback
+  (`RotationNetwork.java` ~`:302`); overflow nodes are never put in `nodeNetworkId`, so they read as
+  unpowered with no cue. Log a warning when the cap is hit (and consider per-build player feedback).
+  *(New — found in deep review, not previously in any doc.)*
+- [ ] **C10. `animationDirection` map leak.** The `CustomBlockRegistry.animationDirection` map isn't
+  cleared on network teardown, so it grows on long-running servers with frequent recalcs. Clear it in
+  `resetPassiveSources`/teardown, or move animation-direction tracking into `RotationNetwork`.
+  *(New — found in deep review.)*
+
+> **Investigated — NOT bugs (do not re-chase):** the reverser's per-BFS live `getBlockPower()` read
+> (intentional — single-threaded scheduling makes it safe), the BFS null-pop after `queue.poll()`
+> (guarded by the re-entrancy queue), and the passive-source boundary-scan face-axis asymmetry
+> (intended — wrong-axis windmills shouldn't connect).
 
 ### Block D — Glue (shared block selection; `rotation-mechanisms.md` Phase 3, not started)
+
+> **Replaces 3 flood-fill sites now + 1 later:** `RotationRotator.floodFill`, `MinecartShipManager`
+> flood-fill, `DoorDemo.floodFill` — and eventually BlockShips `BlockStructureScanner` (the 4th
+> consumer, once Block E lands). One selection layer for all mechanism block-grabbing.
+
 - [ ] **D1.** `GlueManager` + anchor-owned PDC offset storage (`glue`/`unglue`/`resolveStructure`).
+  Define the **`Anchor` abstraction** over **block-with-PDC (skull hinge)** vs
+  **entity-with-PDC (minecart)** — all glue ops go through it.
+  - ✅ Skull-PDC round-trip is auto-persisted by `CustomBlockRegistry` (`markBlock`/`setState` →
+    `skull.update()`, restored on chunk load) — verified; hinge glue persists for free.
+  - ⚠️ **D↔E dependency:** the **minecart entity-PDC has no restore/load path today** —
+    `MechanismSerializer` is only invoked on disassemble. Minecart glue persistence needs Block E's
+    persistence/recovery work (or a minimal entity-PDC save/load). Hinge glue can ship without E.
 - [ ] **D2.** Glue-mode authoring UX (slime-glue item, sessions, particle outline, cuboid fill,
   connectivity/cap), incl. the three interaction-conflict fixes vs `onPlayerInteract`.
 - [ ] **D3.** Retrofit Rotator/DoorDemo and `MinecartShipManager` to `resolveStructure(anchor)` with
@@ -116,12 +148,40 @@ None of this is implemented yet (verified).*
     (assemble/disassemble parity on doors *and* minecarts) **before** removing the flood-fill fallback.
 
 ### Block E — BlockShips integration (`blockships-integration.md`; depends on A, ideally B)
-- [ ] **E1. Phase 1 — Decouple from CustomHeadBlock**: `BlockSnapshotProvider` interface +
-  `CustomBlockSnapshotProvider`; rebase on Block A (conflict #2). *Nothing done — assembly is still fully
-  coupled to `CustomBlockRegistry`.*
-- [ ] **E2. Phase 2 — Persistence & entity recovery** (`MechanismPersistence`, chunk index, incremental recovery).
-- [ ] **E3. Phase 3 — Health, damage, seats.**
-- [ ] **E4. Phase 4 — Perf (folds in B4) + `MechanismConfig` builder + migration surface.**
+*Reviewed against the real BlockShips source (`ship/ShipInstance.java`, `DisplayShip.java`,
+`ShipPersistence`/`ShipWorldData`, `ShipModel`) — corrections below supersede the plan where they differ.*
+
+- [ ] **E1. Phase 1 — Decouple from CustomHeadBlock.** `BlockSnapshotProvider` interface +
+  `CustomBlockSnapshotProvider`. Coupling call sites to extract: `MechanismRegistry.assembleCore`
+  (~`:119–133`), `BasicMechanism.{setBlockState ~:176–190, placeBlock ~:258–264, dropBlockAsItem ~:275}`.
+  *Nothing done — assembly is still fully coupled to `CustomBlockRegistry`.* Rebase on Block A (conflict #2).
+  - The **float→double snap fix lives in Block A** but the decoupled provider path must preserve it.
+  - **Deferred-transform caveat:** the primary display's transform is set on the 1-tick `rotate(0)`,
+    not at spawn — provider `spawnPrimaryDisplay` impls must not assume an immediate transform.
+- [ ] **E2. Phase 2 — Persistence & entity recovery.** Per-world YAML + chunk index (mirror
+  `ShipWorldData`/`ShipPersistence`); snapshot-on-main / write-async via a single-thread executor.
+  - **Metadata-first incremental recovery:** on chunk load, async-load metadata → construct on main
+    thread → `RecoveringMechanism` holder collects entities **across multiple chunk loads** against a
+    stored `expectedEntityCount` (mirror `DisplayShip.onChunkLoad` + `ShipInstance.recoverEntities`).
+  - **Wire the unused `MechanismSerializer.onRecoveryComplete()`** (defined, never called today).
+  - Add a **chunk-unload save hook** (save when all of a mechanism's chunks unload) + a
+    **per-mechanism dirty flag** to debounce the periodic save.
+  - **Inventory Base64 delimiter safety** (`\|` split, `-1` limit to keep trailing empty slots).
+  - Fallback when entities don't arrive: log + wait, then disassemble on timeout (BlockShips
+    waits rather than auto-respawning).
+- [ ] **E3. Phase 3 — Health, damage, seats.** Health component is accurate (nullable, set on the
+  vehicle attribute, regen in tick, death handler).
+  - **Seats correction:** in BlockShips, **seats ARE the collision shulkers** — a collider whose block
+    index matches a `SeatConfig` is marked rideable; players ride it directly. **Do NOT spawn separate
+    seat entities** (the plan's "spawn shulkers as seat mount points" would double-spawn). Add seat
+    query/mount methods to `Mechanism`; steering stays in the consumer plugin.
+- [ ] **E4. Phase 4 — Perf + migration surface.** Object pooling (pre-alloc work matrices = **B4**),
+  throttled passenger-chain validation every 20 ticks, configurable interpolation duration,
+  `MechanismConfig` builder, vehicle-validity pre-flight at assembly (= **B1**). ~1400 LOC eliminated
+  from BlockShips is realistic.
+
+> **Already correct — no work:** `ARMORSTAND_RIDE_OFFSET = 1.975f`, minecart ride offset `0f`, and the
+> collision-shulker setup (persistent / invisible / AI-off / collidable) all match BlockShips.
 
 ### Block F — Polish / config (anytime)
 - [ ] **F1.** Distinct head textures for `rotation:reverser` (`@copper_gear`) and `rotation:rotator`
