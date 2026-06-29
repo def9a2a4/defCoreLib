@@ -4,6 +4,13 @@ Network-driven, redstone-controlled doors and drawbridges, built by bridging the
 network to the mechanism system, plus a reusable block-selection ("glue") layer. Three phases
 (plus a small Phase 0), each independently shippable and testable in-game.
 
+> **Status (2026-06-29):** Phase 0 ✅, Phase 1 (reverser) ✅, Phase 2 (rotator + mechanism
+> axis-generalization) ✅ **shipped** (commits `c1e8767`, `9b1feb0`, + the pulse-trigger rework).
+> Phase 3 (glue) **not started**. The Rotator design changed during implementation — it is now
+> **stateless and redstone-pulse-triggered**, not the open/closed direction-polled machine
+> originally written below; sections 2a/2b have been corrected. See **Remaining issues** at the
+> bottom for what's left (chiefly the drawbridge rotation origin and glue).
+
 ## Context
 
 A **Rotator** is the bridge between the rotation-power network and the mechanism system: a
@@ -44,51 +51,57 @@ Both Phase 1 and 2 build on direction, so de-risk it first.
 
 ---
 
-## Phase 1 — Reverser block (+ the reversal-model fix)
+## Phase 1 — Reverser block ✅ SHIPPED (commit `c1e8767`)
 
-### 1a. Fix the reversal model (regression-sensitive)
+### 1a. The reversal model (as implemented)
 
-**Bug:** `Connection(neighbor, reverses)` is a *per-edge* flag, and BFS applies it per edge
-(`conn.reverses() ? myDir.reversed() : myDir`). A reverser between A and B has **two** edges, so
-flagging both `reverses=true` double-reverses (A→R→B = identity) — per-edge flags cannot express
-"reverse once across this block."
+**Bug:** flagging both of a reverser's `Connection(neighbor, reverses)` edges true double-reverses
+(A→R→B = identity) — per-edge flags can't express "reverse once across this block."
 
-**Fix:** model the reverser's reversal as a **node-level** property applied **once** when BFS
-visits the reverser node. (Gear-mesh per-edge reversal stays as-is; only the reverser is
-node-level.)
+**Implemented fix:** the reverser is **along-axis only** (not gearLike, max 2 ports), and an
+along-axis edge reverses **iff its lower (−axis) endpoint is a powered reverser**
+(`isPoweredReverser` in `RotationNetwork.getConnections`, keyed off the `rotation:reverser` id +
+live `getBlockPower()`). This is symmetric (both endpoints compute the same flag) and yields
+exactly one flip across the reverser, with no false jam on the back-edge. Gear-mesh per-edge
+reversal is unchanged.
 
-★ **Regression risk:** this edits the shipped direction BFS — re-verify gears/shafts still
-propagate and counter-rotate correctly afterward.
+### 1b. The `rotation:reverser` block ✅
 
-### 1b. The `rotation:reverser` block
+- Plain along-axis TRANSMITTER registered via the existing `overlayStandard` — all the
+  reverser-specific behavior lives in `getConnections`, so `reactsToNeighbors` (recalc on redstone
+  change) is all the overlay needs. YAML block + `placementStateMap` added (placeholder
+  `@copper_gear` texture — **swap for a distinct head later**). No recipe (given-only, like the
+  other rotation blocks).
 
-- TRANSMITTER. `getBlockPower() > 0` → reverse-once; unpowered → pass-through.
-  `onNeighborChange` → `recalculate`. Coexists with the existing `clutch` (disconnect) on one
-  network.
-- Block boilerplate: YAML def + texture + recipe + give command + axis `placementStateMap` +
-  register in `RotationBlocks`.
-
-**Verify:** source → reverser → shaft/gear chain; toggle redstone → downstream spin visibly
+**Verify (in-game):** source → reverser → shaft/gear chain; toggle redstone → downstream spin
 reverses; reverser+clutch combos behave; existing networks unaffected.
 
 ---
 
-## Phase 2 — Rotator (doors + drawbridges)
+## Phase 2 — Rotator (doors + drawbridges) ✅ SHIPPED (commit `9b1feb0` + pulse rework)
 
-### 2a. Generalize mechanism rotation to an arbitrary cardinal axis (the real engine work)
+### 2a. Mechanism rotation generalized to an arbitrary cardinal axis ✅ (as implemented)
 
-- Add a **rotation axis** to `BasicMechanism` (param on `assembleMechanism`; default **Y** → all
-  existing callers / minecart / DoorDemo unchanged). Rename `currentYaw` → `currentAngle`.
-- `rotate(angle)` → `new Matrix4f().rotate(toRadians(±angle), axisVec)`.
-- ★ **rideOffset:** apply in **local (pre-rotation) space**, not the post-rotation `m31`
-  subtraction (`BasicMechanism` line 116) — that corrupts position on X/Z.
-- ★ **BlockDisplay corner-shift:** make axis-conditional — Y `(-0.5, 0, -0.5)`,
-  X `(0, -0.5, -0.5)`, Z `(-0.5, -0.5, 0)` (line 124).
-- `disassemble`: snap angle around the axis; ★ guard **off-world Y / obstruction** — a tall
-  drawbridge swung 90° lands blocks far from the hinge (possibly below world-min); reuse the
-  existing **three-tier** placement (air→place, fragile→break+place, solid→drop as item) and skip
-  out-of-world targets.
-- Collider repositioning and the minecart `updateFromVehicle` (Y-only) path: unchanged.
+- Added a **rotation axis** (`Vector3f`) to `BasicMechanism` (param on `assembleMechanism`; default
+  **Y** → existing callers / minecart / DoorDemo unchanged). `rotate`/`disassemble` use
+  `new Matrix4f().rotate(toRadians(−angle), axis)` instead of `rotateY`. Kept `currentYaw` (the
+  rename was cosmetic).
+- **Correction to the original plan:** rideOffset and the BlockDisplay corner-shift did **NOT** need
+  axis-conditioning. rideOffset is a world-Y mount correction (the parent BlockDisplay is
+  yaw-frozen/axis-aligned), and the corner-shift `(-0.5,0,-0.5)` produces a correct unit cube in
+  *local* space that `rot` then rotates rigidly — both are axis-agnostic. They were left unchanged.
+- `disassemble`: snaps the angle about the axis; added an **off-world Y guard** (drops blocks that
+  swing below world-min/above world-max as items). For v1's **oak-planks-only** selection,
+  `BlockRotation.rotateBlockData` is a no-op (planks have no orientation), so block-data rotation is
+  moot.
+- ⚠️ **Known remaining issue — drawbridge rotation origin (deferred):** for horizontal (X/Z) axes
+  the `localTransform` reference is center-in-XZ but **bottom-corner-in-Y**, so rotation drifts the
+  block ~0.5 off. The simple "center-Y" fix is **wrong** (it breaks Y-doors and minecarts — adds
+  0.5 to an on-axis offset → blocks restore 0.5/1 block high). The correct fix is "center
+  everything" (pass the pivot as block-center **and** make `localTransform` center-based together,
+  which cancels for Y → stays integer → keeps doors/minecarts exact; plus corner-shift
+  `(-0.5,-0.5,-0.5)`, collider, disassembly), touching `MechanismRegistry`, `BasicMechanism`,
+  `DoorDemo`, `MinecartShipManager`, `RotationRotator`. Needs in-game iteration. See Remaining issues.
 
 ### 2b. The `rotation:rotator` block + control loop
 

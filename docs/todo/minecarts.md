@@ -273,12 +273,12 @@ vehicle hasn't moved, or exactly the drift if it has.
 
 ### Change 4: BasicMechanism.updateFromVehicle() — delta-track pivot (lines 324, 329-334)
 
-**Current code (line 307):**
+**Current code (line 324):**
 ```java
 this.pivot = loc.clone();
 ```
 
-**New code (replace line 307):**
+**New code (replace line 324):**
 ```java
 this.pivot.add(
     loc.getX() - previousVehicleLoc.getX(),
@@ -289,7 +289,7 @@ this.pivot.add(
 The pivot accumulates vehicle movement deltas instead of being overwritten. It stays in
 the snapped frame.
 
-**Current parent teleport code (lines 312-316):**
+**Current parent teleport code (lines 329-334):**
 ```java
 if (!ownsVehicle) {
     Location parentLoc = loc.clone();
@@ -311,12 +311,12 @@ if (!ownsVehicle) {
 
 The parent follows the snapped pivot, not the raw vehicle position.
 
-### Also update the cross-world guard (lines 298-301)
+### Also update the cross-world guard (lines 315-318)
 
 The cross-world guard resets `previousVehicleLoc` on world change. It should also reset
 the pivot to the vehicle's new snapped position:
 
-**Current code (lines 298-301):**
+**Current code (lines 315-318):**
 ```java
 if (!loc.getWorld().equals(previousVehicleLoc.getWorld())) {
     previousVehicleLoc = loc.clone();
@@ -340,30 +340,30 @@ if (!loc.getWorld().equals(previousVehicleLoc.getWorld())) {
 
 ## What Doesn't Change
 
-- **`rotate()`** (lines 107-152): Uses `this.pivot` for collider positioning and
+- **`rotate()`** (lines 109-157): Uses `this.pivot` for collider positioning and
   `currentTransform` for display matrices. Both are correct once pivot is in the
   snapped frame.
 
-- **`move()`** (lines 155-159): Consumer-driven API. Sets pivot absolutely — the caller
+- **`move()`** (lines 159-165): Consumer-driven API. Sets pivot absolutely — the caller
   provides the position. If the consumer wants snapped positions, they snap before
   calling. No current consumers use `move()` for the minecart path (minecarts use
   autonomous `updateFromVehicle`). DoorDemo uses `rotate()` only, not `move()`.
 
-- **`disassemble()`** (lines 192-225): Uses `this.pivot` + `Math.round(rotated_offset)`
+- **`disassemble()`** (lines 198-242): Uses `this.pivot` + `Math.round(rotated_offset)`
   for block placement. With pivot in the snapped frame (X/Z at .5), this gives correct
   block positions. Example: `pivot=(10.5, 64, 20.5)`, offset `(1, 0, 0)` rotated 90° →
   `(0, 0, -1)`, block at `(10.5+0, 64, 20.5-1)` = `(10.5, 64, 19.5)`, `getBlock()` = 
   `(10, 64, 19)`. Correct.
 
-- **`assemblyYaw`** (line 75): Raw vehicle yaw at assembly, used for delta rotation
+- **`assemblyYaw`** (line 77): Raw vehicle yaw at assembly, used for delta rotation
   (`yaw - assemblyYaw`). Not affected by XZ snapping.
 
 - **ArmorStand (owned) path**: For the DoorDemo, `pivot` is `head.getLocation().add(0.5, 0, 0.5)`.
   Since `head.getLocation()` returns integer block coords, `pivot.X` is already at `.5`.
-  `snapX = floor(.5) + 0.5 = 0.5 = pivot.X`. Snap offset is zero. `ownsVehicle = true`,
-  so the `updateFromVehicle` parent-teleport branch is never hit (parent is a passenger,
-  follows automatically). Delta tracking is harmless — pivot tracks the ArmorStand's
-  movement, which matches the passenger chain.
+  `snapX = floor(.5) + 0.5 = 0.5 = pivot.X`. Snap offset is zero. `ownsVehicle = true`
+  (ArmorStand spawned at line 75), so the `updateFromVehicle` parent-teleport branch is
+  never hit (parent is a passenger, follows automatically). Delta tracking is harmless —
+  pivot tracks the ArmorStand's movement, which matches the passenger chain.
 
 - **No new fields on BasicMechanism.** The delta is computed inline from
   `(loc - previousVehicleLoc)` each tick.
@@ -507,7 +507,7 @@ pivot bug above; they can be fixed separately.
 
 ### 1. Float precision in snap computation (LOW)
 
-`MechanismRegistry.java:91-92` casts to `float` prematurely:
+`MechanismRegistry.java:105-106` casts to `float` prematurely:
 
 ```java
 float snapX = (float)(Math.floor(pivot.getX()) + 0.5);
@@ -518,7 +518,7 @@ Float mantissa is 24 bits (~7 decimal digits). At coordinates beyond ~8M blocks,
 `floor(X) + 0.5` can't represent the `.5` offset — the snap silently rounds to an
 integer, breaking the integer-offset invariant that `disassemble()` depends on.
 
-**Fix:** Use `double` for snapping, cast to `float` only at Matrix4f construction:
+**Fix:** Use `double` for snapping, cast to `float` only at Matrix4f construction (line 110):
 
 ```java
 double snapX = Math.floor(pivot.getX()) + 0.5;
@@ -542,8 +542,8 @@ the nearest player. Consider making the limit configurable in `minecart-ship-blo
 
 ### 3. tickMechanisms() iteration safety (LATENT)
 
-`MechanismRegistry.java:309` iterates `activeMechanisms.values()` directly. Currently
-safe because `updateFromVehicle()` never removes mechanisms. But `shutdown()` (line 258)
+`MechanismRegistry.java:323` iterates `activeMechanisms.values()` directly. Currently
+safe because `updateFromVehicle()` never removes mechanisms. But `shutdown()` (line 272)
 already defensively copies with `new ArrayList<>(...)`, suggesting awareness of the risk.
 
 If future code adds validity-based cleanup during tick, this would throw
@@ -553,8 +553,8 @@ If future code adds validity-based cleanup during tick, this would throw
 
 ### 4. Matrix allocation in tick loop (PERF)
 
-`MechanismRegistry.java:329-331` allocates a new `Matrix4f` for `base` per animated
-display per block per tick. Only `workMatrix` (line 41) is reused.
+`MechanismRegistry.java:343-345` allocates a new `Matrix4f` for `base` per animated
+display per block per tick. Only `workMatrix` (line 40) is reused.
 
 Negligible for <10 mechanisms but noticeable at 50+ (relevant for BlockShips migration).
 
@@ -569,7 +569,7 @@ is valid/alive. A dead or removed entity silently produces a broken mechanism.
 
 ### 6. Particle ticking not implemented (FEATURE GAP)
 
-`MechanismRegistry.java:340`: `// TODO: particle ticking for mechanism blocks`.
+`MechanismRegistry.java:354`: `// TODO: particle ticking for mechanism blocks`.
 `ParticleConfig` is resolved and stored on `MechanismBlockData` but never spawned
 during the tick loop. Blocks that declare particles in their YAML config won't
 emit them while assembled into a mechanism.
@@ -578,7 +578,31 @@ emit them while assembled into a mechanism.
 
 - `MechanismBlockData.collisionScale` — stored (always `1.0f`) but never read anywhere.
   Placeholder for future shulker scaling; harmless but should be documented or removed.
-- `RotationNetwork.perpendicularNeighbors()` (line 397) — dead code, never called.
+- ~~`RotationNetwork.perpendicularNeighbors()` — dead code, never called.~~
+  *(Deleted from codebase as of 2026-06-29.)*
 - `MINECART_RIDE_OFFSET = 0f` — previously flagged as needing tuning in
   `blockships-integration.md`, but agents confirmed 0f is correct for the external-vehicle
   path (parent follows via teleport, not as passenger). Not a bug.
+
+### 8. Same-world large teleport unguarded (LOW)
+
+`BasicMechanism.updateFromVehicle()` (line 324) overwrites or delta-tracks the pivot from
+the vehicle's position each tick. If the vehicle is teleported a large distance within the
+same world (e.g., `/tp` on a riding minecart), the delta is huge — the pivot jumps
+discontinuously. The cross-world guard (line 315) resets pivot on world change, but
+same-world jumps are unguarded.
+
+Only relevant after implementing the pivot fix (Changes 1-4). Current code overwrites
+pivot each tick, so teleports are handled implicitly.
+
+**Fix:** Add a distance threshold in `updateFromVehicle()` before delta accumulation —
+if `|delta| > threshold` (e.g., 10 blocks), treat it as a teleport: re-snap pivot to
+`snapped(loc)` and reset `previousVehicleLoc`, same as the cross-world guard.
+
+### 9. 1-tick delay lambda vehicle validity (LOW)
+
+`MechanismRegistry.java:252`: the 1-tick delay lambda calls `mech.rotate(0)` without
+checking `vehicle.isValid()`. If the vehicle dies during the delay tick (entity killed,
+chunk unloaded), this operates on a dead entity.
+
+**Fix:** Add `if (!vehicle.isValid()) { mech.disassemble(); return; }` at top of lambda.
