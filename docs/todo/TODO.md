@@ -1,5 +1,13 @@
 # DefCoreLib TODO
 
+# Main
+
+- texture fixes for dril/screw, gears, shafts, others
+- fans
+- chains -- long-distance connect two "chain wheels"
+
+
+
 ## Detail docs
 
 - [animations-mechanisms.md](animations-mechanisms.md) — animations ✅ done; moveable mechanisms built but buggy

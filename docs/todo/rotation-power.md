@@ -534,6 +534,180 @@ Defined in `rotation-blocks.yml` via the display-system refactor (Phases 1+2: `@
 8. ~~rotation-config.yml loading~~ (deferred to Phase 2 — values hardcoded for now)
 9. ~~Visual tuning~~
 
+## Phase 3: Cleanup & hardening
+
+Bugs and structural issues found via deep code review. Grouped into bugfixes, elegance
+improvements, and dead-code removal. Each item is independent and can be landed separately.
+
+### Bugs
+
+#### B1. `recalculateAdjacentNetworks` early return (`RotationNetwork.java:120`)
+
+The `return` inside the loop exits after recalculating only the **first** adjacent network found.
+Called from `toggleSourceDirection()` when a passive source (windmill) is wrenched. Windmills are
+not graph nodes, so BFS from one adjacent network cannot cross the windmill to reach another — if
+a windmill borders two separate networks, only the first gets its direction/power updated. The
+second silently retains stale data.
+
+**Fix:** Remove the `return` on line 120. The re-entrancy guard (`pendingRecalcs` queue) handles
+multiple concurrent `recalculate()` calls correctly.
+
+#### B2. Passive source boundary scan dedup ordering (`RotationNetwork.java:315` vs `323`)
+
+`countedSources.add(neighbor)` (dedup) runs at line 315, **before** axis validation at line 323.
+If a passive source is first discovered via a member with an incompatible axis (e.g., X-axis shaft
+east of a Y-axis windmill), it is marked "already tried" and skipped when a compatible Y-axis
+member above tries to find it via `DOWN`.
+
+**Scenario:** Y-axis windmill at (0,0,0). X-axis shaft at (1,0,0) iterates EAST/WEST faces, finds
+windmill via WEST, adds to `countedSources`, but fails axis validation (Y≠X). Y-axis shaft at
+(0,1,0) iterates UP/DOWN, finds windmill via DOWN, but `countedSources.add()` returns false.
+Windmill is silently never counted as a power source.
+
+**Fix:** Move `countedSources.add(neighbor)` inside the success branch after line 323 (or after
+the `passiveSourceTypes.get()` check at line 320 to still cheaply skip non-passive blocks).
+
+#### B3. `previouslyJammed` snapshot misses neighbor networks (`RotationNetwork.java:209-217`)
+
+The snapshot only captures jammed members of the changed node's own network. Lines 237-254 also
+tear down neighbor networks. When two previously-jammed networks merge via a new connection and
+the result is still jammed, the transition-effect check at line 399
+(`!members.stream().allMatch(previouslyJammed::contains)`) fires spuriously — smoke and anvil
+sound play again on blocks that were already jammed. Cosmetic only; network state is correct.
+
+**Fix:** Before the neighbor-dirtying loop, also snapshot jammed members of each neighbor network
+into `previouslyJammed`:
+```java
+for (var entry : networks.entrySet()) {
+    if (entry.getValue().jammed()) {
+        Set<LocationKey> m = networkMembers.get(entry.getKey());
+        if (m != null) previouslyJammed.addAll(m);
+    }
+}
+```
+
+#### B4. Missing `isChunkLoaded` guard in `toBlock()` (`RotationNetwork.java:588`)
+
+`toBlock()` calls `world.getBlockAt()` without checking if the chunk is loaded. Paper's
+`getBlockAt()` synchronously loads unloaded chunks. All call sites on graph nodes (in the `nodes`
+map) are safe — nodes are added on chunk load, removed on chunk unload. The one genuinely unsafe
+call site is the passive source boundary scan (line 318), which probes neighbor blocks not in the
+graph — these could be across a chunk boundary into an unloaded chunk.
+
+**Fix:** Add `world.isChunkLoaded(key.x() >> 4, key.z() >> 4)` check in `toBlock()`, consistent
+with existing patterns in `CustomBlockRegistry.java` (lines 249, 694, 740, 789).
+
+### Elegance
+
+#### E1. Extract `teardownNetwork(int netId)` helper
+
+The 5-line teardown sequence (remove from `networkMembers`, clear `nodeNetworkId` +
+`nodeDirection` per member, `resetPassiveSources`, remove from `networks`) is copy-pasted three
+times: `doRecalculate` lines 222-232, lines 243-252, and `removeNodesInChunk` lines 471-481.
+Extract into a helper returning the former member set.
+
+#### E2. Cache locked state on `RotationNode`
+
+`isLocked()` does `toBlock()` → `registry.getState()` → `startsWith("locked_")` on every neighbor
+during BFS — ~1500 world reads per recalculation of a 256-node network. The locked state is
+already known when the clutch's `onNeighborChange` fires. Add `boolean locked` field to
+`RotationNode`; clutch overlay updates it before recalculating. `getConnections()` becomes a pure
+in-memory graph traversal.
+
+#### E3. Shared rotation overlay builder in `RotationBlocks`
+
+All 8 overlays duplicate `.drillable(false)`, `.reactsToNeighbors(true)`, wrench-first
+`onInteract`, identical `onChunkUnload` and `onBlockRemoved` lambdas (~60 lines total). Extract a
+helper returning a pre-configured builder; block-specific overlays override only what differs.
+
+#### E4. Decompose `doRecalculate()` into phases
+
+210-line method handling 7 distinct phases. Extract `buildNetwork(start)` returning a result
+record (members, passiveSources, state, dirMap), plus `emitJammedEffects()` and
+`updateBlockStates()`. Coordinator becomes ~15 lines. No behavior change.
+
+### Dead code / incomplete
+
+#### I1. Remove `getNetworkStats()` (`RotationNetwork.java:166`)
+
+Returns `int[3]`. Superseded by `NetworkDebugInfo` record. Never called anywhere.
+
+#### I2. Wire in `removeNodesInChunk()` (`RotationNetwork.java:447`)
+
+Batch chunk-unload optimization: single rebuild instead of N individual `removeNode()` calls.
+Currently chunk unloads dispatch per-block `onChunkUnloadCallback`, each triggering a separate
+recalculation. Wiring this in would reduce chunk-unload cost from O(N) recalculations to O(1).
+
+#### I3. Flexible windmill direction missing from debug output (`RotationNetwork.java:153-159`)
+
+`getNetworkDebugInfo` counts passive source directions via `readStoredDirection()` (PDC).
+Un-wrenched windmills have no PDC entry so they are uncounted — debug can show
+`"JAMMED (0 CW, 1 CCW)"` when there is actually a flexible windmill also contributing. Would need
+to store BFS-derived direction for passive sources, or derive it on-demand in the debug method.
+
+#### I4. Lava bucket fuel doesn't return empty bucket (`RotationBlocks.java:251`)
+
+`held.setAmount(held.getAmount() - 1)` deletes the lava bucket. Vanilla furnaces return an empty
+bucket.
+
+#### I5. Idle water wheel transmits rotation
+
+When a water wheel has no water, it is registered as TRANSMITTER with 0 power — it still forms
+connections and transmits rotation through itself. A chain `shaft → idle_water_wheel → shaft`
+transmits power. May be intentional (the wheel is mechanically coupled even when still), but is
+undocumented.
+
+### Doc staleness
+
+- This doc says bevel gears "PRESERVE" direction — code now uses `bevelReverses()` symmetric
+  scalar triple product formula (face-dependent reversal)
+- This doc says "Copper axe" for wrench — code uses `GOLDEN_AXE` (no copper axe in vanilla)
+- This doc references `demo:windmill` — code uses `rotation:windmill`
+- Class javadoc (lines 26-30) says gears connect to "4 neighbors in perpendicular plane" — code
+  connects all 6 adjacent gears (same-axis gear mesh + bevel)
+- `RotationBlocks.java:29` comment says "gearbox" — should say "clutch"
+
+### Investigated — not bugs (do not re-chase)
+
+These were flagged during deep review and confirmed **correct**; recorded so they aren't
+re-investigated. (B4 already owns the real `isChunkLoaded` finding.)
+
+#### N1. BFS jam detection is correct (`RotationNetwork.java:290`)
+A review flagged the contradiction check using `nodeNetworkId.containsKey(nk)` (catches only
+already-popped nodes), seeming to miss a back-edge to a queued-but-unpopped node and so fail to
+jam odd-reversal gear loops. It is actually correct: `getConnections` is **symmetric**
+(along-axis, gear-mesh `sameAxis`, and bevel all classify an edge identically from both ends),
+so every contradiction edge is examined from its *later-popped* endpoint — which sees the
+earlier endpoint in `nodeNetworkId` and flags the violation. The "missed" branch is redundant.
+Only a cap-truncated (>256-node) BFS could miss one. **Do not change this.**
+
+#### N2. Wrench recipe IS registered
+`registerWrenchRecipe()` is not called inside `RotationBlocks.register()`, but
+`CoreLibPlugin.onEnable` calls `RotationBlocks.registerWrenchRecipe()` (line 92) immediately
+after `register(...)`. The wrench is craftable in-game. Minor: not reload-idempotent — a
+`/reload` re-adds the same `WRENCH_RECIPE_KEY`; prepend `Bukkit.removeRecipe(WRENCH_RECIPE_KEY)`
+if reload-safety is wanted.
+
+#### N3. Floor drill DOWN is a deliberate behavior, not a bug
+This doc says "Floor heads: player's cardinal facing" (line 157) but the code stores
+`BlockFace.DOWN` for floor drills (`storeFacingIfAbsent`, `RotationBlocks.java:537`). DOWN is
+sensible (drill into the ground), and the drill's spin axis comes from `axisFromState`, not the
+facing — a cardinal-facing floor drill would spin around Y while drilling sideways. Decision,
+not a fix: either keep DOWN (and correct the line-157 claim) or, for sideways floor drills,
+make the spin axis follow the facing too.
+
+### Verification (Phase 3)
+
+1. Wrench a windmill between two separate shaft chains → both networks update (B1)
+2. Y-axis windmill with X-axis shaft to east AND Y-axis shaft above → windmill powers the Y-axis
+   network (B2)
+3. Connect two jammed networks with a new block → smoke plays once, not twice (B3)
+4. Network node at chunk border, passive source in adjacent unloaded chunk → no synchronous chunk
+   load (B4)
+5. `gradle compileJava` clean after all changes
+
+---
+
 ## Future enhancements
 
 ### Mechanism integration (mechanical bearing)
