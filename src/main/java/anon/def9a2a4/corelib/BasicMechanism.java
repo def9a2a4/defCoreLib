@@ -75,7 +75,10 @@ final class BasicMechanism implements Mechanism {
         this.serializer = serializer;
         this.startTick = Bukkit.getServer().getCurrentTick();
         this.assemblyYaw = vehicle.getLocation().getYaw();
-        this.previousVehicleLoc = pivot.clone();
+        // Track the RAW vehicle position so updateFromVehicle's first delta is zero if the vehicle
+        // hasn't moved, or exactly the 1-tick assembly drift if it has — not a spurious snap-vs-vehicle
+        // offset. The pivot itself is the snapped frame; deltas accumulate onto it.
+        this.previousVehicleLoc = vehicle.getLocation();
         this.previousVehicleYaw = assemblyYaw;
     }
 
@@ -311,8 +314,12 @@ final class BasicMechanism implements Mechanism {
         if (!vehicle.isValid()) return;
         Location loc = vehicle.getLocation();
         float yaw = loc.getYaw();
-        // Guard: distanceSquared throws if worlds differ (e.g., entity teleported cross-world)
+        // Guard: distanceSquared throws if worlds differ (e.g., entity teleported cross-world).
+        // Re-snap the pivot to the new world's block center so the snapped frame survives the jump.
         if (!loc.getWorld().equals(previousVehicleLoc.getWorld())) {
+            this.pivot = loc.clone();
+            this.pivot.setX(Math.floor(loc.getX()) + 0.5);
+            this.pivot.setZ(Math.floor(loc.getZ()) + 0.5);
             previousVehicleLoc = loc.clone();
             previousVehicleYaw = yaw;
             return;
@@ -321,13 +328,19 @@ final class BasicMechanism implements Mechanism {
         boolean moved = distSq > 0.0001 || Math.abs(yaw - previousVehicleYaw) > 0.1f;
         if (!moved) return;
 
-        this.pivot = loc.clone();
-        // Teleport parent to follow vehicle (for non-passenger parent, e.g., minecart path).
+        // Delta-track: accumulate the vehicle's movement onto the pivot so it stays in the snapped
+        // frame (a constant offset from the raw vehicle), preserving the integer-offset invariant.
+        // Overwriting with the raw vehicle position would destroy that frame and skew rotation.
+        this.pivot.add(
+            loc.getX() - previousVehicleLoc.getX(),
+            loc.getY() - previousVehicleLoc.getY(),
+            loc.getZ() - previousVehicleLoc.getZ());
+        // Teleport parent to follow the SNAPPED pivot (for non-passenger parent, e.g., minecart path).
         // Zero out yaw/pitch — all rotation is handled via display transform matrices (deltaYaw).
         // If we pass the vehicle's yaw here, displays would double-rotate (parent entity yaw +
         // transform rotation), since passenger displays inherit the parent's entity orientation.
         if (!ownsVehicle) {
-            Location parentLoc = loc.clone();
+            Location parentLoc = this.pivot.clone();
             parentLoc.setYaw(0);
             parentLoc.setPitch(0);
             TeleportCompat.teleport(parent, parentLoc);

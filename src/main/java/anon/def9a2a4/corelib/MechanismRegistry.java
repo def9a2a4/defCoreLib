@@ -100,16 +100,21 @@ public class MechanismRegistry {
         List<MechanismBlockData> blockData = new ArrayList<>();
 
         // 1. Snapshot each block
-        // Snap pivot XZ to nearest block center so offsets are always integers.
-        // This guarantees rotation by 90° gives exact integers.
-        float snapX = (float)(Math.floor(pivot.getX()) + 0.5);
-        float snapZ = (float)(Math.floor(pivot.getZ()) + 0.5);
+        // Snap pivot XZ to the nearest block center so offsets are always integers (rotation by 90°
+        // then maps integers to integers, keeping disassembly exact). Compute in double, cast to float
+        // only at matrix build — float can't represent the .5 offset past ~8M blocks. The snapped pivot
+        // flows downstream (collider spawn, BasicMechanism ctor) so the whole mechanism shares one frame.
+        double snapX = Math.floor(pivot.getX()) + 0.5;
+        double snapZ = Math.floor(pivot.getZ()) + 0.5;
+        pivot = pivot.clone(); // don't mutate the caller's Location
+        pivot.setX(snapX);
+        pivot.setZ(snapZ);
         for (Block block : blocks) {
             BlockData bd = block.getBlockData();
             Matrix4f local = new Matrix4f().translation(
-                (block.getX() + 0.5f) - snapX,
-                block.getY() - (float) pivot.getY(),
-                (block.getZ() + 0.5f) - snapZ);
+                (float) ((block.getX() + 0.5) - snapX),
+                (float) (block.getY() - pivot.getY()),
+                (float) ((block.getZ() + 0.5) - snapZ));
 
             String customType = null, customState = null;
             List<CustomHeadBlock.DisplayEntityConfig> decs = null;
@@ -242,14 +247,20 @@ public class MechanismRegistry {
         //    For external vehicles (minecarts): parent is teleported each tick instead,
         //    because minecarts silently reject addPassenger for non-living entities at NMS level.
         Bukkit.getScheduler().runTaskLater(plugin, () -> {
+            if (!vehicle.isValid()) { mech.disassemble(); return; } // vehicle died during the delay tick
             for (var group : displaysPerBlock) {
                 for (Display d : group) parentDisplay.addPassenger(d);
             }
             if (ownsVehicle) {
                 vehicle.addPassenger(parentDisplay);
             } else {
-                // Teleport parent to vehicle position; updateFromVehicle() will maintain this each tick
-                TeleportCompat.teleport(parentDisplay, vehicle.getLocation());
+                // External vehicle (minecart): start the parent at the SNAPPED pivot, not the raw
+                // vehicle position, which may have drifted during this 1-tick delay (NMS rail physics).
+                // updateFromVehicle() maintains it from here. Zero yaw — rotation is via display matrices.
+                Location parentLoc = mech.pivot();
+                parentLoc.setYaw(0);
+                parentLoc.setPitch(0);
+                TeleportCompat.teleport(parentDisplay, parentLoc);
             }
             mech.rotate(0);
         }, 1L);
