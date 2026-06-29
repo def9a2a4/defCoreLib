@@ -32,19 +32,19 @@ Two vehicle paths:
   position each tick (minecarts silently reject `addPassenger()` for non-living entities
   at NMS level). `ownsVehicle = false`.
 
-### Local transform computation (MechanismRegistry.assembleCore, lines 88-98)
+### Local transform computation (MechanismRegistry.assembleCore, lines 102-112)
 
 At assembly, block offsets are computed relative to a **snapped pivot** — the nearest
 block center to the vehicle position:
 
 ```java
-float snapX = (float)(Math.floor(pivot.getX()) + 0.5);   // line 91
-float snapZ = (float)(Math.floor(pivot.getZ()) + 0.5);   // line 92
+float snapX = (float)(Math.floor(pivot.getX()) + 0.5);   // line 105
+float snapZ = (float)(Math.floor(pivot.getZ()) + 0.5);   // line 106
 // ...
 Matrix4f local = new Matrix4f().translation(
-    (block.getX() + 0.5f) - snapX,                        // line 96
-    block.getY() - (float) pivot.getY(),                   // line 97
-    (block.getZ() + 0.5f) - snapZ);                        // line 98
+    (block.getX() + 0.5f) - snapX,                        // line 110
+    block.getY() - (float) pivot.getY(),                   // line 111
+    (block.getZ() + 0.5f) - snapZ);                        // line 112
 ```
 
 This guarantees XZ offsets are **always integers** (center-to-center). Integer offsets
@@ -54,20 +54,21 @@ so `Math.round()` in `disassemble()` gives exact block positions.
 Proven broken without integers: vehicle at `(10.0, 64, 20.0)`, block offset `(0.5, 0, 1.5)`,
 rotated 90° → `Math.round(1.5) = 2`, wrong block. The integer invariant is not optional.
 
-### Display positioning (BasicMechanism.rotate, lines 107-152)
+### Display positioning (BasicMechanism.rotate, lines 109-157)
 
 Displays are passengers of the parent entity. Their transforms are set via
 `display.setTransformationMatrix(matrix)`, which positions them **relative to the parent**.
 
 ```java
-Matrix4f rot = new Matrix4f().rotateY((float) Math.toRadians(-yaw));  // line 110
-Matrix4f dm = new Matrix4f(rot).mul(mb.localTransform);               // line 115
-dm.m31(dm.m31() - rideOffset);                                        // line 116
+Matrix4f rot = new Matrix4f().rotate((float) Math.toRadians(-yaw),     // lines 114-115
+        rotationAxis.x, rotationAxis.y, rotationAxis.z);
+Matrix4f dm = new Matrix4f(rot).mul(mb.localTransform);               // line 120
+dm.m31(dm.m31() - rideOffset);                                        // line 121
 ```
 
 So `display_world_position = parent_position + rot * local_offset - rideOffset_Y`.
 
-### Collider positioning (BasicMechanism.rotate, lines 144-151)
+### Collider positioning (BasicMechanism.rotate, lines 149-156)
 
 Colliders are **NOT** passengers. They're teleported to world coordinates each rotation:
 
@@ -75,7 +76,7 @@ Colliders are **NOT** passengers. They're teleported to world coordinates each r
 Vector3f worldOff = rot.transformPosition(
     blocks.get(cp.blockIndex()).localTransform.getTranslation(...));
 TeleportCompat.teleport(cp.carrier(),
-    pivot.clone().add(worldOff.x, worldOff.y, worldOff.z));           // line 150
+    pivot.clone().add(worldOff.x, worldOff.y, worldOff.z));           // line 155
 ```
 
 So `collider_world_position = pivot + rot * local_offset`.
@@ -96,11 +97,11 @@ collider_world = pivot      + rot * offset
 
 ### Issue 1: Pivot overwrites raw vehicle position
 
-`BasicMechanism.updateFromVehicle()` (line 307) overwrites the pivot with the raw vehicle
+`BasicMechanism.updateFromVehicle()` (line 324) overwrites the pivot with the raw vehicle
 location every tick:
 
 ```java
-this.pivot = loc.clone();   // line 307 — raw vehicle position, NOT snapped
+this.pivot = loc.clone();   // line 324 — raw vehicle position, NOT snapped
 ```
 
 The local transforms were computed from the snapped pivot (e.g. X=5.5). If the vehicle
@@ -124,7 +125,7 @@ minecart.setVelocity(new org.bukkit.util.Vector(0, 0, 0));
 
 After `snapAndStop`, the vehicle IS at block center, so `snapX - pivot.X = 0`. All good.
 
-But `assembleCore()` schedules a 1-tick delay (lines 230-241) before mounting displays and
+But `assembleCore()` schedules a 1-tick delay (lines 244-255) before mounting displays and
 setting initial transforms. During that tick:
 
 1. **NMS minecart physics run** — the minecart is on a powered activator rail. Adjacent
@@ -138,7 +139,7 @@ setting initial transforms. During that tick:
 When the delay lambda runs on tick N+1:
 
 ```java
-// MechanismRegistry line 238 — reads CURRENT vehicle position (possibly drifted)
+// MechanismRegistry line 252 — reads CURRENT vehicle position (possibly drifted)
 TeleportCompat.teleport(parentDisplay, vehicle.getLocation());
 ```
 
@@ -197,19 +198,19 @@ section above. The integer offset invariant is load-bearing.
 
 ## Detailed Changes
 
-### Change 1: MechanismRegistry.assembleCore() — snap the pivot (lines 91-92)
+### Change 1: MechanismRegistry.assembleCore() — snap the pivot (lines 105-106)
 
 After computing `snapX`/`snapZ`, snap the pivot Location before any downstream use.
-Currently the raw pivot flows through to collider spawning (line 195), parent spawning
-(line 142), and the BasicMechanism constructor (line 218).
+Currently the raw pivot flows through to collider spawning (line 209), parent spawning
+(line 156), and the BasicMechanism constructor (lines 232-233).
 
-**Current code (lines 91-92):**
+**Current code (lines 105-106):**
 ```java
 float snapX = (float)(Math.floor(pivot.getX()) + 0.5);
 float snapZ = (float)(Math.floor(pivot.getZ()) + 0.5);
 ```
 
-**New code (insert after line 92):**
+**New code (insert after line 106):**
 ```java
 pivot = pivot.clone();       // don't mutate caller's Location
 pivot.setX(snapX);
@@ -217,18 +218,18 @@ pivot.setZ(snapZ);
 ```
 
 **What this affects downstream (all correct):**
-- Line 97: `block.getY() - (float) pivot.getY()` — Y unchanged, still correct
-- Line 142: `spawnLoc = pivot.clone().add(0, 2.5, 0)` — temporary spawn pos, fine
-- Line 195: `carrierLoc = pivot.clone().add(initOff.x, ...)` — colliders now at snapped pos ✓
-- Line 218: `new BasicMechanism(..., pivot, ...)` — receives snapped pivot ✓
+- Line 111: `block.getY() - (float) pivot.getY()` — Y unchanged, still correct
+- Line 156: `spawnLoc = pivot.clone().add(0, 2.5, 0)` — temporary spawn pos, fine
+- Line 209: `carrierLoc = pivot.clone().add(initOff.x, ...)` — colliders now at snapped pos ✓
+- Lines 232-233: `new BasicMechanism(..., pivot, ...)` — receives snapped pivot ✓
 
-### Change 2: MechanismRegistry 1-tick delay — teleport parent to snapped pivot (line 238)
+### Change 2: MechanismRegistry 1-tick delay — teleport parent to snapped pivot (line 252)
 
 Currently the parent is teleported to the raw vehicle position, which may have drifted
 during the 1-tick delay. Also, the initial teleport doesn't zero yaw (unlike
 `updateFromVehicle` which does).
 
-**Current code (lines 237-238):**
+**Current code (lines 251-252):**
 ```java
 // Teleport parent to vehicle position; updateFromVehicle() will maintain this each tick
 TeleportCompat.teleport(parentDisplay, vehicle.getLocation());
@@ -246,7 +247,7 @@ This fixes two things:
 1. Parent starts at snapped position, not drifted vehicle position
 2. Zeroes yaw on initial teleport (prevents double-rotation on first frame)
 
-### Change 3: BasicMechanism constructor — init previousVehicleLoc from vehicle (line 76)
+### Change 3: BasicMechanism constructor — init previousVehicleLoc from vehicle (line 78)
 
 The movement detection in `updateFromVehicle()` compares `vehicle.getLocation()` against
 `previousVehicleLoc`. If `previousVehicleLoc` is initialized from the snapped pivot
@@ -255,7 +256,7 @@ see a spurious delta equal to the drift. With delta tracking, this spurious delt
 shift the pivot by the drift amount — which is actually fine (it corrects for the drift),
 but semantically we should track the raw vehicle position.
 
-**Current code (line 76):**
+**Current code (line 78):**
 ```java
 this.previousVehicleLoc = pivot.clone();
 ```
@@ -270,7 +271,7 @@ that position (depends on whether `snapAndStop` succeeded and whether the 1-tick
 caused drift). Using `vehicle.getLocation()` ensures the first delta is zero if the
 vehicle hasn't moved, or exactly the drift if it has.
 
-### Change 4: BasicMechanism.updateFromVehicle() — delta-track pivot (lines 307, 312-316)
+### Change 4: BasicMechanism.updateFromVehicle() — delta-track pivot (lines 324, 329-334)
 
 **Current code (line 307):**
 ```java

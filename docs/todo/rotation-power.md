@@ -763,3 +763,39 @@ Moves water/lava source blocks. Places a waterlogged block or source block in it
 11. ~~Network cap: 257th shaft doesn't receive power~~
 12. ~~Chunk unload/reload → network rebuilds correctly~~
 13. ~~Re-entrant recalculate doesn't corrupt state~~
+
+---
+
+## Decisions needed (your input)
+
+Open questions surfaced during review — none block the confirmed bugfixes (B1, B2, B4, I4),
+but each below changes scope or behavior and is your call.
+
+1. **Idle water wheel transmission (I5).** A dry water wheel is registered as a 0-power
+   TRANSMITTER, so `shaft → idle_water_wheel → shaft` still passes rotation through it. Is that
+   intended (mechanically coupled even when still) or should a dry wheel *disconnect*?
+   → If intended, just document it; if not, it's a small connection-rules change.
+
+2. **Floor drill facing (N3).** Floor drills currently drill straight **DOWN**. The alternative
+   is player-cardinal facing (drill sideways) — but that also needs the spin axis to follow the
+   facing, or the drill spins around Y while drilling sideways. Keep DOWN, or invest in cardinal?
+   → Recommendation: keep DOWN.
+
+3. **`getNetworkStats()` — keep or remove (I1).** It has no callers today, but lines 65/191
+   document it as the deferred **Rotator**'s `transientDemand` read API. Remove now (YAGNI, and
+   also clean the 65/191 javadoc) or keep as Rotator scaffolding (and drop I1)?
+   → Recommendation: keep + drop I1, since the Rotator is the next feature.
+
+4. **Build the Rotator next?** It's marked deferred. If yes, #3 resolves to "keep." If it's not
+   coming soon, removing `getNetworkStats` is cleaner.
+
+5. **Optional cleanup scope.** Do the elegance refactors now or defer? **E2 (cache locked +
+   reverser-powered state)** is the real perf win (~1500 world reads/recalc on big networks) and
+   I'd do it regardless. E1/E3/E4 (helper extraction, shared overlay builder, decompose
+   `doRecalculate`) and I2 (`removeNodesInChunk` O(1) unload) / I3 (debug windmill count) are
+   nice-to-have — do now or leave as backlog?
+
+6. **Wrench recipe reload-safety (N2).** The recipe registers fine on startup but isn't
+   reload-idempotent (a `/reload` re-adds the same key). Add the `Bukkit.removeRecipe` guard, or
+   not worth it?
+   → Recommendation: add the one-line guard.
