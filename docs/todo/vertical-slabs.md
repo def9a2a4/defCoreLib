@@ -16,6 +16,12 @@ making `DisplayEntityConfig.displayItem` nullable. This keeps the existing recor
 builder, state config, mechanism registry, and all consumer code completely untouched.
 No NPE risks, no constructor signature changes, no downstream breakage.
 
+> **Rejected alternative**: an earlier draft (formerly the repo-root `TODO-vertical-slabs.md`)
+> proposed making `DisplayEntityConfig.displayItem` `@Nullable` and adding a `blockData` field to
+> the existing record in-place. Rejected: it changes the record's constructor signature and risks
+> an NPE/CCE in `MechanismRegistry` (~line 178-187) where every config is assumed to be an
+> ItemDisplay. The separate-record approach above supersedes it.
+
 ---
 
 ## Part 1: defCoreLib — Add BlockDisplay support (additive only)

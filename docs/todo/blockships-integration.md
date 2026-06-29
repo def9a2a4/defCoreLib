@@ -528,7 +528,7 @@ These should be fixed before starting integration work:
 
 1. **Collider initial position rounding** — `MechanismRegistry.assembleCore()` line 195: carrier spawns at `pivot + localTransform.getTranslation()` without rounding. Should `Math.round()` XZ offsets for grid alignment.
 
-2. **`MINECART_RIDE_OFFSET = 0f`** — needs empirical tuning in-game. Displays may be mispositioned vertically on minecarts.
+2. ~~**`MINECART_RIDE_OFFSET = 0f`** — needs empirical tuning in-game.~~ **Resolved:** `0f` confirmed correct in-game — not a bug (see minecarts.md "MINECART_RIDE_OFFSET").
 
 3. **No vehicle validity check at assembly** — `assembleMechanism(existingVehicle)` doesn't verify vehicle is valid/alive. Dead entity silently produces broken mechanism.
 
