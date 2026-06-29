@@ -93,6 +93,7 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
 
         // Register mechanism demos
         new DoorDemo(this, registry, mechanismRegistry).register();
+        new RotationRotator(this, registry, rotationNetwork, mechanismRegistry).register();
         minecartShipManager = new MinecartShipManager(this, registry, mechanismRegistry);
         minecartShipManager.register();
         getServer().getPluginManager().registerEvents(minecartShipManager, this);

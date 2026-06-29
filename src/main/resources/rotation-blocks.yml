@@ -217,6 +217,34 @@ blocks:
       spinning_y: {}
       spinning_z: {}
 
+  # ─── Rotator ────────────────────────────────────────────────────────────
+  # Consumer hinge: floor = door (Y), wall = drawbridge (X/Z). Network spin direction
+  # CW opens, CCW closes; swings its oak-plank structure as a mechanism. Right-click to
+  # cycle the open angle (90/180/270). v1: oak-plank structures only.
+  rotator:
+    name: "&dRotator"
+    lore:
+      - "&7Swings an attached oak-plank door/drawbridge"
+      - "&7Floor = door, wall = drawbridge"
+      - "&7Right-click: cycle open angle"
+    # Iron Block (placeholder — give it a distinct hinge head texture later)
+    texture: "@iron_block"
+    drops: self
+    default_state: idle_y
+    placement_state_map:
+      DOWN: idle_y
+      NORTH: idle_z
+      SOUTH: idle_z
+      EAST: idle_x
+      WEST: idle_x
+    states:
+      idle_x: {}
+      idle_y: {}
+      idle_z: {}
+      spinning_x: {}
+      spinning_y: {}
+      spinning_z: {}
+
   # ─── Water Wheel ────────────────────────────────────────────────────────
   # Source: 2 SU. Wall only. Spins when water is on perpendicular faces.
   # Display: 4 OAK_SLAB paddles at 90° intervals.

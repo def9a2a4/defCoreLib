@@ -52,10 +52,24 @@ public class MechanismRegistry {
     /** Default ride offset for ArmorStand vehicles. Empirically tuned (matches BlockShips). */
     public static final float ARMORSTAND_RIDE_OFFSET = 1.975f;
 
+    /** Unit Y axis — the default rotation axis (doors, minecarts). */
+    private static final Vector3f AXIS_Y = new Vector3f(0, 1, 0);
+
     /**
      * Assemble a mechanism from world blocks, spawning a new ArmorStand as the vehicle.
+     * Rotates about the vertical (Y) axis.
      */
     public Mechanism assembleMechanism(String type, List<Block> blocks, Location pivot,
+                                       @Nullable MechanismSerializer serializer) {
+        return assembleMechanism(type, blocks, pivot, AXIS_Y, serializer);
+    }
+
+    /**
+     * Assemble a mechanism from world blocks, spawning a new ArmorStand as the vehicle, and
+     * rotating about an arbitrary cardinal axis (Y = door/turntable, X/Z = drawbridge).
+     */
+    public Mechanism assembleMechanism(String type, List<Block> blocks, Location pivot,
+                                       Vector3f rotationAxis,
                                        @Nullable MechanismSerializer serializer) {
         UUID mechId = UUID.randomUUID();
         ArmorStand vehicle = pivot.getWorld().spawn(pivot, ArmorStand.class, as -> {
@@ -63,8 +77,8 @@ public class MechanismRegistry {
             as.setPersistent(true); as.setRotation(0, 0);
             as.addScoreboardTag("corelib:mech:" + mechId + ":vehicle");
         });
-        return assembleCore(mechId, type, blocks, pivot, vehicle, ARMORSTAND_RIDE_OFFSET,
-            true, serializer);
+        return assembleCore(mechId, type, blocks, pivot, rotationAxis, vehicle,
+            ARMORSTAND_RIDE_OFFSET, true, serializer);
     }
 
     /**
@@ -76,13 +90,13 @@ public class MechanismRegistry {
         UUID mechId = UUID.randomUUID();
         Location pivot = existingVehicle.getLocation();
         existingVehicle.addScoreboardTag("corelib:mech:" + mechId + ":vehicle");
-        return assembleCore(mechId, type, blocks, pivot, existingVehicle, rideOffset,
+        return assembleCore(mechId, type, blocks, pivot, AXIS_Y, existingVehicle, rideOffset,
             false, serializer);
     }
 
     private Mechanism assembleCore(UUID mechId, String type, List<Block> blocks, Location pivot,
-                                    Entity vehicle, float rideOffset, boolean ownsVehicle,
-                                    @Nullable MechanismSerializer serializer) {
+                                    Vector3f rotationAxis, Entity vehicle, float rideOffset,
+                                    boolean ownsVehicle, @Nullable MechanismSerializer serializer) {
         List<MechanismBlockData> blockData = new ArrayList<>();
 
         // 1. Snapshot each block
@@ -215,7 +229,7 @@ public class MechanismRegistry {
         }
 
         // 4. Create mechanism, register colliders
-        BasicMechanism mech = new BasicMechanism(mechId, type, pivot, vehicle, parentDisplay,
+        BasicMechanism mech = new BasicMechanism(mechId, type, pivot, rotationAxis, vehicle, parentDisplay,
             rideOffset, ownsVehicle, displaysPerBlock, colliders, blockData, registry, serializer);
         mech.mechanismRegistry = this;
 

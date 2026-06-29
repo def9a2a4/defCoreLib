@@ -29,7 +29,8 @@ final class BasicMechanism implements Mechanism {
     private final UUID id;
     private final String type;
     private Location pivot;
-    private float currentYaw = 0f;
+    private float currentYaw = 0f; // rotation angle (degrees) about rotationAxis; "yaw" kept for the Y/minecart path
+    private final Vector3f rotationAxis; // unit axis to rotate about — Y for doors/minecarts, X/Z for drawbridges
     private Matrix4f currentTransform = new Matrix4f(); // identity
 
     final Entity vehicle;
@@ -51,7 +52,7 @@ final class BasicMechanism implements Mechanism {
     // Back-reference set by MechanismRegistry after construction
     MechanismRegistry mechanismRegistry;
 
-    BasicMechanism(UUID id, String type, Location pivot,
+    BasicMechanism(UUID id, String type, Location pivot, Vector3f rotationAxis,
                    Entity vehicle, org.bukkit.entity.BlockDisplay parent,
                    float rideOffset, boolean ownsVehicle,
                    List<List<Display>> displaysPerBlock,
@@ -62,6 +63,7 @@ final class BasicMechanism implements Mechanism {
         this.id = id;
         this.type = type;
         this.pivot = pivot;
+        this.rotationAxis = new Vector3f(rotationAxis).normalize();
         this.vehicle = vehicle;
         this.parent = parent;
         this.rideOffset = rideOffset;
@@ -107,7 +109,10 @@ final class BasicMechanism implements Mechanism {
     public void rotate(float yaw) {
         checkMainThread();
         this.currentYaw = yaw;
-        Matrix4f rot = new Matrix4f().rotateY((float) Math.toRadians(-yaw));
+        // Rotate about the mechanism's axis (Y for doors/minecarts → identical to rotateY).
+        // Negated to match Minecraft's CW-from-+axis convention (load-bearing for the Y path).
+        Matrix4f rot = new Matrix4f().rotate((float) Math.toRadians(-yaw),
+                rotationAxis.x, rotationAxis.y, rotationAxis.z);
         this.currentTransform = rot;
 
         for (int i = 0; i < blocks.size(); i++) {
@@ -192,8 +197,12 @@ final class BasicMechanism implements Mechanism {
     @Override
     public void disassemble() {
         checkMainThread();
+        // Snap to 90° about the rotation axis. For Y this is yaw; for X/Z it tips a drawbridge
+        // back to a cardinal orientation. 90° rotations about a cardinal axis map integer
+        // offsets to integers, so block positions stay exact.
         float snappedYaw = Math.round(currentYaw / 90f) * 90f;
-        Matrix4f rotation = new Matrix4f().rotateY((float) Math.toRadians(-snappedYaw));
+        Matrix4f rotation = new Matrix4f().rotate((float) Math.toRadians(-snappedYaw),
+                rotationAxis.x, rotationAxis.y, rotationAxis.z);
 
         for (int i = 0; i < blocks.size(); i++) {
             MechanismBlockData mb = blocks.get(i);
@@ -203,6 +212,14 @@ final class BasicMechanism implements Mechanism {
             // Use Math.round to handle floating-point epsilon from trig (e.g., 1.9999999f → 2).
             Location blockLoc = pivot.clone().add(
                 Math.round(worldOffset.x), Math.round(worldOffset.y), Math.round(worldOffset.z));
+
+            // Off-world guard: a tall drawbridge can swing a block below world-min or above
+            // world-max. Don't try to place there — drop it as an item instead.
+            if (blockLoc.getBlockY() < blockLoc.getWorld().getMinHeight()
+                    || blockLoc.getBlockY() >= blockLoc.getWorld().getMaxHeight()) {
+                dropBlockAsItem(blockLoc, mb);
+                continue;
+            }
             Block target = blockLoc.getBlock();
 
             if (target.getType().isAir() || target.getType() == Material.WATER

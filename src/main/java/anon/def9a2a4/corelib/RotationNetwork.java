@@ -61,6 +61,10 @@ public class RotationNetwork {
     private final Map<Integer, Set<CustomBlockRegistry.LocationKey>> networkPassiveSources = new HashMap<>();
     private final Map<Integer, NetworkState> networks = new HashMap<>();
     private final Map<CustomBlockRegistry.LocationKey, SpinDirection> nodeDirection = new HashMap<>();
+    // Transient demand: extra demand from nodes that consume only while active (a Rotator while
+    // swinging). Folded into getNetworkStats's demand WITHOUT a recalculation, so contending
+    // rotators see each other's load without network churn.
+    private final Map<CustomBlockRegistry.LocationKey, Integer> transientDemand = new HashMap<>();
     private int nextNetworkId = 0;
 
     // Re-entrancy guard
@@ -96,6 +100,7 @@ public class RotationNetwork {
 
     public void removeNode(CustomBlockRegistry.LocationKey key) {
         nodes.remove(key);
+        transientDemand.remove(key);
         recalculate(key);
     }
 
@@ -164,14 +169,33 @@ public class RotationNetwork {
                 state.jammed(), cw, ccw);
     }
 
-    /** Returns [supply, demand, blockCount] for the network containing this node, or null. */
+    /** Returns [supply, demand, blockCount] for the network containing this node, or null.
+     *  {@code demand} includes any transient demand (e.g. swinging Rotators) on the network. */
     public int @Nullable [] getNetworkStats(CustomBlockRegistry.LocationKey key) {
         Integer netId = nodeNetworkId.get(key);
         if (netId == null) return null;
         NetworkState state = networks.get(netId);
         Set<CustomBlockRegistry.LocationKey> members = networkMembers.get(netId);
         if (state == null || members == null) return null;
-        return new int[]{ state.supply(), state.demand(), members.size() };
+        int transientSum = 0;
+        if (!transientDemand.isEmpty()) {
+            for (CustomBlockRegistry.LocationKey m : members) {
+                Integer t = transientDemand.get(m);
+                if (t != null) transientSum += t;
+            }
+        }
+        return new int[]{ state.supply(), state.demand() + transientSum, members.size() };
+    }
+
+    /** Register extra demand for a node that consumes only while active (a Rotator while
+     *  swinging). Folded into {@link #getNetworkStats}'s demand with no recalculation. Read your
+     *  surplus BEFORE calling this so the reading excludes your own load. */
+    public void addTransientDemand(CustomBlockRegistry.LocationKey key, int amount) {
+        transientDemand.put(key, amount);
+    }
+
+    public void clearTransientDemand(CustomBlockRegistry.LocationKey key) {
+        transientDemand.remove(key);
     }
 
     /** Returns all nodes in the same network as this key, or null. */
@@ -465,6 +489,7 @@ public class RotationNetwork {
             nodes.remove(k);
             nodeNetworkId.remove(k);
             nodeDirection.remove(k);
+            transientDemand.remove(k);
         }
 
         // Collect remaining dirty members of affected networks
