@@ -479,6 +479,14 @@ final class RotationBlocks {
         return true;
     }
 
+    /** The empty container an output of this material is bottled into, or null if none is needed. */
+    private static @org.jetbrains.annotations.Nullable Material emptyContainerFor(Material out) {
+        return switch (out) {
+            case HONEY_BOTTLE, POTION, SPLASH_POTION, LINGERING_POTION -> Material.GLASS_BOTTLE;
+            default -> null; // (extensible later: MILK_BUCKET/WATER_BUCKET/… → BUCKET)
+        };
+    }
+
     private static int countOf(Inventory inv, Material m) {
         int n = 0;
         for (ItemStack it : inv.getContents()) {
@@ -529,9 +537,23 @@ final class RotationBlocks {
             if (recipe == null) break;                              // nothing processable left
 
             List<ItemStack> outputs = recipes.roll(recipe, registry);
+
+            // Bottled outputs (juices, …) consume an empty container from the host container.
+            Map<Material, Integer> empties = new HashMap<>();
+            for (ItemStack out : outputs) {
+                Material empty = emptyContainerFor(out.getType());
+                if (empty != null) empties.merge(empty, out.getAmount(), Integer::sum);
+            }
+            boolean missingEmpty = false;
+            for (var e : empties.entrySet()) {
+                if (countOf(in, e.getKey()) < e.getValue()) { missingEmpty = true; break; }
+            }
+            if (missingEmpty) break;                                // no container to bottle into → stall
+
             if (!outputs.isEmpty() && !ejectOutputs(machine, outputs)) break; // output full → stall
 
             removeCount(in, recipe.input(), recipe.inputAmount());
+            for (var e : empties.entrySet()) removeCount(in, e.getKey(), e.getValue());
             processed = true;
         }
 

@@ -45,12 +45,14 @@ final class ShowcaseRunner implements Listener {
     private final java.util.Collection<ShowcaseSpec> showcases;
     private final boolean testMode;
     private final Path capturePath;   // null if not capturing
+    private final RotationRotator rotator;   // for the `mechanism_swung` assertion
     private final Map<ShowcaseSpec, Location> origins = new LinkedHashMap<>();
     private boolean done;
 
     private ShowcaseRunner(CoreLibPlugin plugin, CustomBlockRegistry registry, RotationNetwork network,
                            EngineFuelManager fuelManager, ShowcaseBuilder builder,
-                           java.util.Collection<ShowcaseSpec> showcases, boolean testMode, Path capturePath) {
+                           java.util.Collection<ShowcaseSpec> showcases, boolean testMode, Path capturePath,
+                           RotationRotator rotator) {
         this.plugin = plugin;
         this.registry = registry;
         this.network = network;
@@ -59,17 +61,18 @@ final class ShowcaseRunner implements Listener {
         this.showcases = showcases;
         this.testMode = testMode;
         this.capturePath = capturePath;
+        this.rotator = rotator;
     }
 
     static boolean armIfRequested(CoreLibPlugin plugin, CustomBlockRegistry registry, RotationNetwork network,
                                   EngineFuelManager fuelManager, ShowcaseBuilder builder,
-                                  java.util.Collection<ShowcaseSpec> showcases) {
+                                  java.util.Collection<ShowcaseSpec> showcases, RotationRotator rotator) {
         boolean test = Boolean.getBoolean("defcorelib.showcaseTest");
         String capture = System.getProperty("defcorelib.showcaseCapture");
         if (!test && (capture == null || capture.isBlank())) return false;
         Path capturePath = (capture == null || capture.isBlank()) ? null : Path.of(capture);
         ShowcaseRunner runner = new ShowcaseRunner(plugin, registry, network, fuelManager, builder,
-                showcases, test, capturePath);
+                showcases, test, capturePath, rotator);
         Bukkit.getPluginManager().registerEvents(runner, plugin);
         plugin.getLogger().info("ShowcaseRunner armed (" + (test ? "test " : "") + (capturePath != null
                 ? "capture→" + capturePath : "") + ") — " + showcases.size() + " showcases.");

@@ -56,6 +56,9 @@ final class RotationRotator {
     private final Map<CustomBlockRegistry.LocationKey, BukkitTask> activeTasks = new HashMap<>();
     // Last redstone-power state, for off→on rising-edge detection.
     private final Map<CustomBlockRegistry.LocationKey, Boolean> lastPowered = new HashMap<>();
+    // Swings committed per hinge — survives a swing's transient teardown so the showcase harness can
+    // assert a swing actually happened.
+    private final Map<CustomBlockRegistry.LocationKey, Integer> swingCount = new HashMap<>();
 
     RotationRotator(JavaPlugin plugin, CustomBlockRegistry registry,
                     RotationNetwork network, MechanismRegistry mechRegistry,
@@ -87,6 +90,11 @@ final class RotationRotator {
             .onChunkUnload(b -> { cleanup(b); network.removeNode(CustomBlockRegistry.LocationKey.of(b)); })
             .onBlockRemoved((b, state) -> { cleanup(b); network.removeNode(CustomBlockRegistry.LocationKey.of(b)); })
             .build());
+    }
+
+    /** Number of swings this hinge has committed since load (for the showcase test harness). */
+    int swingCount(Block head) {
+        return swingCount.getOrDefault(CustomBlockRegistry.LocationKey.of(head), 0);
     }
 
     // ──────────────────────────────────────────────────────────────────────
@@ -135,6 +143,7 @@ final class RotationRotator {
         float target = (dir == RotationNetwork.SpinDirection.CW) ? targetAngle : -targetAngle;
         network.addTransientDemand(key, SWING_DEMAND);
 
+        swingCount.merge(key, 1, Integer::sum);
         startSwing(key, mech, speed, target);
     }
 

@@ -153,7 +153,6 @@ public class MechanismRegistry {
                         if (item != null) storage.setItem(s, item.clone());
                     }
                 }
-                registry.onBlockRemoved(block, chb);
             } else if (block.getState() instanceof Container c) {
                 Inventory orig = c.getInventory();
                 storage = Bukkit.createInventory(null, orig.getSize());
@@ -167,7 +166,16 @@ public class MechanismRegistry {
                 customType, customState, decs, particles, storage, spinReversed, wallFacing));
         }
 
-        // 2. Two-pass block removal
+        // 2. Tear down custom-block tracking only AFTER every block's state was captured above.
+        // onBlockRemoved removes the rotation-network node, whose synchronous recalc rewrites downstream
+        // transmitters (shaft/gear) spinning_*→idle_*. Doing this per-block during capture snapshotted
+        // later blocks as idle — a capture-order race that left glued gears/shafts static mid-swing.
+        for (Block b : blocks) {
+            CustomHeadBlock chb = registry.getTypeFromBlock(b);
+            if (chb != null) registry.onBlockRemoved(b, chb);
+        }
+
+        // 3. Two-pass block removal
         for (Block b : blocks) {
             if (FragileBlocks.isAttachable(b.getType())) b.setType(Material.AIR, false);
         }
@@ -175,7 +183,7 @@ public class MechanismRegistry {
             if (b.getType() != Material.AIR) b.setType(Material.AIR, false);
         }
 
-        // 3. Spawn display + collider entities
+        // 4. Spawn display + collider entities
         Location spawnLoc = pivot.clone().add(0, 2.5, 0);
 
         // Parent BlockDisplay(AIR): invisible intermediary for multi-passenger support.
@@ -253,7 +261,7 @@ public class MechanismRegistry {
             }
         }
 
-        // 4. Create mechanism, register colliders
+        // 5. Create mechanism, register colliders
         BasicMechanism mech = new BasicMechanism(mechId, type, pivot, rotationAxis, vehicle, parentDisplay,
             rideOffset, ownsVehicle, displaysPerBlock, colliders, blockData, registry, serializer);
         mech.mechanismRegistry = this;
@@ -262,7 +270,7 @@ public class MechanismRegistry {
             colliderIndex.put(cp.shulker().getUniqueId(), new ColliderRef(mech, cp.blockIndex()));
         }
 
-        // 5. 1-tick delay: mount displays on parent, set initial transforms.
+        // 6. 1-tick delay: mount displays on parent, set initial transforms.
         //    For owned vehicles (ArmorStand): parent mounts on vehicle as passenger.
         //    For external vehicles (minecarts): parent is teleported each tick instead,
         //    because minecarts silently reject addPassenger for non-living entities at NMS level.
