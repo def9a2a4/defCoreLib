@@ -65,6 +65,14 @@ export function iconHtml(item) {
   return `<span class="placeholder" title="${esc(label)}">?</span>`;
 }
 
+// Recipe ingredient tags (#banners / #wool / …) render as a representative image + descriptive
+// label instead of bare "#tag" text. materialImg falls back to the label text if the image is missing.
+const TAG_PLACEHOLDER = {
+  banners: { img: 'white_banner', label: 'Banner (any colour)' },
+  banner: { img: 'white_banner', label: 'Banner (any colour)' },
+  wool: { img: 'white_wool', label: 'Wool (any colour)' },
+};
+
 // One ingredient slot. block refs link to that item's page and show its icon.
 function slotEl(ing, itemsById, extraClass = '') {
   const cls = ['slot', extraClass];
@@ -77,9 +85,11 @@ function slotEl(ing, itemsById, extraClass = '') {
     return `<a class="${cls.join(' ')}" href="${itemHref(ing.value)}" title="${esc(label)}">${inner}</a>`;
   }
   if (ing.kind === 'tag') {
-    const label = '#' + ing.value;
+    const ph = TAG_PLACEHOLDER[ing.value];
+    const label = ph ? ph.label : '#' + ing.value;
     cls.push('tag');
-    return `<div class="${cls.join(' ')}" title="${esc(label)}"><span class="slot-label">${esc(label)}</span></div>`;
+    const inner = ph ? materialImg(ph.img, label) : `<span class="slot-label">${esc('#' + ing.value)}</span>`;
+    return `<div class="${cls.join(' ')}" title="${esc(label)}">${inner}</div>`;
   }
   const label = prettyMaterial(ing.value);
   return `<div class="${cls.join(' ')}" title="${esc(label)}">${materialImg(ing.value, label)}</div>`;
@@ -136,6 +146,21 @@ export function recipesHtml(item, itemsById) {
   return recipes.length
     ? `<div class="recipes">${recipes.map((r) => renderRecipe(item, r, itemsById)).join('')}</div>`
     : `<div class="no-recipe">No recipe — obtained via commands.</div>`;
+}
+
+// Grindstone input→output conversions (a global list, shown on the grindstone item page).
+export function grindRecipesHtml(recipes) {
+  const list = recipes || [];
+  if (!list.length) return '';
+  const rows = list.map((r) => {
+    const amt = r.amount > 1 ? `<span class="amount">${r.amount}</span>` : '';
+    return `<div class="grind-row">
+      <div class="slot" title="${esc(prettyMaterial(r.input))}">${materialImg(r.input, prettyMaterial(r.input))}</div>
+      <span class="recipe-arrow">→</span>
+      <div class="slot result" title="${esc(prettyMaterial(r.output))}">${materialImg(r.output, prettyMaterial(r.output))}${amt}</div>
+    </div>`;
+  }).join('');
+  return `<div class="grind-grid">${rows}</div>`;
 }
 
 // Replace [data-head] placeholders with rendered isometric head images (from local skins).

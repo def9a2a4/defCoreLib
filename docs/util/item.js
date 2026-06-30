@@ -1,11 +1,13 @@
 import {
-  esc, mcText, stripColors, iconHtml, recipesHtml, hydrateHeads, materialPath,
+  esc, mcText, stripColors, iconHtml, recipesHtml, grindRecipesHtml, hydrateHeads, materialPath,
 } from './render.js';
 import { render3DHead } from './head3d.js';
 import { renderPlaced } from './placed3d.js';
 
 const GROUP_TITLES = { states: 'States', power: 'Redstone power', facing: 'By facing' };
 const GROUP_ORDER = ['states', 'power', 'facing'];
+const GRINDSTONE_ID = 'rotation:grindstone';
+let GRIND = [];   // grind recipes from the catalog, shown on the grindstone page
 
 function showError(msg) {
   const err = document.getElementById('error');
@@ -79,6 +81,9 @@ function renderItem(item, itemsById) {
       <h2 class="section-title">Recipes</h2>
       ${recipesHtml(item, itemsById)}
     </div>
+    ${item.fullId === GRINDSTONE_ID && GRIND.length
+      ? `<div class="detail-section"><h2 class="section-title">Grindstone Recipes</h2>${grindRecipesHtml(GRIND)}</div>`
+      : ''}
     ${variantsHtml(item)}
   `;
   hydrateHeads(detail);
@@ -230,6 +235,7 @@ async function init() {
     return;
   }
 
+  GRIND = catalog.grindRecipes || [];
   const itemsById = new Map(catalog.items.map((it) => [it.fullId, it]));
   const item = itemsById.get(id);
   if (!item) { showError(`Unknown item: ${id}`); return; }

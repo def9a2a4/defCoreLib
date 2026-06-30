@@ -73,6 +73,29 @@ showcase-test:
 	cd test-server && timeout --foreground -k 30 180 java -Ddefcorelib.showcaseTest=true \
 		-Xmx2G -jar $(PAPER_JAR) --nogui --port 25576 < /dev/null
 
+# Showcase capture: build the demo machines, run them, read back their live display + animation data
+# into showcase-spec.json (then generate_catalog folds it into showcases.json for the docs page).
+.PHONY: showcase-capture
+showcase-capture:
+	@[ -n "$(PAPER_JAR)" ] || { echo "ERROR: no server/paper-*.jar found to copy into test-server/"; exit 1; }
+	gradle shadowJar
+	mkdir -p test-server/plugins .temp
+	[ -f test-server/$(PAPER_JAR) ] || cp server/$(PAPER_JAR) test-server/
+	[ -f test-server/eula.txt ] || echo 'eula=true' > test-server/eula.txt
+	[ -f test-server/server.properties ] || printf '%s\n' \
+		'online-mode=false' 'enforce-secure-profile=false' 'gamemode=creative' 'allow-flight=true' \
+		'difficulty=peaceful' 'spawn-monsters=false' 'spawn-protection=0' 'level-type=flat' \
+		'generate-structures=false' 'server-port=25575' 'level-name=world' \
+		'motd=DefCoreLib docs export' \
+		> test-server/server.properties
+	cp build/libs/DefCoreLib*.jar test-server/plugins/
+	rm -f .temp/showcase-spec.json
+	cd test-server && timeout --foreground -k 30 180 java -Ddefcorelib.showcaseCapture="$(CURDIR)/.temp/showcase-spec.json" \
+		-Xmx2G -jar $(PAPER_JAR) --nogui --port 25576 < /dev/null || true
+	@test -s .temp/showcase-spec.json || { echo "ERROR: capture did not produce .temp/showcase-spec.json"; exit 1; }
+	cp .temp/showcase-spec.json docs/data/showcase-spec.json
+	uv run scripts/generate_catalog.py
+
 .PHONY: clean
 clean:
 	gradle clean

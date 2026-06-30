@@ -1,9 +1,18 @@
 import {
-  esc, mcText, stripColors, prettyMaterial, materialImg,
-  iconHtml, recipesHtml, hydrateHeads, itemHref,
+  esc, mcText, stripColors, iconHtml, recipesHtml, hydrateHeads, itemHref,
 } from './render.js';
 
 const SLAB_NAMESPACE = 'verticalslabs';
+const NS_LABELS = { rotation: 'Rotation', demo: 'Demo', corelib: 'Core' };
+const NS_PRIORITY = ['rotation', 'demo'];   // shown first, in this order; others follow alphabetically
+
+// Non-slab namespaces in display order: priority ones first, then the rest alphabetically.
+function orderedNamespaces() {
+  const all = CATALOG.namespaces.filter((ns) => ns !== SLAB_NAMESPACE);
+  const rest = all.filter((ns) => !NS_PRIORITY.includes(ns)).sort();
+  return [...NS_PRIORITY.filter((ns) => all.includes(ns)), ...rest];
+}
+const nsLabel = (ns) => NS_LABELS[ns] || ns.charAt(0).toUpperCase() + ns.slice(1);
 
 let CATALOG = { items: [], grindRecipes: [], namespaces: [] };
 let itemsById = new Map();
@@ -47,26 +56,34 @@ function matches(it, q) {
 function render() {
   const q = currentQuery();
 
-  // Main grid: everything except slabs, honoring the namespace filter.
-  const main = CATALOG.items.filter((it) =>
-    it.namespace !== SLAB_NAMESPACE &&
-    (!activeNamespace || it.namespace === activeNamespace) &&
-    matches(it, q));
-
+  // One titled section per non-slab namespace (rotation first), honoring search + the pill filter.
   const container = document.getElementById('items-container');
   container.innerHTML = '';
-  main.forEach((it) => container.appendChild(card(it)));
-  document.getElementById('counter').textContent = `${main.length} items`;
+  let total = 0;
+  for (const ns of orderedNamespaces()) {
+    if (activeNamespace && activeNamespace !== ns) continue;
+    const its = CATALOG.items.filter((it) => it.namespace === ns && matches(it, q));
+    if (!its.length) continue;
+    total += its.length;
 
-  // Vertical slabs: their own section, also filtered by search.
-  const slabs = CATALOG.items.filter((it) => it.namespace === SLAB_NAMESPACE && matches(it, q));
+    const section = document.createElement('section');
+    section.innerHTML = `<h2 class="section-title">${esc(nsLabel(ns))} <span class="counter inline">${its.length} items</span></h2>`;
+    const grid = document.createElement('div');
+    grid.className = 'item-grid';
+    its.forEach((it) => grid.appendChild(card(it)));
+    section.appendChild(grid);
+    container.appendChild(section);
+    hydrateHeads(grid);
+  }
+  document.getElementById('counter').textContent = `${total} items`;
+
+  // Vertical slabs: their own section (only when not filtered to another namespace).
+  const slabs = (!activeNamespace) ? CATALOG.items.filter((it) => it.namespace === SLAB_NAMESPACE && matches(it, q)) : [];
   const slabGrid = document.getElementById('slab-grid');
   slabGrid.innerHTML = '';
   slabs.forEach((it) => slabGrid.appendChild(card(it)));
   document.getElementById('slab-section').style.display = slabs.length ? '' : 'none';
   document.getElementById('slab-counter').textContent = `${slabs.length} slabs`;
-
-  hydrateHeads(container);
   hydrateHeads(slabGrid);
 }
 
@@ -85,22 +102,6 @@ function renderPills() {
   CATALOG.namespaces.filter((ns) => ns !== SLAB_NAMESPACE).forEach((ns) => pills.appendChild(make(ns, ns)));
 }
 
-function renderGrind() {
-  const grid = document.getElementById('grind-grid');
-  grid.innerHTML = '';
-  for (const r of CATALOG.grindRecipes) {
-    const row = document.createElement('div');
-    row.className = 'grind-row';
-    const amt = r.amount > 1 ? `<span class="amount">${r.amount}</span>` : '';
-    row.innerHTML = `
-      <div class="slot" title="${esc(prettyMaterial(r.input))}">${materialImg(r.input, prettyMaterial(r.input))}</div>
-      <span class="recipe-arrow">→</span>
-      <div class="slot result" title="${esc(prettyMaterial(r.output))}">${materialImg(r.output, prettyMaterial(r.output))}${amt}</div>`;
-    grid.appendChild(row);
-  }
-  document.getElementById('grind-section').style.display = CATALOG.grindRecipes.length ? '' : 'none';
-}
-
 async function init() {
   try {
     const res = await fetch('./data/items.json');
@@ -116,7 +117,6 @@ async function init() {
   document.getElementById('search-input').addEventListener('input', render);
   renderPills();
   render();
-  renderGrind();
 }
 
 init();

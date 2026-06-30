@@ -9,6 +9,7 @@
 
 body {
   font-family: 'Monocraft', monospace;
+  font-size: 18px;
   background: #1a1a1a;
   color: #e0e0e0;
   margin: 0;
@@ -75,13 +76,15 @@ h1 {
 }
 
 /* ── Item grid ─────────────────────────────────────────────────────────── */
-#items-container {
+.item-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 18px;
   max-width: 1400px;
   margin: 0 auto;
 }
+/* #items-container is a plain wrapper holding one titled section per namespace. */
+#items-container > section:first-child .section-title { margin-top: 14px; }
 
 .item-card {
   background: #2a2a2a;
@@ -113,7 +116,7 @@ h1 {
 
 .item-title { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
 .item-name { font-size: 1.05em; }
-.item-id { color: #666; font-size: 0.72em; }
+.item-id { color: #666; font-size: 0.8em; }
 
 .item-lore { color: #aaa; font-size: 0.82em; line-height: 1.5; }
 .item-lore .line { white-space: pre-wrap; }
@@ -126,7 +129,7 @@ h1 {
   border-radius: 8px;
   padding: 10px;
 }
-.recipe-type { color: #4ecca3; font-size: 0.72em; margin-bottom: 8px; text-transform: uppercase; }
+.recipe-type { color: #4ecca3; font-size: 0.82em; margin-bottom: 8px; text-transform: uppercase; }
 .recipe-body { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
 .recipe-arrow { color: #888; font-size: 1.3em; }
 
@@ -151,7 +154,7 @@ h1 {
 .slot.result { width: 44px; height: 44px; border-color: #4ecca3; }
 .slot img { image-rendering: pixelated; width: 100%; height: 100%; object-fit: contain; }
 .slot .slot-label {
-  font-size: 7px;
+  font-size: 11px;
   line-height: 1.05;
   text-align: center;
   color: #cfcfcf;
@@ -162,14 +165,14 @@ h1 {
   position: absolute;
   right: 1px;
   bottom: 0;
-  font-size: 9px;
+  font-size: 11px;
   color: #fff;
   text-shadow: 1px 1px 0 #000;
 }
 .slot.tag { border-color: #5a7; }
 .shapeless-list { display: flex; gap: 4px; flex-wrap: wrap; }
 
-.no-recipe { color: #666; font-size: 0.78em; font-style: italic; }
+.no-recipe { color: #666; font-size: 0.88em; font-style: italic; }
 
 /* ── Grindstone section ────────────────────────────────────────────────── */
 .section-title {
@@ -260,14 +263,14 @@ a.slot { text-decoration: none; color: inherit; }
 .detail-section .section-title { margin-top: 0; }
 
 /* 3D viewers (detail page) */
-.viewers { display: flex; flex-wrap: wrap; gap: 16px; margin: 18px 0 4px; }
+.viewers { display: flex; flex-wrap: nowrap; gap: 16px; margin: 18px 0 4px; }
 .viewer {
   background: #222;
   border: 1px solid #353535;
   border-radius: 10px;
   padding: 10px;
 }
-.viewer-label { color: #4ecca3; font-size: 0.72em; text-transform: uppercase; margin-bottom: 6px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.viewer-label { color: #4ecca3; font-size: 0.82em; text-transform: uppercase; margin-bottom: 6px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
 .variant-select {
   font-family: 'Monocraft', monospace;
   font-size: 0.85em;
@@ -280,8 +283,8 @@ a.slot { text-decoration: none; color: inherit; }
   text-transform: none;
 }
 .viewer-canvas {
-  width: 280px;
-  height: 280px;
+  width: 250px;
+  height: 250px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -296,7 +299,8 @@ a.slot { text-decoration: none; color: inherit; }
   object-fit: contain;
 }
 .viewer-fail { color: #666; font-size: 0.8em; }
-@media (max-width: 640px) { .viewer-canvas { width: 220px; height: 220px; } }
+@media (max-width: 760px) { .viewers { flex-direction: column; align-items: center; } }
+@media (max-width: 640px) { .viewer-canvas { width: 240px; height: 240px; } }
 
 /* States / variants */
 .variant-group { margin-bottom: 18px; }
@@ -316,8 +320,8 @@ a.slot { text-decoration: none; color: inherit; }
   overflow: hidden;
 }
 .variant-icon img { image-rendering: pixelated; max-width: 100%; max-height: 100%; }
-.variant-icon .slot-label { font-size: 8px; color: #cfcfcf; padding: 2px; word-break: break-word; }
-.variant-label { font-size: 0.7em; color: #aaa; margin-top: 4px; word-break: break-word; }
+.variant-icon .slot-label { font-size: 11px; color: #cfcfcf; padding: 2px; word-break: break-word; }
+.variant-label { font-size: 0.82em; color: #aaa; margin-top: 4px; word-break: break-word; }
 
 .transitions { margin-top: 14px; }
 .transition { font-size: 0.85em; color: #ccc; padding: 3px 0; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }

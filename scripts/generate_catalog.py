@@ -370,12 +370,21 @@ def collect_block_models(items: list[dict]) -> set[str]:
     return blocks
 
 
+# Representative item vendored for a recipe #tag, so the docs can show an icon (mirrors the
+# TAG_PLACEHOLDER map in docs/util/render.js).
+TAG_PLACEHOLDER_MATERIAL = {"banners": "WHITE_BANNER", "banner": "WHITE_BANNER", "wool": "WHITE_WOOL"}
+
+
 def collect_materials(items: list[dict], grind: list[dict]) -> set[str]:
     mats: set[str] = set()
 
     def add_ing(ing):
-        if ing and ing.get("kind") == "material":
+        if not ing:
+            return
+        if ing.get("kind") == "material":
             mats.add(ing["value"])
+        elif ing.get("kind") == "tag" and ing.get("value") in TAG_PLACEHOLDER_MATERIAL:
+            mats.add(TAG_PLACEHOLDER_MATERIAL[ing["value"]])
 
     for it in items:
         if it["icon"].get("type") == "material":
