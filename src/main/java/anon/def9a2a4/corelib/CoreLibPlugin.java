@@ -108,6 +108,10 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         // Register recipes after all blocks are loaded
         registry.finalizeLoading();
 
+        // Docs export mode (-Ddefcorelib.export=<path>): on ServerLoadEvent, dump every block's
+        // ground-truth placed display data to JSON and shut the server down. Inert otherwise.
+        DisplayExporter.armIfRequested(this, registry);
+
         getLogger().info("DefCoreLib enabled");
     }
 
