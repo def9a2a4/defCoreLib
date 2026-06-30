@@ -36,6 +36,7 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
     private MechanismRegistry mechanismRegistry;
     private MechanismMinecartManager mechanismMinecartManager;
     private GlueManager glueManager;
+    private Material glueItemMaterial = Material.SLIME_BALL;
     private RotationNetwork rotationNetwork;
     private BannerManager bannerManager;
     private LargeBannerRecipes largeBannerRecipes;
@@ -94,6 +95,16 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
 
         // Anchor-owned block selection ("glue") — shared by doors/rotators (wired in D3).
         glueManager = new GlueManager(registry, rotConfig.glueMaxSize);
+        glueItemMaterial = Material.matchMaterial(rotConfig.glueItem);
+        if (glueItemMaterial == null) {
+            getLogger().warning("rotation-config glue.item invalid: " + rotConfig.glueItem
+                + "; using SLIME_BALL");
+            glueItemMaterial = Material.SLIME_BALL;
+        }
+        GlueAuthoring glueAuthoring = new GlueAuthoring(this, registry, glueManager,
+            rotConfig.glueOutlineInterval, rotConfig.glueSessionTimeout);
+        getServer().getPluginManager().registerEvents(glueAuthoring, this);
+        glueAuthoring.start();
 
         // Register mechanism demos
         int maxStructureSize = rotConfig.maxStructureSize;
@@ -1151,6 +1162,18 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
                         sender.sendMessage(Component.text("Invalid amount: " + args[2], NamedTextColor.RED));
                         return true;
                     }
+                }
+
+                // Glue is not a CustomHeadBlock — hand out the tagged authoring item directly.
+                if (blockId.equalsIgnoreCase("glue") || blockId.equalsIgnoreCase("corelib:glue")) {
+                    ItemStack glueItem = GlueItem.create(glueItemMaterial);
+                    glueItem.setAmount(amount);
+                    var glueOverflow = player.getInventory().addItem(glueItem);
+                    for (ItemStack lf : glueOverflow.values()) {
+                        player.getWorld().dropItemNaturally(player.getLocation(), lf);
+                    }
+                    sender.sendMessage(Component.text("Gave " + amount + "x Slime Glue", NamedTextColor.GREEN));
+                    return true;
                 }
 
                 // Try with namespace prefix, fall back to searching all namespaces

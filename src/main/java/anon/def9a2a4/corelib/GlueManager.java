@@ -94,6 +94,46 @@ final class GlueManager {
         return Result.OK;
     }
 
+    /** Result of a cuboid fill: how many cells were newly glued vs left out (disconnected or cap-blocked). */
+    record FillResult(int added, int skipped) {}
+
+    /**
+     * Authoring: glue the anchor-connected subset of an explicit candidate block list (a cuboid). Filters
+     * out air, custom rotation/power blocks, the anchor cell, and already-glued cells, then grows the set
+     * by fixpoint from the origin / existing glued cells until nothing more connects or the cap is hit.
+     */
+    FillResult glueCuboid(Anchor a, List<Block> candidates) {
+        Block origin = a.originBlock();
+        int ox = origin.getX(), oy = origin.getY(), oz = origin.getZ();
+        Set<Vector3i> accepted = offsets(a);
+        int before = accepted.size();
+        List<Vector3i> pending = new ArrayList<>();
+        for (Block b : candidates) {
+            Vector3i off = new Vector3i(b.getX() - ox, b.getY() - oy, b.getZ() - oz);
+            if (off.x == 0 && off.y == 0 && off.z == 0) continue;     // the anchor itself
+            if (accepted.contains(off)) continue;                    // already glued
+            if (b.getType().isAir()) continue;
+            if (registry.getTypeFromBlock(b) != null) continue;      // never a custom rotation/power block
+            pending.add(off);
+        }
+        boolean changed = true;
+        while (changed && accepted.size() < maxSize) {
+            changed = false;
+            var it = pending.iterator();
+            while (it.hasNext()) {
+                if (accepted.size() >= maxSize) break;
+                Vector3i off = it.next();
+                if (connects(off, accepted)) {
+                    accepted.add(off);
+                    it.remove();
+                    changed = true;
+                }
+            }
+        }
+        a.writeOffsets(packOffsets(accepted));
+        return new FillResult(accepted.size() - before, pending.size());
+    }
+
     /** Authoring: remove one block. Returns whether it was glued. */
     boolean unglue(Anchor a, Block b) {
         Block origin = a.originBlock();
