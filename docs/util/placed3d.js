@@ -96,6 +96,7 @@ const IDENTITY = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
 // Build one block group: base head (if any) + each display, parented by its position offset.
 async function buildBlockGroup(blk, models, animated) {
   const group = new THREE.Group();
+  group.userData.blockId = blk.id ?? null;   // lets renderScene's highlight() match this block by id
   const off = blk.offset || [0, 0, 0];
   group.position.set(off[0], off[1], off[2]);
 
@@ -157,6 +158,12 @@ export async function renderScene(container, blocks, { autoframe = false, dist =
     }
   }
 
+  // Optional hover-highlight: a BoxHelper outline around the block group(s) matching a given id.
+  // setFromObject (inside BoxHelper.update) recomputes the group's world matrices itself, so updating
+  // the helpers in the RAF loop keeps the outline aligned as the block animates.
+  const highlightHelpers = [];
+  let currentHighlightId = null;
+
   let alive = true;
   const t0 = performance.now();
   (function animate(now) {
@@ -167,12 +174,14 @@ export async function renderScene(container, blocks, { autoframe = false, dist =
       sampleTrack(a.track, a.period, tick, a.obj.matrix);
       a.obj.matrixWorldNeedsUpdate = true;
     }
+    for (const h of highlightHelpers) h.update();
     controls.update();
     renderer.render(scene, camera);
   })();
 
-  return () => {
+  const teardown = () => {
     alive = false;                       // stop the RAF loop first
+    teardown.clearHighlight();
     controls.dispose();
     const disposeMat = (m) => { if (m && !m.userData?.shared) m.dispose(); };   // skip shared singletons
     scene.traverse((o) => {
@@ -187,6 +196,30 @@ export async function renderScene(container, blocks, { autoframe = false, dist =
     renderer.forceContextLoss();         // release the WebGL context (browsers cap at ~16)
     renderer.domElement.remove();
   };
+
+  // Outline every top-level block group whose id matches (multiple instances share an id).
+  teardown.highlight = (id) => {
+    if (!alive || id === currentHighlightId) return;
+    teardown.clearHighlight();
+    for (const o of scene.children) {
+      if (o.userData.blockId !== id) continue;   // tolerates the AmbientLight (no blockId)
+      const h = new THREE.BoxHelper(o, 0x4ecca3);
+      scene.add(h);
+      highlightHelpers.push(h);
+    }
+    currentHighlightId = id;
+  };
+  teardown.clearHighlight = () => {
+    for (const h of highlightHelpers) {
+      scene.remove(h);
+      h.geometry.dispose();
+      h.material.dispose();   // BoxHelper owns a non-shared LineBasicMaterial — safe to dispose
+    }
+    highlightHelpers.length = 0;
+    currentHighlightId = null;
+  };
+
+  return teardown;
 }
 
 /** The renderScene block list for one of an item's placed variants (one block at the origin). */

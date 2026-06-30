@@ -15,6 +15,7 @@ function showError(msg) {
 
 // Live viewer teardowns; released on navigation so the WebGL context doesn't leak.
 const teardowns = new Set();
+let machineApi = null;   // the machine viewer's teardown fn, carrying highlight()/clearHighlight()
 window.addEventListener('pagehide', () => {
   for (const t of teardowns) { try { t(); } catch { /* ignore */ } }
   teardowns.clear();
@@ -24,11 +25,11 @@ window.addEventListener('pagehide', () => {
 // placed thumbnail. Falls back to a non-link card when the block has no catalog item.
 function blockCard(block, item) {
   if (!item) {
-    return `<div class="block-card block-card--bare">
+    return `<div class="block-card block-card--bare" data-block-id="${esc(block.id)}">
       <div class="block-card-id">${esc(block.id)}</div>
     </div>`;
   }
-  return `<a class="block-card" href="${itemHref(item.fullId)}">
+  return `<a class="block-card" href="${itemHref(item.fullId)}" data-block-id="${esc(block.id)}">
     <div class="block-card-thumbs">
       <div class="block-thumb">${item.placedVariants?.length ? `<div class="placed-thumb" data-thumb="${esc(item.fullId)}"></div>` : iconHtml(item)}</div>
       <div class="block-thumb block-thumb--hand">${iconHtml(item)}</div>
@@ -68,8 +69,27 @@ function renderShowcase(sc, itemsById) {
   // Live machine viewer.
   const machine = document.getElementById('machine');
   renderScene(machine, (sc.blocks || []).map(toRenderBlock), { autoframe: true })
-    .then((t) => { if (typeof t === 'function') teardowns.add(t); })
+    .then((t) => { if (typeof t === 'function') { teardowns.add(t); machineApi = t; } })
     .catch((e) => { console.warn(e); machine.innerHTML = '<div class="viewer-fail">3D unavailable</div>'; });
+
+  // Hover a "Blocks used" card → outline the matching block(s) in the live machine view. Delegated
+  // (mouseenter/leave don't bubble); the relatedTarget guard mirrors tooltip.js so moving among a
+  // card's own children doesn't flicker. machineApi starts null → hovers before the scene resolves no-op.
+  const blocksUsed = detail.querySelector('.blocks-used');
+  if (blocksUsed) {
+    blocksUsed.addEventListener('mouseover', (e) => {
+      const card = e.target.closest('.block-card');
+      if (!card) return;
+      const id = card.dataset.blockId;
+      if (!id) return;
+      machineApi?.highlight(id);
+    });
+    blocksUsed.addEventListener('mouseout', (e) => {
+      const card = e.target.closest('.block-card');
+      if (!card || card.contains(e.relatedTarget)) return;
+      machineApi?.clearHighlight();
+    });
+  }
 
   // In-hand head icons (2D) + static placed thumbnails for the blocks-used cards.
   hydrateHeads(detail);

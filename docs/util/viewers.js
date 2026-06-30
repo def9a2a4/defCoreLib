@@ -12,6 +12,7 @@ import { materialPath } from './render.js';
 export function toRenderBlock(blk) {
   const wall = typeof blk.facing === 'string' && blk.facing.startsWith('wall_');
   return {
+    id: blk.id,
     offset: blk.offset || [0, 0, 0],
     baseHeadTextureUrl: blk.baseHeadTextureUrl,
     baseHeadWall: wall,
