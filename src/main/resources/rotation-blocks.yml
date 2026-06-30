@@ -483,6 +483,16 @@ blocks:
           - { material: SMOOTH_STONE_SLAB, tag: base_slab, transform: { translation: [0, 0.0, 0], scale: [0.8, 1.0, 0.8] }, animation: none }
           - { material: SMOOTH_STONE_SLAB, tag: top_slab,  transform: { translation: [0, 0.5, 0],  scale: [0.8, 1.0, 0.8] } }
       spinning: { copy_from: idle, animation: { type: rotate, axis: [0, 1, 0], speed: 3.0 } }
+    recipes:
+      craft:
+        shaped:
+          # Two smooth stone slabs stacked, lightning rod above, copper to one
+          # (canonical: left) side.
+          - pattern: [" L ", "CS ", " S "]
+            key:
+              L: { material: LIGHTNING_ROD }
+              C: { material: COPPER_INGOT }
+              S: { material: SMOOTH_STONE_SLAB }
 
   # ─── Extractor Press ──────────────────────────────────────────────────────
   # Consumer: 1 SU. WALL only — mounts on a container, presses its contents into
@@ -510,11 +520,13 @@ blocks:
     recipes:
       craft:
         shaped:
-          - pattern: [" I ", "IPI", " S "]
+          # Two smooth stone slabs stacked, piston above, copper to one
+          # (canonical: left) side.
+          - pattern: [" P ", "CS ", " S "]
             key:
-              I: { material: IRON_INGOT }
               P: { material: PISTON }
-              S: { material: SMOOTH_STONE }
+              C: { material: COPPER_INGOT }
+              S: { material: SMOOTH_STONE_SLAB }
 
   # ─── Drill ──────────────────────────────────────────────────────────────
   # Consumer: 1 SU. Breaks the block in its facing direction every 2s.
@@ -529,11 +541,12 @@ blocks:
     recipes:
       craft:
         shaped:
-          - pattern: [" N ", "IDI", "III"]
+          - pattern: [" D ", "INI", "IPI"]
             key:
-              N: { material: NETHERITE_INGOT }
-              I: { material: IRON_INGOT }
               D: { material: DIAMOND }
+              I: { material: IRON_INGOT }
+              N: { material: NETHERITE_INGOT }
+              P: { material: PISTON }
     default_state: idle_z
     placement:
       allowed_faces: [NORTH, SOUTH, EAST, WEST]
@@ -826,7 +839,9 @@ blocks:
     recipes:
       craft:
         shaped:
-          - pattern: [" B ", "BCB", " B "]
+          # Bearing core, 4 banners in a +, redstone dust in the corners.
+          - pattern: ["RBR", "BYB", "RBR"]
             key:
+              R: { material: REDSTONE }
               B: { tag: banners }
-              C: { material: COPPER_BLOCK }
+              Y: { block: "rotation:bearing" }
