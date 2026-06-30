@@ -79,6 +79,7 @@ const TAG_PLACEHOLDER = {
   banners: { img: 'white_banner', label: 'Banner (any colour)' },
   banner: { img: 'white_banner', label: 'Banner (any colour)' },
   wool: { img: 'white_wool', label: 'Wool (any colour)' },
+  planks: { img: 'oak_planks', label: 'Planks (any wood)' },
 };
 
 // One ingredient slot. block refs link to that item's page and show its icon.

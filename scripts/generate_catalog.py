@@ -413,7 +413,8 @@ def collect_block_models(items: list[dict]) -> set[str]:
 
 # Representative item vendored for a recipe #tag, so the docs can show an icon (mirrors the
 # TAG_PLACEHOLDER map in docs/util/render.js).
-TAG_PLACEHOLDER_MATERIAL = {"banners": "WHITE_BANNER", "banner": "WHITE_BANNER", "wool": "WHITE_WOOL"}
+TAG_PLACEHOLDER_MATERIAL = {"banners": "WHITE_BANNER", "banner": "WHITE_BANNER", "wool": "WHITE_WOOL",
+                            "planks": "OAK_PLANKS"}
 
 # A block's exported BannerTier (from DisplayExporter) says which custom banner actually crafts it:
 # windmill recipes use a generic `{tag: banners}` in-game (Bukkit can't express a custom item), but
@@ -442,7 +443,7 @@ def apply_banner_tier(item: dict, tier: str | None) -> None:
             r["input"] = fix(r["input"])
 
 
-def collect_materials(items: list[dict], grind: list[dict]) -> set[str]:
+def collect_materials(items: list[dict]) -> set[str]:
     mats: set[str] = set()
 
     def add_ing(ing):
@@ -452,6 +453,10 @@ def collect_materials(items: list[dict], grind: list[dict]) -> set[str]:
             mats.add(ing["value"])
         elif ing.get("kind") == "tag" and ing.get("value") in TAG_PLACEHOLDER_MATERIAL:
             mats.add(TAG_PLACEHOLDER_MATERIAL[ing["value"]])
+
+    def add_ref(ref):  # machine-recipe ref: vanilla Material (custom ids are catalog items already)
+        if ref and ":" not in ref:
+            mats.add(ref)
 
     for it in items:
         if it["icon"].get("type") == "material":
@@ -465,9 +470,12 @@ def collect_materials(items: list[dict], grind: list[dict]) -> set[str]:
                     add_ing(ing)
             elif r["type"] == "stonecutter":
                 add_ing(r.get("input"))
-    for g in grind:
-        mats.add(g["input"])
-        mats.add(g["output"])
+        for r in it.get("machineRecipes", []):
+            add_ref(r["input"])
+            for e in r.get("extraInputs", []):
+                add_ref(e["ref"])
+            for o in r.get("outputs", []):
+                add_ref(o["ref"])
     return mats
 
 
@@ -605,7 +613,7 @@ def vendor_models(items: list[dict]) -> dict:
     return manifest
 
 
-def vendor_assets(items: list[dict], grind: list[dict]) -> dict:
+def vendor_assets(items: list[dict]) -> dict:
     # Head skins.
     skin_urls = collect_skin_urls(items)
     print(f"  vendoring {len(skin_urls)} head skins -> docs/assets/skins/")
@@ -617,7 +625,7 @@ def vendor_assets(items: list[dict], grind: list[dict]) -> dict:
     print(f"    {ok}/{len(skin_urls)} skins present")
 
     # Vanilla item/block textures.
-    materials = collect_materials(items, grind)
+    materials = collect_materials(items)
     octagon = json.loads(OCTAGON_MAP.read_text()) if OCTAGON_MAP.exists() else {}
     try:
         item_list = {f.replace(".png", "") for f in fetch_json(f"{MC_ASSETS_BASE}/item/_list.json")["files"]}
@@ -755,13 +763,14 @@ def main() -> int:
     with out_path.open("w", encoding="utf-8") as f:
         json.dump(catalog, f, indent=2, ensure_ascii=False)
         f.write("\n")
+    machine_count = sum(len(it.get("machineRecipes", [])) for it in items)
     print(f"  = wrote {out_path.relative_to(ROOT)}: {len(items)} items, "
-          f"{len(grind)} grind recipes, namespaces={catalog['namespaces']}")
+          f"{machine_count} machine recipes, namespaces={catalog['namespaces']}")
 
     if args.no_assets:
         print("  (--no-assets: skipped image vendoring)")
     else:
-        manifest = vendor_assets(items + showcase_pseudo, grind)
+        manifest = vendor_assets(items + showcase_pseudo)
         with (DOCS_DATA / "models-manifest.json").open("w", encoding="utf-8") as f:
             json.dump(manifest, f, indent=2, ensure_ascii=False)
             f.write("\n")
