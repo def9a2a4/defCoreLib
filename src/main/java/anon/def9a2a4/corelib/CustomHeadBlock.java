@@ -252,6 +252,7 @@ public final class CustomHeadBlock {
     private final @Nullable String itemTexture; // optional: different texture for item in hand
     private final @Nullable Material itemMaterial;
     private final boolean itemGlint;
+    private final boolean placeable; // false → inventory-only item (juices, oils, wrench)
     private final @Nullable Map<BlockFace, String> directionalTextures;
     private final @Nullable LightConfig light;
     private final @Nullable ParticleConfig particles;
@@ -317,6 +318,7 @@ public final class CustomHeadBlock {
         this.itemTexture = b.itemTexture;
         this.itemMaterial = b.itemMaterial;
         this.itemGlint = b.itemGlint;
+        this.placeable = b.placeable;
         this.directionalTextures = b.directionalTextures;
         this.light = b.light;
         this.particles = b.particles;
@@ -380,6 +382,7 @@ public final class CustomHeadBlock {
     public @Nullable String itemTexture() { return itemTexture; }
     public @Nullable Material itemMaterial() { return itemMaterial; }
     public boolean itemGlint() { return itemGlint; }
+    public boolean placeable() { return placeable; }
     public @Nullable Map<BlockFace, String> directionalTextures() { return directionalTextures; }
     public @Nullable LightConfig light() { return light; }
     public @Nullable ParticleConfig particles() { return particles; }
@@ -588,6 +591,7 @@ public final class CustomHeadBlock {
         b.itemTexture = itemTexture;
         b.itemMaterial = itemMaterial;
         b.itemGlint = itemGlint;
+        b.placeable = placeable;
         b.directionalTextures = directionalTextures;
         b.light = light;
         b.particles = particles;
@@ -641,6 +645,7 @@ public final class CustomHeadBlock {
         private @Nullable String itemTexture;
         private @Nullable Material itemMaterial;
         private boolean itemGlint;
+        private boolean placeable = true;
         private @Nullable Map<BlockFace, String> directionalTextures;
         private @Nullable LightConfig light;
         private @Nullable ParticleConfig particles;
@@ -701,6 +706,7 @@ public final class CustomHeadBlock {
         public Builder itemTexture(String base64) { this.itemTexture = base64; return this; }
         public Builder itemMaterial(Material material) { this.itemMaterial = material; return this; }
         public Builder itemGlint(boolean glint) { this.itemGlint = glint; return this; }
+        public Builder placeable(boolean value) { this.placeable = value; return this; }
         public Builder directionalTextures(Map<BlockFace, String> textures) { this.directionalTextures = textures; return this; }
         public Builder light(int level, int offsetX, int offsetY, int offsetZ) { this.light = new LightConfig(level, offsetX, offsetY, offsetZ); return this; }
         public Builder particles(ParticleConfig config) { this.particles = config; return this; }
@@ -815,8 +821,8 @@ public final class CustomHeadBlock {
         public Builder bannerTier(BannerTier tier) { this.bannerTier = tier; return this; }
 
         public CustomHeadBlock build() {
-            if (texture == null || texture.isBlank()) {
-                throw new IllegalStateException("texture is required and must not be blank");
+            if ((texture == null || texture.isBlank()) && itemMaterial == null) {
+                throw new IllegalStateException("texture is required unless item_material is set (inventory-only item)");
             }
             if (!states.isEmpty() && defaultState == null) {
                 throw new IllegalStateException("States defined but no default state set");

@@ -1,0 +1,19 @@
+# Inventory-only custom items (non-placeable).
+# Modeled as CustomHeadBlock entries with `item_material` + `placeable: false`, so they
+# reuse createItem / recipe-ingredient validation / give with no parallel item system.
+# (Real textures later via resource-pack custom_model_data; for now distinct by name.)
+namespace: rotation
+blocks:
+  sweet_berry_juice:
+    name: "&dSweet Berry Juice"
+    lore:
+      - "&7Pressed from sweet berries"
+    item_material: HONEY_BOTTLE
+    placeable: false
+
+  plant_oil:
+    name: "&ePlant Oil"
+    lore:
+      - "&7Burnable biofuel pressed from seeds"
+    item_material: HONEY_BOTTLE
+    placeable: false

@@ -73,13 +73,16 @@ public final class BlockLoader {
                                               Map<String, String> textures) {
         CustomHeadBlock.Builder b = CustomHeadBlock.builder(namespace, id);
 
-        // Base texture (required) + optional item texture
-        b.texture(resolveTexture(requireString(sec, "texture"), textures));
-        String itemTex = sec.getString("item_texture");
-        if (itemTex != null) b.itemTexture(resolveTexture(itemTex, textures));
+        // Item base: a vanilla material (inventory-only items) or a head texture.
         String itemMat = sec.getString("item_material");
         if (itemMat != null) b.itemMaterial(Material.valueOf(itemMat.toUpperCase(java.util.Locale.ROOT)));
+        // Base texture: required for placeable head blocks; optional when item_material is set.
+        String tex = itemMat != null ? sec.getString("texture") : requireString(sec, "texture");
+        if (tex != null) b.texture(resolveTexture(tex, textures));
+        String itemTex = sec.getString("item_texture");
+        if (itemTex != null) b.itemTexture(resolveTexture(itemTex, textures));
         if (sec.getBoolean("item_glint")) b.itemGlint(true);
+        if (!sec.getBoolean("placeable", true)) b.placeable(false);
 
         // Name and lore
         String nameStr = sec.getString("name");

@@ -76,6 +76,14 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
                 getLogger().info("Loaded " + count + " rotation blocks");
             }
         } catch (IOException ignored) {}
+
+        // Inventory-only custom items (juices, oils, …) — non-placeable CustomHeadBlocks
+        try (InputStream itemStream = getResource("custom-items.yml")) {
+            if (itemStream != null) {
+                int count = BlockLoader.load(itemStream, registry, getLogger());
+                getLogger().info("Loaded " + count + " custom items");
+            }
+        } catch (IOException ignored) {}
         RotationConfig rotConfig = new RotationConfig();
         try (InputStream configStream = getResource("rotation-config.yml")) {
             if (configStream != null) {
@@ -249,6 +257,12 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
 
         CustomHeadBlock type = registry.getType(typeId);
         if (type == null) return;
+
+        // Inventory-only items (juices, oils, wrench): never place as a block.
+        if (!type.placeable()) {
+            event.setCancelled(true);
+            return;
+        }
 
         boolean isAlreadySkull = block.getType() == Material.PLAYER_HEAD
                 || block.getType() == Material.PLAYER_WALL_HEAD;
