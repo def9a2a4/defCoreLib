@@ -4,7 +4,7 @@
 # Keep this in sync by hand when the corresponding Java changes:
 #   - large_banner   -> LargeBannerRecipes.java  (constructor: shape WWW/WBW/WWW, normal banner center)
 #   - huge_banner    -> LargeBannerRecipes.java  (same shape, large_banner center; tier in modifyResult)
-#   - rotation_wrench -> RotationBlocks.java      (registerWrenchRecipe: shape CSC/CS_/_S_)
+# (The rotation wrench + slime glue are now real YAML custom-items — auto-discovered, not listed here.)
 #
 # Schema mirrors a generated catalog item (see generate_catalog.py): name/lore may use
 # &-color codes; `icon.material` renders the vanilla item texture instead of a head.
@@ -38,19 +38,4 @@ items:
         key:
           W: { tag: wool }
           B: { block: corelib:large_banner }
-        amount: 1
-
-  - namespace: rotation
-    id: rotation_wrench
-    name: "&6Rotation Wrench"
-    lore:
-      - "&7Rotates rotation-power blocks."
-      - "&7Right-click a machine to turn it."
-    icon: { material: GOLDEN_AXE }
-    recipes:
-      - type: shaped
-        pattern: ["CSC", "CS ", " S "]
-        key:
-          C: { material: COPPER_INGOT }
-          S: { material: STICK }
         amount: 1

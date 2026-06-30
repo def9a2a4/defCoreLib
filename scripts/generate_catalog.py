@@ -72,6 +72,7 @@ BLOCK_FILES = [
     "rotation-blocks.yml",
     "slabs.yml",
     "custom-items.yml",   # inventory-only items (juices, oils) — non-placeable CustomHeadBlocks
+    "corelib-items.yml",  # corelib-namespace inventory-only items (slime glue)
 ]
 
 # Processing-machine recipe files → (machine block fullId, display label).
