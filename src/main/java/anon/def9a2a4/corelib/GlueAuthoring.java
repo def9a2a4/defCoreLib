@@ -23,6 +23,7 @@ import org.joml.Vector3i;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -233,17 +234,48 @@ final class GlueAuthoring implements Listener {
     private void renderOutline(Player p, GlueSession s) {
         Block origin = s.anchor.originBlock();
         World w = s.anchor.world();
-        var dust = new Particle.DustOptions(Color.LIME, 1.0f);
+        int ox = origin.getX(), oy = origin.getY(), oz = origin.getZ();
+
+        // Green dust at the eight cube-corners of every glued block, deduped so corners shared by
+        // adjacent blocks render once (scales with extent, not block count).
+        var green = new Particle.DustOptions(Color.LIME, 0.8f);
+        Set<Long> seen = new HashSet<>();
         for (Vector3i off : glue.offsets(s.anchor)) {
-            int x = origin.getX() + off.x, y = origin.getY() + off.y, z = origin.getZ() + off.z;
-            if (!w.isChunkLoaded(x >> 4, z >> 4)) continue;
-            p.spawnParticle(Particle.DUST, x + 0.5, y + 0.5, z + 0.5, 1, 0, 0, 0, 0, dust);
+            int bx = ox + off.x, by = oy + off.y, bz = oz + off.z;
+            if (!w.isChunkLoaded(bx >> 4, bz >> 4)) continue;
+            spawnCorners(p, bx, by, bz, green, ox, oy, oz, seen);
         }
+
+        // Orange dust around the hinge (anchor) block.
+        if (w.isChunkLoaded(ox >> 4, oz >> 4)) {
+            spawnCorners(p, ox, oy, oz, new Particle.DustOptions(Color.ORANGE, 1.0f), ox, oy, oz, null);
+        }
+
+        // Pending cuboid corner A — distinct cyan marker.
         Block c = s.cornerA;
         if (c != null && w.isChunkLoaded(c.getX() >> 4, c.getZ() >> 4)) {
             var dustA = new Particle.DustOptions(Color.AQUA, 1.4f);
             p.spawnParticle(Particle.DUST, c.getX() + 0.5, c.getY() + 0.5, c.getZ() + 0.5, 1, 0, 0, 0, 0, dustA);
         }
+    }
+
+    /** Spawn dust at the 8 corners of the cube [x,x+1]^3, optionally deduped against {@code seen}. */
+    private void spawnCorners(Player p, int x, int y, int z, Particle.DustOptions dust,
+                              int ox, int oy, int oz, Set<Long> seen) {
+        for (int dx = 0; dx <= 1; dx++) {
+            for (int dy = 0; dy <= 1; dy++) {
+                for (int dz = 0; dz <= 1; dz++) {
+                    int cx = x + dx, cy = y + dy, cz = z + dz;
+                    if (seen != null && !seen.add(cornerKey(cx - ox, cy - oy, cz - oz))) continue;
+                    p.spawnParticle(Particle.DUST, cx, cy, cz, 1, 0, 0, 0, 0, dust);
+                }
+            }
+        }
+    }
+
+    // Pack a corner's coords relative to the hinge into a long. Structures fit well within ±1024 of it.
+    private static long cornerKey(int rx, int ry, int rz) {
+        return ((long) (rx + 1024) << 22) | ((long) (ry + 1024) << 11) | (long) (rz + 1024);
     }
 
     // ──────────────────────────────────────────────────────────────────────

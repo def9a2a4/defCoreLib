@@ -109,7 +109,15 @@ final class DisplayExporter implements Listener {
             if (keepAlive) {
                 log.info("DisplayExporter keep-alive: join this server to inspect the placed blocks.");
             } else {
-                Bukkit.getScheduler().runTask(plugin, Bukkit::shutdown);
+                // The test-server world is disposable scratch — nothing to save — so skip
+                // Bukkit.shutdown()/System.exit() entirely. Its save-on-main-thread shutdown hook
+                // (saveAll → ensureMain → Waitable.get()) deadlocks once the main thread has stopped,
+                // leaving a wedged ~1 GB JVM. The JSON is already durably written above (synchronous
+                // Files.writeString + atomic Files.move); halt(0) ends the JVM, not the OS.
+                log.info("DisplayExporter: export complete, halting (scratch world, nothing to save).");
+                System.out.flush();
+                System.err.flush();
+                Runtime.getRuntime().halt(0);
             }
         }
     }

@@ -463,6 +463,8 @@ def flatten_block_model(block_id: str):
             elements = data["elements"]
         cur = data.get("parent")
     if not elements:
+        if block_id.startswith("waxed_"):
+            return flatten_block_model(block_id[len("waxed_"):])  # waxed copper reuses the unwaxed model
         return None
     return textures, elements
 
