@@ -285,10 +285,14 @@ final class BasicMechanism implements Mechanism {
         if (mb.customTypeId != null) {
             CustomHeadBlock type = registry.getType(mb.customTypeId);
             if (type != null) {
-                registry.markBlock(target, type, mb.customState);
+                // The vanilla data was rotated above; re-derive the custom state for the landed
+                // orientation so it doesn't snap to an impossible state (and rejoins the network on the
+                // correct axis).
+                String landedState = BlockRotation.rotateCustomState(type, mb.customState, target.getBlockData());
+                registry.markBlock(target, type, landedState);
                 int power = registry.readPower(target, type);
-                registry.applyConfig(target, type, mb.customState, power);
-                registry.restoreBlock(target, type, mb.customState);
+                registry.applyConfig(target, type, landedState, power);
+                registry.restoreBlock(target, type, landedState);
             }
         } else if (mb.storage != null && target.getState() instanceof Container c) {
             c.getSnapshotInventory().setContents(mb.storage.getContents());

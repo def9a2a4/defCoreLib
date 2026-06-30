@@ -53,6 +53,47 @@ public final class BlockRotation {
         return rotated;
     }
 
+    /** State-name dynamic prefixes that precede an orientation token (e.g. {@code spinning_x}). */
+    private static final Set<String> DYNAMIC_PREFIXES = Set.of("idle", "spinning", "running", "locked");
+
+    /**
+     * Derive the custom-block state a block should have after its vanilla data was rotated to {@code landed}.
+     * Custom state encodes orientation (axis suffix, wall variant); on disassembly the vanilla data is
+     * rotated but the captured state is not, producing impossible states. This reverses the placement
+     * mapping: the landed attachment face → {@code placementStateMap} entry, with the captured dynamic
+     * prefix (idle/spinning/running/locked) grafted back on. Returns {@code state} unchanged when no
+     * orientation mapping applies (no map, custom resolver, or unmapped face).
+     */
+    static String rotateCustomState(CustomHeadBlock type, String state, BlockData landed) {
+        if (state == null || type.placementStateMap() == null || type.stateResolver() != null) return state;
+        BlockFace key = attachmentFace(landed);
+        String mapped = type.placementStateMap().get(key);
+        if (mapped == null) return state;
+
+        String[] cap = splitDynamicState(state);
+        String[] map = splitDynamicState(mapped);
+        String newState = cap[0] != null ? cap[0] + "_" + map[1] : mapped;
+
+        if (type.states().containsKey(newState)) return newState;
+        if (type.states().containsKey(mapped)) return mapped;
+        return state;
+    }
+
+    /** The face a placed head is mounted on — mirrors CoreLibPlugin.getAttachmentFace. */
+    private static BlockFace attachmentFace(BlockData data) {
+        if (data instanceof org.bukkit.block.data.Directional dir) return dir.getFacing().getOppositeFace();
+        return BlockFace.DOWN; // floor head sits on the block below
+    }
+
+    /** Split a state into [dynamicPrefix, orientationToken]; dynamicPrefix is null when there is none. */
+    private static String[] splitDynamicState(String state) {
+        int i = state.indexOf('_');
+        if (i > 0 && DYNAMIC_PREFIXES.contains(state.substring(0, i))) {
+            return new String[]{state.substring(0, i), state.substring(i + 1)};
+        }
+        return new String[]{null, state};
+    }
+
     private static BlockFace rotateBlockFace(BlockFace face, float yawDegrees) {
         if (face == BlockFace.UP || face == BlockFace.DOWN) return face;
         float baseYaw = blockFaceToYaw(face);
