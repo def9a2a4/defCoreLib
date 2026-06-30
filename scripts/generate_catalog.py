@@ -62,6 +62,7 @@ ITEMS_DIR = DOCS / "assets" / "items"
 MODELS_DIR = DOCS / "assets" / "models"
 TEXTURES_DIR = DOCS / "assets" / "textures"
 OCTAGON_MAP = Path(__file__).resolve().parent / "octagon-textures.json"
+BUNDLED_MODELS = Path(__file__).resolve().parent / "models"   # hand-authored builtin/entity models
 
 # Resource files that define craftable/placeable items (namespace + `blocks:` map).
 # minecart-ship-blocks.yml is excluded — it is a wildcard allow-list, not custom items.
@@ -312,7 +313,7 @@ def parse_block(namespace: str, block_id: str, sec: dict, aliases: dict) -> dict
         "variants": parse_variants(sec, aliases),
         "transitions": parse_transitions(sec),
         "inHand": in_hand,
-        "placed": {"baseHead": base_head, "displayEntities": placed_display_entities(sec, aliases)},
+        "placedVariants": [],   # filled from display-spec.json (headless export)
     }
 
 
@@ -407,6 +408,12 @@ def download(url: str, dest: Path) -> bool:
         return False
 
 
+def block_id_from_ref(ref: str) -> str:
+    """A display 'block' ref is a full blockdata string (minecraft:smooth_stone_slab[...]);
+    reduce it to the bare model id (smooth_stone_slab)."""
+    return ref.split("[")[0].split(":")[-1].lower()
+
+
 def collect_skin_urls(items: list[dict]) -> set[str]:
     urls: set[str] = set()
 
@@ -422,24 +429,27 @@ def collect_skin_urls(items: list[dict]) -> set[str]:
         in_hand = it.get("inHand") or {}
         if in_hand.get("kind") == "head":
             add(in_hand.get("textureUrl"))
-        placed = it.get("placed") or {}
-        add(placed.get("baseHead"))
-        for de in placed.get("displayEntities", []):
-            if de.get("kind") == "head":
-                add(de.get("textureUrl"))
+        for variant in it.get("placedVariants", []):
+            add(variant.get("baseHeadTextureUrl"))
+            for de in variant.get("displays", []):
+                if de.get("kind") == "head":
+                    add(de.get("ref"))
     return urls
 
 
 def collect_block_models(items: list[dict]) -> set[str]:
-    """Vanilla block/item ids used by display entities or in-hand item models."""
+    """Vanilla block/item ids used by placed display entities or in-hand item models."""
     blocks: set[str] = set()
     for it in items:
         in_hand = it.get("inHand") or {}
         if in_hand.get("kind") == "item" and in_hand.get("block"):
             blocks.add(in_hand["block"])
-        for de in (it.get("placed") or {}).get("displayEntities", []):
-            if de.get("kind") in ("block", "item") and de.get("block"):
-                blocks.add(de["block"])
+        for variant in it.get("placedVariants", []):
+            for de in variant.get("displays", []):
+                if de.get("kind") == "item":
+                    blocks.add(canonical_block(de["ref"]))
+                elif de.get("kind") == "block":
+                    blocks.add(canonical_block(block_id_from_ref(de["ref"])))
     return blocks
 
 
@@ -560,7 +570,20 @@ def vendor_models(items: list[dict]) -> dict:
     for block_id in sorted(blocks):
         res = flatten_block_model(block_id)
         if not res:
-            manifest[block_id] = False
+            # builtin/entity items (banners, etc.) have no vanilla elements model — fall back to a
+            # hand-authored bundled model under scripts/models/ and vendor its textures.
+            bundled = BUNDLED_MODELS / f"{block_id}.json"
+            if bundled.exists():
+                m = json.loads(bundled.read_text())
+                for path in set((m.get("textures") or {}).values()):
+                    download(f"{MC_ASSETS_BASE}/{path}.png", TEXTURES_DIR / f"{path}.png")
+                MODELS_DIR.mkdir(parents=True, exist_ok=True)
+                (MODELS_DIR / f"{block_id}.json").write_text(
+                    json.dumps({k: v for k, v in m.items() if not k.startswith("_")}), encoding="utf-8")
+                manifest[block_id] = True
+                ok += 1
+            else:
+                manifest[block_id] = False
             continue
         textures, elements = res
         resolved = {}
@@ -642,6 +665,18 @@ def main() -> int:
 
     grind = load_grind(RESOURCES / "grind-recipes.yml")
     print(f"  + grind-recipes.yml: {len(grind)} recipes")
+
+    # Ground-truth placed display data from the headless export (make docs).
+    spec_path = DOCS_DATA / "display-spec.json"
+    spec = json.loads(spec_path.read_text()) if spec_path.exists() else {}
+    matched = 0
+    for it in items:
+        variants = (spec.get(it["fullId"]) or {}).get("variants", [])
+        it["placedVariants"] = variants
+        if variants:
+            matched += 1
+    print(f"  + display-spec.json: {len(spec)} types, {matched} matched to items"
+          + ("" if spec else " (MISSING — run `make docs` for the 3D placed views)"))
 
     catalog = {
         "namespaces": sorted({it["namespace"] for it in items}),

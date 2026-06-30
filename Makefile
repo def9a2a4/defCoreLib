@@ -25,7 +25,8 @@ docs:
 	[ -f test-server/server.properties ] || printf '%s\n' \
 		'online-mode=false' 'enforce-secure-profile=false' 'gamemode=creative' 'allow-flight=true' \
 		'difficulty=peaceful' 'spawn-monsters=false' 'spawn-protection=0' 'level-type=flat' \
-		'server-port=25575' 'level-name=world' 'motd=DefCoreLib docs export' \
+		'generate-structures=false' 'server-port=25575' 'level-name=world' \
+		'motd=DefCoreLib docs export' \
 		> test-server/server.properties
 	cp build/libs/DefCoreLib*.jar test-server/plugins/
 	rm -f .temp/display-spec.json
