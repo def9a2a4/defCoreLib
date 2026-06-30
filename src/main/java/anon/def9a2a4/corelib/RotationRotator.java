@@ -33,11 +33,6 @@ import java.util.*;
  */
 final class RotationRotator {
 
-    private static final BlockFace[] CARDINAL_FACES = {
-        BlockFace.NORTH, BlockFace.SOUTH, BlockFace.EAST, BlockFace.WEST,
-        BlockFace.UP, BlockFace.DOWN
-    };
-
     private static final String ROTATOR_ID = "rotation:rotator";
     private static final Material STRUCTURE_MATERIAL = Material.OAK_PLANKS;
 
@@ -228,21 +223,10 @@ final class RotationRotator {
     }
 
     private List<Block> floodFill(Block origin, Material target, int maxBlocks) {
-        Set<Block> visited = new HashSet<>();
-        Queue<Block> queue = new ArrayDeque<>();
-        visited.add(origin); // exclude the hinge itself
-        for (BlockFace face : CARDINAL_FACES) queue.add(origin.getRelative(face));
-        List<Block> result = new ArrayList<>();
-        while (!queue.isEmpty() && result.size() < maxBlocks) {
-            Block b = queue.poll();
-            if (!visited.add(b) || b.getType() != target) continue;
-            // Never pull a rotation/power block into the moving structure.
-            if (registry.getTypeFromBlock(b) != null) continue;
-            result.add(b);
-            for (BlockFace face : CARDINAL_FACES) queue.add(b.getRelative(face));
-        }
-        if (result.size() >= maxBlocks && !queue.isEmpty()) warnTruncated(origin, maxBlocks);
-        return result;
+        // Never pull a rotation/power block into the moving structure.
+        return FloodFill.component(origin, false,
+            b -> b.getType() == target && registry.getTypeFromBlock(b) == null,
+            maxBlocks, () -> warnTruncated(origin, maxBlocks));
     }
 
     private void warnTruncated(Block anchor, int cap) {

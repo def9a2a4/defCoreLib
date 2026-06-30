@@ -127,7 +127,7 @@ public class RotationNetwork {
         // the id would go stale — but the member LocationKeys are stable, so skip any face whose
         // neighbor we've already covered via an earlier network rebuild.
         Set<CustomBlockRegistry.LocationKey> recalced = new HashSet<>();
-        for (BlockFace face : CARDINAL_FACES) {
+        for (BlockFace face : Faces.CARDINAL) {
             CustomBlockRegistry.LocationKey neighbor = faceNeighbor(key, face);
             if (!nodes.containsKey(neighbor) || recalced.contains(neighbor)) continue;
             Set<CustomBlockRegistry.LocationKey> members = getNetworkMembers(neighbor);
@@ -341,7 +341,7 @@ public class RotationNetwork {
                     RotationNode memberNode = nodes.get(loc);
                     if (memberNode == null) continue;
                     Axis nodeAxis = memberNode.axis();
-                    for (BlockFace face : CARDINAL_FACES) {
+                    for (BlockFace face : Faces.CARDINAL) {
                         if (axisFromFace(face) != nodeAxis) continue;
                         CustomBlockRegistry.LocationKey neighbor = faceNeighbor(loc, face);
                         if (nodes.containsKey(neighbor)) continue;
@@ -547,7 +547,7 @@ public class RotationNetwork {
 
         // Gear-to-gear: connects to ANY adjacent gear (all 6 faces, any axis)
         if (node.gearLike()) {
-            for (BlockFace face : CARDINAL_FACES) {
+            for (BlockFace face : Faces.CARDINAL) {
                 CustomBlockRegistry.LocationKey neighbor = faceNeighbor(k, face);
                 if (result.stream().anyMatch(c -> c.neighbor().equals(neighbor))) continue;
                 RotationNode other = nodes.get(neighbor);
@@ -628,10 +628,6 @@ public class RotationNetwork {
     // ──────────────────────────────────────────────────────────────────────
     // Helpers
     // ──────────────────────────────────────────────────────────────────────
-
-    private static final BlockFace[] CARDINAL_FACES = {
-        BlockFace.NORTH, BlockFace.SOUTH, BlockFace.EAST, BlockFace.WEST, BlockFace.UP, BlockFace.DOWN
-    };
 
     private static CustomBlockRegistry.LocationKey faceNeighbor(CustomBlockRegistry.LocationKey k, BlockFace face) {
         return new CustomBlockRegistry.LocationKey(k.worldId(),

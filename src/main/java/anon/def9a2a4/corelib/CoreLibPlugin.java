@@ -1035,15 +1035,11 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
     // Neighbor changes — only for blocks that declared reactsToNeighbors
     // ──────────────────────────────────────────────────────────────────────
 
-    private static final BlockFace[] CARDINAL_FACES = {
-            BlockFace.NORTH, BlockFace.SOUTH, BlockFace.EAST, BlockFace.WEST, BlockFace.UP, BlockFace.DOWN
-    };
-
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = false)
     public void onBlockPhysics(BlockPhysicsEvent event) {
         Block changed = event.getBlock();
         // Fast path: check if any neighbor is in the reactive set before doing expensive lookups
-        for (BlockFace face : CARDINAL_FACES) {
+        for (BlockFace face : Faces.CARDINAL) {
             Block neighbor = changed.getRelative(face);
             if (!registry.isNeighborReactive(neighbor)) continue;
             // Only now do the expensive getTypeFromBlock lookup

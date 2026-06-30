@@ -40,11 +40,6 @@ import java.util.EnumSet;
  */
 final class MechanismMinecartManager implements Listener {
 
-    private static final BlockFace[] CARDINAL_FACES = {
-        BlockFace.NORTH, BlockFace.SOUTH, BlockFace.EAST, BlockFace.WEST,
-        BlockFace.UP, BlockFace.DOWN
-    };
-
     /** Ride offset for Minecart passengers. Needs empirical tuning. */
     private static final float MINECART_RIDE_OFFSET = 0f;
 
@@ -327,24 +322,13 @@ final class MechanismMinecartManager implements Listener {
     // ──────────────────────────────────────────────────────────────────────
 
     private List<Block> floodFillAllowed(Block origin, int maxBlocks) {
-        Set<Block> visited = new HashSet<>();
-        Queue<Block> queue = new ArrayDeque<>();
-        queue.add(origin);
-        List<Block> result = new ArrayList<>();
-        while (!queue.isEmpty() && result.size() < maxBlocks) {
-            Block b = queue.poll();
-            if (!visited.add(b)) continue;
-            if (!allowedMaterials.contains(b.getType())) continue;
-            result.add(b);
-            for (BlockFace face : CARDINAL_FACES) queue.add(b.getRelative(face));
-        }
-        if (result.size() >= maxBlocks && !queue.isEmpty()) {
-            plugin.getLogger().warning("Mechanism minecart: structure capped at " + maxBlocks
-                + " blocks at " + origin.getX() + "," + origin.getY() + "," + origin.getZ()
-                + " (raise max-structure-size in rotation-config.yml)");
-            origin.getWorld().spawnParticle(org.bukkit.Particle.SMOKE,
-                origin.getLocation().add(0.5, 0.5, 0.5), 12, 0.3, 0.3, 0.3, 0.02);
-        }
-        return result;
+        return FloodFill.component(origin, true, b -> allowedMaterials.contains(b.getType()),
+            maxBlocks, () -> {
+                plugin.getLogger().warning("Mechanism minecart: structure capped at " + maxBlocks
+                    + " blocks at " + origin.getX() + "," + origin.getY() + "," + origin.getZ()
+                    + " (raise max-structure-size in rotation-config.yml)");
+                origin.getWorld().spawnParticle(org.bukkit.Particle.SMOKE,
+                    origin.getLocation().add(0.5, 0.5, 0.5), 12, 0.3, 0.3, 0.3, 0.02);
+            });
     }
 }

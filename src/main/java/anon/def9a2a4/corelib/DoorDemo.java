@@ -16,11 +16,6 @@ import java.util.*;
  */
 final class DoorDemo {
 
-    private static final BlockFace[] CARDINAL_FACES = {
-        BlockFace.NORTH, BlockFace.SOUTH, BlockFace.EAST, BlockFace.WEST,
-        BlockFace.UP, BlockFace.DOWN
-    };
-
     private final JavaPlugin plugin;
     private final CustomBlockRegistry registry;
     private final MechanismRegistry mechRegistry;
@@ -162,24 +157,13 @@ final class DoorDemo {
     // ──────────────────────────────────────────────────────────────────────
 
     private List<Block> floodFill(Block origin, Material target, int maxBlocks) {
-        Set<Block> visited = new HashSet<>();
-        Queue<Block> queue = new ArrayDeque<>();
-        visited.add(origin); // exclude head itself
-        for (BlockFace face : CARDINAL_FACES) queue.add(origin.getRelative(face));
-        List<Block> result = new ArrayList<>();
-        while (!queue.isEmpty() && result.size() < maxBlocks) {
-            Block b = queue.poll();
-            if (!visited.add(b) || b.getType() != target) continue;
-            result.add(b);
-            for (BlockFace face : CARDINAL_FACES) queue.add(b.getRelative(face));
-        }
-        if (result.size() >= maxBlocks && !queue.isEmpty()) {
-            plugin.getLogger().warning("Door: structure capped at " + maxBlocks
-                + " blocks at " + origin.getX() + "," + origin.getY() + "," + origin.getZ()
-                + " (raise max-structure-size in rotation-config.yml)");
-            origin.getWorld().spawnParticle(Particle.SMOKE,
-                origin.getLocation().add(0.5, 1.0, 0.5), 12, 0.3, 0.3, 0.3, 0.02);
-        }
-        return result;
+        return FloodFill.component(origin, false, b -> b.getType() == target, maxBlocks,
+            () -> {
+                plugin.getLogger().warning("Door: structure capped at " + maxBlocks
+                    + " blocks at " + origin.getX() + "," + origin.getY() + "," + origin.getZ()
+                    + " (raise max-structure-size in rotation-config.yml)");
+                origin.getWorld().spawnParticle(Particle.SMOKE,
+                    origin.getLocation().add(0.5, 1.0, 0.5), 12, 0.3, 0.3, 0.3, 0.02);
+            });
     }
 }
