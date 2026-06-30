@@ -1,14 +1,14 @@
 {
-  "_comment": "Hand-authored standing white-banner geometry (pole + crossbar + cloth) from the canonical ModelBanner dimensions, since banners are builtin/entity and ship no elements model. Block-model space (16 = 1 block); cloth uses the white banner_base texture. Rendered by docs/util/blockmodel.js. Scale/position are tuned via the windmill display transform.",
+  "_comment": "Standing white-banner geometry (post + crossbar + cloth) reproducing MC's banner-ITEM render (white_banner = minecraft:special/minecraft:banner; ItemDisplay context NONE → no item-model display transform, so this is the raw standing-banner special render). Canonical BannerModel dims (flag 20x40x1, post 2x42x2, crossbar 20x2x2) baked with the standing-render 2/3 scale; x/z centred on the anchor (model 8,8,8 = the windmill blades' pivot); post base at the block bottom; cloth offset to +z IN FRONT of the post (post behind the banner). Block-model space (16 = 1 block). Rendered by docs/util/blockmodel.js. CANDIDATE: scale / y-anchor / flag z-side to be verified against the docs windmill viewer.",
   "textures": {
     "cloth": "entity/banner_base",
     "wood": "block/oak_planks"
   },
   "elements": [
     {
-      "name": "pole",
-      "from": [7, 0, 7],
-      "to": [9, 30, 9],
+      "name": "post",
+      "from": [7.33, 0, 7.33],
+      "to": [8.67, 28, 8.67],
       "faces": {
         "north": { "uv": [0, 0, 2, 16], "texture": "#wood" },
         "south": { "uv": [0, 0, 2, 16], "texture": "#wood" },
@@ -20,8 +20,8 @@
     },
     {
       "name": "crossbar",
-      "from": [-2, 27, 7],
-      "to": [18, 29, 9],
+      "from": [1.33, 26.67, 7.33],
+      "to": [14.67, 28, 8.67],
       "faces": {
         "north": { "uv": [0, 0, 16, 2], "texture": "#wood" },
         "south": { "uv": [0, 0, 16, 2], "texture": "#wood" },
@@ -33,8 +33,8 @@
     },
     {
       "name": "cloth",
-      "from": [-2, -8, 7.4],
-      "to": [18, 28, 8.4],
+      "from": [1.33, 0, 8.67],
+      "to": [14.67, 26.67, 9.34],
       "faces": {
         "north": { "uv": [0.5, 0.5, 10.5, 10.5], "texture": "#cloth" },
         "south": { "uv": [10.5, 0.5, 0.5, 10.5], "texture": "#cloth" },

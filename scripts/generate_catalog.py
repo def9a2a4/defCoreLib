@@ -620,6 +620,28 @@ def main() -> int:
         print(f"    ! {len(unmatched)} spec types with no catalog item: {', '.join(unmatched[:8])}"
               + (" …" if len(unmatched) > 8 else ""), file=sys.stderr)
 
+    # Multi-block "showcases" (make showcase-capture). Optional input; when present, emit showcases.json
+    # and fold its display refs into the vendoring pass below (pseudo-items reuse the placedVariants path).
+    showcase_pseudo: list[dict] = []
+    sc_path = DOCS_DATA / "showcase-spec.json"
+    if sc_path.exists():
+        showcases = json.loads(sc_path.read_text()).get("showcases", [])
+        with (DOCS_DATA / "showcases.json").open("w", encoding="utf-8") as f:
+            json.dump({"showcases": showcases}, f, indent=2, ensure_ascii=False)
+            f.write("\n")
+        for s in showcases:
+            for blk in s.get("blocks", []):
+                showcase_pseudo.append({
+                    "icon": {}, "variants": [], "recipes": [],
+                    "placedVariants": [{
+                        "baseHeadTextureUrl": blk.get("baseHeadTextureUrl"),
+                        "displays": blk.get("displays", []),
+                    }],
+                })
+        print(f"  + showcase-spec.json: {len(showcases)} showcases -> showcases.json")
+    else:
+        print("  (no showcase-spec.json -- run `make showcase-capture` to generate showcases.json)")
+
     catalog = {
         "namespaces": sorted({it["namespace"] for it in items}),
         "items": items,
@@ -637,7 +659,7 @@ def main() -> int:
     if args.no_assets:
         print("  (--no-assets: skipped image vendoring)")
     else:
-        manifest = vendor_assets(items, grind)
+        manifest = vendor_assets(items + showcase_pseudo, grind)
         with (DOCS_DATA / "models-manifest.json").open("w", encoding="utf-8") as f:
             json.dump(manifest, f, indent=2, ensure_ascii=False)
             f.write("\n")
