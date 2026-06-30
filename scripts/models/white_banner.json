@@ -1,8 +1,8 @@
 {
-  "_comment": "Standing white-banner geometry (post + crossbar + cloth) reproducing MC's banner-ITEM render (white_banner = minecraft:special/minecraft:banner; ItemDisplay context NONE → no item-model display transform, so this is the raw standing-banner special render). Canonical BannerModel dims (flag 20x40x1, post 2x42x2, crossbar 20x2x2) baked with the standing-render 2/3 scale; x/z centred on the anchor (model 8,8,8 = the windmill blades' pivot); post base at the block bottom; cloth offset to +z IN FRONT of the post (post behind the banner). Block-model space (16 = 1 block). Rendered by docs/util/blockmodel.js. CANDIDATE: scale / y-anchor / flag z-side to be verified against the docs windmill viewer.",
+  "_comment": "Standing white-banner geometry (post + crossbar + cloth) reproducing MC's banner-ITEM render (white_banner = minecraft:special/minecraft:banner; ItemDisplay context NONE → no item-model display transform, so this is the raw standing-banner special render). Canonical BannerModel dims (flag 20x40x1, post 2x42x2, crossbar 20x2x2) baked with the standing-render 2/3 scale; x/z centred on the anchor (model 8,8,8 = the windmill blades' pivot); post spans the full height with its base at the block bottom; cloth is the front layer (−z side of the post, so the post sits behind it) and stops ~1/13 above the bottom so a sliver of post is exposed. Block-model space (16 = 1 block). Rendered by docs/util/blockmodel.js. CANDIDATE: scale / y-anchor verified against the docs windmill viewer.",
   "textures": {
     "cloth": "entity/banner_base",
-    "wood": "block/oak_planks"
+    "wood": "block/spruce_planks"
   },
   "elements": [
     {
@@ -33,8 +33,8 @@
     },
     {
       "name": "cloth",
-      "from": [1.33, 0, 8.67],
-      "to": [14.67, 26.67, 9.34],
+      "from": [1.33, 2.15, 6.66],
+      "to": [14.67, 26.67, 7.33],
       "faces": {
         "north": { "uv": [0.5, 0.5, 10.5, 10.5], "texture": "#cloth" },
         "south": { "uv": [10.5, 0.5, 0.5, 10.5], "texture": "#cloth" },

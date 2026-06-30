@@ -338,3 +338,25 @@ a.slot { text-decoration: none; color: inherit; }
 .mc-f { color: #FFFFFF; }
 .mc-l { font-weight: bold; } .mc-o { font-style: italic; }
 .mc-n { text-decoration: underline; } .mc-m { text-decoration: line-through; }
+
+/* ── Showcases page ─────────────────────────────────────────────────────── */
+.showcase {
+  background: #222;
+  border: 1px solid #353535;
+  border-radius: 10px;
+  padding: 16px;
+  margin: 0 0 20px;
+  max-width: 760px;
+}
+.showcase h2 { color: #4ecca3; margin: 0 0 4px; }
+.showcase-blurb { color: #bbb; margin: 0 0 12px; line-height: 1.5; }
+.showcase-canvas {
+  width: 100%;
+  height: 420px;
+  background: #1c1c1c;
+  border-radius: 8px;
+  border: 1px solid #3a3a3a;
+  cursor: grab;
+}
+.showcase-canvas:active { cursor: grabbing; }
+.showcase-canvas canvas { display: block; }

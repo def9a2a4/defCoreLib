@@ -91,43 +91,69 @@ function sampleTrack(track, period, tick, out) {
   out.compose(pos, quat, scale);
 }
 
-/** Render a placed variant into `container`. Returns a teardown function. */
-export async function renderPlaced(item, container, variantIndex = 0) {
-  const models = await manifest();
-  const variants = item.placedVariants || [];
-  const variant = variants[variantIndex] || variants[0] || { displays: [] };
+const IDENTITY = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
 
-  const { scene, camera, renderer, controls } = makeViewer(container, { dist: 3.6, target: [0, 0.1, 0] });
+// Build one block group: base head (if any) + each display, parented by its position offset.
+async function buildBlockGroup(blk, models, animated) {
+  const group = new THREE.Group();
+  const off = blk.offset || [0, 0, 0];
+  group.position.set(off[0], off[1], off[2]);
 
   // Base head (the custom head block itself). A floor PLAYER_HEAD is seated; a PLAYER_WALL_HEAD is
   // mounted vertically-centred and pushed onto the wall (−0.25·facing), matching MC's skull renderer.
-  if (variant.baseHeadTextureUrl) {
+  if (blk.baseHeadTextureUrl) {
     try {
-      const wall = !!variant.baseHeadWall;
-      const skull = skullMesh(await loadSkin(variant.baseHeadTextureUrl), { seated: !wall });
-      if (wall && variant.baseHeadFacing) {
-        const f = { north: [0, 0, -1], south: [0, 0, 1], east: [1, 0, 0], west: [-1, 0, 0] }[variant.baseHeadFacing] || [0, 0, 0];
+      const wall = !!blk.baseHeadWall;
+      const skull = skullMesh(await loadSkin(blk.baseHeadTextureUrl), { seated: !wall });
+      if (wall && blk.baseHeadFacing) {
+        const f = { north: [0, 0, -1], south: [0, 0, 1], east: [1, 0, 0], west: [-1, 0, 0] }[blk.baseHeadFacing] || [0, 0, 0];
         skull.position.set(-0.25 * f[0], 0, -0.25 * f[2]);
       }
-      scene.add(skull);
+      group.add(skull);
     } catch { /* skip */ }
   }
 
-  const animated = [];
-  for (const de of variant.displays || []) {
+  for (const de of blk.displays || []) {
     const obj = await buildDisplayObject(de, models);
     obj.matrixAutoUpdate = false;
-    obj.matrix.fromArray(de.matrix || [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]);
+    obj.matrix.fromArray(de.matrix || IDENTITY);
     obj.matrixWorldNeedsUpdate = true;
 
     const parent = new THREE.Group();
     const p = de.position || [0, 0, 0];
     parent.position.set(p[0], p[1], p[2]);
     parent.add(obj);
-    scene.add(parent);
+    group.add(parent);
 
     if (de.animation && de.animation.frames && de.animation.frames.length) {
       animated.push({ obj, track: prepareTrack(de.animation.frames), period: de.animation.period || de.animation.frames.length });
+    }
+  }
+  return group;
+}
+
+/**
+ * Render a list of blocks (each `{offset, baseHeadTextureUrl, baseHeadWall, baseHeadFacing, displays}`)
+ * into `container` as one interactive scene, playing every display's baked track. With `autoframe` the
+ * camera fits the scene bounding box (for multi-block machines). Returns a teardown function.
+ */
+export async function renderScene(container, blocks, { autoframe = false, dist = 3.6, target = [0, 0.1, 0] } = {}) {
+  const models = await manifest();
+  const { scene, camera, renderer, controls } = makeViewer(container, { dist, target });
+
+  const animated = [];
+  for (const blk of blocks) scene.add(await buildBlockGroup(blk, models, animated));
+
+  if (autoframe) {
+    const box = new THREE.Box3().setFromObject(scene);
+    if (!box.isEmpty()) {
+      const center = box.getCenter(new THREE.Vector3());
+      const size = box.getSize(new THREE.Vector3());
+      const d = Math.max(size.x, size.y, size.z, 1) * 1.6 + 1.5;
+      controls.target.copy(center);
+      camera.position.set(center.x + d * 0.6, center.y + d * 0.45, center.z + d);
+      controls.maxDistance = d * 4;
+      controls.update();
     }
   }
 
@@ -161,4 +187,17 @@ export async function renderPlaced(item, container, variantIndex = 0) {
     renderer.forceContextLoss();         // release the WebGL context (browsers cap at ~16)
     renderer.domElement.remove();
   };
+}
+
+/** Render a single placed variant into `container` (one block, fixed camera). Teardown fn returned. */
+export async function renderPlaced(item, container, variantIndex = 0) {
+  const variants = item.placedVariants || [];
+  const variant = variants[variantIndex] || variants[0] || { displays: [] };
+  return renderScene(container, [{
+    offset: [0, 0, 0],
+    baseHeadTextureUrl: variant.baseHeadTextureUrl,
+    baseHeadWall: variant.baseHeadWall,
+    baseHeadFacing: variant.baseHeadFacing,
+    displays: variant.displays || [],
+  }], { autoframe: false, dist: 3.6, target: [0, 0.1, 0] });
 }
