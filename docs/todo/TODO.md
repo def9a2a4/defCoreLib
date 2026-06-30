@@ -2,10 +2,25 @@
 
 # Main
 
+- refine allowed blocks in doors/rotators
+- mechanisms: storage blocks not persistent, no reload persistence, etc. will be mostly handled by blockships integration
 - texture fixes for dril/screw, gears, shafts, others
-- fans
+- recipe book categories: most rotation stuff goes in redstone, vertical slabs go in building blocks
 - chains -- long-distance connect two "chain wheels"
-
+- migrate plugins:
+  - redstone displays (should be trivial)
+  - pipes
+  - headsmith
+  - blockships
+  - yeetables?
+  - ropes?
+- separate rotation stuff into it's own plugin
+- minecart stuff:
+  - chaining minecarts
+  - blast funace minecart
+  - copper rails?
+  - faster tier of rails?
+  - quad junctions?
 
 
 ## Detail docs

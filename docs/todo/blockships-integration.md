@@ -538,6 +538,8 @@ These should be fixed before starting integration work:
 
 6. **Float precision in snap computation** — `MechanismRegistry.assembleCore()` lines 91-92: `float snapX = (float)(Math.floor(pivot.getX()) + 0.5)` — float mantissa (24 bits) can't represent the `.5` offset at coordinates beyond ~8M blocks, breaking the integer-offset invariant that `disassemble()` depends on. Fix: use `double` for snapping, cast to `float` only at Matrix4f construction.
 
+7. **Custom-block storage not restored on disassembly (data loss) — DEFERRED, do with Phase 2.** `BasicMechanism.placeBlock()` restores a custom block's type/state/config but never writes back the captured `mb.storage` inventory — the only `setContents` lives in the `else if (… instanceof Container)` branch, which is unreachable for a custom head. `assembleCore()` *does* capture `mb.storage`, so the items are snapshotted then dropped on the floor: a custom storage block (e.g. a custom chest skull) absorbed by a mechanism and placed back on disassembly **comes back empty**. (Items only survive the *drop-as-item* path, not the place-back path.) BlockShips' inventory handling covers this — the persistent round-trip is exactly the Base64 `ItemStack[]` serialization in **Phase 2** (`MechanismState.blocks[].storage`). The immediate in-memory fix is one line in the custom-block branch of `placeBlock()`: after `restoreBlock`, `if (mb.storage != null) registry.saveInventoryToPDC(target, mb.storage);`. Deferred so the storage/persistence work is done together rather than piecemeal.
+
 ---
 
 ## Verification Plan
