@@ -55,9 +55,6 @@ final class DisplayExporter implements Listener {
                                                     // apart, so quadrants never overlap)
     private static final int SPACING = 4;           // cells 4 apart (demo / rotation / slabs)
     private static final int WINDMILL_SPACING = 12; // windmill "large display" quadrant
-    private static final int MAX_PERIOD = 2400;     // tick cap for loop detection (2 min)
-    private static final int MAX_FRAMES = 120;
-    private static final float EPS = 1.0e-3f;
 
     private final CoreLibPlugin plugin;
     private final CustomBlockRegistry registry;
@@ -255,12 +252,13 @@ final class DisplayExporter implements Listener {
         variant.put("id", vid);
         variant.put("label", label);
         variant.put("baseHeadTextureUrl",
-                type.itemMaterial() != null ? null : textureUrl(type.resolveTexture(state, 0, headFacing)));
+                type.itemMaterial() != null ? null
+                        : DisplayCapture.textureUrl(type.resolveTexture(state, 0, headFacing)));
         // Base-head placement: a floor PLAYER_HEAD is seated, a PLAYER_WALL_HEAD is mounted
         // vertically-centred and pushed onto the wall. The frontend seats the skull accordingly.
         variant.put("baseHeadWall", !floor);
         variant.put("baseHeadFacing", headFacing == null ? null : headFacing.name().toLowerCase());
-        variant.put("displays", readDisplays(type, loc, state, animate, reversed));
+        variant.put("displays", DisplayCapture.readDisplays(type, loc, state, animate, reversed));
 
         if (keepAlive) {
             log.info("  " + type.fullId() + " " + vid + " @ "
@@ -343,146 +341,7 @@ final class DisplayExporter implements Listener {
         block.setType(Material.AIR, false);
     }
 
-    // ── Reading spawned displays ───────────────────────────────────────────
-
-    private List<Map<String, Object>> readDisplays(CustomHeadBlock type, Location scratch, String state,
-            boolean animate, boolean reversed) {
-        List<Map<String, Object>> out = new ArrayList<>();
-        if (!type.hasDisplayEntities()) return out;
-
-        Location blockLoc = scratch.getBlock().getLocation();
-        Location center = blockLoc.clone().add(0.5, 0.5, 0.5);
-        String prefix = DisplayUtil.blockTagPrefix(type.namespace(), type.typeId(), blockLoc);
-
-        // Config map: tagSuffix → (animation, base transform) for baking motion.
-        Map<String, CustomHeadBlock.DisplayEntityConfig> itemBySuffix = new LinkedHashMap<>();
-        for (var d : type.resolveDisplayEntities(state)) itemBySuffix.put(nullKey(d.tagSuffix()), d);
-        Map<String, CustomHeadBlock.BlockDisplayEntityConfig> blockBySuffix = new LinkedHashMap<>();
-        for (var d : type.resolveBlockDisplayEntities(state)) blockBySuffix.put(nullKey(d.tagSuffix()), d);
-
-        for (Display display : DisplayUtil.findByTag(blockLoc, prefix, 2.0)) {
-            Map<String, Object> rec = new LinkedHashMap<>();
-            String suffix = suffixOf(display, prefix);
-            rec.put("tag", suffix);
-
-            Location loc = display.getLocation();
-            rec.put("position", new double[]{
-                    loc.getX() - center.getX(), loc.getY() - center.getY(), loc.getZ() - center.getZ()});
-
-            Matrix4f base = toMatrix(display.getTransformation());
-            rec.put("matrix", arr(base));
-
-            DisplayAnimation anim = null;
-            if (display instanceof ItemDisplay item) {
-                ItemStack stack = item.getItemStack();
-                if (stack.getType() == Material.PLAYER_HEAD) {
-                    rec.put("kind", "head");
-                    rec.put("ref", textureUrl(itemTexture(stack)));
-                } else {
-                    rec.put("kind", "item");
-                    rec.put("ref", stack.getType().getKey().getKey());
-                }
-                var cfg = itemBySuffix.get(nullKey(suffix));
-                if (cfg != null) anim = cfg.animation();
-            } else if (display instanceof BlockDisplay bd) {
-                rec.put("kind", "block");
-                rec.put("ref", bd.getBlock().getAsString());
-                var cfg = blockBySuffix.get(nullKey(suffix));
-                if (cfg != null) anim = cfg.animation();
-            } else {
-                continue;
-            }
-
-            rec.put("animation", (animate && anim != null) ? bake(anim, base, reversed) : null);
-            out.add(rec);
-        }
-        return out;
-    }
-
-    /** Bake a looping matrix track by sampling the real animation function over its detected period.
-     *  `reversed` negates the tick (matching CustomBlockRegistry's `if (reversed) tickAge = -tickAge`). */
-    private Map<String, Object> bake(DisplayAnimation anim, Matrix4f base, boolean reversed) {
-        Matrix4f f0 = new Matrix4f();
-        anim.apply(base, 0, f0);
-        Matrix4f f1 = new Matrix4f();
-        anim.apply(base, 1, f1);
-        int period = 0;
-        Matrix4f f = new Matrix4f();
-        Matrix4f fNext = new Matrix4f();
-        // Two-point check: the cycle truly repeats only when BOTH apply(t)==apply(0) AND apply(t+1)==apply(1).
-        // A single-point (apply(t)==apply(0)) check aliases symmetric bob/pulse to half period (the matrix
-        // returns to baseline at period/2, sampling only half the swing).
-        for (int t = 1; t <= MAX_PERIOD; t++) {
-            anim.apply(base, t, f);
-            if (approxEqual(f, f0)) {
-                anim.apply(base, t + 1, fNext);
-                if (approxEqual(fNext, f1)) { period = t; break; }
-            }
-        }
-        if (period <= 0) period = MAX_FRAMES;
-        int frames = Math.min(period, MAX_FRAMES);
-        List<float[]> track = new ArrayList<>(frames);
-        for (int k = 0; k < frames; k++) {
-            long t = Math.round((double) period * k / frames);
-            Matrix4f fk = new Matrix4f();
-            anim.apply(base, reversed ? -t : t, fk);
-            track.add(arr(fk));
-        }
-        Map<String, Object> a = new LinkedHashMap<>();
-        a.put("period", period);
-        a.put("frames", track);
-        return a;
-    }
-
     // ── Helpers ────────────────────────────────────────────────────────────
-
-    private static String nullKey(String s) { return s == null ? "" : s; }
-
-    private static String suffixOf(Display display, String prefix) {
-        for (String tag : display.getScoreboardTags()) {
-            if (tag.startsWith(prefix)) {
-                String rest = tag.substring(prefix.length());
-                return rest.startsWith(":") ? rest.substring(1) : null;
-            }
-        }
-        return null;
-    }
-
-    private static Matrix4f toMatrix(Transformation t) {
-        return new Matrix4f()
-                .translation(t.getTranslation())
-                .rotate(t.getLeftRotation())
-                .scale(t.getScale())
-                .rotate(t.getRightRotation());
-    }
-
-    private static float[] arr(Matrix4f m) {
-        float[] a = new float[16];
-        m.get(a);                 // column-major, matches THREE.Matrix4.fromArray
-        return a;
-    }
-
-    private static boolean approxEqual(Matrix4f a, Matrix4f b) {
-        float[] x = new float[16], y = new float[16];
-        a.get(x); b.get(y);
-        for (int i = 0; i < 16; i++) if (Math.abs(x[i] - y[i]) > EPS) return false;
-        return true;
-    }
-
-    private static String itemTexture(ItemStack head) {
-        if (!(head.getItemMeta() instanceof SkullMeta sm)) return null;
-        PlayerProfile profile = sm.getPlayerProfile();
-        if (profile == null) return null;
-        for (ProfileProperty p : profile.getProperties()) {
-            if ("textures".equals(p.getName())) return p.getValue();
-        }
-        return null;
-    }
-
-    private static String textureUrl(String base64) {
-        if (base64 == null) return null;
-        return HeadUtil.parseTexture(base64).map(HeadUtil.TextureInfo::textureUrl).orElse(null);
-    }
 
     private static String cap(String s) {
         return s.isEmpty() ? s : s.charAt(0) + s.substring(1).toLowerCase();
