@@ -848,6 +848,12 @@ public class CustomBlockRegistry {
         }
     }
 
+    /** Whether the block's display animation currently spins CCW (reversed). Read by the mechanism
+     *  snapshot before {@link #onBlockRemoved} clears the direction, so a glued block keeps its spin. */
+    boolean isSpinReversed(LocationKey key) {
+        return animationDirection.get(key) == RotationNetwork.SpinDirection.CCW;
+    }
+
     void setAnimationDirection(LocationKey key, RotationNetwork.SpinDirection dir) {
         animationDirection.put(key, dir);
         boolean reversed = (dir == RotationNetwork.SpinDirection.CCW);

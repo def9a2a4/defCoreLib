@@ -150,7 +150,9 @@ final class BasicMechanism implements Mechanism {
                     if (displayIdx >= group.size()) break;
                     var dec = mb.displayEntityConfigs.get(d);
                     if (dec.animation() != null) continue;
-                    Matrix4f extra = new Matrix4f(dm).mul(transformToMatrix(dec.transform()));
+                    Matrix4f extra = new Matrix4f(dm);
+                    applyWallOffset(extra, mb.wallFacing, dec.wallOffset());
+                    extra.mul(transformToMatrix(dec.transform()));
                     group.get(displayIdx).setTransformationMatrix(extra);
                 }
             }
@@ -381,6 +383,18 @@ final class BasicMechanism implements Mechanism {
                 .rotate(t.getLeftRotation())
                 .scale(t.getScale())
                 .rotate(t.getRightRotation());
+    }
+
+    /**
+     * Apply a wall-mounted display's {@code wall_offset} as a block-local shift of {@code -facing·wallOffset},
+     * mirroring the live placement in {@code CustomBlockRegistry.applyConfig}. The shift sits between the
+     * block offset and the display transform (it moves the display/spin center, not the spin itself), and —
+     * being inside the mechanism's rotation — swings with the door. No-op for non-wall-mounted blocks.
+     */
+    static void applyWallOffset(Matrix4f m, @Nullable Vector3f facing, float wallOffset) {
+        if (facing != null && wallOffset != 0f) {
+            m.translate(-facing.x * wallOffset, -facing.y * wallOffset, -facing.z * wallOffset);
+        }
     }
 
     private static void checkMainThread() {

@@ -3,6 +3,7 @@ package anon.def9a2a4.corelib;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.inventory.Inventory;
 import org.joml.Matrix4f;
+import org.joml.Vector3f;
 import org.jspecify.annotations.Nullable;
 
 import java.util.List;
@@ -20,6 +21,12 @@ public final class MechanismBlockData {
     public final float collisionScale;
     public final @Nullable String customTypeId;
 
+    // Captured at assembly from the live custom block (see MechanismRegistry.assembleCore):
+    // spin direction (so a CCW source keeps spinning CCW inside the mechanism) and the wall-mounted
+    // facing (so wall_offset displays sit at the right depth). Both immutable once snapshotted.
+    final boolean spinReversed;
+    final @Nullable Vector3f wallFacing;
+
     // Mutable — updated by BasicMechanism.setBlockState()
     // Nullable but not annotated: @Nullable cannot be applied to qualified inner type names
     String customState;
@@ -32,7 +39,8 @@ public final class MechanismBlockData {
                        @Nullable String customTypeId, String customState,
                        List<CustomHeadBlock.DisplayEntityConfig> displayEntityConfigs,
                        CustomHeadBlock.ParticleConfig particles,
-                       Inventory storage) {
+                       Inventory storage,
+                       boolean spinReversed, @Nullable Vector3f wallFacing) {
         this.blockData = blockData;
         this.localTransform = localTransform;
         this.hasCollision = hasCollision;
@@ -42,6 +50,8 @@ public final class MechanismBlockData {
         this.displayEntityConfigs = displayEntityConfigs;
         this.particles = particles;
         this.storage = storage;
+        this.spinReversed = spinReversed;
+        this.wallFacing = wallFacing;
     }
 
     public String customState() { return customState; }

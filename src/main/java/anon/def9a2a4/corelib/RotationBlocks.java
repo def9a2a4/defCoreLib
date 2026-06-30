@@ -288,8 +288,21 @@ final class RotationBlocks {
             })
             .onTick(b -> {
                 String state = registry.getState(b);
-                if (state == null || !state.startsWith("running_")) return;
                 var key = CustomBlockRegistry.LocationKey.of(b);
+                // Auto-start: an idle engine that has fuel begins running. Mirrors the interact
+                // transition, so fuel added by any path (interact, programmatic) spins it up.
+                if (state != null && state.startsWith("idle_") && fuelManager.getFuel(key) > 0) {
+                    String axis = state.substring(state.lastIndexOf('_') + 1);
+                    String target = "running_" + axis;
+                    registry.setState(b, target);
+                    CustomHeadBlock type = registry.getTypeFromBlock(b);
+                    if (type != null) registry.applyConfig(b, type, target, 0);
+                    network.removeNode(key);
+                    network.addNode(b, blockId, RotationNetwork.axisFromState(target),
+                        RotationNetwork.NodeRole.SOURCE, enginePower, false);
+                    return;
+                }
+                if (state == null || !state.startsWith("running_")) return;
                 int remaining = fuelManager.tick(key);
                 if (remaining <= 0) {
                     // Out of fuel — transition to idle
