@@ -50,24 +50,21 @@ import java.util.logging.Logger;
  */
 final class DisplayExporter implements Listener {
 
-    private static final double GRID_Y = -58;       // build height (just above the superflat surface)
-    private static final int VARIANT_SPACING = 6;   // +x between a block's own variants (close together)
-    private static final int BLOCK_GAP = 12;        // +z between different blocks (well apart)
-    private static final int SECTION_GAP = 24;      // +z between namespace sections
+    private static final double GRID_Y = -60;       // build height (on the superflat surface)
+    private static final int AXIS_GAP = 8;          // offset of each quadrant from the centre axes
+                                                    // (nearest cells across an axis are 2×AXIS_GAP
+                                                    // apart, so quadrants never overlap)
+    private static final int SPACING = 4;           // cells 4 apart (demo / rotation / slabs)
+    private static final int WINDMILL_SPACING = 12; // windmill "large display" quadrant
     private static final int MAX_PERIOD = 2400;     // tick cap for loop detection (2 min)
     private static final int MAX_FRAMES = 120;
     private static final float EPS = 1.0e-3f;
-
-    // Namespace section order in the inspection grid; verticalslabs last (least important).
-    private static final List<String> SECTION_ORDER = List.of("demo", "rotation");
-    private static final String LAST_SECTION = "verticalslabs";
 
     private final CoreLibPlugin plugin;
     private final CustomBlockRegistry registry;
     private final Path outPath;
     private final boolean keepAlive;   // leave blocks placed + server running for in-game inspection
     private boolean done;
-    private int rowZ;                  // grid cursor: current block's row (+z)
 
     private DisplayExporter(CoreLibPlugin plugin, CustomBlockRegistry registry, Path outPath, boolean keepAlive) {
         this.plugin = plugin;
@@ -119,56 +116,61 @@ final class DisplayExporter implements Listener {
 
     // ── Export ─────────────────────────────────────────────────────────────
 
+    /** One layout quadrant: a 2D grid growing outward from the origin in (sx, sz). One block per
+     *  row (variants along x); blocks step along z. */
+    private static final class Quad {
+        final int sx, sz, spacing;
+        int row;
+        Quad(int sx, int sz, int spacing) { this.sx = sx; this.sz = sz; this.spacing = spacing; }
+    }
+
     private Map<String, Object> exportAll(Logger log) {
         World world = Bukkit.getWorlds().get(0);
-        rowZ = 0;
-        String curNs = null;
+        Quad demo = new Quad(1, 1, SPACING);
+        Quad rotation = new Quad(-1, 1, SPACING);
+        Quad slabs = new Quad(1, -1, SPACING);
+        Quad windmill = new Quad(-1, -1, WINDMILL_SPACING);
+
         Map<String, Object> out = new LinkedHashMap<>();
-        for (CustomHeadBlock type : orderedTypes()) {
-            if (!type.namespace().equals(curNs)) {
-                if (curNs != null) rowZ += SECTION_GAP;
-                curNs = type.namespace();
-                log.info("== section: " + curNs + " (z=" + rowZ + ")");
-            }
+        for (CustomHeadBlock type : registry.allTypes()) {
+            Quad quad = quadFor(type, demo, rotation, slabs, windmill);
             try {
-                List<Map<String, Object>> variants = exportType(type, world, log);
+                List<Map<String, Object>> variants = exportType(type, world, quad, log);
                 Map<String, Object> entry = new LinkedHashMap<>();
                 entry.put("variants", variants);
                 out.put(type.fullId(), entry);
             } catch (Throwable t) {
                 log.warning("export " + type.fullId() + ": " + t);
             }
-            rowZ += BLOCK_GAP;
         }
         if (keepAlive) setupViewing(world, log);
         return out;
     }
 
-    /** Types ordered by namespace section (demo, rotation, …, verticalslabs last). */
-    private List<CustomHeadBlock> orderedTypes() {
-        List<CustomHeadBlock> types = new ArrayList<>(registry.allTypes());
-        types.sort(java.util.Comparator.comparingInt(t -> sectionRank(t.namespace())));
-        return types;
+    /** Quadrant for a type: demo (+x,+z), rotation (−x,+z), verticalslabs (+x,−z), windmills the
+     *  "large display" quadrant (−x,−z). */
+    private Quad quadFor(CustomHeadBlock type, Quad demo, Quad rotation, Quad slabs, Quad windmill) {
+        String ns = type.namespace();
+        if (ns.equals("verticalslabs")) return slabs;
+        if (ns.equals("rotation")) return type.typeId().contains("windmill") ? windmill : rotation;
+        return demo;   // demo + any other namespace
     }
 
-    private int sectionRank(String ns) {
-        if (ns.equals(LAST_SECTION)) return 100;
-        int i = SECTION_ORDER.indexOf(ns);
-        return i >= 0 ? i : 50;
-    }
-
-    /** The placedOn faces to enumerate for a type (each becomes a placement variant). */
+    /** The placedOn faces to enumerate for a type. Blocks declare orientations via `allowed_faces`
+     *  and/or `placement_state_map`; we union both (→ DOWN-only if neither is present) so wall
+     *  orientations (gears/shafts/windmills) are enumerated, not just the floor. */
     private List<BlockFace> placedOnFaces(CustomHeadBlock type) {
+        java.util.LinkedHashSet<BlockFace> faces = new java.util.LinkedHashSet<>();
         CustomHeadBlock.PlacementConfig pc = type.placement();
-        if (pc != null && !pc.allowedFaces().isEmpty()) {
-            return new ArrayList<>(pc.allowedFaces());
-        }
-        return List.of(BlockFace.DOWN);   // floor-only default
+        if (pc != null) faces.addAll(pc.allowedFaces());
+        if (type.placementStateMap() != null) faces.addAll(type.placementStateMap().keySet());
+        if (faces.isEmpty()) faces.add(BlockFace.DOWN);
+        return new ArrayList<>(faces);
     }
 
-    /** Emit each placement (floor/walls) × spin-state (idle / spinning / reversed). A block's
-     *  variants share one row (+x), clustered together; different blocks sit on separate rows. */
-    private List<Map<String, Object>> exportType(CustomHeadBlock type, World world, Logger log) {
+    /** Emit each placement (floor/walls) × spin-state (idle / spinning / reversed) into the type's
+     *  quadrant. A block's variants share one row (+x); the next block steps along z. */
+    private List<Map<String, Object>> exportType(CustomHeadBlock type, World world, Quad quad, Logger log) {
         List<Map<String, Object>> variants = new ArrayList<>();
         int vi = 0;
         for (BlockFace placedOn : placedOnFaces(type)) {
@@ -183,23 +185,25 @@ final class DisplayExporter implements Listener {
             String baseLabel = placedOn == BlockFace.DOWN ? "Floor" : ("Wall " + cap(placedOn.name()));
             String baseId = placedOn == BlockFace.DOWN ? "floor" : ("wall_" + placedOn.name().toLowerCase());
 
-            // Idle (placement state, animation suppressed).
-            variants.add(buildVariant(type, world, placedOn, idleState, baseId, baseLabel,
+            variants.add(buildVariant(type, world, quad, placedOn, idleState, baseId, baseLabel,
                     animated ? "idle" : "", false, false, vi++, log));
             if (animated) {
-                variants.add(buildVariant(type, world, placedOn, spinState, baseId, baseLabel,
+                variants.add(buildVariant(type, world, quad, placedOn, spinState, baseId, baseLabel,
                         "spinning", true, false, vi++, log));
-                variants.add(buildVariant(type, world, placedOn, spinState, baseId, baseLabel,
+                variants.add(buildVariant(type, world, quad, placedOn, spinState, baseId, baseLabel,
                         "reversed", true, true, vi++, log));
             }
         }
+        quad.row++;
         return variants;
     }
 
-    private Map<String, Object> buildVariant(CustomHeadBlock type, World world, BlockFace placedOn,
+    private Map<String, Object> buildVariant(CustomHeadBlock type, World world, Quad quad, BlockFace placedOn,
             String state, String baseId, String baseLabel, String suffix,
             boolean animate, boolean reversed, int vi, Logger log) {
-        Location loc = new Location(world, vi * VARIANT_SPACING, GRID_Y, rowZ);
+        int x = quad.sx * (AXIS_GAP + vi * quad.spacing);
+        int z = quad.sz * (AXIS_GAP + quad.row * quad.spacing);
+        Location loc = new Location(world, x, GRID_Y, z);
         loc.getChunk().load(true);
         Block block = loc.getBlock();
 
@@ -248,7 +252,7 @@ final class DisplayExporter implements Listener {
      *  on the blocks without needing op/teleport. */
     private void setupViewing(World world, Logger log) {
         try {
-            world.setSpawnLocation(2, (int) GRID_Y + 1, -5);
+            world.setSpawnLocation(0, (int) GRID_Y + 2, 0);   // centre of the four quadrants
             world.setTime(6000);
             world.setStorm(false);
             world.setThundering(false);
