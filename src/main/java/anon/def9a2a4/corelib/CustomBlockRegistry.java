@@ -1091,9 +1091,6 @@ public class CustomBlockRegistry {
     // ──────────────────────────────────────────────────────────────────────
 
     private final List<org.bukkit.NamespacedKey> registeredRecipeKeys = new ArrayList<>();
-    // Recipes that have custom block ingredients — keyed by recipe NamespacedKey
-    // Maps recipe key → map of (ingredient slot char → required block ID)
-    private final Map<org.bukkit.NamespacedKey, Map<Character, String>> headIngredientRecipes = new HashMap<>();
 
     /** Record for head-input stonecutter recipes (not registered with Bukkit). */
     public record HeadStonecutterRecipe(String inputBlockId, String outputBlockId, int amount) {}
@@ -1109,7 +1106,6 @@ public class CustomBlockRegistry {
         }
     }
 
-    @SuppressWarnings("deprecation")
     private void registerRecipesForType(CustomHeadBlock type) {
         if (!type.hasRecipes()) return;
         String prefix = type.namespace() + "_" + type.typeId() + "_";
@@ -1122,7 +1118,6 @@ public class CustomBlockRegistry {
                 org.bukkit.inventory.ItemStack result = type.createItem(r.amount());
                 org.bukkit.inventory.ShapedRecipe recipe = new org.bukkit.inventory.ShapedRecipe(key, result);
                 recipe.shape(r.pattern().toArray(new String[0]));
-                Map<Character, String> headIngredients = new HashMap<>();
                 for (var entry : r.key().entrySet()) {
                     CustomHeadBlock.IngredientSpec spec = entry.getValue();
                     if (spec.isTag()) {
@@ -1131,16 +1126,11 @@ public class CustomBlockRegistry {
                     } else if (spec.isMaterial()) {
                         recipe.setIngredient(entry.getKey(), spec.material());
                     } else if (spec.isBlock()) {
-                        recipe.setIngredient(entry.getKey(),
-                                new org.bukkit.inventory.RecipeChoice.MaterialChoice(Material.PLAYER_HEAD));
-                        headIngredients.put(entry.getKey(), spec.blockId());
+                        recipe.setIngredient(entry.getKey(), choiceForBlock(spec.blockId()));
                     }
                 }
                 Bukkit.addRecipe(recipe);
                 registeredRecipeKeys.add(key);
-                if (!headIngredients.isEmpty()) {
-                    headIngredientRecipes.put(key, headIngredients);
-                }
             } catch (Exception e) {
                 plugin.getLogger().warning("Failed to register shaped recipe '" + prefix + r.id() + "': " + e.getMessage());
             }
@@ -1152,29 +1142,15 @@ public class CustomBlockRegistry {
                 org.bukkit.NamespacedKey key = new org.bukkit.NamespacedKey(plugin, prefix + r.id());
                 org.bukkit.inventory.ItemStack result = type.createItem(r.amount());
                 org.bukkit.inventory.ShapelessRecipe recipe = new org.bukkit.inventory.ShapelessRecipe(key, result);
-                boolean hasHeadIngredients = false;
                 for (CustomHeadBlock.IngredientSpec spec : r.ingredients()) {
                     if (spec.isMaterial()) {
                         recipe.addIngredient(spec.material());
                     } else if (spec.isBlock()) {
-                        recipe.addIngredient(
-                                new org.bukkit.inventory.RecipeChoice.MaterialChoice(Material.PLAYER_HEAD));
-                        hasHeadIngredients = true;
+                        recipe.addIngredient(choiceForBlock(spec.blockId()));
                     }
                 }
                 Bukkit.addRecipe(recipe);
                 registeredRecipeKeys.add(key);
-                if (hasHeadIngredients) {
-                    Map<Character, String> specMap = new HashMap<>();
-                    int idx = 0;
-                    for (CustomHeadBlock.IngredientSpec spec : r.ingredients()) {
-                        if (spec.isBlock()) {
-                            specMap.put((char) ('0' + idx), spec.blockId());
-                        }
-                        idx++;
-                    }
-                    headIngredientRecipes.put(key, specMap);
-                }
                 if (type.itemMaterial() != null
                         && r.ingredients().size() == 1
                         && r.ingredients().get(0).isMaterial()
@@ -1213,20 +1189,28 @@ public class CustomBlockRegistry {
         }
     }
 
+    /** RecipeChoice for a custom-block ingredient: an ExactChoice of the referenced type's item,
+     *  so the recipe book renders the real head/item and matches it by its (PDC-bearing) meta —
+     *  no PrepareItemCraft PDC check needed. Falls back to any player head if the referenced type
+     *  isn't registered (a YAML typo). */
+    private org.bukkit.inventory.RecipeChoice choiceForBlock(String blockId) {
+        CustomHeadBlock refType = getType(blockId);
+        if (refType == null) {
+            plugin.getLogger().warning("Recipe ingredient references unknown block '" + blockId
+                    + "' — falling back to any player head");
+            return new org.bukkit.inventory.RecipeChoice.MaterialChoice(Material.PLAYER_HEAD);
+        }
+        return new org.bukkit.inventory.RecipeChoice.ExactChoice(refType.createItem(1));
+    }
+
     /** Remove all previously registered recipes. */
     void unregisterRecipes() {
         for (org.bukkit.NamespacedKey key : registeredRecipeKeys) {
             Bukkit.removeRecipe(key);
         }
         registeredRecipeKeys.clear();
-        headIngredientRecipes.clear();
         headStonecutterRecipes.clear();
         toggleRecipes.clear();
-    }
-
-    /** Get head ingredient requirements for a recipe key (for PrepareItemCraftEvent validation). */
-    @Nullable Map<Character, String> getHeadIngredients(org.bukkit.NamespacedKey recipeKey) {
-        return headIngredientRecipes.get(recipeKey);
     }
 
     @Nullable ToggleRecipeInfo getToggleRecipe(org.bukkit.NamespacedKey recipeKey) {

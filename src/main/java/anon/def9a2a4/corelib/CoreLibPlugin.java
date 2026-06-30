@@ -614,33 +614,15 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
     }
 
     // ──────────────────────────────────────────────────────────────────────
-    // Recipe validation — verify custom block ingredients by PDC, not ExactChoice
+    // Recipe result customization — custom-block ingredients match via ExactChoice
+    // (see CustomBlockRegistry.choiceForBlock); here we only handle toggle recipes
+    // and capture banner ingredients onto windmill/fan results.
     // ──────────────────────────────────────────────────────────────────────
 
     @EventHandler(priority = EventPriority.HIGH)
     public void onPrepareCraft(org.bukkit.event.inventory.PrepareItemCraftEvent event) {
         if (event.getRecipe() == null) return;
         if (!(event.getRecipe() instanceof org.bukkit.Keyed keyed)) return;
-
-        Map<Character, String> headIngredients = registry.getHeadIngredients(keyed.getKey());
-        if (headIngredients != null) {
-            // Validate PLAYER_HEAD items by consuming from required ingredients list.
-            // This correctly handles recipes needing multiple different head types.
-            List<String> remaining = new ArrayList<>(headIngredients.values());
-            org.bukkit.inventory.ItemStack[] matrix = event.getInventory().getMatrix();
-            for (ItemStack item : matrix) {
-                if (item == null || item.getType() != Material.PLAYER_HEAD) continue;
-                String blockType = null;
-                if (item.getItemMeta() != null) {
-                    blockType = item.getItemMeta().getPersistentDataContainer()
-                            .get(CustomBlockRegistry.BLOCK_TYPE_KEY, PersistentDataType.STRING);
-                }
-                if (!remaining.remove(blockType)) {
-                    event.getInventory().setResult(null);
-                    return;
-                }
-            }
-        }
 
         var toggle = registry.getToggleRecipe(keyed.getKey());
         if (toggle != null) {
@@ -665,8 +647,11 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         captureBannerIngredients(event.getInventory());
     }
 
-    /** If the crafted result is a custom block with a displayItemResolver, capture banner
-     *  items from the crafting matrix onto the result's PDC. */
+    /** Capture the crafting matrix's banner ingredients onto a windmill/fan result's blade PDC,
+     *  so the placed blades show those banners (patterns included). For windmills (which carry a
+     *  bannerTier) also derive the tier from the banners and swap the result to the matching
+     *  windmill — plain → Windmill, Large → Large Windmill, Huge → Huge Windmill — rejecting a mix
+     *  of tiers. The fan (no bannerTier) just captures its blades, any banner allowed. */
     private void captureBannerIngredients(org.bukkit.inventory.CraftingInventory inv) {
         ItemStack result = inv.getResult();
         if (result == null || result.getType() != Material.PLAYER_HEAD) return;
@@ -677,11 +662,10 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         if (typeId == null) return;
         CustomHeadBlock type = registry.getType(typeId);
         if (type == null || type.displayItemResolver() == null) return;
-        BannerTier requiredTier = type.bannerTier();
+        // Windmills carry a bannerTier and tier-swap by banner; the fan (also banner-bladed) doesn't.
+        boolean isWindmill = type.bannerTier() != null;
 
-        // Matrix is 1-indexed (slot 0 = result): slots 1-9 are the 3x3 grid
-        // Slot layout: 1=TL 2=TC 3=TR 4=ML 5=MC 6=MR 7=BL 8=BC 9=BR
-        // getMatrix() returns 0-indexed array of length 9: [0]=TL .. [8]=BR
+        // getMatrix() is 0-indexed length 9: [0]=TL .. [8]=BR. The blades are the four "+" arms.
         ItemStack[] matrix = inv.getMatrix();
         // Map: top-center(1) → blade_0, middle-right(5) → blade_1,
         //       bottom-center(7) → blade_2, middle-left(3) → blade_3
@@ -690,13 +674,14 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         boolean hasBanners = false;
         byte[][] bladeData = new byte[4][];
         java.util.List<ItemStack> banners = new java.util.ArrayList<>();
+        BannerTier bannerTier = null; // common tier across the banners (windmills only)
         for (int i = 0; i < 4; i++) {
             ItemStack banner = matrix[bannerSlots[i]];
             if (banner != null && banner.getType().name().endsWith("_BANNER")) {
-                // Tier-gated windmills only craft with the matching banner tier.
-                if (requiredTier != null && !LargeBannerRecipes.matches(banner, requiredTier)) {
-                    inv.setResult(null);
-                    return;
+                if (isWindmill) {
+                    BannerTier t = bannerTierOf(banner);
+                    if (bannerTier == null) bannerTier = t;
+                    else if (bannerTier != t) { inv.setResult(null); return; } // no mixing tiers
                 }
                 // Strip the tier marker/auto-name so the blade renders/labels as its base colour.
                 ItemStack blade = LargeBannerRecipes.stripTier(banner.asQuantity(1));
@@ -706,6 +691,13 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
             }
         }
         if (!hasBanners) return;
+
+        // Windmills: swap the result to the windmill matching the banners' tier.
+        if (isWindmill && bannerTier != null && bannerTier != type.bannerTier()) {
+            CustomHeadBlock tierType = windmillForTier(bannerTier);
+            if (tierType == null) return;
+            result = tierType.createItem(result.getAmount());
+        }
 
         ItemStack newResult = result.clone();
         var newMeta = newResult.getItemMeta();
@@ -718,6 +710,23 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         CustomBlockRegistry.applySailLore(newMeta, banners);
         newResult.setItemMeta(newMeta);
         inv.setResult(newResult);
+    }
+
+    /** The banner's tier: a HUGE / LARGE marker, else NORMAL (a plain banner). */
+    private static BannerTier bannerTierOf(ItemStack banner) {
+        if (LargeBannerRecipes.isHugeBanner(banner)) return BannerTier.HUGE;
+        if (LargeBannerRecipes.isLargeBanner(banner)) return BannerTier.LARGE;
+        return BannerTier.NORMAL;
+    }
+
+    /** The windmill block type for a banner tier (the Windmill recipe swaps to it by banner). */
+    private CustomHeadBlock windmillForTier(BannerTier tier) {
+        String id = switch (tier) {
+            case NORMAL -> "rotation:windmill";
+            case LARGE  -> "rotation:large_windmill";
+            case HUGE   -> "rotation:huge_windmill";
+        };
+        return registry.getType(id);
     }
 
     /** Copy blade PDC from a placed skull block onto an item (for drops / pick-block). */

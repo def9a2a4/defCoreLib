@@ -644,10 +644,13 @@ blocks:
     recipes:
       craft:
         shaped:
-          - pattern: [" B ", "BSB", " B "]
+          # Bearing center + 4 banners. The output tier is chosen from the banners'
+          # tier at craft time (CoreLibPlugin.captureBannerIngredients): plain → Windmill,
+          # Large → Large Windmill, Huge → Huge Windmill. Patterns are preserved onto the blades.
+          - pattern: [" B ", "BYB", " B "]
             key:
               B: { tag: banners }
-              S: { material: STICK }
+              Y: { block: rotation:bearing }
 
   # ─── Large Windmill ─────────────────────────────────────────────────────
   # Source: 5 SU. Always spinning. 3x scale of rotation:windmill banners.
@@ -657,6 +660,7 @@ blocks:
     lore:
       - "&7Produces 5 units of rotation power"
       - "&7Always spinning"
+      - "&7Crafted like a Windmill using Large banners"
     texture: "@large_windmill"
     drops: self
     break_sound: { sound: BLOCK_WOOD_BREAK, volume: 0.8, pitch: 0.8 }
@@ -704,13 +708,8 @@ blocks:
           - { material: WHITE_BANNER, tag: blade_c, transform: { translation: [0, -1.25, 0], scale: [2.25, 2.25, 2.25], left_rotation: [180, 1, 0, 1] }, wall_offset: 0.25 }
           - { material: WHITE_BANNER, tag: blade_d, transform: { translation: [0, 0, -1.25], scale: [2.25, 2.25, 2.25], left_rotation: [-120, 1, -1, 1] }, wall_offset: 0.25 }
         animation: { type: rotate, axis: [1, 0, 0], speed: 2.0 }
-    recipes:
-      craft:
-        shaped:
-          - pattern: [" B ", "BIB", " B "]
-            key:
-              B: { tag: banners }
-              I: { material: IRON_BLOCK }
+    # No own recipe — crafted via the Windmill recipe with Large banners
+    # (CoreLibPlugin.captureBannerIngredients swaps the result by banner tier).
 
   # ─── Huge Windmill ──────────────────────────────────────────────────────
   # Source: 15 SU. Always spinning. 4x scale of demo:windmill banners.
@@ -721,6 +720,7 @@ blocks:
     lore:
       - "&7Produces 15 units of rotation power"
       - "&7Always spinning"
+      - "&7Crafted like a Windmill using Huge banners"
     texture: "@large_windmill"
     drops: self
     break_sound: { sound: BLOCK_WOOD_BREAK, volume: 0.8, pitch: 0.8 }
@@ -768,13 +768,8 @@ blocks:
           - { material: WHITE_BANNER, tag: blade_c, transform: { translation: [0, -1.667, 0], scale: [3.0, 3.0, 3.0], left_rotation: [180, 1, 0, 1] }, wall_offset: 0.25 }
           - { material: WHITE_BANNER, tag: blade_d, transform: { translation: [0, 0, -1.667], scale: [3.0, 3.0, 3.0], left_rotation: [-120, 1, -1, 1] }, wall_offset: 0.25 }
         animation: { type: rotate, axis: [1, 0, 0], speed: 1.0 }
-    recipes:
-      craft:
-        shaped:
-          - pattern: [" B ", "BIB", " B "]
-            key:
-              B: { tag: banners }
-              I: { material: DIAMOND_BLOCK }
+    # No own recipe — crafted via the Windmill recipe with Huge banners
+    # (CoreLibPlugin.captureBannerIngredients swaps the result by banner tier).
 
   # ─── Fan ────────────────────────────────────────────────────────────────
   # Consumer: 1 SU. Spins only while powered; blows entities (mobs, players,
