@@ -99,9 +99,18 @@ export async function renderPlaced(item, container, variantIndex = 0) {
 
   const { scene, camera, renderer, controls } = makeViewer(container, { dist: 3.6, target: [0, 0.1, 0] });
 
-  // Base head (the custom head block itself), rendered as a floor-seated skull.
+  // Base head (the custom head block itself). A floor PLAYER_HEAD is seated; a PLAYER_WALL_HEAD is
+  // mounted vertically-centred and pushed onto the wall (−0.25·facing), matching MC's skull renderer.
   if (variant.baseHeadTextureUrl) {
-    try { scene.add(skullMesh(await loadSkin(variant.baseHeadTextureUrl))); } catch { /* skip */ }
+    try {
+      const wall = !!variant.baseHeadWall;
+      const skull = skullMesh(await loadSkin(variant.baseHeadTextureUrl), { seated: !wall });
+      if (wall && variant.baseHeadFacing) {
+        const f = { north: [0, 0, -1], south: [0, 0, 1], east: [1, 0, 0], west: [-1, 0, 0] }[variant.baseHeadFacing] || [0, 0, 0];
+        skull.position.set(-0.25 * f[0], 0, -0.25 * f[2]);
+      }
+      scene.add(skull);
+    } catch { /* skip */ }
   }
 
   const animated = [];

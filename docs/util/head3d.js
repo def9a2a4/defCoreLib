@@ -71,13 +71,16 @@ export function headCubeMesh(skin) {
  *  an 8×8×8 (½-block) skull + 8.5³ hat, occupying the bottom-centre of the block model
  *  (xz centred, y −0.5..0). Matches the local geometry of a custom head block and of a
  *  player-head ItemDisplay, so a placed display's read-back transform lands correctly. */
-export function skullMesh(skin) {
+export function skullMesh(skin, { seated = true } = {}) {
   const group = new THREE.Group();
   const S = 0.5;          // 8/16 block
   const inner = new THREE.Mesh(new THREE.BoxGeometry(S, S, S), cubeMaterials(skin, 0, 0, false));
   const outer = new THREE.Mesh(new THREE.BoxGeometry(S * 1.0625, S * 1.0625, S * 1.0625), cubeMaterials(skin, 32, 0, true));
-  inner.position.y = -0.25;     // seat the skull on the block floor (y −0.5..0)
-  outer.position.y = -0.25;
+  // seated: floor PLAYER_HEAD, skull on the block floor (y −0.5..0). centered: PLAYER_WALL_HEAD,
+  // mounted at the block's vertical middle (y −0.25..0.25), matching MC's skull renderer.
+  const yOff = seated ? -0.25 : 0;
+  inner.position.y = yOff;
+  outer.position.y = yOff;
   group.add(inner, outer);
   return group;
 }

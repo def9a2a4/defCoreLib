@@ -150,7 +150,10 @@ function mountPlacedViewer(host, item, variants) {
   };
   const select = panel.querySelector('.variant-select');
   if (select) select.addEventListener('change', () => show(+select.value));
-  show(0);
+  // Default to the floor orientation (the canonical, known-good view) when present, else variant 0.
+  const floorIdx = Math.max(0, variants.findIndex((v) => String(v.id || '').startsWith('floor')));
+  if (select) select.value = String(floorIdx);
+  show(floorIdx);
 }
 
 async function init() {
