@@ -1,5 +1,5 @@
 import {
-  esc, mcText, stripColors, iconHtml, recipesHtml, machineRecipesHtml, hydrateHeads,
+  esc, mcText, stripColors, iconHtml, recipesHtml, machineRecipesHtml, producedByHtml, hydrateHeads,
 } from './render.js';
 import { mountInHand, mountPlaced, hasInHand } from './viewers.js';
 
@@ -89,10 +89,12 @@ function renderItem(item, itemsById) {
     ${lore}
     ${usedInShowcasesHtml(item)}
     <div class="viewers" id="viewers"></div>
-    <div class="detail-section">
-      <h2 class="section-title">Recipes</h2>
-      ${recipesHtml(item, itemsById)}
-    </div>
+    ${item.recipes?.length || !item.producedBy?.length
+      ? `<div class="detail-section"><h2 class="section-title">Recipes</h2>${recipesHtml(item, itemsById)}</div>`
+      : ''}
+    ${item.producedBy?.length
+      ? `<div class="detail-section"><h2 class="section-title">Obtained from</h2>${producedByHtml(item.producedBy, itemsById)}</div>`
+      : ''}
     ${item.machineRecipes?.length
       ? `<div class="detail-section"><h2 class="section-title">${esc(item.machineType || 'Processing')} Recipes</h2>${machineRecipesHtml(item.machineRecipes, itemsById)}</div>`
       : ''}

@@ -188,6 +188,26 @@ export function machineRecipesHtml(recipes, itemsById) {
   return `<div class="grind-grid">${rows}</div>`;
 }
 
+// Reverse of machineRecipesHtml: this item's catalog page showing the machine(s) that produce
+// it. Groups by machine, with a heading linking to the machine, then the producing recipe rows.
+export function producedByHtml(producedBy, itemsById) {
+  const list = producedBy || [];
+  if (!list.length) return '';
+  const byMachine = new Map();   // machineId → { machineType, recipes: [] }
+  for (const p of list) {
+    if (!byMachine.has(p.machine)) byMachine.set(p.machine, { machineType: p.machineType, recipes: [] });
+    byMachine.get(p.machine).recipes.push(p.recipe);
+  }
+  return [...byMachine.entries()].map(([machineId, g]) => {
+    const m = itemsById.get(machineId);
+    const name = m ? stripColors(m.name) : machineId;
+    const heading = m
+      ? `<a class="produced-by-machine" href="${itemHref(machineId)}">${esc(name)}</a>`
+      : `<span class="produced-by-machine">${esc(name)}</span>`;
+    return `<div class="produced-by"><div class="produced-by-label">${heading}</div>${machineRecipesHtml(g.recipes, itemsById)}</div>`;
+  }).join('');
+}
+
 // Replace [data-head] placeholders with rendered isometric head images (from local skins).
 export async function hydrateHeads(root) {
   const els = root.querySelectorAll('[data-head]');

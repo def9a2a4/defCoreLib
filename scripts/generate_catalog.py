@@ -754,6 +754,15 @@ def main() -> int:
         elif recs:
             print(f"  ! {fname}: machine {machine_id} not in catalog", file=sys.stderr)
 
+        # Reverse index: tag each custom-item output with the machine recipe that makes it,
+        # so its catalog page shows "Produced by <machine>". (Vanilla outputs have no page.)
+        for r in recs:
+            for o in r["outputs"]:
+                out_item = items_by_id.get(o["ref"])
+                if out_item is not None:
+                    out_item.setdefault("producedBy", []).append(
+                        {"machine": machine_id, "machineType": label, "recipe": r})
+
     catalog = {
         "namespaces": sorted({it["namespace"] for it in items}),
         "items": items,

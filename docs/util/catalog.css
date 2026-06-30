@@ -219,6 +219,11 @@ h1 {
 }
 /* Machine recipes: input(s) (+ glass bottle, …) → output(s); each side wraps. */
 .machine-io { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+/* "Obtained from" reverse links: which machine produces this item. */
+.produced-by { margin-bottom: 12px; }
+.produced-by-label { color: #4ecca3; font-size: 0.85em; margin-bottom: 6px; }
+a.produced-by-machine { color: #4ecca3; text-decoration: none; }
+a.produced-by-machine:hover { text-decoration: underline; }
 .slot .chance {
   position: absolute;
   left: 1px;
