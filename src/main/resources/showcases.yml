@@ -1,20 +1,24 @@
 # Demo "showcases": multi-block machines that demonstrate plugin functionality.
 # Placed as real, network-joined blocks. `at` is [dx,dy,dz] from the build origin; `facing` is the
-# placement face (down = floor → Y axis; north/south → Z axis; east/west → X axis). Rotation blocks
-# connect to same-axis cardinal neighbours, so a straight same-facing line transmits power with no gears.
-# `state` is optional (defaults to the placement_state_map entry for that face).
+# placement face. KEY RULE (verified in RotationNetwork): a block connects only to the two neighbours
+# ALONG ITS SPIN AXIS — facing down → Y axis (couples up/down); north/south → Z (couples N/S); east/west
+# → X (couples E/W). So a power chain must run *along* the shared axis.
+#   • grindstone is always Y-axis (wall-mounted, powered from directly above/below) regardless of facing.
+#   • drill/fan take their axis from facing.
+#   • generator is a PASSIVE source (spins by default; redstone DISABLES it) — never pulse it.
+#   • engine only produces power once FUELLED (the runner feeds it); idle/static until then.
+#   • reverser only flips direction when it is itself redstone-powered.
 #
-# `activate`: passive | { fuel: [x,y,z] } (feed the engine) | { pulse: [x,y,z] } (redstone the source).
-# `expect`:  behavioural assertions for the Phase-2 runner (network_powered / spinning / mechanism_swung).
+# `activate`: passive | { fuel: [x,y,z] } | { pulse: [x,y,z] }.  `expect`: phase-2 assertions.
 showcases:
-  # ── Engine-powered (fuel source) ───────────────────────────────────────
+  # ── Engine-powered (fuel source; static until the runner fuels them) ────
   - id: engine_fan
     name: "Engine → Fan"
     blurb: "A fuel-burning engine spins a shaft up into a fan that blows a gust of air."
     blocks:
-      - { id: "rotation:engine", facing: down, at: [0, 0, 0] }
+      - { id: "rotation:engine", facing: down, at: [0, 0, 0] }   # Y axis (couples up)
       - { id: "rotation:shaft",  facing: down, at: [0, 1, 0] }
-      - { id: "rotation:fan",    facing: down, at: [0, 2, 0] }
+      - { id: "rotation:fan",    facing: down, at: [0, 2, 0] }   # floor fan = Y axis
     activate: { fuel: [0, 0, 0] }
     expect:
       - { type: network_powered, at: [0, 1, 0] }
@@ -22,56 +26,63 @@ showcases:
 
   - id: engine_grindstone
     name: "Engine → Grindstone"
-    blurb: "A fuel-burning engine drives a shaft into a grindstone that mills items to dust."
+    blurb: "A fuel-burning engine drives a vertical shaft down into a grindstone that mills items."
     blocks:
-      - { id: "rotation:engine",     facing: north, at: [0, 0, 2] }
-      - { id: "rotation:shaft",      facing: north, at: [0, 0, 1] }
-      - { id: "rotation:grindstone", facing: north, at: [0, 0, 0] }
-    activate: { fuel: [0, 0, 2] }
+      # Grindstone is Y-axis (powered from above), so the whole chain is a vertical Y column.
+      - { id: "rotation:engine",     facing: down,  at: [0, 2, 0] }
+      - { id: "rotation:shaft",      facing: down,  at: [0, 1, 0] }
+      - { id: "rotation:grindstone", facing: north, at: [0, 0, 0] }   # Y axis; faces N for looks
+    vanilla:
+      - { block: "STONE", at: [0, 0, 1] }   # wall the grindstone mounts against (its south support)
+    activate: { fuel: [0, 2, 0] }
     expect:
-      - { type: network_powered, at: [0, 0, 1] }
+      - { type: network_powered, at: [0, 1, 0] }
       - { type: spinning, at: [0, 0, 0] }
 
-  # ── Generator-powered (redstone source) ────────────────────────────────
+  # ── Generator-powered (passive: spins by default — do NOT pulse it) ─────
   - id: generator_drill
     name: "Generator → Drill"
-    blurb: "A redstone generator powers a drill that bores through solid stone."
+    blurb: "A redstone generator powers a drill that bores forward through solid stone."
     blocks:
+      # Horizontal Z column: all north-facing → Z axis, coupled along N/S.
       - { id: "rotation:generator", facing: north, at: [0, 0, 2] }
       - { id: "rotation:shaft",     facing: north, at: [0, 0, 1] }
-      - { id: "rotation:drill",     facing: north, at: [0, 0, 0] }
+      - { id: "rotation:drill",     facing: north, at: [0, 0, 0] }   # bores north (−z)
     vanilla:
-      - { block: "STONE", at: [0, 0, -1] }   # target the drill bores into
-    activate: { pulse: [1, 0, 2] }
+      - { block: "STONE", at: [0, 0, -1] }   # the block the drill chews
+    activate: passive
     expect:
       - { type: network_powered, at: [0, 0, 1] }
       - { type: spinning, at: [0, 0, 0] }
 
   - id: generator_reverser_fan
     name: "Generator → Reverser → Fan"
-    blurb: "A redstone generator feeds a reverser that flips the spin direction before a fan."
+    blurb: "A redstone generator drives a fan, but a powered reverser flips the spin direction first."
     blocks:
       - { id: "rotation:generator", facing: down, at: [0, 0, 0] }
-      - { id: "rotation:reverser",  facing: down, at: [0, 1, 0] }
+      - { id: "rotation:reverser",  facing: down, at: [0, 1, 0] }   # reverses (redstone block beside it)
       - { id: "rotation:shaft",     facing: down, at: [0, 2, 0] }
       - { id: "rotation:fan",       facing: down, at: [0, 3, 0] }
-    activate: { pulse: [1, 0, 0] }
+    vanilla:
+      - { block: "REDSTONE_BLOCK", at: [1, 1, 0] }   # powers the reverser → flips direction
+    activate: passive
     expect:
       - { type: network_powered, at: [0, 2, 0] }
       - { type: spinning, at: [0, 3, 0] }
 
   - id: generator_drawbridge
     name: "Generator → Drawbridge"
-    blurb: "A redstone generator powers a rotator hinge that swings a plank drawbridge open and shut."
+    blurb: "A redstone generator powers a rotator hinge; a pulse swings the plank drawbridge open."
     blocks:
-      - { id: "rotation:generator", facing: north, at: [0, 0, 1] }
-      - { id: "rotation:rotator",   facing: north, at: [0, 0, 0] }
+      # Generator sits BEHIND the hinge on the Z axis (couples N/S); the trigger is on the far side so
+      # it can't disable the generator.
+      - { id: "rotation:generator", facing: north, at: [0, 0, -1] }
+      - { id: "rotation:rotator",   facing: north, at: [0, 0, 0] }   # hinge, Z axis
     vanilla:
-      - { block: "OAK_PLANKS", at: [0, 1, 0] }   # the drawbridge leaf (flood-filled by the hinge)
-      - { block: "OAK_PLANKS", at: [1, 1, 0] }
+      - { block: "OAK_PLANKS", at: [0, 1, 0] }   # drawbridge leaf (flood-filled by the hinge)
       - { block: "OAK_PLANKS", at: [0, 2, 0] }
+      - { block: "OAK_PLANKS", at: [1, 1, 0] }
       - { block: "OAK_PLANKS", at: [1, 2, 0] }
-      - { block: "LEVER", at: [0, 0, 2] }        # redstone pulse triggers the swing
-    activate: { pulse: [0, 0, 2] }
+    activate: { pulse: [1, 0, 0] }   # redstone east of the hinge → rising edge → swing (not near the generator)
     expect:
       - { type: mechanism_swung, at: [0, 0, 0] }
