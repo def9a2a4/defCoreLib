@@ -1,0 +1,21 @@
+# Demo "showcases": multi-block machines that demonstrate plugin functionality.
+# Phase 1 places these as real, network-joined blocks. `at` is [dx,dy,dz] relative to the build
+# origin; `facing` is the placement face (down = floor; north/south/east/west = wall). `state` is
+# optional (defaults to the block's placement_state_map entry for that face).
+showcases:
+  - id: windmill_tower
+    name: "Windmill Tower"
+    blurb: "A windmill turns in the wind and drives a vertical shaft."
+    blocks:
+      - { id: "rotation:windmill", facing: down, at: [0, 3, 0] }
+      - { id: "rotation:shaft",    facing: down, at: [0, 2, 0] }
+      - { id: "rotation:shaft",    facing: down, at: [0, 1, 0] }
+      - { id: "rotation:gear",     facing: down, at: [0, 0, 0] }
+
+  - id: generator_shaft
+    name: "Generator + Shaft"
+    blurb: "A spinning generator feeds rotational power down a shaft into a gear."
+    blocks:
+      - { id: "rotation:generator", facing: down, at: [0, 2, 0] }
+      - { id: "rotation:shaft",     facing: down, at: [0, 1, 0] }
+      - { id: "rotation:gear",      facing: down, at: [0, 0, 0] }

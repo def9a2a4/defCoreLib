@@ -15,7 +15,7 @@ final class RotationConfig {
     int maxStructureSize = 256; // cap on flood-fill-selected mechanism structures (door/rotator/minecart)
     int glueMaxSize = 256;      // cap on a glued selection; defaults to maxStructureSize
     String glueItem = "SLIME_BALL";
-    int glueOutlineInterval = 10;
+    int glueOutlineInterval = 5;
     int glueSessionTimeout = 2400;
     int drillTickInterval = 4;
     int drillBreakStages = 10;

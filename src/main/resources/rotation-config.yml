@@ -7,7 +7,7 @@ max-structure-size: 256
 glue:
   max-size: 256           # cap on a glued selection (defaults to max-structure-size if omitted)
   item: SLIME_BALL        # material of the slime-glue authoring item
-  outline-interval: 10    # ticks between particle-outline refreshes during authoring
+  outline-interval: 5     # ticks between particle-outline refreshes during authoring
   session-timeout: 2400   # ticks of inactivity before an authoring session auto-closes
 
 drill:
