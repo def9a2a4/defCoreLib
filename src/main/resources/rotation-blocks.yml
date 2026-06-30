@@ -437,6 +437,38 @@ blocks:
           - { material: SMOOTH_STONE_SLAB, tag: top_slab,  transform: { translation: [0, 0.5, 0],  scale: [0.8, 1.0, 0.8] } }
       spinning: { copy_from: idle, animation: { type: rotate, axis: [0, 1, 0], speed: 3.0 } }
 
+  # ─── Extractor Press ──────────────────────────────────────────────────────
+  # Consumer: 1 SU. WALL only — mounts on a container, presses its contents into
+  # outputs (juices, oils, extra dyes/sugar) ejected below. Powered from a shaft
+  # on top (Y axis). Display: a stone base with a piston head that bobs while
+  # powered (the pressing motion).
+  press:
+    name: "&fExtractor Press"
+    lore:
+      - "&7Mounts on a container and presses its contents when powered"
+      - "&7Powered from the top; squeezes out juices, oils & extracts below"
+    # Iron Block
+    texture: "@iron_block"
+    drops: self
+    placement:
+      allowed_faces: [NORTH, SOUTH, EAST, WEST]
+    default_state: idle
+    states:
+      # Stone base (static) + piston head that bobs down/up while pressing.
+      idle:
+        display_entities:
+          - { material: SMOOTH_STONE_SLAB, tag: base, transform: { translation: [0, 0.0, 0],  scale: [0.85, 1.0, 0.85] }, animation: none }
+          - { material: PISTON,            tag: head, transform: { translation: [0, 0.55, 0], scale: [0.7, 0.5, 0.7] } }
+      spinning: { copy_from: idle, animation: { type: bob, amplitude: 0.18, period: 20 } }
+    recipes:
+      craft:
+        shaped:
+          - pattern: [" I ", "IPI", " S "]
+            key:
+              I: { material: IRON_INGOT }
+              P: { material: PISTON }
+              S: { material: SMOOTH_STONE }
+
   # ─── Drill ──────────────────────────────────────────────────────────────
   # Consumer: 1 SU. Breaks the block in its facing direction every 2s.
   drill:

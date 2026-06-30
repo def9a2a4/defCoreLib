@@ -31,6 +31,10 @@ fan:
   max-push: 0.5       # cap on per-tick push velocity
   push-per-su: 0.08   # extra push velocity per surplus SU
 
+press:
+  tick-interval: 20   # fixed press cycle length, in ticks
+  max-batch: 8        # cap on items pressed per cycle (batch scales with surplus SU)
+
 fuel:
   COAL: 200
   CHARCOAL: 160
@@ -51,3 +55,4 @@ power:
   drill: 1
   grindstone: 1
   fan: 1
+  press: 1

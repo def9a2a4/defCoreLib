@@ -93,7 +93,14 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
                 getLogger().info("Loaded " + rc + " grind recipes");
             }
         } catch (IOException ignored) {}
-        RotationBlocks.register(registry, rotationNetwork, fuelManager, grindRecipes, rotConfig);
+        MachineRecipes pressRecipes = new MachineRecipes();
+        try (InputStream pressStream = getResource("press-recipes.yml")) {
+            if (pressStream != null) {
+                int rc = pressRecipes.load(pressStream, getLogger());
+                getLogger().info("Loaded " + rc + " press recipes");
+            }
+        } catch (IOException ignored) {}
+        RotationBlocks.register(registry, rotationNetwork, fuelManager, grindRecipes, pressRecipes, rotConfig);
         RotationBlocks.registerWrenchRecipe();
 
         // Anchor-owned block selection ("glue") — shared by doors/rotators (wired in D3).

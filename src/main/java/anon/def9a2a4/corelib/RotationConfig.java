@@ -26,6 +26,8 @@ final class RotationConfig {
     double fanMinPush = 0.12;
     double fanMaxPush = 0.5;
     double fanPushPerSU = 0.08;
+    int pressTickInterval = 20;
+    int pressMaxBatch = 8;
     Set<Material> drillBlacklist = Set.of(
             Material.OBSIDIAN, Material.CRYING_OBSIDIAN, Material.SPAWNER,
             Material.MOVING_PISTON, Material.REINFORCED_DEEPSLATE);
@@ -85,6 +87,13 @@ final class RotationConfig {
             fanMinPush = fan.getDouble("min-push", fanMinPush);
             fanMaxPush = fan.getDouble("max-push", fanMaxPush);
             fanPushPerSU = fan.getDouble("push-per-su", fanPushPerSU);
+            loaded++;
+        }
+
+        ConfigurationSection press = yaml.getConfigurationSection("press");
+        if (press != null) {
+            pressTickInterval = press.getInt("tick-interval", pressTickInterval);
+            pressMaxBatch = press.getInt("max-batch", pressMaxBatch);
             loaded++;
         }
 
@@ -155,5 +164,6 @@ final class RotationConfig {
         powerValues.put("drill", 1);
         powerValues.put("grindstone", 1);
         powerValues.put("fan", 1);
+        powerValues.put("press", 1);
     }
 }

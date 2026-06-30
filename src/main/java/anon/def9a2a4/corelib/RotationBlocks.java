@@ -69,7 +69,7 @@ final class RotationBlocks {
 
     static void register(CustomBlockRegistry registry, RotationNetwork network,
                          EngineFuelManager fuelManager, MachineRecipes grindRecipes,
-                         RotationConfig config) {
+                         MachineRecipes pressRecipes, RotationConfig config) {
         // Overlay callbacks onto YAML-loaded blocks
         overlayStandard(registry, network, "rotation:shaft",   RotationNetwork.NodeRole.TRANSMITTER, 0, false);
         overlayStandard(registry, network, "rotation:gear",    RotationNetwork.NodeRole.TRANSMITTER, 0, true);
@@ -81,6 +81,7 @@ final class RotationBlocks {
         overlayWaterWheel(registry, network, config);
         overlayEngine(registry, network, fuelManager, config);
         overlayGrindstone(registry, network, grindRecipes, config);
+        overlayPress(registry, network, pressRecipes, config);
         overlayGenerator(registry, network, config);
         overlayDrill(registry, network, config);
         overlayFan(registry, network, config);
@@ -413,6 +414,21 @@ final class RotationBlocks {
             b -> processingMachineTick(b, network, grindRecipes, registry,
                 grindstoneMaxBatch, org.bukkit.Sound.BLOCK_GRINDSTONE_USE),
             (b, event) -> manualGrind(b, event, registry, grindRecipes)));
+    }
+
+    private static void overlayPress(CustomBlockRegistry registry, RotationNetwork network,
+                                     MachineRecipes pressRecipes, RotationConfig config) {
+        int maxBatch = config.pressMaxBatch;
+        // Same processing geometry as the grindstone: wall-mounted, powered from the top (Y),
+        // host container behind, outputs ejected below. No manual fallback — automation only.
+        overlayConsumerMachine(registry, network, new ConsumerSpec(
+            "rotation:press",
+            b -> RotationNetwork.Axis.Y,
+            config.getPower("press", 1),
+            config.pressTickInterval,
+            b -> processingMachineTick(b, network, pressRecipes, registry,
+                maxBatch, org.bukkit.Sound.BLOCK_ANVIL_USE),
+            null));
     }
 
     /** Hand-fed grinding while spinning (fallback when there's no host container). Null → not handled. */
