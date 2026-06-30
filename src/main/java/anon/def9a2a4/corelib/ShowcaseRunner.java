@@ -3,7 +3,6 @@ package anon.def9a2a4.corelib;
 import com.google.gson.GsonBuilder;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -34,7 +33,6 @@ final class ShowcaseRunner implements Listener {
     private static final int TEST_X = 1000;     // far from the docs grid → fresh, clean chunks
     private static final int TEST_Y = -50;      // in air above the superflat surface
     private static final int SPACING = 16;      // machines spaced along z
-    private static final int FUEL_TICKS = 6000; // keep fueled engines running through the window
 
     private static final long ACTIVATE_AT = 20; // ticks after build
     private static final long FINISH_AT = 80;
@@ -105,26 +103,7 @@ final class ShowcaseRunner implements Listener {
 
     private void activateAll() {
         for (Map.Entry<ShowcaseSpec, Location> e : origins.entrySet()) {
-            ShowcaseSpec spec = e.getKey();
-            Location origin = e.getValue();
-            ShowcaseSpec.Activate act = spec.activate;
-            switch (act.kind()) {
-                case "pulse" -> {
-                    if (act.at() != null) blockAt(origin, act.at()).setType(Material.REDSTONE_BLOCK, true);
-                }
-                case "fuel" -> {
-                    if (act.at() != null) {
-                        fuelManager.addFuel(CustomBlockRegistry.LocationKey.of(blockAt(origin, act.at())),
-                                FUEL_TICKS);
-                    }
-                }
-                default -> {   // passive: nudge a recalc on the first block so the network is fresh
-                    if (!spec.blocks.isEmpty()) {
-                        network.recalculate(CustomBlockRegistry.LocationKey.of(
-                                blockAt(origin, spec.blocks.get(0).at())));
-                    }
-                }
-            }
+            ShowcaseActivation.activate(e.getKey(), e.getValue(), network, fuelManager);
         }
     }
 

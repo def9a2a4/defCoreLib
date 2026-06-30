@@ -138,6 +138,14 @@ final class BasicMechanism implements Mechanism {
             if (primary instanceof org.bukkit.entity.BlockDisplay) {
                 Matrix4f bdm = new Matrix4f(dm).translate(-0.5f, -0.5f, -0.5f);
                 primary.setTransformationMatrix(bdm);
+            } else if (mb.wallFacing != null) {
+                // Wall-mounted custom head: floor heads (wallFacing == null) are already center-bottom
+                // correct; a wall head shifts +0.25 up and +0.25 toward its attachment face (= -wallFacing).
+                // Applied in the LOCAL frame on a COPY of dm so it swings with the door and doesn't corrupt
+                // the aux displays below (which reuse dm).
+                Matrix4f wdm = new Matrix4f(dm).translate(
+                    -mb.wallFacing.x * 0.25f, 0.25f, -mb.wallFacing.z * 0.25f);
+                primary.setTransformationMatrix(wdm);
             } else {
                 primary.setTransformationMatrix(dm);
             }
