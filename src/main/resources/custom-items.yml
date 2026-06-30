@@ -17,3 +17,20 @@ blocks:
       - "&7Burnable biofuel pressed from seeds"
     item_material: HONEY_BOTTLE
     placeable: false
+
+  # Intermediate mechanical component crafted from iron + copper + planks.
+  # Used as the core of the windmills and the fan.
+  bearing:
+    name: "&7Bearing"
+    lore:
+      - "&7A precision mechanical component"
+    item_material: IRON_NUGGET
+    placeable: false
+    recipes:
+      craft:
+        shaped:
+          - pattern: ["WCW", "CIC", "WCW"]
+            key:
+              W: { tag: planks }
+              C: { material: COPPER_INGOT }
+              I: { material: IRON_INGOT }

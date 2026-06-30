@@ -66,6 +66,12 @@ blocks:
             tag: rod
             transform: { translation: [0, 0, -0.5], scale: [0.66, 2.0, 0.66], left_rotation: [-90, 1, 0, 0] }
       spinning_z: { copy_from: idle_z, animation: { type: rotate, axis: [0, 0, 1], speed: 3.0 } }
+    recipes:
+      craft:
+        shapeless:
+          - ingredients:
+              - { material: LIGHTNING_ROD }
+              - { material: COPPER_INGOT }
 
   # ─── Gear ───────────────────────────────────────────────────────────────
   # Transmitter: connects perpendicular gears + along-axis like a shaft.
@@ -162,6 +168,15 @@ blocks:
             tag: disc_b
             transform: { translation: [0, 0, 0.46], scale: [1.7, 0.4, 1.7], left_rotation: [98.42, 0.8629, 0.3574, 0.3574] }
       spinning_south_z: { copy_from: idle_south_z, animation: { type: rotate, axis: [0, 0, 1], speed: 3.0 } }
+    recipes:
+      craft:
+        shaped:
+          # Iron core, copper in a +, lightning rod in the (canonical top-left) corner.
+          - pattern: ["LC ", "CIC", " C "]
+            key:
+              L: { material: LIGHTNING_ROD }
+              C: { material: COPPER_INGOT }
+              I: { material: IRON_INGOT }
 
   # ─── Clutch ─────────────────────────────────────────────────────────────
   # Transmitter: like a shaft, but disconnects when powered by redstone.
@@ -190,6 +205,15 @@ blocks:
       locked_x: {}
       locked_y: {}
       locked_z: {}
+    recipes:
+      craft:
+        shaped:
+          # Iron core, copper in a +, redstone dust in the four corners.
+          - pattern: ["RCR", "CIC", "RCR"]
+            key:
+              R: { material: REDSTONE }
+              C: { material: COPPER_INGOT }
+              I: { material: IRON_INGOT }
 
   # ─── Reverser ───────────────────────────────────────────────────────────
   # Transmitter: like a shaft, but REVERSES spin direction when redstone powered.
@@ -216,6 +240,12 @@ blocks:
       spinning_x: {}
       spinning_y: {}
       spinning_z: {}
+    recipes:
+      craft:
+        shapeless:
+          - ingredients:
+              - { block: "rotation:clutch" }
+              - { block: "rotation:gear" }
 
   # ─── Rotator ────────────────────────────────────────────────────────────
   # Consumer hinge: floor = door (Y), wall = drawbridge (X/Z). Network spin direction
@@ -345,6 +375,14 @@ blocks:
           speed: 0.02
           interval: 10
           floor_offset: [0, 0.8, 0]
+    recipes:
+      craft:
+        shaped:
+          # Blast furnace surrounded by 4 copper ingots in a +.
+          - pattern: [" C ", "CFC", " C "]
+            key:
+              C: { material: COPPER_INGOT }
+              F: { material: BLAST_FURNACE }
 
   # ─── Redstone Generator ────────────────────────────────────────────────
   # Source: 1 SU. Always on unless receiving redstone power. Expensive to craft.
@@ -409,6 +447,15 @@ blocks:
           speed: 0.01
           interval: 8
           floor_offset: [0, 0.5, 0]
+    recipes:
+      craft:
+        shaped:
+          # Blast furnace center, redstone blocks left & right, copper top & bottom.
+          - pattern: [" C ", "RFR", " C "]
+            key:
+              C: { material: COPPER_INGOT }
+              R: { material: REDSTONE_BLOCK }
+              F: { material: BLAST_FURNACE }
 
   # ─── Grindstone ─────────────────────────────────────────────────────────
   # Consumer: 1 SU. WALL only — mounts on a block and pulls from it if it's a
