@@ -18,6 +18,11 @@ showcases:
   - id: engine_fan
     name: "Engine → Fan"
     blurb: "A fuel-burning engine spins a shaft up into a fan that blows a gust of air."
+    description: >
+      The engine burns fuel — coal, charcoal, a lava bucket — to produce rotational power, measured in
+      Spin Units (SU). That power runs up the shaft (a shaft just transmits rotation along its axis) into
+      the fan, which turns it back into motion: a directed gust that pushes entities away from its face.
+      The more surplus power on the network, the stronger and farther the push.
     blocks:
       - { id: "rotation:engine", facing: down, at: [0, 0, 0] }   # Y axis (couples up)
       - { id: "rotation:shaft",  facing: down, at: [0, 1, 0] }
@@ -30,6 +35,11 @@ showcases:
   - id: engine_grindstone
     name: "Engine → Grindstone"
     blurb: "A fuel-burning engine drives a vertical shaft down into a grindstone that mills items."
+    description: >
+      A fuelled engine sends power down a vertical shaft into a grindstone. The grindstone is always a
+      Y-axis machine — it draws power from directly above or below — and grinds items fed from an adjacent
+      container, turning them to dust according to its recipe set while its wheel spins. Stop feeding the
+      engine fuel and the whole column winds down.
     blocks:
       # Grindstone is Y-axis (powered from above), so the whole chain is a vertical Y column.
       - { id: "rotation:engine",     facing: down,  at: [0, 2, 0] }
@@ -48,6 +58,11 @@ showcases:
   - id: generator_drill
     name: "Generator → Drill"
     blurb: "A redstone generator powers a drill that bores forward through solid stone."
+    description: >
+      The generator is a passive power source — it spins on its own (and redstone DISABLES it, rather
+      than enabling it). Its rotation feeds a shaft into a drill, which bores into whatever block sits in
+      front of its bit, breaking it in stages. Because rotation only couples along a block's spin axis,
+      the generator, shaft, and drill all sit in a straight line on the same axis.
     blocks:
       # Horizontal Z column (all Z axis, coupled along N/S). `facing` is the clicked face → the head
       # points the OPPOSITE way, so the drill is `south` to bore NORTH (−z) into the stone — NOT into
@@ -65,6 +80,11 @@ showcases:
   - id: generator_reverser_fan
     name: "Generator → Reverser → Fan"
     blurb: "A redstone generator drives a fan, but a powered reverser flips the spin direction first."
+    description: >
+      Power flows from the passive generator up through a reverser into a fan. A reverser is a normal
+      transmitter until it receives redstone — then it inverts the spin direction passing through it, so
+      everything downstream turns the opposite way. Here a redstone block beside the reverser flips the
+      fan, demonstrating direction control without rewiring the machine.
     blocks:
       - { id: "rotation:generator", facing: down, at: [0, 0, 0] }
       - { id: "rotation:reverser",  facing: down, at: [0, 1, 0] }   # reverses (redstone block beside it)
@@ -80,6 +100,11 @@ showcases:
   - id: generator_drawbridge
     name: "Generator → Drawbridge"
     blurb: "A redstone generator powers a rotator hinge; a pulse swings the plank drawbridge open."
+    description: >
+      The rotator is a hinge: on a redstone pulse it gathers the connected planks into a moving structure
+      and swings them as one — a drawbridge. The generator behind it supplies the rotational power that
+      sets the swing speed. Unlike the spinning machines, this is the mechanism system at work: real
+      blocks are lifted into display entities, rotated, and set back down at their new orientation.
     blocks:
       # Generator sits BEHIND the hinge on the Z axis (couples N/S); the trigger is on the far side so
       # it can't disable the generator.

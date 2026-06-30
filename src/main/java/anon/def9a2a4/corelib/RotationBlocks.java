@@ -22,8 +22,12 @@ import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.entity.Player;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.BiFunction;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 /**
  * Overlays rotation network callbacks onto YAML-defined blocks.
@@ -64,7 +68,7 @@ final class RotationBlocks {
     }
 
     static void register(CustomBlockRegistry registry, RotationNetwork network,
-                         EngineFuelManager fuelManager, GrindRecipes grindRecipes,
+                         EngineFuelManager fuelManager, MachineRecipes grindRecipes,
                          RotationConfig config) {
         // Overlay callbacks onto YAML-loaded blocks
         overlayStandard(registry, network, "rotation:shaft",   RotationNetwork.NodeRole.TRANSMITTER, 0, false);
@@ -341,108 +345,182 @@ final class RotationBlocks {
     // Grindstone: consumer with interact-based grinding
     // ──────────────────────────────────────────────────────────────────────
 
-    private static void overlayGrindstone(CustomBlockRegistry registry, RotationNetwork network,
-                                          GrindRecipes grindRecipes, RotationConfig config) {
-        grindstoneTickInterval = config.grindstoneTickInterval;
-        grindstoneMaxBatch = config.grindstoneMaxBatch;
-        int grindstonePower = config.getPower("grindstone", 1);
-        String blockId = "rotation:grindstone";
-        CustomHeadBlock block = registry.getType(blockId);
-        if (block == null) { warn(registry, blockId); return; }
+    /**
+     * Declarative description of a rotation CONSUMER machine. The shared
+     * {@link #overlayConsumerMachine} builds the common skeleton from this.
+     *
+     * @param axis      rotation/network axis given the block (constant, or derived from facing)
+     * @param tick      per-cycle behavior while loaded (the machine's work)
+     * @param interact  optional action for a non-wrench right-click; return {@code null} to fall
+     *                  through to the default network-debug readout
+     */
+    private record ConsumerSpec(
+            String blockId,
+            Function<Block, RotationNetwork.Axis> axis,
+            int power,
+            int tickInterval,
+            Consumer<Block> tick,
+            @org.jetbrains.annotations.Nullable
+            BiFunction<Block, org.bukkit.event.player.PlayerInteractEvent, Boolean> interact) {}
+
+    /**
+     * Shared overlay for rotation CONSUMER machines (grindstone, fan, press, …): the
+     * common builder skeleton — not-drillable, neighbor recalc, wrench-first interact,
+     * ticking, and CONSUMER node add/remove over the chunk/break lifecycle. Per-machine
+     * behavior comes entirely from the {@link ConsumerSpec}. (The drill keeps its own
+     * overlay: it adds piston cancellation + break-animation cleanup.)
+     */
+    private static void overlayConsumerMachine(CustomBlockRegistry registry, RotationNetwork network,
+                                               ConsumerSpec spec) {
+        CustomHeadBlock block = registry.getType(spec.blockId());
+        if (block == null) { warn(registry, spec.blockId()); return; }
         registry.register(block.toBuilder()
             .drillable(false)
             .reactsToNeighbors(true)
-            .tickInterval(grindstoneTickInterval)
+            .tickInterval(spec.tickInterval())
             .onNeighborChange((b, face) -> recalcIfKnown(b, network))
             .onInteract((b, event) -> {
                 if (isWrench(event.getPlayer().getInventory().getItemInMainHand()))
                     return wrenchInteract(b, event, network, registry);
-                String state = registry.getState(b);
-                if (!"spinning".equals(state)) return debugInteract(b, event, network, registry);
-
-                var held = event.getPlayer().getInventory().getItemInMainHand();
-                if (held.getType().isAir()) return debugInteract(b, event, network, registry);
-
-                var result = grindRecipes.getResult(held.getType());
-                if (result == null) return debugInteract(b, event, network, registry);
-
-                // Manual grind: consume 1 from hand, eject the result below.
-                held.setAmount(held.getAmount() - 1);
-                ejectGrindOutput(b, result);
-                b.getWorld().playSound(b.getLocation().add(0.5, 0.5, 0.5),
-                    org.bukkit.Sound.BLOCK_GRINDSTONE_USE, 1f, 1f);
-                return true;
+                if (spec.interact() != null) {
+                    Boolean handled = spec.interact().apply(b, event);
+                    if (handled != null) return handled;
+                }
+                return debugInteract(b, event, network, registry);
             })
-            .onTick(b -> grindstoneTick(b, network, grindRecipes))
+            .onTick(spec.tick())
             .onChunkLoad((b, state) -> {
                 storeFacingIfAbsent(b);
-                // Wall-mounted, but powered from the top: rotation axis is Y, so the
-                // network connects ±Y and a shaft above drives it. Facing (for the host
-                // container behind it) is read separately from the wall head's data.
-                network.addNode(b, blockId, RotationNetwork.Axis.Y,
-                    RotationNetwork.NodeRole.CONSUMER, grindstonePower, false);
+                network.addNode(b, spec.blockId(), spec.axis().apply(b),
+                    RotationNetwork.NodeRole.CONSUMER, spec.power(), false);
             })
             .onChunkUnload(b -> network.removeNode(CustomBlockRegistry.LocationKey.of(b)))
             .onBlockRemoved((b, state) -> network.removeNode(CustomBlockRegistry.LocationKey.of(b)))
             .build());
     }
 
-    /** Inventory of the container this wall-mounted grindstone is mounted on, or null. */
-    private static @org.jetbrains.annotations.Nullable Inventory hostContainer(Block grind) {
-        BlockFace facing = readFacing(grind);
+    private static void overlayGrindstone(CustomBlockRegistry registry, RotationNetwork network,
+                                          MachineRecipes grindRecipes, RotationConfig config) {
+        grindstoneTickInterval = config.grindstoneTickInterval;
+        grindstoneMaxBatch = config.grindstoneMaxBatch;
+        // Wall-mounted, powered from the top: rotation axis is Y (a shaft above drives it).
+        // Host container is read separately via the stored wall-head facing.
+        overlayConsumerMachine(registry, network, new ConsumerSpec(
+            "rotation:grindstone",
+            b -> RotationNetwork.Axis.Y,
+            config.getPower("grindstone", 1),
+            grindstoneTickInterval,
+            b -> processingMachineTick(b, network, grindRecipes, registry,
+                grindstoneMaxBatch, org.bukkit.Sound.BLOCK_GRINDSTONE_USE),
+            (b, event) -> manualGrind(b, event, registry, grindRecipes)));
+    }
+
+    /** Hand-fed grinding while spinning (fallback when there's no host container). Null → not handled. */
+    private static @org.jetbrains.annotations.Nullable Boolean manualGrind(Block b,
+            org.bukkit.event.player.PlayerInteractEvent event,
+            CustomBlockRegistry registry, MachineRecipes grindRecipes) {
+        if (!"spinning".equals(registry.getState(b))) return null;
+        var held = event.getPlayer().getInventory().getItemInMainHand();
+        if (held.getType().isAir()) return null;
+        MachineRecipes.Recipe recipe = grindRecipes.match(held.getType());
+        if (recipe == null || held.getAmount() < recipe.inputAmount()) return null;
+
+        List<ItemStack> outputs = grindRecipes.roll(recipe, registry);
+        if (!outputs.isEmpty() && !ejectOutputs(b, outputs)) return true; // output full → no-op
+        held.setAmount(held.getAmount() - recipe.inputAmount());
+        b.getWorld().playSound(b.getLocation().add(0.5, 0.5, 0.5),
+            org.bukkit.Sound.BLOCK_GRINDSTONE_USE, 1f, 1f);
+        return true;
+    }
+
+    /** Inventory of the container a wall-mounted processing machine is mounted on, or null. */
+    private static @org.jetbrains.annotations.Nullable Inventory hostContainer(Block machine) {
+        BlockFace facing = readFacing(machine);
         if (facing == null) return null;
-        Block host = grind.getRelative(facing.getOppositeFace());
+        Block host = machine.getRelative(facing.getOppositeFace());
         return host.getState() instanceof Container c ? c.getInventory() : null;
     }
 
     /**
-     * Place a grind result into the container directly below, else drop it below.
+     * Place an output into the container directly below, else drop it below.
      * Returns true if delivered (caller may consume input); false if the output
      * container was full (stall — do not consume input).
      */
-    private static boolean ejectGrindOutput(Block grind, ItemStack result) {
-        Block below = grind.getRelative(BlockFace.DOWN);
+    private static boolean ejectOutput(Block machine, ItemStack result) {
+        Block below = machine.getRelative(BlockFace.DOWN);
         if (below.getState() instanceof Container oc) {
             return oc.getInventory().addItem(result).isEmpty();
         }
-        grind.getWorld().dropItemNaturally(grind.getLocation().add(0.5, -0.2, 0.5), result);
+        machine.getWorld().dropItemNaturally(machine.getLocation().add(0.5, -0.2, 0.5), result);
         return true;
     }
 
-    /** Auto-grind from the host container while powered; batch size scales with surplus SU. */
-    private static void grindstoneTick(Block grind, RotationNetwork network, GrindRecipes grindRecipes) {
-        var key = CustomBlockRegistry.LocationKey.of(grind);
+    /** Eject every output below; stalls (returns false) if any can't be delivered. */
+    private static boolean ejectOutputs(Block machine, List<ItemStack> outputs) {
+        for (ItemStack out : outputs) {
+            if (!ejectOutput(machine, out)) return false;
+        }
+        return true;
+    }
+
+    private static int countOf(Inventory inv, Material m) {
+        int n = 0;
+        for (ItemStack it : inv.getContents()) {
+            if (it != null && it.getType() == m) n += it.getAmount();
+        }
+        return n;
+    }
+
+    private static void removeCount(Inventory inv, Material m, int n) {
+        for (int i = 0; i < inv.getSize() && n > 0; i++) {
+            ItemStack it = inv.getItem(i);
+            if (it == null || it.getType() != m) continue;
+            int take = Math.min(n, it.getAmount());
+            it.setAmount(it.getAmount() - take);
+            inv.setItem(i, it.getAmount() <= 0 ? null : it);
+            n -= take;
+        }
+    }
+
+    /**
+     * Shared container-processing loop for rotation consumer machines (grindstone, press, …):
+     * while powered, pull recipe inputs from the host container behind and eject results below,
+     * a batch per cycle sized by surplus SU. Inputs are consumed only after outputs are delivered
+     * (stall-safe). Reused by every machine via a recipe map + sound + batch cap.
+     */
+    private static void processingMachineTick(Block machine, RotationNetwork network,
+            MachineRecipes recipes, CustomBlockRegistry registry, int maxBatch, org.bukkit.Sound sound) {
+        var key = CustomBlockRegistry.LocationKey.of(machine);
         if (!network.isPowered(key)) return;
 
-        Inventory in = hostContainer(grind);
+        Inventory in = hostContainer(machine);
         if (in == null) return;
 
         int[] stats = network.getNetworkStats(key);
         if (stats == null) return;
         // stats = {supply, demand, count}; surplus headroom = supply - demand.
-        int batch = Math.min(grindstoneMaxBatch, Math.max(1, stats[0] - stats[1]));
+        int batch = Math.min(maxBatch, Math.max(1, stats[0] - stats[1]));
 
-        boolean ground = false;
+        boolean processed = false;
         for (int done = 0; done < batch; done++) {
-            int slot = -1;
-            ItemStack src = null, result = null;
+            MachineRecipes.Recipe recipe = null;
             for (int i = 0; i < in.getSize(); i++) {
                 ItemStack it = in.getItem(i);
                 if (it == null || it.getType().isAir()) continue;
-                ItemStack r = grindRecipes.getResult(it.getType());
-                if (r != null) { slot = i; src = it; result = r; break; }
+                MachineRecipes.Recipe r = recipes.match(it.getType());
+                if (r != null && countOf(in, it.getType()) >= r.inputAmount()) { recipe = r; break; }
             }
-            if (slot < 0) break;                       // nothing grindable left
-            if (!ejectGrindOutput(grind, result)) break; // output full → stall, keep input
+            if (recipe == null) break;                              // nothing processable left
 
-            src.setAmount(src.getAmount() - 1);
-            in.setItem(slot, src.getAmount() <= 0 ? null : src);
-            ground = true;
+            List<ItemStack> outputs = recipes.roll(recipe, registry);
+            if (!outputs.isEmpty() && !ejectOutputs(machine, outputs)) break; // output full → stall
+
+            removeCount(in, recipe.input(), recipe.inputAmount());
+            processed = true;
         }
 
-        if (ground) {
-            grind.getWorld().playSound(grind.getLocation().add(0.5, 0.5, 0.5),
-                org.bukkit.Sound.BLOCK_GRINDSTONE_USE, 0.6f, 1f);
+        if (processed) {
+            machine.getWorld().playSound(machine.getLocation().add(0.5, 0.5, 0.5), sound, 0.6f, 1f);
         }
     }
 
@@ -456,30 +534,15 @@ final class RotationBlocks {
         fanMinPush = config.fanMinPush;
         fanMaxPush = config.fanMaxPush;
         fanPushPerSU = config.fanPushPerSU;
-        int fanPower = config.getPower("fan", 1);
-        String blockId = "rotation:fan";
-        CustomHeadBlock block = registry.getType(blockId);
-        if (block == null) { warn(registry, blockId); return; }
-        registry.register(block.toBuilder()
-            .drillable(false)
-            .reactsToNeighbors(true)
-            .tickInterval(config.fanTickInterval)
-            .onNeighborChange((b, face) -> recalcIfKnown(b, network))
-            .onInteract((b, event) ->
-                isWrench(event.getPlayer().getInventory().getItemInMainHand())
-                    ? wrenchInteract(b, event, network, registry)
-                    : debugInteract(b, event, network, registry))
-            .onTick(b -> fanTick(b, network))
-            .onChunkLoad((b, state) -> {
-                storeFacingIfAbsent(b);
-                // Rotation axis = the axis the blades spin about = the blow axis.
-                // Floor heads store DOWN (blow up → Y); wall heads store N/S (Z) or E/W (X).
-                network.addNode(b, blockId, fanAxis(readFacing(b)),
-                    RotationNetwork.NodeRole.CONSUMER, fanPower, false);
-            })
-            .onChunkUnload(b -> network.removeNode(CustomBlockRegistry.LocationKey.of(b)))
-            .onBlockRemoved((b, state) -> network.removeNode(CustomBlockRegistry.LocationKey.of(b)))
-            .build());
+        // Rotation axis = the blade spin axis = the blow axis: floor heads store DOWN (blow up → Y),
+        // wall heads store N/S (Z) or E/W (X). No host container, so a plain wrench/debug interact.
+        overlayConsumerMachine(registry, network, new ConsumerSpec(
+            "rotation:fan",
+            b -> fanAxis(readFacing(b)),
+            config.getPower("fan", 1),
+            config.fanTickInterval,
+            b -> fanTick(b, network),
+            null));
     }
 
     /** Direction the fan blows: outward from the mounted surface (floor → up, wall → its facing). */

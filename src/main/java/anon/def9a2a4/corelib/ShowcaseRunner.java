@@ -169,6 +169,7 @@ final class ShowcaseRunner implements Listener {
                 BlockFace headFacing = floor ? null : bs.facing().getOppositeFace();
 
                 Map<String, Object> rec = new LinkedHashMap<>();
+                rec.put("id", bs.id());   // custom-block fullId, for showcase↔item interlinking
                 rec.put("offset", new int[]{bs.at()[0], bs.at()[1], bs.at()[2]});
                 rec.put("facing", floor ? "floor" : "wall_" + bs.facing().name().toLowerCase());
                 rec.put("baseHeadTextureUrl", type.itemMaterial() != null ? null
@@ -180,6 +181,7 @@ final class ShowcaseRunner implements Listener {
             sc.put("id", spec.id);
             sc.put("name", spec.name);
             sc.put("blurb", spec.blurb);
+            sc.put("description", spec.description);
             sc.put("blocks", blocks);
             out.add(sc);
         }

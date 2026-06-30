@@ -36,17 +36,19 @@ final class ShowcaseSpec {
 
     final String id;
     final String name;
-    final String blurb;
+    final String blurb;        // short one-liner (catalog/list card)
+    final String description;  // longer "deeper explanation" (detail page); defaults to blurb
     final List<BlockSpec> blocks;
     final List<VanillaSpec> vanilla;
     final Activate activate;
     final List<Expect> expect;
 
-    ShowcaseSpec(String id, String name, String blurb, List<BlockSpec> blocks, List<VanillaSpec> vanilla,
-                 Activate activate, List<Expect> expect) {
+    ShowcaseSpec(String id, String name, String blurb, String description, List<BlockSpec> blocks,
+                 List<VanillaSpec> vanilla, Activate activate, List<Expect> expect) {
         this.id = id;
         this.name = name;
         this.blurb = blurb;
+        this.description = description;
         this.blocks = blocks;
         this.vanilla = vanilla;
         this.activate = activate;
@@ -64,6 +66,7 @@ final class ShowcaseSpec {
                 if (id == null) { log.warning("showcases.yml: entry missing id, skipped"); continue; }
                 String name = str(entry.get("name"));
                 String blurb = str(entry.get("blurb"));
+                String description = str(entry.get("description"));
                 List<BlockSpec> blocks = new ArrayList<>();
                 for (Object o : asList(entry.get("blocks"))) {
                     if (!(o instanceof Map<?, ?> m)) continue;
@@ -99,8 +102,9 @@ final class ShowcaseSpec {
                     }
                     expect.add(new Expect(type, at, str(m.get("value"))));
                 }
-                out.put(id, new ShowcaseSpec(id, name == null ? id : name, blurb == null ? "" : blurb,
-                        blocks, vanilla, activate, expect));
+                String shortBlurb = blurb == null ? "" : blurb;
+                out.put(id, new ShowcaseSpec(id, name == null ? id : name, shortBlurb,
+                        description == null ? shortBlurb : description, blocks, vanilla, activate, expect));
             } catch (Exception e) {
                 log.warning("showcases.yml: failed to parse an entry: " + e);
             }

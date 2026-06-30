@@ -4,6 +4,8 @@ import org.bukkit.Location;
 import org.bukkit.World;
 
 import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.logging.Logger;
 
 /**
@@ -22,8 +24,10 @@ final class ShowcaseWorld {
 
     private ShowcaseWorld() {}
 
-    static void placeAll(World world, ShowcaseBuilder builder,
-                         Collection<ShowcaseSpec> showcases, Logger log) {
+    /** Build every showcase; returns the build origin of each so the caller can activate/drive it. */
+    static Map<ShowcaseSpec, Location> placeAll(World world, ShowcaseBuilder builder,
+                                                Collection<ShowcaseSpec> showcases, Logger log) {
+        Map<ShowcaseSpec, Location> origins = new LinkedHashMap<>();
         int i = 0;
         for (ShowcaseSpec spec : showcases) {
             int z = Z0 - i * SPACING;
@@ -32,6 +36,7 @@ final class ShowcaseWorld {
             origin.getChunk().setForceLoaded(true);   // keep animations running off-screen
             try {
                 int placed = builder.build(spec, origin);
+                origins.put(spec, origin);
                 log.info("  showcase " + spec.id + " (" + placed + " blocks) @ "
                         + LANE_X + " " + (int) GRID_Y + " " + z);
             } catch (Throwable t) {
@@ -39,5 +44,6 @@ final class ShowcaseWorld {
             }
             i++;
         }
+        return origins;
     }
 }

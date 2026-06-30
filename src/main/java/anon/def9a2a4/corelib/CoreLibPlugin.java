@@ -86,7 +86,7 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         rotationNetwork = new RotationNetwork(this, registry);
         rotationNetwork.setMaxNetworkSize(rotConfig.maxNetworkSize);
         fuelManager = new EngineFuelManager(rotConfig.fuelValues);
-        GrindRecipes grindRecipes = new GrindRecipes();
+        MachineRecipes grindRecipes = new MachineRecipes();
         try (InputStream grindStream = getResource("grind-recipes.yml")) {
             if (grindStream != null) {
                 int rc = grindRecipes.load(grindStream, getLogger());
@@ -137,7 +137,8 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
 
         // Docs export mode (-Ddefcorelib.export=<path>): on ServerLoadEvent, dump every block's
         // ground-truth placed display data to JSON and shut the server down. Inert otherwise.
-        DisplayExporter.armIfRequested(this, registry, showcaseBuilder, showcases.values());
+        DisplayExporter.armIfRequested(this, registry, showcaseBuilder, showcases.values(),
+                rotationNetwork, fuelManager);
 
         // Headless showcase integration tests (-Ddefcorelib.showcaseTest=true): build, run, assert, exit.
         ShowcaseRunner.armIfRequested(this, registry, rotationNetwork, fuelManager, showcaseBuilder, showcases.values());

@@ -62,27 +62,34 @@ final class DisplayExporter implements Listener {
     private final boolean keepAlive;   // leave blocks placed + server running for in-game inspection
     private final ShowcaseBuilder showcaseBuilder;
     private final java.util.Collection<ShowcaseSpec> showcases;
+    private final RotationNetwork network;        // keep-alive: drive the showcase machines
+    private final EngineFuelManager fuelManager;  // keep-alive: fuel the engine showcases
     private boolean done;
 
     private DisplayExporter(CoreLibPlugin plugin, CustomBlockRegistry registry, Path outPath, boolean keepAlive,
-                            ShowcaseBuilder showcaseBuilder, java.util.Collection<ShowcaseSpec> showcases) {
+                            ShowcaseBuilder showcaseBuilder, java.util.Collection<ShowcaseSpec> showcases,
+                            RotationNetwork network, EngineFuelManager fuelManager) {
         this.plugin = plugin;
         this.registry = registry;
         this.outPath = outPath;
         this.keepAlive = keepAlive;
         this.showcaseBuilder = showcaseBuilder;
         this.showcases = showcases;
+        this.network = network;
+        this.fuelManager = fuelManager;
     }
 
     /** Register the exporter listener if the export system property is set. Returns true if armed.
      *  With {@code -Ddefcorelib.exportKeep=true} the blocks are left placed and the server keeps
      *  running so you can join and inspect; otherwise it cleans up and shuts down. */
     static boolean armIfRequested(CoreLibPlugin plugin, CustomBlockRegistry registry,
-                                  ShowcaseBuilder showcaseBuilder, java.util.Collection<ShowcaseSpec> showcases) {
+                                  ShowcaseBuilder showcaseBuilder, java.util.Collection<ShowcaseSpec> showcases,
+                                  RotationNetwork network, EngineFuelManager fuelManager) {
         String out = System.getProperty("defcorelib.export");
         if (out == null || out.isBlank()) return false;
         boolean keep = Boolean.getBoolean("defcorelib.exportKeep");
-        DisplayExporter exporter = new DisplayExporter(plugin, registry, Path.of(out), keep, showcaseBuilder, showcases);
+        DisplayExporter exporter = new DisplayExporter(plugin, registry, Path.of(out), keep, showcaseBuilder,
+                showcases, network, fuelManager);
         Bukkit.getPluginManager().registerEvents(exporter, plugin);
         plugin.getLogger().info("DisplayExporter armed → " + out
                 + (keep ? " (keep-alive: blocks stay placed, server stays up for inspection)"
@@ -157,10 +164,44 @@ final class DisplayExporter implements Listener {
         if (keepAlive) {
             // Multi-block showcases live in the same world (windmill quadrant), but only in keep-alive:
             // the non-keepalive run halt(0)s immediately, so their deferred registration would never run.
-            ShowcaseWorld.placeAll(world, showcaseBuilder, showcases, log);
+            Map<ShowcaseSpec, Location> origins = ShowcaseWorld.placeAll(world, showcaseBuilder, showcases, log);
+            startShowcaseDriver(origins, log);
             setupViewing(world, log);
         }
         return out;
+    }
+
+    private static final long DRIVE_FIRST = 20;     // ticks: let the deferred build + network settle
+    private static final long DRIVE_PERIOD = 100;   // ticks (~5 s): re-fuel engines / re-pulse triggers
+
+    /** Keep every machine visibly running for the join-and-look world: fuel engines (and keep topping
+     *  them up), kick passive networks, and pulse — then re-pulse — redstone triggers so swing machines
+     *  cycle instead of opening once. Mirrors {@link ShowcaseRunner} activation but loops indefinitely. */
+    private void startShowcaseDriver(Map<ShowcaseSpec, Location> origins, Logger log) {
+        if (origins.isEmpty()) return;
+        // First pass: standard activation (fuel / pulse / passive recalc).
+        Bukkit.getScheduler().runTaskLater(plugin, () -> {
+            for (Map.Entry<ShowcaseSpec, Location> e : origins.entrySet()) {
+                ShowcaseActivation.activate(e.getKey(), e.getValue(), network, fuelManager);
+            }
+            log.info("DisplayExporter keep-alive: activated " + origins.size() + " showcase machines.");
+        }, DRIVE_FIRST);
+        // Looping driver: top up fuel; toggle pulse triggers so they re-fire on each rising edge.
+        Bukkit.getScheduler().runTaskTimer(plugin, () -> {
+            for (Map.Entry<ShowcaseSpec, Location> e : origins.entrySet()) {
+                ShowcaseSpec.Activate act = e.getKey().activate;
+                if (act.at() == null) continue;
+                Block at = ShowcaseActivation.blockAt(e.getValue(), act.at());
+                switch (act.kind()) {
+                    case "fuel" -> fuelManager.addFuel(
+                            CustomBlockRegistry.LocationKey.of(at), ShowcaseActivation.FUEL_TICKS);
+                    // Toggle the trigger block: AIR on this tick → REDSTONE_BLOCK next → fresh rising edge.
+                    case "pulse" -> at.setType(at.getType() == Material.REDSTONE_BLOCK
+                            ? Material.AIR : Material.REDSTONE_BLOCK, true);
+                    default -> { }
+                }
+            }
+        }, DRIVE_FIRST + DRIVE_PERIOD, DRIVE_PERIOD);
     }
 
     /** Quadrant for a type: demo (+x,+z), rotation (−x,+z), verticalslabs (+x,−z), windmills the
