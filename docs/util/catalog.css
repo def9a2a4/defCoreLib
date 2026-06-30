@@ -217,6 +217,16 @@ h1 {
   align-items: center;
   gap: 10px;
 }
+/* Machine recipes: input(s) (+ glass bottle, …) → output(s); each side wraps. */
+.machine-io { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+.slot .chance {
+  position: absolute;
+  left: 1px;
+  bottom: 0;
+  font-size: 10px;
+  color: #9fd;
+  text-shadow: 1px 1px 0 #000;
+}
 
 #error {
   background: #5c1a1a;
@@ -379,3 +389,79 @@ a.slot { text-decoration: none; color: inherit; }
 }
 .showcase-canvas:active { cursor: grabbing; }
 .showcase-canvas canvas { display: block; }
+.showcase h2 a.showcase-title-link { color: inherit; text-decoration: none; }
+.showcase h2 a.showcase-title-link:hover { color: #6fe0bd; text-decoration: underline; }
+.details-link {
+  display: inline-block;
+  margin-top: 12px;
+  color: #4ecca3;
+  text-decoration: none;
+  font-size: 0.9em;
+}
+.details-link:hover { text-decoration: underline; }
+
+/* ── Showcase detail page ───────────────────────────────────────────────── */
+.showcase-description {
+  color: #ccc;
+  line-height: 1.65;
+  margin: 16px 0 22px;
+  max-width: 760px;
+}
+.blocks-used { display: flex; flex-wrap: wrap; gap: 16px; }
+.block-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  width: 140px;
+  padding: 12px;
+  background: #2a2a2a;
+  border: 1px solid #3a3a3a;
+  border-radius: 10px;
+  text-decoration: none;
+  color: inherit;
+  transition: border-color 0.1s;
+}
+a.block-card:hover { border-color: #4ecca3; }
+.block-card-thumbs { display: flex; align-items: flex-end; gap: 8px; }
+.block-thumb {
+  width: 96px;
+  height: 96px;
+  background: #1c1c1c;
+  border: 1px solid #383838;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  image-rendering: pixelated;
+}
+.block-thumb--hand { width: 48px; height: 48px; }
+.block-thumb img { image-rendering: pixelated; max-width: 100%; max-height: 100%; }
+.block-thumb .placed-thumb { width: 100%; height: 100%; }
+.block-card-name { font-size: 0.9em; text-align: center; word-break: break-word; }
+.block-card-id { font-size: 0.72em; color: #888; text-align: center; word-break: break-all; }
+
+/* ── Catalog placed-thumbnail (static 3D preview on animated cards) ──────── */
+.card-3d { display: flex; justify-content: center; margin: 2px 0; }
+.placed-thumb {
+  width: 96px;
+  height: 96px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+.placed-thumb-img { max-width: 100%; max-height: 100%; }
+
+/* ── Item page: "Used in showcases" backlinks ───────────────────────────── */
+.used-in-links { display: flex; flex-wrap: wrap; gap: 10px; }
+.used-in-links a {
+  background: #2a2a2a;
+  border: 1px solid #3a3a3a;
+  border-radius: 6px;
+  padding: 5px 12px;
+  color: #4ecca3;
+  text-decoration: none;
+}
+.used-in-links a:hover { border-color: #4ecca3; }

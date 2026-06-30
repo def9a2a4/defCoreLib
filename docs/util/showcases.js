@@ -4,6 +4,8 @@
 // tracks, reusing the placed3d.js renderer.
 
 import { renderScene } from './placed3d.js';
+import { toRenderBlock } from './viewers.js';
+import { esc } from './render.js';
 
 const root = document.getElementById('showcases');
 const errEl = document.getElementById('error');
@@ -11,18 +13,6 @@ const errEl = document.getElementById('error');
 function fail(msg) {
   if (errEl) errEl.textContent = msg;
   console.error(msg);
-}
-
-// Showcase blocks carry `facing` ("floor" | "wall_<n|s|e|w>"); map to placed3d's base-head fields.
-function toRenderBlock(blk) {
-  const wall = typeof blk.facing === 'string' && blk.facing.startsWith('wall_');
-  return {
-    offset: blk.offset || [0, 0, 0],
-    baseHeadTextureUrl: blk.baseHeadTextureUrl,
-    baseHeadWall: wall,
-    baseHeadFacing: wall ? blk.facing.slice(5) : null,
-    displays: blk.displays || [],
-  };
 }
 
 async function main() {
@@ -48,7 +38,7 @@ async function main() {
     card.className = 'showcase';
 
     const h2 = document.createElement('h2');
-    h2.textContent = sc.name || sc.id;
+    h2.innerHTML = `<a class="showcase-title-link" href="./showcase.html?id=${encodeURIComponent(sc.id)}">${esc(sc.name || sc.id)}</a>`;
     card.appendChild(h2);
 
     if (sc.blurb) {
@@ -61,6 +51,12 @@ async function main() {
     const canvas = document.createElement('div');
     canvas.className = 'showcase-canvas';
     card.appendChild(canvas);
+
+    const more = document.createElement('a');
+    more.className = 'details-link';
+    more.href = `./showcase.html?id=${encodeURIComponent(sc.id)}`;
+    more.textContent = 'Details →';
+    card.appendChild(more);
 
     root.appendChild(card);
 

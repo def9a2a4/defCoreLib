@@ -1,8 +1,7 @@
 import {
-  esc, mcText, stripColors, iconHtml, recipesHtml, machineRecipesHtml, hydrateHeads, materialPath,
+  esc, mcText, stripColors, iconHtml, recipesHtml, machineRecipesHtml, hydrateHeads,
 } from './render.js';
-import { render3DHead } from './head3d.js';
-import { renderPlaced } from './placed3d.js';
+import { mountInHand, mountPlaced, hasInHand } from './viewers.js';
 
 const GROUP_TITLES = { states: 'States', power: 'Redstone power', facing: 'By facing' };
 const GROUP_ORDER = ['states', 'power', 'facing'];
@@ -56,6 +55,20 @@ function transitionsHtml(item) {
   return `<div class="transitions"><div class="variant-group-title">Transitions</div>${rows}</div>`;
 }
 
+// Backlinks to the showcase machines that use this block (reverse of showcases.json; built by
+// generate_catalog into item.usedInShowcases as [{id, name}]).
+function usedInShowcasesHtml(item) {
+  const used = item.usedInShowcases || [];
+  if (!used.length) return '';
+  const links = used
+    .map((s) => `<a href="./showcase.html?id=${encodeURIComponent(s.id)}">${esc(s.name)}</a>`)
+    .join('');
+  return `<div class="detail-section used-in">
+    <h2 class="section-title">Used in showcases</h2>
+    <div class="used-in-links">${links}</div>
+  </div>`;
+}
+
 function renderItem(item, itemsById) {
   const detail = document.getElementById('detail');
   document.title = `DefCoreLib — ${stripColors(item.name)}`;
@@ -74,6 +87,7 @@ function renderItem(item, itemsById) {
       </div>
     </div>
     ${lore}
+    ${usedInShowcasesHtml(item)}
     <div class="viewers" id="viewers"></div>
     <div class="detail-section">
       <h2 class="section-title">Recipes</h2>
@@ -109,17 +123,6 @@ function addViewer(parent, label, renderFn) {
       console.warn(e);
       canvas.innerHTML = '<div class="viewer-fail">3D unavailable</div>';
     });
-}
-
-function inHandViewer(item) {
-  const ih = item.inHand || {};
-  if (ih.kind === 'head' && ih.textureUrl) return (c) => render3DHead(ih.textureUrl, c);
-  // Vanilla item_material items: show the reliable 2D inventory icon (their 3D block
-  // form appears in the "Placed" viewer).
-  if (ih.kind === 'item' && ih.block) {
-    return (c) => { c.innerHTML = `<img class="flat-item" src="${materialPath(ih.block)}" alt="">`; };
-  }
-  return null;
 }
 
 // Placed variants split into a placement axis (Floor / Wall N·E·S·W) and a spin axis (Stopped/CW/CCW),
@@ -168,8 +171,7 @@ function pickIndex(m, placement, spin) {
 // "In hand" viewer + one or two "Placed" viewers (floor + wall) with placement/spin dropdowns.
 function mountViewers(item) {
   const host = document.getElementById('viewers');
-  const inHand = inHandViewer(item);
-  if (inHand) addViewer(host, 'In hand', inHand);
+  if (hasInHand(item)) addViewer(host, 'In hand', (c) => mountInHand(item, c));
 
   const variants = item.placedVariants || [];
   if (!variants.length) return;
@@ -210,7 +212,7 @@ function mountPlacedBox(host, item, m, place0, spin0) {
     const spin = spinEl ? spinEl.value : spin0;
     if (teardown) { viewerTeardowns.delete(teardown); teardown(); teardown = null; }
     canvas.innerHTML = '';
-    Promise.resolve(renderPlaced(item, canvas, pickIndex(m, placement, spin)))
+    Promise.resolve(mountPlaced(item, canvas, pickIndex(m, placement, spin)))
       .then((t) => { teardown = t; if (t) viewerTeardowns.add(t); })
       .catch((e) => { console.warn(e); canvas.innerHTML = '<div class="viewer-fail">3D unavailable</div>'; });
   };

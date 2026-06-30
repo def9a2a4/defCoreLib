@@ -1,6 +1,7 @@
 import {
   esc, mcText, stripColors, iconHtml, recipesHtml, hydrateHeads, itemHref,
 } from './render.js';
+import { thumbnailDataURL, placedVariantBlocks } from './placed3d.js';
 
 const SLAB_NAMESPACE = 'verticalslabs';
 const NS_LABELS = { rotation: 'Rotation', demo: 'Demo', corelib: 'Core' };
@@ -14,9 +15,29 @@ function orderedNamespaces() {
 }
 const nsLabel = (ns) => NS_LABELS[ns] || ns.charAt(0).toUpperCase() + ns.slice(1);
 
-let CATALOG = { items: [], grindRecipes: [], namespaces: [] };
+let CATALOG = { items: [], namespaces: [] };
 let itemsById = new Map();
 let activeNamespace = null;
+
+// Lazily fills each card's placed-thumbnail (static PNG, generated offscreen → 0 live WebGL contexts on
+// the grid). Reset + re-armed every render() so search/filter re-renders don't retain detached cards.
+const thumbObserver = new IntersectionObserver((entries) => {
+  for (const e of entries) {
+    if (!e.isIntersecting) continue;
+    const el = e.target;
+    thumbObserver.unobserve(el);
+    const item = itemsById.get(el.dataset.thumb);
+    if (!item) continue;
+    thumbnailDataURL(placedVariantBlocks(item), { size: 192, cacheKey: item.fullId }).then((url) => {
+      if (!url || !el.isConnected) return;
+      const img = new Image();
+      img.src = url;
+      img.alt = '';
+      img.className = 'placed-thumb-img';
+      el.appendChild(img);
+    });
+  }
+}, { rootMargin: '200px' });
 
 function card(item) {
   const a = document.createElement('a');
@@ -30,6 +51,10 @@ function card(item) {
   const badge = item.variants?.length
     ? `<span class="state-badge" title="${item.variants.length} states/textures">${item.variants.length} states</span>`
     : '';
+  // Placed 3D preview (static thumbnail) for blocks that have a captured placed form.
+  const placed = item.placedVariants?.length
+    ? `<div class="card-3d"><div class="placed-thumb" data-thumb="${esc(item.fullId)}"></div></div>`
+    : '';
 
   a.innerHTML = `
     <div class="item-header">
@@ -39,6 +64,7 @@ function card(item) {
         <div class="item-id">${esc(item.fullId)} ${badge}</div>
       </div>
     </div>
+    ${placed}
     ${lore}
     ${recipesHtml(item, itemsById)}
   `;
@@ -55,6 +81,8 @@ function matches(it, q) {
 
 function render() {
   const q = currentQuery();
+
+  thumbObserver.disconnect();   // drop observations on cards about to be replaced (no stale refs)
 
   // One titled section per non-slab namespace (rotation first), honoring search + the pill filter.
   const container = document.getElementById('items-container');
@@ -85,6 +113,8 @@ function render() {
   document.getElementById('slab-section').style.display = slabs.length ? '' : 'none';
   document.getElementById('slab-counter').textContent = `${slabs.length} slabs`;
   hydrateHeads(slabGrid);
+
+  document.querySelectorAll('.placed-thumb').forEach((el) => thumbObserver.observe(el));
 }
 
 function renderPills() {

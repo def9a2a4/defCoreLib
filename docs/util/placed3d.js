@@ -7,7 +7,7 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { loadSkin, skullMesh } from './head3d.js';
-import { buildBlockMesh, fallbackBox } from './blockmodel.js';
+import { buildBlockMesh, fallbackBox, texturesSettled } from './blockmodel.js';
 
 let MANIFEST = null;
 async function manifest() {
@@ -189,15 +189,98 @@ export async function renderScene(container, blocks, { autoframe = false, dist =
   };
 }
 
-/** Render a single placed variant into `container` (one block, fixed camera). Teardown fn returned. */
-export async function renderPlaced(item, container, variantIndex = 0) {
+/** The renderScene block list for one of an item's placed variants (one block at the origin). */
+export function placedVariantBlocks(item, variantIndex = 0) {
   const variants = item.placedVariants || [];
   const variant = variants[variantIndex] || variants[0] || { displays: [] };
-  return renderScene(container, [{
+  return [{
     offset: [0, 0, 0],
     baseHeadTextureUrl: variant.baseHeadTextureUrl,
     baseHeadWall: variant.baseHeadWall,
     baseHeadFacing: variant.baseHeadFacing,
     displays: variant.displays || [],
-  }], { autoframe: false, dist: 3.6, target: [0, 0.1, 0] });
+  }];
+}
+
+/** Render a single placed variant into `container` (one block, fixed camera). Teardown fn returned. */
+export async function renderPlaced(item, container, variantIndex = 0) {
+  return renderScene(container, placedVariantBlocks(item, variantIndex),
+    { autoframe: false, dist: 3.6, target: [0, 0.1, 0] });
+}
+
+// ── Offscreen thumbnails ───────────────────────────────────────────────────
+// A single shared, headless renderer reused for every thumbnail (one WebGL context total, regardless
+// of how many cards are on the grid — the browser caps live contexts at ~16). Calls are serialized so
+// the shared renderer is never re-entered mid-frame.
+let THUMB_RENDERER = null;
+let thumbChain = Promise.resolve();
+
+function thumbRenderer(size) {
+  if (!THUMB_RENDERER) {
+    THUMB_RENDERER = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true });
+    THUMB_RENDERER.setPixelRatio(1);
+    THUMB_RENDERER.outputColorSpace = THREE.SRGBColorSpace;
+  }
+  THUMB_RENDERER.setSize(size, size);
+  return THUMB_RENDERER;
+}
+
+/**
+ * Render `blocks` (same shape as renderScene) to a single still PNG data-URL, framed like the live
+ * placed viewer. Awaits texture loads first so the frame isn't captured untextured. Animated displays
+ * are posed at a fixed mid-loop tick so the snapshot looks alive. Pass `cacheKey` to memoise in
+ * localStorage. Returns the data-URL (or null on failure).
+ */
+export function thumbnailDataURL(blocks, { size = 256, tick = 12, cacheKey = null } = {}) {
+  const lsKey = cacheKey ? 'defcorelib-thumb:' + cacheKey : null;
+  if (lsKey) {
+    const cached = localStorage.getItem(lsKey);
+    if (cached) return Promise.resolve(cached);
+  }
+
+  const run = async () => {
+    const models = await manifest();
+    const scene = new THREE.Scene();
+    scene.add(new THREE.AmbientLight(0xffffff, 1.0));
+    const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 100);
+
+    const animated = [];
+    for (const blk of blocks) scene.add(await buildBlockGroup(blk, models, animated));
+    await texturesSettled();   // block textures load async; wait so the single frame isn't blank
+
+    for (const a of animated) {
+      sampleTrack(a.track, a.period, tick, a.obj.matrix);
+      a.obj.matrixWorldNeedsUpdate = true;
+    }
+
+    const box = new THREE.Box3().setFromObject(scene);   // mirror renderScene's autoframe math
+    if (!box.isEmpty()) {
+      const center = box.getCenter(new THREE.Vector3());
+      const sz = box.getSize(new THREE.Vector3());
+      const d = Math.max(sz.x, sz.y, sz.z, 1) * 1.6 + 1.5;
+      camera.position.set(center.x + d * 0.6, center.y + d * 0.45, center.z + d);
+      camera.lookAt(center);
+    } else {
+      camera.position.set(2.55, 1.8, 3.4);
+      camera.lookAt(0, 0.1, 0);
+    }
+
+    const renderer = thumbRenderer(size);
+    renderer.render(scene, camera);
+    const url = renderer.domElement.toDataURL('image/png');
+
+    // Dispose the throwaway scene (keep the shared renderer + shared material singletons).
+    const disposeMat = (m) => { if (m && !m.userData?.shared) m.dispose(); };
+    scene.traverse((o) => {
+      o.geometry?.dispose();
+      const m = o.material;
+      if (Array.isArray(m)) m.forEach(disposeMat); else disposeMat(m);
+    });
+
+    if (lsKey) { try { localStorage.setItem(lsKey, url); } catch { /* quota: ignore */ } }
+    return url;
+  };
+
+  thumbChain = thumbChain.then(run, run);   // serialize; a prior failure must not block the queue
+  return thumbChain.catch((e) => { console.warn(e); return null; });
 }
