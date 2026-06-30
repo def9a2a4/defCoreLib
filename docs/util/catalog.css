@@ -485,14 +485,35 @@ a.block-card:hover { border-color: #4ecca3; }
    The .block-thumb .placed-thumb override above keeps showcase thumbnails at their own size. */
 .placed-thumb-img { width: 100%; height: 100%; object-fit: contain; image-rendering: pixelated; }
 
-/* ── Item page: "Used in showcases" backlinks ───────────────────────────── */
-.used-in-links { display: flex; flex-wrap: wrap; gap: 10px; }
-.used-in-links a {
+/* ── Item page: "Used in showcases" backlinks (machine screenshot + name) ── */
+.used-in-showcases {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 14px;
+}
+.showcase-backlink {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
   background: #2a2a2a;
   border: 1px solid #3a3a3a;
-  border-radius: 6px;
-  padding: 5px 12px;
-  color: #4ecca3;
+  border-radius: 10px;
   text-decoration: none;
+  color: inherit;
+  transition: border-color 0.1s;
 }
-.used-in-links a:hover { border-color: #4ecca3; }
+.showcase-backlink:hover { border-color: #4ecca3; }
+.showcase-thumb {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  background: #1c1c1c;
+  border: 1px solid #383838;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+.showcase-backlink-name { font-size: 0.92em; text-align: center; color: #4ecca3; word-break: break-word; }

@@ -1,7 +1,8 @@
 import {
   esc, mcText, stripColors, iconHtml, recipesHtml, machineRecipesHtml, producedByHtml, hydrateHeads,
 } from './render.js';
-import { mountInHand, mountPlaced, hasInHand } from './viewers.js';
+import { mountInHand, mountPlaced, hasInHand, toRenderBlock } from './viewers.js';
+import { thumbnailDataURL } from './placed3d.js';
 
 const GROUP_TITLES = { states: 'States', power: 'Redstone power', facing: 'By facing' };
 const GROUP_ORDER = ['states', 'power', 'facing'];
@@ -56,20 +57,41 @@ function transitionsHtml(item) {
 }
 
 // Backlinks to the showcase machines that use this block (reverse of showcases.json; built by
-// generate_catalog into item.usedInShowcases as [{id, name}]).
+// generate_catalog into item.usedInShowcases as [{id, name}]). Each card carries a static 3D
+// screenshot of the machine, hydrated later by hydrateShowcaseThumbs once showcases.json is loaded.
 function usedInShowcasesHtml(item) {
   const used = item.usedInShowcases || [];
   if (!used.length) return '';
-  const links = used
-    .map((s) => `<a href="./showcase.html?id=${encodeURIComponent(s.id)}">${esc(s.name)}</a>`)
-    .join('');
+  const cards = used.map((s) => `
+    <a class="showcase-backlink" href="./showcase.html?id=${encodeURIComponent(s.id)}">
+      <div class="showcase-thumb" data-showcase-thumb="${esc(s.id)}"></div>
+      <div class="showcase-backlink-name">${esc(s.name)}</div>
+    </a>`).join('');
   return `<div class="detail-section used-in">
     <h2 class="section-title">Used in showcases</h2>
-    <div class="used-in-links">${links}</div>
+    <div class="used-in-showcases">${cards}</div>
   </div>`;
 }
 
-function renderItem(item, itemsById) {
+// Fill each [data-showcase-thumb] with an offscreen-rendered PNG of the whole machine. zoom:1 (not the
+// single-block 1.7 default) keeps the multi-block machine framed, matching the live showcase viewer.
+function hydrateShowcaseThumbs(root, showcasesById) {
+  root.querySelectorAll('[data-showcase-thumb]').forEach((el) => {
+    const sc = showcasesById.get(el.dataset.showcaseThumb);
+    if (!sc) return;
+    thumbnailDataURL((sc.blocks || []).map(toRenderBlock), { size: 300, cacheKey: 'showcase:' + sc.id, zoom: 1 })
+      .then((url) => {
+        if (!url || !el.isConnected) return;
+        const img = new Image();
+        img.src = url;
+        img.alt = '';
+        img.className = 'placed-thumb-img';
+        el.appendChild(img);
+      });
+  });
+}
+
+function renderItem(item, itemsById, showcasesById) {
   const detail = document.getElementById('detail');
   document.title = `DefCoreLib — ${stripColors(item.name)}`;
 
@@ -87,7 +109,6 @@ function renderItem(item, itemsById) {
       </div>
     </div>
     ${lore}
-    ${usedInShowcasesHtml(item)}
     <div class="viewers" id="viewers"></div>
     ${item.recipes?.length || !item.producedBy?.length
       ? `<div class="detail-section"><h2 class="section-title">Recipes</h2>${recipesHtml(item, itemsById)}</div>`
@@ -99,9 +120,11 @@ function renderItem(item, itemsById) {
       ? `<div class="detail-section"><h2 class="section-title">${esc(item.machineType || 'Processing')} Recipes</h2>${machineRecipesHtml(item.machineRecipes, itemsById)}</div>`
       : ''}
     ${variantsHtml(item)}
+    ${usedInShowcasesHtml(item)}
   `;
   hydrateHeads(detail);
   mountViewers(item);
+  if (showcasesById) hydrateShowcaseThumbs(detail, showcasesById);
 }
 
 // Registry of live viewer teardowns; released on navigation so WebGL contexts don't leak.
@@ -240,7 +263,18 @@ async function init() {
   const itemsById = new Map(catalog.items.map((it) => [it.fullId, it]));
   const item = itemsById.get(id);
   if (!item) { showError(`Unknown item: ${id}`); return; }
-  renderItem(item, itemsById);
+
+  // Only this item's pages that actually appear in a showcase need the (~900 KB) showcase block data,
+  // for the bottom-of-page machine screenshots. A failed/missing load just drops the thumbnails.
+  let showcasesById = null;
+  if (item.usedInShowcases?.length) {
+    try {
+      const sc = await fetch('./data/showcases.json').then((r) => { if (!r.ok) throw new Error(r.status); return r.json(); });
+      showcasesById = new Map((sc.showcases || []).map((s) => [s.id, s]));
+    } catch (e) { console.warn('showcases.json unavailable:', e); }
+  }
+
+  renderItem(item, itemsById, showcasesById);
 }
 
 init();

@@ -488,23 +488,41 @@ def fetch_json(url: str):
 
 def wiki_invicon_url(name: str) -> str:
     """Minecraft wiki rendered inventory icon, e.g. OAK_SLAB -> Invicon_Oak_Slab.png.
-    Covers model items (slabs/stairs), banners, etc. that have no flat texture."""
-    display = "_".join(w.capitalize() for w in name.split("_"))
+    Covers model items (slabs/stairs), banners, etc. that have no flat texture. WIKI_NAME holds
+    exact display strings for the wiki's naming quirks (e.g. redstone_block -> Block_of_Redstone)."""
+    display = WIKI_NAME.get(name) or "_".join(w.capitalize() for w in name.split("_"))
     filename = f"Invicon_{display}.png"
     return f"https://minecraft.wiki/w/Special:FilePath/{urllib.parse.quote(filename)}"
 
 
-def resolve_material_url(name: str, octagon: dict, item_list: set, block_list: set) -> str | None:
-    """HeadSmith's priority chain: octagon render -> item flat -> block flat -> wiki invicon."""
+# Wiki Invicon filenames that don't follow the Title_Case(material) convention. Extend if the
+# regen log reports a block that fell back to a flat face (HTTP 404 on its computed Invicon).
+WIKI_NAME = {
+    "redstone_block": "Block_of_Redstone",
+}
+
+
+def resolve_material_urls(name: str, octagon: dict, item_list: set, block_list: set) -> list[str]:
+    """Ordered icon candidates, tried until one downloads (see vendor_assets). Real BLOCKS prefer
+    the wiki's isometric Invicon render over a flat single-face texture, so recipe grids show 3D
+    cubes (gravel, sand, …) instead of a flat sprite; genuine items keep their flat inventory icon.
+    Priority: octagon hi-res isometric -> block isometric Invicon -> item flat -> block flat ->
+    Invicon fallback (covers model items like slabs that have no flat texture)."""
+    urls: list[str] = []
     if name in octagon:
         folder = urllib.parse.quote(octagon[name]["folder"])
         file = urllib.parse.quote(octagon[name]["file"])
-        return f"{OCTAGON_BASE}/{folder}/{file}"
-    if name in item_list:
-        return f"{MC_ASSETS_BASE}/item/{name}.png"
+        urls.append(f"{OCTAGON_BASE}/{folder}/{file}")
     if name in block_list:
-        return f"{MC_ASSETS_BASE}/block/{name}.png"
-    return wiki_invicon_url(name)
+        urls.append(wiki_invicon_url(name))   # isometric cube for placeable blocks
+    if name in item_list:
+        urls.append(f"{MC_ASSETS_BASE}/item/{name}.png")
+    if name in block_list:
+        urls.append(f"{MC_ASSETS_BASE}/block/{name}.png")
+    urls.append(wiki_invicon_url(name))
+    # De-dupe while preserving order (Invicon may appear twice for blocks).
+    seen: set = set()
+    return [u for u in urls if not (u in seen or seen.add(u))]
 
 
 # Vanilla block/item MODELS, flattened at build time so the front-end can render them
@@ -639,8 +657,9 @@ def vendor_assets(items: list[dict]) -> dict:
     got, missing = 0, []
     for mat in sorted(materials):
         name = mat.lower()
-        url = resolve_material_url(name, octagon, item_list, block_list)
-        if url and download(url, ITEMS_DIR / f"{name}.png"):
+        # Try the icon candidates in priority order; first one that downloads wins. This lets a
+        # block whose isometric Invicon is missing (404) fall back to its flat face instead of a hole.
+        if any(download(url, ITEMS_DIR / f"{name}.png") for url in resolve_material_urls(name, octagon, item_list, block_list)):
             got += 1
         else:
             missing.append(mat)
