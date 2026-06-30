@@ -1,4 +1,7 @@
 max-network-size: 256
+# Max blocks a mechanism structure (door / drawbridge / minecart) can grab.
+# Hitting the cap logs a warning + shows smoke at the anchor (no longer silent).
+max-structure-size: 256
 
 drill:
   tick-interval: 4

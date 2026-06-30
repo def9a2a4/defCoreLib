@@ -2,6 +2,7 @@ package anon.def9a2a4.corelib;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.Particle;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -23,13 +24,16 @@ final class DoorDemo {
     private final JavaPlugin plugin;
     private final CustomBlockRegistry registry;
     private final MechanismRegistry mechRegistry;
+    private final int maxStructureSize;
     private final Map<CustomBlockRegistry.LocationKey, Mechanism> activeDoors = new HashMap<>();
     private final Map<CustomBlockRegistry.LocationKey, BukkitTask> activeTasks = new HashMap<>();
 
-    DoorDemo(JavaPlugin plugin, CustomBlockRegistry registry, MechanismRegistry mechRegistry) {
+    DoorDemo(JavaPlugin plugin, CustomBlockRegistry registry, MechanismRegistry mechRegistry,
+             int maxStructureSize) {
         this.plugin = plugin;
         this.registry = registry;
         this.mechRegistry = mechRegistry;
+        this.maxStructureSize = maxStructureSize;
     }
 
     void register() {
@@ -70,7 +74,7 @@ final class DoorDemo {
         Mechanism mech = activeDoors.get(key);
         boolean freshAssembly = (mech == null);
         if (freshAssembly) {
-            List<Block> planks = floodFill(head, Material.OAK_PLANKS, 256);
+            List<Block> planks = floodFill(head, Material.OAK_PLANKS, maxStructureSize);
             if (planks.isEmpty()) return;
             mech = mechRegistry.assembleMechanism("demo:door", planks,
                 head.getLocation().add(0.5, 0, 0.5), null);
@@ -113,7 +117,7 @@ final class DoorDemo {
             timerDelay = 0; // already mounted
         } else {
             // Fully opened + disassembled: re-assemble rotated planks, rotate to -90°
-            List<Block> planks = floodFill(head, Material.OAK_PLANKS, 256);
+            List<Block> planks = floodFill(head, Material.OAK_PLANKS, maxStructureSize);
             if (planks.isEmpty()) return;
             mech = mechRegistry.assembleMechanism("demo:door", planks,
                 head.getLocation().add(0.5, 0, 0.5), null);
@@ -168,6 +172,13 @@ final class DoorDemo {
             if (!visited.add(b) || b.getType() != target) continue;
             result.add(b);
             for (BlockFace face : CARDINAL_FACES) queue.add(b.getRelative(face));
+        }
+        if (result.size() >= maxBlocks && !queue.isEmpty()) {
+            plugin.getLogger().warning("Door: structure capped at " + maxBlocks
+                + " blocks at " + origin.getX() + "," + origin.getY() + "," + origin.getZ()
+                + " (raise max-structure-size in rotation-config.yml)");
+            origin.getWorld().spawnParticle(Particle.SMOKE,
+                origin.getLocation().add(0.5, 1.0, 0.5), 12, 0.3, 0.3, 0.3, 0.02);
         }
         return result;
     }

@@ -12,6 +12,7 @@ import java.util.logging.Logger;
 final class RotationConfig {
 
     int maxNetworkSize = 256;
+    int maxStructureSize = 256; // cap on flood-fill-selected mechanism structures (door/rotator/minecart)
     int drillTickInterval = 4;
     int drillBreakStages = 10;
     int grindstoneTickInterval = 20;
@@ -37,6 +38,7 @@ final class RotationConfig {
         int loaded = 0;
 
         maxNetworkSize = yaml.getInt("max-network-size", maxNetworkSize);
+        maxStructureSize = yaml.getInt("max-structure-size", maxStructureSize);
 
         ConfigurationSection drill = yaml.getConfigurationSection("drill");
         if (drill != null) {

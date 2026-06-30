@@ -255,9 +255,17 @@ final class RotationBlocks {
                 if (fuelValue <= 0) return debugInteract(b, event, network, registry);
 
                 // Consume 1 item, add fuel
+                Material fuelType = held.getType();
                 held.setAmount(held.getAmount() - 1);
                 var key = CustomBlockRegistry.LocationKey.of(b);
                 fuelManager.addFuel(key, fuelValue);
+
+                // Bucket fuels return the empty bucket (vanilla furnace parity).
+                if (fuelType == Material.LAVA_BUCKET) {
+                    var player = event.getPlayer();
+                    player.getInventory().addItem(new ItemStack(Material.BUCKET)).values()
+                        .forEach(it -> player.getWorld().dropItemNaturally(player.getLocation(), it));
+                }
 
                 // Transition to running if idle
                 String state = registry.getState(b);

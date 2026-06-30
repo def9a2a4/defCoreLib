@@ -52,6 +52,7 @@ final class MechanismMinecartManager implements Listener {
     private final CustomBlockRegistry registry;
     private final MechanismRegistry mechRegistry;
     private final NamespacedKey mechanismMinecartKey;
+    private final int maxStructureSize;
 
     private final Map<UUID, MinecartState> tracked = new HashMap<>();
     private Set<Material> allowedMaterials = Set.of(); // loaded from config
@@ -68,11 +69,13 @@ final class MechanismMinecartManager implements Listener {
         }
     }
 
-    MechanismMinecartManager(JavaPlugin plugin, CustomBlockRegistry registry, MechanismRegistry mechRegistry) {
+    MechanismMinecartManager(JavaPlugin plugin, CustomBlockRegistry registry, MechanismRegistry mechRegistry,
+                             int maxStructureSize) {
         this.plugin = plugin;
         this.registry = registry;
         this.mechRegistry = mechRegistry;
         this.mechanismMinecartKey = new NamespacedKey(plugin, "mechanism_minecart");
+        this.maxStructureSize = maxStructureSize;
     }
 
     void register() {
@@ -256,7 +259,7 @@ final class MechanismMinecartManager implements Listener {
         org.bukkit.Location above = state.minecart.getLocation().clone().add(0, 1, 0);
         if (above.getBlock().getType().isAir()) return;
 
-        List<Block> blocks = floodFillAllowed(above.getBlock(), 256);
+        List<Block> blocks = floodFillAllowed(above.getBlock(), maxStructureSize);
         if (blocks.isEmpty()) return;
 
         Mechanism mech = mechRegistry.assembleMechanism("demo:mechanism_minecart", blocks,
@@ -334,6 +337,13 @@ final class MechanismMinecartManager implements Listener {
             if (!allowedMaterials.contains(b.getType())) continue;
             result.add(b);
             for (BlockFace face : CARDINAL_FACES) queue.add(b.getRelative(face));
+        }
+        if (result.size() >= maxBlocks && !queue.isEmpty()) {
+            plugin.getLogger().warning("Mechanism minecart: structure capped at " + maxBlocks
+                + " blocks at " + origin.getX() + "," + origin.getY() + "," + origin.getZ()
+                + " (raise max-structure-size in rotation-config.yml)");
+            origin.getWorld().spawnParticle(org.bukkit.Particle.SMOKE,
+                origin.getLocation().add(0.5, 0.5, 0.5), 12, 0.3, 0.3, 0.3, 0.02);
         }
         return result;
     }

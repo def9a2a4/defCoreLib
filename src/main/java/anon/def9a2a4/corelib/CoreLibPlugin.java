@@ -92,9 +92,10 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         RotationBlocks.registerWrenchRecipe();
 
         // Register mechanism demos
-        new DoorDemo(this, registry, mechanismRegistry).register();
-        new RotationRotator(this, registry, rotationNetwork, mechanismRegistry).register();
-        mechanismMinecartManager = new MechanismMinecartManager(this, registry, mechanismRegistry);
+        int maxStructureSize = rotConfig.maxStructureSize;
+        new DoorDemo(this, registry, mechanismRegistry, maxStructureSize).register();
+        new RotationRotator(this, registry, rotationNetwork, mechanismRegistry, maxStructureSize).register();
+        mechanismMinecartManager = new MechanismMinecartManager(this, registry, mechanismRegistry, maxStructureSize);
         mechanismMinecartManager.register();
         getServer().getPluginManager().registerEvents(mechanismMinecartManager, this);
 

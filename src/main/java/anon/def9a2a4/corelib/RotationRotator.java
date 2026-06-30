@@ -40,7 +40,6 @@ final class RotationRotator {
 
     private static final String ROTATOR_ID = "rotation:rotator";
     private static final Material STRUCTURE_MATERIAL = Material.OAK_PLANKS;
-    private static final int MAX_BLOCKS = 256;
 
     // Tuning (live-tunable): per-tick swing speed = clamp(K * surplus / blockCount, MIN, MAX).
     private static final float SPEED_K = 8f;
@@ -55,6 +54,7 @@ final class RotationRotator {
     private final CustomBlockRegistry registry;
     private final RotationNetwork network;
     private final MechanismRegistry mechRegistry;
+    private final int maxStructureSize;
 
     private final Map<CustomBlockRegistry.LocationKey, Mechanism> activeRotators = new HashMap<>();
     private final Map<CustomBlockRegistry.LocationKey, BukkitTask> activeTasks = new HashMap<>();
@@ -62,11 +62,12 @@ final class RotationRotator {
     private final Map<CustomBlockRegistry.LocationKey, Boolean> lastPowered = new HashMap<>();
 
     RotationRotator(JavaPlugin plugin, CustomBlockRegistry registry,
-                    RotationNetwork network, MechanismRegistry mechRegistry) {
+                    RotationNetwork network, MechanismRegistry mechRegistry, int maxStructureSize) {
         this.plugin = plugin;
         this.registry = registry;
         this.network = network;
         this.mechRegistry = mechRegistry;
+        this.maxStructureSize = maxStructureSize;
     }
 
     void register() {
@@ -116,7 +117,7 @@ final class RotationRotator {
         int surplus = stats[0] - stats[1];
         if (surplus <= 0) { feedbackNoPower(head); return; }
 
-        List<Block> planks = floodFill(head, STRUCTURE_MATERIAL, MAX_BLOCKS);
+        List<Block> planks = floodFill(head, STRUCTURE_MATERIAL, maxStructureSize);
         if (planks.isEmpty()) return;
 
         RotationNetwork.RotationNode node = network.getNode(key);
@@ -240,7 +241,16 @@ final class RotationRotator {
             result.add(b);
             for (BlockFace face : CARDINAL_FACES) queue.add(b.getRelative(face));
         }
+        if (result.size() >= maxBlocks && !queue.isEmpty()) warnTruncated(origin, maxBlocks);
         return result;
+    }
+
+    private void warnTruncated(Block anchor, int cap) {
+        plugin.getLogger().warning("Rotator: structure capped at " + cap
+            + " blocks at " + anchor.getX() + "," + anchor.getY() + "," + anchor.getZ()
+            + " (raise max-structure-size in rotation-config.yml)");
+        anchor.getWorld().spawnParticle(Particle.SMOKE,
+            anchor.getLocation().add(0.5, 1.0, 0.5), 12, 0.3, 0.3, 0.3, 0.02);
     }
 
     private int readTarget(Block head) {
