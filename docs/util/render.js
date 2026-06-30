@@ -4,6 +4,13 @@
 // docs/assets/ folder (populated by scripts/generate_catalog.py).
 
 import { headDataUrl } from './head-icon.js';
+import './tooltip.js';   // side effect: installs the shared [data-tip] hover tooltip
+
+// Single owner for a slot's hover label: `data-tip` drives the themed tooltip,
+// `aria-label` preserves the accessible name that `title` used to provide. Stamp
+// this on the slot container only — icons inside it stay label-free so there's
+// exactly one tooltip per slot.
+export const tipAttrs = (label) => `data-tip="${esc(label)}" aria-label="${esc(label)}"`;
 
 const MC_COLORS = {
   '0': 'mc-0', '1': 'mc-1', '2': 'mc-2', '3': 'mc-3', '4': 'mc-4', '5': 'mc-5',
@@ -50,9 +57,10 @@ export const skinPath = (url) => `./assets/skins/${url.split('/').pop()}.png`;
 export const materialPath = (material) => `./assets/items/${material.toLowerCase()}.png`;
 
 // <img> for a vanilla material, falling back to a text label if the asset is missing.
+// No `title` — the enclosing slot owns the tooltip (see tipAttrs); `alt` stays for a11y.
 export function materialImg(material, label) {
-  return `<img class="mat-img" src="${materialPath(material)}" alt="${esc(label)}" title="${esc(label)}"
-    onerror="this.replaceWith(Object.assign(document.createElement('span'),{className:'slot-label',title:this.alt,textContent:this.alt}));">`;
+  return `<img class="mat-img" src="${materialPath(material)}" alt="${esc(label)}"
+    onerror="this.replaceWith(Object.assign(document.createElement('span'),{className:'slot-label',textContent:this.alt}));">`;
 }
 
 // Inner HTML for an item's icon: a vanilla image, or a head placeholder hydrated later.
@@ -60,9 +68,9 @@ export function iconHtml(item) {
   const label = stripColors(item.name);
   if (item.icon?.type === 'material') return materialImg(item.icon.material, label);
   if (item.icon?.type === 'head' && item.icon.textureUrl) {
-    return `<span class="slot-label head-pending" data-head="${esc(item.icon.textureUrl)}" data-title="${esc(label)}" title="${esc(label)}"></span>`;
+    return `<span class="slot-label head-pending" data-head="${esc(item.icon.textureUrl)}" data-title="${esc(label)}"></span>`;
   }
-  return `<span class="placeholder" title="${esc(label)}">?</span>`;
+  return `<span class="placeholder">?</span>`;
 }
 
 // Recipe ingredient tags (#banners / #wool / …) render as a representative image + descriptive
@@ -81,24 +89,24 @@ function slotEl(ing, itemsById, extraClass = '') {
   if (ing.kind === 'block') {
     const ref = itemsById.get(ing.value);
     const label = ref ? stripColors(ref.name) : ing.value;
-    const inner = ref ? iconHtml(ref) : `<span class="slot-label" title="${esc(label)}">${esc(label)}</span>`;
-    return `<a class="${cls.join(' ')}" href="${itemHref(ing.value)}" title="${esc(label)}">${inner}</a>`;
+    const inner = ref ? iconHtml(ref) : `<span class="slot-label">${esc(label)}</span>`;
+    return `<a class="${cls.join(' ')}" href="${itemHref(ing.value)}" ${tipAttrs(label)}>${inner}</a>`;
   }
   if (ing.kind === 'tag') {
     const ph = TAG_PLACEHOLDER[ing.value];
     const label = ph ? ph.label : '#' + ing.value;
     cls.push('tag');
     const inner = ph ? materialImg(ph.img, label) : `<span class="slot-label">${esc('#' + ing.value)}</span>`;
-    return `<div class="${cls.join(' ')}" title="${esc(label)}">${inner}</div>`;
+    return `<div class="${cls.join(' ')}" ${tipAttrs(label)}>${inner}</div>`;
   }
   const label = prettyMaterial(ing.value);
-  return `<div class="${cls.join(' ')}" title="${esc(label)}">${materialImg(ing.value, label)}</div>`;
+  return `<div class="${cls.join(' ')}" ${tipAttrs(label)}>${materialImg(ing.value, label)}</div>`;
 }
 
 function resultSlot(item, amount) {
   const label = stripColors(item.name);
   const amt = amount > 1 ? `<span class="amount">${amount}</span>` : '';
-  return `<a class="slot result" href="${itemHref(item.fullId)}" title="${esc(label)}">${iconHtml(item)}${amt}</a>`;
+  return `<a class="slot result" href="${itemHref(item.fullId)}" ${tipAttrs(label)}>${iconHtml(item)}${amt}</a>`;
 }
 
 export function renderRecipe(item, recipe, itemsById) {
@@ -154,10 +162,12 @@ export function grindRecipesHtml(recipes) {
   if (!list.length) return '';
   const rows = list.map((r) => {
     const amt = r.amount > 1 ? `<span class="amount">${r.amount}</span>` : '';
+    const inLabel = prettyMaterial(r.input);
+    const outLabel = prettyMaterial(r.output);
     return `<div class="grind-row">
-      <div class="slot" title="${esc(prettyMaterial(r.input))}">${materialImg(r.input, prettyMaterial(r.input))}</div>
+      <div class="slot" ${tipAttrs(inLabel)}>${materialImg(r.input, inLabel)}</div>
       <span class="recipe-arrow">→</span>
-      <div class="slot result" title="${esc(prettyMaterial(r.output))}">${materialImg(r.output, prettyMaterial(r.output))}${amt}</div>
+      <div class="slot result" ${tipAttrs(outLabel)}>${materialImg(r.output, outLabel)}${amt}</div>
     </div>`;
   }).join('');
   return `<div class="grind-grid">${rows}</div>`;
@@ -175,7 +185,8 @@ export async function hydrateHeads(root) {
       const img = new Image();
       img.src = dataUrl;
       img.alt = title;
-      img.title = title;
+      img.dataset.tip = title;
+      img.setAttribute('aria-label', title);
       img.className = 'head-img';
       el.replaceWith(img);
     } else if (!el.textContent) {

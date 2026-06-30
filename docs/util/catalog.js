@@ -4,7 +4,7 @@ import {
 
 const SLAB_NAMESPACE = 'verticalslabs';
 const NS_LABELS = { rotation: 'Rotation', demo: 'Demo', corelib: 'Core' };
-const NS_PRIORITY = ['rotation', 'demo'];   // shown first, in this order; others follow alphabetically
+const NS_PRIORITY = ['rotation', 'corelib', 'demo'];   // shown first, in this order; others follow alphabetically
 
 // Non-slab namespaces in display order: priority ones first, then the rest alphabetically.
 function orderedNamespaces() {

@@ -374,6 +374,32 @@ def collect_block_models(items: list[dict]) -> set[str]:
 # TAG_PLACEHOLDER map in docs/util/render.js).
 TAG_PLACEHOLDER_MATERIAL = {"banners": "WHITE_BANNER", "banner": "WHITE_BANNER", "wool": "WHITE_WOOL"}
 
+# A block's exported BannerTier (from DisplayExporter) says which custom banner actually crafts it:
+# windmill recipes use a generic `{tag: banners}` in-game (Bukkit can't express a custom item), but
+# large/huge windmills are tier-gated in Java. Keyed on the BannerTier enum (NORMAL stays generic).
+TIER_BANNER = {"LARGE": "corelib:large_banner", "HUGE": "corelib:huge_banner"}
+
+
+def apply_banner_tier(item: dict, tier: str | None) -> None:
+    """Rewrite a tier-gated block's generic `{tag: banners}` recipe ingredient to the real custom
+    banner item, so the docs show the banner the craft truly requires."""
+    target = TIER_BANNER.get(tier or "")
+    if not target:
+        return
+
+    def fix(ing):
+        if ing and ing.get("kind") == "tag" and ing.get("value") == "banners":
+            return {"kind": "block", "value": target}
+        return ing
+
+    for r in item.get("recipes") or []:
+        if "key" in r:
+            r["key"] = {k: fix(v) for k, v in r["key"].items()}
+        if "ingredients" in r:
+            r["ingredients"] = [fix(i) for i in r["ingredients"]]
+        if "input" in r:
+            r["input"] = fix(r["input"])
+
 
 def collect_materials(items: list[dict], grind: list[dict]) -> set[str]:
     mats: set[str] = set()
@@ -610,10 +636,14 @@ def main() -> int:
     item_ids = {it["fullId"] for it in items}
     matched = 0
     for it in items:
-        variants = (spec.get(it["fullId"]) or {}).get("variants", [])
+        entry = spec.get(it["fullId"]) or {}
+        variants = entry.get("variants", [])
         it["placedVariants"] = variants
         if variants:
             matched += 1
+        # Tier-gated blocks (windmills) get their generic banner ingredient rewritten to the real
+        # custom banner the craft requires, derived from the exported BannerTier (not a hardcoded id).
+        apply_banner_tier(it, entry.get("bannerTier"))
     unmatched = sorted(k for k in spec if k not in item_ids)
     print(f"  + display-spec.json: matched {matched}/{len(spec)} spec types to items")
     if unmatched:
