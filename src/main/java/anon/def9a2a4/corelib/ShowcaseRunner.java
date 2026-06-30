@@ -147,6 +147,9 @@ final class ShowcaseRunner implements Listener {
             case "state" -> {
                 return ex.value() != null && ex.value().equals(registry.getState(block));
             }
+            case "mechanism_swung" -> {
+                return rotator != null && rotator.swingCount(block) > 0;
+            }
             default -> {
                 plugin.getLogger().warning("[showcase] unknown expect type: " + ex.type());
                 return false;

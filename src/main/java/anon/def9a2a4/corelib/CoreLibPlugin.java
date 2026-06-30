@@ -136,7 +136,8 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         // Register mechanism demos
         int maxStructureSize = rotConfig.maxStructureSize;
         new DoorDemo(this, registry, mechanismRegistry, glueManager, maxStructureSize).register();
-        new RotationRotator(this, registry, rotationNetwork, mechanismRegistry, glueManager, maxStructureSize).register();
+        RotationRotator rotationRotator = new RotationRotator(this, registry, rotationNetwork, mechanismRegistry, glueManager, maxStructureSize);
+        rotationRotator.register();
         mechanismMinecartManager = new MechanismMinecartManager(this, registry, mechanismRegistry, maxStructureSize);
         mechanismMinecartManager.register();
         getServer().getPluginManager().registerEvents(mechanismMinecartManager, this);
@@ -156,7 +157,7 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
                 rotationNetwork, fuelManager);
 
         // Headless showcase integration tests (-Ddefcorelib.showcaseTest=true): build, run, assert, exit.
-        ShowcaseRunner.armIfRequested(this, registry, rotationNetwork, fuelManager, showcaseBuilder, showcases.values());
+        ShowcaseRunner.armIfRequested(this, registry, rotationNetwork, fuelManager, showcaseBuilder, showcases.values(), rotationRotator);
 
         getLogger().info("DefCoreLib enabled");
     }
