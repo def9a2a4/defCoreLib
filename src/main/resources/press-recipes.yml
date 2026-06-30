@@ -9,4 +9,4 @@ recipes:
   - { input: COCOA_BEANS, output: BROWN_DYE,  amount: 2 }
   # Custom-item outputs (resolved via the registry):
   - { input: SWEET_BERRIES, input_amount: 3, output: "rotation:sweet_berry_juice" }
-  - { input: WHEAT_SEEDS,   input_amount: 4, output: "rotation:plant_oil" }
+  - { input: WHEAT_SEEDS,   input_amount: 4, output: "rotation:seed_oil" }

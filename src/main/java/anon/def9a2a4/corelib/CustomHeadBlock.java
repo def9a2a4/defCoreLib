@@ -254,6 +254,7 @@ public final class CustomHeadBlock {
     private final boolean itemGlint;
     private final boolean unbreakable; // item form: unbreakable + hide the flag (e.g. wrench)
     private final boolean placeable; // false → inventory-only item (juices, oils, wrench)
+    private final @Nullable PotionConfig potion; // item_material POTION: base type + custom effects
     private final @Nullable Map<BlockFace, String> directionalTextures;
     private final @Nullable LightConfig light;
     private final @Nullable ParticleConfig particles;
@@ -321,6 +322,7 @@ public final class CustomHeadBlock {
         this.itemGlint = b.itemGlint;
         this.unbreakable = b.unbreakable;
         this.placeable = b.placeable;
+        this.potion = b.potion;
         this.directionalTextures = b.directionalTextures;
         this.light = b.light;
         this.particles = b.particles;
@@ -386,6 +388,7 @@ public final class CustomHeadBlock {
     public boolean itemGlint() { return itemGlint; }
     public boolean unbreakable() { return unbreakable; }
     public boolean placeable() { return placeable; }
+    public @Nullable PotionConfig potion() { return potion; }
     public @Nullable Map<BlockFace, String> directionalTextures() { return directionalTextures; }
     public @Nullable LightConfig light() { return light; }
     public @Nullable ParticleConfig particles() { return particles; }
@@ -438,6 +441,11 @@ public final class CustomHeadBlock {
     public boolean hasLight() { return _hasLight; }
     public boolean hasParticles() { return _hasParticles; }
 
+    /** Potion data for an item_material:POTION custom item. {@code baseType} is a {@link org.bukkit.potion.PotionType}
+     *  name (e.g. HEALING) or null; {@code effects} are custom effects (e.g. SATURATION); {@code colorRgb} an optional tint. */
+    public record PotionConfig(@Nullable String baseType, List<EffectSpec> effects, @Nullable Integer colorRgb) {}
+    public record EffectSpec(String type, int duration, int amplifier) {}
+
     /** Create an ItemStack for this block type with correct texture, name, lore, and PDC. */
     public org.bukkit.inventory.ItemStack createItem(int amount) {
         if (itemMaterial != null) {
@@ -451,6 +459,20 @@ public final class CustomHeadBlock {
             if (unbreakable) {
                 meta.setUnbreakable(true);
                 meta.addItemFlags(org.bukkit.inventory.ItemFlag.HIDE_UNBREAKABLE);
+            }
+            if (potion != null && meta instanceof org.bukkit.inventory.meta.PotionMeta pm) {
+                if (potion.baseType() != null) {
+                    pm.setBasePotionType(org.bukkit.potion.PotionType.valueOf(potion.baseType().toUpperCase(java.util.Locale.ROOT)));
+                }
+                for (EffectSpec e : potion.effects()) {
+                    org.bukkit.potion.PotionEffectType type = org.bukkit.Registry.EFFECT.get(
+                            org.bukkit.NamespacedKey.minecraft(e.type().toLowerCase(java.util.Locale.ROOT)));
+                    if (type != null) {
+                        pm.addCustomEffect(new org.bukkit.potion.PotionEffect(type, e.duration(), e.amplifier()), true);
+                    }
+                }
+                if (potion.colorRgb() != null) pm.setColor(org.bukkit.Color.fromRGB(potion.colorRgb()));
+                meta = pm;
             }
             stack.setItemMeta(meta);
             return stack;
@@ -600,6 +622,7 @@ public final class CustomHeadBlock {
         b.itemGlint = itemGlint;
         b.unbreakable = unbreakable;
         b.placeable = placeable;
+        b.potion = potion;
         b.directionalTextures = directionalTextures;
         b.light = light;
         b.particles = particles;
@@ -655,6 +678,7 @@ public final class CustomHeadBlock {
         private boolean itemGlint;
         private boolean unbreakable;
         private boolean placeable = true;
+        private @Nullable PotionConfig potion;
         private @Nullable Map<BlockFace, String> directionalTextures;
         private @Nullable LightConfig light;
         private @Nullable ParticleConfig particles;
@@ -717,6 +741,7 @@ public final class CustomHeadBlock {
         public Builder itemGlint(boolean glint) { this.itemGlint = glint; return this; }
         public Builder unbreakable(boolean v) { this.unbreakable = v; return this; }
         public Builder placeable(boolean value) { this.placeable = value; return this; }
+        public Builder potion(PotionConfig config) { this.potion = config; return this; }
         public Builder directionalTextures(Map<BlockFace, String> textures) { this.directionalTextures = textures; return this; }
         public Builder light(int level, int offsetX, int offsetY, int offsetZ) { this.light = new LightConfig(level, offsetX, offsetY, offsetZ); return this; }
         public Builder particles(ParticleConfig config) { this.particles = config; return this; }

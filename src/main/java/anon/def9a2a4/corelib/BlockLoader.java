@@ -84,6 +84,8 @@ public final class BlockLoader {
         if (sec.getBoolean("item_glint")) b.itemGlint(true);
         if (sec.getBoolean("unbreakable")) b.unbreakable(true);
         if (!sec.getBoolean("placeable", true)) b.placeable(false);
+        ConfigurationSection potionSec = sec.getConfigurationSection("potion");
+        if (potionSec != null) b.potion(parsePotion(potionSec));
 
         // Name and lore
         String nameStr = sec.getString("name");
@@ -483,6 +485,25 @@ public final class BlockLoader {
         int oy = offset.size() > 1 ? offset.get(1) : 0;
         int oz = offset.size() > 2 ? offset.get(2) : 0;
         return new CustomHeadBlock.LightConfig(level, ox, oy, oz);
+    }
+
+    private static CustomHeadBlock.PotionConfig parsePotion(ConfigurationSection sec) {
+        String baseType = sec.getString("base_type");
+        List<CustomHeadBlock.EffectSpec> effects = new java.util.ArrayList<>();
+        for (Map<?, ?> e : sec.getMapList("effects")) {
+            Object type = e.get("type");
+            if (type == null) continue;
+            int dur = e.get("duration") instanceof Number n ? n.intValue() : 1;
+            int amp = e.get("amplifier") instanceof Number n ? n.intValue() : 0;
+            effects.add(new CustomHeadBlock.EffectSpec(String.valueOf(type), dur, amp));
+        }
+        Integer color = null;
+        String c = sec.getString("color");
+        if (c != null) {
+            try { color = Integer.parseInt(c.replace("#", "").trim(), 16); }
+            catch (NumberFormatException ignored) {}
+        }
+        return new CustomHeadBlock.PotionConfig(baseType, effects, color);
     }
 
     private static CustomHeadBlock.ParticleConfig parseParticles(ConfigurationSection sec) {

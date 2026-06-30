@@ -4,19 +4,30 @@
 # (Real textures later via resource-pack custom_model_data; for now distinct by name.)
 namespace: rotation
 blocks:
+  # A real Potion of Instant Health under the hood (base type HEALING → red, heals on drink).
   sweet_berry_juice:
     name: "&dSweet Berry Juice"
     lore:
       - "&7Pressed from sweet berries"
-    item_material: HONEY_BOTTLE
+      - "&7Drink for instant health"
+    item_material: POTION
     placeable: false
+    potion:
+      base_type: HEALING
 
-  plant_oil:
-    name: "&ePlant Oil"
+  # A Potion of Saturation. Saturation has no vanilla base potion type, so it's a
+  # custom effect plus a yellow tint.
+  seed_oil:
+    name: "&eSeed Oil"
     lore:
-      - "&7Burnable biofuel pressed from seeds"
-    item_material: HONEY_BOTTLE
+      - "&7Pressed from seeds"
+      - "&7Drink for saturation"
+    item_material: POTION
     placeable: false
+    potion:
+      effects:
+        - { type: SATURATION, duration: 100, amplifier: 0 }
+      color: "#E0A030"
 
   # Intermediate mechanical component crafted from iron + copper + planks.
   # Used as the core of the fan (and, later, the windmills). Non-placeable head
