@@ -11,6 +11,11 @@ showcases:
       - { id: "rotation:shaft",    facing: down, at: [0, 2, 0] }
       - { id: "rotation:shaft",    facing: down, at: [0, 1, 0] }
       - { id: "rotation:gear",     facing: down, at: [0, 0, 0] }
+    activate: passive              # windmill self-powers on network recalc
+    expect:
+      - { type: network_powered, at: [0, 2, 0] }   # shaft on the powered network
+      - { type: spinning, at: [0, 2, 0] }          # shaft spins
+      - { type: spinning, at: [0, 0, 0] }          # gear spins
 
   - id: generator_shaft
     name: "Generator + Shaft"
@@ -19,3 +24,8 @@ showcases:
       - { id: "rotation:generator", facing: down, at: [0, 2, 0] }
       - { id: "rotation:shaft",     facing: down, at: [0, 1, 0] }
       - { id: "rotation:gear",      facing: down, at: [0, 0, 0] }
+    activate: passive              # generator spins by default
+    expect:
+      - { type: network_powered, at: [0, 1, 0] }   # shaft on the powered network
+      - { type: spinning, at: [0, 1, 0] }          # shaft spins
+      - { type: spinning, at: [0, 0, 0] }          # gear spins

@@ -27,18 +27,30 @@ final class ShowcaseSpec {
     /** One vanilla support block (redstone, planks, container, …) at an offset. */
     record VanillaSpec(Material material, int[] at) {}
 
+    /** How the runner powers the machine: {@code passive} (no-op / recalc), {@code pulse} (redstone at
+     *  {@code at}), or {@code fuel} (insert fuel into the block at {@code at}). */
+    record Activate(String kind, @Nullable int[] at) {}
+
+    /** A behavioural assertion (phase 2). {@code at} = offset from the build origin. */
+    record Expect(String type, int[] at, @Nullable String value) {}
+
     final String id;
     final String name;
     final String blurb;
     final List<BlockSpec> blocks;
     final List<VanillaSpec> vanilla;
+    final Activate activate;
+    final List<Expect> expect;
 
-    ShowcaseSpec(String id, String name, String blurb, List<BlockSpec> blocks, List<VanillaSpec> vanilla) {
+    ShowcaseSpec(String id, String name, String blurb, List<BlockSpec> blocks, List<VanillaSpec> vanilla,
+                 Activate activate, List<Expect> expect) {
         this.id = id;
         this.name = name;
         this.blurb = blurb;
         this.blocks = blocks;
         this.vanilla = vanilla;
+        this.activate = activate;
+        this.expect = expect;
     }
 
     /** Parse {@code showcases.yml} into an insertion-ordered id → spec map. Malformed entries are
@@ -75,13 +87,35 @@ final class ShowcaseSpec {
                     }
                     vanilla.add(new VanillaSpec(mat, at));
                 }
+                Activate activate = parseActivate(entry.get("activate"));
+                List<Expect> expect = new ArrayList<>();
+                for (Object o : asList(entry.get("expect"))) {
+                    if (!(o instanceof Map<?, ?> m)) continue;
+                    String type = str(m.get("type"));
+                    int[] at = vec(m.get("at"));
+                    if (type == null || at == null) {
+                        log.warning("showcases.yml [" + id + "]: expect entry needs type + at, skipped");
+                        continue;
+                    }
+                    expect.add(new Expect(type, at, str(m.get("value"))));
+                }
                 out.put(id, new ShowcaseSpec(id, name == null ? id : name, blurb == null ? "" : blurb,
-                        blocks, vanilla));
+                        blocks, vanilla, activate, expect));
             } catch (Exception e) {
                 log.warning("showcases.yml: failed to parse an entry: " + e);
             }
         }
         return out;
+    }
+
+    /** `passive` (string) | `{ pulse: [x,y,z] }` | `{ fuel: [x,y,z] }`. Defaults to passive. */
+    private static Activate parseActivate(@Nullable Object o) {
+        if (o instanceof Map<?, ?> m) {
+            for (String kind : new String[]{"pulse", "fuel"}) {
+                if (m.containsKey(kind)) return new Activate(kind, vec(m.get(kind)));
+            }
+        }
+        return new Activate("passive", null);
     }
 
     // ── parsing helpers ──────────────────────────────────────────────────────

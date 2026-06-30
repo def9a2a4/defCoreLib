@@ -57,10 +57,10 @@
   "tuff_brick_slab": true,
   "tuff_slab": true,
   "warped_slab": true,
-  "waxed_cut_copper_slab": false,
-  "waxed_exposed_cut_copper_slab": false,
-  "waxed_oxidized_cut_copper_slab": false,
-  "waxed_weathered_cut_copper_slab": false,
+  "waxed_cut_copper_slab": true,
+  "waxed_exposed_cut_copper_slab": true,
+  "waxed_oxidized_cut_copper_slab": true,
+  "waxed_weathered_cut_copper_slab": true,
   "weathered_cut_copper_slab": true,
   "white_banner": true
 }

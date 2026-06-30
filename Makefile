@@ -53,6 +53,26 @@ endif
 docs-fast:
 	uv run scripts/generate_catalog.py
 
+# Showcase integration tests: build the demo machines, run them, assert the YAML `expect` conditions.
+# The plugin halt()s with exit 0 (all pass) or 1 (any fail); NO `|| true`, so a failure fails `make`.
+# Runs on a separate port (25576) so it won't clash with a keep-alive docs server on 25575.
+.PHONY: showcase-test
+showcase-test:
+	@[ -n "$(PAPER_JAR)" ] || { echo "ERROR: no server/paper-*.jar found to copy into test-server/"; exit 1; }
+	gradle shadowJar
+	mkdir -p test-server/plugins
+	[ -f test-server/$(PAPER_JAR) ] || cp server/$(PAPER_JAR) test-server/
+	[ -f test-server/eula.txt ] || echo 'eula=true' > test-server/eula.txt
+	[ -f test-server/server.properties ] || printf '%s\n' \
+		'online-mode=false' 'enforce-secure-profile=false' 'gamemode=creative' 'allow-flight=true' \
+		'difficulty=peaceful' 'spawn-monsters=false' 'spawn-protection=0' 'level-type=flat' \
+		'generate-structures=false' 'server-port=25575' 'level-name=world' \
+		'motd=DefCoreLib docs export' \
+		> test-server/server.properties
+	cp build/libs/DefCoreLib*.jar test-server/plugins/
+	cd test-server && timeout --foreground -k 30 180 java -Ddefcorelib.showcaseTest=true \
+		-Xmx2G -jar $(PAPER_JAR) --nogui --port 25576 < /dev/null
+
 .PHONY: clean
 clean:
 	gradle clean

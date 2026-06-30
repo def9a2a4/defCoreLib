@@ -138,6 +138,9 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         // ground-truth placed display data to JSON and shut the server down. Inert otherwise.
         DisplayExporter.armIfRequested(this, registry, showcaseBuilder, showcases.values());
 
+        // Headless showcase integration tests (-Ddefcorelib.showcaseTest=true): build, run, assert, exit.
+        ShowcaseRunner.armIfRequested(this, registry, rotationNetwork, showcaseBuilder, showcases.values());
+
         getLogger().info("DefCoreLib enabled");
     }
 
