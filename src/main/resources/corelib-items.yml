@@ -1,0 +1,17 @@
+# Inventory-only custom items in the `corelib` namespace (non-placeable).
+# Same model as custom-items.yml: a CustomHeadBlock with item_material + placeable:false,
+# so they reuse createItem / give / docs with no parallel item system. Behavior is wired
+# in Java by id (e.g. GlueItem.isGlueItem checks the block_type PDC == corelib:glue_item).
+namespace: corelib
+blocks:
+  # Slime Glue: authoring tool for door/rotator structures. Given via /defcorelib give glue.
+  glue_item:
+    name: "&aSlime Glue"
+    lore:
+      - "&7Right-click a door/rotator hinge to edit"
+      - "&7Left-click: glue  ·  Shift-left-click: unglue"
+      - "&7Right-click two blocks: cuboid fill"
+      - "&7Right-click air: reset corner  ·  Sneak-right hinge: clear"
+    item_material: SLIME_BALL
+    placeable: false
+    item_glint: true

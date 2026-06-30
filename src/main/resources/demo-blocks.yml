@@ -471,3 +471,34 @@ blocks:
         transform:
           translation: [0, 0.5, 0]
           scale: [0.5, 0.5, 0.5]
+
+  # ─── Door Controller ─────────────────────────────────────────────────
+  # Declared here; behavior (assemble/rotate oak-plank door on redstone, cleanup)
+  # is overlaid in Java by DoorDemo via registry.getType(...).toBuilder().
+  door_controller:
+    name: "Door Controller"
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYWNjNzg5ZjIzMDc5NGY5MGUzM2M0ZjlhZDAwNjk0YmMyYTJmZjVlOGI5YjM3NWRjMzUzMjQwMWIyODFmM2U1OCJ9fX0="
+    drops: self
+    default_state: closed
+    states:
+      closed: {}
+      open: {}
+    transitions:
+      - trigger: { type: redstone, range: "1-15" }
+        from: closed
+        to: open
+      - trigger: { type: redstone, range: "0" }
+        from: open
+        to: closed
+    redstone:
+      sensitivity: BINARY
+      reader: EXTENDED
+
+  # ─── Mechanism Minecart ──────────────────────────────────────────────
+  # Item-only (placeable: false): right-clicking a rail spawns a minecart entity.
+  # All spawn/tick/assemble/destroy logic lives in MechanismMinecartManager (Java).
+  mechanism_minecart:
+    name: "Mechanism Minecart"
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYWNjNzg5ZjIzMDc5NGY5MGUzM2M0ZjlhZDAwNjk0YmMyYTJmZjVlOGI5YjM3NWRjMzUzMjQwMWIyODFmM2U1OCJ9fX0="
+    drops: self
+    placeable: false

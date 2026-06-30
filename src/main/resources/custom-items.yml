@@ -19,12 +19,13 @@ blocks:
     placeable: false
 
   # Intermediate mechanical component crafted from iron + copper + planks.
-  # Used as the core of the windmills and the fan.
+  # Used as the core of the fan (and, later, the windmills). Non-placeable head
+  # item — placeholder texture (Copper Gear skin) until real art lands.
   bearing:
     name: "&7Bearing"
     lore:
       - "&7A precision mechanical component"
-    item_material: IRON_NUGGET
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWU1ZWRmZTkwMTU2Y2U5YjViNmI4MDc5M2RjMmNiZmU4NTBkZGVjODU2Yzk5ZWViZGUzMTc3NWNjZTk1NjA0MSJ9fX0="
     placeable: false
     recipes:
       craft:
@@ -34,3 +35,22 @@ blocks:
               W: { tag: planks }
               C: { material: COPPER_INGOT }
               I: { material: IRON_INGOT }
+
+  # Rotation Wrench: right-click rotation-power blocks to turn them. Identity is the
+  # registry block_type PDC (rotation:wrench); behavior is in RotationBlocks.isWrench.
+  wrench:
+    name: "&6Rotation Wrench"
+    lore:
+      - "&7Rotates rotation-power blocks."
+      - "&7Right-click a machine to turn it."
+    item_material: GOLDEN_AXE
+    placeable: false
+    item_glint: true
+    unbreakable: true
+    recipes:
+      craft:
+        shaped:
+          - pattern: ["CSC", "CS ", " S "]
+            key:
+              C: { material: COPPER_INGOT }
+              S: { material: STICK }
