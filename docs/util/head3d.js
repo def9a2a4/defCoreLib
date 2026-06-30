@@ -67,6 +67,21 @@ export function headCubeMesh(skin) {
   return group;
 }
 
+/** A THREE.Group containing a player-HEAD skull as it renders in-game / as a head item:
+ *  an 8×8×8 (½-block) skull + 8.5³ hat, occupying the bottom-centre of the block model
+ *  (xz centred, y −0.5..0). Matches the local geometry of a custom head block and of a
+ *  player-head ItemDisplay, so a placed display's read-back transform lands correctly. */
+export function skullMesh(skin) {
+  const group = new THREE.Group();
+  const S = 0.5;          // 8/16 block
+  const inner = new THREE.Mesh(new THREE.BoxGeometry(S, S, S), cubeMaterials(skin, 0, 0, false));
+  const outer = new THREE.Mesh(new THREE.BoxGeometry(S * 1.0625, S * 1.0625, S * 1.0625), cubeMaterials(skin, 32, 0, true));
+  inner.position.y = -0.25;     // seat the skull on the block floor (y −0.5..0)
+  outer.position.y = -0.25;
+  group.add(inner, outer);
+  return group;
+}
+
 /** Standalone interactive head viewer in `container` (its own renderer + controls). */
 export async function render3DHead(textureUrl, container) {
   const skin = await loadSkin(textureUrl);

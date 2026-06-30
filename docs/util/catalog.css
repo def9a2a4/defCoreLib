@@ -268,6 +268,17 @@ a.slot { text-decoration: none; color: inherit; }
   padding: 10px;
 }
 .viewer-label { color: #4ecca3; font-size: 0.72em; text-transform: uppercase; margin-bottom: 6px; }
+.variant-select {
+  font-family: 'Monocraft', monospace;
+  font-size: 0.85em;
+  background: #1c1c1c;
+  color: #e0e0e0;
+  border: 1px solid #3a3a3a;
+  border-radius: 4px;
+  padding: 2px 6px;
+  margin-left: 6px;
+  text-transform: none;
+}
 .viewer-canvas {
   width: 280px;
   height: 280px;

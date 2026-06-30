@@ -108,22 +108,38 @@ function inHandViewer(item) {
   return null;
 }
 
-// Show one "Block" viewer for simple head blocks; otherwise "In hand" + "Placed".
+// "In hand" viewer + a "Placed" viewer with a variant selector (Floor / Wall N·E·S·W).
 function mountViewers(item) {
   const host = document.getElementById('viewers');
-  const placed = item.placed || {};
-  const ih = item.inHand || {};
-  const hasEntities = (placed.displayEntities || []).length > 0;
-  const sameAppearance = ih.kind === 'head' && !hasEntities
-    && (!placed.baseHead || placed.baseHead === ih.textureUrl);
-
-  if (sameAppearance) {
-    if (ih.textureUrl) addViewer(host, 'Block', (c) => render3DHead(ih.textureUrl, c));
-    return;
-  }
   const inHand = inHandViewer(item);
   if (inHand) addViewer(host, 'In hand', inHand);
-  if (placed.baseHead || hasEntities) addViewer(host, 'Placed', (c) => renderPlaced(item, c));
+
+  const variants = item.placedVariants || [];
+  if (variants.length) mountPlacedViewer(host, item, variants);
+}
+
+function mountPlacedViewer(host, item, variants) {
+  const panel = document.createElement('div');
+  panel.className = 'viewer';
+  const selector = variants.length > 1
+    ? `<select class="variant-select">${variants
+        .map((v, i) => `<option value="${i}">${esc(v.label || v.id)}</option>`).join('')}</select>`
+    : '';
+  panel.innerHTML = `<div class="viewer-label">Placed ${selector}</div><div class="viewer-canvas"></div>`;
+  host.appendChild(panel);
+
+  const canvas = panel.querySelector('.viewer-canvas');
+  let teardown = null;
+  const show = (idx) => {
+    if (teardown) { teardown(); teardown = null; }
+    canvas.innerHTML = '';
+    Promise.resolve(renderPlaced(item, canvas, idx))
+      .then((t) => { teardown = t; })
+      .catch((e) => { console.warn(e); canvas.innerHTML = '<div class="viewer-fail">3D unavailable</div>'; });
+  };
+  const select = panel.querySelector('.variant-select');
+  if (select) select.addEventListener('change', () => show(+select.value));
+  show(0);
 }
 
 async function init() {

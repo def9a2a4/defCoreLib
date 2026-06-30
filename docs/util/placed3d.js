@@ -1,17 +1,12 @@
-// Renders a placed custom block as an interactive 3D scene: the base head plus every
-// YAML display entity (head / block / item), each with its transform and animation.
-// Transform order and animation math mirror the plugin exactly:
-//   base matrix = T · Rleft · S · Rright   (left/right rotations are axis-angle [deg,x,y,z])
-//   animations (DisplayAnimation.java), with tickAge = elapsedSeconds × 20:
-//     rotate: out = R(axis, deg/tick · tick) · base      (pre-multiply)
-//     bob:    out = base · translate(0, A·sin(2π·tick/period), 0)
-//     pulse:  out = base · scale(mid + amp·sin(2π·tick/period))
-//     orbit:  out = base · translate(circular offset)
-//     compose: layers, each rebased on the previous output
+// Renders a placed custom block as an interactive 3D scene from the GROUND-TRUTH data exported
+// by the plugin (scripts → DisplayExporter → docs/data/display-spec.json → items.json placedVariants).
+// Each display carries the real read-back transform matrix[16], a position offset (captures
+// wall_offset), and, when animated, a baked keyframe track the browser just plays back — so there
+// is no animation math here and nothing re-derived from YAML.
 
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import { loadSkin, headCubeMesh } from './head3d.js';
+import { loadSkin, skullMesh } from './head3d.js';
 import { buildBlockMesh, fallbackBox } from './blockmodel.js';
 
 let MANIFEST = null;
@@ -22,70 +17,21 @@ async function manifest() {
   return MANIFEST;
 }
 
-function axisAngleMatrix(aa) {
-  if (!aa) return new THREE.Matrix4();
-  const axis = new THREE.Vector3(aa[1], aa[2], aa[3]);
-  if (axis.lengthSq() < 1e-9) return new THREE.Matrix4();
-  axis.normalize();
-  return new THREE.Matrix4().makeRotationAxis(axis, THREE.MathUtils.degToRad(aa[0]));
+// Mirror scripts/generate_catalog.py canonical_block(): wool/banner default to white.
+function canonical(ref) {
+  let n = String(ref).split('[')[0].split(':').pop().toLowerCase();
+  if (n.endsWith('_wool') || n === 'wool') return 'white_wool';
+  if (n.endsWith('_banner') || n === 'banner') return 'white_banner';
+  return n;
 }
 
-// T · Rleft · S · Rright
-function baseMatrix(t) {
-  const T = new THREE.Matrix4().makeTranslation(...(t.translation || [0, 0, 0]));
-  const Rl = axisAngleMatrix(t.leftRotation);
-  const S = new THREE.Matrix4().makeScale(...(t.scale || [1, 1, 1]));
-  const Rr = axisAngleMatrix(t.rightRotation);
-  return T.multiply(Rl).multiply(S).multiply(Rr);
-}
-
-function applyAnimation(anim, base, tick) {
-  if (!anim) return base;
-  switch (anim.type) {
-    case 'rotate': {
-      const axis = new THREE.Vector3(...anim.axis);
-      if (axis.lengthSq() < 1e-9) return base.clone();
-      axis.normalize();
-      const R = new THREE.Matrix4().makeRotationAxis(axis, THREE.MathUtils.degToRad(anim.speed) * tick);
-      return R.multiply(base.clone());                       // R · base
-    }
-    case 'bob': {
-      const dy = anim.amplitude * Math.sin((2 * Math.PI / anim.period) * tick);
-      return base.clone().multiply(new THREE.Matrix4().makeTranslation(0, dy, 0));
-    }
-    case 'pulse': {
-      const mid = (anim.minScale + anim.maxScale) / 2;
-      const amp = (anim.maxScale - anim.minScale) / 2;
-      const s = mid + amp * Math.sin((2 * Math.PI / anim.period) * tick);
-      return base.clone().multiply(new THREE.Matrix4().makeScale(s, s, s));
-    }
-    case 'orbit': {
-      const n = new THREE.Vector3(...anim.axis).normalize();
-      const tangent = (Math.abs(n.y) < 0.9 ? new THREE.Vector3(0, 1, 0) : new THREE.Vector3(1, 0, 0))
-        .cross(n).normalize();
-      const bitangent = n.clone().cross(tangent).normalize();
-      const a = (2 * Math.PI / anim.period) * tick;
-      const off = tangent.multiplyScalar(anim.radius * Math.cos(a))
-        .add(bitangent.multiplyScalar(anim.radius * Math.sin(a)));
-      return base.clone().multiply(new THREE.Matrix4().makeTranslation(off.x, off.y, off.z));
-    }
-    case 'compose': {
-      let out = base;
-      for (const layer of anim.layers) out = applyAnimation(layer, out, tick);
-      return out;
-    }
-    default:
-      return base;
-  }
-}
-
-function makeViewer(container, { dist = 3.2, target = [0, 0, 0] } = {}) {
-  const width = container.clientWidth || 280;
-  const height = container.clientHeight || 280;
+function makeViewer(container, { dist = 3.4, target = [0, 0, 0] } = {}) {
+  const width = container.clientWidth || 300;
+  const height = container.clientHeight || 300;
 
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 100);
-  camera.position.set(dist * 0.7, dist * 0.55, dist);
+  camera.position.set(dist * 0.75, dist * 0.5, dist);
 
   const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
   renderer.setSize(width, height);
@@ -97,46 +43,81 @@ function makeViewer(container, { dist = 3.2, target = [0, 0, 0] } = {}) {
   controls.enableDamping = true;
   controls.dampingFactor = 0.06;
   controls.target.set(...target);
-  controls.minDistance = 1.4;
-  controls.maxDistance = 10;
+  controls.minDistance = 1.2;
+  controls.maxDistance = 12;
   controls.update();
 
   scene.add(new THREE.AmbientLight(0xffffff, 1.0));
   return { scene, camera, renderer, controls };
 }
 
-async function buildEntityObject(de, models) {
+async function buildDisplayObject(de, models) {
   if (de.kind === 'head') {
-    try { return headCubeMesh(await loadSkin(de.textureUrl)); }
+    try { return skullMesh(await loadSkin(de.ref)); }
     catch { return fallbackBox(0x9b6cff); }
   }
-  if (models[de.block]) {
-    try { return await buildBlockMesh(de.block); }
+  const id = canonical(de.ref);
+  if (models[id]) {
+    try { return await buildBlockMesh(id); }
     catch { return fallbackBox(); }
   }
   return fallbackBox();
 }
 
-/** Render the placed block (base head + display entities) into `container`.
- *  Returns a teardown function. */
-export async function renderPlaced(item, container) {
-  const models = await manifest();
-  const placed = item.placed || {};
-  const { scene, camera, renderer, controls } = makeViewer(container, { dist: 3.4, target: [0, 0.2, 0] });
+// Pre-decompose a baked keyframe track ([[16],...]) for cheap per-frame interpolation.
+function prepareTrack(frames) {
+  return frames.map((f) => {
+    const m = new THREE.Matrix4().fromArray(f);
+    const pos = new THREE.Vector3();
+    const quat = new THREE.Quaternion();
+    const scale = new THREE.Vector3();
+    m.decompose(pos, quat, scale);
+    return { pos, quat, scale };
+  });
+}
 
-  if (placed.baseHead) {
-    try { scene.add(headCubeMesh(await loadSkin(placed.baseHead))); } catch { /* skip base */ }
+function sampleTrack(track, period, tick, out) {
+  const n = track.length;
+  const x = ((tick % period) / period) * n;       // [0, n)
+  const i = Math.floor(x) % n;
+  const j = (i + 1) % n;
+  const a = track[i], b = track[j];
+  const f = x - Math.floor(x);
+  const pos = a.pos.clone().lerp(b.pos, f);
+  const quat = a.quat.clone().slerp(b.quat, f);
+  const scale = a.scale.clone().lerp(b.scale, f);
+  out.compose(pos, quat, scale);
+}
+
+/** Render a placed variant into `container`. Returns a teardown function. */
+export async function renderPlaced(item, container, variantIndex = 0) {
+  const models = await manifest();
+  const variants = item.placedVariants || [];
+  const variant = variants[variantIndex] || variants[0] || { displays: [] };
+
+  const { scene, camera, renderer, controls } = makeViewer(container, { dist: 3.6, target: [0, 0.1, 0] });
+
+  // Base head (the custom head block itself), rendered as a floor-seated skull.
+  if (variant.baseHeadTextureUrl) {
+    try { scene.add(skullMesh(await loadSkin(variant.baseHeadTextureUrl))); } catch { /* skip */ }
   }
 
   const animated = [];
-  for (const de of placed.displayEntities || []) {
-    const obj = await buildEntityObject(de, models);
-    const base = baseMatrix(de.transform || {});
+  for (const de of variant.displays || []) {
+    const obj = await buildDisplayObject(de, models);
     obj.matrixAutoUpdate = false;
-    obj.matrix.copy(base);
+    obj.matrix.fromArray(de.matrix || [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]);
     obj.matrixWorldNeedsUpdate = true;
-    scene.add(obj);
-    if (de.animation) animated.push({ obj, base, anim: de.animation });
+
+    const parent = new THREE.Group();
+    const p = de.position || [0, 0, 0];
+    parent.position.set(p[0], p[1], p[2]);
+    parent.add(obj);
+    scene.add(parent);
+
+    if (de.animation && de.animation.frames && de.animation.frames.length) {
+      animated.push({ obj, track: prepareTrack(de.animation.frames), period: de.animation.period || de.animation.frames.length });
+    }
   }
 
   let alive = true;
@@ -146,31 +127,12 @@ export async function renderPlaced(item, container) {
     requestAnimationFrame(animate);
     const tick = ((now || performance.now()) - t0) / 1000 * 20;   // 20 ticks/sec
     for (const a of animated) {
-      a.obj.matrix.copy(applyAnimation(a.anim, a.base, tick));
+      sampleTrack(a.track, a.period, tick, a.obj.matrix);
       a.obj.matrixWorldNeedsUpdate = true;
     }
     controls.update();
     renderer.render(scene, camera);
   })();
 
-  return () => { alive = false; renderer.dispose(); };
-}
-
-/** Render a single vanilla block/item model (the in-hand view for item_material items). */
-export async function renderBlock(blockId, container) {
-  const models = await manifest();
-  const { scene, camera, renderer, controls } = makeViewer(container, { dist: 2.6 });
-  let obj;
-  if (models[blockId]) { try { obj = await buildBlockMesh(blockId); } catch { obj = fallbackBox(); } }
-  else obj = fallbackBox();
-  scene.add(obj);
-
-  let alive = true;
-  (function animate() {
-    if (!alive) return;
-    requestAnimationFrame(animate);
-    controls.update();
-    renderer.render(scene, camera);
-  })();
   return () => { alive = false; renderer.dispose(); };
 }

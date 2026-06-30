@@ -8,20 +8,35 @@ the actual blocks.
 ## Regenerate
 
 ```sh
-make docs          # runs scripts/generate_catalog.py via uv
+make docs                 # full pipeline (see below)
+make docs KEEP_ALIVE=1    # same, but keep a joinable server up to inspect blocks in-game
+make docs-fast            # only re-run the catalog generator (no server); fast frontend iteration
 ```
 
-This reads the block definitions under `src/main/resources/`
-(`demo-blocks.yml`, `rotation-blocks.yml`, `slabs.yml`, `grind-recipes.yml`) plus the
-hand-authored `docs/data/extras.yml`, writes `docs/data/items.json`, **and downloads all
-referenced images into `docs/assets/`** (head skins + vanilla item/block textures) so the
-page never depends on third-party CDNs at runtime. Commit the regenerated `items.json`
-along with any block changes.
+`make docs` is a single command that:
+1. builds the plugin (`gradle shadowJar`);
+2. boots a **separate** headless server (`test-server/`, *not* the playtest `server/`) with
+   `-Ddefcorelib.export`, which places one of every registered block in each orientation, reads
+   back the **actual spawned display entities** (transforms, `wall_offset`, base head, baked
+   animation keyframes — ground-truth, never re-derived) into `docs/data/display-spec.json`, then
+   shuts down;
+3. runs `scripts/generate_catalog.py`, which merges `display-spec.json` into `docs/data/items.json`
+   (the recipes/lore/textures still come from the YAML) and **vendors all referenced images** into
+   `docs/assets/` (head skins, vanilla item/block textures + flattened models).
 
-```sh
-make docs                                       # full: JSON + vendored images
-uv run scripts/generate_catalog.py --no-assets  # JSON only (fast; skips downloads)
-```
+The `placedVariants` in `items.json` drive the interactive 3D "placed" views; everything else (the
+catalog, recipes, in-hand icon) comes from the YAML as before. Because it reads the running plugin,
+**new blocks (and blocks from dependent plugins whose jars are in `test-server/plugins/`) appear
+automatically** with zero per-block code.
+
+### Inspect in-game
+`make docs KEEP_ALIVE=1` lays every block + variant out in a grid and keeps the server running on
+**localhost:25575** (offline mode). Join it and `/tp @s 0 101 0` to fly the grid and compare against
+the docs. `Ctrl-C` when done, then `make docs-fast` to regenerate the catalog.
+
+> The first `make docs` copies the Paper jar from your playtest `server/` into `test-server/`
+> (gitignored). Resolver/world-dependent blocks (e.g. Pipes) need representative-neighbour
+> placement and are a later phase.
 
 ## Preview locally
 
