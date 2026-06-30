@@ -280,7 +280,7 @@ a.slot { text-decoration: none; color: inherit; }
 .slab-grid .item-lore, .slab-grid .recipes { display: none; }
 
 /* ── Detail page ───────────────────────────────────────────────────────── */
-.detail-wrap { max-width: 900px; margin: 0 auto; }
+.detail-wrap { max-width: 1200px; margin: 0 auto; }
 .back-link {
   display: inline-block;
   color: #4ecca3;
@@ -306,10 +306,10 @@ a.slot { text-decoration: none; color: inherit; }
 .detail-section { margin-top: 24px; }
 .detail-section .section-title { margin-top: 0; }
 
-/* 3D viewers (detail page). flex-wrap is a safety net: 3 panels (In hand + 2 Placed) at 250px
-   total ~848px, fits the 900px detail-wrap; wrap covers any narrower intermediate width before
-   the 760px column-stack kicks in. */
-.viewers { display: flex; flex-wrap: wrap; gap: 16px; margin: 18px 0 4px; }
+/* 3D viewers (detail page): one centered row on desktop. 3 panels (In hand + 2 Placed) =
+   3×(320+22) + 2×16 = 1058px, fits the 1200 column once the viewport is ≥~1121px; below that
+   the media query stacks them. */
+.viewers { display: flex; flex-wrap: nowrap; justify-content: center; gap: 16px; margin: 18px 0 4px; }
 .viewer {
   background: #222;
   border: 1px solid #353535;
@@ -329,8 +329,8 @@ a.slot { text-decoration: none; color: inherit; }
   text-transform: none;
 }
 .viewer-canvas {
-  width: 250px;
-  height: 250px;
+  width: min(320px, 86vw);
+  height: min(320px, 86vw);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -345,8 +345,9 @@ a.slot { text-decoration: none; color: inherit; }
   object-fit: contain;
 }
 .viewer-fail { color: #666; font-size: 0.8em; }
-@media (max-width: 760px) { .viewers { flex-direction: column; align-items: center; } }
-@media (max-width: 640px) { .viewer-canvas { width: 240px; height: 240px; } }
+/* Stack the viewers once 3 panels no longer fit one row (~1121px); the canvas min(320px,86vw)
+   then handles small-phone shrink on its own. */
+@media (max-width: 1120px) { .viewers { flex-direction: column; align-items: center; } }
 
 /* States / variants */
 .variant-group { margin-bottom: 18px; }

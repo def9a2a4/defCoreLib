@@ -138,7 +138,7 @@ async function buildBlockGroup(blk, models, animated) {
  * into `container` as one interactive scene, playing every display's baked track. With `autoframe` the
  * camera fits the scene bounding box (for multi-block machines). Returns a teardown function.
  */
-export async function renderScene(container, blocks, { autoframe = false, dist = 3.6, target = [0, 0.1, 0] } = {}) {
+export async function renderScene(container, blocks, { autoframe = false, dist = 3.6, target = [0, 0.1, 0], zoom = 1 } = {}) {
   const models = await manifest();
   const { scene, camera, renderer, controls } = makeViewer(container, { dist, target });
 
@@ -150,7 +150,7 @@ export async function renderScene(container, blocks, { autoframe = false, dist =
     if (!box.isEmpty()) {
       const center = box.getCenter(new THREE.Vector3());
       const size = box.getSize(new THREE.Vector3());
-      const d = Math.max(size.x, size.y, size.z, 1) * 1.6 + 1.5;
+      const d = (Math.max(size.x, size.y, size.z, 1) * 1.6 + 1.5) / zoom;   // zoom>1 tightens the frame
       controls.target.copy(center);
       camera.position.set(center.x + d * 0.6, center.y + d * 0.45, center.z + d);
       controls.maxDistance = d * 4;
@@ -240,7 +240,7 @@ export async function renderPlaced(item, container, variantIndex = 0) {
   // autoframe so the item fills the canvas with the same framing as the catalog snapshot
   // (thumbnailDataURL uses this same box math); dist/target seed the camera pre-frame.
   return renderScene(container, placedVariantBlocks(item, variantIndex),
-    { autoframe: true, dist: 3.6, target: [0, 0.1, 0] });
+    { autoframe: true, dist: 3.6, target: [0, 0.1, 0], zoom: 1.7 });
 }
 
 // ── Offscreen thumbnails ───────────────────────────────────────────────────
@@ -266,7 +266,7 @@ function thumbRenderer(size) {
  * are posed at a fixed mid-loop tick so the snapshot looks alive. Pass `cacheKey` to memoise in
  * localStorage. Returns the data-URL (or null on failure).
  */
-export function thumbnailDataURL(blocks, { size = 256, tick = 12, cacheKey = null } = {}) {
+export function thumbnailDataURL(blocks, { size = 256, tick = 12, cacheKey = null, zoom = 1.7 } = {}) {
   const lsKey = cacheKey ? 'defcorelib-thumb:' + cacheKey : null;
   if (lsKey) {
     const cached = localStorage.getItem(lsKey);
@@ -292,7 +292,7 @@ export function thumbnailDataURL(blocks, { size = 256, tick = 12, cacheKey = nul
     if (!box.isEmpty()) {
       const center = box.getCenter(new THREE.Vector3());
       const sz = box.getSize(new THREE.Vector3());
-      const d = Math.max(sz.x, sz.y, sz.z, 1) * 1.6 + 1.5;
+      const d = (Math.max(sz.x, sz.y, sz.z, 1) * 1.6 + 1.5) / zoom;   // matches renderScene; zoom>1 tightens
       camera.position.set(center.x + d * 0.6, center.y + d * 0.45, center.z + d);
       camera.lookAt(center);
     } else {

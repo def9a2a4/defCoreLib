@@ -1,7 +1,7 @@
 # Extractor Press recipes — squeeze inputs from the host container into outputs below.
 # Schema (see MachineRecipes): input + optional input_amount; output (vanilla Material
-# or a custom item id like "rotation:plant_oil") + optional amount; or an `outputs:` list.
-# Vanilla-only outputs for now; custom juice/oil outputs are added with the item layer.
+# or a custom item id like "rotation:seed_oil") + optional amount; or an `outputs:` list.
+# Bottled outputs (juices/oils on a POTION/HONEY_BOTTLE base) also consume a glass bottle.
 
 recipes:
   - { input: SUGAR_CANE,  output: SUGAR,      amount: 2 }

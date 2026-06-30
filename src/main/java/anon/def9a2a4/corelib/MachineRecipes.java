@@ -104,10 +104,6 @@ final class MachineRecipes {
         return byInput.get(input);
     }
 
-    boolean hasRecipe(Material input) {
-        return byInput.containsKey(input);
-    }
-
     /** Resolve a recipe's outputs into concrete stacks, applying per-output chance. */
     List<ItemStack> roll(Recipe r, CustomBlockRegistry registry) {
         List<ItemStack> out = new ArrayList<>(r.outputs().size());
@@ -115,7 +111,12 @@ final class MachineRecipes {
             if (o.chance() < 1.0 && ThreadLocalRandom.current().nextDouble() >= o.chance()) continue;
             if (o.customId() != null) {
                 CustomHeadBlock type = registry.getType(o.customId());
-                if (type != null) out.add(type.createItem(o.amount()));
+                if (type != null) {
+                    out.add(type.createItem(o.amount()));
+                } else {
+                    registry.getPlugin().getLogger().warning(
+                        "MachineRecipes: unknown custom output '" + o.customId() + "' — recipe output skipped");
+                }
             } else {
                 out.add(new ItemStack(o.material(), o.amount()));
             }

@@ -431,23 +431,28 @@ final class RotationBlocks {
     }
 
     /**
-     * Place an output into the container directly below, else drop it below.
-     * Returns true if delivered (caller may consume input); false if the output
-     * container was full (stall — do not consume input).
+     * Deliver all outputs below the machine. Into the container directly below **atomically**
+     * (all-or-nothing, so a multi-output recipe never half-fills a container that has room for
+     * only some outputs), else drop them below. Returns false (stall — caller keeps the input)
+     * only when a container below can't hold every output.
      */
-    private static boolean ejectOutput(Block machine, ItemStack result) {
+    private static boolean ejectOutputs(Block machine, List<ItemStack> outputs) {
+        if (outputs.isEmpty()) return true;
         Block below = machine.getRelative(BlockFace.DOWN);
         if (below.getState() instanceof Container oc) {
-            return oc.getInventory().addItem(result).isEmpty();
+            Inventory inv = oc.getInventory();
+            ItemStack[] snapshot = java.util.Arrays.stream(inv.getContents())
+                .map(s -> s == null ? null : s.clone()).toArray(ItemStack[]::new);
+            for (ItemStack out : outputs) {
+                if (!inv.addItem(out).isEmpty()) { // didn't fully fit → roll back, stall
+                    inv.setContents(snapshot);
+                    return false;
+                }
+            }
+            return true;
         }
-        machine.getWorld().dropItemNaturally(machine.getLocation().add(0.5, -0.2, 0.5), result);
-        return true;
-    }
-
-    /** Eject every output below; stalls (returns false) if any can't be delivered. */
-    private static boolean ejectOutputs(Block machine, List<ItemStack> outputs) {
         for (ItemStack out : outputs) {
-            if (!ejectOutput(machine, out)) return false;
+            machine.getWorld().dropItemNaturally(machine.getLocation().add(0.5, -0.2, 0.5), out);
         }
         return true;
     }
