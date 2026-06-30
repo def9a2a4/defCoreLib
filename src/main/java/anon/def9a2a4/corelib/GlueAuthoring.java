@@ -78,6 +78,9 @@ final class GlueAuthoring implements Listener {
 
         switch (event.getAction()) {
             case RIGHT_CLICK_BLOCK -> {
+                // The glue brush is a real BRUSH — never let it perform the vanilla brush action
+                // (covers suspicious sand/gravel, even with no active session).
+                event.setUseItemInHand(org.bukkit.event.Event.Result.DENY);
                 Block clicked = event.getClickedBlock();
                 if (clicked == null) return;
                 if (isAnchor(clicked)) {
@@ -101,8 +104,10 @@ final class GlueAuthoring implements Listener {
                         feedback(player, clicked, false);
                     }
                 } else {
-                    reportGlue(player, clicked,
-                        glue.glue(session.anchor, clicked, isDrawbridgeAnchor(session.anchor.originBlock())));
+                    GlueManager.Result res = glue.glue(session.anchor, clicked,
+                        isDrawbridgeAnchor(session.anchor.originBlock()));
+                    reportGlue(player, clicked, res);
+                    if (res == GlueManager.Result.OK) damageBrush(player, 1);
                 }
             }
             case RIGHT_CLICK_AIR -> {
@@ -175,8 +180,16 @@ final class GlueAuthoring implements Listener {
         }
         GlueManager.FillResult r = glue.glueCuboid(s.anchor, boxBlocks(a, clicked),
             isDrawbridgeAnchor(s.anchor.originBlock()));
+        damageBrush(player, r.added());
         player.playSound(player.getLocation(), Sound.BLOCK_SLIME_BLOCK_PLACE, 0.6f, 1.1f);
         actionBar(player, "+" + r.added() + " glued, " + r.skipped() + " skipped", NamedTextColor.GREEN);
+    }
+
+    /** Wear the held glue brush down by one durability per glued block. Paper's damageItemStack
+     *  respects unbreaking and breaks the item (with animation/sound) when it runs out. */
+    private void damageBrush(Player player, int amount) {
+        if (amount <= 0) return;
+        player.damageItemStack(EquipmentSlot.HAND, amount);
     }
 
     private List<Block> boxBlocks(Block a, Block b) {

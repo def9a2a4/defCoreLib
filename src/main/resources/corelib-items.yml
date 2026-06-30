@@ -4,15 +4,18 @@
 # in Java by id (e.g. GlueItem.isGlueItem checks the block_type PDC == corelib:glue_item).
 namespace: corelib
 blocks:
-  # Slime Glue: authoring tool for door/rotator structures. Given via /defcorelib give glue.
+  # Glue Brush: authoring tool for door/rotator structures. Given via /defcorelib give glue.
+  # A real BRUSH (kept damageable) — GlueAuthoring suppresses vanilla brushing and wears it
+  # down one durability per glued block.
   glue_item:
-    name: "&aSlime Glue"
+    name: "&aGlue Brush"
     lore:
       - "&7Right-click a door/rotator hinge to edit"
       - "&7Left-click: glue  ·  Shift-left-click: unglue"
       - "&7Right-click two blocks: cuboid fill"
       - "&7Right-click air: reset corner  ·  Sneak-right hinge: clear"
-    item_material: SLIME_BALL
+      - "&8Wears out as you glue"
+    item_material: BRUSH
     placeable: false
     item_glint: true
     recipes:
