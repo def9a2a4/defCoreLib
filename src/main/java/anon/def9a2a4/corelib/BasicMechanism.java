@@ -123,13 +123,15 @@ final class BasicMechanism implements Mechanism {
             Matrix4f dm = new Matrix4f(rot).mul(mb.localTransform);
             dm.m31(dm.m31() - rideOffset); // compensate vehicle passenger riding offset
 
-            // Primary display (index 0): BlockDisplay uses corner rendering — shift -0.5 XZ
-            // in LOCAL space (post-multiply) so the shift rotates with the block.
-            // ItemDisplay renders centered — no XZ shift needed.
+            // Primary display (index 0): BlockDisplay renders the unit cube from its MIN corner, so
+            // shift -0.5 on ALL axes (in LOCAL space, post-multiply) to put the cube's true 3D center
+            // at the transform origin. Combined with the block-centered pivot + center-based
+            // localTransform, the cube then orbits its center about ANY cardinal axis (drawbridges).
+            // ItemDisplay renders centered — no shift needed.
             List<Display> group = displaysPerBlock.get(i);
             Display primary = group.get(0);
             if (primary instanceof org.bukkit.entity.BlockDisplay) {
-                Matrix4f bdm = new Matrix4f(dm).translate(-0.5f, 0f, -0.5f);
+                Matrix4f bdm = new Matrix4f(dm).translate(-0.5f, -0.5f, -0.5f);
                 primary.setTransformationMatrix(bdm);
             } else {
                 primary.setTransformationMatrix(dm);
@@ -149,13 +151,16 @@ final class BasicMechanism implements Mechanism {
             }
         }
 
-        // Reposition collider carriers
+        // Reposition collider carriers. localTransform is now center-based in all axes and the pivot
+        // is block-centered, so rotating the plain translation orbits the true block center. The -0.5 Y
+        // anchors the carrier at the cell bottom (the shulker box sits ~half a block above its carrier),
+        // matching the collider spawn in assembleCore.
         for (ColliderPair cp : colliders) {
             Vector3f worldOff = rot.transformPosition(
                 blocks.get(cp.blockIndex()).localTransform.getTranslation(new Vector3f()),
                 new Vector3f());
             TeleportCompat.teleport(cp.carrier(),
-                pivot.clone().add(worldOff.x, worldOff.y, worldOff.z));
+                pivot.clone().add(worldOff.x, worldOff.y - 0.5, worldOff.z));
         }
     }
 
@@ -211,8 +216,8 @@ final class BasicMechanism implements Mechanism {
             MechanismBlockData mb = blocks.get(i);
             Vector3f worldOffset = rotation.transformPosition(
                 mb.localTransform.getTranslation(new Vector3f()), new Vector3f());
-            // localTransform uses center-to-center offsets (integers after rotation).
-            // Use Math.round to handle floating-point epsilon from trig (e.g., 1.9999999f → 2).
+            // localTransform is center-to-center (integer) and the pivot is block-centered, so a 90°
+            // rotation maps integers to integers; Math.round handles trig epsilon (1.9999999f → 2).
             Location blockLoc = pivot.clone().add(
                 Math.round(worldOffset.x), Math.round(worldOffset.y), Math.round(worldOffset.z));
 
@@ -319,6 +324,7 @@ final class BasicMechanism implements Mechanism {
         if (!loc.getWorld().equals(previousVehicleLoc.getWorld())) {
             this.pivot = loc.clone();
             this.pivot.setX(Math.floor(loc.getX()) + 0.5);
+            this.pivot.setY(Math.floor(loc.getY()) + 0.5);
             this.pivot.setZ(Math.floor(loc.getZ()) + 0.5);
             previousVehicleLoc = loc.clone();
             previousVehicleYaw = yaw;

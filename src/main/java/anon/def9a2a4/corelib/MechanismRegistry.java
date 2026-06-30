@@ -72,7 +72,12 @@ public class MechanismRegistry {
                                        Vector3f rotationAxis,
                                        @Nullable MechanismSerializer serializer) {
         UUID mechId = UUID.randomUUID();
-        ArmorStand vehicle = pivot.getWorld().spawn(pivot, ArmorStand.class, as -> {
+        // Spawn the vehicle at the block-CENTERED pivot Y so the display chain (mounted on this
+        // ArmorStand) shares the same centered frame as the rotation/collider/disassembly. Otherwise
+        // displays sit half a block low (the corner-shift's -0.5 Y would be uncompensated).
+        Location vehicleLoc = pivot.clone();
+        vehicleLoc.setY(Math.floor(pivot.getY()) + 0.5);
+        ArmorStand vehicle = vehicleLoc.getWorld().spawn(vehicleLoc, ArmorStand.class, as -> {
             as.setInvisible(true); as.setGravity(false); as.setSilent(true);
             as.setPersistent(true); as.setRotation(0, 0);
             as.addScoreboardTag("corelib:mech:" + mechId + ":vehicle");
@@ -100,20 +105,24 @@ public class MechanismRegistry {
         List<MechanismBlockData> blockData = new ArrayList<>();
 
         // 1. Snapshot each block
-        // Snap pivot XZ to the nearest block center so offsets are always integers (rotation by 90°
-        // then maps integers to integers, keeping disassembly exact). Compute in double, cast to float
-        // only at matrix build — float can't represent the .5 offset past ~8M blocks. The snapped pivot
-        // flows downstream (collider spawn, BasicMechanism ctor) so the whole mechanism shares one frame.
+        // Snap the pivot to the nearest block CENTER on all three axes, and make localTransform
+        // center-to-center, so the rotation orbits the block's true center about any cardinal axis
+        // (load-bearing for X/Z drawbridges; Y doors are unaffected). Offsets stay integer (rotation by
+        // 90° maps integers to integers, keeping disassembly's Math.round exact). Compute in double, cast
+        // to float only at matrix build — float can't represent the .5 offset past ~8M blocks. The snapped
+        // pivot flows downstream (collider spawn, BasicMechanism ctor) so the whole mechanism shares one frame.
         double snapX = Math.floor(pivot.getX()) + 0.5;
+        double snapY = Math.floor(pivot.getY()) + 0.5;
         double snapZ = Math.floor(pivot.getZ()) + 0.5;
         pivot = pivot.clone(); // don't mutate the caller's Location
         pivot.setX(snapX);
+        pivot.setY(snapY);
         pivot.setZ(snapZ);
         for (Block block : blocks) {
             BlockData bd = block.getBlockData();
             Matrix4f local = new Matrix4f().translation(
                 (float) ((block.getX() + 0.5) - snapX),
-                (float) (block.getY() - pivot.getY()),
+                (float) ((block.getY() + 0.5) - snapY),
                 (float) ((block.getZ() + 0.5) - snapZ));
 
             String customType = null, customState = null;
@@ -211,7 +220,9 @@ public class MechanismRegistry {
             if (mb.hasCollision) {
                 final int blockIdx = i;
                 Vector3f initOff = mb.localTransform.getTranslation(new Vector3f());
-                Location carrierLoc = pivot.clone().add(initOff.x, initOff.y, initOff.z);
+                // -0.5 Y: the shulker box (attachedFace DOWN, marker, peek 0) sits ~half a block above
+                // its carrier, so anchor the carrier at the cell bottom to center the box on the cell.
+                Location carrierLoc = pivot.clone().add(initOff.x, initOff.y - 0.5, initOff.z);
 
                 ArmorStand carrier = pivot.getWorld().spawn(carrierLoc, ArmorStand.class, as -> {
                     as.setInvisible(true); as.setGravity(false); as.setSilent(true);
