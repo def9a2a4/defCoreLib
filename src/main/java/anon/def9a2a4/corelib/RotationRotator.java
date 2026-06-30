@@ -49,6 +49,7 @@ final class RotationRotator {
     private final CustomBlockRegistry registry;
     private final RotationNetwork network;
     private final MechanismRegistry mechRegistry;
+    private final GlueManager glueManager;
     private final int maxStructureSize;
 
     private final Map<CustomBlockRegistry.LocationKey, Mechanism> activeRotators = new HashMap<>();
@@ -57,11 +58,13 @@ final class RotationRotator {
     private final Map<CustomBlockRegistry.LocationKey, Boolean> lastPowered = new HashMap<>();
 
     RotationRotator(JavaPlugin plugin, CustomBlockRegistry registry,
-                    RotationNetwork network, MechanismRegistry mechRegistry, int maxStructureSize) {
+                    RotationNetwork network, MechanismRegistry mechRegistry,
+                    GlueManager glueManager, int maxStructureSize) {
         this.plugin = plugin;
         this.registry = registry;
         this.network = network;
         this.mechRegistry = mechRegistry;
+        this.glueManager = glueManager;
         this.maxStructureSize = maxStructureSize;
     }
 
@@ -112,7 +115,10 @@ final class RotationRotator {
         int surplus = stats[0] - stats[1];
         if (surplus <= 0) { feedbackNoPower(head); return; }
 
-        List<Block> planks = floodFill(head, STRUCTURE_MATERIAL, maxStructureSize);
+        Anchor anchor = new BlockAnchor(head, () -> !activeRotators.containsKey(key));
+        List<Block> resolved = glueManager.resolveStructure(anchor);
+        List<Block> planks = resolved != null ? resolved
+            : floodFill(head, STRUCTURE_MATERIAL, maxStructureSize);
         if (planks.isEmpty()) return;
 
         RotationNetwork.RotationNode node = network.getNode(key);
@@ -120,6 +126,7 @@ final class RotationRotator {
         Vector3f axis = axisVec(node.axis());
         Mechanism mech = mechRegistry.assembleMechanism(ROTATOR_ID, planks,
             head.getLocation().add(0.5, 0, 0.5), axis, null);
+        if (resolved != null) mech.setOnDisassembled(p -> glueManager.setStructure(anchor, p));
         activeRotators.put(key, mech);
 
         int mass = Math.max(1, mech.blockCount());

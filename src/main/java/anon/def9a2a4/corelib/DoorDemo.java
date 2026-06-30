@@ -19,15 +19,17 @@ final class DoorDemo {
     private final JavaPlugin plugin;
     private final CustomBlockRegistry registry;
     private final MechanismRegistry mechRegistry;
+    private final GlueManager glueManager;
     private final int maxStructureSize;
     private final Map<CustomBlockRegistry.LocationKey, Mechanism> activeDoors = new HashMap<>();
     private final Map<CustomBlockRegistry.LocationKey, BukkitTask> activeTasks = new HashMap<>();
 
     DoorDemo(JavaPlugin plugin, CustomBlockRegistry registry, MechanismRegistry mechRegistry,
-             int maxStructureSize) {
+             GlueManager glueManager, int maxStructureSize) {
         this.plugin = plugin;
         this.registry = registry;
         this.mechRegistry = mechRegistry;
+        this.glueManager = glueManager;
         this.maxStructureSize = maxStructureSize;
     }
 
@@ -69,10 +71,14 @@ final class DoorDemo {
         Mechanism mech = activeDoors.get(key);
         boolean freshAssembly = (mech == null);
         if (freshAssembly) {
-            List<Block> planks = floodFill(head, Material.OAK_PLANKS, maxStructureSize);
+            Anchor anchor = new BlockAnchor(head, () -> !activeDoors.containsKey(key));
+            List<Block> resolved = glueManager.resolveStructure(anchor);
+            List<Block> planks = resolved != null ? resolved
+                : floodFill(head, Material.OAK_PLANKS, maxStructureSize);
             if (planks.isEmpty()) return;
             mech = mechRegistry.assembleMechanism("demo:door", planks,
                 head.getLocation().add(0.5, 0, 0.5), null);
+            if (resolved != null) mech.setOnDisassembled(p -> glueManager.setStructure(anchor, p));
             activeDoors.put(key, mech);
         }
 
@@ -112,10 +118,14 @@ final class DoorDemo {
             timerDelay = 0; // already mounted
         } else {
             // Fully opened + disassembled: re-assemble rotated planks, rotate to -90°
-            List<Block> planks = floodFill(head, Material.OAK_PLANKS, maxStructureSize);
+            Anchor anchor = new BlockAnchor(head, () -> !activeDoors.containsKey(key));
+            List<Block> resolved = glueManager.resolveStructure(anchor);
+            List<Block> planks = resolved != null ? resolved
+                : floodFill(head, Material.OAK_PLANKS, maxStructureSize);
             if (planks.isEmpty()) return;
             mech = mechRegistry.assembleMechanism("demo:door", planks,
                 head.getLocation().add(0.5, 0, 0.5), null);
+            if (resolved != null) mech.setOnDisassembled(p -> glueManager.setStructure(anchor, p));
             activeDoors.put(key, mech);
             targetYaw = -90f;
             timerDelay = 2; // wait for passenger mount

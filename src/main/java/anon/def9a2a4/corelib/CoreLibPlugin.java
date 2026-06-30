@@ -108,8 +108,8 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
 
         // Register mechanism demos
         int maxStructureSize = rotConfig.maxStructureSize;
-        new DoorDemo(this, registry, mechanismRegistry, maxStructureSize).register();
-        new RotationRotator(this, registry, rotationNetwork, mechanismRegistry, maxStructureSize).register();
+        new DoorDemo(this, registry, mechanismRegistry, glueManager, maxStructureSize).register();
+        new RotationRotator(this, registry, rotationNetwork, mechanismRegistry, glueManager, maxStructureSize).register();
         mechanismMinecartManager = new MechanismMinecartManager(this, registry, mechanismRegistry, maxStructureSize);
         mechanismMinecartManager.register();
         getServer().getPluginManager().registerEvents(mechanismMinecartManager, this);
