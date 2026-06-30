@@ -6,7 +6,7 @@ max-structure-size: 256
 # "Glue": author-controlled block selection for doors/rotators (replaces same-material flood-fill).
 glue:
   max-size: 256           # cap on a glued selection (defaults to max-structure-size if omitted)
-  item: SLIME_BALL        # material of the slime-glue authoring item
+  # The glue item itself is declared in corelib-items.yml (corelib:glue_item, SLIME_BALL).
   outline-interval: 5     # ticks between particle-outline refreshes during authoring
   session-timeout: 2400   # ticks of inactivity before an authoring session auto-closes
 
