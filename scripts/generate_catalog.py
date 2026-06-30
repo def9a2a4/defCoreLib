@@ -71,7 +71,19 @@ BLOCK_FILES = [
     "demo-blocks.yml",
     "rotation-blocks.yml",
     "slabs.yml",
+    "custom-items.yml",   # inventory-only items (juices, oils) — non-placeable CustomHeadBlocks
 ]
+
+# Processing-machine recipe files → (machine block fullId, display label).
+# Each machine's input→output recipes attach to its own catalog entry.
+MACHINE_RECIPE_FILES = {
+    "rotation:grindstone": ("grind-recipes.yml", "Grinding"),
+    "rotation:press": ("press-recipes.yml", "Pressing"),
+}
+
+# Output materials that are bottled, so producing them consumes an empty glass bottle
+# (mirrors RotationBlocks.emptyContainerFor on the Java side).
+BOTTLE_OUTPUTS = {"HONEY_BOTTLE", "POTION", "SPLASH_POTION", "LINGERING_POTION"}
 
 # Vanilla-texture sources, mirroring HeadSmith/docs/util/catalog.js (pinned 1.21.4).
 OCTAGON_BASE = "https://raw.githubusercontent.com/MyOctagon/Minecraft-Block-Textures/main"
@@ -293,16 +305,45 @@ def load_extras(path: Path) -> list[dict]:
     return items
 
 
-def load_grind(path: Path) -> list[dict]:
+def _machine_output(node: dict) -> dict | None:
+    """One output: {ref, amount, chance}. ref is a custom fullId (has ':') or a Material name."""
+    spec = node.get("output", node.get("custom"))
+    if spec is None:
+        return None
+    spec = str(spec)
+    ref = spec if ":" in spec else spec.upper()
+    return {"ref": ref, "amount": int(node.get("amount", 1)), "chance": float(node.get("chance", 1.0))}
+
+
+def load_machine_recipes(path: Path) -> list[dict]:
+    """Parse a MachineRecipes YAML (grindstone/press/…). Accepts scalar `output`/`amount`
+    or an `outputs:` list, plus `input_amount`. extraInputs (e.g. bottles) are filled later
+    once custom output materials can be resolved."""
     if not path.exists():
         return []
     data = load_yaml(path)
-    return [
-        {"input": str(r.get("input", "")).upper(),
-         "output": str(r.get("output", "")).upper(),
-         "amount": r.get("amount", 1)}
-        for r in (data.get("recipes") or [])
-    ]
+    recipes: list[dict] = []
+    for r in (data.get("recipes") or []):
+        inp = str(r.get("input", "")).upper()
+        if not inp:
+            continue
+        outputs: list[dict] = []
+        raw = r.get("outputs")
+        if isinstance(raw, list):
+            outputs = [o for o in (_machine_output(n) for n in raw if isinstance(n, dict)) if o]
+        else:
+            o = _machine_output(r)
+            if o:
+                outputs.append(o)
+        if not outputs:
+            continue
+        recipes.append({
+            "input": inp,
+            "inputAmount": int(r.get("input_amount", 1)),
+            "outputs": outputs,
+            "extraInputs": [],
+        })
+    return recipes
 
 
 # ── Asset vendoring ────────────────────────────────────────────────────────
@@ -622,8 +663,6 @@ def main() -> int:
     print(f"  + extras.yml: {len(extras)} items")
     items.extend(extras)
 
-    grind = load_grind(RESOURCES / "grind-recipes.yml")
-    print(f"  + grind-recipes.yml: {len(grind)} recipes")
 
     # Ground-truth placed display data from the headless export (make docs).
     # display-spec.json is a committed source input (like extras.yml): a full `make docs` run
@@ -680,10 +719,35 @@ def main() -> int:
     else:
         print("  (no showcase-spec.json -- run `make showcase-capture` to generate showcases.json)")
 
+    # Attach processing recipes to each machine's catalog entry. Resolve bottled outputs
+    # (custom items whose base material is a bottle) to a glass-bottle extra input.
+    items_by_id = {it["fullId"]: it for it in items}
+
+    def output_material(ref: str) -> str | None:
+        if ":" in ref:
+            it = items_by_id.get(ref)
+            icon = it.get("icon") if it else None
+            return icon.get("material") if icon and icon.get("type") == "material" else None
+        return ref
+
+    for machine_id, (fname, label) in MACHINE_RECIPE_FILES.items():
+        recs = load_machine_recipes(RESOURCES / fname)
+        for r in recs:
+            bottles = sum(o["amount"] for o in r["outputs"]
+                          if output_material(o["ref"]) in BOTTLE_OUTPUTS)
+            if bottles:
+                r["extraInputs"] = [{"ref": "GLASS_BOTTLE", "amount": bottles}]
+        target = items_by_id.get(machine_id)
+        if target is not None:
+            target["machineRecipes"] = recs
+            target["machineType"] = label
+            print(f"  + {fname}: {len(recs)} recipes → {machine_id}")
+        elif recs:
+            print(f"  ! {fname}: machine {machine_id} not in catalog", file=sys.stderr)
+
     catalog = {
         "namespaces": sorted({it["namespace"] for it in items}),
         "items": items,
-        "grindRecipes": grind,
     }
 
     DOCS_DATA.mkdir(parents=True, exist_ok=True)

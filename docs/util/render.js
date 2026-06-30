@@ -82,7 +82,8 @@ const TAG_PLACEHOLDER = {
 };
 
 // One ingredient slot. block refs link to that item's page and show its icon.
-function slotEl(ing, itemsById, extraClass = '') {
+// `badges` is optional trailing HTML (amount/chance) placed inside the slot.
+function slotEl(ing, itemsById, extraClass = '', badges = '') {
   const cls = ['slot', extraClass];
   if (!ing) { cls.push('empty'); return `<div class="${cls.join(' ')}"></div>`; }
 
@@ -90,17 +91,17 @@ function slotEl(ing, itemsById, extraClass = '') {
     const ref = itemsById.get(ing.value);
     const label = ref ? stripColors(ref.name) : ing.value;
     const inner = ref ? iconHtml(ref) : `<span class="slot-label">${esc(label)}</span>`;
-    return `<a class="${cls.join(' ')}" href="${itemHref(ing.value)}" ${tipAttrs(label)}>${inner}</a>`;
+    return `<a class="${cls.join(' ')}" href="${itemHref(ing.value)}" ${tipAttrs(label)}>${inner}${badges}</a>`;
   }
   if (ing.kind === 'tag') {
     const ph = TAG_PLACEHOLDER[ing.value];
     const label = ph ? ph.label : '#' + ing.value;
     cls.push('tag');
     const inner = ph ? materialImg(ph.img, label) : `<span class="slot-label">${esc('#' + ing.value)}</span>`;
-    return `<div class="${cls.join(' ')}" ${tipAttrs(label)}>${inner}</div>`;
+    return `<div class="${cls.join(' ')}" ${tipAttrs(label)}>${inner}${badges}</div>`;
   }
   const label = prettyMaterial(ing.value);
-  return `<div class="${cls.join(' ')}" ${tipAttrs(label)}>${materialImg(ing.value, label)}</div>`;
+  return `<div class="${cls.join(' ')}" ${tipAttrs(label)}>${materialImg(ing.value, label)}${badges}</div>`;
 }
 
 function resultSlot(item, amount) {
@@ -156,18 +157,31 @@ export function recipesHtml(item, itemsById) {
     : `<div class="no-recipe">No recipe — obtained via commands.</div>`;
 }
 
-// Grindstone input→output conversions (a global list, shown on the grindstone item page).
-export function grindRecipesHtml(recipes) {
+// A machine-recipe ref ("namespace:id" custom item, or a vanilla Material name) → ingredient shape.
+const refIng = (ref) => (ref.includes(':') ? { kind: 'block', value: ref } : { kind: 'material', value: ref });
+
+// Amount (>1) and chance (<1) badges shown inside a machine-recipe slot.
+const slotBadges = (count, chance) =>
+  (count > 1 ? `<span class="amount">${count}</span>` : '')
+  + (chance != null && chance < 1 ? `<span class="chance">${Math.round(chance * 100)}%</span>` : '');
+
+// Processing-machine recipes (grindstone, press, …): input (+ extra inputs like glass
+// bottles) → one or more outputs, with input/output amounts and per-output chance.
+// Resolves both vanilla materials and custom items via the shared slot renderer.
+export function machineRecipesHtml(recipes, itemsById) {
   const list = recipes || [];
   if (!list.length) return '';
   const rows = list.map((r) => {
-    const amt = r.amount > 1 ? `<span class="amount">${r.amount}</span>` : '';
-    const inLabel = prettyMaterial(r.input);
-    const outLabel = prettyMaterial(r.output);
+    const inputs = [slotEl(refIng(r.input), itemsById, '', slotBadges(r.inputAmount, 1))]
+      .concat((r.extraInputs || []).map((e) => slotEl(refIng(e.ref), itemsById, '', slotBadges(e.amount, 1))))
+      .join('');
+    const outputs = (r.outputs || [])
+      .map((o) => slotEl(refIng(o.ref), itemsById, 'result', slotBadges(o.amount, o.chance)))
+      .join('');
     return `<div class="grind-row">
-      <div class="slot" ${tipAttrs(inLabel)}>${materialImg(r.input, inLabel)}</div>
+      <div class="machine-io">${inputs}</div>
       <span class="recipe-arrow">→</span>
-      <div class="slot result" ${tipAttrs(outLabel)}>${materialImg(r.output, outLabel)}${amt}</div>
+      <div class="machine-io">${outputs}</div>
     </div>`;
   }).join('');
   return `<div class="grind-grid">${rows}</div>`;

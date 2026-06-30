@@ -11,17 +11,29 @@ import * as THREE from 'three';
 
 const modelCache = new Map();    // id -> Promise<model json>
 const texCache = new Map();      // path -> THREE.Texture
+const texReady = new Map();      // path -> Promise (resolves once the image has loaded/errored)
 
 const TEX_LOADER = new THREE.TextureLoader();
 
 function loadTexture(path) {
   if (texCache.has(path)) return texCache.get(path);
-  const tex = TEX_LOADER.load(`./assets/textures/${path}.png`);
+  // TextureLoader.load() returns the Texture synchronously but uploads pixels asynchronously; a live
+  // viewer's RAF loop redraws until they arrive, but a one-shot snapshot (thumbnailDataURL) must wait.
+  // Track a per-texture promise (resolved on load OR error so a missing PNG never hangs the await).
+  let settle;
+  texReady.set(path, new Promise((res) => { settle = res; }));
+  const tex = TEX_LOADER.load(`./assets/textures/${path}.png`, () => settle(), undefined, () => settle());
   tex.magFilter = THREE.NearestFilter;
   tex.minFilter = THREE.NearestFilter;
   tex.colorSpace = THREE.SRGBColorSpace;
   texCache.set(path, tex);
   return tex;
+}
+
+/** Resolve once every texture requested so far has finished loading (or failed). Lets a single-frame
+ *  snapshot render with textures present instead of capturing untextured (blank) geometry. */
+export async function texturesSettled() {
+  await Promise.allSettled([...texReady.values()]);
 }
 
 function loadModel(id) {
