@@ -20,20 +20,20 @@ drill:
     - MOVING_PISTON
     - REINFORCED_DEEPSLATE
 
-grindstone:
+millstone:
   tick-interval: 20   # fixed grind cycle length, in ticks
-  max-batch: 8        # cap on items ground per cycle (batch scales with surplus SU)
+  max-batch: 8        # cap on items ground per cycle (batch scales with surplus power)
 
 fan:
   tick-interval: 2    # ticks between pushes (frequent = continuous force)
   range: 5            # fixed beam length, in blocks
-  min-push: 0.12      # per-tick push velocity when powered with no surplus SU
+  min-push: 0.12      # per-tick push velocity when powered with no surplus power
   max-push: 0.5       # cap on per-tick push velocity
-  push-per-su: 0.08   # extra push velocity per surplus SU
+  push-per-power: 0.08 # extra push velocity per surplus power
 
 press:
   tick-interval: 20   # fixed press cycle length, in ticks
-  max-batch: 8        # cap on items pressed per cycle (batch scales with surplus SU)
+  max-batch: 8        # cap on items pressed per cycle (batch scales with surplus power)
 
 fuel:
   COAL: 200
@@ -53,6 +53,6 @@ power:
   engine: 5
   generator: 1
   drill: 1
-  grindstone: 1
+  millstone: 1
   fan: 1
   press: 1

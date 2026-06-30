@@ -166,7 +166,7 @@ const slotBadges = (count, chance) =>
   (count > 1 ? `<span class="amount">${count}</span>` : '')
   + (chance != null && chance < 1 ? `<span class="chance">${Math.round(chance * 100)}%</span>` : '');
 
-// Processing-machine recipes (grindstone, press, …): input (+ extra inputs like glass
+// Processing-machine recipes (millstone, press, …): input (+ extra inputs like glass
 // bottles) → one or more outputs, with input/output amounts and per-output chance.
 // Resolves both vanilla materials and custom items via the shared slot renderer.
 export function machineRecipesHtml(recipes, itemsById) {

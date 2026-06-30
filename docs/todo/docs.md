@@ -80,7 +80,7 @@ picks for `redstone`-`LEVEL` blocks (e.g. the default/unpowered texture).
 
 ### B. Model origin — `docs/util/blockmodel.js`, `docs/util/placed3d.js`  [verified; +fallbackBox]
 - **Confirmed by YAML** (not assumed): `block_display_test` BlockDisplay (diamond, `scale 0.5`,
-  `translation [0,0.5,0]` — only +Y) ⇒ **BlockDisplay = corner-origin [0,1]³**; grindstone ItemDisplays
+  `translation [0,0.5,0]` — only +Y) ⇒ **BlockDisplay = corner-origin [0,1]³**; millstone ItemDisplays
   (`SMOOTH_STONE_SLAB`, `[0,0,0]`/`[0,0.5,0]`, stacked) ⇒ **ItemDisplay = centered**. `buildElement`
   subtracts a **constant** 0.5 = a uniform model-box shift (the critique's per-element worry is unfounded).
 - **B1** `buildBlockMesh(id, { centered = true })` → in `buildElement`, subtract 0.5 only when
@@ -100,7 +100,7 @@ picks for `redstone`-`LEVEL` blocks (e.g. the default/unpowered texture).
   banner applies an item-model transform the read-back `matrix` doesn't include). Tune the model
   scale/orientation against the grid (windmill quadrant).
 - **B6 verify** on the grid: `block_display_test` sits in the lower `+x+z` corner lifted +0.5Y;
-  grindstone = two flush-stacked slabs; drill rod / gear disc / crystal align; wall drill's base head
+  millstone = two flush-stacked slabs; drill rod / gear disc / crystal align; wall drill's base head
   sits on the wall; windmill blades read as banners at the right size.
 
 ### C. WebGL lifecycle — `placed3d.js`, `head3d.js`, `item.js`
@@ -323,7 +323,7 @@ JSON baking is unchanged (stopped → no track, CW → +t, CCW → −t).
 ## Verification
 1. `make docs` runs end-to-end as one command (build → headless export → vendor → `items.json`) and
    hard-fails if the export JSON is absent/empty.
-2. Serve and check against in-game (ground-truth now): drill `wall_offset`, grindstone two stacked
+2. Serve and check against in-game (ground-truth now): drill `wall_offset`, millstone two stacked
    smooth-stone slabs, windmill rotating white **banner** with correct pivot, water_wheel, slab
    per-facing variant toggle, spinning↔idle toggle, spinning_crystal / pulsing_orb animations.
 3. Robustness: add a new config block → it appears with variants automatically, zero per-block code.

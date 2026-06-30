@@ -18,13 +18,13 @@ final class RotationConfig {
     int glueSessionTimeout = 2400;
     int drillTickInterval = 4;
     int drillBreakStages = 10;
-    int grindstoneTickInterval = 20;
-    int grindstoneMaxBatch = 8;
+    int millstoneTickInterval = 20;
+    int millstoneMaxBatch = 8;
     int fanTickInterval = 2;
     int fanRange = 5;
     double fanMinPush = 0.12;
     double fanMaxPush = 0.5;
-    double fanPushPerSU = 0.08;
+    double fanPushPerPower = 0.08;
     int pressTickInterval = 20;
     int pressMaxBatch = 8;
     Set<Material> drillBlacklist = Set.of(
@@ -71,10 +71,10 @@ final class RotationConfig {
             loaded++;
         }
 
-        ConfigurationSection grindstone = yaml.getConfigurationSection("grindstone");
-        if (grindstone != null) {
-            grindstoneTickInterval = grindstone.getInt("tick-interval", grindstoneTickInterval);
-            grindstoneMaxBatch = grindstone.getInt("max-batch", grindstoneMaxBatch);
+        ConfigurationSection millstone = yaml.getConfigurationSection("millstone");
+        if (millstone != null) {
+            millstoneTickInterval = millstone.getInt("tick-interval", millstoneTickInterval);
+            millstoneMaxBatch = millstone.getInt("max-batch", millstoneMaxBatch);
             loaded++;
         }
 
@@ -84,7 +84,7 @@ final class RotationConfig {
             fanRange = fan.getInt("range", fanRange);
             fanMinPush = fan.getDouble("min-push", fanMinPush);
             fanMaxPush = fan.getDouble("max-push", fanMaxPush);
-            fanPushPerSU = fan.getDouble("push-per-su", fanPushPerSU);
+            fanPushPerPower = fan.getDouble("push-per-power", fanPushPerPower);
             loaded++;
         }
 
@@ -160,7 +160,7 @@ final class RotationConfig {
         powerValues.put("engine", 5);
         powerValues.put("generator", 1);
         powerValues.put("drill", 1);
-        powerValues.put("grindstone", 1);
+        powerValues.put("millstone", 1);
         powerValues.put("fan", 1);
         powerValues.put("press", 1);
     }

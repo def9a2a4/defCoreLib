@@ -7,7 +7,7 @@ Tackled in three independent phases, one at a time.
 ## Background — three layers of duplication
 
 The rotation blocks (shaft, gear, drill, windmill, water wheel, clutch, engine,
-grindstone, generator) are data-driven via YAML. Three layers of redundancy:
+millstone, generator) are data-driven via YAML. Three layers of redundancy:
 
 1. **Texture duplication** — ~13 distinct head textures, but ~69 inline `texture: "eyJ0…"`
    base64 references (~250 chars each). "Cut Copper" appeared 29×, the gear disc 20×,
@@ -82,8 +82,8 @@ not starting with `@` pass through unchanged (backward compatible). Unknown `@al
   list), `fillItemAnimation`/`fillBlockAnimation` (rebuild all six record components). All
   validation throws → block skipped + logged. States without the new keys take the original path.
 - **`rotation-blocks.yml`** — all 22 active states (shaft/gear/water_wheel/engine/generator/
-  grindstone/drill) collapsed to `copy_from` + one-line state animation (engine/generator keep
-  `particles:`); grindstone `base_slab` carries `animation: none`; both windmills stripped of
+  millstone/drill) collapsed to `copy_from` + one-line state animation (engine/generator keep
+  `particles:`); millstone `base_slab` carries `animation: none`; both windmills stripped of
   per-blade animation + given one state-level animation each. 721 → 565 lines.
 - **Verification done:** Python materialization-equivalence proof (every entity's
   item/material/transform/tag/wall_offset/interpolation preserved, animation on the same
@@ -96,7 +96,7 @@ Every active (`spinning_*` / `running_*`) state is a byte-for-byte copy of its `
 plus a rotate `animation:` on its display entities; the windmill repeats an identical
 `animation:` on all 4 blades of every orientation state. Phase 2 removes this duplication and
 **normalizes every spin to 3.0** (speeds had drifted: gear discs 2.0, gear floor-rod 2.0 vs
-wall-rod 3.0, water wheel 1.25, grindstone 2.0, windmill 1.5, rest 3.0).
+wall-rod 3.0, water wheel 1.25, millstone 2.0, windmill 1.5, rest 3.0).
 
 Design after four critique/review rounds. Decisive insight (two independent agents): display
 entities **already** support a per-entity `animation:` field (rotate/bob/pulse/orbit/compose via
@@ -135,7 +135,7 @@ running_y:  { copy_from: idle_y, animation: { type: rotate, axis: [0, 1, 0], spe
 # windmill — inline blades (no idle twin), one state animation; no copy_from
 floor: { display_entities: [ …4 blades, no per-blade animation… ], animation: { type: rotate, axis: [0, 1, 0], speed: 3.0 } }
 
-# grindstone — NOT a special case anymore: base opts out, top inherits the state animation
+# millstone — NOT a special case anymore: base opts out, top inherits the state animation
 spinning:
   copy_from: idle          # idle's base_slab carries `animation: none`; top_slab carries nothing
   animation: { type: rotate, axis: [0, 1, 0], speed: 3.0 }
@@ -198,7 +198,7 @@ is detected from the raw map, no record change.
   (`spinning_y/x/east_x/z/south_z`) → their `idle_*` twin; rod + both discs unify to 3.0 (current
   data drifts rod 3.0 / discs 2.0 on walls). ~110 lines + all hand-written quaternion+animation
   blocks removed.
-- **Grindstone** — add `animation: none` to idle `base_slab`; both active states →
+- **Millstone** — add `animation: none` to idle `base_slab`; both active states →
   `copy_from: idle` + state-level rotate at 3.0. (No longer hand-written.)
 - **Windmills — BOTH `large_windmill` and `huge_windmill`** — strip inline per-blade
   `animation:`; add one state-level `animation: { type: rotate, axis: <state axis>, speed: 3.0 }`
@@ -206,7 +206,7 @@ is detected from the raw map, no record change.
 - **Clutch** — untouched (empty states, no display entities).
 
 > Deliberate, user-requested **visual normalization** to 3.0 (gear discs + wall-rod, water wheel,
-> grindstone, both windmills), not byte-for-byte preservation. Structure (transforms, textures,
+> millstone, both windmills), not byte-for-byte preservation. Structure (transforms, textures,
 > tags, wall offsets, which entities animate) preserved exactly.
 
 ### Verification
@@ -215,13 +215,13 @@ is detected from the raw map, no record change.
    active/windmill state assert: each entity's item-or-blockData/transform/tag/wallOffset matches
    its source (idle or inline) entity; `interpolationDuration == 2` (relies on the parse default
    of 2); a rotate animation on every entity that should spin and **null on `animation: none`
-   entities** (grindstone base); the animation equals `Animations.rotate(axis, speed)` at sampled
+   entities** (millstone base); the animation equals `Animations.rotate(axis, speed)` at sampled
    ticks; **both** item and block lists populated. Remove after.
 3. **Negative tests** — `copy_from` unknown / self / chained / + own `display_entities` /
    + `no_display_entities` / empty-target, and `animation` with missing/zero axis or missing
    speed, each fail to load with a clear message (only that block skipped).
 4. **Live-server smoke test** — place every rotation block in all orientations; power them;
-   confirm uniform 3.0 spin, grindstone base stays still, both windmills' blades spin, particles
+   confirm uniform 3.0 spin, millstone base stays still, both windmills' blades spin, particles
    play. **Generator**: its `default_state`/`placement_state_map` point at `spinning_*`, so it
    must spawn already-spinning (resolution reads the raw section, so sibling order is irrelevant).
 

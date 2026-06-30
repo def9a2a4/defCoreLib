@@ -78,7 +78,7 @@ BLOCK_FILES = [
 # Processing-machine recipe files → (machine block fullId, display label).
 # Each machine's input→output recipes attach to its own catalog entry.
 MACHINE_RECIPE_FILES = {
-    "rotation:grindstone": ("grind-recipes.yml", "Grinding"),
+    "rotation:millstone": ("mill-recipes.yml", "Milling"),
     "rotation:press": ("press-recipes.yml", "Pressing"),
 }
 
@@ -317,7 +317,7 @@ def _machine_output(node: dict) -> dict | None:
 
 
 def load_machine_recipes(path: Path) -> list[dict]:
-    """Parse a MachineRecipes YAML (grindstone/press/…). Accepts scalar `output`/`amount`
+    """Parse a MachineRecipes YAML (millstone/press/…). Accepts scalar `output`/`amount`
     or an `outputs:` list, plus `input_amount`. extraInputs (e.g. bottles) are filled later
     once custom output materials can be resolved."""
     if not path.exists():

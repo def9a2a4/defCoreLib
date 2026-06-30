@@ -17,14 +17,14 @@ import java.util.logging.Logger;
 
 /**
  * Generic processing-machine recipe map: one input {@link Material} → one or more outputs.
- * Shared by every container-processing rotation consumer (grindstone, extractor press, …).
+ * Shared by every container-processing rotation consumer (millstone, extractor press, …).
  *
  * <p>An output is either a vanilla material or a custom block/item referenced by its
  * {@code namespace:id} (produced via {@link CustomHeadBlock#createItem}). Recipes support
  * {@code input_amount} (items consumed per application) and per-output {@code chance}
- * ({@code < 1.0} reserved for the future sieve; grind/press recipes use 1.0).
+ * ({@code < 1.0} reserved for the future sieve; mill/press recipes use 1.0).
  *
- * <p>YAML schema (both forms accepted; the scalar form keeps legacy grind-recipes.yml valid):
+ * <p>YAML schema (both forms accepted; the scalar form keeps mill-recipes.yml valid):
  * <pre>
  * recipes:
  *   - { input: BONE, output: BONE_MEAL, amount: 3 }              # scalar, single output

@@ -62,10 +62,10 @@ live site later, either:
 
 | Path | Purpose |
 | --- | --- |
-| `index.html` | Catalog grid (main items + Vertical Slabs + Grindstone sections) |
+| `index.html` | Catalog grid (main items + Vertical Slabs + Millstone sections) |
 | `item.html` | Per-item detail page (`item.html?id=<namespace:id>`) |
 | `util/render.js` | Shared rendering: color codes, icons, recipe grids, head hydration |
-| `util/catalog.js` | Catalog grid: cards, search, namespace filters, slab/grind sections |
+| `util/catalog.js` | Catalog grid: cards, search, namespace filters, slab/mill sections |
 | `util/item.js` | Detail page: full lore, recipes, states/variants, transitions |
 | `util/head-icon.js` | Renders player-head skins as isometric icons (from `assets/skins/`) |
 | `util/catalog.css` | Styling (Monocraft font, dark theme) |

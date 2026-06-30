@@ -1,7 +1,7 @@
 # Rotation Power System (Basic Create Mod)
 
 ## Context
-Adding a rotation power network to defCoreLib — power sources (windmill, water wheel, engine, generator), transmission (shaft, gear, clutch), and consumers (drill, grindstone). Hybrid architecture: `RotationNetwork` manages graph/power, blocks are `CustomHeadBlock` for visuals.
+Adding a rotation power network to defCoreLib — power sources (windmill, water wheel, engine, generator), transmission (shaft, gear, clutch), and consumers (drill, millstone). Hybrid architecture: `RotationNetwork` manages graph/power, blocks are `CustomHeadBlock` for visuals.
 
 ## Architecture
 
@@ -31,7 +31,7 @@ Chunk load → onChunkLoadCallback → addNode → recalculate
 ## Prerequisites: corelib changes  ✅ DONE
 
 ### A. Add `onInteract` escape hatch to `CustomHeadBlock`
-Engine (add fuel) and grindstone (grind items) need custom interact handling.
+Engine (add fuel) and millstone (grind items) need custom interact handling.
 
 ```java
 // New field + accessor + builder method:
@@ -155,7 +155,7 @@ Static `register(CustomBlockRegistry, RotationNetwork)`. Namespace: `"rotation"`
 | reverser | TRANSMITTER | 0 | idle/spinning per axis | - | Along-axis direction flip when redstone-powered |
 | drill | CONSUMER | 1 | idle/spinning per axis | 4 | Staged breaking: 10 stages × 4-tick interval = 2s per block. Shows crack animation. |
 | generator | SOURCE | 1 | idle/spinning per axis | - | Inverted redstone: unpowered=spinning, powered=idle |
-| grindstone | CONSUMER | 1 | idle/spinning | - | Floor-only. onInteract: grind recipes |
+| millstone | CONSUMER | 1 | idle/spinning | - | Floor-only. onInteract: grind recipes |
 
 **Common placementStateMap (all axis-aware blocks):**
 ```java
@@ -188,10 +188,10 @@ NamespacedKey FUEL_KEY = new NamespacedKey("rotation", "fuel_ticks");
 
 **Water wheel:** `onNeighborChange` checks 6 neighbors for `Material.WATER` or `Waterlogged` blocks → spinning/idle + recalculate. Phase 2 adds `onInteract` for wrench handling (show "Water wheels are always flexible" message) and `debugInteract()` fallthrough.
 
-### 3. `GrindRecipes.java` (~60 lines)
-Loads `grind-recipes.yml` → `Map<Material, ItemStack>`.
+### 3. `MillRecipes.java` (~60 lines)
+Loads `mill-recipes.yml` → `Map<Material, ItemStack>`.
 
-### 4. `resources/grind-recipes.yml`
+### 4. `resources/mill-recipes.yml`
 ```yaml
 recipes:
   - input: BONE
@@ -244,7 +244,7 @@ power:
   engine: 5
   generator: 1
   drill: 1
-  grindstone: 1
+  millstone: 1
 ```
 
 ---
@@ -446,7 +446,7 @@ can't be injected at parse time. Instead, wrap at runtime in `applyConfig()`.
   both `displayItemResolver` and wrench-only `onInteract`
 - Generator (`rotation:generator`): active SOURCE, same wrench treatment as engine (toggle + PDC)
 - Non-wrench right-click on any rotation block → `debugInteract()` as usual
-- Debug output gains direction + jammed state: `"3/5 SU | JAMMED (2 CW, 1 CCW) | 12 blocks"`
+- Debug output gains direction + jammed state: `"3/5 Power | JAMMED (2 CW, 1 CCW) | 12 blocks"`
   For jammed networks, highlight conflicting sources with `ANGRY_VILLAGER` particles (red)
   and majority-direction sources with `HAPPY_VILLAGER` (green).
   `getNetworkStats()` (currently `int[3]`) is extended to also return jammed boolean and
@@ -472,7 +472,7 @@ flag) and gives exactly one direction flip across the block.
 CONSUMER that rotates connected solid blocks in the network's spin direction (CW/CCW).
 Implemented in `RotationRotator.java`, registered in `CoreLibPlugin.onEnable` — uses
 `MechanismRegistry` for the swing and `getNetworkStats()`/`transientDemand` for "demand only
-while swinging." (Originally specced as 4 SU, 90°/redstone-pulse, BFS flood-fill max 64, DoorDemo
+while swinging." (Originally specced as 4 Power, 90°/redstone-pulse, BFS flood-fill max 64, DoorDemo
 pattern — being refined separately; consult `RotationRotator.java` for current behavior.)
 
 ### Implementation order  ✅ DONE
@@ -531,7 +531,7 @@ large_windmill uses 2.0 and huge_windmill uses 1.0 (scaled inversely with size).
 - **Shaft:** single small skull, rotate animation matching axis
 - **Gear:** rod + two discs with composed quaternion rotations, rotate animation matching axis
 - **Drill:** skull with rotate animation (spinning states only)
-- **Grindstone:** two displays (base + top), top rotates around Y, base opts out via `animation: none`
+- **Millstone:** two displays (base + top), top rotates around Y, base opts out via `animation: none`
 - **Windmills:** 4 banner blades per orientation, single state-level rotate animation
 - **Engine/Generator:** rod + housing, particles on running states
 
@@ -541,8 +541,8 @@ large_windmill uses 2.0 and huge_windmill uses 1.0 (scaled inversely with size).
 3. ~~RotationBlocks.java — shaft + windmill only (MVP)~~
 4. ~~CoreLibPlugin wiring~~
 5. ~~Test: windmill → shaft → shaft → spinning propagates~~
-6. ~~Remaining blocks (gear, clutch, water_wheel, engine, drill, grindstone, generator)~~
-7. ~~GrindRecipes + YAML config~~
+6. ~~Remaining blocks (gear, clutch, water_wheel, engine, drill, millstone, generator)~~
+7. ~~MillRecipes + YAML config~~
 8. ~~rotation-config.yml loading~~
 9. ~~Visual tuning~~
 
@@ -731,7 +731,7 @@ while drilling sideways. Doc now correctly says "Floor heads: DOWN".
 A rotation CONSUMER block that assembles and rotates a mechanism structure. When powered, calls `MechanismRegistry.assembleMechanism()` on the structure in its facing direction, then `mechanism.rotate(yaw)` each tick. Power cost scales with mechanism block count. Bridges the rotation and mechanism systems.
 
 ### Fan
-A rotation CONSUMER that pushes entities in its facing direction when powered. Uses velocity vectors on nearby entities within a cone. Could also: push items into fire for smelting, push items into water for washing (recipe system like grindstone).
+A rotation CONSUMER that pushes entities in its facing direction when powered. Uses velocity vectors on nearby entities within a cone. Could also: push items into fire for smelting, push items into water for washing (recipe system like millstone).
 
 ### Sounds
 - Ambient: spinning blocks play a quiet looping sound every N ticks (piggyback on existing `ParticleConfig` tick interval). Different per block type (gear grinding, shaft creaking, drill crunching).
@@ -743,12 +743,12 @@ When `supply < demand`, consumers show smoke particles instead of spinning. Add 
 ### Diagnostic tool
 Right-click any rotation block with a specific item (e.g. CLOCK or custom item) → ActionBar message:
 ```
-Network: 3/5 SU | 12 blocks | Powered ✓
+Network: 3/5 Power | 12 blocks | Powered ✓
 ```
 Shows supply/demand, node count, powered status. Could also highlight connected blocks with glow effect temporarily.
 
 ### Saw (wood variant of drill)
-Identical to drill mechanically but: only breaks wood-type blocks, drops planks instead of the block itself. Recipe map like grindstone: OAK_LOG→4 OAK_PLANKS, BIRCH_LOG→4 BIRCH_PLANKS, etc.
+Identical to drill mechanically but: only breaks wood-type blocks, drops planks instead of the block itself. Recipe map like millstone: OAK_LOG→4 OAK_PLANKS, BIRCH_LOG→4 BIRCH_PLANKS, etc.
 
 ### Pump
 Moves water/lava source blocks. Places a waterlogged block or source block in its facing direction, consuming from behind. Needs careful anti-grief considerations (worldguard integration, claim checks).
@@ -761,7 +761,7 @@ Moves water/lava source blocks. Places a waterlogged block or source block in it
 5. ~~Clutch + redstone → downstream stops. Remove → resumes~~
 6. ~~Drill breaks block in facing direction every 2s~~
 7. ~~Drill does NOT break blocks with `drillable: false`~~
-8. ~~Grindstone powered + right-click bone → 3 bone meal~~
+8. ~~Millstone powered + right-click bone → 3 bone meal~~
 9. ~~Engine + coal → runs 10s, stops, downstream stops~~
 10. ~~Water wheel with/without water → produces/stops~~
 11. ~~Network cap: 257th shaft doesn't receive power~~

@@ -50,7 +50,7 @@
   entities). Needs additive `BlockDisplayEntityConfig` in CoreLib. See [vertical-slabs.md](vertical-slabs.md).
 - [ ] **Redstone cables** — reuse Pipes code; a cable that transmits redstone power instantly without
   changing power level. See [redstone-cables.md](redstone-cables.md).
-- [ ] **Create-type mod** — rotational power for drills, grindstones, doors; minecarts with build
+- [ ] **Create-type mod** — rotational power for drills, millstones, doors; minecarts with build
   blocks. Rotation Phase 1 is shipped (see [rotation-power.md](rotation-power.md)); mechanisms are
   built-but-buggy (see below). *Design-open: how to glue blocks to a mechanism — enchanted slimeball
   "slime glue" vs. particle display?*
@@ -131,7 +131,7 @@
   `DisplayAnimation` interface + `Animations` factory; per-tick ticker in `CustomBlockRegistry`.
 - [x] **Display system elegance refactor** Phases 1 & 2 — texture registry (`@alias`), `copy_from` +
   state-level animation. See [display-system-refactor.md](display-system-refactor.md).
-- [x] **Rotational power network** Phase 1 — windmills/gears/shafts/drills/grindstones; rotation
+- [x] **Rotational power network** Phase 1 — windmills/gears/shafts/drills/millstones; rotation
   components. See [rotation-power.md](rotation-power.md).
 - [x] **Windmill banner tiering** — normal/large/huge windmills gated by banner tier; tiered banner's
   tier PDC + auto-name stripped from captured blades (`LargeBannerRecipes.stripTier`).

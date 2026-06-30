@@ -41,7 +41,7 @@ final class RotationBlocks {
     }
 
     static void register(CustomBlockRegistry registry, RotationNetwork network,
-                         EngineFuelManager fuelManager, MachineRecipes grindRecipes,
+                         EngineFuelManager fuelManager, MachineRecipes millRecipes,
                          MachineRecipes pressRecipes, RotationConfig config) {
         // Overlay callbacks onto YAML-loaded blocks
         overlayStandard(registry, network, "rotation:shaft",   RotationNetwork.NodeRole.TRANSMITTER, 0, false);
@@ -53,7 +53,7 @@ final class RotationBlocks {
         overlayClutch(registry, network);
         overlayWaterWheel(registry, network, config);
         overlayEngine(registry, network, fuelManager, config);
-        overlayGrindstone(registry, network, grindRecipes, config);
+        overlayMillstone(registry, network, millRecipes, config);
         overlayPress(registry, network, pressRecipes, config);
         overlayGenerator(registry, network, config);
         overlayDrill(registry, network, config);
@@ -316,7 +316,7 @@ final class RotationBlocks {
     }
 
     // ──────────────────────────────────────────────────────────────────────
-    // Grindstone: consumer with interact-based grinding
+    // Millstone: consumer with interact-based grinding
     // ──────────────────────────────────────────────────────────────────────
 
     /**
@@ -338,7 +338,7 @@ final class RotationBlocks {
             BiFunction<Block, org.bukkit.event.player.PlayerInteractEvent, Boolean> interact) {}
 
     /**
-     * Shared overlay for rotation CONSUMER machines (grindstone, fan, press, …): the
+     * Shared overlay for rotation CONSUMER machines (millstone, fan, press, …): the
      * common builder skeleton — not-drillable, neighbor recalc, wrench-first interact,
      * ticking, and CONSUMER node add/remove over the chunk/break lifecycle. Per-machine
      * behavior comes entirely from the {@link ConsumerSpec}. (The drill keeps its own
@@ -373,26 +373,26 @@ final class RotationBlocks {
             .build());
     }
 
-    private static void overlayGrindstone(CustomBlockRegistry registry, RotationNetwork network,
-                                          MachineRecipes grindRecipes, RotationConfig config) {
-        grindstoneTickInterval = config.grindstoneTickInterval;
-        grindstoneMaxBatch = config.grindstoneMaxBatch;
+    private static void overlayMillstone(CustomBlockRegistry registry, RotationNetwork network,
+                                         MachineRecipes millRecipes, RotationConfig config) {
+        millstoneTickInterval = config.millstoneTickInterval;
+        millstoneMaxBatch = config.millstoneMaxBatch;
         // Wall-mounted, powered from the top: rotation axis is Y (a shaft above drives it).
         // Host container is read separately via the stored wall-head facing.
         overlayConsumerMachine(registry, network, new ConsumerSpec(
-            "rotation:grindstone",
+            "rotation:millstone",
             b -> RotationNetwork.Axis.Y,
-            config.getPower("grindstone", 1),
-            grindstoneTickInterval,
-            b -> processingMachineTick(b, network, grindRecipes, registry,
-                grindstoneMaxBatch, org.bukkit.Sound.BLOCK_GRINDSTONE_USE),
-            (b, event) -> manualGrind(b, event, registry, grindRecipes)));
+            config.getPower("millstone", 1),
+            millstoneTickInterval,
+            b -> processingMachineTick(b, network, millRecipes, registry,
+                millstoneMaxBatch, org.bukkit.Sound.BLOCK_GRINDSTONE_USE),
+            (b, event) -> manualMill(b, event, registry, millRecipes)));
     }
 
     private static void overlayPress(CustomBlockRegistry registry, RotationNetwork network,
                                      MachineRecipes pressRecipes, RotationConfig config) {
         int maxBatch = config.pressMaxBatch;
-        // Same processing geometry as the grindstone: wall-mounted, powered from the top (Y),
+        // Same processing geometry as the millstone: wall-mounted, powered from the top (Y),
         // host container behind, outputs ejected below. No manual fallback — automation only.
         overlayConsumerMachine(registry, network, new ConsumerSpec(
             "rotation:press",
@@ -405,16 +405,16 @@ final class RotationBlocks {
     }
 
     /** Hand-fed grinding while spinning (fallback when there's no host container). Null → not handled. */
-    private static @org.jetbrains.annotations.Nullable Boolean manualGrind(Block b,
+    private static @org.jetbrains.annotations.Nullable Boolean manualMill(Block b,
             org.bukkit.event.player.PlayerInteractEvent event,
-            CustomBlockRegistry registry, MachineRecipes grindRecipes) {
+            CustomBlockRegistry registry, MachineRecipes millRecipes) {
         if (!"spinning".equals(registry.getState(b))) return null;
         var held = event.getPlayer().getInventory().getItemInMainHand();
         if (held.getType().isAir()) return null;
-        MachineRecipes.Recipe recipe = grindRecipes.match(held.getType());
+        MachineRecipes.Recipe recipe = millRecipes.match(held.getType());
         if (recipe == null || held.getAmount() < recipe.inputAmount()) return null;
 
-        List<ItemStack> outputs = grindRecipes.roll(recipe, registry);
+        List<ItemStack> outputs = millRecipes.roll(recipe, registry);
         if (!outputs.isEmpty() && !ejectOutputs(b, outputs)) return true; // output full → no-op
         held.setAmount(held.getAmount() - recipe.inputAmount());
         b.getWorld().playSound(b.getLocation().add(0.5, 0.5, 0.5),
@@ -485,9 +485,9 @@ final class RotationBlocks {
     }
 
     /**
-     * Shared container-processing loop for rotation consumer machines (grindstone, press, …):
+     * Shared container-processing loop for rotation consumer machines (millstone, press, …):
      * while powered, pull recipe inputs from the host container behind and eject results below,
-     * a batch per cycle sized by surplus SU. Inputs are consumed only after outputs are delivered
+     * a batch per cycle sized by surplus power. Inputs are consumed only after outputs are delivered
      * (stall-safe). Reused by every machine via a recipe map + sound + batch cap.
      */
     private static void processingMachineTick(Block machine, RotationNetwork network,
@@ -549,7 +549,7 @@ final class RotationBlocks {
         fanRange = config.fanRange;
         fanMinPush = config.fanMinPush;
         fanMaxPush = config.fanMaxPush;
-        fanPushPerSU = config.fanPushPerSU;
+        fanPushPerPower = config.fanPushPerPower;
         // Rotation axis = the blade spin axis = the blow axis: floor heads store DOWN (blow up → Y),
         // wall heads store N/S (Z) or E/W (X). No host container, so a plain wrench/debug interact.
         overlayConsumerMachine(registry, network, new ConsumerSpec(
@@ -578,7 +578,7 @@ final class RotationBlocks {
         };
     }
 
-    /** While powered, push mobs/players/items along a fixed-length beam; strength scales with surplus SU. */
+    /** While powered, push mobs/players/items along a fixed-length beam; strength scales with surplus power. */
     private static void fanTick(Block fan, RotationNetwork network) {
         var key = CustomBlockRegistry.LocationKey.of(fan);
         if (!network.isPowered(key)) return;
@@ -587,7 +587,7 @@ final class RotationBlocks {
         if (stats == null) return;
         // stats = {supply, demand, count}; surplus headroom = supply - demand (advisory).
         int surplus = Math.max(0, stats[0] - stats[1]);
-        double push = Math.min(fanMaxPush, fanMinPush + surplus * fanPushPerSU);
+        double push = Math.min(fanMaxPush, fanMinPush + surplus * fanPushPerPower);
 
         BlockFace dir = blowDirection(fan);
         org.bukkit.util.Vector unit = dir.getDirection();   // unit-length
@@ -676,12 +676,12 @@ final class RotationBlocks {
     private static Set<Material> drillBlacklist;
     private static int drillTickInterval;
     private static int drillBreakStages;
-    private static int grindstoneTickInterval;
-    private static int grindstoneMaxBatch;
+    private static int millstoneTickInterval;
+    private static int millstoneMaxBatch;
     private static int fanRange;
     private static double fanMinPush;
     private static double fanMaxPush;
-    private static double fanPushPerSU;
+    private static double fanPushPerPower;
 
     private record DrillState(int progress, Material targetMaterial) {}
     private static final Map<CustomBlockRegistry.LocationKey, DrillState> drillProgress = new HashMap<>();
@@ -953,7 +953,7 @@ final class RotationBlocks {
             RotationNetwork.SpinDirection dir = network.getDirection(key);
             String dirStr = dir != null ? " " + dir : "";
             if (dbg != null) {
-                info = state + " | " + dbg.supply() + "/" + dbg.demand() + " SU, "
+                info = state + " | " + dbg.supply() + "/" + dbg.demand() + " Power, "
                      + dbg.blockCount() + " blocks" + dirStr;
                 if (dbg.jammed()) {
                     info += " | JAMMED (" + dbg.cwSources() + " CW, " + dbg.ccwSources() + " CCW)";

@@ -20,7 +20,7 @@ textures:
   chiselled_copper:  "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMmVkZDI0ODI1YzIxNzMwM2YyNmFmNTUyNjU3MGEyMTRhZWMyOWI5Mjk3YTY4NzcxNTFiYTUwZmNlZGZmN2ZmMSJ9fX0="  # Chiselled Copper — water wheel
   bronze_engine:     "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTE3MmMxZTcyOWUwY2EwMDE5M2FiNWQ0M2U4OTNmYWJlZGY1YTgwZmM2NDcyNTgxNzZlODUwMjQzMjg4NTkyNSJ9fX0="  # Bronze Ship Engine — engine
   copper_bulb:       "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODNhY2RjZWQ0ZjVhNDhlNzRlZGFkZDAxNGM1ZGU3ZGFmOWVmYjEyMWNlYWZiNmMxNWNkYjEzODc1NTk0ZmNkOSJ9fX0="  # Copper Bulb (powered) — generator
-  stone_slabs:       "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTUxZTcwMTY5ZWEwMGYwNGE5NDM5MjIxY2YzMzc3MDg0NDE1OWRkNzc1ZmM4ODMwZTMxMWZkOWI1Y2NkMjk2OSJ9fX0="  # Stone Slabs — grindstone
+  stone_slabs:       "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTUxZTcwMTY5ZWEwMGYwNGE5NDM5MjIxY2YzMzc3MDg0NDE1OWRkNzc1ZmM4ODMwZTMxMWZkOWI1Y2NkMjk2OSJ9fX0="  # Stone Slabs — millstone
   drill_head:        "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmRmYzY3MTJmOTRiMjc4YmE2MjM5YWJhMDQxMjZhM2JhZjAwMTExNWYzNTE0Mjk0ZDYxNWFmNzlkNmJmNGRhMCJ9fX0="  # Drill — drill placed head
   drill_item:        "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTI4Y2ZkMDY0YmQ0ODY2NmU2YTczOGMxNTJhNWZiYjA0MmJhNzJiNWU5MjkxMmUzZTJmNjk1MWVhOGYyNWQyZSJ9fX0="  # Drill — drill item
   large_windmill:    "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjg4NGFkYTRjNzRjMGY5NjE0NjkyNjJkOTU2OTc3YmFmYjBiMmQ3ZmVkOWM3YmRmMzVmNDUxOTllOWY2ZGRiYiJ9fX0="  # Large Windmill
@@ -276,12 +276,12 @@ blocks:
       spinning_z: {}
 
   # ─── Water Wheel ────────────────────────────────────────────────────────
-  # Source: 2 SU. Wall only. Spins when water is on perpendicular faces.
+  # Source: 2 Power. Wall only. Spins when water is on perpendicular faces.
   # Display: 4 OAK_SLAB paddles at 90° intervals.
   water_wheel:
     name: "&bWater Wheel"
     lore:
-      - "&7Produces 2 SU when adjacent to water"
+      - "&7Produces 2 Power when adjacent to water"
       - "&7Place on a wall"
     # Chiselled Copper
     texture: "@chiselled_copper"
@@ -313,12 +313,12 @@ blocks:
       spinning_x: { copy_from: idle_x, animation: { type: rotate, axis: [1, 0, 0], speed: 3.0 } }
 
   # ─── Engine ─────────────────────────────────────────────────────────────
-  # Source: 5 SU. Needs fuel (coal, charcoal, etc). Any orientation.
+  # Source: 5 Power. Needs fuel (coal, charcoal, etc). Any orientation.
   # Shaft display entity shows rotation direction. Smoke particles when running.
   engine:
     name: "&4Engine"
     lore:
-      - "&7Produces 5 SU when fueled"
+      - "&7Produces 5 Power when fueled"
       - "&7Right-click with fuel to power"
     # Bronze Ship Engine (9172c1e7)
     texture: "@bronze_engine"
@@ -385,12 +385,12 @@ blocks:
               F: { material: BLAST_FURNACE }
 
   # ─── Redstone Generator ────────────────────────────────────────────────
-  # Source: 1 SU. Always on unless receiving redstone power. Expensive to craft.
+  # Source: 1 Power. Always on unless receiving redstone power. Expensive to craft.
   # Shaft display entity shows rotation direction. Spark particles when active.
   generator:
     name: "&5Redstone Generator"
     lore:
-      - "&7Produces 1 SU constantly"
+      - "&7Produces 1 Power constantly"
       - "&7Turns off when redstone powered"
     # Copper Bulb Powered (83acdced)
     texture: "@copper_bulb"
@@ -457,14 +457,14 @@ blocks:
               R: { material: REDSTONE_BLOCK }
               F: { material: BLAST_FURNACE }
 
-  # ─── Grindstone ─────────────────────────────────────────────────────────
-  # Consumer: 1 SU. WALL only — mounts on a block and pulls from it if it's a
+  # ─── Millstone ──────────────────────────────────────────────────────────
+  # Consumer: 1 Power. WALL only — mounts on a block and pulls from it if it's a
   # container; outputs into the container below (or drops below). Batch size
-  # scales with surplus SU. Powered from a shaft on top (Y axis). Right-click
+  # scales with surplus power. Powered from a shaft on top (Y axis). Right-click
   # with an item to grind manually (fallback when there's no host container).
   # Display: two smooth stone slabs — bottom static, top spins around Y.
-  grindstone:
-    name: "&7Grindstone"
+  millstone:
+    name: "&7Millstone"
     lore:
       - "&7Mounts on a container and grinds its contents when powered"
       - "&7Powered from the top; grinds faster with more power; outputs below"
@@ -495,7 +495,7 @@ blocks:
               S: { material: SMOOTH_STONE_SLAB }
 
   # ─── Extractor Press ──────────────────────────────────────────────────────
-  # Consumer: 1 SU. WALL only — mounts on a container, presses its contents into
+  # Consumer: 1 Power. WALL only — mounts on a container, presses its contents into
   # outputs (juices, oils, extra dyes/sugar) ejected below. Powered from a shaft
   # on top (Y axis). Display: a stone base with a piston head that bobs while
   # powered (the pressing motion).
@@ -529,7 +529,7 @@ blocks:
               S: { material: SMOOTH_STONE_SLAB }
 
   # ─── Drill ──────────────────────────────────────────────────────────────
-  # Consumer: 1 SU. Breaks the block in its facing direction every 2s.
+  # Consumer: 1 Power. Breaks the block in its facing direction every 2s.
   drill:
     name: "&8Drill"
     lore:
@@ -588,11 +588,11 @@ blocks:
       spinning_south_z: { copy_from: idle_south_z, animation: { type: rotate, axis: [0, 0, 1], speed: 3.0 } }
 
   # ─── Windmill ───────────────────────────────────────────────────────────
-  # Source: 1 SU. Always spinning. Regular tier — 0.75 scale, NORMAL banners.
+  # Source: 1 Power. Always spinning. Regular tier — 0.75 scale, NORMAL banners.
   windmill:
     name: "&aWindmill"
     lore:
-      - "&7Produces 1 unit of rotation power"
+      - "&7Produces 1 Power"
       - "&7Always spinning"
     texture: "@large_windmill"
     drops: self
@@ -653,12 +653,12 @@ blocks:
               Y: { block: rotation:bearing }
 
   # ─── Large Windmill ─────────────────────────────────────────────────────
-  # Source: 5 SU. Always spinning. 3x scale of rotation:windmill banners.
+  # Source: 5 Power. Always spinning. 3x scale of rotation:windmill banners.
   # Same left_rotations, scale 0.75→2.25, blade origins 1.25 from center, Y -0.6.
   large_windmill:
     name: "&2Large Windmill"
     lore:
-      - "&7Produces 5 units of rotation power"
+      - "&7Produces 5 Power"
       - "&7Always spinning"
       - "&7Crafted like a Windmill using Large banners"
     texture: "@large_windmill"
@@ -712,13 +712,13 @@ blocks:
     # (CoreLibPlugin.captureBannerIngredients swaps the result by banner tier).
 
   # ─── Huge Windmill ──────────────────────────────────────────────────────
-  # Source: 15 SU. Always spinning. 4x scale of demo:windmill banners.
+  # Source: 15 Power. Always spinning. 4x scale of demo:windmill banners.
   # Same left_rotations as large_windmill, scale 2.25→3.0, blade origins 1.25→1.667, Y -0.25→-0.333.
   # Crafted only with Huge banners (enforced in Java via bannerTier).
   huge_windmill:
     name: "&bHuge Windmill"
     lore:
-      - "&7Produces 15 units of rotation power"
+      - "&7Produces 15 Power"
       - "&7Always spinning"
       - "&7Crafted like a Windmill using Huge banners"
     texture: "@large_windmill"
@@ -772,9 +772,9 @@ blocks:
     # (CoreLibPlugin.captureBannerIngredients swaps the result by banner tier).
 
   # ─── Fan ────────────────────────────────────────────────────────────────
-  # Consumer: 1 SU. Spins only while powered; blows entities (mobs, players,
+  # Consumer: 1 Power. Spins only while powered; blows entities (mobs, players,
   # dropped items) away from the surface it's mounted on — floor → up, wall →
-  # outward — in a ~1-wide beam. Push strength scales with surplus SU; reach is
+  # outward — in a ~1-wide beam. Push strength scales with surplus power; reach is
   # fixed (see rotation-config.yml fan.range). Blade geometry mirrors the regular
   # windmill (0.75 scale); states are idle_/spinning_ pairs so the network can
   # start/stop the spin by swapping the prefix while keeping orientation.

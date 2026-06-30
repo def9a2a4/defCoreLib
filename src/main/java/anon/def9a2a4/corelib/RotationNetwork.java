@@ -426,7 +426,7 @@ public class RotationNetwork {
             networks.put(netId, netState);
 
             logger.info("[Rotation] Network #" + netId + ": " + members.size() + " blocks, "
-                + supply + "/" + demand + " SU"
+                + supply + "/" + demand + " Power"
                 + (jammed ? ", JAMMED" : "")
                 + ", " + (netState.powered() ? "POWERED" : "unpowered"));
 
@@ -677,7 +677,7 @@ public class RotationNetwork {
 
     public static Axis axisFromState(String state) {
         int i = state.lastIndexOf('_');
-        // Axis-less states (e.g. grindstone "idle") default to Y — correct for floor-only blocks
+        // Axis-less states (e.g. millstone "idle") default to Y — correct for floor-only blocks
         if (i < 0) return Axis.Y;
         String suffix = state.substring(i + 1);
         return switch (suffix) {

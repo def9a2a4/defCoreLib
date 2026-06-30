@@ -101,11 +101,11 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         rotationNetwork = new RotationNetwork(this, registry);
         rotationNetwork.setMaxNetworkSize(rotConfig.maxNetworkSize);
         fuelManager = new EngineFuelManager(rotConfig.fuelValues);
-        MachineRecipes grindRecipes = new MachineRecipes();
-        try (InputStream grindStream = getResource("grind-recipes.yml")) {
-            if (grindStream != null) {
-                int rc = grindRecipes.load(grindStream, getLogger());
-                getLogger().info("Loaded " + rc + " grind recipes");
+        MachineRecipes millRecipes = new MachineRecipes();
+        try (InputStream millStream = getResource("mill-recipes.yml")) {
+            if (millStream != null) {
+                int rc = millRecipes.load(millStream, getLogger());
+                getLogger().info("Loaded " + rc + " mill recipes");
             }
         } catch (IOException ignored) {}
         MachineRecipes pressRecipes = new MachineRecipes();
@@ -115,7 +115,7 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
                 getLogger().info("Loaded " + rc + " press recipes");
             }
         } catch (IOException ignored) {}
-        RotationBlocks.register(registry, rotationNetwork, fuelManager, grindRecipes, pressRecipes, rotConfig);
+        RotationBlocks.register(registry, rotationNetwork, fuelManager, millRecipes, pressRecipes, rotConfig);
 
         // Anchor-owned block selection ("glue") — shared by doors/rotators (wired in D3).
         // The glue item itself is declared in corelib-items.yml (corelib:glue_item).
@@ -817,7 +817,7 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
             block.getWorld().playSound(block.getLocation().add(0.5, 0.5, 0.5), s.sound(), s.volume(), s.pitch());
         }
 
-        // Custom interact callback (engine fuel, grindstone, etc.)
+        // Custom interact callback (engine fuel, millstone, etc.)
         if (type.onInteract() != null) {
             if (type.onInteract().apply(block, event)) {
                 event.setCancelled(true);

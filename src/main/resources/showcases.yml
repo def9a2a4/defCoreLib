@@ -1,12 +1,12 @@
 # Demo "showcases": multi-block machines that demonstrate plugin functionality.
 # Placed as real, network-joined blocks. `at` is [dx,dy,dz] from the build origin; `facing` is the
 # placement (clicked) face — the block's head then points the OPPOSITE way (a wall head faces away
-# from the surface it hangs on). This matters for DIRECTIONAL blocks (drill bore, fan blow, grindstone
+# from the surface it hangs on). This matters for DIRECTIONAL blocks (drill bore, fan blow, millstone
 # wall side): write the clicked face, not the direction you want it to point.
 # KEY RULE (verified in RotationNetwork): a block connects only to the two neighbours
 # ALONG ITS SPIN AXIS — facing down → Y axis (couples up/down); north/south → Z (couples N/S); east/west
 # → X (couples E/W). So a power chain must run *along* the shared axis.
-#   • grindstone is always Y-axis (wall-mounted, powered from directly above/below) regardless of facing.
+#   • millstone is always Y-axis (wall-mounted, powered from directly above/below) regardless of facing.
 #   • drill/fan take their axis from facing.
 #   • generator is a PASSIVE source (spins by default; redstone DISABLES it) — never pulse it.
 #   • engine only produces power once FUELLED (the runner feeds it); idle/static until then.
@@ -20,7 +20,7 @@ showcases:
     blurb: "A fuel-burning engine spins a shaft up into a fan that blows a gust of air."
     description: >
       The engine burns fuel — coal, charcoal, a lava bucket — to produce rotational power, measured in
-      Spin Units (SU). That power runs up the shaft (a shaft just transmits rotation along its axis) into
+      Power. That power runs up the shaft (a shaft just transmits rotation along its axis) into
       the fan, which turns it back into motion: a directed gust that pushes entities away from its face.
       The more surplus power on the network, the stronger and farther the push.
     blocks:
@@ -32,23 +32,23 @@ showcases:
       - { type: network_powered, at: [0, 1, 0] }
       - { type: spinning, at: [0, 2, 0] }
 
-  - id: engine_grindstone
-    name: "Engine → Grindstone"
-    blurb: "A fuel-burning engine drives a vertical shaft down into a grindstone that mills items."
+  - id: engine_millstone
+    name: "Engine → Millstone"
+    blurb: "A fuel-burning engine drives a vertical shaft down into a millstone that mills items."
     description: >
-      A fuelled engine sends power down a vertical shaft into a grindstone. The grindstone is always a
+      A fuelled engine sends power down a vertical shaft into a millstone. The millstone is always a
       Y-axis machine — it draws power from directly above or below — and grinds items fed from an adjacent
       container, turning them to dust according to its recipe set while its wheel spins. Stop feeding the
       engine fuel and the whole column winds down.
     blocks:
-      # Grindstone is Y-axis (powered from above), so the whole chain is a vertical Y column.
+      # Millstone is Y-axis (powered from above), so the whole chain is a vertical Y column.
       - { id: "rotation:engine",     facing: down,  at: [0, 2, 0] }
       - { id: "rotation:shaft",      facing: down,  at: [0, 1, 0] }
       # `facing` is the clicked face → the head points the OPPOSITE way, so `south` backs the
-      # grindstone onto the STONE at +z below. (Axis is hardcoded Y regardless of facing.)
-      - { id: "rotation:grindstone", facing: south, at: [0, 0, 0] }
+      # millstone onto the STONE at +z below. (Axis is hardcoded Y regardless of facing.)
+      - { id: "rotation:millstone", facing: south, at: [0, 0, 0] }
     vanilla:
-      - { block: "STONE", at: [0, 0, 1] }   # wall the grindstone mounts against (south support)
+      - { block: "STONE", at: [0, 0, 1] }   # wall the millstone mounts against (south support)
     activate: { fuel: [0, 2, 0] }
     expect:
       - { type: network_powered, at: [0, 1, 0] }
