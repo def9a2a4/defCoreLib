@@ -35,8 +35,14 @@ ifeq ($(KEEP_ALIVE),1)
 	cd test-server && java -Ddefcorelib.export="$(CURDIR)/.temp/display-spec.json" \
 		-Ddefcorelib.exportKeep=true -Xmx2G -jar $(PAPER_JAR) --nogui --port 25575
 else
-	cd test-server && timeout 300 java -Ddefcorelib.export="$(CURDIR)/.temp/display-spec.json" \
-		-Xmx2G -jar $(PAPER_JAR) --nogui --port 25575 || true
+	# --foreground: keep java in the foreground process group so Paper's console reader can access the
+	# TTY. Without it, `timeout` (run from a Makefile, i.e. not an interactive shell) backgrounds java;
+	# Paper's stdin read then triggers SIGTTIN and the whole JVM is STOPPED mid-boot (looks like a hang
+	# that Ctrl+C can't kill). timeout still enforces the 300s cap on a genuinely stuck boot.
+	# -k 30: if SIGTERM at 300s doesn't kill it, escalate to SIGKILL 30s later (insurance against a
+	# hang before the export's own halt(0) runs — e.g. during world gen). A normal run halts in ~12s.
+	cd test-server && timeout --foreground -k 30 300 java -Ddefcorelib.export="$(CURDIR)/.temp/display-spec.json" \
+		-Xmx2G -jar $(PAPER_JAR) --nogui --port 25575 < /dev/null || true
 	@test -s .temp/display-spec.json || { echo "ERROR: headless export did not produce .temp/display-spec.json"; exit 1; }
 	cp .temp/display-spec.json docs/data/display-spec.json
 	uv run scripts/generate_catalog.py
