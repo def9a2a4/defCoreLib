@@ -35,13 +35,14 @@
       "name": "cloth",
       "from": [1.33, 2.15, 6.66],
       "to": [14.67, 26.67, 7.33],
+      "rotation": { "origin": [8, 26.67, 7.33], "axis": "x", "angle": 0.1 },
       "faces": {
-        "north": { "uv": [0.5, 0.5, 10.5, 10.5], "texture": "#cloth" },
-        "south": { "uv": [10.5, 0.5, 0.5, 10.5], "texture": "#cloth" },
-        "east":  { "uv": [0, 0, 1, 10.5], "texture": "#cloth" },
-        "west":  { "uv": [0, 0, 1, 10.5], "texture": "#cloth" },
-        "up":    { "uv": [0.5, 0, 10.5, 1], "texture": "#cloth" },
-        "down":  { "uv": [0.5, 0, 10.5, 1], "texture": "#cloth" }
+        "north": { "uv": [1, 1, 9, 9.5], "texture": "#cloth" },
+        "south": { "uv": [1, 1, 9, 9.5], "texture": "#cloth" },
+        "east":  { "uv": [1, 1, 2, 9.5], "texture": "#cloth" },
+        "west":  { "uv": [1, 1, 2, 9.5], "texture": "#cloth" },
+        "up":    { "uv": [1, 1, 9, 2], "texture": "#cloth" },
+        "down":  { "uv": [1, 1, 9, 2], "texture": "#cloth" }
       }
     }
   ]

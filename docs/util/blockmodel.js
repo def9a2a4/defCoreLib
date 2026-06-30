@@ -78,6 +78,19 @@ function buildElement(el, textures, centered) {
 
   const mesh = new THREE.Mesh(geo, materials);
   mesh.position.set(center[0], center[1], center[2]);
+
+  // Optional Minecraft element rotation: { origin:[x,y,z] (0..16), axis:"x"|"y"|"z", angle:deg }.
+  // Wrap the mesh in a pivot group at the origin and rotate the group.
+  if (el.rotation) {
+    const r = el.rotation, o = r.origin || [8, 8, 8];
+    const piv = [o[0] / 16 - off, o[1] / 16 - off, o[2] / 16 - off];
+    const g = new THREE.Group();
+    g.position.set(piv[0], piv[1], piv[2]);
+    mesh.position.set(center[0] - piv[0], center[1] - piv[1], center[2] - piv[2]);
+    g.rotation[r.axis || 'x'] = THREE.MathUtils.degToRad(r.angle || 0);
+    g.add(mesh);
+    return g;
+  }
   return mesh;
 }
 

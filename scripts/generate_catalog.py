@@ -629,6 +629,7 @@ def main() -> int:
         with (DOCS_DATA / "showcases.json").open("w", encoding="utf-8") as f:
             json.dump({"showcases": showcases}, f, indent=2, ensure_ascii=False)
             f.write("\n")
+        used: dict[str, list[dict]] = {}   # fullId -> [{id,name}] for item→showcase backlinks
         for s in showcases:
             for blk in s.get("blocks", []):
                 showcase_pseudo.append({
@@ -638,6 +639,13 @@ def main() -> int:
                         "displays": blk.get("displays", []),
                     }],
                 })
+                bid = blk.get("id")
+                if bid:
+                    entries = used.setdefault(bid, [])
+                    if not any(u["id"] == s["id"] for u in entries):
+                        entries.append({"id": s["id"], "name": s.get("name", s["id"])})
+        for it in items:
+            it["usedInShowcases"] = used.get(it["fullId"], [])
         print(f"  + showcase-spec.json: {len(showcases)} showcases -> showcases.json")
     else:
         print("  (no showcase-spec.json -- run `make showcase-capture` to generate showcases.json)")
