@@ -28,7 +28,7 @@ const thumbObserver = new IntersectionObserver((entries) => {
     thumbObserver.unobserve(el);
     const item = itemsById.get(el.dataset.thumb);
     if (!item) continue;
-    thumbnailDataURL(placedVariantBlocks(item), { size: 192, cacheKey: item.fullId }).then((url) => {
+    thumbnailDataURL(placedVariantBlocks(item), { size: 300, cacheKey: item.fullId }).then((url) => {
       if (!url || !el.isConnected) return;
       const img = new Image();
       img.src = url;

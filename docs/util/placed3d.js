@@ -235,10 +235,12 @@ export function placedVariantBlocks(item, variantIndex = 0) {
   }];
 }
 
-/** Render a single placed variant into `container` (one block, fixed camera). Teardown fn returned. */
+/** Render a single placed variant into `container`. Teardown fn returned. */
 export async function renderPlaced(item, container, variantIndex = 0) {
+  // autoframe so the item fills the canvas with the same framing as the catalog snapshot
+  // (thumbnailDataURL uses this same box math); dist/target seed the camera pre-frame.
   return renderScene(container, placedVariantBlocks(item, variantIndex),
-    { autoframe: false, dist: 3.6, target: [0, 0.1, 0] });
+    { autoframe: true, dist: 3.6, target: [0, 0.1, 0] });
 }
 
 // ── Offscreen thumbnails ───────────────────────────────────────────────────

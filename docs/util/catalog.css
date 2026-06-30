@@ -149,7 +149,9 @@ h1 {
 .item-lore .line { white-space: pre-wrap; }
 
 /* ── Recipes ───────────────────────────────────────────────────────────── */
-.recipes { display: flex; flex-direction: column; gap: 10px; margin-top: 4px; }
+/* margin-top:auto pins the recipe block to the card bottom; grid rows stretch cards to equal
+   height, so recipes line up across a row regardless of lore length. */
+.recipes { display: flex; flex-direction: column; gap: 10px; margin-top: auto; }
 .recipe {
   background: #222;
   border: 1px solid #353535;
@@ -199,7 +201,7 @@ h1 {
 .slot.tag { border-color: #5a7; }
 .shapeless-list { display: flex; gap: 4px; flex-wrap: wrap; }
 
-.no-recipe { color: #666; font-size: 0.88em; font-style: italic; }
+.no-recipe { color: #666; font-size: 0.88em; font-style: italic; margin-top: auto; }
 
 /* ── Grindstone section ────────────────────────────────────────────────── */
 .section-title {
@@ -246,7 +248,7 @@ a.produced-by-machine:hover { text-decoration: underline; }
   color: #ff8080;
   padding: 15px;
   border-radius: 8px;
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto 20px;
   display: none;
 }
@@ -304,8 +306,10 @@ a.slot { text-decoration: none; color: inherit; }
 .detail-section { margin-top: 24px; }
 .detail-section .section-title { margin-top: 0; }
 
-/* 3D viewers (detail page) */
-.viewers { display: flex; flex-wrap: nowrap; gap: 16px; margin: 18px 0 4px; }
+/* 3D viewers (detail page). flex-wrap is a safety net: 3 panels (In hand + 2 Placed) at 250px
+   total ~848px, fits the 900px detail-wrap; wrap covers any narrower intermediate width before
+   the 760px column-stack kicks in. */
+.viewers { display: flex; flex-wrap: wrap; gap: 16px; margin: 18px 0 4px; }
 .viewer {
   background: #222;
   border: 1px solid #353535;
@@ -382,19 +386,25 @@ a.slot { text-decoration: none; color: inherit; }
 .mc-n { text-decoration: underline; } .mc-m { text-decoration: line-through; }
 
 /* ── Showcases page ─────────────────────────────────────────────────────── */
+/* List of all showcases: a responsive grid (≈440px min track → 3 cols @1440, 2 @1024, 1 mobile). */
+#showcases {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(440px, 1fr));
+  gap: 20px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
 .showcase {
   background: #222;
   border: 1px solid #353535;
   border-radius: 10px;
   padding: 16px;
-  margin: 0 0 20px;
-  max-width: 760px;
 }
 .showcase h2 { color: #4ecca3; margin: 0 0 4px; }
 .showcase-blurb { color: #bbb; margin: 0 0 12px; line-height: 1.5; }
 .showcase-canvas {
   width: 100%;
-  height: 420px;
+  height: min(65vh, 640px);   /* ~1.5× the old 420px area; renderScene autoframes to refit */
   background: #1c1c1c;
   border-radius: 8px;
   border: 1px solid #3a3a3a;
@@ -418,15 +428,20 @@ a.slot { text-decoration: none; color: inherit; }
   color: #ccc;
   line-height: 1.65;
   margin: 16px 0 22px;
-  max-width: 760px;
+  max-width: 900px;
 }
-.blocks-used { display: flex; flex-wrap: wrap; gap: 16px; }
+/* Grid (not fixed-width flex): the old 140px card clipped its 176px-wide thumbs. 184px min track
+   fits placed-thumb (96) + hand (48) + gap (8) + padding (24). */
+.blocks-used {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(184px, 1fr));
+  gap: 16px;
+}
 .block-card {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 6px;
-  width: 140px;
   padding: 12px;
   background: #2a2a2a;
   border: 1px solid #3a3a3a;
@@ -458,14 +473,16 @@ a.block-card:hover { border-color: #4ecca3; }
 /* ── Catalog placed-thumbnail (static 3D preview on animated cards) ──────── */
 .card-3d { display: flex; justify-content: center; margin: 2px 0; }
 .placed-thumb {
-  width: 96px;
-  height: 96px;
+  width: 150px;
+  height: 150px;
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
 }
-.placed-thumb-img { max-width: 100%; max-height: 100%; }
+/* Explicit fill (not bare max-*) so the lazy-loaded PNG reserves its box and never load-shifts.
+   The .block-thumb .placed-thumb override above keeps showcase thumbnails at their own size. */
+.placed-thumb-img { width: 100%; height: 100%; object-fit: contain; image-rendering: pixelated; }
 
 /* ── Item page: "Used in showcases" backlinks ───────────────────────────── */
 .used-in-links { display: flex; flex-wrap: wrap; gap: 10px; }
