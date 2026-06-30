@@ -1,58 +1,80 @@
 package anon.def9a2a4.corelib;
 
+import com.google.gson.GsonBuilder;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.server.ServerLoadEvent;
 
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
 /**
- * Headless integration-test harness for the showcases. Armed by {@code -Ddefcorelib.showcaseTest=true}
- * (inert otherwise). On startup it builds every {@link ShowcaseSpec} as a real machine, drives it for a
- * bounded number of ticks (so the rotation network recalcs + consumers spin up), then asserts each
- * YAML-declared {@code expect} and exits with code 0 (all pass) or 1 (any fail) so {@code make
- * showcase-test} can gate. Builds at fresh, far coords (untouched chunks ⇒ deterministic).
+ * Headless harness that builds every {@link ShowcaseSpec} as a real machine, drives it for a bounded
+ * number of ticks (network recalc + spin-up), then either:
+ *   <ul><li><b>tests</b> ({@code -Ddefcorelib.showcaseTest=true}) — asserts each YAML {@code expect}, exits
+ *   0 (all pass) / 1 (any fail) so {@code make showcase-test} gates; and/or</li>
+ *   <li><b>captures</b> ({@code -Ddefcorelib.showcaseCapture=<path>}) — reads the running displays + bakes
+ *   animations into {@code showcase-spec.json} for the docs.</li></ul>
+ * Builds at fresh, far coords (untouched chunks ⇒ deterministic). Inert when neither property is set.
  */
 final class ShowcaseRunner implements Listener {
 
     private static final int TEST_X = 1000;     // far from the docs grid → fresh, clean chunks
     private static final int TEST_Y = -50;      // in air above the superflat surface
     private static final int SPACING = 16;      // machines spaced along z
+    private static final int FUEL_TICKS = 6000; // keep fueled engines running through the window
 
     private static final long ACTIVATE_AT = 20; // ticks after build
-    private static final long ASSERT_AT = 80;
+    private static final long FINISH_AT = 80;
 
     private final CoreLibPlugin plugin;
     private final CustomBlockRegistry registry;
     private final RotationNetwork network;
+    private final EngineFuelManager fuelManager;
     private final ShowcaseBuilder builder;
     private final java.util.Collection<ShowcaseSpec> showcases;
+    private final boolean testMode;
+    private final Path capturePath;   // null if not capturing
     private final Map<ShowcaseSpec, Location> origins = new LinkedHashMap<>();
     private boolean done;
 
     private ShowcaseRunner(CoreLibPlugin plugin, CustomBlockRegistry registry, RotationNetwork network,
-                           ShowcaseBuilder builder, java.util.Collection<ShowcaseSpec> showcases) {
+                           EngineFuelManager fuelManager, ShowcaseBuilder builder,
+                           java.util.Collection<ShowcaseSpec> showcases, boolean testMode, Path capturePath) {
         this.plugin = plugin;
         this.registry = registry;
         this.network = network;
+        this.fuelManager = fuelManager;
         this.builder = builder;
         this.showcases = showcases;
+        this.testMode = testMode;
+        this.capturePath = capturePath;
     }
 
     static boolean armIfRequested(CoreLibPlugin plugin, CustomBlockRegistry registry, RotationNetwork network,
-                                  ShowcaseBuilder builder, java.util.Collection<ShowcaseSpec> showcases) {
-        if (!Boolean.getBoolean("defcorelib.showcaseTest")) return false;
-        ShowcaseRunner runner = new ShowcaseRunner(plugin, registry, network, builder, showcases);
+                                  EngineFuelManager fuelManager, ShowcaseBuilder builder,
+                                  java.util.Collection<ShowcaseSpec> showcases) {
+        boolean test = Boolean.getBoolean("defcorelib.showcaseTest");
+        String capture = System.getProperty("defcorelib.showcaseCapture");
+        if (!test && (capture == null || capture.isBlank())) return false;
+        Path capturePath = (capture == null || capture.isBlank()) ? null : Path.of(capture);
+        ShowcaseRunner runner = new ShowcaseRunner(plugin, registry, network, fuelManager, builder,
+                showcases, test, capturePath);
         Bukkit.getPluginManager().registerEvents(runner, plugin);
-        plugin.getLogger().info("ShowcaseRunner armed — will build + test " + showcases.size()
-                + " showcases, then exit.");
+        plugin.getLogger().info("ShowcaseRunner armed (" + (test ? "test " : "") + (capturePath != null
+                ? "capture→" + capturePath : "") + ") — " + showcases.size() + " showcases.");
         return true;
     }
 
@@ -70,15 +92,15 @@ final class ShowcaseRunner implements Listener {
             try {
                 int placed = builder.build(spec, origin);
                 origins.put(spec, origin);
-                plugin.getLogger().info("  [test] built " + spec.id + " (" + placed + " blocks) @ "
+                plugin.getLogger().info("  [showcase] built " + spec.id + " (" + placed + " blocks) @ "
                         + TEST_X + " " + TEST_Y + " " + (i * SPACING));
             } catch (Throwable t) {
-                plugin.getLogger().warning("[test] build " + spec.id + " failed: " + t);
+                plugin.getLogger().warning("[showcase] build " + spec.id + " failed: " + t);
             }
             i++;
         }
         Bukkit.getScheduler().runTaskLater(plugin, this::activateAll, ACTIVATE_AT);
-        Bukkit.getScheduler().runTaskLater(plugin, this::assertAndExit, ASSERT_AT);
+        Bukkit.getScheduler().runTaskLater(plugin, this::finish, FINISH_AT);
     }
 
     private void activateAll() {
@@ -90,8 +112,12 @@ final class ShowcaseRunner implements Listener {
                 case "pulse" -> {
                     if (act.at() != null) blockAt(origin, act.at()).setType(Material.REDSTONE_BLOCK, true);
                 }
-                case "fuel" -> plugin.getLogger().warning("[test] " + spec.id
-                        + ": activate=fuel not implemented yet");
+                case "fuel" -> {
+                    if (act.at() != null) {
+                        fuelManager.addFuel(CustomBlockRegistry.LocationKey.of(blockAt(origin, act.at())),
+                                FUEL_TICKS);
+                    }
+                }
                 default -> {   // passive: nudge a recalc on the first block so the network is fresh
                     if (!spec.blocks.isEmpty()) {
                         network.recalculate(CustomBlockRegistry.LocationKey.of(
@@ -102,24 +128,29 @@ final class ShowcaseRunner implements Listener {
         }
     }
 
-    private void assertAndExit() {
+    private void finish() {
+        if (capturePath != null) capture();
+        int fail = testMode ? assertAll() : 0;
+        System.out.flush();
+        System.err.flush();
+        Runtime.getRuntime().halt(fail == 0 ? 0 : 1);
+    }
+
+    // ── Test ─────────────────────────────────────────────────────────────────
+
+    private int assertAll() {
         Logger log = plugin.getLogger();
         int pass = 0, fail = 0;
         log.info("──────── showcase tests ────────");
         for (Map.Entry<ShowcaseSpec, Location> e : origins.entrySet()) {
-            ShowcaseSpec spec = e.getKey();
-            Location origin = e.getValue();
-            for (ShowcaseSpec.Expect ex : spec.expect) {
-                Block block = blockAt(origin, ex.at());
-                boolean ok = check(ex, block);
-                log.info("  [" + (ok ? "PASS" : "FAIL") + "] " + spec.id + " " + describe(ex));
+            for (ShowcaseSpec.Expect ex : e.getKey().expect) {
+                boolean ok = check(ex, blockAt(e.getValue(), ex.at()));
+                log.info("  [" + (ok ? "PASS" : "FAIL") + "] " + e.getKey().id + " " + describe(ex));
                 if (ok) pass++; else fail++;
             }
         }
         log.info("──────── " + pass + " passed, " + fail + " failed ────────");
-        System.out.flush();
-        System.err.flush();
-        Runtime.getRuntime().halt(fail == 0 ? 0 : 1);
+        return fail;
     }
 
     private boolean check(ShowcaseSpec.Expect ex, Block block) {
@@ -135,11 +166,60 @@ final class ShowcaseRunner implements Listener {
                 return ex.value() != null && ex.value().equals(registry.getState(block));
             }
             default -> {
-                plugin.getLogger().warning("[test] unknown expect type: " + ex.type());
+                plugin.getLogger().warning("[showcase] unknown expect type: " + ex.type());
                 return false;
             }
         }
     }
+
+    // ── Capture ────────────────────────────────────────────────────────────
+
+    private void capture() {
+        Logger log = plugin.getLogger();
+        List<Map<String, Object>> out = new ArrayList<>();
+        for (Map.Entry<ShowcaseSpec, Location> e : origins.entrySet()) {
+            ShowcaseSpec spec = e.getKey();
+            Location origin = e.getValue();
+            List<Map<String, Object>> blocks = new ArrayList<>();
+            for (ShowcaseSpec.BlockSpec bs : spec.blocks) {
+                CustomHeadBlock type = registry.getType(bs.id());
+                if (type == null) continue;
+                Block block = blockAt(origin, bs.at());
+                String state = registry.getState(block);
+                boolean floor = bs.facing() == BlockFace.DOWN || bs.facing() == BlockFace.UP;
+                BlockFace headFacing = floor ? null : bs.facing().getOppositeFace();
+
+                Map<String, Object> rec = new LinkedHashMap<>();
+                rec.put("offset", new int[]{bs.at()[0], bs.at()[1], bs.at()[2]});
+                rec.put("facing", floor ? "floor" : "wall_" + bs.facing().name().toLowerCase());
+                rec.put("baseHeadTextureUrl", type.itemMaterial() != null ? null
+                        : DisplayCapture.textureUrl(type.resolveTexture(state, 0, headFacing)));
+                rec.put("displays", DisplayCapture.readDisplays(type, block.getLocation(), state, true, false));
+                blocks.add(rec);
+            }
+            Map<String, Object> sc = new LinkedHashMap<>();
+            sc.put("id", spec.id);
+            sc.put("name", spec.name);
+            sc.put("blurb", spec.blurb);
+            sc.put("blocks", blocks);
+            out.add(sc);
+        }
+        Map<String, Object> root = new LinkedHashMap<>();
+        root.put("showcases", out);
+        try {
+            String json = new GsonBuilder().setPrettyPrinting().create().toJson(root);
+            Path tmp = capturePath.resolveSibling(capturePath.getFileName() + ".tmp");
+            Files.createDirectories(capturePath.toAbsolutePath().getParent());
+            Files.writeString(tmp, json, StandardCharsets.UTF_8);
+            Files.move(tmp, capturePath, java.nio.file.StandardCopyOption.REPLACE_EXISTING,
+                    java.nio.file.StandardCopyOption.ATOMIC_MOVE);
+            log.info("[showcase] captured " + out.size() + " showcases → " + capturePath);
+        } catch (Throwable t) {
+            log.severe("[showcase] capture write failed: " + t);
+        }
+    }
+
+    // ── Helpers ──────────────────────────────────────────────────────────────
 
     private static String describe(ShowcaseSpec.Expect ex) {
         String at = "[" + ex.at()[0] + "," + ex.at()[1] + "," + ex.at()[2] + "]";

@@ -40,6 +40,7 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
     private ShowcaseBuilder showcaseBuilder;
     private java.util.Map<String, ShowcaseSpec> showcases = java.util.Map.of();
     private RotationNetwork rotationNetwork;
+    private EngineFuelManager fuelManager;
     private BannerManager bannerManager;
     private LargeBannerRecipes largeBannerRecipes;
 
@@ -84,7 +85,7 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         } catch (IOException ignored) {}
         rotationNetwork = new RotationNetwork(this, registry);
         rotationNetwork.setMaxNetworkSize(rotConfig.maxNetworkSize);
-        EngineFuelManager fuelManager = new EngineFuelManager(rotConfig.fuelValues);
+        fuelManager = new EngineFuelManager(rotConfig.fuelValues);
         GrindRecipes grindRecipes = new GrindRecipes();
         try (InputStream grindStream = getResource("grind-recipes.yml")) {
             if (grindStream != null) {
@@ -139,7 +140,7 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         DisplayExporter.armIfRequested(this, registry, showcaseBuilder, showcases.values());
 
         // Headless showcase integration tests (-Ddefcorelib.showcaseTest=true): build, run, assert, exit.
-        ShowcaseRunner.armIfRequested(this, registry, rotationNetwork, showcaseBuilder, showcases.values());
+        ShowcaseRunner.armIfRequested(this, registry, rotationNetwork, fuelManager, showcaseBuilder, showcases.values());
 
         getLogger().info("DefCoreLib enabled");
     }
