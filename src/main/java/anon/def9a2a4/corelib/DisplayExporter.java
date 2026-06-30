@@ -63,23 +63,29 @@ final class DisplayExporter implements Listener {
     private final CustomBlockRegistry registry;
     private final Path outPath;
     private final boolean keepAlive;   // leave blocks placed + server running for in-game inspection
+    private final ShowcaseBuilder showcaseBuilder;
+    private final java.util.Collection<ShowcaseSpec> showcases;
     private boolean done;
 
-    private DisplayExporter(CoreLibPlugin plugin, CustomBlockRegistry registry, Path outPath, boolean keepAlive) {
+    private DisplayExporter(CoreLibPlugin plugin, CustomBlockRegistry registry, Path outPath, boolean keepAlive,
+                            ShowcaseBuilder showcaseBuilder, java.util.Collection<ShowcaseSpec> showcases) {
         this.plugin = plugin;
         this.registry = registry;
         this.outPath = outPath;
         this.keepAlive = keepAlive;
+        this.showcaseBuilder = showcaseBuilder;
+        this.showcases = showcases;
     }
 
     /** Register the exporter listener if the export system property is set. Returns true if armed.
      *  With {@code -Ddefcorelib.exportKeep=true} the blocks are left placed and the server keeps
      *  running so you can join and inspect; otherwise it cleans up and shuts down. */
-    static boolean armIfRequested(CoreLibPlugin plugin, CustomBlockRegistry registry) {
+    static boolean armIfRequested(CoreLibPlugin plugin, CustomBlockRegistry registry,
+                                  ShowcaseBuilder showcaseBuilder, java.util.Collection<ShowcaseSpec> showcases) {
         String out = System.getProperty("defcorelib.export");
         if (out == null || out.isBlank()) return false;
         boolean keep = Boolean.getBoolean("defcorelib.exportKeep");
-        DisplayExporter exporter = new DisplayExporter(plugin, registry, Path.of(out), keep);
+        DisplayExporter exporter = new DisplayExporter(plugin, registry, Path.of(out), keep, showcaseBuilder, showcases);
         Bukkit.getPluginManager().registerEvents(exporter, plugin);
         plugin.getLogger().info("DisplayExporter armed → " + out
                 + (keep ? " (keep-alive: blocks stay placed, server stays up for inspection)"
@@ -151,7 +157,12 @@ final class DisplayExporter implements Listener {
                 log.warning("export " + type.fullId() + ": " + t);
             }
         }
-        if (keepAlive) setupViewing(world, log);
+        if (keepAlive) {
+            // Multi-block showcases live in the same world (windmill quadrant), but only in keep-alive:
+            // the non-keepalive run halt(0)s immediately, so their deferred registration would never run.
+            ShowcaseWorld.placeAll(world, showcaseBuilder, showcases, log);
+            setupViewing(world, log);
+        }
         return out;
     }
 
@@ -245,6 +256,10 @@ final class DisplayExporter implements Listener {
         variant.put("label", label);
         variant.put("baseHeadTextureUrl",
                 type.itemMaterial() != null ? null : textureUrl(type.resolveTexture(state, 0, headFacing)));
+        // Base-head placement: a floor PLAYER_HEAD is seated, a PLAYER_WALL_HEAD is mounted
+        // vertically-centred and pushed onto the wall. The frontend seats the skull accordingly.
+        variant.put("baseHeadWall", !floor);
+        variant.put("baseHeadFacing", headFacing == null ? null : headFacing.name().toLowerCase());
         variant.put("displays", readDisplays(type, loc, state, animate, reversed));
 
         if (keepAlive) {

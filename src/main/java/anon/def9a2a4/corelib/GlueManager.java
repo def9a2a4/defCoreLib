@@ -3,6 +3,14 @@ package anon.def9a2a4.corelib;
 import org.bukkit.NamespacedKey;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.block.data.Bisected;
+import org.bukkit.block.data.BlockData;
+import org.bukkit.block.data.Directional;
+import org.bukkit.block.data.MultipleFacing;
+import org.bukkit.block.data.Orientable;
+import org.bukkit.block.data.Rail;
+import org.bukkit.block.data.Rotatable;
+import org.bukkit.block.data.type.Slab;
 import org.joml.Vector3i;
 import org.jspecify.annotations.Nullable;
 
@@ -21,13 +29,11 @@ final class GlueManager {
     static final NamespacedKey GLUE_KEY = new NamespacedKey("corelib", "glue_offsets");
 
     /** Outcome of a single-block {@link #glue} authoring op. */
-    enum Result { OK, NOT_CONNECTED, CAP_HIT, ALREADY_GLUED, IS_ANCHOR }
+    enum Result { OK, NOT_CONNECTED, CAP_HIT, ALREADY_GLUED, IS_ANCHOR, AXIS_INCOMPATIBLE }
 
-    private final CustomBlockRegistry registry;
     private final int maxSize;
 
-    GlueManager(CustomBlockRegistry registry, int maxSize) {
-        this.registry = registry;
+    GlueManager(int maxSize) {
         this.maxSize = maxSize;
     }
 
@@ -40,9 +46,9 @@ final class GlueManager {
 
     /**
      * Resolve glued offsets to currently-present world blocks, or {@code null} if the anchor has no
-     * glue. Read-only: blocks that are now air, or are themselves custom rotation/power blocks, are
-     * skipped (the rotator never pulls a power node into a moving structure). An empty (non-null) list
-     * means "glued, but every block is gone".
+     * glue. Read-only: only blocks that are now air are skipped (the block was removed). Custom blocks
+     * and power components are kept — gluability was already vetted at authoring time (see {@link #glue}).
+     * An empty (non-null) list means "glued, but every block is gone".
      */
     @Nullable List<Block> resolveStructure(Anchor a) {
         int[] o = a.readOffsets();
@@ -53,8 +59,7 @@ final class GlueManager {
         List<Block> out = new ArrayList<>(o.length / 3);
         for (int i = 0; i + 2 < o.length; i += 3) {
             Block b = w.getBlockAt(ox + o[i], oy + o[i + 1], oz + o[i + 2]);
-            if (b.getType().isAir()) continue;                  // block gone — skip
-            if (registry.getTypeFromBlock(b) != null) continue; // never pull a custom rotation/power block
+            if (b.getType().isAir()) continue; // block gone — skip
             out.add(b);
         }
         return out;
@@ -79,12 +84,17 @@ final class GlueManager {
         return set;
     }
 
-    /** Authoring: add one block. Connectivity- and cap-checked. */
-    Result glue(Anchor a, Block b) {
+    /**
+     * Authoring: add one block. Connectivity- and cap-checked. On a horizontal-axis (drawbridge) anchor,
+     * orientation-bearing blocks are rejected — {@code BlockRotation} can only rotate about Y, so stairs/
+     * slabs/etc. (and custom skulls) can't be validly represented after an X/Z rotation.
+     */
+    Result glue(Anchor a, Block b, boolean horizontalAxis) {
         Block origin = a.originBlock();
         Vector3i off = new Vector3i(b.getX() - origin.getX(), b.getY() - origin.getY(),
             b.getZ() - origin.getZ());
         if (off.x == 0 && off.y == 0 && off.z == 0) return Result.IS_ANCHOR;
+        if (horizontalAxis && isOrientationBearing(b.getBlockData())) return Result.AXIS_INCOMPATIBLE;
         Set<Vector3i> set = offsets(a);
         if (set.contains(off)) return Result.ALREADY_GLUED;
         if (set.size() >= maxSize) return Result.CAP_HIT;
@@ -99,10 +109,11 @@ final class GlueManager {
 
     /**
      * Authoring: glue the anchor-connected subset of an explicit candidate block list (a cuboid). Filters
-     * out air, custom rotation/power blocks, the anchor cell, and already-glued cells, then grows the set
-     * by fixpoint from the origin / existing glued cells until nothing more connects or the cap is hit.
+     * out air, the anchor cell, already-glued cells, and (on a horizontal-axis drawbridge) orientation-
+     * bearing blocks; then grows the set by fixpoint from the origin / existing glued cells until nothing
+     * more connects or the cap is hit.
      */
-    FillResult glueCuboid(Anchor a, List<Block> candidates) {
+    FillResult glueCuboid(Anchor a, List<Block> candidates, boolean horizontalAxis) {
         Block origin = a.originBlock();
         int ox = origin.getX(), oy = origin.getY(), oz = origin.getZ();
         Set<Vector3i> accepted = offsets(a);
@@ -113,7 +124,7 @@ final class GlueManager {
             if (off.x == 0 && off.y == 0 && off.z == 0) continue;     // the anchor itself
             if (accepted.contains(off)) continue;                    // already glued
             if (b.getType().isAir()) continue;
-            if (registry.getTypeFromBlock(b) != null) continue;      // never a custom rotation/power block
+            if (horizontalAxis && isOrientationBearing(b.getBlockData())) continue; // can't rotate on X/Z
             pending.add(off);
         }
         boolean changed = true;
@@ -154,6 +165,22 @@ final class GlueManager {
 
     private static boolean cardinallyAdjacent(Vector3i o, int x, int y, int z) {
         return Math.abs(o.x - x) + Math.abs(o.y - y) + Math.abs(o.z - z) == 1;
+    }
+
+    /**
+     * Whether a block's appearance depends on an orientation that a Y-only {@code BlockRotation} can't
+     * fix after an X/Z (drawbridge) rotation — stairs, slabs, logs, fences/panes, rails, and custom
+     * skull blocks (PLAYER_HEAD is Rotatable, PLAYER_WALL_HEAD is Directional). Such blocks can only be
+     * glued to a Y-axis mechanism (floor door / Y rotator).
+     */
+    private static boolean isOrientationBearing(BlockData bd) {
+        return bd instanceof Directional
+            || bd instanceof Orientable
+            || bd instanceof Rotatable
+            || bd instanceof MultipleFacing
+            || bd instanceof Bisected
+            || bd instanceof Slab
+            || bd instanceof Rail;
     }
 
     private static int[] packBlocks(Anchor a, List<Block> blocks) {

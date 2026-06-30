@@ -101,7 +101,8 @@ final class GlueAuthoring implements Listener {
                         feedback(player, clicked, false);
                     }
                 } else {
-                    reportGlue(player, clicked, glue.glue(session.anchor, clicked));
+                    reportGlue(player, clicked,
+                        glue.glue(session.anchor, clicked, isDrawbridgeAnchor(session.anchor.originBlock())));
                 }
             }
             case RIGHT_CLICK_AIR -> {
@@ -172,7 +173,8 @@ final class GlueAuthoring implements Listener {
             actionBar(player, "Box too large (" + volume + " cells)", NamedTextColor.RED);
             return;
         }
-        GlueManager.FillResult r = glue.glueCuboid(s.anchor, boxBlocks(a, clicked));
+        GlueManager.FillResult r = glue.glueCuboid(s.anchor, boxBlocks(a, clicked),
+            isDrawbridgeAnchor(s.anchor.originBlock()));
         player.playSound(player.getLocation(), Sound.BLOCK_SLIME_BLOCK_PLACE, 0.6f, 1.1f);
         actionBar(player, "+" + r.added() + " glued, " + r.skipped() + " skipped", NamedTextColor.GREEN);
     }
@@ -287,13 +289,24 @@ final class GlueAuthoring implements Listener {
         return type != null && ANCHOR_IDS.contains(type.fullId());
     }
 
+    /** Whether this anchor's mechanism rotates about a horizontal (X/Z drawbridge) axis. */
+    private boolean isDrawbridgeAnchor(Block anchorBlock) {
+        CustomHeadBlock type = registry.getTypeFromBlock(anchorBlock);
+        if (type == null || !"rotation:rotator".equals(type.fullId())) return false; // doors are Y
+        String state = registry.getState(anchorBlock);
+        if (state == null) return false;
+        RotationNetwork.Axis axis = RotationNetwork.axisFromState(state);
+        return axis == RotationNetwork.Axis.X || axis == RotationNetwork.Axis.Z;
+    }
+
     private void reportGlue(Player player, Block block, GlueManager.Result r) {
         switch (r) {
             case OK -> feedback(player, block, true);
             case ALREADY_GLUED -> actionBar(player, "Already glued", NamedTextColor.YELLOW);
-            case CAP_HIT -> actionBar(player, "Glue cap reached (" + glue.maxSize() + ")", NamedTextColor.RED);
-            case NOT_CONNECTED -> actionBar(player, "Not connected to the structure", NamedTextColor.RED);
+            case CAP_HIT -> reject(player, block, "Glue cap reached (" + glue.maxSize() + ")");
+            case NOT_CONNECTED -> reject(player, block, "Not connected to the structure");
             case IS_ANCHOR -> actionBar(player, "That's the hinge", NamedTextColor.RED);
+            case AXIS_INCOMPATIBLE -> reject(player, block, "Won't rotate on a drawbridge");
         }
     }
 
@@ -302,6 +315,14 @@ final class GlueAuthoring implements Listener {
         player.spawnParticle(Particle.DUST, block.getLocation().add(0.5, 0.5, 0.5), 6, 0.25, 0.25, 0.25,
             new Particle.DustOptions(color, 1.0f));
         player.playSound(block.getLocation(), Sound.BLOCK_SLIME_BLOCK_HIT, 0.5f, added ? 1.6f : 0.8f);
+    }
+
+    /** Rejection feedback: red dust at the block + a low deny tone + a brief reason on the action bar. */
+    private void reject(Player player, Block block, String reason) {
+        player.spawnParticle(Particle.DUST, block.getLocation().add(0.5, 0.5, 0.5), 12, 0.3, 0.3, 0.3,
+            new Particle.DustOptions(Color.fromRGB(0xFF3030), 1.2f));
+        player.playSound(block.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 0.6f, 0.6f);
+        actionBar(player, reason, NamedTextColor.RED);
     }
 
     private void actionBar(Player player, String text, NamedTextColor color) {

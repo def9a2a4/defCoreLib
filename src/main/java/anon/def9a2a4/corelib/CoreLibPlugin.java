@@ -37,6 +37,8 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
     private MechanismMinecartManager mechanismMinecartManager;
     private GlueManager glueManager;
     private Material glueItemMaterial = Material.SLIME_BALL;
+    private ShowcaseBuilder showcaseBuilder;
+    private java.util.Map<String, ShowcaseSpec> showcases = java.util.Map.of();
     private RotationNetwork rotationNetwork;
     private BannerManager bannerManager;
     private LargeBannerRecipes largeBannerRecipes;
@@ -94,7 +96,7 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         RotationBlocks.registerWrenchRecipe();
 
         // Anchor-owned block selection ("glue") — shared by doors/rotators (wired in D3).
-        glueManager = new GlueManager(registry, rotConfig.glueMaxSize);
+        glueManager = new GlueManager(rotConfig.glueMaxSize);
         glueItemMaterial = Material.matchMaterial(rotConfig.glueItem);
         if (glueItemMaterial == null) {
             getLogger().warning("rotation-config glue.item invalid: " + rotConfig.glueItem
@@ -105,6 +107,15 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
             rotConfig.glueOutlineInterval, rotConfig.glueSessionTimeout);
         getServer().getPluginManager().registerEvents(glueAuthoring, this);
         glueAuthoring.start();
+
+        // Demo showcases (multi-block machines) — placement via /defcorelib showcase build <id>.
+        showcaseBuilder = new ShowcaseBuilder(this, registry);
+        try (InputStream showcaseStream = getResource("showcases.yml")) {
+            if (showcaseStream != null) {
+                showcases = ShowcaseSpec.load(showcaseStream, getLogger());
+                getLogger().info("Loaded " + showcases.size() + " showcases");
+            }
+        } catch (IOException ignored) {}
 
         // Register mechanism demos
         int maxStructureSize = rotConfig.maxStructureSize;
@@ -125,7 +136,7 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
 
         // Docs export mode (-Ddefcorelib.export=<path>): on ServerLoadEvent, dump every block's
         // ground-truth placed display data to JSON and shut the server down. Inert otherwise.
-        DisplayExporter.armIfRequested(this, registry);
+        DisplayExporter.armIfRequested(this, registry, showcaseBuilder, showcases.values());
 
         getLogger().info("DefCoreLib enabled");
     }
@@ -1268,6 +1279,32 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
                     }
                 }
             }
+            case "showcase" -> {
+                if (!(sender instanceof Player player)) {
+                    sender.sendMessage(Component.text("Must be a player", NamedTextColor.RED));
+                    return true;
+                }
+                if (args.length >= 2 && args[1].equalsIgnoreCase("build")) {
+                    if (args.length < 3) {
+                        sender.sendMessage(Component.text("Usage: /defcorelib showcase build <id>", NamedTextColor.YELLOW));
+                        return true;
+                    }
+                    ShowcaseSpec spec = showcases.get(args[2]);
+                    if (spec == null) {
+                        sender.sendMessage(Component.text("Unknown showcase: " + args[2], NamedTextColor.RED));
+                        return true;
+                    }
+                    int placed = showcaseBuilder.build(spec, player.getLocation().getBlock().getLocation());
+                    sender.sendMessage(Component.text("Building '" + spec.name + "' (" + placed
+                        + " blocks) at your feet.", NamedTextColor.GREEN));
+                } else {
+                    sender.sendMessage(Component.text("Showcases:", NamedTextColor.GOLD));
+                    for (ShowcaseSpec s : showcases.values()) {
+                        sender.sendMessage(Component.text("  " + s.id + " — " + s.name, NamedTextColor.WHITE));
+                    }
+                    sender.sendMessage(Component.text("Build with: /defcorelib showcase build <id>", NamedTextColor.GRAY));
+                }
+            }
             case "gluetest" -> {
                 if (!(sender instanceof Player player)) {
                     sender.sendMessage(Component.text("Must be a player", NamedTextColor.RED));
@@ -1306,7 +1343,7 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         if (!command.getName().equalsIgnoreCase("defcorelib")) return List.of();
         if (args.length == 1) {
-            return List.of("give", "give_demo", "give_demo_rotation", "list", "colliders", "reloadbanners", "cleanorphans", "gluetest").stream()
+            return List.of("give", "give_demo", "give_demo_rotation", "list", "colliders", "reloadbanners", "cleanorphans", "gluetest", "showcase").stream()
                     .filter(s -> s.startsWith(args[0].toLowerCase()))
                     .toList();
         }
