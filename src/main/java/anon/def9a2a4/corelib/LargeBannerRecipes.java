@@ -41,12 +41,32 @@ public class LargeBannerRecipes implements Listener {
 
     public LargeBannerRecipes(JavaPlugin plugin) {
         recipeKey = new NamespacedKey(plugin, "large_banner");
-        ItemStack placeholder = new ItemStack(Material.WHITE_BANNER);
-        ShapedRecipe recipe = new ShapedRecipe(recipeKey, placeholder);
+        ShapedRecipe recipe = new ShapedRecipe(recipeKey, largeBannerPlaceholder());
         recipe.shape("WWW", "WBW", "WWW");
+        recipe.setCategory(org.bukkit.inventory.recipe.CraftingBookCategory.BUILDING);
         recipe.setIngredient('W', new RecipeChoice.MaterialChoice(Tag.WOOL));
         recipe.setIngredient('B', new RecipeChoice.MaterialChoice(BANNER_MATERIALS));
         Bukkit.addRecipe(recipe);
+    }
+
+    /** The recipe-book key for the large/huge banner craft (so it can be discovered on join). */
+    NamespacedKey recipeKey() { return recipeKey; }
+
+    /** Book-only result shown for the recipe: a Large White Banner whose lore explains that feeding
+     *  a Large banner back in upgrades it to Huge. The actual crafted item is rebuilt by modifyResult
+     *  from the real input banner (preserving its colour/patterns), so it never carries this lore. */
+    private static ItemStack largeBannerPlaceholder() {
+        ItemStack item = new ItemStack(Material.WHITE_BANNER);
+        var meta = item.getItemMeta();
+        meta.getPersistentDataContainer().set(LARGE_BANNER_KEY, PersistentDataType.BYTE, (byte) 1);
+        meta.displayName(Component.text("Large White Banner", NamedTextColor.WHITE)
+                .decoration(TextDecoration.ITALIC, false));
+        meta.lore(List.of(
+                Component.text("Large", NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false),
+                Component.text("Use a Large Banner as input to craft a Huge Banner", NamedTextColor.GRAY)
+                        .decoration(TextDecoration.ITALIC, false)));
+        item.setItemMeta(meta);
+        return item;
     }
 
     /** Unregister the recipe on plugin disable so a server /reload doesn't fail with a

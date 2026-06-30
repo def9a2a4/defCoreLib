@@ -594,6 +594,7 @@ blocks:
     lore:
       - "&7Produces 1 Power"
       - "&7Always spinning"
+      - "&7Use Large/Huge banners for a bigger windmill"
     texture: "@large_windmill"
     drops: self
     break_sound: { sound: BLOCK_WOOD_BREAK, volume: 0.8, pitch: 1.0 }

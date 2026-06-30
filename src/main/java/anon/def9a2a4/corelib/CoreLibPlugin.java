@@ -774,6 +774,8 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
     @EventHandler
     public void onPlayerJoin(org.bukkit.event.player.PlayerJoinEvent event) {
         registry.syncRecipeDiscovery(event.getPlayer());
+        // The large/huge banner craft is registered outside the registry, so discover it here too.
+        if (largeBannerRecipes != null) event.getPlayer().discoverRecipe(largeBannerRecipes.recipeKey());
     }
 
     @EventHandler

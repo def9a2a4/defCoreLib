@@ -1118,6 +1118,7 @@ public class CustomBlockRegistry {
                 org.bukkit.inventory.ItemStack result = type.createItem(r.amount());
                 org.bukkit.inventory.ShapedRecipe recipe = new org.bukkit.inventory.ShapedRecipe(key, result);
                 recipe.shape(r.pattern().toArray(new String[0]));
+                recipe.setCategory(categoryFor(type));
                 for (var entry : r.key().entrySet()) {
                     CustomHeadBlock.IngredientSpec spec = entry.getValue();
                     if (spec.isTag()) {
@@ -1142,6 +1143,7 @@ public class CustomBlockRegistry {
                 org.bukkit.NamespacedKey key = new org.bukkit.NamespacedKey(plugin, prefix + r.id());
                 org.bukkit.inventory.ItemStack result = type.createItem(r.amount());
                 org.bukkit.inventory.ShapelessRecipe recipe = new org.bukkit.inventory.ShapelessRecipe(key, result);
+                recipe.setCategory(categoryFor(type));
                 for (CustomHeadBlock.IngredientSpec spec : r.ingredients()) {
                     if (spec.isMaterial()) {
                         recipe.addIngredient(spec.material());
@@ -1201,6 +1203,17 @@ public class CustomBlockRegistry {
             return new org.bukkit.inventory.RecipeChoice.MaterialChoice(Material.PLAYER_HEAD);
         }
         return new org.bukkit.inventory.RecipeChoice.ExactChoice(refType.createItem(1));
+    }
+
+    /** Recipe-book tab for a type's crafting recipes: its explicit recipe_category if set, else a
+     *  namespace default (rotation → Redstone, verticalslabs → Building, everything else → Misc). */
+    private static org.bukkit.inventory.recipe.CraftingBookCategory categoryFor(CustomHeadBlock type) {
+        if (type.recipeCategory() != null) return type.recipeCategory();
+        return switch (type.namespace()) {
+            case "rotation" -> org.bukkit.inventory.recipe.CraftingBookCategory.REDSTONE;
+            case "verticalslabs" -> org.bukkit.inventory.recipe.CraftingBookCategory.BUILDING;
+            default -> org.bukkit.inventory.recipe.CraftingBookCategory.MISC;
+        };
     }
 
     /** Remove all previously registered recipes. */

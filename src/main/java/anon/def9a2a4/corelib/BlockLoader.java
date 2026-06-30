@@ -86,6 +86,16 @@ public final class BlockLoader {
         if (!sec.getBoolean("placeable", true)) b.placeable(false);
         ConfigurationSection potionSec = sec.getConfigurationSection("potion");
         if (potionSec != null) b.potion(parsePotion(potionSec));
+        String recipeCat = sec.getString("recipe_category");
+        if (recipeCat != null) {
+            try {
+                b.recipeCategory(org.bukkit.inventory.recipe.CraftingBookCategory.valueOf(
+                        recipeCat.toUpperCase(java.util.Locale.ROOT)));
+            } catch (IllegalArgumentException e) {
+                throw new IllegalArgumentException("Unknown recipe_category '" + recipeCat
+                        + "' — expected BUILDING/REDSTONE/EQUIPMENT/MISC");
+            }
+        }
 
         // Name and lore
         String nameStr = sec.getString("name");

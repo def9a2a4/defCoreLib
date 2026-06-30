@@ -310,6 +310,7 @@ public final class CustomHeadBlock {
     private final java.util.function.@Nullable BiFunction<Block, String, org.bukkit.inventory.ItemStack> displayItemResolver;
     private final @Nullable DisplayTransformResolver displayTransformResolver;
     private final @Nullable BannerTier bannerTier;
+    private final org.bukkit.inventory.recipe.@Nullable CraftingBookCategory recipeCategory;
 
     private CustomHeadBlock(Builder b) {
         this.namespace = b.namespace;
@@ -363,6 +364,7 @@ public final class CustomHeadBlock {
         this.displayItemResolver = b.displayItemResolver;
         this.displayTransformResolver = b.displayTransformResolver;
         this.bannerTier = b.bannerTier;
+        this.recipeCategory = b.recipeCategory;
 
         // Cache capability checks (avoid streaming states on every call)
         this._hasDisplayEntities = !displayEntities.isEmpty() || !blockDisplayEntities.isEmpty()
@@ -436,6 +438,7 @@ public final class CustomHeadBlock {
     public @Nullable DisplayTransformResolver displayTransformResolver() { return displayTransformResolver; }
     /** Required banner tier for banner-blade crafting ingredients, or {@code null} for no gating. */
     public @Nullable BannerTier bannerTier() { return bannerTier; }
+    public org.bukkit.inventory.recipe.@Nullable CraftingBookCategory recipeCategory() { return recipeCategory; }
 
     public boolean hasDisplayEntities() { return _hasDisplayEntities; }
     public boolean hasLight() { return _hasLight; }
@@ -662,6 +665,7 @@ public final class CustomHeadBlock {
         b.displayItemResolver = displayItemResolver;
         b.displayTransformResolver = displayTransformResolver;
         b.bannerTier = bannerTier;
+        b.recipeCategory = recipeCategory;
         return b;
     }
 
@@ -722,6 +726,7 @@ public final class CustomHeadBlock {
         private @Nullable BiFunction<Block, String, org.bukkit.inventory.ItemStack> displayItemResolver;
         private @Nullable DisplayTransformResolver displayTransformResolver;
         private @Nullable BannerTier bannerTier;
+        private org.bukkit.inventory.recipe.@Nullable CraftingBookCategory recipeCategory;
 
         private Builder(String namespace, String typeId) {
             this.namespace = Objects.requireNonNull(namespace);
@@ -854,6 +859,7 @@ public final class CustomHeadBlock {
             return this;
         }
         public Builder bannerTier(BannerTier tier) { this.bannerTier = tier; return this; }
+        public Builder recipeCategory(org.bukkit.inventory.recipe.CraftingBookCategory c) { this.recipeCategory = c; return this; }
 
         public CustomHeadBlock build() {
             if ((texture == null || texture.isBlank()) && itemMaterial == null) {
