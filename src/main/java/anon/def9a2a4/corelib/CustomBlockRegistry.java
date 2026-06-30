@@ -207,6 +207,12 @@ public class CustomBlockRegistry {
         return types.get(fullId);
     }
 
+    /** The custom item id (BLOCK_TYPE_KEY PDC) stamped on an ItemStack by createItem, or null. */
+    public static @Nullable String getItemTypeId(@Nullable ItemStack item) {
+        if (item == null || !item.hasItemMeta()) return null;
+        return item.getItemMeta().getPersistentDataContainer().get(BLOCK_TYPE_KEY, PersistentDataType.STRING);
+    }
+
     public @Nullable CustomHeadBlock getTypeFromBlock(Block block) {
         if (block.getType() != Material.PLAYER_HEAD && block.getType() != Material.PLAYER_WALL_HEAD) {
             return null;

@@ -2,8 +2,6 @@ package anon.def9a2a4.corelib;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.format.TextDecoration;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -14,9 +12,7 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.block.Container;
 import org.bukkit.block.Skull;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.persistence.PersistentDataType;
 
 import org.bukkit.entity.Player;
@@ -38,33 +34,10 @@ final class RotationBlocks {
 
     private RotationBlocks() {}
 
-    private static final NamespacedKey WRENCH_KEY = new NamespacedKey("rotation", "wrench");
-    private static final NamespacedKey WRENCH_RECIPE_KEY = new NamespacedKey("rotation", "wrench_recipe");
-
+    // The wrench is declared in custom-items.yml (rotation:wrench); identity is the registry
+    // block_type PDC, and its recipe auto-registers from YAML.
     static boolean isWrench(ItemStack item) {
-        if (item == null || item.getType() != Material.GOLDEN_AXE) return false;
-        return item.getItemMeta().getPersistentDataContainer().has(WRENCH_KEY);
-    }
-
-    static ItemStack createWrench() {
-        ItemStack wrench = new ItemStack(Material.GOLDEN_AXE);
-        var meta = wrench.getItemMeta();
-        meta.displayName(Component.text("Rotation Wrench", NamedTextColor.GOLD)
-                .decoration(TextDecoration.ITALIC, false));
-        meta.setUnbreakable(true);
-        meta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
-        meta.setEnchantmentGlintOverride(true);
-        meta.getPersistentDataContainer().set(WRENCH_KEY, PersistentDataType.BYTE, (byte) 1);
-        wrench.setItemMeta(meta);
-        return wrench;
-    }
-
-    static void registerWrenchRecipe() {
-        ShapedRecipe recipe = new ShapedRecipe(WRENCH_RECIPE_KEY, createWrench());
-        recipe.shape("CSC", "CS ", " S ");
-        recipe.setIngredient('C', Material.COPPER_INGOT);
-        recipe.setIngredient('S', Material.STICK);
-        Bukkit.addRecipe(recipe);
+        return "rotation:wrench".equals(CustomBlockRegistry.getItemTypeId(item));
     }
 
     static void register(CustomBlockRegistry registry, RotationNetwork network,

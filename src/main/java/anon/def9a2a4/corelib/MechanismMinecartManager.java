@@ -74,13 +74,12 @@ final class MechanismMinecartManager implements Listener {
     }
 
     void register() {
-        // Register the mechanism minecart item as a custom head block (item-only)
-        CustomHeadBlock mechanismMinecartBlock = CustomHeadBlock.builder("demo", "mechanism_minecart")
-            .name(net.kyori.adventure.text.Component.text("Mechanism Minecart"))
-            .texture("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYWNjNzg5ZjIzMDc5NGY5MGUzM2M0ZjlhZDAwNjk0YmMyYTJmZjVlOGI5YjM3NWRjMzUzMjQwMWIyODFmM2U1OCJ9fX0=")
-            .drops(CustomHeadBlock.DropRule.self())
-            .build();
-        registry.register(mechanismMinecartBlock);
+        // The item (item-only, placeable: false) is declared in demo-blocks.yml; its identity is the
+        // registry block_type PDC. All spawn/tick/assemble/destroy logic lives below — just verify it exists.
+        if (registry.getType("demo:mechanism_minecart") == null) {
+            plugin.getLogger().warning("MechanismMinecartManager: 'demo:mechanism_minecart' not found in "
+                + "registry (check demo-blocks.yml) — minecart item will not be obtainable");
+        }
 
         // Load allowed materials from config
         loadAllowedMaterials();

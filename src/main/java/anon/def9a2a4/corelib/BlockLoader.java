@@ -82,6 +82,7 @@ public final class BlockLoader {
         String itemTex = sec.getString("item_texture");
         if (itemTex != null) b.itemTexture(resolveTexture(itemTex, textures));
         if (sec.getBoolean("item_glint")) b.itemGlint(true);
+        if (sec.getBoolean("unbreakable")) b.unbreakable(true);
         if (!sec.getBoolean("placeable", true)) b.placeable(false);
 
         // Name and lore

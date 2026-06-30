@@ -252,6 +252,7 @@ public final class CustomHeadBlock {
     private final @Nullable String itemTexture; // optional: different texture for item in hand
     private final @Nullable Material itemMaterial;
     private final boolean itemGlint;
+    private final boolean unbreakable; // item form: unbreakable + hide the flag (e.g. wrench)
     private final boolean placeable; // false → inventory-only item (juices, oils, wrench)
     private final @Nullable Map<BlockFace, String> directionalTextures;
     private final @Nullable LightConfig light;
@@ -318,6 +319,7 @@ public final class CustomHeadBlock {
         this.itemTexture = b.itemTexture;
         this.itemMaterial = b.itemMaterial;
         this.itemGlint = b.itemGlint;
+        this.unbreakable = b.unbreakable;
         this.placeable = b.placeable;
         this.directionalTextures = b.directionalTextures;
         this.light = b.light;
@@ -382,6 +384,7 @@ public final class CustomHeadBlock {
     public @Nullable String itemTexture() { return itemTexture; }
     public @Nullable Material itemMaterial() { return itemMaterial; }
     public boolean itemGlint() { return itemGlint; }
+    public boolean unbreakable() { return unbreakable; }
     public boolean placeable() { return placeable; }
     public @Nullable Map<BlockFace, String> directionalTextures() { return directionalTextures; }
     public @Nullable LightConfig light() { return light; }
@@ -445,6 +448,10 @@ public final class CustomHeadBlock {
             meta.getPersistentDataContainer().set(
                     CustomBlockRegistry.BLOCK_TYPE_KEY, org.bukkit.persistence.PersistentDataType.STRING, fullId());
             if (itemGlint) meta.setEnchantmentGlintOverride(true);
+            if (unbreakable) {
+                meta.setUnbreakable(true);
+                meta.addItemFlags(org.bukkit.inventory.ItemFlag.HIDE_UNBREAKABLE);
+            }
             stack.setItemMeta(meta);
             return stack;
         }
@@ -591,6 +598,7 @@ public final class CustomHeadBlock {
         b.itemTexture = itemTexture;
         b.itemMaterial = itemMaterial;
         b.itemGlint = itemGlint;
+        b.unbreakable = unbreakable;
         b.placeable = placeable;
         b.directionalTextures = directionalTextures;
         b.light = light;
@@ -645,6 +653,7 @@ public final class CustomHeadBlock {
         private @Nullable String itemTexture;
         private @Nullable Material itemMaterial;
         private boolean itemGlint;
+        private boolean unbreakable;
         private boolean placeable = true;
         private @Nullable Map<BlockFace, String> directionalTextures;
         private @Nullable LightConfig light;
@@ -706,6 +715,7 @@ public final class CustomHeadBlock {
         public Builder itemTexture(String base64) { this.itemTexture = base64; return this; }
         public Builder itemMaterial(Material material) { this.itemMaterial = material; return this; }
         public Builder itemGlint(boolean glint) { this.itemGlint = glint; return this; }
+        public Builder unbreakable(boolean v) { this.unbreakable = v; return this; }
         public Builder placeable(boolean value) { this.placeable = value; return this; }
         public Builder directionalTextures(Map<BlockFace, String> textures) { this.directionalTextures = textures; return this; }
         public Builder light(int level, int offsetX, int offsetY, int offsetZ) { this.light = new LightConfig(level, offsetX, offsetY, offsetZ); return this; }

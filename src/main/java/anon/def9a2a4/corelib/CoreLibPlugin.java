@@ -36,7 +36,6 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
     private MechanismRegistry mechanismRegistry;
     private MechanismMinecartManager mechanismMinecartManager;
     private GlueManager glueManager;
-    private Material glueItemMaterial = Material.SLIME_BALL;
     private ShowcaseBuilder showcaseBuilder;
     private java.util.Map<String, ShowcaseSpec> showcases = java.util.Map.of();
     private RotationNetwork rotationNetwork;
@@ -84,6 +83,14 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
                 getLogger().info("Loaded " + count + " custom items");
             }
         } catch (IOException ignored) {}
+
+        // corelib-namespace inventory-only items (slime glue) — same model as custom-items.yml
+        try (InputStream corelibItemStream = getResource("corelib-items.yml")) {
+            if (corelibItemStream != null) {
+                int count = BlockLoader.load(corelibItemStream, registry, getLogger());
+                getLogger().info("Loaded " + count + " corelib items");
+            }
+        } catch (IOException ignored) {}
         RotationConfig rotConfig = new RotationConfig();
         try (InputStream configStream = getResource("rotation-config.yml")) {
             if (configStream != null) {
@@ -109,16 +116,10 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
             }
         } catch (IOException ignored) {}
         RotationBlocks.register(registry, rotationNetwork, fuelManager, grindRecipes, pressRecipes, rotConfig);
-        RotationBlocks.registerWrenchRecipe();
 
         // Anchor-owned block selection ("glue") — shared by doors/rotators (wired in D3).
+        // The glue item itself is declared in corelib-items.yml (corelib:glue_item).
         glueManager = new GlueManager(rotConfig.glueMaxSize);
-        glueItemMaterial = Material.matchMaterial(rotConfig.glueItem);
-        if (glueItemMaterial == null) {
-            getLogger().warning("rotation-config glue.item invalid: " + rotConfig.glueItem
-                + "; using SLIME_BALL");
-            glueItemMaterial = Material.SLIME_BALL;
-        }
         GlueAuthoring glueAuthoring = new GlueAuthoring(this, registry, glueManager,
             rotConfig.glueOutlineInterval, rotConfig.glueSessionTimeout);
         getServer().getPluginManager().registerEvents(glueAuthoring, this);
@@ -1202,16 +1203,9 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
                     }
                 }
 
-                // Glue is not a CustomHeadBlock — hand out the tagged authoring item directly.
+                // Friendly alias: `give glue` → the registry item corelib:glue_item.
                 if (blockId.equalsIgnoreCase("glue") || blockId.equalsIgnoreCase("corelib:glue")) {
-                    ItemStack glueItem = GlueItem.create(glueItemMaterial);
-                    glueItem.setAmount(amount);
-                    var glueOverflow = player.getInventory().addItem(glueItem);
-                    for (ItemStack lf : glueOverflow.values()) {
-                        player.getWorld().dropItemNaturally(player.getLocation(), lf);
-                    }
-                    sender.sendMessage(Component.text("Gave " + amount + "x Slime Glue", NamedTextColor.GREEN));
-                    return true;
+                    blockId = "corelib:glue_item";
                 }
 
                 // Try with namespace prefix, fall back to searching all namespaces
@@ -1268,12 +1262,8 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
                         count++;
                     }
                 }
-                var wrenchOverflow = player.getInventory().addItem(RotationBlocks.createWrench());
-                for (ItemStack lf : wrenchOverflow.values()) {
-                    player.getWorld().dropItemNaturally(player.getLocation(), lf);
-                }
-                count++;
-                sender.sendMessage(Component.text("Gave " + count + " rotation blocks + wrench", NamedTextColor.GREEN));
+                // The wrench is now a rotation-namespace YAML item, so it's included above.
+                sender.sendMessage(Component.text("Gave " + count + " rotation items (incl. wrench)", NamedTextColor.GREEN));
             }
             case "colliders" -> {
                 boolean enabled = !mechanismRegistry.isColliderGlowEnabled();

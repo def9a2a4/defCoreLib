@@ -34,30 +34,21 @@ final class DoorDemo {
     }
 
     void register() {
-        registry.register(buildDoorController());
-    }
-
-    private CustomHeadBlock buildDoorController() {
-        return CustomHeadBlock.builder("demo", "door_controller")
-            .name(net.kyori.adventure.text.Component.text("Door Controller"))
-            .texture("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYWNjNzg5ZjIzMDc5NGY5MGUzM2M0ZjlhZDAwNjk0YmMyYTJmZjVlOGI5YjM3NWRjMzUzMjQwMWIyODFmM2U1OCJ9fX0=")
-            .drops(CustomHeadBlock.DropRule.self())
-            .state("closed")
-            .state("open")
-            .defaultState("closed")
-            .redstone(CustomHeadBlock.Sensitivity.BINARY, CustomHeadBlock.PowerReader.EXTENDED)
-            .transition(
-                new CustomHeadBlock.Trigger.RedstonePower(CustomHeadBlock.PowerRange.POWERED),
-                "closed", "open")
-            .transition(
-                new CustomHeadBlock.Trigger.RedstonePower(CustomHeadBlock.PowerRange.ZERO),
-                "open", "closed")
+        // Visuals/states/redstone/transitions are declared in demo-blocks.yml; overlay the
+        // door behavior here, mirroring RotationBlocks.overlayStandard.
+        CustomHeadBlock base = registry.getType("demo:door_controller");
+        if (base == null) {
+            plugin.getLogger().warning("DoorDemo: block 'demo:door_controller' not found in registry "
+                + "(check demo-blocks.yml) — door behavior not installed");
+            return;
+        }
+        registry.register(base.toBuilder()
             .onStateChanged((block, oldState, newState) -> {
                 if ("open".equals(newState)) openDoor(block);
                 else if ("closed".equals(newState)) closeDoor(block);
             })
             .onBlockRemoved((block, state) -> cleanupDoor(block))
-            .build();
+            .build());
     }
 
     // ──────────────────────────────────────────────────────────────────────
