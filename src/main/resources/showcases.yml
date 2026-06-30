@@ -1,31 +1,77 @@
 # Demo "showcases": multi-block machines that demonstrate plugin functionality.
-# Phase 1 places these as real, network-joined blocks. `at` is [dx,dy,dz] relative to the build
-# origin; `facing` is the placement face (down = floor; north/south/east/west = wall). `state` is
-# optional (defaults to the block's placement_state_map entry for that face).
+# Placed as real, network-joined blocks. `at` is [dx,dy,dz] from the build origin; `facing` is the
+# placement face (down = floor → Y axis; north/south → Z axis; east/west → X axis). Rotation blocks
+# connect to same-axis cardinal neighbours, so a straight same-facing line transmits power with no gears.
+# `state` is optional (defaults to the placement_state_map entry for that face).
+#
+# `activate`: passive | { fuel: [x,y,z] } (feed the engine) | { pulse: [x,y,z] } (redstone the source).
+# `expect`:  behavioural assertions for the Phase-2 runner (network_powered / spinning / mechanism_swung).
 showcases:
-  - id: windmill_tower
-    name: "Windmill Tower"
-    blurb: "A windmill turns in the wind and drives a vertical shaft."
+  # ── Engine-powered (fuel source) ───────────────────────────────────────
+  - id: engine_fan
+    name: "Engine → Fan"
+    blurb: "A fuel-burning engine spins a shaft up into a fan that blows a gust of air."
     blocks:
-      - { id: "rotation:windmill", facing: down, at: [0, 3, 0] }
-      - { id: "rotation:shaft",    facing: down, at: [0, 2, 0] }
-      - { id: "rotation:shaft",    facing: down, at: [0, 1, 0] }
-      - { id: "rotation:gear",     facing: down, at: [0, 0, 0] }
-    activate: passive              # windmill self-powers on network recalc
+      - { id: "rotation:engine", facing: down, at: [0, 0, 0] }
+      - { id: "rotation:shaft",  facing: down, at: [0, 1, 0] }
+      - { id: "rotation:fan",    facing: down, at: [0, 2, 0] }
+    activate: { fuel: [0, 0, 0] }
     expect:
-      - { type: network_powered, at: [0, 2, 0] }   # shaft on the powered network
-      - { type: spinning, at: [0, 2, 0] }          # shaft spins
-      - { type: spinning, at: [0, 0, 0] }          # gear spins
+      - { type: network_powered, at: [0, 1, 0] }
+      - { type: spinning, at: [0, 2, 0] }
 
-  - id: generator_shaft
-    name: "Generator + Shaft"
-    blurb: "A spinning generator feeds rotational power down a shaft into a gear."
+  - id: engine_grindstone
+    name: "Engine → Grindstone"
+    blurb: "A fuel-burning engine drives a shaft into a grindstone that mills items to dust."
     blocks:
-      - { id: "rotation:generator", facing: down, at: [0, 2, 0] }
-      - { id: "rotation:shaft",     facing: down, at: [0, 1, 0] }
-      - { id: "rotation:gear",      facing: down, at: [0, 0, 0] }
-    activate: passive              # generator spins by default
+      - { id: "rotation:engine",     facing: north, at: [0, 0, 2] }
+      - { id: "rotation:shaft",      facing: north, at: [0, 0, 1] }
+      - { id: "rotation:grindstone", facing: north, at: [0, 0, 0] }
+    activate: { fuel: [0, 0, 2] }
     expect:
-      - { type: network_powered, at: [0, 1, 0] }   # shaft on the powered network
-      - { type: spinning, at: [0, 1, 0] }          # shaft spins
-      - { type: spinning, at: [0, 0, 0] }          # gear spins
+      - { type: network_powered, at: [0, 0, 1] }
+      - { type: spinning, at: [0, 0, 0] }
+
+  # ── Generator-powered (redstone source) ────────────────────────────────
+  - id: generator_drill
+    name: "Generator → Drill"
+    blurb: "A redstone generator powers a drill that bores through solid stone."
+    blocks:
+      - { id: "rotation:generator", facing: north, at: [0, 0, 2] }
+      - { id: "rotation:shaft",     facing: north, at: [0, 0, 1] }
+      - { id: "rotation:drill",     facing: north, at: [0, 0, 0] }
+    vanilla:
+      - { block: "STONE", at: [0, 0, -1] }   # target the drill bores into
+    activate: { pulse: [1, 0, 2] }
+    expect:
+      - { type: network_powered, at: [0, 0, 1] }
+      - { type: spinning, at: [0, 0, 0] }
+
+  - id: generator_reverser_fan
+    name: "Generator → Reverser → Fan"
+    blurb: "A redstone generator feeds a reverser that flips the spin direction before a fan."
+    blocks:
+      - { id: "rotation:generator", facing: down, at: [0, 0, 0] }
+      - { id: "rotation:reverser",  facing: down, at: [0, 1, 0] }
+      - { id: "rotation:shaft",     facing: down, at: [0, 2, 0] }
+      - { id: "rotation:fan",       facing: down, at: [0, 3, 0] }
+    activate: { pulse: [1, 0, 0] }
+    expect:
+      - { type: network_powered, at: [0, 2, 0] }
+      - { type: spinning, at: [0, 3, 0] }
+
+  - id: generator_drawbridge
+    name: "Generator → Drawbridge"
+    blurb: "A redstone generator powers a rotator hinge that swings a plank drawbridge open and shut."
+    blocks:
+      - { id: "rotation:generator", facing: north, at: [0, 0, 1] }
+      - { id: "rotation:rotator",   facing: north, at: [0, 0, 0] }
+    vanilla:
+      - { block: "OAK_PLANKS", at: [0, 1, 0] }   # the drawbridge leaf (flood-filled by the hinge)
+      - { block: "OAK_PLANKS", at: [1, 1, 0] }
+      - { block: "OAK_PLANKS", at: [0, 2, 0] }
+      - { block: "OAK_PLANKS", at: [1, 2, 0] }
+      - { block: "LEVER", at: [0, 0, 2] }        # redstone pulse triggers the swing
+    activate: { pulse: [0, 0, 2] }
+    expect:
+      - { type: mechanism_swung, at: [0, 0, 0] }

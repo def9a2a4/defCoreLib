@@ -267,7 +267,7 @@ a.slot { text-decoration: none; color: inherit; }
   border-radius: 10px;
   padding: 10px;
 }
-.viewer-label { color: #4ecca3; font-size: 0.72em; text-transform: uppercase; margin-bottom: 6px; }
+.viewer-label { color: #4ecca3; font-size: 0.72em; text-transform: uppercase; margin-bottom: 6px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
 .variant-select {
   font-family: 'Monocraft', monospace;
   font-size: 0.85em;

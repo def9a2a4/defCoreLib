@@ -119,41 +119,101 @@ function inHandViewer(item) {
   return null;
 }
 
-// "In hand" viewer + a "Placed" viewer with a variant selector (Floor / Wall N·E·S·W).
+// Placed variants split into a placement axis (Floor / Wall N·E·S·W) and a spin axis (Stopped/CW/CCW),
+// parsed from the variant id (e.g. 'wall_west_cw' -> {placement:'wall_west', spin:'cw'}).
+const SPINS = ['stopped', 'cw', 'ccw'];                          // also the display order
+const PLACES = ['floor', 'wall_north', 'wall_east', 'wall_south', 'wall_west'];
+
+function splitVariantId(id) {
+  for (const s of SPINS) {
+    if (id === s) return { placement: '', spin: s };
+    if (id.endsWith('_' + s)) return { placement: id.slice(0, -(s.length + 1)), spin: s };
+  }
+  return { placement: id, spin: '' };                           // no spin suffix (placement-only)
+}
+
+const cap = (s) => (s ? s[0].toUpperCase() + s.slice(1) : s);
+const placeLabel = (p) => (p === 'floor' ? 'Floor' : p.startsWith('wall_') ? `Wall ${cap(p.slice(5))}` : (p || 'Default'));
+const spinLabel = (s) => ({ stopped: 'Stopped', cw: 'CW', ccw: 'CCW' }[s] || s);
+
+const order = (arr, ref) => arr.slice().sort((a, b) => {
+  const ia = ref.indexOf(a), ib = ref.indexOf(b);
+  return (ia < 0 ? ref.length : ia) - (ib < 0 ? ref.length : ib);
+});
+
+function buildPlacedModel(variants) {
+  const places = new Set(), spins = new Set();
+  const index = new Map();
+  variants.forEach((v, i) => {
+    const { placement, spin } = splitVariantId(String(v.id || ''));
+    places.add(placement); spins.add(spin);
+    index.set(`${placement}|${spin}`, i);
+  });
+  const placements = order([...places], PLACES);
+  const sp = order([...spins], SPINS);
+  return { placements, spins: sp, index, isRotation: sp.includes('cw'), hasSpin: sp.some((s) => s !== '') };
+}
+
+// Resolve a (placement, spin) pair to a variant index, falling back to the same placement with any
+// available spin, then to variant 0.
+function pickIndex(m, placement, spin) {
+  if (m.index.has(`${placement}|${spin}`)) return m.index.get(`${placement}|${spin}`);
+  for (const s of m.spins) if (m.index.has(`${placement}|${s}`)) return m.index.get(`${placement}|${s}`);
+  return 0;
+}
+
+// "In hand" viewer + one or two "Placed" viewers (floor + wall) with placement/spin dropdowns.
 function mountViewers(item) {
   const host = document.getElementById('viewers');
   const inHand = inHandViewer(item);
   if (inHand) addViewer(host, 'In hand', inHand);
 
   const variants = item.placedVariants || [];
-  if (variants.length) mountPlacedViewer(host, item, variants);
+  if (!variants.length) return;
+
+  const m = buildPlacedModel(variants);
+  const defSpin = m.isRotation ? 'cw' : m.spins[0];             // rotation components spin by default
+  const walls = m.placements.filter((p) => p.startsWith('wall'));
+  if (m.placements.includes('floor') && walls.length) {
+    const wall = walls.includes('wall_west') ? 'wall_west' : walls[0];
+    mountPlacedBox(host, item, m, 'floor', defSpin);
+    mountPlacedBox(host, item, m, wall, defSpin);
+  } else {
+    mountPlacedBox(host, item, m, m.placements[0], defSpin);
+  }
 }
 
-function mountPlacedViewer(host, item, variants) {
+function mountPlacedBox(host, item, m, place0, spin0) {
+  const sel = (cls, opts, val) =>
+    `<select class="variant-select ${cls}">${opts
+      .map(([v, lab]) => `<option value="${esc(v)}"${v === val ? ' selected' : ''}>${esc(lab)}</option>`)
+      .join('')}</select>`;
+  const placeSel = m.placements.length > 1
+    ? sel('place-select', m.placements.map((p) => [p, placeLabel(p)]), place0) : '';
+  const spinSel = m.hasSpin
+    ? sel('spin-select', m.spins.map((s) => [s, spinLabel(s)]), spin0) : '';
+
   const panel = document.createElement('div');
   panel.className = 'viewer';
-  const selector = variants.length > 1
-    ? `<select class="variant-select">${variants
-        .map((v, i) => `<option value="${i}">${esc(v.label || v.id)}</option>`).join('')}</select>`
-    : '';
-  panel.innerHTML = `<div class="viewer-label">Placed ${selector}</div><div class="viewer-canvas"></div>`;
+  panel.innerHTML = `<div class="viewer-label">Placed ${placeSel}${spinSel}</div><div class="viewer-canvas"></div>`;
   host.appendChild(panel);
 
   const canvas = panel.querySelector('.viewer-canvas');
+  const placeEl = panel.querySelector('.place-select');
+  const spinEl = panel.querySelector('.spin-select');
   let teardown = null;
-  const show = (idx) => {
+  const show = () => {
+    const placement = placeEl ? placeEl.value : place0;
+    const spin = spinEl ? spinEl.value : spin0;
     if (teardown) { viewerTeardowns.delete(teardown); teardown(); teardown = null; }
     canvas.innerHTML = '';
-    Promise.resolve(renderPlaced(item, canvas, idx))
+    Promise.resolve(renderPlaced(item, canvas, pickIndex(m, placement, spin)))
       .then((t) => { teardown = t; if (t) viewerTeardowns.add(t); })
       .catch((e) => { console.warn(e); canvas.innerHTML = '<div class="viewer-fail">3D unavailable</div>'; });
   };
-  const select = panel.querySelector('.variant-select');
-  if (select) select.addEventListener('change', () => show(+select.value));
-  // Default to the floor orientation (the canonical, known-good view) when present, else variant 0.
-  const floorIdx = Math.max(0, variants.findIndex((v) => String(v.id || '').startsWith('floor')));
-  if (select) select.value = String(floorIdx);
-  show(floorIdx);
+  if (placeEl) placeEl.addEventListener('change', show);
+  if (spinEl) spinEl.addEventListener('change', show);
+  show();
 }
 
 async function init() {
