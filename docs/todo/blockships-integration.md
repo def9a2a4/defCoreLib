@@ -2,51 +2,120 @@
 
 ## Context
 
-DefCoreLib's mechanism system (Mechanism, BasicMechanism, MechanismRegistry) already implements the core patterns BlockShips uses: passenger entity chains (vehicle → parent BlockDisplay → child displays), shulker collision proxies on marker ArmorStands, JOML Matrix4f transforms with delta-yaw rotation, and three-tier disassembly. The hard math works.
+### The three goals
 
-However, the mechanism system was built around CustomHeadBlock as its only block type. BlockShips uses vanilla blocks, custom textures via skull profiles, per-ship persistence, incremental entity recovery across chunk loads, health/damage, multi-seat support, and buoyancy physics. Migrating BlockShips to use DefCoreLib as its core means DefCoreLib must support all of these without requiring CustomHeadBlock.
+1. **One copy of the heavy path.** There should be a single engine for "convert a set of blocks → display
+   entities + colliders, then move/rotate them," shared by rotators, minecarts, AND BlockShips. Today
+   BlockShips duplicates this (~1,400+ lines of `ShipInstance`/`DisplayShip`/persistence). The end state:
+   BlockShips **delegates** to DefCoreLib's `Mechanism` engine and holds **zero** copies of spawn/transform/
+   recovery.
+2. **DefCoreLib custom blocks (and their display entities) work on ships.** Custom head blocks (gears,
+   windmills) with animated display entities work on doors/rotators today; they must keep working when built
+   into a ship — rendered by the *same* engine, not re-implemented.
+3. **Persistence for DefCoreLib mechanisms** (doors, minecarts, rotators) — for DefCoreLib's own sake
+   (survive `/stop`+restart and chunk reload), independent of BlockShips.
 
-This plan has four phases, each shippable independently. After Phase 4, BlockShips can replace its internal entity management (ShipInstance display/collider spawning, transform math, entity tagging) with DefCoreLib's Mechanism API.
+### Where things actually stand
+
+DefCoreLib's mechanism system (`Mechanism`, `BasicMechanism`, `MechanismRegistry`) already implements the
+core patterns: passenger entity chains (vehicle → parent BlockDisplay → child displays), shulker collision
+proxies on marker ArmorStands, JOML `Matrix4f` transforms, and three-tier disassembly. It **already moves
+vanilla blocks** — the oak-plank door is the proof; `CustomHeadBlock` handling is an optional
+`if (customTypeId != null)` branch, not a requirement. So the task is **not** "make vanilla work."
+
+The two engines are **complementary** (same author): DefCoreLib leads on multi-axis rotation, custom-block
+state machines, and the rotation-power network; BlockShips leads on persistence, incremental chunk recovery,
+health/damage, and seats. Integration is currently **unstarted** (no dependency either direction). So most of
+Phases 2–3 is *porting BlockShips' proven systems into the Mechanism core* (it's construction, not just
+"decoupling"); the BlockShips line-count reduction is the *final* payoff.
+
+Two cross-cutting facts the phases must respect:
+- **Composition, not replacement (goal #2):** the engine keeps its `CustomBlockRegistry` rendering path and
+  *adds* a consumer provider; they compose **per block** (registry-first; provider as fallback). See Phase 1.
+- **Yaw-model mismatch (Phase-4 risk):** BlockShips *freezes* the vehicle yaw and rotates displays by a
+  delta-from-spawn (hence its ProtocolLib teleport-packet sync); DefCoreLib reads the **live** vehicle yaw
+  (`BasicMechanism.updateFromVehicle`). These must be reconciled before BlockShips delegates movement.
+
+This plan has four phases, each shippable independently. After Phase 4, BlockShips replaces its internal
+entity management (`ShipInstance` display/collider spawning, transform math, entity tagging, recovery) with
+DefCoreLib's Mechanism API.
 
 ---
 
-## Phase 1: Decouple from CustomHeadBlock
+## Phase 1: Composable per-block provider
 
-**Goal:** MechanismRegistry and BasicMechanism work with arbitrary block types, not just custom head blocks.
+**Goal:** Let an external consumer (BlockShips) supply its own per-block snapshot / render / restore / drop
+behavior **without** removing DefCoreLib's existing CustomHeadBlock path. The engine renders each block
+**registry-first** (a gear/windmill on a ship still renders + animates via the registry), falling back to
+the consumer provider only for blocks the registry doesn't claim. This is what makes goal #2 work: ship
+blocks and DefCoreLib custom blocks coexist in **one** mechanism.
 
-### Problem
+> This is a refinement of the old "decouple from CustomHeadBlock" framing. Vanilla blocks already work; the
+> point is *additive composition*, not replacing the registry.
 
-Assembly and disassembly are tightly coupled to CustomBlockRegistry/CustomHeadBlock:
+### Where the registry/CustomHeadBlock coupling lives (current line numbers)
 
-**MechanismRegistry.assembleCore():**
-- Line 105: `registry.getTypeFromBlock(block)` — detect custom block
-- Lines 107-118: `chb.fullId()`, `resolveDisplayEntities()`, `resolveParticles()`, `chb.storage()`, `registry.loadInventoryFromPDC()` — snapshot custom state
-- Line 119: `registry.onBlockRemoved(block, chb)` — cleanup
-- Lines 164-170: `registry.getType()`, `chb.resolveTexture()` — spawn primary display
+**`MechanismRegistry.assembleCore()`:**
+- `registry.getTypeFromBlock(block)` — detect custom block (~135)
+- custom-state capture: `chb.fullId()` (137), `registry.getState` (138), `resolveDisplayEntities` (139),
+  `resolveParticles` (140), `isSpinReversed` (142), wall-facing (143–147), `chb.storage()`/`loadInventoryFromPDC` (148–155)
+- `registry.onBlockRemoved(block, chb)` — rotation-network cleanup, AFTER all blocks are captured (~174–175)
+- primary display: `registry.getType()` (209) + `chb.resolveTexture()` (211)
 
-**BasicMechanism.setBlockState():**
-- Lines 171-185: `registry.getType()`, `type.resolveTexture()`, `type.resolveParticles()`, `type.resolveDisplayEntities()`
+**`BasicMechanism.setBlockState()`** (~199–213): `registry.getType()`, `resolveTexture`, `resolveParticles`, `resolveDisplayEntities`.
 
-**BasicMechanism.placeBlock() (disassembly):**
-- Lines 241-252: `registry.getType()`, `registry.markBlock()`, `registry.readPower()`, `registry.applyConfig()`, `registry.restoreBlock()`
+**`BasicMechanism.placeBlock()` (disassembly)** (~294–303): `registry.getType()` (294), `markBlock` (300), `readPower` (301), `applyConfig` (302), `restoreBlock` (303).
 
-**BasicMechanism.dropBlockAsItem():**
-- Line 258: `registry.getType()`, `type.createItem()`
+**`BasicMechanism.dropBlockAsItem()`** (~314–315): `registry.getType()`, `type.createItem()`.
 
-### Solution: Extract `BlockSnapshotProvider` interface
+### What "custom blocks work on ships" actually means (honest scope)
+
+Verified against the engine: when a DefCoreLib custom block is assembled into a mechanism, its **visual /
+animated** layer works fully, but its **live behavior is frozen** for the duration of the ride.
+
+- **Works:** display entities with a baked `animation:` (windmill blades, gears, shafts, water-wheel paddles)
+  keep spinning on a moving ship from the captured `DisplayAnimation` alone (`updateAnimatedDisplays` ~391–421);
+  captured spin direction (CW/CCW via `spinReversed`), texture, wall offset, colliders, and
+  restore-on-disassembly with the correct state all work.
+- **Frozen while assembled (inherent):** live rotation-network spin recompute, redstone-driven state
+  (clutch/reverser), engine fuel, grindstone/press/drill processing, particle emission (`// TODO` ~379), and
+  interaction. Assembly removes the block from the world and tears down its network node
+  (`onBlockRemoved`→`removeNode`); nothing re-evaluates custom state during the ride.
+
+So **purely-visual blocks just work; network/redstone-driven machines ride frozen** in their captured state.
+That's acceptable (a ship is a rigid body, not a running rotation network); making machines live mid-ride is
+out of scope (it would require per-tick state re-evaluation). **Acceptance criterion:** a ship mixing vanilla
+blocks + a gear + a windmill renders all three correctly and the gear/windmill animate while the ship moves,
+with no special-casing in BlockShips.
+
+### Solution: a `BlockSnapshotProvider` that composes with the registry (registry-first)
+
+The engine keeps its `CustomBlockRegistry` branch and **adds** an optional consumer provider. Per block, in
+the one assembly loop:
+
+1. Try the registry (`getTypeFromBlock`). If it claims the block → DefCoreLib custom block renders /
+   animates / restores / drops via the existing path, **unchanged** (this is why a gear/windmill works on a
+   ship).
+2. Otherwise fall back to the consumer `BlockSnapshotProvider` (ship skull/banner ItemDisplays, opaque
+   per-block data, vanilla restore, the wheel's custom drop).
+
+The provider is an **additive per-block fallback — never a replacement** for the registry.
 
 ```java
 public interface BlockSnapshotProvider {
-    /** Snapshot a world block for mechanism assembly. Returns null to use default vanilla snapshot. */
+    /** Snapshot a world block for mechanism assembly. Called only for blocks the registry does NOT claim. */
     @Nullable BlockSnapshot snapshot(Block block);
+
+    /** Post-snapshot cleanup for this provider's blocks (mirrors registry.onBlockRemoved; no-op for vanilla/ships). */
+    void onCaptured(Block block);
 
     /** Restore a block to the world during disassembly. */
     void restore(Block target, BlockSnapshot snapshot, float snappedYaw);
 
-    /** Create an item drop for a block that can't be placed (solid block collision). */
+    /** Create an item drop for a block that can't be placed (e.g. ship wheel for the vehicle block). */
     ItemStack createDrop(BlockSnapshot snapshot);
 
-    /** Spawn the primary display entity for this block. Returns null to use default BlockDisplay. */
+    /** Spawn the primary display entity for this block (skull/banner ItemDisplay, or null → vanilla BlockDisplay). */
     @Nullable Display spawnPrimaryDisplay(Location loc, BlockSnapshot snapshot,
                                           UUID mechId, int blockIdx);
 
@@ -55,56 +124,76 @@ public interface BlockSnapshotProvider {
 }
 ```
 
-`BlockSnapshot` extends `MechanismBlockData` or replaces it — carries everything needed for both rendering and restoration, without referencing CustomHeadBlock.
+`BlockSnapshot` = the existing `MechanismBlockData` plus an `Object providerData` opaque field — no new
+class, no `CustomHeadBlock` reference in the carried data.
 
-**Default implementation:** `CustomBlockSnapshotProvider` wraps the existing CustomBlockRegistry calls. This is what DoorDemo and MinecartShipManager continue to use.
+**The registry path stays as the built-in (default) branch** — DoorDemo and MechanismMinecartManager are
+unaffected. The provider is only consulted for non-registry blocks.
 
-**BlockShips implementation:** `ShipBlockSnapshotProvider` uses vanilla BlockData for displays, no PDC, no custom state. Restoration places vanilla blocks. Drop creates vanilla items (or ship wheel for the vehicle block).
+**BlockShips implementation:** `ShipBlockSnapshotProvider` handles the ship's **non-registry** blocks. Note
+those are NOT "vanilla, no custom state" — BlockShips renders **skull** (PLAYER_HEAD ItemDisplay +
+`skull_profile`) and **banner** (ItemDisplay + patterns) blocks and stores rich opaque per-block state (a
+`rawYaml` map: `skull_profile`, `banner_patterns`, `sign_data`, `container_items`, `is_engine`,
+`display_yaw`). Only the **wheel block** drops a custom item; other blocks drop/restore vanilla. Any
+DefCoreLib custom head built into a ship is resolved **registry-first** and renders/animates normally — the
+ship provider never sees it.
 
 ### Changes
 
 | File | Change |
 |------|--------|
-| `MechanismRegistry.java` | Add `BlockSnapshotProvider` parameter to `assembleMechanism()` overloads. Default to `CustomBlockSnapshotProvider` (backward compat). Replace all `registry.getType*()` calls in `assembleCore()` with provider calls. |
-| `BasicMechanism.java` | Store `BlockSnapshotProvider` instead of `CustomBlockRegistry`. Replace `registry.*` calls in `placeBlock()`, `dropBlockAsItem()`, `setBlockState()` with provider calls. |
-| `MechanismBlockData.java` | Add optional `Object providerData` field — provider-specific opaque state (CustomHeadBlock stores customTypeId/customState; BlockShips stores model part index). |
+| `MechanismRegistry.java` | Add an optional `BlockSnapshotProvider` parameter to `assembleMechanism()` overloads. In `assembleCore()`, keep the registry branch; **delegate to the provider only for blocks the registry doesn't claim** (registry-first composition). |
+| `BasicMechanism.java` | Hold the registry **AND** the optional provider. In `placeBlock()`/`dropBlockAsItem()`/`setBlockState()`, registry-claimed blocks use the registry path; others use the provider. |
+| `MechanismBlockData.java` | Add optional `Object providerData` field — provider-specific opaque state (BlockShips stores its `rawYaml`/model-part data; registry-claimed blocks keep using the typed custom fields). |
 | `Mechanism.java` | No change. Consumer-facing interface stays clean. |
-| `DoorDemo.java` | No change (uses default provider). |
-| `MinecartShipManager.java` | No change (uses default provider). |
+| `DoorDemo.java` | No change (no provider → registry path only). |
+| `MechanismMinecartManager.java` | No change (no provider → registry path only). |
 
 ### Backward compatibility
 
-Existing two-arg `assembleMechanism()` overloads keep working — they internally use `CustomBlockSnapshotProvider`. New overloads add `BlockSnapshotProvider` parameter.
+Existing `assembleMechanism()` overloads keep working with **no** provider — every block goes through the
+registry/vanilla path exactly as today. New overloads add an optional `BlockSnapshotProvider` that only
+handles blocks the registry doesn't claim.
 
 ---
 
 ## Phase 2: Persistence & Entity Recovery
 
-**Goal:** Mechanisms survive server restarts and chunk unload/reload cycles.
+**Goal:** Mechanisms survive server restarts and chunk unload/reload cycles. **This is goal #3 — a
+DefCoreLib feature in its own right** (a door/minecart/rotator must survive `/stop`+restart), not a BlockShips
+favor. BlockShips is the reference implementation we borrow from.
 
-### Current state
+### Current state (a DefCoreLib defect to close)
 
-- `MechanismSerializer` interface exists but is never called for save/restore
+- `MechanismSerializer` interface exists but is **never called** for save/restore
 - Both demo consumers pass `null` serializer
 - `cleanupOrphanedEntities()` removes stale entities — but never tries to recover them
-- Entities are `setPersistent(true)` and tagged, so they survive restarts as orphans
+- Entities are `setPersistent(true)` and tagged, so today they survive restarts as **orphans** (a door
+  reassembled before restart comes back as dead entities + lost state)
 
 ### BlockShips' proven pattern (to adopt)
 
-BlockShips uses per-world YAML with a chunk index:
+BlockShips actually has **two** persistence paths; adopt the modern per-world one:
+- `ShipPersistence` → a flat `ships.yml` (legacy whole-world save/load + startup orphan cleanup).
+- `ShipWorldData` → the per-world, chunk-indexed path we model on:
 ```
 worlds/
   world_name/
     chunks.yml          # "x,z" → [uuid1, uuid2, ...]
-    mechanisms/
-      {uuid}.yml        # Position, yaw, type, block list, consumer data
+    ships/              # (DefCoreLib: mechanisms/) one file per mechanism
+      {uuid}.yml        # type, yaw, entity count, block list, consumer data
 ```
 
 Key design decisions from BlockShips:
-1. **Snapshot on main thread, write async** — single-threaded `ExecutorService` serializes I/O
+1. **Snapshot on main thread, write async** — single-threaded daemon `ExecutorService` serializes I/O
 2. **Entity recovery is incremental** — entities may arrive across multiple chunk loads
 3. **Expected entity count** stored in metadata — recovery is "complete" when count matches
 4. **Chunk index** enables O(1) lookup: "which mechanisms overlap this chunk?"
+5. **Position is re-derived from the recovered vehicle entity**, not stored in the per-ship YAML — BlockShips'
+   ships always own a persistent ArmorStand vehicle. ⚠️ **DefCoreLib must NOT blindly copy this:** a door
+   anchors on a *world block* (no persistent entity) and a minecart can despawn, so the generic schema
+   **keeps** position (see `MechanismState` below). Re-derive-from-vehicle is an *optional optimization* for
+   mechanism types that have a guaranteed persistent anchor entity.
 
 ### Implementation
 
@@ -140,10 +229,12 @@ record MechanismState(
     UUID id,
     String type,
     String worldName,
-    double x, double y, double z,
-    float yaw,
-    float assemblyYaw,
-    float rideOffset,
+    double x, double y, double z,   // KEEP: required for vehicle-less mechanisms (doors anchor on a world
+                                    // block). Mechanisms with a persistent anchor entity MAY re-derive it
+                                    // from the entity on recovery instead (the BlockShips optimization).
+    float yaw,                      // dynamic yaw at save time (cf. BlockShips `current_yaw`)
+    float assemblyYaw,              // NB: which yaw value(s) to persist depends on the live-vs-frozen yaw
+    float rideOffset,               //     model reconciliation (Phase 4) — revisit when that lands.
     boolean ownsVehicle,
     List<BlockSnapshot> blocks,     // Serialized block data
     int expectedEntityCount,        // For recovery validation
@@ -182,30 +273,36 @@ consumer:
 
 #### D. Entity recovery flow
 
-Adopt BlockShips' incremental recovery pattern:
+Adopt BlockShips' incremental recovery pattern (entities may arrive across several chunk loads):
 
 1. **On chunk load** (`EntitiesLoadEvent`):
    - Query chunk index for mechanisms in this chunk
    - For each mechanism not already active:
      - Load metadata async
-     - On completion (main thread): create `RecoveringMechanism` holder
+     - On completion (main thread): begin tracking recovery (holder OR in-instance — see below)
      - Scan chunk entities for matching tags
      - Track found vs expected entity count
 
-2. **`RecoveringMechanism`** tracks partial state:
-   ```java
-   class RecoveringMechanism {
-       final MechanismState state;
-       Entity vehicle;
-       BlockDisplay parent;
-       final Map<Integer, List<Display>> displays = new HashMap<>();
-       final Map<Integer, ColliderPair> colliders = new HashMap<>();
-       int foundCount = 0;
-       int expectedCount;
-
-       boolean isComplete() { return foundCount >= expectedCount; }
-   }
-   ```
+2. **Tracking partial recovery — two valid shapes** (BlockShips uses the second):
+   - **Holder class `RecoveringMechanism`** (cleaner encapsulation; good for deferred assembly):
+     ```java
+     class RecoveringMechanism {
+         final MechanismState state;
+         Entity vehicle;
+         BlockDisplay parent;
+         final Map<Integer, List<Display>> displays = new HashMap<>();
+         final Map<Integer, ColliderPair> colliders = new HashMap<>();
+         int foundCount = 0, expectedCount;
+         boolean isComplete() { return foundCount >= expectedCount; }
+     }
+     ```
+   - **In-instance (the proven BlockShips reference):** construct the mechanism entity-less via `fromState`,
+     then attach entities incrementally — fields `expectedEntityCount` / `recoveryComplete` /
+     `pendingCarriers` / `pendingShulkers` / `recoveredDisplayIndices` on the mechanism itself
+     (`collectEntitiesFromChunk` / `tryAddEntity` / `processPendingColliders`). Carriers and shulkers count
+     toward `foundCount` only once **paired**. Expected count =
+     `2 (vehicle+parent) + parts + items + collisionParts*2 + seats` — a flat `foundCount++` over raw
+     entities would complete recovery prematurely.
 
 3. **On recovery complete:**
    - Construct `BasicMechanism` from recovered entities + state
@@ -263,25 +360,32 @@ Following BlockShips:
 
 ### Health system
 
-BlockShips tracks health on the ArmorStand vehicle:
+BlockShips stores health **on the ArmorStand vehicle's `GENERIC_MAX_HEALTH` attribute** (not a side field) —
+regen runs in the tick loop (`min(current + regenPerTick, max)`, ~ShipInstance 1209) and death is checked
+off `vehicle.getHealth() <= 0` (~1228) → `destroyAndDropItem`:
 ```java
 vehicle.getAttribute(GENERIC_MAX_HEALTH).setBaseValue(maxHealth);
 ```
+It also **mirrors the value onto each seat shulker** so the rider sees it on the vanilla health HUD, scaled
+to fit (≤40 HP shown directly, else scaled to 20 hearts) — `syncSeatShulkerHealth` (~1870), setup ~805.
 
 DefCoreLib should support this as an optional feature (not all mechanisms need health — doors don't).
 
 #### `MechanismHealth` (new, optional component)
 
+A thin wrapper over the vehicle's max-health attribute (so the value survives in entity NBT across chunk
+reload for free) that also fans the value out to any seat shulkers for the HUD:
+
 ```java
 public class MechanismHealth {
-    private final double maxHealth;
+    private final LivingEntity vehicle;      // health lives on its GENERIC_MAX_HEALTH attribute
     private final double regenPerTick;       // healthRegenPerSecond / 20
-    private double currentHealth;
 
-    void damage(double amount) { ... }
-    void tick() { currentHealth = Math.min(currentHealth + regenPerTick, maxHealth); }
-    boolean isDead() { return currentHealth <= 0; }
-    double fraction() { return currentHealth / maxHealth; }
+    void damage(double amount) { vehicle.setHealth(max(0, vehicle.getHealth() - amount)); syncSeatHUD(); }
+    void tick() { setHealth(min(vehicle.getHealth() + regenPerTick, maxHealth())); }
+    boolean isDead() { return vehicle.getHealth() <= 0; }
+    double fraction() { return vehicle.getHealth() / maxHealth(); }
+    // syncSeatHUD(): mirror onto seat shulkers with the 40-HP/20-heart scaling
 }
 ```
 
@@ -290,12 +394,15 @@ Wired into Mechanism interface as optional:
 @Nullable MechanismHealth health();
 ```
 
-#### Damage routing
+#### Damage routing (confirmed — keep)
 
-BlockShips routes damage from shulker hits to the vehicle. DefCoreLib already cancels damage on `corelib:mech:*` entities in CoreLibPlugin. Change to:
+BlockShips routes damage from shulker hits to the vehicle, verified in `DisplayShip.onShulkerDamage`
+(~1487–1549): an `EntityDamageEvent` on a ship-tagged shulker is **cancelled** (shulker stays effectively
+invulnerable) and the damage is applied to `vehicle.getHealth()`; at ≤0 it calls `destroyAndDropItem`.
+DefCoreLib already cancels damage on `corelib:mech:*` entities in CoreLibPlugin. Change to:
 
 1. On `EntityDamageEvent` for a mechanism shulker:
-   - If mechanism has health: apply damage, check death
+   - If mechanism has health: cancel the shulker damage, apply it to the vehicle health, check death
    - If no health: cancel (current behavior)
 2. On death: call consumer callback (BlockShips drops ship wheel; door does nothing)
 
@@ -312,7 +419,10 @@ Passed to `assembleMechanism()` as optional parameter. Called when health reache
 
 ### Seat system
 
-BlockShips uses shulkers as seat mount points. Players ride the shulker, which is positioned at the seat location.
+BlockShips does NOT spawn separate seat entities — a seat **is one of the block's collision shulkers**
+(collidable, tagged `shipseat:{i}`). The player rides that shulker, so it already follows the mechanism via
+the existing collider repositioning. Lead points work the same way: a `leadable:{i}` role on an existing
+collision shulker, not a new entity.
 
 #### `SeatConfig` record
 
@@ -329,11 +439,13 @@ public record SeatConfig(
 ```java
 // In assembleMechanism():
 List<SeatConfig> seats = ...;  // Provided by consumer
-// For each seat: spawn Shulker at offset position (like colliders but rideable)
+// A seat marks an EXISTING collision shulker (by blockIndex) as rideable + tags it shipseat:{i}.
 // Mount player via seatShulker.addPassenger(player)
 ```
 
-Seat shulkers are managed like colliders but with `setCollidable(false)` (no physics — just mount points). Repositioned on rotate/move like colliders.
+Seats reuse the block's collision shulker (collidable — it's the same entity that gives the block its
+collision), tagged for seat lookup. They are repositioned on rotate/move exactly because they ARE colliders,
+so the entity-count math (`collisionParts*2`, no extra per-seat entities) stays correct.
 
 #### Mechanism interface additions
 
@@ -364,13 +476,12 @@ boolean isDriverSeat(int seatIndex);
 
 #### A. Object pooling in tick loop
 
-BlockShips pre-allocates ~15 reusable Matrix4f/Vector3f fields. DefCoreLib's tick loop allocates new matrices per block per tick.
+BlockShips pre-allocates ~15–20 reusable Matrix4f/Vector3f fields. DefCoreLib's tick loop allocates new matrices per block per tick.
 
-**Current (MechanismRegistry.tickMechanisms line 329):**
+**Current (`MechanismRegistry.updateAnimatedDisplays`, ~lines 410 & 414 — two allocations per block per tick):**
 ```java
-Matrix4f base = new Matrix4f(mech.currentTransform())  // allocation
-    .mul(mb.localTransform)
-    .mul(BasicMechanism.transformToMatrix(dec.transform()));  // allocation inside
+dec.animation().apply(BasicMechanism.transformToMatrix(dec.transform()), age, workMatrix); // alloc (410)
+Matrix4f placed = new Matrix4f(mech.currentTransform()).mul(mb.localTransform);            // alloc (414)
 ```
 
 **Fix:** Pre-allocate work matrices on MechanismRegistry:
@@ -448,41 +559,58 @@ mech.disassemble();  // or mech.destroy() if blocks shouldn't restore
 | **ShipConfig** | Per-ship-type tuning (speed, drag, turn rate) — consumer config |
 | **ShipCustomization** | Wood type, balloon color, banner — visual customization |
 | **ShipSteeringListener** | ProtocolLib key detection — domain-specific |
-| **BlockStructureScanner** | Weight calculation, sail detection — domain-specific |
+| **BlockStructureScanner** (partial) | Its `scanStructure` + weight/sail/cannon/leash detection stays. ⚠️ But its `placeBlocks`/`removeBlocks` (block snapshot/restore/drop) belong in the `ShipBlockSnapshotProvider` — NOT a clean split: the rotation utilities (`rotateBlockData`, `blockFaceToYaw`, …) are shared by both `scanStructure` (stays) and `placeBlocks` (moves). Extract rotations to a neutral util, or accept duplication. |
 | **ShipWheelManager** | Fuel tracking — domain-specific |
 
 #### What migrates to DefCoreLib
 
-| BlockShips Code | DefCoreLib Replacement |
-|----------------|----------------------|
-| ShipInstance entity spawning (~200 lines) | `MechanismRegistry.assembleMechanism()` |
-| ShipInstance.updateDisplayTransforms() (~80 lines) | `BasicMechanism.rotate()` |
-| ShipInstance.updateCollisionPositions() (~60 lines) | `BasicMechanism.rotate()` collider section |
-| DisplayShip chunk recovery (~150 lines) | `MechanismPersistence` + recovery flow |
-| ShipWorldData (~250 lines) | `MechanismPersistence` |
-| ShipPersistence (~410 lines) | `MechanismPersistence` |
-| ShipTags (~183 lines) | Entity tag pattern in MechanismRegistry |
-| CollisionBox (~32 lines) | `ColliderPair` |
-| DisplayInstance (~18 lines) | Display lists in BasicMechanism |
-| Health tracking in ShipInstance (~30 lines) | `MechanismHealth` |
-| Seat management in ShipInstance (~40 lines) | Seat system in BasicMechanism |
-| ShipTeleportCompat | `TeleportCompat` (already exists) |
+(Sizes below are from `wc -l` at the time of writing — treat as rough.)
 
-**Estimated lines eliminated from BlockShips: ~1,400**
+| BlockShips Code | Lines | DefCoreLib Replacement |
+|----------------|-------|----------------------|
+| ShipInstance entity spawning | ~200–300 | `MechanismRegistry.assembleMechanism()` |
+| ShipInstance.updateDisplayTransforms() | ~32 | `BasicMechanism.rotate()` |
+| ShipInstance.updateCollisionPositions() | ~107 | `BasicMechanism.rotate()` collider section |
+| ShipInstance health + seat mgmt | ~120 (61 + 58) | `MechanismHealth` + seat system |
+| DisplayShip chunk recovery | ~150–200 | `MechanismPersistence` + recovery flow |
+| ShipWorldData | 593 | `MechanismPersistence` |
+| ShipPersistence | 403 | `MechanismPersistence` |
+| ShipTags | 182 | Entity tag pattern in MechanismRegistry |
+| CollisionBox | 31 | `ColliderPair` |
+| DisplayInstance | 18 | Display lists in BasicMechanism |
+| BlockStructureScanner.placeBlocks/removeBlocks | ~216 | `ShipBlockSnapshotProvider` (see entanglement caveat above) |
+| ShipTeleportCompat | — | `TeleportCompat` (already exists in DefCoreLib) |
+
+**Lines eliminated from BlockShips: a rough lower bound of ~1,400, and plausibly ~2,300+** once partial
+removals (ShipInstance spawn/transform/recovery/health/seat) are counted. Treat as an order-of-magnitude
+estimate, not a precise figure.
+
+#### Yaw-model reconciliation (prerequisite for BlockShips delegating movement)
+
+The two engines drive rotation differently and this must be resolved before `mech.move(pos, yaw)` can back a
+ship:
+- **DefCoreLib:** `BasicMechanism.updateFromVehicle` reads the **live** vehicle yaw and applies it directly.
+- **BlockShips:** **freezes** the vehicle yaw at spawn and rotates displays by `currentYaw - spawnYaw`
+  (delta-from-spawn), precisely to avoid the entity-tracker's ~1.4°/byte yaw quantization — which is why it
+  also sends ProtocolLib position-sync packets (~ShipInstance 1420–1469).
+Options: (a) give the engine a "frozen-vehicle + explicit delta yaw" mode that ships use while keeping the
+live-yaw mode for doors/minecarts; or (b) move BlockShips to live-yaw and accept/mitigate the quantization.
+This choice also determines which yaw value Phase 2 persists (see `MechanismState`).
 
 ---
 
 ## Implementation Order
 
-### Phase 1 (Decouple) — ~2 sessions
+### Phase 1 (Composable provider) — ~2 sessions
 
-1. Define `BlockSnapshotProvider` interface and `BlockSnapshot` class
-2. Implement `CustomBlockSnapshotProvider` wrapping existing registry calls
-3. Add provider parameter to `assembleMechanism()` overloads (backward-compat defaults)
-4. Refactor `BasicMechanism` to use provider instead of direct registry calls
-5. Refactor `MechanismRegistry.assembleCore()` to use provider
-6. Test: DoorDemo and MinecartShipManager work identically (regression)
-7. Test: Create a `VanillaBlockSnapshotProvider` that uses only BlockDisplay — assemble a vanilla mechanism without any CustomHeadBlock dependency
+1. Define `BlockSnapshotProvider` interface; add `Object providerData` to `MechanismBlockData`
+2. Add an optional provider parameter to `assembleMechanism()` overloads (no provider = today's behavior)
+3. In `assembleCore()` + `BasicMechanism`, route **registry-first per block**, provider as fallback (do NOT
+   replace the registry branch)
+4. Test: DoorDemo and MechanismMinecartManager work identically (regression — they pass no provider)
+5. Test (goal #2): a **mixed** mechanism with a vanilla block + a DefCoreLib gear + a windmill — all render,
+   the gear/windmill animate while the mechanism moves, with a trivial test provider supplying only the
+   non-registry blocks
 
 ### Phase 2 (Persistence) — ~3 sessions
 
@@ -490,7 +618,7 @@ mech.disassemble();  // or mech.destroy() if blocks shouldn't restore
 2. Implement `MechanismState` serialization (blocks, transforms, consumer data)
 3. Add inventory serialization (Base64 ItemStack[], following BlockShips pattern)
 4. Implement chunk index (world → chunk → mechanism UUIDs)
-5. Implement `RecoveringMechanism` for incremental entity recovery
+5. Implement incremental entity recovery (in-instance fields, per the BlockShips reference — or a `RecoveringMechanism` holder)
 6. Wire into `MechanismRegistry`: save on assembly, remove on disassemble, recover on chunk load
 7. Replace `cleanupOrphanedEntities()` with recovery-then-cleanup
 8. Add periodic save (every 5 minutes) + save-on-shutdown
@@ -522,21 +650,36 @@ mech.disassemble();  // or mech.destroy() if blocks shouldn't restore
 
 ---
 
-## Known Bugs to Fix (Pre-Phase 1)
+## Known Issues (small / precision notes — mostly not blockers)
 
-These should be fixed before starting integration work:
+These are minor; verification (against current code) reclassified most of the original list. Only #5 was a
+genuine dead-code item and has been **struck**.
 
-1. **Collider initial position rounding** — `MechanismRegistry.assembleCore()` line 195: carrier spawns at `pivot + localTransform.getTranslation()` without rounding. Should `Math.round()` XZ offsets for grid alignment.
+1. **Collider grid alignment — open precision note (not the original "round at spawn").** The original
+   concern (round XZ at the initial carrier spawn) is moot: at assembly yaw is 0 and offsets are integer
+   from centered positions (pivot snapped in `double`, `assembleCore` ~114–126). HOWEVER, `BasicMechanism.rotate`
+   repositions colliders via float `pivot.add(worldOff…)` **without** the `Math.round` that disassembly uses
+   on the same calculation (with a "trig epsilon" comment, ~246). For 90° rotations this is exact; for
+   non-90° angles or coordinates near the float-precision limit, colliders could drift sub-block. Confirm
+   whether the rotate path needs the same rounding (or whether continuous collider motion is intended).
 
 2. ~~**`MINECART_RIDE_OFFSET = 0f`** — needs empirical tuning in-game.~~ **Resolved:** `0f` confirmed correct in-game — not a bug (see minecarts.md "MINECART_RIDE_OFFSET").
 
-3. **No vehicle validity check at assembly** — `assembleMechanism(existingVehicle)` doesn't verify vehicle is valid/alive. Dead entity silently produces broken mechanism.
+3. **No up-front vehicle validity check (minor).** The external-vehicle overload `assembleMechanism(…, Entity, …)`
+   (~93–100) doesn't check `existingVehicle.isValid()` before spawning entities. It is NOT silently broken:
+   `assembleCore`'s 1-tick mount task disassembles a dead vehicle (`if (!vehicle.isValid()) { mech.disassemble(); return; }`,
+   ~278) and `disassemble()` removes every entity + deregisters. The only residual is a one-tick window where
+   a mechanism is registered before validity is confirmed; an up-front guard would be tidier.
 
-4. **Particle ticking not implemented** — `TODO` at MechanismRegistry line 340. `ParticleConfig` is stored but never spawned.
+4. **Particle ticking not implemented** — `// TODO` at `MechanismRegistry` ~line 379. `ParticleConfig` is captured per block but never spawned in the tick loop. (This is also why custom-machine particles — engine smoke, generator sparks — don't emit on a moving ship; see Phase 1 scope.)
 
-5. **Dead code** — `perpendicularNeighbors()` in RotationNetwork.java (lines 397-415) is never called.
+5. ~~**Dead code — `perpendicularNeighbors()` in RotationNetwork.java.**~~ **Struck:** the method no longer exists (removed in the Phase-2 rotation rewrite, commit `e0447d0`); grep-empty across the repo.
 
-6. **Float precision in snap computation** — `MechanismRegistry.assembleCore()` lines 91-92: `float snapX = (float)(Math.floor(pivot.getX()) + 0.5)` — float mantissa (24 bits) can't represent the `.5` offset at coordinates beyond ~8M blocks, breaking the integer-offset invariant that `disassemble()` depends on. Fix: use `double` for snapping, cast to `float` only at Matrix4f construction.
+6. **Disassembly grid-snap precision — residual note (not "float snapX").** The original `float snapX` is
+   gone — assembly snaps in `double` and casts to `float` only at Matrix4f construction (~114–126). But
+   disassembly still `Math.round`s a float `worldOffset` to place blocks back (`BasicMechanism`, ~246), so
+   the integer-offset invariant is *aspirational, not enforced* at >8M coords / non-90° rotations. Likely
+   fine in practice; worth confirming if huge-coordinate or non-cardinal mechanisms are ever supported.
 
 7. **Custom-block storage not restored on disassembly (data loss) — DEFERRED, do with Phase 2.** `BasicMechanism.placeBlock()` restores a custom block's type/state/config but never writes back the captured `mb.storage` inventory — the only `setContents` lives in the `else if (… instanceof Container)` branch, which is unreachable for a custom head. `assembleCore()` *does* capture `mb.storage`, so the items are snapshotted then dropped on the floor: a custom storage block (e.g. a custom chest skull) absorbed by a mechanism and placed back on disassembly **comes back empty**. (Items only survive the *drop-as-item* path, not the place-back path.) BlockShips' inventory handling covers this — the persistent round-trip is exactly the Base64 `ItemStack[]` serialization in **Phase 2** (`MechanismState.blocks[].storage`). The immediate in-memory fix is one line in the custom-block branch of `placeBlock()`: after `restoreBlock`, `if (mb.storage != null) registry.saveInventoryToPDC(target, mb.storage);`. Deferred so the storage/persistence work is done together rather than piecemeal.
 
@@ -545,19 +688,22 @@ These should be fixed before starting integration work:
 ## Verification Plan
 
 ### Phase 1 verification
-- [ ] DoorDemo open/close works identically (regression)
-- [ ] MinecartShipManager assemble/disassemble works identically (regression)
-- [ ] New `VanillaBlockSnapshotProvider` assembles vanilla blocks without CustomHeadBlock
-- [ ] Custom head blocks in mechanism still resolve textures correctly
+- [ ] DoorDemo open/close works identically (regression — no provider passed)
+- [ ] MechanismMinecartManager assemble/disassemble works identically (regression)
+- [ ] Custom head blocks in a mechanism still resolve textures/animations correctly (registry path intact)
+- [ ] **Goal #2 — mixed mechanism:** vanilla block + DefCoreLib gear + windmill all render; gear/windmill
+      animate while the mechanism moves; the test provider only supplies the non-registry block
 - [ ] Container inventories still clone and restore correctly
 
 ### Phase 2 verification
-- [ ] Assemble mechanism → restart server → mechanism entities + state recover
+- [ ] **DefCoreLib door** → `/stop`+restart → door recovers and still opens (goal #3, no BlockShips involved)
+- [ ] **Custom-head rotator with a container** → restart → inventory intact (also closes the deferred storage
+      data-loss issue, Known Issues #7)
+- [ ] Minecart mechanism → restart → recovers (verify the external/persistent vehicle anchor)
 - [ ] Assemble mechanism → `/stop` (clean shutdown) → restart → recovery
 - [ ] Assemble mechanism → kill -9 (crash) → restart → recovery from periodic save
-- [ ] Mechanism spanning 2 chunks → unload one chunk → reload → recovery
+- [ ] Mechanism spanning 2 chunks → unload one chunk → reload → incremental recovery completes
 - [ ] Two mechanisms in same chunk → both recover
-- [ ] Mechanism with container inventory → restart → inventory intact
 - [ ] Disassemble → metadata file removed → no orphan entities
 - [ ] Consumer data (MechanismSerializer) round-trips through save/restore
 

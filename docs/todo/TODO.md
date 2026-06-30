@@ -33,6 +33,7 @@
 - [redstone-cables.md](redstone-cables.md) — redstone-cables demo plugin plan
 - [rotation-mechanisms.md](rotation-mechanisms.md) — Reverser → Rotator → Glue: network-driven doors/drawbridges bridging rotation-power to mechanisms (3 phases, not started)
 - [rotation-power.md](rotation-power.md) — rotational power network; Phase 1 done, Phase 2 (directionality) in progress
+- [tech-tree.md](tech-tree.md) — remaining rotation tech-tree roadmap (sieve, sources, alloys/multiblock furnace, automation, sensors); build waves + open decisions
 - [vertical-slabs.md](vertical-slabs.md) — vertical-slabs demo plugin plan (additive BlockDisplay support)
 
 ## Ready to implement
