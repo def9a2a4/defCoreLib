@@ -13,6 +13,10 @@ final class RotationConfig {
 
     int maxNetworkSize = 256;
     int maxStructureSize = 256; // cap on flood-fill-selected mechanism structures (door/rotator/minecart)
+    int glueMaxSize = 256;      // cap on a glued selection; defaults to maxStructureSize
+    String glueItem = "SLIME_BALL";
+    int glueOutlineInterval = 10;
+    int glueSessionTimeout = 2400;
     int drillTickInterval = 4;
     int drillBreakStages = 10;
     int grindstoneTickInterval = 20;
@@ -39,6 +43,16 @@ final class RotationConfig {
 
         maxNetworkSize = yaml.getInt("max-network-size", maxNetworkSize);
         maxStructureSize = yaml.getInt("max-structure-size", maxStructureSize);
+        glueMaxSize = maxStructureSize; // default; overridden by glue.max-size below
+
+        ConfigurationSection glue = yaml.getConfigurationSection("glue");
+        if (glue != null) {
+            glueMaxSize = glue.getInt("max-size", maxStructureSize);
+            glueItem = glue.getString("item", glueItem);
+            glueOutlineInterval = glue.getInt("outline-interval", glueOutlineInterval);
+            glueSessionTimeout = glue.getInt("session-timeout", glueSessionTimeout);
+            loaded++;
+        }
 
         ConfigurationSection drill = yaml.getConfigurationSection("drill");
         if (drill != null) {

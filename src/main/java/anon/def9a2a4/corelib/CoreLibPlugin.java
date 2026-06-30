@@ -35,6 +35,7 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
     private CustomBlockRegistry registry;
     private MechanismRegistry mechanismRegistry;
     private MechanismMinecartManager mechanismMinecartManager;
+    private GlueManager glueManager;
     private RotationNetwork rotationNetwork;
     private BannerManager bannerManager;
     private LargeBannerRecipes largeBannerRecipes;
@@ -91,6 +92,9 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         RotationBlocks.register(registry, rotationNetwork, fuelManager, grindRecipes, rotConfig);
         RotationBlocks.registerWrenchRecipe();
 
+        // Anchor-owned block selection ("glue") — shared by doors/rotators (wired in D3).
+        glueManager = new GlueManager(registry, rotConfig.glueMaxSize);
+
         // Register mechanism demos
         int maxStructureSize = rotConfig.maxStructureSize;
         new DoorDemo(this, registry, mechanismRegistry, maxStructureSize).register();
@@ -142,6 +146,10 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
 
     public MechanismRegistry getMechanismRegistry() {
         return mechanismRegistry;
+    }
+
+    GlueManager getGlueManager() {
+        return glueManager;
     }
 
     public RotationNetwork getRotationNetwork() {
@@ -1237,6 +1245,35 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
                     }
                 }
             }
+            case "gluetest" -> {
+                if (!(sender instanceof Player player)) {
+                    sender.sendMessage(Component.text("Must be a player", NamedTextColor.RED));
+                    return true;
+                }
+                Block target = player.getTargetBlockExact(8);
+                if (target == null || registry.getTypeFromBlock(target) == null) {
+                    sender.sendMessage(Component.text("Look at a custom-block (skull) anchor within 8 blocks",
+                        NamedTextColor.RED));
+                    return true;
+                }
+                Anchor anchor = new BlockAnchor(target, () -> true);
+                if (args.length >= 2 && args[1].equalsIgnoreCase("clear")) {
+                    glueManager.unglueAll(anchor);
+                    sender.sendMessage(Component.text("Glue cleared", NamedTextColor.GREEN));
+                } else if (glueManager.hasGlue(anchor)) {
+                    List<Block> resolved = glueManager.resolveStructure(anchor);
+                    sender.sendMessage(Component.text("Glued: " + glueManager.offsets(anchor).size()
+                        + " offsets, " + (resolved == null ? 0 : resolved.size())
+                        + " present in world. (/defcorelib gluetest clear to clear)", NamedTextColor.AQUA));
+                } else {
+                    List<Block> planks = FloodFill.component(target, false,
+                        b -> b.getType() == Material.OAK_PLANKS && registry.getTypeFromBlock(b) == null,
+                        glueManager.maxSize(), null);
+                    glueManager.setStructure(anchor, planks);
+                    sender.sendMessage(Component.text("Froze " + planks.size()
+                        + " connected oak planks as glue", NamedTextColor.GREEN));
+                }
+            }
             default -> sender.sendMessage(Component.text("Unknown subcommand: " + args[0], NamedTextColor.RED));
         }
         return true;
@@ -1246,7 +1283,7 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         if (!command.getName().equalsIgnoreCase("defcorelib")) return List.of();
         if (args.length == 1) {
-            return List.of("give", "give_demo", "give_demo_rotation", "list", "colliders", "reloadbanners", "cleanorphans").stream()
+            return List.of("give", "give_demo", "give_demo_rotation", "list", "colliders", "reloadbanners", "cleanorphans", "gluetest").stream()
                     .filter(s -> s.startsWith(args[0].toLowerCase()))
                     .toList();
         }

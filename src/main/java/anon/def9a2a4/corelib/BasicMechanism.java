@@ -16,8 +16,10 @@ import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.jspecify.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.function.Consumer;
 
 /**
  * Default implementation of {@link Mechanism}.
@@ -51,6 +53,9 @@ final class BasicMechanism implements Mechanism {
 
     // Back-reference set by MechanismRegistry after construction
     MechanismRegistry mechanismRegistry;
+
+    // Optional glue rebind hook: invoked at disassembly with the blocks actually placed back.
+    private @Nullable Consumer<List<Block>> onDisassembled;
 
     BasicMechanism(UUID id, String type, Location pivot, Vector3f rotationAxis,
                    Entity vehicle, org.bukkit.entity.BlockDisplay parent,
@@ -203,6 +208,11 @@ final class BasicMechanism implements Mechanism {
     // ──────────────────────────────────────────────────────────────────────
 
     @Override
+    public void setOnDisassembled(@Nullable Consumer<List<Block>> callback) {
+        this.onDisassembled = callback;
+    }
+
+    @Override
     public void disassemble() {
         checkMainThread();
         // Snap to 90° about the rotation axis. For Y this is yaw; for X/Z it tips a drawbridge
@@ -211,6 +221,10 @@ final class BasicMechanism implements Mechanism {
         float snappedYaw = Math.round(currentYaw / 90f) * 90f;
         Matrix4f rotation = new Matrix4f().rotate((float) Math.toRadians(-snappedYaw),
                 rotationAxis.x, rotationAxis.y, rotationAxis.z);
+
+        // The cells where blocks actually landed — handed to the glue rebind hook so an anchor's
+        // offset set tracks the structure's new rest positions (dropped-as-item blocks are excluded).
+        List<Block> placed = new ArrayList<>(blocks.size());
 
         for (int i = 0; i < blocks.size(); i++) {
             MechanismBlockData mb = blocks.get(i);
@@ -233,9 +247,11 @@ final class BasicMechanism implements Mechanism {
             if (target.getType().isAir() || target.getType() == Material.WATER
                     || target.getType() == Material.LAVA) {
                 placeBlock(target, mb, snappedYaw);
+                placed.add(target);
             } else if (FragileBlocks.isFragile(target.getType())) {
                 target.breakNaturally();
                 placeBlock(target, mb, snappedYaw);
+                placed.add(target);
             } else {
                 // Solid block wins — explosion effect + drop mechanism block as item
                 target.getWorld().spawnParticle(Particle.EXPLOSION,
@@ -247,6 +263,7 @@ final class BasicMechanism implements Mechanism {
         removeAllEntities();
         if (mechanismRegistry != null) mechanismRegistry.onMechanismRemoved(this);
         if (serializer != null) serializer.onDisassemble(this);
+        if (onDisassembled != null) onDisassembled.accept(placed);
     }
 
     @Override

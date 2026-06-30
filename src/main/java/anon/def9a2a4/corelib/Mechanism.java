@@ -1,11 +1,14 @@
 package anon.def9a2a4.corelib;
 
 import org.bukkit.Location;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Display;
 import org.bukkit.inventory.Inventory;
 import org.jspecify.annotations.Nullable;
 
+import java.util.List;
 import java.util.UUID;
+import java.util.function.Consumer;
 
 /**
  * A moveable block structure — displays + shulker colliders driven by a consumer.
@@ -36,6 +39,13 @@ public interface Mechanism {
 
     /** Restore blocks to the world and remove all entities. */
     void disassemble();
+
+    /**
+     * Set a callback invoked at the end of {@link #disassemble()} with the blocks that were actually
+     * placed back into the world (at their final, possibly-rotated landing cells). Used by the glue
+     * layer to rebind an anchor's offset set to the structure's new rest positions. {@code null} clears it.
+     */
+    void setOnDisassembled(@Nullable Consumer<List<Block>> callback);
 
     /** Remove all entities without restoring blocks. */
     void destroy();
