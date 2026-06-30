@@ -4,6 +4,9 @@ gradlew.bat
 # Server directory
 server/*
 
+# Headless docs-export server (generated; paper jar copied in by `make docs`)
+/test-server/
+
 # Vendored docs images (downloaded by scripts/generate_catalog.py; not committed for now)
 /docs/assets/
 
