@@ -156,6 +156,9 @@ final class DisplayExporter implements Listener {
                 List<Map<String, Object>> variants = exportType(type, world, quad, log);
                 Map<String, Object> entry = new LinkedHashMap<>();
                 entry.put("variants", variants);
+                // Banner tier gates which custom banner crafts this block (e.g. windmills);
+                // the docs read it to show the real required banner instead of a generic tag.
+                entry.put("bannerTier", type.bannerTier() == null ? null : type.bannerTier().name());
                 out.put(type.fullId(), entry);
             } catch (Throwable t) {
                 log.warning("export " + type.fullId() + ": " + t);
