@@ -37,6 +37,7 @@ function loadModel(id) {
 // THREE.BoxGeometry face groups, in order: +x, -x, +y, -y, +z, -z.
 const FACE_DIRS = ['east', 'west', 'up', 'down', 'south', 'north'];
 const TRANSPARENT = new THREE.MeshBasicMaterial({ transparent: true, opacity: 0, depthWrite: false });
+TRANSPARENT.userData.shared = true;   // module singleton — teardown must NOT dispose it
 
 // Rewrite the 4 uvs of one BoxGeometry face from a Minecraft [x1,y1,x2,y2] rect (0..16,
 // origin top-left). THREE face vertices are ordered top-left, top-right, bottom-left, bottom-right.
@@ -52,13 +53,16 @@ function setFaceUV(geo, faceIndex, uv) {
   attr.needsUpdate = true;
 }
 
-function buildElement(el, textures) {
+function buildElement(el, textures, centered) {
   const from = el.from, to = el.to;
   const size = [(to[0] - from[0]) / 16, (to[1] - from[1]) / 16, (to[2] - from[2]) / 16];
+  // Minecraft model space is corner-origin [0,1]³. ItemDisplays read back centered, so we shift the
+  // box by -0.5; BlockDisplays read back corner-origin (matrix already in [0,1]³), so we don't.
+  const off = centered ? 0.5 : 0;
   const center = [
-    (from[0] + to[0]) / 2 / 16 - 0.5,
-    (from[1] + to[1]) / 2 / 16 - 0.5,
-    (from[2] + to[2]) / 2 / 16 - 0.5,
+    (from[0] + to[0]) / 2 / 16 - off,
+    (from[1] + to[1]) / 2 / 16 - off,
+    (from[2] + to[2]) / 2 / 16 - off,
   ];
   const geo = new THREE.BoxGeometry(size[0], size[1], size[2]);
 
@@ -77,20 +81,24 @@ function buildElement(el, textures) {
   return mesh;
 }
 
-/** Build a THREE.Group (1-block cube space, centered at origin) for a vanilla model id. */
-export async function buildBlockMesh(id) {
+/** Build a THREE.Group for a vanilla model id. `centered` (default true) centers the 1-block cube at
+ *  the origin (ItemDisplay space); `centered:false` keeps it corner-origin [0,1]³ (BlockDisplay space). */
+export async function buildBlockMesh(id, { centered = true } = {}) {
   const model = await loadModel(id);
   const group = new THREE.Group();
-  for (const el of model.elements || []) group.add(buildElement(el, model.textures || {}));
+  for (const el of model.elements || []) group.add(buildElement(el, model.textures || {}, centered));
   return group;
 }
 
-/** Fallback when a model can't be resolved: a plain 1-block cube tinted `color`. */
-export function fallbackBox(color = 0xcccccc) {
+/** Fallback when a model can't be resolved: a plain 1-block cube tinted `color`. Honors the same
+ *  origin convention as buildBlockMesh so missing-model block displays aren't half a block off. */
+export function fallbackBox(color = 0xcccccc, { centered = true } = {}) {
   const group = new THREE.Group();
-  group.add(new THREE.Mesh(
+  const mesh = new THREE.Mesh(
     new THREE.BoxGeometry(1, 1, 1),
     new THREE.MeshBasicMaterial({ color }),
-  ));
+  );
+  if (!centered) mesh.position.set(0.5, 0.5, 0.5);
+  group.add(mesh);
   return group;
 }

@@ -2,7 +2,6 @@ package anon.def9a2a4.corelib;
 
 import com.destroystokyo.paper.profile.PlayerProfile;
 import com.destroystokyo.paper.profile.ProfileProperty;
-import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -91,6 +90,7 @@ final class DisplayExporter implements Listener {
     @EventHandler
     public void onServerLoad(ServerLoadEvent event) {
         if (done) return;
+        if (event.getType() != ServerLoadEvent.LoadType.STARTUP) return;   // not on /reload
         done = true;
         Logger log = plugin.getLogger();
         try {
@@ -174,24 +174,32 @@ final class DisplayExporter implements Listener {
         List<Map<String, Object>> variants = new ArrayList<>();
         int vi = 0;
         for (BlockFace placedOn : placedOnFaces(type)) {
-            String idleState = type.defaultState();
+            String placement = type.defaultState();
             if (type.placementStateMap() != null) {
                 String mapped = type.placementStateMap().get(placedOn);
-                if (mapped != null) idleState = mapped;
+                if (mapped != null) placement = mapped;
             }
-            String spinState = animatedSiblingOr(type, idleState);
-            boolean animated = hasAnimation(type, spinState);
-
             String baseLabel = placedOn == BlockFace.DOWN ? "Floor" : ("Wall " + cap(placedOn.name()));
             String baseId = placedOn == BlockFace.DOWN ? "floor" : ("wall_" + placedOn.name().toLowerCase());
 
-            variants.add(buildVariant(type, world, quad, placedOn, idleState, baseId, baseLabel,
-                    animated ? "idle" : "", false, false, vi++, log));
-            if (animated) {
-                variants.add(buildVariant(type, world, quad, placedOn, spinState, baseId, baseLabel,
-                        "spinning", true, false, vi++, log));
-                variants.add(buildVariant(type, world, quad, placedOn, spinState, baseId, baseLabel,
-                        "reversed", true, true, vi++, log));
+            // Resolve the idle (rest) state and its spinning/running sibling for this orientation.
+            String[] pair = idleSpinPair(type, placement);
+            String idleState = pair[0], spinState = pair[1];
+            boolean idleAnimated = idleState != null && hasAnimation(type, idleState);
+            boolean spinExists = spinState != null && hasAnimation(type, spinState);
+            String animState = spinExists ? spinState : (idleAnimated ? idleState : null);
+
+            // Stopped: only when a genuinely static state exists (don't fake one for always-animated).
+            if (!idleAnimated) {
+                variants.add(buildVariant(type, world, quad, placedOn, idleState, baseId, baseLabel,
+                        animState != null ? "stopped" : "", false, false, vi++, log));
+            }
+            // CW + CCW for the animated state.
+            if (animState != null) {
+                variants.add(buildVariant(type, world, quad, placedOn, animState, baseId, baseLabel,
+                        "cw", true, false, vi++, log));
+                variants.add(buildVariant(type, world, quad, placedOn, animState, baseId, baseLabel,
+                        "ccw", true, true, vi++, log));
             }
         }
         quad.row++;
@@ -205,6 +213,7 @@ final class DisplayExporter implements Listener {
         int z = quad.sz * (AXIS_GAP + quad.row * quad.spacing);
         Location loc = new Location(world, x, GRID_Y, z);
         loc.getChunk().load(true);
+        if (keepAlive) loc.getChunk().setForceLoaded(true);   // keep animations running off-screen
         Block block = loc.getBlock();
 
         boolean floor = placedOn == BlockFace.DOWN
@@ -212,11 +221,16 @@ final class DisplayExporter implements Listener {
         BlockFace headFacing = floor ? null : placedOn.getOppositeFace();
 
         placeHead(block, floor, headFacing);
-        registry.markBlock(block, type, state);
+        // NOTE: deliberately NOT markBlock'd — these inspection blocks must not join the rotation
+        // network, or RotationNetwork.updateBlockState would reset consumers (drill/fan) to idle.
         registry.applyConfig(block, type, state, 0);
+        if (animate) {   // make the in-game block spin the intended way (no effect on the tick-0 read-back)
+            registry.setAnimationDirection(CustomBlockRegistry.LocationKey.of(block),
+                    reversed ? RotationNetwork.SpinDirection.CCW : RotationNetwork.SpinDirection.CW);
+        }
 
         String vid = suffix.isEmpty() ? baseId : (baseId + "_" + suffix);
-        String label = suffix.isEmpty() ? baseLabel : (baseLabel + " · " + suffix);
+        String label = suffix.isEmpty() ? baseLabel : (baseLabel + " · " + prettySuffix(suffix));
 
         Map<String, Object> variant = new LinkedHashMap<>();
         variant.put("id", vid);
@@ -240,12 +254,26 @@ final class DisplayExporter implements Listener {
         return false;
     }
 
-    /** The animated counterpart of a placement state, by the plugin's own naming convention
-     *  (`idle*` → `spinning*`, e.g. idle_z → spinning_z). Falls back to the idle state. */
-    private String animatedSiblingOr(CustomHeadBlock type, String idleState) {
-        if (idleState == null || !idleState.contains("idle")) return idleState;
-        String candidate = idleState.replace("idle", "spinning");
-        return type.states().containsKey(candidate) ? candidate : idleState;
+    /** Resolve the rest (idle) state and its animated sibling for an orientation, from the
+     *  placement state's `idle_`/`spinning_`/`running_` prefix + shared suffix. Returns
+     *  {idleState, spinState|null}; for a non-rotation state returns {placement, null}. */
+    private String[] idleSpinPair(CustomHeadBlock type, String placement) {
+        if (placement == null) return new String[]{null, null};
+        String suffix;
+        if (placement.startsWith("idle_")) suffix = placement.substring(5);
+        else if (placement.startsWith("spinning_")) suffix = placement.substring(9);
+        else if (placement.startsWith("running_")) suffix = placement.substring(8);
+        else if (placement.equals("idle") || placement.equals("spinning") || placement.equals("running")) suffix = "";
+        else return new String[]{placement, null};   // not a rotation state
+
+        String idle = suffix.isEmpty() ? "idle" : "idle_" + suffix;
+        if (!type.states().containsKey(idle)) idle = placement;
+        String spin = null;
+        for (String pre : new String[]{"spinning", "running"}) {
+            String cand = suffix.isEmpty() ? pre : pre + "_" + suffix;
+            if (type.states().containsKey(cand)) { spin = cand; break; }
+        }
+        return new String[]{idle, spin};
     }
 
     /** Keep-alive: make the world spawn at the grid, in clear daylight, so a joining player lands
@@ -353,11 +381,20 @@ final class DisplayExporter implements Listener {
     private Map<String, Object> bake(DisplayAnimation anim, Matrix4f base, boolean reversed) {
         Matrix4f f0 = new Matrix4f();
         anim.apply(base, 0, f0);
+        Matrix4f f1 = new Matrix4f();
+        anim.apply(base, 1, f1);
         int period = 0;
         Matrix4f f = new Matrix4f();
+        Matrix4f fNext = new Matrix4f();
+        // Two-point check: the cycle truly repeats only when BOTH apply(t)==apply(0) AND apply(t+1)==apply(1).
+        // A single-point (apply(t)==apply(0)) check aliases symmetric bob/pulse to half period (the matrix
+        // returns to baseline at period/2, sampling only half the swing).
         for (int t = 1; t <= MAX_PERIOD; t++) {
             anim.apply(base, t, f);
-            if (approxEqual(f, f0)) { period = t; break; }
+            if (approxEqual(f, f0)) {
+                anim.apply(base, t + 1, fNext);
+                if (approxEqual(fNext, f1)) { period = t; break; }
+            }
         }
         if (period <= 0) period = MAX_FRAMES;
         int frames = Math.min(period, MAX_FRAMES);
@@ -426,5 +463,13 @@ final class DisplayExporter implements Listener {
 
     private static String cap(String s) {
         return s.isEmpty() ? s : s.charAt(0) + s.substring(1).toLowerCase();
+    }
+
+    private static String prettySuffix(String s) {
+        return switch (s) {
+            case "cw" -> "CW";
+            case "ccw" -> "CCW";
+            default -> s;
+        };
     }
 }

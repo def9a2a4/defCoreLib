@@ -60,8 +60,9 @@ function renderItem(item, itemsById) {
   const detail = document.getElementById('detail');
   document.title = `DefCoreLib — ${stripColors(item.name)}`;
 
-  const lore = item.lore.length
-    ? `<div class="item-lore">${item.lore.map((l) => `<div class="line">${mcText(l)}</div>`).join('')}</div>`
+  const loreLines = item.lore || [];
+  const lore = loreLines.length
+    ? `<div class="item-lore">${loreLines.map((l) => `<div class="line">${mcText(l)}</div>`).join('')}</div>`
     : '';
 
   detail.innerHTML = `
@@ -84,17 +85,27 @@ function renderItem(item, itemsById) {
   mountViewers(item);
 }
 
-// Add a labelled 3D viewer panel and drive `renderFn(canvasContainer)` into it.
+// Registry of live viewer teardowns; released on navigation so WebGL contexts don't leak.
+const viewerTeardowns = new Set();
+window.addEventListener('pagehide', () => {
+  for (const t of viewerTeardowns) { try { t(); } catch { /* ignore */ } }
+  viewerTeardowns.clear();
+});
+
+// Add a labelled 3D viewer panel and drive `renderFn(canvasContainer)` into it. `renderFn` may
+// resolve to a teardown function (render3DHead does) — track it so the context is released.
 function addViewer(parent, label, renderFn) {
   const panel = document.createElement('div');
   panel.className = 'viewer';
   panel.innerHTML = `<div class="viewer-label">${esc(label)}</div><div class="viewer-canvas"></div>`;
   parent.appendChild(panel);
   const canvas = panel.querySelector('.viewer-canvas');
-  Promise.resolve(renderFn(canvas)).catch((e) => {
-    console.warn(e);
-    canvas.innerHTML = '<div class="viewer-fail">3D unavailable</div>';
-  });
+  Promise.resolve(renderFn(canvas))
+    .then((t) => { if (typeof t === 'function') viewerTeardowns.add(t); })
+    .catch((e) => {
+      console.warn(e);
+      canvas.innerHTML = '<div class="viewer-fail">3D unavailable</div>';
+    });
 }
 
 function inHandViewer(item) {
@@ -131,10 +142,10 @@ function mountPlacedViewer(host, item, variants) {
   const canvas = panel.querySelector('.viewer-canvas');
   let teardown = null;
   const show = (idx) => {
-    if (teardown) { teardown(); teardown = null; }
+    if (teardown) { viewerTeardowns.delete(teardown); teardown(); teardown = null; }
     canvas.innerHTML = '';
     Promise.resolve(renderPlaced(item, canvas, idx))
-      .then((t) => { teardown = t; })
+      .then((t) => { teardown = t; if (t) viewerTeardowns.add(t); })
       .catch((e) => { console.warn(e); canvas.innerHTML = '<div class="viewer-fail">3D unavailable</div>'; });
   };
   const select = panel.querySelector('.variant-select');

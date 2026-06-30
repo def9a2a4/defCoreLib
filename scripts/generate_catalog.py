@@ -27,6 +27,7 @@ from __future__ import annotations
 import argparse
 import base64
 import json
+import os
 import re
 import sys
 import urllib.parse
@@ -189,40 +190,6 @@ def parse_transitions(sec: dict) -> list[dict]:
     return out
 
 
-# ── Placed display entities (3D scene) ─────────────────────────────────────
-
-def parse_transform(t) -> dict:
-    """Normalize a display-entity transform. left/right_rotation are axis-angle
-    [degrees, x, y, z]; Minecraft applies T · Rleft · S · Rright."""
-    t = t or {}
-    return {
-        "translation": list(t.get("translation") or [0, 0, 0]),
-        "scale": list(t.get("scale") or [1, 1, 1]),
-        "leftRotation": list(t["left_rotation"]) if t.get("left_rotation") else None,
-        "rightRotation": list(t["right_rotation"]) if t.get("right_rotation") else None,
-    }
-
-
-def parse_animation(a):
-    """Normalize an animation node (mirrors DisplayAnimation.java)."""
-    if not isinstance(a, dict):
-        return None
-    kind = a.get("type")
-    if kind == "rotate":
-        return {"type": "rotate", "axis": list(a.get("axis") or [0, 1, 0]), "speed": a.get("speed", 0)}
-    if kind == "bob":
-        return {"type": "bob", "amplitude": a.get("amplitude", 0), "period": a.get("period", 20)}
-    if kind == "pulse":
-        return {"type": "pulse", "minScale": a.get("min_scale", 1), "maxScale": a.get("max_scale", 1),
-                "period": a.get("period", 20)}
-    if kind == "orbit":
-        return {"type": "orbit", "radius": a.get("radius", 0), "period": a.get("period", 20),
-                "axis": list(a.get("axis") or [0, 1, 0])}
-    if kind == "compose":
-        return {"type": "compose", "layers": [parse_animation(l) for l in (a.get("layers") or []) if l]}
-    return None
-
-
 def canonical_block(name: str) -> str:
     """Vanilla block/material id (lowercase, no namespace) with wool/banner → white."""
     n = name.split(":")[-1].lower()
@@ -231,58 +198,6 @@ def canonical_block(name: str) -> str:
     if n.endswith("_banner") or n == "banner":
         return "white_banner"
     return n
-
-
-def parse_display_entity(de: dict, aliases: dict, fallback_anim) -> dict | None:
-    if not isinstance(de, dict):
-        return None
-    transform = parse_transform(de.get("transform"))
-    animation = parse_animation(de.get("animation")) or fallback_anim
-    if de.get("texture"):
-        url = texture_to_url(de["texture"], aliases)
-        if not url:
-            return None
-        return {"kind": "head", "textureUrl": url, "transform": transform, "animation": animation}
-    if de.get("block_data"):
-        return {"kind": "block", "block": canonical_block(str(de["block_data"])),
-                "transform": transform, "animation": animation}
-    if de.get("material"):
-        return {"kind": "item", "block": canonical_block(str(de["material"])),
-                "transform": transform, "animation": animation}
-    return None
-
-
-def state_display_entities(states: dict, name, base: list):
-    """A state's raw display_entities, following one level of copy_from."""
-    st = states.get(name) if name is not None else None
-    if not isinstance(st, dict):
-        return base
-    if "display_entities" in st:
-        return st["display_entities"]
-    if "copy_from" in st:
-        return state_display_entities(states, st["copy_from"], base)
-    return base
-
-
-def placed_display_entities(sec: dict, aliases: dict) -> list[dict]:
-    """Resolve the display entities to show for the placed block. Uses the default
-    state; if a sibling state is `copy_from: <default>` and adds an animation (the
-    `spinning_*` machines), apply that animation so the docs show motion."""
-    states = sec.get("states") or {}
-    base = sec.get("display_entities") or []
-    if not states:
-        raw = base
-        anim_override = None
-    else:
-        default = sec.get("default_state")
-        raw = state_display_entities(states, default, base)
-        anim_override = None
-        for st in states.values():
-            if isinstance(st, dict) and st.get("copy_from") == default and st.get("animation"):
-                anim_override = parse_animation(st["animation"])
-                break
-    out = [parse_display_entity(de, aliases, anim_override) for de in raw]
-    return [e for e in out if e]
 
 
 def parse_block(namespace: str, block_id: str, sec: dict, aliases: dict) -> dict:
@@ -401,7 +316,9 @@ def download(url: str, dest: Path) -> bool:
         with urllib.request.urlopen(req, timeout=30) as resp:
             data = resp.read()
         dest.parent.mkdir(parents=True, exist_ok=True)
-        dest.write_bytes(data)
+        tmp = dest.with_name(dest.name + ".tmp")
+        tmp.write_bytes(data)
+        os.replace(tmp, dest)   # atomic: a crash mid-write never leaves a truncated PNG in cache
         return True
     except Exception as e:
         print(f"    ! {url} -> {e}", file=sys.stderr)
@@ -574,7 +491,12 @@ def vendor_models(items: list[dict]) -> dict:
             # hand-authored bundled model under scripts/models/ and vendor its textures.
             bundled = BUNDLED_MODELS / f"{block_id}.json"
             if bundled.exists():
-                m = json.loads(bundled.read_text())
+                try:
+                    m = json.loads(bundled.read_text())
+                except (json.JSONDecodeError, OSError) as e:
+                    print(f"    ! bundled model {bundled.name} unreadable -> {e}", file=sys.stderr)
+                    manifest[block_id] = False
+                    continue
                 for path in set((m.get("textures") or {}).values()):
                     download(f"{MC_ASSETS_BASE}/{path}.png", TEXTURES_DIR / f"{path}.png")
                 MODELS_DIR.mkdir(parents=True, exist_ok=True)
@@ -667,16 +589,25 @@ def main() -> int:
     print(f"  + grind-recipes.yml: {len(grind)} recipes")
 
     # Ground-truth placed display data from the headless export (make docs).
+    # display-spec.json is a committed source input (like extras.yml): a full `make docs` run
+    # writes it from .temp/. Fail loud rather than silently zeroing every placedVariants.
     spec_path = DOCS_DATA / "display-spec.json"
-    spec = json.loads(spec_path.read_text()) if spec_path.exists() else {}
+    if not spec_path.exists():
+        sys.exit(f"ERROR: {spec_path} is missing — run `make docs` first to produce the "
+                 f"ground-truth placed-display export (the committed items.json depends on it).")
+    spec = json.loads(spec_path.read_text())
+    item_ids = {it["fullId"] for it in items}
     matched = 0
     for it in items:
         variants = (spec.get(it["fullId"]) or {}).get("variants", [])
         it["placedVariants"] = variants
         if variants:
             matched += 1
-    print(f"  + display-spec.json: {len(spec)} types, {matched} matched to items"
-          + ("" if spec else " (MISSING — run `make docs` for the 3D placed views)"))
+    unmatched = sorted(k for k in spec if k not in item_ids)
+    print(f"  + display-spec.json: matched {matched}/{len(spec)} spec types to items")
+    if unmatched:
+        print(f"    ! {len(unmatched)} spec types with no catalog item: {', '.join(unmatched[:8])}"
+              + (" …" if len(unmatched) > 8 else ""), file=sys.stderr)
 
     catalog = {
         "namespaces": sorted({it["namespace"] for it in items}),

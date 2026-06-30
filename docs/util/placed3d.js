@@ -34,8 +34,8 @@ function makeViewer(container, { dist = 3.4, target = [0, 0, 0] } = {}) {
   camera.position.set(dist * 0.75, dist * 0.5, dist);
 
   const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));   // cap before setSize; >2 wastes a lot of fill
   renderer.setSize(width, height);
-  renderer.setPixelRatio(window.devicePixelRatio);
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   container.appendChild(renderer.domElement);
 
@@ -56,12 +56,14 @@ async function buildDisplayObject(de, models) {
     try { return skullMesh(await loadSkin(de.ref)); }
     catch { return fallbackBox(0x9b6cff); }
   }
+  // BlockDisplays read back corner-origin; ItemDisplays read back centered.
+  const centered = de.kind !== 'block';
   const id = canonical(de.ref);
   if (models[id]) {
-    try { return await buildBlockMesh(id); }
-    catch { return fallbackBox(); }
+    try { return await buildBlockMesh(id, { centered }); }
+    catch { return fallbackBox(0xcccccc, { centered }); }
   }
-  return fallbackBox();
+  return fallbackBox(0xcccccc, { centered });
 }
 
 // Pre-decompose a baked keyframe track ([[16],...]) for cheap per-frame interpolation.
@@ -134,5 +136,20 @@ export async function renderPlaced(item, container, variantIndex = 0) {
     renderer.render(scene, camera);
   })();
 
-  return () => { alive = false; renderer.dispose(); };
+  return () => {
+    alive = false;                       // stop the RAF loop first
+    controls.dispose();
+    const disposeMat = (m) => { if (m && !m.userData?.shared) m.dispose(); };   // skip shared singletons
+    scene.traverse((o) => {
+      o.geometry?.dispose();
+      const m = o.material;
+      if (Array.isArray(m)) m.forEach(disposeMat);
+      else disposeMat(m);
+    });
+    // NOTE: do NOT dispose textures — they live in the shared texCache/skin cache and are reused;
+    // forceContextLoss() below frees their GPU uploads anyway.
+    renderer.dispose();
+    renderer.forceContextLoss();         // release the WebGL context (browsers cap at ~16)
+    renderer.domElement.remove();
+  };
 }

@@ -14,8 +14,9 @@ function card(item) {
   a.className = 'item-card';
   a.href = itemHref(item.fullId);
 
-  const lore = item.lore.length
-    ? `<div class="item-lore">${item.lore.map((l) => `<div class="line">${mcText(l)}</div>`).join('')}</div>`
+  const loreLines = item.lore || [];
+  const lore = loreLines.length
+    ? `<div class="item-lore">${loreLines.map((l) => `<div class="line">${mcText(l)}</div>`).join('')}</div>`
     : '';
   const badge = item.variants?.length
     ? `<span class="state-badge" title="${item.variants.length} states/textures">${item.variants.length} states</span>`

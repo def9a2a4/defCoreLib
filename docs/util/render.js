@@ -132,8 +132,9 @@ export function renderRecipe(item, recipe, itemsById) {
 }
 
 export function recipesHtml(item, itemsById) {
-  return item.recipes.length
-    ? `<div class="recipes">${item.recipes.map((r) => renderRecipe(item, r, itemsById)).join('')}</div>`
+  const recipes = item.recipes || [];   // guard: this runs per catalog card — a missing list would kill the grid
+  return recipes.length
+    ? `<div class="recipes">${recipes.map((r) => renderRecipe(item, r, itemsById)).join('')}</div>`
     : `<div class="no-recipe">No recipe — obtained via commands.</div>`;
 }
 

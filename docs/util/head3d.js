@@ -93,8 +93,8 @@ export async function render3DHead(textureUrl, container) {
   camera.position.set(1.6, 1.2, 2.2);
 
   const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));   // cap before setSize
   renderer.setSize(width, height);
-  renderer.setPixelRatio(window.devicePixelRatio);
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   container.appendChild(renderer.domElement);
 
@@ -115,5 +115,18 @@ export async function render3DHead(textureUrl, container) {
     renderer.render(scene, camera);
   })();
 
-  return () => { alive = false; renderer.dispose(); };
+  return () => {
+    alive = false;
+    controls.dispose();
+    scene.traverse((o) => {
+      o.geometry?.dispose();
+      const m = o.material;
+      const disposeMat = (x) => { if (x && !x.userData?.shared) { x.map?.dispose(); x.dispose(); } };
+      if (Array.isArray(m)) m.forEach(disposeMat);
+      else disposeMat(m);
+    });
+    renderer.dispose();
+    renderer.forceContextLoss();
+    renderer.domElement.remove();
+  };
 }

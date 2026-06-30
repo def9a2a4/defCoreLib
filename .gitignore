@@ -1,5 +1,6 @@
 .temp/**
 gradlew.bat
+**/__pycache__/**
 
 # Server directory
 server/*
