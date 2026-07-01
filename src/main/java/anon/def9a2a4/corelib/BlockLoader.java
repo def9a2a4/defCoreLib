@@ -679,24 +679,28 @@ public final class BlockLoader {
             case "rotate" -> {
                 Vector3f axis = parseVector3f(map.get("axis"), new Vector3f(0, 1, 0));
                 float speed = (float) toDouble((Object) map.get("speed"), 1.0);
-                yield Animations.rotate(axis, speed);
+                float phase = (float) toDouble((Object) map.get("phase"), 0.0);
+                yield Animations.rotate(axis, speed, phase);
             }
             case "bob" -> {
                 float amplitude = (float) toDouble((Object) map.get("amplitude"), 0.1);
                 int period = toInt((Object) map.get("period"), 40);
-                yield Animations.bob(amplitude, period);
+                float phase = (float) toDouble((Object) map.get("phase"), 0.0);
+                yield Animations.bob(amplitude, period, phase);
             }
             case "pulse" -> {
                 float min = (float) toDouble((Object) map.get("min_scale"), 0.8);
                 float max = (float) toDouble((Object) map.get("max_scale"), 1.2);
                 int period = toInt((Object) map.get("period"), 40);
-                yield Animations.pulse(min, max, period);
+                float phase = (float) toDouble((Object) map.get("phase"), 0.0);
+                yield Animations.pulse(min, max, period, phase);
             }
             case "orbit" -> {
                 float radius = (float) toDouble((Object) map.get("radius"), 0.5);
                 int period = toInt((Object) map.get("period"), 40);
                 Vector3f axis = parseVector3f(map.get("axis"), new Vector3f(0, 1, 0));
-                yield Animations.orbit(radius, period, axis);
+                float phase = (float) toDouble((Object) map.get("phase"), 0.0);
+                yield Animations.orbit(radius, period, axis, phase);
             }
             case "compose" -> {
                 List<Map<?, ?>> layers = (List<Map<?, ?>>) map.get("layers");

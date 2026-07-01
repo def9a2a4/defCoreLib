@@ -157,6 +157,18 @@ final class RotationBlocks {
             .tickInterval(10)
             .onNeighborChange((b, face) -> evaluateWaterWheel(b, network, registry, waterWheelPower))
             .onTick(b -> evaluateWaterWheel(b, network, registry, waterWheelPower))
+            // Paddles render as the plank the wheel was crafted with (captured onto the skull PDC).
+            .plankKeyed(true)
+            .displayItemResolver((b, suffix) -> {
+                if (suffix == null || !suffix.startsWith("paddle_")) return null; // leave the hub/rod
+                if (!(b.getState() instanceof org.bukkit.block.Skull skull)) return null;
+                String plank = skull.getPersistentDataContainer().get(
+                        CustomBlockRegistry.PLANK_TYPE_KEY,
+                        org.bukkit.persistence.PersistentDataType.STRING);
+                org.bukkit.Material mat = plank == null ? null : org.bukkit.Material.matchMaterial(plank);
+                if (mat == null) mat = org.bukkit.Material.OAK_PLANKS;
+                return new org.bukkit.inventory.ItemStack(mat);
+            })
             .onInteract((b, event) -> {
                 if (isWrench(event.getPlayer().getInventory().getItemInMainHand())) {
                     if (event.getPlayer().isSneaking())
@@ -179,13 +191,13 @@ final class RotationBlocks {
             .build());
     }
 
-    /** Net torque magnitude below this = no meaningful current → wheel idles. */
-    private static final double WATER_FLOW_EPS = 1.0e-3;
+    /** |flowSignal| above this = a real current is driving the wheel (signal is ~0 or ~1). */
+    private static final double WATER_FLOW_MIN = 0.1;
 
     /**
      * Evaluate a water wheel each tick / on neighbor change: spin only when flowing water
-     * exerts a net torque, in the direction that torque implies. Shared by onTick and
-     * onNeighborChange so the two never drift.
+     * pushes its rim, in the direction of that push. Shared by onTick and onNeighborChange so
+     * the two never drift. Ordered so a change costs exactly one network recalc (steady = zero).
      */
     private static void evaluateWaterWheel(Block b, RotationNetwork network,
                                            CustomBlockRegistry registry, int power) {
@@ -193,73 +205,77 @@ final class RotationBlocks {
         if (state == null) return;
         RotationNetwork.Axis axis = RotationNetwork.axisFromState(state);
         String axisStr = state.substring(state.lastIndexOf('_') + 1);
-
-        double torque = waterTorque(b, axis);
-        boolean spinning = Math.abs(torque) > WATER_FLOW_EPS;
-        String target = (spinning ? "spinning_" : "idle_") + axisStr;
         var key = CustomBlockRegistry.LocationKey.of(b);
 
-        boolean changed = false;
-        if (!target.equals(state)) {
+        double signal = flowSignal(b, axis);
+        boolean spinning = Math.abs(signal) > WATER_FLOW_MIN;
+        String target = (spinning ? "spinning_" : "idle_") + axisStr;
+        boolean stateChanged = !target.equals(state);
+
+        // Write the spin direction to the PDC FIRST, so the recalc that addNode triggers below
+        // (or the targeted recalc) anchors on the fresh direction. Set unconditionally when
+        // (re)entering spin so the node is never added with a stale/default direction.
+        // Flow + rotation axis are world-absolute, so this sign is facing-independent.
+        // NOTE: CW = positive rotation about the YAML axis; if a wheel spins against its
+        // current, swap the two SpinDirection values below.
+        boolean dirChanged = false;
+        if (spinning && b.getState() instanceof Skull skull) {
+            RotationNetwork.SpinDirection desired = signal > 0
+                    ? RotationNetwork.SpinDirection.CW : RotationNetwork.SpinDirection.CCW;
+            boolean enteringSpin = !state.startsWith("spinning_");
+            if (enteringSpin || network.readStoredDirection(key) != desired) {
+                skull.getPersistentDataContainer().set(RotationNetwork.SPIN_DIR_KEY,
+                        PersistentDataType.STRING,
+                        desired == RotationNetwork.SpinDirection.CW ? "cw" : "ccw");
+                skull.update();
+                dirChanged = true;
+            }
+        }
+
+        if (stateChanged) {
             registry.setState(b, target);
             CustomHeadBlock type = registry.getTypeFromBlock(b);
             if (type != null) registry.applyConfig(b, type, target, 0);
             network.removeNode(key);
             network.addNode(b, "rotation:water_wheel", axis,
                 spinning ? RotationNetwork.NodeRole.SOURCE : RotationNetwork.NodeRole.TRANSMITTER,
-                spinning ? power : 0, false);
-            changed = true;
+                spinning ? power : 0, false); // addNode recalcs with the fresh direction
+            return;
         }
-
-        if (spinning) {
-            // Flow vector and rotation axis are world-absolute, so this sign is facing-independent.
-            // NOTE: CW=positive rotation about the YAML axis; if a wheel visually spins the wrong
-            // way against its current, swap these two SpinDirection values.
-            RotationNetwork.SpinDirection desired = torque > 0
-                    ? RotationNetwork.SpinDirection.CW : RotationNetwork.SpinDirection.CCW;
-            if (network.readStoredDirection(key) != desired
-                    && b.getState() instanceof Skull skull) {
-                skull.getPersistentDataContainer().set(RotationNetwork.SPIN_DIR_KEY,
-                        PersistentDataType.STRING,
-                        desired == RotationNetwork.SpinDirection.CW ? "cw" : "ccw");
-                skull.update();
-                changed = true;
-            }
-        }
-
-        if (changed) recalcIfKnown(b, network);
+        if (dirChanged) recalcIfKnown(b, network);
     }
 
     /**
-     * Signed torque about the wheel's axle from flowing water on its rim. Samples the four
-     * in-plane neighbors (XY plane for a Z-axle wheel, YZ for X-axle); each water neighbor
-     * contributes (r × flow)·axle, where r is the neighbor's unit offset and flow is Paper's
-     * ground-truth {@code computeFlowDirection}. Still/source pools yield ~0 → wheel idles.
+     * Flow "signal": flow direction turned into a spin sign + strength. Over-shot sampling —
+     * the block ABOVE plus the two tangential SIDE neighbors (drop DOWN, whose symmetric torque
+     * would cancel a uniform current). Each water neighbor contributes the tangential push
+     * (r × flow)·axle, r = neighbor unit offset, flow = Paper's ground-truth computeFlowDirection.
+     * Still/source pools flow ~0 → signal ~0 → idle. Plane: XY for a Z-axle wheel, YZ for X-axle.
      */
-    private static double waterTorque(Block block, RotationNetwork.Axis axis) {
+    private static double flowSignal(Block block, RotationNetwork.Axis axis) {
         org.bukkit.World world = block.getWorld();
         boolean xAxle = axis == RotationNetwork.Axis.X;
         org.bukkit.block.BlockFace[] faces = xAxle
                 ? new org.bukkit.block.BlockFace[]{ org.bukkit.block.BlockFace.UP,
-                    org.bukkit.block.BlockFace.DOWN, org.bukkit.block.BlockFace.NORTH,
-                    org.bukkit.block.BlockFace.SOUTH }
+                    org.bukkit.block.BlockFace.NORTH, org.bukkit.block.BlockFace.SOUTH }
                 : new org.bukkit.block.BlockFace[]{ org.bukkit.block.BlockFace.UP,
-                    org.bukkit.block.BlockFace.DOWN, org.bukkit.block.BlockFace.EAST,
-                    org.bukkit.block.BlockFace.WEST };
-        double torque = 0;
+                    org.bukkit.block.BlockFace.EAST, org.bukkit.block.BlockFace.WEST };
+        double signal = 0;
         for (var f : faces) {
             Block nb = block.getRelative(f);
+            // Skip a neighbor whose chunk isn't loaded — getFluidData would sync-load it.
+            if (!world.isChunkLoaded(nb.getX() >> 4, nb.getZ() >> 4)) continue;
             org.bukkit.Location loc = nb.getLocation();
             io.papermc.paper.block.fluid.FluidData fd = world.getFluidData(loc);
             org.bukkit.Fluid type = fd.getFluidType();
             if (type != org.bukkit.Fluid.WATER && type != org.bukkit.Fluid.FLOWING_WATER) continue;
             org.bukkit.util.Vector v = fd.computeFlowDirection(loc);
             org.bukkit.util.Vector r = f.getDirection();
-            torque += xAxle
+            signal += xAxle
                     ? r.getY() * v.getZ() - r.getZ() * v.getY()   // (r × v)·x̂
                     : r.getX() * v.getY() - r.getY() * v.getX();   // (r × v)·ẑ
         }
-        return torque;
+        return signal;
     }
 
     // ──────────────────────────────────────────────────────────────────────

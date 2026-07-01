@@ -422,7 +422,8 @@ blocks:
           type: compose
           layers:
             - { type: rotate, axis: [0, 1, 0], speed: 3.0 }
-            - { type: bob, amplitude: 0.08, period: 50 }
+            # amplitude compensated 0.08→0.028 for the world-space bob fix (was scaled by 0.35)
+            - { type: bob, amplitude: 0.028, period: 50 }
         interpolation: 2
 
   # ─── 20. Pulsing Orb ─────────────────────────────────────────────────

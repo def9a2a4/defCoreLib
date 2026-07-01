@@ -310,6 +310,7 @@ public final class CustomHeadBlock {
     private final java.util.function.@Nullable BiFunction<Block, String, org.bukkit.inventory.ItemStack> displayItemResolver;
     private final @Nullable DisplayTransformResolver displayTransformResolver;
     private final @Nullable BannerTier bannerTier;
+    private final boolean plankKeyed;
     private final org.bukkit.inventory.recipe.@Nullable CraftingBookCategory recipeCategory;
 
     private CustomHeadBlock(Builder b) {
@@ -364,6 +365,7 @@ public final class CustomHeadBlock {
         this.displayItemResolver = b.displayItemResolver;
         this.displayTransformResolver = b.displayTransformResolver;
         this.bannerTier = b.bannerTier;
+        this.plankKeyed = b.plankKeyed;
         this.recipeCategory = b.recipeCategory;
 
         // Cache capability checks (avoid streaming states on every call)
@@ -438,6 +440,8 @@ public final class CustomHeadBlock {
     public @Nullable DisplayTransformResolver displayTransformResolver() { return displayTransformResolver; }
     /** Required banner tier for banner-blade crafting ingredients, or {@code null} for no gating. */
     public @Nullable BannerTier bannerTier() { return bannerTier; }
+    /** Whether this block captures the crafted plank type onto its item/skull (water wheel). */
+    public boolean plankKeyed() { return plankKeyed; }
     public org.bukkit.inventory.recipe.@Nullable CraftingBookCategory recipeCategory() { return recipeCategory; }
 
     public boolean hasDisplayEntities() { return _hasDisplayEntities; }
@@ -665,6 +669,7 @@ public final class CustomHeadBlock {
         b.displayItemResolver = displayItemResolver;
         b.displayTransformResolver = displayTransformResolver;
         b.bannerTier = bannerTier;
+        b.plankKeyed = plankKeyed;
         b.recipeCategory = recipeCategory;
         return b;
     }
@@ -726,6 +731,7 @@ public final class CustomHeadBlock {
         private @Nullable BiFunction<Block, String, org.bukkit.inventory.ItemStack> displayItemResolver;
         private @Nullable DisplayTransformResolver displayTransformResolver;
         private @Nullable BannerTier bannerTier;
+        private boolean plankKeyed;
         private org.bukkit.inventory.recipe.@Nullable CraftingBookCategory recipeCategory;
 
         private Builder(String namespace, String typeId) {
@@ -859,6 +865,7 @@ public final class CustomHeadBlock {
             return this;
         }
         public Builder bannerTier(BannerTier tier) { this.bannerTier = tier; return this; }
+        public Builder plankKeyed(boolean v) { this.plankKeyed = v; return this; }
         public Builder recipeCategory(org.bukkit.inventory.recipe.CraftingBookCategory c) { this.recipeCategory = c; return this; }
 
         public CustomHeadBlock build() {

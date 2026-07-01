@@ -25,6 +25,10 @@ public interface DisplayAnimation {
 final class Animations {
     private Animations() {}
 
+    /** One full cycle, for converting a phase given in CYCLE FRACTIONS (turns) to radians:
+     *  phase 0.25 = quarter cycle, 0.5 = half (anti-phase), 1.0 = full cycle. */
+    private static final float TAU = (float) (2.0 * Math.PI);
+
     /** Continuous rotation around an axis.
      *
      * <p>Uses pre-multiply (R × base) so the entire display — including its
@@ -37,37 +41,50 @@ final class Animations {
      * crystal at [0, 0.8, 0] rotating around Y), pre- and post-multiply are
      * visually equivalent — the center is unaffected by the rotation.
      */
-    static DisplayAnimation rotate(Vector3f axis, float degreesPerTick) {
+    static DisplayAnimation rotate(Vector3f axis, float degreesPerTick, float phaseTurns) {
         float radiansPerTick = (float) Math.toRadians(degreesPerTick);
+        float phase = phaseTurns * TAU;
         Vector3f norm = normalizedAxis(axis);
         return (base, tickAge, output) -> {
-            new Matrix4f().rotate(radiansPerTick * tickAge, norm.x, norm.y, norm.z).mul(base, output);
+            new Matrix4f().rotate(radiansPerTick * tickAge + phase, norm.x, norm.y, norm.z).mul(base, output);
         };
     }
 
-    /** Vertical bob (sine wave on Y axis). */
-    static DisplayAnimation bob(float amplitude, int periodTicks) {
+    /** Vertical bob (sine wave on Y axis).
+     *
+     * <p>Pre-multiplies (T × base) so the bob is a WORLD-space vertical translation,
+     * independent of the display's own scale/rotation — every bobbing display moves by
+     * the same {@code amplitude}. (Post-multiplying would push dy through the base's
+     * scale+rotation, so a scaled or flipped display would bob by a different magnitude /
+     * opposite direction.) Mirrors {@link #rotate}'s rigid-body approach.
+     *
+     * <p>{@code phaseTurns} offsets the sine (0.5 = anti-phase), so two displays on the
+     * same block can bob together or in opposition. */
+    static DisplayAnimation bob(float amplitude, int periodTicks, float phaseTurns) {
         float omega = omega(periodTicks);
+        float phase = phaseTurns * TAU;
         return (base, tickAge, output) -> {
-            float dy = amplitude * (float) Math.sin(omega * tickAge);
-            output.set(base).translate(0, dy, 0);
+            float dy = amplitude * (float) Math.sin(omega * tickAge + phase);
+            new Matrix4f().translation(0, dy, 0).mul(base, output);
         };
     }
 
     /** Pulsing scale between min and max. */
-    static DisplayAnimation pulse(float minScale, float maxScale, int periodTicks) {
+    static DisplayAnimation pulse(float minScale, float maxScale, int periodTicks, float phaseTurns) {
         float mid = (minScale + maxScale) * 0.5f;
         float amp = (maxScale - minScale) * 0.5f;
         float omega = omega(periodTicks);
+        float phase = phaseTurns * TAU;
         return (base, tickAge, output) -> {
-            float s = mid + amp * (float) Math.sin(omega * tickAge);
+            float s = mid + amp * (float) Math.sin(omega * tickAge + phase);
             output.set(base).scale(s);
         };
     }
 
     /** Circular orbit around an axis. */
-    static DisplayAnimation orbit(float radius, int periodTicks, Vector3f axis) {
+    static DisplayAnimation orbit(float radius, int periodTicks, Vector3f axis, float phaseTurns) {
         float omega = omega(periodTicks);
+        float phase = phaseTurns * TAU;
         Vector3f norm = normalizedAxis(axis);
         // Build a local coordinate frame: tangent + bitangent perpendicular to axis
         Vector3f tangent = new Vector3f();
@@ -80,7 +97,7 @@ final class Animations {
         norm.cross(tangent, bitangent).normalize();
 
         return (base, tickAge, output) -> {
-            float angle = omega * tickAge;
+            float angle = omega * tickAge + phase;
             float dx = radius * ((float) Math.cos(angle) * tangent.x + (float) Math.sin(angle) * bitangent.x);
             float dy = radius * ((float) Math.cos(angle) * tangent.y + (float) Math.sin(angle) * bitangent.y);
             float dz = radius * ((float) Math.cos(angle) * tangent.z + (float) Math.sin(angle) * bitangent.z);

@@ -66,6 +66,16 @@ public class CustomBlockRegistry {
         }
     }
 
+    // PDC key for the captured plank Material name (water wheel paddles), stored on item + skull.
+    static final NamespacedKey PLANK_TYPE_KEY = new NamespacedKey("corelib", "plank_type");
+
+    /** Copy the plank-type PDC string between two PersistentDataContainers (no-op if absent). */
+    static void copyPlankPdc(org.bukkit.persistence.PersistentDataContainer src,
+                             org.bukkit.persistence.PersistentDataContainer dst) {
+        String plank = src.get(PLANK_TYPE_KEY, org.bukkit.persistence.PersistentDataType.STRING);
+        if (plank != null) dst.set(PLANK_TYPE_KEY, org.bukkit.persistence.PersistentDataType.STRING, plank);
+    }
+
     // ──────────────────────────────────────────────────────────────────────
     // Sail (blade banner) lore generation
     // ──────────────────────────────────────────────────────────────────────
