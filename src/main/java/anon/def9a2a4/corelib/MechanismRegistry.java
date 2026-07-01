@@ -82,8 +82,15 @@ public class MechanismRegistry {
             as.setPersistent(true); as.setRotation(0, 0);
             as.addScoreboardTag("corelib:mech:" + mechId + ":vehicle");
         });
-        return assembleCore(mechId, type, blocks, pivot, rotationAxis, vehicle,
-            ARMORSTAND_RIDE_OFFSET, true, serializer);
+        // We own the vehicle: if assembly throws (before it's registered in activeMechanisms), remove the
+        // just-spawned persistent ArmorStand so it isn't orphaned in the world until the next chunk reload.
+        try {
+            return assembleCore(mechId, type, blocks, pivot, rotationAxis, vehicle,
+                ARMORSTAND_RIDE_OFFSET, true, serializer);
+        } catch (RuntimeException e) {
+            vehicle.remove();
+            throw e;
+        }
     }
 
     /**
@@ -127,6 +134,7 @@ public class MechanismRegistry {
 
             String customType = null, customState = null;
             List<CustomHeadBlock.DisplayEntityConfig> decs = null;
+            List<CustomHeadBlock.BlockDisplayEntityConfig> bdecs = null;
             CustomHeadBlock.ParticleConfig particles = null;
             Inventory storage = null;
             boolean spinReversed = false;
@@ -137,6 +145,7 @@ public class MechanismRegistry {
                 customType = chb.fullId();
                 customState = registry.getState(block);
                 decs = chb.resolveDisplayEntities(customState);
+                bdecs = chb.resolveBlockDisplayEntities(customState);
                 particles = chb.resolveParticles(customState);
                 // Capture spin direction + wall facing BEFORE onBlockRemoved() clears the direction.
                 spinReversed = registry.isSpinReversed(CustomBlockRegistry.LocationKey.of(block));
@@ -160,7 +169,7 @@ public class MechanismRegistry {
             }
 
             blockData.add(new MechanismBlockData(bd, local, true, 1.0f,
-                customType, customState, decs, particles, storage, spinReversed, wallFacing));
+                customType, customState, decs, bdecs, particles, storage, spinReversed, wallFacing));
         }
 
         // 2. Tear down custom-block tracking only AFTER every block's state was captured above.
@@ -224,6 +233,20 @@ public class MechanismRegistry {
                         mechId, i, "extra_" + d);
                     if (dec.interpolationDuration() != 0) {
                         ((ItemDisplay) extra).setInterpolationDuration(dec.interpolationDuration());
+                    }
+                    group.add(extra);
+                }
+            }
+
+            // Additional block-data displays from display_entities config (e.g. a vertical slab's body).
+            // Appended AFTER the item extras, so group = [primary, itemExtras…, blockExtras…]; the transform
+            // loops in rotate()/updateAnimatedDisplays() index these at base = 1 + itemCount.
+            if (mb.blockDisplayEntityConfigs != null) {
+                for (int d = 0; d < mb.blockDisplayEntityConfigs.size(); d++) {
+                    var bdc = mb.blockDisplayEntityConfigs.get(d);
+                    Display extra = spawnMechBlockDisplay(spawnLoc, bdc.blockData(), mechId, i, "block_" + d);
+                    if (bdc.interpolationDuration() != 0) {
+                        extra.setInterpolationDuration(bdc.interpolationDuration());
                     }
                     group.add(extra);
                 }
@@ -391,28 +414,53 @@ public class MechanismRegistry {
             if (displays.isEmpty() || !displays.get(0).isValid()) continue;
 
             MechanismBlockData mb = mech.blocks.get(i);
-            if (mb.displayEntityConfigs == null) continue;
 
-            for (int d = 0; d < mb.displayEntityConfigs.size(); d++) {
-                var dec = mb.displayEntityConfigs.get(d);
-                if (dec.animation() == null) continue;
-                int displayIdx = d + 1;
-                if (displayIdx >= displays.size()) continue;
-                Display display = displays.get(displayIdx);
-                if (!display.isValid()) continue;
+            if (mb.displayEntityConfigs != null) {
+                for (int d = 0; d < mb.displayEntityConfigs.size(); d++) {
+                    var dec = mb.displayEntityConfigs.get(d);
+                    if (dec.animation() == null) continue;
+                    int displayIdx = d + 1;
+                    if (displayIdx >= displays.size()) continue;
+                    Display display = displays.get(displayIdx);
+                    if (!display.isValid()) continue;
 
-                // Animate the display's LOCAL transform (origin = block center), exactly as the standalone
-                // path does — negating the age for a CCW-captured source.
-                long age = mb.spinReversed ? -tickAge : tickAge;
-                dec.animation().apply(BasicMechanism.transformToMatrix(dec.transform()), age, workMatrix);
+                    // Animate the display's LOCAL transform (origin = block center), exactly as the standalone
+                    // path does — negating the age for a CCW-captured source.
+                    long age = mb.spinReversed ? -tickAge : tickAge;
+                    dec.animation().apply(BasicMechanism.transformToMatrix(dec.transform()), age, workMatrix);
 
-                // Place: pivot-rotation · block-offset · [wall offset] · animated-local.
-                // Additional displays are always ItemDisplay (center-rendered) — no XZ shift.
-                Matrix4f placed = new Matrix4f(mech.currentTransform()).mul(mb.localTransform);
-                BasicMechanism.applyWallOffset(placed, mb.wallFacing, dec.wallOffset());
-                placed.mul(workMatrix);
-                placed.m31(placed.m31() - mech.rideOffset); // passenger offset — parent space, applied last
-                display.setTransformationMatrix(placed);
+                    // Place: pivot-rotation · block-offset · [wall offset] · animated-local.
+                    // Additional displays are always ItemDisplay (center-rendered) — no XZ shift.
+                    Matrix4f placed = new Matrix4f(mech.currentTransform()).mul(mb.localTransform);
+                    BasicMechanism.applyWallOffset(placed, mb.wallFacing, dec.wallOffset());
+                    placed.mul(workMatrix);
+                    placed.m31(placed.m31() - mech.rideOffset); // passenger offset — parent space, applied last
+                    display.setTransformationMatrix(placed);
+                }
+            }
+
+            // Animated BLOCK-data displays, indexed after the item extras. Same composition as above and,
+            // like the non-animated block path in rotate(), NO -0.5 corner shift (the authored transform
+            // already carries it, matching the static center-spawn).
+            if (mb.blockDisplayEntityConfigs != null) {
+                int base = 1 + (mb.displayEntityConfigs != null ? mb.displayEntityConfigs.size() : 0);
+                for (int d = 0; d < mb.blockDisplayEntityConfigs.size(); d++) {
+                    var bdc = mb.blockDisplayEntityConfigs.get(d);
+                    if (bdc.animation() == null) continue;
+                    int idx = base + d;
+                    if (idx >= displays.size()) continue;
+                    Display display = displays.get(idx);
+                    if (!display.isValid()) continue;
+
+                    long age = mb.spinReversed ? -tickAge : tickAge;
+                    bdc.animation().apply(BasicMechanism.transformToMatrix(bdc.transform()), age, workMatrix);
+
+                    Matrix4f placed = new Matrix4f(mech.currentTransform()).mul(mb.localTransform);
+                    BasicMechanism.applyWallOffset(placed, mb.wallFacing, bdc.wallOffset());
+                    placed.mul(workMatrix);
+                    placed.m31(placed.m31() - mech.rideOffset); // passenger offset — parent space, applied last
+                    display.setTransformationMatrix(placed);
+                }
             }
         }
     }

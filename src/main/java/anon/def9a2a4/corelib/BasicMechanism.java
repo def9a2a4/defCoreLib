@@ -164,6 +164,25 @@ final class BasicMechanism implements Mechanism {
                     group.get(displayIdx).setTransformationMatrix(extra);
                 }
             }
+
+            // Additional BLOCK-data displays (e.g. a vertical slab's body). Composed exactly like the item
+            // path above — dm (center frame) · wallOffset · configTransform, with NO -0.5 corner shift: unlike
+            // the PRIMARY BlockDisplay (identity transform, needs the shift), these carry an authored transform
+            // that already bakes in the corner offset, matching the static DisplayUtil.spawnBlock (center-spawn,
+            // no shift). Indexed after the item extras. Animated ones are handled in updateAnimatedDisplays().
+            if (mb.blockDisplayEntityConfigs != null) {
+                int base = 1 + (mb.displayEntityConfigs != null ? mb.displayEntityConfigs.size() : 0);
+                for (int d = 0; d < mb.blockDisplayEntityConfigs.size(); d++) {
+                    int idx = base + d;
+                    if (idx >= group.size()) break;
+                    var bdc = mb.blockDisplayEntityConfigs.get(d);
+                    if (bdc.animation() != null) continue;
+                    Matrix4f bd = new Matrix4f(dm);
+                    applyWallOffset(bd, mb.wallFacing, bdc.wallOffset());
+                    bd.mul(transformToMatrix(bdc.transform()));
+                    group.get(idx).setTransformationMatrix(bd);
+                }
+            }
         }
 
         // Reposition collider carriers. localTransform is now center-based in all axes and the pivot
@@ -211,6 +230,7 @@ final class BasicMechanism implements Mechanism {
         // Update configs for tick loop
         mb.particles = type.resolveParticles(newState);
         mb.displayEntityConfigs = type.resolveDisplayEntities(newState);
+        mb.blockDisplayEntityConfigs = type.resolveBlockDisplayEntities(newState);
     }
 
     // ──────────────────────────────────────────────────────────────────────

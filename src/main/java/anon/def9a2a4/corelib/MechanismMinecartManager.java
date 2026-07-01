@@ -31,7 +31,8 @@ import java.util.*;
  * Place a minecart on rails, glue blocks to it (glue item, right-click), then push onto a
  * powered activator rail — or right-click the cart — to assemble the glued selection into a
  * mechanism that follows the minecart. Another activator rail disassembles back to blocks.
- * Assembly is glue-only: an unglued cart assembles nothing.
+ * Assembly uses the cart's glued selection; with no glue it defaults to the single block
+ * directly above the cart (nothing if that block is air).
  *
  * Self-contained — can be spun out to a separate plugin by moving this file
  * and calling getMechanismRegistry() from the new plugin.

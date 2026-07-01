@@ -31,6 +31,7 @@ public final class MechanismBlockData {
     // Nullable but not annotated: @Nullable cannot be applied to qualified inner type names
     String customState;
     List<CustomHeadBlock.DisplayEntityConfig> displayEntityConfigs;
+    List<CustomHeadBlock.BlockDisplayEntityConfig> blockDisplayEntityConfigs;
     CustomHeadBlock.ParticleConfig particles;
     Inventory storage;
 
@@ -38,6 +39,7 @@ public final class MechanismBlockData {
                        boolean hasCollision, float collisionScale,
                        @Nullable String customTypeId, String customState,
                        List<CustomHeadBlock.DisplayEntityConfig> displayEntityConfigs,
+                       List<CustomHeadBlock.BlockDisplayEntityConfig> blockDisplayEntityConfigs,
                        CustomHeadBlock.ParticleConfig particles,
                        Inventory storage,
                        boolean spinReversed, @Nullable Vector3f wallFacing) {
@@ -48,6 +50,7 @@ public final class MechanismBlockData {
         this.customTypeId = customTypeId;
         this.customState = customState;
         this.displayEntityConfigs = displayEntityConfigs;
+        this.blockDisplayEntityConfigs = blockDisplayEntityConfigs;
         this.particles = particles;
         this.storage = storage;
         this.spinReversed = spinReversed;
@@ -56,6 +59,7 @@ public final class MechanismBlockData {
 
     public String customState() { return customState; }
     public List<CustomHeadBlock.DisplayEntityConfig> displayEntityConfigs() { return displayEntityConfigs; }
+    public List<CustomHeadBlock.BlockDisplayEntityConfig> blockDisplayEntityConfigs() { return blockDisplayEntityConfigs; }
     public CustomHeadBlock.ParticleConfig particles() { return particles; }
     public Inventory storage() { return storage; }
 }

@@ -1466,7 +1466,7 @@ public class CustomBlockRegistry {
     public org.bukkit.inventory.@Nullable Inventory takeStorageSnapshot(Block block) {
         CustomHeadBlock type = getTypeFromBlock(block);
         if (type == null || type.storage() == null) return null;
-        org.bukkit.inventory.Inventory snap = Bukkit.createInventory(null, type.storage().layout().slots);
+        org.bukkit.inventory.Inventory snap = createStorageInventory(type.storage(), type, null);
         StorageHolder holder = openStorages.remove(LocationKey.of(block));   // evict: block is leaving
         if (holder != null) {
             new ArrayList<>(holder.getInventory().getViewers()).forEach(v -> v.closeInventory());
