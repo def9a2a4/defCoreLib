@@ -23,9 +23,9 @@ their features on top of it.
 
 DefCoreLib is a dependency other plugins install alongside:
 
-- **[vslab](https://github.com/def9a2a4/defCoreLib/blob/main/docs/readmes/vslab.md)** - vertical slabs
-- **[bbanners](https://github.com/def9a2a4/defCoreLib/blob/main/docs/readmes/bbanners.md)** - flag banners + large/huge banners
-- **[mech](https://github.com/def9a2a4/defCoreLib/blob/main/docs/readmes/mech.md)** - rotation mechanisms, glue, mechanism minecarts
+- **[VerticalSlabs](https://github.com/def9a2a4/defCoreLib/blob/main/docs/readmes/vslab.md)** - vertical slabs
+- **[BetterBanners](https://github.com/def9a2a4/defCoreLib/blob/main/docs/readmes/bbanners.md)** - flag banners + large/huge banners
+- **[Mechanism](https://github.com/def9a2a4/defCoreLib/blob/main/docs/readmes/mech.md)** - rotation mechanisms, glue, mechanism minecarts
 - [**Pipes**](https://github.com/def9a2a4/Pipes) - item-transport pipes
 
 ## Commands

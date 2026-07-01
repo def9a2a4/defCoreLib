@@ -18,6 +18,7 @@ const nsLabel = (ns) => NS_LABELS[ns] || ns.charAt(0).toUpperCase() + ns.slice(1
 let CATALOG = { items: [], namespaces: [] };
 let itemsById = new Map();
 let activeNamespace = null;
+let subsetIds = null;   // Set<fullId> or null when no ?items= given
 
 // Lazily fills each card's placed-thumbnail (static PNG, generated offscreen → 0 live WebGL contexts on
 // the grid). Reset + re-armed every render() so search/filter re-renders don't retain detached cards.
@@ -80,6 +81,8 @@ function matches(it, q) {
   return !q || stripColors(it.name).toLowerCase().includes(q) || it.fullId.toLowerCase().includes(q);
 }
 
+function inSubset(it) { return !subsetIds || subsetIds.has(it.fullId); }
+
 function render() {
   const q = currentQuery();
 
@@ -91,7 +94,7 @@ function render() {
   let total = 0;
   for (const ns of orderedNamespaces()) {
     if (activeNamespace && activeNamespace !== ns) continue;
-    const its = CATALOG.items.filter((it) => it.namespace === ns && matches(it, q));
+    const its = CATALOG.items.filter((it) => it.namespace === ns && matches(it, q) && inSubset(it));
     if (!its.length) continue;
     total += its.length;
 
@@ -107,7 +110,7 @@ function render() {
   document.getElementById('counter').textContent = `${total} items`;
 
   // Vertical slabs: their own section (only when not filtered to another namespace).
-  const slabs = (!activeNamespace) ? CATALOG.items.filter((it) => it.namespace === SLAB_NAMESPACE && matches(it, q)) : [];
+  const slabs = (!activeNamespace) ? CATALOG.items.filter((it) => it.namespace === SLAB_NAMESPACE && matches(it, q) && inSubset(it)) : [];
   const slabGrid = document.getElementById('slab-grid');
   slabGrid.innerHTML = '';
   slabs.forEach((it) => slabGrid.appendChild(card(it)));
@@ -124,13 +127,38 @@ function renderPills() {
     const el = document.createElement('button');
     el.className = 'pill' + (activeNamespace === ns ? ' active' : '');
     el.textContent = label;
-    el.onclick = () => { activeNamespace = activeNamespace === ns ? null : ns; renderPills(); render(); };
+    el.onclick = () => { activeNamespace = activeNamespace === ns ? null : ns; syncUrl(); renderPills(); render(); };
     return el;
   };
   pills.innerHTML = '';
   pills.appendChild(make('All', null));
   // Slabs have their own section, so they're not a main-grid filter.
   CATALOG.namespaces.filter((ns) => ns !== SLAB_NAMESPACE).forEach((ns) => pills.appendChild(make(ns, ns)));
+}
+
+// Seed filter state from the URL (?q=…, ?ns=…, ?items=a,b) so links open a specific subset.
+function readUrl() {
+  const p = new URLSearchParams(location.search);
+  const q = p.get('q');
+  if (q) document.getElementById('search-input').value = q;
+  const ns = p.get('ns');
+  if (ns && CATALOG.namespaces.includes(ns) && ns !== SLAB_NAMESPACE) activeNamespace = ns;
+  const items = p.get('items');
+  if (items) {
+    const ids = items.split(',').map((s) => s.trim()).filter(Boolean);
+    if (ids.length) subsetIds = new Set(ids);
+  }
+}
+
+// Mirror the current filter state back into the URL so any view is copy-pasteable.
+function syncUrl() {
+  const p = new URLSearchParams();
+  const q = document.getElementById('search-input').value.trim();
+  if (q) p.set('q', q);
+  if (activeNamespace) p.set('ns', activeNamespace);
+  if (subsetIds) p.set('items', [...subsetIds].join(','));
+  const qs = p.toString();
+  history.replaceState(null, '', qs ? `?${qs}` : location.pathname);
 }
 
 async function init() {
@@ -145,7 +173,8 @@ async function init() {
     return;
   }
   itemsById = new Map(CATALOG.items.map((it) => [it.fullId, it]));
-  document.getElementById('search-input').addEventListener('input', render);
+  readUrl();
+  document.getElementById('search-input').addEventListener('input', () => { syncUrl(); render(); });
   renderPills();
   render();
 }

@@ -62,7 +62,7 @@ live site later, either:
 
 | Path | Purpose |
 | --- | --- |
-| `index.html` | Catalog grid (main items + Vertical Slabs + Millstone sections) |
+| `index.html` | Catalog grid (main items + VerticalSlabs + Millstone sections) |
 | `item.html` | Per-item detail page (`item.html?id=<namespace:id>`) |
 | `util/render.js` | Shared rendering: color codes, icons, recipe grids, head hydration |
 | `util/catalog.js` | Catalog grid: cards, search, namespace filters, slab/mill sections |

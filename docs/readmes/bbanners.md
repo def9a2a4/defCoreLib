@@ -1,4 +1,4 @@
-# bbanners
+# BetterBanners
 
 Flag banners and oversized banner tiers.
 
@@ -8,7 +8,7 @@ Flag banners and oversized banner tiers.
 
 - **Flag banners** - mount any banner as a hanging flag on fence posts, chains, and bars.
 - **Large & Huge banners** - upgrade normal banners into bigger variants that keep their patterns.
-- Large/Huge banners are the ingredient for [Mechanisms](https://github.com/def9a2a4/defCoreLib/blob/main/docs/readmes/mech.md) Large and Huge windmills.
+- Large/Huge banners are the ingredient for [Mechanism](https://github.com/def9a2a4/defCoreLib/blob/main/docs/readmes/mech.md) Large and Huge windmills.
 
 ## Requires
 

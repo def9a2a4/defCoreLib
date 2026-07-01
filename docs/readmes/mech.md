@@ -1,4 +1,4 @@
-# mech
+# Mechanism
 
 Kinetic rotation mechanisms - build power networks that drive machines, doors, and vehicles. Inspired by Create mod, loosely also inspired by slimefun, pylon, and classic minecraft tekkit/technic/buildcraft/industrialcraft.
 
@@ -45,7 +45,7 @@ shafts and gears, branch or turn corners with gears, and gate the flow with clut
 ## Requires
 
 - **[DefCoreLib](https://github.com/def9a2a4/defCoreLib/blob/main/docs/readmes/defCoreLib.md)** is required.
-- Soft depend: [bbanners](https://github.com/def9a2a4/defCoreLib/blob/main/docs/readmes/bbanners.md) for **Large & Huge windmills** - without it, plain windmills still
+- Soft depend: [BetterBanners](https://github.com/def9a2a4/defCoreLib/blob/main/docs/readmes/bbanners.md) for **Large & Huge windmills** - without it, plain windmills still
   craft but the large/huge tiers are uncraftable.
 
 ## Configuration
