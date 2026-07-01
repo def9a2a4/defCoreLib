@@ -79,8 +79,8 @@ BLOCK_FILES = [
 # Processing-machine recipe files → (machine block fullId, display label).
 # Each machine's input→output recipes attach to its own catalog entry.
 MACHINE_RECIPE_FILES = {
-    "rotation:millstone": ("mill-recipes.yml", "Milling"),
-    "rotation:press": ("press-recipes.yml", "Pressing"),
+    "mech:millstone": ("mill-recipes.yml", "Milling"),
+    "mech:press": ("press-recipes.yml", "Pressing"),
 }
 
 # Output materials that are bottled, so producing them consumes an empty glass bottle
@@ -705,7 +705,7 @@ def main() -> int:
     # Tier windmills (large/huge) have no YAML recipe of their own — their craft is the base Windmill
     # recipe with tier banners (Java captureBannerIngredients swaps the result). Grab the base recipe
     # so we can clone it onto them below for the docs.
-    windmill = next((it for it in items if it["fullId"] == "rotation:windmill"), None)
+    windmill = next((it for it in items if it["fullId"] == "mech:windmill"), None)
     base_windmill_recipes = windmill["recipes"] if windmill else []
     matched = 0
     for it in items:
