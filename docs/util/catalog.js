@@ -1,6 +1,5 @@
 import {
-  esc, mcText, stripColors, iconHtml, recipesHtml, machineRecipesHtml, producedByHtml,
-  hydrateHeads, itemHref,
+  esc, mcText, stripColors, iconHtml, recipesHtml, producedByHtml, hydrateHeads, itemHref,
 } from './render.js';
 import { thumbnailDataURL, placedVariantBlocks } from './placed3d.js';
 
@@ -69,7 +68,6 @@ function card(item) {
     ${lore}
     ${item.recipes?.length || !item.producedBy?.length ? recipesHtml(item, itemsById) : ''}
     ${item.producedBy?.length ? producedByHtml(item.producedBy, itemsById) : ''}
-    ${item.machineRecipes?.length ? machineRecipesHtml(item.machineRecipes, itemsById) : ''}
   `;
   return a;
 }
