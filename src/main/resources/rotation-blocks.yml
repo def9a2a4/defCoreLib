@@ -676,15 +676,15 @@ blocks:
       idle:
         display_entities:
           - { material: SMOOTH_STONE_SLAB, tag: base,  transform: { translation: [0, -0.25, 0],  scale: [0.9, 0.5, 0.9] } }
-          - { material: SMOOTH_STONE_SLAB, tag: anvil, transform: { translation: [0, 0.075, 0],  scale: [0.75, 0.3, 0.75] } }
-          - { material: PISTON,            tag: head,  transform: { translation: [0, 0.20, 0],   scale: [0.55, 0.25, 0.55], left_rotation: [180, 1, 0, 0] } }
-          - { texture: "@rod_up",          tag: shaft, transform: { translation: [0, 0.5, 0],    scale: [0.66, 0.5, 0.66] } }
+          - { material: SMOOTH_STONE_SLAB, tag: anvil, transform: { translation: [0, 0.025, 0],  scale: [0.75, 0.3, 0.75] } }
+          - { material: PISTON,            tag: head,  transform: { translation: [0, 0.15, 0],   scale: [0.55, 0.25, 0.55], left_rotation: [180, 1, 0, 0] } }
+          - { texture: "@rod_up",          tag: shaft, transform: { translation: [0, 0.5, 0],    scale: [0.66, 0.75, 0.66] } }
       spinning:
         display_entities:
           - { material: SMOOTH_STONE_SLAB, tag: base,  transform: { translation: [0, -0.25, 0],  scale: [0.9, 0.5, 0.9] } }
-          - { material: SMOOTH_STONE_SLAB, tag: anvil, transform: { translation: [0, 0.075, 0],  scale: [0.75, 0.3, 0.75] }, animation: { type: bob, amplitude: 0.175, period: 80, phase: 0 } }
-          - { material: PISTON,            tag: head,  transform: { translation: [0, 0.20, 0],   scale: [0.55, 0.25, 0.55], left_rotation: [180, 1, 0, 0] }, animation: { type: bob, amplitude: 0.175, period: 80, phase: 0 } }
-          - { texture: "@rod_up",          tag: shaft, transform: { translation: [0, 0.5, 0],    scale: [0.66, 0.5, 0.66] }, animation: { type: rotate, axis: [0, 1, 0], speed: 3.0 } }
+          - { material: SMOOTH_STONE_SLAB, tag: anvil, transform: { translation: [0, 0.025, 0],  scale: [0.75, 0.3, 0.75] }, animation: { type: bob, amplitude: 0.125, period: 80, phase: 0 } }
+          - { material: PISTON,            tag: head,  transform: { translation: [0, 0.15, 0],   scale: [0.55, 0.25, 0.55], left_rotation: [180, 1, 0, 0] }, animation: { type: bob, amplitude: 0.125, period: 80, phase: 0 } }
+          - { texture: "@rod_up",          tag: shaft, transform: { translation: [0, 0.5, 0],    scale: [0.66, 0.75, 0.66] }, animation: { type: rotate, axis: [0, 1, 0], speed: 3.0 } }
     recipes:
       craft:
         shaped:
