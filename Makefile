@@ -61,6 +61,21 @@ endif
 docs-fast:
 	uv run scripts/generate_catalog.py $(CATALOG_ARGS)
 
+# Copy the deployable demo website (static site) from docs/ into the sibling
+# defCoreLib-docs/ deploy directory. "Site only": the HTML pages plus util/, data/,
+# assets/, and skin-editor/ — everything the browser loads. README.md, readmes/, and
+# todo/ are source/planning docs and are NOT copied. Mirror semantics: the managed
+# paths are removed first so files deleted from docs/ also disappear from the deploy
+# dir; anything else there (e.g. a .git repo) is left untouched.
+.PHONY: docs-site
+docs-site:
+	mkdir -p ../defCoreLib-docs
+	rm -rf ../defCoreLib-docs/util ../defCoreLib-docs/data \
+		../defCoreLib-docs/assets ../defCoreLib-docs/skin-editor ../defCoreLib-docs/*.html
+	cp docs/*.html ../defCoreLib-docs/
+	cp -r docs/util docs/data docs/assets docs/skin-editor ../defCoreLib-docs/
+	rm -f ../defCoreLib-docs/data/.gitignore
+
 # Showcase integration tests: build the demo machines, run them, assert the YAML `expect` conditions.
 # The plugin halt()s with exit 0 (all pass) or 1 (any fail); NO `|| true`, so a failure fails `make`.
 # Runs on a separate port (25576) so it won't clash with a keep-alive docs server on 25575.
