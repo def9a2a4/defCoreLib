@@ -60,15 +60,17 @@ showcases:
     blurb: "A redstone generator powers a drill that bores forward through solid stone."
     description: >
       The generator is a passive power source — it spins on its own (and redstone DISABLES it, rather
-      than enabling it). Its rotation feeds a shaft into a drill, which bores into whatever block sits in
-      front of its bit, breaking it in stages. Because rotation only couples along a block's spin axis,
-      the generator, shaft, and drill all sit in a straight line on the same axis.
+      than enabling it). Its rotation feeds through a clutch into a drill, which bores into whatever block
+      sits in front of its bit, breaking it in stages. A clutch passes power straight through like a
+      shaft, but a redstone signal disengages it — a quick way to stop the drill without unpowering the
+      generator. Because rotation only couples along a block's spin axis, the three blocks sit in a line.
     blocks:
       # Horizontal Z column (all Z axis, coupled along N/S). `facing` is the clicked face → the head
       # points the OPPOSITE way, so the drill is `south` to bore NORTH (−z) into the stone — NOT into
-      # its own shaft on the +z side. Generator/shaft direction is irrelevant (Z axis either way).
-      - { id: "rotation:generator", facing: north, at: [0, 0, 2] }
-      - { id: "rotation:shaft",     facing: north, at: [0, 0, 1] }
+      # its own clutch on the +z side. Generator/clutch direction is irrelevant (Z axis either way).
+      # The clutch transmits power like a shaft, but can be switched off with redstone to cut the drill.
+      - { id: "rotation:generator", facing: south, at: [0, 0, 2] }
+      - { id: "rotation:clutch",    facing: north, at: [0, 0, 1] }
       - { id: "rotation:drill",     facing: south, at: [0, 0, 0] }   # bores north (−z) into the stone
     vanilla:
       - { block: "STONE", at: [0, 0, -1] }   # the block the drill chews
@@ -77,44 +79,44 @@ showcases:
       - { type: network_powered, at: [0, 0, 1] }
       - { type: spinning, at: [0, 0, 0] }
 
-  - id: generator_reverser_fan
-    name: "Generator → Reverser → Fan"
-    blurb: "A redstone generator drives a fan, but a powered reverser flips the spin direction first."
+  - id: generator_fan
+    name: "Generator → Fan"
+    blurb: "A redstone generator spins a shaft up into a fan that blows a gust of air — no fuel needed."
     description: >
-      Power flows from the passive generator up through a reverser into a fan. A reverser is a normal
-      transmitter until it receives redstone — then it inverts the spin direction passing through it, so
-      everything downstream turns the opposite way. Here a redstone block beside the reverser flips the
-      fan, demonstrating direction control without rewiring the machine.
+      A passive generator spins on its own and drives a shaft up into a fan. Unlike the fuel-burning
+      engine, the generator needs no upkeep — it runs continuously until a redstone signal disables it.
+      The fan turns that rotation into a directed gust that pushes entities away from its face.
     blocks:
       - { id: "rotation:generator", facing: down, at: [0, 0, 0] }
-      - { id: "rotation:reverser",  facing: down, at: [0, 1, 0] }   # reverses (redstone block beside it)
-      - { id: "rotation:shaft",     facing: down, at: [0, 2, 0] }
-      - { id: "rotation:fan",       facing: down, at: [0, 3, 0] }
-    vanilla:
-      - { block: "REDSTONE_BLOCK", at: [1, 1, 0] }   # powers the reverser → flips direction
+      - { id: "rotation:shaft",     facing: down, at: [0, 1, 0] }
+      - { id: "rotation:fan",       facing: down, at: [0, 2, 0] }
     activate: passive
     expect:
-      - { type: network_powered, at: [0, 2, 0] }
-      - { type: spinning, at: [0, 3, 0] }
+      - { type: network_powered, at: [0, 1, 0] }
+      - { type: spinning, at: [0, 2, 0] }
 
   - id: generator_drawbridge
-    name: "Generator → Drawbridge"
-    blurb: "A redstone generator powers a rotator hinge; a pulse swings the plank drawbridge open."
+    name: "Generator → Reverser → Drawbridge"
+    blurb: "A generator drives a rotator hinge through a lever-switched reverser; a pulse swings the drawbridge."
     description: >
       The rotator is a hinge: on a redstone pulse it gathers the connected planks into a moving structure
-      and swings them as one — a drawbridge. The generator behind it supplies the rotational power that
-      sets the swing speed. Unlike the spinning machines, this is the mechanism system at work: real
-      blocks are lifted into display entities, rotated, and set back down at their new orientation.
+      and swings them as one — a drawbridge. Power reaches it from the generator behind, but passes through
+      a reverser first: a floor lever beside the reverser is switched on, so the swing runs the reversed
+      direction. Unlike the spinning machines, this is the mechanism system at work — real blocks are
+      lifted into display entities, rotated, and set back down at their new orientation.
     blocks:
-      # Generator sits BEHIND the hinge on the Z axis (couples N/S); the trigger is on the far side so
-      # it can't disable the generator.
-      - { id: "rotation:generator", facing: north, at: [0, 0, -1] }
-      - { id: "rotation:rotator",   facing: north, at: [0, 0, 0] }   # hinge, Z axis
+      # Z-axis chain: generator → reverser → rotator hinge. The generator sits two blocks BEHIND the hinge
+      # so neither the swing pulse (east of the hinge) nor the lever (beside the reverser) can disable it.
+      - { id: "rotation:generator", facing: north, at: [0, 0, -2] }
+      - { id: "rotation:reverser",  facing: north, at: [0, 0, -1] }   # lever beside it → reverses the swing
+      - { id: "rotation:rotator",   facing: south, at: [0, 0, 0] }    # hinge, Z axis
     vanilla:
       - { block: "OAK_PLANKS", at: [0, 1, 0] }   # drawbridge leaf (flood-filled by the hinge)
       - { block: "OAK_PLANKS", at: [0, 2, 0] }
       - { block: "OAK_PLANKS", at: [1, 1, 0] }
       - { block: "OAK_PLANKS", at: [1, 2, 0] }
+      # Floor lever, switched on, face-adjacent to the reverser only → powers it (reverses direction).
+      - { block: "LEVER", at: [-1, 0, -1], data: "[face=floor,facing=north,powered=true]" }
     activate: { pulse: [1, 0, 0] }   # redstone east of the hinge → rising edge → swing (not near the generator)
     expect:
       - { type: mechanism_swung, at: [0, 0, 0] }

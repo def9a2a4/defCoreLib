@@ -183,6 +183,23 @@ final class ShowcaseRunner implements Listener {
                 rec.put("displays", DisplayCapture.readDisplays(type, block.getLocation(), state, true, false));
                 blocks.add(rec);
             }
+            // Vanilla support blocks: emit a single static "block" display so the webpage renders them
+            // (bare material name — generate_catalog vendors the model; placed3d draws it corner-origin).
+            for (ShowcaseSpec.VanillaSpec vs : spec.vanilla) {
+                Map<String, Object> display = new LinkedHashMap<>();
+                display.put("kind", "block");
+                display.put("ref", vs.material().getKey().getKey());   // e.g. "oak_planks"
+                display.put("position", new double[]{0, 0, 0});
+                display.put("matrix", new float[]{1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1});
+                display.put("animation", null);
+
+                Map<String, Object> rec = new LinkedHashMap<>();
+                rec.put("id", null);
+                rec.put("offset", new int[]{vs.at()[0], vs.at()[1], vs.at()[2]});
+                rec.put("baseHeadTextureUrl", null);
+                rec.put("displays", List.of(display));
+                blocks.add(rec);
+            }
             Map<String, Object> sc = new LinkedHashMap<>();
             sc.put("id", spec.id);
             sc.put("name", spec.name);
