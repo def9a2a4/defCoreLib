@@ -1,41 +1,50 @@
 # DefCoreLib
 
 Shared core library for the *def* plugin family — a data-driven custom-block engine plus demo
-content. The companion plugins (`vslab`, `bbanners`, `mech`) build on it.
+content. On its own it only ships the engine and some command-only demo items; other plugins build
+their features on top of it.
 
 <!-- img: demo blocks showcase -->
 
-## Features
+## What it provides
 
 - **Custom-block engine** — YAML-driven player-head blocks with states, redstone behavior,
-  particles, light, storage, and animated display entities. This is the foundation companion
-  plugins register their content against.
-- **~20 demo blocks** (command-only) — candles, mini crafting table, redstone & binary displays,
-  signal meter, storage barrel / hopper crate / dropper box, alarm, enchanting pedestal, and
-  spinning/pulsing display decorations. Grab them with `/defcorelib give`.
-- **Glued multi-block structures** — the "glue brush" authoring tool binds blocks into rotating
-  doors & drawbridges.
-- **Mechanism minecarts** — carts that carry and move block structures.
+  particles, light, storage, and animated display entities.
+- **Custom items & heads, recipe registration, and persistence** (chunk scan + self-healing) that
+  companion plugins reuse instead of reimplementing.
+- **Mechanism engine** — turns groups of blocks into moving display entities + colliders:
+  glue-based doors/drawbridges and mechanism minecarts.
+- **Recipe gating** — companion plugins switch their content's recipes on by namespace, so
+  installing one adds a coherent, craftable feature set.
+- ~20 **command-only** demo blocks (candles, redstone/binary displays, storage barrels, alarms,
+  spinning/pulsing decorations) — grab them with `/defcorelib give`.
+
+## Used by
+
+DefCoreLib is a dependency other plugins install alongside:
+
+- **[vslab](./vslab.md)** — vertical slabs
+- **[bbanners](./bbanners.md)** — flag banners + large/huge banners
+- **[mech](./mech.md)** — rotation mechanisms, glue, mechanism minecarts
+- **Pipes** — item-transport pipes (separate repo)
 
 ## Commands
 
-All under permission `corelib.admin`.
+Permission `corelib.admin`.
 
 | Command | Description |
 | --- | --- |
 | `/defcorelib give <id> [n]` | Give a custom item (`namespace:id` or shorthand; `give glue` → glue brush) |
-| `/defcorelib give_demo` | Give every registered block |
-| `/defcorelib give_demo_rotation` | Give the mechanism (`mech`) blocks |
 | `/defcorelib list` | List all registered block ids |
 | `/defcorelib colliders` | Toggle mechanism collider glow visualization |
-| `/defcorelib reloadbanners` | Reload banner config from file |
 | `/defcorelib cleanorphans [confirm]` | Find (and, with `confirm`, remove) orphaned display entities |
-| `/defcorelib showcase <build\|list\|export\|anchor> [id]` | Build/manage demo showcases |
 
 ## Requires
 
-Nothing — this is the base plugin. `vslab`, `bbanners`, and `mech` all depend on it.
+Nothing — this is the base plugin.
 
-## Docs
+## Links
 
-Full block & item catalog with recipes: https://def9a2a4.github.io/defCoreLib/
+- Docs & item catalog: https://def9a2a4.github.io/defCoreLib/
+- Repository: https://github.com/def9a2a4/defCoreLib/
+- Issues: https://github.com/def9a2a4/defCoreLib/issues

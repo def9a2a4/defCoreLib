@@ -19,6 +19,8 @@ Flag banners and oversized banner tiers.
 
 `banner-config.yml` — visual tuning for flag banners (thickness, face gap, tilt/splay).
 
-## Docs
+## Links
 
-Recipes & details: https://def9a2a4.github.io/defCoreLib/?q=banner
+- Recipes & details: https://def9a2a4.github.io/defCoreLib/?q=banner
+- Repository: https://github.com/def9a2a4/defCoreLib/
+- Issues: https://github.com/def9a2a4/defCoreLib/issues

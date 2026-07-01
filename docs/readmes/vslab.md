@@ -15,6 +15,8 @@ Vertical slabs for the whole slab family — wall-mounted half blocks for cleane
 
 [DefCoreLib](./defCoreLib.md).
 
-## Docs
+## Links
 
-Full type list & recipes: https://def9a2a4.github.io/defCoreLib/?q=verticalslabs
+- Full type list & recipes: https://def9a2a4.github.io/defCoreLib/?q=verticalslabs
+- Repository: https://github.com/def9a2a4/defCoreLib/
+- Issues: https://github.com/def9a2a4/defCoreLib/issues
