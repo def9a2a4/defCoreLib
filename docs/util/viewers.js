@@ -9,6 +9,10 @@ import { renderPlaced } from './placed3d.js';
 import { materialPath } from './render.js';
 
 // Showcase blocks carry `facing` ("floor" | "wall_<n|s|e|w>"); map to placed3d's base-head fields.
+// The "wall_<dir>" here is the PLACEMENT face the head sits ON (ShowcaseRunner stores bs.facing());
+// the head LOOKS the opposite way. The item path stores the look direction (placedOn.getOppositeFace())
+// and placed3d's push + rotation both expect the look direction, so invert here to match.
+const OPPOSITE = { north: 'south', south: 'north', east: 'west', west: 'east' };
 export function toRenderBlock(blk) {
   const wall = typeof blk.facing === 'string' && blk.facing.startsWith('wall_');
   return {
@@ -16,7 +20,7 @@ export function toRenderBlock(blk) {
     offset: blk.offset || [0, 0, 0],
     baseHeadTextureUrl: blk.baseHeadTextureUrl,
     baseHeadWall: wall,
-    baseHeadFacing: wall ? blk.facing.slice(5) : null,
+    baseHeadFacing: wall ? (OPPOSITE[blk.facing.slice(5)] || null) : null,
     displays: blk.displays || [],
   };
 }

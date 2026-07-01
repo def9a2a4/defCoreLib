@@ -108,6 +108,10 @@ async function buildBlockGroup(blk, models, animated) {
       const skull = skullMesh(await loadSkin(blk.baseHeadTextureUrl), { seated: !wall });
       if (wall && blk.baseHeadFacing) {
         const f = { north: [0, 0, -1], south: [0, 0, 1], east: [1, 0, 0], west: [-1, 0, 0] }[blk.baseHeadFacing] || [0, 0, 0];
+        // The skull's face is authored on the +z (south) side; rotate it to look along baseHeadFacing
+        // (three.js rotation.y=θ sends +z to (sinθ,cosθ): +π/2→east, −π/2→west, π→north). The skull
+        // group is xz-centred so this spins in place; the −0.25·facing push then seats it on the wall.
+        skull.rotation.y = { south: 0, north: Math.PI, east: Math.PI / 2, west: -Math.PI / 2 }[blk.baseHeadFacing] || 0;
         skull.position.set(-0.25 * f[0], 0, -0.25 * f[2]);
       }
       group.add(skull);
@@ -267,7 +271,9 @@ function thumbRenderer(size) {
  * localStorage. Returns the data-URL (or null on failure).
  */
 export function thumbnailDataURL(blocks, { size = 256, tick = 12, cacheKey = null, zoom = 1.7 } = {}) {
-  const lsKey = cacheKey ? 'defcorelib-thumb:' + cacheKey : null;
+  // Bump the version prefix whenever the render changes, so every visitor's cached PNGs regenerate
+  // (v2: base heads are now rotated to face their direction).
+  const lsKey = cacheKey ? 'defcorelib-thumb:v2:' + cacheKey : null;
   if (lsKey) {
     const cached = localStorage.getItem(lsKey);
     if (cached) return Promise.resolve(cached);
