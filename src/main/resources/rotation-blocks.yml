@@ -418,14 +418,14 @@ blocks:
           - texture: "@rod_up"
             tag: rod
             transform: { translation: [0, 0, -0.5], scale: [0.66, 2.02, 0.66], left_rotation: [-90, 1, 0, 0] }
-          - { material: OAK_PLANKS, tag: paddle_0, transform: { translation: [0, 0.4, 0],         scale: [0.0625, 1.5, 0.48], left_rotation: [0, 0, 0, 1] },    wall_offset: 0.01 }
-          - { material: OAK_PLANKS, tag: paddle_1, transform: { translation: [0.283, 0.283, 0],   scale: [0.0625, 1.5, 0.48], left_rotation: [-45, 0, 0, 1] },   wall_offset: 0.01 }
-          - { material: OAK_PLANKS, tag: paddle_2, transform: { translation: [0.4, 0, 0],         scale: [0.0625, 1.5, 0.48], left_rotation: [-90, 0, 0, 1] },   wall_offset: 0.01 }
-          - { material: OAK_PLANKS, tag: paddle_3, transform: { translation: [0.283, -0.283, 0],  scale: [0.0625, 1.5, 0.48], left_rotation: [-135, 0, 0, 1] },  wall_offset: 0.01 }
-          - { material: OAK_PLANKS, tag: paddle_4, transform: { translation: [0, -0.4, 0],        scale: [0.0625, 1.5, 0.48], left_rotation: [-180, 0, 0, 1] },  wall_offset: 0.01 }
-          - { material: OAK_PLANKS, tag: paddle_5, transform: { translation: [-0.283, -0.283, 0], scale: [0.0625, 1.5, 0.48], left_rotation: [-225, 0, 0, 1] },  wall_offset: 0.01 }
-          - { material: OAK_PLANKS, tag: paddle_6, transform: { translation: [-0.4, 0, 0],        scale: [0.0625, 1.5, 0.48], left_rotation: [-270, 0, 0, 1] },  wall_offset: 0.01 }
-          - { material: OAK_PLANKS, tag: paddle_7, transform: { translation: [-0.283, 0.283, 0],  scale: [0.0625, 1.5, 0.48], left_rotation: [-315, 0, 0, 1] },  wall_offset: 0.01 }
+          - { material: OAK_PLANKS, tag: paddle_0, transform: { translation: [0, 0.65, 0],       scale: [0.0625, 1, 0.48], left_rotation: [0, 0, 0, 1] },    wall_offset: 0.01 }
+          - { material: OAK_PLANKS, tag: paddle_1, transform: { translation: [0.46, 0.46, 0],    scale: [0.0625, 1, 0.48], left_rotation: [-45, 0, 0, 1] },   wall_offset: 0.01 }
+          - { material: OAK_PLANKS, tag: paddle_2, transform: { translation: [0.65, 0, 0],       scale: [0.0625, 1, 0.48], left_rotation: [-90, 0, 0, 1] },   wall_offset: 0.01 }
+          - { material: OAK_PLANKS, tag: paddle_3, transform: { translation: [0.46, -0.46, 0],   scale: [0.0625, 1, 0.48], left_rotation: [-135, 0, 0, 1] },  wall_offset: 0.01 }
+          - { material: OAK_PLANKS, tag: paddle_4, transform: { translation: [0, -0.65, 0],      scale: [0.0625, 1, 0.48], left_rotation: [-180, 0, 0, 1] },  wall_offset: 0.01 }
+          - { material: OAK_PLANKS, tag: paddle_5, transform: { translation: [-0.46, -0.46, 0],  scale: [0.0625, 1, 0.48], left_rotation: [-225, 0, 0, 1] },  wall_offset: 0.01 }
+          - { material: OAK_PLANKS, tag: paddle_6, transform: { translation: [-0.65, 0, 0],      scale: [0.0625, 1, 0.48], left_rotation: [-270, 0, 0, 1] },  wall_offset: 0.01 }
+          - { material: OAK_PLANKS, tag: paddle_7, transform: { translation: [-0.46, 0.46, 0],   scale: [0.0625, 1, 0.48], left_rotation: [-315, 0, 0, 1] },  wall_offset: 0.01 }
       spinning_z: { copy_from: idle_z, animation: { type: rotate, axis: [0, 0, 1], speed: 3.0 } }
       # X-axis (E/W wall): 8 oak-plank paddles radial in YZ plane; rod = axle along X.
       idle_x:
@@ -433,14 +433,14 @@ blocks:
           - texture: "@rod_up"
             tag: rod
             transform: { translation: [-0.5, 0, 0], scale: [0.66, 2.02, 0.66], left_rotation: [90, 0, 0, 1] }
-          - { material: OAK_PLANKS, tag: paddle_0, transform: { translation: [0, 0.4, 0],         scale: [0.48, 1.5, 0.0625], left_rotation: [0, 1, 0, 0] },    wall_offset: 0.01 }
-          - { material: OAK_PLANKS, tag: paddle_1, transform: { translation: [0, 0.283, 0.283],   scale: [0.48, 1.5, 0.0625], left_rotation: [45, 1, 0, 0] },   wall_offset: 0.01 }
-          - { material: OAK_PLANKS, tag: paddle_2, transform: { translation: [0, 0, 0.4],         scale: [0.48, 1.5, 0.0625], left_rotation: [90, 1, 0, 0] },   wall_offset: 0.01 }
-          - { material: OAK_PLANKS, tag: paddle_3, transform: { translation: [0, -0.283, 0.283],  scale: [0.48, 1.5, 0.0625], left_rotation: [135, 1, 0, 0] },  wall_offset: 0.01 }
-          - { material: OAK_PLANKS, tag: paddle_4, transform: { translation: [0, -0.4, 0],        scale: [0.48, 1.5, 0.0625], left_rotation: [180, 1, 0, 0] },  wall_offset: 0.01 }
-          - { material: OAK_PLANKS, tag: paddle_5, transform: { translation: [0, -0.283, -0.283], scale: [0.48, 1.5, 0.0625], left_rotation: [225, 1, 0, 0] },  wall_offset: 0.01 }
-          - { material: OAK_PLANKS, tag: paddle_6, transform: { translation: [0, 0, -0.4],        scale: [0.48, 1.5, 0.0625], left_rotation: [270, 1, 0, 0] },  wall_offset: 0.01 }
-          - { material: OAK_PLANKS, tag: paddle_7, transform: { translation: [0, 0.283, -0.283],  scale: [0.48, 1.5, 0.0625], left_rotation: [315, 1, 0, 0] },  wall_offset: 0.01 }
+          - { material: OAK_PLANKS, tag: paddle_0, transform: { translation: [0, 0.65, 0],       scale: [0.48, 1, 0.0625], left_rotation: [0, 1, 0, 0] },    wall_offset: 0.01 }
+          - { material: OAK_PLANKS, tag: paddle_1, transform: { translation: [0, 0.46, 0.46],    scale: [0.48, 1, 0.0625], left_rotation: [45, 1, 0, 0] },   wall_offset: 0.01 }
+          - { material: OAK_PLANKS, tag: paddle_2, transform: { translation: [0, 0, 0.65],       scale: [0.48, 1, 0.0625], left_rotation: [90, 1, 0, 0] },   wall_offset: 0.01 }
+          - { material: OAK_PLANKS, tag: paddle_3, transform: { translation: [0, -0.46, 0.46],   scale: [0.48, 1, 0.0625], left_rotation: [135, 1, 0, 0] },  wall_offset: 0.01 }
+          - { material: OAK_PLANKS, tag: paddle_4, transform: { translation: [0, -0.65, 0],      scale: [0.48, 1, 0.0625], left_rotation: [180, 1, 0, 0] },  wall_offset: 0.01 }
+          - { material: OAK_PLANKS, tag: paddle_5, transform: { translation: [0, -0.46, -0.46],  scale: [0.48, 1, 0.0625], left_rotation: [225, 1, 0, 0] },  wall_offset: 0.01 }
+          - { material: OAK_PLANKS, tag: paddle_6, transform: { translation: [0, 0, -0.65],      scale: [0.48, 1, 0.0625], left_rotation: [270, 1, 0, 0] },  wall_offset: 0.01 }
+          - { material: OAK_PLANKS, tag: paddle_7, transform: { translation: [0, 0.46, -0.46],   scale: [0.48, 1, 0.0625], left_rotation: [315, 1, 0, 0] },  wall_offset: 0.01 }
       spinning_x: { copy_from: idle_x, animation: { type: rotate, axis: [1, 0, 0], speed: 3.0 } }
     recipes:
       craft:
