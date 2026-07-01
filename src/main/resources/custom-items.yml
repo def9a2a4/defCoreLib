@@ -29,9 +29,9 @@ blocks:
         - { type: SATURATION, duration: 100, amplifier: 0 }
       color: "#E0A030"
 
-  # Intermediate mechanical component crafted from iron + copper + planks.
-  # Used as the core of the fan (and, later, the windmills). Non-placeable head
-  # item — copber2 art (assets/rotation/copber2-fwd.png).
+  # Intermediate mechanical component: copper ingot core + 4 copper nuggets in a +.
+  # The shared core of most rotation machines (windmills, fan, clutch, engine, …).
+  # Non-placeable head item — copber2 art (assets/rotation/copber2-fwd.png).
   bearing:
     name: "&7Bearing"
     lore:
@@ -41,11 +41,10 @@ blocks:
     recipes:
       craft:
         shaped:
-          - pattern: ["WCW", "CIC", "WCW"]
+          - pattern: [" N ", "NCN", " N "]
             key:
-              W: { tag: planks }
+              N: { material: COPPER_NUGGET }
               C: { material: COPPER_INGOT }
-              I: { material: IRON_INGOT }
 
   # Rotation Wrench: right-click rotation-power blocks to turn them. Identity is the
   # registry block_type PDC (rotation:wrench); behavior is in RotationBlocks.isWrench.
