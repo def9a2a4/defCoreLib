@@ -1,6 +1,7 @@
 package anon.def9a2a4.mech;
 
 import anon.def9a2a4.corelib.CoreLibPlugin;
+import org.bstats.bukkit.Metrics;
 import org.bukkit.plugin.java.JavaPlugin;
 
 /**
@@ -17,6 +18,7 @@ public final class MechPlugin extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        new Metrics(this, 32320);
         CoreLibPlugin core = CoreLibPlugin.getInstance();
         if (core == null) {
             getLogger().severe("DefCoreLib not present — mechanism recipes cannot be enabled.");

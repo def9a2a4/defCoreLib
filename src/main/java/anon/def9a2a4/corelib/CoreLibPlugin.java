@@ -20,6 +20,7 @@ import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bstats.bukkit.Metrics;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -47,6 +48,7 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
     @Override
     public void onEnable() {
         instance = this;
+        new Metrics(this, 32317);
         registry = new CustomBlockRegistry(this);
         registry.startTasks();
         mechanismRegistry = new MechanismRegistry(this, registry);

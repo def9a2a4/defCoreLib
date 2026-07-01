@@ -1,6 +1,7 @@
 package anon.def9a2a4.bbanners;
 
 import anon.def9a2a4.corelib.CoreLibPlugin;
+import org.bstats.bukkit.Metrics;
 import org.bukkit.plugin.java.JavaPlugin;
 
 /**
@@ -12,6 +13,7 @@ public final class BbannersPlugin extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        new Metrics(this, 32319);
         CoreLibPlugin core = CoreLibPlugin.getInstance();
         if (core == null) {
             getLogger().severe("DefCoreLib not present — banner functionality cannot be enabled.");

@@ -22,6 +22,7 @@ repositories {
 
 dependencies {
     compileOnly("io.papermc.paper:paper-api:1.21.8-R0.1-SNAPSHOT")
+    implementation("org.bstats:bstats-bukkit:3.1.0")
     // The core DefCoreLib runtime (installed separately at runtime). Consume the root's `shadow`
     // configuration so the dependency on the shadowJar task is explicit (avoids Gradle's
     // implicit-dependency error from jar/shadowJar sharing an output name).
@@ -39,6 +40,8 @@ tasks {
     }
 
     shadowJar {
+        relocate("org.bstats", "anon.def9a2a4.bstats")
+        mergeServiceFiles()
         archiveClassifier.set("")
         archiveBaseName.set("mech")
     }
