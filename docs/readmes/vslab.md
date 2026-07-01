@@ -10,10 +10,10 @@ Don't you ever wish you had slabs, but vertical? But on an unmodded minecraft se
 
 ## Requires
 
-[DefCoreLib](./defCoreLib.md).
+[DefCoreLib](https://github.com/def9a2a4/defCoreLib/blob/main/docs/readmes/defCoreLib.md).
 
 ## Links
 
-- Full type list & recipes: https://def9a2a4.github.io/defCoreLib/?q=verticalslabs
+- Full type list & recipes: https://def9a2a4.github.io/defCoreLib-docs/?q=verticalslabs
 - Repository: https://github.com/def9a2a4/defCoreLib/
 - Issues: https://github.com/def9a2a4/defCoreLib/issues

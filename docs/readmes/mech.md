@@ -29,7 +29,7 @@ shafts and gears, branch or turn corners with gears, and gate the flow with clut
 
 ## Machines
 
-- **Millstone** - grinds items (e.g. cobblestone → gravel → sand, bone → bone meal).
+- **Millstone** - grinds items (e.g. cobblestone -> gravel -> sand, bone -> bone meal).
 - **Extractor press** - presses items into juices and oils (consumes glass bottles).
 - **Fan** - pushes entities and items in front of it; range scales with surplus power.
 - **Drill** - mines the blocks in front of it.
@@ -44,8 +44,8 @@ shafts and gears, branch or turn corners with gears, and gate the flow with clut
 
 ## Requires
 
-- **[DefCoreLib](./defCoreLib.md)** is required.
-- Soft depend: [bbanners](./bbanners.md) for **Large & Huge windmills** - without it, plain windmills still
+- **[DefCoreLib](https://github.com/def9a2a4/defCoreLib/blob/main/docs/readmes/defCoreLib.md)** is required.
+- Soft depend: [bbanners](https://github.com/def9a2a4/defCoreLib/blob/main/docs/readmes/bbanners.md) for **Large & Huge windmills** - without it, plain windmills still
   craft but the large/huge tiers are uncraftable.
 
 ## Configuration
@@ -56,7 +56,7 @@ shafts and gears, branch or turn corners with gears, and gate the flow with clut
 
 ## Links
 
-- Full block & recipe list: https://def9a2a4.github.io/defCoreLib/?q=mech
-- Mechanism showcases: https://def9a2a4.github.io/defCoreLib/showcases.html
+- Full block & recipe list: https://def9a2a4.github.io/defCoreLib-docs/?q=mech
+- Mechanism showcases: https://def9a2a4.github.io/defCoreLib-docs/showcases.html
 - Repository: https://github.com/def9a2a4/defCoreLib/
 - Issues: https://github.com/def9a2a4/defCoreLib/issues
