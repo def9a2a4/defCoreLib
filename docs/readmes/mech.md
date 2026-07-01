@@ -15,35 +15,32 @@ shafts and gears, branch or turn corners with gears, and gate the flow with clut
 
 ## Power sources
 
-- **Windmill** - always spinning; low power. **Large** and **Huge** windmills produce progressively
-  more (crafted with large/huge banners - see Requires).
-- **Water wheel** - wall-mounted; spins when placed next to water.
-- **Engine** - burns fuel (coal, logs, planks, blaze rods, lava) for high power; right-click to
-  refuel.
-- **Redstone generator** - steady power, toggled by a redstone signal. No fuel needed, but low power and expensive.
+- [**Windmill**](https://def9a2a4.github.io/defCoreLib-docs/item.html?id=mech%3Awindmill) - always spinning; low power. [**Large**](https://def9a2a4.github.io/defCoreLib-docs/item.html?id=mech%3Alarge_windmill) and [**Huge**](https://def9a2a4.github.io/defCoreLib-docs/item.html?id=mech%3Ahuge_windmill) windmills produce progressively more (crafted with large/huge banners - see Requires).
+- [**Water wheel**](https://def9a2a4.github.io/defCoreLib-docs/item.html?id=mech%3Awater_wheel) - wall-mounted; spins when placed next to water.
+- [**Engine**](https://def9a2a4.github.io/defCoreLib-docs/item.html?id=mech%3Aengine) - burns fuel (coal, logs, planks, blaze rods, lava) for high power; right-click to refuel.
+- [**Redstone generator**](https://def9a2a4.github.io/defCoreLib-docs/item.html?id=mech%3Agenerator) - steady power, toggled by a redstone signal. No fuel needed, but low power and expensive.
 
 ## Transmission
 
-<!-- TODO: add links for each item -->
 - [**Shaft**](https://def9a2a4.github.io/defCoreLib-docs/item.html?id=mech%3Ashaft) - carries rotation along its axis.
-- **Gear** - meshes with perpendicular or in-line gears to route power around corners and branch it.
-- **Clutch** - disconnects the line while it receives a redstone signal.
-- **Reverser** - flips spin direction on a redstone signal. Mostly useful for Rotators.
+- [**Gear**](https://def9a2a4.github.io/defCoreLib-docs/item.html?id=mech%3Agear) - meshes with perpendicular or in-line gears to route power around corners and branch it.
+- [**Clutch**](https://def9a2a4.github.io/defCoreLib-docs/item.html?id=mech%3Aclutch) - disconnects the line while it receives a redstone signal.
+- [**Reverser**](https://def9a2a4.github.io/defCoreLib-docs/item.html?id=mech%3Areverser) - flips spin direction on a redstone signal. Mostly useful for Rotators.
 
 ## Machines
 
-- **Millstone** - grinds items (e.g. cobblestone -> gravel -> sand, bone -> bone meal).
-- **Extractor press** - presses items into juices and oils (consumes glass bottles).
-- **Fan** - pushes entities and items in front of it; range scales with surplus power.
-- **Drill** - mines the blocks in front of it.
-- **Placer** - places blocks from an attached inventory.
+- [**Millstone**](https://def9a2a4.github.io/defCoreLib-docs/item.html?id=mech%3Amillstone) - grinds items (e.g. cobblestone -> gravel -> sand, bone -> bone meal).
+- [**Extractor press**](https://def9a2a4.github.io/defCoreLib-docs/item.html?id=mech%3Apress) - presses items into juices and oils (consumes glass bottles).
+- [**Fan**](https://def9a2a4.github.io/defCoreLib-docs/item.html?id=mech%3Afan) - pushes entities and items in front of it; range scales with surplus power.
+- [**Drill**](https://def9a2a4.github.io/defCoreLib-docs/item.html?id=mech%3Adrill) - mines the blocks in front of it.
+- [**Placer**](https://def9a2a4.github.io/defCoreLib-docs/item.html?id=mech%3Aplacer) - places blocks from an attached inventory.
 
 ## Structures & vehicles
 
-- **Rotators** - glue any block structure to a rotator to make swinging **doors** and **drawbridges**,
+- [**Rotators**](https://def9a2a4.github.io/defCoreLib-docs/item.html?id=mech%3Arotator) - glue any block structure to a rotator to make swinging **doors** and **drawbridges**,
   powered by the network.
-- **Mechanism minecarts** - carry a glued block structure along rails. Mostly decorative for now, more features coming soon!
-- **Glue brush** - the authoring tool that binds blocks into a movable structure.
+- [**Mechanism minecarts**](https://def9a2a4.github.io/defCoreLib-docs/item.html?id=mech%3Amechanism_minecart) - carry a glued block structure along rails. Mostly decorative for now, more features coming soon!
+- [**Glue brush**](https://def9a2a4.github.io/defCoreLib-docs/item.html?id=mech%3Aglue_item) - the authoring tool that binds blocks into a movable structure.
 
 ## Requires
 
@@ -59,7 +56,5 @@ shafts and gears, branch or turn corners with gears, and gate the flow with clut
 
 ## Links
 
-- Full block & recipe list: https://def9a2a4.github.io/defCoreLib-docs/?q=mech
-- Mechanism showcases: https://def9a2a4.github.io/defCoreLib-docs/showcases.html
 - Repository: https://github.com/def9a2a4/defCoreLib/
 - Issues: https://github.com/def9a2a4/defCoreLib/issues
