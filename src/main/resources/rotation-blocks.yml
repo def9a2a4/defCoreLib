@@ -400,27 +400,35 @@ blocks:
       EAST: idle_x
       WEST: idle_x
     states:
-      # Z-axis (N/S wall): paddles in XY plane. rod = standard shaft along Z (the axle).
+      # Z-axis (N/S wall): 8 oak-plank paddles radial in XY plane; rod = axle along Z.
       idle_z:
         display_entities:
           - texture: "@rod_up"
             tag: rod
             transform: { translation: [0, 0, -0.5], scale: [0.66, 2.02, 0.66], left_rotation: [-90, 1, 0, 0] }
-          - { material: OAK_SLAB, tag: paddle_a, transform: { translation: [0.35, 0, 0],  scale: [0.6, 0.6, 0.15] }, wall_offset: 0.25 }
-          - { material: OAK_SLAB, tag: paddle_b, transform: { translation: [0, 0.35, 0],  scale: [0.15, 0.6, 0.6] }, wall_offset: 0.25 }
-          - { material: OAK_SLAB, tag: paddle_c, transform: { translation: [-0.35, 0, 0], scale: [0.6, 0.6, 0.15] }, wall_offset: 0.25 }
-          - { material: OAK_SLAB, tag: paddle_d, transform: { translation: [0, -0.35, 0], scale: [0.15, 0.6, 0.6] }, wall_offset: 0.25 }
+          - { material: OAK_PLANKS, tag: paddle_0, transform: { translation: [0, 0.4, 0],         scale: [0.0625, 0.75, 0.5], left_rotation: [0, 0, 0, 1] },    wall_offset: 0.25 }
+          - { material: OAK_PLANKS, tag: paddle_1, transform: { translation: [0.283, 0.283, 0],   scale: [0.0625, 0.75, 0.5], left_rotation: [-45, 0, 0, 1] },   wall_offset: 0.25 }
+          - { material: OAK_PLANKS, tag: paddle_2, transform: { translation: [0.4, 0, 0],         scale: [0.0625, 0.75, 0.5], left_rotation: [-90, 0, 0, 1] },   wall_offset: 0.25 }
+          - { material: OAK_PLANKS, tag: paddle_3, transform: { translation: [0.283, -0.283, 0],  scale: [0.0625, 0.75, 0.5], left_rotation: [-135, 0, 0, 1] },  wall_offset: 0.25 }
+          - { material: OAK_PLANKS, tag: paddle_4, transform: { translation: [0, -0.4, 0],        scale: [0.0625, 0.75, 0.5], left_rotation: [-180, 0, 0, 1] },  wall_offset: 0.25 }
+          - { material: OAK_PLANKS, tag: paddle_5, transform: { translation: [-0.283, -0.283, 0], scale: [0.0625, 0.75, 0.5], left_rotation: [-225, 0, 0, 1] },  wall_offset: 0.25 }
+          - { material: OAK_PLANKS, tag: paddle_6, transform: { translation: [-0.4, 0, 0],        scale: [0.0625, 0.75, 0.5], left_rotation: [-270, 0, 0, 1] },  wall_offset: 0.25 }
+          - { material: OAK_PLANKS, tag: paddle_7, transform: { translation: [-0.283, 0.283, 0],  scale: [0.0625, 0.75, 0.5], left_rotation: [-315, 0, 0, 1] },  wall_offset: 0.25 }
       spinning_z: { copy_from: idle_z, animation: { type: rotate, axis: [0, 0, 1], speed: 3.0 } }
-      # X-axis (E/W wall): paddles in YZ plane. rod = standard shaft along X (the axle).
+      # X-axis (E/W wall): 8 oak-plank paddles radial in YZ plane; rod = axle along X.
       idle_x:
         display_entities:
           - texture: "@rod_up"
             tag: rod
             transform: { translation: [-0.5, 0, 0], scale: [0.66, 2.02, 0.66], left_rotation: [90, 0, 0, 1] }
-          - { material: OAK_SLAB, tag: paddle_a, transform: { translation: [0, 0.35, 0],  scale: [0.15, 0.6, 0.6] }, wall_offset: 0.25 }
-          - { material: OAK_SLAB, tag: paddle_b, transform: { translation: [0, 0, 0.35],  scale: [0.6, 0.15, 0.6] }, wall_offset: 0.25 }
-          - { material: OAK_SLAB, tag: paddle_c, transform: { translation: [0, -0.35, 0], scale: [0.15, 0.6, 0.6] }, wall_offset: 0.25 }
-          - { material: OAK_SLAB, tag: paddle_d, transform: { translation: [0, 0, -0.35], scale: [0.6, 0.15, 0.6] }, wall_offset: 0.25 }
+          - { material: OAK_PLANKS, tag: paddle_0, transform: { translation: [0, 0.4, 0],         scale: [0.5, 0.75, 0.0625], left_rotation: [0, 1, 0, 0] },    wall_offset: 0.25 }
+          - { material: OAK_PLANKS, tag: paddle_1, transform: { translation: [0, 0.283, 0.283],   scale: [0.5, 0.75, 0.0625], left_rotation: [45, 1, 0, 0] },   wall_offset: 0.25 }
+          - { material: OAK_PLANKS, tag: paddle_2, transform: { translation: [0, 0, 0.4],         scale: [0.5, 0.75, 0.0625], left_rotation: [90, 1, 0, 0] },   wall_offset: 0.25 }
+          - { material: OAK_PLANKS, tag: paddle_3, transform: { translation: [0, -0.283, 0.283],  scale: [0.5, 0.75, 0.0625], left_rotation: [135, 1, 0, 0] },  wall_offset: 0.25 }
+          - { material: OAK_PLANKS, tag: paddle_4, transform: { translation: [0, -0.4, 0],        scale: [0.5, 0.75, 0.0625], left_rotation: [180, 1, 0, 0] },  wall_offset: 0.25 }
+          - { material: OAK_PLANKS, tag: paddle_5, transform: { translation: [0, -0.283, -0.283], scale: [0.5, 0.75, 0.0625], left_rotation: [225, 1, 0, 0] },  wall_offset: 0.25 }
+          - { material: OAK_PLANKS, tag: paddle_6, transform: { translation: [0, 0, -0.4],        scale: [0.5, 0.75, 0.0625], left_rotation: [270, 1, 0, 0] },  wall_offset: 0.25 }
+          - { material: OAK_PLANKS, tag: paddle_7, transform: { translation: [0, 0.283, -0.283],  scale: [0.5, 0.75, 0.0625], left_rotation: [315, 1, 0, 0] },  wall_offset: 0.25 }
       spinning_x: { copy_from: idle_x, animation: { type: rotate, axis: [1, 0, 0], speed: 3.0 } }
     recipes:
       craft:
@@ -610,13 +618,14 @@ blocks:
     recipes:
       craft:
         shaped:
-          # Two smooth stone slabs stacked, lightning rod above, copper to one
-          # (canonical: left) side.
-          - pattern: [" L ", "CS ", " S "]
+          # A stack of two smooth stone slabs + copper on the right, topped by a
+          # lightning rod (power intake) and a bearing.
+          - pattern: [" LB", " MC", " MC"]
             key:
               L: { material: LIGHTNING_ROD }
+              B: { block: "rotation:bearing" }
+              M: { material: SMOOTH_STONE_SLAB }
               C: { material: COPPER_INGOT }
-              S: { material: SMOOTH_STONE_SLAB }
 
   # ─── Extractor Press ──────────────────────────────────────────────────────
   # Consumer: 1 Power. WALL only — mounts on a container, presses its contents into
@@ -644,13 +653,14 @@ blocks:
     recipes:
       craft:
         shaped:
-          # Two smooth stone slabs stacked, piston above, copper to one
-          # (canonical: left) side.
-          - pattern: [" P ", "CS ", " S "]
+          # A stack of two smooth stone slabs + copper on the right, topped by a
+          # piston (the press) flanked by two bearings.
+          - pattern: ["BPB", " MC", " MC"]
             key:
+              B: { block: "rotation:bearing" }
               P: { material: PISTON }
+              M: { material: SMOOTH_STONE_SLAB }
               C: { material: COPPER_INGOT }
-              S: { material: SMOOTH_STONE_SLAB }
 
   # ─── Drill ──────────────────────────────────────────────────────────────
   # Consumer: 1 Power. Breaks the block in its facing direction every 2s.
