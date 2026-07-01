@@ -17,18 +17,6 @@ blocks:
     drops: self
     break_sound: { sound: BLOCK_CANDLE_BREAK, volume: 1.0, pitch: 1.0 }
     place_sound: { sound: BLOCK_CANDLE_PLACE, volume: 1.0, pitch: 1.0 }
-    recipes:
-      craft:
-        shaped:
-          - id: "candle_craft"
-            amount: 1
-            pattern: ["CC", "CC"]
-            key:
-              C: { material: CANDLE }
-      stonecutter:
-        - id: "candle_from_torch"
-          amount: 1
-          input: { material: TORCH }
     default_state: unlit
     states:
       unlit: {}
@@ -65,18 +53,6 @@ blocks:
     drops: self
     light: { level: 14, offset: [0, 1, 0] }
     break_sound: { sound: BLOCK_WOOD_BREAK, volume: 0.7, pitch: 1.2 }
-    recipes:
-      craft:
-        shapeless:
-          - id: "lantern_from_candle"
-            amount: 1
-            ingredients:
-              - { block: "demo:candle" }
-              - { material: PUMPKIN }
-      stonecutter:
-        - id: "lantern_from_candle_sc"
-          amount: 1
-          input: { block: "demo:candle" }
 
   # ─── 3. Crafting Table ──────────────────────────────────────────────
   # Features: interactGUI, interact sound.
@@ -395,17 +371,6 @@ blocks:
     drops: self
     interact_gui: ANVIL
     interact_sound: { sound: BLOCK_ANVIL_LAND, volume: 0.3, pitch: 1.5 }
-    recipes:
-      unlock_advancement: "minecraft:story/smelt_iron"
-      craft:
-        shaped:
-          - id: locked_workbench_craft
-            amount: 1
-            pattern: ["IWI", "WAW", "IWI"]
-            key:
-              I: { material: IRON_INGOT }
-              W: { material: OAK_PLANKS }
-              A: { material: ANVIL }
 
   # ─── 18. Spinning Crystal ──────────────────────────────────────────
   # Features: animated display entity (rotate + bob compose).

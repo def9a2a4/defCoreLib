@@ -645,12 +645,13 @@ blocks:
         shaped:
           # A stack of two smooth stone slabs + copper on the right, topped by a
           # lightning rod (power intake) and a bearing.
-          - pattern: [" LB", " MC", " MC"]
+          - pattern: [" LB", " MH", " MC"]
             key:
               L: { material: LIGHTNING_ROD }
               B: { block: "rotation:bearing" }
               M: { material: SMOOTH_STONE_SLAB }
               C: { material: COPPER_INGOT }
+              H: { material: HOPPER }
 
   # ─── Extractor Press ──────────────────────────────────────────────────────
   # Consumer: 1 Power. WALL only — mounts on a container, presses its contents into
@@ -692,12 +693,13 @@ blocks:
         shaped:
           # A stack of two smooth stone slabs + copper on the right, topped by a
           # piston (the press) flanked by two bearings.
-          - pattern: ["BPB", " MC", " MC"]
+          - pattern: ["BPB", " MH", " MC"]
             key:
               B: { block: "rotation:bearing" }
               P: { material: PISTON }
               M: { material: SMOOTH_STONE_SLAB }
               C: { material: COPPER_INGOT }
+              H: { material: HOPPER }
 
   # ─── Block Placer ─────────────────────────────────────────────────────────
   # Consumer: 1 Power. WALL only — mounts on a container and places its blocks into
@@ -769,12 +771,13 @@ blocks:
         shaped:
           # Dispenser core (vanilla's block placer) + bearing power intake on top,
           # piston arm below, copper on the sides.
-          - pattern: [" B ", "CDC", " P "]
+          - pattern: [" BH", "CDC", " P "]
             key:
               B: { block: "rotation:bearing" }
               D: { material: DISPENSER }
               C: { material: COPPER_INGOT }
               P: { material: PISTON }
+              H: { material: HOPPER }
 
   # ─── Drill ──────────────────────────────────────────────────────────────
   # Consumer: 1 Power. Breaks the block in its facing direction every 2s.
