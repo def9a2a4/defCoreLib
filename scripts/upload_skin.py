@@ -1,3 +1,10 @@
+# /// script
+# requires-python = ">=3.9"
+# dependencies = [
+#     "requests==2.34.2",
+# ]
+# ///
+
 import sys
 from pathlib import Path
 
