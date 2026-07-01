@@ -2,6 +2,7 @@
 
 # Main
 
+- mechanism minecarts still broken. persistence, interaction, mmb, and 90 deg rotation on first place
 - refine allowed blocks in doors/rotators
 - mechanisms: storage blocks not persistent, no reload persistence, etc. will be mostly handled by blockships integration
 - texture fixes for dril/screw, gears, shafts, others
