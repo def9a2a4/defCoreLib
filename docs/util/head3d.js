@@ -52,8 +52,8 @@ function cubeMaterials(skin, ox, oy, transparent) {
     m(ox + 16, oy + 8),         // -x left
     m(ox + 8, oy + 0, true),    // +y top (rotated 180)
     m(ox + 16, oy + 0),         // -y bottom
-    m(ox + 24, oy + 8),         // +z front
-    m(ox + 8, oy + 8),          // -z back
+    m(ox + 24, oy + 8),         // +z back (skin back region)
+    m(ox + 8, oy + 8),          // -z front/face (skin face region; so the head looks toward -z/north)
   ];
 }
 
