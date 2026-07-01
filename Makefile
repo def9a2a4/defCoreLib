@@ -36,7 +36,8 @@ docs:
 		'generate-structures=false' 'server-port=25575' 'level-name=world' \
 		'motd=DefCoreLib docs export' \
 		> test-server/server.properties
-	cp build/libs/DefCoreLib*.jar test-server/plugins/
+	cp build/libs/DefCoreLib*.jar vslab/build/libs/vslab*.jar \
+		bbanners/build/libs/bbanners*.jar mech/build/libs/mech*.jar test-server/plugins/
 	rm -f .temp/display-spec.json
 ifeq ($(KEEP_ALIVE),1)
 	@echo ">>> test-server keep-alive on localhost:25575 (offline, MC 1.21.11). You spawn at the grid."
@@ -92,7 +93,8 @@ showcase-test:
 		'generate-structures=false' 'server-port=25575' 'level-name=world' \
 		'motd=DefCoreLib docs export' \
 		> test-server/server.properties
-	cp build/libs/DefCoreLib*.jar test-server/plugins/
+	cp build/libs/DefCoreLib*.jar vslab/build/libs/vslab*.jar \
+		bbanners/build/libs/bbanners*.jar mech/build/libs/mech*.jar test-server/plugins/
 	cd test-server && timeout --foreground -k 30 180 java -Ddefcorelib.showcaseTest=true \
 		-Xmx2G -jar $(PAPER_JAR) --nogui --port 25576 < /dev/null
 
@@ -111,7 +113,8 @@ showcase-capture:
 		'generate-structures=false' 'server-port=25575' 'level-name=world' \
 		'motd=DefCoreLib docs export' \
 		> test-server/server.properties
-	cp build/libs/DefCoreLib*.jar test-server/plugins/
+	cp build/libs/DefCoreLib*.jar vslab/build/libs/vslab*.jar \
+		bbanners/build/libs/bbanners*.jar mech/build/libs/mech*.jar test-server/plugins/
 	rm -f .temp/showcase-spec.json
 	cd test-server && timeout --foreground -k 30 180 java -Ddefcorelib.showcaseCapture="$(CURDIR)/.temp/showcase-spec.json" \
 		-Xmx2G -jar $(PAPER_JAR) --nogui --port 25576 < /dev/null || true
