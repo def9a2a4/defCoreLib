@@ -151,10 +151,10 @@ final class RotationConfig {
             String name = m.name();
             if (name.endsWith("_LOG") || name.endsWith("_WOOD")
                     || name.endsWith("_STEM") || name.endsWith("_HYPHAE")) {
-                fuelValues.putIfAbsent(m, 150);
+                fuelValues.putIfAbsent(m, 8);
             }
             if (name.endsWith("_PLANKS")) {
-                fuelValues.putIfAbsent(m, 75);
+                fuelValues.putIfAbsent(m, 3);
             }
         }
     }

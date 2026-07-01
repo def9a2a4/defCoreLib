@@ -540,8 +540,8 @@ final class RotationBlocks {
             if (leftover.isEmpty()) {
                 item.setAmount(item.getAmount() - 1);
                 adjacent.setItem(i, item.getAmount() <= 0 ? null : item);
+                return;
             }
-            return;
         }
     }
 
