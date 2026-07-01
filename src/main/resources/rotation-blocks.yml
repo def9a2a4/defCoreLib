@@ -1127,7 +1127,7 @@ blocks:
     name: "&6Mechanism Minecart"
     lore:
       - "&7Right-click a rail to spawn a cart."
-      - "&7Build blocks above it, then power an"
+      - "&7Glue blocks to it, then power an"
       - "&7activator rail to assemble & ride them."
     item_material: FURNACE_MINECART
     item_glint: true

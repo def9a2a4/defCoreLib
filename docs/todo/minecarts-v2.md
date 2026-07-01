@@ -176,7 +176,7 @@ Remove the `mechanism_minecart:` entry (+ its banner comment) from `demo-blocks.
     name: "&6Mechanism Minecart"
     lore:
       - "&7Right-click a rail to spawn a cart."
-      - "&7Build blocks above it, then power an"
+      - "&7Glue blocks to it, then power an"
       - "&7activator rail to assemble & ride them."
     item_material: FURNACE_MINECART
     item_glint: true
@@ -279,12 +279,13 @@ Issue #7 in [`blockships-integration.md`](blockships-integration.md)**; noted he
 blocks to carts is a prime trigger. Fix belongs in the mechanism layer (restore `mb.storage` for the
 custom-block placement path), so it's shared with doors/rotators.
 
-### 3. Flood-fill fallback can assemble a *surprise* structure — MEDIUM/LOW
-`assemble()` falls back to `floodFillAllowed` on the blocks above the cart when a glued resolve comes back
-empty (the intended fix for the co-location blocker). But if a player glued a selection and then some glued
-blocks were removed, activation silently assembles **whatever allowed blocks happen to be stacked above the
-cart** instead — no warning that it ignored the (now-partial) glue. Consider: if the cart *has* glue offsets
-but they resolve empty, warn / refuse rather than silently flood-filling a different structure.
+### 3. Flood-fill fallback can assemble a *surprise* structure — RESOLVED (fallback removed)
+Minecarts are now **glue-only**: `assemble()` uses `glueManager.resolveStructure(anchor)` and assembles
+nothing when the resolve is null or empty. The `floodFillAllowed` helper, the `allowedMaterials` allow-list,
+`loadAllowedMaterials()`, and `mechanism-minecart-blocks.yml` were all removed. This eliminates the
+surprise-structure hazard entirely — a cart can never assemble blocks the player didn't explicitly glue,
+so there is no partial-glue-then-flood-fill path left to warn about. (Door and rotator keep their own
+flood-fill fallback; only the minecart changed.)
 
 ### Carried over from [`minecarts.md`](minecarts.md) — still live
 The main subject of `minecarts.md` (the **off-center pivot rotation bug** and its delta-tracked-pivot fix)

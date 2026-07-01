@@ -28,9 +28,10 @@ import java.util.*;
 
 /**
  * Demo mechanism consumer: mechanism minecart.
- * Place a minecart on rails, build blocks above it, push onto a powered activator rail
- * to assemble blocks into a mechanism that follows the minecart. Another activator rail
- * disassembles back to blocks.
+ * Place a minecart on rails, glue blocks to it (glue item, right-click), then push onto a
+ * powered activator rail — or right-click the cart — to assemble the glued selection into a
+ * mechanism that follows the minecart. Another activator rail disassembles back to blocks.
+ * Assembly is glue-only: an unglued cart assembles nothing.
  *
  * Self-contained — can be spun out to a separate plugin by moving this file
  * and calling getMechanismRegistry() from the new plugin.
