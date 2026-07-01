@@ -14,6 +14,9 @@ build:
 #                           then `make docs-fast` to regenerate the catalog.
 PAPER_JAR := $(notdir $(firstword $(wildcard server/paper-*.jar)))
 KEEP_ALIVE ?= 0
+# Extra args passed to the catalog generator. CI sets `--no-assets` to skip
+# vendoring images from third-party CDNs (only the headless boot is under test).
+CATALOG_ARGS ?=
 
 .PHONY: docs
 docs:
@@ -45,13 +48,13 @@ else
 		-Xmx2G -jar $(PAPER_JAR) --nogui --port 25575 < /dev/null || true
 	@test -s .temp/display-spec.json || { echo "ERROR: headless export did not produce .temp/display-spec.json"; exit 1; }
 	cp .temp/display-spec.json docs/data/display-spec.json
-	uv run scripts/generate_catalog.py
+	uv run scripts/generate_catalog.py $(CATALOG_ARGS)
 endif
 
 # Fast iteration: regenerate the catalog from the existing display-spec.json (no server boot).
 .PHONY: docs-fast
 docs-fast:
-	uv run scripts/generate_catalog.py
+	uv run scripts/generate_catalog.py $(CATALOG_ARGS)
 
 # Showcase integration tests: build the demo machines, run them, assert the YAML `expect` conditions.
 # The plugin halt()s with exit 0 (all pass) or 1 (any fail); NO `|| true`, so a failure fails `make`.
@@ -94,7 +97,7 @@ showcase-capture:
 		-Xmx2G -jar $(PAPER_JAR) --nogui --port 25576 < /dev/null || true
 	@test -s .temp/showcase-spec.json || { echo "ERROR: capture did not produce .temp/showcase-spec.json"; exit 1; }
 	cp .temp/showcase-spec.json docs/data/showcase-spec.json
-	uv run scripts/generate_catalog.py
+	uv run scripts/generate_catalog.py $(CATALOG_ARGS)
 
 .PHONY: clean
 clean:

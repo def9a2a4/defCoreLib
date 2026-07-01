@@ -1,0 +1,79 @@
+name: Test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  showcase:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Java 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v5
+
+      - name: Download Paper
+        run: |
+          set -euo pipefail
+          VER=1.21.11
+          BUILD=$(curl -fsSL "https://api.papermc.io/v2/projects/paper/versions/$VER/builds" \
+            | jq -r '.builds[-1].build')
+          JAR="paper-$VER-$BUILD.jar"
+          mkdir -p server
+          curl -fsSL -o "server/$JAR" \
+            "https://api.papermc.io/v2/projects/paper/versions/$VER/builds/$BUILD/downloads/$JAR"
+          echo "Downloaded server/$JAR"
+
+      - name: Clean
+        run: make clean
+
+      - name: Build
+        run: make build
+
+      - name: Docs export (headless boot, blocks placed, spec exported)
+        run: |
+          mkdir -p ci-logs
+          make docs CATALOG_ARGS=--no-assets 2>&1 | tee ci-logs/docs.log
+
+      - name: Showcase capture (demo machines run, live data captured)
+        run: |
+          mkdir -p ci-logs
+          make showcase-capture CATALOG_ARGS=--no-assets 2>&1 | tee ci-logs/capture.log
+
+      - name: Showcase test (assert YAML expect conditions)
+        run: |
+          mkdir -p ci-logs
+          make showcase-test 2>&1 | tee ci-logs/showcase-test.log
+
+      - name: Check for logged errors
+        if: always()
+        run: |
+          # Match ERROR/FATAL/SEVERE severity lines, stack-trace frames, and
+          # chained exceptions — but NOT benign WARN lines that merely mention an
+          # exception in their text (the exporter warns about items with null
+          # textures at WARN level).
+          if grep -nE ' (ERROR|FATAL)\]|SEVERE\]|^[[:space:]]+at [A-Za-z]|Caused by:' ci-logs/*.log; then
+            echo "::error::Errors were logged during the headless boot (see matches above)"
+            exit 1
+          fi
+          echo "No logged errors found."
+
+      - name: Upload logs on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ci-logs
+          path: ci-logs/
