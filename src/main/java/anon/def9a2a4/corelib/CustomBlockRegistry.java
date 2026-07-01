@@ -1132,7 +1132,13 @@ public class CustomBlockRegistry {
         for (CustomHeadBlock type : types.values()) {
             if (type.namespace().equals(namespace)) registerRecipesForType(type);
         }
-        for (org.bukkit.entity.Player p : Bukkit.getOnlinePlayers()) syncRecipeDiscovery(p);
+        // Resend the recipe list to already-connected players (a /reload or a runtime enable);
+        // without this the client never learns the just-added recipes and they stay absent from the
+        // recipe book (hand-crafting still works). No-op at startup — no players are online yet.
+        if (!Bukkit.getOnlinePlayers().isEmpty()) {
+            Bukkit.updateRecipes();
+            for (org.bukkit.entity.Player p : Bukkit.getOnlinePlayers()) syncRecipeDiscovery(p);
+        }
     }
 
     /**
@@ -1159,6 +1165,7 @@ public class CustomBlockRegistry {
                 || r.outputBlockId().startsWith(namespace + ":"));
         toggleRecipes.keySet().removeIf(k -> k.getKey().startsWith(prefix));
         advancementRecipes.values().forEach(list -> list.removeAll(toRemove));
+        if (!Bukkit.getOnlinePlayers().isEmpty()) Bukkit.updateRecipes(); // resend so they leave the book
     }
 
     /** Register all recipes for all registered block types. Call after all blocks are loaded. */

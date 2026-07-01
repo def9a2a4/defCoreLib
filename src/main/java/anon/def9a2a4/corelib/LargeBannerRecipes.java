@@ -57,7 +57,12 @@ public class LargeBannerRecipes implements Listener {
         if (active) return;
         Bukkit.addRecipe(recipe);
         active = true;
-        for (org.bukkit.entity.Player p : Bukkit.getOnlinePlayers()) p.discoverRecipe(recipeKey);
+        // Resend the recipe list so a runtime enable (/reload) reaches connected clients; without it
+        // the recipe stays out of the book. No-op at startup — no players online yet.
+        if (!Bukkit.getOnlinePlayers().isEmpty()) {
+            Bukkit.updateRecipes();
+            for (org.bukkit.entity.Player p : Bukkit.getOnlinePlayers()) p.discoverRecipe(recipeKey);
+        }
     }
 
     /** Remove the recipe and undiscover it. Idempotent. Called on bbanners disable / core shutdown. */
@@ -65,7 +70,10 @@ public class LargeBannerRecipes implements Listener {
         if (!active) return;
         Bukkit.removeRecipe(recipeKey);
         active = false;
-        for (org.bukkit.entity.Player p : Bukkit.getOnlinePlayers()) p.undiscoverRecipe(recipeKey);
+        if (!Bukkit.getOnlinePlayers().isEmpty()) {
+            for (org.bukkit.entity.Player p : Bukkit.getOnlinePlayers()) p.undiscoverRecipe(recipeKey);
+            Bukkit.updateRecipes();
+        }
     }
 
     boolean isActive() { return active; }
