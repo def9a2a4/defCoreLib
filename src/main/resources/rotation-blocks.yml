@@ -48,6 +48,8 @@ textures:
   clutch_fwd:        "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjI4ZTA2YzU2MDU0Y2Q5MGYzOWU5ZDA4ZTFiMjA3OTc0NjUwM2Y1MjE1OGJhMDk4YjljYmRlODJlODZkMGE5NyJ9fX0="  # clutch-fwd — clutch head (wall) + item
   reverser_up:       "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODMyYTg3MGEzNDMwMmViYThhMTNiYzI2ZWZjMGM5ZDQwOWJkYWYzYWRjZTBkMzUzZGEzOTNkMWM0YjgxODI0MyJ9fX0="  # reverser-up — reverser head (floor)
   reverser_fwd:      "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjk1MWJlMGM0NzVlMTE5ZTk2YWQxYzgzODU5MTI0MGYyZjVmYTEyODFmZTUyNTZlMmY2YzVlZWZlZWI3MzA3YiJ9fX0="  # reverser-fwd — reverser head (wall) + item
+  machine_base:      "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTlmMzdmMWNiZDQ3YzM1MDQ1MTFiZjMzYzU4YzNhMjUyYjYwNzEzZWM1ZmM1NDMzZDg4N2Q0YTBkOTk2MjEwIn19fQ=="  # 59f37f1c — millstone + press placed head
+  compressor_item:   "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvY2Q3Y2Y4NmY5ZjY1MzdkZDVkMThmMDAwNjE4ODdjY2Q1OWM0ZTc5NjY0Y2ViZDY1Y2FhN2ViMGUwMjcwMWViOCJ9fX0="  # dev/press/compressor — press item
 
 blocks:
 
@@ -418,6 +420,7 @@ blocks:
           - texture: "@rod_up"
             tag: rod
             transform: { translation: [0, 0, -0.5], scale: [0.66, 2.02, 0.66], left_rotation: [-90, 1, 0, 0] }
+            wall_offset: 0.001
           - { material: OAK_PLANKS, tag: paddle_0, transform: { translation: [0, 0.65, 0],       scale: [0.0625, 1, 0.48], left_rotation: [0, 0, 0, 1] },    wall_offset: 0.01 }
           - { material: OAK_PLANKS, tag: paddle_1, transform: { translation: [0.46, 0.46, 0],    scale: [0.0625, 1, 0.48], left_rotation: [-45, 0, 0, 1] },   wall_offset: 0.01 }
           - { material: OAK_PLANKS, tag: paddle_2, transform: { translation: [0.65, 0, 0],       scale: [0.0625, 1, 0.48], left_rotation: [-90, 0, 0, 1] },   wall_offset: 0.01 }
@@ -433,6 +436,7 @@ blocks:
           - texture: "@rod_up"
             tag: rod
             transform: { translation: [-0.5, 0, 0], scale: [0.66, 2.02, 0.66], left_rotation: [90, 0, 0, 1] }
+            wall_offset: 0.001
           - { material: OAK_PLANKS, tag: paddle_0, transform: { translation: [0, 0.65, 0],       scale: [0.48, 1, 0.0625], left_rotation: [0, 1, 0, 0] },    wall_offset: 0.01 }
           - { material: OAK_PLANKS, tag: paddle_1, transform: { translation: [0, 0.46, 0.46],    scale: [0.48, 1, 0.0625], left_rotation: [45, 1, 0, 0] },   wall_offset: 0.01 }
           - { material: OAK_PLANKS, tag: paddle_2, transform: { translation: [0, 0, 0.65],       scale: [0.48, 1, 0.0625], left_rotation: [90, 1, 0, 0] },   wall_offset: 0.01 }
@@ -617,8 +621,8 @@ blocks:
       - "&7Mounts on a container and grinds its contents when powered"
       - "&7Powered from the top; grinds faster with more power; outputs below"
       - "&7Right-click with item to grind manually"
-    # Stone Slabs (151e7016)
-    texture: "@stone_slabs"
+    # Stone machine head (shared with the press).
+    texture: "@machine_base"
     drops: self
     placement:
       allowed_faces: [NORTH, SOUTH, EAST, WEST]
@@ -646,26 +650,29 @@ blocks:
   # ─── Extractor Press ──────────────────────────────────────────────────────
   # Consumer: 1 Power. WALL only — mounts on a container, presses its contents into
   # outputs (juices, oils, extra dyes/sugar) ejected below. Powered from a shaft
-  # on top (Y axis). Display: a stone base with a piston head that bobs while
-  # powered (the pressing motion).
+  # on top (Y axis). Display (compressor): stone base + a bobbing smooth-stone slab
+  # (the pressed material) under a downward-facing piston, with a shaft stub on top.
   press:
     name: "&fExtractor Press"
     lore:
       - "&7Mounts on a container and presses its contents when powered"
       - "&7Powered from the top; squeezes out juices, oils & extracts below"
-    # Iron Block
-    texture: "@iron_block"
+    # Stone machine head (shared with the millstone); compressor item in hand.
+    texture: "@machine_base"
+    item_texture: "@compressor_item"
     drops: self
     placement:
       allowed_faces: [NORTH, SOUTH, EAST, WEST]
     default_state: idle
     states:
-      # Stone base (static) + piston head that bobs down/up while pressing.
+      # base (static) + anvil slab (bobs) + flipped piston (static, faces down) + shaft (static).
       idle:
         display_entities:
-          - { material: SMOOTH_STONE_SLAB, tag: base, transform: { translation: [0, 0.0, 0],  scale: [0.85, 1.0, 0.85] }, animation: none }
-          - { material: PISTON,            tag: head, transform: { translation: [0, 0.55, 0], scale: [0.7, 0.5, 0.7] } }
-      spinning: { copy_from: idle, animation: { type: bob, amplitude: 0.18, period: 20 } }
+          - { material: SMOOTH_STONE_SLAB, tag: base,  transform: { translation: [0, 0.0, 0],  scale: [0.85, 1.0, 0.85] }, animation: none }
+          - { material: SMOOTH_STONE_SLAB, tag: anvil, transform: { translation: [0, 0.45, 0], scale: [0.7, 0.5, 0.7] } }
+          - { material: PISTON,            tag: head,  transform: { translation: [0, 0.75, 0], scale: [0.7, 0.5, 0.7], left_rotation: [180, 1, 0, 0] }, animation: none }
+          - { texture: "@rod_up",          tag: shaft, transform: { translation: [0, 1.0, 0],  scale: [0.66, 0.8, 0.66] }, animation: none }
+      spinning: { copy_from: idle, animation: { type: bob, amplitude: 0.1, period: 20 } }
     recipes:
       craft:
         shaped:
