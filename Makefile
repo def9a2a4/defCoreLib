@@ -77,6 +77,14 @@ docs-site:
 	cp -r docs/util docs/data docs/assets docs/skin-editor ../defCoreLib-docs/
 	rm -f ../defCoreLib-docs/data/.gitignore
 
+# Strip embedded metadata (tIME timestamps, tEXt/EXIF comments) from the README
+# asset PNGs. In place, via ImageMagick; pixel data is untouched. Makes the images
+# smaller and their re-exports diff-deterministically. `-strip` on all PNGs under
+# docs/readmes/assets/; `find ... +` no-ops cleanly when the dir is empty.
+.PHONY: strip-assets
+strip-assets:
+	find docs/readmes/assets -name '*.png' -exec magick mogrify -strip {} +
+
 # Showcase integration tests: build the demo machines, run them, assert the YAML `expect` conditions.
 # The plugin halt()s with exit 0 (all pass) or 1 (any fail); NO `|| true`, so a failure fails `make`.
 # Runs on a separate port (25576) so it won't clash with a keep-alive docs server on 25575.
