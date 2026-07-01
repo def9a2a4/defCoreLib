@@ -1,8 +1,13 @@
+# `gradle shadowJar` runs the shadowJar task in the root (core) AND every companion module that
+# has it (vslab / bbanners / mech), so one invocation builds all four jars.
 .PHONY: build
 build:
 	gradle shadowJar
 	mkdir -p bin
 	cp build/libs/DefCoreLib*.jar bin/
+	cp vslab/build/libs/vslab*.jar bin/
+	cp bbanners/build/libs/bbanners*.jar bin/
+	cp mech/build/libs/mech*.jar bin/
 
 # Docs build: compile the plugin, boot a SEPARATE server (test-server/, not the playtest server/)
 # that exports the ground-truth placed-display data (-Ddefcorelib.export), then generate the catalog
@@ -106,7 +111,7 @@ clean:
 
 .PHONY: server-plugin-copy
 server-plugin-copy:
-	cp bin/DefCoreLib*.jar server/plugins/
+	cp bin/*.jar server/plugins/
 
 .PHONY: server-clear-plugin-data
 server-clear-plugin-data:

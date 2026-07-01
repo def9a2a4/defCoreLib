@@ -1,0 +1,8 @@
+name: mech
+main: anon.def9a2a4.mech.MechPlugin
+version: ${version}
+api-version: 1.21
+author: def9a2a4
+description: Enables rotation mechanisms, glue and mechanism minecarts (content lives in DefCoreLib)
+depend: [DefCoreLib]
+softdepend: [bbanners]
