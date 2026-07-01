@@ -1,5 +1,13 @@
 # BlockShips Integration Plan
 
+> **Verified against current source 2026-07-01.** All major claims confirmed (serializer never called;
+> demo consumers pass `null`; custom-block storage captured but not restored — Known Issue #7; colliders
+> repositioned without `Math.round`; BlockShips health/seats/recovery patterns as described). Two content
+> updates this pass: the **yaw framing was corrected** (both engines already delta-rotate — see the Context
+> bullet and the Phase-4 yaw section) and a **core-ownership boundary** was made explicit (below).
+> Caveat: cited line numbers are `~`-approximate and drift by 1–2 as code changes; treat them as anchors,
+> re-grep before editing. Uncertainties are flagged inline with ⚠️.
+
 ## Context
 
 ### The three goals
@@ -32,13 +40,37 @@ Phases 2–3 is *porting BlockShips' proven systems into the Mechanism core* (it
 Two cross-cutting facts the phases must respect:
 - **Composition, not replacement (goal #2):** the engine keeps its `CustomBlockRegistry` rendering path and
   *adds* a consumer provider; they compose **per block** (registry-first; provider as fallback). See Phase 1.
-- **Yaw-model mismatch (Phase-4 risk):** BlockShips *freezes* the vehicle yaw and rotates displays by a
-  delta-from-spawn (hence its ProtocolLib teleport-packet sync); DefCoreLib reads the **live** vehicle yaw
-  (`BasicMechanism.updateFromVehicle`). These must be reconciled before BlockShips delegates movement.
+- **Yaw-source mismatch (Phase-4 risk) — CORRECTED 2026-07-01:** both engines already *delta-rotate*
+  displays, so the old "live vs delta" framing was wrong. `BasicMechanism.updateFromVehicle` (`:385`) does
+  `rotate(yaw - assemblyYaw)`, and its **non-owned/minecart path** (`:379-385`) already freezes the parent
+  entity at zero yaw and rotates displays via matrices — the *same* model BlockShips uses. The real conflict
+  is the **yaw source + who drives the tick**: `tickMechanisms` (`MechanismRegistry:377`) **unconditionally**
+  calls `updateFromVehicle` every tick, reading the network-**quantized** `vehicle.getYaw()`, whereas
+  BlockShips freezes the vehicle and drives from an **exact** internal `physics.currentYaw` (which is *why*
+  it needs ProtocolLib position-sync packets). A consumer calling `move(pos, exactYaw)` today is overridden
+  the same tick by `updateFromVehicle`. See the corrected Phase-4 reconciliation section.
 
 This plan has four phases, each shippable independently. After Phase 4, BlockShips replaces its internal
 entity management (`ShipInstance` display/collider spawning, transform math, entity tagging, recovery) with
 DefCoreLib's Mechanism API.
+
+### Core ownership boundary (governing principle)
+
+The goal is to have **as much of the "core" as possible live in DefCoreLib**: mechanism orchestration,
+display-entity management, collider (carrier+shulker) management, and the transform/movement that drives
+them. BlockShips keeps only *domain* logic. The split:
+
+| Concern | Owner | Note |
+|---|---|---|
+| Display-entity spawn / transform / recovery | **Core (DefCoreLib)** | the heavy path |
+| Collider spawn / position / recovery | **Core** | the entities are core… |
+| Collision **force → velocity** response | Consumer (BlockShips) | …but the force math is physics; the engine must **expose** collider read-access so `ShipCollision` can read positions (see Phase 4) |
+| Movement + yaw application + anti-quantization position-sync | **Core** | see corrected Phase-4 yaw section |
+| Health / seats machinery (values, mounting, HUD sync) | **Core** | |
+| Physics, steering, config, customization, fuel, structure scan | Consumer | domain logic |
+
+Everything below is consistent with this table; the Phase-4 "what stays / what migrates" tables are its
+concrete expression.
 
 ---
 
@@ -555,7 +587,7 @@ mech.disassemble();  // or mech.destroy() if blocks shouldn't restore
 | System | Why it stays |
 |--------|-------------|
 | **ShipPhysics** | Velocity, acceleration, buoyancy, airship controls — domain-specific, not generalizable |
-| **ShipCollision** | Force accumulation, entity push — tightly coupled to physics |
+| **ShipCollision** / **ShipCollisionCoordinator** | Force accumulation + ship-to-ship momentum → velocity — pure physics. **Verified 2026-07-01:** these classes only *read* collider positions (terrain force, penetration force), they don't own entities. ⚠️ **Consequence of the core-ownership boundary:** once the collider *entities* live in DefCoreLib, the engine must **expose collider read-access** on the `Mechanism` interface — e.g. `int colliderCount()` + a world-space `getColliderBox(int)` (or per-block collider position accessor). Exact shape TBD (see uncertainty note below). |
 | **ShipConfig** | Per-ship-type tuning (speed, drag, turn rate) — consumer config |
 | **ShipCustomization** | Wood type, balloon color, banner — visual customization |
 | **ShipSteeringListener** | ProtocolLib key detection — domain-specific |
@@ -585,17 +617,43 @@ mech.disassemble();  // or mech.destroy() if blocks shouldn't restore
 removals (ShipInstance spawn/transform/recovery/health/seat) are counted. Treat as an order-of-magnitude
 estimate, not a precise figure.
 
-#### Yaw-model reconciliation (prerequisite for BlockShips delegating movement)
+#### Yaw-source reconciliation (prerequisite for BlockShips delegating movement) — CORRECTED 2026-07-01
 
-The two engines drive rotation differently and this must be resolved before `mech.move(pos, yaw)` can back a
-ship:
-- **DefCoreLib:** `BasicMechanism.updateFromVehicle` reads the **live** vehicle yaw and applies it directly.
-- **BlockShips:** **freezes** the vehicle yaw at spawn and rotates displays by `currentYaw - spawnYaw`
-  (delta-from-spawn), precisely to avoid the entity-tracker's ~1.4°/byte yaw quantization — which is why it
-  also sends ProtocolLib position-sync packets (~ShipInstance 1420–1469).
-Options: (a) give the engine a "frozen-vehicle + explicit delta yaw" mode that ships use while keeping the
-live-yaw mode for doors/minecarts; or (b) move BlockShips to live-yaw and accept/mitigate the quantization.
-This choice also determines which yaw value Phase 2 persists (see `MechanismState`).
+**The original "the two engines drive rotation differently" framing was wrong** and is corrected here.
+Verified against current code:
+
+- **Both delta-rotate.** `BasicMechanism.updateFromVehicle` (`:349-386`) does `rotate(yaw - assemblyYaw)`,
+  not "applies the live yaw directly." Its **non-owned/minecart path** (`:379-385`) teleports the parent at
+  **zero yaw** and rotates displays purely via matrices — this is *already* BlockShips' frozen-parent +
+  delta-rotate model.
+- **The real difference is the yaw source + the tick driver.** `tickMechanisms` (`MechanismRegistry:377`)
+  **unconditionally** calls `updateFromVehicle` for every active mechanism each tick, reading the
+  network-**quantized** `vehicle.getYaw()` (~1.4°/byte). BlockShips instead freezes the vehicle and drives
+  displays from an **exact** internal `physics.currentYaw`, and sends ProtocolLib position-sync packets
+  (~ShipInstance 1379-1469) so *other* clients see smooth motion despite the quantized entity.
+- **The concrete conflict:** a consumer calling `mech.move(pos, exactYaw)` is overridden the **same tick**,
+  because `updateFromVehicle` runs afterward and re-derives yaw from the frozen vehicle (→ `rotate(0)`).
+  Also latent: `move()` treats yaw as **absolute** (`rotate(yaw)`, `:182-188`) while `updateFromVehicle`
+  treats it as a **delta** — two inconsistent yaw conventions on the same class.
+
+**Recommended resolution (replaces the old options a/b): a "driven / external-yaw" mechanism mode.**
+For a driven mechanism, `tickMechanisms` **skips `updateFromVehicle`**; the consumer pushes exact
+position + yaw each tick via `move()`/a dedicated `drive(pos, yaw)`, and the **engine owns** the
+anti-quantization position-sync. This eliminates quantization at the source (the engine never reads the
+entity's quantized yaw), keeps all display/collider management in core, and settles which yaw Phase 2
+persists (the exact driven yaw). Doors/rotators/minecarts keep the existing vehicle-driven mode unchanged.
+
+> ⚠️ **Uncertainty (validate before committing to this):**
+> 1. **Position-sync ownership.** BlockShips' smoothness relies on ProtocolLib `ENTITY_TELEPORT` packets.
+>    DefCoreLib currently has only `TeleportCompat` (a teleport abstraction) — I have **not** verified it
+>    emits the same per-tick position/rotation sync BlockShips depends on. Moving position-sync into the
+>    engine may require porting the ProtocolLib packet path (or an equivalent), which adds a ProtocolLib
+>    dependency to the *core* — possibly undesirable. Open question: does position-sync belong in core, or
+>    stay a consumer responsibility while the engine only owns the transform math?
+> 2. **`move()` vs `updateFromVehicle` unification.** Reconciling the absolute-vs-delta yaw conventions may
+>    affect existing `move()` callers; audit them before changing semantics.
+> 3. Whether a driven mechanism should still *own* an ArmorStand vehicle at all (for health NBT + a
+>    recovery anchor) or drop it — interacts with the Phase-2 persistence anchor decision.
 
 ---
 

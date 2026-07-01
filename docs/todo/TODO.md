@@ -76,16 +76,14 @@
 
 ## Banner subsystem follow-ups (from 2026-06 deep review)
 
-- [ ] **Unified event dispatcher + caching (F3)** — ~42 `@EventHandler`s across 4 `Listener` classes;
-  11 event types handled by 2+ classes (break/explode/piston/flow/etc.). Route through one dispatcher
-  with a shared per-event cache + unified chunk/location index so hot handlers (BlockFromTo, piston,
-  physics) short-circuit O(1). **Hard constraints (don't build naively):** keep multiple handlers per
-  *actually-used* priority bucket (MONITOR cleanup must run after other plugins' cancels — don't
-  collapse to one priority); preserve per-callback `ignoreCancelled`; the index **must** include
-  banner-entity chunks (banner displays are entities, never in `chunkHints`, else false-negative
-  "empty" → missed cleanup); memoize only pure reads in a stack-scoped EventContext (re-entrancy via
-  `skull.update()`); the real win is extending existing fast-paths (`isNeighborReactive`/`isCustomBlock`)
-  to BlockFromTo + the banner radius-scan. Folds in the deferred banner per-chunk perf gate.
+- [ ] **Scaling to many custom blocks — authoring refactor + shared-infra perf** — see
+  [event-scaling.md](event-scaling.md). Supersedes the old "F3 unified dispatcher" idea: **don't
+  build a dispatcher** (the registry already is the per-block dispatcher). The real work is (A) a
+  `BlockCallbacks` holder + shared overlay helper to fix the `toBuilder()` silent-field-drop bug and
+  the `RotationBlocks` boilerplate, (B) a unified display-entity index to kill the `getNearbyEntities`
+  scans (banner cleanup, `applyConfig` per-redstone, `trackAnimations` per-chunk-load), (C) quick wins
+  (`setInvulnerable` to delete the EntityDamage listeners; cache `LocationKey` in tick records),
+  (D) a per-chunk index last. The `isCustomBlock`/`isNeighborReactive` fast-paths already exist.
 - [ ] **Remove banner reload tooling** — `reloadConfig` / `/defcorelib reloadbanners` and the
   `banner-config.yml` load path are dev-only; delete once positions are finalized. (Known minor bugs
   while it lives: reload swaps flag front/back faces, can CCE on a stale bed cast, and skips large
