@@ -94,9 +94,10 @@ public class RotationNetwork {
                         NodeRole role, int powerUnits, boolean gearLike) {
         CustomBlockRegistry.LocationKey key = CustomBlockRegistry.LocationKey.of(block);
         nodes.put(key, new RotationNode(key, blockTypeId, axis, role, powerUnits, gearLike));
-        logger.info("[Rotation] addNode: " + blockTypeId + " axis=" + axis
-            + " at " + key.x() + "," + key.y() + "," + key.z()
-            + " (total nodes: " + nodes.size() + ")");
+        // verbose: fires per rotation block on every chunk load — uncomment to trace node registration
+        // logger.info("[Rotation] addNode: " + blockTypeId + " axis=" + axis
+        //     + " at " + key.x() + "," + key.y() + "," + key.z()
+        //     + " (total nodes: " + nodes.size() + ")");
         recalculate(key);
     }
 
@@ -425,10 +426,11 @@ public class RotationNetwork {
             NetworkState netState = new NetworkState(supply, demand, jammed);
             networks.put(netId, netState);
 
-            logger.info("[Rotation] Network #" + netId + ": " + members.size() + " blocks, "
-                + supply + "/" + demand + " Power"
-                + (jammed ? ", JAMMED" : "")
-                + ", " + (netState.powered() ? "POWERED" : "unpowered"));
+            // verbose: fires per network on every recalculation — uncomment to trace network state
+            // logger.info("[Rotation] Network #" + netId + ": " + members.size() + " blocks, "
+            //     + supply + "/" + demand + " Power"
+            //     + (jammed ? ", JAMMED" : "")
+            //     + ", " + (netState.powered() ? "POWERED" : "unpowered"));
 
             // Smoke + sound on transition to jammed
             if (jammed && !members.stream().allMatch(previouslyJammed::contains)) {

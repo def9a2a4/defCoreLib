@@ -18,6 +18,7 @@ blocks:
     item_material: BRUSH
     placeable: false
     item_glint: true
+    recipe_category: REDSTONE
     recipes:
       craft:
         shapeless:

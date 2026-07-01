@@ -56,47 +56,41 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         // Load demo blocks from YAML
         try (InputStream demoStream = getResource("demo-blocks.yml")) {
             if (demoStream != null) {
-                int count = BlockLoader.load(demoStream, registry, getLogger());
-                getLogger().info("Loaded " + count + " demo blocks");
+                BlockLoader.load(demoStream, registry, getLogger());
             }
         } catch (IOException ignored) {}
 
         // Load vertical slabs from YAML
         try (InputStream slabStream = getResource("slabs.yml")) {
             if (slabStream != null) {
-                int count = BlockLoader.load(slabStream, registry, getLogger());
-                getLogger().info("Loaded " + count + " vertical slabs");
+                BlockLoader.load(slabStream, registry, getLogger());
             }
         } catch (IOException ignored) {}
 
         // Load rotation blocks from YAML, then overlay Java callbacks
         try (InputStream rotStream = getResource("rotation-blocks.yml")) {
             if (rotStream != null) {
-                int count = BlockLoader.load(rotStream, registry, getLogger());
-                getLogger().info("Loaded " + count + " rotation blocks");
+                BlockLoader.load(rotStream, registry, getLogger());
             }
         } catch (IOException ignored) {}
 
         // Inventory-only custom items (juices, oils, …) — non-placeable CustomHeadBlocks
         try (InputStream itemStream = getResource("custom-items.yml")) {
             if (itemStream != null) {
-                int count = BlockLoader.load(itemStream, registry, getLogger());
-                getLogger().info("Loaded " + count + " custom items");
+                BlockLoader.load(itemStream, registry, getLogger());
             }
         } catch (IOException ignored) {}
 
         // corelib-namespace inventory-only items (slime glue) — same model as custom-items.yml
         try (InputStream corelibItemStream = getResource("corelib-items.yml")) {
             if (corelibItemStream != null) {
-                int count = BlockLoader.load(corelibItemStream, registry, getLogger());
-                getLogger().info("Loaded " + count + " corelib items");
+                BlockLoader.load(corelibItemStream, registry, getLogger());
             }
         } catch (IOException ignored) {}
         RotationConfig rotConfig = new RotationConfig();
         try (InputStream configStream = getResource("rotation-config.yml")) {
             if (configStream != null) {
-                int sections = rotConfig.load(configStream, getLogger());
-                getLogger().info("Loaded rotation config (" + sections + " sections)");
+                rotConfig.load(configStream, getLogger());
             }
         } catch (IOException ignored) {}
         rotationNetwork = new RotationNetwork(this, registry);
@@ -105,15 +99,13 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         MachineRecipes millRecipes = new MachineRecipes();
         try (InputStream millStream = getResource("mill-recipes.yml")) {
             if (millStream != null) {
-                int rc = millRecipes.load(millStream, getLogger());
-                getLogger().info("Loaded " + rc + " mill recipes");
+                millRecipes.load(millStream, getLogger());
             }
         } catch (IOException ignored) {}
         MachineRecipes pressRecipes = new MachineRecipes();
         try (InputStream pressStream = getResource("press-recipes.yml")) {
             if (pressStream != null) {
-                int rc = pressRecipes.load(pressStream, getLogger());
-                getLogger().info("Loaded " + rc + " press recipes");
+                pressRecipes.load(pressStream, getLogger());
             }
         } catch (IOException ignored) {}
         RotationBlocks.register(registry, rotationNetwork, fuelManager, millRecipes, pressRecipes, rotConfig);
@@ -131,7 +123,6 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         try (InputStream showcaseStream = getResource("showcases.yml")) {
             if (showcaseStream != null) {
                 showcases = ShowcaseSpec.load(showcaseStream, getLogger());
-                getLogger().info("Loaded " + showcases.size() + " showcases");
             }
         } catch (IOException ignored) {}
 
@@ -162,7 +153,8 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         // Headless showcase integration tests (-Ddefcorelib.showcaseTest=true): build, run, assert, exit.
         ShowcaseRunner.armIfRequested(this, registry, rotationNetwork, fuelManager, showcaseBuilder, showcases.values(), rotationRotator);
 
-        getLogger().info("DefCoreLib enabled");
+        getLogger().info("DefCoreLib enabled: " + registry.allTypes().size()
+                + " block types, " + showcases.size() + " showcases");
     }
 
     @Override
