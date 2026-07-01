@@ -162,6 +162,18 @@ final class GlueAuthoring implements Listener {
     // Session lifecycle
     // ──────────────────────────────────────────────────────────────────────
 
+    /** Dev entry point (for {@code /defcorelib showcase anchor}): start/toggle a glue session on an
+     *  ARBITRARY block, bypassing the {@link #isAnchor} gate — so any machine can be marked for export. */
+    public void startBlockSession(Player player, Block anchorBlock) {
+        toggleSession(player, anchorBlock);
+    }
+
+    /** The player's current glue-session anchor, or {@code null} if none is open. */
+    public @org.jspecify.annotations.Nullable Anchor sessionAnchor(Player player) {
+        GlueSession s = sessions.get(player.getUniqueId());
+        return s == null ? null : s.anchor;
+    }
+
     private void toggleSession(Player player, Block anchorBlock) {
         UUID id = player.getUniqueId();
         Object key = CustomBlockRegistry.LocationKey.of(anchorBlock);

@@ -36,6 +36,7 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
     private MechanismRegistry mechanismRegistry;
     private MechanismMinecartManager mechanismMinecartManager;
     private GlueManager glueManager;
+    private GlueAuthoring glueAuthoring;
     private ShowcaseBuilder showcaseBuilder;
     private java.util.Map<String, ShowcaseSpec> showcases = java.util.Map.of();
     private RotationNetwork rotationNetwork;
@@ -120,7 +121,7 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         // Anchor-owned block selection ("glue") — shared by doors/rotators (wired in D3).
         // The glue item itself is declared in corelib-items.yml (corelib:glue_item).
         glueManager = new GlueManager(rotConfig.glueMaxSize);
-        GlueAuthoring glueAuthoring = new GlueAuthoring(this, registry, glueManager,
+        glueAuthoring = new GlueAuthoring(this, registry, glueManager,
             rotConfig.glueOutlineInterval, rotConfig.glueSessionTimeout);
         getServer().getPluginManager().registerEvents(glueAuthoring, this);
         glueAuthoring.start();
@@ -1362,12 +1363,46 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
                     int placed = showcaseBuilder.build(spec, player.getLocation().getBlock().getLocation());
                     sender.sendMessage(Component.text("Building '" + spec.name + "' (" + placed
                         + " blocks) at your feet.", NamedTextColor.GREEN));
+                } else if (args.length >= 2 && args[1].equalsIgnoreCase("anchor")) {
+                    // Dev export: mark the block you look at as the showcase origin, then glue-mark the rest.
+                    Block target = player.getTargetBlockExact(8);
+                    if (target == null || target.getType().isAir()) {
+                        sender.sendMessage(Component.text("Look at the block to use as the showcase origin.",
+                            NamedTextColor.RED));
+                        return true;
+                    }
+                    glueAuthoring.startBlockSession(player, target);
+                    sender.sendMessage(Component.text("Showcase origin set. Mark the machine's blocks with the "
+                        + "glue item, then /defcorelib showcase export <id>.", NamedTextColor.GREEN));
+                } else if (args.length >= 2 && args[1].equalsIgnoreCase("export")) {
+                    if (args.length < 3) {
+                        sender.sendMessage(Component.text("Usage: /defcorelib showcase export <id>",
+                            NamedTextColor.YELLOW));
+                        return true;
+                    }
+                    Anchor anchor = glueAuthoring.sessionAnchor(player);
+                    if (anchor == null) {
+                        sender.sendMessage(Component.text("No glue session — run /defcorelib showcase anchor "
+                            + "first, then mark the blocks.", NamedTextColor.RED));
+                        return true;
+                    }
+                    List<Block> glued = glueManager.resolveStructure(anchor);
+                    try {
+                        java.nio.file.Path out = getDataFolder().toPath().resolve("showcase-export.yml");
+                        int n = ShowcaseExporter.export(args[2], anchor, glued, registry, out);
+                        sender.sendMessage(Component.text("Exported '" + args[2] + "' (" + n + " blocks) → "
+                            + out.toAbsolutePath(), NamedTextColor.GREEN));
+                    } catch (Exception e) {
+                        sender.sendMessage(Component.text("Export failed: " + e.getMessage(), NamedTextColor.RED));
+                        getLogger().warning("showcase export failed: " + e);
+                    }
                 } else {
                     sender.sendMessage(Component.text("Showcases:", NamedTextColor.GOLD));
                     for (ShowcaseSpec s : showcases.values()) {
                         sender.sendMessage(Component.text("  " + s.id + " — " + s.name, NamedTextColor.WHITE));
                     }
-                    sender.sendMessage(Component.text("Build with: /defcorelib showcase build <id>", NamedTextColor.GRAY));
+                    sender.sendMessage(Component.text("Build: showcase build <id>  |  Export a built machine: "
+                        + "showcase anchor (look at origin) → glue-mark → showcase export <id>", NamedTextColor.GRAY));
                 }
             }
             case "gluetest" -> {
@@ -1422,6 +1457,16 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
             return registry.allTypes().stream()
                     .map(CustomHeadBlock::fullId)
                     .filter(id -> id.toLowerCase().startsWith(prefix))
+                    .toList();
+        }
+        if (args.length == 2 && args[0].equalsIgnoreCase("showcase")) {
+            return List.of("build", "anchor", "export", "list").stream()
+                    .filter(s -> s.startsWith(args[1].toLowerCase()))
+                    .toList();
+        }
+        if (args.length == 3 && args[0].equalsIgnoreCase("showcase") && args[1].equalsIgnoreCase("build")) {
+            return showcases.keySet().stream()
+                    .filter(s -> s.toLowerCase().startsWith(args[2].toLowerCase()))
                     .toList();
         }
         return List.of();
