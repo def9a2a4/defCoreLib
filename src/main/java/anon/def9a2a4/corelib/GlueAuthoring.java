@@ -8,12 +8,14 @@ import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.entity.Minecart;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
+import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -50,6 +52,10 @@ final class GlueAuthoring implements Listener {
 
     private final Map<UUID, GlueSession> sessions = new HashMap<>();
 
+    /** Set post-construction (the manager is built after this listener) — used only to gate/identify
+     *  mechanism minecarts for entity-anchored glue. Null-safe throughout. */
+    private MechanismMinecartManager minecartManager;
+
     GlueAuthoring(JavaPlugin plugin, CustomBlockRegistry registry, GlueManager glue,
                   int outlineInterval, int sessionTimeout) {
         this.plugin = plugin;
@@ -57,6 +63,10 @@ final class GlueAuthoring implements Listener {
         this.glue = glue;
         this.outlineInterval = Math.max(1, outlineInterval);
         this.sessionTimeout = sessionTimeout;
+    }
+
+    void setMinecartManager(MechanismMinecartManager minecartManager) {
+        this.minecartManager = minecartManager;
     }
 
     void start() {
@@ -89,6 +99,7 @@ final class GlueAuthoring implements Listener {
                     else toggleSession(player, clicked);
                 } else if (session != null) {
                     event.setCancelled(true);
+                    if (!session.anchor.isAtRest()) { actionBar(player, "Anchor is moving — wait", NamedTextColor.RED); return; }
                     handleCorner(player, session, clicked);
                 }
                 // else: holding glue, no session, non-anchor block → don't interfere
@@ -98,6 +109,7 @@ final class GlueAuthoring implements Listener {
                 Block clicked = event.getClickedBlock();
                 if (clicked == null) return;
                 event.setCancelled(true);
+                if (!session.anchor.isAtRest()) { actionBar(player, "Anchor is moving — wait", NamedTextColor.RED); return; }
                 session.touch(now());
                 if (sneak) {
                     if (glue.unglue(session.anchor, clicked)) {
@@ -118,6 +130,22 @@ final class GlueAuthoring implements Listener {
             }
             default -> { }
         }
+    }
+
+    /**
+     * Start/continue a glue session on a mechanism minecart. Runs at LOWEST and cancels the interaction so
+     * the manager's {@code HIGH, ignoreCancelled=true} assemble/disassemble toggle is preempted while the
+     * player holds glue. (Mounting is already blocked by the manager's VehicleEnterEvent handler.)
+     */
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onInteractEntity(PlayerInteractEntityEvent event) {
+        if (event.getHand() != EquipmentSlot.HAND) return;
+        Player player = event.getPlayer();
+        if (!GlueItem.isGlueItem(player.getInventory().getItemInMainHand())) return;
+        if (!(event.getRightClicked() instanceof Minecart cart)) return;
+        if (minecartManager == null || !minecartManager.isMechanismMinecart(cart)) return;
+        event.setCancelled(true);
+        toggleSession(player, cart);
     }
 
     /** Suppress block breaking while a player is actively authoring (covers creative instant-break). */
@@ -152,6 +180,43 @@ final class GlueAuthoring implements Listener {
         sessions.put(id, new GlueSession(anchor, id, now()));
         player.playSound(player.getLocation(), Sound.BLOCK_SLIME_BLOCK_PLACE, 0.6f, 1.4f);
         actionBar(player, "Glue: editing (" + glue.offsets(anchor).size() + " blocks)", NamedTextColor.GREEN);
+    }
+
+    private void toggleSession(Player player, Minecart cart) {
+        UUID id = player.getUniqueId();
+        Object key = cart.getUniqueId();
+        GlueSession existing = sessions.get(id);
+        if (existing != null && existing.anchor.identityKey().equals(key)) {
+            sessions.remove(id);
+            actionBar(player, "Glue: session closed", NamedTextColor.GRAY);
+            return;
+        }
+        if (!minecartCanAuthor(cart)) {
+            actionBar(player, "Minecart is moving or active — settle it first", NamedTextColor.RED);
+            return;
+        }
+        for (GlueSession s : sessions.values()) {
+            if (!s.player.equals(id) && s.anchor.identityKey().equals(key)) {
+                actionBar(player, "Another player is editing this minecart", NamedTextColor.RED);
+                return;
+            }
+        }
+        // Offsets are relative to the cart's current cell, so the glued structure must be assembled in
+        // place (power the rail under the stationary cart). isAtRest gates edits while it's active/moving.
+        Anchor anchor = new EntityAnchor(cart, () -> minecartCanAuthor(cart));
+        sessions.put(id, new GlueSession(anchor, id, now()));
+        player.playSound(player.getLocation(), Sound.BLOCK_SLIME_BLOCK_PLACE, 0.6f, 1.4f);
+        actionBar(player, "Glue: editing (" + glue.offsets(anchor).size() + " blocks)", NamedTextColor.GREEN);
+    }
+
+    /** A mechanism minecart may be authored only while it's not assembled, not on a powered activator rail
+     *  (about to trigger), and not moving. */
+    private boolean minecartCanAuthor(Minecart cart) {
+        return minecartManager != null
+            && cart.isValid() && !cart.isDead()
+            && !minecartManager.isAssembled(cart.getUniqueId())
+            && !minecartManager.isOnPoweredActivatorRail(cart)
+            && cart.getVelocity().lengthSquared() < 1.0e-4;
     }
 
     private void unglueAllAt(Player player, Block anchorBlock) {
@@ -237,6 +302,13 @@ final class GlueAuthoring implements Listener {
             Player p = Bukkit.getPlayer(e.getKey());
             if (p == null) { it.remove(); continue; }
             GlueSession s = e.getValue();
+            // Close a session whose minecart anchor was removed (/kill, explosion, despawn — paths that
+            // VehicleDestroyEvent misses) before renderOutline touches a dead entity.
+            if (s.anchor instanceof EntityAnchor ea && !ea.isValid()) {
+                it.remove();
+                actionBar(p, "Glue: minecart gone", NamedTextColor.GRAY);
+                continue;
+            }
             if (now - s.lastTouchTick > sessionTimeout) {
                 it.remove();
                 actionBar(p, "Glue: session timed out", NamedTextColor.GRAY);

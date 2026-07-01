@@ -46,6 +46,7 @@ final class MechanismMinecartManager implements Listener {
     private final JavaPlugin plugin;
     private final CustomBlockRegistry registry;
     private final MechanismRegistry mechRegistry;
+    private final GlueManager glueManager;
     private final NamespacedKey mechanismMinecartKey;
     private final int maxStructureSize;
 
@@ -65,10 +66,11 @@ final class MechanismMinecartManager implements Listener {
     }
 
     MechanismMinecartManager(JavaPlugin plugin, CustomBlockRegistry registry, MechanismRegistry mechRegistry,
-                             int maxStructureSize) {
+                             GlueManager glueManager, int maxStructureSize) {
         this.plugin = plugin;
         this.registry = registry;
         this.mechRegistry = mechRegistry;
+        this.glueManager = glueManager;
         this.mechanismMinecartKey = new NamespacedKey(plugin, "mechanism_minecart");
         this.maxStructureSize = maxStructureSize;
     }
@@ -226,7 +228,18 @@ final class MechanismMinecartManager implements Listener {
         }
     }
 
-    private boolean isOnPoweredActivatorRail(Minecart minecart) {
+    /** Whether this cart currently has an assembled mechanism (used by glue authoring's at-rest gate). */
+    boolean isAssembled(UUID minecartId) {
+        MinecartState s = tracked.get(minecartId);
+        return s != null && s.mechanism != null;
+    }
+
+    /** Whether this cart is a tracked mechanism minecart (glue authoring targets only these). */
+    boolean isMechanismMinecart(Minecart minecart) {
+        return tracked.containsKey(minecart.getUniqueId());
+    }
+
+    boolean isOnPoweredActivatorRail(Minecart minecart) {
         Block block = minecart.getLocation().getBlock();
         if (block.getType() != Material.ACTIVATOR_RAIL) return false;
         if (block.getBlockData() instanceof org.bukkit.block.data.type.RedstoneRail rr) {
@@ -250,15 +263,29 @@ final class MechanismMinecartManager implements Listener {
     private void assemble(MinecartState state) {
         snapAndStop(state.minecart);
 
-        org.bukkit.Location above = state.minecart.getLocation().clone().add(0, 1, 0);
-        if (above.getBlock().getType().isAir()) return;
+        // Prefer a glued selection (offsets in the cart's PDC, resolved relative to its current cell — so
+        // the glued structure must be co-located with the cart: assemble in place). An empty (but non-null)
+        // resolve means "glued, but the blocks aren't at the cart" — fall back to flood-fill rather than
+        // assembling nothing.
+        Anchor anchor = new EntityAnchor(state.minecart, () -> state.mechanism == null);
+        List<Block> resolved = glueManager.resolveStructure(anchor);
+        boolean usingGlue = resolved != null && !resolved.isEmpty();
 
-        List<Block> blocks = floodFillAllowed(above.getBlock(), maxStructureSize);
+        List<Block> blocks;
+        if (usingGlue) {
+            blocks = resolved;
+        } else {
+            org.bukkit.Location above = state.minecart.getLocation().clone().add(0, 1, 0);
+            if (above.getBlock().getType().isAir()) return;
+            blocks = floodFillAllowed(above.getBlock(), maxStructureSize);
+        }
         if (blocks.isEmpty()) return;
 
         Mechanism mech = mechRegistry.assembleMechanism("demo:mechanism_minecart", blocks,
             state.minecart, MINECART_RIDE_OFFSET, null);
         state.mechanism = mech;
+        // Rebind glue to where the blocks land (relative to the cart's rest cell) so it tracks across rides.
+        if (usingGlue) mech.setOnDisassembled(p -> glueManager.setStructure(anchor, p));
     }
 
     private void disassemble(MinecartState state) {
@@ -302,7 +329,9 @@ final class MechanismMinecartManager implements Listener {
         event.setCancelled(true);
     }
 
-    @EventHandler(priority = EventPriority.HIGH)
+    // ignoreCancelled: the glue-authoring handler (EventPriority.LOWEST) cancels this interaction when the
+    // player holds the glue item, so this assemble/disassemble toggle is preempted during authoring.
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onMinecartInteract(PlayerInteractEntityEvent event) {
         if (event.getHand() != EquipmentSlot.HAND) return;
         if (!(event.getRightClicked() instanceof Minecart minecart)) return;
