@@ -85,6 +85,7 @@ blocks:
           - texture: "@rod_up"
             tag: rod
             transform: { translation: [-0.5, 0, 0], scale: [0.66, 2.02, 0.66], left_rotation: [90, 0, 0, 1] }
+            wall_offset: 0.01
       spinning_x: { copy_from: idle_x, texture: "@shaft_ring_fwd", animation: { type: rotate, axis: [1, 0, 0], speed: 3.0 } }
       # Z-axis: rotate head -90° around X so height→Z
       idle_z:
@@ -93,6 +94,7 @@ blocks:
           - texture: "@rod_up"
             tag: rod
             transform: { translation: [0, 0, -0.5], scale: [0.66, 2.02, 0.66], left_rotation: [-90, 1, 0, 0] }
+            wall_offset: 0.01
       spinning_z: { copy_from: idle_z, texture: "@shaft_ring_fwd", animation: { type: rotate, axis: [0, 0, 1], speed: 3.0 } }
     recipes:
       craft:
@@ -154,6 +156,7 @@ blocks:
           - texture: "@rod_up"
             tag: shaft_rod
             transform: { translation: [-0.5, 0, 0], scale: [0.66, 2.02, 0.66], left_rotation: [90, 0, 0, 1] }
+            wall_offset: 0.01
           - texture: "@gear_up"
             tag: disc_a
             transform: { translation: [-0.45, 0, 0], scale: [1.7, 0.4, 1.7], left_rotation: [90, 0, 0, 1] }
@@ -167,6 +170,7 @@ blocks:
           - texture: "@rod_up"
             tag: shaft_rod
             transform: { translation: [-0.5, 0, 0], scale: [0.66, 2.02, 0.66], left_rotation: [90, 0, 0, 1] }
+            wall_offset: 0.01
           - texture: "@gear_up"
             tag: disc_a
             transform: { translation: [0.45, 0, 0], scale: [1.7, 0.4, 1.7], left_rotation: [-90, 0, 0, 1] }
@@ -181,6 +185,7 @@ blocks:
           - texture: "@rod_up"
             tag: shaft_rod
             transform: { translation: [0, 0, -0.5], scale: [0.66, 2.02, 0.66], left_rotation: [-90, 1, 0, 0] }
+            wall_offset: 0.01
           - texture: "@gear_up"
             tag: disc_a
             transform: { translation: [0, 0, -0.45], scale: [1.7, 0.4, 1.7], left_rotation: [-90, 1, 0, 0] }
@@ -194,6 +199,7 @@ blocks:
           - texture: "@rod_up"
             tag: shaft_rod
             transform: { translation: [0, 0, -0.5], scale: [0.66, 2.02, 0.66], left_rotation: [-90, 1, 0, 0] }
+            wall_offset: 0.01
           - texture: "@gear_up"
             tag: disc_a
             transform: { translation: [0, 0, 0.45], scale: [1.7, 0.4, 1.7], left_rotation: [90, 1, 0, 0] }
@@ -238,6 +244,7 @@ blocks:
           - texture: "@rod_up"
             tag: rod
             transform: { translation: [-0.5, 0, 0], scale: [0.66, 2.02, 0.66], left_rotation: [90, 0, 0, 1] }
+            wall_offset: 0.01
       idle_y:
         texture: "@clutch_up"
         display_entities:
@@ -250,6 +257,7 @@ blocks:
           - texture: "@rod_up"
             tag: rod
             transform: { translation: [0, 0, -0.5], scale: [0.66, 2.02, 0.66], left_rotation: [-90, 1, 0, 0] }
+            wall_offset: 0.01
       spinning_x: { copy_from: idle_x, texture: "@clutch_fwd", animation: { type: rotate, axis: [1, 0, 0], speed: 3.0 } }
       spinning_y: { copy_from: idle_y, texture: "@clutch_up", animation: { type: rotate, axis: [0, 1, 0], speed: 3.0 } }
       spinning_z: { copy_from: idle_z, texture: "@clutch_fwd", animation: { type: rotate, axis: [0, 0, 1], speed: 3.0 } }
@@ -296,6 +304,7 @@ blocks:
           - texture: "@rod_up"
             tag: rod
             transform: { translation: [-0.5, 0, 0], scale: [0.66, 2.02, 0.66], left_rotation: [90, 0, 0, 1] }
+            wall_offset: 0.01
       idle_y:
         texture: "@reverser_up"
         display_entities:
@@ -308,6 +317,7 @@ blocks:
           - texture: "@rod_up"
             tag: rod
             transform: { translation: [0, 0, -0.5], scale: [0.66, 2.02, 0.66], left_rotation: [-90, 1, 0, 0] }
+            wall_offset: 0.01
       spinning_x: { copy_from: idle_x, texture: "@reverser_fwd", animation: { type: rotate, axis: [1, 0, 0], speed: 3.0 } }
       spinning_y: { copy_from: idle_y, texture: "@reverser_up", animation: { type: rotate, axis: [0, 1, 0], speed: 3.0 } }
       spinning_z: { copy_from: idle_z, texture: "@reverser_fwd", animation: { type: rotate, axis: [0, 0, 1], speed: 3.0 } }
@@ -351,6 +361,7 @@ blocks:
           - texture: "@rod_up"
             tag: rod
             transform: { translation: [-0.5, 0, 0], scale: [0.66, 2.02, 0.66], left_rotation: [90, 0, 0, 1] }
+            wall_offset: 0.01
       idle_y:
         texture: "@rotator_up"
         display_entities:
@@ -363,6 +374,7 @@ blocks:
           - texture: "@rod_up"
             tag: rod
             transform: { translation: [0, 0, -0.5], scale: [0.66, 2.02, 0.66], left_rotation: [-90, 1, 0, 0] }
+            wall_offset: 0.01
       spinning_x: { copy_from: idle_x, texture: "@rotator_side", animation: { type: rotate, axis: [1, 0, 0], speed: 3.0 } }
       spinning_y: { copy_from: idle_y, texture: "@rotator_up", animation: { type: rotate, axis: [0, 1, 0], speed: 3.0 } }
       spinning_z: { copy_from: idle_z, texture: "@rotator_side", animation: { type: rotate, axis: [0, 0, 1], speed: 3.0 } }
@@ -406,14 +418,14 @@ blocks:
           - texture: "@rod_up"
             tag: rod
             transform: { translation: [0, 0, -0.5], scale: [0.66, 2.02, 0.66], left_rotation: [-90, 1, 0, 0] }
-          - { material: OAK_PLANKS, tag: paddle_0, transform: { translation: [0, 0.4, 0],         scale: [0.0625, 0.75, 0.5], left_rotation: [0, 0, 0, 1] },    wall_offset: 0.25 }
-          - { material: OAK_PLANKS, tag: paddle_1, transform: { translation: [0.283, 0.283, 0],   scale: [0.0625, 0.75, 0.5], left_rotation: [-45, 0, 0, 1] },   wall_offset: 0.25 }
-          - { material: OAK_PLANKS, tag: paddle_2, transform: { translation: [0.4, 0, 0],         scale: [0.0625, 0.75, 0.5], left_rotation: [-90, 0, 0, 1] },   wall_offset: 0.25 }
-          - { material: OAK_PLANKS, tag: paddle_3, transform: { translation: [0.283, -0.283, 0],  scale: [0.0625, 0.75, 0.5], left_rotation: [-135, 0, 0, 1] },  wall_offset: 0.25 }
-          - { material: OAK_PLANKS, tag: paddle_4, transform: { translation: [0, -0.4, 0],        scale: [0.0625, 0.75, 0.5], left_rotation: [-180, 0, 0, 1] },  wall_offset: 0.25 }
-          - { material: OAK_PLANKS, tag: paddle_5, transform: { translation: [-0.283, -0.283, 0], scale: [0.0625, 0.75, 0.5], left_rotation: [-225, 0, 0, 1] },  wall_offset: 0.25 }
-          - { material: OAK_PLANKS, tag: paddle_6, transform: { translation: [-0.4, 0, 0],        scale: [0.0625, 0.75, 0.5], left_rotation: [-270, 0, 0, 1] },  wall_offset: 0.25 }
-          - { material: OAK_PLANKS, tag: paddle_7, transform: { translation: [-0.283, 0.283, 0],  scale: [0.0625, 0.75, 0.5], left_rotation: [-315, 0, 0, 1] },  wall_offset: 0.25 }
+          - { material: OAK_PLANKS, tag: paddle_0, transform: { translation: [0, 0.4, 0],         scale: [0.0625, 1, 0.49], left_rotation: [0, 0, 0, 1] },    wall_offset: 0.25 }
+          - { material: OAK_PLANKS, tag: paddle_1, transform: { translation: [0.283, 0.283, 0],   scale: [0.0625, 1, 0.49], left_rotation: [-45, 0, 0, 1] },   wall_offset: 0.25 }
+          - { material: OAK_PLANKS, tag: paddle_2, transform: { translation: [0.4, 0, 0],         scale: [0.0625, 1, 0.49], left_rotation: [-90, 0, 0, 1] },   wall_offset: 0.25 }
+          - { material: OAK_PLANKS, tag: paddle_3, transform: { translation: [0.283, -0.283, 0],  scale: [0.0625, 1, 0.49], left_rotation: [-135, 0, 0, 1] },  wall_offset: 0.25 }
+          - { material: OAK_PLANKS, tag: paddle_4, transform: { translation: [0, -0.4, 0],        scale: [0.0625, 1, 0.49], left_rotation: [-180, 0, 0, 1] },  wall_offset: 0.25 }
+          - { material: OAK_PLANKS, tag: paddle_5, transform: { translation: [-0.283, -0.283, 0], scale: [0.0625, 1, 0.49], left_rotation: [-225, 0, 0, 1] },  wall_offset: 0.25 }
+          - { material: OAK_PLANKS, tag: paddle_6, transform: { translation: [-0.4, 0, 0],        scale: [0.0625, 1, 0.49], left_rotation: [-270, 0, 0, 1] },  wall_offset: 0.25 }
+          - { material: OAK_PLANKS, tag: paddle_7, transform: { translation: [-0.283, 0.283, 0],  scale: [0.0625, 1, 0.49], left_rotation: [-315, 0, 0, 1] },  wall_offset: 0.25 }
       spinning_z: { copy_from: idle_z, animation: { type: rotate, axis: [0, 0, 1], speed: 3.0 } }
       # X-axis (E/W wall): 8 oak-plank paddles radial in YZ plane; rod = axle along X.
       idle_x:
@@ -463,17 +475,19 @@ blocks:
         display_entities:
           - texture: "@rod_up"
             tag: rod
-            transform: { translation: [-0.5, 0, 0], scale: [0.66, 2.02, 0.66], left_rotation: [90, 0, 0, 1] }
+            transform: { translation: [-0.5, 0, 0], scale: [0.66, 2.00, 0.66], left_rotation: [90, 0, 0, 1] }
+            wall_offset: 0.01
       idle_y:
         display_entities:
           - texture: "@rod_up"
             tag: rod
-            transform: { translation: [0, 0.5, 0], scale: [0.66, 2.02, 0.66] }
+            transform: { translation: [0, 0.51, 0], scale: [0.66, 2.00, 0.66] }
       idle_z:
         display_entities:
           - texture: "@rod_up"
             tag: rod
-            transform: { translation: [0, 0, -0.5], scale: [0.66, 2.02, 0.66], left_rotation: [-90, 1, 0, 0] }
+            transform: { translation: [0, 0, -0.5], scale: [0.66, 2.00, 0.66], left_rotation: [-90, 1, 0, 0] }
+            wall_offset: 0.01
       # Running: spinning shaft + smoke particles
       running_x:
         copy_from: idle_x
@@ -537,17 +551,19 @@ blocks:
         display_entities:
           - texture: "@rod_up"
             tag: rod
-            transform: { translation: [-0.5, 0, 0], scale: [0.66, 2.02, 0.66], left_rotation: [90, 0, 0, 1] }
+            transform: { translation: [-0.5, 0, 0], scale: [0.66, 2.00, 0.66], left_rotation: [90, 0, 0, 1] }
+            wall_offset: 0.01
       idle_y:
         display_entities:
           - texture: "@rod_up"
             tag: rod
-            transform: { translation: [0, 0.5, 0], scale: [0.66, 2.02, 0.66] }
+            transform: { translation: [0, 0.51, 0], scale: [0.66, 2.00, 0.66] }
       idle_z:
         display_entities:
           - texture: "@rod_up"
             tag: rod
-            transform: { translation: [0, 0, -0.5], scale: [0.66, 2.02, 0.66], left_rotation: [-90, 1, 0, 0] }
+            transform: { translation: [0, 0, -0.5], scale: [0.66, 2.00, 0.66], left_rotation: [-90, 1, 0, 0] }
+            wall_offset: 0.01
       # Spinning: rotating shaft + spark particles
       spinning_x:
         copy_from: idle_x
