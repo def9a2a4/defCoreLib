@@ -143,6 +143,15 @@ final class RotationBlocks {
     // Water Wheel: source, perpendicular water detection
     // ──────────────────────────────────────────────────────────────────────
 
+    /** Water-wheel paddles: the 8 slabs (ring, clockwise from top) map to paddle_0..7, each
+     *  rendered as its matching plank and listed in "Paddles:" lore. Slot 4 (bearing) is skipped. */
+    private static final IngredientCapture PADDLE_CAPTURE = new IngredientCapture(
+            java.util.Map.of(1, "paddle_0", 2, "paddle_1", 5, "paddle_2", 8, "paddle_3",
+                             7, "paddle_4", 6, "paddle_5", 3, "paddle_6", 0, "paddle_7"),
+            slab -> new org.bukkit.inventory.ItemStack(IngredientCapture.plankForSlab(slab.getType())),
+            IngredientCapture::describeMaterial,
+            "Paddles:", false);
+
     private static void overlayWaterWheel(CustomBlockRegistry registry, RotationNetwork network,
                                               RotationConfig config) {
         int waterWheelPower = config.getPower("water_wheel", 2);
@@ -157,18 +166,9 @@ final class RotationBlocks {
             .tickInterval(10)
             .onNeighborChange((b, face) -> evaluateWaterWheel(b, network, registry, waterWheelPower))
             .onTick(b -> evaluateWaterWheel(b, network, registry, waterWheelPower))
-            // Paddles render as the plank the wheel was crafted with (captured onto the skull PDC).
-            .plankKeyed(true)
-            .displayItemResolver((b, suffix) -> {
-                if (suffix == null || !suffix.startsWith("paddle_")) return null; // leave the hub/rod
-                if (!(b.getState() instanceof org.bukkit.block.Skull skull)) return null;
-                String plank = skull.getPersistentDataContainer().get(
-                        CustomBlockRegistry.PLANK_TYPE_KEY,
-                        org.bukkit.persistence.PersistentDataType.STRING);
-                org.bukkit.Material mat = plank == null ? null : org.bukkit.Material.matchMaterial(plank);
-                if (mat == null) mat = org.bukkit.Material.OAK_PLANKS;
-                return new org.bukkit.inventory.ItemStack(mat);
-            })
+            // Each paddle renders the plank matching the slab it was crafted with; captured onto
+            // the skull PDC per-tag and listed in "Paddles:" lore (see IngredientCapture).
+            .ingredientCapture(PADDLE_CAPTURE)
             .onInteract((b, event) -> {
                 if (isWrench(event.getPlayer().getInventory().getItemInMainHand())) {
                     if (event.getPlayer().isSneaking())

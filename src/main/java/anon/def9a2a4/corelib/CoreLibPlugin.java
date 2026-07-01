@@ -350,16 +350,19 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         // Write PDC to the placed skull (with correct initial state)
         registry.markBlock(block, type, state);
 
-        // Copy blade banner data from item → skull (for windmill custom banners)
-        if (type.displayItemResolver() != null
-                && meta instanceof org.bukkit.inventory.meta.SkullMeta skullMeta
+        // Copy captured display data from item → skull (windmill banners / water-wheel planks)
+        if (meta instanceof org.bukkit.inventory.meta.SkullMeta skullMeta
                 && block.getState() instanceof org.bukkit.block.Skull skull) {
-            CustomBlockRegistry.copyBladePdc(
-                    skullMeta.getPersistentDataContainer(),
-                    skull.getPersistentDataContainer());
-            CustomBlockRegistry.copyPlankPdc(
-                    skullMeta.getPersistentDataContainer(),
-                    skull.getPersistentDataContainer());
+            if (type.displayItemResolver() != null) {
+                CustomBlockRegistry.copyBladePdc(
+                        skullMeta.getPersistentDataContainer(),
+                        skull.getPersistentDataContainer());
+            }
+            if (type.ingredientCapture() != null) {
+                type.ingredientCapture().copyPdc(
+                        skullMeta.getPersistentDataContainer(),
+                        skull.getPersistentDataContainer());
+            }
             skull.update();
         }
 
@@ -423,7 +426,7 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         int power = type.sensitivity() != CustomHeadBlock.Sensitivity.NONE ? registry.readPower(block, type) : 0;
 
         // Enrich self-drop item BEFORE cleanup (skull PDC must be readable)
-        ItemStack selfDropItem = enrichItemWithBladeData(block, type, type.createItem(1));
+        ItemStack selfDropItem = enrichDrop(block, type, type.createItem(1));
 
         // Cleanup
         registry.onBlockRemoved(block, type);
@@ -475,7 +478,7 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
             if (type != null) {
                 it.remove(); // prevent vanilla skull drop
                 if (type.storage() != null) registry.dropStorage(block);
-                ItemStack drop = enrichItemWithBladeData(block, type, type.createItem(1));
+                ItemStack drop = enrichDrop(block, type, type.createItem(1));
                 block.getWorld().dropItemNaturally(
                         block.getLocation().add(0.5, 0.5, 0.5), drop);
                 registry.onBlockRemoved(block, type);
@@ -506,7 +509,7 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
             if (type.breakOnPiston()) {
                 String state = registry.getState(block);
                 if (type.storage() != null) registry.dropStorage(block);
-                ItemStack drop = enrichItemWithBladeData(block, type, type.createItem(1));
+                ItemStack drop = enrichDrop(block, type, type.createItem(1));
                 for (var rule : type.dropRules()) {
                     if (rule.inState() != null && !rule.inState().equals(state)) continue;
                     if (rule.isSelfDrop()) {
@@ -598,7 +601,7 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
 
         event.setCancelled(true);
         Player player = event.getPlayer();
-        ItemStack customItem = enrichItemWithBladeData(block, type, type.createItem(1));
+        ItemStack customItem = enrichDrop(block, type, type.createItem(1));
         int targetSlot = event.getTargetSlot();
 
         // Don't overwrite existing items — find an empty hotbar slot or swap safely
@@ -657,15 +660,15 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
 
         // Capture banner ingredients onto the result item (for windmill blades etc.)
         captureBannerIngredients(event.getInventory());
-        // Capture the crafted plank wood onto the result (for water-wheel paddles).
-        capturePlankIngredient(event.getInventory());
+        // Generic ingredient capture (e.g. water-wheel paddle planks).
+        IngredientCapture.capture(event.getInventory(), registry);
     }
 
     @EventHandler(priority = EventPriority.HIGH)
     public void onCraftItem(org.bukkit.event.inventory.CraftItemEvent event) {
         // Re-capture on actual craft (Bukkit creates a fresh result from the recipe)
         captureBannerIngredients(event.getInventory());
-        capturePlankIngredient(event.getInventory());
+        IngredientCapture.capture(event.getInventory(), registry);
     }
 
     /** Capture the crafting matrix's banner ingredients onto a windmill/fan result's blade PDC,
@@ -733,40 +736,6 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         inv.setResult(newResult);
     }
 
-    /** For a plankKeyed result (water wheel), stamp the crafted wood's plank onto the result item
-     *  so the placed paddles render in that wood. Reads the first slab slot; slab→plank by name
-     *  (BAMBOO_MOSAIC_SLAB → BAMBOO_PLANKS), OAK_PLANKS fallback. No-op for any other recipe. */
-    private void capturePlankIngredient(org.bukkit.inventory.CraftingInventory inv) {
-        ItemStack result = inv.getResult();
-        if (result == null || result.getType() != Material.PLAYER_HEAD) return;
-        if (!(result.getItemMeta() instanceof org.bukkit.inventory.meta.SkullMeta meta)) return;
-        String typeId = meta.getPersistentDataContainer()
-                .get(CustomBlockRegistry.BLOCK_TYPE_KEY, PersistentDataType.STRING);
-        if (typeId == null) return;
-        CustomHeadBlock type = registry.getType(typeId);
-        if (type == null || !type.plankKeyed()) return;
-
-        ItemStack[] matrix = inv.getMatrix();
-        // Shaped recipe forces a wooden slab at slot 0 (slot 4 is the bearing).
-        ItemStack slab = matrix.length > 0 ? matrix[0] : null;
-        if (slab == null || slab.getType() == Material.AIR) return;
-        Material plank = plankForSlab(slab.getType());
-
-        ItemStack newResult = result.clone();
-        var newMeta = newResult.getItemMeta();
-        newMeta.getPersistentDataContainer().set(
-                CustomBlockRegistry.PLANK_TYPE_KEY, PersistentDataType.STRING, plank.name());
-        newResult.setItemMeta(newMeta);
-        inv.setResult(newResult);
-    }
-
-    /** The plank material for a wooden slab (BAMBOO_MOSAIC_SLAB → BAMBOO_PLANKS), OAK fallback. */
-    private static Material plankForSlab(Material slab) {
-        if (slab == Material.BAMBOO_MOSAIC_SLAB) return Material.BAMBOO_PLANKS;
-        Material m = Material.matchMaterial(slab.name().replace("_SLAB", "_PLANKS"));
-        return m != null ? m : Material.OAK_PLANKS;
-    }
-
     /** The banner's tier: a HUGE / LARGE marker, else NORMAL (a plain banner). */
     private static BannerTier bannerTierOf(ItemStack banner) {
         if (LargeBannerRecipes.isHugeBanner(banner)) return BannerTier.HUGE;
@@ -784,24 +753,32 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         return registry.getType(id);
     }
 
-    /** Copy blade PDC from a placed skull block onto an item (for drops / pick-block). */
+    /** Carry captured display data (+ lore) from a placed skull back onto its dropped/picked item.
+     *  Dispatches: water-wheel-style ingredient capture, else the windmill banner path. */
+    private ItemStack enrichDrop(Block block, CustomHeadBlock type, ItemStack item) {
+        if (type.ingredientCapture() != null) {
+            if (block.getState() instanceof org.bukkit.block.Skull skull) {
+                return type.ingredientCapture().enrich(skull, item);
+            }
+            return item;
+        }
+        return enrichItemWithBladeData(block, type, item);
+    }
+
+    /** Copy blade banner PDC from a placed skull onto an item + sail lore (windmill drops/pick). */
     private ItemStack enrichItemWithBladeData(Block block, CustomHeadBlock type, ItemStack item) {
         if (type.displayItemResolver() == null) return item;
         if (!(block.getState() instanceof org.bukkit.block.Skull skull)) return item;
         var skullPdc = skull.getPersistentDataContainer();
 
-        ItemStack enriched = item.clone();
-        var meta = enriched.getItemMeta();
-        // Carry the plank wood (water wheel) back onto the item BEFORE the banner gate — a
-        // plank-only block has no blade keys, so it must not fall through to the sail-lore path.
-        CustomBlockRegistry.copyPlankPdc(skullPdc, meta.getPersistentDataContainer());
-
         boolean hasAny = false;
         for (var key : CustomBlockRegistry.BLADE_KEYS) {
             if (skullPdc.has(key, PersistentDataType.BYTE_ARRAY)) { hasAny = true; break; }
         }
-        if (!hasAny) { enriched.setItemMeta(meta); return enriched; }
+        if (!hasAny) return item;
 
+        ItemStack enriched = item.clone();
+        var meta = enriched.getItemMeta();
         CustomBlockRegistry.copyBladePdc(skullPdc, meta.getPersistentDataContainer());
         java.util.List<ItemStack> banners = new java.util.ArrayList<>();
         for (var key : CustomBlockRegistry.BLADE_KEYS) {
