@@ -227,18 +227,26 @@ final class MechanismMinecartManager implements Listener {
     private void assemble(MinecartState state) {
         snapAndStop(state.minecart);
 
-        // Glue-only: the structure is the cart's glued selection (offsets in the cart's PDC, resolved
-        // relative to its current cell — so the glued blocks must be co-located with the cart: assemble
-        // in place). No glue (null) or an empty resolve → nothing to assemble.
+        // Structure = the cart's glued selection (offsets in the cart's PDC, resolved relative to its
+        // current cell — glued blocks must be co-located with the cart: assemble in place). With no
+        // authored glue, default to the single block directly above the cart.
         Anchor anchor = new EntityAnchor(state.minecart, () -> state.mechanism == null);
-        List<Block> blocks = glueManager.resolveStructure(anchor);
-        if (blocks == null || blocks.isEmpty()) return;
+        List<Block> resolved = glueManager.resolveStructure(anchor);
+        boolean glued = resolved != null && !resolved.isEmpty();
+        List<Block> blocks;
+        if (glued) {
+            blocks = resolved;
+        } else {
+            Block seed = state.minecart.getLocation().clone().add(0, 1, 0).getBlock();
+            if (seed.getType().isAir()) return;
+            blocks = List.of(seed);
+        }
 
         Mechanism mech = mechRegistry.assembleMechanism(MECH_MINECART_ID, blocks,
             state.minecart, MINECART_RIDE_OFFSET, null);
         state.mechanism = mech;
-        // Rebind glue to where the blocks land (relative to the cart's rest cell) so it tracks across rides.
-        mech.setOnDisassembled(p -> glueManager.setStructure(anchor, p));
+        // Rebind only authored glue to where the blocks land so it tracks across rides.
+        if (glued) mech.setOnDisassembled(p -> glueManager.setStructure(anchor, p));
     }
 
     private void disassemble(MinecartState state) {

@@ -12,7 +12,7 @@ import java.util.logging.Logger;
 final class RotationConfig {
 
     int maxNetworkSize = 256;
-    int maxStructureSize = 256; // cap on flood-fill-selected mechanism structures (door/rotator/minecart)
+    int maxStructureSize = 256; // default cap for glued selections; overridable via glue.max-size
     int glueMaxSize = 256;      // cap on a glued selection; defaults to maxStructureSize
     int glueOutlineInterval = 5;
     int glueSessionTimeout = 2400;

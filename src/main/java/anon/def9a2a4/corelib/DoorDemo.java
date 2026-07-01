@@ -1,8 +1,6 @@
 package anon.def9a2a4.corelib;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
-import org.bukkit.Particle;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -11,8 +9,8 @@ import org.bukkit.scheduler.BukkitTask;
 import java.util.*;
 
 /**
- * Demo mechanism: a door controller head block that detects connected oak planks
- * via BFS flood fill, assembles them into a mechanism, and rotates 90° on redstone.
+ * Demo mechanism: a door controller head block that assembles its structure (authored glue, else the
+ * single block it's placed on) into a mechanism and rotates 90° on redstone.
  */
 final class DoorDemo {
 
@@ -20,17 +18,15 @@ final class DoorDemo {
     private final CustomBlockRegistry registry;
     private final MechanismRegistry mechRegistry;
     private final GlueManager glueManager;
-    private final int maxStructureSize;
     private final Map<CustomBlockRegistry.LocationKey, Mechanism> activeDoors = new HashMap<>();
     private final Map<CustomBlockRegistry.LocationKey, BukkitTask> activeTasks = new HashMap<>();
 
     DoorDemo(JavaPlugin plugin, CustomBlockRegistry registry, MechanismRegistry mechRegistry,
-             GlueManager glueManager, int maxStructureSize) {
+             GlueManager glueManager) {
         this.plugin = plugin;
         this.registry = registry;
         this.mechRegistry = mechRegistry;
         this.glueManager = glueManager;
-        this.maxStructureSize = maxStructureSize;
     }
 
     void register() {
@@ -64,12 +60,18 @@ final class DoorDemo {
         if (freshAssembly) {
             Anchor anchor = new BlockAnchor(head, () -> !activeDoors.containsKey(key));
             List<Block> resolved = glueManager.resolveStructure(anchor);
-            List<Block> planks = resolved != null ? resolved
-                : floodFill(head, Material.OAK_PLANKS, maxStructureSize);
-            if (planks.isEmpty()) return;
+            boolean glued = resolved != null && !resolved.isEmpty();
+            List<Block> planks;
+            if (glued) {
+                planks = resolved;
+            } else {
+                Block seed = attachmentBlock(head);   // no glue → swing the block the door is placed on
+                if (seed.getType().isAir()) return;
+                planks = List.of(seed);
+            }
             mech = mechRegistry.assembleMechanism("demo:door", planks,
                 head.getLocation().add(0.5, 0, 0.5), null);
-            if (resolved != null) mech.setOnDisassembled(p -> glueManager.setStructure(anchor, p));
+            if (glued) mech.setOnDisassembled(p -> glueManager.setStructure(anchor, p));   // rebind only authored glue
             activeDoors.put(key, mech);
         }
 
@@ -111,12 +113,18 @@ final class DoorDemo {
             // Fully opened + disassembled: re-assemble rotated planks, rotate to -90°
             Anchor anchor = new BlockAnchor(head, () -> !activeDoors.containsKey(key));
             List<Block> resolved = glueManager.resolveStructure(anchor);
-            List<Block> planks = resolved != null ? resolved
-                : floodFill(head, Material.OAK_PLANKS, maxStructureSize);
-            if (planks.isEmpty()) return;
+            boolean glued = resolved != null && !resolved.isEmpty();
+            List<Block> planks;
+            if (glued) {
+                planks = resolved;
+            } else {
+                Block seed = attachmentBlock(head);   // no glue → swing the block the door is placed on
+                if (seed.getType().isAir()) return;
+                planks = List.of(seed);
+            }
             mech = mechRegistry.assembleMechanism("demo:door", planks,
                 head.getLocation().add(0.5, 0, 0.5), null);
-            if (resolved != null) mech.setOnDisassembled(p -> glueManager.setStructure(anchor, p));
+            if (glued) mech.setOnDisassembled(p -> glueManager.setStructure(anchor, p));   // rebind only authored glue
             activeDoors.put(key, mech);
             targetYaw = -90f;
             timerDelay = 2; // wait for passenger mount
@@ -157,14 +165,12 @@ final class DoorDemo {
 
     // ──────────────────────────────────────────────────────────────────────
 
-    private List<Block> floodFill(Block origin, Material target, int maxBlocks) {
-        return FloodFill.component(origin, false, b -> b.getType() == target, maxBlocks,
-            () -> {
-                plugin.getLogger().warning("Door: structure capped at " + maxBlocks
-                    + " blocks at " + origin.getX() + "," + origin.getY() + "," + origin.getZ()
-                    + " (raise max-structure-size in rotation-config.yml)");
-                origin.getWorld().spawnParticle(Particle.SMOKE,
-                    origin.getLocation().add(0.5, 1.0, 0.5), 12, 0.3, 0.3, 0.3, 0.02);
-            });
+    /** The block the door head is placed on: behind for a wall head, below for a floor head. Used as
+     *  the default single-block structure when no glue is authored. */
+    private static Block attachmentBlock(Block head) {
+        if (head.getBlockData() instanceof org.bukkit.block.data.Directional d) {
+            return head.getRelative(d.getFacing().getOppositeFace());
+        }
+        return head.getRelative(BlockFace.DOWN);
     }
 }

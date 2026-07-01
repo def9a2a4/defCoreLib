@@ -3,7 +3,6 @@ package anon.def9a2a4.corelib;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
@@ -22,19 +21,18 @@ import java.util.*;
  *
  * <p>A CONSUMER block (floor → door about Y, wall → drawbridge about X/Z). It is <b>stateless</b> —
  * it has no "open"/"closed". On a <b>redstone rising edge</b> (off→on) it checks it has rotation
- * power, flood-fills its oak-plank structure, and rotates it once by the target angle (right-click
- * to cycle 90/180/270) in the network's current spin direction: CW → +angle, CCW → −angle. Reverse
- * the network (a redstone reverser, or wrench the source) to rotate the other way; each pulse is
- * one rotation, then real blocks are restored.
+ * power, resolves its structure (authored glue, else the single block it's placed on), and rotates it
+ * once by the target angle (right-click to cycle 90/180/270) in the network's current spin direction:
+ * CW → +angle, CCW → −angle. Reverse the network (a redstone reverser, or wrench the source) to rotate
+ * the other way; each pulse is one rotation, then real blocks are restored.
  *
  * <p>Swing speed is locked at start to {@code clamp(K * surplus / mass)}; while swinging the rotator
- * registers transient network demand so contending rotators slow each other down. v1: block
- * selection is an oak-plank flood-fill (glue replaces this later).
+ * registers transient network demand so contending rotators slow each other down. Block selection is
+ * the glued selection, defaulting to the single attachment block when no glue is authored.
  */
 final class RotationRotator {
 
     private static final String ROTATOR_ID = "rotation:rotator";
-    private static final Material STRUCTURE_MATERIAL = Material.OAK_PLANKS;
 
     // Tuning (live-tunable): per-tick swing speed = clamp(K * surplus / blockCount, MIN, MAX).
     private static final float SPEED_K = 8f;
@@ -50,7 +48,6 @@ final class RotationRotator {
     private final RotationNetwork network;
     private final MechanismRegistry mechRegistry;
     private final GlueManager glueManager;
-    private final int maxStructureSize;
 
     private final Map<CustomBlockRegistry.LocationKey, Mechanism> activeRotators = new HashMap<>();
     private final Map<CustomBlockRegistry.LocationKey, BukkitTask> activeTasks = new HashMap<>();
@@ -62,13 +59,12 @@ final class RotationRotator {
 
     RotationRotator(JavaPlugin plugin, CustomBlockRegistry registry,
                     RotationNetwork network, MechanismRegistry mechRegistry,
-                    GlueManager glueManager, int maxStructureSize) {
+                    GlueManager glueManager) {
         this.plugin = plugin;
         this.registry = registry;
         this.network = network;
         this.mechRegistry = mechRegistry;
         this.glueManager = glueManager;
-        this.maxStructureSize = maxStructureSize;
     }
 
     void register() {
@@ -125,16 +121,22 @@ final class RotationRotator {
 
         Anchor anchor = new BlockAnchor(head, () -> !activeRotators.containsKey(key));
         List<Block> resolved = glueManager.resolveStructure(anchor);
-        List<Block> planks = resolved != null ? resolved
-            : floodFill(head, STRUCTURE_MATERIAL, maxStructureSize);
-        if (planks.isEmpty()) return;
+        boolean glued = resolved != null && !resolved.isEmpty();
+        List<Block> planks;
+        if (glued) {
+            planks = resolved;
+        } else {
+            Block seed = attachmentBlock(head);   // no glue → swing the block the rotator is placed on
+            if (seed.getType().isAir()) return;
+            planks = List.of(seed);
+        }
 
         RotationNetwork.RotationNode node = network.getNode(key);
         if (node == null) return;
         Vector3f axis = axisVec(node.axis());
         Mechanism mech = mechRegistry.assembleMechanism(ROTATOR_ID, planks,
             head.getLocation().add(0.5, 0, 0.5), axis, null);
-        if (resolved != null) mech.setOnDisassembled(p -> glueManager.setStructure(anchor, p));
+        if (glued) mech.setOnDisassembled(p -> glueManager.setStructure(anchor, p));   // rebind only authored glue
         activeRotators.put(key, mech);
 
         int mass = Math.max(1, mech.blockCount());
@@ -238,19 +240,13 @@ final class RotationRotator {
         return v < lo ? lo : Math.min(v, hi);
     }
 
-    private List<Block> floodFill(Block origin, Material target, int maxBlocks) {
-        // Never pull a rotation/power block into the moving structure.
-        return FloodFill.component(origin, false,
-            b -> b.getType() == target && registry.getTypeFromBlock(b) == null,
-            maxBlocks, () -> warnTruncated(origin, maxBlocks));
-    }
-
-    private void warnTruncated(Block anchor, int cap) {
-        plugin.getLogger().warning("Rotator: structure capped at " + cap
-            + " blocks at " + anchor.getX() + "," + anchor.getY() + "," + anchor.getZ()
-            + " (raise max-structure-size in rotation-config.yml)");
-        anchor.getWorld().spawnParticle(Particle.SMOKE,
-            anchor.getLocation().add(0.5, 1.0, 0.5), 12, 0.3, 0.3, 0.3, 0.02);
+    /** The block a rotator head is placed on: behind for a wall head (drawbridge), below for a floor
+     *  head (door). Used as the default single-block structure when no glue is authored. */
+    private static Block attachmentBlock(Block head) {
+        if (head.getBlockData() instanceof org.bukkit.block.data.Directional d) {
+            return head.getRelative(d.getFacing().getOppositeFace());
+        }
+        return head.getRelative(BlockFace.DOWN);
     }
 
     private int readTarget(Block head) {
