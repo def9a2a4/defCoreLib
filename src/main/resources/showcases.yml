@@ -22,7 +22,7 @@ showcases:
       The engine burns fuel — coal, charcoal, a lava bucket — to produce rotational power, measured in
       Power. That power runs up the shaft (a shaft just transmits rotation along its axis) into
       the fan, which turns it back into motion: a directed gust that pushes entities away from its face.
-      The more surplus power on the network, the stronger and farther the push.
+      The more surplus power on the network, the stronger the push.
     blocks:
       - { id: "rotation:engine", facing: down, at: [0, 0, 0] }   # Y axis (couples up)
       - { id: "rotation:shaft",  facing: down, at: [0, 1, 0] }
@@ -38,7 +38,7 @@ showcases:
     description: >
       A fuelled engine sends power down a vertical shaft into a millstone. The millstone is always a
       Y-axis machine — it draws power from directly above or below — and grinds items fed from an adjacent
-      container, turning them to dust according to its recipe set while its wheel spins. Stop feeding the
+      container into new materials according to its recipe set while its wheel spins. Stop feeding the
       engine fuel and the whole column winds down.
     blocks:
       # Millstone is Y-axis (powered from above), so the whole chain is a vertical Y column.
@@ -190,7 +190,7 @@ showcases:
     name: "Water Wheel → Fan"
     blurb: "Falling water turns a paddle wheel, which spins a shaft into a fan that blows a gust of air."
     description: >
-      A water wheel is a passive source powered by moving water — not a still pool, but a real current
+      A water wheel is a source powered by moving water — not a still pool, but a real current
       pushing its paddles. A stream falls past its rim and sets it turning, and that rotation runs down a
       shaft into a fan. No fuel, no redstone, just flow.
     blocks:
