@@ -697,6 +697,40 @@ blocks:
               M: { material: SMOOTH_STONE_SLAB }
               C: { material: COPPER_INGOT }
 
+  # ─── Block Placer ─────────────────────────────────────────────────────────
+  # Consumer: 1 Power. WALL only — mounts on a container and places its blocks into
+  # the cell in front (the facing direction) when powered, one per cycle. Powered from
+  # a shaft on top (Y axis), like the millstone. Vanilla blocks only; skips custom
+  # plugin blocks and non-block items. Facing is read from the wall-head block data.
+  # Display (placeholder): a scaled dispenser body — the vanilla block-placing machine.
+  placer:
+    name: "&aBlock Placer"
+    lore:
+      - "&7Mounts on a container and places its blocks in front when powered"
+      - "&7Powered from the top by a shaft"
+    # Stone machine head (shared with the millstone/press) — placeholder skin.
+    texture: "@machine_base"
+    item_texture: "@machine_base"
+    drops: self
+    placement:
+      allowed_faces: [NORTH, SOUTH, EAST, WEST]
+    default_state: idle
+    states:
+      idle:
+        display_entities:
+          - { material: DISPENSER, tag: body, transform: { translation: [0, 0, 0], scale: [0.85, 0.85, 0.85] } }
+    recipes:
+      craft:
+        shaped:
+          # Dispenser core (vanilla's block placer) + bearing power intake on top,
+          # piston arm below, copper on the sides.
+          - pattern: [" B ", "CDC", " P "]
+            key:
+              B: { block: "rotation:bearing" }
+              D: { material: DISPENSER }
+              C: { material: COPPER_INGOT }
+              P: { material: PISTON }
+
   # ─── Drill ──────────────────────────────────────────────────────────────
   # Consumer: 1 Power. Breaks the block in its facing direction every 2s.
   drill:

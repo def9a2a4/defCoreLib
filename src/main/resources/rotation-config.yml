@@ -35,6 +35,9 @@ press:
   tick-interval: 20   # fixed press cycle length, in ticks
   max-batch: 8        # cap on items pressed per cycle (batch scales with surplus power)
 
+placer:
+  tick-interval: 20   # ticks between placements (one block placed per cycle)
+
 fuel:
   COAL: 200
   CHARCOAL: 160
@@ -56,3 +59,4 @@ power:
   millstone: 1
   fan: 1
   press: 1
+  placer: 1

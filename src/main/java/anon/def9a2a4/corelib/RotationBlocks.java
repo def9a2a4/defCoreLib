@@ -55,6 +55,7 @@ final class RotationBlocks {
         overlayEngine(registry, network, fuelManager, config);
         overlayMillstone(registry, network, millRecipes, config);
         overlayPress(registry, network, pressRecipes, config);
+        overlayPlacer(registry, network, config);
         overlayGenerator(registry, network, config);
         overlayDrill(registry, network, config);
         overlayFan(registry, network, config);
@@ -471,6 +472,56 @@ final class RotationBlocks {
             b -> processingMachineTick(b, network, pressRecipes, registry,
                 maxBatch, org.bukkit.Sound.BLOCK_ANVIL_USE),
             null));
+    }
+
+    private static void overlayPlacer(CustomBlockRegistry registry, RotationNetwork network,
+                                      RotationConfig config) {
+        // Wall-mounted, powered from the top (Y): a shaft above drives it, exactly like the
+        // millstone. Pulls block items from the host container behind and places them into the
+        // cell in front (the wall-head facing direction), one per cycle.
+        overlayConsumerMachine(registry, network, new ConsumerSpec(
+            "rotation:placer",
+            b -> RotationNetwork.Axis.Y,
+            config.getPower("placer", 1),
+            config.placerTickInterval,
+            b -> placerTick(b, registry, network),
+            null));
+    }
+
+    /**
+     * Place one vanilla block per cycle: while powered, pull the first placeable vanilla block
+     * from the host container behind and set it into the (air/replaceable) cell in front. Custom
+     * plugin head-blocks and non-block items are skipped. {@code setType} runs with physics.
+     */
+    private static void placerTick(Block placer, CustomBlockRegistry registry, RotationNetwork network) {
+        var key = CustomBlockRegistry.LocationKey.of(placer);
+        if (!network.isPowered(key)) return;
+
+        BlockFace facing = readFacing(placer);
+        if (facing == null) return;
+        Block target = placer.getRelative(facing);
+        if (!target.isReplaceable()) return; // front occupied → idle
+
+        Inventory host = hostContainer(placer);
+        if (host == null) return;
+
+        for (int i = 0; i < host.getSize(); i++) {
+            ItemStack it = host.getItem(i);
+            if (it == null) continue;
+            Material m = it.getType();
+            if (!m.isBlock() || m.isAir()) continue;
+            if (CustomBlockRegistry.getItemTypeId(it) != null) continue; // skip custom plugin blocks
+
+            target.setType(m);
+            it.setAmount(it.getAmount() - 1);
+            host.setItem(i, it.getAmount() <= 0 ? null : it);
+
+            var placeSound = target.getBlockSoundGroup().getPlaceSound();
+            target.getWorld().playSound(target.getLocation().add(0.5, 0.5, 0.5), placeSound, 1f, 1f);
+            target.getWorld().spawnParticle(Particle.BLOCK, target.getLocation().add(0.5, 0.5, 0.5),
+                6, 0.25, 0.25, 0.25, 0.0, target.getBlockData());
+            return;
+        }
     }
 
     /** Hand-fed grinding while spinning (fallback when there's no host container). Null → not handled. */
