@@ -1457,6 +1457,41 @@ public class CustomBlockRegistry {
         }
     }
 
+    /**
+     * Snapshot a storage block's CURRENT contents (the live cached holder if one is open, else the PDC)
+     * and evict any cache entry — the block is being removed from the world into a mechanism. Returns a
+     * deep-cloned inventory that does not alias the live holder's ItemStacks, or null if the block has no
+     * storage config. Used by the mechanism-assembly capture path.
+     */
+    public org.bukkit.inventory.@Nullable Inventory takeStorageSnapshot(Block block) {
+        CustomHeadBlock type = getTypeFromBlock(block);
+        if (type == null || type.storage() == null) return null;
+        org.bukkit.inventory.Inventory snap = Bukkit.createInventory(null, type.storage().layout().slots);
+        StorageHolder holder = openStorages.remove(LocationKey.of(block));   // evict: block is leaving
+        if (holder != null) {
+            new ArrayList<>(holder.getInventory().getViewers()).forEach(v -> v.closeInventory());
+            snap.setContents(holder.getInventory().getContents());
+        } else {
+            loadInventoryFromPDC(block, snap);
+        }
+        for (int s = 0; s < snap.getSize(); s++) {                            // break aliasing with holder
+            ItemStack it = snap.getItem(s);
+            if (it != null) snap.setItem(s, it.clone());
+        }
+        return snap;
+    }
+
+    /**
+     * Restore contents into a block's storage, keeping the shared cache AND the PDC consistent so ticks,
+     * GUI viewers, and the break-drop path all agree. Used by the mechanism-disassembly place-back path.
+     */
+    public void restoreStorageSnapshot(Block block, org.bukkit.inventory.Inventory contents) {
+        org.bukkit.inventory.Inventory inv = getOrCreateStorage(block);   // cache-consistent (create/reuse)
+        if (inv == null) return;                                          // not a storage block
+        inv.setContents(contents.getContents());
+        saveInventoryToPDC(block.getLocation(), inv);                     // persist to PDC now
+    }
+
     // ──────────────────────────────────────────────────────────────────────
     // Internal tracking records
     // ──────────────────────────────────────────────────────────────────────

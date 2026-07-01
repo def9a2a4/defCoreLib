@@ -131,7 +131,7 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         new DoorDemo(this, registry, mechanismRegistry, glueManager, maxStructureSize).register();
         RotationRotator rotationRotator = new RotationRotator(this, registry, rotationNetwork, mechanismRegistry, glueManager, maxStructureSize);
         rotationRotator.register();
-        mechanismMinecartManager = new MechanismMinecartManager(this, registry, mechanismRegistry, glueManager, maxStructureSize);
+        mechanismMinecartManager = new MechanismMinecartManager(this, registry, mechanismRegistry, glueManager);
         glueAuthoring.setMinecartManager(mechanismMinecartManager);
         mechanismMinecartManager.register();
         getServer().getPluginManager().registerEvents(mechanismMinecartManager, this);

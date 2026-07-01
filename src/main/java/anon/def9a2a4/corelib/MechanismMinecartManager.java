@@ -3,13 +3,11 @@ package anon.def9a2a4.corelib;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
 import org.bukkit.Chunk;
 import org.bukkit.World;
 import org.bukkit.entity.Display;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Minecart;
-import org.bukkit.entity.Player;
 import org.bukkit.entity.minecart.RideableMinecart;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -27,7 +25,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.util.*;
-import java.util.EnumSet;
 
 /**
  * Demo mechanism consumer: mechanism minecart.
@@ -54,10 +51,8 @@ final class MechanismMinecartManager implements Listener {
     private final MechanismRegistry mechRegistry;
     private final GlueManager glueManager;
     private final NamespacedKey mechanismMinecartKey;
-    private final int maxStructureSize;
 
     private final Map<UUID, MinecartState> tracked = new HashMap<>();
-    private Set<Material> allowedMaterials = Set.of(); // loaded from config
     private BukkitTask tickTask;
 
     private static final class MinecartState {
@@ -72,13 +67,12 @@ final class MechanismMinecartManager implements Listener {
     }
 
     MechanismMinecartManager(JavaPlugin plugin, CustomBlockRegistry registry, MechanismRegistry mechRegistry,
-                             GlueManager glueManager, int maxStructureSize) {
+                             GlueManager glueManager) {
         this.plugin = plugin;
         this.registry = registry;
         this.mechRegistry = mechRegistry;
         this.glueManager = glueManager;
         this.mechanismMinecartKey = new NamespacedKey(plugin, "mechanism_minecart");
-        this.maxStructureSize = maxStructureSize;
     }
 
     void register() {
@@ -88,9 +82,6 @@ final class MechanismMinecartManager implements Listener {
             plugin.getLogger().warning("MechanismMinecartManager: '" + MECH_MINECART_ID + "' not found in "
                 + "registry (check rotation-blocks.yml) — minecart item will not be obtainable");
         }
-
-        // Load allowed materials from config
-        loadAllowedMaterials();
 
         // Scan already-loaded chunks for surviving mechanism minecarts (post-reload recovery)
         for (World world : Bukkit.getWorlds()) {
@@ -111,48 +102,6 @@ final class MechanismMinecartManager implements Listener {
             if (!minecart.getScoreboardTags().contains("corelib:mechanism_minecart")) continue;
             tracked.put(minecart.getUniqueId(), new MinecartState(minecart));
         }
-    }
-
-    private void loadAllowedMaterials() {
-        java.io.File configFile = new java.io.File(plugin.getDataFolder(), "mechanism-minecart-blocks.yml");
-        if (!configFile.exists()) {
-            // Write default config
-            plugin.saveResource("mechanism-minecart-blocks.yml", false);
-        }
-        org.bukkit.configuration.file.YamlConfiguration config =
-            org.bukkit.configuration.file.YamlConfiguration.loadConfiguration(configFile);
-        List<String> materialNames = config.getStringList("allowed_blocks");
-        Set<Material> mats = EnumSet.noneOf(Material.class);
-        for (String rawName : materialNames) {
-            String name = rawName.trim();
-            if (name.isEmpty()) continue;
-            boolean startWild = name.startsWith("*");
-            boolean endWild = name.endsWith("*");
-            int matchesBefore = mats.size();
-            if (startWild || endWild) {
-                String pattern = name.replace("*", "").toUpperCase();
-                if (pattern.isEmpty()) {
-                    plugin.getLogger().warning("Mechanism minecart config: '" + name + "' is too broad (matches all blocks), skipping");
-                    continue;
-                }
-                for (Material mat : Material.values()) {
-                    if (!mat.isBlock()) continue;
-                    String n = mat.name();
-                    boolean match = (startWild && endWild) ? n.contains(pattern)
-                        : startWild ? n.endsWith(pattern)
-                        : n.startsWith(pattern);
-                    if (match) mats.add(mat);
-                }
-            } else {
-                Material mat = Material.getMaterial(name.toUpperCase());
-                if (mat != null && mat.isBlock()) mats.add(mat);
-            }
-            if (mats.size() == matchesBefore) {
-                plugin.getLogger().warning("Mechanism minecart config: '" + name + "' matched 0 blocks");
-            }
-        }
-        allowedMaterials = Set.copyOf(mats);
-        plugin.getLogger().info("Mechanism minecart: loaded " + allowedMaterials.size() + " allowed block types");
     }
 
     void shutdown() {
@@ -278,29 +227,18 @@ final class MechanismMinecartManager implements Listener {
     private void assemble(MinecartState state) {
         snapAndStop(state.minecart);
 
-        // Prefer a glued selection (offsets in the cart's PDC, resolved relative to its current cell — so
-        // the glued structure must be co-located with the cart: assemble in place). An empty (but non-null)
-        // resolve means "glued, but the blocks aren't at the cart" — fall back to flood-fill rather than
-        // assembling nothing.
+        // Glue-only: the structure is the cart's glued selection (offsets in the cart's PDC, resolved
+        // relative to its current cell — so the glued blocks must be co-located with the cart: assemble
+        // in place). No glue (null) or an empty resolve → nothing to assemble.
         Anchor anchor = new EntityAnchor(state.minecart, () -> state.mechanism == null);
-        List<Block> resolved = glueManager.resolveStructure(anchor);
-        boolean usingGlue = resolved != null && !resolved.isEmpty();
-
-        List<Block> blocks;
-        if (usingGlue) {
-            blocks = resolved;
-        } else {
-            org.bukkit.Location above = state.minecart.getLocation().clone().add(0, 1, 0);
-            if (above.getBlock().getType().isAir()) return;
-            blocks = floodFillAllowed(above.getBlock(), maxStructureSize);
-        }
-        if (blocks.isEmpty()) return;
+        List<Block> blocks = glueManager.resolveStructure(anchor);
+        if (blocks == null || blocks.isEmpty()) return;
 
         Mechanism mech = mechRegistry.assembleMechanism(MECH_MINECART_ID, blocks,
             state.minecart, MINECART_RIDE_OFFSET, null);
         state.mechanism = mech;
         // Rebind glue to where the blocks land (relative to the cart's rest cell) so it tracks across rides.
-        if (usingGlue) mech.setOnDisassembled(p -> glueManager.setStructure(anchor, p));
+        mech.setOnDisassembled(p -> glueManager.setStructure(anchor, p));
     }
 
     private void disassemble(MinecartState state) {
@@ -369,20 +307,5 @@ final class MechanismMinecartManager implements Listener {
         } else {
             disassemble(state);
         }
-    }
-
-    // ──────────────────────────────────────────────────────────────────────
-    // Flood fill (data-driven allow list from mechanism-minecart-blocks.yml)
-    // ──────────────────────────────────────────────────────────────────────
-
-    private List<Block> floodFillAllowed(Block origin, int maxBlocks) {
-        return FloodFill.component(origin, true, b -> allowedMaterials.contains(b.getType()),
-            maxBlocks, () -> {
-                plugin.getLogger().warning("Mechanism minecart: structure capped at " + maxBlocks
-                    + " blocks at " + origin.getX() + "," + origin.getY() + "," + origin.getZ()
-                    + " (raise max-structure-size in rotation-config.yml)");
-                origin.getWorld().spawnParticle(org.bukkit.Particle.SMOKE,
-                    origin.getLocation().add(0.5, 0.5, 0.5), 12, 0.3, 0.3, 0.3, 0.02);
-            });
     }
 }

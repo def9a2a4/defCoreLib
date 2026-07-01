@@ -301,6 +301,9 @@ final class BasicMechanism implements Mechanism {
                 int power = registry.readPower(target, type);
                 registry.applyConfig(target, type, landedState, power);
                 registry.restoreBlock(target, type, landedState);
+                // Write captured storage back into the landed skull, keeping the shared cache + PDC
+                // consistent (custom-storage blocks don't hit the vanilla-Container branch below).
+                if (mb.storage != null) registry.restoreStorageSnapshot(target, mb.storage);
             }
         } else if (mb.storage != null && target.getState() instanceof Container c) {
             c.getSnapshotInventory().setContents(mb.storage.getContents());

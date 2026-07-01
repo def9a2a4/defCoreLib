@@ -146,12 +146,9 @@ public class MechanismRegistry {
                     wallFacing = new Vector3f((float) f.getX(), (float) f.getY(), (float) f.getZ());
                 }
                 if (chb.storage() != null) {
-                    storage = Bukkit.createInventory(null, chb.storage().layout().slots);
-                    registry.loadInventoryFromPDC(block, storage);
-                    for (int s = 0; s < storage.getSize(); s++) {
-                        ItemStack item = storage.getItem(s);
-                        if (item != null) storage.setItem(s, item.clone());
-                    }
+                    // Snapshot the live cached holder (if a pipe/tick/GUI has out-run the PDC) and evict
+                    // it — the block is leaving the world. Deep-cloned inside takeStorageSnapshot.
+                    storage = registry.takeStorageSnapshot(block);
                 }
             } else if (block.getState() instanceof Container c) {
                 Inventory orig = c.getInventory();
