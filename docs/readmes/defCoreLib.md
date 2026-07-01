@@ -17,7 +17,7 @@ their features on top of it.
 - **Recipe gating** — companion plugins switch their content's recipes on by namespace, so
   installing one adds a coherent, craftable feature set.
 - ~20 **command-only** demo blocks (candles, redstone/binary displays, storage barrels, alarms,
-  spinning/pulsing decorations) — grab them with `/defcorelib give`.
+  spinning/pulsing decorations) — grab them with `/defcorelib give`. Not meant to be useful, just there for testing the functionality.
 
 ## Used by
 
@@ -26,7 +26,7 @@ DefCoreLib is a dependency other plugins install alongside:
 - **[vslab](./vslab.md)** — vertical slabs
 - **[bbanners](./bbanners.md)** — flag banners + large/huge banners
 - **[mech](./mech.md)** — rotation mechanisms, glue, mechanism minecarts
-- **Pipes** — item-transport pipes (separate repo)
+- [**Pipes**](https://github.com/def9a2a4/Pipes) - item-transport pipes
 
 ## Commands
 

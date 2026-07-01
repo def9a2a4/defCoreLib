@@ -6,18 +6,13 @@ Flag banners and oversized banner tiers.
 
 ## Features
 
-- **Flag banners** — mount any banner as a hanging flag on fence posts, chains, and bars, with
-  thin, gently-tilted faces.
+- **Flag banners** — mount any banner as a hanging flag on fence posts, chains, and bars.
 - **Large & Huge banners** — upgrade normal banners into bigger variants that keep their patterns.
-- Large/Huge banners are the ingredient for `mech`'s Large and Huge windmills.
+- Large/Huge banners are the ingredient for [Mechanisms](ADD LINK) Large and Huge windmills.
 
 ## Requires
 
 [DefCoreLib](./defCoreLib.md).
-
-## Configuration
-
-`banner-config.yml` — visual tuning for flag banners (thickness, face gap, tilt/splay).
 
 ## Links
 

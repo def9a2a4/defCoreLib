@@ -1,15 +1,12 @@
-# vslab
+# Vertical Slabs!!1!
 
-Vertical slabs for the whole slab family — wall-mounted half blocks for cleaner builds.
-
-<!-- img: vertical slabs -->
+Don't you ever wish you had slabs, but vertical? But on an unmodded minecraft server, as a plugin?
 
 ## Features
 
-- Vertical slabs for wood, nether-wood, bamboo, and stone families (oak, spruce, … stone,
-  cobblestone, granite, sandstone, and more).
-- Place against any wall face (N/S/E/W); orientation is preserved.
-- Crafted from the matching horizontal slab — toggle back and forth.
+- Vertical slabs for basically every slab variant
+- Place against any wall face
+- Crafted from just the matching horizontal slab. Craft the original slab from a vertical slab too
 
 ## Requires
 
