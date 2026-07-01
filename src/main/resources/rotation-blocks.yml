@@ -259,11 +259,14 @@ blocks:
     recipes:
       craft:
         shaped:
-          # Iron core, copper in a +, redstone dust in the four corners.
-          - pattern: ["RCR", "CIC", "RCR"]
+          # Bearing core, iron on one side; copper corners, redstone dust top & bottom,
+          # lightning rod on the other side.
+          - pattern: ["CRC", "LBI", "CRC"]
             key:
-              R: { material: REDSTONE }
               C: { material: COPPER_INGOT }
+              R: { material: REDSTONE }
+              L: { material: LIGHTNING_ROD }
+              B: { block: "rotation:bearing" }
               I: { material: IRON_INGOT }
 
   # ─── Reverser ───────────────────────────────────────────────────────────
@@ -310,10 +313,14 @@ blocks:
       spinning_z: { copy_from: idle_z, texture: "@reverser_fwd", animation: { type: rotate, axis: [0, 0, 1], speed: 3.0 } }
     recipes:
       craft:
-        shapeless:
-          - ingredients:
-              - { block: "rotation:clutch" }
-              - { block: "rotation:gear" }
+        shaped:
+          # Like the clutch, but a second bearing in place of the iron core.
+          - pattern: ["CRC", "LBB", "CRC"]
+            key:
+              C: { material: COPPER_INGOT }
+              R: { material: REDSTONE }
+              L: { material: LIGHTNING_ROD }
+              B: { block: "rotation:bearing" }
 
   # ─── Rotator ────────────────────────────────────────────────────────────
   # Consumer hinge: floor = door (Y), wall = drawbridge (X/Z). Network spin direction
@@ -359,6 +366,18 @@ blocks:
       spinning_x: { copy_from: idle_x, texture: "@rotator_side", animation: { type: rotate, axis: [1, 0, 0], speed: 3.0 } }
       spinning_y: { copy_from: idle_y, texture: "@rotator_up", animation: { type: rotate, axis: [0, 1, 0], speed: 3.0 } }
       spinning_z: { copy_from: idle_z, texture: "@rotator_side", animation: { type: rotate, axis: [0, 0, 1], speed: 3.0 } }
+    recipes:
+      craft:
+        shaped:
+          # Like the clutch, but a sticky piston (the hinge actuator) replaces the
+          # lightning rod.
+          - pattern: ["CRC", "SBI", "CRC"]
+            key:
+              C: { material: COPPER_INGOT }
+              R: { material: REDSTONE }
+              S: { material: STICKY_PISTON }
+              B: { block: "rotation:bearing" }
+              I: { material: IRON_INGOT }
 
   # ─── Water Wheel ────────────────────────────────────────────────────────
   # Source: 2 Power. Wall only. Spins when water is on perpendicular faces.
@@ -403,6 +422,14 @@ blocks:
           - { material: OAK_SLAB, tag: paddle_c, transform: { translation: [0, -0.35, 0], scale: [0.15, 0.6, 0.6] }, wall_offset: 0.25 }
           - { material: OAK_SLAB, tag: paddle_d, transform: { translation: [0, 0, -0.35], scale: [0.6, 0.15, 0.6] }, wall_offset: 0.25 }
       spinning_x: { copy_from: idle_x, animation: { type: rotate, axis: [1, 0, 0], speed: 3.0 } }
+    recipes:
+      craft:
+        shaped:
+          # Bearing axle in a + of planks (the paddle wheel).
+          - pattern: [" W ", "WBW", " W "]
+            key:
+              W: { tag: planks }
+              B: { block: "rotation:bearing" }
 
   # ─── Engine ─────────────────────────────────────────────────────────────
   # Source: 5 Power. Needs fuel (coal, charcoal, etc). Any orientation.
@@ -470,11 +497,13 @@ blocks:
     recipes:
       craft:
         shaped:
-          # Blast furnace surrounded by 4 copper ingots in a +.
-          - pattern: [" C ", "CFC", " C "]
+          # Blast furnace core + bearing, pistons top & bottom, copper elsewhere.
+          - pattern: ["CPC", "CFB", "CPC"]
             key:
               C: { material: COPPER_INGOT }
+              P: { material: PISTON }
               F: { material: BLAST_FURNACE }
+              B: { block: "rotation:bearing" }
 
   # ─── Redstone Generator ────────────────────────────────────────────────
   # Source: 1 Power. Always on unless receiving redstone power. Expensive to craft.
@@ -542,12 +571,15 @@ blocks:
     recipes:
       craft:
         shaped:
-          # Blast furnace center, redstone blocks left & right, copper top & bottom.
-          - pattern: [" C ", "RFR", " C "]
+          # Like the engine (blast furnace core + bearing, pistons top & bottom) but with
+          # redstone blocks on the right column — always-on unless redstone-powered.
+          - pattern: ["CPE", "CFB", "CPE"]
             key:
               C: { material: COPPER_INGOT }
-              R: { material: REDSTONE_BLOCK }
+              P: { material: PISTON }
+              E: { material: REDSTONE_BLOCK }
               F: { material: BLAST_FURNACE }
+              B: { block: "rotation:bearing" }
 
   # ─── Millstone ──────────────────────────────────────────────────────────
   # Consumer: 1 Power. WALL only — mounts on a block and pulls from it if it's a
