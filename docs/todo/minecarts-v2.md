@@ -18,8 +18,9 @@ See [`minecarts.md`](minecarts.md) for the original mechanism-minecart design th
 
 - **`EntityAnchor`** — `Anchor` backed by a minecart's entity PDC (persistent, no `BlockState.update()`).
   Offsets relative to the cart's current cell → glue is "assemble in place only".
-- **`MechanismMinecartManager.assemble()`** — prefers `glueManager.resolveStructure(anchor)`, falls back to
-  the material allow-list flood-fill when the resolve is null OR empty; rebinds glue on disassembly.
+- **`MechanismMinecartManager.assemble()`** — **glue-only**: assembles `glueManager.resolveStructure(anchor)`,
+  or does nothing when the resolve is null/empty (the material allow-list flood-fill fallback was removed);
+  rebinds glue on disassembly.
 - **`GlueAuthoring.onInteractEntity`** — right-click a mechanism minecart with the glue item to author it;
   sneak-right-click clears its glue (mirrors the block-anchor `unglueAllAt`).
 - **The freeze** — `MechanismMinecartManager.tick()` currently:
