@@ -18,9 +18,9 @@ See [`minecarts.md`](minecarts.md) for the original mechanism-minecart design th
 
 - **`EntityAnchor`** — `Anchor` backed by a minecart's entity PDC (persistent, no `BlockState.update()`).
   Offsets relative to the cart's current cell → glue is "assemble in place only".
-- **`MechanismMinecartManager.assemble()`** — **glue-only**: assembles `glueManager.resolveStructure(anchor)`,
-  or does nothing when the resolve is null/empty (the material allow-list flood-fill fallback was removed);
-  rebinds glue on disassembly.
+- **`MechanismMinecartManager.assemble()`** — assembles `glueManager.resolveStructure(anchor)`; with no
+  authored glue it defaults to the single block directly above the cart (the multi-block material
+  allow-list flood-fill fallback was removed). Rebinds glue on disassembly.
 - **`GlueAuthoring.onInteractEntity`** — right-click a mechanism minecart with the glue item to author it;
   sneak-right-click clears its glue (mirrors the block-anchor `unglueAllAt`).
 - **The freeze** — `MechanismMinecartManager.tick()` currently:
@@ -279,13 +279,13 @@ Issue #7 in [`blockships-integration.md`](blockships-integration.md)**; noted he
 blocks to carts is a prime trigger. Fix belongs in the mechanism layer (restore `mb.storage` for the
 custom-block placement path), so it's shared with doors/rotators.
 
-### 3. Flood-fill fallback can assemble a *surprise* structure — RESOLVED (fallback removed)
-Minecarts are now **glue-only**: `assemble()` uses `glueManager.resolveStructure(anchor)` and assembles
-nothing when the resolve is null or empty. The `floodFillAllowed` helper, the `allowedMaterials` allow-list,
+### 3. Flood-fill fallback can assemble a *surprise* structure — RESOLVED (multi-block fallback removed)
+`assemble()` uses `glueManager.resolveStructure(anchor)`; with no authored glue it falls back to the
+single block directly above the cart. The `floodFillAllowed` helper, the `allowedMaterials` allow-list,
 `loadAllowedMaterials()`, and `mechanism-minecart-blocks.yml` were all removed. This eliminates the
-surprise-structure hazard entirely — a cart can never assemble blocks the player didn't explicitly glue,
-so there is no partial-glue-then-flood-fill path left to warn about. (Door and rotator keep their own
-flood-fill fallback; only the minecart changed.)
+surprise-structure hazard: the fallback is now exactly one deterministic block, so a cart can never pull
+in an unrelated stack of blocks the player didn't glue. (Door and rotator keep their own flood-fill
+fallback; only the minecart changed.)
 
 ### Carried over from [`minecarts.md`](minecarts.md) — still live
 The main subject of `minecarts.md` (the **off-center pivot rotation bug** and its delta-tracked-pivot fix)
