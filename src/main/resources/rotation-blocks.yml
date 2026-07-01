@@ -25,6 +25,24 @@ textures:
   drill_item:        "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTI4Y2ZkMDY0YmQ0ODY2NmU2YTczOGMxNTJhNWZiYjA0MmJhNzJiNWU5MjkxMmUzZTJmNjk1MWVhOGYyNWQyZSJ9fX0="  # Drill — drill item
   large_windmill:    "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjg4NGFkYTRjNzRjMGY5NjE0NjkyNjJkOTU2OTc3YmFmYjBiMmQ3ZmVkOWM3YmRmMzVmNDUxOTllOWY2ZGRiYiJ9fX0="  # Large Windmill
 
+  # ── Revised art (from assets/rotation/, via scripts/upload_skin.py) ────────────
+  # Orientation-dependent pairs: *_up = floor placement, *_fwd = wall placement.
+  rod_up:            "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjFhZmNhZTY0YTU3OTViNjNkZjdkNjhkOTEzNGFlZTFkNDQwN2UyOTQyZmRjZjNhNjFjODk5MjhmMzQ3NTYxNiJ9fX0="  # rod/copper-rod-up — shaft display entity (floor/Y)
+  rod_fwd:           "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjc1YzhhMjNlYzYwNzcyMTE4ZjYwNTIyZWIzZDU4MjYwY2Q5NGI0NGIwZWU5MWM5NmQ4Mzc1MmIyYTQ4ZDIzNCJ9fX0="  # rod/copper-rod-fwd — shaft display entity (wall/X,Z) + shaft item
+  shaft_ring_up:     "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTE0NTM0ODBkOTk0NzNhNWFhYTNmMmEzZjUwNzUyNmE1YmUzMjNkYzJiNzYwNDFlNGFiYmM2MmNjNWNmMmFiMSJ9fX0="  # copper-shaft-ring-up — gear/shaft placed head (floor)
+  shaft_ring_fwd:    "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjRjZTRkZGVkNTg0NzkyMDE2MDJiYTA4MWU2YmNkZjc5MzQyYjdkMjg1ZDQwMjEzMzZiMTljNTU0M2JhYTFkOCJ9fX0="  # copper-shaft-ring-fwd — gear/shaft placed head (wall)
+  gear_up:           "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTM1NDhjNmJkZGYwMGQ1MDI5MjEyYjc0NjFkZGNhYTcyZTkyOGQ0M2YzYWIwMmEyYWJmNjgwYTYzZDI1MWVjNSJ9fX0="  # gear-up — big gear disc display (floor)
+  gear_fwd:          "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWU1ZWRmZTkwMTU2Y2U5YjViNmI4MDc5M2RjMmNiZmU4NTBkZGVjODU2Yzk5ZWViZGUzMTc3NWNjZTk1NjA0MSJ9fX0="  # gear-fwd — big gear disc display (wall)
+  water_wheel_copper: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvM2Q0NzBkY2Y3MGRhMzJiMzNlYWM0ZTBmMjAyMzZhMjk0YTE5NDMxMWI3MWQ2NzZjMTk3MzVhMDI0Mjc2NjlkNiJ9fX0="  # water-wheel-copper — water wheel head + item
+  rotator_up:        "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOWEzOWE4NDBhMGViYzkxYWJjOWEwNjNlYWNkOTFjYjVmYzk0M2U1OTU0YTQxNjJlMTQyZGNmZWQ2MzAyZTVhNyJ9fX0="  # copper-bearing-plated-up — rotator head (floor)
+  rotator_side:      "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDE4NjNmM2UwNTlkNjNmYjE1NDE1NWZhNzQ5YzA2MDQxNGM2ZDQxOTBjZTkyNjExODU3NTBjMTRmYzY2NDMzYyJ9fX0="  # copper-bearing-plated — rotator head (wall) + item
+  windmill_hub_up:   "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZmMwNDRiNjg5MTY0MTljZDU1ZmE5NDA3MDU4MDU3N2YxYmVjMzk4ZDE2YmMyOTVmNTA5MzA2ZDc1NWM1Y2UzZSJ9fX0="  # copber2-up — windmill hub placed head (floor)
+  windmill_hub_fwd:  "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMmQzMmJlY2RiNDYzMjYzMTRjZDBkMDU1MWIzYTNmMjhlMTc1NzQ2NjM4MDgzMDUwYWY4M2VkYmEyNDlhMWZmMiJ9fX0="  # copber2-fwd — windmill hub placed head (wall) + bearing item
+  windmill_item:     "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZmVhNTg1NmQ1OTNjZGNmNDgzNTI0NzFiNGE1ZGU0NDI3N2FiMjFkOWUyODc2NWUxYjZkODM5ZWY0ZjllMmEzNSJ9fX0="  # windmill-fwd — windmill item (all tiers)
+  fan_placed_up:     "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjcwODkzMGQ3NTZkNmM3N2Q2MGFlZDQyZjA2ZDUyMGJkNDJiMDZhMDY5ZjdlODM4MjM3ODgzZGI5ODRlNGY2YSJ9fX0="  # fan/fan-placed-up — fan placed head (floor)
+  fan_placed_fwd:    "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjYxNmUxZTQyMDBiYWUxNzM1MjZiMjIxYTNjZDAyNjhmMWFmZmU2YzdkMjJjYmEwMGVmN2U4MmVhZDRhMTJmNyJ9fX0="  # fan/fan-placed-fwd — fan placed head (wall)
+  fan_item:          "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNmJkYzYxNTVmY2Y0YThmMDZkNDZhYmY5MGFhNjJmNzE1NGRhNGY2NGRkMzhhNjdmMGMzODBhMGJkZjZhOWQwMyJ9fX0="  # fan/fan-item — fan item
+
 blocks:
 
   # ─── Shaft ──────────────────────────────────────────────────────────────
@@ -34,8 +52,9 @@ blocks:
     name: "&eShaft"
     lore:
       - "&7Transmits rotational power"
-    # Cut Copper
-    texture: "@cut_copper"
+    # Placed head: copper shaft ring (orientation-dependent per state). Item: copper rod.
+    texture: "@shaft_ring_fwd"
+    item_texture: "@rod_fwd"
     drops: self
     default_state: idle_y
     placement_state_map:
@@ -47,25 +66,28 @@ blocks:
     states:
       # Y-axis: default head orientation
       idle_y:
+        texture: "@shaft_ring_up"
         display_entities:
-          - texture: "@cut_copper"
+          - texture: "@rod_up"
             tag: rod
-            transform: { translation: [0, 0.5, 0], scale: [0.66, 2.0, 0.66] }
-      spinning_y: { copy_from: idle_y, animation: { type: rotate, axis: [0, 1, 0], speed: 3.0 } }
+            transform: { translation: [0, 0.5, 0], scale: [0.66, 2.02, 0.66] }
+      spinning_y: { copy_from: idle_y, texture: "@shaft_ring_up", animation: { type: rotate, axis: [0, 1, 0], speed: 3.0 } }
       # X-axis: rotate head 90° around Z so height→-X
       idle_x:
+        texture: "@shaft_ring_fwd"
         display_entities:
-          - texture: "@cut_copper"
+          - texture: "@rod_fwd"
             tag: rod
-            transform: { translation: [-0.5, 0, 0], scale: [0.66, 2.0, 0.66], left_rotation: [90, 0, 0, 1] }
-      spinning_x: { copy_from: idle_x, animation: { type: rotate, axis: [1, 0, 0], speed: 3.0 } }
+            transform: { translation: [-0.5, 0, 0], scale: [0.66, 2.02, 0.66], left_rotation: [90, 0, 0, 1] }
+      spinning_x: { copy_from: idle_x, texture: "@shaft_ring_fwd", animation: { type: rotate, axis: [1, 0, 0], speed: 3.0 } }
       # Z-axis: rotate head -90° around X so height→Z
       idle_z:
+        texture: "@shaft_ring_fwd"
         display_entities:
-          - texture: "@cut_copper"
+          - texture: "@rod_fwd"
             tag: rod
-            transform: { translation: [0, 0, -0.5], scale: [0.66, 2.0, 0.66], left_rotation: [-90, 1, 0, 0] }
-      spinning_z: { copy_from: idle_z, animation: { type: rotate, axis: [0, 0, 1], speed: 3.0 } }
+            transform: { translation: [0, 0, -0.5], scale: [0.66, 2.02, 0.66], left_rotation: [-90, 1, 0, 0] }
+      spinning_z: { copy_from: idle_z, texture: "@shaft_ring_fwd", animation: { type: rotate, axis: [0, 0, 1], speed: 3.0 } }
     recipes:
       craft:
         shapeless:
@@ -92,8 +114,8 @@ blocks:
     lore:
       - "&7Transfers power along axis"
       - "&7Connects perpendicular gears"
-    # Iron Block (placed head)
-    texture: "@iron_block"
+    # Placed head: copper shaft ring (orientation-dependent per state).
+    texture: "@shaft_ring_fwd"
     # Copper Gear (item in hand)
     item_texture: "@copper_gear"
     drops: self
@@ -107,67 +129,72 @@ blocks:
     states:
       # ── Y-axis gear (floor): discs lowered onto seated head, shaft rod up ──
       idle_y:
+        texture: "@shaft_ring_up"
         display_entities:
-          - texture: "@cut_copper"
+          - texture: "@rod_up"
             tag: shaft_rod
-            transform: { translation: [0, 0.5, 0], scale: [0.66, 2.0, 0.66] }
-          - texture: "@gear_disc"
+            transform: { translation: [0, 0.5, 0], scale: [0.66, 2.02, 0.66] }
+          - texture: "@gear_up"
             tag: disc_a
             transform: { translation: [0, -0.29, 0], scale: [1.7, 0.4, 1.7] }
-          - texture: "@gear_disc"
+          - texture: "@gear_up"
             tag: disc_b
             transform: { translation: [0, -0.28, 0], scale: [1.7, 0.4, 1.7], left_rotation: [45, 0, 1, 0] }
-      spinning_y: { copy_from: idle_y, animation: { type: rotate, axis: [0, 1, 0], speed: 3.0 } }
+      spinning_y: { copy_from: idle_y, texture: "@shaft_ring_up", animation: { type: rotate, axis: [0, 1, 0], speed: 3.0 } }
       # ── X-axis gear (E/W wall): disc pulled to the wall; shaft_rod = standalone shaft ──
       idle_x:
+        texture: "@shaft_ring_fwd"
         display_entities:
-          - texture: "@cut_copper"
+          - texture: "@rod_fwd"
             tag: shaft_rod
-            transform: { translation: [-0.5, 0, 0], scale: [0.66, 2.0, 0.66], left_rotation: [90, 0, 0, 1] }
-          - texture: "@gear_disc"
+            transform: { translation: [-0.5, 0, 0], scale: [0.66, 2.02, 0.66], left_rotation: [90, 0, 0, 1] }
+          - texture: "@gear_fwd"
             tag: disc_a
             transform: { translation: [-0.45, 0, 0], scale: [1.7, 0.4, 1.7], left_rotation: [90, 0, 0, 1] }
-          - texture: "@gear_disc"
+          - texture: "@gear_fwd"
             tag: disc_b
             transform: { translation: [-0.46, 0, 0], scale: [1.7, 0.4, 1.7], left_rotation: [98.42, -0.3574, 0.3574, 0.8629] }
-      spinning_x: { copy_from: idle_x, animation: { type: rotate, axis: [1, 0, 0], speed: 3.0 } }
+      spinning_x: { copy_from: idle_x, texture: "@shaft_ring_fwd", animation: { type: rotate, axis: [1, 0, 0], speed: 3.0 } }
       idle_east_x:
+        texture: "@shaft_ring_fwd"
         display_entities:
-          - texture: "@cut_copper"
+          - texture: "@rod_fwd"
             tag: shaft_rod
-            transform: { translation: [-0.5, 0, 0], scale: [0.66, 2.0, 0.66], left_rotation: [90, 0, 0, 1] }
-          - texture: "@gear_disc"
+            transform: { translation: [-0.5, 0, 0], scale: [0.66, 2.02, 0.66], left_rotation: [90, 0, 0, 1] }
+          - texture: "@gear_fwd"
             tag: disc_a
             transform: { translation: [0.45, 0, 0], scale: [1.7, 0.4, 1.7], left_rotation: [-90, 0, 0, 1] }
-          - texture: "@gear_disc"
+          - texture: "@gear_fwd"
             tag: disc_b
             transform: { translation: [0.46, 0, 0], scale: [1.7, 0.4, 1.7], left_rotation: [98.42, 0.3574, 0.3574, -0.8629] }
-      spinning_east_x: { copy_from: idle_east_x, animation: { type: rotate, axis: [1, 0, 0], speed: 3.0 } }
+      spinning_east_x: { copy_from: idle_east_x, texture: "@shaft_ring_fwd", animation: { type: rotate, axis: [1, 0, 0], speed: 3.0 } }
       # ── Z-axis gear (N/S wall): disc pulled to the wall; shaft_rod = standalone shaft ──
       idle_z:
+        texture: "@shaft_ring_fwd"
         display_entities:
-          - texture: "@cut_copper"
+          - texture: "@rod_fwd"
             tag: shaft_rod
-            transform: { translation: [0, 0, -0.5], scale: [0.66, 2.0, 0.66], left_rotation: [-90, 1, 0, 0] }
-          - texture: "@gear_disc"
+            transform: { translation: [0, 0, -0.5], scale: [0.66, 2.02, 0.66], left_rotation: [-90, 1, 0, 0] }
+          - texture: "@gear_fwd"
             tag: disc_a
             transform: { translation: [0, 0, -0.45], scale: [1.7, 0.4, 1.7], left_rotation: [-90, 1, 0, 0] }
-          - texture: "@gear_disc"
+          - texture: "@gear_fwd"
             tag: disc_b
             transform: { translation: [0, 0, -0.46], scale: [1.7, 0.4, 1.7], left_rotation: [98.42, -0.8629, 0.3574, -0.3574] }
-      spinning_z: { copy_from: idle_z, animation: { type: rotate, axis: [0, 0, 1], speed: 3.0 } }
+      spinning_z: { copy_from: idle_z, texture: "@shaft_ring_fwd", animation: { type: rotate, axis: [0, 0, 1], speed: 3.0 } }
       idle_south_z:
+        texture: "@shaft_ring_fwd"
         display_entities:
-          - texture: "@cut_copper"
+          - texture: "@rod_fwd"
             tag: shaft_rod
-            transform: { translation: [0, 0, -0.5], scale: [0.66, 2.0, 0.66], left_rotation: [-90, 1, 0, 0] }
-          - texture: "@gear_disc"
+            transform: { translation: [0, 0, -0.5], scale: [0.66, 2.02, 0.66], left_rotation: [-90, 1, 0, 0] }
+          - texture: "@gear_fwd"
             tag: disc_a
             transform: { translation: [0, 0, 0.45], scale: [1.7, 0.4, 1.7], left_rotation: [90, 1, 0, 0] }
-          - texture: "@gear_disc"
+          - texture: "@gear_fwd"
             tag: disc_b
             transform: { translation: [0, 0, 0.46], scale: [1.7, 0.4, 1.7], left_rotation: [98.42, 0.8629, 0.3574, 0.3574] }
-      spinning_south_z: { copy_from: idle_south_z, animation: { type: rotate, axis: [0, 0, 1], speed: 3.0 } }
+      spinning_south_z: { copy_from: idle_south_z, texture: "@shaft_ring_fwd", animation: { type: rotate, axis: [0, 0, 1], speed: 3.0 } }
     recipes:
       craft:
         shaped:
@@ -196,15 +223,29 @@ blocks:
       EAST: idle_x
       WEST: idle_x
     states:
-      idle_x: {}
-      idle_y: {}
-      idle_z: {}
-      spinning_x: {}
-      spinning_y: {}
-      spinning_z: {}
-      locked_x: {}
-      locked_y: {}
-      locked_z: {}
+      # Standard shaft display (same as rotation:shaft). Shown in all states —
+      # locked just stops the spin; the shaft stays visible.
+      idle_x:
+        display_entities:
+          - texture: "@rod_fwd"
+            tag: rod
+            transform: { translation: [-0.5, 0, 0], scale: [0.66, 2.02, 0.66], left_rotation: [90, 0, 0, 1] }
+      idle_y:
+        display_entities:
+          - texture: "@rod_up"
+            tag: rod
+            transform: { translation: [0, 0.5, 0], scale: [0.66, 2.02, 0.66] }
+      idle_z:
+        display_entities:
+          - texture: "@rod_fwd"
+            tag: rod
+            transform: { translation: [0, 0, -0.5], scale: [0.66, 2.02, 0.66], left_rotation: [-90, 1, 0, 0] }
+      spinning_x: { copy_from: idle_x, animation: { type: rotate, axis: [1, 0, 0], speed: 3.0 } }
+      spinning_y: { copy_from: idle_y, animation: { type: rotate, axis: [0, 1, 0], speed: 3.0 } }
+      spinning_z: { copy_from: idle_z, animation: { type: rotate, axis: [0, 0, 1], speed: 3.0 } }
+      locked_x: { copy_from: idle_x }
+      locked_y: { copy_from: idle_y }
+      locked_z: { copy_from: idle_z }
     recipes:
       craft:
         shaped:
@@ -234,12 +275,25 @@ blocks:
       EAST: idle_x
       WEST: idle_x
     states:
-      idle_x: {}
-      idle_y: {}
-      idle_z: {}
-      spinning_x: {}
-      spinning_y: {}
-      spinning_z: {}
+      # Standard shaft display (same as rotation:shaft).
+      idle_x:
+        display_entities:
+          - texture: "@rod_fwd"
+            tag: rod
+            transform: { translation: [-0.5, 0, 0], scale: [0.66, 2.02, 0.66], left_rotation: [90, 0, 0, 1] }
+      idle_y:
+        display_entities:
+          - texture: "@rod_up"
+            tag: rod
+            transform: { translation: [0, 0.5, 0], scale: [0.66, 2.02, 0.66] }
+      idle_z:
+        display_entities:
+          - texture: "@rod_fwd"
+            tag: rod
+            transform: { translation: [0, 0, -0.5], scale: [0.66, 2.02, 0.66], left_rotation: [-90, 1, 0, 0] }
+      spinning_x: { copy_from: idle_x, animation: { type: rotate, axis: [1, 0, 0], speed: 3.0 } }
+      spinning_y: { copy_from: idle_y, animation: { type: rotate, axis: [0, 1, 0], speed: 3.0 } }
+      spinning_z: { copy_from: idle_z, animation: { type: rotate, axis: [0, 0, 1], speed: 3.0 } }
     recipes:
       craft:
         shapeless:
@@ -257,8 +311,9 @@ blocks:
       - "&7Swings an attached oak-plank door/drawbridge"
       - "&7Floor = door, wall = drawbridge"
       - "&7Right-click: cycle open angle"
-    # Iron Block (placeholder — give it a distinct hinge head texture later)
-    texture: "@iron_block"
+    # Hinge head: plated copper bearing (orientation-dependent per state).
+    texture: "@rotator_side"
+    item_texture: "@rotator_side"
     drops: self
     default_state: idle_y
     placement_state_map:
@@ -268,12 +323,28 @@ blocks:
       EAST: idle_x
       WEST: idle_x
     states:
-      idle_x: {}
-      idle_y: {}
-      idle_z: {}
-      spinning_x: {}
-      spinning_y: {}
-      spinning_z: {}
+      # Standard shaft display (same as rotation:shaft) + oriented hinge head.
+      idle_x:
+        texture: "@rotator_side"
+        display_entities:
+          - texture: "@rod_fwd"
+            tag: rod
+            transform: { translation: [-0.5, 0, 0], scale: [0.66, 2.02, 0.66], left_rotation: [90, 0, 0, 1] }
+      idle_y:
+        texture: "@rotator_up"
+        display_entities:
+          - texture: "@rod_up"
+            tag: rod
+            transform: { translation: [0, 0.5, 0], scale: [0.66, 2.02, 0.66] }
+      idle_z:
+        texture: "@rotator_side"
+        display_entities:
+          - texture: "@rod_fwd"
+            tag: rod
+            transform: { translation: [0, 0, -0.5], scale: [0.66, 2.02, 0.66], left_rotation: [-90, 1, 0, 0] }
+      spinning_x: { copy_from: idle_x, texture: "@rotator_side", animation: { type: rotate, axis: [1, 0, 0], speed: 3.0 } }
+      spinning_y: { copy_from: idle_y, texture: "@rotator_up", animation: { type: rotate, axis: [0, 1, 0], speed: 3.0 } }
+      spinning_z: { copy_from: idle_z, texture: "@rotator_side", animation: { type: rotate, axis: [0, 0, 1], speed: 3.0 } }
 
   # ─── Water Wheel ────────────────────────────────────────────────────────
   # Source: 2 Power. Wall only. Spins when water is on perpendicular faces.
@@ -283,8 +354,9 @@ blocks:
     lore:
       - "&7Produces 2 Power when adjacent to water"
       - "&7Place on a wall"
-    # Chiselled Copper
-    texture: "@chiselled_copper"
+    # Copper water wheel (head + item).
+    texture: "@water_wheel_copper"
+    item_texture: "@water_wheel_copper"
     drops: self
     placement:
       allowed_faces: [NORTH, SOUTH, EAST, WEST]
@@ -295,17 +367,23 @@ blocks:
       EAST: idle_x
       WEST: idle_x
     states:
-      # Z-axis (N/S wall): paddles in XY plane
+      # Z-axis (N/S wall): paddles in XY plane. rod = standard shaft along Z (the axle).
       idle_z:
         display_entities:
+          - texture: "@rod_fwd"
+            tag: rod
+            transform: { translation: [0, 0, -0.5], scale: [0.66, 2.02, 0.66], left_rotation: [-90, 1, 0, 0] }
           - { material: OAK_SLAB, tag: paddle_a, transform: { translation: [0.35, 0, 0],  scale: [0.6, 0.6, 0.15] }, wall_offset: 0.25 }
           - { material: OAK_SLAB, tag: paddle_b, transform: { translation: [0, 0.35, 0],  scale: [0.15, 0.6, 0.6] }, wall_offset: 0.25 }
           - { material: OAK_SLAB, tag: paddle_c, transform: { translation: [-0.35, 0, 0], scale: [0.6, 0.6, 0.15] }, wall_offset: 0.25 }
           - { material: OAK_SLAB, tag: paddle_d, transform: { translation: [0, -0.35, 0], scale: [0.15, 0.6, 0.6] }, wall_offset: 0.25 }
       spinning_z: { copy_from: idle_z, animation: { type: rotate, axis: [0, 0, 1], speed: 3.0 } }
-      # X-axis (E/W wall): paddles in YZ plane
+      # X-axis (E/W wall): paddles in YZ plane. rod = standard shaft along X (the axle).
       idle_x:
         display_entities:
+          - texture: "@rod_fwd"
+            tag: rod
+            transform: { translation: [-0.5, 0, 0], scale: [0.66, 2.02, 0.66], left_rotation: [90, 0, 0, 1] }
           - { material: OAK_SLAB, tag: paddle_a, transform: { translation: [0, 0.35, 0],  scale: [0.15, 0.6, 0.6] }, wall_offset: 0.25 }
           - { material: OAK_SLAB, tag: paddle_b, transform: { translation: [0, 0, 0.35],  scale: [0.6, 0.15, 0.6] }, wall_offset: 0.25 }
           - { material: OAK_SLAB, tag: paddle_c, transform: { translation: [0, -0.35, 0], scale: [0.15, 0.6, 0.6] }, wall_offset: 0.25 }
@@ -334,19 +412,19 @@ blocks:
       # Idle: static shaft display showing axis direction
       idle_x:
         display_entities:
-          - texture: "@cut_copper"
+          - texture: "@rod_fwd"
             tag: rod
-            transform: { translation: [-0.5, 0, 0], scale: [0.66, 2.0, 0.66], left_rotation: [90, 0, 0, 1] }
+            transform: { translation: [-0.5, 0, 0], scale: [0.66, 2.02, 0.66], left_rotation: [90, 0, 0, 1] }
       idle_y:
         display_entities:
-          - texture: "@cut_copper"
+          - texture: "@rod_up"
             tag: rod
-            transform: { translation: [0, 0.5, 0], scale: [0.66, 2.0, 0.66] }
+            transform: { translation: [0, 0.5, 0], scale: [0.66, 2.02, 0.66] }
       idle_z:
         display_entities:
-          - texture: "@cut_copper"
+          - texture: "@rod_fwd"
             tag: rod
-            transform: { translation: [0, 0, -0.5], scale: [0.66, 2.0, 0.66], left_rotation: [-90, 1, 0, 0] }
+            transform: { translation: [0, 0, -0.5], scale: [0.66, 2.02, 0.66], left_rotation: [-90, 1, 0, 0] }
       # Running: spinning shaft + smoke particles
       running_x:
         copy_from: idle_x
@@ -406,19 +484,19 @@ blocks:
       # Idle: static shaft, no particles (redstone-disabled)
       idle_x:
         display_entities:
-          - texture: "@cut_copper"
+          - texture: "@rod_fwd"
             tag: rod
-            transform: { translation: [-0.5, 0, 0], scale: [0.66, 2.0, 0.66], left_rotation: [90, 0, 0, 1] }
+            transform: { translation: [-0.5, 0, 0], scale: [0.66, 2.02, 0.66], left_rotation: [90, 0, 0, 1] }
       idle_y:
         display_entities:
-          - texture: "@cut_copper"
+          - texture: "@rod_up"
             tag: rod
-            transform: { translation: [0, 0.5, 0], scale: [0.66, 2.0, 0.66] }
+            transform: { translation: [0, 0.5, 0], scale: [0.66, 2.02, 0.66] }
       idle_z:
         display_entities:
-          - texture: "@cut_copper"
+          - texture: "@rod_fwd"
             tag: rod
-            transform: { translation: [0, 0, -0.5], scale: [0.66, 2.0, 0.66], left_rotation: [-90, 1, 0, 0] }
+            transform: { translation: [0, 0, -0.5], scale: [0.66, 2.02, 0.66], left_rotation: [-90, 1, 0, 0] }
       # Spinning: rotating shaft + spark particles
       spinning_x:
         copy_from: idle_x
@@ -596,6 +674,7 @@ blocks:
       - "&7Always spinning"
       - "&7Use Large/Huge banners for a bigger windmill"
     texture: "@large_windmill"
+    item_texture: "@windmill_item"
     drops: self
     break_sound: { sound: BLOCK_WOOD_BREAK, volume: 0.8, pitch: 1.0 }
     place_sound: { sound: BLOCK_WOOD_PLACE, volume: 0.8, pitch: 1.0 }
@@ -608,6 +687,7 @@ blocks:
       WEST: wall_w
     states:
       floor:
+        texture: "@windmill_hub_up"
         display_entities:
           - { material: WHITE_BANNER, tag: blade_a, transform: { translation: [0.375, -0.2, 0],    scale: [0.75, 0.75, 0.75], left_rotation: [120, 1, 1, -1] } }
           - { material: WHITE_BANNER, tag: blade_b, transform: { translation: [0, -0.2, 0.375],    scale: [0.75, 0.75, 0.75], left_rotation: [90, 1, 0, 0] } }
@@ -615,6 +695,7 @@ blocks:
           - { material: WHITE_BANNER, tag: blade_d, transform: { translation: [0, -0.2, -0.375],   scale: [0.75, 0.75, 0.75], left_rotation: [180, 0, 1, -1] } }
         animation: { type: rotate, axis: [0, 1, 0], speed: 3.0 }
       wall_n:
+        texture: "@windmill_hub_fwd"
         display_entities:
           - { material: WHITE_BANNER, tag: blade_a, transform: { translation: [0.375, 0, 0],  scale: [0.75, 0.75, 0.75], left_rotation: [-90, 0, 0, 1] }, wall_offset: 0.25 }
           - { material: WHITE_BANNER, tag: blade_b, transform: { translation: [0, 0.375, 0],  scale: [0.75, 0.75, 0.75] }, wall_offset: 0.25 }
@@ -622,6 +703,7 @@ blocks:
           - { material: WHITE_BANNER, tag: blade_d, transform: { translation: [0, -0.375, 0], scale: [0.75, 0.75, 0.75], left_rotation: [180, 0, 0, 1] }, wall_offset: 0.25 }
         animation: { type: rotate, axis: [0, 0, 1], speed: 3.0 }
       wall_s:
+        texture: "@windmill_hub_fwd"
         display_entities:
           - { material: WHITE_BANNER, tag: blade_a, transform: { translation: [0.375, 0, 0],  scale: [0.75, 0.75, 0.75], left_rotation: [180, 1, 1, 0] }, wall_offset: 0.25 }
           - { material: WHITE_BANNER, tag: blade_b, transform: { translation: [0, 0.375, 0],  scale: [0.75, 0.75, 0.75], left_rotation: [180, 0, 1, 0] }, wall_offset: 0.25 }
@@ -629,6 +711,7 @@ blocks:
           - { material: WHITE_BANNER, tag: blade_d, transform: { translation: [0, -0.375, 0], scale: [0.75, 0.75, 0.75], left_rotation: [180, 1, 0, 0] }, wall_offset: 0.25 }
         animation: { type: rotate, axis: [0, 0, 1], speed: 3.0 }
       wall_w:
+        texture: "@windmill_hub_fwd"
         display_entities:
           - { material: WHITE_BANNER, tag: blade_a, transform: { translation: [0, 0.375, 0],  scale: [0.75, 0.75, 0.75], left_rotation: [-90, 0, 1, 0] }, wall_offset: 0.25 }
           - { material: WHITE_BANNER, tag: blade_b, transform: { translation: [0, 0, 0.375],  scale: [0.75, 0.75, 0.75], left_rotation: [120, 1, -1, -1] }, wall_offset: 0.25 }
@@ -636,6 +719,7 @@ blocks:
           - { material: WHITE_BANNER, tag: blade_d, transform: { translation: [0, 0, -0.375], scale: [0.75, 0.75, 0.75], left_rotation: [-120, 1, 1, -1] }, wall_offset: 0.25 }
         animation: { type: rotate, axis: [1, 0, 0], speed: 3.0 }
       wall_e:
+        texture: "@windmill_hub_fwd"
         display_entities:
           - { material: WHITE_BANNER, tag: blade_a, transform: { translation: [0, 0.375, 0],  scale: [0.75, 0.75, 0.75], left_rotation: [90, 0, 1, 0] }, wall_offset: 0.25 }
           - { material: WHITE_BANNER, tag: blade_b, transform: { translation: [0, 0, 0.375],  scale: [0.75, 0.75, 0.75], left_rotation: [120, 1, 1, 1] }, wall_offset: 0.25 }
@@ -663,6 +747,7 @@ blocks:
       - "&7Always spinning"
       - "&7Crafted like a Windmill using Large banners"
     texture: "@large_windmill"
+    item_texture: "@windmill_item"
     drops: self
     break_sound: { sound: BLOCK_WOOD_BREAK, volume: 0.8, pitch: 0.8 }
     place_sound: { sound: BLOCK_WOOD_PLACE, volume: 0.8, pitch: 0.8 }
@@ -675,6 +760,7 @@ blocks:
       WEST: wall_w
     states:
       floor:
+        texture: "@windmill_hub_up"
         display_entities:
           - { material: WHITE_BANNER, tag: blade_a, transform: { translation: [1.25, -0.25, 0],    scale: [2.25, 2.25, 2.25], left_rotation: [120, 1, 1, -1] } }
           - { material: WHITE_BANNER, tag: blade_b, transform: { translation: [0, -0.25, 1.25],    scale: [2.25, 2.25, 2.25], left_rotation: [90, 1, 0, 0] } }
@@ -682,6 +768,7 @@ blocks:
           - { material: WHITE_BANNER, tag: blade_d, transform: { translation: [0, -0.25, -1.25],   scale: [2.25, 2.25, 2.25], left_rotation: [180, 0, 1, -1] } }
         animation: { type: rotate, axis: [0, 1, 0], speed: 2.0 }
       wall_n:
+        texture: "@windmill_hub_fwd"
         display_entities:
           - { material: WHITE_BANNER, tag: blade_a, transform: { translation: [1.25, 0, 0],  scale: [2.25, 2.25, 2.25], left_rotation: [-90, 0, 0, 1] }, wall_offset: 0.25 }
           - { material: WHITE_BANNER, tag: blade_b, transform: { translation: [0, 1.25, 0],  scale: [2.25, 2.25, 2.25] }, wall_offset: 0.25 }
@@ -689,6 +776,7 @@ blocks:
           - { material: WHITE_BANNER, tag: blade_d, transform: { translation: [0, -1.25, 0], scale: [2.25, 2.25, 2.25], left_rotation: [180, 0, 0, 1] }, wall_offset: 0.25 }
         animation: { type: rotate, axis: [0, 0, 1], speed: 2.0 }
       wall_s:
+        texture: "@windmill_hub_fwd"
         display_entities:
           - { material: WHITE_BANNER, tag: blade_a, transform: { translation: [1.25, 0, 0],  scale: [2.25, 2.25, 2.25], left_rotation: [180, 1, 1, 0] }, wall_offset: 0.25 }
           - { material: WHITE_BANNER, tag: blade_b, transform: { translation: [0, 1.25, 0],  scale: [2.25, 2.25, 2.25], left_rotation: [180, 0, 1, 0] }, wall_offset: 0.25 }
@@ -696,6 +784,7 @@ blocks:
           - { material: WHITE_BANNER, tag: blade_d, transform: { translation: [0, -1.25, 0], scale: [2.25, 2.25, 2.25], left_rotation: [180, 1, 0, 0] }, wall_offset: 0.25 }
         animation: { type: rotate, axis: [0, 0, 1], speed: 2.0 }
       wall_w:
+        texture: "@windmill_hub_fwd"
         display_entities:
           - { material: WHITE_BANNER, tag: blade_a, transform: { translation: [0, 1.25, 0],  scale: [2.25, 2.25, 2.25], left_rotation: [-90, 0, 1, 0] }, wall_offset: 0.25 }
           - { material: WHITE_BANNER, tag: blade_b, transform: { translation: [0, 0, 1.25],  scale: [2.25, 2.25, 2.25], left_rotation: [120, 1, -1, -1] }, wall_offset: 0.25 }
@@ -703,6 +792,7 @@ blocks:
           - { material: WHITE_BANNER, tag: blade_d, transform: { translation: [0, 0, -1.25], scale: [2.25, 2.25, 2.25], left_rotation: [-120, 1, 1, -1] }, wall_offset: 0.25 }
         animation: { type: rotate, axis: [1, 0, 0], speed: 2.0 }
       wall_e:
+        texture: "@windmill_hub_fwd"
         display_entities:
           - { material: WHITE_BANNER, tag: blade_a, transform: { translation: [0, 1.25, 0],  scale: [2.25, 2.25, 2.25], left_rotation: [90, 0, 1, 0] }, wall_offset: 0.25 }
           - { material: WHITE_BANNER, tag: blade_b, transform: { translation: [0, 0, 1.25],  scale: [2.25, 2.25, 2.25], left_rotation: [120, 1, 1, 1] }, wall_offset: 0.25 }
@@ -723,6 +813,7 @@ blocks:
       - "&7Always spinning"
       - "&7Crafted like a Windmill using Huge banners"
     texture: "@large_windmill"
+    item_texture: "@windmill_item"
     drops: self
     break_sound: { sound: BLOCK_WOOD_BREAK, volume: 0.8, pitch: 0.8 }
     place_sound: { sound: BLOCK_WOOD_PLACE, volume: 0.8, pitch: 0.8 }
@@ -735,6 +826,7 @@ blocks:
       WEST: wall_w
     states:
       floor:
+        texture: "@windmill_hub_up"
         display_entities:
           - { material: WHITE_BANNER, tag: blade_a, transform: { translation: [1.667, -0.333, 0],    scale: [3.0, 3.0, 3.0], left_rotation: [120, 1, 1, -1] } }
           - { material: WHITE_BANNER, tag: blade_b, transform: { translation: [0, -0.333, 1.667],    scale: [3.0, 3.0, 3.0], left_rotation: [90, 1, 0, 0] } }
@@ -742,6 +834,7 @@ blocks:
           - { material: WHITE_BANNER, tag: blade_d, transform: { translation: [0, -0.333, -1.667],   scale: [3.0, 3.0, 3.0], left_rotation: [180, 0, 1, -1] } }
         animation: { type: rotate, axis: [0, 1, 0], speed: 1.0 }
       wall_n:
+        texture: "@windmill_hub_fwd"
         display_entities:
           - { material: WHITE_BANNER, tag: blade_a, transform: { translation: [1.667, 0, 0],  scale: [3.0, 3.0, 3.0], left_rotation: [-90, 0, 0, 1] }, wall_offset: 0.25 }
           - { material: WHITE_BANNER, tag: blade_b, transform: { translation: [0, 1.667, 0],  scale: [3.0, 3.0, 3.0] }, wall_offset: 0.25 }
@@ -749,6 +842,7 @@ blocks:
           - { material: WHITE_BANNER, tag: blade_d, transform: { translation: [0, -1.667, 0], scale: [3.0, 3.0, 3.0], left_rotation: [180, 0, 0, 1] }, wall_offset: 0.25 }
         animation: { type: rotate, axis: [0, 0, 1], speed: 1.0 }
       wall_s:
+        texture: "@windmill_hub_fwd"
         display_entities:
           - { material: WHITE_BANNER, tag: blade_a, transform: { translation: [1.667, 0, 0],  scale: [3.0, 3.0, 3.0], left_rotation: [180, 1, 1, 0] }, wall_offset: 0.25 }
           - { material: WHITE_BANNER, tag: blade_b, transform: { translation: [0, 1.667, 0],  scale: [3.0, 3.0, 3.0], left_rotation: [180, 0, 1, 0] }, wall_offset: 0.25 }
@@ -756,6 +850,7 @@ blocks:
           - { material: WHITE_BANNER, tag: blade_d, transform: { translation: [0, -1.667, 0], scale: [3.0, 3.0, 3.0], left_rotation: [180, 1, 0, 0] }, wall_offset: 0.25 }
         animation: { type: rotate, axis: [0, 0, 1], speed: 1.0 }
       wall_w:
+        texture: "@windmill_hub_fwd"
         display_entities:
           - { material: WHITE_BANNER, tag: blade_a, transform: { translation: [0, 1.667, 0],  scale: [3.0, 3.0, 3.0], left_rotation: [-90, 0, 1, 0] }, wall_offset: 0.25 }
           - { material: WHITE_BANNER, tag: blade_b, transform: { translation: [0, 0, 1.667],  scale: [3.0, 3.0, 3.0], left_rotation: [120, 1, -1, -1] }, wall_offset: 0.25 }
@@ -763,6 +858,7 @@ blocks:
           - { material: WHITE_BANNER, tag: blade_d, transform: { translation: [0, 0, -1.667], scale: [3.0, 3.0, 3.0], left_rotation: [-120, 1, 1, -1] }, wall_offset: 0.25 }
         animation: { type: rotate, axis: [1, 0, 0], speed: 1.0 }
       wall_e:
+        texture: "@windmill_hub_fwd"
         display_entities:
           - { material: WHITE_BANNER, tag: blade_a, transform: { translation: [0, 1.667, 0],  scale: [3.0, 3.0, 3.0], left_rotation: [90, 0, 1, 0] }, wall_offset: 0.25 }
           - { material: WHITE_BANNER, tag: blade_b, transform: { translation: [0, 0, 1.667],  scale: [3.0, 3.0, 3.0], left_rotation: [120, 1, 1, 1] }, wall_offset: 0.25 }
@@ -785,7 +881,8 @@ blocks:
       - "&7Consumes rotation power to blow entities"
       - "&7Pushes mobs, players & items away from its mount"
       - "&7Stronger with more surplus power; fixed range"
-    texture: "@large_windmill"
+    texture: "@fan_placed_fwd"
+    item_texture: "@fan_item"
     drops: self
     break_sound: { sound: BLOCK_WOOD_BREAK, volume: 0.8, pitch: 1.2 }
     place_sound: { sound: BLOCK_WOOD_PLACE, volume: 0.8, pitch: 1.2 }
@@ -798,40 +895,45 @@ blocks:
       WEST: idle_wall_w
     states:
       idle_floor:
+        texture: "@fan_placed_up"
         display_entities:
           - { material: WHITE_BANNER, tag: blade_a, transform: { translation: [0.1875, 0.05, 0],     scale: [0.375, 0.375, 0.375], left_rotation: [120, 1, 1, -1] } }
           - { material: WHITE_BANNER, tag: blade_b, transform: { translation: [0, 0.05, 0.1875],     scale: [0.375, 0.375, 0.375], left_rotation: [90, 1, 0, 0] } }
           - { material: WHITE_BANNER, tag: blade_c, transform: { translation: [-0.1875, 0.05, 0],    scale: [0.375, 0.375, 0.375], left_rotation: [120, 1, -1, 1] } }
           - { material: WHITE_BANNER, tag: blade_d, transform: { translation: [0, 0.05, -0.1875],    scale: [0.375, 0.375, 0.375], left_rotation: [180, 0, 1, -1] } }
-      spinning_floor: { copy_from: idle_floor, animation: { type: rotate, axis: [0, 1, 0], speed: 6.0 } }
+      spinning_floor: { copy_from: idle_floor, texture: "@fan_placed_up", animation: { type: rotate, axis: [0, 1, 0], speed: 6.0 } }
       idle_wall_n:
+        texture: "@fan_placed_fwd"
         display_entities:
           - { material: WHITE_BANNER, tag: blade_a, transform: { translation: [0.1875, 0, 0],  scale: [0.375, 0.375, 0.375], left_rotation: [-90, 0, 0, 1] }, wall_offset: 0.0 }
           - { material: WHITE_BANNER, tag: blade_b, transform: { translation: [0, 0.1875, 0],  scale: [0.375, 0.375, 0.375] }, wall_offset: 0.0 }
           - { material: WHITE_BANNER, tag: blade_c, transform: { translation: [-0.1875, 0, 0], scale: [0.375, 0.375, 0.375], left_rotation: [90, 0, 0, 1] }, wall_offset: 0.0 }
           - { material: WHITE_BANNER, tag: blade_d, transform: { translation: [0, -0.1875, 0], scale: [0.375, 0.375, 0.375], left_rotation: [180, 0, 0, 1] }, wall_offset: 0.0 }
-      spinning_wall_n: { copy_from: idle_wall_n, animation: { type: rotate, axis: [0, 0, 1], speed: 6.0 } }
+      spinning_wall_n: { copy_from: idle_wall_n, texture: "@fan_placed_fwd", animation: { type: rotate, axis: [0, 0, 1], speed: 6.0 } }
       idle_wall_s:
+        texture: "@fan_placed_fwd"
         display_entities:
           - { material: WHITE_BANNER, tag: blade_a, transform: { translation: [0.1875, 0, 0],  scale: [0.375, 0.375, 0.375], left_rotation: [180, 1, 1, 0] }, wall_offset: 0.0 }
           - { material: WHITE_BANNER, tag: blade_b, transform: { translation: [0, 0.1875, 0],  scale: [0.375, 0.375, 0.375], left_rotation: [180, 0, 1, 0] }, wall_offset: 0.0 }
           - { material: WHITE_BANNER, tag: blade_c, transform: { translation: [-0.1875, 0, 0], scale: [0.375, 0.375, 0.375], left_rotation: [180, 1, -1, 0] }, wall_offset: 0.0 }
           - { material: WHITE_BANNER, tag: blade_d, transform: { translation: [0, -0.1875, 0], scale: [0.375, 0.375, 0.375], left_rotation: [180, 1, 0, 0] }, wall_offset: 0.0 }
-      spinning_wall_s: { copy_from: idle_wall_s, animation: { type: rotate, axis: [0, 0, 1], speed: 6.0 } }
+      spinning_wall_s: { copy_from: idle_wall_s, texture: "@fan_placed_fwd", animation: { type: rotate, axis: [0, 0, 1], speed: 6.0 } }
       idle_wall_w:
+        texture: "@fan_placed_fwd"
         display_entities:
           - { material: WHITE_BANNER, tag: blade_a, transform: { translation: [0, 0.1875, 0],  scale: [0.375, 0.375, 0.375], left_rotation: [-90, 0, 1, 0] }, wall_offset: 0.0 }
           - { material: WHITE_BANNER, tag: blade_b, transform: { translation: [0, 0, 0.1875],  scale: [0.375, 0.375, 0.375], left_rotation: [120, 1, -1, -1] }, wall_offset: 0.0 }
           - { material: WHITE_BANNER, tag: blade_c, transform: { translation: [0, -0.1875, 0], scale: [0.375, 0.375, 0.375], left_rotation: [180, 1, 0, -1] }, wall_offset: 0.0 }
           - { material: WHITE_BANNER, tag: blade_d, transform: { translation: [0, 0, -0.1875], scale: [0.375, 0.375, 0.375], left_rotation: [-120, 1, 1, -1] }, wall_offset: 0.0 }
-      spinning_wall_w: { copy_from: idle_wall_w, animation: { type: rotate, axis: [1, 0, 0], speed: 6.0 } }
+      spinning_wall_w: { copy_from: idle_wall_w, texture: "@fan_placed_fwd", animation: { type: rotate, axis: [1, 0, 0], speed: 6.0 } }
       idle_wall_e:
+        texture: "@fan_placed_fwd"
         display_entities:
           - { material: WHITE_BANNER, tag: blade_a, transform: { translation: [0, 0.1875, 0],  scale: [0.375, 0.375, 0.375], left_rotation: [90, 0, 1, 0] }, wall_offset: 0.0 }
           - { material: WHITE_BANNER, tag: blade_b, transform: { translation: [0, 0, 0.1875],  scale: [0.375, 0.375, 0.375], left_rotation: [120, 1, 1, 1] }, wall_offset: 0.0 }
           - { material: WHITE_BANNER, tag: blade_c, transform: { translation: [0, -0.1875, 0], scale: [0.375, 0.375, 0.375], left_rotation: [180, 1, 0, 1] }, wall_offset: 0.0 }
           - { material: WHITE_BANNER, tag: blade_d, transform: { translation: [0, 0, -0.1875], scale: [0.375, 0.375, 0.375], left_rotation: [-120, 1, -1, 1] }, wall_offset: 0.0 }
-      spinning_wall_e: { copy_from: idle_wall_e, animation: { type: rotate, axis: [1, 0, 0], speed: 6.0 } }
+      spinning_wall_e: { copy_from: idle_wall_e, texture: "@fan_placed_fwd", animation: { type: rotate, axis: [1, 0, 0], speed: 6.0 } }
     recipes:
       craft:
         shaped:
