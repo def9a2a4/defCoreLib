@@ -2,9 +2,17 @@
 
 Don't you ever wish you had slabs, but vertical? But on an unmodded minecraft server, as a plugin?
 
+
+[Catalog of vertical slabs](https://def9a2a4.github.io/defCoreLib-docs/index.html/index.html?q=slab)
+
+
+
+
+![]()
+
 ## Features
 
-- Vertical slabs for basically every slab variant
+- Vertical slabs for basically every slab variant. See [the catalog](https://def9a2a4.github.io/defCoreLib-docs/index.html/index.html?q=slab).
 - Place against any wall face
 - Crafted from just the matching horizontal slab. Craft the original slab from a vertical slab too
 

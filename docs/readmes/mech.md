@@ -2,6 +2,8 @@
 
 Kinetic rotation mechanisms - build power networks that drive machines, doors, and vehicles. Inspired by Create mod, loosely also inspired by slimefun, pylon, and classic minecraft tekkit/technic/buildcraft/industrialcraft.
 
+See the [items and their recipes](https://def9a2a4.github.io/defCoreLib-docs/index.html?ns=mech), or the [things you can build](https://def9a2a4.github.io/defCoreLib-docs/showcases.html).
+
 <!-- img: rotation network -->
 
 ## How it works
@@ -22,7 +24,8 @@ shafts and gears, branch or turn corners with gears, and gate the flow with clut
 
 ## Transmission
 
-- **Shaft** - carries rotation along its axis.
+<!-- TODO: add links for each item -->
+- [**Shaft**](https://def9a2a4.github.io/defCoreLib-docs/item.html?id=mech%3Ashaft) - carries rotation along its axis.
 - **Gear** - meshes with perpendicular or in-line gears to route power around corners and branch it.
 - **Clutch** - disconnects the line while it receives a redstone signal.
 - **Reverser** - flips spin direction on a redstone signal. Mostly useful for Rotators.
