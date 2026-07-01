@@ -112,10 +112,13 @@ showcases:
       - { id: "rotation:reverser",  facing: north, at: [0, 0, -1] }   # lever beside it → reverses the swing
       - { id: "rotation:rotator",   facing: south, at: [0, 0, 0] }    # hinge, Z axis
     vanilla:
-      - { block: "OAK_PLANKS", at: [0, 1, 0] }   # drawbridge leaf (flood-filled by the hinge)
-      - { block: "OAK_PLANKS", at: [0, 2, 0] }
-      - { block: "OAK_PLANKS", at: [1, 1, 0] }
-      - { block: "OAK_PLANKS", at: [1, 2, 0] }
+      # Drawbridge leaf: a flat deck at floor level extending −x from the hinge (a Z-axis hinge swings a
+      # deck that lies in x up to vertical). Flood-filled from the hinge via [-1,0,0]. The captured pose is
+      # the leaf AFTER one swing (raised). Extends −x to stay clear of the pulse redstone at [1,0,0].
+      - { block: "OAK_PLANKS", at: [-1, 0, 0] }
+      - { block: "OAK_PLANKS", at: [-2, 0, 0] }
+      - { block: "OAK_PLANKS", at: [-1, 0, 1] }
+      - { block: "OAK_PLANKS", at: [-2, 0, 1] }
       # Floor lever, switched on, face-adjacent to the reverser only → powers it (reverses direction).
       - { block: "LEVER", at: [-1, 0, -1], data: "[face=floor,facing=north,powered=true]" }
     activate: { pulse: [1, 0, 0] }   # redstone east of the hinge → rising edge → swing (not near the generator)
@@ -152,11 +155,12 @@ showcases:
       banners mean a bigger windmill and far more power.
     blocks:
       # Wall windmill (spins on Z) feeds a Z shaft directly in front of it, into a drill boring +z.
-      - { id: "rotation:huge_windmill", facing: north, at: [0, 0, 0] }   # wall_s → Z axis
+      - { id: "rotation:huge_windmill", facing: south, at: [0, 0, 0] }   # wall_n → Z axis, blades face +z
       - { id: "rotation:shaft",         facing: north, at: [0, 0, 1] }
       - { id: "rotation:drill",         facing: north, at: [0, 0, 2] }   # head→south → bores +z into stone
     vanilla:
-      - { block: "STONE", at: [0, 0, 3] }   # the block the drill chews
+      - { block: "STONE", at: [0, 0, -1] }   # wall the windmill mounts against (behind it)
+      - { block: "STONE", at: [0, 0, 3] }    # the block the drill chews
     activate: passive
     expect:
       - { type: network_powered, at: [0, 0, 1] }
