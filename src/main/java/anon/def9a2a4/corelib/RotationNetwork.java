@@ -24,7 +24,8 @@ import java.util.logging.Logger;
  * <p>Connection rules:
  * <ul>
  *   <li>Along-axis: every node connects to its 2 neighbors along its axis if they share the same
- *       axis. A powered reverser on the lower endpoint flips the edge's direction.</li>
+ *       axis. A powered reverser flips the edge on its output side (UP for a floor head, its
+ *       facing for a wall head); see the XOR rule in {@code getConnections}.</li>
  *   <li>Gear-to-gear (gear-like nodes only): connects to all 6 adjacent gear-like neighbors
  *       (same-axis gear mesh reverses; bevel reversal is face-dependent via
  *       {@code bevelReverses()}).</li>
@@ -41,7 +42,7 @@ public class RotationNetwork {
     }
 
     record RotationNode(CustomBlockRegistry.LocationKey key, String blockTypeId, Axis axis,
-                        NodeRole role, int powerUnits, boolean gearLike) {}
+                        NodeRole role, int powerUnits, boolean gearLike, int reverserOutSign) {}
 
     record Connection(CustomBlockRegistry.LocationKey neighbor, boolean reverses) {}
 
@@ -93,7 +94,8 @@ public class RotationNetwork {
     public void addNode(Block block, String blockTypeId, Axis axis,
                         NodeRole role, int powerUnits, boolean gearLike) {
         CustomBlockRegistry.LocationKey key = CustomBlockRegistry.LocationKey.of(block);
-        nodes.put(key, new RotationNode(key, blockTypeId, axis, role, powerUnits, gearLike));
+        int reverserOutSign = reverserOutSign(block, blockTypeId, axis);
+        nodes.put(key, new RotationNode(key, blockTypeId, axis, role, powerUnits, gearLike, reverserOutSign));
         // verbose: fires per rotation block on every chunk load — uncomment to trace node registration
         // logger.info("[Rotation] addNode: " + blockTypeId + " axis=" + axis
         //     + " at " + key.x() + "," + key.y() + "," + key.z()
@@ -371,37 +373,44 @@ public class RotationNetwork {
                 }
             }
 
-            // Post-pass: anchor to explicit source directions from PDC
-            List<Map.Entry<CustomBlockRegistry.LocationKey, SpinDirection>> explicitSources = new ArrayList<>();
+            // Post-pass: pin the absolute spin frame to a source so it's deterministic and stable
+            // across a reverser toggle / reload — otherwise the arbitrary CW-seeded BFS root decides
+            // which side "stays", and toggling a reverser can flip the source instead of the target.
+            // EVERY source anchors (desired = its stored PDC direction, else CW); a source with an
+            // explicit stored direction is preferred as the anchor. Conflict/jam detection stays over
+            // stored-direction sources only, so two flexible (unwrenched) sources on opposite sides of
+            // a reverser don't false-jam.
+            List<Map.Entry<CustomBlockRegistry.LocationKey, SpinDirection>> allSources = new ArrayList<>();
+            List<Map.Entry<CustomBlockRegistry.LocationKey, SpinDirection>> storedSources = new ArrayList<>();
             for (CustomBlockRegistry.LocationKey loc : members) {
                 RotationNode node = nodes.get(loc);
-                if (node != null && node.role() == NodeRole.SOURCE) {
-                    SpinDirection stored = readStoredDirection(loc);
-                    if (stored != null) explicitSources.add(Map.entry(loc, stored));
-                }
+                if (node == null || node.role() != NodeRole.SOURCE) continue;
+                SpinDirection stored = readStoredDirection(loc);
+                allSources.add(Map.entry(loc, stored != null ? stored : SpinDirection.CW));
+                if (stored != null) storedSources.add(Map.entry(loc, stored));
             }
             for (CustomBlockRegistry.LocationKey ps : passiveSources) {
                 SpinDirection stored = readStoredDirection(ps);
-                if (stored != null) explicitSources.add(Map.entry(ps, stored));
+                allSources.add(Map.entry(ps, stored != null ? stored : SpinDirection.CW));
+                if (stored != null) storedSources.add(Map.entry(ps, stored));
             }
 
-            if (!explicitSources.isEmpty()) {
-                // Deterministic anchor: lowest LocationKey
-                explicitSources.sort(Comparator
+            if (!allSources.isEmpty()) {
+                // Deterministic anchor: lowest LocationKey, preferring a stored-direction source.
+                Comparator<Map.Entry<CustomBlockRegistry.LocationKey, SpinDirection>> byKey = Comparator
                         .comparing((Map.Entry<CustomBlockRegistry.LocationKey, SpinDirection> e) -> e.getKey().worldId())
                         .thenComparingInt(e -> e.getKey().x())
                         .thenComparingInt(e -> e.getKey().y())
-                        .thenComparingInt(e -> e.getKey().z()));
-
-                var anchor = explicitSources.get(0);
+                        .thenComparingInt(e -> e.getKey().z());
+                var anchor = (storedSources.isEmpty() ? allSources : storedSources)
+                        .stream().min(byKey).orElseThrow();
                 SpinDirection bfsDir = dirMap.getOrDefault(anchor.getKey(), SpinDirection.CW);
                 if (bfsDir != anchor.getValue()) {
                     dirMap.replaceAll((k, v) -> v.reversed());
                 }
 
-                // Check remaining explicit sources for conflicts
-                for (int i = 1; i < explicitSources.size(); i++) {
-                    var entry = explicitSources.get(i);
+                // Jam only when two EXPLICITLY-directed sources disagree after anchoring.
+                for (var entry : storedSources) {
                     SpinDirection computed = dirMap.getOrDefault(entry.getKey(), SpinDirection.CW);
                     if (computed != entry.getValue()) {
                         jammed = true;
@@ -414,7 +423,13 @@ public class RotationNetwork {
             for (CustomBlockRegistry.LocationKey loc : members) {
                 SpinDirection dir = dirMap.getOrDefault(loc, SpinDirection.CW);
                 nodeDirection.put(loc, dir);
-                registry.setAnimationDirection(loc, dir);
+                // A powered reverser's dirMap value groups with its mount/input side (it flips the
+                // output edge). Its rod should instead spin with its OUTPUT side, so flip the DISPLAY
+                // only — nodeDirection (propagation/debug) stays the network's real direction.
+                RotationNode n = nodes.get(loc);
+                SpinDirection animDir =
+                    (n != null && n.reverserOutSign() != 0 && isPoweredReverser(n)) ? dir.reversed() : dir;
+                registry.setAnimationDirection(loc, animDir);
             }
             for (CustomBlockRegistry.LocationKey ps : passiveSources) {
                 SpinDirection dir = dirMap.getOrDefault(ps, SpinDirection.CW);
@@ -537,15 +552,21 @@ public class RotationNetwork {
         CustomBlockRegistry.LocationKey k = node.key();
 
         // Along-axis: 2 neighbors (checked first — load-bearing for reverses classification).
-        // An along-axis edge reverses iff its lower (−axis) endpoint is a powered reverser.
-        // This yields exactly one direction flip across a reverser (so its two along-axis
-        // neighbours spin oppositely) and is symmetric: both endpoints compute the same flag
-        // because the lower endpoint of the shared edge is the same block from either side.
-        //   +axis edge: this node is the lower endpoint.
-        //   −axis edge: the neighbour is the lower endpoint.
-        checkAxisNeighbor(axisNeighbor(k, node.axis(), +1), node.axis(), isPoweredReverser(node), result);
-        CustomBlockRegistry.LocationKey negKey = axisNeighbor(k, node.axis(), -1);
-        checkAxisNeighbor(negKey, node.axis(), isPoweredReverser(nodes.get(negKey)), result);
+        // An along-axis edge reverses iff EXACTLY ONE of its endpoints is a powered reverser whose
+        // output face points along that edge, outward (UP for a floor head, its facing for a wall
+        // head — see reverserOutSign). XOR keeps both half-edges' flags identical from either side
+        // (symmetry the direction-contradiction jam relies on) and makes two reversers pointed at
+        // each other cancel. Reduces to "the one reverser facing this edge" for an ordinary shaft,
+        // and correctly drives the reverser's flip onto the shaft side even when its mount side is
+        // a dead wall (previously a −axis-facing wall reverser was inert).
+        Axis axis = node.axis();
+        int selfSign = poweredReverserSign(node, axis);
+        CustomBlockRegistry.LocationKey posKey = axisNeighbor(k, axis, +1);
+        CustomBlockRegistry.LocationKey negKey = axisNeighbor(k, axis, -1);
+        boolean posReverses = (selfSign > 0) ^ (poweredReverserSign(nodes.get(posKey), axis) < 0);
+        boolean negReverses = (selfSign < 0) ^ (poweredReverserSign(nodes.get(negKey), axis) > 0);
+        checkAxisNeighbor(posKey, axis, posReverses, result);
+        checkAxisNeighbor(negKey, axis, negReverses, result);
 
         // Gear-to-gear: connects to ANY adjacent gear (all 6 faces, any axis)
         if (node.gearLike()) {
@@ -579,6 +600,26 @@ public class RotationNetwork {
         if (node == null || !REVERSER_ID.equals(node.blockTypeId())) return false;
         Block b = toBlock(node.key());
         return b != null && b.getBlockPower() > 0;
+    }
+
+    /** Output-face sign (+1/−1) of a reverser along {@code axis}: UP for a floor head, its facing
+     *  for a wall head. 0 for non-reversers. Captured once at {@link #addNode} so the hot path
+     *  never reads live facing — facing only changes via rotation/glue, which re-add the node
+     *  (and the reverser cancels pistons), whereas redstone power changes with no re-add. */
+    private static int reverserOutSign(Block block, String blockTypeId, Axis axis) {
+        if (!REVERSER_ID.equals(blockTypeId)) return 0;
+        if (block.getBlockData() instanceof org.bukkit.block.data.Directional dir) {
+            BlockFace f = dir.getFacing();                 // wall head → points out of the wall
+            return axisComponent(axis, f.getModX(), f.getModY(), f.getModZ());
+        }
+        return axis == Axis.Y ? 1 : 0;                     // floor head → UP
+    }
+
+    /** Signed output of {@code node} along {@code axis} when it's a live-powered reverser on that
+     *  axis, else 0. Drives the XOR edge-reversal rule in {@link #getConnections}. */
+    private int poweredReverserSign(@Nullable RotationNode node, Axis axis) {
+        if (node == null || node.reverserOutSign() == 0 || node.axis() != axis) return 0;
+        return isPoweredReverser(node) ? node.reverserOutSign() : 0;
     }
 
     private boolean isLocked(RotationNode node) {

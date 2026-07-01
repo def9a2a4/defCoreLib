@@ -46,10 +46,11 @@ final class RotationBlocks {
         // Overlay callbacks onto YAML-loaded blocks
         overlayStandard(registry, network, "rotation:shaft",   RotationNetwork.NodeRole.TRANSMITTER, 0, false);
         overlayStandard(registry, network, "rotation:gear",    RotationNetwork.NodeRole.TRANSMITTER, 0, true);
-        // Reverser: a plain along-axis transmitter; reversal lives entirely in
-        // RotationNetwork.getConnections (keyed off the "rotation:reverser" id + live redstone),
-        // so the standard overlay (recalc on redstone change via reactsToNeighbors) is all it needs.
-        overlayStandard(registry, network, "rotation:reverser", RotationNetwork.NodeRole.TRANSMITTER, 0, false);
+        // Reverser: a plain along-axis transmitter; reversal lives in RotationNetwork.getConnections
+        // (keyed off the "rotation:reverser" id + live redstone + the output side captured at
+        // addNode). cancelPistons so a shove can't relocate it out from under that cached facing
+        // (its flip side is fixed at placement, not re-read live).
+        overlayStandard(registry, network, "rotation:reverser", RotationNetwork.NodeRole.TRANSMITTER, 0, false, true);
         overlayClutch(registry, network);
         overlayWaterWheel(registry, network, config);
         overlayEngine(registry, network, fuelManager, config);
@@ -80,6 +81,12 @@ final class RotationBlocks {
     private static void overlayStandard(CustomBlockRegistry registry, RotationNetwork network,
                                         String blockId, RotationNetwork.NodeRole role,
                                         int power, boolean gearLike) {
+        overlayStandard(registry, network, blockId, role, power, gearLike, false);
+    }
+
+    private static void overlayStandard(CustomBlockRegistry registry, RotationNetwork network,
+                                        String blockId, RotationNetwork.NodeRole role,
+                                        int power, boolean gearLike, boolean cancelPistons) {
         CustomHeadBlock block = registry.getType(blockId);
         if (block == null) {
             registry.getPlugin().getLogger().warning("RotationBlocks: block '" + blockId + "' not found — skipping overlay");
@@ -87,6 +94,7 @@ final class RotationBlocks {
         }
         registry.register(block.toBuilder()
             .drillable(false)
+            .cancelPistons(cancelPistons)
             .reactsToNeighbors(true)
             .onNeighborChange((b, face) -> recalcIfKnown(b, network))
             .onInteract((b, event) -> {
