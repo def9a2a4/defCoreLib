@@ -5,6 +5,9 @@
 - refine allowed blocks in doors/rotators
 - mechanisms: storage blocks not persistent, no reload persistence, etc. will be mostly handled by blockships integration
 - texture fixes for dril/screw, gears, shafts, others
+- migrate windmill (banner) capture onto the `IngredientCapture` system — currently a separate
+  bespoke path (`captureBannerIngredients` / `BLADE_KEYS` / `displayItemResolver` + tier-swap
+  retarget). Water-wheel paddles already use `IngredientCapture`; unify the two.
 - recipe book categories: most rotation stuff goes in redstone, vertical slabs go in building blocks
 - chains -- long-distance connect two "chain wheels"
 - migrate plugins:
