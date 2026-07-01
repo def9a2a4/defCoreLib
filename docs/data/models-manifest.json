@@ -24,6 +24,7 @@
   "dispenser": true,
   "end_stone_brick_slab": true,
   "exposed_cut_copper_slab": true,
+  "furnace_minecart": false,
   "golden_axe": false,
   "granite_slab": true,
   "jungle_slab": true,

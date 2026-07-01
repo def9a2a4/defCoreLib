@@ -10,6 +10,9 @@ import { esc } from './render.js';
 const root = document.getElementById('showcases');
 const errEl = document.getElementById('error');
 
+// Showcases hidden from the page for now (still captured; remove an id to re-enable).
+const HIDDEN = new Set(['water_wheel_fan']);
+
 function fail(msg) {
   if (errEl) errEl.textContent = msg;
   console.error(msg);
@@ -27,7 +30,7 @@ async function main() {
     return;
   }
 
-  const showcases = data.showcases || [];
+  const showcases = (data.showcases || []).filter((sc) => !HIDDEN.has(sc.id));
   if (!showcases.length) {
     fail('No showcases found in showcases.json.');
     return;
