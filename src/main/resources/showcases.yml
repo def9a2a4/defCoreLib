@@ -44,11 +44,12 @@ showcases:
       # Millstone is Y-axis (powered from above), so the whole chain is a vertical Y column.
       - { id: "rotation:engine",     facing: down,  at: [0, 2, 0] }
       - { id: "rotation:shaft",      facing: down,  at: [0, 1, 0] }
-      # `facing` is the clicked face → the head points the OPPOSITE way, so `south` backs the
-      # millstone onto the STONE at +z below. (Axis is hardcoded Y regardless of facing.)
+      # `facing` is the clicked face → the head points the OPPOSITE way, so `south` mounts the
+      # millstone onto the +z block below. (Axis is hardcoded Y regardless of facing.)
       - { id: "rotation:millstone", facing: south, at: [0, 0, 0] }
     vanilla:
-      - { block: "STONE", at: [0, 0, 1] }   # wall the millstone mounts against (south support)
+      # The millstone reads items from the container on its mounting face — a barrel here.
+      - { block: "BARREL", at: [0, 0, 1] }
     activate: { fuel: [0, 2, 0] }
     expect:
       - { type: network_powered, at: [0, 1, 0] }
@@ -120,3 +121,86 @@ showcases:
     activate: { pulse: [1, 0, 0] }   # redstone east of the hinge → rising edge → swing (not near the generator)
     expect:
       - { type: mechanism_swung, at: [0, 0, 0] }
+
+  # ── Gears: power turning a 90° corner ───────────────────────────────────
+  - id: gear_corner
+    name: "Gearbox Corner"
+    blurb: "A generator's vertical power meshes through gears to turn a 90° corner and drive a fan sideways."
+    description: >
+      A shaft only carries rotation straight along its axis; gears turn the corner. Here the passive
+      generator spins a vertical (Y) gear, which meshes with a second gear mounted at 90° (X) beside it —
+      a bevel pair. The horizontal gear then drives a fan on its own axis, so power that entered going up
+      leaves going sideways.
+    blocks:
+      - { id: "rotation:generator", facing: down, at: [0, 0, 0] }   # Y source
+      - { id: "rotation:gear",      facing: down, at: [0, 1, 0] }   # Y gear, driven from below
+      - { id: "rotation:gear",      facing: west, at: [1, 1, 0] }   # X gear, meshes perpendicular
+      - { id: "rotation:fan",       facing: west, at: [2, 1, 0] }   # X consumer
+    activate: passive
+    expect:
+      - { type: network_powered, at: [1, 1, 0] }
+      - { type: spinning, at: [2, 1, 0] }
+
+  # ── Windmill: passive wind source (wall-mounted → horizontal power) ──────
+  - id: windmill_drill
+    name: "Windmill → Drill"
+    blurb: "A wall-mounted huge windmill spins on the wind and bores a drill straight through solid stone."
+    description: >
+      Windmills are passive sources — they never need fuel or redstone, they just turn. Mounted on a wall
+      the blades spin in a vertical plane, and (unlike a floor windmill) they deliver power horizontally
+      along that spin axis. This one drives a shaft into a drill that bores forward through stone. Bigger
+      banners mean a bigger windmill and far more power.
+    blocks:
+      # Wall windmill (spins on Z) feeds a Z shaft directly in front of it, into a drill boring +z.
+      - { id: "rotation:huge_windmill", facing: north, at: [0, 0, 0] }   # wall_s → Z axis
+      - { id: "rotation:shaft",         facing: north, at: [0, 0, 1] }
+      - { id: "rotation:drill",         facing: north, at: [0, 0, 2] }   # head→south → bores +z into stone
+    vanilla:
+      - { block: "STONE", at: [0, 0, 3] }   # the block the drill chews
+    activate: passive
+    expect:
+      - { type: network_powered, at: [0, 0, 1] }
+      - { type: spinning, at: [0, 0, 2] }
+
+  # ── Press: second processing machine (piston bobs under power) ──────────
+  - id: generator_press
+    name: "Generator → Press"
+    blurb: "A generator drives a vertical shaft into a press whose piston bobs to squeeze a barrel's contents."
+    description: >
+      The press is a Y-axis machine like the millstone: it takes power from directly above and extracts
+      juices, oils and dyes from items in the barrel it mounts on. A passive generator keeps its piston
+      bobbing without any fuel. (This demo shows the motion; a running press needs items in the barrel to
+      actually produce anything.)
+    blocks:
+      - { id: "rotation:generator", facing: down,  at: [0, 2, 0] }   # Y source
+      - { id: "rotation:shaft",     facing: down,  at: [0, 1, 0] }
+      - { id: "rotation:press",     facing: south, at: [0, 0, 0] }   # Y machine, mounts on +z block
+    vanilla:
+      - { block: "BARREL", at: [0, 0, 1] }   # container on the press's mounting face
+    activate: passive
+    expect:
+      - { type: network_powered, at: [0, 1, 0] }
+      - { type: spinning, at: [0, 0, 0] }
+
+  # ── Water wheel: water-driven source (needs a flowing current) ──────────
+  - id: water_wheel_fan
+    name: "Water Wheel → Fan"
+    blurb: "Falling water turns a paddle wheel, which spins a shaft into a fan that blows a gust of air."
+    description: >
+      A water wheel is a passive source powered by moving water — not a still pool, but a real current
+      pushing its paddles. A stream falls past its rim and sets it turning, and that rotation runs down a
+      shaft into a fan. No fuel, no redstone, just flow.
+    blocks:
+      - { id: "rotation:water_wheel", facing: north, at: [0, 0, 0] }   # Z axle; spins on flow at its rim
+      - { id: "rotation:shaft",       facing: north, at: [0, 0, 1] }
+      - { id: "rotation:fan",         facing: north, at: [0, 0, 2] }
+    vanilla:
+      # Source falls into the wheel's EAST rim [1,0,0] (left air) → a downward current spins the wheel.
+      # A stone lip channels it straight down rather than spreading wide. `physics: true` lets it flow.
+      - { block: "WATER", at: [1, 1, 0], physics: true }
+      - { block: "STONE", at: [2, 1, 0] }
+      - { block: "STONE", at: [2, 0, 0] }
+    activate: passive
+    expect:
+      - { type: spinning, at: [0, 0, 0] }
+      - { type: network_powered, at: [0, 0, 1] }

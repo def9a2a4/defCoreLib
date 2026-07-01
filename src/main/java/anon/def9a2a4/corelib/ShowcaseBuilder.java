@@ -37,16 +37,17 @@ final class ShowcaseBuilder {
         // Vanilla support first, so it can serve as redstone/attachment for the custom blocks.
         for (ShowcaseSpec.VanillaSpec v : spec.vanilla) {
             Block b = world.getBlockAt(ox + v.at()[0], oy + v.at()[1], oz + v.at()[2]);
+            boolean physics = v.physics();   // e.g. a WATER source that must flow
             if (v.data() != null) {
                 try {
-                    b.setBlockData(Bukkit.createBlockData(v.material(), v.data()), false);
+                    b.setBlockData(Bukkit.createBlockData(v.material(), v.data()), physics);
                     continue;
                 } catch (IllegalArgumentException ex) {
                     plugin.getLogger().warning("showcase: bad block-data '" + v.data() + "' for "
                             + v.material() + " — placing plain (" + ex.getMessage() + ")");
                 }
             }
-            b.setType(v.material(), false);
+            b.setType(v.material(), physics);
         }
 
         // Custom blocks: place + markBlock now; defer applyConfig + callbacks to next tick (batched),

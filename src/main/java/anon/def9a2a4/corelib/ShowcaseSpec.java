@@ -25,8 +25,9 @@ final class ShowcaseSpec {
     record BlockSpec(String id, BlockFace facing, int[] at, @Nullable String state) {}
 
     /** One vanilla support block (redstone, planks, container, …) at an offset. {@code data} is an
-     *  optional Bukkit block-data string (e.g. {@code "[face=floor,powered=true]"} for a lit lever). */
-    record VanillaSpec(Material material, int[] at, @Nullable String data) {}
+     *  optional Bukkit block-data string (e.g. {@code "[face=floor,powered=true]"} for a lit lever).
+     *  {@code physics} places with block-updates on (e.g. so a {@code WATER} source actually flows). */
+    record VanillaSpec(Material material, int[] at, @Nullable String data, boolean physics) {}
 
     /** How the runner powers the machine: {@code passive} (no-op / recalc), {@code pulse} (redstone at
      *  {@code at}), or {@code fuel} (insert fuel into the block at {@code at}). */
@@ -89,7 +90,8 @@ final class ShowcaseSpec {
                         log.warning("showcases.yml [" + id + "]: vanilla entry needs valid block + at, skipped");
                         continue;
                     }
-                    vanilla.add(new VanillaSpec(mat, at, str(m.get("data"))));
+                    vanilla.add(new VanillaSpec(mat, at, str(m.get("data")),
+                            Boolean.TRUE.equals(m.get("physics"))));
                 }
                 Activate activate = parseActivate(entry.get("activate"));
                 List<Expect> expect = new ArrayList<>();
