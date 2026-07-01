@@ -112,13 +112,13 @@ showcases:
       - { id: "rotation:reverser",  facing: north, at: [0, 0, -1] }   # lever beside it → reverses the swing
       - { id: "rotation:rotator",   facing: south, at: [0, 0, 0] }    # hinge, Z axis
     vanilla:
-      # Drawbridge leaf: a flat deck at floor level extending −x from the hinge (a Z-axis hinge swings a
-      # deck that lies in x up to vertical). Flood-filled from the hinge via [-1,0,0]. The captured pose is
-      # the leaf AFTER one swing (raised). Extends −x to stay clear of the pulse redstone at [1,0,0].
-      - { block: "OAK_PLANKS", at: [-1, 0, 0] }
-      - { block: "OAK_PLANKS", at: [-2, 0, 0] }
-      - { block: "OAK_PLANKS", at: [-1, 0, 1] }
-      - { block: "OAK_PLANKS", at: [-2, 0, 1] }
+      # Drawbridge leaf: a 2×2 vertical panel standing up BEHIND the hinge (+z), in the ZY plane at x=0.
+      # Seated at floor so the bottom row [0,0,1] is face-adjacent to the hinge — flood-fill reaches it and
+      # the swing still fires. (Capture emits these rest positions statically; no swing is rendered.)
+      - { block: "OAK_PLANKS", at: [0, 0, 1] }
+      - { block: "OAK_PLANKS", at: [0, 1, 1] }
+      - { block: "OAK_PLANKS", at: [0, 0, 2] }
+      - { block: "OAK_PLANKS", at: [0, 1, 2] }
       # Floor lever, switched on, face-adjacent to the reverser only → powers it (reverses direction).
       - { block: "LEVER", at: [-1, 0, -1], data: "[face=floor,facing=north,powered=true]" }
     activate: { pulse: [1, 0, 0] }   # redstone east of the hinge → rising edge → swing (not near the generator)
@@ -159,8 +159,7 @@ showcases:
       - { id: "rotation:shaft",         facing: north, at: [0, 0, 1] }
       - { id: "rotation:drill",         facing: north, at: [0, 0, 2] }   # head→south → bores +z into stone
     vanilla:
-      - { block: "STONE", at: [0, 0, -1] }   # wall the windmill mounts against (behind it)
-      - { block: "STONE", at: [0, 0, 3] }    # the block the drill chews
+      - { block: "STONE", at: [0, 0, 3] }   # the block the drill chews
     activate: passive
     expect:
       - { type: network_powered, at: [0, 0, 1] }
