@@ -262,8 +262,36 @@ final class DisplayExporter implements Listener {
                         "ccw", true, true, vi++, log));
             }
         }
+        if (keepAlive) placeSample(type, world, quad);
         quad.row++;
         return variants;
+    }
+
+    /** Keep-alive only: a single properly-marked block per row, one step before the first
+     *  variant, so creative pick-block yields the real item. Unlike the preview variants it
+     *  IS markBlock'd — but it sits alone, so it forms its own isolated rotation-network node
+     *  and never pulls the (unmarked) display variants in. Not added to the exported variants. */
+    private void placeSample(CustomHeadBlock type, World world, Quad quad) {
+        BlockFace placedOn = placedOnFaces(type).get(0);          // type's primary orientation
+        String state = type.defaultState();
+        if (type.placementStateMap() != null) {
+            String mapped = type.placementStateMap().get(placedOn);
+            if (mapped != null) state = mapped;
+        }
+        boolean floor = placedOn == BlockFace.DOWN
+                || (state != null && type.playerHeadStates().contains(state));
+        BlockFace headFacing = floor ? null : placedOn.getOppositeFace();
+
+        int x = quad.sx * (AXIS_GAP - 2);                         // sign-safe: AXIS_GAP(8) > 2
+        int z = quad.sz * (AXIS_GAP + quad.row * quad.spacing);   // same row as this type
+        Location loc = new Location(world, x, GRID_Y, z);
+        loc.getChunk().load(true);
+        loc.getChunk().setForceLoaded(true);
+        Block block = loc.getBlock();
+
+        placeHead(block, floor, headFacing);
+        registry.markBlock(block, type, state);   // REAL identity → existing onPickBlock resolves it
+        registry.applyConfig(block, type, state, 0);
     }
 
     private Map<String, Object> buildVariant(CustomHeadBlock type, World world, Quad quad, BlockFace placedOn,
