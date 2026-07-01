@@ -43,6 +43,9 @@ final class MechanismMinecartManager implements Listener {
     /** Ride offset for Minecart passengers. Needs empirical tuning. */
     private static final float MINECART_RIDE_OFFSET = 0f;
 
+    /** Vanilla minecart max speed (blocks/tick), restored when a cart isn't frozen by glue. */
+    private static final double DEFAULT_MINECART_MAX_SPEED = 0.4d;
+
     private final JavaPlugin plugin;
     private final CustomBlockRegistry registry;
     private final MechanismRegistry mechRegistry;
@@ -212,6 +215,13 @@ final class MechanismMinecartManager implements Listener {
                 it.remove();
                 continue;
             }
+
+            // Freeze a glued, unassembled cart so its glue can't drift: with max speed 0 the physics step
+            // clamps any velocity to 0, so the cart never crosses a cell (and originBlock() stays put).
+            // Restore vanilla speed once assembled (it must ride) or unglued.
+            boolean frozen = state.mechanism == null
+                && glueManager.hasGlue(new EntityAnchor(state.minecart, () -> true));
+            state.minecart.setMaxSpeed(frozen ? 0.0d : DEFAULT_MINECART_MAX_SPEED);
 
             boolean onPowered = isOnPoweredActivatorRail(state.minecart);
 

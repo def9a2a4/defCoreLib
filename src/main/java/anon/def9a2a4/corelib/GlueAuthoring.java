@@ -144,8 +144,9 @@ final class GlueAuthoring implements Listener {
         if (!GlueItem.isGlueItem(player.getInventory().getItemInMainHand())) return;
         if (!(event.getRightClicked() instanceof Minecart cart)) return;
         if (minecartManager == null || !minecartManager.isMechanismMinecart(cart)) return;
-        event.setCancelled(true);
-        toggleSession(player, cart);
+        event.setCancelled(true); // preempt the manager's HIGH, ignoreCancelled=true assemble toggle
+        if (player.isSneaking()) unglueAllAt(player, cart);
+        else toggleSession(player, cart);
     }
 
     /** Suppress block breaking while a player is actively authoring (covers creative instant-break). */
@@ -225,6 +226,15 @@ final class GlueAuthoring implements Listener {
         GlueSession s = sessions.get(player.getUniqueId());
         if (s != null && s.anchor.identityKey().equals(anchor.identityKey())) s.cornerA = null;
         actionBar(player, "Glue: cleared", NamedTextColor.YELLOW);
+    }
+
+    /** Clear a mechanism minecart's glue — the manager's tick() lifts the freeze once it's empty. */
+    private void unglueAllAt(Player player, Minecart cart) {
+        Anchor anchor = new EntityAnchor(cart, () -> true);
+        glue.unglueAll(anchor);
+        GlueSession s = sessions.get(player.getUniqueId());
+        if (s != null && s.anchor.identityKey().equals(anchor.identityKey())) s.cornerA = null;
+        actionBar(player, "Glue cleared — minecart free to move", NamedTextColor.YELLOW);
     }
 
     private void handleCorner(Player player, GlueSession s, Block clicked) {

@@ -189,7 +189,10 @@ final class ShowcaseRunner implements Listener {
                 Map<String, Object> display = new LinkedHashMap<>();
                 display.put("kind", "block");
                 display.put("ref", vs.material().getKey().getKey());   // e.g. "oak_planks"
-                display.put("position", new double[]{0, 0, 0});
+                // A "block" display is corner-origin ([0,1]³, center +0.5), but the capture frame's origin
+                // is the cell CENTER (positions are entity − (corner+0.5)). Shift −0.5 so the cube centers
+                // on the cell, matching the custom blocks — exactly what a real corner BlockDisplay records.
+                display.put("position", new double[]{-0.5, -0.5, -0.5});
                 display.put("matrix", new float[]{1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1});
                 display.put("animation", null);
 
