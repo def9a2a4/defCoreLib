@@ -416,7 +416,7 @@ def collect_block_models(items: list[dict]) -> set[str]:
 # Representative item vendored for a recipe #tag, so the docs can show an icon (mirrors the
 # TAG_PLACEHOLDER map in docs/util/render.js).
 TAG_PLACEHOLDER_MATERIAL = {"banners": "WHITE_BANNER", "banner": "WHITE_BANNER", "wool": "WHITE_WOOL",
-                            "planks": "OAK_PLANKS"}
+                            "planks": "OAK_PLANKS", "wooden_slabs": "OAK_SLAB"}
 
 # A block's exported BannerTier (from DisplayExporter) says which custom banner actually crafts it:
 # windmill recipes use a generic `{tag: banners}` in-game (Bukkit can't express a custom item), but

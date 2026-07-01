@@ -399,8 +399,8 @@ blocks:
     lore:
       - "&7Produces 2 Power when adjacent to water"
       - "&7Place on a wall"
-    # Copper water wheel (head + item).
-    texture: "@water_wheel_copper"
+    # Placed hub head = windmill hub (copber2-fwd, same as bearing); item = copper wheel.
+    texture: "@windmill_hub_fwd"
     item_texture: "@water_wheel_copper"
     drops: self
     placement:
@@ -433,22 +433,22 @@ blocks:
           - texture: "@rod_up"
             tag: rod
             transform: { translation: [-0.5, 0, 0], scale: [0.66, 2.02, 0.66], left_rotation: [90, 0, 0, 1] }
-          - { material: OAK_PLANKS, tag: paddle_0, transform: { translation: [0, 0.4, 0],         scale: [0.5, 0.75, 0.0625], left_rotation: [0, 1, 0, 0] },    wall_offset: 0.25 }
-          - { material: OAK_PLANKS, tag: paddle_1, transform: { translation: [0, 0.283, 0.283],   scale: [0.5, 0.75, 0.0625], left_rotation: [45, 1, 0, 0] },   wall_offset: 0.25 }
-          - { material: OAK_PLANKS, tag: paddle_2, transform: { translation: [0, 0, 0.4],         scale: [0.5, 0.75, 0.0625], left_rotation: [90, 1, 0, 0] },   wall_offset: 0.25 }
-          - { material: OAK_PLANKS, tag: paddle_3, transform: { translation: [0, -0.283, 0.283],  scale: [0.5, 0.75, 0.0625], left_rotation: [135, 1, 0, 0] },  wall_offset: 0.25 }
-          - { material: OAK_PLANKS, tag: paddle_4, transform: { translation: [0, -0.4, 0],        scale: [0.5, 0.75, 0.0625], left_rotation: [180, 1, 0, 0] },  wall_offset: 0.25 }
-          - { material: OAK_PLANKS, tag: paddle_5, transform: { translation: [0, -0.283, -0.283], scale: [0.5, 0.75, 0.0625], left_rotation: [225, 1, 0, 0] },  wall_offset: 0.25 }
-          - { material: OAK_PLANKS, tag: paddle_6, transform: { translation: [0, 0, -0.4],        scale: [0.5, 0.75, 0.0625], left_rotation: [270, 1, 0, 0] },  wall_offset: 0.25 }
-          - { material: OAK_PLANKS, tag: paddle_7, transform: { translation: [0, 0.283, -0.283],  scale: [0.5, 0.75, 0.0625], left_rotation: [315, 1, 0, 0] },  wall_offset: 0.25 }
+          - { material: OAK_PLANKS, tag: paddle_0, transform: { translation: [0, 0.4, 0],         scale: [0.49, 1, 0.0625], left_rotation: [0, 1, 0, 0] },    wall_offset: 0.25 }
+          - { material: OAK_PLANKS, tag: paddle_1, transform: { translation: [0, 0.283, 0.283],   scale: [0.49, 1, 0.0625], left_rotation: [45, 1, 0, 0] },   wall_offset: 0.25 }
+          - { material: OAK_PLANKS, tag: paddle_2, transform: { translation: [0, 0, 0.4],         scale: [0.49, 1, 0.0625], left_rotation: [90, 1, 0, 0] },   wall_offset: 0.25 }
+          - { material: OAK_PLANKS, tag: paddle_3, transform: { translation: [0, -0.283, 0.283],  scale: [0.49, 1, 0.0625], left_rotation: [135, 1, 0, 0] },  wall_offset: 0.25 }
+          - { material: OAK_PLANKS, tag: paddle_4, transform: { translation: [0, -0.4, 0],        scale: [0.49, 1, 0.0625], left_rotation: [180, 1, 0, 0] },  wall_offset: 0.25 }
+          - { material: OAK_PLANKS, tag: paddle_5, transform: { translation: [0, -0.283, -0.283], scale: [0.49, 1, 0.0625], left_rotation: [225, 1, 0, 0] },  wall_offset: 0.25 }
+          - { material: OAK_PLANKS, tag: paddle_6, transform: { translation: [0, 0, -0.4],        scale: [0.49, 1, 0.0625], left_rotation: [270, 1, 0, 0] },  wall_offset: 0.25 }
+          - { material: OAK_PLANKS, tag: paddle_7, transform: { translation: [0, 0.283, -0.283],  scale: [0.49, 1, 0.0625], left_rotation: [315, 1, 0, 0] },  wall_offset: 0.25 }
       spinning_x: { copy_from: idle_x, animation: { type: rotate, axis: [1, 0, 0], speed: 3.0 } }
     recipes:
       craft:
         shaped:
-          # Bearing axle in a + of planks (the paddle wheel).
-          - pattern: [" W ", "WBW", " W "]
+          # Bearing axle ringed by 8 wooden plank slabs (any wood) — the paddle wheel.
+          - pattern: ["SSS", "SBS", "SSS"]
             key:
-              W: { tag: planks }
+              S: { tag: wooden_slabs }
               B: { block: "rotation:bearing" }
 
   # ─── Engine ─────────────────────────────────────────────────────────────
@@ -519,13 +519,13 @@ blocks:
     recipes:
       craft:
         shaped:
-          # Blast furnace core + bearing, pistons top & bottom, copper elsewhere.
-          - pattern: ["CPC", "CFB", "CPC"]
+          # Blast furnace core flanked by pistons, bearing on top, copper base & corners.
+          - pattern: ["CBC", "PFP", "CCC"]
             key:
               C: { material: COPPER_INGOT }
+              B: { block: "rotation:bearing" }
               P: { material: PISTON }
               F: { material: BLAST_FURNACE }
-              B: { block: "rotation:bearing" }
 
   # ─── Redstone Generator ────────────────────────────────────────────────
   # Source: 1 Power. Always on unless receiving redstone power. Expensive to craft.
@@ -595,15 +595,15 @@ blocks:
     recipes:
       craft:
         shaped:
-          # Like the engine (blast furnace core + bearing, pistons top & bottom) but with
-          # redstone blocks on the right column — always-on unless redstone-powered.
-          - pattern: ["CPE", "CFB", "CPE"]
+          # Like the engine, but redstone blocks in the top corners in place of copper —
+          # always-on unless redstone-powered.
+          - pattern: ["EBE", "PFP", "CCC"]
             key:
-              C: { material: COPPER_INGOT }
-              P: { material: PISTON }
               E: { material: REDSTONE_BLOCK }
-              F: { material: BLAST_FURNACE }
               B: { block: "rotation:bearing" }
+              P: { material: PISTON }
+              F: { material: BLAST_FURNACE }
+              C: { material: COPPER_INGOT }
 
   # ─── Millstone ──────────────────────────────────────────────────────────
   # Consumer: 1 Power. WALL only — mounts on a block and pulls from it if it's a
