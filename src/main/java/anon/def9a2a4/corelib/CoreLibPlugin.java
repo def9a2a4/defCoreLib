@@ -603,36 +603,7 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         event.setCancelled(true);
         Player player = event.getPlayer();
         ItemStack customItem = enrichDrop(block, type, type.createItem(1));
-        int targetSlot = event.getTargetSlot();
-
-        // Don't overwrite existing items — find an empty hotbar slot or swap safely
-        ItemStack existing = player.getInventory().getItem(targetSlot);
-        if (existing != null && existing.getType() != Material.AIR) {
-            // Check if player already has this item in hotbar
-            for (int i = 0; i < 9; i++) {
-                ItemStack hotbar = player.getInventory().getItem(i);
-                if (hotbar != null && hotbar.isSimilar(customItem)) {
-                    player.getInventory().setHeldItemSlot(i);
-                    return;
-                }
-            }
-            // Find empty hotbar slot
-            int emptySlot = -1;
-            for (int i = 0; i < 9; i++) {
-                ItemStack hotbar = player.getInventory().getItem(i);
-                if (hotbar == null || hotbar.getType() == Material.AIR) {
-                    emptySlot = i;
-                    break;
-                }
-            }
-            if (emptySlot != -1) {
-                targetSlot = emptySlot;
-            }
-            // If no empty slot in creative, overwrite is acceptable (matches vanilla behavior)
-        }
-
-        player.getInventory().setItem(targetSlot, customItem);
-        player.getInventory().setHeldItemSlot(targetSlot);
+        InventoryUtil.pickInto(player, customItem, event.getTargetSlot());
     }
 
     // ──────────────────────────────────────────────────────────────────────

@@ -209,6 +209,7 @@ None of this is implemented yet (verified).*
   noted:
   - visible name `"Ship Minecart"` → `"Mechanism Minecart"` (`:81`)
   - custom-block id `demo:minecart_ship` → `demo:mechanism_minecart` (`:80/:199/:293`)
+    *(later rehomed to `rotation:mechanism_minecart` — see minecarts-v2.md)*
   - entity tag `corelib:minecart_ship` → `corelib:mechanism_minecart` (`:106/:184`)
   - item PDC `NamespacedKey(…,"minecart_ship")` (`:75`)
   - mechanism **type** string `demo:minecart_ship` (`:261`)

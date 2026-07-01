@@ -1113,3 +1113,26 @@ blocks:
               R: { material: REDSTONE }
               B: { tag: banners }
               Y: { block: "rotation:bearing" }
+
+  # ─── Mechanism Minecart ──────────────────────────────────────────────
+  # Item-only (placeable: false): right-clicking a rail spawns a minecart entity.
+  # Spawn/tick/assemble/destroy logic lives in MechanismMinecartManager (Java).
+  mechanism_minecart:
+    name: "&6Mechanism Minecart"
+    lore:
+      - "&7Right-click a rail to spawn a cart."
+      - "&7Build blocks above it, then power an"
+      - "&7activator rail to assemble & ride them."
+    item_material: FURNACE_MINECART
+    item_glint: true
+    placeable: false
+    recipes:
+      craft:
+        shaped:
+          - pattern: ["IPI", "ROR", " M "]
+            key:
+              I: { material: IRON_INGOT }
+              P: { material: STICKY_PISTON }
+              R: { material: REDSTONE }
+              O: { block: "rotation:rotator" }
+              M: { material: MINECART }

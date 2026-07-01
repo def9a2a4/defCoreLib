@@ -46,6 +46,9 @@ final class MechanismMinecartManager implements Listener {
     /** Vanilla minecart max speed (blocks/tick), restored when a cart isn't frozen by glue. */
     private static final double DEFAULT_MINECART_MAX_SPEED = 0.4d;
 
+    /** Registry id of the mechanism-minecart custom item (declared in rotation-blocks.yml). */
+    private static final String MECH_MINECART_ID = "rotation:mechanism_minecart";
+
     private final JavaPlugin plugin;
     private final CustomBlockRegistry registry;
     private final MechanismRegistry mechRegistry;
@@ -79,11 +82,11 @@ final class MechanismMinecartManager implements Listener {
     }
 
     void register() {
-        // The item (item-only, placeable: false) is declared in demo-blocks.yml; its identity is the
+        // The item (item-only, placeable: false) is declared in rotation-blocks.yml; its identity is the
         // registry block_type PDC. All spawn/tick/assemble/destroy logic lives below — just verify it exists.
-        if (registry.getType("demo:mechanism_minecart") == null) {
-            plugin.getLogger().warning("MechanismMinecartManager: 'demo:mechanism_minecart' not found in "
-                + "registry (check demo-blocks.yml) — minecart item will not be obtainable");
+        if (registry.getType(MECH_MINECART_ID) == null) {
+            plugin.getLogger().warning("MechanismMinecartManager: '" + MECH_MINECART_ID + "' not found in "
+                + "registry (check rotation-blocks.yml) — minecart item will not be obtainable");
         }
 
         // Load allowed materials from config
@@ -191,15 +194,17 @@ final class MechanismMinecartManager implements Listener {
 
         tracked.put(minecart.getUniqueId(), new MinecartState(minecart));
 
-        // Consume one item
-        item.setAmount(item.getAmount() - 1);
+        // Consume one item (not in creative — mirrors BannerManager.consumeItem)
+        if (event.getPlayer().getGameMode() != org.bukkit.GameMode.CREATIVE) {
+            item.setAmount(item.getAmount() - 1);
+        }
     }
 
     private boolean isMechanismMinecartItem(ItemStack stack) {
         if (stack == null || !stack.hasItemMeta()) return false;
         PersistentDataContainer pdc = stack.getItemMeta().getPersistentDataContainer();
         String typeId = pdc.get(CustomBlockRegistry.BLOCK_TYPE_KEY, PersistentDataType.STRING);
-        return "demo:mechanism_minecart".equals(typeId);
+        return MECH_MINECART_ID.equals(typeId);
     }
 
     // ──────────────────────────────────────────────────────────────────────
@@ -291,7 +296,7 @@ final class MechanismMinecartManager implements Listener {
         }
         if (blocks.isEmpty()) return;
 
-        Mechanism mech = mechRegistry.assembleMechanism("demo:mechanism_minecart", blocks,
+        Mechanism mech = mechRegistry.assembleMechanism(MECH_MINECART_ID, blocks,
             state.minecart, MINECART_RIDE_OFFSET, null);
         state.mechanism = mech;
         // Rebind glue to where the blocks land (relative to the cart's rest cell) so it tracks across rides.
@@ -325,10 +330,21 @@ final class MechanismMinecartManager implements Listener {
         event.setCancelled(true);
         minecart.remove();
 
-        CustomHeadBlock itemType = registry.getType("demo:mechanism_minecart");
+        CustomHeadBlock itemType = registry.getType(MECH_MINECART_ID);
         if (itemType != null) {
             minecart.getWorld().dropItemNaturally(minecart.getLocation(), itemType.createItem(1));
         }
+    }
+
+    // Creative middle-click (pick-block) on a mechanism minecart: give the custom item, not a
+    // vanilla minecart. The cart is an entity, so PlayerPickBlockEvent never sees it.
+    @EventHandler(priority = EventPriority.HIGH)
+    public void onPickMinecart(io.papermc.paper.event.player.PlayerPickEntityEvent event) {
+        if (!(event.getEntity() instanceof Minecart minecart) || !isMechanismMinecart(minecart)) return;
+        CustomHeadBlock itemType = registry.getType(MECH_MINECART_ID);
+        if (itemType == null) return;
+        event.setCancelled(true);
+        InventoryUtil.pickInto(event.getPlayer(), itemType.createItem(1), event.getTargetSlot());
     }
 
     @EventHandler(priority = EventPriority.HIGH)
