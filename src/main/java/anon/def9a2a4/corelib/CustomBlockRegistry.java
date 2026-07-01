@@ -1311,6 +1311,26 @@ public class CustomBlockRegistry {
     static final org.bukkit.NamespacedKey INVENTORY_KEY = new org.bukkit.NamespacedKey("corelib", "inventory");
     private final Map<LocationKey, StorageHolder> openStorages = new HashMap<>();
 
+    /**
+     * Get or create the storage inventory for a block without opening a GUI.
+     * Uses the same cache as {@link #openStorage} so ticks and viewers share one Inventory instance.
+     */
+    public org.bukkit.inventory.@org.jspecify.annotations.Nullable Inventory getOrCreateStorage(Block block) {
+        CustomHeadBlock type = getTypeFromBlock(block);
+        if (type == null || type.storage() == null) return null;
+
+        LocationKey key = LocationKey.of(block);
+        StorageHolder holder = openStorages.get(key);
+        if (holder == null) {
+            holder = new StorageHolder(block.getLocation());
+            org.bukkit.inventory.Inventory inv = createStorageInventory(type.storage(), type, holder);
+            holder.setInventory(inv);
+            loadInventoryFromPDC(block, inv);
+            openStorages.put(key, holder);
+        }
+        return holder.getInventory();
+    }
+
     /** Open the storage inventory for a block. Supports multiple viewers. */
     void openStorage(Block block, org.bukkit.entity.Player player, CustomHeadBlock type) {
         LocationKey key = LocationKey.of(block);

@@ -92,7 +92,7 @@ final class RotationBlocks {
             .onInteract((b, event) -> {
                 if (isWrench(event.getPlayer().getInventory().getItemInMainHand()))
                     return wrenchInteract(b, event, network, registry);
-                return debugInteract(b, event, network, registry);
+                return false;
             })
             .onChunkLoad((b, state) -> network.addNode(b, blockId,
                 RotationNetwork.axisFromState(state), role, power, gearLike))
@@ -131,7 +131,7 @@ final class RotationBlocks {
             .onInteract((b, event) -> {
                 if (isWrench(event.getPlayer().getInventory().getItemInMainHand()))
                     return wrenchInteract(b, event, network, registry);
-                return debugInteract(b, event, network, registry);
+                return false;
             })
             .onChunkLoad((b, state) -> network.addNode(b, blockId,
                 RotationNetwork.axisFromState(state), RotationNetwork.NodeRole.TRANSMITTER, 0, false))
@@ -178,7 +178,7 @@ final class RotationBlocks {
                             Component.text("Water wheels are always flexible", NamedTextColor.AQUA));
                     return true;
                 }
-                return debugInteract(b, event, network, registry);
+                return false;
             })
             .onChunkLoad((b, state) -> {
                 RotationNetwork.Axis axis = RotationNetwork.axisFromState(state);
@@ -295,50 +295,42 @@ final class RotationBlocks {
             .tickInterval(20)
             .onNeighborChange((b, face) -> recalcIfKnown(b, network))
             .onInteract((b, event) -> {
-                var held = event.getPlayer().getInventory().getItemInMainHand();
-                if (isWrench(held)) return wrenchInteract(b, event, network, registry);
-                // Add fuel on right-click
-                if (held.getType().isAir()) return debugInteract(b, event, network, registry);
-                int fuelValue = fuelManager.getFuelValue(held.getType());
-                if (fuelValue <= 0) return debugInteract(b, event, network, registry);
-
-                // Consume 1 item, add fuel
-                Material fuelType = held.getType();
-                held.setAmount(held.getAmount() - 1);
+                if (isWrench(event.getPlayer().getInventory().getItemInMainHand()))
+                    return wrenchInteract(b, event, network, registry);
+                Inventory inv = registry.getOrCreateStorage(b);
+                if (inv == null) return false;
                 var key = CustomBlockRegistry.LocationKey.of(b);
-                fuelManager.addFuel(key, fuelValue);
-
-                // Bucket fuels return the empty bucket (vanilla furnace parity).
-                if (fuelType == Material.LAVA_BUCKET) {
-                    var player = event.getPlayer();
-                    player.getInventory().addItem(new ItemStack(Material.BUCKET)).values()
-                        .forEach(it -> player.getWorld().dropItemNaturally(player.getLocation(), it));
+                int fuelTicks = fuelManager.getFuel(key);
+                int seconds = fuelTicks / 20;
+                var view = event.getPlayer().openInventory(inv);
+                if (view != null) {
+                    view.setTitle("Engine - " + seconds + "s fuel");
                 }
-
-                // Transition to running if idle
-                String state = registry.getState(b);
-                if (state != null && state.startsWith("idle_")) {
-                    String axis = state.substring(state.lastIndexOf('_') + 1);
-                    String target = "running_" + axis;
-                    registry.setState(b, target);
-                    CustomHeadBlock type = registry.getTypeFromBlock(b);
-                    if (type != null) registry.applyConfig(b, type, target, 0);
-                    // Re-add as SOURCE
-                    network.removeNode(key);
-                    network.addNode(b, blockId, RotationNetwork.axisFromState(target),
-                        RotationNetwork.NodeRole.SOURCE, enginePower, false);
-                }
-
-                event.getPlayer().sendActionBar(net.kyori.adventure.text.Component.text(
-                    "Fuel: " + fuelManager.getFuel(key) + " ticks",
-                    net.kyori.adventure.text.format.NamedTextColor.GOLD));
                 return true;
             })
             .onTick(b -> {
                 String state = registry.getState(b);
                 var key = CustomBlockRegistry.LocationKey.of(b);
-                // Auto-start: an idle engine that has fuel begins running. Mirrors the interact
-                // transition, so fuel added by any path (interact, programmatic) spins it up.
+
+                // Auto-consume fuel from internal storage when the fuel counter is empty
+                if (fuelManager.getFuel(key) <= 0) {
+                    Inventory storage = registry.getOrCreateStorage(b);
+                    if (storage != null) {
+                        for (int i = 0; i < storage.getSize(); i++) {
+                            ItemStack it = storage.getItem(i);
+                            if (it == null || it.getType().isAir()) continue;
+                            int fv = fuelManager.getFuelValue(it.getType());
+                            if (fv > 0) {
+                                fuelManager.addFuel(key, fv);
+                                it.setAmount(it.getAmount() - 1);
+                                storage.setItem(i, it.getAmount() <= 0 ? null : it);
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                // Auto-start: an idle engine that has fuel begins running
                 if (state != null && state.startsWith("idle_") && fuelManager.getFuel(key) > 0) {
                     String axis = state.substring(state.lastIndexOf('_') + 1);
                     String target = "running_" + axis;
@@ -359,7 +351,6 @@ final class RotationBlocks {
                     registry.setState(b, target);
                     CustomHeadBlock type = registry.getTypeFromBlock(b);
                     if (type != null) registry.applyConfig(b, type, target, 0);
-                    // Re-add as non-source
                     network.removeNode(key);
                     network.addNode(b, blockId, RotationNetwork.axisFromState(target),
                         RotationNetwork.NodeRole.TRANSMITTER, 0, false);
@@ -430,7 +421,7 @@ final class RotationBlocks {
                     Boolean handled = spec.interact().apply(b, event);
                     if (handled != null) return handled;
                 }
-                return debugInteract(b, event, network, registry);
+                return false;
             })
             .onTick(spec.tick())
             .onChunkLoad((b, state) -> {
@@ -456,7 +447,7 @@ final class RotationBlocks {
             millstoneTickInterval,
             b -> processingMachineTick(b, network, millRecipes, registry,
                 millstoneMaxBatch, org.bukkit.Sound.BLOCK_GRINDSTONE_USE),
-            (b, event) -> manualMill(b, event, registry, millRecipes)));
+            null));
     }
 
     private static void overlayPress(CustomBlockRegistry registry, RotationNetwork network,
@@ -497,6 +488,8 @@ final class RotationBlocks {
         var key = CustomBlockRegistry.LocationKey.of(placer);
         if (!network.isPowered(key)) return;
 
+        pullFromAdjacentContainer(placer);
+
         BlockFace facing = readFacing(placer);
         if (facing == null) return;
         Block target = placer.getRelative(facing);
@@ -524,30 +517,34 @@ final class RotationBlocks {
         }
     }
 
-    /** Hand-fed grinding while spinning (fallback when there's no host container). Null → not handled. */
-    private static @org.jetbrains.annotations.Nullable Boolean manualMill(Block b,
-            org.bukkit.event.player.PlayerInteractEvent event,
-            CustomBlockRegistry registry, MachineRecipes millRecipes) {
-        if (!"spinning".equals(registry.getState(b))) return null;
-        var held = event.getPlayer().getInventory().getItemInMainHand();
-        if (held.getType().isAir()) return null;
-        MachineRecipes.Recipe recipe = millRecipes.match(held.getType());
-        if (recipe == null || held.getAmount() < recipe.inputAmount()) return null;
-
-        List<ItemStack> outputs = millRecipes.roll(recipe, registry);
-        if (!outputs.isEmpty() && !ejectOutputs(b, outputs)) return true; // output full → no-op
-        held.setAmount(held.getAmount() - recipe.inputAmount());
-        b.getWorld().playSound(b.getLocation().add(0.5, 0.5, 0.5),
-            org.bukkit.Sound.BLOCK_GRINDSTONE_USE, 1f, 1f);
-        return true;
+    /** Internal storage inventory of a machine, or null if the block has no storage configured. */
+    private static @org.jetbrains.annotations.Nullable Inventory hostContainer(Block machine) {
+        return CoreLibPlugin.getInstance().getRegistry().getOrCreateStorage(machine);
     }
 
-    /** Inventory of the container a wall-mounted processing machine is mounted on, or null. */
-    private static @org.jetbrains.annotations.Nullable Inventory hostContainer(Block machine) {
+    /** Pull items from the vanilla container behind a wall-mounted machine into its internal storage. */
+    private static void pullFromAdjacentContainer(Block machine) {
         BlockFace facing = readFacing(machine);
-        if (facing == null) return null;
+        if (facing == null) return;
+        Inventory internal = CoreLibPlugin.getInstance().getRegistry().getOrCreateStorage(machine);
+        if (internal == null) return;
         Block host = machine.getRelative(facing.getOppositeFace());
-        return host.getState() instanceof Container c ? c.getInventory() : null;
+        if (!(host.getState() instanceof Container c)) return;
+        Inventory adjacent = c.getInventory();
+        for (int i = 0; i < adjacent.getSize(); i++) {
+            ItemStack item = adjacent.getItem(i);
+            if (item == null || item.getType().isAir()) continue;
+            var leftover = internal.addItem(item.clone());
+            if (leftover.isEmpty()) {
+                adjacent.setItem(i, null);
+            } else {
+                int transferred = item.getAmount() - leftover.values().iterator().next().getAmount();
+                if (transferred > 0) {
+                    item.setAmount(item.getAmount() - transferred);
+                    adjacent.setItem(i, item);
+                }
+            }
+        }
     }
 
     /**
@@ -572,7 +569,7 @@ final class RotationBlocks {
             return true;
         }
         for (ItemStack out : outputs) {
-            machine.getWorld().dropItemNaturally(machine.getLocation().add(0.5, -0.2, 0.5), out);
+            machine.getWorld().dropItem(machine.getLocation().add(0.5, 0.0, 0.5), out);
         }
         return true;
     }
@@ -615,6 +612,7 @@ final class RotationBlocks {
         var key = CustomBlockRegistry.LocationKey.of(machine);
         if (!network.isPowered(key)) return;
 
+        pullFromAdjacentContainer(machine);
         Inventory in = hostContainer(machine);
         if (in == null) return;
 
@@ -770,7 +768,7 @@ final class RotationBlocks {
             .onInteract((b, event) -> {
                 if (isWrench(event.getPlayer().getInventory().getItemInMainHand()))
                     return wrenchInteract(b, event, network, registry);
-                return debugInteract(b, event, network, registry);
+                return false;
             })
             .onChunkLoad((b, state) -> {
                 boolean spinning = state != null && state.startsWith("spinning_");
@@ -824,7 +822,7 @@ final class RotationBlocks {
             .onInteract((b, event) -> {
                 if (isWrench(event.getPlayer().getInventory().getItemInMainHand()))
                     return wrenchInteract(b, event, network, registry);
-                return debugInteract(b, event, network, registry);
+                return false;
             })
             .onTick(b -> drillTick(b, registry, network))
             .onChunkLoad((b, state) -> {

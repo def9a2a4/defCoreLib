@@ -466,10 +466,11 @@ blocks:
     name: "&4Engine"
     lore:
       - "&7Produces 5 Power when fueled"
-      - "&7Right-click with fuel to power"
+      - "&7Right-click to open fuel storage"
     # Bronze Ship Engine (9172c1e7)
     texture: "@bronze_engine"
     drops: self
+    storage: { layout: HOPPER }
     default_state: idle_y
     placement_state_map:
       DOWN: idle_y
@@ -622,13 +623,13 @@ blocks:
   millstone:
     name: "&7Millstone"
     lore:
-      - "&7Mounts on a container and grinds its contents when powered"
+      - "&7Grinds items from its storage when powered"
       - "&7Powered from the top; grinds faster with more power; outputs below"
-      - "&7Right-click with item to grind manually"
     # Stone machine head (shared with the press).
     texture: "@machine_base"
     item_texture: "@stone_slabs"
     drops: self
+    storage: { layout: HOPPER }
     placement:
       allowed_faces: [NORTH, SOUTH, EAST, WEST]
     default_state: idle
@@ -661,12 +662,13 @@ blocks:
   press:
     name: "&fExtractor Press"
     lore:
-      - "&7Mounts on a container and presses its contents when powered"
+      - "&7Presses items from its storage when powered"
       - "&7Powered from the top; squeezes out juices, oils & extracts below"
     # Stone machine head (shared with the millstone); compressor item in hand.
     texture: "@machine_base"
     item_texture: "@compressor_item"
     drops: self
+    storage: { layout: HOPPER }
     placement:
       allowed_faces: [NORTH, SOUTH, EAST, WEST]
     default_state: idle
@@ -710,12 +712,13 @@ blocks:
   placer:
     name: "&aBlock Placer"
     lore:
-      - "&7Mounts on a container and places its blocks in front when powered"
+      - "&7Places blocks from its storage in front when powered"
       - "&7Powered from the top by a shaft"
     # Placed head = stone machine head (shared with the millstone/press); item = placer skin.
     texture: "@machine_base"
     item_texture: "@placer_item"
     drops: self
+    storage: { layout: HOPPER }
     placement:
       allowed_faces: [NORTH, SOUTH, EAST, WEST]
     # Per-wall states orient the dispenser's front face OUTWARD (where it places blocks), like the
