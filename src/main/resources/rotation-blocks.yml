@@ -42,6 +42,12 @@ textures:
   fan_placed_up:     "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjcwODkzMGQ3NTZkNmM3N2Q2MGFlZDQyZjA2ZDUyMGJkNDJiMDZhMDY5ZjdlODM4MjM3ODgzZGI5ODRlNGY2YSJ9fX0="  # fan/fan-placed-up — fan placed head (floor)
   fan_placed_fwd:    "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjYxNmUxZTQyMDBiYWUxNzM1MjZiMjIxYTNjZDAyNjhmMWFmZmU2YzdkMjJjYmEwMGVmN2U4MmVhZDRhMTJmNyJ9fX0="  # fan/fan-placed-fwd — fan placed head (wall)
   fan_item:          "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNmJkYzYxNTVmY2Y0YThmMDZkNDZhYmY5MGFhNjJmNzE1NGRhNGY2NGRkMzhhNjdmMGMzODBhMGJkZjZhOWQwMyJ9fX0="  # fan/fan-item — fan item
+  screw_up:          "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmUzNDhlNDIyMjNjNDBlOWU0MDUxODY2YjM3NjNlZDViNTEzYTk3OWZkNWNhMTUxODFmZmExYTAxZTk2NDM1YiJ9fX0="  # screw-up-new — drill display entity
+  screw_fwd:         "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTNhMWZiMzA4YWU3NzhhZDRjZDZhOTkzNGZhOTlhYzUzMWIzYWZmOTYwMmZiODA1ZTkzYjE0YjI3NmFhODExZiJ9fX0="  # screw-fwd-new — drill item
+  clutch_up:         "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjRlMDJjOGEzMzg5YTkxYjQwMmQyZWIyOGU3ZGYzOTk5MTc0ODM2MDUxMWNlMTU4OGQ0OGQzYmQ4ZTc0MWY1OSJ9fX0="  # copper-bearing-up — clutch head (floor)
+  clutch_fwd:        "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjQwY2VhNTcyZTQ4NjEyNTM0MTg3MWUxNDRlYWYzNGRiMzAwYWI3OTViZjgyMzYwOGE0NTdlYTNjNTE5YmM3NSJ9fX0="  # copper-bearing-fwd — clutch head (wall) + item
+  reverser_up:       "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODMyYTg3MGEzNDMwMmViYThhMTNiYzI2ZWZjMGM5ZDQwOWJkYWYzYWRjZTBkMzUzZGEzOTNkMWM0YjgxODI0MyJ9fX0="  # reverser-up — reverser head (floor)
+  reverser_fwd:      "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjk1MWJlMGM0NzVlMTE5ZTk2YWQxYzgzODU5MTI0MGYyZjVmYTEyODFmZTUyNTZlMmY2YzVlZWZlZWI3MzA3YiJ9fX0="  # reverser-fwd — reverser head (wall) + item
 
 blocks:
 
@@ -212,8 +218,9 @@ blocks:
     lore:
       - "&7Transmits rotation power"
       - "&7Disconnects when redstone powered"
-    # Copper Block
-    texture: "@copper_block"
+    # Copper bearing head (orientation-dependent per state).
+    texture: "@clutch_fwd"
+    item_texture: "@clutch_fwd"
     drops: self
     default_state: idle_y
     placement_state_map:
@@ -226,26 +233,29 @@ blocks:
       # Standard shaft display (same as rotation:shaft). Shown in all states —
       # locked just stops the spin; the shaft stays visible.
       idle_x:
+        texture: "@clutch_fwd"
         display_entities:
           - texture: "@rod_up"
             tag: rod
             transform: { translation: [-0.5, 0, 0], scale: [0.66, 2.02, 0.66], left_rotation: [90, 0, 0, 1] }
       idle_y:
+        texture: "@clutch_up"
         display_entities:
           - texture: "@rod_up"
             tag: rod
             transform: { translation: [0, 0.5, 0], scale: [0.66, 2.02, 0.66] }
       idle_z:
+        texture: "@clutch_fwd"
         display_entities:
           - texture: "@rod_up"
             tag: rod
             transform: { translation: [0, 0, -0.5], scale: [0.66, 2.02, 0.66], left_rotation: [-90, 1, 0, 0] }
-      spinning_x: { copy_from: idle_x, animation: { type: rotate, axis: [1, 0, 0], speed: 3.0 } }
-      spinning_y: { copy_from: idle_y, animation: { type: rotate, axis: [0, 1, 0], speed: 3.0 } }
-      spinning_z: { copy_from: idle_z, animation: { type: rotate, axis: [0, 0, 1], speed: 3.0 } }
-      locked_x: { copy_from: idle_x }
-      locked_y: { copy_from: idle_y }
-      locked_z: { copy_from: idle_z }
+      spinning_x: { copy_from: idle_x, texture: "@clutch_fwd", animation: { type: rotate, axis: [1, 0, 0], speed: 3.0 } }
+      spinning_y: { copy_from: idle_y, texture: "@clutch_up", animation: { type: rotate, axis: [0, 1, 0], speed: 3.0 } }
+      spinning_z: { copy_from: idle_z, texture: "@clutch_fwd", animation: { type: rotate, axis: [0, 0, 1], speed: 3.0 } }
+      locked_x: { copy_from: idle_x, texture: "@clutch_fwd" }
+      locked_y: { copy_from: idle_y, texture: "@clutch_up" }
+      locked_z: { copy_from: idle_z, texture: "@clutch_fwd" }
     recipes:
       craft:
         shaped:
@@ -264,8 +274,9 @@ blocks:
     lore:
       - "&7Transmits rotation power"
       - "&7Reverses spin direction when redstone powered"
-    # Copper Gear (placeholder — give it a distinct head texture later)
-    texture: "@copper_gear"
+    # Reverser head (orientation-dependent per state).
+    texture: "@reverser_fwd"
+    item_texture: "@reverser_fwd"
     drops: self
     default_state: idle_y
     placement_state_map:
@@ -277,23 +288,26 @@ blocks:
     states:
       # Standard shaft display (same as rotation:shaft).
       idle_x:
+        texture: "@reverser_fwd"
         display_entities:
           - texture: "@rod_up"
             tag: rod
             transform: { translation: [-0.5, 0, 0], scale: [0.66, 2.02, 0.66], left_rotation: [90, 0, 0, 1] }
       idle_y:
+        texture: "@reverser_up"
         display_entities:
           - texture: "@rod_up"
             tag: rod
             transform: { translation: [0, 0.5, 0], scale: [0.66, 2.02, 0.66] }
       idle_z:
+        texture: "@reverser_fwd"
         display_entities:
           - texture: "@rod_up"
             tag: rod
             transform: { translation: [0, 0, -0.5], scale: [0.66, 2.02, 0.66], left_rotation: [-90, 1, 0, 0] }
-      spinning_x: { copy_from: idle_x, animation: { type: rotate, axis: [1, 0, 0], speed: 3.0 } }
-      spinning_y: { copy_from: idle_y, animation: { type: rotate, axis: [0, 1, 0], speed: 3.0 } }
-      spinning_z: { copy_from: idle_z, animation: { type: rotate, axis: [0, 0, 1], speed: 3.0 } }
+      spinning_x: { copy_from: idle_x, texture: "@reverser_fwd", animation: { type: rotate, axis: [1, 0, 0], speed: 3.0 } }
+      spinning_y: { copy_from: idle_y, texture: "@reverser_up", animation: { type: rotate, axis: [0, 1, 0], speed: 3.0 } }
+      spinning_z: { copy_from: idle_z, texture: "@reverser_fwd", animation: { type: rotate, axis: [0, 0, 1], speed: 3.0 } }
     recipes:
       craft:
         shapeless:
@@ -614,7 +628,7 @@ blocks:
       - "&7Breaks blocks when powered"
       - "&7Mines in facing direction"
     texture: "@drill_head"
-    item_texture: "@drill_item"
+    item_texture: "@screw_fwd"
     drops: self
     recipes:
       craft:
@@ -636,31 +650,31 @@ blocks:
     states:
       idle_y:
         display_entities:
-          - texture: "@drill_rod"
+          - texture: "@screw_up"
             tag: rod
             transform: { translation: [0, -0.75, 0], scale: [0.66, 1.0, 0.66] }
       spinning_y: { copy_from: idle_y, animation: { type: rotate, axis: [0, 1, 0], speed: 3.0 } }
       idle_x:
         display_entities:
-          - texture: "@drill_rod"
+          - texture: "@screw_up"
             tag: rod
             transform: { translation: [0, 0, 0], scale: [0.66, 1.0, 0.66], left_rotation: [90, 0, 0, 1] }
       spinning_x: { copy_from: idle_x, animation: { type: rotate, axis: [1, 0, 0], speed: 3.0 } }
       idle_east_x:
         display_entities:
-          - texture: "@drill_rod"
+          - texture: "@screw_up"
             tag: rod
             transform: { translation: [0, 0, 0], scale: [0.66, 1.0, 0.66], left_rotation: [-90, 0, 0, 1] }
       spinning_east_x: { copy_from: idle_east_x, animation: { type: rotate, axis: [1, 0, 0], speed: 3.0 } }
       idle_z:
         display_entities:
-          - texture: "@drill_rod"
+          - texture: "@screw_up"
             tag: rod
             transform: { translation: [0, 0, 0], scale: [0.66, 1.0, 0.66], left_rotation: [-90, 1, 0, 0] }
       spinning_z: { copy_from: idle_z, animation: { type: rotate, axis: [0, 0, 1], speed: 3.0 } }
       idle_south_z:
         display_entities:
-          - texture: "@drill_rod"
+          - texture: "@screw_up"
             tag: rod
             transform: { translation: [0, 0, 0], scale: [0.66, 1.0, 0.66], left_rotation: [90, 1, 0, 0] }
       spinning_south_z: { copy_from: idle_south_z, animation: { type: rotate, axis: [0, 0, 1], speed: 3.0 } }
