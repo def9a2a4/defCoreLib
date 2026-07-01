@@ -50,6 +50,8 @@ textures:
   reverser_fwd:      "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjk1MWJlMGM0NzVlMTE5ZTk2YWQxYzgzODU5MTI0MGYyZjVmYTEyODFmZTUyNTZlMmY2YzVlZWZlZWI3MzA3YiJ9fX0="  # reverser-fwd — reverser head (wall) + item
   machine_base:      "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTlmMzdmMWNiZDQ3YzM1MDQ1MTFiZjMzYzU4YzNhMjUyYjYwNzEzZWM1ZmM1NDMzZDg4N2Q0YTBkOTk2MjEwIn19fQ=="  # 59f37f1c — millstone + press placed head
   compressor_item:   "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvY2Q3Y2Y4NmY5ZjY1MzdkZDVkMThmMDAwNjE4ODdjY2Q1OWM0ZTc5NjY0Y2ViZDY1Y2FhN2ViMGUwMjcwMWViOCJ9fX0="  # dev/press/compressor — press item
+  placer_item:       "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvM2M1ZjNjM2Q1ZDdiMWNlMGYzMjA0MGMxNDU0ZGFmODg3OGUxY2MyOTllMDI1YmFkMmU2OTE5ZWJhZTIxZmJiOCJ9fX0="  # block placer — item in hand
+  placer_piston:     "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWYyZWZiNDJjYWFlNTYxZmUyZDk3YmY3MTFjY2MwNjQ3ZGU2OTVmZDJkZTIxZDljZGNiMTI5YmEyOTMzY2VkZiJ9fX0="  # block placer — symmetric piston display
 
 blocks:
 
@@ -708,17 +710,27 @@ blocks:
     lore:
       - "&7Mounts on a container and places its blocks in front when powered"
       - "&7Powered from the top by a shaft"
-    # Stone machine head (shared with the millstone/press) — placeholder skin.
+    # Placed head = stone machine head (shared with the millstone/press); item = placer skin.
     texture: "@machine_base"
-    item_texture: "@machine_base"
+    item_texture: "@placer_item"
     drops: self
     placement:
       allowed_faces: [NORTH, SOUTH, EAST, WEST]
     default_state: idle
     states:
+      # Non-directional: symmetric piston + top shaft + centered dispenser look the same on
+      # every wall, so a single idle/spinning pair suffices. The shaft spins when powered
+      # (auto idle↔spinning toggle). Shaft entity is copied from the press verbatim.
       idle:
         display_entities:
-          - { material: DISPENSER, tag: body, transform: { translation: [0, 0, 0], scale: [0.85, 0.85, 0.85] } }
+          - { material: DISPENSER,     tag: body,   transform: { translation: [0, 0, 0],   scale: [0.7, 0.7, 0.7] } }
+          - { texture: "@rod_up",      tag: shaft,  transform: { translation: [0, 0.5, 0], scale: [0.66, 0.5, 0.66] } }
+          - { texture: "@placer_piston", tag: piston, transform: { translation: [0, 0, 0], scale: [0.5, 0.5, 0.5] }, wall_offset: -0.375 }  # pushed forward so its front edge meets the opposite block (0.5 − 0.25/2)
+      spinning:
+        display_entities:
+          - { material: DISPENSER,     tag: body,   transform: { translation: [0, 0, 0],   scale: [0.7, 0.7, 0.7] } }
+          - { texture: "@rod_up",      tag: shaft,  transform: { translation: [0, 0.5, 0], scale: [0.66, 0.5, 0.66] }, animation: { type: rotate, axis: [0, 1, 0], speed: 3.0 } }
+          - { texture: "@placer_piston", tag: piston, transform: { translation: [0, 0, 0], scale: [0.5, 0.5, 0.5] }, wall_offset: -0.375 }  # pushed forward so its front edge meets the opposite block (0.5 − 0.25/2)
     recipes:
       craft:
         shaped:
