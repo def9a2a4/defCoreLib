@@ -419,7 +419,9 @@ blocks:
         display_entities:
           - texture: "@windmill_hub_fwd"
             tag: hub
-            transform: { translation: [0, 0, 0], scale: [2, 2, 2] }
+            transform: { translation: [0, 0.5, 0], scale: [2, 2, 2] }
+            animation: none
+            wall_offset: 0.001
           - { material: OAK_PLANKS, tag: paddle_0, transform: { translation: [0, 0.65, 0],       scale: [0.0625, 1, 0.48], left_rotation: [0, 0, 0, 1] },    wall_offset: 0.01 }
           - { material: OAK_PLANKS, tag: paddle_1, transform: { translation: [0.46, 0.46, 0],    scale: [0.0625, 1, 0.48], left_rotation: [-45, 0, 0, 1] },   wall_offset: 0.01 }
           - { material: OAK_PLANKS, tag: paddle_2, transform: { translation: [0.65, 0, 0],       scale: [0.0625, 1, 0.48], left_rotation: [-90, 0, 0, 1] },   wall_offset: 0.01 }
@@ -429,12 +431,13 @@ blocks:
           - { material: OAK_PLANKS, tag: paddle_6, transform: { translation: [-0.65, 0, 0],      scale: [0.0625, 1, 0.48], left_rotation: [-270, 0, 0, 1] },  wall_offset: 0.01 }
           - { material: OAK_PLANKS, tag: paddle_7, transform: { translation: [-0.46, 0.46, 0],   scale: [0.0625, 1, 0.48], left_rotation: [-315, 0, 0, 1] },  wall_offset: 0.01 }
       spinning_z: { copy_from: idle_z, animation: { type: rotate, axis: [0, 0, 1], speed: 3.0 } }
-      # X-axis (E/W wall): 8 oak-plank paddles radial in YZ plane; rod = axle along X.
+      # X-axis (E/W wall): 8 oak-plank paddles radial in YZ plane; 2x hub head at center.
       idle_x:
         display_entities:
-          - texture: "@rod_up"
-            tag: rod
-            transform: { translation: [-0.5, 0, 0], scale: [0.66, 2.02, 0.66], left_rotation: [90, 0, 0, 1] }
+          - texture: "@windmill_hub_fwd"
+            tag: hub
+            transform: { translation: [0, 0.5, 0], scale: [2, 2, 2], left_rotation: [90, 0, 1, 0] }
+            animation: none
             wall_offset: 0.001
           - { material: OAK_PLANKS, tag: paddle_0, transform: { translation: [0, 0.65, 0],       scale: [0.48, 1, 0.0625], left_rotation: [0, 1, 0, 0] },    wall_offset: 0.01 }
           - { material: OAK_PLANKS, tag: paddle_1, transform: { translation: [0, 0.46, 0.46],    scale: [0.48, 1, 0.0625], left_rotation: [45, 1, 0, 0] },   wall_offset: 0.01 }
@@ -622,6 +625,7 @@ blocks:
       - "&7Right-click with item to grind manually"
     # Stone machine head (shared with the press).
     texture: "@machine_base"
+    item_texture: "@stone_slabs"
     drops: self
     placement:
       allowed_faces: [NORTH, SOUTH, EAST, WEST]
