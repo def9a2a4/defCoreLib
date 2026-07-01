@@ -76,7 +76,7 @@ blocks:
       idle_x:
         texture: "@shaft_ring_fwd"
         display_entities:
-          - texture: "@rod_fwd"
+          - texture: "@rod_up"
             tag: rod
             transform: { translation: [-0.5, 0, 0], scale: [0.66, 2.02, 0.66], left_rotation: [90, 0, 0, 1] }
       spinning_x: { copy_from: idle_x, texture: "@shaft_ring_fwd", animation: { type: rotate, axis: [1, 0, 0], speed: 3.0 } }
@@ -84,7 +84,7 @@ blocks:
       idle_z:
         texture: "@shaft_ring_fwd"
         display_entities:
-          - texture: "@rod_fwd"
+          - texture: "@rod_up"
             tag: rod
             transform: { translation: [0, 0, -0.5], scale: [0.66, 2.02, 0.66], left_rotation: [-90, 1, 0, 0] }
       spinning_z: { copy_from: idle_z, texture: "@shaft_ring_fwd", animation: { type: rotate, axis: [0, 0, 1], speed: 3.0 } }
@@ -145,26 +145,26 @@ blocks:
       idle_x:
         texture: "@shaft_ring_fwd"
         display_entities:
-          - texture: "@rod_fwd"
+          - texture: "@rod_up"
             tag: shaft_rod
             transform: { translation: [-0.5, 0, 0], scale: [0.66, 2.02, 0.66], left_rotation: [90, 0, 0, 1] }
-          - texture: "@gear_fwd"
+          - texture: "@gear_up"
             tag: disc_a
             transform: { translation: [-0.45, 0, 0], scale: [1.7, 0.4, 1.7], left_rotation: [90, 0, 0, 1] }
-          - texture: "@gear_fwd"
+          - texture: "@gear_up"
             tag: disc_b
             transform: { translation: [-0.46, 0, 0], scale: [1.7, 0.4, 1.7], left_rotation: [98.42, -0.3574, 0.3574, 0.8629] }
       spinning_x: { copy_from: idle_x, texture: "@shaft_ring_fwd", animation: { type: rotate, axis: [1, 0, 0], speed: 3.0 } }
       idle_east_x:
         texture: "@shaft_ring_fwd"
         display_entities:
-          - texture: "@rod_fwd"
+          - texture: "@rod_up"
             tag: shaft_rod
             transform: { translation: [-0.5, 0, 0], scale: [0.66, 2.02, 0.66], left_rotation: [90, 0, 0, 1] }
-          - texture: "@gear_fwd"
+          - texture: "@gear_up"
             tag: disc_a
             transform: { translation: [0.45, 0, 0], scale: [1.7, 0.4, 1.7], left_rotation: [-90, 0, 0, 1] }
-          - texture: "@gear_fwd"
+          - texture: "@gear_up"
             tag: disc_b
             transform: { translation: [0.46, 0, 0], scale: [1.7, 0.4, 1.7], left_rotation: [98.42, 0.3574, 0.3574, -0.8629] }
       spinning_east_x: { copy_from: idle_east_x, texture: "@shaft_ring_fwd", animation: { type: rotate, axis: [1, 0, 0], speed: 3.0 } }
@@ -172,26 +172,26 @@ blocks:
       idle_z:
         texture: "@shaft_ring_fwd"
         display_entities:
-          - texture: "@rod_fwd"
+          - texture: "@rod_up"
             tag: shaft_rod
             transform: { translation: [0, 0, -0.5], scale: [0.66, 2.02, 0.66], left_rotation: [-90, 1, 0, 0] }
-          - texture: "@gear_fwd"
+          - texture: "@gear_up"
             tag: disc_a
             transform: { translation: [0, 0, -0.45], scale: [1.7, 0.4, 1.7], left_rotation: [-90, 1, 0, 0] }
-          - texture: "@gear_fwd"
+          - texture: "@gear_up"
             tag: disc_b
             transform: { translation: [0, 0, -0.46], scale: [1.7, 0.4, 1.7], left_rotation: [98.42, -0.8629, 0.3574, -0.3574] }
       spinning_z: { copy_from: idle_z, texture: "@shaft_ring_fwd", animation: { type: rotate, axis: [0, 0, 1], speed: 3.0 } }
       idle_south_z:
         texture: "@shaft_ring_fwd"
         display_entities:
-          - texture: "@rod_fwd"
+          - texture: "@rod_up"
             tag: shaft_rod
             transform: { translation: [0, 0, -0.5], scale: [0.66, 2.02, 0.66], left_rotation: [-90, 1, 0, 0] }
-          - texture: "@gear_fwd"
+          - texture: "@gear_up"
             tag: disc_a
             transform: { translation: [0, 0, 0.45], scale: [1.7, 0.4, 1.7], left_rotation: [90, 1, 0, 0] }
-          - texture: "@gear_fwd"
+          - texture: "@gear_up"
             tag: disc_b
             transform: { translation: [0, 0, 0.46], scale: [1.7, 0.4, 1.7], left_rotation: [98.42, 0.8629, 0.3574, 0.3574] }
       spinning_south_z: { copy_from: idle_south_z, texture: "@shaft_ring_fwd", animation: { type: rotate, axis: [0, 0, 1], speed: 3.0 } }
@@ -227,7 +227,7 @@ blocks:
       # locked just stops the spin; the shaft stays visible.
       idle_x:
         display_entities:
-          - texture: "@rod_fwd"
+          - texture: "@rod_up"
             tag: rod
             transform: { translation: [-0.5, 0, 0], scale: [0.66, 2.02, 0.66], left_rotation: [90, 0, 0, 1] }
       idle_y:
@@ -237,7 +237,7 @@ blocks:
             transform: { translation: [0, 0.5, 0], scale: [0.66, 2.02, 0.66] }
       idle_z:
         display_entities:
-          - texture: "@rod_fwd"
+          - texture: "@rod_up"
             tag: rod
             transform: { translation: [0, 0, -0.5], scale: [0.66, 2.02, 0.66], left_rotation: [-90, 1, 0, 0] }
       spinning_x: { copy_from: idle_x, animation: { type: rotate, axis: [1, 0, 0], speed: 3.0 } }
@@ -278,7 +278,7 @@ blocks:
       # Standard shaft display (same as rotation:shaft).
       idle_x:
         display_entities:
-          - texture: "@rod_fwd"
+          - texture: "@rod_up"
             tag: rod
             transform: { translation: [-0.5, 0, 0], scale: [0.66, 2.02, 0.66], left_rotation: [90, 0, 0, 1] }
       idle_y:
@@ -288,7 +288,7 @@ blocks:
             transform: { translation: [0, 0.5, 0], scale: [0.66, 2.02, 0.66] }
       idle_z:
         display_entities:
-          - texture: "@rod_fwd"
+          - texture: "@rod_up"
             tag: rod
             transform: { translation: [0, 0, -0.5], scale: [0.66, 2.02, 0.66], left_rotation: [-90, 1, 0, 0] }
       spinning_x: { copy_from: idle_x, animation: { type: rotate, axis: [1, 0, 0], speed: 3.0 } }
@@ -327,7 +327,7 @@ blocks:
       idle_x:
         texture: "@rotator_side"
         display_entities:
-          - texture: "@rod_fwd"
+          - texture: "@rod_up"
             tag: rod
             transform: { translation: [-0.5, 0, 0], scale: [0.66, 2.02, 0.66], left_rotation: [90, 0, 0, 1] }
       idle_y:
@@ -339,7 +339,7 @@ blocks:
       idle_z:
         texture: "@rotator_side"
         display_entities:
-          - texture: "@rod_fwd"
+          - texture: "@rod_up"
             tag: rod
             transform: { translation: [0, 0, -0.5], scale: [0.66, 2.02, 0.66], left_rotation: [-90, 1, 0, 0] }
       spinning_x: { copy_from: idle_x, texture: "@rotator_side", animation: { type: rotate, axis: [1, 0, 0], speed: 3.0 } }
@@ -370,7 +370,7 @@ blocks:
       # Z-axis (N/S wall): paddles in XY plane. rod = standard shaft along Z (the axle).
       idle_z:
         display_entities:
-          - texture: "@rod_fwd"
+          - texture: "@rod_up"
             tag: rod
             transform: { translation: [0, 0, -0.5], scale: [0.66, 2.02, 0.66], left_rotation: [-90, 1, 0, 0] }
           - { material: OAK_SLAB, tag: paddle_a, transform: { translation: [0.35, 0, 0],  scale: [0.6, 0.6, 0.15] }, wall_offset: 0.25 }
@@ -381,7 +381,7 @@ blocks:
       # X-axis (E/W wall): paddles in YZ plane. rod = standard shaft along X (the axle).
       idle_x:
         display_entities:
-          - texture: "@rod_fwd"
+          - texture: "@rod_up"
             tag: rod
             transform: { translation: [-0.5, 0, 0], scale: [0.66, 2.02, 0.66], left_rotation: [90, 0, 0, 1] }
           - { material: OAK_SLAB, tag: paddle_a, transform: { translation: [0, 0.35, 0],  scale: [0.15, 0.6, 0.6] }, wall_offset: 0.25 }
@@ -412,7 +412,7 @@ blocks:
       # Idle: static shaft display showing axis direction
       idle_x:
         display_entities:
-          - texture: "@rod_fwd"
+          - texture: "@rod_up"
             tag: rod
             transform: { translation: [-0.5, 0, 0], scale: [0.66, 2.02, 0.66], left_rotation: [90, 0, 0, 1] }
       idle_y:
@@ -422,7 +422,7 @@ blocks:
             transform: { translation: [0, 0.5, 0], scale: [0.66, 2.02, 0.66] }
       idle_z:
         display_entities:
-          - texture: "@rod_fwd"
+          - texture: "@rod_up"
             tag: rod
             transform: { translation: [0, 0, -0.5], scale: [0.66, 2.02, 0.66], left_rotation: [-90, 1, 0, 0] }
       # Running: spinning shaft + smoke particles
@@ -484,7 +484,7 @@ blocks:
       # Idle: static shaft, no particles (redstone-disabled)
       idle_x:
         display_entities:
-          - texture: "@rod_fwd"
+          - texture: "@rod_up"
             tag: rod
             transform: { translation: [-0.5, 0, 0], scale: [0.66, 2.02, 0.66], left_rotation: [90, 0, 0, 1] }
       idle_y:
@@ -494,7 +494,7 @@ blocks:
             transform: { translation: [0, 0.5, 0], scale: [0.66, 2.02, 0.66] }
       idle_z:
         display_entities:
-          - texture: "@rod_fwd"
+          - texture: "@rod_up"
             tag: rod
             transform: { translation: [0, 0, -0.5], scale: [0.66, 2.02, 0.66], left_rotation: [-90, 1, 0, 0] }
       # Spinning: rotating shaft + spark particles
