@@ -533,6 +533,20 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         }
     }
 
+    // Prevent flowing water/lava from destroying a placed custom head. The head cell is the
+    // flow's destination; vanilla would replace it and drop a plain (non-functional) head.
+    // Cancel at HIGH so the block is never destroyed. Cheap material pre-check before the Set
+    // lookup keeps this off the hot path for ordinary water tiles.
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    public void onFluidFlowIntoCustomHead(org.bukkit.event.block.BlockFromToEvent event) {
+        Block to = event.getToBlock();
+        Material t = to.getType();
+        if (t != Material.PLAYER_HEAD && t != Material.PLAYER_WALL_HEAD) return;
+        if (registry.isCustomBlock(to)) {
+            event.setCancelled(true);
+        }
+    }
+
     // Water/lava flow destroying custom heads
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onBlockFromTo(org.bukkit.event.block.BlockFromToEvent event) {

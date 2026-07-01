@@ -414,13 +414,12 @@ blocks:
       EAST: idle_x
       WEST: idle_x
     states:
-      # Z-axis (N/S wall): 8 oak-plank paddles radial in XY plane; rod = axle along Z.
+      # Z-axis (N/S wall): 8 oak-plank paddles radial in XY plane; 2x hub head at center.
       idle_z:
         display_entities:
-          - texture: "@rod_up"
-            tag: rod
-            transform: { translation: [0, 0, -0.5], scale: [0.66, 2.02, 0.66], left_rotation: [-90, 1, 0, 0] }
-            wall_offset: 0.001
+          - texture: "@windmill_hub_fwd"
+            tag: hub
+            transform: { translation: [0, 0, 0], scale: [2, 2, 2] }
           - { material: OAK_PLANKS, tag: paddle_0, transform: { translation: [0, 0.65, 0],       scale: [0.0625, 1, 0.48], left_rotation: [0, 0, 0, 1] },    wall_offset: 0.01 }
           - { material: OAK_PLANKS, tag: paddle_1, transform: { translation: [0.46, 0.46, 0],    scale: [0.0625, 1, 0.48], left_rotation: [-45, 0, 0, 1] },   wall_offset: 0.01 }
           - { material: OAK_PLANKS, tag: paddle_2, transform: { translation: [0.65, 0, 0],       scale: [0.0625, 1, 0.48], left_rotation: [-90, 0, 0, 1] },   wall_offset: 0.01 }
@@ -665,14 +664,15 @@ blocks:
       allowed_faces: [NORTH, SOUTH, EAST, WEST]
     default_state: idle
     states:
-      # base (static) + anvil slab (bobs) + flipped piston (static, faces down) + shaft (static).
+      # Short static base + a bobbing pair (anvil slab under a downward piston) that
+      # presses down to barely touch the base; static shaft stub on top.
       idle:
         display_entities:
-          - { material: SMOOTH_STONE_SLAB, tag: base,  transform: { translation: [0, 0.0, 0],  scale: [0.85, 1.0, 0.85] }, animation: none }
-          - { material: SMOOTH_STONE_SLAB, tag: anvil, transform: { translation: [0, 0.45, 0], scale: [0.7, 0.5, 0.7] } }
-          - { material: PISTON,            tag: head,  transform: { translation: [0, 0.75, 0], scale: [0.7, 0.5, 0.7], left_rotation: [180, 1, 0, 0] }, animation: none }
-          - { texture: "@rod_up",          tag: shaft, transform: { translation: [0, 1.0, 0],  scale: [0.66, 0.8, 0.66] }, animation: none }
-      spinning: { copy_from: idle, animation: { type: bob, amplitude: 0.1, period: 20 } }
+          - { material: SMOOTH_STONE_SLAB, tag: base,  transform: { translation: [0, -0.15, 0], scale: [0.85, 0.3, 0.85] }, animation: none }
+          - { material: SMOOTH_STONE_SLAB, tag: anvil, transform: { translation: [0, 0.30, 0],  scale: [0.7, 0.3, 0.7] } }
+          - { material: PISTON,            tag: head,  transform: { translation: [0, 0.70, 0],  scale: [0.5, 0.5, 0.5], left_rotation: [180, 1, 0, 0] } }
+          - { texture: "@rod_up",          tag: shaft, transform: { translation: [0, 1.0, 0],   scale: [0.66, 0.2, 0.66] }, animation: none }
+      spinning: { copy_from: idle, animation: { type: bob, amplitude: 0.15, period: 20 } }
     recipes:
       craft:
         shaped:

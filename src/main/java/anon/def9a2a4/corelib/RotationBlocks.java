@@ -152,20 +152,11 @@ final class RotationBlocks {
         registry.register(block.toBuilder()
             .drillable(false)
             .reactsToNeighbors(true)
-            .onNeighborChange((b, face) -> {
-                String state = registry.getState(b);
-                if (state == null) return;
-                RotationNetwork.Axis axis = RotationNetwork.axisFromState(state);
-                boolean hasWater = hasPerpendicularWater(b, axis);
-                String axisStr = state.substring(state.lastIndexOf('_') + 1);
-                String target = (hasWater ? "spinning_" : "idle_") + axisStr;
-                if (!target.equals(state)) {
-                    registry.setState(b, target);
-                    CustomHeadBlock type = registry.getTypeFromBlock(b);
-                    if (type != null) registry.applyConfig(b, type, target, 0);
-                }
-                recalcIfKnown(b, network);
-            })
+            // Poll on a tick: neighbor callbacks miss water-level changes a couple cells away,
+            // and flow direction needs re-sampling as the current shifts.
+            .tickInterval(10)
+            .onNeighborChange((b, face) -> evaluateWaterWheel(b, network, registry, waterWheelPower))
+            .onTick(b -> evaluateWaterWheel(b, network, registry, waterWheelPower))
             .onInteract((b, event) -> {
                 if (isWrench(event.getPlayer().getInventory().getItemInMainHand())) {
                     if (event.getPlayer().isSneaking())
@@ -188,25 +179,87 @@ final class RotationBlocks {
             .build());
     }
 
-    private static boolean hasPerpendicularWater(Block block, RotationNetwork.Axis axis) {
-        org.bukkit.block.BlockFace[] faces = switch (axis) {
-            case X -> new org.bukkit.block.BlockFace[]{
-                org.bukkit.block.BlockFace.NORTH, org.bukkit.block.BlockFace.SOUTH,
-                org.bukkit.block.BlockFace.UP, org.bukkit.block.BlockFace.DOWN};
-            case Z -> new org.bukkit.block.BlockFace[]{
-                org.bukkit.block.BlockFace.EAST, org.bukkit.block.BlockFace.WEST,
-                org.bukkit.block.BlockFace.UP, org.bukkit.block.BlockFace.DOWN};
-            default -> new org.bukkit.block.BlockFace[]{
-                org.bukkit.block.BlockFace.NORTH, org.bukkit.block.BlockFace.SOUTH,
-                org.bukkit.block.BlockFace.EAST, org.bukkit.block.BlockFace.WEST};
-        };
-        for (var f : faces) {
-            Block neighbor = block.getRelative(f);
-            if (neighbor.getType() == org.bukkit.Material.WATER) return true;
-            if (neighbor.getBlockData() instanceof org.bukkit.block.data.Waterlogged wl && wl.isWaterlogged())
-                return true;
+    /** Net torque magnitude below this = no meaningful current → wheel idles. */
+    private static final double WATER_FLOW_EPS = 1.0e-3;
+
+    /**
+     * Evaluate a water wheel each tick / on neighbor change: spin only when flowing water
+     * exerts a net torque, in the direction that torque implies. Shared by onTick and
+     * onNeighborChange so the two never drift.
+     */
+    private static void evaluateWaterWheel(Block b, RotationNetwork network,
+                                           CustomBlockRegistry registry, int power) {
+        String state = registry.getState(b);
+        if (state == null) return;
+        RotationNetwork.Axis axis = RotationNetwork.axisFromState(state);
+        String axisStr = state.substring(state.lastIndexOf('_') + 1);
+
+        double torque = waterTorque(b, axis);
+        boolean spinning = Math.abs(torque) > WATER_FLOW_EPS;
+        String target = (spinning ? "spinning_" : "idle_") + axisStr;
+        var key = CustomBlockRegistry.LocationKey.of(b);
+
+        boolean changed = false;
+        if (!target.equals(state)) {
+            registry.setState(b, target);
+            CustomHeadBlock type = registry.getTypeFromBlock(b);
+            if (type != null) registry.applyConfig(b, type, target, 0);
+            network.removeNode(key);
+            network.addNode(b, "rotation:water_wheel", axis,
+                spinning ? RotationNetwork.NodeRole.SOURCE : RotationNetwork.NodeRole.TRANSMITTER,
+                spinning ? power : 0, false);
+            changed = true;
         }
-        return false;
+
+        if (spinning) {
+            // Flow vector and rotation axis are world-absolute, so this sign is facing-independent.
+            // NOTE: CW=positive rotation about the YAML axis; if a wheel visually spins the wrong
+            // way against its current, swap these two SpinDirection values.
+            RotationNetwork.SpinDirection desired = torque > 0
+                    ? RotationNetwork.SpinDirection.CW : RotationNetwork.SpinDirection.CCW;
+            if (network.readStoredDirection(key) != desired
+                    && b.getState() instanceof Skull skull) {
+                skull.getPersistentDataContainer().set(RotationNetwork.SPIN_DIR_KEY,
+                        PersistentDataType.STRING,
+                        desired == RotationNetwork.SpinDirection.CW ? "cw" : "ccw");
+                skull.update();
+                changed = true;
+            }
+        }
+
+        if (changed) recalcIfKnown(b, network);
+    }
+
+    /**
+     * Signed torque about the wheel's axle from flowing water on its rim. Samples the four
+     * in-plane neighbors (XY plane for a Z-axle wheel, YZ for X-axle); each water neighbor
+     * contributes (r × flow)·axle, where r is the neighbor's unit offset and flow is Paper's
+     * ground-truth {@code computeFlowDirection}. Still/source pools yield ~0 → wheel idles.
+     */
+    private static double waterTorque(Block block, RotationNetwork.Axis axis) {
+        org.bukkit.World world = block.getWorld();
+        boolean xAxle = axis == RotationNetwork.Axis.X;
+        org.bukkit.block.BlockFace[] faces = xAxle
+                ? new org.bukkit.block.BlockFace[]{ org.bukkit.block.BlockFace.UP,
+                    org.bukkit.block.BlockFace.DOWN, org.bukkit.block.BlockFace.NORTH,
+                    org.bukkit.block.BlockFace.SOUTH }
+                : new org.bukkit.block.BlockFace[]{ org.bukkit.block.BlockFace.UP,
+                    org.bukkit.block.BlockFace.DOWN, org.bukkit.block.BlockFace.EAST,
+                    org.bukkit.block.BlockFace.WEST };
+        double torque = 0;
+        for (var f : faces) {
+            Block nb = block.getRelative(f);
+            org.bukkit.Location loc = nb.getLocation();
+            io.papermc.paper.block.fluid.FluidData fd = world.getFluidData(loc);
+            org.bukkit.Fluid type = fd.getFluidType();
+            if (type != org.bukkit.Fluid.WATER && type != org.bukkit.Fluid.FLOWING_WATER) continue;
+            org.bukkit.util.Vector v = fd.computeFlowDirection(loc);
+            org.bukkit.util.Vector r = f.getDirection();
+            torque += xAxle
+                    ? r.getY() * v.getZ() - r.getZ() * v.getY()   // (r × v)·x̂
+                    : r.getX() * v.getY() - r.getY() * v.getX();   // (r × v)·ẑ
+        }
+        return torque;
     }
 
     // ──────────────────────────────────────────────────────────────────────
