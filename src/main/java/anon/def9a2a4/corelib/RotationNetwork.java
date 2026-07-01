@@ -680,9 +680,12 @@ public class RotationNetwork {
         // Axis-less states (e.g. millstone "idle") default to Y — correct for floor-only blocks
         if (i < 0) return Axis.Y;
         String suffix = state.substring(i + 1);
+        // Wall-mounted windmills carry a wall-direction suffix instead of an axis letter; map it to the
+        // axis their blades actually spin on (n/s → Z, e/w → X) so a wall windmill supplies power along
+        // its visual spin axis, not always Y.
         return switch (suffix) {
-            case "x" -> Axis.X;
-            case "z" -> Axis.Z;
+            case "x", "e", "w" -> Axis.X;
+            case "z", "n", "s" -> Axis.Z;
             default -> Axis.Y;
         };
     }
