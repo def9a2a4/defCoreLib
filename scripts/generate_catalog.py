@@ -26,6 +26,7 @@ from __future__ import annotations
 
 import argparse
 import base64
+import copy
 import json
 import os
 import re
@@ -701,6 +702,11 @@ def main() -> int:
                  f"ground-truth placed-display export (the committed items.json depends on it).")
     spec = json.loads(spec_path.read_text())
     item_ids = {it["fullId"] for it in items}
+    # Tier windmills (large/huge) have no YAML recipe of their own — their craft is the base Windmill
+    # recipe with tier banners (Java captureBannerIngredients swaps the result). Grab the base recipe
+    # so we can clone it onto them below for the docs.
+    windmill = next((it for it in items if it["fullId"] == "rotation:windmill"), None)
+    base_windmill_recipes = windmill["recipes"] if windmill else []
     matched = 0
     for it in items:
         entry = spec.get(it["fullId"]) or {}
@@ -710,7 +716,10 @@ def main() -> int:
             matched += 1
         # Tier-gated blocks (windmills) get their generic banner ingredient rewritten to the real
         # custom banner the craft requires, derived from the exported BannerTier (not a hardcoded id).
-        apply_banner_tier(it, entry.get("bannerTier"))
+        tier = entry.get("bannerTier")
+        if tier in ("LARGE", "HUGE") and not it["recipes"]:
+            it["recipes"] = copy.deepcopy(base_windmill_recipes)
+        apply_banner_tier(it, tier)
     unmatched = sorted(k for k in spec if k not in item_ids)
     print(f"  + display-spec.json: matched {matched}/{len(spec)} spec types to items")
     if unmatched:
