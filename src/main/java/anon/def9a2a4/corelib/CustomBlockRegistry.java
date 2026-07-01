@@ -1102,6 +1102,65 @@ public class CustomBlockRegistry {
     record ToggleRecipeInfo(String blockId, Material outputMaterial) {}
     private final Map<org.bukkit.NamespacedKey, ToggleRecipeInfo> toggleRecipes = new HashMap<>();
 
+    // ── Recipe gating ──────────────────────────────────────────────────────
+    // Recipes for these namespaces are withheld by default and only registered once a companion
+    // plugin (vslab / mech) calls enableRecipes(...). Every OTHER namespace (corelib, pipes, …)
+    // registers exactly as before (default-allow), so third-party runtime registrars are unaffected.
+    private static final Set<String> GATED_NAMESPACES = Set.of("demo", "verticalslabs", "mech");
+    private final Set<String> enabledRecipeNamespaces = new HashSet<>();
+    // Per-type guard so an enable can't double-register a type's recipes (idempotency).
+    private final Set<String> recipeRegisteredTypes = new HashSet<>();
+
+    // Windmill large/huge tier swap — only active when the bbanners plugin is present (set by mech).
+    // Without it, a large/huge banner (from /give/creative) must NOT produce a tier windmill.
+    private volatile boolean windmillTierEnabled = false;
+    public void setWindmillTierEnabled(boolean enabled) { this.windmillTierEnabled = enabled; }
+    public boolean isWindmillTierEnabled() { return windmillTierEnabled; }
+
+    private boolean recipesGatedOff(String namespace) {
+        return GATED_NAMESPACES.contains(namespace) && !enabledRecipeNamespaces.contains(namespace);
+    }
+
+    /**
+     * Enable crafting recipes for a gated namespace (called from a companion plugin's onEnable).
+     * Idempotent; registers the namespace's recipes and syncs recipe-book discovery for online
+     * players so they appear immediately.
+     */
+    public void enableRecipes(String namespace) {
+        if (!enabledRecipeNamespaces.add(namespace)) return; // already enabled
+        if (!finalized) return; // finalizeLoading() will register once core finishes loading
+        for (CustomHeadBlock type : types.values()) {
+            if (type.namespace().equals(namespace)) registerRecipesForType(type);
+        }
+        for (org.bukkit.entity.Player p : Bukkit.getOnlinePlayers()) syncRecipeDiscovery(p);
+    }
+
+    /**
+     * Disable crafting recipes for a gated namespace (companion onDisable). Best-effort: removes the
+     * Bukkit recipes, undiscovers them for online players, and prunes the side-tables. (Runtime
+     * single-plugin disable is rare on Paper — real disable is a server stop — so this is scoped to
+     * "no crash / no orphaned recipe-book entries", not a full teardown.)
+     */
+    public void disableRecipes(String namespace) {
+        if (!enabledRecipeNamespaces.remove(namespace)) return; // wasn't enabled
+        String prefix = namespace + "_";
+        List<org.bukkit.NamespacedKey> toRemove = new ArrayList<>();
+        for (org.bukkit.NamespacedKey key : registeredRecipeKeys) {
+            if (key.getKey().startsWith(prefix)) toRemove.add(key);
+        }
+        for (org.bukkit.NamespacedKey key : toRemove) {
+            Bukkit.removeRecipe(key);
+            for (org.bukkit.entity.Player p : Bukkit.getOnlinePlayers()) p.undiscoverRecipe(key);
+        }
+        registeredRecipeKeys.removeAll(toRemove);
+        gatedRecipeKeys.removeAll(toRemove);
+        recipeRegisteredTypes.removeIf(id -> id.startsWith(namespace + ":"));
+        headStonecutterRecipes.removeIf(r -> r.inputBlockId().startsWith(namespace + ":")
+                || r.outputBlockId().startsWith(namespace + ":"));
+        toggleRecipes.keySet().removeIf(k -> k.getKey().startsWith(prefix));
+        advancementRecipes.values().forEach(list -> list.removeAll(toRemove));
+    }
+
     /** Register all recipes for all registered block types. Call after all blocks are loaded. */
     void registerRecipes() {
         for (CustomHeadBlock type : types.values()) {
@@ -1111,6 +1170,8 @@ public class CustomBlockRegistry {
 
     private void registerRecipesForType(CustomHeadBlock type) {
         if (!type.hasRecipes()) return;
+        if (recipesGatedOff(type.namespace())) return; // withheld until a companion enables it
+        if (!recipeRegisteredTypes.add(type.fullId())) return; // already registered — idempotent
         String prefix = type.namespace() + "_" + type.typeId() + "_";
         int keysBefore = registeredRecipeKeys.size();
 
@@ -1213,7 +1274,7 @@ public class CustomBlockRegistry {
     private static org.bukkit.inventory.recipe.CraftingBookCategory categoryFor(CustomHeadBlock type) {
         if (type.recipeCategory() != null) return type.recipeCategory();
         return switch (type.namespace()) {
-            case "rotation" -> org.bukkit.inventory.recipe.CraftingBookCategory.REDSTONE;
+            case "mech" -> org.bukkit.inventory.recipe.CraftingBookCategory.REDSTONE;
             case "verticalslabs" -> org.bukkit.inventory.recipe.CraftingBookCategory.BUILDING;
             default -> org.bukkit.inventory.recipe.CraftingBookCategory.MISC;
         };
@@ -1227,6 +1288,7 @@ public class CustomBlockRegistry {
         registeredRecipeKeys.clear();
         headStonecutterRecipes.clear();
         toggleRecipes.clear();
+        recipeRegisteredTypes.clear();
     }
 
     @Nullable ToggleRecipeInfo getToggleRecipe(org.bukkit.NamespacedKey recipeKey) {

@@ -66,11 +66,20 @@ public class BannerManager implements Listener {
     private float flagOutwardOffsetHuge = -0.124f;
     private float flagSplayTilt = 0.45f;
     private float flagUnifiedTilt = 0.0f;
+    // Banner placement is gated on the bbanners plugin. Listeners stay registered by core always;
+    // only placement/shears checks this flag. Cleanup handlers (break/explode/burn/piston/…) stay
+    // live regardless, so removing bbanners never orphans a placed banner's display entity.
+    private volatile boolean active = false;
 
     public BannerManager(JavaPlugin plugin) {
         this.plugin = plugin;
         loadBedConfig();
     }
+
+    /** Enable banner placement (called when the bbanners plugin enables). */
+    public void activate() { active = true; }
+    /** Disable banner placement; already-placed banners are unaffected and still clean up. */
+    public void deactivate() { active = false; }
 
     private void loadBedConfig() {
         // Optional dev-only tuning file; not shipped/created for users — baked defaults are used
@@ -136,6 +145,7 @@ public class BannerManager implements Listener {
 
     @EventHandler(priority = EventPriority.NORMAL)
     public void onPlayerInteract(PlayerInteractEvent event) {
+        if (!active) return; // banner placement gated on the bbanners plugin
         if (event.getAction() != Action.RIGHT_CLICK_BLOCK) return;
         if (event.getHand() != EquipmentSlot.HAND) return;
 

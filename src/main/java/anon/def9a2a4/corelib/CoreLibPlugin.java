@@ -111,7 +111,7 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         RotationBlocks.register(registry, rotationNetwork, fuelManager, millRecipes, pressRecipes, rotConfig);
 
         // Anchor-owned block selection ("glue") — shared by doors/rotators (wired in D3).
-        // The glue item itself is declared in corelib-items.yml (corelib:glue_item).
+        // The glue item itself is declared in corelib-items.yml (mech:glue_item).
         glueManager = new GlueManager(rotConfig.glueMaxSize);
         glueAuthoring = new GlueAuthoring(this, registry, glueManager,
             rotConfig.glueOutlineInterval, rotConfig.glueSessionTimeout);
@@ -179,6 +179,18 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
 
     public CustomBlockRegistry getRegistry() {
         return registry;
+    }
+
+    /** Activate flag/large/huge banner functionality (called from the bbanners companion plugin). */
+    public void activateBanners() {
+        if (bannerManager != null) bannerManager.activate();
+        if (largeBannerRecipes != null) largeBannerRecipes.activate();
+    }
+
+    /** Deactivate banner functionality (bbanners disable). Placed banners are unaffected. */
+    public void deactivateBanners() {
+        if (bannerManager != null) bannerManager.deactivate();
+        if (largeBannerRecipes != null) largeBannerRecipes.deactivate();
     }
 
     public MechanismRegistry getMechanismRegistry() {
@@ -650,7 +662,9 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         CustomHeadBlock type = registry.getType(typeId);
         if (type == null || type.displayItemResolver() == null) return;
         // Windmills carry a bannerTier and tier-swap by banner; the fan (also banner-bladed) doesn't.
-        boolean isWindmill = type.bannerTier() != null;
+        // The tier swap is gated on the bbanners plugin (windmillTierEnabled): without it, treat every
+        // windmill as plain (just capture blades), so a large/huge banner can't sneak a tier windmill.
+        boolean isWindmill = type.bannerTier() != null && registry.isWindmillTierEnabled();
 
         // getMatrix() is 0-indexed length 9: [0]=TL .. [8]=BR. The blades are the four "+" arms.
         ItemStack[] matrix = inv.getMatrix();
@@ -709,9 +723,9 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
     /** The windmill block type for a banner tier (the Windmill recipe swaps to it by banner). */
     private CustomHeadBlock windmillForTier(BannerTier tier) {
         String id = switch (tier) {
-            case NORMAL -> "rotation:windmill";
-            case LARGE  -> "rotation:large_windmill";
-            case HUGE   -> "rotation:huge_windmill";
+            case NORMAL -> "mech:windmill";
+            case LARGE  -> "mech:large_windmill";
+            case HUGE   -> "mech:huge_windmill";
         };
         return registry.getType(id);
     }
@@ -774,8 +788,11 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
     @EventHandler
     public void onPlayerJoin(org.bukkit.event.player.PlayerJoinEvent event) {
         registry.syncRecipeDiscovery(event.getPlayer());
-        // The large/huge banner craft is registered outside the registry, so discover it here too.
-        if (largeBannerRecipes != null) event.getPlayer().discoverRecipe(largeBannerRecipes.recipeKey());
+        // The large/huge banner craft is registered outside the registry, so discover it here too —
+        // but only when the bbanners plugin has activated it.
+        if (largeBannerRecipes != null && largeBannerRecipes.isActive()) {
+            event.getPlayer().discoverRecipe(largeBannerRecipes.recipeKey());
+        }
     }
 
     @EventHandler
@@ -1214,9 +1231,9 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
                     }
                 }
 
-                // Friendly alias: `give glue` → the registry item corelib:glue_item.
-                if (blockId.equalsIgnoreCase("glue") || blockId.equalsIgnoreCase("corelib:glue")) {
-                    blockId = "corelib:glue_item";
+                // Friendly alias: `give glue` → the registry item mech:glue_item.
+                if (blockId.equalsIgnoreCase("glue") || blockId.equalsIgnoreCase("mech:glue")) {
+                    blockId = "mech:glue_item";
                 }
 
                 // Try with namespace prefix, fall back to searching all namespaces
@@ -1265,7 +1282,7 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
                 }
                 int count = 0;
                 for (CustomHeadBlock type : registry.allTypes()) {
-                    if (type.namespace().equals("rotation")) {
+                    if (type.namespace().equals("mech")) {
                         var overflow = player.getInventory().addItem(type.createItem(1));
                         for (ItemStack lf : overflow.values()) {
                             player.getWorld().dropItemNaturally(player.getLocation(), lf);

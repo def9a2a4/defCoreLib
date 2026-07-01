@@ -38,16 +38,37 @@ public class LargeBannerRecipes implements Listener {
             Material.BLACK_BANNER);
 
     private final NamespacedKey recipeKey;
+    private final ShapedRecipe recipe;
+    private volatile boolean active = false;
 
     public LargeBannerRecipes(JavaPlugin plugin) {
         recipeKey = new NamespacedKey(plugin, "large_banner");
-        ShapedRecipe recipe = new ShapedRecipe(recipeKey, largeBannerPlaceholder());
+        recipe = new ShapedRecipe(recipeKey, largeBannerPlaceholder());
         recipe.shape("WWW", "WBW", "WWW");
         recipe.setCategory(org.bukkit.inventory.recipe.CraftingBookCategory.BUILDING);
         recipe.setIngredient('W', new RecipeChoice.MaterialChoice(Tag.WOOL));
         recipe.setIngredient('B', new RecipeChoice.MaterialChoice(BANNER_MATERIALS));
-        Bukkit.addRecipe(recipe);
+        // Recipe is registered on activate() (bbanners plugin), not on construction.
     }
+
+    /** Register the large/huge banner recipe and discover it for online players. Idempotent.
+     *  Called when the bbanners plugin enables. */
+    void activate() {
+        if (active) return;
+        Bukkit.addRecipe(recipe);
+        active = true;
+        for (org.bukkit.entity.Player p : Bukkit.getOnlinePlayers()) p.discoverRecipe(recipeKey);
+    }
+
+    /** Remove the recipe and undiscover it. Idempotent. Called on bbanners disable / core shutdown. */
+    void deactivate() {
+        if (!active) return;
+        Bukkit.removeRecipe(recipeKey);
+        active = false;
+        for (org.bukkit.entity.Player p : Bukkit.getOnlinePlayers()) p.undiscoverRecipe(recipeKey);
+    }
+
+    boolean isActive() { return active; }
 
     /** The recipe-book key for the large/huge banner craft (so it can be discovered on join). */
     NamespacedKey recipeKey() { return recipeKey; }
@@ -69,10 +90,10 @@ public class LargeBannerRecipes implements Listener {
         return item;
     }
 
-    /** Unregister the recipe on plugin disable so a server /reload doesn't fail with a
-     *  duplicate-key error when the constructor re-adds it. */
+    /** Remove the recipe on core shutdown (alias of deactivate) so a /reload doesn't fail with a
+     *  duplicate-key error when it is re-added. */
     void unregister() {
-        Bukkit.removeRecipe(recipeKey);
+        deactivate();
     }
 
     @EventHandler(priority = EventPriority.NORMAL)
@@ -86,6 +107,7 @@ public class LargeBannerRecipes implements Listener {
     }
 
     private void modifyResult(CraftingInventory inv) {
+        if (!active) return; // large/huge banner crafting gated on the bbanners plugin
         if (inv.getRecipe() == null) return;
         if (!(inv.getRecipe() instanceof Keyed keyed)) return;
         if (!keyed.getKey().equals(recipeKey)) return;
