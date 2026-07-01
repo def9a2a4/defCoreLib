@@ -3,5 +3,5 @@ main: anon.def9a2a4.bbanners.BbannersPlugin
 version: ${version}
 api-version: 1.21
 author: def9a2a4
-description: Enables flag/large/huge banner functionality (content lives in DefCoreLib)
+description: BetterBanners - flag, large, and huge banners (content lives in DefCoreLib)
 depend: [DefCoreLib]

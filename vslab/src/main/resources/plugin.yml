@@ -3,5 +3,5 @@ main: anon.def9a2a4.vslab.VslabPlugin
 version: ${version}
 api-version: 1.21
 author: def9a2a4
-description: Enables vertical slab crafting recipes (content lives in DefCoreLib)
+description: VerticalSlabs - vertical slab crafting recipes (content lives in DefCoreLib)
 depend: [DefCoreLib]

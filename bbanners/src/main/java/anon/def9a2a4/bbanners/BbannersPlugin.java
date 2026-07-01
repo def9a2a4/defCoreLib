@@ -5,7 +5,7 @@ import org.bstats.bukkit.Metrics;
 import org.bukkit.plugin.java.JavaPlugin;
 
 /**
- * Banners companion. The banner subsystem (flag banners + large/huge banner crafting) lives in
+ * BetterBanners companion. The banner subsystem (flag banners + large/huge banner crafting) lives in
  * DefCoreLib but ships dormant. This plugin activates it. Cleanup of already-placed banners stays
  * live in core regardless, so removing this plugin never orphans a placed banner's display entity.
  */
@@ -16,11 +16,11 @@ public final class BbannersPlugin extends JavaPlugin {
         new Metrics(this, 32319);
         CoreLibPlugin core = CoreLibPlugin.getInstance();
         if (core == null) {
-            getLogger().severe("DefCoreLib not present — banner functionality cannot be enabled.");
+            getLogger().severe("DefCoreLib not present; BetterBanners functionality cannot be enabled.");
             return;
         }
         core.activateBanners();
-        getLogger().info("Banner functionality enabled.");
+        getLogger().info("BetterBanners functionality enabled.");
     }
 
     @Override
