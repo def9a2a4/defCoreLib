@@ -54,7 +54,7 @@ public class RotationNetwork {
     private final JavaPlugin plugin;
     private final Logger logger;
 
-    // Passive sources: YAML-only blocks detected at network boundary (e.g. rotation:windmill)
+    // Passive sources: YAML-only blocks detected at network boundary (e.g. mech:windmill)
     private final Map<String, Integer> passiveSourceTypes = new HashMap<>();
 
     // Graph state
@@ -77,9 +77,9 @@ public class RotationNetwork {
     // Config
     private int maxNetworkSize = 256;
 
-    static final NamespacedKey SPIN_DIR_KEY = new NamespacedKey("rotation", "spin_dir");
+    static final NamespacedKey SPIN_DIR_KEY = new NamespacedKey("mech", "spin_dir");
 
-    private static final String REVERSER_ID = "rotation:reverser";
+    private static final String REVERSER_ID = "mech:reverser";
 
     RotationNetwork(JavaPlugin plugin, CustomBlockRegistry registry) {
         this.plugin = plugin;

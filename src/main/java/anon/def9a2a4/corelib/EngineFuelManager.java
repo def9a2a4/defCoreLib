@@ -17,7 +17,7 @@ import java.util.Map;
  */
 final class EngineFuelManager {
 
-    private static final NamespacedKey FUEL_KEY = new NamespacedKey("rotation", "fuel_ticks");
+    private static final NamespacedKey FUEL_KEY = new NamespacedKey("mech", "fuel_ticks");
 
     private final Map<Material, Integer> fuelValues;
 

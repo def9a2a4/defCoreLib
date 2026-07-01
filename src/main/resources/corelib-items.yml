@@ -2,7 +2,7 @@
 # Same model as custom-items.yml: a CustomHeadBlock with item_material + placeable:false,
 # so they reuse createItem / give / docs with no parallel item system. Behavior is wired
 # in Java by id (e.g. GlueItem.isGlueItem checks the block_type PDC == corelib:glue_item).
-namespace: corelib
+namespace: mech
 blocks:
   # Glue Brush: authoring tool for door/rotator structures. Given via /defcorelib give glue.
   # A real BRUSH (kept damageable) — GlueAuthoring suppresses vanilla brushing and wears it

@@ -32,7 +32,7 @@ import java.util.*;
  */
 final class RotationRotator {
 
-    private static final String ROTATOR_ID = "rotation:rotator";
+    private static final String ROTATOR_ID = "mech:rotator";
 
     // Tuning (live-tunable): per-tick swing speed = clamp(K * surplus / blockCount, MIN, MAX).
     private static final float SPEED_K = 8f;
@@ -41,7 +41,7 @@ final class RotationRotator {
     // Demand the rotator places on the network while swinging (others see reduced surplus).
     private static final int SWING_DEMAND = 2;
 
-    private static final NamespacedKey TARGET_KEY = new NamespacedKey("rotation", "rotator_target");
+    private static final NamespacedKey TARGET_KEY = new NamespacedKey("mech", "rotator_target");
 
     private final JavaPlugin plugin;
     private final CustomBlockRegistry registry;

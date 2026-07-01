@@ -6,7 +6,7 @@
 # For wall-axis display entities, left_rotation orients the head to face along the
 # rotation axis, and translation centers the scaled model at block center.
 
-namespace: rotation
+namespace: mech
 
 # ── Named texture registry ─────────────────────────────────────────────────────
 # Reference any of these from texture/item_texture/display_entities as "@alias".
@@ -240,7 +240,7 @@ blocks:
       EAST: idle_x
       WEST: idle_x
     states:
-      # Standard shaft display (same as rotation:shaft). Shown in all states —
+      # Standard shaft display (same as mech:shaft). Shown in all states —
       # locked just stops the spin; the shaft stays visible.
       idle_x:
         texture: "@clutch_fwd"
@@ -278,7 +278,7 @@ blocks:
               C: { material: COPPER_INGOT }
               R: { material: REDSTONE }
               L: { material: LIGHTNING_ROD }
-              B: { block: "rotation:bearing" }
+              B: { block: "mech:bearing" }
               I: { material: IRON_INGOT }
 
   # ─── Reverser ───────────────────────────────────────────────────────────
@@ -301,7 +301,7 @@ blocks:
       EAST: idle_x
       WEST: idle_x
     states:
-      # Standard shaft display (same as rotation:shaft).
+      # Standard shaft display (same as mech:shaft).
       idle_x:
         texture: "@reverser_fwd"
         display_entities:
@@ -334,7 +334,7 @@ blocks:
               C: { material: COPPER_INGOT }
               R: { material: REDSTONE }
               L: { material: LIGHTNING_ROD }
-              B: { block: "rotation:bearing" }
+              B: { block: "mech:bearing" }
 
   # ─── Rotator ────────────────────────────────────────────────────────────
   # Consumer hinge: floor = door (Y), wall = drawbridge (X/Z). Network spin direction
@@ -358,7 +358,7 @@ blocks:
       EAST: idle_x
       WEST: idle_x
     states:
-      # Standard shaft display (same as rotation:shaft) + oriented hinge head.
+      # Standard shaft display (same as mech:shaft) + oriented hinge head.
       idle_x:
         texture: "@rotator_side"
         display_entities:
@@ -392,7 +392,7 @@ blocks:
               C: { material: COPPER_INGOT }
               R: { material: REDSTONE }
               S: { material: STICKY_PISTON }
-              B: { block: "rotation:bearing" }
+              B: { block: "mech:bearing" }
               I: { material: IRON_INGOT }
 
   # ─── Water Wheel ────────────────────────────────────────────────────────
@@ -457,7 +457,7 @@ blocks:
           - pattern: ["SSS", "SBS", "SSS"]
             key:
               S: { tag: wooden_slabs }
-              B: { block: "rotation:bearing" }
+              B: { block: "mech:bearing" }
 
   # ─── Engine ─────────────────────────────────────────────────────────────
   # Source: 5 Power. Needs fuel (coal, charcoal, etc). Any orientation.
@@ -532,7 +532,7 @@ blocks:
           - pattern: ["CBC", "PFP", "CCC"]
             key:
               C: { material: COPPER_INGOT }
-              B: { block: "rotation:bearing" }
+              B: { block: "mech:bearing" }
               P: { material: PISTON }
               F: { material: BLAST_FURNACE }
 
@@ -609,7 +609,7 @@ blocks:
           - pattern: ["EBE", "PFP", "CCC"]
             key:
               E: { material: REDSTONE_BLOCK }
-              B: { block: "rotation:bearing" }
+              B: { block: "mech:bearing" }
               P: { material: PISTON }
               F: { material: BLAST_FURNACE }
               C: { material: COPPER_INGOT }
@@ -649,7 +649,7 @@ blocks:
           - pattern: [" LB", " MH", " MC"]
             key:
               L: { material: LIGHTNING_ROD }
-              B: { block: "rotation:bearing" }
+              B: { block: "mech:bearing" }
               M: { material: SMOOTH_STONE_SLAB }
               C: { material: COPPER_INGOT }
               H: { material: HOPPER }
@@ -697,7 +697,7 @@ blocks:
           # piston (the press) flanked by two bearings.
           - pattern: ["BPB", " MH", " MC"]
             key:
-              B: { block: "rotation:bearing" }
+              B: { block: "mech:bearing" }
               P: { material: PISTON }
               M: { material: SMOOTH_STONE_SLAB }
               C: { material: COPPER_INGOT }
@@ -776,7 +776,7 @@ blocks:
           # piston arm below, copper on the sides.
           - pattern: [" BH", "CDC", " P "]
             key:
-              B: { block: "rotation:bearing" }
+              B: { block: "mech:bearing" }
               D: { material: DISPENSER }
               C: { material: COPPER_INGOT }
               P: { material: PISTON }
@@ -911,10 +911,10 @@ blocks:
           - pattern: [" B ", "BYB", " B "]
             key:
               B: { tag: banners }
-              Y: { block: rotation:bearing }
+              Y: { block: mech:bearing }
 
   # ─── Large Windmill ─────────────────────────────────────────────────────
-  # Source: 5 Power. Always spinning. 3x scale of rotation:windmill banners.
+  # Source: 5 Power. Always spinning. 3x scale of mech:windmill banners.
   # Same left_rotations, scale 0.75→2.25, blade origins 1.25 from center, Y -0.6.
   large_windmill:
     name: "&2Large Windmill"
@@ -1118,7 +1118,7 @@ blocks:
             key:
               R: { material: REDSTONE }
               B: { tag: banners }
-              Y: { block: "rotation:bearing" }
+              Y: { block: "mech:bearing" }
 
   # ─── Mechanism Minecart ──────────────────────────────────────────────
   # Item-only (placeable: false): right-clicking a rail spawns a minecart entity.
@@ -1140,5 +1140,5 @@ blocks:
               I: { material: IRON_INGOT }
               P: { material: STICKY_PISTON }
               R: { material: REDSTONE }
-              O: { block: "rotation:rotator" }
+              O: { block: "mech:rotator" }
               M: { material: MINECART }

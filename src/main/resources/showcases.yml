@@ -27,21 +27,21 @@ showcases:
       into gravel; the second grinds that gravel into sand. A placer at the foot of the column
       takes the finished sand and sets it down as a real block in the world.
     blocks:
-      - { id: "rotation:gear",           facing: east,  at: [0, 0, 0] }
-      - { id: "rotation:clutch",         facing: east,  at: [-1, 0, 0] }
-      - { id: "rotation:gear",           facing: down,  at: [0, 0, -1] }
-      - { id: "rotation:gear",           facing: north, at: [0, 0, 1] }
-      - { id: "rotation:engine",         facing: south, at: [0, 0, 2] }
-      - { id: "rotation:large_windmill", facing: north, at: [0, 0, 3] }
-      - { id: "rotation:drill",          facing: east,  at: [-2, 0, 0] }
-      - { id: "rotation:gear",           facing: down,  at: [-1, 0, -1] }
-      - { id: "rotation:shaft",          facing: down,  at: [0, -1, -1] }
-      - { id: "rotation:gear",           facing: down,  at: [-2, 0, -1] }
-      - { id: "rotation:shaft",          facing: down,  at: [-1, -1, -1] }
-      - { id: "rotation:millstone",      facing: west,  at: [-2, -1, -1] }
-      - { id: "rotation:millstone",      facing: west,  at: [-1, -2, -1] }
-      - { id: "rotation:shaft",          facing: down,  at: [0, -2, -1] }
-      - { id: "rotation:placer",         facing: west,  at: [0, -3, -1] }
+      - { id: "mech:gear",           facing: east,  at: [0, 0, 0] }
+      - { id: "mech:clutch",         facing: east,  at: [-1, 0, 0] }
+      - { id: "mech:gear",           facing: down,  at: [0, 0, -1] }
+      - { id: "mech:gear",           facing: north, at: [0, 0, 1] }
+      - { id: "mech:engine",         facing: south, at: [0, 0, 2] }
+      - { id: "mech:large_windmill", facing: north, at: [0, 0, 3] }
+      - { id: "mech:drill",          facing: east,  at: [-2, 0, 0] }
+      - { id: "mech:gear",           facing: down,  at: [-1, 0, -1] }
+      - { id: "mech:shaft",          facing: down,  at: [0, -1, -1] }
+      - { id: "mech:gear",           facing: down,  at: [-2, 0, -1] }
+      - { id: "mech:shaft",          facing: down,  at: [-1, -1, -1] }
+      - { id: "mech:millstone",      facing: west,  at: [-2, -1, -1] }
+      - { id: "mech:millstone",      facing: west,  at: [-1, -2, -1] }
+      - { id: "mech:shaft",          facing: down,  at: [0, -2, -1] }
+      - { id: "mech:placer",         facing: west,  at: [0, -3, -1] }
     vanilla:
       - { block: "LEVER",        at: [-1, 0, 1],   data: "[face=floor,facing=north,powered=true]" }
       - { block: "SMOOTH_STONE", at: [-1, -1, 1] }
@@ -64,9 +64,9 @@ showcases:
       the fan, which turns it back into motion: a directed gust that pushes entities away from its face.
       The more surplus power on the network, the stronger the push.
     blocks:
-      - { id: "rotation:engine", facing: down, at: [0, 0, 0] }   # Y axis (couples up)
-      - { id: "rotation:shaft",  facing: down, at: [0, 1, 0] }
-      - { id: "rotation:fan",    facing: down, at: [0, 2, 0] }   # floor fan = Y axis
+      - { id: "mech:engine", facing: down, at: [0, 0, 0] }   # Y axis (couples up)
+      - { id: "mech:shaft",  facing: down, at: [0, 1, 0] }
+      - { id: "mech:fan",    facing: down, at: [0, 2, 0] }   # floor fan = Y axis
     activate: { fuel: [0, 0, 0] }
     expect:
       - { type: network_powered, at: [0, 1, 0] }
@@ -82,11 +82,11 @@ showcases:
       engine fuel and the whole column winds down.
     blocks:
       # Millstone is Y-axis (powered from above), so the whole chain is a vertical Y column.
-      - { id: "rotation:engine",     facing: down,  at: [0, 2, 0] }
-      - { id: "rotation:shaft",      facing: down,  at: [0, 1, 0] }
+      - { id: "mech:engine",     facing: down,  at: [0, 2, 0] }
+      - { id: "mech:shaft",      facing: down,  at: [0, 1, 0] }
       # `facing` is the clicked face → the head points the OPPOSITE way, so `south` mounts the
       # millstone onto the +z block below. (Axis is hardcoded Y regardless of facing.)
-      - { id: "rotation:millstone", facing: south, at: [0, 0, 0] }
+      - { id: "mech:millstone", facing: south, at: [0, 0, 0] }
     vanilla:
       # The millstone reads items from the container on its mounting face — a barrel here.
       - { block: "BARREL", at: [0, 0, 1] }
@@ -110,9 +110,9 @@ showcases:
       # points the OPPOSITE way, so the drill is `south` to bore NORTH (−z) into the stone — NOT into
       # its own clutch on the +z side. Generator/clutch direction is irrelevant (Z axis either way).
       # The clutch transmits power like a shaft, but can be switched off with redstone to cut the drill.
-      - { id: "rotation:generator", facing: south, at: [0, 0, 2] }
-      - { id: "rotation:clutch",    facing: north, at: [0, 0, 1] }
-      - { id: "rotation:drill",     facing: south, at: [0, 0, 0] }   # bores north (−z) into the stone
+      - { id: "mech:generator", facing: south, at: [0, 0, 2] }
+      - { id: "mech:clutch",    facing: north, at: [0, 0, 1] }
+      - { id: "mech:drill",     facing: south, at: [0, 0, 0] }   # bores north (−z) into the stone
     vanilla:
       - { block: "STONE", at: [0, 0, -1] }   # the block the drill chews
     activate: passive
@@ -128,9 +128,9 @@ showcases:
       engine, the generator needs no upkeep — it runs continuously until a redstone signal disables it.
       The fan turns that rotation into a directed gust that pushes entities away from its face.
     blocks:
-      - { id: "rotation:generator", facing: down, at: [0, 0, 0] }
-      - { id: "rotation:shaft",     facing: down, at: [0, 1, 0] }
-      - { id: "rotation:fan",       facing: down, at: [0, 2, 0] }
+      - { id: "mech:generator", facing: down, at: [0, 0, 0] }
+      - { id: "mech:shaft",     facing: down, at: [0, 1, 0] }
+      - { id: "mech:fan",       facing: down, at: [0, 2, 0] }
     activate: passive
     expect:
       - { type: network_powered, at: [0, 1, 0] }
@@ -148,9 +148,9 @@ showcases:
     blocks:
       # Z-axis chain: generator → reverser → rotator hinge. The generator sits two blocks BEHIND the hinge
       # so neither the swing pulse (east of the hinge) nor the lever (beside the reverser) can disable it.
-      - { id: "rotation:generator", facing: north, at: [0, 0, -2] }
-      - { id: "rotation:reverser",  facing: north, at: [0, 0, -1] }   # lever beside it → reverses the swing
-      - { id: "rotation:rotator",   facing: south, at: [0, 0, 0] }    # hinge, Z axis
+      - { id: "mech:generator", facing: north, at: [0, 0, -2] }
+      - { id: "mech:reverser",  facing: north, at: [0, 0, -1] }   # lever beside it → reverses the swing
+      - { id: "mech:rotator",   facing: south, at: [0, 0, 0] }    # hinge, Z axis
     vanilla:
       # Drawbridge leaf: a 2×2 vertical panel standing up BEHIND the hinge (+z), in the ZY plane at x=0.
       # Seated at floor so the bottom row [0,0,1] is face-adjacent to the hinge — flood-fill reaches it and
@@ -175,10 +175,10 @@ showcases:
       a bevel pair. The horizontal gear then drives a fan on its own axis, so power that entered going up
       leaves going sideways.
     blocks:
-      - { id: "rotation:generator", facing: down, at: [0, 0, 0] }   # Y source
-      - { id: "rotation:gear",      facing: down, at: [0, 1, 0] }   # Y gear, driven from below
-      - { id: "rotation:gear",      facing: west, at: [1, 1, 0] }   # X gear, meshes perpendicular
-      - { id: "rotation:fan",       facing: west, at: [2, 1, 0] }   # X consumer
+      - { id: "mech:generator", facing: down, at: [0, 0, 0] }   # Y source
+      - { id: "mech:gear",      facing: down, at: [0, 1, 0] }   # Y gear, driven from below
+      - { id: "mech:gear",      facing: west, at: [1, 1, 0] }   # X gear, meshes perpendicular
+      - { id: "mech:fan",       facing: west, at: [2, 1, 0] }   # X consumer
     activate: passive
     expect:
       - { type: network_powered, at: [1, 1, 0] }
@@ -195,9 +195,9 @@ showcases:
       banners mean a bigger windmill and far more power.
     blocks:
       # Wall windmill (spins on Z) feeds a Z shaft directly in front of it, into a drill boring +z.
-      - { id: "rotation:huge_windmill", facing: south, at: [0, 0, 0] }   # wall_n → Z axis, blades face +z
-      - { id: "rotation:shaft",         facing: north, at: [0, 0, 1] }
-      - { id: "rotation:drill",         facing: north, at: [0, 0, 2] }   # head→south → bores +z into stone
+      - { id: "mech:huge_windmill", facing: south, at: [0, 0, 0] }   # wall_n → Z axis, blades face +z
+      - { id: "mech:shaft",         facing: north, at: [0, 0, 1] }
+      - { id: "mech:drill",         facing: north, at: [0, 0, 2] }   # head→south → bores +z into stone
     vanilla:
       - { block: "STONE", at: [0, 0, 3] }   # the block the drill chews
     activate: passive
@@ -215,9 +215,9 @@ showcases:
       bobbing without any fuel. (This demo shows the motion; a running press needs items in the barrel to
       actually produce anything.)
     blocks:
-      - { id: "rotation:generator", facing: down,  at: [0, 2, 0] }   # Y source
-      - { id: "rotation:shaft",     facing: down,  at: [0, 1, 0] }
-      - { id: "rotation:press",     facing: south, at: [0, 0, 0] }   # Y machine, mounts on +z block
+      - { id: "mech:generator", facing: down,  at: [0, 2, 0] }   # Y source
+      - { id: "mech:shaft",     facing: down,  at: [0, 1, 0] }
+      - { id: "mech:press",     facing: south, at: [0, 0, 0] }   # Y machine, mounts on +z block
     vanilla:
       - { block: "BARREL", at: [0, 0, 1] }   # container on the press's mounting face
     activate: passive
@@ -234,9 +234,9 @@ showcases:
       pushing its paddles. A stream falls past its rim and sets it turning, and that rotation runs down a
       shaft into a fan. No fuel, no redstone, just flow.
     blocks:
-      - { id: "rotation:water_wheel", facing: north, at: [0, 0, 0] }   # Z axle; spins on flow at its rim
-      - { id: "rotation:shaft",       facing: north, at: [0, 0, 1] }
-      - { id: "rotation:fan",         facing: north, at: [0, 0, 2] }
+      - { id: "mech:water_wheel", facing: north, at: [0, 0, 0] }   # Z axle; spins on flow at its rim
+      - { id: "mech:shaft",       facing: north, at: [0, 0, 1] }
+      - { id: "mech:fan",         facing: north, at: [0, 0, 2] }
     vanilla:
       # Source falls into the wheel's EAST rim [1,0,0] (left air) → a downward current spins the wheel.
       # A stone lip channels it straight down rather than spreading wide. `physics: true` lets it flow.

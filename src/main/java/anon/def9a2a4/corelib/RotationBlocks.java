@@ -34,23 +34,23 @@ final class RotationBlocks {
 
     private RotationBlocks() {}
 
-    // The wrench is declared in custom-items.yml (rotation:wrench); identity is the registry
+    // The wrench is declared in custom-items.yml (mech:wrench); identity is the registry
     // block_type PDC, and its recipe auto-registers from YAML.
     static boolean isWrench(ItemStack item) {
-        return "rotation:wrench".equals(CustomBlockRegistry.getItemTypeId(item));
+        return "mech:wrench".equals(CustomBlockRegistry.getItemTypeId(item));
     }
 
     static void register(CustomBlockRegistry registry, RotationNetwork network,
                          EngineFuelManager fuelManager, MachineRecipes millRecipes,
                          MachineRecipes pressRecipes, RotationConfig config) {
         // Overlay callbacks onto YAML-loaded blocks
-        overlayStandard(registry, network, "rotation:shaft",   RotationNetwork.NodeRole.TRANSMITTER, 0, false);
-        overlayStandard(registry, network, "rotation:gear",    RotationNetwork.NodeRole.TRANSMITTER, 0, true);
+        overlayStandard(registry, network, "mech:shaft",   RotationNetwork.NodeRole.TRANSMITTER, 0, false);
+        overlayStandard(registry, network, "mech:gear",    RotationNetwork.NodeRole.TRANSMITTER, 0, true);
         // Reverser: a plain along-axis transmitter; reversal lives in RotationNetwork.getConnections
-        // (keyed off the "rotation:reverser" id + live redstone + the output side captured at
+        // (keyed off the "mech:reverser" id + live redstone + the output side captured at
         // addNode). cancelPistons so a shove can't relocate it out from under that cached facing
         // (its flip side is fixed at placement, not re-read live).
-        overlayStandard(registry, network, "rotation:reverser", RotationNetwork.NodeRole.TRANSMITTER, 0, false, true);
+        overlayStandard(registry, network, "mech:reverser", RotationNetwork.NodeRole.TRANSMITTER, 0, false, true);
         overlayClutch(registry, network);
         overlayWaterWheel(registry, network, config);
         overlayEngine(registry, network, fuelManager, config);
@@ -62,16 +62,16 @@ final class RotationBlocks {
         overlayFan(registry, network, config);
 
         // Passive sources — detected at network boundary, no callbacks needed
-        network.registerPassiveSource("rotation:windmill", config.getPower("windmill", 1));
-        network.registerPassiveSource("rotation:large_windmill", config.getPower("large_windmill", 5));
-        network.registerPassiveSource("rotation:huge_windmill", config.getPower("huge_windmill", 15));
+        network.registerPassiveSource("mech:windmill", config.getPower("windmill", 1));
+        network.registerPassiveSource("mech:large_windmill", config.getPower("large_windmill", 5));
+        network.registerPassiveSource("mech:huge_windmill", config.getPower("huge_windmill", 15));
 
         // Windmill blade resolver — allows crafted banners to replace default WHITE_BANNER.
         // Each tier is craftable only with the matching banner tier (enforced in
         // CoreLibPlugin.captureBannerIngredients via the block's bannerTier).
-        overlayWindmillResolver(registry, "rotation:windmill", BannerTier.NORMAL, network);
-        overlayWindmillResolver(registry, "rotation:large_windmill", BannerTier.LARGE, network);
-        overlayWindmillResolver(registry, "rotation:huge_windmill", BannerTier.HUGE, network);
+        overlayWindmillResolver(registry, "mech:windmill", BannerTier.NORMAL, network);
+        overlayWindmillResolver(registry, "mech:large_windmill", BannerTier.LARGE, network);
+        overlayWindmillResolver(registry, "mech:huge_windmill", BannerTier.HUGE, network);
     }
 
     // ──────────────────────────────────────────────────────────────────────
@@ -114,7 +114,7 @@ final class RotationBlocks {
     // ──────────────────────────────────────────────────────────────────────
 
     private static void overlayClutch(CustomBlockRegistry registry, RotationNetwork network) {
-        String blockId = "rotation:clutch";
+        String blockId = "mech:clutch";
         CustomHeadBlock block = registry.getType(blockId);
         if (block == null) {
             registry.getPlugin().getLogger().warning("RotationBlocks: block '" + blockId + "' not found — skipping overlay");
@@ -164,7 +164,7 @@ final class RotationBlocks {
     private static void overlayWaterWheel(CustomBlockRegistry registry, RotationNetwork network,
                                               RotationConfig config) {
         int waterWheelPower = config.getPower("water_wheel", 2);
-        String blockId = "rotation:water_wheel";
+        String blockId = "mech:water_wheel";
         CustomHeadBlock block = registry.getType(blockId);
         if (block == null) { warn(registry, blockId); return; }
         registry.register(block.toBuilder()
@@ -246,7 +246,7 @@ final class RotationBlocks {
             CustomHeadBlock type = registry.getTypeFromBlock(b);
             if (type != null) registry.applyConfig(b, type, target, 0);
             network.removeNode(key);
-            network.addNode(b, "rotation:water_wheel", axis,
+            network.addNode(b, "mech:water_wheel", axis,
                 spinning ? RotationNetwork.NodeRole.SOURCE : RotationNetwork.NodeRole.TRANSMITTER,
                 spinning ? power : 0, false); // addNode recalcs with the fresh direction
             return;
@@ -294,7 +294,7 @@ final class RotationBlocks {
     private static void overlayEngine(CustomBlockRegistry registry, RotationNetwork network,
                                       EngineFuelManager fuelManager, RotationConfig config) {
         int enginePower = config.getPower("engine", 5);
-        String blockId = "rotation:engine";
+        String blockId = "mech:engine";
         CustomHeadBlock block = registry.getType(blockId);
         if (block == null) { warn(registry, blockId); return; }
         registry.register(block.toBuilder()
@@ -449,7 +449,7 @@ final class RotationBlocks {
         // Wall-mounted, powered from the top: rotation axis is Y (a shaft above drives it).
         // Host container is read separately via the stored wall-head facing.
         overlayConsumerMachine(registry, network, new ConsumerSpec(
-            "rotation:millstone",
+            "mech:millstone",
             b -> RotationNetwork.Axis.Y,
             config.getPower("millstone", 1),
             millstoneTickInterval,
@@ -464,7 +464,7 @@ final class RotationBlocks {
         // Same processing geometry as the millstone: wall-mounted, powered from the top (Y),
         // host container behind, outputs ejected below. No manual fallback — automation only.
         overlayConsumerMachine(registry, network, new ConsumerSpec(
-            "rotation:press",
+            "mech:press",
             b -> RotationNetwork.Axis.Y,
             config.getPower("press", 1),
             config.pressTickInterval,
@@ -479,7 +479,7 @@ final class RotationBlocks {
         // millstone. Pulls block items from the host container behind and places them into the
         // cell in front (the wall-head facing direction), one per cycle.
         overlayConsumerMachine(registry, network, new ConsumerSpec(
-            "rotation:placer",
+            "mech:placer",
             b -> RotationNetwork.Axis.Y,
             config.getPower("placer", 1),
             config.placerTickInterval,
@@ -677,7 +677,7 @@ final class RotationBlocks {
         // Rotation axis = the blade spin axis = the blow axis: floor heads store DOWN (blow up → Y),
         // wall heads store N/S (Z) or E/W (X). No host container, so a plain wrench/debug interact.
         overlayConsumerMachine(registry, network, new ConsumerSpec(
-            "rotation:fan",
+            "mech:fan",
             b -> fanAxis(readFacing(b)),
             config.getPower("fan", 1),
             config.fanTickInterval,
@@ -751,7 +751,7 @@ final class RotationBlocks {
     private static void overlayGenerator(CustomBlockRegistry registry, RotationNetwork network,
                                             RotationConfig config) {
         int generatorPower = config.getPower("generator", 1);
-        String blockId = "rotation:generator";
+        String blockId = "mech:generator";
         CustomHeadBlock block = registry.getType(blockId);
         if (block == null) { warn(registry, blockId); return; }
         registry.register(block.toBuilder()
@@ -792,7 +792,7 @@ final class RotationBlocks {
     // Drill: consumer, breaks block in facing direction with break animation
     // ──────────────────────────────────────────────────────────────────────
 
-    private static final NamespacedKey DRILL_FACING_KEY = new NamespacedKey("rotation", "drill_facing");
+    private static final NamespacedKey DRILL_FACING_KEY = new NamespacedKey("mech", "drill_facing");
 
     private static final ItemStack NETHERITE_PICK = new ItemStack(Material.NETHERITE_PICKAXE);
     private static final double DRILL_ANIM_RADIUS = 48.0;
@@ -816,7 +816,7 @@ final class RotationBlocks {
         drillTickInterval = config.drillTickInterval;
         drillBreakStages = config.drillBreakStages;
         int drillPower = config.getPower("drill", 1);
-        String blockId = "rotation:drill";
+        String blockId = "mech:drill";
         CustomHeadBlock block = registry.getType(blockId);
         if (block == null) { warn(registry, blockId); return; }
         registry.register(block.toBuilder()

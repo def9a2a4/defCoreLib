@@ -31,7 +31,7 @@ import java.util.logging.Logger;
  *   - input: SWEET_BERRIES                                       # full form
  *     input_amount: 3
  *     outputs:
- *       - { custom: rotation:sweet_berry_juice }
+ *       - { custom: mech:sweet_berry_juice }
  *       - { output: IRON_NUGGET, amount: 1, chance: 0.1 }
  * </pre>
  */

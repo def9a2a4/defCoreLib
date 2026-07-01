@@ -2,7 +2,7 @@
 # Modeled as CustomHeadBlock entries with `item_material` + `placeable: false`, so they
 # reuse createItem / recipe-ingredient validation / give with no parallel item system.
 # (Real textures later via resource-pack custom_model_data; for now distinct by name.)
-namespace: rotation
+namespace: mech
 blocks:
   # A real Potion of Instant Health under the hood (base type HEALING → red, heals on drink).
   sweet_berry_juice:
@@ -47,7 +47,7 @@ blocks:
               C: { material: COPPER_INGOT }
 
   # Rotation Wrench: right-click rotation-power blocks to turn them. Identity is the
-  # registry block_type PDC (rotation:wrench); behavior is in RotationBlocks.isWrench.
+  # registry block_type PDC (mech:wrench); behavior is in RotationBlocks.isWrench.
   wrench:
     name: "&6Rotation Wrench"
     lore:

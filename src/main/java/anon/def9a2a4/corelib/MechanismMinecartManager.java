@@ -46,7 +46,7 @@ final class MechanismMinecartManager implements Listener {
     private static final double DEFAULT_MINECART_MAX_SPEED = 0.4d;
 
     /** Registry id of the mechanism-minecart custom item (declared in rotation-blocks.yml). */
-    private static final String MECH_MINECART_ID = "rotation:mechanism_minecart";
+    private static final String MECH_MINECART_ID = "mech:mechanism_minecart";
 
     private final JavaPlugin plugin;
     private final CustomBlockRegistry registry;

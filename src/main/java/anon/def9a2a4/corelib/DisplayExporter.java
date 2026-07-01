@@ -212,7 +212,7 @@ final class DisplayExporter implements Listener {
     private Quad quadFor(CustomHeadBlock type, Quad demo, Quad rotation, Quad slabs, Quad windmill) {
         String ns = type.namespace();
         if (ns.equals("verticalslabs")) return slabs;
-        if (ns.equals("rotation")) return type.typeId().contains("windmill") ? windmill : rotation;
+        if (ns.equals("mech")) return type.typeId().contains("windmill") ? windmill : rotation;
         return demo;   // demo + any other namespace
     }
 

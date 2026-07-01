@@ -39,7 +39,7 @@ import java.util.UUID;
 final class GlueAuthoring implements Listener {
 
     /** Custom-block ids that can own a glued structure (skull anchors). */
-    private static final Set<String> ANCHOR_IDS = Set.of("demo:door_controller", "rotation:rotator");
+    private static final Set<String> ANCHOR_IDS = Set.of("demo:door_controller", "mech:rotator");
 
     /** A cuboid-fill box larger than this many cells is rejected (avoids enumerating huge volumes). */
     private static final int MAX_BOX_VOLUME = 32_768;
@@ -399,7 +399,7 @@ final class GlueAuthoring implements Listener {
     /** Whether this anchor's mechanism rotates about a horizontal (X/Z drawbridge) axis. */
     private boolean isDrawbridgeAnchor(Block anchorBlock) {
         CustomHeadBlock type = registry.getTypeFromBlock(anchorBlock);
-        if (type == null || !"rotation:rotator".equals(type.fullId())) return false; // doors are Y
+        if (type == null || !"mech:rotator".equals(type.fullId())) return false; // doors are Y
         String state = registry.getState(anchorBlock);
         if (state == null) return false;
         RotationNetwork.Axis axis = RotationNetwork.axisFromState(state);
