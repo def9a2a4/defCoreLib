@@ -130,8 +130,21 @@ public record IngredientCapture(
             lines.add(Component.text(" • " + prefix + e.getKey(), NamedTextColor.GRAY)
                     .decoration(TextDecoration.ITALIC, false));
         }
-        List<Component> lore = (replaceLore || !meta.hasLore())
-                ? new ArrayList<>() : new ArrayList<>(meta.lore());
+        List<Component> lore;
+        if (replaceLore || !meta.hasLore()) {
+            lore = new ArrayList<>();
+        } else {
+            lore = new ArrayList<>(meta.lore());
+            // Idempotent append: drop a previously-appended block (capture runs on both
+            // PrepareItemCraft and CraftItem, so the second pass must not stack a second copy).
+            var plain = net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer.plainText();
+            for (int i = 0; i < lore.size(); i++) {
+                if (plain.serialize(lore.get(i)).equals(loreHeader)) {
+                    lore = new ArrayList<>(lore.subList(0, i));
+                    break;
+                }
+            }
+        }
         lore.addAll(lines);
         meta.lore(lore);
     }
