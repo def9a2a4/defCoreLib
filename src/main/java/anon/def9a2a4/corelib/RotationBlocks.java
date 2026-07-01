@@ -301,7 +301,7 @@ final class RotationBlocks {
                 if (inv == null) return false;
                 var key = CustomBlockRegistry.LocationKey.of(b);
                 int fuelTicks = fuelManager.getFuel(key);
-                int seconds = fuelTicks / 20;
+                int seconds = fuelTicks;
                 var view = event.getPlayer().openInventory(inv);
                 if (view != null) {
                     view.setTitle("Engine - " + seconds + "s fuel");
@@ -534,16 +534,14 @@ final class RotationBlocks {
         for (int i = 0; i < adjacent.getSize(); i++) {
             ItemStack item = adjacent.getItem(i);
             if (item == null || item.getType().isAir()) continue;
-            var leftover = internal.addItem(item.clone());
+            ItemStack single = item.clone();
+            single.setAmount(1);
+            var leftover = internal.addItem(single);
             if (leftover.isEmpty()) {
-                adjacent.setItem(i, null);
-            } else {
-                int transferred = item.getAmount() - leftover.values().iterator().next().getAmount();
-                if (transferred > 0) {
-                    item.setAmount(item.getAmount() - transferred);
-                    adjacent.setItem(i, item);
-                }
+                item.setAmount(item.getAmount() - 1);
+                adjacent.setItem(i, item.getAmount() <= 0 ? null : item);
             }
+            return;
         }
     }
 

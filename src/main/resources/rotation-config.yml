@@ -39,13 +39,13 @@ placer:
   tick-interval: 20   # ticks between placements (one block placed per cycle)
 
 fuel:
-  COAL: 200
-  CHARCOAL: 160
-  COAL_BLOCK: 1600
-  LAVA_BUCKET: 2000
-  BLAZE_ROD: 300
-  STICK: 25
-  # Also: all *_LOG/*_WOOD/*_STEM/*_HYPHAE → 150, all *_PLANKS → 75
+  COAL: 16
+  CHARCOAL: 12
+  COAL_BLOCK: 144    # 16 * 9
+  LAVA_BUCKET: 100
+  BLAZE_ROD: 20
+  STICK: 1
+  # Also: all *_LOG/*_WOOD/*_STEM/*_HYPHAE → 8, all *_PLANKS → 3
   # (registered dynamically via Material.values() scan)
 
 power:

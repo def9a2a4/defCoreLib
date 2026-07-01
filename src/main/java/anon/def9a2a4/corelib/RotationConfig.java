@@ -115,10 +115,10 @@ final class RotationConfig {
                 String name = m.name();
                 if (name.endsWith("_LOG") || name.endsWith("_WOOD")
                         || name.endsWith("_STEM") || name.endsWith("_HYPHAE")) {
-                    fuelValues.putIfAbsent(m, 150);
+                    fuelValues.putIfAbsent(m, 8);
                 }
                 if (name.endsWith("_PLANKS")) {
-                    fuelValues.putIfAbsent(m, 75);
+                    fuelValues.putIfAbsent(m, 3);
                 }
             }
             loaded++;
@@ -141,12 +141,12 @@ final class RotationConfig {
     }
 
     private void initDefaultFuel() {
-        fuelValues.put(Material.COAL, 200);
-        fuelValues.put(Material.CHARCOAL, 160);
-        fuelValues.put(Material.COAL_BLOCK, 1600);
-        fuelValues.put(Material.LAVA_BUCKET, 2000);
-        fuelValues.put(Material.BLAZE_ROD, 300);
-        fuelValues.put(Material.STICK, 25);
+        fuelValues.put(Material.COAL, 16);
+        fuelValues.put(Material.CHARCOAL, 12);
+        fuelValues.put(Material.COAL_BLOCK, 144);
+        fuelValues.put(Material.LAVA_BUCKET, 100);
+        fuelValues.put(Material.BLAZE_ROD, 20);
+        fuelValues.put(Material.STICK, 1);
         for (Material m : Material.values()) {
             String name = m.name();
             if (name.endsWith("_LOG") || name.endsWith("_WOOD")
