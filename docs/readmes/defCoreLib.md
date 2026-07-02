@@ -1,21 +1,14 @@
 # DefCoreLib
 
-Shared core library for the *def* plugin family - a data-driven custom-block engine plus demo
-content. On its own it only ships the engine and some command-only demo items; other plugins build
-their features on top of it.
+Shared core library for the [*def9a2a4*](https://def9a2a4.github.io/) plugin family - a data-driven custom-block engine plus demo content. On its own it only ships the engine and some command-only demo items; other plugins build their features on top of it.
 
 ## What it provides
 
-- **Custom-block engine** - YAML-driven player-head blocks with states, redstone behavior,
-  particles, light, storage, and animated display entities.
-- **Custom items & heads, recipe registration, and persistence** (chunk scan + self-healing) that
-  companion plugins reuse instead of reimplementing.
-- **Mechanism engine** - turns groups of blocks into moving display entities + colliders:
-  glue-based doors/drawbridges and mechanism minecarts.
-- **Recipe gating** - companion plugins switch their content's recipes on by namespace, so
-  installing one adds a coherent, craftable feature set.
-- ~20 **command-only** demo blocks (candles, redstone/binary displays, storage barrels, alarms,
-  spinning/pulsing decorations) - grab them with `/defcorelib give`. Not meant to be useful, just there for testing the functionality.
+- **Custom-block engine** - YAML-driven player-head blocks with states, redstone behavior, particles, light, storage, and animated display entities.
+- **Custom items & heads, recipe registration, and persistence** (chunk scan + self-healing) that companion plugins reuse instead of reimplementing.
+- **Mechanism engine** - turns groups of blocks into moving display entities + colliders: glue-based doors/drawbridges and mechanism minecarts.
+- **Recipe gating** - companion plugins switch their content's recipes on by namespace, so installing one adds a coherent, craftable feature set.
+- ~20 **command-only** demo blocks (candles, redstone/binary displays, storage barrels, alarms, spinning/pulsing decorations) - grab them with `/defcorelib give`. Not meant to be useful, just there for testing the functionality.
 
 ## Used by
 

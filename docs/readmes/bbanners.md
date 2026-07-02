@@ -2,7 +2,7 @@
 
 Flag banners and oversized banner tiers.
 
-![Normal and large banner tiers](https://def9a2a4.github.io/defCoreLib-docs/readmes/assets/bbanners/large.png)
+[![Normal and large banner tiers](https://def9a2a4.github.io/defCoreLib-docs/readmes/assets/bbanners/large.png)](https://def9a2a4.github.io/defCoreLib-docs/index.html?q=banner)
 
 
 ## Features

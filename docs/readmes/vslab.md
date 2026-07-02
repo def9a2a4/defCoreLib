@@ -25,6 +25,7 @@ See [the catalog of vertical slabs](https://def9a2a4.github.io/defCoreLib-docs/i
 - Issues: https://github.com/def9a2a4/defCoreLib/issues
 
 
+[![Catalog](https://def9a2a4.github.io/defCoreLib-docs/readmes/assets/vslab/catalog.png)](https://def9a2a4.github.io/defCoreLib-docs/index.html?q=slab)
 
 
 Finally, a new longest item name:
