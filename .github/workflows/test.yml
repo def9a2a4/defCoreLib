@@ -53,10 +53,8 @@ jobs:
           mkdir -p ci-logs
           make showcase-capture CATALOG_ARGS=--no-assets 2>&1 | tee ci-logs/capture.log
 
-      - name: Showcase test (assert YAML expect conditions)
-        run: |
-          mkdir -p ci-logs
-          make showcase-test 2>&1 | tee ci-logs/showcase-test.log
+      # Functional showcase-test now runs across the version matrix in server-test.yml
+      # (Version Matrix workflow); this job covers docs/catalog + showcase capture.
 
       - name: Check for logged errors
         if: always()

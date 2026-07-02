@@ -109,6 +109,52 @@ showcase-test:
 	cd test-server && timeout --foreground -k 30 180 java -Ddefcorelib.showcaseTest=true \
 		-Xmx2G -jar $(PAPER_JAR) --nogui --port 25576 < /dev/null
 
+# ---------------------------------------------------------------------------
+# Multi-version CI matrix (see .github/workflows/server-test.yml).
+# Boots the plugins against a chosen server flavour + Minecraft version. Unlike
+# the local `showcase-test` above, this does NOT run gradle: it uses the shaded
+# jars already in bin/ (a downloaded build artifact), so 26.x cells can run on
+# Java 25 without hitting the Java-21 gradle toolchain.
+# ---------------------------------------------------------------------------
+SERVER_VARIANT ?= paper
+MINECRAFT_VERSION ?= 1.21.11
+DOWNLOAD_CACHE := .temp/download-cache
+SERVER_JAR := $(DOWNLOAD_CACHE)/$(SERVER_VARIANT)-$(MINECRAFT_VERSION).jar
+
+# Paper: Fill API (v2 was retired). builds/latest returns the download URL directly.
+$(DOWNLOAD_CACHE)/paper-%.jar:
+	@mkdir -p $(DOWNLOAD_CACHE)
+	url=$$(curl -fsSL -H "User-Agent: defCoreLib-ci (github actions)" \
+		"https://fill.papermc.io/v3/projects/paper/versions/$*/builds/latest" \
+		| jq -r '.downloads."server:default".url'); \
+	curl -fsSL -o $@ "$$url"
+
+# Purpur: resolve the latest build for the version, then download it.
+$(DOWNLOAD_CACHE)/purpur-%.jar:
+	@mkdir -p $(DOWNLOAD_CACHE)
+	build=$$(curl -fsSL "https://api.purpurmc.org/v2/purpur/$*" | jq -r '.builds.latest'); \
+	curl -fsSL -o $@ "https://api.purpurmc.org/v2/purpur/$*/$$build/download"
+
+.PHONY: test-server-download
+test-server-download: $(SERVER_JAR)
+
+# Self-asserting showcase test on the matrixed server (halts 0=pass / 1=fail, no `|| true`).
+.PHONY: showcase-test-ci
+showcase-test-ci: test-server-download
+	mkdir -p test-server/plugins
+	rm -f test-server/plugins/*.jar
+	cp bin/*.jar test-server/plugins/
+	cp $(SERVER_JAR) test-server/server.jar
+	[ -f test-server/eula.txt ] || echo 'eula=true' > test-server/eula.txt
+	[ -f test-server/server.properties ] || printf '%s\n' \
+		'online-mode=false' 'enforce-secure-profile=false' 'gamemode=creative' 'allow-flight=true' \
+		'difficulty=peaceful' 'spawn-monsters=false' 'spawn-protection=0' 'level-type=flat' \
+		'generate-structures=false' 'server-port=25576' 'level-name=world' \
+		'motd=DefCoreLib showcase test' \
+		> test-server/server.properties
+	cd test-server && timeout --foreground -k 30 180 java -Ddefcorelib.showcaseTest=true \
+		-Xmx2G -jar server.jar --nogui --port 25576 < /dev/null
+
 # Showcase capture: build the demo machines, run them, read back their live display + animation data
 # into showcase-spec.json (then generate_catalog folds it into showcases.json for the docs page).
 .PHONY: showcase-capture

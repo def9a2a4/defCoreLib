@@ -1,0 +1,92 @@
+name: Version Matrix
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  # Build the four shaded plugin jars once (Java 21) and share them with every
+  # matrix cell, so the cells never invoke gradle — 26.x cells can then run on
+  # Java 25 without a Java-21 toolchain conflict.
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Java 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Build plugins
+        run: make build
+
+      - name: Upload plugin jars
+        uses: actions/upload-artifact@v4
+        with:
+          name: plugins
+          path: bin/*.jar
+
+  showcase-test:
+    needs: build
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        minecraft: ['1.21.11', '26.1.2', '26.2']
+        server: ['paper', 'purpur']
+
+    name: ${{ matrix.server }} ${{ matrix.minecraft }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # 26.x servers require Java 25; 1.21.x run on Java 21.
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: ${{ startsWith(matrix.minecraft, '26.') && '25' || '21' }}
+
+      - name: Download plugin jars
+        uses: actions/download-artifact@v4
+        with:
+          name: plugins
+          path: bin/
+
+      - name: Showcase test
+        shell: bash
+        run: |
+          set -euo pipefail   # so make's assertion failure survives the tee pipe
+          mkdir -p ci-logs
+          make showcase-test-ci \
+            MINECRAFT_VERSION=${{ matrix.minecraft }} \
+            SERVER_VARIANT=${{ matrix.server }} \
+            2>&1 | tee ci-logs/showcase-${{ matrix.server }}-${{ matrix.minecraft }}.log
+
+      - name: Check for logged errors
+        if: always()
+        run: |
+          # Same filter as test.yml: ignore Mojang's benign "No key layers in
+          # MapLike[{}]" banner-codec noise (patternless windmill-blade banners);
+          # fail on any other ERROR/FATAL/SEVERE/stack-trace/Caused-by line.
+          if grep -nE ' (ERROR|FATAL)\]|SEVERE\]|^[[:space:]]+at [A-Za-z]|Caused by:' ci-logs/*.log \
+               | grep -v 'No key layers in MapLike'; then
+            echo "::error::Errors were logged during the showcase test"
+            exit 1
+          fi
+          echo "No logged errors found."
+
+      - name: Upload logs on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: logs-${{ matrix.server }}-${{ matrix.minecraft }}
+          path: ci-logs/
