@@ -38,6 +38,7 @@ tasks {
 
     jar {
         archiveBaseName.set("DefCoreLib")
+        archiveClassifier.set("plain")   // avoid colliding with shadowJar's DefCoreLib-0.1.0.jar
         manifest {
             attributes["paperweight-mappings-namespace"] = "mojang"
         }
