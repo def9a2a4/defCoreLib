@@ -35,6 +35,8 @@ body {
   padding: 20px;
 }
 
+a { color: #55FF55; }
+
 h1 {
   text-align: center;
   color: #fff;
@@ -235,7 +237,7 @@ h1 {
 /* "Obtained from" reverse links: which machine produces this item. */
 .produced-by { margin-bottom: 12px; }
 .produced-by-label { color: #4ecca3; font-size: 0.85em; margin-bottom: 6px; }
-a.produced-by-machine { color: #4ecca3; text-decoration: none; }
+a.produced-by-machine { color: #55FF55; text-decoration: none; }
 a.produced-by-machine:hover { text-decoration: underline; }
 .slot .chance {
   position: absolute;
@@ -286,7 +288,7 @@ a.slot { text-decoration: none; color: inherit; }
 .detail-wrap { max-width: 1200px; margin: 0 auto; }
 .back-link {
   display: inline-block;
-  color: #4ecca3;
+  color: #55FF55;
   text-decoration: none;
   margin-bottom: 20px;
   font-size: 0.85em;
@@ -519,4 +521,4 @@ a.block-card:hover { border-color: #4ecca3; }
   justify-content: center;
   overflow: hidden;
 }
-.showcase-backlink-name { font-size: 0.92em; text-align: center; color: #4ecca3; word-break: break-word; }
+.showcase-backlink-name { font-size: 0.92em; text-align: center; color: #55FF55; word-break: break-word; }
