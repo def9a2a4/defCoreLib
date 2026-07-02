@@ -64,8 +64,12 @@ jobs:
           # Match ERROR/FATAL/SEVERE severity lines, stack-trace frames, and
           # chained exceptions — but NOT benign WARN lines that merely mention an
           # exception in their text (the exporter warns about items with null
-          # textures at WARN level).
-          if grep -nE ' (ERROR|FATAL)\]|SEVERE\]|^[[:space:]]+at [A-Za-z]|Caused by:' ci-logs/*.log; then
+          # textures at WARN level), and NOT Mojang's "No key layers in MapLike[{}]"
+          # codec noise: windmill blades placed without a crafted banner fall back to
+          # a patternless WHITE_BANNER, which the server logs at ERROR while still
+          # rendering fine (showcase-test's assertions still pass).
+          if grep -nE ' (ERROR|FATAL)\]|SEVERE\]|^[[:space:]]+at [A-Za-z]|Caused by:' ci-logs/*.log \
+               | grep -v 'No key layers in MapLike'; then
             echo "::error::Errors were logged during the headless boot (see matches above)"
             exit 1
           fi
