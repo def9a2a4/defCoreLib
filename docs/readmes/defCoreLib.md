@@ -4,8 +4,6 @@ Shared core library for the *def* plugin family - a data-driven custom-block eng
 content. On its own it only ships the engine and some command-only demo items; other plugins build
 their features on top of it.
 
-<!-- img: demo blocks showcase -->
-
 ## What it provides
 
 - **Custom-block engine** - YAML-driven player-head blocks with states, redstone behavior,
@@ -27,6 +25,14 @@ DefCoreLib is a dependency other plugins install alongside:
 - **[BetterBanners](https://github.com/def9a2a4/defCoreLib/blob/main/docs/readmes/bbanners.md)** - flag banners + large/huge banners
 - **[Mechanism](https://github.com/def9a2a4/defCoreLib/blob/main/docs/readmes/mech.md)** - rotation mechanisms, glue, mechanism minecarts
 - [**Pipes**](https://github.com/def9a2a4/Pipes) - item-transport pipes
+
+## Gallery
+
+| Plugin | Preview |
+| --- | --- |
+| [VerticalSlabs](https://github.com/def9a2a4/defCoreLib/blob/main/docs/readmes/vslab.md) | <img src="https://def9a2a4.github.io/defCoreLib-docs/readmes/assets/vslab/vslabs.png" width="220"> <img src="https://def9a2a4.github.io/defCoreLib-docs/readmes/assets/vslab/catalog.png" width="220"> |
+| [BetterBanners](https://github.com/def9a2a4/defCoreLib/blob/main/docs/readmes/bbanners.md) | <img src="https://def9a2a4.github.io/defCoreLib-docs/readmes/assets/bbanners/all.png" width="220"> <img src="https://def9a2a4.github.io/defCoreLib-docs/readmes/assets/bbanners/huge.png" width="220"> |
+| [Mechanism](https://github.com/def9a2a4/defCoreLib/blob/main/docs/readmes/mech.md) | <img src="https://def9a2a4.github.io/defCoreLib-docs/readmes/assets/mech/mech.gif" width="220"> <img src="https://def9a2a4.github.io/defCoreLib-docs/readmes/assets/mech/mech-ingame.gif" width="220"> <img src="https://def9a2a4.github.io/defCoreLib-docs/readmes/assets/mech/catalog-1.png" width="220"> |
 
 ## Commands
 

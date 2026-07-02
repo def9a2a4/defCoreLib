@@ -64,18 +64,21 @@ docs-fast:
 
 # Copy the deployable demo website (static site) from docs/ into the sibling
 # defCoreLib-docs/ deploy directory. "Site only": the HTML pages plus util/, data/,
-# assets/, and skin-editor/ — everything the browser loads. README.md, readmes/, and
-# todo/ are source/planning docs and are NOT copied. Mirror semantics: the managed
-# paths are removed first so files deleted from docs/ also disappear from the deploy
-# dir; anything else there (e.g. a .git repo) is left untouched.
+# assets/, skin-editor/, and readmes/ (the plugin READMEs + their images, which the
+# READMEs reference by their deployed remote URL) — everything the browser loads.
+# README.md and todo/ are source/planning docs and are NOT copied. The raw
+# readmes/assets/mech/old/ screencasts are gitignored and dropped from the deploy.
+# Mirror semantics: the managed paths are removed first so files deleted from docs/
+# also disappear from the deploy dir; anything else there (e.g. a .git repo) is left untouched.
 .PHONY: docs-site
 docs-site:
 	mkdir -p ../defCoreLib-docs
 	rm -rf ../defCoreLib-docs/util ../defCoreLib-docs/data \
-		../defCoreLib-docs/assets ../defCoreLib-docs/skin-editor ../defCoreLib-docs/*.html
+		../defCoreLib-docs/assets ../defCoreLib-docs/skin-editor ../defCoreLib-docs/readmes ../defCoreLib-docs/*.html
 	cp docs/*.html ../defCoreLib-docs/
-	cp -r docs/util docs/data docs/assets docs/skin-editor ../defCoreLib-docs/
+	cp -r docs/util docs/data docs/assets docs/skin-editor docs/readmes ../defCoreLib-docs/
 	rm -f ../defCoreLib-docs/data/.gitignore
+	rm -rf ../defCoreLib-docs/readmes/assets/mech/old
 
 # Strip embedded metadata (tIME timestamps, tEXt/EXIF comments) from the README
 # asset PNGs. In place, via ImageMagick; pixel data is untouched. Makes the images
