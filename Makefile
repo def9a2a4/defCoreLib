@@ -78,7 +78,7 @@ docs-site:
 	cp docs/*.html ../defCoreLib-docs/
 	cp -r docs/util docs/data docs/assets docs/skin-editor docs/readmes ../defCoreLib-docs/
 	rm -f ../defCoreLib-docs/data/.gitignore
-	rm -rf ../defCoreLib-docs/readmes/assets/mech/old
+	rm -f ../defCoreLib-docs/readmes/.gitignore
 
 # Strip embedded metadata (tIME timestamps, tEXt/EXIF comments) from the README
 # asset PNGs. In place, via ImageMagick; pixel data is untouched. Makes the images
