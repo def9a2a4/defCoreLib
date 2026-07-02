@@ -23,3 +23,10 @@ See [the catalog of vertical slabs](https://def9a2a4.github.io/defCoreLib-docs/i
 - Full type list & recipes: https://def9a2a4.github.io/defCoreLib-docs/index.html?q=slab
 - Repository: https://github.com/def9a2a4/defCoreLib/
 - Issues: https://github.com/def9a2a4/defCoreLib/issues
+
+
+
+
+Finally, a new longest item name:
+
+![waxed weathered cut copper vertical slab](https://def9a2a4.github.io/defCoreLib-docs/readmes/assets/vslab/waxed-weathered-cut-copper-vertical-slab.png)
