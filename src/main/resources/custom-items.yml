@@ -10,6 +10,9 @@ blocks:
     lore:
       - "&7Pressed from sweet berries"
       - "&7Drink for instant health"
+    catalog_notes:
+      - "&fMade by pressing sweet berries in the Extractor Press."
+      - "&7It's a Potion of Instant Health under the hood — drink it to heal."
     item_material: POTION
     placeable: false
     potion:
@@ -22,6 +25,9 @@ blocks:
     lore:
       - "&7Pressed from seeds"
       - "&7Drink for saturation"
+    catalog_notes:
+      - "&fMade by pressing seeds in the Extractor Press."
+      - "&7Drink it for a short Saturation boost."
     item_material: POTION
     placeable: false
     potion:
@@ -36,6 +42,9 @@ blocks:
     name: "&7Bearing"
     lore:
       - "&7A precision mechanical component"
+    catalog_notes:
+      - "&fThe core component most rotation machines are built from — windmills, the fan, the clutch, the engine, and more all need one."
+      - "&7Craft a batch of these first when starting a mechanism build."
     texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMmQzMmJlY2RiNDYzMjYzMTRjZDBkMDU1MWIzYTNmMjhlMTc1NzQ2NjM4MDgzMDUwYWY4M2VkYmEyNDlhMWZmMiJ9fX0="
     placeable: false
     recipes:
@@ -53,6 +62,10 @@ blocks:
     lore:
       - "&7Rotates rotation-power blocks."
       - "&7Right-click a machine to turn it."
+    catalog_notes:
+      - "&fRight-click any rotation machine to rotate it in place."
+      - "&fPlacing a machine points its face at the block face you click, so the wrench is the quick way to re-aim it afterward."
+      - "&7Unbreakable — one wrench lasts forever."
     item_material: GOLDEN_AXE
     placeable: false
     item_glint: true

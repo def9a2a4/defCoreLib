@@ -62,6 +62,9 @@ blocks:
     name: "&eShaft"
     lore:
       - "&7Transmits rotational power"
+    catalog_notes:
+      - "&fA transmitter: it carries rotation power in a straight line along the axis it points."
+      - "&7Produces and consumes nothing on its own — use shafts to route power from a source to a machine."
     # Placed head: copper shaft ring (orientation-dependent per state). Item: copper rod.
     texture: "@shaft_ring_fwd"
     item_texture: "@rod_fwd"
@@ -126,6 +129,10 @@ blocks:
     lore:
       - "&7Transfers power along axis"
       - "&7Connects perpendicular gears"
+    catalog_notes:
+      - "&fWorks like a shaft, but also meshes with gears on its perpendicular sides."
+      - "&fUse it to turn power around a 90° corner, or to split one input into several directions."
+      - "&7Still carries power straight along its own axis, just like a shaft."
     # Placed head: copper shaft ring (orientation-dependent per state).
     texture: "@shaft_ring_fwd"
     # Copper Gear (item in hand)
@@ -228,6 +235,10 @@ blocks:
     lore:
       - "&7Transmits rotation power"
       - "&7Disconnects when redstone powered"
+    catalog_notes:
+      - "&fA shaft you can switch off: give it a redstone signal and it disconnects, cutting power from passing through."
+      - "&7With no redstone signal it passes power normally, like a plain shaft."
+      - "&7Handy as a clutch/gate to start and stop a branch of your network."
     # Copper bearing head (orientation-dependent per state).
     texture: "@clutch_fwd"
     item_texture: "@clutch_fwd"
@@ -289,6 +300,9 @@ blocks:
     lore:
       - "&7Transmits rotation power"
       - "&7Reverses spin direction when redstone powered"
+    catalog_notes:
+      - "&fFlips the spin direction when it gets a redstone signal — but stays connected, unlike the clutch which disconnects."
+      - "&7Use it to make part of a network turn the opposite way (e.g. to close a door driven by the same source)."
     # Reverser head (orientation-dependent per state).
     texture: "@reverser_fwd"
     item_texture: "@reverser_fwd"
@@ -346,6 +360,11 @@ blocks:
       - "&7Swings an attached oak-plank door/drawbridge"
       - "&7Floor = door, wall = drawbridge"
       - "&7Right-click: cycle open angle"
+    catalog_notes:
+      - "&fA hinge that swings an attached oak-plank structure: placed on the floor it acts like a door, on a wall like a drawbridge."
+      - "&fThe network's spin direction decides which way it swings — one direction opens, the other closes."
+      - "&7Right-click to cycle how far it opens (90°, 180°, or 270°)."
+      - "&7v1 swings oak-plank structures only."
     # Hinge head: plated copper bearing (orientation-dependent per state).
     texture: "@rotator_side"
     item_texture: "@rotator_side"
@@ -403,6 +422,9 @@ blocks:
     lore:
       - "&7Produces 2 Power when adjacent to water"
       - "&7Place on a wall"
+    catalog_notes:
+      - "&fA source worth 2 Power. Mount it on a wall next to flowing or still water and it spins from the current."
+      - "&7It needs water on its perpendicular faces to turn — no water, no power. A passive source otherwise (no fuel)."
     # Placed hub head = windmill hub (copber2-fwd, same as bearing); item = copper wheel.
     texture: "@windmill_hub_fwd"
     item_texture: "@water_wheel_copper"
@@ -467,6 +489,10 @@ blocks:
     lore:
       - "&7Produces 5 Power when fueled"
       - "&7Right-click to open fuel storage"
+    catalog_notes:
+      - "&fThe strongest source at 5 Power, but it burns fuel — right-click to open its fuel slot."
+      - "&fEats the usual furnace fuels: coal, charcoal, blaze rods, lava buckets, logs, planks, sticks, and so on. Higher-value fuels last longer."
+      - "&7Puffs smoke while it's running. Can face any direction."
     # Bronze Ship Engine (9172c1e7)
     texture: "@bronze_engine"
     drops: self
@@ -544,6 +570,10 @@ blocks:
     lore:
       - "&7Produces 1 Power constantly"
       - "&7Turns off when redstone powered"
+    catalog_notes:
+      - "&fA steady 1-Power source that runs on its own — no fuel needed."
+      - "&fInverted redstone: it runs while UNpowered and switches OFF when you give it a redstone signal, so you can gate it with a lever or clock."
+      - "&7Expensive to craft, but maintenance-free once placed."
     # Copper Bulb Powered (83acdced)
     texture: "@copper_bulb"
     drops: self
@@ -625,6 +655,10 @@ blocks:
     lore:
       - "&7Grinds items from its storage when powered"
       - "&7Powered from the top; grinds faster with more power; outputs below"
+    catalog_notes:
+      - "&fGrinds items from its own storage while powered by a shaft on top, dropping the results into a container below it."
+      - "&7Grinds more per cycle the more surplus power the network has, up to a cap."
+      - "&7No output container? Right-click it holding an item to grind that item by hand."
     # Stone machine head (shared with the press).
     texture: "@machine_base"
     item_texture: "@stone_slabs"
@@ -664,6 +698,10 @@ blocks:
     lore:
       - "&7Presses items from its storage when powered"
       - "&7Powered from the top; squeezes out juices, oils & extracts below"
+    catalog_notes:
+      - "&fSqueezes items from its storage while powered by a shaft on top, dropping the results into a container below."
+      - "&fThis is how you make the juices, oils, and extracts (like Sweet Berry Juice and Seed Oil) — see its recipes below."
+      - "&7Presses more per cycle the more surplus power the network has, up to a cap."
     # Stone machine head (shared with the millstone); compressor item in hand.
     texture: "@machine_base"
     item_texture: "@compressor_item"
@@ -714,6 +752,9 @@ blocks:
     lore:
       - "&7Places blocks from its storage in front when powered"
       - "&7Powered from the top by a shaft"
+    catalog_notes:
+      - "&fMounts on a wall over a container and places its stored blocks into the space in front of it, one per cycle, while powered by a shaft on top."
+      - "&7Vanilla blocks only — it skips custom plugin blocks and anything that isn't a placeable block."
     # Placed head = stone machine head (shared with the millstone/press); item = placer skin.
     texture: "@machine_base"
     item_texture: "@placer_item"
@@ -1152,6 +1193,9 @@ blocks:
       - "&7Right-click a rail to spawn a cart."
       - "&7Glue blocks to it, then power an"
       - "&7activator rail to assemble & ride them."
+    catalog_notes:
+      - "&fRight-click a rail to spawn a cart, glue blocks onto it, then run it over a powered activator rail to assemble the whole thing into a rideable moving structure."
+      - "&7It's an item you use on a rail, not a block you place in the world."
     item_material: FURNACE_MINECART
     item_glint: true
     placeable: false
