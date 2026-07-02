@@ -148,6 +148,9 @@ h1 {
 .item-lore { color: #aaa; font-size: 0.82em; line-height: 1.5; }
 .item-lore .line { white-space: pre-wrap; }
 
+.note-line { color: #bbb; font-size: 0.9em; line-height: 1.6; white-space: pre-wrap; }
+.note-line + .note-line { margin-top: 6px; }
+
 /* ── Recipes ───────────────────────────────────────────────────────────── */
 /* margin-top:auto pins the recipe block to the card bottom; grid rows stretch cards to equal
    height, so recipes line up across a row regardless of lore length. */

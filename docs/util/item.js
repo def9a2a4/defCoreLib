@@ -100,6 +100,12 @@ function renderItem(item, itemsById, showcasesById) {
     ? `<div class="item-lore">${loreLines.map((l) => `<div class="line">${mcText(l)}</div>`).join('')}</div>`
     : '';
 
+  const noteLines = item.notes || [];
+  const notes = noteLines.length
+    ? `<div class="detail-section"><h2 class="section-title">Notes</h2>${
+        noteLines.map((l) => `<div class="note-line">${mcText(l)}</div>`).join('')}</div>`
+    : '';
+
   detail.innerHTML = `
     <div class="detail-header">
       <div class="detail-icon ${item.glint ? 'glint' : ''}">${iconHtml(item)}</div>
@@ -109,6 +115,7 @@ function renderItem(item, itemsById, showcasesById) {
       </div>
     </div>
     ${lore}
+    ${notes}
     <div class="viewers" id="viewers"></div>
     ${item.recipes?.length || !item.producedBy?.length
       ? `<div class="detail-section"><h2 class="section-title">Recipes</h2>${recipesHtml(item, itemsById)}</div>`

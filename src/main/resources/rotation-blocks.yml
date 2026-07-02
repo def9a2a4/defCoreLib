@@ -789,6 +789,11 @@ blocks:
     lore:
       - "&7Breaks blocks when powered"
       - "&7Mines in facing direction"
+    catalog_notes:
+      - "&fMounts on a wall and breaks the block directly in front of it while it has power."
+      - "&fThe drill face is the wall face you click when placing — it mines away from that wall."
+      - "&7Breaking runs in stages (like real mining), so harder blocks take longer to pop."
+      - "&cWon't break: obsidian, crying obsidian, spawners, reinforced deepslate, and moving pistons."
     texture: "@drill_head"
     item_texture: "@screw_fwd"
     drops: self
@@ -849,6 +854,11 @@ blocks:
       - "&7Produces 1 Power"
       - "&7Always spinning"
       - "&7Use Large/Huge banners for a bigger windmill"
+    catalog_notes:
+      - "&fA passive power source — it spins on its own, with no fuel or redstone needed."
+      - "&fThe banner patterns from the four banners you craft it with show up on the blades, so a dyed/patterned banner makes a custom windmill."
+      - "&7Craft with plain banners for this tier; use Large or Huge banners to get the Large/Huge Windmill instead."
+      - "&7Places on the floor (spins flat) or on a wall (spins like a wheel)."
     texture: "@large_windmill"
     item_texture: "@windmill_item"
     drops: self
@@ -922,6 +932,10 @@ blocks:
       - "&7Produces 5 Power"
       - "&7Always spinning"
       - "&7Crafted like a Windmill using Large banners"
+    catalog_notes:
+      - "&fThe 5-Power tier: same recipe as the Windmill, but with four Large Banners in place of plain banners."
+      - "&fBlades are 3x the size of a plain Windmill's and still carry the banners' patterns."
+      - "&fA passive source — spins on its own, no fuel or redstone."
     texture: "@large_windmill"
     item_texture: "@windmill_item"
     drops: self
@@ -988,6 +1002,10 @@ blocks:
       - "&7Produces 15 Power"
       - "&7Always spinning"
       - "&7Crafted like a Windmill using Huge banners"
+    catalog_notes:
+      - "&fThe biggest tier at 15 Power: same recipe as the Windmill, but with four Huge Banners."
+      - "&fBlades are the largest of the three tiers and still show the banners' patterns."
+      - "&fA passive source — spins on its own, no fuel or redstone."
     texture: "@large_windmill"
     item_texture: "@windmill_item"
     drops: self
@@ -1057,6 +1075,11 @@ blocks:
       - "&7Consumes rotation power to blow entities"
       - "&7Pushes mobs, players & items away from its mount"
       - "&7Stronger with more surplus power; fixed range"
+    catalog_notes:
+      - "&fBlows a straight beam of wind out of its face, pushing mobs, players, and dropped items along it."
+      - "&fPlace it on the floor to blow things upward, or on a wall to blow them outward."
+      - "&7Reaches a fixed distance (about 5 blocks); it does not push farther with more power."
+      - "&7Extra surplus power on the network makes the push stronger, up to a cap — it doesn't extend the range."
     texture: "@fan_placed_fwd"
     item_texture: "@fan_item"
     drops: self

@@ -230,12 +230,17 @@ def parse_block(namespace: str, block_id: str, sec: dict, aliases: dict) -> dict
     if isinstance(lore, str):
         lore = [lore]
 
+    notes = sec.get("catalog_notes") or []
+    if isinstance(notes, str):
+        notes = [notes]
+
     return {
         "namespace": namespace,
         "id": block_id,
         "fullId": f"{namespace}:{block_id}",
         "name": sec.get("name") or block_id,
         "lore": list(lore),
+        "notes": list(notes),
         "icon": icon,
         "glint": bool(sec.get("item_glint", False)),
         "recipes": parse_recipes(sec.get("recipes")),
@@ -296,6 +301,7 @@ def load_extras(path: Path) -> list[dict]:
             "fullId": f"{namespace}:{entry['id']}",
             "name": entry.get("name") or entry["id"],
             "lore": list(entry.get("lore") or []),
+            "notes": list(entry.get("catalog_notes") or []),
             "icon": icon,
             "glint": bool(entry.get("glint", False)),
             "recipes": recipes,
