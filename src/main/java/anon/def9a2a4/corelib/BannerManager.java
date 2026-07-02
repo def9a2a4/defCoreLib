@@ -536,9 +536,16 @@ public class BannerManager implements Listener {
 
     private static boolean isFlagHost(Material mat) {
         String name = mat.name();
-        return (name.endsWith("_FENCE") && !name.endsWith("_FENCE_GATE"))
-                || mat == Material.CHAIN
-                || mat == Material.IRON_BARS;
+        // Suffix matching against the runtime Material name so new copper variants
+        // (chains/bars) are picked up without a Bukkit API bump.
+        return (name.endsWith("_FENCE") && !name.endsWith("_FENCE_GATE")) // all fences
+                || name.endsWith("_WALL")        // all walls (stone/mud brick, deepslate, tuff, blackstone, resin, …)
+                || name.endsWith("_BARS")        // IRON_BARS + all copper bar variants
+                || name.endsWith("_CHAIN")       // all copper chain variants
+                || name.endsWith("GLASS_PANE")   // plain + all stained glass panes
+                || mat == Material.CHAIN         // iron chain (no "_CHAIN" suffix)
+                || mat == Material.LIGHTNING_ROD
+                || mat == Material.END_ROD;
     }
 
     private static int yawToStep(float yaw) {
