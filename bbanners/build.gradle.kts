@@ -43,6 +43,6 @@ tasks {
         relocate("org.bstats", "anon.def9a2a4.bstats")
         mergeServiceFiles()
         archiveClassifier.set("")
-        archiveBaseName.set("bbanners")
+        archiveBaseName.set("BetterBanners")
     }
 }

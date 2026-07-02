@@ -37,8 +37,8 @@ tasks {
     }
 
     jar {
-        archiveBaseName.set("DefCoreLib")
-        archiveClassifier.set("plain")   // avoid colliding with shadowJar's DefCoreLib-0.1.0.jar
+        archiveBaseName.set("defCoreLib")
+        archiveClassifier.set("plain")   // avoid colliding with shadowJar's defCoreLib-0.1.0.jar
         manifest {
             attributes["paperweight-mappings-namespace"] = "mojang"
         }
@@ -48,7 +48,7 @@ tasks {
         relocate("org.bstats", "anon.def9a2a4.bstats")
         mergeServiceFiles()
         archiveClassifier.set("")
-        archiveBaseName.set("DefCoreLib")
+        archiveBaseName.set("defCoreLib")
     }
 }
 

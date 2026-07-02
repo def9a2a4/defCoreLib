@@ -4,10 +4,10 @@
 build:
 	gradle shadowJar
 	mkdir -p bin
-	cp build/libs/DefCoreLib*.jar bin/
+	cp build/libs/defCoreLib*.jar bin/
 	cp vslab/build/libs/vslab*.jar bin/
-	cp bbanners/build/libs/bbanners*.jar bin/
-	cp mech/build/libs/mech*.jar bin/
+	cp bbanners/build/libs/BetterBanners*.jar bin/
+	cp mech/build/libs/Mechanism*.jar bin/
 
 # Docs build: compile the plugin, boot a SEPARATE server (test-server/, not the playtest server/)
 # that exports the ground-truth placed-display data (-Ddefcorelib.export), then generate the catalog
@@ -36,8 +36,8 @@ docs:
 		'generate-structures=false' 'server-port=25575' 'level-name=world' \
 		'motd=DefCoreLib docs export' \
 		> test-server/server.properties
-	cp build/libs/DefCoreLib*.jar vslab/build/libs/vslab*.jar \
-		bbanners/build/libs/bbanners*.jar mech/build/libs/mech*.jar test-server/plugins/
+	cp build/libs/defCoreLib*.jar vslab/build/libs/vslab*.jar \
+		bbanners/build/libs/BetterBanners*.jar mech/build/libs/Mechanism*.jar test-server/plugins/
 	rm -f .temp/display-spec.json
 ifeq ($(KEEP_ALIVE),1)
 	@echo ">>> test-server keep-alive on localhost:25575 (offline, MC 1.21.11). You spawn at the grid."
@@ -104,8 +104,8 @@ showcase-test:
 		'generate-structures=false' 'server-port=25575' 'level-name=world' \
 		'motd=DefCoreLib docs export' \
 		> test-server/server.properties
-	cp build/libs/DefCoreLib*.jar vslab/build/libs/vslab*.jar \
-		bbanners/build/libs/bbanners*.jar mech/build/libs/mech*.jar test-server/plugins/
+	cp build/libs/defCoreLib*.jar vslab/build/libs/vslab*.jar \
+		bbanners/build/libs/BetterBanners*.jar mech/build/libs/Mechanism*.jar test-server/plugins/
 	cd test-server && timeout --foreground -k 30 180 java -Ddefcorelib.showcaseTest=true \
 		-Xmx2G -jar $(PAPER_JAR) --nogui --port 25576 < /dev/null
 
@@ -170,8 +170,8 @@ showcase-capture:
 		'generate-structures=false' 'server-port=25575' 'level-name=world' \
 		'motd=DefCoreLib docs export' \
 		> test-server/server.properties
-	cp build/libs/DefCoreLib*.jar vslab/build/libs/vslab*.jar \
-		bbanners/build/libs/bbanners*.jar mech/build/libs/mech*.jar test-server/plugins/
+	cp build/libs/defCoreLib*.jar vslab/build/libs/vslab*.jar \
+		bbanners/build/libs/BetterBanners*.jar mech/build/libs/Mechanism*.jar test-server/plugins/
 	rm -f .temp/showcase-spec.json
 	cd test-server && timeout --foreground -k 30 180 java -Ddefcorelib.showcaseCapture="$(CURDIR)/.temp/showcase-spec.json" \
 		-Xmx2G -jar $(PAPER_JAR) --nogui --port 25576 < /dev/null || true
