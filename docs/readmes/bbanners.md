@@ -6,9 +6,11 @@ Flag banners and oversized banner tiers.
 
 ## Features
 
-- **Flag banners** - mount any banner as a hanging flag on fence posts, chains, and bars.
-- **Large & Huge banners** - upgrade normal banners into bigger variants that keep their patterns. See [the catalog](https://def9a2a4.github.io/defCoreLib-docs/index.html?q=banner).
+- **Flag banners** - mount any banner as a hanging flag on fence posts, walls, chains, bars (iron and copper variants), glass panes, and lightning/end rods. Shift-click to place normally.
+- **Large & Huge banners** - upgrade normal banners into bigger variants that keep their patterns. See [the catalog](https://def9a2a4.github.io/defCoreLib-docs/index.html?q=banner). Can be used as flags as well.
 - Large/Huge banners are the ingredient for [Mechanism](https://github.com/def9a2a4/defCoreLib/blob/main/docs/readmes/mech.md) Large and Huge windmills.
+
+Break the block that a flag/large/huge banner is attached to to remove it, or right click the block with shears. Large/Huge banners placed on the floor behave like regular banners, in that they can be facing different directions. Flag banners can also be facing any direction, and a single "pole" can have many flag banners.
 
 ## Requires
 
