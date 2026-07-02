@@ -4,8 +4,8 @@ import {
 import { thumbnailDataURL, placedVariantBlocks } from './placed3d.js';
 
 const SLAB_NAMESPACE = 'verticalslabs';
-const NS_LABELS = { rotation: 'Rotation', demo: 'Demo', corelib: 'Core' };
-const NS_PRIORITY = ['rotation', 'corelib', 'demo'];   // shown first, in this order; others follow alphabetically
+const NS_LABELS = { mech: 'Mechanism', demo: 'Demo', corelib: 'Core' };
+const NS_PRIORITY = ['mech', 'corelib', 'demo'];   // shown first, in this order; others follow alphabetically
 
 // Non-slab namespaces in display order: priority ones first, then the rest alphabetically.
 function orderedNamespaces() {
