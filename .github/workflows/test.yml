@@ -29,12 +29,12 @@ jobs:
         run: |
           set -euo pipefail
           VER=1.21.11
-          BUILD=$(curl -fsSL "https://api.papermc.io/v2/projects/paper/versions/$VER/builds" \
-            | jq -r '.builds[-1].build')
-          JAR="paper-$VER-$BUILD.jar"
+          META=$(curl -fsSL -H "User-Agent: defCoreLib-ci (github actions)" \
+            "https://fill.papermc.io/v3/projects/paper/versions/$VER/builds/latest")
+          URL=$(echo "$META" | jq -r '.downloads."server:default".url')
+          JAR=$(echo "$META" | jq -r '.downloads."server:default".name')
           mkdir -p server
-          curl -fsSL -o "server/$JAR" \
-            "https://api.papermc.io/v2/projects/paper/versions/$VER/builds/$BUILD/downloads/$JAR"
+          curl -fsSL -o "server/$JAR" "$URL"
           echo "Downloaded server/$JAR"
 
       - name: Clean
