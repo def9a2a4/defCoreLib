@@ -15,6 +15,10 @@ blocks:
       - "&7Right-click two blocks: cuboid fill"
       - "&7Right-click air: reset corner  ·  Sneak-right hinge: clear"
       - "&8Wears out as you glue"
+    catalog_notes:
+      - "&fThe authoring tool for moving structures: use it to pick exactly which blocks a [Rotator](mech:rotator) or [Mechanism Minecart](mech:mechanism_minecart) carries."
+      - "&7Glue a selection to a hinge or cart and it moves those blocks as one; see the controls above."
+      - "&8It's a real brush and wears down one durability per block you glue."
     item_material: BRUSH
     placeable: false
     item_glint: true

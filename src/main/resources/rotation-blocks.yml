@@ -352,19 +352,20 @@ blocks:
 
   # ─── Rotator ────────────────────────────────────────────────────────────
   # Consumer hinge: floor = door (Y), wall = drawbridge (X/Z). Network spin direction
-  # CW opens, CCW closes; swings its oak-plank structure as a mechanism. Right-click to
-  # cycle the open angle (90/180/270). v1: oak-plank structures only.
+  # CW opens, CCW closes. Swings its glued structure as a mechanism (the blocks authored
+  # with the Glue Brush, or just the attached block when nothing is glued). Right-click to
+  # cycle the open angle (90/180/270).
   rotator:
     name: "&dRotator"
     lore:
-      - "&7Swings an attached oak-plank door/drawbridge"
+      - "&7Swings blocks glued to it as a door/drawbridge"
       - "&7Floor = door, wall = drawbridge"
       - "&7Right-click: cycle open angle"
     catalog_notes:
-      - "&fA hinge that swings an attached oak-plank structure: placed on the floor it acts like a door, on a wall like a drawbridge."
+      - "&fA hinge that swings a structure: on the floor it acts like a door, on a wall like a drawbridge."
+      - "&fGlue the blocks you want it to move with the [Glue Brush](mech:glue_item) — any blocks work. With nothing glued it just swings the single block it's attached to."
       - "&fThe network's spin direction decides which way it swings — one direction opens, the other closes."
       - "&7Right-click to cycle how far it opens (90°, 180°, or 270°)."
-      - "&7v1 swings oak-plank structures only."
     # Hinge head: plated copper bearing (orientation-dependent per state).
     texture: "@rotator_side"
     item_texture: "@rotator_side"
@@ -423,8 +424,8 @@ blocks:
       - "&7Produces 2 Power when adjacent to water"
       - "&7Place on a wall"
     catalog_notes:
-      - "&fA source worth 2 Power. Mount it on a wall next to flowing or still water and it spins from the current."
-      - "&7It needs water on its perpendicular faces to turn — no water, no power. A passive source otherwise (no fuel)."
+      - "&fA source worth 2 Power. Mount it on a wall with water touching it (still or flowing) and it spins from the current."
+      - "&7Needs water alongside it (its top and sides) to turn — no water, no power. A passive source otherwise (no fuel)."
     # Placed hub head = windmill hub (copber2-fwd, same as bearing); item = copper wheel.
     texture: "@windmill_hub_fwd"
     item_texture: "@water_wheel_copper"
@@ -647,8 +648,7 @@ blocks:
   # ─── Millstone ──────────────────────────────────────────────────────────
   # Consumer: 1 Power. WALL only — mounts on a block and pulls from it if it's a
   # container; outputs into the container below (or drops below). Batch size
-  # scales with surplus power. Powered from a shaft on top (Y axis). Right-click
-  # with an item to grind manually (fallback when there's no host container).
+  # scales with surplus power. Powered from a shaft on top (Y axis).
   # Display: two smooth stone slabs — bottom static, top spins around Y.
   millstone:
     name: "&7Millstone"
@@ -658,7 +658,6 @@ blocks:
     catalog_notes:
       - "&fGrinds items from its own storage while powered by a shaft on top, dropping the results into a container below it."
       - "&7Grinds more per cycle the more surplus power the network has, up to a cap."
-      - "&7No output container? Right-click it holding an item to grind that item by hand."
     # Stone machine head (shared with the press).
     texture: "@machine_base"
     item_texture: "@stone_slabs"
@@ -1194,7 +1193,8 @@ blocks:
       - "&7Glue blocks to it, then power an"
       - "&7activator rail to assemble & ride them."
     catalog_notes:
-      - "&fRight-click a rail to spawn a cart, glue blocks onto it, then run it over a powered activator rail to assemble the whole thing into a rideable moving structure."
+      - "&fRight-click a rail to spawn a cart, then glue blocks onto it with the [Glue Brush](mech:glue_item)."
+      - "&fPush it onto a powered activator rail (or right-click the cart) to assemble the glued blocks into a rideable moving structure; another activator rail disassembles it back into blocks."
       - "&7It's an item you use on a rail, not a block you place in the world."
     item_material: FURNACE_MINECART
     item_glint: true

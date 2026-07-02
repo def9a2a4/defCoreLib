@@ -152,6 +152,7 @@ h1 {
 
 .note-line { color: #bbb; font-size: 0.9em; line-height: 1.6; white-space: pre-wrap; }
 .note-line + .note-line { margin-top: 6px; }
+.note-link { text-decoration: underline; }
 
 /* ── Recipes ───────────────────────────────────────────────────────────── */
 /* margin-top:auto pins the recipe block to the card bottom; grid rows stretch cards to equal

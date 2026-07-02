@@ -1,5 +1,5 @@
 import {
-  esc, mcText, stripColors, iconHtml, recipesHtml, machineRecipesHtml, producedByHtml, hydrateHeads,
+  esc, mcText, stripColors, iconHtml, itemHref, recipesHtml, machineRecipesHtml, producedByHtml, hydrateHeads,
 } from './render.js';
 import { mountInHand, mountPlaced, hasInHand, toRenderBlock } from './viewers.js';
 import { thumbnailDataURL } from './placed3d.js';
@@ -91,6 +91,27 @@ function hydrateShowcaseThumbs(root, showcasesById) {
   });
 }
 
+// Render one note line. Supports a `[label](namespace:id)` link syntax that turns into an
+// internal item-page link; everything else goes through mcText (which escapes HTML and
+// applies &-colour codes). The required colon in the id keeps ordinary prose parens like
+// "(see below)" from being mistaken for links, and an id not present in itemsById falls back
+// to plain text so a broken link never renders a dead anchor.
+const NOTE_LINK_RE = /\[([^\]]+)\]\(([a-z0-9_]+:[a-z0-9_./-]+)\)/gi;
+function noteHtml(line, itemsById) {
+  let out = '';
+  let last = 0;
+  for (const m of line.matchAll(NOTE_LINK_RE)) {
+    out += mcText(line.slice(last, m.index));
+    const [, label, id] = m;
+    out += itemsById.has(id)
+      ? `<a class="note-link" href="${esc(itemHref(id))}">${mcText(label)}</a>`
+      : mcText(m[0]);
+    last = m.index + m[0].length;
+  }
+  out += mcText(line.slice(last));
+  return out;
+}
+
 function renderItem(item, itemsById, showcasesById) {
   const detail = document.getElementById('detail');
   document.title = `DefCoreLib — ${stripColors(item.name)}`;
@@ -103,7 +124,7 @@ function renderItem(item, itemsById, showcasesById) {
   const noteLines = item.notes || [];
   const notes = noteLines.length
     ? `<div class="detail-section"><h2 class="section-title">Notes</h2>${
-        noteLines.map((l) => `<div class="note-line">${mcText(l)}</div>`).join('')}</div>`
+        noteLines.map((l) => `<div class="note-line">${noteHtml(l, itemsById)}</div>`).join('')}</div>`
     : '';
 
   detail.innerHTML = `
