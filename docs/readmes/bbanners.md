@@ -1,6 +1,6 @@
 # BetterBanners
 
-Flag banners and oversized banner tiers.
+Flag banners and oversized banner tiers. Purely server-side paper plugin, no mods or resource packs required.
 
 [![Normal and large banner tiers](https://def9a2a4.github.io/defCoreLib-docs/readmes/assets/bbanners/large.png)](https://def9a2a4.github.io/defCoreLib-docs/index.html?q=banner)
 

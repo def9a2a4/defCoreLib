@@ -1,6 +1,6 @@
 # Mechanism
 
-Kinetic rotation mechanisms - build power networks that drive machines, doors, and vehicles. Inspired by Create mod, loosely also inspired by slimefun, pylon, and classic minecraft tekkit/technic/buildcraft/industrialcraft.
+Kinetic rotation mechanisms - build power networks that drive machines, doors, and vehicles. Inspired by Create mod, loosely also inspired by slimefun, pylon, and classic minecraft tekkit/technic/buildcraft/industrialcraft. *Purely server-side paper plugin, **no mods or resource packs!***
 
 See the [items and their recipes](https://def9a2a4.github.io/defCoreLib-docs/index.html?ns=mech), or the [things you can build](https://def9a2a4.github.io/defCoreLib-docs/showcases.html).
 
