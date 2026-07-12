@@ -429,6 +429,11 @@ public class CustomBlockRegistry {
         if (type.sensitivity() != CustomHeadBlock.Sensitivity.NONE) {
             int power = readPower(block, type);
             trackRedstone(block, type, power);
+            // Reconcile the persisted skull texture to the actual power at load time. The poll only
+            // re-textures on a CHANGE (lastPower != newPower), and trackRedstone just seeded
+            // lastPower = power, so a head that lost power while its chunk was unloaded would
+            // otherwise stay stuck on its last-lit texture.
+            HeadUtil.applyTexture(block, type.resolveTexture(state, power, getSkullFacing(block)));
         }
 
         // Track custom block location for fast physics checks
