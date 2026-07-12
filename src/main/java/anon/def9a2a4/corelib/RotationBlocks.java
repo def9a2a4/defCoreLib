@@ -2,6 +2,7 @@ package anon.def9a2a4.corelib;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -644,10 +645,17 @@ final class RotationBlocks {
             }
             return true;
         }
-        for (ItemStack out : outputs) {
-            machine.getWorld().dropItem(machine.getLocation().add(0.5, 0.0, 0.5), out);
-        }
-        return true;
+        MachineEjectEvent event = new MachineEjectEvent(machine, BlockFace.DOWN, outputs);
+        Bukkit.getPluginManager().callEvent(event);
+        return switch (event.getResult()) {
+            case HANDLED -> true;
+            case STALL   -> false;
+            case DEFAULT -> {
+                for (ItemStack out : outputs)
+                    machine.getWorld().dropItem(machine.getLocation().add(0.5, 0.0, 0.5), out);
+                yield true;
+            }
+        };
     }
 
     /** The empty container an output of this material is bottled into, or null if none is needed. */
