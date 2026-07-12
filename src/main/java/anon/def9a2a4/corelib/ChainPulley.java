@@ -10,16 +10,20 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.Skull;
+import org.bukkit.entity.Display;
+import org.bukkit.entity.ItemDisplay;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.util.Transformation;
+import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 import org.jspecify.annotations.Nullable;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.UUID;
 
@@ -57,14 +61,25 @@ final class ChainPulley {
     private static final int MAX_DIST = 10;
     private static final double MAX_DIST_SQ = (double) MAX_DIST * MAX_DIST;
     private static final float DIAMETER = 0.33f;
-    /** Display-tag suffix for the stretched chain strand (kept distinct from the pulley's wheel displays). */
-    private static final String STRAND_SUFFIX = "link";
+    /** Chain strand length multiplier (the requested "2× longer"). */
+    private static final float LENGTH_SCALE = 2f;
+    /** Radians the powered strand rotates about its long axis per tick. */
+    private static final float SPIN_RATE = 0.25f;
+    /**
+     * Strand display type segment. Deliberately NOT "chain_pulley" so the block-display refresh
+     * (which removes {@code corelib:mech:chain_pulley:<x>_<y>_<z>*} on every idle↔spinning state change)
+     * can't delete the strand — while still under {@code corelib:mech:} so the orphan scanner skips it.
+     */
+    private static final String STRAND_TYPE = "chain_strand";
 
     private final CustomBlockRegistry registry;
     private final RotationNetwork network;
     // Transient per-player first-click selection (the link source); not persisted.
     private final Map<UUID, CustomBlockRegistry.LocationKey> pendingSelection = new HashMap<>();
-    // Placeholder chain-strand head texture (the pulley's own resolved head), captured at register().
+    // Live strand displays keyed by their source pulley, for the per-tick spin animation.
+    private final Map<CustomBlockRegistry.LocationKey, StrandAnim> strands = new HashMap<>();
+    private int spinTicks = 0;
+    // Chain-strand head texture (the @chain art), captured at register().
     private String strandTexture = "";
 
     ChainPulley(CustomBlockRegistry registry, RotationNetwork network) {
@@ -78,7 +93,7 @@ final class ChainPulley {
             registry.getPlugin().getLogger().warning("ChainPulley: block '" + PULLEY_ID + "' not found — skipping overlay");
             return;
         }
-        strandTexture = block.texture(); // placeholder art; swap for a dedicated chain-link texture later
+        strandTexture = block.resolveTexture("strand", 0, null); // the @chain art (texture-only state)
         registry.register(block.toBuilder()
             .drillable(false)
             .reactsToNeighbors(true)
@@ -88,6 +103,9 @@ final class ChainPulley {
             .onChunkUnload(b -> network.removeNode(CustomBlockRegistry.LocationKey.of(b)))
             .onBlockRemoved((b, state) -> handleBlockRemoved(b))
             .build());
+        // Per-tick spin: rotate each powered strand about its long axis. Only registry-owned displays
+        // are driven by the central tickAnimations loop, so the runtime strands need their own ticker.
+        Bukkit.getScheduler().runTaskTimer(registry.getPlugin(), this::tickStrands, 1L, 1L);
     }
 
     // ──────────────────────────────────────────────────────────────────────
@@ -101,11 +119,13 @@ final class ChainPulley {
         CustomBlockRegistry.LocationKey partner = readPartner(b);
         if (partner != null) {
             network.linkChain(key, partner);
-            // Re-spawn the persisted strand only if it's missing (avoids duplicates on reload).
-            String tag = strandTag(b.getLocation());
-            if (DisplayUtil.findByTag(b.getLocation(), tag, 1.5).isEmpty()) {
-                spawnStrand(b, partner);
-            }
+            // Re-register the strand for animation: reuse the persisted display if it survived the
+            // reload, otherwise spawn a fresh one.
+            var existing = DisplayUtil.findByTag(b.getLocation(), strandTag(b.getLocation()), 1.5);
+            ItemDisplay disp = null;
+            for (Display d : existing) { if (d instanceof ItemDisplay id) { disp = id; break; } }
+            if (disp != null) registerStrand(b, partner, disp);
+            else spawnStrand(b, partner);
         }
     }
 
@@ -113,7 +133,7 @@ final class ChainPulley {
         CustomBlockRegistry.LocationKey key = CustomBlockRegistry.LocationKey.of(b);
         // This pulley's own outgoing strand goes away.
         if (network.chainOutOf(key) != null) {
-            DisplayUtil.removeByTag(b.getLocation(), strandTag(b.getLocation()), 1.5);
+            removeStrand(b.getLocation(), key);
             network.unlinkChain(key);
         }
         // Any pulley whose link targets this one is now dangling — clear it.
@@ -122,7 +142,7 @@ final class ChainPulley {
             Block srcBlock = blockOf(src);
             if (srcBlock != null) {
                 clearPartner(srcBlock);
-                DisplayUtil.removeByTag(srcBlock.getLocation(), strandTag(srcBlock.getLocation()), 1.5);
+                removeStrand(srcBlock.getLocation(), src);
             }
         }
         network.removeNode(key);
@@ -153,7 +173,7 @@ final class ChainPulley {
             if (network.chainOutOf(key) != null) {
                 clearPartner(b);
                 network.unlinkChain(key);
-                DisplayUtil.removeByTag(b.getLocation(), strandTag(b.getLocation()), 1.5);
+                removeStrand(b.getLocation(), key);
                 refundChain(player);
                 player.sendActionBar(Component.text("Chain removed", NamedTextColor.YELLOW));
                 return true;
@@ -204,27 +224,89 @@ final class ChainPulley {
     // Chain strand display (custom head, diameter 0.33, stretched source→target)
     // ──────────────────────────────────────────────────────────────────────
 
+    /** Spawn a fresh strand from source→target and register it for animation. */
     private void spawnStrand(Block source, CustomBlockRegistry.LocationKey target) {
-        World world = source.getWorld();
+        StrandAnim base = strandBase(source, target);
+        if (base == null) return;
+        ItemStack head = HeadUtil.createHead(strandTexture, 1);
+        Transformation transform = new Transformation(
+            base.translation, new Quaternionf(base.orient), base.scale, new Quaternionf());
+        ItemDisplay display = DisplayUtil.spawn(
+            new Location(source.getWorld(), source.getX(), source.getY(), source.getZ()),
+            head, transform, strandTag(source.getLocation()));
+        base.display = display;
+        strands.put(CustomBlockRegistry.LocationKey.of(source), base);
+    }
+
+    /** Register an already-spawned (reloaded) strand display for animation. */
+    private void registerStrand(Block source, CustomBlockRegistry.LocationKey target, ItemDisplay display) {
+        StrandAnim base = strandBase(source, target);
+        if (base == null) return;
+        base.display = display;
+        strands.put(CustomBlockRegistry.LocationKey.of(source), base);
+    }
+
+    /**
+     * Geometry for a strand: the head's long axis is local +Z (so "rotate about Z" spins it in place),
+     * aimed along the gap, stretched to {@code length * LENGTH_SCALE}, centred on the midpoint. Anchor
+     * is the source block centre (DisplayUtil.spawn adds +0.5).
+     */
+    private @Nullable StrandAnim strandBase(Block source, CustomBlockRegistry.LocationKey target) {
         float dx = target.x() - source.getX();
         float dy = target.y() - source.getY();
         float dz = target.z() - source.getZ();
         float length = (float) Math.sqrt(dx * dx + dy * dy + dz * dz);
-        if (length < 1e-3f) return;
-        // Head model's long axis is local +Y (as the shaft rod uses). Aim it along the gap, stretch to
-        // the gap length, and translate to the midpoint. Spawn anchor is the source block centre.
-        Transformation transform = new Transformation(
-            new Vector3f(dx / 2f, dy / 2f, dz / 2f),
-            new Quaternionf().rotationTo(0f, 1f, 0f, dx, dy, dz),
-            new Vector3f(DIAMETER, length, DIAMETER),
-            new Quaternionf());
-        ItemStack head = HeadUtil.createHead(strandTexture, 1);
-        DisplayUtil.spawn(new Location(world, source.getX(), source.getY(), source.getZ()),
-            head, transform, strandTag(source.getLocation()));
+        if (length < 1e-3f) return null;
+        Quaternionf orient = new Quaternionf().rotationTo(0f, 0f, 1f, dx, dy, dz);
+        Vector3f translation = new Vector3f(dx / 2f, dy / 2f, dz / 2f);
+        Vector3f scale = new Vector3f(DIAMETER, DIAMETER, length * LENGTH_SCALE);
+        return new StrandAnim(orient, translation, scale);
+    }
+
+    /** Remove a strand's display entity and stop animating it. */
+    private void removeStrand(Location sourceLoc, CustomBlockRegistry.LocationKey sourceKey) {
+        DisplayUtil.removeByTag(sourceLoc, strandTag(sourceLoc), 1.5);
+        strands.remove(sourceKey);
+    }
+
+    /** Per-tick: spin every powered strand about its long axis; drop dead displays. */
+    private void tickStrands() {
+        if (strands.isEmpty()) return;
+        spinTicks++;
+        Iterator<Map.Entry<CustomBlockRegistry.LocationKey, StrandAnim>> it = strands.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry<CustomBlockRegistry.LocationKey, StrandAnim> e = it.next();
+            StrandAnim s = e.getValue();
+            if (s.display == null || !s.display.isValid()) { it.remove(); continue; }
+            if (!network.isPowered(e.getKey())) continue; // unpowered → hold last transform
+            int sign = network.getDirection(e.getKey()) == RotationNetwork.SpinDirection.CCW ? -1 : 1;
+            s.angle += SPIN_RATE * sign;
+            // T · Rorient · Rz(angle) · S — matches the spawn Transformation at angle 0.
+            Matrix4f m = new Matrix4f()
+                .translate(s.translation)
+                .rotate(s.orient)
+                .rotateZ(s.angle)
+                .scale(s.scale);
+            s.display.setTransformationMatrix(m);
+        }
     }
 
     private static String strandTag(Location sourceLoc) {
-        return DisplayUtil.blockTag("mech", "chain_pulley", sourceLoc, STRAND_SUFFIX);
+        return DisplayUtil.blockTag("mech", STRAND_TYPE, sourceLoc, null);
+    }
+
+    /** Mutable animation state for one chain strand. */
+    private static final class StrandAnim {
+        @Nullable ItemDisplay display;
+        final Quaternionf orient;
+        final Vector3f translation;
+        final Vector3f scale;
+        float angle = 0f;
+        StrandAnim(Quaternionf orient, Vector3f translation, Vector3f scale) {
+            this.orient = orient;
+            this.translation = translation;
+            this.scale = scale;
+        }
     }
 
     // ──────────────────────────────────────────────────────────────────────
