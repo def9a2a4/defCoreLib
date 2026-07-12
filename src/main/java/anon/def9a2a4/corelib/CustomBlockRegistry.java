@@ -711,28 +711,42 @@ public class CustomBlockRegistry {
         if (type.redstone() == null) return 0;
         return switch (type.redstone().reader()) {
             case DIRECT -> block.getBlockPower();
-            case EXTENDED -> readExtendedPower(block);
+            case EXTENDED -> readExtendedPower(block, type.sensitivity());
         };
     }
 
-    /** EXTENDED reader: the analog level of the redstone dust the indicator senses — the block 2 away
-     *  (behind the wall for wall heads, below for floor heads). Reads the wire's own POWER via
-     *  {@code RedstoneWire.getPower()}; {@code getBlockPower()} is deliberately NOT used — it
-     *  collapses to 15/0 for any non-dust source (comparator, repeater, lever, powered block), which
-     *  would make the indicator falsely read 15. Non-dust sources therefore read 0. */
-    private int readExtendedPower(Block block) {
-        Block extended;
+    /** EXTENDED reader: senses redstone through a 1-block wall (wall heads) or below (floor heads) by
+     *  reading the block 2 away.
+     *
+     *  <p>For {@code LEVEL} (analog indicators) it reads ONLY redstone dust, via the wire's own
+     *  {@code getPower()}. {@code getBlockPower()} is avoided here because it collapses to 15/0 for any
+     *  non-dust source (comparator, repeater, lever, powered block) — which would make an indicator
+     *  falsely display 15. So non-dust sources read 0 for LEVEL blocks.
+     *
+     *  <p>For {@code BINARY} (on/off) blocks the exact level is irrelevant, so the 15/0
+     *  {@code getBlockPower()} behaviour is fine and is kept — e.g. a door still opens from a
+     *  lever/button/redstone block, not just dust. */
+    private int readExtendedPower(Block block, CustomHeadBlock.Sensitivity sensitivity) {
+        Block extended = null;
         if (block.getType() == Material.PLAYER_WALL_HEAD
                 && block.getBlockData() instanceof Directional directional) {
             BlockFace behind = directional.getFacing().getOppositeFace();
             extended = block.getRelative(behind).getRelative(behind);   // 2 behind, through the wall
         } else if (block.getType() == Material.PLAYER_HEAD) {
             extended = block.getRelative(0, -2, 0);                      // 2 below
-        } else {
-            return 0;
         }
-        return extended.getBlockData() instanceof org.bukkit.block.data.type.RedstoneWire wire
+
+        int dust = extended != null
+                && extended.getBlockData() instanceof org.bukkit.block.data.type.RedstoneWire wire
                 ? wire.getPower() : 0;
+
+        if (sensitivity == CustomHeadBlock.Sensitivity.LEVEL) {
+            return dust;   // analog indicators: dust level only (non-dust reads 0, avoids the false 15)
+        }
+        // BINARY / on-off: any redstone source counts, level irrelevant — keep the original read.
+        int extendedPower = extended == null ? 0
+                : (extended.getType() == Material.REDSTONE_WIRE ? dust : extended.getBlockPower());
+        return Math.max(block.getBlockPower(), extendedPower);
     }
 
     void trackRedstone(Block block, CustomHeadBlock type, int initialPower) {
