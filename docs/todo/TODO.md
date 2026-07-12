@@ -11,7 +11,8 @@
   bespoke path (`captureBannerIngredients` / `BLADE_KEYS` / `displayItemResolver` + tier-swap
   retarget). Water-wheel paddles already use `IngredientCapture`; unify the two.
 - recipe book categories: most rotation stuff goes in redstone, vertical slabs go in building blocks
-- chains -- long-distance connect two "chain wheels"
+- chains -- long-distance connect two "chain wheels" (designed → [power-chains.md](../todos/mechanism/power-chains.md))
+- extendable pistons -- Create-style multiblock piston (designed → [extendable-pistons.md](../todos/mechanism/extendable-pistons.md))
 - migrate plugins:
   - redstone displays (should be trivial)
   - pipes
@@ -30,15 +31,19 @@
 
 ## Detail docs
 
-- [animations-mechanisms.md](animations-mechanisms.md) — animations ✅ done; moveable mechanisms built but buggy
-- [blockships-integration.md](blockships-integration.md) — BlockShips integration plan (4 phases, not started)
+> Mechanism-related design docs now live under [`../todos/mechanism/`](../todos/mechanism/).
+
+- [power-chains.md](../todos/mechanism/power-chains.md) — long-distance rotational power link (chain wheels) + minecart ski-lift (designed, not started)
+- [extendable-pistons.md](../todos/mechanism/extendable-pistons.md) — Create-style multiblock piston (core + poles + head), rotation-powered, glue payload (designed, not started)
+- [animations-mechanisms.md](../todos/mechanism/animations-mechanisms.md) — animations ✅ done; moveable mechanisms built but buggy
+- [blockships-integration.md](../todos/mechanism/blockships-integration.md) — BlockShips integration plan (4 phases, not started)
 - [display-system-refactor.md](display-system-refactor.md) — display elegance refactor; Phases 1/2 done, 2b blocked, 3 deferred
-- [minecarts.md](minecarts.md) — minecart mechanism off-center pivot bug (open) + 7 deferred issues
+- [minecarts.md](../todos/mechanism/minecarts.md) — minecart mechanism off-center pivot bug (open) + 7 deferred issues
 - [pipes.md](pipes.md) — Pipes → CoreLib migration plan
 - [redstone-cables.md](redstone-cables.md) — redstone-cables demo plugin plan
-- [rotation-mechanisms.md](rotation-mechanisms.md) — Reverser → Rotator → Glue: network-driven doors/drawbridges bridging rotation-power to mechanisms (3 phases, not started)
-- [rotation-power.md](rotation-power.md) — rotational power network; Phase 1 done, Phase 2 (directionality) in progress
-- [tech-tree.md](tech-tree.md) — remaining rotation tech-tree roadmap (sieve, sources, alloys/multiblock furnace, automation, sensors); build waves + open decisions
+- [rotation-mechanisms.md](../todos/mechanism/rotation-mechanisms.md) — Reverser → Rotator → Glue: network-driven doors/drawbridges bridging rotation-power to mechanisms (3 phases, not started)
+- [rotation-power.md](../todos/mechanism/rotation-power.md) — rotational power network; Phase 1 done, Phase 2 (directionality) in progress
+- [tech-tree.md](../todos/mechanism/tech-tree.md) — remaining rotation tech-tree roadmap (sieve, sources, alloys/multiblock furnace, automation, sensors); build waves + open decisions
 - [vertical-slabs.md](vertical-slabs.md) — vertical-slabs demo plugin plan (additive BlockDisplay support)
 
 ## Ready to implement
@@ -48,7 +53,7 @@
   currently synchronous (`CustomBlockRegistry.registerRecipes`). Unblocks the HeadSmith migration.
 - [ ] **Off-center pivot rotation fix** — delta-tracked snapped pivot; 4 code changes to
   `MechanismRegistry` + `BasicMechanism` + cross-world guard. Fully designed in
-  [minecarts.md](minecarts.md) (Changes 1-4). Prerequisite for mechanism stabilization.
+  [minecarts.md](../todos/mechanism/minecarts.md) (Changes 1-4). Prerequisite for mechanism stabilization.
 
 ## Consumer plugins (open)
 
@@ -57,21 +62,21 @@
 - [ ] **Redstone cables** — reuse Pipes code; a cable that transmits redstone power instantly without
   changing power level. See [redstone-cables.md](redstone-cables.md).
 - [ ] **Create-type mod** — rotational power for drills, millstones, doors; minecarts with build
-  blocks. Rotation Phase 1 is shipped (see [rotation-power.md](rotation-power.md)); mechanisms are
+  blocks. Rotation Phase 1 is shipped (see [rotation-power.md](../todos/mechanism/rotation-power.md)); mechanisms are
   built-but-buggy (see below). *Design-open: how to glue blocks to a mechanism — enchanted slimeball
   "slime glue" vs. particle display?*
 
 ## Future systems
 
 - [ ] **Moveable mechanisms** — *core built* (`Mechanism`/`MechanismRegistry`/`BasicMechanism`, door +
-  minecart demos), but **not done**: off-center pivot rotation bug open ([minecarts.md](minecarts.md)),
+  minecart demos), but **not done**: off-center pivot rotation bug open ([minecarts.md](../todos/mechanism/minecarts.md)),
   particle ticking unimplemented (`MechanismRegistry` ~line 340), BlockShips pre-Phase-1 bugs
-  ([blockships-integration.md](blockships-integration.md)). Stabilize before calling complete.
+  ([blockships-integration.md](../todos/mechanism/blockships-integration.md)). Stabilize before calling complete.
 - [ ] **Custom blocks in mechanisms** — DefCoreLib custom blocks (gears, windmills, etc.) on minecart
   mechanisms. `assembleCore` already handles custom blocks when present (snapshots type/state/displays/
   particles/inventory, re-spawns display entities with animations), but `MinecartShipManager`'s
   material allow-list flood fill blocks `PLAYER_HEAD`. Becomes natural when glue replaces flood-fill
-  ([rotation-mechanisms.md](rotation-mechanisms.md) Phase 3) — glue selects by anchor-owned offsets,
+  ([rotation-mechanisms.md](../todos/mechanism/rotation-mechanisms.md) Phase 3) — glue selects by anchor-owned offsets,
   not material. Needs testing: custom state round-trip, animation playback on assembled mechanism.
   Includes the sub-case of `blockDisplayEntities` (e.g. vertical slabs) which need a parallel loop
   in `MechanismRegistry` (~30 lines).
@@ -136,6 +141,6 @@
 - [x] **Display system elegance refactor** Phases 1 & 2 — texture registry (`@alias`), `copy_from` +
   state-level animation. See [display-system-refactor.md](display-system-refactor.md).
 - [x] **Rotational power network** Phase 1 — windmills/gears/shafts/drills/millstones; rotation
-  components. See [rotation-power.md](rotation-power.md).
+  components. See [rotation-power.md](../todos/mechanism/rotation-power.md).
 - [x] **Windmill banner tiering** — normal/large/huge windmills gated by banner tier; tiered banner's
   tier PDC + auto-name stripped from captured blades (`LargeBannerRecipes.stripTier`).
