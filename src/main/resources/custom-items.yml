@@ -18,22 +18,89 @@ blocks:
     potion:
       base_type: HEALING
 
-  # A Potion of Saturation. Saturation has no vanilla base potion type, so it's a
-  # custom effect plus a yellow tint.
+  # Industrial oil pressed from seeds. Stackable (not a potion) so it works as fuel /
+  # a crafting reagent. item_material is a placeholder skin (real oil texture via a
+  # resource pack later); MAGMA_CREAM is stackable and is not a machine input, so a
+  # Seed Oil item is never mistaken for a press/mill ingredient.
+  #   Uses: engine fuel (RotationBlocks engine onInteract, by PDC) and the iron/copper
+  #   lantern recipes (RotationBlocks.registerSeedOilRecipes, seed oil + string as wick).
   seed_oil:
     name: "&eSeed Oil"
     lore:
       - "&7Pressed from seeds"
-      - "&7Drink for saturation"
+      - "&7Fuel for engines and lanterns"
     catalog_notes:
-      - "&fMade by pressing seeds in the Extractor Press."
-      - "&7Drink it for a short Saturation boost."
+      - "&fMade by pressing seeds in the [Extractor Press](mech:press)."
+      - "&7Burn it in the [Engine](mech:engine) as fuel, or craft it with a string and"
+      - "&7iron/copper nuggets into a lantern."
+    item_material: MAGMA_CREAM
+    placeable: false
+
+  # Ground from wheat in the millstone; feeds the flour -> dough -> bread chain.
+  # SUGAR reskin (white powder), distinct by name (real texture via resource pack later).
+  flour:
+    name: "&fFlour"
+    lore:
+      - "&7Finely ground wheat"
+    catalog_notes:
+      - "&fGrind wheat in the [Millstone](mech:millstone) — 2 flour per wheat."
+      - "&7Combine 3 flour + a water bucket into [Dough](mech:dough), then bake it into bread."
+    item_material: SUGAR
+    placeable: false
+
+  # Crafted from 3 flour + a water bucket; smelt in a furnace or smoker -> bread.
+  # BREAD reskin (placeholder). The dough->bread step is registered in Java
+  # (RotationBlocks.registerBakingRecipes) since it outputs vanilla bread.
+  dough:
+    name: "&eDough"
+    lore:
+      - "&7Unbaked — smelt it into bread"
+    catalog_notes:
+      - "&fCraft 3 [Flour](mech:flour) + a water bucket into dough (keeps the bucket)."
+      - "&7Smelt dough in a furnace or smoker to bake it into bread."
+    item_material: BREAD
+    placeable: false
+    recipes:
+      craft:
+        shapeless:
+          - id: from_flour
+            ingredients:
+              - { block: mech:flour }
+              - { block: mech:flour }
+              - { block: mech:flour }
+              - { material: WATER_BUCKET }
+
+  # Pressed from sugarcane. A real potion under the hood — short Speed on drink.
+  sugarcane_juice:
+    name: "&aSugarcane Juice"
+    lore:
+      - "&7Pressed from sugarcane"
+      - "&7Drink for a burst of speed"
+    catalog_notes:
+      - "&fPress sugarcane in the [Extractor Press](mech:press) to bottle it."
+      - "&7Drink it for a short Speed boost."
     item_material: POTION
     placeable: false
     potion:
       effects:
-        - { type: SATURATION, duration: 100, amplifier: 0 }
-      color: "#E0A030"
+        - { type: SPEED, duration: 600, amplifier: 0 }   # 600t = 30s
+      color: "#B5D99C"
+
+  # Pressed from glow berries. Cosmetic Glowing outline on drink (not powerful).
+  glow_berry_juice:
+    name: "&6Glow Berry Juice"
+    lore:
+      - "&7Pressed from glow berries"
+      - "&7Drink to give off a soft glow"
+    catalog_notes:
+      - "&fPress glow berries in the [Extractor Press](mech:press)."
+      - "&7Drink it to glow for a while."
+    item_material: POTION
+    placeable: false
+    potion:
+      effects:
+        - { type: GLOWING, duration: 600, amplifier: 0 }   # 30s, cosmetic
+      color: "#E08020"
 
   # Intermediate mechanical component: copper ingot core + 4 copper nuggets in a +.
   # The shared core of most rotation machines (windmills, fan, clutch, engine, …).

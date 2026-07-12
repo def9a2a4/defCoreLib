@@ -40,6 +40,71 @@ final class RotationBlocks {
         return "mech:wrench".equals(CustomBlockRegistry.getItemTypeId(item));
     }
 
+    /** Seed Oil burns this many ticks per unit in an engine (20s). */
+    static final int SEED_OIL_FUEL_TICKS = 400;
+
+    /**
+     * Bake dough into bread. This is a vanilla output from a custom ingredient, which the
+     * type-owned YAML recipe system can't express (a YAML recipe's result is always the
+     * owning custom type's item), so it's registered here. Furnace + smoker, reload-safe.
+     * Call after {@code registry.finalizeLoading()} so mech:dough exists.
+     */
+    static void registerBakingRecipes(org.bukkit.plugin.Plugin plugin, CustomBlockRegistry registry) {
+        CustomHeadBlock dough = registry.getType("mech:dough");
+        if (dough == null) {
+            plugin.getLogger().warning("registerBakingRecipes: mech:dough not found — skipping dough→bread");
+            return;
+        }
+        var doughChoice = new org.bukkit.inventory.RecipeChoice.ExactChoice(dough.createItem(1));
+        ItemStack bread = new ItemStack(Material.BREAD);
+
+        NamespacedKey furnaceKey = new NamespacedKey(plugin, "mech_dough_bake");
+        org.bukkit.Bukkit.removeRecipe(furnaceKey);
+        org.bukkit.Bukkit.addRecipe(new org.bukkit.inventory.FurnaceRecipe(furnaceKey, bread, doughChoice, 0.1f, 200));
+
+        NamespacedKey smokerKey = new NamespacedKey(plugin, "mech_dough_smoke");
+        org.bukkit.Bukkit.removeRecipe(smokerKey);
+        org.bukkit.Bukkit.addRecipe(new org.bukkit.inventory.SmokingRecipe(smokerKey, bread, doughChoice, 0.1f, 100));
+    }
+
+    /**
+     * Craft iron/copper lanterns from Seed Oil — vanilla outputs, so registered here with an
+     * ExactChoice on the custom oil plus a string wick (seed oil + string replace the torch):
+     * <pre>N S N / N O N / N N N</pre> N=nugget, O=seed oil, S=string. Reload-safe. Copper
+     * lantern/nugget are vanilla only since the Copper Age update (Java 1.21.9) — resolved via
+     * matchMaterial so this compiles and skips gracefully on older APIs.
+     */
+    static void registerSeedOilRecipes(org.bukkit.plugin.Plugin plugin, CustomBlockRegistry registry) {
+        CustomHeadBlock oil = registry.getType("mech:seed_oil");
+        if (oil == null) {
+            plugin.getLogger().warning("registerSeedOilRecipes: mech:seed_oil not found — skipping lantern recipes");
+            return;
+        }
+        var oilChoice = new org.bukkit.inventory.RecipeChoice.ExactChoice(oil.createItem(1));
+        registerLanternRecipe(plugin, "mech_iron_lantern", Material.LANTERN, Material.IRON_NUGGET, oilChoice);
+
+        Material copperLantern = Material.matchMaterial("COPPER_LANTERN");
+        Material copperNugget = Material.matchMaterial("COPPER_NUGGET");
+        if (copperLantern != null && copperNugget != null) {
+            registerLanternRecipe(plugin, "mech_copper_lantern", copperLantern, copperNugget, oilChoice);
+        } else {
+            plugin.getLogger().info("Seed-oil copper lantern skipped (COPPER_LANTERN/COPPER_NUGGET not in this MC version).");
+        }
+    }
+
+    private static void registerLanternRecipe(org.bukkit.plugin.Plugin plugin, String keyName,
+                                              Material result, Material nugget,
+                                              org.bukkit.inventory.RecipeChoice oil) {
+        NamespacedKey key = new NamespacedKey(plugin, keyName);
+        org.bukkit.Bukkit.removeRecipe(key);
+        var recipe = new org.bukkit.inventory.ShapedRecipe(key, new ItemStack(result));
+        recipe.shape("NSN", "NON", "NNN");
+        recipe.setIngredient('N', nugget);
+        recipe.setIngredient('S', Material.STRING);
+        recipe.setIngredient('O', oil);
+        org.bukkit.Bukkit.addRecipe(recipe);
+    }
+
     static void register(CustomBlockRegistry registry, RotationNetwork network,
                          EngineFuelManager fuelManager, MachineRecipes millRecipes,
                          MachineRecipes pressRecipes, RotationConfig config) {
@@ -328,6 +393,11 @@ final class RotationBlocks {
                             ItemStack it = storage.getItem(i);
                             if (it == null || it.getType().isAir()) continue;
                             int fv = fuelManager.getFuelValue(it.getType());
+                            // Seed Oil is a custom item (not a fuel Material) — recognize it by PDC
+                            // so real magma cream (its placeholder skin) isn't treated as fuel.
+                            if (fv <= 0 && "mech:seed_oil".equals(CustomBlockRegistry.getItemTypeId(it))) {
+                                fv = SEED_OIL_FUEL_TICKS;
+                            }
                             if (fv > 0) {
                                 fuelManager.addFuel(key, fv);
                                 it.setAmount(it.getAmount() - 1);

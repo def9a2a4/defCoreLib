@@ -153,6 +153,12 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         // Register recipes after all blocks are loaded
         registry.finalizeLoading();
 
+        // Bespoke recipes whose result is a vanilla item made from a custom ingredient
+        // (the YAML recipe system only outputs the owning custom type's item):
+        // dough → bread (furnace/smoker) and seed oil → iron/copper lantern.
+        RotationBlocks.registerBakingRecipes(this, registry);
+        RotationBlocks.registerSeedOilRecipes(this, registry);
+
         // Docs export mode (-Ddefcorelib.export=<path>): on ServerLoadEvent, dump every block's
         // ground-truth placed display data to JSON and shut the server down. Inert otherwise.
         DisplayExporter.armIfRequested(this, registry, showcaseBuilder, showcases.values(),

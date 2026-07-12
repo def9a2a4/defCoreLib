@@ -1,12 +1,47 @@
-# Extractor Press recipes — squeeze inputs from the host container into outputs below.
+# Extractor Press recipes — squeeze inputs into bottled liquids / oils / pigments.
 # Schema (see MachineRecipes): input + optional input_amount; output (vanilla Material
-# or a custom item id like "mech:seed_oil") + optional amount; or an `outputs:` list.
-# Bottled outputs (juices/oils on a POTION/HONEY_BOTTLE base) also consume a glass bottle.
+# or a custom item id like "mech:seed_oil") + optional amount; or an `outputs:` list with
+# per-output `chance`. Bottled outputs (POTION / HONEY_BOTTLE) also consume a glass bottle.
 
 recipes:
-  - { input: SUGAR_CANE,  output: SUGAR,      amount: 2 }
-  - { input: CACTUS,      output: GREEN_DYE,  amount: 2 }
-  - { input: COCOA_BEANS, output: BROWN_DYE,  amount: 2 }
-  # Custom-item outputs (resolved via the registry):
+  # ── Juices (mild effects only; the rest were cut as overpowered) ──
+  - input: SUGAR_CANE
+    input_amount: 2
+    outputs:
+      - { custom: "mech:sugarcane_juice" }
+      - { output: SUGAR, chance: 0.5 }
+  - { input: GLOW_BERRIES, input_amount: 2, output: "mech:glow_berry_juice" }
   - { input: SWEET_BERRIES, input_amount: 3, output: "mech:sweet_berry_juice" }
-  - { input: WHEAT_SEEDS,   input_amount: 4, output: "mech:seed_oil" }
+
+  # ── Seeds -> Seed Oil (industrial: engine fuel + lantern reagent) ──
+  - { input: WHEAT_SEEDS,    input_amount: 4, output: "mech:seed_oil" }
+  - { input: PUMPKIN_SEEDS,  input_amount: 4, output: "mech:seed_oil" }
+  - { input: MELON_SEEDS,    input_amount: 4, output: "mech:seed_oil" }
+  - { input: BEETROOT_SEEDS, input_amount: 4, output: "mech:seed_oil" }
+
+  # ── Squeeze a bottled liquid straight out ──
+  - { input: HONEYCOMB, output: HONEY_BOTTLE }
+
+  # ── Dye extraction: ~1.2x (1 dye guaranteed + 20% bonus) ──
+  - input: CACTUS
+    outputs: [ { output: GREEN_DYE }, { output: GREEN_DYE, chance: 0.2 } ]
+  - input: POPPY
+    outputs: [ { output: RED_DYE }, { output: RED_DYE, chance: 0.2 } ]
+  - input: RED_TULIP
+    outputs: [ { output: RED_DYE }, { output: RED_DYE, chance: 0.2 } ]
+  - input: DANDELION
+    outputs: [ { output: YELLOW_DYE }, { output: YELLOW_DYE, chance: 0.2 } ]
+  - input: CORNFLOWER
+    outputs: [ { output: BLUE_DYE }, { output: BLUE_DYE, chance: 0.2 } ]
+  - input: BLUE_ORCHID
+    outputs: [ { output: LIGHT_BLUE_DYE }, { output: LIGHT_BLUE_DYE, chance: 0.2 } ]
+  - input: ORANGE_TULIP
+    outputs: [ { output: ORANGE_DYE }, { output: ORANGE_DYE, chance: 0.2 } ]
+  - input: ALLIUM
+    outputs: [ { output: MAGENTA_DYE }, { output: MAGENTA_DYE, chance: 0.2 } ]
+  - input: PINK_TULIP
+    outputs: [ { output: PINK_DYE }, { output: PINK_DYE, chance: 0.2 } ]
+  - input: LILY_OF_THE_VALLEY
+    outputs: [ { output: WHITE_DYE }, { output: WHITE_DYE, chance: 0.2 } ]
+  - input: WITHER_ROSE
+    outputs: [ { output: BLACK_DYE }, { output: BLACK_DYE, chance: 0.2 } ]

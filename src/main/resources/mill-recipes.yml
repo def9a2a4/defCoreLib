@@ -1,24 +1,91 @@
-# Millstone grinding recipes
-# input: material name (uppercase)
-# output: material name
-# amount: number of output items per grind
+# Millstone grinding recipes — MachineRecipes schema (see MachineRecipes.java).
+#   input:        vanilla Material (uppercase)
+#   output:       vanilla Material or custom "mech:id"   (scalar single-output form)
+#   amount:       output count (default 1)
+#   input_amount: items consumed per grind (default 1)
+#   outputs:      list form for multi-output + per-output `chance` (0.0-1.0)
+#
+# Balance:
+#   - Ore grinding ~1.2x in expectation (normal drop guaranteed + ~20% bonus, floor = mining).
+#     Requires a silk-touched ore BLOCK as input; smelt the raw metal as usual.
+#   - Block "unpacking" gives crafting-yield MINUS 1 (lossy; a future tier-2 mill = lossless).
+#   - Rock chain grinds one tier down, no byproducts.
 
 recipes:
-  - input: BONE
-    output: BONE_MEAL
-    amount: 3
-  - input: BLAZE_ROD
-    output: BLAZE_POWDER
-    amount: 3
-  - input: SUGAR_CANE
-    output: SUGAR
-    amount: 2
-  - input: COBBLESTONE
-    output: GRAVEL
-    amount: 1
-  - input: GRAVEL
-    output: SAND
-    amount: 1
-  - input: WHEAT
-    output: SUGAR
-    amount: 1
+  # ── Rock / terrain chain (renewable feedstocks -> renewable sand/flint) ──
+  - { input: COBBLESTONE,       output: GRAVEL }
+  - { input: COBBLED_DEEPSLATE, output: GRAVEL }
+  - { input: BASALT,            output: GRAVEL }
+  - { input: GRAVEL,            output: SAND }
+  - { input: SANDSTONE,         output: SAND,     amount: 2 }
+  - { input: RED_SANDSTONE,     output: RED_SAND, amount: 2 }
+  - input: GLASS
+    outputs:
+      - { output: SAND, amount: 1, chance: 0.5 }
+
+  # ── Ore grinding: silk-touched ore block -> ~1.2x (normal drop + ~20% bonus) ──
+  - input: IRON_ORE
+    outputs: [ { output: RAW_IRON }, { output: RAW_IRON, chance: 0.2 } ]
+  - input: DEEPSLATE_IRON_ORE
+    outputs: [ { output: RAW_IRON }, { output: RAW_IRON, chance: 0.2 } ]
+  - input: GOLD_ORE
+    outputs: [ { output: RAW_GOLD }, { output: RAW_GOLD, chance: 0.2 } ]
+  - input: DEEPSLATE_GOLD_ORE
+    outputs: [ { output: RAW_GOLD }, { output: RAW_GOLD, chance: 0.2 } ]
+  - input: COPPER_ORE
+    outputs: [ { output: RAW_COPPER, amount: 3 }, { output: RAW_COPPER, chance: 0.2 } ]
+  - input: DEEPSLATE_COPPER_ORE
+    outputs: [ { output: RAW_COPPER, amount: 3 }, { output: RAW_COPPER, chance: 0.2 } ]
+  - input: COAL_ORE
+    outputs: [ { output: COAL }, { output: COAL, chance: 0.2 } ]
+  - input: DEEPSLATE_COAL_ORE
+    outputs: [ { output: COAL }, { output: COAL, chance: 0.2 } ]
+  - input: NETHER_QUARTZ_ORE
+    outputs: [ { output: QUARTZ }, { output: QUARTZ, chance: 0.2 } ]
+  - input: NETHER_GOLD_ORE
+    outputs: [ { output: GOLD_NUGGET, amount: 4 }, { output: GOLD_NUGGET, chance: 0.2 } ]
+  - input: REDSTONE_ORE
+    outputs: [ { output: REDSTONE, amount: 5 }, { output: REDSTONE, chance: 0.2 } ]
+  - input: DEEPSLATE_REDSTONE_ORE
+    outputs: [ { output: REDSTONE, amount: 5 }, { output: REDSTONE, chance: 0.2 } ]
+  - input: LAPIS_ORE
+    outputs: [ { output: LAPIS_LAZULI, amount: 6 }, { output: LAPIS_LAZULI, amount: 2, chance: 0.2 } ]
+  - input: DEEPSLATE_LAPIS_ORE
+    outputs: [ { output: LAPIS_LAZULI, amount: 6 }, { output: LAPIS_LAZULI, amount: 2, chance: 0.2 } ]
+  - input: DIAMOND_ORE
+    outputs: [ { output: DIAMOND }, { output: DIAMOND, chance: 0.2 } ]
+  - input: DEEPSLATE_DIAMOND_ORE
+    outputs: [ { output: DIAMOND }, { output: DIAMOND, chance: 0.2 } ]
+  - input: EMERALD_ORE
+    outputs: [ { output: EMERALD }, { output: EMERALD, chance: 0.2 } ]
+  - input: DEEPSLATE_EMERALD_ORE
+    outputs: [ { output: EMERALD }, { output: EMERALD, chance: 0.2 } ]
+  - input: ANCIENT_DEBRIS
+    outputs: [ { output: NETHERITE_SCRAP }, { output: NETHERITE_SCRAP, chance: 0.2 } ]
+
+  # ── Unpacking: compact block -> components, MINUS 1 (lossy basic mill) ──
+  - { input: GLOWSTONE,        output: GLOWSTONE_DUST, amount: 3 }  # craft-back 4
+  - { input: BONE_BLOCK,       output: BONE_MEAL,      amount: 8 }  # craft-back 9
+  - { input: CLAY,             output: CLAY_BALL,      amount: 3 }  # craft-back 4
+  - { input: QUARTZ_BLOCK,     output: QUARTZ,         amount: 3 }  # craft-back 4
+  - { input: DRIED_KELP_BLOCK, output: DRIED_KELP,     amount: 8 }  # craft-back 9
+  # Wool -> string (any color): craft-back 4 -> 3
+  - { input: WHITE_WOOL,      output: STRING, amount: 3 }
+  - { input: ORANGE_WOOL,     output: STRING, amount: 3 }
+  - { input: MAGENTA_WOOL,    output: STRING, amount: 3 }
+  - { input: LIGHT_BLUE_WOOL, output: STRING, amount: 3 }
+  - { input: YELLOW_WOOL,     output: STRING, amount: 3 }
+  - { input: LIME_WOOL,       output: STRING, amount: 3 }
+  - { input: PINK_WOOL,       output: STRING, amount: 3 }
+  - { input: GRAY_WOOL,       output: STRING, amount: 3 }
+  - { input: LIGHT_GRAY_WOOL, output: STRING, amount: 3 }
+  - { input: CYAN_WOOL,       output: STRING, amount: 3 }
+  - { input: PURPLE_WOOL,     output: STRING, amount: 3 }
+  - { input: BLUE_WOOL,       output: STRING, amount: 3 }
+  - { input: BROWN_WOOL,      output: STRING, amount: 3 }
+  - { input: GREEN_WOOL,      output: STRING, amount: 3 }
+  - { input: RED_WOOL,        output: STRING, amount: 3 }
+  - { input: BLACK_WOOL,      output: STRING, amount: 3 }
+
+  # ── Milling (custom) ──
+  - { input: WHEAT, output: "mech:flour", amount: 2 }
