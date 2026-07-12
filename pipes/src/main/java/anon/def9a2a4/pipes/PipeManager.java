@@ -586,7 +586,8 @@ public class PipeManager {
      * Falls back to parsing facing from state when the pipe isn't yet registered (initial placement).
      */
     public @org.jspecify.annotations.Nullable Transformation resolveTransform(
-            Block block, @org.jspecify.annotations.Nullable String state, PipeVariant fallbackVariant) {
+            Block block, @org.jspecify.annotations.Nullable String state, PipeVariant fallbackVariant,
+            int displayIndex) {
         Location location = normalizeLocation(block.getLocation());
         PipeData data = pipes.get(location);
 
@@ -602,6 +603,9 @@ public class PipeManager {
             return null;
         }
 
+        if (displayIndex == 1 && variant.getBehaviorType() == BehaviorType.CORNER) {
+            return calculateCornerDirectionalTransformation(location, facing);
+        }
         return calculateTransformation(location, facing, variant);
     }
 

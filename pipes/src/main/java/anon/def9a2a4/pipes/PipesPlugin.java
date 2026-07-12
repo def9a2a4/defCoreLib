@@ -86,15 +86,11 @@ public class PipesPlugin extends JavaPlugin {
         recipeUnlockListener = new RecipeUnlockListener(this, recipeManager);
         cauldronConversionListener = new CauldronConversionListener(this);
         conversionRecipeCraftListener = new ConversionRecipeCraftListener(this, recipeManager);
-        getServer().getPluginManager().registerEvents(new PipeListener(this, pipeManagers), this);
         try {
             Class.forName("io.papermc.paper.event.player.PlayerPickBlockEvent");
             getServer().getPluginManager().registerEvents(new PickBlockListener(this, pipeManagers), this);
         } catch (ClassNotFoundException ignored) {}
-        try {
-            Class.forName("anon.def9a2a4.corelib.MachineEjectEvent");
-            getServer().getPluginManager().registerEvents(new MachineEjectListener(pipeManagers), this);
-        } catch (ClassNotFoundException ignored) {}
+        getServer().getPluginManager().registerEvents(new MachineEjectListener(pipeManagers), this);
         getServer().getPluginManager().registerEvents(worldManager, this);
         getServer().getPluginManager().registerEvents(recipeUnlockListener, this);
         getServer().getPluginManager().registerEvents(cauldronConversionListener, this);
