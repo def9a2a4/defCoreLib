@@ -710,19 +710,30 @@ public class CustomBlockRegistry {
         };
     }
 
-    /** Read power through walls for wall-mounted heads, or below for floor heads. */
+    /** Read power through walls for wall-mounted heads, or below for floor heads.
+     *  Starts from the head's own received power, then extends to the block 2 away (behind the wall
+     *  for wall heads, below for floor heads). Redstone dust is read via its own signal strength
+     *  ({@link #blockOrDustPower}) rather than {@code getBlockPower()}, which does not report a lit
+     *  wire's level and would otherwise leave the indicator stuck when the dust powers down. */
     private int readExtendedPower(Block block) {
-        if (block.getType() == Material.PLAYER_WALL_HEAD) {
-            if (block.getBlockData() instanceof Directional directional) {
-                BlockFace behind = directional.getFacing().getOppositeFace();
-                Block b1 = block.getRelative(behind);
-                Block b2 = b1.getRelative(behind);
-                return Math.max(b1.getBlockPower(), b2.getBlockPower());
-            }
+        int power = block.getBlockPower();
+        if (block.getType() == Material.PLAYER_WALL_HEAD
+                && block.getBlockData() instanceof Directional directional) {
+            BlockFace behind = directional.getFacing().getOppositeFace();
+            Block extended = block.getRelative(behind).getRelative(behind);
+            power = Math.max(power, blockOrDustPower(extended));
         } else if (block.getType() == Material.PLAYER_HEAD) {
-            Block b1 = block.getRelative(0, -1, 0);
-            Block b2 = block.getRelative(0, -2, 0);
-            return Math.max(b1.getBlockPower(), b2.getBlockPower());
+            Block extended = block.getRelative(0, -2, 0);
+            power = Math.max(power, blockOrDustPower(extended));
+        }
+        return power;
+    }
+
+    /** Power of a block, reading redstone dust's own signal strength rather than the (unreliable,
+     *  often 0) value {@code getBlockPower()} reports for a lit wire. */
+    private static int blockOrDustPower(Block block) {
+        if (block.getType() == Material.REDSTONE_WIRE) {
+            return ((org.bukkit.block.data.type.RedstoneWire) block.getBlockData()).getPower();
         }
         return block.getBlockPower();
     }
