@@ -68,6 +68,10 @@ public class RotationNetwork {
     // swinging). Folded into getNetworkStats's demand WITHOUT a recalculation, so contending
     // rotators see each other's load without network churn.
     private final Map<CustomBlockRegistry.LocationKey, Integer> transientDemand = new HashMap<>();
+    // Chain-pulley links: each pulley has ONE outgoing partner (a directed functional graph). A pulley
+    // only transmits power along its link when it sits on a CLOSED loop (see onClosedLoop) — an open
+    // chain renders but stays dead. Injected as a distance edge in getConnections.
+    private final Map<CustomBlockRegistry.LocationKey, CustomBlockRegistry.LocationKey> chainOut = new HashMap<>();
     private int nextNetworkId = 0;
 
     // Re-entrancy guard
@@ -107,6 +111,54 @@ public class RotationNetwork {
         nodes.remove(key);
         transientDemand.remove(key);
         recalculate(key);
+    }
+
+    // ──────────────────────────────────────────────────────────────────────
+    // Chain-pulley links (distance edges gated on a closed loop)
+    // ──────────────────────────────────────────────────────────────────────
+
+    /** Set {@code a}'s single outgoing chain link to {@code b} and recompute both endpoints' networks. */
+    public void linkChain(CustomBlockRegistry.LocationKey a, CustomBlockRegistry.LocationKey b) {
+        chainOut.put(a, b);
+        recalculate(a);
+        if (nodes.containsKey(b)) recalculate(b);
+    }
+
+    /** Remove {@code a}'s outgoing chain link and recompute {@code a} and its former partner. */
+    public void unlinkChain(CustomBlockRegistry.LocationKey a) {
+        CustomBlockRegistry.LocationKey old = chainOut.remove(a);
+        recalculate(a);
+        if (old != null && nodes.containsKey(old)) recalculate(old);
+    }
+
+    /** This pulley's current outgoing chain partner, or null. */
+    public CustomBlockRegistry.@Nullable LocationKey chainOutOf(CustomBlockRegistry.LocationKey a) {
+        return chainOut.get(a);
+    }
+
+    /** All pulleys whose outgoing link targets {@code b} (for cleanup when {@code b} breaks). */
+    public List<CustomBlockRegistry.LocationKey> chainIntoOf(CustomBlockRegistry.LocationKey b) {
+        List<CustomBlockRegistry.LocationKey> in = new ArrayList<>();
+        for (Map.Entry<CustomBlockRegistry.LocationKey, CustomBlockRegistry.LocationKey> e : chainOut.entrySet()) {
+            if (e.getValue().equals(b)) in.add(e.getKey());
+        }
+        return in;
+    }
+
+    /**
+     * True iff following the outgoing chain links from {@code start} returns to {@code start} — i.e.
+     * {@code start} lies on a closed loop. A hop into a missing node (unloaded/broken) is a dead end.
+     */
+    public boolean onClosedLoop(CustomBlockRegistry.LocationKey start) {
+        CustomBlockRegistry.LocationKey cur = chainOut.get(start);
+        int hops = 0;
+        while (cur != null && hops <= maxNetworkSize) {
+            if (!nodes.containsKey(cur)) return false;
+            if (cur.equals(start)) return true;
+            cur = chainOut.get(cur);
+            hops++;
+        }
+        return false;
     }
 
     public boolean isPowered(CustomBlockRegistry.LocationKey key) {
@@ -580,6 +632,17 @@ public class RotationNetwork {
                     result.add(new Connection(neighbor, reverses));
                 }
             }
+        }
+
+        // Chain-pulley distance edge: inject the outgoing link ONLY when this pulley sits on a closed
+        // loop (an open chain carries no power). reverses=false — a chain drive keeps spin direction.
+        // Connection.neighbor() is unconstrained, so BFS in doRecalculate hops across the gap and every
+        // ring member's out-edge merges the whole loop into one network.
+        CustomBlockRegistry.LocationKey chainPartner = chainOut.get(k);
+        if (chainPartner != null && nodes.containsKey(chainPartner) && !isLocked(nodes.get(chainPartner))
+                && onClosedLoop(k)
+                && result.stream().noneMatch(c -> c.neighbor().equals(chainPartner))) {
+            result.add(new Connection(chainPartner, false));
         }
 
         return result;

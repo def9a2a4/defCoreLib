@@ -117,6 +117,9 @@ final class RotationBlocks {
         // addNode). cancelPistons so a shove can't relocate it out from under that cached facing
         // (its flip side is fixed at placement, not re-read live).
         overlayStandard(registry, network, "mech:reverser", RotationNetwork.NodeRole.TRANSMITTER, 0, false, true);
+        // Chain pulley: shaft-like transmitter + distance chain links (see ChainPulley). Instance holds
+        // per-player link selection state, so it outlives register() via the callback captures.
+        new ChainPulley(registry, network).register();
         overlayClutch(registry, network);
         overlayWaterWheel(registry, network, config);
         overlayEngine(registry, network, fuelManager, config);
