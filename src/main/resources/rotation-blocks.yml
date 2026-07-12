@@ -1183,6 +1183,92 @@ blocks:
               B: { tag: banners }
               Y: { block: "mech:bearing" }
 
+  # ─── Suction Hopper ───────────────────────────────────────────────────
+  # Consumer: 1 Power. Fan + hopper. While powered, pulls dropped items from a 3×3×3
+  # cube inward, captures the ones in its own cell into a 5-slot hopper inventory, and
+  # feeds the container/pipe it's mounted on (below on the floor, into the wall on a wall).
+  # With no container it holds the items. Unlike other machines it takes rotation power
+  # from any of its five open faces (dynamic axis pick in RotationBlocks.overlaySuctionHopper).
+  # Display: a hopper facing the mount + the fan's blades on the outward face (spin when
+  # powered). The hopper block-display carries animation:none so only the blades spin.
+  # Placement key = mount/wall face (getFacing().getOppositeFace()); hopper spout = that face.
+  # Blade transforms mirror the fan; the hopper is a corner-anchored BlockDisplay so its
+  # translation is -scale/2 to recenter. Wall blade offsets may want in-game tuning.
+  suction_hopper:
+    name: "&bSuction Hopper"
+    lore:
+      - "&7Pulls nearby dropped items inward while powered"
+      - "&7Captures them and feeds the container it's mounted on"
+      - "&7Powered from any side that isn't its mount"
+    catalog_notes:
+      - "&fWhile powered it sucks dropped items from a 3×3×3 area into itself, then pushes them into the container it's placed on (below on the floor, or into the wall)."
+      - "&fUnlike most machines it takes rotation power from a shaft on any of its five open faces."
+      - "&fIt feeds vanilla containers directly, and also pushes into a pipe mounted below it (when the Pipes plugin is present)."
+      - "&7With no container to output into, it just holds the items in its own inventory."
+    texture: "@machine_base"
+    item_texture: "@fan_item"
+    drops: self
+    storage: { layout: HOPPER }
+    break_sound: { sound: BLOCK_WOOD_BREAK, volume: 0.8, pitch: 1.0 }
+    place_sound: { sound: BLOCK_METAL_PLACE, volume: 0.8, pitch: 1.0 }
+    default_state: idle_floor
+    placement_state_map:
+      DOWN: idle_floor
+      NORTH: idle_wall_s
+      SOUTH: idle_wall_n
+      EAST: idle_wall_e
+      WEST: idle_wall_w
+    states:
+      # Floor: spout down (into the block below), blades on top spinning around Y.
+      idle_floor:
+        display_entities:
+          - { block_data: "minecraft:hopper[facing=down]", tag: hopper, transform: { translation: [-0.49, -0.49, -0.49], scale: [0.98, 0.98, 0.98] }, animation: none }
+          - { material: WHITE_BANNER, tag: blade_a, transform: { translation: [0.1875, 0.55, 0],  scale: [0.375, 0.375, 0.375], left_rotation: [120, 1, 1, -1] } }
+          - { material: WHITE_BANNER, tag: blade_b, transform: { translation: [0, 0.55, 0.1875],  scale: [0.375, 0.375, 0.375], left_rotation: [90, 1, 0, 0] } }
+          - { material: WHITE_BANNER, tag: blade_c, transform: { translation: [-0.1875, 0.55, 0], scale: [0.375, 0.375, 0.375], left_rotation: [120, 1, -1, 1] } }
+          - { material: WHITE_BANNER, tag: blade_d, transform: { translation: [0, 0.55, -0.1875], scale: [0.375, 0.375, 0.375], left_rotation: [180, 0, 1, -1] } }
+      spinning_floor: { copy_from: idle_floor, animation: { type: rotate, axis: [0, 1, 0], speed: 6.0 } }
+      # Wall states: spout points into the mounted wall (= the placement key); blades mirror the
+      # fan's matching wall state and spin around the wall's normal axis (Z for n/s, X for e/w).
+      idle_wall_n:
+        display_entities:
+          - { block_data: "minecraft:hopper[facing=south]", tag: hopper, transform: { translation: [-0.49, -0.49, -0.49], scale: [0.98, 0.98, 0.98] }, animation: none }
+          - { material: WHITE_BANNER, tag: blade_a, transform: { translation: [0.1875, 0, 0],  scale: [0.375, 0.375, 0.375], left_rotation: [-90, 0, 0, 1] }, wall_offset: -0.001 }
+          - { material: WHITE_BANNER, tag: blade_b, transform: { translation: [0, 0.1875, 0],  scale: [0.375, 0.375, 0.375] }, wall_offset: -0.001 }
+          - { material: WHITE_BANNER, tag: blade_c, transform: { translation: [-0.1875, 0, 0], scale: [0.375, 0.375, 0.375], left_rotation: [90, 0, 0, 1] }, wall_offset: -0.001 }
+          - { material: WHITE_BANNER, tag: blade_d, transform: { translation: [0, -0.1875, 0], scale: [0.375, 0.375, 0.375], left_rotation: [180, 0, 0, 1] }, wall_offset: -0.001 }
+      spinning_wall_n: { copy_from: idle_wall_n, animation: { type: rotate, axis: [0, 0, 1], speed: 6.0 } }
+      idle_wall_s:
+        display_entities:
+          - { block_data: "minecraft:hopper[facing=north]", tag: hopper, transform: { translation: [-0.49, -0.49, -0.49], scale: [0.98, 0.98, 0.98] }, animation: none }
+          - { material: WHITE_BANNER, tag: blade_a, transform: { translation: [0.1875, 0, 0],  scale: [0.375, 0.375, 0.375], left_rotation: [180, 1, 1, 0] }, wall_offset: -0.001 }
+          - { material: WHITE_BANNER, tag: blade_b, transform: { translation: [0, 0.1875, 0],  scale: [0.375, 0.375, 0.375], left_rotation: [180, 0, 1, 0] }, wall_offset: -0.001 }
+          - { material: WHITE_BANNER, tag: blade_c, transform: { translation: [-0.1875, 0, 0], scale: [0.375, 0.375, 0.375], left_rotation: [180, 1, -1, 0] }, wall_offset: -0.001 }
+          - { material: WHITE_BANNER, tag: blade_d, transform: { translation: [0, -0.1875, 0], scale: [0.375, 0.375, 0.375], left_rotation: [180, 1, 0, 0] }, wall_offset: -0.001 }
+      spinning_wall_s: { copy_from: idle_wall_s, animation: { type: rotate, axis: [0, 0, 1], speed: 6.0 } }
+      idle_wall_w:
+        display_entities:
+          - { block_data: "minecraft:hopper[facing=west]", tag: hopper, transform: { translation: [-0.49, -0.49, -0.49], scale: [0.98, 0.98, 0.98] }, animation: none }
+          - { material: WHITE_BANNER, tag: blade_a, transform: { translation: [0, 0.1875, 0],  scale: [0.375, 0.375, 0.375], left_rotation: [-90, 0, 1, 0] }, wall_offset: -0.001 }
+          - { material: WHITE_BANNER, tag: blade_b, transform: { translation: [0, 0, 0.1875],  scale: [0.375, 0.375, 0.375], left_rotation: [120, 1, -1, -1] }, wall_offset: -0.001 }
+          - { material: WHITE_BANNER, tag: blade_c, transform: { translation: [0, -0.1875, 0], scale: [0.375, 0.375, 0.375], left_rotation: [180, 1, 0, -1] }, wall_offset: -0.001 }
+          - { material: WHITE_BANNER, tag: blade_d, transform: { translation: [0, 0, -0.1875], scale: [0.375, 0.375, 0.375], left_rotation: [-120, 1, 1, -1] }, wall_offset: -0.001 }
+      spinning_wall_w: { copy_from: idle_wall_w, animation: { type: rotate, axis: [1, 0, 0], speed: 6.0 } }
+      idle_wall_e:
+        display_entities:
+          - { block_data: "minecraft:hopper[facing=east]", tag: hopper, transform: { translation: [-0.49, -0.49, -0.49], scale: [0.98, 0.98, 0.98] }, animation: none }
+          - { material: WHITE_BANNER, tag: blade_a, transform: { translation: [0, 0.1875, 0],  scale: [0.375, 0.375, 0.375], left_rotation: [90, 0, 1, 0] }, wall_offset: -0.001 }
+          - { material: WHITE_BANNER, tag: blade_b, transform: { translation: [0, 0, 0.1875],  scale: [0.375, 0.375, 0.375], left_rotation: [120, 1, 1, 1] }, wall_offset: -0.001 }
+          - { material: WHITE_BANNER, tag: blade_c, transform: { translation: [0, -0.1875, 0], scale: [0.375, 0.375, 0.375], left_rotation: [180, 1, 0, 1] }, wall_offset: -0.001 }
+          - { material: WHITE_BANNER, tag: blade_d, transform: { translation: [0, 0, -0.1875], scale: [0.375, 0.375, 0.375], left_rotation: [-120, 1, -1, 1] }, wall_offset: -0.001 }
+      spinning_wall_e: { copy_from: idle_wall_e, animation: { type: rotate, axis: [1, 0, 0], speed: 6.0 } }
+    recipes:
+      craft:
+        shapeless:
+          - ingredients:
+              - { block: "mech:fan" }
+              - { material: HOPPER }
+
   # ─── Mechanism Minecart ──────────────────────────────────────────────
   # Item-only (placeable: false): right-clicking a rail spawns a minecart entity.
   # Spawn/tick/assemble/destroy logic lives in MechanismMinecartManager (Java).

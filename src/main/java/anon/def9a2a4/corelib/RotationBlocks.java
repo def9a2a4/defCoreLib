@@ -126,6 +126,7 @@ final class RotationBlocks {
         overlayGenerator(registry, network, config);
         overlayDrill(registry, network, config);
         overlayFan(registry, network, config);
+        overlaySuctionHopper(registry, network, config);
 
         // Passive sources — detected at network boundary, no callbacks needed
         network.registerPassiveSource("mech:windmill", config.getPower("windmill", 1));
@@ -823,6 +824,186 @@ final class RotationBlocks {
     }
 
     // ──────────────────────────────────────────────────────────────────────
+    // Suction Hopper: consumer that pulls dropped items in and feeds the mount
+    // ──────────────────────────────────────────────────────────────────────
+
+    /** Face buried in the mounting surface (floor → DOWN, wall → into the wall). */
+    private static BlockFace mountFace(Block b) { return blowDirection(b).getOppositeFace(); }
+
+    /**
+     * Which network axis this hopper's CONSUMER node should register on. Scans the 5 faces that are
+     * not the mounted surface; a face qualifies when its neighbor is a rotation node whose axis
+     * matches that face's axis. Prefers a face whose neighbor network is already powered (so a hopper
+     * wedged between two shafts joins the live one); else the first qualifier; else keeps the current
+     * axis (default Y) to avoid churn.
+     */
+    private static RotationNetwork.Axis omniIntakeAxis(Block b, RotationNetwork network) {
+        BlockFace mount = mountFace(b);
+        RotationNetwork.Axis firstQualifying = null;
+        for (BlockFace f : Faces.CARDINAL) {
+            if (f == mount) continue;
+            RotationNetwork.Axis fAxis = RotationNetwork.axisFromFace(f);
+            var nKey = CustomBlockRegistry.LocationKey.of(b.getRelative(f));
+            var node = network.getNode(nKey);
+            if (node == null || node.axis() != fAxis) continue;
+            if (firstQualifying == null) firstQualifying = fAxis;
+            if (network.isPowered(nKey)) return fAxis;         // prefer a live driver
+        }
+        if (firstQualifying != null) return firstQualifying;
+        var self = network.getNode(CustomBlockRegistry.LocationKey.of(b));
+        return self != null ? self.axis() : RotationNetwork.Axis.Y;
+    }
+
+    /** Re-register on the chosen axis only if it changed (add/removeNode already recalculate). */
+    private static void refreshIntakeAxis(Block b, RotationNetwork network) {
+        var key = CustomBlockRegistry.LocationKey.of(b);
+        var self = network.getNode(key);
+        RotationNetwork.Axis want = omniIntakeAxis(b, network);
+        if (self != null && self.axis() == want) return;
+        network.removeNode(key);
+        network.addNode(b, "mech:suction_hopper", want,
+            RotationNetwork.NodeRole.CONSUMER, suctionHopperPower, false);
+    }
+
+    private static void overlaySuctionHopper(CustomBlockRegistry registry, RotationNetwork network,
+                                             RotationConfig config) {
+        suctionHopperPower  = config.getPower("suction_hopper", 1);
+        suctionTickInterval = config.suctionTickInterval;
+        suctionPullRange    = config.suctionPullRange;
+        suctionPullStrength = config.suctionPullStrength;
+
+        String blockId = "mech:suction_hopper";
+        CustomHeadBlock block = registry.getType(blockId);
+        if (block == null) { warn(registry, blockId); return; }
+
+        registry.register(block.toBuilder()
+            .drillable(false)
+            .reactsToNeighbors(true)
+            .cancelPistons(true)                 // stored facing must stay valid; block isn't piston-mobile
+            .tickInterval(suctionTickInterval)
+            .onNeighborChange((b, face) -> {
+                var self = network.getNode(CustomBlockRegistry.LocationKey.of(b));
+                RotationNetwork.Axis before = self != null ? self.axis() : null;
+                refreshIntakeAxis(b, network);
+                var after = network.getNode(CustomBlockRegistry.LocationKey.of(b));
+                if (after != null && after.axis() == before) recalcIfKnown(b, network);
+            })
+            .onInteract((b, event) -> {
+                if (isWrench(event.getPlayer().getInventory().getItemInMainHand()))
+                    return wrenchInteract(b, event, network, registry);
+                Inventory inv = registry.getOrCreateStorage(b);   // open the 5-slot GUI
+                if (inv == null) return false;
+                event.getPlayer().openInventory(inv);
+                return true;
+            })
+            .onTick(b -> suctionTick(b, network, registry))
+            .onChunkLoad((b, state) -> {
+                storeFacingIfAbsent(b);
+                network.addNode(b, blockId, omniIntakeAxis(b, network),
+                    RotationNetwork.NodeRole.CONSUMER, suctionHopperPower, false);
+                refreshIntakeAxis(b, network);   // refine once same-chunk neighbors exist
+            })
+            .onChunkUnload(b -> network.removeNode(CustomBlockRegistry.LocationKey.of(b)))
+            .onBlockRemoved((b, state) -> network.removeNode(CustomBlockRegistry.LocationKey.of(b)))
+            .build());
+    }
+
+    /** While powered: pull dropped items inward, capture ones in the own cell, feed the mount. */
+    private static void suctionTick(Block hopper, RotationNetwork network, CustomBlockRegistry registry) {
+        var key = CustomBlockRegistry.LocationKey.of(hopper);
+        if (!network.isPowered(key)) return;
+
+        World world = hopper.getWorld();
+        Location center = hopper.getLocation().add(0.5, 0.5, 0.5);
+        Inventory internal = registry.getOrCreateStorage(hopper);
+        if (internal == null) return;
+
+        double r = suctionPullRange + 0.5;   // half-extent; 1 → 1.5 → exact 3×3×3 cube
+        var box = org.bukkit.util.BoundingBox.of(center.toVector(), r, r, r);
+        for (org.bukkit.entity.Entity e : world.getNearbyEntities(box)) {
+            if (!(e instanceof org.bukkit.entity.Item item)) continue;   // Displays are not Items
+            if (!item.isValid() || item.isDead()) continue;
+            Location il = item.getLocation();
+
+            // Capture inside the block's own 1×1×1 cell.
+            if (il.getBlockX() == hopper.getX() && il.getBlockY() == hopper.getY()
+                    && il.getBlockZ() == hopper.getZ()) {
+                ItemStack stack = item.getItemStack();
+                var leftover = internal.addItem(stack.clone());
+                if (leftover.isEmpty()) {
+                    item.remove();
+                } else {
+                    int remaining = leftover.values().iterator().next().getAmount();
+                    if (remaining != stack.getAmount()) {         // partial fit; full-block → leave as-is
+                        ItemStack keep = stack.clone(); keep.setAmount(remaining);
+                        item.setItemStack(keep);
+                    }
+                }
+                continue;                                          // captured items aren't also pulled
+            }
+
+            // Pull toward center: fixed nudge, capped so it never overshoots (mirrors fanTick).
+            var toCenter = center.toVector().subtract(il.toVector());
+            double dist = toCenter.length();
+            if (dist < 1e-3) continue;
+            var unit = toCenter.multiply(1.0 / dist);
+            var v = item.getVelocity();
+            double along = v.dot(unit);
+            if (along < suctionPullStrength)
+                item.setVelocity(v.add(unit.clone().multiply(suctionPullStrength - along)));
+        }
+
+        pushToMount(hopper, internal);
+
+        // Rare inward "airy" particles from a random cube point toward center (count=0 → offset=velocity).
+        var rnd = java.util.concurrent.ThreadLocalRandom.current();
+        if (rnd.nextInt(3) == 0) {
+            Location p = new Location(world,
+                center.getX() + (rnd.nextDouble()*2-1)*r,
+                center.getY() + (rnd.nextDouble()*2-1)*r,
+                center.getZ() + (rnd.nextDouble()*2-1)*r);
+            var inward = center.toVector().subtract(p.toVector());
+            if (inward.lengthSquared() > 1e-4) inward.normalize().multiply(0.15);
+            world.spawnParticle(Particle.CLOUD, p, 0, inward.getX(), inward.getY(), inward.getZ(), 0.05);
+        }
+    }
+
+    /**
+     * One item/tick out of internal storage toward the mount face. A vanilla Container is fed directly;
+     * otherwise a MachineEjectEvent lets a listener (Pipes) claim the item. Items are KEPT on
+     * STALL/DEFAULT — the suction hopper never drops (unlike ejectOutputs).
+     */
+    private static void pushToMount(Block hopper, Inventory internal) {
+        BlockFace mount = mountFace(hopper);
+        Block target = hopper.getRelative(mount);
+        boolean isContainer = target.getState() instanceof Container;
+
+        for (int i = 0; i < internal.getSize(); i++) {
+            ItemStack it = internal.getItem(i);
+            if (it == null || it.getType().isAir()) continue;
+            ItemStack single = it.clone(); single.setAmount(1);
+
+            boolean consumed;
+            if (isContainer) {
+                Inventory dest = ((Container) target.getState()).getInventory();
+                consumed = dest.addItem(single).isEmpty();          // false → container full: keep, stop
+            } else {
+                // No vanilla container: offer to listeners (Pipes). Single item → deliverFromAbove is
+                // all-or-nothing (no partial-insert). HANDLED consumes; STALL/DEFAULT keep (never drop).
+                MachineEjectEvent ev = new MachineEjectEvent(hopper, mount, java.util.List.of(single));
+                Bukkit.getPluginManager().callEvent(ev);
+                consumed = ev.getResult() == MachineEjectEvent.Result.HANDLED;
+            }
+
+            if (consumed) {
+                it.setAmount(it.getAmount() - 1);
+                internal.setItem(i, it.getAmount() <= 0 ? null : it);
+            }
+            return;   // one attempt/tick regardless of outcome (keeps event rate low)
+        }
+    }
+
+    // ──────────────────────────────────────────────────────────────────────
     // Generator: source, turns off when receiving redstone power
     // ──────────────────────────────────────────────────────────────────────
 
@@ -884,6 +1065,10 @@ final class RotationBlocks {
     private static double fanMinPush;
     private static double fanMaxPush;
     private static double fanPushPerPower;
+    private static int suctionHopperPower;
+    private static int suctionTickInterval;
+    private static int suctionPullRange;
+    private static double suctionPullStrength;
 
     private record DrillState(int progress, Material targetMaterial) {}
     private static final Map<CustomBlockRegistry.LocationKey, DrillState> drillProgress = new HashMap<>();

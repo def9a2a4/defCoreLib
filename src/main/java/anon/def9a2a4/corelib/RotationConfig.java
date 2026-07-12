@@ -28,6 +28,9 @@ final class RotationConfig {
     int pressTickInterval = 20;
     int pressMaxBatch = 8;
     int placerTickInterval = 20;
+    int suctionTickInterval = 2;
+    int suctionPullRange = 1;          // Chebyshev radius: 1 → 3×3×3 cube
+    double suctionPullStrength = 0.14; // fixed inward velocity (≈ fanMinPush)
     Set<Material> drillBlacklist = Set.of(
             Material.OBSIDIAN, Material.CRYING_OBSIDIAN, Material.SPAWNER,
             Material.MOVING_PISTON, Material.REINFORCED_DEEPSLATE);
@@ -102,6 +105,14 @@ final class RotationConfig {
             loaded++;
         }
 
+        ConfigurationSection suction = yaml.getConfigurationSection("suction_hopper");
+        if (suction != null) {
+            suctionTickInterval = suction.getInt("tick-interval", suctionTickInterval);
+            suctionPullRange    = suction.getInt("pull-range", suctionPullRange);
+            suctionPullStrength = suction.getDouble("pull-strength", suctionPullStrength);
+            loaded++;
+        }
+
         ConfigurationSection fuel = yaml.getConfigurationSection("fuel");
         if (fuel != null) {
             fuelValues.clear();
@@ -171,5 +182,6 @@ final class RotationConfig {
         powerValues.put("fan", 1);
         powerValues.put("press", 1);
         powerValues.put("placer", 1);
+        powerValues.put("suction_hopper", 1);
     }
 }
