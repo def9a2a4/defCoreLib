@@ -1,6 +1,6 @@
 # BetterBanners
 
-Flag banners and oversized banner tiers. Purely server-side paper plugin, no mods or resource packs required.
+Flag banners, larger size banner tiers, and bed banners. Purely server-side paper plugin, no mods or resource packs required.
 
 [![Normal and large banner tiers](https://def9a2a4.github.io/defCoreLib-docs/readmes/assets/bbanners/large.png)](https://def9a2a4.github.io/defCoreLib-docs/index.html?q=banner)
 
@@ -11,9 +11,10 @@ Flag banners and oversized banner tiers. Purely server-side paper plugin, no mod
 - **Large & Huge banners** - upgrade normal banners into bigger variants that keep their patterns. See [the catalog](https://def9a2a4.github.io/defCoreLib-docs/index.html?q=banner). Can be used as flags as well.
 	- Crafting recipe: surround a banner or large banner with wool to bump it up a tier
 	![Crafting recipe: surround a banner or large banner with wool to bump it up a tier.](https://def9a2a4.github.io/defCoreLib-docs/readmes/assets/bbanners/crafting.png)
+- **Bed Banners** - place a banner on a bed to decorate it!
 - Large/Huge banners are the ingredient for [Mechanism](https://github.com/def9a2a4/defCoreLib/blob/main/docs/readmes/mech.md) Large and Huge windmills.
 
-Break the block that a flag/large/huge banner is attached to to remove it, or right click the block with shears. Large/Huge banners placed on the floor behave like regular banners, in that they can be facing different directions. Flag banners can also be facing any direction, and a single "pole" can have many flag banners.
+To remove banners on beds, flag banners, or large banners, break the block they were placed on, or right click the block with shears. Large/Huge banners placed on the floor behave like regular banners, in that they can be facing different directions. Flag banners can also be facing any direction, and a single "pole" can have many flag banners.
 
 
 # Images

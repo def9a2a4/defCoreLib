@@ -98,8 +98,8 @@
 
 - [ ] **[next]** Push the **10 pending commits** to GitHub; confirm existing CI
   (`.github/workflows/publish.yml`, `checks.yml`) goes green. (Remote + workflows already configured.)
-- [ ] Migrate RedstoneDisplays to CoreLib (simplest consumer, ~7 files — do first to validate the
-  migration pattern)
+- [x] Migrate RedstoneDisplays to CoreLib (simplest consumer — done as the `rsd` companion module +
+  `redstonedisplays` namespace in `redstone-displays.yml`; validated the migration pattern)
 - [ ] Migrate Pipes to CoreLib (see [pipes.md](pipes.md))
 - [ ] Migrate HeadSmith to CoreLib (largest; gated on batched recipe reload above)
 - [ ] Two-JAR distribution: slim (depends on CoreLib) + bundled (shadows CoreLib)
