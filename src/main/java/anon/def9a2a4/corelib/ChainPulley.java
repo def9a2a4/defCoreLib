@@ -58,11 +58,13 @@ final class ChainPulley {
         return m != null ? m : Material.matchMaterial("CHAIN");
     }
 
-    private static final int MAX_DIST = 10;
+    private static final int MAX_DIST = 32;
     private static final double MAX_DIST_SQ = (double) MAX_DIST * MAX_DIST;
     private static final float DIAMETER = 0.33f;
     /** Chain strand length multiplier (the requested "2× longer"). */
     private static final float LENGTH_SCALE = 2f;
+    /** Shift the strand this fraction of the wheel-to-wheel distance along the link (toward the partner). */
+    private static final float FORWARD_FRACTION = 0.5f;
     /** Radians the powered strand rotates about its long axis per tick. */
     private static final float SPIN_RATE = 0.25f;
     /**
@@ -247,9 +249,9 @@ final class ChainPulley {
     }
 
     /**
-     * Geometry for a strand: the head's long axis is local +Z (so "rotate about Z" spins it in place),
-     * aimed along the gap, stretched to {@code length * LENGTH_SCALE}, centred on the midpoint. Anchor
-     * is the source block centre (DisplayUtil.spawn adds +0.5).
+     * Geometry for a strand: the head's long axis is local +Y (the Y-stretch is what links the two
+     * wheels, thin in X/Z), aimed along the gap, stretched to {@code length * LENGTH_SCALE}, centred on
+     * the midpoint. Anchor is the source block centre (DisplayUtil.spawn adds +0.5).
      */
     private @Nullable StrandAnim strandBase(Block source, CustomBlockRegistry.LocationKey target) {
         float dx = target.x() - source.getX();
@@ -257,9 +259,12 @@ final class ChainPulley {
         float dz = target.z() - source.getZ();
         float length = (float) Math.sqrt(dx * dx + dy * dy + dz * dz);
         if (length < 1e-3f) return null;
-        Quaternionf orient = new Quaternionf().rotationTo(0f, 0f, 1f, dx, dy, dz);
-        Vector3f translation = new Vector3f(dx / 2f, dy / 2f, dz / 2f);
-        Vector3f scale = new Vector3f(DIAMETER, DIAMETER, length * LENGTH_SCALE);
+        Quaternionf orient = new Quaternionf().rotationTo(0f, 1f, 0f, dx, dy, dz);
+        // Midpoint, then nudged forward by FORWARD_FRACTION of the gap (toward the partner) so the
+        // strand isn't centred on the source block.
+        Vector3f translation = new Vector3f(
+            dx / 2f + dx * FORWARD_FRACTION, dy / 2f + dy * FORWARD_FRACTION, dz / 2f + dz * FORWARD_FRACTION);
+        Vector3f scale = new Vector3f(DIAMETER, length * LENGTH_SCALE, DIAMETER);
         return new StrandAnim(orient, translation, scale);
     }
 
@@ -278,14 +283,17 @@ final class ChainPulley {
             Map.Entry<CustomBlockRegistry.LocationKey, StrandAnim> e = it.next();
             StrandAnim s = e.getValue();
             if (s.display == null || !s.display.isValid()) { it.remove(); continue; }
-            if (!network.isPowered(e.getKey())) continue; // unpowered → hold last transform
+            // Spin only when the loop is complete AND powered — an open chain never moves, even if the
+            // pulley is otherwise powered by a shaft.
+            if (!network.isPowered(e.getKey()) || !network.onClosedLoop(e.getKey())) continue;
             int sign = network.getDirection(e.getKey()) == RotationNetwork.SpinDirection.CCW ? -1 : 1;
             s.angle += SPIN_RATE * sign;
-            // T · Rorient · Rz(angle) · S — matches the spawn Transformation at angle 0.
+            // T · Rorient · Ry(angle) · S — spins about the long (Y/stretch) axis; matches the spawn
+            // Transformation at angle 0.
             Matrix4f m = new Matrix4f()
                 .translate(s.translation)
                 .rotate(s.orient)
-                .rotateZ(s.angle)
+                .rotateY(s.angle)
                 .scale(s.scale);
             s.display.setTransformationMatrix(m);
         }

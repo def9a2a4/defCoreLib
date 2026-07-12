@@ -11,7 +11,7 @@ namespace: mech
 # ── Named texture registry ─────────────────────────────────────────────────────
 # Reference any of these from texture/item_texture/display_entities as "@alias".
 textures:
-  chainwheel:        "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTliNzc4MjJhODNmZDBjNWFkMGEyMmE4ZWI5NzViNWIyM2Y1ODhkMTkzMzg4ZGE2MzNmZWZlMzFlMjZlOWU0NiJ9fX0="  # Chain Pulley — placed head + wheel display
+  chainwheel:        "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTliNzc4MjJhODNmZDBjNWFkMGEyMmE4ZWI5NzViNWIyM2Y1ODhkMTkzMzg4ZGE2MzNmZWZlMzFlMjZlOWU0NiJ9fX0="  # Chain Pulley — in-hand item + spinning wheel display
   chain:             "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvY2JmZTg2MDJiZDAyNDA2YzYyNDNhZmIxMjE5YjczOWJhZmIyZGQwY2NkZmM1ZmI1ZDFlMzEwMDY5YTZkYTBmOCJ9fX0="  # Chain — strand between linked pulleys
   cut_copper:        "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTI4YmMyZGYzZGZmNWVjM2QxNDNhMmNlZWNiOTM4MjE4MzUxNmU5ZmFkZDdlNDA5YTVlYjQxNTUxNTc0YTI1ZiJ9fX0="  # Cut Copper — shaft/gear/engine/generator/drill rods
   gear_disc:         "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTM1NDhjNmJkZGYwMGQ1MDI5MjEyYjc0NjFkZGNhYTcyZTkyOGQ0M2YzYWIwMmEyYWJmNjgwYTYzZDI1MWVjNSJ9fX0="  # Copper Gear (modified) — gear discs
@@ -245,42 +245,42 @@ blocks:
       - "&fA transmitter you can link to another pulley with a chain."
       - "&7Right-click one pulley with a chain, then another, to link them (max 10 blocks apart)."
       - "&7Power only flows once the chain links form a closed loop."
-    texture: "@chainwheel"
+    texture: "@windmill_hub_up"
     item_texture: "@chainwheel"
     drops: self
     default_state: idle_y
+    # Floor placement only (placedOn resolves to DOWN); wall placements are rejected.
+    placement:
+      allowed_faces: [DOWN]
     placement_state_map:
       DOWN: idle_y
-      NORTH: idle_z
-      SOUTH: idle_z
-      EAST: idle_x
-      WEST: idle_x
     states:
-      # A single chainwheel head as the spinning wheel (disc-scaled, thin along its spin axis).
-      # spinning_* inherits the display and adds a rotate animation about that axis.
+      # Bearing hub skull (texture @bearing) with a large spinning chainwheel display entity on top.
+      # spinning_* inherits the display and adds a rotate animation about its axis.
+      # (idle_x/z + spinning_x/z are unreachable under floor-only placement but kept for completeness.)
       idle_y:
-        texture: "@chainwheel"
+        texture: "@windmill_hub_up"
         display_entities:
           - texture: "@chainwheel"
             tag: wheel
-            transform: { translation: [0, 0, 0], scale: [1.4, 0.4, 1.4] }
-      spinning_y: { copy_from: idle_y, texture: "@chainwheel", animation: { type: rotate, axis: [0, 1, 0], speed: 3.0 } }
+            transform: { translation: [0, 0.5, 0], scale: [1.5, 1.2, 1.5] }
+      spinning_y: { copy_from: idle_y, texture: "@windmill_hub_up", animation: { type: rotate, axis: [0, 1, 0], speed: 3.0 } }
       idle_x:
-        texture: "@chainwheel"
+        texture: "@windmill_hub_up"
         display_entities:
           - texture: "@chainwheel"
             tag: wheel
-            transform: { translation: [0, 0, 0], scale: [1.4, 0.4, 1.4], left_rotation: [90, 0, 0, 1] }
+            transform: { translation: [0, 0.5, 0], scale: [1.5, 1.2, 1.5], left_rotation: [90, 0, 0, 1] }
             wall_offset: 0.001
-      spinning_x: { copy_from: idle_x, texture: "@chainwheel", animation: { type: rotate, axis: [1, 0, 0], speed: 3.0 } }
+      spinning_x: { copy_from: idle_x, texture: "@windmill_hub_up", animation: { type: rotate, axis: [1, 0, 0], speed: 3.0 } }
       idle_z:
-        texture: "@chainwheel"
+        texture: "@windmill_hub_up"
         display_entities:
           - texture: "@chainwheel"
             tag: wheel
-            transform: { translation: [0, 0, 0], scale: [1.4, 0.4, 1.4], left_rotation: [-90, 1, 0, 0] }
+            transform: { translation: [0, 0.5, 0], scale: [1.5, 1.2, 1.5], left_rotation: [-90, 1, 0, 0] }
             wall_offset: 0.001
-      spinning_z: { copy_from: idle_z, texture: "@chainwheel", animation: { type: rotate, axis: [0, 0, 1], speed: 3.0 } }
+      spinning_z: { copy_from: idle_z, texture: "@windmill_hub_up", animation: { type: rotate, axis: [0, 0, 1], speed: 3.0 } }
       # Texture-only pseudo-state: never entered by the network; exists so ChainPulley.java can read
       # the @chain base64 via resolveTexture("strand", ...) for the runtime strand display.
       strand: { texture: "@chain" }
