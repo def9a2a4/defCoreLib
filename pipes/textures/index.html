@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Texture Color Editor</title>
+    <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Texture Color Editor</h1>
+
+        <div class="drop-zone" id="dropZone">
+            <p>Drag & drop a PNG here, or click to select</p>
+            <input type="file" class="file-input" id="fileInput" accept="image/png">
+        </div>
+
+        <div class="url-input-row">
+            <input type="text" id="urlInput" class="url-input" placeholder="Paste base64, data URL, or image URL...">
+            <button class="btn-primary btn-small" id="loadUrlBtn">Load</button>
+        </div>
+
+        <div class="main-content">
+            <div class="left-column">
+                <div class="preview-row" id="previewRow">
+                    <div class="png-stack">
+                        <div class="canvas-wrapper">
+                            <h3>Original</h3>
+                            <canvas id="originalCanvas"></canvas>
+                        </div>
+                        <div class="canvas-wrapper">
+                            <h3>Modified</h3>
+                            <canvas id="modifiedCanvas"></canvas>
+                        </div>
+                    </div>
+                    <div class="view-section">
+                        <h3>Isometric View</h3>
+                        <div id="isometric-container"></div>
+                    </div>
+                </div>
+
+                <div class="view-section" id="view3dContainer">
+                    <h3>3D Interactive View</h3>
+                    <div id="three-container"></div>
+                    <div class="view-controls">Drag to rotate / Scroll to zoom</div>
+                </div>
+
+                <details class="collapsible-section" id="colorAnalysis" open>
+                    <summary>Color Analysis</summary>
+                    <div class="collapsible-content">
+                        <div class="reference-upload">
+                            <span class="ref-label">Reference:</span>
+                            <div class="ref-presets">
+                                <img src="https://raw.githubusercontent.com/InventivetalentDev/minecraft-assets/1.21.1/assets/minecraft/textures/item/copper_ingot.png"
+                                     class="ref-preset-icon" title="Copper Ingot">
+                                <img src="https://raw.githubusercontent.com/InventivetalentDev/minecraft-assets/1.21.1/assets/minecraft/textures/block/oxidized_copper.png"
+                                     class="ref-preset-icon" title="Oxidized Copper">
+                                <img src="https://raw.githubusercontent.com/InventivetalentDev/minecraft-assets/1.21.1/assets/minecraft/textures/item/iron_ingot.png"
+                                     class="ref-preset-icon" title="Iron Ingot">
+                                <img src="https://raw.githubusercontent.com/InventivetalentDev/minecraft-assets/1.21.1/assets/minecraft/textures/item/gold_ingot.png"
+                                     class="ref-preset-icon" title="Gold Ingot">
+                            </div>
+                            <div class="drop-zone-small" id="refDropZone">
+                                <span>or drop/click</span>
+                                <input type="file" class="file-input" id="refFileInput" accept="image/png,image/jpeg">
+                            </div>
+                            <button class="btn-secondary btn-small" id="clearRefBtn" style="display:none">Clear</button>
+                            <button class="btn-secondary btn-small" id="matchHueBtn" style="display:none">Match Hue</button>
+                        </div>
+                        <div class="distributions">
+                            <div class="distribution-section">
+                                <h3>Hue Distribution</h3>
+                                <canvas id="hueHistogram" width="360" height="80"></canvas>
+                            </div>
+                            <div class="distribution-section">
+                                <h3>Brightness Distribution</h3>
+                                <canvas id="brightnessHistogram" width="300" height="80"></canvas>
+                            </div>
+                        </div>
+                        <div class="histogram-legend" id="histogramLegend">
+                            <span class="legend-item"><span class="legend-filled"></span> Current</span>
+                            <span class="legend-item"><span class="legend-outline"></span> Reference</span>
+                        </div>
+                    </div>
+                </details>
+            </div>
+
+            <div class="right-column">
+                <div class="controls" id="controls">
+                    <div class="section-title">Rotate Head</div>
+                    <div class="buttons">
+                        <button class="btn-secondary" id="rotateUpBtn">↑ Up</button>
+                        <button class="btn-secondary" id="rotateDownBtn">↓ Down</button>
+                        <button class="btn-secondary" id="rotateLeftBtn">← Left</button>
+                        <button class="btn-secondary" id="rotateRightBtn">→ Right</button>
+                    </div>
+
+                    <div class="buttons">
+                        <button class="btn-secondary" id="clearOuterBtn">Clear Outer Layer</button>
+                    </div>
+
+                    <div class="section-title">Global Adjustments</div>
+
+                    <div class="slider-group">
+                        <label>Hue Shift <span id="hueValue">0</span>&deg;</label>
+                        <input type="range" id="hue" min="-180" max="180" value="0">
+                    </div>
+
+                    <div class="slider-group">
+                        <label>Saturation <span id="saturationValue">0</span>%</label>
+                        <input type="range" id="saturation" min="-100" max="100" value="0">
+                    </div>
+
+                    <div class="slider-group">
+                        <label>Lightness <span id="lightnessValue">0</span>%</label>
+                        <input type="range" id="lightness" min="-100" max="100" value="0">
+                    </div>
+
+                    <div class="slider-group">
+                        <label>Contrast <span id="contrastValue">0</span>%</label>
+                        <input type="range" id="contrast" min="-100" max="100" value="0">
+                    </div>
+
+                    <div class="section-title">Colorize (applies tint to non-grey pixels)</div>
+
+                    <div class="slider-group">
+                        <label>Colorize Hue <span id="colorizeHueValue">30</span>&deg;</label>
+                        <div class="slider-with-input">
+                            <input type="range" id="colorizeHue" min="0" max="360" value="30">
+                            <input type="text" id="colorizeHexInput" placeholder="#b87333" class="hex-input">
+                        </div>
+                    </div>
+
+                    <div class="slider-group">
+                        <label>Colorize Amount <span id="colorizeAmountValue">0</span>%</label>
+                        <input type="range" id="colorizeAmount" min="0" max="100" value="0">
+                    </div>
+
+                    <div class="section-title">Desaturate by Hue Range</div>
+
+                    <div class="slider-group">
+                        <label>Target Hue <span id="targetHueValue">30</span>&deg;</label>
+                        <input type="range" id="targetHue" min="0" max="360" value="30">
+                    </div>
+
+                    <div class="slider-group">
+                        <label>Hue Range <span id="hueRangeValue">30</span>&deg;</label>
+                        <input type="range" id="hueRange" min="5" max="90" value="30">
+                    </div>
+
+                    <div class="slider-group">
+                        <label>Grey Amount <span id="greyAmountValue">0</span>%</label>
+                        <input type="range" id="greyAmount" min="0" max="100" value="0">
+                    </div>
+
+                    <div class="buttons">
+                        <button class="btn-secondary" id="resetBtn">Reset</button>
+                        <button class="btn-primary" id="downloadBtn">Download PNG</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+            "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+        }
+    }
+    </script>
+
+    <script type="module" src="./skin-editor.js"></script>
+</body>
+</html>

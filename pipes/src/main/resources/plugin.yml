@@ -1,0 +1,36 @@
+name: Pipes
+main: anon.def9a2a4.pipes.PipesPlugin
+version: ${version}
+api-version: 1.21
+author: You
+description: Item pipes for transferring items between containers
+depend: [DefCoreLib]
+
+commands:
+  pipes:
+    description: Pipes admin commands
+    usage: /pipes <help|reload|give|recipes|cleanup|info|delete_all>
+    permission: pipes.admin
+
+permissions:
+  pipes.admin:
+    description: Allows access to all Pipes commands
+    default: op
+  pipes.reload:
+    description: Allows reloading the config
+    default: op
+  pipes.give:
+    description: Allows giving pipe items
+    default: op
+  pipes.recipes:
+    description: Allows unlocking all pipe recipes
+    default: op
+  pipes.cleanup:
+    description: Allows cleaning up orphaned display entities
+    default: op
+  pipes.info:
+    description: Allows viewing pipe statistics
+    default: op
+  pipes.delete_all:
+    description: Allows deleting all pipes
+    default: op

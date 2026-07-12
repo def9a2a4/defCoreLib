@@ -1,18 +1,16 @@
 # `gradle shadowJar` runs the shadowJar task in the root (core) AND every companion module that
 # has it (vslab / bbanners / mech / rsd), so one invocation builds all five jars.
-PIPES_DIR := ../Pipes
-
 .PHONY: build
 build:
 	gradle shadowJar
-	cd $(PIPES_DIR) && gradle shadowJar
+	
 	mkdir -p bin
 	cp build/libs/defCoreLib*.jar bin/
 	cp vslab/build/libs/vslab*.jar bin/
 	cp bbanners/build/libs/BetterBanners*.jar bin/
 	cp mech/build/libs/Mechanism*.jar bin/
 	cp rsd/build/libs/RedstoneDisplays*.jar bin/
-	cp $(PIPES_DIR)/build/libs/Pipes*.jar bin/
+	cp pipes/build/libs/Pipes*.jar bin/
 
 # Docs build: compile the plugin, boot a SEPARATE server (test-server/, not the playtest server/)
 # that exports the ground-truth placed-display data (-Ddefcorelib.export), then generate the catalog
@@ -32,7 +30,7 @@ CATALOG_ARGS ?=
 docs:
 	@[ -n "$(PAPER_JAR)" ] || { echo "ERROR: no server/paper-*.jar found to copy into test-server/"; exit 1; }
 	gradle shadowJar
-	cd $(PIPES_DIR) && gradle shadowJar
+	
 	mkdir -p test-server/plugins .temp
 	[ -f test-server/$(PAPER_JAR) ] || cp server/$(PAPER_JAR) test-server/
 	[ -f test-server/eula.txt ] || echo 'eula=true' > test-server/eula.txt
@@ -45,7 +43,7 @@ docs:
 	cp build/libs/defCoreLib*.jar vslab/build/libs/vslab*.jar \
 		bbanners/build/libs/BetterBanners*.jar mech/build/libs/Mechanism*.jar \
 		rsd/build/libs/RedstoneDisplays*.jar \
-		$(PIPES_DIR)/build/libs/Pipes*.jar test-server/plugins/
+		pipes/build/libs/Pipes*.jar test-server/plugins/
 	rm -f .temp/display-spec.json
 ifeq ($(KEEP_ALIVE),1)
 	@echo ">>> test-server keep-alive on localhost:25575 (offline, MC 1.21.11). You spawn at the grid."
@@ -109,7 +107,7 @@ strip-assets:
 showcase-test:
 	@[ -n "$(PAPER_JAR)" ] || { echo "ERROR: no server/paper-*.jar found to copy into test-server/"; exit 1; }
 	gradle shadowJar
-	cd $(PIPES_DIR) && gradle shadowJar
+	
 	mkdir -p test-server/plugins
 	[ -f test-server/$(PAPER_JAR) ] || cp server/$(PAPER_JAR) test-server/
 	[ -f test-server/eula.txt ] || echo 'eula=true' > test-server/eula.txt
@@ -122,7 +120,7 @@ showcase-test:
 	cp build/libs/defCoreLib*.jar vslab/build/libs/vslab*.jar \
 		bbanners/build/libs/BetterBanners*.jar mech/build/libs/Mechanism*.jar \
 		rsd/build/libs/RedstoneDisplays*.jar \
-		$(PIPES_DIR)/build/libs/Pipes*.jar test-server/plugins/
+		pipes/build/libs/Pipes*.jar test-server/plugins/
 	cd test-server && timeout --foreground -k 30 180 java -Ddefcorelib.showcaseTest=true \
 		-Xmx2G -jar $(PAPER_JAR) --nogui --port 25576 < /dev/null
 
@@ -178,7 +176,7 @@ showcase-test-ci: test-server-download
 showcase-capture:
 	@[ -n "$(PAPER_JAR)" ] || { echo "ERROR: no server/paper-*.jar found to copy into test-server/"; exit 1; }
 	gradle shadowJar
-	cd $(PIPES_DIR) && gradle shadowJar
+	
 	mkdir -p test-server/plugins .temp
 	[ -f test-server/$(PAPER_JAR) ] || cp server/$(PAPER_JAR) test-server/
 	[ -f test-server/eula.txt ] || echo 'eula=true' > test-server/eula.txt
@@ -191,7 +189,7 @@ showcase-capture:
 	cp build/libs/defCoreLib*.jar vslab/build/libs/vslab*.jar \
 		bbanners/build/libs/BetterBanners*.jar mech/build/libs/Mechanism*.jar \
 		rsd/build/libs/RedstoneDisplays*.jar \
-		$(PIPES_DIR)/build/libs/Pipes*.jar test-server/plugins/
+		pipes/build/libs/Pipes*.jar test-server/plugins/
 	rm -f .temp/showcase-spec.json
 	cd test-server && timeout --foreground -k 30 180 java -Ddefcorelib.showcaseCapture="$(CURDIR)/.temp/showcase-spec.json" \
 		-Xmx2G -jar $(PAPER_JAR) --nogui --port 25576 < /dev/null || true

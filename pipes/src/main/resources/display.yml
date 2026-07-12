@@ -1,0 +1,247 @@
+# Copper Pipes Display Configuration
+# This file contains texture sets and display transformation settings.
+
+# Texture sets - referenced by variant's texture-set field in config.yml
+texture-sets:
+  # Copper pipe textures (regular behavior)
+  copper:
+    # Inventory item texture
+    item: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjU0OGJhYjNjNDhkYzg1ZWQzMzI4YWQ4YWM4NzE5ZDBjMTM0ODM5NzFkODE4ZWU2ZDIwOTc0ZDkxYTZlYjVlZiJ9fX0="
+    # Placed head block textures
+    head:
+      horizontal: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzdlZDVlZjUzMzAwNzczNWVlNDQwZTg0ZjU1M2ViZDY4ODYxZTAyZmM1MmE1ZmY5M2MyN2I1ODQyOTdiMzUwYSJ9fX0="
+      up: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHBzOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlLzY5OWEwN2QyZGIxZGI5YTRlOTI2ZDdlNGE2YmUxYmUxZTk2ZWE4ZDMwMDhiNzFiYjU3YTJiNDdhYjY4N2I0NzcifX19"
+      down: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHBzOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlLzY5OWEwN2QyZGIxZGI5YTRlOTI2ZDdlNGE2YmUxYmUxZTk2ZWE4ZDMwMDhiNzFiYjU3YTJiNDdhYjY4N2I0NzcifX19"
+    # Item display entity textures
+    item-display:
+      horizontal: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjU0OGJhYjNjNDhkYzg1ZWQzMzI4YWQ4YWM4NzE5ZDBjMTM0ODM5NzFkODE4ZWU2ZDIwOTc0ZDkxYTZlYjVlZiJ9fX0="
+      up: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHBzOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlL2VlZGQxYjQ4MTAwMjU3MjJiMzBlYmJlMjBmMTI5OGE5MDgyNmM1MzQ1ZGU2MDJmYzE3ZGFlZDFlMDVkZWQ4ZDgifX19"
+      down: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHBzOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlLzMyMjlmYTZhZDBlMDNmNjYyYmVlMjkwZWVhOGMxOWI4YTgxZDA2MDc1YjRhNTVhZjIxOWE3N2VhOWRhZjEzMjMifX19"
+
+  # Copper corner pipe textures (corner behavior)
+  copper_corner:
+    item: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDBhNmU2YWE3Y2U5OWM4MWRhZjgxNmQ2OTYzOGQ1MmIyODgyYTI1NTg4ODAyMjJlOWE0NjZkY2VkYzg4MDE1YSJ9fX0="
+    head:
+      horizontal: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzdlZDVlZjUzMzAwNzczNWVlNDQwZTg0ZjU1M2ViZDY4ODYxZTAyZmM1MmE1ZmY5M2MyN2I1ODQyOTdiMzUwYSJ9fX0="
+      down: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHBzOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlLzY5OWEwN2QyZGIxZGI5YTRlOTI2ZDdlNGE2YmUxYmUxZTk2ZWE4ZDMwMDhiNzFiYjU3YTJiNDdhYjY4N2I0NzcifX19"
+    # Corner pipes use a single item-display texture
+    item-display: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDBhNmU2YWE3Y2U5OWM4MWRhZjgxNmQ2OTYzOGQ1MmIyODgyYTI1NTg4ODAyMjJlOWE0NjZkY2VkYzg4MDE1YSJ9fX0="
+    # Directional display textures (second display entity, orientation-dependent)
+    directional-display:
+      horizontal: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjU0OGJhYjNjNDhkYzg1ZWQzMzI4YWQ4YWM4NzE5ZDBjMTM0ODM5NzFkODE4ZWU2ZDIwOTc0ZDkxYTZlYjVlZiJ9fX0="
+      down: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHBzOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlLzMyMjlmYTZhZDBlMDNmNjYyYmVlMjkwZWVhOGMxOWI4YTgxZDA2MDc1YjRhNTVhZjIxOWE3N2VhOWRhZjEzMjMifX19"
+
+  # Iron pipe textures
+  iron:
+    item: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvN2RhMWU3ZmU4ZGY1MzY5MjZmODgyMmM4MGQ5Y2E4NTU5YTlmMDUzZWYyYThhMTEyNmJiMzgzOGYwMTcxODc4NyJ9fX0="
+    head:
+      horizontal: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTI1MThhY2NkNDRkMTAwYTQwMDhjYjhkNTk3YTkwYTUyMjcyNjU2ODYwNDc3MzI0OTIwM2U5ZDJiYTU3ZTRlNyJ9fX0="
+      up: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGJiYjBiODI5MmQxZDVjMWViYzBkYjhiZjkxNTU5ODc5YTJiMGFmMjQ0NzY5NmJhMjBjOThlYmFmZWUxODBhOCJ9fX0="
+      down: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGJiYjBiODI5MmQxZDVjMWViYzBkYjhiZjkxNTU5ODc5YTJiMGFmMjQ0NzY5NmJhMjBjOThlYmFmZWUxODBhOCJ9fX0="
+    item-display:
+      horizontal: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvN2RhMWU3ZmU4ZGY1MzY5MjZmODgyMmM4MGQ5Y2E4NTU5YTlmMDUzZWYyYThhMTEyNmJiMzgzOGYwMTcxODc4NyJ9fX0="
+      up: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzI4ZTIxMDQ5MTNlZTAyMGZhODNkMTFjYzVkNDUyMmIyMjYzNTBiM2JmZGY4MTEyMDllNmEwZTRmNzZhNjFjNyJ9fX0="
+      down: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZGNmZTgwZThlYzY0YTQ2ODYxNzc4NGU3MzUyZDkwMTI1OWIyYzJkM2RhMDNjMjRiNWZhOTY1ZWE3MWExODc4OSJ9fX0="
+
+  # Iron corner pipe textures
+  iron_corner:
+    item: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDkxMjA5Y2I5ZGVhZGJmYmVkN2NkYWUxM2EyNWFiM2FlZjc1MGI2NzgzNmU1YmJiNmQ5ZjkwMDIzMDg1NjlkNyJ9fX0="
+    head:
+      horizontal: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTI1MThhY2NkNDRkMTAwYTQwMDhjYjhkNTk3YTkwYTUyMjcyNjU2ODYwNDc3MzI0OTIwM2U5ZDJiYTU3ZTRlNyJ9fX0="
+      down: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGJiYjBiODI5MmQxZDVjMWViYzBkYjhiZjkxNTU5ODc5YTJiMGFmMjQ0NzY5NmJhMjBjOThlYmFmZWUxODBhOCJ9fX0="
+    item-display: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDkxMjA5Y2I5ZGVhZGJmYmVkN2NkYWUxM2EyNWFiM2FlZjc1MGI2NzgzNmU1YmJiNmQ5ZjkwMDIzMDg1NjlkNyJ9fX0="
+    # Directional display textures (second display entity, orientation-dependent)
+    directional-display:
+      horizontal: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvN2RhMWU3ZmU4ZGY1MzY5MjZmODgyMmM4MGQ5Y2E4NTU5YTlmMDUzZWYyYThhMTEyNmJiMzgzOGYwMTcxODc4NyJ9fX0="
+      down: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZGNmZTgwZThlYzY0YTQ2ODYxNzc4NGU3MzUyZDkwMTI1OWIyYzJkM2RhMDNjMjRiNWZhOTY1ZWE3MWExODc4OSJ9fX0="
+
+  # Gold pipe textures
+  gold:
+    item: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTFmYjkzOGNhM2YxMWEyODg5YTkzYjY4NzRjYWRmZDhjZjJhNTlkYjY3MmE0OWVmMjFhZmFiYmMwY2QzZjE4MSJ9fX0="
+    head:
+      horizontal: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZWNlMGQ1ZGY5MTM0NDA5ZTk1NDFjMTY5Y2U1YmZlZWIwNmMyZTJlYjU3ZWFkODEyYjA1YjlkZDI5YWEyZjdjNSJ9fX0="
+      up: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZmMxZGQzNGZiNjljMWMxOGExYmUyYzJjMjY0MzhmYjMxNWMyNGI4OWI3ZWJiZDUzNDc3MjdlZTUyZDYxZjRlOCJ9fX0="
+      down: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZmMxZGQzNGZiNjljMWMxOGExYmUyYzJjMjY0MzhmYjMxNWMyNGI4OWI3ZWJiZDUzNDc3MjdlZTUyZDYxZjRlOCJ9fX0="
+    item-display:
+      horizontal: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTFmYjkzOGNhM2YxMWEyODg5YTkzYjY4NzRjYWRmZDhjZjJhNTlkYjY3MmE0OWVmMjFhZmFiYmMwY2QzZjE4MSJ9fX0="
+      up: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTg2MzRkOWFmYjZlNjkzNjUxMTM1MWY1ODY2ZDRiODIzOWI5MmFiNzdhMWIyYjg4ZDY2ZjY4ODUwNWNkNDBjMyJ9fX0="
+      down: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNWJmM2Y0OGFjYmNkYWFmZjZmYzQ5ZDk3NDYyY2RhNzEzZDY0OGE0YmNiYzgyZWNmZmM4NzA2ZDM0YjFjNWQ2NyJ9fX0="
+
+  # Gold corner pipe textures
+  gold_corner:
+    item: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzc0ZDg4YjQ0MGNkNjhhOTZkZTQwZTE2N2U3ZjJhMzg2ZWE3MzUxYjkxY2Y5ZjFkM2I3YWVlMzM5MWZkZDBkMyJ9fX0="
+    head:
+      horizontal: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZWNlMGQ1ZGY5MTM0NDA5ZTk1NDFjMTY5Y2U1YmZlZWIwNmMyZTJlYjU3ZWFkODEyYjA1YjlkZDI5YWEyZjdjNSJ9fX0="
+      down: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZmMxZGQzNGZiNjljMWMxOGExYmUyYzJjMjY0MzhmYjMxNWMyNGI4OWI3ZWJiZDUzNDc3MjdlZTUyZDYxZjRlOCJ9fX0="
+    item-display: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzc0ZDg4YjQ0MGNkNjhhOTZkZTQwZTE2N2U3ZjJhMzg2ZWE3MzUxYjkxY2Y5ZjFkM2I3YWVlMzM5MWZkZDBkMyJ9fX0="
+    # Directional display textures (second display entity, orientation-dependent)
+    directional-display:
+      horizontal: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTFmYjkzOGNhM2YxMWEyODg5YTkzYjY4NzRjYWRmZDhjZjJhNTlkYjY3MmE0OWVmMjFhZmFiYmMwY2QzZjE4MSJ9fX0="
+      down: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNWJmM2Y0OGFjYmNkYWFmZjZmYzQ5ZDk3NDYyY2RhNzEzZDY0OGE0YmNiYzgyZWNmZmM4NzA2ZDM0YjFjNWQ2NyJ9fX0="
+
+  # Oxidized copper pipe textures
+  oxidized_copper:
+    item: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTMwYjY0NDViYjQ1M2ExM2I4ZTBjMjViNjJlYjdmYTIwYWZjYjU4MjI1MDJhYWVlM2RmYWQ2YTcxNjBiYzMxNyJ9fX0="
+    head:
+      horizontal: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjIyNTRiMTE2Y2E4OGJjYzY1ZTkyN2NkYTRkY2FiNDc2ODhiNjNmNDk5ZTM2YTgyNDcxZTM5YjVmNzBhM2ZjZSJ9fX0="
+      up: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDFmOWM2ODBjNmMwY2JhYjRiOTRjZjUxMWMzMGE2OTRjMTcwYjEyMGQ5MDdmODhiYjViYjY3MTllZjhhZWI3NSJ9fX0="
+      down: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDFmOWM2ODBjNmMwY2JhYjRiOTRjZjUxMWMzMGE2OTRjMTcwYjEyMGQ5MDdmODhiYjViYjY3MTllZjhhZWI3NSJ9fX0="
+    item-display:
+      horizontal: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTMwYjY0NDViYjQ1M2ExM2I4ZTBjMjViNjJlYjdmYTIwYWZjYjU4MjI1MDJhYWVlM2RmYWQ2YTcxNjBiYzMxNyJ9fX0="
+      up: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvM2ZmNzA1MjFhMDdjNTVmZjBlZTVkNTJjNmM0NjJkODIxZjM4MDFhNmZkNzhkMTUxYzBkYWE0NDBiZDI2NDEyZCJ9fX0="
+      down: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTA4OTdjOWY0ZTNhYmFhZDliMzY0MmYwMGMzYWI5MTJkMmQ5N2Y4YjI0MjY1ZjJmZDFlNGIyOTcwOTQwZWEyZiJ9fX0="
+
+  # Oxidized copper corner pipe textures
+  oxidized_copper_corner:
+    item: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjAwMTYxNGNhYTI2N2RhY2ExMGQyMjI0YWNhN2M2YzAzNjA4ZGVlNGQyYWQzZGZmOTdhYzEyOWU3N2ZkY2ZhNCJ9fX0="
+    head:
+      horizontal: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjIyNTRiMTE2Y2E4OGJjYzY1ZTkyN2NkYTRkY2FiNDc2ODhiNjNmNDk5ZTM2YTgyNDcxZTM5YjVmNzBhM2ZjZSJ9fX0="
+      down: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDFmOWM2ODBjNmMwY2JhYjRiOTRjZjUxMWMzMGE2OTRjMTcwYjEyMGQ5MDdmODhiYjViYjY3MTllZjhhZWI3NSJ9fX0="
+    item-display: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjAwMTYxNGNhYTI2N2RhY2ExMGQyMjI0YWNhN2M2YzAzNjA4ZGVlNGQyYWQzZGZmOTdhYzEyOWU3N2ZkY2ZhNCJ9fX0="
+    # Directional display textures (second display entity, orientation-dependent)
+    directional-display:
+      horizontal: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTMwYjY0NDViYjQ1M2ExM2I4ZTBjMjViNjJlYjdmYTIwYWZjYjU4MjI1MDJhYWVlM2RmYWQ2YTcxNjBiYzMxNyJ9fX0="
+      down: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTA4OTdjOWY0ZTNhYmFhZDliMzY0MmYwMGMzYWI5MTJkMmQ5N2Y4YjI0MjY1ZjJmZDFlNGIyOTcwOTQwZWEyZiJ9fX0="
+
+# Display entity settings (shared across all variants)
+display:
+  # Base scale in the direction the pipe is facing
+  facing-scale: 2.0
+  # Scale in perpendicular directions
+  perpendicular-scale: 0.998
+
+# Corner pipe display settings
+corner-pipe:
+  display:
+    scale: 1.1
+    height: 0.775
+    directional-forward-offset: 0.0
+  # Destination adjustments for corner pipe directional display
+  adjustments:
+    destination:
+      air:
+        side: 0.0
+        down: -0.5
+      chest:
+        side: 0.0625
+        down: -0.1
+      hopper:
+        side: 0.106
+        down: -0.05
+      container:
+        side: 0.0
+        down: -0.18
+      pipe-orthogonal:
+        side: 0.23
+        down: -0.01
+      pipe-continuous:
+        side: 0.0
+        down: -0.18
+      pipe-into:
+        side: -0.75
+        down: -0.5
+      corner-pipe:
+        side: 0.205
+        down: -0.05
+      corner-into:
+        side: -0.75
+        down: 0.0
+      block:
+        side: 0.0
+        down: -0.5
+
+# Global display adjustments for pipe endpoints
+adjustments:
+  # Where the BACK of the display terminates (source side)
+  source:
+    air:
+      side: 0.5
+      up: 0.5
+      down: 0.5
+    chest:
+      side: 0.5625
+      up: 0.5
+      down: 0.625
+    hopper:
+      side: 0.59
+      up: 0.75
+      down: 0.75
+    container:
+      side: 0.5
+      up: 0.5
+      down: 0.5
+    pipe-orthogonal:
+      side: 0.5
+      up: 0.5
+      down: 0.5
+    pipe-continuous:
+      side: 0.5
+      up: 0.5
+      down: 0.5
+    pipe-into:
+      side: 0.5
+      up: 0.5
+      down: 0.5
+    corner-into:
+      side: 0.25
+      up: 0.5
+      down: 0.5
+    block:
+      side: 0.5
+      up: 0.5
+      down: 0.5
+
+  # Where the FRONT of the display terminates (destination side)
+  destination:
+    air:
+      side: -0.55
+      up: -0.75
+      down: -0.501
+    chest:
+      side: -0.4375
+      up: -0.5
+      down: -0.4
+    hopper:
+      side: -0.41
+      up: -0.25
+      down: -0.41
+    container:
+      side: -0.5
+      up: -0.5
+      down: -0.5
+    pipe-orthogonal:
+      side: -0.285
+      up: -0.27
+      down: -0.27
+    pipe-continuous:
+      side: -0.5
+      up: -0.5
+      down: -0.5
+    pipe-into:
+      side: -0.75
+      up: -0.75
+      down: -0.75
+    corner-pipe:
+      side: -0.31
+      up: -0.3
+      down: -0.25
+    corner-into:
+      side: -0.75
+      up: -0.75
+      down: 0.0
+    block:
+      side: -0.75
+      up: -0.75
+      down: -0.5
+
+  # Global perpendicular offsets by pipe orientation
+  global-offset:
+    horizontal:
+      right: 0.0
+      up: 0.2495
+    up:
+      right: 0.0
+      up: 0.0
+    down:
+      right: 0.0
+      up: 0.0

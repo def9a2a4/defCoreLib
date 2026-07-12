@@ -1,0 +1,57 @@
+name: Server Startup Test
+
+on:
+  workflow_call:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        minecraft: ['1.21', '1.21.1', '1.21.4', '1.21.8', '1.21.11', '26.1.2']
+
+    name: paper ${{ matrix.minecraft }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: ${{ startsWith(matrix.minecraft, '26.') && '25' || '21' }}
+
+      - name: Download plugin JAR
+        uses: actions/download-artifact@v4
+        with:
+          name: Pipes
+          path: bin/
+
+      - name: Download server
+        run: make test-server-download MINECRAFT_VERSION=${{ matrix.minecraft }}
+
+      - name: Setup test server
+        run: make test-server-setup
+
+      - name: Server startup test
+        run: make test-server-startup-only MINECRAFT_VERSION=${{ matrix.minecraft }}
+
+      - name: Check for errors
+        if: always()
+        run: |
+          if [ -f test-server/errors.log ]; then
+            echo "========== ERRORS =========="
+            cat test-server/errors.log
+            exit 1
+          fi
+
+      - name: Upload logs on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: logs-${{ matrix.minecraft }}
+          path: |
+            test-server/server.log
+            test-server/errors.log

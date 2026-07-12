@@ -1,0 +1,246 @@
+# Copper Pipes Plugin Configuration
+
+# Recipe unlock settings
+recipes:
+  # Advancement required to unlock pipe recipes
+  # Set to "none" or "" to make recipes always available
+  # Examples:
+  #   minecraft:story/smelt_iron     - Acquire Hardware (smelt iron ingot)
+  #   minecraft:story/obtain_armor   - Suit Up
+  #   minecraft:nether/obtain_blaze_rod - Into Fire
+  unlock-advancement: "minecraft:story/smelt_iron"
+
+  # Show a message when recipes are unlocked
+  show-unlock-message: true
+  unlock-message: "<gold>You've unlocked pipe crafting recipes!"
+
+# World filter - control which worlds pipes can be used in
+# mode: "allowlist" (only listed worlds) or "blocklist" (all except listed worlds)
+# If mode is not set or empty, pipes are enabled in all worlds (default)
+# worlds:
+#   mode: blocklist
+#   list:
+#     - world_the_end
+
+# Performance tuning
+performance:
+  sleep:
+    source-empty-ticks: 60    # Ticks to sleep when source container is empty (0 to disable)
+    dest-full-ticks: 80       # Ticks to sleep when destination is full (0 to disable)
+    end-recheck-ticks: 40     # Ticks before rechecking a dead-end path for new containers
+
+# Global settings
+global:
+  debug:
+    # Show particles on active pipes
+    particles: false
+    # Particle spawn interval in ticks
+    particle-interval: 10
+
+# Pipe variants - define as many as needed
+# Each variant references a texture-set from display.yml
+variants:
+  # Copper Pipe - standard pipe that pulls items from containers
+  copper_pipe:
+    behavior: REGULAR  # REGULAR or CORNER
+    display-name: "Copper Pipe"
+    lore:
+      - "Pulls items out of the container or pipe it is placed on."
+    texture-set: copper  # References texture set in display.yml
+
+    # Per-variant transfer settings
+    transfer:
+      # Ticks between item transfers (20 ticks = 1 second)
+      interval-ticks: 10
+      # Number of items to transfer per operation
+      items-per-transfer: 4
+
+    # Crafting recipes (supports multiple recipes per variant)
+    recipes:
+      - shape:
+          - "CCC"
+          - " R "
+          - "CCC"
+        ingredients:
+          C: COPPER_INGOT
+          R: REDSTONE
+        result-amount: 4
+
+  # Corner Pipe - only relays items, doesn't pull from containers
+  copper_corner_pipe:
+    behavior: CORNER
+    display-name: "Copper Corner Pipe"
+    lore:
+      - "Pushed items into the direction it was placed. Must have another pipe feeding into it."
+    texture-set: copper_corner  # References texture set in display.yml
+
+    transfer:
+      interval-ticks: 10
+      items-per-transfer: 4
+
+    recipes:
+      - shape:
+          - "CCC"
+          - " RC"
+          - "CCC"
+        ingredients:
+          C: COPPER_INGOT
+          R: REDSTONE
+        result-amount: 4
+      - shape:
+          - "CCC"
+          - "CR "
+          - "CCC"
+        ingredients:
+          C: COPPER_INGOT
+          R: REDSTONE
+        result-amount: 4
+
+  # Iron Pipe - standard pipe that pulls items from containers
+  iron_pipe:
+    behavior: REGULAR
+    display-name: "Iron Pipe"
+    lore:
+      - "Pulls items out of the container or pipe it is placed on."
+    texture-set: iron
+
+    transfer:
+      interval-ticks: 10
+      items-per-transfer: 8
+
+    recipes:
+      - shape:
+          - "III"
+          - " R "
+          - "III"
+        ingredients:
+          I: IRON_INGOT
+          R: REDSTONE
+        result-amount: 4
+
+  # Iron Corner Pipe - only relays items, doesn't pull from containers
+  iron_corner_pipe:
+    behavior: CORNER
+    display-name: "Iron Corner Pipe"
+    lore:
+      - "Pushed items into the direction it was placed. Must have another pipe feeding into it."
+    texture-set: iron_corner
+
+    transfer:
+      interval-ticks: 10
+      items-per-transfer: 8
+
+    recipes:
+      - shape:
+          - "III"
+          - " RI"
+          - "III"
+        ingredients:
+          I: IRON_INGOT
+          R: REDSTONE
+        result-amount: 4
+      - shape:
+          - "III"
+          - "IR "
+          - "III"
+        ingredients:
+          I: IRON_INGOT
+          R: REDSTONE
+        result-amount: 4
+
+  # Gold Pipe - standard pipe that pulls items from containers
+  gold_pipe:
+    behavior: REGULAR
+    display-name: "Gold Pipe"
+    lore:
+      - "Pulls items out of the container or pipe it is placed on."
+    texture-set: gold
+
+    transfer:
+      interval-ticks: 10
+      items-per-transfer: 16
+
+    recipes:
+      - shape:
+          - "GGG"
+          - " R "
+          - "GGG"
+        ingredients:
+          G: GOLD_INGOT
+          R: REDSTONE
+        result-amount: 4
+
+  # Gold Corner Pipe - only relays items, doesn't pull from containers
+  gold_corner_pipe:
+    behavior: CORNER
+    display-name: "Gold Corner Pipe"
+    lore:
+      - "Pushed items into the direction it was placed. Must have another pipe feeding into it."
+    texture-set: gold_corner
+
+    transfer:
+      interval-ticks: 10
+      items-per-transfer: 16
+
+    recipes:
+      - shape:
+          - "GGG"
+          - " RG"
+          - "GGG"
+        ingredients:
+          G: GOLD_INGOT
+          R: REDSTONE
+        result-amount: 4
+      - shape:
+          - "GGG"
+          - "GR "
+          - "GGG"
+        ingredients:
+          G: GOLD_INGOT
+          R: REDSTONE
+        result-amount: 4
+
+  # Oxidized Copper Pipe - obtained by throwing copper pipe into water cauldron
+  oxidized_copper_pipe:
+    behavior: REGULAR
+    display-name: "Oxidized Copper Pipe"
+    lore:
+      - "Pulls items out of the container or pipe it is placed on."
+    texture-set: oxidized_copper
+
+    transfer:
+      interval-ticks: 10
+      items-per-transfer: 1
+
+    # No recipes - obtained via cauldron conversion
+
+  # Oxidized Copper Corner Pipe - obtained by throwing corner pipe into water cauldron
+  oxidized_copper_corner_pipe:
+    behavior: CORNER
+    display-name: "Oxidized Copper Corner Pipe"
+    lore:
+      - "Pushed items into the direction it was placed. Must have another pipe feeding into it."
+    texture-set: oxidized_copper_corner
+
+    transfer:
+      interval-ticks: 10
+      items-per-transfer: 1
+
+    # No recipes - obtained via cauldron conversion
+
+# Cauldron conversions - throw pipe item into water cauldron to convert
+cauldron-conversions:
+  copper_pipe: oxidized_copper_pipe
+  copper_corner_pipe: oxidized_copper_corner_pipe
+
+# Shapeless conversion recipes - craft pipe + catalyst to get converted pipe
+# The catalyst item remains in the crafting grid after crafting (not consumed)
+conversion-recipes:
+  oxidized_copper_pipe:
+    from-variant: copper_pipe
+    catalyst: WATER_BUCKET
+    result-amount: 1
+  oxidized_copper_corner_pipe:
+    from-variant: copper_corner_pipe
+    catalyst: WATER_BUCKET
+    result-amount: 1

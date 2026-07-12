@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Head Viewer</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #1a1a2e;
+      color: #eee;
+      margin: 0;
+      padding: 20px;
+      min-height: 100vh;
+    }
+    h1 {
+      text-align: center;
+      color: #fff;
+      margin-bottom: 30px;
+    }
+    .container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 40px;
+      justify-content: center;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .view-section {
+      background: #16213e;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    }
+    .view-section h2 {
+      margin-top: 0;
+      color: #4ecca3;
+      font-size: 1.2em;
+    }
+    #isometric-container canvas {
+      image-rendering: pixelated;
+      background: #0f0f23;
+      border-radius: 8px;
+    }
+    #three-container {
+      width: 400px;
+      height: 400px;
+      background: #0f0f23;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .controls {
+      margin-top: 15px;
+      font-size: 0.9em;
+      color: #888;
+    }
+    #texture-info {
+      text-align: center;
+      margin-bottom: 20px;
+      font-size: 0.85em;
+      color: #666;
+      word-break: break-all;
+      max-width: 800px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+  </style>
+</head>
+<body>
+  <h1>Minecraft Head Viewer</h1>
+  <div id="texture-info"></div>
+  <div class="container">
+    <div class="view-section">
+      <h2>Isometric View</h2>
+      <div id="isometric-container"></div>
+    </div>
+    <div class="view-section">
+      <h2>3D Interactive View</h2>
+      <div id="three-container"></div>
+      <div class="controls">Drag to rotate • Scroll to zoom</div>
+    </div>
+  </div>
+
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+    }
+  }
+  </script>
+
+  <script type="module">
+    import { renderIsometricHeadFromBase64, render3DHeadFromBase64 } from './head-renderer.js';
+
+    const DEFAULT_TEXTURE = 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTFkNjE4ZjMyYTIwZWMzZmIzOTE2MDEyMGEzZjg3ZDUwNmU2OTA5MGViZGJmNTA4OTZjNjVhNmFjNDQwZDhhYyJ9fX0';
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const texture = urlParams.get('texture') || DEFAULT_TEXTURE;
+
+    try {
+      await Promise.all([
+        renderIsometricHeadFromBase64(texture, document.getElementById('isometric-container')),
+        render3DHeadFromBase64(texture, document.getElementById('three-container'))
+      ]);
+    } catch (e) {
+      document.getElementById('texture-info').textContent = 'Failed to load texture: ' + e.message;
+    }
+  </script>
+</body>
+</html>
