@@ -49,6 +49,7 @@ textures:
   reverser_up:       "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODMyYTg3MGEzNDMwMmViYThhMTNiYzI2ZWZjMGM5ZDQwOWJkYWYzYWRjZTBkMzUzZGEzOTNkMWM0YjgxODI0MyJ9fX0="  # reverser-up — reverser head (floor)
   reverser_fwd:      "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjk1MWJlMGM0NzVlMTE5ZTk2YWQxYzgzODU5MTI0MGYyZjVmYTEyODFmZTUyNTZlMmY2YzVlZWZlZWI3MzA3YiJ9fX0="  # reverser-fwd — reverser head (wall) + item
   machine_base:      "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTlmMzdmMWNiZDQ3YzM1MDQ1MTFiZjMzYzU4YzNhMjUyYjYwNzEzZWM1ZmM1NDMzZDg4N2Q0YTBkOTk2MjEwIn19fQ=="  # 59f37f1c — millstone + press placed head
+  hopper_floor:      "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHBzOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlLzY5OWEwN2QyZGIxZGI5YTRlOTI2ZDdlNGE2YmUxYmUxZTk2ZWE4ZDMwMDhiNzFiYjU3YTJiNDdhYjY4N2I0NzcifX19"  # 699a07d2 — copper-pipe floor/down head skin; distinct floor look for the suction hopper (swap freely)
   compressor_item:   "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvY2Q3Y2Y4NmY5ZjY1MzdkZDVkMThmMDAwNjE4ODdjY2Q1OWM0ZTc5NjY0Y2ViZDY1Y2FhN2ViMGUwMjcwMWViOCJ9fX0="  # dev/press/compressor — press item
   placer_item:       "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvM2M1ZjNjM2Q1ZDdiMWNlMGYzMjA0MGMxNDU0ZGFmODg3OGUxY2MyOTllMDI1YmFkMmU2OTE5ZWJhZTIxZmJiOCJ9fX0="  # block placer — item in hand
   placer_piston:     "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWYyZWZiNDJjYWFlNTYxZmUyZDk3YmY3MTFjY2MwNjQ3ZGU2OTVmZDJkZTIxZDljZGNiMTI5YmEyOTMzY2VkZiJ9fX0="  # block placer — symmetric piston display
@@ -227,6 +228,73 @@ blocks:
               L: { material: LIGHTNING_ROD }
               C: { material: COPPER_INGOT }
               I: { material: IRON_INGOT }
+
+  # ─── Chain Pulley ───────────────────────────────────────────────────────
+  # Transmitter (powers along its axis like a shaft) that can also be linked to a second pulley by a
+  # chain, jumping rotational power across a gap. Right-click one pulley with a CHAIN to select, then
+  # a second to link (max 10 blocks). Power flows only once the links form a CLOSED loop. Placeholder
+  # art reuses the shaft-ring + gear-disc heads; the network/link behavior is overlaid in ChainPulley.java.
+  chain_pulley:
+    name: "&eChain Pulley"
+    lore:
+      - "&7Links rotational power across a gap"
+      - "&7Chain two pulleys into a loop"
+    catalog_notes:
+      - "&fA transmitter you can link to another pulley with a chain."
+      - "&7Right-click one pulley with a chain, then another, to link them (max 10 blocks apart)."
+      - "&7Power only flows once the chain links form a closed loop."
+    texture: "@shaft_ring_fwd"
+    item_texture: "@copper_gear"
+    drops: self
+    default_state: idle_y
+    placement_state_map:
+      DOWN: idle_y
+      UP: idle_y
+      NORTH: idle_z
+      SOUTH: idle_z
+      EAST: idle_x
+      WEST: idle_x
+    states:
+      idle_y:
+        texture: "@shaft_ring_up"
+        display_entities:
+          - texture: "@rod_up"
+            tag: rod
+            transform: { translation: [0, 0.5, 0], scale: [0.66, 1.002, 0.66] }
+          - texture: "@gear_up"
+            tag: wheel
+            transform: { translation: [0, 0, 0], scale: [1.4, 0.4, 1.4] }
+      spinning_y: { copy_from: idle_y, texture: "@shaft_ring_up", animation: { type: rotate, axis: [0, 1, 0], speed: 3.0 } }
+      idle_x:
+        texture: "@shaft_ring_fwd"
+        display_entities:
+          - texture: "@rod_up"
+            tag: rod
+            transform: { translation: [-0.5, 0, 0], scale: [0.66, 1.002, 0.66], left_rotation: [90, 0, 0, 1] }
+            wall_offset: 0.001
+          - texture: "@gear_up"
+            tag: wheel
+            transform: { translation: [0, 0, 0], scale: [1.4, 0.4, 1.4], left_rotation: [90, 0, 0, 1] }
+      spinning_x: { copy_from: idle_x, texture: "@shaft_ring_fwd", animation: { type: rotate, axis: [1, 0, 0], speed: 3.0 } }
+      idle_z:
+        texture: "@shaft_ring_fwd"
+        display_entities:
+          - texture: "@rod_up"
+            tag: rod
+            transform: { translation: [0, 0, -0.5], scale: [0.66, 1.002, 0.66], left_rotation: [-90, 1, 0, 0] }
+            wall_offset: 0.001
+          - texture: "@gear_up"
+            tag: wheel
+            transform: { translation: [0, 0, 0], scale: [1.4, 0.4, 1.4], left_rotation: [-90, 1, 0, 0] }
+      spinning_z: { copy_from: idle_z, texture: "@shaft_ring_fwd", animation: { type: rotate, axis: [0, 0, 1], speed: 3.0 } }
+    recipes:
+      craft:
+        shaped:
+          # A bearing surrounded by chains.
+          - pattern: ["CCC", "CBC", "CCC"]
+            key:
+              C: { material: IRON_CHAIN }
+              B: { block: "mech:bearing" }
 
   # ─── Clutch ─────────────────────────────────────────────────────────────
   # Transmitter: like a shaft, but disconnects when powered by redstone.
@@ -1221,18 +1289,19 @@ blocks:
     states:
       # Floor: spout down (into the block below), blades on top spinning around Y.
       idle_floor:
+        texture: "@hopper_floor"
         display_entities:
           - { block_data: "minecraft:hopper[facing=down]", tag: hopper, transform: { translation: [-0.49, -0.49, -0.49], scale: [0.98, 0.98, 0.98] }, animation: none }
           - { material: WHITE_BANNER, tag: blade_a, transform: { translation: [0.1875, 0.55, 0],  scale: [0.375, 0.375, 0.375], left_rotation: [120, 1, 1, -1] } }
           - { material: WHITE_BANNER, tag: blade_b, transform: { translation: [0, 0.55, 0.1875],  scale: [0.375, 0.375, 0.375], left_rotation: [90, 1, 0, 0] } }
           - { material: WHITE_BANNER, tag: blade_c, transform: { translation: [-0.1875, 0.55, 0], scale: [0.375, 0.375, 0.375], left_rotation: [120, 1, -1, 1] } }
           - { material: WHITE_BANNER, tag: blade_d, transform: { translation: [0, 0.55, -0.1875], scale: [0.375, 0.375, 0.375], left_rotation: [180, 0, 1, -1] } }
-      spinning_floor: { copy_from: idle_floor, animation: { type: rotate, axis: [0, 1, 0], speed: 6.0 } }
+      spinning_floor: { copy_from: idle_floor, texture: "@hopper_floor", animation: { type: rotate, axis: [0, 1, 0], speed: 6.0 } }
       # Wall states: spout points into the mounted wall (= the placement key); blades mirror the
       # fan's matching wall state and spin around the wall's normal axis (Z for n/s, X for e/w).
       idle_wall_n:
         display_entities:
-          - { block_data: "minecraft:hopper[facing=south]", tag: hopper, transform: { translation: [-0.49, -0.49, -0.49], scale: [0.98, 0.98, 0.98] }, animation: none }
+          - { block_data: "minecraft:hopper[facing=down]", tag: hopper, transform: { translation: [-0.49, -0.49, 0.49], scale: [0.98, 0.98, 0.98], left_rotation: [-90, 1, 0, 0] }, animation: none }
           - { material: WHITE_BANNER, tag: blade_a, transform: { translation: [0.1875, 0, 0],  scale: [0.375, 0.375, 0.375], left_rotation: [-90, 0, 0, 1] }, wall_offset: -0.001 }
           - { material: WHITE_BANNER, tag: blade_b, transform: { translation: [0, 0.1875, 0],  scale: [0.375, 0.375, 0.375] }, wall_offset: -0.001 }
           - { material: WHITE_BANNER, tag: blade_c, transform: { translation: [-0.1875, 0, 0], scale: [0.375, 0.375, 0.375], left_rotation: [90, 0, 0, 1] }, wall_offset: -0.001 }
@@ -1240,7 +1309,7 @@ blocks:
       spinning_wall_n: { copy_from: idle_wall_n, animation: { type: rotate, axis: [0, 0, 1], speed: 6.0 } }
       idle_wall_s:
         display_entities:
-          - { block_data: "minecraft:hopper[facing=north]", tag: hopper, transform: { translation: [-0.49, -0.49, -0.49], scale: [0.98, 0.98, 0.98] }, animation: none }
+          - { block_data: "minecraft:hopper[facing=down]", tag: hopper, transform: { translation: [-0.49, 0.49, -0.49], scale: [0.98, 0.98, 0.98], left_rotation: [90, 1, 0, 0] }, animation: none }
           - { material: WHITE_BANNER, tag: blade_a, transform: { translation: [0.1875, 0, 0],  scale: [0.375, 0.375, 0.375], left_rotation: [180, 1, 1, 0] }, wall_offset: -0.001 }
           - { material: WHITE_BANNER, tag: blade_b, transform: { translation: [0, 0.1875, 0],  scale: [0.375, 0.375, 0.375], left_rotation: [180, 0, 1, 0] }, wall_offset: -0.001 }
           - { material: WHITE_BANNER, tag: blade_c, transform: { translation: [-0.1875, 0, 0], scale: [0.375, 0.375, 0.375], left_rotation: [180, 1, -1, 0] }, wall_offset: -0.001 }
@@ -1248,7 +1317,7 @@ blocks:
       spinning_wall_s: { copy_from: idle_wall_s, animation: { type: rotate, axis: [0, 0, 1], speed: 6.0 } }
       idle_wall_w:
         display_entities:
-          - { block_data: "minecraft:hopper[facing=west]", tag: hopper, transform: { translation: [-0.49, -0.49, -0.49], scale: [0.98, 0.98, 0.98] }, animation: none }
+          - { block_data: "minecraft:hopper[facing=down]", tag: hopper, transform: { translation: [-0.49, 0.49, -0.49], scale: [0.98, 0.98, 0.98], left_rotation: [-90, 0, 0, 1] }, animation: none }
           - { material: WHITE_BANNER, tag: blade_a, transform: { translation: [0, 0.1875, 0],  scale: [0.375, 0.375, 0.375], left_rotation: [-90, 0, 1, 0] }, wall_offset: -0.001 }
           - { material: WHITE_BANNER, tag: blade_b, transform: { translation: [0, 0, 0.1875],  scale: [0.375, 0.375, 0.375], left_rotation: [120, 1, -1, -1] }, wall_offset: -0.001 }
           - { material: WHITE_BANNER, tag: blade_c, transform: { translation: [0, -0.1875, 0], scale: [0.375, 0.375, 0.375], left_rotation: [180, 1, 0, -1] }, wall_offset: -0.001 }
@@ -1256,7 +1325,7 @@ blocks:
       spinning_wall_w: { copy_from: idle_wall_w, animation: { type: rotate, axis: [1, 0, 0], speed: 6.0 } }
       idle_wall_e:
         display_entities:
-          - { block_data: "minecraft:hopper[facing=east]", tag: hopper, transform: { translation: [-0.49, -0.49, -0.49], scale: [0.98, 0.98, 0.98] }, animation: none }
+          - { block_data: "minecraft:hopper[facing=down]", tag: hopper, transform: { translation: [0.49, -0.49, -0.49], scale: [0.98, 0.98, 0.98], left_rotation: [90, 0, 0, 1] }, animation: none }
           - { material: WHITE_BANNER, tag: blade_a, transform: { translation: [0, 0.1875, 0],  scale: [0.375, 0.375, 0.375], left_rotation: [90, 0, 1, 0] }, wall_offset: -0.001 }
           - { material: WHITE_BANNER, tag: blade_b, transform: { translation: [0, 0, 0.1875],  scale: [0.375, 0.375, 0.375], left_rotation: [120, 1, 1, 1] }, wall_offset: -0.001 }
           - { material: WHITE_BANNER, tag: blade_c, transform: { translation: [0, -0.1875, 0], scale: [0.375, 0.375, 0.375], left_rotation: [180, 1, 0, 1] }, wall_offset: -0.001 }

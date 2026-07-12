@@ -45,6 +45,15 @@ final class ChainPulley {
     /** Skull-PDC key holding this pulley's single outgoing partner as {@code int[]{x,y,z}} (same world). */
     private static final NamespacedKey OUT_KEY = new NamespacedKey("mech", "chain_out");
 
+    // 1.21.9 (Copper Age) renamed CHAIN → IRON_CHAIN. Resolve by name so this compiles against either
+    // API and runs on either server, rather than referencing a possibly-missing enum constant.
+    private static final Material CHAIN_MATERIAL = resolveChain();
+
+    private static Material resolveChain() {
+        Material m = Material.matchMaterial("IRON_CHAIN");
+        return m != null ? m : Material.matchMaterial("CHAIN");
+    }
+
     private static final int MAX_DIST = 10;
     private static final double MAX_DIST_SQ = (double) MAX_DIST * MAX_DIST;
     private static final float DIAMETER = 0.33f;
@@ -130,7 +139,7 @@ final class ChainPulley {
 
     private boolean handleInteract(Block b, PlayerInteractEvent event) {
         Player player = event.getPlayer();
-        if (player.getInventory().getItemInMainHand().getType() != Material.CHAIN) {
+        if (player.getInventory().getItemInMainHand().getType() != CHAIN_MATERIAL) {
             return false; // not linking — let placement / other handlers proceed
         }
         event.setCancelled(true); // don't place the chain block
@@ -259,11 +268,11 @@ final class ChainPulley {
     private static void consumeChain(Player player) {
         if (player.getGameMode() == GameMode.CREATIVE) return;
         ItemStack hand = player.getInventory().getItemInMainHand();
-        if (hand.getType() == Material.CHAIN) hand.setAmount(hand.getAmount() - 1);
+        if (hand.getType() == CHAIN_MATERIAL) hand.setAmount(hand.getAmount() - 1);
     }
 
     private static void refundChain(Player player) {
         if (player.getGameMode() == GameMode.CREATIVE) return;
-        player.getInventory().addItem(new ItemStack(Material.CHAIN));
+        player.getInventory().addItem(new ItemStack(CHAIN_MATERIAL));
     }
 }
