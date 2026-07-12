@@ -72,6 +72,7 @@ BLOCK_FILES = [
     "demo-blocks.yml",
     "rotation-blocks.yml",
     "slabs.yml",
+    "redstone-displays.yml",  # RedstoneDisplays indicator blocks (redstonedisplays namespace)
     "custom-items.yml",   # inventory-only items (juices, oils) — non-placeable CustomHeadBlocks
     "corelib-items.yml",  # corelib-namespace inventory-only items (slime glue)
 ]

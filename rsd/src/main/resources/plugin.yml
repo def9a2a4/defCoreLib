@@ -1,0 +1,7 @@
+name: RedstoneDisplays
+main: anon.def9a2a4.rsd.RsdPlugin
+version: ${version}
+api-version: 1.21
+author: def9a2a4
+description: RedstoneDisplays - redstone power indicator blocks (content lives in DefCoreLib)
+depend: [DefCoreLib]

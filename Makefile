@@ -65,6 +65,12 @@ else
 	uv run scripts/generate_catalog.py $(CATALOG_ARGS)
 endif
 
+# Boot the docs test-server in keep-alive mode (grid layout, stays up on
+# localhost:25575). Alias for `make docs KEEP_ALIVE=1`.
+.PHONY: docs-server
+docs-server:
+	$(MAKE) docs KEEP_ALIVE=1
+
 # Fast iteration: regenerate the catalog from the existing display-spec.json (no server boot).
 .PHONY: docs-fast
 docs-fast:

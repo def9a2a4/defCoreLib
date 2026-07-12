@@ -76,6 +76,13 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
             }
         } catch (IOException ignored) {}
 
+        // RedstoneDisplays indicator blocks (recipes gated behind the `rsd` companion plugin)
+        try (InputStream rsdStream = getResource("redstone-displays.yml")) {
+            if (rsdStream != null) {
+                BlockLoader.load(rsdStream, registry, getLogger());
+            }
+        } catch (IOException ignored) {}
+
         // Inventory-only custom items (juices, oils, …) — non-placeable CustomHeadBlocks
         try (InputStream itemStream = getResource("custom-items.yml")) {
             if (itemStream != null) {
