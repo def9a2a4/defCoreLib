@@ -1,0 +1,25 @@
+{
+  "parent": "mech:root",
+  "display": {
+    "icon": {
+      "id": "minecraft:copper_bulb"
+    },
+    "title": {
+      "text": "It Lives",
+      "color": "yellow"
+    },
+    "description": {
+      "text": "The shaft begins to spin.",
+      "color": "gray",
+      "italic": true
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "criteria": {
+    "impossible": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

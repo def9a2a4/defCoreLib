@@ -1,0 +1,25 @@
+{
+  "parent": "mech:root",
+  "display": {
+    "icon": {
+      "id": "minecraft:copper_ingot"
+    },
+    "title": {
+      "text": "First Bearing",
+      "color": "white"
+    },
+    "description": {
+      "text": "Every machine starts here.",
+      "color": "gray",
+      "italic": true
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "criteria": {
+    "impossible": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

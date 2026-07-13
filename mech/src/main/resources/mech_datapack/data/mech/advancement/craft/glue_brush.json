@@ -1,0 +1,25 @@
+{
+  "parent": "mech:craft/bearing",
+  "display": {
+    "icon": {
+      "id": "minecraft:slime_ball"
+    },
+    "title": {
+      "text": "Stuck On You",
+      "color": "white"
+    },
+    "description": {
+      "text": "Choose what moves.",
+      "color": "gray",
+      "italic": true
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "criteria": {
+    "impossible": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

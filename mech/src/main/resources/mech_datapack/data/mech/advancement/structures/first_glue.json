@@ -1,0 +1,25 @@
+{
+  "parent": "mech:root",
+  "display": {
+    "icon": {
+      "id": "minecraft:slime_ball"
+    },
+    "title": {
+      "text": "Bound Together",
+      "color": "white"
+    },
+    "description": {
+      "text": "These blocks move as one now.",
+      "color": "gray",
+      "italic": true
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "criteria": {
+    "impossible": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

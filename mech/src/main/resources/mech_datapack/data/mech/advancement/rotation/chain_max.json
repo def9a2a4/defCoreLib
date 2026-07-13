@@ -1,0 +1,25 @@
+{
+  "parent": "mech:rotation/chain_32",
+  "display": {
+    "icon": {
+      "id": "minecraft:lightning_rod"
+    },
+    "title": {
+      "text": "Rube Goldberg",
+      "color": "light_purple"
+    },
+    "description": {
+      "text": "Right up against the limit.",
+      "color": "gray",
+      "italic": true
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "criteria": {
+    "impossible": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

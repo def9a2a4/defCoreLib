@@ -1,0 +1,25 @@
+{
+  "parent": "mech:rotation/first_power",
+  "display": {
+    "icon": {
+      "id": "minecraft:blast_furnace"
+    },
+    "title": {
+      "text": "Ignition",
+      "color": "yellow"
+    },
+    "description": {
+      "text": "Burn fuel, make torque.",
+      "color": "gray",
+      "italic": true
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "criteria": {
+    "impossible": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

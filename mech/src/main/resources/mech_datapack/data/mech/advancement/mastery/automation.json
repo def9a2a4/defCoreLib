@@ -1,0 +1,25 @@
+{
+  "parent": "mech:root",
+  "display": {
+    "icon": {
+      "id": "minecraft:dispenser"
+    },
+    "title": {
+      "text": "Set It and Forget It",
+      "color": "light_purple"
+    },
+    "description": {
+      "text": "A source feeds a working machine, untended.",
+      "color": "gray",
+      "italic": true
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "criteria": {
+    "impossible": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

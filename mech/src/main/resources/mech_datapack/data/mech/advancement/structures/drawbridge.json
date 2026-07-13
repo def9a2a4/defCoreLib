@@ -1,0 +1,25 @@
+{
+  "parent": "mech:structures/door",
+  "display": {
+    "icon": {
+      "id": "minecraft:oak_trapdoor"
+    },
+    "title": {
+      "text": "Lower the Drawbridge",
+      "color": "yellow"
+    },
+    "description": {
+      "text": "Cross when you say so.",
+      "color": "gray",
+      "italic": true
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "criteria": {
+    "impossible": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

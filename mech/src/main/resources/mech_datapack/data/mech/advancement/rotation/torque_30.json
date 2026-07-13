@@ -1,0 +1,25 @@
+{
+  "parent": "mech:rotation/torque_15",
+  "display": {
+    "icon": {
+      "id": "minecraft:netherite_block"
+    },
+    "title": {
+      "text": "Overdrive",
+      "color": "light_purple"
+    },
+    "description": {
+      "text": "Stack the sources.",
+      "color": "gray",
+      "italic": true
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "criteria": {
+    "impossible": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

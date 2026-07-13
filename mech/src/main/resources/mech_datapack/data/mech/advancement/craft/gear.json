@@ -1,0 +1,25 @@
+{
+  "parent": "mech:craft/shaft",
+  "display": {
+    "icon": {
+      "id": "minecraft:copper_ingot"
+    },
+    "title": {
+      "text": "Turning the Corner",
+      "color": "white"
+    },
+    "description": {
+      "text": "Power learns to turn.",
+      "color": "gray",
+      "italic": true
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "criteria": {
+    "impossible": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

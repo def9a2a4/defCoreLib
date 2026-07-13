@@ -1,0 +1,25 @@
+{
+  "parent": "mech:rotation/torque_5",
+  "display": {
+    "icon": {
+      "id": "minecraft:gold_block"
+    },
+    "title": {
+      "text": "Powerhouse",
+      "color": "yellow"
+    },
+    "description": {
+      "text": "A huge windmill's worth of grunt.",
+      "color": "gray",
+      "italic": true
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "criteria": {
+    "impossible": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

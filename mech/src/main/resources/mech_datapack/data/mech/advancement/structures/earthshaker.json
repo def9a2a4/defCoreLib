@@ -1,0 +1,25 @@
+{
+  "parent": "mech:structures/big_move",
+  "display": {
+    "icon": {
+      "id": "minecraft:slime_block"
+    },
+    "title": {
+      "text": "Earthshaker",
+      "color": "light_purple"
+    },
+    "description": {
+      "text": "The ground itself gives way.",
+      "color": "gray",
+      "italic": true
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "criteria": {
+    "impossible": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "parent": "mech:craft/gear",
+  "display": {
+    "icon": {
+      "id": "minecraft:copper_block"
+    },
+    "title": {
+      "text": "Reverse Course",
+      "color": "white"
+    },
+    "description": {
+      "text": "Same source, opposite spin.",
+      "color": "gray",
+      "italic": true
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "criteria": {
+    "impossible": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

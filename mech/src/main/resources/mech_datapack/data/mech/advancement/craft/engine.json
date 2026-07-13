@@ -1,0 +1,25 @@
+{
+  "parent": "mech:craft/water_wheel",
+  "display": {
+    "icon": {
+      "id": "minecraft:blast_furnace"
+    },
+    "title": {
+      "text": "Full Steam",
+      "color": "yellow"
+    },
+    "description": {
+      "text": "Fuel in, power out.",
+      "color": "gray",
+      "italic": true
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "criteria": {
+    "impossible": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

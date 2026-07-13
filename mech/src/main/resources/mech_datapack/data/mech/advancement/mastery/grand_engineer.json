@@ -1,0 +1,25 @@
+{
+  "parent": "mech:root",
+  "display": {
+    "icon": {
+      "id": "minecraft:netherite_block"
+    },
+    "title": {
+      "text": "Grand Engineer",
+      "color": "light_purple"
+    },
+    "description": {
+      "text": "Master of every craft.",
+      "color": "gray",
+      "italic": true
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "criteria": {
+    "impossible": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

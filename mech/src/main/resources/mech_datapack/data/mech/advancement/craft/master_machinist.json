@@ -1,0 +1,25 @@
+{
+  "parent": "mech:craft/engine",
+  "display": {
+    "icon": {
+      "id": "minecraft:copper_block"
+    },
+    "title": {
+      "text": "Master Machinist",
+      "color": "light_purple"
+    },
+    "description": {
+      "text": "One of every machine on the wall.",
+      "color": "gray",
+      "italic": true
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "criteria": {
+    "impossible": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

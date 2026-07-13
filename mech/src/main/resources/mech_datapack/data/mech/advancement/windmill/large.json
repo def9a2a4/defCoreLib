@@ -1,0 +1,25 @@
+{
+  "parent": "mech:windmill/plain",
+  "display": {
+    "icon": {
+      "id": "minecraft:light_gray_banner"
+    },
+    "title": {
+      "text": "Catching the Breeze",
+      "color": "yellow"
+    },
+    "description": {
+      "text": "Bigger sails, bigger bite.",
+      "color": "gray",
+      "italic": true
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "criteria": {
+    "impossible": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

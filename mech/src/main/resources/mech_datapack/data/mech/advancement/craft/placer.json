@@ -1,0 +1,25 @@
+{
+  "parent": "mech:craft/drill",
+  "display": {
+    "icon": {
+      "id": "minecraft:dispenser"
+    },
+    "title": {
+      "text": "Autoplacement",
+      "color": "white"
+    },
+    "description": {
+      "text": "Let the machine build.",
+      "color": "gray",
+      "italic": true
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "criteria": {
+    "impossible": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

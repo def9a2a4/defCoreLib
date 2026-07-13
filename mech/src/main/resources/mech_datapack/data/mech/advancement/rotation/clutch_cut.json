@@ -1,0 +1,25 @@
+{
+  "parent": "mech:rotation/first_power",
+  "display": {
+    "icon": {
+      "id": "minecraft:redstone"
+    },
+    "title": {
+      "text": "Disengage",
+      "color": "white"
+    },
+    "description": {
+      "text": "Kill the branch mid-spin.",
+      "color": "gray",
+      "italic": true
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "criteria": {
+    "impossible": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

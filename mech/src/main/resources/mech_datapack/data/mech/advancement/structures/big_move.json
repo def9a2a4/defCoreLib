@@ -1,0 +1,25 @@
+{
+  "parent": "mech:structures/assemble",
+  "display": {
+    "icon": {
+      "id": "minecraft:piston"
+    },
+    "title": {
+      "text": "Moving Day",
+      "color": "light_purple"
+    },
+    "description": {
+      "text": "Thirty-two blocks in motion.",
+      "color": "gray",
+      "italic": true
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "criteria": {
+    "impossible": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

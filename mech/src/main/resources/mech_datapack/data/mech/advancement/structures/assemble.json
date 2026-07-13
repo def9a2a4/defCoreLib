@@ -1,0 +1,25 @@
+{
+  "parent": "mech:structures/first_glue",
+  "display": {
+    "icon": {
+      "id": "minecraft:slime_block"
+    },
+    "title": {
+      "text": "It Moves!",
+      "color": "yellow"
+    },
+    "description": {
+      "text": "The structure comes alive.",
+      "color": "gray",
+      "italic": true
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "criteria": {
+    "impossible": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

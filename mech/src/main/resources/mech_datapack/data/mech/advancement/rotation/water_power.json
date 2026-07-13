@@ -1,0 +1,25 @@
+{
+  "parent": "mech:rotation/first_power",
+  "display": {
+    "icon": {
+      "id": "minecraft:water_bucket"
+    },
+    "title": {
+      "text": "Go With the Flow",
+      "color": "white"
+    },
+    "description": {
+      "text": "The current turns the wheel.",
+      "color": "gray",
+      "italic": true
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "criteria": {
+    "impossible": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

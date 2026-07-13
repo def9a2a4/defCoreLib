@@ -1,0 +1,25 @@
+{
+  "parent": "mech:windmill/large",
+  "display": {
+    "icon": {
+      "id": "minecraft:cyan_banner"
+    },
+    "title": {
+      "text": "Lord of the Winds",
+      "color": "light_purple"
+    },
+    "description": {
+      "text": "It blots out the sun.",
+      "color": "gray",
+      "italic": true
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "criteria": {
+    "impossible": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "parent": "mech:craft/gear",
+  "display": {
+    "icon": {
+      "id": "minecraft:copper_block"
+    },
+    "title": {
+      "text": "Clutch Play",
+      "color": "white"
+    },
+    "description": {
+      "text": "Cut the line on command.",
+      "color": "gray",
+      "italic": true
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "criteria": {
+    "impossible": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

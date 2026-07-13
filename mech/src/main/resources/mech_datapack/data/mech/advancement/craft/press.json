@@ -1,0 +1,25 @@
+{
+  "parent": "mech:craft/millstone",
+  "display": {
+    "icon": {
+      "id": "minecraft:piston"
+    },
+    "title": {
+      "text": "Under Pressure",
+      "color": "white"
+    },
+    "description": {
+      "text": "Squeeze out the good stuff.",
+      "color": "gray",
+      "italic": true
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "criteria": {
+    "impossible": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

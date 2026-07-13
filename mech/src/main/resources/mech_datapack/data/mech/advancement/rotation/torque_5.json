@@ -1,0 +1,25 @@
+{
+  "parent": "mech:rotation/first_power",
+  "display": {
+    "icon": {
+      "id": "minecraft:copper_block"
+    },
+    "title": {
+      "text": "Getting Torque-y",
+      "color": "white"
+    },
+    "description": {
+      "text": "Real load, real power.",
+      "color": "gray",
+      "italic": true
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "criteria": {
+    "impossible": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

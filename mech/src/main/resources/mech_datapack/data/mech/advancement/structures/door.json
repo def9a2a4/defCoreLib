@@ -1,0 +1,25 @@
+{
+  "parent": "mech:structures/assemble",
+  "display": {
+    "icon": {
+      "id": "minecraft:oak_door"
+    },
+    "title": {
+      "text": "Open Sesame",
+      "color": "yellow"
+    },
+    "description": {
+      "text": "A door with a spine of copper.",
+      "color": "gray",
+      "italic": true
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "criteria": {
+    "impossible": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

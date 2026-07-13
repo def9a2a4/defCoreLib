@@ -1,0 +1,25 @@
+{
+  "parent": "mech:craft/water_wheel",
+  "display": {
+    "icon": {
+      "id": "minecraft:redstone"
+    },
+    "title": {
+      "text": "Off the Grid",
+      "color": "white"
+    },
+    "description": {
+      "text": "Redstone into rotation.",
+      "color": "gray",
+      "italic": true
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "criteria": {
+    "impossible": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

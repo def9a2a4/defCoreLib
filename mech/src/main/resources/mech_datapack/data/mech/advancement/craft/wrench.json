@@ -1,0 +1,25 @@
+{
+  "parent": "mech:craft/bearing",
+  "display": {
+    "icon": {
+      "id": "minecraft:golden_axe"
+    },
+    "title": {
+      "text": "Right Tool for the Job",
+      "color": "white"
+    },
+    "description": {
+      "text": "Turn it to face the world.",
+      "color": "gray",
+      "italic": true
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "criteria": {
+    "impossible": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

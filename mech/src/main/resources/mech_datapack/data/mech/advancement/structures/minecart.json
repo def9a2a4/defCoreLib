@@ -1,0 +1,25 @@
+{
+  "parent": "mech:structures/assemble",
+  "display": {
+    "icon": {
+      "id": "minecraft:furnace_minecart"
+    },
+    "title": {
+      "text": "All Aboard",
+      "color": "light_purple"
+    },
+    "description": {
+      "text": "Ride your own moving room.",
+      "color": "gray",
+      "italic": true
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "criteria": {
+    "impossible": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}
