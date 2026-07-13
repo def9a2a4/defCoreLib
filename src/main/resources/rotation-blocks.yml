@@ -1351,3 +1351,129 @@ blocks:
               R: { material: REDSTONE }
               O: { block: "mech:rotator" }
               M: { material: MINECART }
+
+  # ─── Extendable Piston (arm-only MVP) ───────────────────────────────────
+  # A fixed piston_core draws rotational power from any adjacent shaft/gear (omni consumer). Along its
+  # pole line [poles][CORE][poles][HEAD], the whole rod slides by spin direction: CW extends, CCW
+  # retracts. Behaviour lives in ExtendablePistonManager.java. Placeholder textures for now.
+  # Directional: placement face sets "forward" (the extend axis + direction). The core reads its own
+  # fwd_* state to know which way to push. placedOn → forward = away from the surface.
+  piston_core:
+    name: "&bPiston Core"
+    lore:
+      - "&7Rotation-powered piston base"
+      - "&7Spin CW to extend, CCW to retract"
+    catalog_notes:
+      - "&fThe powered base of an extendable piston. Feed it rotational power from any side."
+      - "&7Build a line of piston poles through it, capped by a piston head; reach = poles behind the core."
+      - "&7Placement decides 'forward' — the direction it pushes."
+    texture: "@iron_block"
+    item_texture: "@iron_block"
+    drops: self
+    default_state: fwd_up
+    placement_state_map:
+      DOWN: fwd_up
+      NORTH: fwd_south
+      SOUTH: fwd_north
+      EAST: fwd_west
+      WEST: fwd_east
+    states:
+      fwd_up: { texture: "@iron_block" }
+      fwd_down: { texture: "@iron_block" }
+      fwd_north: { texture: "@iron_block" }
+      fwd_south: { texture: "@iron_block" }
+      fwd_east: { texture: "@iron_block" }
+      fwd_west: { texture: "@iron_block" }
+    recipes:
+      craft:
+        shaped:
+          - pattern: ["III", "IBI", "III"]
+            key:
+              I: { material: IRON_INGOT }
+              B: { block: "mech:bearing" }
+  # Axis-oriented like a log/shaft: the placement face sets the rod's axis (idle_x/y/z).
+  piston_pole:
+    name: "&bPiston Pole"
+    lore:
+      - "&7Extension segment — add more behind"
+      - "&7the core for a longer throw"
+    texture: "@rod_up"
+    item_texture: "@rod_up"
+    drops: self
+    cancel_pistons: true
+    default_state: idle_y
+    placement_state_map:
+      DOWN: idle_y
+      NORTH: idle_z
+      SOUTH: idle_z
+      EAST: idle_x
+      WEST: idle_x
+    states:
+      idle_y:
+        texture: "@rod_up"
+        display_entities:
+          - texture: "@rod_up"
+            tag: rod
+            transform: { translation: [0, 0.5, 0], scale: [0.66, 1.002, 0.66] }
+      idle_x:
+        texture: "@rod_up"
+        display_entities:
+          - texture: "@rod_up"
+            tag: rod
+            transform: { translation: [-0.5, 0, 0], scale: [0.66, 1.002, 0.66], left_rotation: [90, 0, 0, 1] }
+            wall_offset: 0.001
+      idle_z:
+        texture: "@rod_up"
+        display_entities:
+          - texture: "@rod_up"
+            tag: rod
+            transform: { translation: [0, 0, -0.5], scale: [0.66, 1.002, 0.66], left_rotation: [-90, 1, 0, 0] }
+            wall_offset: 0.001
+    recipes:
+      craft:
+        shaped:
+          - pattern: ["I", "I"]
+            key:
+              I: { material: IRON_INGOT }
+  piston_head:
+    name: "&bPiston Head"
+    lore:
+      - "&7The pushing face at the end of the rod"
+    texture: "@cut_copper"
+    item_texture: "@cut_copper"
+    drops: self
+    cancel_pistons: true
+    default_state: idle_y
+    placement_state_map:
+      DOWN: idle_y
+      NORTH: idle_z
+      SOUTH: idle_z
+      EAST: idle_x
+      WEST: idle_x
+    states:
+      idle_y:
+        texture: "@cut_copper"
+        display_entities:
+          - texture: "@cut_copper"
+            tag: cap
+            transform: { translation: [0, 0.35, 0], scale: [0.9, 0.7, 0.9] }
+      idle_x:
+        texture: "@cut_copper"
+        display_entities:
+          - texture: "@cut_copper"
+            tag: cap
+            transform: { translation: [-0.35, 0, 0], scale: [0.9, 0.7, 0.9], left_rotation: [90, 0, 0, 1] }
+            wall_offset: 0.001
+      idle_z:
+        texture: "@cut_copper"
+        display_entities:
+          - texture: "@cut_copper"
+            tag: cap
+            transform: { translation: [0, 0, -0.35], scale: [0.9, 0.7, 0.9], left_rotation: [-90, 1, 0, 0] }
+            wall_offset: 0.001
+    recipes:
+      craft:
+        shaped:
+          - pattern: ["II", "II"]
+            key:
+              I: { material: IRON_INGOT }

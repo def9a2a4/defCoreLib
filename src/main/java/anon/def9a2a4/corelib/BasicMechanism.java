@@ -204,6 +204,10 @@ final class BasicMechanism implements Mechanism {
         TeleportCompat.teleport(vehicle, position);
         this.pivot = position.clone();
         rotate(yaw);
+        // A manual move() is authoritative: re-baseline the vehicle tracker so updateFromVehicle()
+        // (run every tick for all mechanisms) doesn't re-apply this teleport as drift next tick.
+        this.previousVehicleLoc = vehicle.getLocation();
+        this.previousVehicleYaw = this.previousVehicleLoc.getYaw();
     }
 
     // ──────────────────────────────────────────────────────────────────────
@@ -242,6 +246,15 @@ final class BasicMechanism implements Mechanism {
         this.onDisassembled = callback;
     }
 
+    // Cells that must never be overwritten on disassemble (e.g. a piston core the rod slides through).
+    // A mechanism block whose landing cell is protected is discarded — not placed, not dropped.
+    private java.util.@Nullable Set<CustomBlockRegistry.LocationKey> protectedCells = null;
+
+    /** Mark cells that disassembly must not overwrite (consumed instead). */
+    void setProtectedCells(java.util.Set<CustomBlockRegistry.LocationKey> cells) {
+        this.protectedCells = cells;
+    }
+
     @Override
     public void disassemble() {
         checkMainThread();
@@ -273,6 +286,11 @@ final class BasicMechanism implements Mechanism {
                 continue;
             }
             Block target = blockLoc.getBlock();
+
+            // Protected cell (e.g. the piston core the rod slid through): consume the block silently.
+            if (protectedCells != null && protectedCells.contains(CustomBlockRegistry.LocationKey.of(target))) {
+                continue;
+            }
 
             if (target.getType().isAir() || target.getType() == Material.WATER
                     || target.getType() == Material.LAVA) {

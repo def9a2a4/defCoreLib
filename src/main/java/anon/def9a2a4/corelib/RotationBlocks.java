@@ -891,7 +891,9 @@ final class RotationBlocks {
         Inventory internal = registry.getOrCreateStorage(hopper);
         if (internal == null) return;
 
-        double r = suctionPullRange + 0.5;   // half-extent; 1 → 1.5 → exact 3×3×3 cube
+        // Half-extent = full cells (pullRange + 0.5) + a 0.25 margin per side, so pullRange 1 →
+        // 1.75 → 3.5×3.5×3.5 box (the 3×3×3 cells plus a quarter-block reach on every face).
+        double r = suctionPullRange + 0.75;
         var box = org.bukkit.util.BoundingBox.of(center.toVector(), r, r, r);
         for (org.bukkit.entity.Entity e : world.getNearbyEntities(box)) {
             if (!(e instanceof org.bukkit.entity.Item item)) continue;   // Displays are not Items
