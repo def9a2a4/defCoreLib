@@ -57,7 +57,7 @@ power:
   huge_windmill: 15
   water_wheel: 2
   engine: 5
-  generator: 1
+  redstone_motor: 1
   drill: 1
   millstone: 1
   fan: 1

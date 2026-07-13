@@ -7,6 +7,8 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.util.Transformation;
+import org.joml.AxisAngle4f;
 import org.joml.Vector3f;
 import org.jspecify.annotations.Nullable;
 
@@ -85,12 +87,12 @@ final class ExtendablePistonManager {
             .build());
 
         overlayStructural(POLE_ID);
-        overlayStructural(HEAD_ID);
+        overlayHead();
 
         Bukkit.getScheduler().runTaskTimer(plugin, this::tick, 1L, 1L);
     }
 
-    /** Pole/head are inert structural blocks (no network behaviour). */
+    /** Pole is an inert structural block (no network behaviour). */
     private void overlayStructural(String id) {
         CustomHeadBlock t = registry.getType(id);
         if (t == null) {
@@ -98,6 +100,106 @@ final class ExtendablePistonManager {
             return;
         }
         registry.register(t.toBuilder().drillable(false).cancelPistons(true).build());
+    }
+
+    /**
+     * Head: structural like the pole, plus a neighbour-aware {@link CustomHeadBlock.DisplayTransformResolver}
+     * (pipes-style) that points the toothed pole-stub (display 0) and the wide cap (display 1) <b>outward</b> —
+     * the axis side that does <em>not</em> have an adjacent pole. Re-resolved automatically when a neighbour
+     * changes (needs {@code reactsToNeighbors}). Static YAML transforms are the outward=+axis fallback.
+     */
+    private void overlayHead() {
+        CustomHeadBlock t = registry.getType(HEAD_ID);
+        if (t == null) {
+            plugin.getLogger().warning("ExtendablePiston: block '" + HEAD_ID + "' not found — skipping");
+            return;
+        }
+        registry.register(t.toBuilder()
+            .drillable(false)
+            .cancelPistons(true)
+            .reactsToNeighbors(true)
+            .displayTransformResolver((block, state, cfg, idx) -> headTransform(block, state, idx))
+            .build());
+    }
+
+    // ──────────────────────────────────────────────────────────────────────
+    // Head display: pole-stub (idx 0) + cap (idx 1) pointing away from the pole
+    // ──────────────────────────────────────────────────────────────────────
+
+    private static final AxisAngle4f R_IDENTITY = new AxisAngle4f(0f, 0f, 0f, 1f);
+    private static final float POLE_W = 1.002f;      // stub width  (0.501 block, matches piston_pole)
+    private static final float STUB_LEN = 1.8f;      // stub length (0.9 block "on the outward side")
+    private static final float CAP_W = 2.0f;         // cap width   (2x pole ⇒ ~full block)
+    private static final float CAP_THICK = 0.5f;     // cap depth along the axis (thin disc)
+    private static final float STUB_T = 0.5f;        // stub outer end at the block face
+    private static final float CAP_T = 0.75f;        // cap centre 0.25 past the block face (0.5 + 0.25)
+
+    /**
+     * Resolve display {@code idx} (0 = toothed pole-stub, 1 = wide cap) for a placed head. Both point toward
+     * {@code outward} = the axis face with no adjacent pole. Offsets are visual-tuning values (cf. pipes'
+     * display.yml) — adjust against a running server.
+     */
+    private @Nullable Transformation headTransform(Block block, @Nullable String state, int idx) {
+        BlockFace axisPos = axisPositive(state);
+        if (axisPos == null) return null;
+        BlockFace outward = outwardFace(block, axisPos);
+        Vector3f o = new Vector3f(outward.getModX(), outward.getModY(), outward.getModZ());
+        if (idx == 0) {
+            // Toothed stub: long axis lies along the head's axis, outer end at the block face.
+            return new Transformation(o.mul(STUB_T, new Vector3f()),
+                stubRotation(outward), new Vector3f(POLE_W, STUB_LEN, POLE_W), R_IDENTITY);
+        }
+        // Cap: thin disc perpendicular to the axis, pushed 0.25 past the face.
+        return new Transformation(o.mul(CAP_T, new Vector3f()),
+            capRotation(outward), new Vector3f(CAP_W, CAP_THICK, CAP_W), R_IDENTITY);
+    }
+
+    /** +axis for the head's placement state ({@code idle_x/y/z}), or null if unknown. */
+    private static @Nullable BlockFace axisPositive(@Nullable String state) {
+        if (state == null) return null;
+        return switch (state) {
+            case "idle_y" -> BlockFace.UP;
+            case "idle_x" -> BlockFace.EAST;
+            case "idle_z" -> BlockFace.SOUTH;
+            default -> null;
+        };
+    }
+
+    /** The axis side without an adjacent pole (outward). Defaults to {@code +axis} if ambiguous. */
+    private BlockFace outwardFace(Block head, BlockFace axisPos) {
+        boolean posPole = isType(head.getRelative(axisPos), POLE_ID);
+        boolean negPole = isType(head.getRelative(axisPos.getOppositeFace()), POLE_ID);
+        if (posPole && !negPole) return axisPos.getOppositeFace();
+        if (negPole && !posPole) return axisPos;
+        return axisPos;
+    }
+
+    /**
+     * Orient the pole-stub mesh (local long-axis = Y, extends toward local −Y) so its outer end points at
+     * {@code outward}. Mirrors the piston_pole YAML rotations, with a 180° flip for the negative direction.
+     */
+    private static AxisAngle4f stubRotation(BlockFace outward) {
+        float h = (float) (Math.PI / 2), p = (float) Math.PI;
+        return switch (outward) {
+            case DOWN  -> R_IDENTITY;                     // mesh already extends −Y
+            case UP    -> new AxisAngle4f(p, 1f, 0f, 0f); // flip to +Y
+            case WEST  -> new AxisAngle4f(h, 0f, 0f, 1f); // +90 about Z
+            case EAST  -> new AxisAngle4f(-h, 0f, 0f, 1f);
+            case NORTH -> new AxisAngle4f(-h, 1f, 0f, 0f); // −90 about X
+            case SOUTH -> new AxisAngle4f(h, 1f, 0f, 0f);
+            default    -> R_IDENTITY;
+        };
+    }
+
+    /** Orient the flat cap disc perpendicular to the axis (sign-independent — the disc is symmetric). */
+    private static AxisAngle4f capRotation(BlockFace outward) {
+        float h = (float) (Math.PI / 2);
+        return switch (outward) {
+            case UP, DOWN       -> R_IDENTITY;
+            case EAST, WEST     -> new AxisAngle4f(h, 0f, 0f, 1f);
+            case NORTH, SOUTH   -> new AxisAngle4f(-h, 1f, 0f, 0f);
+            default             -> R_IDENTITY;
+        };
     }
 
     private void recalcIfNode(Block b) {

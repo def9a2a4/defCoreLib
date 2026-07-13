@@ -13,7 +13,7 @@ namespace: mech
 textures:
   chainwheel:        "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTliNzc4MjJhODNmZDBjNWFkMGEyMmE4ZWI5NzViNWIyM2Y1ODhkMTkzMzg4ZGE2MzNmZWZlMzFlMjZlOWU0NiJ9fX0="  # Chain Pulley — in-hand item + spinning wheel display
   chain:             "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvY2JmZTg2MDJiZDAyNDA2YzYyNDNhZmIxMjE5YjczOWJhZmIyZGQwY2NkZmM1ZmI1ZDFlMzEwMDY5YTZkYTBmOCJ9fX0="  # Chain — strand between linked pulleys
-  cut_copper:        "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTI4YmMyZGYzZGZmNWVjM2QxNDNhMmNlZWNiOTM4MjE4MzUxNmU5ZmFkZDdlNDA5YTVlYjQxNTUxNTc0YTI1ZiJ9fX0="  # Cut Copper — shaft/gear/engine/generator/drill rods
+  cut_copper:        "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTI4YmMyZGYzZGZmNWVjM2QxNDNhMmNlZWNiOTM4MjE4MzUxNmU5ZmFkZDdlNDA5YTVlYjQxNTUxNTc0YTI1ZiJ9fX0="  # Cut Copper — shaft/gear/engine/motor/drill rods
   gear_disc:         "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTM1NDhjNmJkZGYwMGQ1MDI5MjEyYjc0NjFkZGNhYTcyZTkyOGQ0M2YzYWIwMmEyYWJmNjgwYTYzZDI1MWVjNSJ9fX0="  # Copper Gear (modified) — gear discs
   drill_rod:         "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjcwMDQxYzZiZTc5OWNiNjliMTI3ZGYzNTU3NDIzMjIwM2UyYzI2MTkwN2IyZmQ1OGExNGVlNjkyOTg4ZTA3MyJ9fX0="  # Drill bit — drill display rod
   iron_block:        "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvN2ZmOTgxN2Q3NjdkMmVkZTcxODFhMDU3YWEyNmYwOGY3ZWNmNDY1MWRlYzk3ZGU1YjU0ZWVkZTFkZDJiNDJjNyJ9fX0="  # Iron Block — gear placed head
@@ -21,7 +21,7 @@ textures:
   copper_block:      "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWMyNjU4MDNkMWNjMmUzMWY3OTUxZmZlY2JlZjUwZTA3OGMzNjYyOWQ1ZDA5MDc4YjkxYmE0ZGNkNDRjYTI5YyJ9fX0="  # Copper Block — clutch
   chiselled_copper:  "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMmVkZDI0ODI1YzIxNzMwM2YyNmFmNTUyNjU3MGEyMTRhZWMyOWI5Mjk3YTY4NzcxNTFiYTUwZmNlZGZmN2ZmMSJ9fX0="  # Chiselled Copper — water wheel
   bronze_engine:     "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTE3MmMxZTcyOWUwY2EwMDE5M2FiNWQ0M2U4OTNmYWJlZGY1YTgwZmM2NDcyNTgxNzZlODUwMjQzMjg4NTkyNSJ9fX0="  # Bronze Ship Engine — engine
-  copper_bulb:       "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODNhY2RjZWQ0ZjVhNDhlNzRlZGFkZDAxNGM1ZGU3ZGFmOWVmYjEyMWNlYWZiNmMxNWNkYjEzODc1NTk0ZmNkOSJ9fX0="  # Copper Bulb (powered) — generator
+  copper_bulb:       "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODNhY2RjZWQ0ZjVhNDhlNzRlZGFkZDAxNGM1ZGU3ZGFmOWVmYjEyMWNlYWZiNmMxNWNkYjEzODc1NTk0ZmNkOSJ9fX0="  # Copper Bulb (powered) — redstone motor
   stone_slabs:       "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTUxZTcwMTY5ZWEwMGYwNGE5NDM5MjIxY2YzMzc3MDg0NDE1OWRkNzc1ZmM4ODMwZTMxMWZkOWI1Y2NkMjk2OSJ9fX0="  # Stone Slabs — millstone
   drill_head:        "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmRmYzY3MTJmOTRiMjc4YmE2MjM5YWJhMDQxMjZhM2JhZjAwMTExNWYzNTE0Mjk0ZDYxNWFmNzlkNmJmNGRhMCJ9fX0="  # Drill — drill placed head
   drill_item:        "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTI4Y2ZkMDY0YmQ0ODY2NmU2YTczOGMxNTJhNWZiYjA0MmJhNzJiNWU5MjkxMmUzZTJmNjk1MWVhOGYyNWQyZSJ9fX0="  # Drill — drill item
@@ -55,6 +55,14 @@ textures:
   compressor_item:   "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvY2Q3Y2Y4NmY5ZjY1MzdkZDVkMThmMDAwNjE4ODdjY2Q1OWM0ZTc5NjY0Y2ViZDY1Y2FhN2ViMGUwMjcwMWViOCJ9fX0="  # dev/press/compressor — press item
   placer_item:       "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvM2M1ZjNjM2Q1ZDdiMWNlMGYzMjA0MGMxNDU0ZGFmODg3OGUxY2MyOTllMDI1YmFkMmU2OTE5ZWJhZTIxZmJiOCJ9fX0="  # block placer — item in hand
   placer_piston:     "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWYyZWZiNDJjYWFlNTYxZmUyZDk3YmY3MTFjY2MwNjQ3ZGU2OTVmZDJkZTIxZDljZGNiMTI5YmEyOTMzY2VkZiJ9fX0="  # block placer — symmetric piston display
+
+  # ── Extendable-piston art (from assets/rotation/piston/, via scripts/upload_skin.py) ──
+  rod_toothed_up:    "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZWM4MWIyMDYzN2I0NzE5OGJlODU2M2E0MzM2M2VmZGNmZGFlOTg5MmE2NTNiNDIyOGVlYTBmNjVhMzlkZTliNyJ9fX0="  # piston/rod-toothed-up — piston pole/head-stub display (all orientations)
+  rod_toothed_fwd:   "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWQzZjY3ZDdkNDU3OWJhNjMzYjNkMDhkYjM5MWIyYTJiMWNlOWUxNDIwOTZkMmI1MmI5N2MwZWUzNjEyMmY3NiJ9fX0="  # piston/rod-toothed-fwd — piston pole item
+  core_up:           "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMmVmZmY4MGVlMjVlYzM1OGMwYTliYTBkMDdmMDZiZTI2NjkxNDFhNzI5MzYyM2QwMjVmZDk2MmY4NzZhZjJlOCJ9fX0="  # piston/core-up — piston core cube (floor/vertical)
+  core_fwd:          "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZWE3YWZlYWNhZTljNTVjZmUxNmNjZmJiNTg3NTcxN2M0ZDgzMDhhMTU0NzFhMWI2NzY4YWE1N2Y3NjRhYWUzNiJ9fX0="  # piston/core-fwd — piston core cube (wall/horizontal) + item
+  head_up:           "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTQ4YzAxMDIzYzdkODgxZWZlMThkZjczZDgyOWIzM2Q1OGQ1NzQ4ZTQzMDI3YzQ3ZWUxODFmYTQzNzE0YWI4YiJ9fX0="  # piston/head-up — piston head cap (floor/vertical)
+  head_fwd:          "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzc1MDgyM2E4ZDU1ZTYxMTk5ZGFiMzZiZGJkOTgyMjljNTA5MmY3MGFjYzgyOTkyMzJiOWQ3MzFmODZkNjRhMSJ9fX0="  # piston/head-fwd — piston head cap (wall/horizontal) + item
 
 blocks:
 
@@ -628,11 +636,11 @@ blocks:
               P: { material: PISTON }
               F: { material: BLAST_FURNACE }
 
-  # ─── Redstone Generator ────────────────────────────────────────────────
+  # ─── Redstone Motor ────────────────────────────────────────────────────
   # Source: 1 Power. Always on unless receiving redstone power. Expensive to craft.
   # Shaft display entity shows rotation direction. Spark particles when active.
-  generator:
-    name: "&5Redstone Generator"
+  redstone_motor:
+    name: "&5Redstone Motor"
     lore:
       - "&7Produces 1 Power constantly"
       - "&7Turns off when redstone powered"
@@ -1367,8 +1375,10 @@ blocks:
       - "&fThe powered base of an extendable piston. Feed it rotational power from any side."
       - "&7Build a line of piston poles through it, capped by a piston head; reach = poles behind the core."
       - "&7Placement decides 'forward' — the direction it pushes."
-    texture: "@iron_block"
-    item_texture: "@iron_block"
+    # Full-block cube display (2x head = 1 block on all axes), like the windmill hub. core-up for the
+    # vertical facings (floor/ceiling), core-fwd for the four horizontal (wall) facings, turned about Y.
+    texture: "@core_up"
+    item_texture: "@core_fwd"
     drops: self
     default_state: fwd_up
     placement_state_map:
@@ -1378,12 +1388,46 @@ blocks:
       EAST: fwd_west
       WEST: fwd_east
     states:
-      fwd_up: { texture: "@iron_block" }
-      fwd_down: { texture: "@iron_block" }
-      fwd_north: { texture: "@iron_block" }
-      fwd_south: { texture: "@iron_block" }
-      fwd_east: { texture: "@iron_block" }
-      fwd_west: { texture: "@iron_block" }
+      fwd_up:
+        texture: "@core_up"
+        display_entities:
+          - texture: "@core_up"
+            tag: core
+            transform: { translation: [0, 0.5, 0], scale: [2, 2, 2] }
+      fwd_down:
+        texture: "@core_up"
+        display_entities:
+          - texture: "@core_up"
+            tag: core
+            transform: { translation: [0, 0.5, 0], scale: [2, 2, 2] }
+      fwd_south:
+        texture: "@core_fwd"
+        display_entities:
+          - texture: "@core_fwd"
+            tag: core
+            transform: { translation: [0, 0.5, 0], scale: [2, 2, 2] }
+            wall_offset: 0.001
+      fwd_west:
+        texture: "@core_fwd"
+        display_entities:
+          - texture: "@core_fwd"
+            tag: core
+            transform: { translation: [0, 0.5, 0], scale: [2, 2, 2], left_rotation: [90, 0, 1, 0] }
+            wall_offset: 0.001
+      fwd_north:
+        texture: "@core_fwd"
+        display_entities:
+          - texture: "@core_fwd"
+            tag: core
+            transform: { translation: [0, 0.5, 0], scale: [2, 2, 2], left_rotation: [180, 0, 1, 0] }
+            wall_offset: 0.001
+      fwd_east:
+        texture: "@core_fwd"
+        display_entities:
+          - texture: "@core_fwd"
+            tag: core
+            transform: { translation: [0, 0.5, 0], scale: [2, 2, 2], left_rotation: [270, 0, 1, 0] }
+            wall_offset: 0.001
     recipes:
       craft:
         shaped:
@@ -1397,8 +1441,9 @@ blocks:
     lore:
       - "&7Extension segment — add more behind"
       - "&7the core for a longer throw"
-    texture: "@rod_up"
-    item_texture: "@rod_up"
+    # Toothed rod, 0.501 blocks wide (scale 1.002) — same pattern as the shaft but not narrowed.
+    texture: "@rod_toothed_up"
+    item_texture: "@rod_toothed_fwd"
     drops: self
     cancel_pistons: true
     default_state: idle_y
@@ -1410,24 +1455,24 @@ blocks:
       WEST: idle_x
     states:
       idle_y:
-        texture: "@rod_up"
+        texture: "@rod_toothed_up"
         display_entities:
-          - texture: "@rod_up"
+          - texture: "@rod_toothed_up"
             tag: rod
-            transform: { translation: [0, 0.5, 0], scale: [0.66, 1.002, 0.66] }
+            transform: { translation: [0, 0.5, 0], scale: [1.002, 2.002, 1.002] }
       idle_x:
-        texture: "@rod_up"
+        texture: "@rod_toothed_up"
         display_entities:
-          - texture: "@rod_up"
+          - texture: "@rod_toothed_up"
             tag: rod
-            transform: { translation: [-0.5, 0, 0], scale: [0.66, 1.002, 0.66], left_rotation: [90, 0, 0, 1] }
+            transform: { translation: [-0.5, 0, 0], scale: [1.002, 2.002, 1.002], left_rotation: [90, 0, 0, 1] }
             wall_offset: 0.001
       idle_z:
-        texture: "@rod_up"
+        texture: "@rod_toothed_up"
         display_entities:
-          - texture: "@rod_up"
+          - texture: "@rod_toothed_up"
             tag: rod
-            transform: { translation: [0, 0, -0.5], scale: [0.66, 1.002, 0.66], left_rotation: [-90, 1, 0, 0] }
+            transform: { translation: [0, 0, -0.5], scale: [1.002, 2.002, 1.002], left_rotation: [-90, 1, 0, 0] }
             wall_offset: 0.001
     recipes:
       craft:
@@ -1439,8 +1484,11 @@ blocks:
     name: "&bPiston Head"
     lore:
       - "&7The pushing face at the end of the rod"
-    texture: "@cut_copper"
-    item_texture: "@cut_copper"
+    # Two display entities: a toothed pole-stub (idx 0) + a wide cap (idx 1). Both transforms are computed
+    # at runtime by ExtendablePistonManager's displayTransformResolver so they point AWAY from the adjacent
+    # pole ("outward"). The transforms below are placeholder fallbacks for the outward=+axis case.
+    texture: "@head_up"
+    item_texture: "@head_fwd"
     drops: self
     cancel_pistons: true
     default_state: idle_y
@@ -1452,24 +1500,35 @@ blocks:
       WEST: idle_x
     states:
       idle_y:
-        texture: "@cut_copper"
+        texture: "@head_up"
         display_entities:
-          - texture: "@cut_copper"
+          - texture: "@rod_toothed_up"
+            tag: pole
+            transform: { translation: [0, 0.5, 0], scale: [1.002, 1.8, 1.002] }
+          - texture: "@head_up"
             tag: cap
-            transform: { translation: [0, 0.35, 0], scale: [0.9, 0.7, 0.9] }
+            transform: { translation: [0, 0.75, 0], scale: [2.0, 0.5, 2.0] }
       idle_x:
-        texture: "@cut_copper"
+        texture: "@head_fwd"
         display_entities:
-          - texture: "@cut_copper"
+          - texture: "@rod_toothed_up"
+            tag: pole
+            transform: { translation: [-0.5, 0, 0], scale: [1.002, 1.8, 1.002], left_rotation: [90, 0, 0, 1] }
+            wall_offset: 0.001
+          - texture: "@head_fwd"
             tag: cap
-            transform: { translation: [-0.35, 0, 0], scale: [0.9, 0.7, 0.9], left_rotation: [90, 0, 0, 1] }
+            transform: { translation: [-0.75, 0, 0], scale: [2.0, 0.5, 2.0], left_rotation: [90, 0, 0, 1] }
             wall_offset: 0.001
       idle_z:
-        texture: "@cut_copper"
+        texture: "@head_fwd"
         display_entities:
-          - texture: "@cut_copper"
+          - texture: "@rod_toothed_up"
+            tag: pole
+            transform: { translation: [0, 0, -0.5], scale: [1.002, 1.8, 1.002], left_rotation: [-90, 1, 0, 0] }
+            wall_offset: 0.001
+          - texture: "@head_fwd"
             tag: cap
-            transform: { translation: [0, 0, -0.35], scale: [0.9, 0.7, 0.9], left_rotation: [-90, 1, 0, 0] }
+            transform: { translation: [0, 0, -0.75], scale: [2.0, 0.5, 2.0], left_rotation: [-90, 1, 0, 0] }
             wall_offset: 0.001
     recipes:
       craft:

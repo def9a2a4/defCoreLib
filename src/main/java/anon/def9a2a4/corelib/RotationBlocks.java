@@ -126,7 +126,7 @@ final class RotationBlocks {
         overlayMillstone(registry, network, millRecipes, config);
         overlayPress(registry, network, pressRecipes, config);
         overlayPlacer(registry, network, config);
-        overlayGenerator(registry, network, config);
+        overlayRedstoneMotor(registry, network, config);
         overlayDrill(registry, network, config);
         overlayFan(registry, network, config);
         overlaySuctionHopper(registry, network, config);
@@ -979,13 +979,13 @@ final class RotationBlocks {
     }
 
     // ──────────────────────────────────────────────────────────────────────
-    // Generator: source, turns off when receiving redstone power
+    // Redstone Motor: source, turns off when receiving redstone power
     // ──────────────────────────────────────────────────────────────────────
 
-    private static void overlayGenerator(CustomBlockRegistry registry, RotationNetwork network,
+    private static void overlayRedstoneMotor(CustomBlockRegistry registry, RotationNetwork network,
                                             RotationConfig config) {
-        int generatorPower = config.getPower("generator", 1);
-        String blockId = "mech:generator";
+        int motorPower = config.getPower("redstone_motor", 1);
+        String blockId = "mech:redstone_motor";
         CustomHeadBlock block = registry.getType(blockId);
         if (block == null) { warn(registry, blockId); return; }
         registry.register(block.toBuilder()
@@ -1002,6 +1002,15 @@ final class RotationBlocks {
                     registry.setState(b, target);
                     CustomHeadBlock type = registry.getTypeFromBlock(b);
                     if (type != null) registry.applyConfig(b, type, target, 0);
+                    // Sync the network node role with the new visual — otherwise a
+                    // switched-off (idle) motor keeps supplying power as a stale SOURCE.
+                    // Mirrors the engine's removeNode+addNode discipline.
+                    CustomBlockRegistry.LocationKey key = CustomBlockRegistry.LocationKey.of(b);
+                    network.removeNode(key);
+                    network.addNode(b, blockId, RotationNetwork.axisFromState(target),
+                        rsPowered ? RotationNetwork.NodeRole.TRANSMITTER : RotationNetwork.NodeRole.SOURCE,
+                        rsPowered ? 0 : motorPower, false);
+                    return;
                 }
                 recalcIfKnown(b, network);
             })
@@ -1015,7 +1024,7 @@ final class RotationBlocks {
                 RotationNetwork.Axis axis = RotationNetwork.axisFromState(state != null ? state : "spinning_y");
                 network.addNode(b, blockId, axis,
                     spinning ? RotationNetwork.NodeRole.SOURCE : RotationNetwork.NodeRole.TRANSMITTER,
-                    spinning ? generatorPower : 0, false);
+                    spinning ? motorPower : 0, false);
             })
             .onChunkUnload(b -> network.removeNode(CustomBlockRegistry.LocationKey.of(b)))
             .onBlockRemoved((b, state) -> network.removeNode(CustomBlockRegistry.LocationKey.of(b)))

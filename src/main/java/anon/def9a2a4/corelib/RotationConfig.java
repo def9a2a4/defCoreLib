@@ -183,7 +183,7 @@ final class RotationConfig {
         powerValues.put("huge_windmill", 15);
         powerValues.put("water_wheel", 2);
         powerValues.put("engine", 5);
-        powerValues.put("generator", 1);
+        powerValues.put("redstone_motor", 1);
         powerValues.put("drill", 1);
         powerValues.put("millstone", 1);
         powerValues.put("fan", 1);
