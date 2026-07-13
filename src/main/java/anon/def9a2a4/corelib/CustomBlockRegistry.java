@@ -399,6 +399,7 @@ public class CustomBlockRegistry {
 
             CustomHeadBlock type = types.get(typeId);
             if (type == null) continue;
+            if (!isNamespaceEnabledInWorld(type.namespace(), chunk.getWorld().getName())) continue;
 
             Block block = skull.getBlock();
             String state = skull.getPersistentDataContainer().get(STATE_KEY, PersistentDataType.STRING);
@@ -1611,6 +1612,49 @@ public class CustomBlockRegistry {
             return new LocationKey(loc.getWorld().getUID(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
         }
     }
+
+    // ──────────────────────────────────────────────────────────────────────
+    // World filter (per-namespace world enable/disable)
+    // ──────────────────────────────────────────────────────────────────────
+
+    private final Map<String, WorldFilter> worldFilters = new HashMap<>();
+
+    public void setWorldFilter(String namespace, WorldFilter filter) {
+        worldFilters.put(namespace, filter);
+    }
+
+    public void clearWorldFilter(String namespace) {
+        worldFilters.remove(namespace);
+    }
+
+    public boolean isNamespaceEnabledInWorld(String namespace, String worldName) {
+        WorldFilter filter = worldFilters.get(namespace);
+        return filter == null || filter.isEnabled(worldName);
+    }
+
+    // ──────────────────────────────────────────────────────────────────────
+    // Cauldron conversions (item + water cauldron → different item)
+    // ──────────────────────────────────────────────────────────────────────
+
+    private final Map<String, String> cauldronConversions = new HashMap<>();
+
+    public void registerCauldronConversion(String fromId, String toId) {
+        cauldronConversions.put(fromId, toId);
+    }
+
+    public void clearCauldronConversions(String namespace) {
+        cauldronConversions.entrySet().removeIf(e -> e.getKey().startsWith(namespace + ":"));
+    }
+
+    @Nullable String getCauldronConversionTarget(String fromId) {
+        return cauldronConversions.get(fromId);
+    }
+
+    boolean hasCauldronConversions() {
+        return !cauldronConversions.isEmpty();
+    }
+
+    // ──────────────────────────────────────────────────────────────────────
 
     private static final class RedstoneTracked {
         final Block block;

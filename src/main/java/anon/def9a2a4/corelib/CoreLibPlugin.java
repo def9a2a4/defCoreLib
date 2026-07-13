@@ -280,6 +280,11 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         CustomHeadBlock type = registry.getType(typeId);
         if (type == null) return;
 
+        if (!registry.isNamespaceEnabledInWorld(type.namespace(), block.getWorld().getName())) {
+            event.setCancelled(true);
+            return;
+        }
+
         // Inventory-only items (juices, oils, wrench): never place as a block.
         if (!type.placeable()) {
             event.setCancelled(true);
@@ -622,6 +627,77 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         Player player = event.getPlayer();
         ItemStack customItem = enrichDrop(block, type, type.createItem(1));
         InventoryUtil.pickInto(player, customItem, event.getTargetSlot());
+    }
+
+    // ──────────────────────────────────────────────────────────────────────
+    // Cauldron conversions — item thrown into water cauldron → different item
+    // ──────────────────────────────────────────────────────────────────────
+
+    @EventHandler
+    public void onItemSpawnCauldron(org.bukkit.event.entity.ItemSpawnEvent event) {
+        if (!registry.hasCauldronConversions()) return;
+
+        org.bukkit.entity.Item itemEntity = event.getEntity();
+        ItemStack item = itemEntity.getItemStack();
+
+        String fromId = CustomBlockRegistry.getItemTypeId(item);
+        if (fromId == null) return;
+
+        String toId = registry.getCauldronConversionTarget(fromId);
+        if (toId == null) return;
+
+        new org.bukkit.scheduler.BukkitRunnable() {
+            int ticks = 0;
+
+            @Override
+            public void run() {
+                if (!itemEntity.isValid() || itemEntity.isDead()) {
+                    cancel();
+                    return;
+                }
+                if (ticks++ > 20) {
+                    cancel();
+                    return;
+                }
+                Block block = itemEntity.getLocation().getBlock();
+                if (block.getType() == Material.WATER_CAULDRON
+                        && block.getBlockData() instanceof org.bukkit.block.data.Levelled levelled
+                        && levelled.getLevel() > 0) {
+                    performCauldronConversion(itemEntity, item, toId, block, levelled);
+                    cancel();
+                }
+            }
+        }.runTaskTimer(this, 5L, 2L);
+    }
+
+    private void performCauldronConversion(org.bukkit.entity.Item itemEntity, ItemStack originalItem,
+                                           String toId, Block cauldron, org.bukkit.block.data.Levelled levelled) {
+        CustomHeadBlock toType = registry.getType(toId);
+        if (toType == null) {
+            getLogger().warning("Cauldron conversion target not found: " + toId);
+            return;
+        }
+
+        ItemStack converted = toType.createItem(originalItem.getAmount());
+        itemEntity.remove();
+        itemEntity.getWorld().dropItem(itemEntity.getLocation(), converted);
+
+        int newLevel = levelled.getLevel() - 1;
+        if (newLevel <= 0) {
+            cauldron.setType(Material.CAULDRON);
+        } else {
+            levelled.setLevel(newLevel);
+            cauldron.setBlockData(levelled);
+        }
+
+        cauldron.getWorld().spawnParticle(
+                org.bukkit.Particle.SPLASH,
+                cauldron.getLocation().add(0.5, 0.9, 0.5),
+                10, 0.2, 0.1, 0.2, 0.05);
+        cauldron.getWorld().playSound(
+                cauldron.getLocation(),
+                org.bukkit.Sound.ITEM_BUCKET_EMPTY,
+                0.5f, 1.2f);
     }
 
     // ──────────────────────────────────────────────────────────────────────
