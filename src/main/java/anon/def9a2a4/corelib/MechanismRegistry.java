@@ -71,6 +71,18 @@ public class MechanismRegistry {
     public Mechanism assembleMechanism(String type, List<Block> blocks, Location pivot,
                                        Vector3f rotationAxis,
                                        @Nullable MechanismSerializer serializer) {
+        return assembleMechanism(type, blocks, List.of(), pivot, rotationAxis, serializer);
+    }
+
+    /**
+     * Assemble from world blocks plus synthetic "ghost" blocks — each copies a template block's
+     * appearance but sits at a target cell and is <b>not</b> aired out (its cell holds another block,
+     * e.g. a piston core's internal pole). Ghosts ride the rigid body and land like normal blocks on
+     * disassembly (a protected target cell is skipped). Spawns a new owned ArmorStand vehicle.
+     */
+    public Mechanism assembleMechanism(String type, List<Block> blocks, List<GhostBlock> ghosts,
+                                       Location pivot, Vector3f rotationAxis,
+                                       @Nullable MechanismSerializer serializer) {
         UUID mechId = UUID.randomUUID();
         // Spawn the vehicle at the block-CENTERED pivot Y so the display chain (mounted on this
         // ArmorStand) shares the same centered frame as the rotation/collider/disassembly. Otherwise
@@ -85,7 +97,7 @@ public class MechanismRegistry {
         // We own the vehicle: if assembly throws (before it's registered in activeMechanisms), remove the
         // just-spawned persistent ArmorStand so it isn't orphaned in the world until the next chunk reload.
         try {
-            return assembleCore(mechId, type, blocks, pivot, rotationAxis, vehicle,
+            return assembleCore(mechId, type, blocks, ghosts, pivot, rotationAxis, vehicle,
                 ARMORSTAND_RIDE_OFFSET, true, serializer);
         } catch (RuntimeException e) {
             vehicle.remove();
@@ -102,12 +114,16 @@ public class MechanismRegistry {
         UUID mechId = UUID.randomUUID();
         Location pivot = existingVehicle.getLocation();
         existingVehicle.addScoreboardTag("corelib:mech:" + mechId + ":vehicle");
-        return assembleCore(mechId, type, blocks, pivot, AXIS_Y, existingVehicle, rideOffset,
+        return assembleCore(mechId, type, blocks, List.of(), pivot, AXIS_Y, existingVehicle, rideOffset,
             false, serializer);
     }
 
-    private Mechanism assembleCore(UUID mechId, String type, List<Block> blocks, Location pivot,
-                                    Vector3f rotationAxis, Entity vehicle, float rideOffset,
+    /** A synthetic block for {@link #assembleMechanism}: renders {@code template}'s appearance at
+     *  {@code target}, without touching whatever real block occupies {@code target}. */
+    public record GhostBlock(Location target, Block template) {}
+
+    private Mechanism assembleCore(UUID mechId, String type, List<Block> blocks, List<GhostBlock> ghosts,
+                                    Location pivot, Vector3f rotationAxis, Entity vehicle, float rideOffset,
                                     boolean ownsVehicle, @Nullable MechanismSerializer serializer) {
         List<MechanismBlockData> blockData = new ArrayList<>();
 
@@ -173,6 +189,39 @@ public class MechanismRegistry {
 
             blockData.add(new MechanismBlockData(bd, local, true, 1.0f,
                 customType, customState, decs, bdecs, particles, storage, spinReversed, wallFacing));
+        }
+
+        // 1b. Snapshot GHOST blocks — synthetic copies of a template's appearance at a target cell.
+        // Their localTransform comes from the TARGET (not the template), and they are NOT aired out
+        // (the target cell holds another real block, e.g. the piston core). On disassemble they place
+        // like normal blocks; a protected target cell is skipped (see BasicMechanism).
+        for (GhostBlock ghost : ghosts) {
+            Block tmpl = ghost.template();
+            BlockData gbd = tmpl.getBlockData();
+            Matrix4f glocal = new Matrix4f().translation(
+                (float) ((ghost.target().getBlockX() + 0.5) - snapX),
+                (float) ((ghost.target().getBlockY() + 0.5) - snapY),
+                (float) ((ghost.target().getBlockZ() + 0.5) - snapZ));
+            String gType = null, gState = null;
+            List<CustomHeadBlock.DisplayEntityConfig> gdecs = null;
+            List<CustomHeadBlock.BlockDisplayEntityConfig> gbdecs = null;
+            CustomHeadBlock.ParticleConfig gparticles = null;
+            Vector3f gwall = null;
+            CustomHeadBlock gchb = registry.getTypeFromBlock(tmpl);
+            if (gchb != null) {
+                gType = gchb.fullId();
+                gState = registry.getState(tmpl);
+                gdecs = gchb.resolveDisplayEntities(gState);
+                gbdecs = gchb.resolveBlockDisplayEntities(gState);
+                gparticles = gchb.resolveParticles(gState);
+                if (tmpl.getType() == Material.PLAYER_WALL_HEAD
+                        && gbd instanceof org.bukkit.block.data.Directional wallDir) {
+                    org.bukkit.util.Vector f = wallDir.getFacing().getDirection();
+                    gwall = new Vector3f((float) f.getX(), (float) f.getY(), (float) f.getZ());
+                }
+            }
+            blockData.add(new MechanismBlockData(gbd, glocal, true, 1.0f,
+                gType, gState, gdecs, gbdecs, gparticles, null, false, gwall));
         }
 
         // 2. Tear down custom-block tracking only AFTER every block's state was captured above.

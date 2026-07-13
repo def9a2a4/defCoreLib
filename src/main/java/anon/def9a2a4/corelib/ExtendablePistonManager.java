@@ -221,15 +221,28 @@ final class ExtendablePistonManager {
 
     private void startMove(CustomBlockRegistry.LocationKey coreKey, PistonLine line,
                            BlockFace moveFace, int r) {
-        Mechanism mech = mechRegistry.assembleMechanism(MECH_TYPE, line.rodBlocks(),
+        // Ghost "fake shaft inside the core": a pole at the core cell, so the sliding rod is contiguous
+        // (fills what would otherwise be a gap). Copies an existing pole's appearance/orientation.
+        Block template = firstPole(line.rodBlocks());
+        List<MechanismRegistry.GhostBlock> ghosts = template == null ? List.of()
+            : List.of(new MechanismRegistry.GhostBlock(line.core().getLocation(), template));
+
+        Mechanism mech = mechRegistry.assembleMechanism(MECH_TYPE, line.rodBlocks(), ghosts,
             line.head().getLocation(), AXIS_Y, null);
         if (mech == null) return;
+        // Whichever rod block lands on the core cell is skipped (consumed); the ghost fills the gap.
         ((BasicMechanism) mech).setProtectedCells(Set.of(coreKey));
 
         Location start = mech.pivot(); // block-centered after assembly
         Vector3f dir = new Vector3f(moveFace.getModX(), moveFace.getModY(), moveFace.getModZ());
         Location target = start.clone().add(dir.x * r, dir.y * r, dir.z * r);
-        active.put(coreKey, new ActiveMove(coreKey, mech, target, dir, line.rodBlocks().size()));
+        active.put(coreKey, new ActiveMove(coreKey, mech, target, dir,
+            line.rodBlocks().size() + ghosts.size()));
+    }
+
+    private @Nullable Block firstPole(List<Block> rod) {
+        for (Block b : rod) if (isType(b, POLE_ID)) return b;
+        return null;
     }
 
     /** @return true when the move finished (disassembled) and should be dropped from {@code active}. */

@@ -938,8 +938,8 @@ final class RotationBlocks {
                 center.getY() + (rnd.nextDouble()*2-1)*r,
                 center.getZ() + (rnd.nextDouble()*2-1)*r);
             var inward = center.toVector().subtract(p.toVector());
-            if (inward.lengthSquared() > 1e-4) inward.normalize().multiply(0.15);
-            world.spawnParticle(Particle.CLOUD, p, 0, inward.getX(), inward.getY(), inward.getZ(), 0.05);
+            if (inward.lengthSquared() > 1e-4) inward.normalize();
+            world.spawnParticle(Particle.CLOUD, p, 0, inward.getX(), inward.getY(), inward.getZ(), 0.1);
         }
     }
 
