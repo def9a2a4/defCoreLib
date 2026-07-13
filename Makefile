@@ -1,11 +1,17 @@
 # `gradle shadowJar` runs the shadowJar task in the root (core) AND every companion module that
 # has it (vslab / bbanners / mech / rsd), so one invocation builds all five jars.
+
+# Only the classifier-less shadow jar — never the `-plain` thin jar (which exists solely so the
+# subprojects can compile against corelib via `compileOnly(project(":"))`). Shipping both into a
+# plugins folder makes Paper report "Ambiguous plugin name 'DefCoreLib'", so deploys use this.
+CORE_JAR = $$(ls build/libs/defCoreLib*.jar | grep -v -- -plain)
+
 .PHONY: build
 build:
 	gradle shadowJar
 	
 	mkdir -p bin
-	cp build/libs/defCoreLib*.jar bin/
+	cp $(CORE_JAR) bin/
 	cp vslab/build/libs/vslab*.jar bin/
 	cp bbanners/build/libs/BetterBanners*.jar bin/
 	cp mech/build/libs/Mechanism*.jar bin/
@@ -40,7 +46,7 @@ docs:
 		'generate-structures=false' 'server-port=25575' 'level-name=world' \
 		'motd=DefCoreLib docs export' \
 		> test-server/server.properties
-	cp build/libs/defCoreLib*.jar vslab/build/libs/vslab*.jar \
+	cp $(CORE_JAR) vslab/build/libs/vslab*.jar \
 		bbanners/build/libs/BetterBanners*.jar mech/build/libs/Mechanism*.jar \
 		rsd/build/libs/RedstoneDisplays*.jar \
 		pipes/build/libs/Pipes*.jar test-server/plugins/
@@ -117,7 +123,7 @@ showcase-test:
 		'generate-structures=false' 'server-port=25575' 'level-name=world' \
 		'motd=DefCoreLib docs export' \
 		> test-server/server.properties
-	cp build/libs/defCoreLib*.jar vslab/build/libs/vslab*.jar \
+	cp $(CORE_JAR) vslab/build/libs/vslab*.jar \
 		bbanners/build/libs/BetterBanners*.jar mech/build/libs/Mechanism*.jar \
 		rsd/build/libs/RedstoneDisplays*.jar \
 		pipes/build/libs/Pipes*.jar test-server/plugins/
@@ -186,7 +192,7 @@ showcase-capture:
 		'generate-structures=false' 'server-port=25575' 'level-name=world' \
 		'motd=DefCoreLib docs export' \
 		> test-server/server.properties
-	cp build/libs/defCoreLib*.jar vslab/build/libs/vslab*.jar \
+	cp $(CORE_JAR) vslab/build/libs/vslab*.jar \
 		bbanners/build/libs/BetterBanners*.jar mech/build/libs/Mechanism*.jar \
 		rsd/build/libs/RedstoneDisplays*.jar \
 		pipes/build/libs/Pipes*.jar test-server/plugins/

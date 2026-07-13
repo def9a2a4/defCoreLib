@@ -36,12 +36,13 @@ tasks {
         }
     }
 
-    // Don't emit the thin `defCoreLib-0.1.0-plain.jar`: it declares the same
-    // plugin name as the shadow jar, so shipping both makes Paper report an
-    // "Ambiguous plugin name 'DefCoreLib'" error. shadowJar is the only
+    // Keep the thin jar (subprojects compile against it via `compileOnly(project(":"))`), but give it a
+    // `-plain` classifier so it doesn't collide with the shadow jar and the deploy steps can skip it.
+    // Shipping BOTH jars to the server makes Paper report "Ambiguous plugin name 'DefCoreLib'", so the
+    // Makefile copies only the classifier-less shadow jar into the plugins folder. shadowJar is the only
     // deployable artifact.
     jar {
-        enabled = false
+        archiveClassifier.set("plain")
     }
 
     shadowJar {
