@@ -1,5 +1,5 @@
 {
-  "parent": "mech:rotation/first_power",
+  "parent": "mech:craft/chain_pulley",
   "display": {
     "icon": {
       "id": "minecraft:chain"

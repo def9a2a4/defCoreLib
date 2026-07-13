@@ -1,5 +1,5 @@
 {
-  "parent": "mech:structures/assemble",
+  "parent": "mech:craft/minecart",
   "display": {
     "icon": {
       "id": "minecraft:furnace_minecart"

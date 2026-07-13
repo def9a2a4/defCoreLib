@@ -1,5 +1,5 @@
 {
-  "parent": "mech:rotation/first_power",
+  "parent": "mech:craft/water_wheel",
   "display": {
     "icon": {
       "id": "minecraft:player_head",

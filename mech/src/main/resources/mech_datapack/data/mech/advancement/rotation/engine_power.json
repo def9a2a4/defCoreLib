@@ -1,5 +1,5 @@
 {
-  "parent": "mech:rotation/torque_5",
+  "parent": "mech:craft/engine",
   "display": {
     "icon": {
       "id": "minecraft:player_head",
