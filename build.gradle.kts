@@ -36,12 +36,12 @@ tasks {
         }
     }
 
+    // Don't emit the thin `defCoreLib-0.1.0-plain.jar`: it declares the same
+    // plugin name as the shadow jar, so shipping both makes Paper report an
+    // "Ambiguous plugin name 'DefCoreLib'" error. shadowJar is the only
+    // deployable artifact.
     jar {
-        archiveBaseName.set("defCoreLib")
-        archiveClassifier.set("plain")   // avoid colliding with shadowJar's defCoreLib-0.1.0.jar
-        manifest {
-            attributes["paperweight-mappings-namespace"] = "mojang"
-        }
+        enabled = false
     }
 
     shadowJar {
@@ -49,6 +49,9 @@ tasks {
         mergeServiceFiles()
         archiveClassifier.set("")
         archiveBaseName.set("defCoreLib")
+        manifest {
+            attributes["paperweight-mappings-namespace"] = "mojang"
+        }
     }
 }
 
