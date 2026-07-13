@@ -390,6 +390,15 @@ public class RotationNetwork {
 
                 if (node.role() == NodeRole.SOURCE) supply += node.powerUnits();
                 if (node.role() == NodeRole.CONSUMER) demand += node.powerUnits();
+                // Chain pulley on a live loop draws ceil(span/10) power on its outgoing link, so a long
+                // chain isn't a free power-teleporter (balance vs gears). Open/dead chains cost nothing.
+                if (ChainPulley.PULLEY_ID.equals(node.blockTypeId())) {
+                    CustomBlockRegistry.LocationKey partner = chainOut.get(loc);
+                    if (partner != null && onClosedLoop(loc)) {
+                        double dx = loc.x() - partner.x(), dy = loc.y() - partner.y(), dz = loc.z() - partner.z();
+                        demand += (int) Math.ceil(Math.sqrt(dx * dx + dy * dy + dz * dz) / 10.0);
+                    }
+                }
 
                 SpinDirection myDir = dirMap.get(loc);
                 for (Connection conn : getConnections(node)) {
