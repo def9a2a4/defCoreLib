@@ -64,6 +64,37 @@ speed/direction, then released back to normal physics. Reuses the mechanism-mine
 (`MechanismMinecartManager` + `EntityAnchor` + `updateFromVehicle`). Needs geometry design: grab radius,
 per-tick carry along the `chainOut` loop polygon, release conditions.
 
+## Remaining open items (as of 2026-07-14, post deep-review)
+Core feature, destruction-robustness (per-block piston policy, chain drops on break/glue,
+entity-change protection), and the wrench/UX/hygiene pass are all shipped. Outstanding:
+
+- **[open — correctness] Lock-gate phantom demand + recalc perf ("Fix 3").** The standalone demand
+  block in `RotationNetwork.doRecalculate` charges `ceil(span/10)` for any pulley on a closed loop
+  without checking `!isLocked(partner)` — so a clutched (locked) pulley on a loop still draws power for
+  a link that transmits nothing, which can wrongly tip a marginal network unpowered. Fix: add a
+  `chainDrive` flag to `Connection`, inject it only on the already-gated/deduped chain edge, and move
+  the demand charge onto that edge (keep an explicit `PULLEY_ID` gate). Fold in a per-`doRecalculate`
+  `onClosedLoop` memo (label the whole cycle → O(L), not O(L²)) and the N1 fix (an adjacent deduped
+  link no longer double-charges). Vetted across 5 agent reviews; held only because it edits core power
+  math. Note: on upgrade, a network previously stuck unpowered by phantom demand may correctly flip to
+  powered after the first recalc.
+- **[deferred] Reload strand duplication ("Fix 1").** `handleChunkLoad` re-acquires the strand via
+  `DisplayUtil.findByTag` at `ChunkLoadEvent`, before Paper loads entities → a duplicate strand spawns
+  and the persisted original is orphaned. The copies overlap exactly, so it's an *invisible* entity
+  leak (the stale copy sits static behind the spinning one), not a visible glitch. Fix: move the
+  re-acquire to `EntitiesLoadEvent` (make `ChainPulley` a `Listener`), adopt the persisted strand,
+  dedup/orphan-sweep, and respawn only genuinely-missing strands. Left undone — not reproducible in a
+  quick in-game check; only manifests after a server restart / chunk reload, so re-test with a restart
+  before implementing.
+- **[deferred — cosmetic] Wheel-spin ignores direction.** The registry-owned spinning chainwheel always
+  turns one way, while the manually-ticked strand shows the true CW/CCW. A correct fix needs duplicate
+  CW/CCW animation states or converting the wheel to a manually-ticked display like the strand —
+  disproportionate for a cue the strand already conveys.
+- **[accepted] `/setblock` / `/fill` / WorldEdit node leak (#6).** Removing a pulley via these bypasses
+  Bukkit events, so its `RotationNetwork` node isn't cleaned up. Inherent to those tools; orphaned
+  displays are recoverable via `/defcorelib refreshdisplays`, network nodes are not.
+- **[deferred feature] Seamless auto-grab ski lift** — designed above; not started.
+
 ## Verify
 `make build && make docs`. Link a 3-wheel loop → chain renders as the stretched rotating display,
 spinning only when the loop is powered; lore shows no "max 10"; power flows only with surplus covering
