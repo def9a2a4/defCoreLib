@@ -249,3 +249,28 @@ showcases:
     # expect:
     #   - { type: spinning, at: [0, 0, 0] }
     #   - { type: network_powered, at: [0, 0, 1] }
+
+  # ── Sampler: two passive sources feeding a gear corner ──────────────────
+  - id: icon_machine
+    name: "Water Wheel & Windmill Gearbox"
+    blurb: "A water wheel and a windmill each drive a shaft into a pair of corner-meshed gears."
+    description: >
+      Two passive generators meeting at a gear corner. The water wheel spins by default and
+      sends rotation west along a shaft; the windmill does the same to the north. Each shaft
+      carries its rotation into a gear, and the two gears mesh perpendicular at the corner, so
+      both sources turn the same coupled pair. A compact sampler of the rotation system —
+      two power sources, shafts, and a gear corner in a single build.
+    blocks:
+      - { id: "mech:windmill",    facing: south, at: [0, 0, -2] }
+      - { id: "mech:shaft",       facing: north, at: [0, 0, -1] }
+      - { id: "mech:gear",        facing: south, at: [0, 0, 0] }    # Z axis
+      - { id: "mech:gear",        facing: west,  at: [1, 0, 0] }    # X axis, meshes the corner
+      - { id: "mech:shaft",       facing: west,  at: [2, 0, 0] }
+      - { id: "mech:water_wheel", facing: east,  at: [3, 0, 0] }
+    vanilla:
+      # Water around the wheel (barriers that dammed it in the export are dropped; it never renders).
+      - { block: "WATER", at: [3, 0, 1], data: "[level=8]", physics: true }
+      - { block: "WATER", at: [3, 1, 0], data: "[level=0]", physics: true }
+      - { block: "WATER", at: [3, 1, 1], data: "[level=1]", physics: true }
+    activate: passive
+    expect: []
