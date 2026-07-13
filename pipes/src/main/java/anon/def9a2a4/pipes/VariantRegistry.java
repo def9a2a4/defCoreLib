@@ -51,8 +51,8 @@ public class VariantRegistry {
             throw new IllegalArgumentException("Invalid behavior type: " + behaviorStr);
         }
 
-        int intervalTicks = section.getInt("transfer.interval-ticks", 10);
-        int itemsPerTransfer = section.getInt("transfer.items-per-transfer", 1);
+        int intervalTicks = Math.max(1, section.getInt("transfer.interval-ticks", 10));
+        int itemsPerTransfer = Math.max(1, section.getInt("transfer.items-per-transfer", 1));
 
         return new PipeVariant(id, behavior, intervalTicks, itemsPerTransfer);
     }

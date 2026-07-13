@@ -664,39 +664,45 @@ public class PipeManager {
 
     private CachedPath findDestination(Location pipeLocation, BlockFace facing,
                                         Set<Location> visited, List<Location> chain, int currentMinItems) {
-        Location normalized = normalizeLocation(pipeLocation);
-        chain.add(normalized);
+        Location current = pipeLocation;
+        BlockFace currentFacing = facing;
 
-        PipeData selfData = getPipeData(normalized);
-        if (selfData != null) {
-            currentMinItems = Math.min(currentMinItems, selfData.variant().itemsPerTransfer());
-        }
+        while (true) {
+            Location normalized = normalizeLocation(current);
+            visited.add(normalized);
+            chain.add(normalized);
 
-        Block nextBlock = normalized.getBlock().getRelative(facing);
-        Location nextLoc = normalizeLocation(nextBlock.getLocation());
-
-        if (visited.contains(nextLoc)) {
-            return new CachedPath(null, normalized, chain, currentMinItems);
-        }
-        visited.add(nextLoc);
-
-        Optional<ContainerAdapter> adapterOpt = ContainerAdapterRegistry.findAdapter(nextBlock);
-        if (adapterOpt.isPresent()) {
-            if (adapterOpt.get().canReceiveFrom(nextBlock, facing.getOppositeFace())) {
-                return new CachedPath(nextLoc, normalized, chain, currentMinItems);
+            PipeData selfData = getPipeData(normalized);
+            if (selfData != null) {
+                currentMinItems = Math.min(currentMinItems, selfData.variant().itemsPerTransfer());
             }
-            return new CachedPath(null, normalized, chain, currentMinItems);
-        }
 
-        PipeData nextPipeData = getPipeData(nextLoc);
-        if (nextPipeData != null) {
-            if (nextPipeData.facing() == facing.getOppositeFace()) {
+            Block nextBlock = normalized.getBlock().getRelative(currentFacing);
+            Location nextLoc = normalizeLocation(nextBlock.getLocation());
+
+            if (visited.contains(nextLoc)) {
                 return new CachedPath(null, normalized, chain, currentMinItems);
             }
-            return findDestination(nextLoc, nextPipeData.facing(), visited, chain, currentMinItems);
-        }
 
-        return new CachedPath(null, normalized, chain, currentMinItems);
+            Optional<ContainerAdapter> adapterOpt = ContainerAdapterRegistry.findAdapter(nextBlock);
+            if (adapterOpt.isPresent()) {
+                if (adapterOpt.get().canReceiveFrom(nextBlock, currentFacing.getOppositeFace())) {
+                    return new CachedPath(nextLoc, normalized, chain, currentMinItems);
+                }
+                return new CachedPath(null, normalized, chain, currentMinItems);
+            }
+
+            PipeData nextPipeData = getPipeData(nextLoc);
+            if (nextPipeData == null) {
+                return new CachedPath(null, normalized, chain, currentMinItems);
+            }
+            if (nextPipeData.facing() == currentFacing.getOppositeFace()) {
+                return new CachedPath(null, normalized, chain, currentMinItems);
+            }
+
+            current = nextLoc;
+            currentFacing = nextPipeData.facing();
+        }
     }
 
     /**

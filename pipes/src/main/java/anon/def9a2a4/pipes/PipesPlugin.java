@@ -357,7 +357,7 @@ public class PipesPlugin extends JavaPlugin {
         pipeConfig = new PipeConfig(getConfig());
 
         File externalDisplayConfig = new File(getDataFolder(), "display.yml");
-        FileConfiguration displayConfigRaw;
+        FileConfiguration displayConfigRaw = null;
         if (externalDisplayConfig.exists()) {
             getLogger().info("Loading display.yml from plugin folder (development override)");
             displayConfigRaw = YamlConfiguration.loadConfiguration(externalDisplayConfig);
@@ -365,14 +365,16 @@ public class PipesPlugin extends JavaPlugin {
             try (InputStream stream = getResource("display.yml")) {
                 if (stream == null) {
                     getLogger().severe("Could not find display.yml in JAR!");
-                    return;
+                } else {
+                    displayConfigRaw = YamlConfiguration.loadConfiguration(
+                            new InputStreamReader(stream, StandardCharsets.UTF_8));
                 }
-                displayConfigRaw = YamlConfiguration.loadConfiguration(
-                        new InputStreamReader(stream, StandardCharsets.UTF_8));
             } catch (Exception e) {
                 getLogger().severe("Failed to load display.yml: " + e.getMessage());
-                return;
             }
+        }
+        if (displayConfigRaw == null) {
+            displayConfigRaw = new YamlConfiguration();
         }
         displayConfig = new DisplayConfig(displayConfigRaw);
 

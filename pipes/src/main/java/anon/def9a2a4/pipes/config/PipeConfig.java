@@ -28,9 +28,9 @@ public class PipeConfig {
             this.worldFilter = null;
         }
 
-        this.sourceEmptySleepTicks = config.getInt("performance.sleep.source-empty-ticks", 60);
-        this.destFullSleepTicks = config.getInt("performance.sleep.dest-full-ticks", 80);
-        this.endRecheckSleepTicks = config.getInt("performance.sleep.end-recheck-ticks", 40);
+        this.sourceEmptySleepTicks = Math.max(0, config.getInt("performance.sleep.source-empty-ticks", 60));
+        this.destFullSleepTicks = Math.max(0, config.getInt("performance.sleep.dest-full-ticks", 80));
+        this.endRecheckSleepTicks = Math.max(0, config.getInt("performance.sleep.end-recheck-ticks", 40));
     }
 
     public boolean isDebugParticles() { return debugParticles; }

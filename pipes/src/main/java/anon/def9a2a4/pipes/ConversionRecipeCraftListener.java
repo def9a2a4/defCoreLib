@@ -7,7 +7,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.CraftItemEvent;
-import org.bukkit.event.inventory.PrepareItemCraftEvent;
+
 import org.bukkit.inventory.CraftingInventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
@@ -24,17 +24,6 @@ public class ConversionRecipeCraftListener implements Listener {
     public ConversionRecipeCraftListener(PipesPlugin plugin, RecipeManager recipeManager) {
         this.plugin = plugin;
         this.recipeManager = recipeManager;
-    }
-
-    @EventHandler(priority = EventPriority.HIGH)
-    public void onPrepareCraft(PrepareItemCraftEvent event) {
-        Recipe recipe = event.getRecipe();
-        if (recipe == null) return;
-
-        NamespacedKey key = getRecipeKey(recipe);
-        if (key == null || !recipeManager.isConversionRecipe(key)) return;
-
-        // Recipe is valid, result will be set by Bukkit
     }
 
     @EventHandler(priority = EventPriority.HIGH)
@@ -64,8 +53,9 @@ public class ConversionRecipeCraftListener implements Listener {
                 if (item == null || item.getType() == Material.AIR) continue;
 
                 if (item.getType() == catalyst) {
-                    // Replace water bucket with empty bucket
-                    matrix[i] = new ItemStack(Material.BUCKET);
+                    if (catalyst.name().endsWith("_BUCKET")) {
+                        matrix[i] = new ItemStack(Material.BUCKET);
+                    }
                 } else if (plugin.isPipeItem(item) && !consumed) {
                     if (item.getAmount() > 1) {
                         item.setAmount(item.getAmount() - 1);
