@@ -41,7 +41,6 @@ final class ExtendablePistonManager {
 
     private static final int TRIGGER_PERIOD = 4;         // ticks between idle-core scans
     private static final float MIN_STEP = 0.08f;         // blocks/tick (floor so it always progresses)
-    private static final float MAX_STEP = 0.5f;
     private static final float SPEED_K = 0.5f;
     private static final Vector3f AXIS_Y = new Vector3f(0f, 1f, 0f);
 
@@ -50,20 +49,23 @@ final class ExtendablePistonManager {
     private final RotationNetwork network;
     private final MechanismRegistry mechRegistry;
     private final GlueManager glueManager;
+    private final RotationConfig config;
 
     private final Set<CustomBlockRegistry.LocationKey> cores = new HashSet<>();
     private final Map<CustomBlockRegistry.LocationKey, ActiveMove> active = new HashMap<>();
     private final Set<CustomBlockRegistry.LocationKey> warnedCores = new HashSet<>();  // rate-limit tick warnings
+    private final Map<CustomBlockRegistry.LocationKey, String> lastDiag = new HashMap<>();  // TEMP (Issue 7)
     private int tickCounter = 0;
 
     ExtendablePistonManager(JavaPlugin plugin, CustomBlockRegistry registry,
                             RotationNetwork network, MechanismRegistry mechRegistry,
-                            GlueManager glueManager) {
+                            GlueManager glueManager, RotationConfig config) {
         this.plugin = plugin;
         this.registry = registry;
         this.network = network;
         this.mechRegistry = mechRegistry;
         this.glueManager = glueManager;
+        this.config = config;
     }
 
     void register() {
@@ -80,11 +82,11 @@ final class ExtendablePistonManager {
             .onNeighborChange((b, face) -> recalcIfNode(b))
             .onChunkLoad((b, state) -> {
                 CustomBlockRegistry.LocationKey k = CustomBlockRegistry.LocationKey.of(b);
-                // Omni consumer: draws power from the first aligned shaft/gear on ANY face. Static demand 0
-                // (a pure leaf, like RotationRotator's idle state) so a piston never loads or stalls the
-                // network — it reads power/direction only.
+                // Omni consumer: draws power from the first aligned shaft/gear on ANY face. Static base demand
+                // (default 1, like drill/fan/hopper) so the piston participates in the power economy — it slows
+                // co-resident consumers by their fair share, and its own speed scales with the leftover surplus.
                 network.addNode(b, CORE_ID, RotationNetwork.Axis.Y,
-                    RotationNetwork.NodeRole.CONSUMER, 0, false, true, null);
+                    RotationNetwork.NodeRole.CONSUMER, config.getPower("piston_core", 1), false, true, null);
                 cores.add(k);
             })
             .onChunkUnload(b -> forget(b))
@@ -206,9 +208,10 @@ final class ExtendablePistonManager {
         // Cap idx 1 — a 0.5-thick plate. Vertical and wall heads use DIFFERENT head skins whose decorated art
         // sits on different faces, so they need different rotation/scale:
         if (outward == BlockFace.UP || outward == BlockFace.DOWN) {
-            // Vertical: @head_up art on ±Y, thin-in-Y, +Y→outward. Nudged 0.25 down; down-cap lifted 0.5.
+            // Vertical: @head_up art on ±Y, thin-in-Y, +Y→outward. Nudged 0.25 down; down-cap lifted 0.49
+            // (0.5 − 0.01, the extra 0.01 pushing it clear of the block face below to avoid z-fighting).
             Vector3f capT = new Vector3f(o).mul(CAP_T).add(0f, -0.25f, 0f);
-            if (outward == BlockFace.DOWN) capT.add(0f, 0.5f, 0f);
+            if (outward == BlockFace.DOWN) capT.add(0f, 0.49f, 0f);
             return new Transformation(capT, r, new Vector3f(CAP_W, CAP_THICK, CAP_W), R_IDENTITY);
         }
         // Wall: @head_fwd art on ±Z, thin-in-Z, front(+Z)→outward, upright & vertically centred on the block.
@@ -308,6 +311,7 @@ final class ExtendablePistonManager {
                     warnOnce(m.coreKey, "advance", t);
                     safeDisassemble(m.mech, m.coreKey);
                     it.remove();
+                    warnedCores.remove(m.coreKey);   // re-arm: a fresh fault after this recovery re-logs once
                 }
             }
         }
@@ -325,16 +329,16 @@ final class ExtendablePistonManager {
     }
 
     private void maybeTrigger(CustomBlockRegistry.LocationKey coreKey) {
-        if (!network.isPowered(coreKey)) return;
+        if (!network.isPowered(coreKey)) { diag(coreKey, "not-powered"); return; }
         RotationNetwork.SpinDirection dir = network.getDirection(coreKey);
-        if (dir == null) return;
+        if (dir == null) { diag(coreKey, "powered but no-direction"); return; }
         Block core = blockOf(coreKey);
         if (core == null) return;
         PistonLine line = detectLine(core);
-        if (line == null) return;
+        if (line == null) { diag(coreKey, "no-line (state=" + registry.getState(core) + ")"); return; }
 
         List<Block> payload = resolvePayload(line);
-        if (payload == null) return;                                // glued structure holds an immovable block — abort
+        if (payload == null) { diag(coreKey, "payload-rejected"); return; }  // glued structure holds an immovable block
         // Full moving assembly (rod + payload); the core cell is passable (ghost-filled, protected on land).
         List<Block> moving = new ArrayList<>(line.rodBlocks());
         moving.addAll(payload);
@@ -342,11 +346,14 @@ final class ExtendablePistonManager {
 
         if (dir == RotationNetwork.SpinDirection.CW) {              // extend
             int r = clearForAll(moving, footprint, line.frontFace(), line.backPoles());
-            if (r > 0) startMove(coreKey, line, payload, line.frontFace(), r);
+            diag(coreKey, "CW fwd=" + line.frontFace() + " back=" + line.backPoles()
+                + " front=" + line.frontPoles() + " r=" + r);
+            if (r > 0) startMove(coreKey, line, payload, line.frontFace(), r, dir);
         } else {                                                    // CCW → retract
             BlockFace back = line.frontFace().getOppositeFace();
             int r = clearForAll(moving, footprint, back, line.extension());
-            if (r > 0) startMove(coreKey, line, payload, back, r);
+            diag(coreKey, "CCW back=" + back + " ext=" + line.extension() + " r=" + r);
+            if (r > 0) startMove(coreKey, line, payload, back, r, dir);
         }
     }
 
@@ -455,7 +462,7 @@ final class ExtendablePistonManager {
     // ──────────────────────────────────────────────────────────────────────
 
     private void startMove(CustomBlockRegistry.LocationKey coreKey, PistonLine line, List<Block> payload,
-                           BlockFace moveFace, int r) {
+                           BlockFace moveFace, int r, RotationNetwork.SpinDirection spinDir) {
         // Capture the head's authored-glue offsets BEFORE assembly airs the head out to AIR (else readOffsets
         // reads a non-skull → null → glue is lost on land).
         int[] glueOffsets = new BlockAnchor(line.head(), () -> true).readOffsets();
@@ -484,19 +491,22 @@ final class ExtendablePistonManager {
         try {
             ((BasicMechanism) mech).setProtectedCells(Set.of(coreKey));
             Vector3f dir = new Vector3f(moveFace.getModX(), moveFace.getModY(), moveFace.getModZ());
-            // Rebind glue on ANY disassembly (completion, power-cut stop, forget, engine teardown). Compute the
-            // head's landed cell from the ACTUAL final pivot — correct for full AND partial/interrupted moves.
-            if (glueOffsets != null) {
-                mech.setOnDisassembled(placed -> {
-                    Location p = mech.pivot();
-                    Block landedHead = p.getWorld().getBlockAt(p.getBlockX(), p.getBlockY(), p.getBlockZ());
-                    new BlockAnchor(landedHead, () -> true).writeOffsets(glueOffsets);
-                });
-            }
+            // Runs on ANY disassembly (completion, power-cut/reverse stop, forget, engine teardown), AFTER the
+            // whole rod is placed. Compute the head's landed cell from the ACTUAL final pivot. Two jobs:
+            //   1. Re-resolve the head's display now that every pole carries its PDC — else a first-extend-from-
+            //      rest resolves the head before its neighbour pole exists and defaults to +axis (down flips up).
+            //   2. Rebind authored glue onto the landed head (if any).
+            mech.setOnDisassembled(placed -> {
+                Location p = mech.pivot();
+                Block landedHead = p.getWorld().getBlockAt(p.getBlockX(), p.getBlockY(), p.getBlockZ());
+                CustomHeadBlock ht = registry.getTypeFromBlock(landedHead);
+                if (ht != null) registry.resolveDisplayTransforms(landedHead, ht, registry.getState(landedHead));
+                if (glueOffsets != null) new BlockAnchor(landedHead, () -> true).writeOffsets(glueOffsets);
+            });
             Location start = mech.pivot(); // block-centered after assembly
             Location target = start.clone().add(dir.x * r, dir.y * r, dir.z * r);
             active.put(coreKey, new ActiveMove(coreKey, mech, start, target, dir,
-                assembleBlocks.size() + ghosts.size()));
+                assembleBlocks.size() + ghosts.size(), spinDir));
         } catch (Throwable t) {
             safeDisassemble(mech, coreKey);   // restore the aired-out rod instead of leaking the mech
             throw t;
@@ -515,9 +525,10 @@ final class ExtendablePistonManager {
         // Mirrors RotationRotator's 2-tick startup delay.
         if (m.warmup > 0) { m.warmup--; return false; }
         Location cur = m.mech.pivot();
-        // Power cut mid-slide → stop at the NEXT whole block (don't run to the full planned target). Retarget to
-        // start + dir·ceil(progress); `start`/`target` are block-centered so the arrival branch lands on-grid.
-        if (!network.isPowered(m.coreKey)) {
+        // Stop-then-reverse: if power is cut OR the spin direction flips mid-slide, stop at the NEXT whole block
+        // (don't run to the full planned target). Retarget to start + dir·ceil(progress); `start`/`target` are
+        // block-centered so the arrival branch lands on-grid, and the next trigger scan drives the other way.
+        if (!network.isPowered(m.coreKey) || network.getDirection(m.coreKey) != m.spinDir) {
             double progress = (cur.getX() - m.start.getX()) * m.dir.x
                             + (cur.getY() - m.start.getY()) * m.dir.y
                             + (cur.getZ() - m.start.getZ()) * m.dir.z;
@@ -527,9 +538,11 @@ final class ExtendablePistonManager {
         double remaining = (m.target.getX() - cur.getX()) * m.dir.x
                          + (m.target.getY() - cur.getY()) * m.dir.y
                          + (m.target.getZ() - cur.getZ()) * m.dir.z;
+        // Speed ∝ surplus/mass (like the rotator), capped by the configurable piston max-step, floored by
+        // MIN_STEP so it always creeps even at surplus 0 (soft manners — never hard-yields).
         int[] stats = network.getNetworkStats(m.coreKey);
-        float supply = stats != null ? Math.max(1, stats[0]) : 1;
-        float step = clamp(SPEED_K * supply / Math.max(1, m.mass), MIN_STEP, MAX_STEP);
+        int surplus = stats != null ? stats[0] - stats[1] : 0;
+        float step = clamp(SPEED_K * surplus / Math.max(1, m.mass), MIN_STEP, (float) config.pistonMaxStep);
 
         if (remaining <= step + 1e-3) {
             m.mech.move(m.target, 0f);   // snap to the block-centered target cell
@@ -593,6 +606,13 @@ final class ExtendablePistonManager {
         }
     }
 
+    /** TEMPORARY (Issue 7): log a core's trigger outcome, but only when it changes, to avoid per-scan spam. */
+    private void diag(CustomBlockRegistry.LocationKey coreKey, String msg) {
+        if (!msg.equals(lastDiag.put(coreKey, msg))) {
+            plugin.getLogger().info("[piston-diag] " + coreKey + " → " + msg);
+        }
+    }
+
     /** A detected piston line. {@code extension} = front-pole count = cells the head sits past the core. */
     private record PistonLine(BlockFace frontFace, Block core, int backPoles, Block head, int frontPoles,
                               List<Block> rodBlocks) {
@@ -602,19 +622,21 @@ final class ExtendablePistonManager {
     private static final class ActiveMove {
         final CustomBlockRegistry.LocationKey coreKey;
         final Mechanism mech;
-        final Location start;                  // block-centered assembly pivot (base for the power-cut retarget)
-        Location target;                       // mutable: B1 retargets to the next whole block on power loss
+        final Location start;                  // block-centered assembly pivot (base for the stop retarget)
+        Location target;                       // mutable: retargeted to the next whole block on power-cut/reverse
         final Vector3f dir;
         final int mass;
+        final RotationNetwork.SpinDirection spinDir;  // the spin that started this move; a flip stops it
         int warmup = 2;                        // ticks to wait before the first move (mount + rotate(0) first)
         ActiveMove(CustomBlockRegistry.LocationKey coreKey, Mechanism mech, Location start, Location target,
-                   Vector3f dir, int mass) {
+                   Vector3f dir, int mass, RotationNetwork.SpinDirection spinDir) {
             this.coreKey = coreKey;
             this.mech = mech;
             this.start = start;
             this.target = target;
             this.dir = dir;
             this.mass = mass;
+            this.spinDir = spinDir;
         }
     }
 }

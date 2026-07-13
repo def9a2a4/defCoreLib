@@ -225,22 +225,10 @@ public class MechanismRegistry {
                 gType, gState, gdecs, gbdecs, gparticles, null, false, gwall));
         }
 
-        // 2. Tear down custom-block tracking only AFTER every block's state was captured above.
-        // onBlockRemoved removes the rotation-network node, whose synchronous recalc rewrites downstream
-        // transmitters (shaft/gear) spinning_*→idle_*. Doing this per-block during capture snapshotted
-        // later blocks as idle — a capture-order race that left glued gears/shafts static mid-swing.
-        for (Block b : blocks) {
-            CustomHeadBlock chb = registry.getTypeFromBlock(b);
-            if (chb != null) registry.onBlockRemoved(b, chb);
-        }
-
-        // 3. Two-pass block removal
-        for (Block b : blocks) {
-            if (FragileBlocks.isAttachable(b.getType())) b.setType(Material.AIR, false);
-        }
-        for (Block b : blocks) {
-            if (b.getType() != Material.AIR) b.setType(Material.AIR, false);
-        }
+        // Steps 2-3 (tear down custom-block tracking + air out the source blocks) are deferred to AFTER the
+        // display spawn — see airOutSourceBlocks(). For owned vehicles the mech displays are mounted and
+        // positioned onto the cells FIRST (synchronously), so removing the real blocks leaves no empty frame
+        // (the flicker). The snapshot above still runs first, so the capture-order race is unaffected.
 
         // 4. Spawn display + collider entities
         Location spawnLoc = pivot.clone().add(0, 2.5, 0);
@@ -343,29 +331,43 @@ public class MechanismRegistry {
             colliderIndex.put(cp.shulker().getUniqueId(), new ColliderRef(mech, cp.blockIndex()));
         }
 
-        // 6. 1-tick delay: mount displays on parent, set initial transforms.
-        //    For owned vehicles (ArmorStand): parent mounts on vehicle as passenger.
-        //    For external vehicles (minecarts): parent is teleported each tick instead,
-        //    because minecarts silently reject addPassenger for non-living entities at NMS level.
-        Bukkit.getScheduler().runTaskLater(plugin, () -> {
-            if (!vehicle.isValid()) { mech.disassemble(); return; } // vehicle died during the delay tick
-            for (var group : displaysPerBlock) {
-                for (Display d : group) parentDisplay.addPassenger(d);
-            }
-            if (ownsVehicle) {
+        // 6. Mount displays on parent + set initial transforms, then air out the source blocks.
+        if (ownsVehicle) {
+            // Owned ArmorStand vehicle: mount + position the displays SYNCHRONOUSLY (this tick), THEN remove
+            // the real blocks — so the mech displays already cover the cells before the originals vanish, with
+            // no empty frame (the per-move flicker). No delay tick ⇒ no vehicle-death window. Owned ArmorStands
+            // accept addPassenger synchronously (the 1-tick defer only ever existed for minecarts, below).
+            try {
+                for (var group : displaysPerBlock) {
+                    for (Display d : group) parentDisplay.addPassenger(d);
+                }
                 vehicle.addPassenger(parentDisplay);
-            } else {
-                // External vehicle (minecart): start the parent at the SNAPPED pivot, not the raw
-                // vehicle position, which may have drifted during this 1-tick delay (NMS rail physics).
-                // updateFromVehicle() maintains it from here. Zero yaw — rotation is via display matrices.
+                mech.rotate(0);
+                updateAnimatedDisplays(mech, 0L);
+            } catch (RuntimeException e) {
+                mech.removeAllEntities();   // drop the just-spawned mech displays/colliders; blocks untouched
+                throw e;                    // the owning overload's catch then removes the vehicle
+            }
+            airOutSourceBlocks(blocks);
+        } else {
+            // External vehicle (minecart): remove the real blocks now, then defer the mount one tick —
+            // minecarts silently reject addPassenger for non-living entities at the NMS level.
+            airOutSourceBlocks(blocks);
+            Bukkit.getScheduler().runTaskLater(plugin, () -> {
+                if (!vehicle.isValid()) { mech.disassemble(); return; } // vehicle died during the delay tick
+                for (var group : displaysPerBlock) {
+                    for (Display d : group) parentDisplay.addPassenger(d);
+                }
+                // Start the parent at the SNAPPED pivot, not the raw vehicle position, which may have drifted
+                // during this 1-tick delay (NMS rail physics). updateFromVehicle() maintains it from here.
                 Location parentLoc = mech.pivot();
                 parentLoc.setYaw(0);
                 parentLoc.setPitch(0);
                 TeleportCompat.teleport(parentDisplay, parentLoc);
-            }
-            mech.rotate(0);
-            updateAnimatedDisplays(mech, 0L); // place animated displays on the first frame — no 1-tick pop
-        }, 1L);
+                mech.rotate(0);
+                updateAnimatedDisplays(mech, 0L); // place animated displays on the first frame — no 1-tick pop
+            }, 1L);
+        }
 
         activeMechanisms.put(mechId, mech);
 
@@ -377,6 +379,25 @@ public class MechanismRegistry {
             new MechanismAssembleEvent(mech, type, pivot.clone(), mech.blockCount(), verticalAxis));
 
         return mech;
+    }
+
+    /**
+     * Tear down custom-block tracking (which removes each block's OWN display entities) and air out the source
+     * blocks. Must run AFTER the snapshot — {@code onBlockRemoved} triggers a synchronous rotation-network
+     * recalc that rewrites downstream transmitters {@code spinning_*→idle_*}, so doing it during capture would
+     * snapshot later blocks as idle. Two-pass removal handles attachables before their supports.
+     */
+    private void airOutSourceBlocks(List<Block> blocks) {
+        for (Block b : blocks) {
+            CustomHeadBlock chb = registry.getTypeFromBlock(b);
+            if (chb != null) registry.onBlockRemoved(b, chb);
+        }
+        for (Block b : blocks) {
+            if (FragileBlocks.isAttachable(b.getType())) b.setType(Material.AIR, false);
+        }
+        for (Block b : blocks) {
+            if (b.getType() != Material.AIR) b.setType(Material.AIR, false);
+        }
     }
 
     // ──────────────────────────────────────────────────────────────────────
@@ -554,6 +575,13 @@ public class MechanismRegistry {
         for (ColliderPair cp : mech.colliders) {
             colliderIndex.remove(cp.shulker().getUniqueId());
         }
+    }
+
+    /** Remove a disassembled owned-vehicle mechanism's display/collider entities one tick later, so the
+     *  just-placed blocks' own displays have a frame to render first (avoids the landing flicker). The mech is
+     *  already unregistered by the caller, so the lingering entities are never ticked. */
+    void deferEntityRemoval(BasicMechanism mech) {
+        Bukkit.getScheduler().runTaskLater(plugin, mech::removeAllEntities, 1L);
     }
 
     // ──────────────────────────────────────────────────────────────────────

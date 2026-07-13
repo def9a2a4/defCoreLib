@@ -32,6 +32,7 @@ final class RotationConfig {
     int suctionPullRange = 1;          // Chebyshev radius: 1 → 3×3×3 cube
     double suctionPullStrength = 0.14; // fixed inward velocity (≈ fanMinPush)
     int chainPulleyMaxDistance = 32;   // max chain-pulley link distance (blocks)
+    double pistonMaxStep = 0.5;        // extendable piston: cap on per-tick slide velocity (blocks/tick)
     int dynamoTickInterval = 10;       // redstone dynamo: ticks between comparator-output refreshes
     String dynamoDefaultMode = "TOTAL";      // TOTAL | USED | UNUSED
     String dynamoDefaultScaling = "CLAMP";   // CLAMP | MOD15 | DIV15
@@ -142,6 +143,12 @@ final class RotationConfig {
         ConfigurationSection chainPulley = yaml.getConfigurationSection("chain-pulley");
         if (chainPulley != null) {
             chainPulleyMaxDistance = chainPulley.getInt("max-distance", chainPulleyMaxDistance);
+            loaded++;
+        }
+
+        ConfigurationSection piston = yaml.getConfigurationSection("piston");
+        if (piston != null) {
+            pistonMaxStep = piston.getDouble("max-step", pistonMaxStep);
             loaded++;
         }
 

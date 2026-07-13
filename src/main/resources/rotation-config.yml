@@ -41,6 +41,9 @@ placer:
 chain-pulley:
   max-distance: 32    # max distance (blocks) between two linked chain pulleys
 
+piston:
+  max-step: 0.5       # extendable piston: cap on per-tick slide velocity (blocks/tick)
+
 redstone_dynamo:
   tick-interval: 10       # ticks between comparator-output refreshes
   default-mode: TOTAL     # TOTAL | USED | UNUSED — which network quantity to report
@@ -68,3 +71,4 @@ power:
   fan: 1
   press: 1
   placer: 1
+  piston_core: 1   # base rotational demand of an extendable piston core (speed scales with surplus above this)

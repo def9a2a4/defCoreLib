@@ -314,8 +314,17 @@ final class BasicMechanism implements Mechanism {
             }
         }
 
-        removeAllEntities();
+        // Unregister now so the tick loop won't re-touch this disassembled mech. For an owned vehicle, DEFER
+        // removing the mech's display entities one tick so the just-placed blocks' own displays get a frame to
+        // render first — else custom-block displays blink as the mech displays vanish (the landing flicker).
+        // The mech is already unregistered, so the lingering entities are never ticked. External (minecart)
+        // vehicles remove synchronously (their landed payload is vanilla and renders same-tick).
         if (mechanismRegistry != null) mechanismRegistry.onMechanismRemoved(this);
+        if (ownsVehicle && mechanismRegistry != null) {
+            mechanismRegistry.deferEntityRemoval(this);
+        } else {
+            removeAllEntities();
+        }
         if (serializer != null) serializer.onDisassemble(this);
         if (onDisassembled != null) onDisassembled.accept(placed);
     }
