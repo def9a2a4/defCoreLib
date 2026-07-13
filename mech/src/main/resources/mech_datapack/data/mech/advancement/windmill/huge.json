@@ -2,16 +2,25 @@
   "parent": "mech:windmill/large",
   "display": {
     "icon": {
-      "id": "minecraft:cyan_banner"
+      "id": "minecraft:player_head",
+      "components": {
+        "minecraft:profile": {
+          "properties": [
+            {
+              "name": "textures",
+              "value": "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZmVhNTg1NmQ1OTNjZGNmNDgzNTI0NzFiNGE1ZGU0NDI3N2FiMjFkOWUyODc2NWUxYjZkODM5ZWY0ZjllMmEzNSJ9fX0="
+            }
+          ]
+        }
+      }
     },
     "title": {
       "text": "Lord of the Winds",
       "color": "light_purple"
     },
     "description": {
-      "text": "It blots out the sun.",
-      "color": "gray",
-      "italic": true
+      "text": "Build a Huge Windmill (15 power) \u2014 craft it with Huge banners (needs BetterBanners).",
+      "color": "gray"
     },
     "frame": "challenge",
     "show_toast": true,

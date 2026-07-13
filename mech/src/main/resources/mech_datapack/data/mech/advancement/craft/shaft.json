@@ -2,16 +2,25 @@
   "parent": "mech:craft/bearing",
   "display": {
     "icon": {
-      "id": "minecraft:lightning_rod"
+      "id": "minecraft:player_head",
+      "components": {
+        "minecraft:profile": {
+          "properties": [
+            {
+              "name": "textures",
+              "value": "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzQxMTNmNjAyNDMxN2NiZmNlZmU4MDdhMzg0YzViOGIxZmE2NGVkY2M2N2Q0MDU5ZjY2MTMzMmZhYTI0ZTUxNSJ9fX0="
+            }
+          ]
+        }
+      }
     },
     "title": {
       "text": "First Shaft",
       "color": "white"
     },
     "description": {
-      "text": "A straight line of power.",
-      "color": "gray",
-      "italic": true
+      "text": "Craft a Shaft \u2014 carries rotational power in a straight line along its axis.",
+      "color": "gray"
     },
     "frame": "task",
     "show_toast": true,

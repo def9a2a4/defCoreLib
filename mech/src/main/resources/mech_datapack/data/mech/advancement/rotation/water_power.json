@@ -2,16 +2,25 @@
   "parent": "mech:rotation/first_power",
   "display": {
     "icon": {
-      "id": "minecraft:water_bucket"
+      "id": "minecraft:player_head",
+      "components": {
+        "minecraft:profile": {
+          "properties": [
+            {
+              "name": "textures",
+              "value": "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvM2Q0NzBkY2Y3MGRhMzJiMzNlYWM0ZTBmMjAyMzZhMjk0YTE5NDMxMWI3MWQ2NzZjMTk3MzVhMDI0Mjc2NjlkNiJ9fX0="
+            }
+          ]
+        }
+      }
     },
     "title": {
       "text": "Go With the Flow",
       "color": "white"
     },
     "description": {
-      "text": "The current turns the wheel.",
-      "color": "gray",
-      "italic": true
+      "text": "Drive a network with a Water Wheel turned by the current.",
+      "color": "gray"
     },
     "frame": "task",
     "show_toast": true,

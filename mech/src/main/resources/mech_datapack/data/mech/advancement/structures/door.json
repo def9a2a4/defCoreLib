@@ -2,16 +2,25 @@
   "parent": "mech:structures/assemble",
   "display": {
     "icon": {
-      "id": "minecraft:oak_door"
+      "id": "minecraft:player_head",
+      "components": {
+        "minecraft:profile": {
+          "properties": [
+            {
+              "name": "textures",
+              "value": "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOWEzOWE4NDBhMGViYzkxYWJjOWEwNjNlYWNkOTFjYjVmYzk0M2U1OTU0YTQxNjJlMTQyZGNmZWQ2MzAyZTVhNyJ9fX0="
+            }
+          ]
+        }
+      }
     },
     "title": {
       "text": "Open Sesame",
       "color": "yellow"
     },
     "description": {
-      "text": "A door with a spine of copper.",
-      "color": "gray",
-      "italic": true
+      "text": "Swing a floor-mounted Rotator as a door.",
+      "color": "gray"
     },
     "frame": "goal",
     "show_toast": true,

@@ -2,16 +2,25 @@
   "parent": "mech:rotation/first_power",
   "display": {
     "icon": {
-      "id": "minecraft:copper_block"
+      "id": "minecraft:player_head",
+      "components": {
+        "minecraft:profile": {
+          "properties": [
+            {
+              "name": "textures",
+              "value": "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjk1MWJlMGM0NzVlMTE5ZTk2YWQxYzgzODU5MTI0MGYyZjVmYTEyODFmZTUyNTZlMmY2YzVlZWZlZWI3MzA3YiJ9fX0="
+            }
+          ]
+        }
+      }
     },
     "title": {
       "text": "About Face",
       "color": "white"
     },
     "description": {
-      "text": "Flip the whole line.",
-      "color": "gray",
-      "italic": true
+      "text": "Flip a running line's direction with a Reverser.",
+      "color": "gray"
     },
     "frame": "task",
     "show_toast": true,

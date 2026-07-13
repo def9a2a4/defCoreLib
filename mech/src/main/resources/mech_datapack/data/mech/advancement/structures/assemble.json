@@ -9,9 +9,8 @@
       "color": "yellow"
     },
     "description": {
-      "text": "The structure comes alive.",
-      "color": "gray",
-      "italic": true
+      "text": "Assemble a glued structure into a moving mechanism.",
+      "color": "gray"
     },
     "frame": "goal",
     "show_toast": true,

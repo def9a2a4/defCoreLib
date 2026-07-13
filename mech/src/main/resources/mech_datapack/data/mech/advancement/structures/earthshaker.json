@@ -9,9 +9,8 @@
       "color": "light_purple"
     },
     "description": {
-      "text": "The ground itself gives way.",
-      "color": "gray",
-      "italic": true
+      "text": "Move a massive mechanism of 128 or more blocks.",
+      "color": "gray"
     },
     "frame": "challenge",
     "show_toast": true,

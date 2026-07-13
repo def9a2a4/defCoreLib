@@ -2,16 +2,25 @@
   "parent": "mech:craft/drill",
   "display": {
     "icon": {
-      "id": "minecraft:dispenser"
+      "id": "minecraft:player_head",
+      "components": {
+        "minecraft:profile": {
+          "properties": [
+            {
+              "name": "textures",
+              "value": "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvM2M1ZjNjM2Q1ZDdiMWNlMGYzMjA0MGMxNDU0ZGFmODg3OGUxY2MyOTllMDI1YmFkMmU2OTE5ZWJhZTIxZmJiOCJ9fX0="
+            }
+          ]
+        }
+      }
     },
     "title": {
       "text": "Autoplacement",
       "color": "white"
     },
     "description": {
-      "text": "Let the machine build.",
-      "color": "gray",
-      "italic": true
+      "text": "Craft a Block Placer \u2014 places its stored blocks into the world, one per cycle, while powered.",
+      "color": "gray"
     },
     "frame": "task",
     "show_toast": true,

@@ -2,16 +2,25 @@
   "parent": "mech:root",
   "display": {
     "icon": {
-      "id": "minecraft:copper_ingot"
+      "id": "minecraft:player_head",
+      "components": {
+        "minecraft:profile": {
+          "properties": [
+            {
+              "name": "textures",
+              "value": "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMmQzMmJlY2RiNDYzMjYzMTRjZDBkMDU1MWIzYTNmMjhlMTc1NzQ2NjM4MDgzMDUwYWY4M2VkYmEyNDlhMWZmMiJ9fX0="
+            }
+          ]
+        }
+      }
     },
     "title": {
       "text": "First Bearing",
       "color": "white"
     },
     "description": {
-      "text": "Every machine starts here.",
-      "color": "gray",
-      "italic": true
+      "text": "Craft a Bearing \u2014 the copper core most rotation machines are built from.",
+      "color": "gray"
     },
     "frame": "task",
     "show_toast": true,

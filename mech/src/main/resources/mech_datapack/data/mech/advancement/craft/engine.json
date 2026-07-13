@@ -2,16 +2,25 @@
   "parent": "mech:craft/water_wheel",
   "display": {
     "icon": {
-      "id": "minecraft:blast_furnace"
+      "id": "minecraft:player_head",
+      "components": {
+        "minecraft:profile": {
+          "properties": [
+            {
+              "name": "textures",
+              "value": "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTE3MmMxZTcyOWUwY2EwMDE5M2FiNWQ0M2U4OTNmYWJlZGY1YTgwZmM2NDcyNTgxNzZlODUwMjQzMjg4NTkyNSJ9fX0="
+            }
+          ]
+        }
+      }
     },
     "title": {
       "text": "Full Steam",
       "color": "yellow"
     },
     "description": {
-      "text": "Fuel in, power out.",
-      "color": "gray",
-      "italic": true
+      "text": "Craft an Engine \u2014 the strongest source at 5 power, but it burns furnace fuel to run.",
+      "color": "gray"
     },
     "frame": "goal",
     "show_toast": true,

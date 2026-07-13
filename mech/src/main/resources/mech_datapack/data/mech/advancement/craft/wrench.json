@@ -9,9 +9,8 @@
       "color": "white"
     },
     "description": {
-      "text": "Turn it to face the world.",
-      "color": "gray",
-      "italic": true
+      "text": "Craft the Rotation Wrench \u2014 right-click a machine to rotate it in place.",
+      "color": "gray"
     },
     "frame": "task",
     "show_toast": true,

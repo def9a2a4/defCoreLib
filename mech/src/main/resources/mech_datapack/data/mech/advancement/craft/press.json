@@ -2,16 +2,25 @@
   "parent": "mech:craft/millstone",
   "display": {
     "icon": {
-      "id": "minecraft:piston"
+      "id": "minecraft:player_head",
+      "components": {
+        "minecraft:profile": {
+          "properties": [
+            {
+              "name": "textures",
+              "value": "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvY2Q3Y2Y4NmY5ZjY1MzdkZDVkMThmMDAwNjE4ODdjY2Q1OWM0ZTc5NjY0Y2ViZDY1Y2FhN2ViMGUwMjcwMWViOCJ9fX0="
+            }
+          ]
+        }
+      }
     },
     "title": {
       "text": "Under Pressure",
       "color": "white"
     },
     "description": {
-      "text": "Squeeze out the good stuff.",
-      "color": "gray",
-      "italic": true
+      "text": "Craft an Extractor Press \u2014 squeezes stored items into juices, oils, honey, and dyes.",
+      "color": "gray"
     },
     "frame": "task",
     "show_toast": true,

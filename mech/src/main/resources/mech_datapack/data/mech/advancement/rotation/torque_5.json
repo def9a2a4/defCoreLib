@@ -2,16 +2,25 @@
   "parent": "mech:rotation/first_power",
   "display": {
     "icon": {
-      "id": "minecraft:copper_block"
+      "id": "minecraft:player_head",
+      "components": {
+        "minecraft:profile": {
+          "properties": [
+            {
+              "name": "textures",
+              "value": "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWU1ZWRmZTkwMTU2Y2U5YjViNmI4MDc5M2RjMmNiZmU4NTBkZGVjODU2Yzk5ZWViZGUzMTc3NWNjZTk1NjA0MSJ9fX0="
+            }
+          ]
+        }
+      }
     },
     "title": {
       "text": "Getting Torque-y",
       "color": "white"
     },
     "description": {
-      "text": "Real load, real power.",
-      "color": "gray",
-      "italic": true
+      "text": "Drive a network supplying 5 or more power.",
+      "color": "gray"
     },
     "frame": "task",
     "show_toast": true,

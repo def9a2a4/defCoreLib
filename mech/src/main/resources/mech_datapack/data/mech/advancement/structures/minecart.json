@@ -9,9 +9,8 @@
       "color": "light_purple"
     },
     "description": {
-      "text": "Ride your own moving room.",
-      "color": "gray",
-      "italic": true
+      "text": "Assemble and move a Mechanism Minecart \u2014 a structure that rides the rails.",
+      "color": "gray"
     },
     "frame": "challenge",
     "show_toast": true,

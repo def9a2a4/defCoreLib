@@ -2,16 +2,25 @@
   "parent": "mech:craft/shaft",
   "display": {
     "icon": {
-      "id": "minecraft:oak_slab"
+      "id": "minecraft:player_head",
+      "components": {
+        "minecraft:profile": {
+          "properties": [
+            {
+              "name": "textures",
+              "value": "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvM2Q0NzBkY2Y3MGRhMzJiMzNlYWM0ZTBmMjAyMzZhMjk0YTE5NDMxMWI3MWQ2NzZjMTk3MzVhMDI0Mjc2NjlkNiJ9fX0="
+            }
+          ]
+        }
+      }
     },
     "title": {
       "text": "Paddle Power",
       "color": "white"
     },
     "description": {
-      "text": "The river does the work.",
-      "color": "gray",
-      "italic": true
+      "text": "Craft a Water Wheel \u2014 a passive source worth 2 power, spun by water against a wall.",
+      "color": "gray"
     },
     "frame": "task",
     "show_toast": true,

@@ -2,16 +2,25 @@
   "parent": "mech:rotation/torque_15",
   "display": {
     "icon": {
-      "id": "minecraft:netherite_block"
+      "id": "minecraft:player_head",
+      "components": {
+        "minecraft:profile": {
+          "properties": [
+            {
+              "name": "textures",
+              "value": "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWU1ZWRmZTkwMTU2Y2U5YjViNmI4MDc5M2RjMmNiZmU4NTBkZGVjODU2Yzk5ZWViZGUzMTc3NWNjZTk1NjA0MSJ9fX0="
+            }
+          ]
+        }
+      }
     },
     "title": {
       "text": "Overdrive",
       "color": "light_purple"
     },
     "description": {
-      "text": "Stack the sources.",
-      "color": "gray",
-      "italic": true
+      "text": "Drive a network supplying 30 or more power by stacking sources.",
+      "color": "gray"
     },
     "frame": "challenge",
     "show_toast": true,

@@ -2,16 +2,25 @@
   "parent": "mech:craft/water_wheel",
   "display": {
     "icon": {
-      "id": "minecraft:redstone"
+      "id": "minecraft:player_head",
+      "components": {
+        "minecraft:profile": {
+          "properties": [
+            {
+              "name": "textures",
+              "value": "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODNhY2RjZWQ0ZjVhNDhlNzRlZGFkZDAxNGM1ZGU3ZGFmOWVmYjEyMWNlYWZiNmMxNWNkYjEzODc1NTk0ZmNkOSJ9fX0="
+            }
+          ]
+        }
+      }
     },
     "title": {
       "text": "Off the Grid",
       "color": "white"
     },
     "description": {
-      "text": "Redstone into rotation.",
-      "color": "gray",
-      "italic": true
+      "text": "Craft a Redstone Motor \u2014 a steady 1-power source that runs while UNpowered by redstone.",
+      "color": "gray"
     },
     "frame": "task",
     "show_toast": true,

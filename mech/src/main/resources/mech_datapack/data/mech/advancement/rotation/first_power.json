@@ -2,16 +2,25 @@
   "parent": "mech:root",
   "display": {
     "icon": {
-      "id": "minecraft:copper_bulb"
+      "id": "minecraft:player_head",
+      "components": {
+        "minecraft:profile": {
+          "properties": [
+            {
+              "name": "textures",
+              "value": "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjRlMDJjOGEzMzg5YTkxYjQwMmQyZWIyOGU3ZGYzOTk5MTc0ODM2MDUxMWNlMTU4OGQ0OGQzYmQ4ZTc0MWY1OSJ9fX0="
+            }
+          ]
+        }
+      }
     },
     "title": {
       "text": "It Lives",
       "color": "yellow"
     },
     "description": {
-      "text": "The shaft begins to spin.",
-      "color": "gray",
-      "italic": true
+      "text": "Power a rotation network \u2014 connect a source to a shaft and watch it spin.",
+      "color": "gray"
     },
     "frame": "goal",
     "show_toast": true,
