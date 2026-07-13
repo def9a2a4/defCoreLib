@@ -4,6 +4,8 @@ Don't you ever wish you had slabs, but vertical? But on an unmodded minecraft se
 
 See [the catalog of vertical slabs](https://def9a2a4.github.io/defCoreLib-docs/index.html?q=slab).
 
+[Download on Modrinth](https://modrinth.com/plugin/vslab)
+
 ![Vertical slabs](https://def9a2a4.github.io/defCoreLib-docs/readmes/assets/vslab/vslabs.png)
 
 ## Features
@@ -22,6 +24,7 @@ See [the catalog of vertical slabs](https://def9a2a4.github.io/defCoreLib-docs/i
 ## Links
 
 - Full type list & recipes: https://def9a2a4.github.io/defCoreLib-docs/index.html?q=slab
+- Download on Modrinth: https://modrinth.com/plugin/vslab
 - Repository: https://github.com/def9a2a4/defCoreLib/
 - Issues: https://github.com/def9a2a4/defCoreLib/issues
 

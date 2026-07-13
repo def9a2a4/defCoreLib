@@ -4,6 +4,8 @@ Kinetic rotation mechanisms - build power networks that drive machines, doors, a
 
 See the [items and their recipes](https://def9a2a4.github.io/defCoreLib-docs/index.html?ns=mech), or the [things you can build](https://def9a2a4.github.io/defCoreLib-docs/showcases.html).
 
+[Download on Modrinth](https://modrinth.com/plugin/mechanism)
+
 [![Windmill-driven sand generator](https://def9a2a4.github.io/defCoreLib-docs/readmes/assets/mech/mech.gif)](https://def9a2a4.github.io/defCoreLib-docs/showcase.html?id=sand_generator)
 [![Mechanisms in-game](https://def9a2a4.github.io/defCoreLib-docs/readmes/assets/mech/mech-ingame.gif)](https://def9a2a4.github.io/defCoreLib-docs/readmes/assets/mech/mech-ingame.webm)
 
@@ -59,5 +61,7 @@ shafts and gears, branch or turn corners with gears, and gate the flow with clut
 
 ## Links
 
+- Items, recipes & showcases: https://def9a2a4.github.io/defCoreLib-docs/index.html?ns=mech
+- Download on Modrinth: https://modrinth.com/plugin/mechanism
 - Repository: https://github.com/def9a2a4/defCoreLib/
 - Issues: https://github.com/def9a2a4/defCoreLib/issues

@@ -5,6 +5,8 @@ strength they receive (0-15).
 
 See [the catalog of indicators](https://def9a2a4.github.io/defCoreLib-docs/index.html?q=indicator).
 
+[Download on Modrinth](https://modrinth.com/plugin/redstonedisplays)
+
 ![Indicators being used to show signal strength from a lectern.](https://def9a2a4.github.io/defCoreLib-docs/readmes/assets/rsd/indicators-lectern.png)
 
 ## Features
@@ -27,6 +29,7 @@ they just aren't craftable.
 ## Links
 
 - Full type list & recipes: https://def9a2a4.github.io/defCoreLib-docs/index.html?q=indicator
+- Download on Modrinth: https://modrinth.com/plugin/redstonedisplays
 - Repository: https://github.com/def9a2a4/defCoreLib/
 - Issues: https://github.com/def9a2a4/defCoreLib/issues
 
