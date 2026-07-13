@@ -1,0 +1,61 @@
+# Chain Pulley — implementation status & plan
+
+The **chain pulley** (`mech:chain_pulley`) is the first shipped slice of the power-chains feature
+(design vision: [`power-chains.md`](power-chains.md)). A shaft-like rotation **transmitter** that links
+to other pulleys by iron chain, so rotational power jumps a gap around a **closed loop**. This doc is
+the living implementation status / round plan; the design rationale lives in `power-chains.md`.
+
+Code: `ChainPulley.java` (block overlay + link interaction + chain display), `RotationNetwork.java`
+(the `chainOut` distance-edge graph), `rotation-blocks.yml` (`chain_pulley` block + `strand` texture +
+recipe), `rotation-config.yml` (`chain-pulley.max-distance`), `RotationConfig.java`, `RotationBlocks.java`.
+
+## Model
+- **Directed functional graph.** Each pulley stores ONE outgoing partner in its skull PDC
+  (`mech:chain_out`, `INTEGER_ARRAY {x,y,z}`); `RotationNetwork.chainOut` mirrors it in memory.
+- **Closed loop required.** `RotationNetwork.getConnections` injects a pulley's out-edge only when
+  `onClosedLoop(k)` (following `chainOut` returns to `k`). Reverse-duplicate links are rejected, so the
+  minimum working loop is a ring of **3+** pulleys (`A→B→C→A`).
+- **Floor placement only** (`placement: allowed_faces: [DOWN]`); pulleys stack/branch and the chain
+  runs between wheel centres.
+
+## Done (rounds 1–5, committed)
+- Block + recipe (a `mech:bearing` surrounded by iron chains), floor-only placement, placed head =
+  floor-windmill hub (`@windmill_hub_up`), in-hand item + spinning wheel display = `@chainwheel`.
+- Link UX: right-click a pulley with a chain to select, another to link; right-click a linked pulley to
+  remove (refund). Directed, one outgoing link each, same-world, config-max-distance.
+- Chain visual: a single stretched `@chain` head display along the link, **rotating about its long axis
+  when the loop is powered** (per-tick ticker gated on `isPowered && onClosedLoop`).
+- **Ring power fix:** `doRecalculate` teardown is transitive over `getConnections`, so closing a 3+ ring
+  powers every member (previously fragmented, leaving far wheels dead).
+- Chain **cost = rounded block distance**; too few in hand → message, no link; unlink refunds the amount.
+- **Configurable** max link distance (`rotation-config.yml chain-pulley.max-distance`, default 32).
+
+## Round 6 (in progress) — two small items
+1. **Lore** — drop the stale "(max 10 blocks apart)" from `chain_pulley` `catalog_notes` (distance is
+   config-driven now; links cost chains + power). Rewrite number-free:
+   ```yaml
+       catalog_notes:
+         - "&fA transmitter you can link to other pulleys with a chain."
+         - "&7Right-click one pulley with a chain, then another, to link them — uses chains equal to the distance."
+         - "&7Power flows only around a closed loop of three or more pulleys, and each link draws a little power."
+   ```
+2. **Power cost per link (balance vs gears).** Each wheel draws `ceil(span/10)` power on its live loop
+   link. In `RotationNetwork.doRecalculate`, at the member demand sum: if node is `mech:chain_pulley`
+   and `onClosedLoop(loc)`, `demand += ceil(dist(loc, chainOut.get(loc)) / 10)`. Live per-recalc, gated
+   on the closed loop so a dead chain costs nothing.
+
+> Visual note (settled): keep the animated single stretched display. A static real-chain-segments look
+> and/or linear "sliding" motion were considered; sliding costs ~N transform packets/tick/viewer, so
+> it's deferred as an opt-in.
+
+## Deferred: seamless auto-grab ski lift (next round)
+No player interaction — a normal minecart part of a rail contraption. A moving cart within a small
+radius of a live chain segment is lifted off the rail, carried to the far pulley at chain
+speed/direction, then released back to normal physics. Reuses the mechanism-minecart gondola-follow
+(`MechanismMinecartManager` + `EntityAnchor` + `updateFromVehicle`). Needs geometry design: grab radius,
+per-tick carry along the `chainOut` loop polygon, release conditions.
+
+## Verify
+`make build && make docs`. Link a 3-wheel loop → chain renders as the stretched rotating display,
+spinning only when the loop is powered; lore shows no "max 10"; power flows only with surplus covering
+the machines **plus** each link's `ceil(span/10)` (a too-long chain on a weak source stays dead).
