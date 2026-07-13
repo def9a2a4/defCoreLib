@@ -467,10 +467,14 @@ final class RotationBlocks {
      * Declarative description of a rotation CONSUMER machine. The shared
      * {@link #overlayConsumerMachine} builds the common skeleton from this.
      *
-     * @param axis      rotation/network axis given the block (constant, or derived from facing)
+     * @param axis      rotation/network axis given the block (constant, or derived from facing).
+     *                  Ignored (nominal) when {@code omniExcludedFace} is set.
      * @param tick      per-cycle behavior while loaded (the machine's work)
      * @param interact  optional action for a non-wrench right-click; return {@code null} to fall
      *                  through to the default network-debug readout
+     * @param omniExcludedFace  when non-null, the machine is an <b>omni consumer</b> (powered from the
+     *                  first aligned shaft on any face); this yields the mounted face to exclude
+     *                  ({@code b -> null} scans all six). Null ⇒ ordinary single-axis consumer.
      */
     private record ConsumerSpec(
             String blockId,
@@ -479,7 +483,9 @@ final class RotationBlocks {
             int tickInterval,
             Consumer<Block> tick,
             @org.jetbrains.annotations.Nullable
-            BiFunction<Block, org.bukkit.event.player.PlayerInteractEvent, Boolean> interact) {}
+            BiFunction<Block, org.bukkit.event.player.PlayerInteractEvent, Boolean> interact,
+            @org.jetbrains.annotations.Nullable
+            Function<Block, BlockFace> omniExcludedFace) {}
 
     /**
      * Shared overlay for rotation CONSUMER machines (millstone, fan, press, …): the
@@ -509,8 +515,14 @@ final class RotationBlocks {
             .onTick(spec.tick())
             .onChunkLoad((b, state) -> {
                 storeFacingIfAbsent(b);
-                network.addNode(b, spec.blockId(), spec.axis().apply(b),
-                    RotationNetwork.NodeRole.CONSUMER, spec.power(), false);
+                if (spec.omniExcludedFace() != null) {
+                    network.addNode(b, spec.blockId(), spec.axis().apply(b),
+                        RotationNetwork.NodeRole.CONSUMER, spec.power(), false,
+                        true, spec.omniExcludedFace().apply(b));
+                } else {
+                    network.addNode(b, spec.blockId(), spec.axis().apply(b),
+                        RotationNetwork.NodeRole.CONSUMER, spec.power(), false);
+                }
             })
             .onChunkUnload(b -> network.removeNode(CustomBlockRegistry.LocationKey.of(b)))
             .onBlockRemoved((b, state) -> network.removeNode(CustomBlockRegistry.LocationKey.of(b)))
@@ -530,7 +542,7 @@ final class RotationBlocks {
             millstoneTickInterval,
             b -> processingMachineTick(b, network, millRecipes, registry,
                 millstoneMaxBatch, org.bukkit.Sound.BLOCK_GRINDSTONE_USE),
-            null));
+            null, null));
     }
 
     private static void overlayPress(CustomBlockRegistry registry, RotationNetwork network,
@@ -545,7 +557,7 @@ final class RotationBlocks {
             config.pressTickInterval,
             b -> processingMachineTick(b, network, pressRecipes, registry,
                 maxBatch, org.bukkit.Sound.BLOCK_ANVIL_USE),
-            null));
+            null, null));
     }
 
     private static void overlayPlacer(CustomBlockRegistry registry, RotationNetwork network,
@@ -559,7 +571,7 @@ final class RotationBlocks {
             config.getPower("placer", 1),
             config.placerTickInterval,
             b -> placerTick(b, registry, network),
-            null));
+            null, null));
     }
 
     /**
@@ -764,7 +776,7 @@ final class RotationBlocks {
             config.getPower("fan", 1),
             config.fanTickInterval,
             b -> fanTick(b, network),
-            null));
+            null, null));
     }
 
     /** Direction the fan blows: outward from the mounted surface (floor → up, wall → its facing). */
@@ -833,82 +845,27 @@ final class RotationBlocks {
     /** Face buried in the mounting surface (floor → DOWN, wall → into the wall). */
     private static BlockFace mountFace(Block b) { return blowDirection(b).getOppositeFace(); }
 
-    /**
-     * Which network axis this hopper's CONSUMER node should register on. Scans the 5 faces that are
-     * not the mounted surface; a face qualifies when its neighbor is a rotation node whose axis
-     * matches that face's axis. Prefers a face whose neighbor network is already powered (so a hopper
-     * wedged between two shafts joins the live one); else the first qualifier; else keeps the current
-     * axis (default Y) to avoid churn.
-     */
-    private static RotationNetwork.Axis omniIntakeAxis(Block b, RotationNetwork network) {
-        BlockFace mount = mountFace(b);
-        RotationNetwork.Axis firstQualifying = null;
-        for (BlockFace f : Faces.CARDINAL) {
-            if (f == mount) continue;
-            RotationNetwork.Axis fAxis = RotationNetwork.axisFromFace(f);
-            var nKey = CustomBlockRegistry.LocationKey.of(b.getRelative(f));
-            var node = network.getNode(nKey);
-            if (node == null || node.axis() != fAxis) continue;
-            if (firstQualifying == null) firstQualifying = fAxis;
-            if (network.isPowered(nKey)) return fAxis;         // prefer a live driver
-        }
-        if (firstQualifying != null) return firstQualifying;
-        var self = network.getNode(CustomBlockRegistry.LocationKey.of(b));
-        return self != null ? self.axis() : RotationNetwork.Axis.Y;
-    }
-
-    /** Re-register on the chosen axis only if it changed (add/removeNode already recalculate). */
-    private static void refreshIntakeAxis(Block b, RotationNetwork network) {
-        var key = CustomBlockRegistry.LocationKey.of(b);
-        var self = network.getNode(key);
-        RotationNetwork.Axis want = omniIntakeAxis(b, network);
-        if (self != null && self.axis() == want) return;
-        network.removeNode(key);
-        network.addNode(b, "mech:suction_hopper", want,
-            RotationNetwork.NodeRole.CONSUMER, suctionHopperPower, false);
-    }
-
     private static void overlaySuctionHopper(CustomBlockRegistry registry, RotationNetwork network,
                                              RotationConfig config) {
-        suctionHopperPower  = config.getPower("suction_hopper", 1);
         suctionTickInterval = config.suctionTickInterval;
         suctionPullRange    = config.suctionPullRange;
         suctionPullStrength = config.suctionPullStrength;
-
-        String blockId = "mech:suction_hopper";
-        CustomHeadBlock block = registry.getType(blockId);
-        if (block == null) { warn(registry, blockId); return; }
-
-        registry.register(block.toBuilder()
-            .drillable(false)
-            .reactsToNeighbors(true)
-            .cancelPistons(true)                 // stored facing must stay valid; block isn't piston-mobile
-            .tickInterval(suctionTickInterval)
-            .onNeighborChange((b, face) -> {
-                var self = network.getNode(CustomBlockRegistry.LocationKey.of(b));
-                RotationNetwork.Axis before = self != null ? self.axis() : null;
-                refreshIntakeAxis(b, network);
-                var after = network.getNode(CustomBlockRegistry.LocationKey.of(b));
-                if (after != null && after.axis() == before) recalcIfKnown(b, network);
-            })
-            .onInteract((b, event) -> {
-                if (isWrench(event.getPlayer().getInventory().getItemInMainHand()))
-                    return wrenchInteract(b, event, network, registry);
-                Inventory inv = registry.getOrCreateStorage(b);   // open the 5-slot GUI
+        // Omni consumer: the network powers it from the first aligned shaft on any face except its
+        // mount (chosen live — see RotationNetwork's omni handling). Otherwise a fan+hopper: 5-slot
+        // storage, pulls dropped items in, feeds the mounted container/pipe.
+        overlayConsumerMachine(registry, network, new ConsumerSpec(
+            "mech:suction_hopper",
+            b -> RotationNetwork.Axis.Y,                       // nominal; omni ignores the stored axis
+            config.getPower("suction_hopper", 1),
+            config.suctionTickInterval,
+            b -> suctionTick(b, network, registry),
+            (b, event) -> {                                    // right-click opens the 5-slot GUI
+                Inventory inv = registry.getOrCreateStorage(b);
                 if (inv == null) return false;
                 event.getPlayer().openInventory(inv);
                 return true;
-            })
-            .onTick(b -> suctionTick(b, network, registry))
-            .onChunkLoad((b, state) -> {
-                storeFacingIfAbsent(b);
-                network.addNode(b, blockId, omniIntakeAxis(b, network),
-                    RotationNetwork.NodeRole.CONSUMER, suctionHopperPower, false);
-                refreshIntakeAxis(b, network);   // refine once same-chunk neighbors exist
-            })
-            .onChunkUnload(b -> network.removeNode(CustomBlockRegistry.LocationKey.of(b)))
-            .onBlockRemoved((b, state) -> network.removeNode(CustomBlockRegistry.LocationKey.of(b)))
-            .build());
+            },
+            b -> mountFace(b)));                                // non-null ⇒ omni; exclude the mounted face
     }
 
     /** While powered: pull dropped items inward, capture ones in the own cell, feed the mount. */
@@ -1068,7 +1025,6 @@ final class RotationBlocks {
     private static double fanMinPush;
     private static double fanMaxPush;
     private static double fanPushPerPower;
-    private static int suctionHopperPower;
     private static int suctionTickInterval;
     private static int suctionPullRange;
     private static double suctionPullStrength;

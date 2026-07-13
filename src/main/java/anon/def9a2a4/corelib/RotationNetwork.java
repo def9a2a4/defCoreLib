@@ -42,7 +42,8 @@ public class RotationNetwork {
     }
 
     record RotationNode(CustomBlockRegistry.LocationKey key, String blockTypeId, Axis axis,
-                        NodeRole role, int powerUnits, boolean gearLike, int reverserOutSign) {}
+                        NodeRole role, int powerUnits, boolean gearLike, int reverserOutSign,
+                        boolean omni, @Nullable BlockFace omniExcludedFace) {}
 
     record Connection(CustomBlockRegistry.LocationKey neighbor, boolean reverses) {}
 
@@ -97,13 +98,22 @@ public class RotationNetwork {
 
     public void addNode(Block block, String blockTypeId, Axis axis,
                         NodeRole role, int powerUnits, boolean gearLike) {
+        addNode(block, blockTypeId, axis, role, powerUnits, gearLike, false, null);
+    }
+
+    /**
+     * Register a node, optionally as an <b>omni consumer</b>: a leaf sink that draws power from the
+     * first aligned shaft on any of its faces (in {@link Faces#CARDINAL} order, skipping
+     * {@code omniExcludedFace}), chosen live during flood-fill so it self-corrects each recalc.
+     * Omni nodes store a nominal {@code axis} — their connectivity comes from {@link #omniAttachKey}.
+     */
+    public void addNode(Block block, String blockTypeId, Axis axis,
+                        NodeRole role, int powerUnits, boolean gearLike,
+                        boolean omni, @Nullable BlockFace omniExcludedFace) {
         CustomBlockRegistry.LocationKey key = CustomBlockRegistry.LocationKey.of(block);
         int reverserOutSign = reverserOutSign(block, blockTypeId, axis);
-        nodes.put(key, new RotationNode(key, blockTypeId, axis, role, powerUnits, gearLike, reverserOutSign));
-        // verbose: fires per rotation block on every chunk load — uncomment to trace node registration
-        // logger.info("[Rotation] addNode: " + blockTypeId + " axis=" + axis
-        //     + " at " + key.x() + "," + key.y() + "," + key.z()
-        //     + " (total nodes: " + nodes.size() + ")");
+        nodes.put(key, new RotationNode(key, blockTypeId, axis, role, powerUnits, gearLike,
+                reverserOutSign, omni, omniExcludedFace));
         recalculate(key);
     }
 
@@ -405,6 +415,7 @@ public class RotationNetwork {
                 for (CustomBlockRegistry.LocationKey loc : members) {
                     RotationNode memberNode = nodes.get(loc);
                     if (memberNode == null) continue;
+                    if (memberNode.omni()) continue;   // omni sink has a nominal axis; not a windmill attach point
                     Axis nodeAxis = memberNode.axis();
                     for (BlockFace face : Faces.CARDINAL) {
                         if (axisFromFace(face) != nodeAxis) continue;
@@ -610,6 +621,14 @@ public class RotationNetwork {
     List<Connection> getConnections(RotationNode node) {
         if (isLocked(node)) return List.of();
 
+        // Omni consumer: a single leaf edge to the first aligned shaft (see omniAttachKey). No along-axis,
+        // gear, or chain edges — a sink draws from one shaft and passes nothing on, so it never bridges
+        // networks or takes part in cross-axis spin bookkeeping.
+        if (node.omni()) {
+            CustomBlockRegistry.LocationKey attach = omniAttachKey(node);
+            return attach == null ? List.of() : List.of(new Connection(attach, false));
+        }
+
         List<Connection> result = new ArrayList<>(6);
         CustomBlockRegistry.LocationKey k = node.key();
 
@@ -627,8 +646,8 @@ public class RotationNetwork {
         CustomBlockRegistry.LocationKey negKey = axisNeighbor(k, axis, -1);
         boolean posReverses = (selfSign > 0) ^ (poweredReverserSign(nodes.get(posKey), axis) < 0);
         boolean negReverses = (selfSign < 0) ^ (poweredReverserSign(nodes.get(negKey), axis) > 0);
-        checkAxisNeighbor(posKey, axis, posReverses, result);
-        checkAxisNeighbor(negKey, axis, negReverses, result);
+        checkAxisNeighbor(k, posKey, axis, posReverses, result);
+        checkAxisNeighbor(k, negKey, axis, negReverses, result);
 
         // Gear-to-gear: connects to ANY adjacent gear (all 6 faces, any axis)
         if (node.gearLike()) {
@@ -658,12 +677,36 @@ public class RotationNetwork {
         return result;
     }
 
-    private void checkAxisNeighbor(CustomBlockRegistry.LocationKey neighborKey, Axis requiredAxis,
+    private void checkAxisNeighbor(CustomBlockRegistry.LocationKey callerKey,
+                                   CustomBlockRegistry.LocationKey neighborKey, Axis requiredAxis,
                                    boolean reverses, List<Connection> result) {
         RotationNode other = nodes.get(neighborKey);
-        if (other != null && other.axis() == requiredAxis && !isLocked(other)) {
+        if (other == null || isLocked(other)) return;
+        if (other.omni()) {
+            // Mutual single edge: connect back only if this omni neighbour actually chose us, so a
+            // non-chosen adjacent shaft never pulls it into that shaft's network. reverses=false — a
+            // leaf sink imposes no spin direction, keeping both half-edges symmetric (no spurious jam).
+            if (callerKey.equals(omniAttachKey(other))) result.add(new Connection(neighborKey, false));
+            return;
+        }
+        if (other.axis() == requiredAxis) {
             result.add(new Connection(neighborKey, reverses));
         }
+    }
+
+    /** The single shaft an omni node draws from: the first aligned shaft in fixed {@link Faces#CARDINAL}
+     *  order (skipping its mounted face), or null. Evaluated live so it self-corrects every recalc —
+     *  a shaft that registers after the block is picked up as soon as its addNode triggers recalculation. */
+    private CustomBlockRegistry.@Nullable LocationKey omniAttachKey(RotationNode node) {
+        for (BlockFace face : Faces.CARDINAL) {
+            if (face == node.omniExcludedFace()) continue;
+            CustomBlockRegistry.LocationKey nk = faceNeighbor(node.key(), face);
+            RotationNode other = nodes.get(nk);
+            if (other != null && !other.omni() && !isLocked(other) && other.axis() == axisFromFace(face)) {
+                return nk;
+            }
+        }
+        return null;
     }
 
     /** A reverser is an along-axis-only transmitter that flips spin direction once across
