@@ -21,6 +21,29 @@ existing code. And `disassemble()` (`:246`) snaps yaw to 90° and lands blocks a
 This means the piston needs **no transform-math changes** — it drives the head+payload via `move()`
 cell-by-cell and disassembles at the target cell.
 
+## MVP scope (Round 1 — decided)
+
+- **Arm-only first.** core + poles + head extend/retract as a moving contraption (head assembled as a
+  1-block mechanism) + a rendered pole arm. **No glued payload yet** — this round exists to prove the
+  `move()`-translation keystone end-to-end. Glue-carried payload is Round 2.
+- **Power = rotation-gated + redstone edge.** The core is a rotation-network `CONSUMER`; a **redstone
+  rising edge** fires an extend *only if* the core's network is currently powered (`isPowered`); a
+  **falling edge** retracts. (Reverse-spin-to-retract is deferred to keep Round 1 simple.)
+
+### Keystone verified (safe, minimal)
+- `move(pos, yaw)` (`BasicMechanism.java:202`) teleports the vehicle + sets `pivot` + `rotate(yaw)` —
+  bodily translation with no matrix change. **`Mechanism.move()` currently has ZERO callers** in the
+  codebase, so it is free to adjust.
+- **One required 2-line fix:** the tick loop runs `updateFromVehicle()` every tick
+  (`MechanismRegistry.java:397`), and its `pivot.add(delta)` (`BasicMechanism.java:394`) would
+  *double-count* a `move()` teleport because `move()` never updates `previousVehicleLoc`. Fix: at the
+  end of `move()`, set `previousVehicleLoc = position.clone()` / `previousVehicleYaw = yaw` so
+  `updateFromVehicle()` sees "no drift" and stays inert. Doors/rotators keep their owned vehicle
+  stationary so they're unaffected; minecarts never call `move()`.
+- **Assemble path:** `assembleMechanism(type, blocks, pivot, axisVec, serializer)`
+  (`MechanismRegistry.java:71`) already spawns an owned invisible ArmorStand vehicle — assemble the
+  head block through it, then drive `move()` each tick from the piston's own ticker.
+
 ## Design decisions
 
 - **Three blocks** (all via the builder pattern):
