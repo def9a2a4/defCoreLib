@@ -6,6 +6,8 @@ import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.block.data.Directional;
+import org.bukkit.block.data.Rotatable;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.Transformation;
 import org.joml.AxisAngle4f;
@@ -37,7 +39,7 @@ final class ExtendablePistonManager {
     static final String HEAD_ID = "mech:piston_head";
     private static final String MECH_TYPE = "mech:piston";
 
-    private static final int CORE_POWER = 2;
+    private static final int MOVE_DEMAND = 2;            // transient network demand while sliding
     private static final int TRIGGER_PERIOD = 4;         // ticks between idle-core scans
     private static final float MIN_STEP = 0.08f;         // blocks/tick (floor so it always progresses)
     private static final float MAX_STEP = 0.5f;
@@ -78,12 +80,15 @@ final class ExtendablePistonManager {
             .onChunkLoad((b, state) -> {
                 CustomBlockRegistry.LocationKey k = CustomBlockRegistry.LocationKey.of(b);
                 // Omni consumer: draws power from the first aligned shaft/gear on ANY face.
+                // Static demand 0 (like RotationRotator) so an idle piston never loads/stalls the network;
+                // demand is added transiently only while sliding (see startMove).
                 network.addNode(b, CORE_ID, RotationNetwork.Axis.Y,
-                    RotationNetwork.NodeRole.CONSUMER, CORE_POWER, false, true, null);
+                    RotationNetwork.NodeRole.CONSUMER, 0, false, true, null);
                 cores.add(k);
             })
             .onChunkUnload(b -> forget(b))
             .onBlockRemoved((b, state) -> forget(b))
+            .onBlockPlaced((b, state) -> snapFloorRotation(b))
             .build());
 
         overlayStructural(POLE_ID);
@@ -92,14 +97,30 @@ final class ExtendablePistonManager {
         Bukkit.getScheduler().runTaskTimer(plugin, this::tick, 1L, 1L);
     }
 
-    /** Pole is an inert structural block (no network behaviour). */
+    /** Pole is an inert structural block (no network behaviour); floor placements snap to grid-aligned NORTH. */
     private void overlayStructural(String id) {
         CustomHeadBlock t = registry.getType(id);
         if (t == null) {
             plugin.getLogger().warning("ExtendablePiston: block '" + id + "' not found — skipping");
             return;
         }
-        registry.register(t.toBuilder().drillable(false).cancelPistons(true).build());
+        registry.register(t.toBuilder()
+            .drillable(false)
+            .cancelPistons(true)
+            .onBlockPlaced((b, state) -> snapFloorRotation(b))
+            .build());
+    }
+
+    /**
+     * Snap a floor-placed head's 16-way skull yaw to grid-aligned NORTH (like {@code PipeBlockRegistrar}).
+     * Display entities are fixed-world-frame, but the vanilla skull underneath follows the player's look;
+     * snapping keeps it aligned with the grid. No-op for wall heads (which have no free yaw).
+     */
+    private static void snapFloorRotation(Block b) {
+        if (b.getType() == Material.PLAYER_HEAD && b.getBlockData() instanceof Rotatable r) {
+            r.setRotation(BlockFace.NORTH);
+            b.setBlockData(r, false);
+        }
     }
 
     /**
@@ -118,21 +139,51 @@ final class ExtendablePistonManager {
             .drillable(false)
             .cancelPistons(true)
             .reactsToNeighbors(true)
+            .stateResolver(event -> headAxisState(event.getBlock()))
+            .onBlockPlaced((b, state) -> snapFloorRotation(b))
             .displayTransformResolver((block, state, cfg, idx) -> headTransform(block, state, idx))
             .build());
+    }
+
+    /**
+     * Orient a head to the axis of an adjacent pole (so it caps the rod correctly instead of following the
+     * clicked face — a mid-air cap otherwise becomes a floor {@code idle_y} showing the wrong entities). Falls
+     * back to the placement-face axis (mirrors {@code placement_state_map}) when no pole is adjacent. Never
+     * returns null (a null state would cancel placement).
+     */
+    private String headAxisState(Block head) {
+        if (isType(head.getRelative(BlockFace.UP), POLE_ID) || isType(head.getRelative(BlockFace.DOWN), POLE_ID))
+            return "idle_y";
+        if (isType(head.getRelative(BlockFace.EAST), POLE_ID) || isType(head.getRelative(BlockFace.WEST), POLE_ID))
+            return "idle_x";
+        if (isType(head.getRelative(BlockFace.NORTH), POLE_ID) || isType(head.getRelative(BlockFace.SOUTH), POLE_ID))
+            return "idle_z";
+        // No adjacent pole: derive the axis from how the head was placed (wall head = horizontal).
+        if (head.getBlockData() instanceof Directional d) {
+            return switch (d.getFacing()) {
+                case EAST, WEST -> "idle_x";
+                case NORTH, SOUTH -> "idle_z";
+                default -> "idle_y";
+            };
+        }
+        return "idle_y";
     }
 
     // ──────────────────────────────────────────────────────────────────────
     // Head display: pole-stub (idx 0) + cap (idx 1) pointing away from the pole
     // ──────────────────────────────────────────────────────────────────────
 
+    // A player-head ItemDisplay's intrinsic model box is p ∈ [-0.25,0.25]×[-0.5,0]×[-0.25,0.25] — a 0.5³
+    // cube, X/Z-centred but TOP-ANCHORED in Y (origin at the top-face centre, body hangs toward -Y). World
+    // point = C + T + R·(S⊙p), C = block centre. Because the box is asymmetric in Y, orientation must map
+    // model +Y onto the outward direction per {@link #rotationFor} — a sign-independent rotation is wrong.
     private static final AxisAngle4f R_IDENTITY = new AxisAngle4f(0f, 0f, 0f, 1f);
     private static final float POLE_W = 1.002f;      // stub width  (0.501 block, matches piston_pole)
     private static final float STUB_LEN = 1.8f;      // stub length (0.9 block "on the outward side")
-    private static final float CAP_W = 2.0f;         // cap width   (2x pole ⇒ ~full block)
-    private static final float CAP_THICK = 0.5f;     // cap depth along the axis (thin disc)
-    private static final float STUB_T = 0.5f;        // stub outer end at the block face
-    private static final float CAP_T = 0.75f;        // cap centre 0.25 past the block face (0.5 + 0.25)
+    private static final float CAP_W = 2.004f;       // cap width   (2x the 0.501 pole ⇒ 1.002 block)
+    private static final float CAP_THICK = 1.0f;     // cap depth along the axis (0.5 block plate)
+    private static final float STUB_T = 0.4f;        // stub inner end flush with the pole (u∈[-0.5,0.4])
+    private static final float CAP_T = 0.75f;        // cap anchor 0.25 past the block face (plate u∈[0.25,0.75])
 
     /**
      * Resolve display {@code idx} (0 = toothed pole-stub, 1 = wide cap) for a placed head. Both point toward
@@ -144,14 +195,21 @@ final class ExtendablePistonManager {
         if (axisPos == null) return null;
         BlockFace outward = outwardFace(block, axisPos);
         Vector3f o = new Vector3f(outward.getModX(), outward.getModY(), outward.getModZ());
+        AxisAngle4f r = rotationFor(outward);
         if (idx == 0) {
-            // Toothed stub: long axis lies along the head's axis, outer end at the block face.
+            // Toothed stub: 0.9-long rod, inner end flush with the pole, outer end hidden under the cap.
             return new Transformation(o.mul(STUB_T, new Vector3f()),
-                stubRotation(outward), new Vector3f(POLE_W, STUB_LEN, POLE_W), R_IDENTITY);
+                r, new Vector3f(POLE_W, STUB_LEN, POLE_W), R_IDENTITY);
         }
-        // Cap: thin disc perpendicular to the axis, pushed 0.25 past the face.
-        return new Transformation(o.mul(CAP_T, new Vector3f()),
-            capRotation(outward), new Vector3f(CAP_W, CAP_THICK, CAP_W), R_IDENTITY);
+        // Cap: 0.5-thick full-width plate ⟂ the axis, nudged onto the block — floor caps 0.25 down (world),
+        // wall caps 0.25 toward the pole (inward).
+        Vector3f capT = new Vector3f(o).mul(CAP_T);
+        if (outward == BlockFace.UP || outward == BlockFace.DOWN) {
+            capT.add(0f, -0.25f, 0f);
+        } else {
+            capT.sub(o.x * 0.25f, o.y * 0.25f, o.z * 0.25f);
+        }
+        return new Transformation(capT, r, new Vector3f(CAP_W, CAP_THICK, CAP_W), R_IDENTITY);
     }
 
     /** +axis for the head's placement state ({@code idle_x/y/z}), or null if unknown. */
@@ -175,30 +233,20 @@ final class ExtendablePistonManager {
     }
 
     /**
-     * Orient the pole-stub mesh (local long-axis = Y, extends toward local −Y) so its outer end points at
-     * {@code outward}. Mirrors the piston_pole YAML rotations, with a 180° flip for the negative direction.
+     * Rotation that maps the model's +Y axis onto {@code outward}. The whole ±-asymmetry of the top-anchored
+     * head box lives here, so with {@code T = k·outward} both the stub and the cap land correctly (inner/outer
+     * ends flush) for every one of the six directions.
      */
-    private static AxisAngle4f stubRotation(BlockFace outward) {
+    private static AxisAngle4f rotationFor(BlockFace outward) {
         float h = (float) (Math.PI / 2), p = (float) Math.PI;
         return switch (outward) {
-            case DOWN  -> R_IDENTITY;                     // mesh already extends −Y
-            case UP    -> new AxisAngle4f(p, 1f, 0f, 0f); // flip to +Y
-            case WEST  -> new AxisAngle4f(h, 0f, 0f, 1f); // +90 about Z
-            case EAST  -> new AxisAngle4f(-h, 0f, 0f, 1f);
-            case NORTH -> new AxisAngle4f(-h, 1f, 0f, 0f); // −90 about X
-            case SOUTH -> new AxisAngle4f(h, 1f, 0f, 0f);
+            case UP    -> R_IDENTITY;                     // +Y → +Y
+            case DOWN  -> new AxisAngle4f(p, 1f, 0f, 0f);  // +Y → -Y
+            case EAST  -> new AxisAngle4f(-h, 0f, 0f, 1f); // +Y → +X
+            case WEST  -> new AxisAngle4f(h, 0f, 0f, 1f);  // +Y → -X
+            case SOUTH -> new AxisAngle4f(h, 1f, 0f, 0f);  // +Y → +Z
+            case NORTH -> new AxisAngle4f(-h, 1f, 0f, 0f); // +Y → -Z
             default    -> R_IDENTITY;
-        };
-    }
-
-    /** Orient the flat cap disc perpendicular to the axis (sign-independent — the disc is symmetric). */
-    private static AxisAngle4f capRotation(BlockFace outward) {
-        float h = (float) (Math.PI / 2);
-        return switch (outward) {
-            case UP, DOWN       -> R_IDENTITY;
-            case EAST, WEST     -> new AxisAngle4f(h, 0f, 0f, 1f);
-            case NORTH, SOUTH   -> new AxisAngle4f(-h, 1f, 0f, 0f);
-            default             -> R_IDENTITY;
         };
     }
 
@@ -209,9 +257,10 @@ final class ExtendablePistonManager {
 
     private void forget(Block b) {
         CustomBlockRegistry.LocationKey k = CustomBlockRegistry.LocationKey.of(b);
-        network.removeNode(k);
+        network.removeNode(k);   // also clears any transient demand for this node
         cores.remove(k);
-        active.remove(k);
+        ActiveMove m = active.remove(k);
+        if (m != null) m.mech.disassemble();   // land the rod (fires the glue hook) instead of orphaning displays
     }
 
     // ──────────────────────────────────────────────────────────────────────
@@ -234,6 +283,10 @@ final class ExtendablePistonManager {
 
     private void maybeTrigger(CustomBlockRegistry.LocationKey coreKey) {
         if (!network.isPowered(coreKey)) return;
+        // Yield under contention: only move when the network has spare surplus (read BEFORE we add our own
+        // transient demand, so it excludes us — mirrors RotationRotator). Prevents starving co-resident consumers.
+        int[] stats = network.getNetworkStats(coreKey);
+        if (stats == null || stats[0] - stats[1] <= 0) return;
         RotationNetwork.SpinDirection dir = network.getDirection(coreKey);
         if (dir == null) return;
         Block core = blockOf(coreKey);
@@ -242,13 +295,19 @@ final class ExtendablePistonManager {
         if (line == null) return;
 
         List<Block> payload = resolvePayload(line);
+        if (payload == null) return;                                // glued structure holds an immovable block — abort
+        // Full moving assembly (rod + payload); the core cell is passable (ghost-filled, protected on land).
+        List<Block> moving = new ArrayList<>(line.rodBlocks());
+        moving.addAll(payload);
+        Set<Long> footprint = footprintKeys(moving, line.core());
+
         if (dir == RotationNetwork.SpinDirection.CW) {              // extend
-            Block edge = leadingEdge(line, payload);
-            int r = Math.min(line.backPoles(), clearAhead(edge, line.frontFace(), line.backPoles()));
+            int r = clearForAll(moving, footprint, line.frontFace(), line.backPoles());
             if (r > 0) startMove(coreKey, line, payload, line.frontFace(), r);
         } else {                                                    // CCW → retract
-            int r = Math.min(line.extension(), clearBehind(line, line.extension()));
-            if (r > 0) startMove(coreKey, line, payload, line.frontFace().getOppositeFace(), r);
+            BlockFace back = line.frontFace().getOppositeFace();
+            int r = clearForAll(moving, footprint, back, line.extension());
+            if (r > 0) startMove(coreKey, line, payload, back, r);
         }
     }
 
@@ -301,48 +360,53 @@ final class ExtendablePistonManager {
         return !run.isEmpty() && isType(run.get(run.size() - 1), HEAD_ID);
     }
 
-    private int clearAhead(Block edge, BlockFace forward, int max) {
-        Block b = edge;
-        int n = 0;
-        for (int i = 0; i < max; i++) {
-            b = b.getRelative(forward);
-            if (isClear(b)) n++; else break;
+    /**
+     * Max forward steps (≤ {@code max}) the whole rigid assembly can advance along {@code face}: the min, over
+     * every moving block, of consecutive cells ahead that are clear <em>or</em> part of the assembly's own swept
+     * footprint (cells that also vacate). Checking every block — not just the leading column — is what stops a
+     * wide glued payload from shearing off and destroying blocks on landing.
+     */
+    private int clearForAll(List<Block> moving, Set<Long> footprint, BlockFace face, int max) {
+        int best = max;
+        for (Block b : moving) {
+            int n = 0;
+            Block c = b;
+            for (int i = 0; i < max; i++) {
+                c = c.getRelative(face);
+                if (footprint.contains(cellKey(c)) || isClear(c)) n++; else break;
+            }
+            if (n < best) best = n;
         }
-        return n;
+        return best;
     }
 
-    private int clearBehind(PistonLine line, int max) {
-        BlockFace back = line.frontFace().getOppositeFace();
-        Block b = line.core();
-        int n = 0;
-        for (int i = 0; i < max; i++) {
-            b = b.getRelative(back);
-            if (isClear(b)) n++; else break;
-        }
-        return n;
+    /** Cells occupied by the moving assembly, plus the core cell (the rod slides through it — ghost-filled). */
+    private static Set<Long> footprintKeys(List<Block> moving, Block core) {
+        Set<Long> keys = new HashSet<>(moving.size() + 1);
+        for (Block b : moving) keys.add(cellKey(b));
+        keys.add(cellKey(core));
+        return keys;
     }
 
-    /** The payload the head carries: the glue-authored structure, else the single block directly ahead. */
-    private List<Block> resolvePayload(PistonLine line) {
+    /** Pack a block's local coords into a long (piston lines are small + single-world). */
+    private static long cellKey(Block b) {
+        return ((long) (b.getX() & 0x3FFFFFF) << 38) | ((long) (b.getZ() & 0x3FFFFFF) << 12)
+             | ((long) ((b.getY() + 2048) & 0xFFF));
+    }
+
+    /**
+     * The payload the head carries: the glue-authored structure, else the single movable block directly ahead.
+     * Returns an empty list for "nothing to carry" and {@code null} to <em>reject the whole move</em> (a glued
+     * structure containing an immovable block — moving it would shear the structure).
+     */
+    private @Nullable List<Block> resolvePayload(PistonLine line) {
         List<Block> glued = glueManager.resolveStructure(new BlockAnchor(line.head(), () -> true));
-        if (glued != null && !glued.isEmpty()) return glued;
-        Block front = line.head().getRelative(line.frontFace());
-        return front.getType().isAir() ? List.of() : List.of(front);
-    }
-
-    /** Furthest-forward cell of the moving assembly (head or a payload block) — for the obstruction check. */
-    private static Block leadingEdge(PistonLine line, List<Block> payload) {
-        Block edge = line.head();
-        int best = forwardCoord(edge, line.frontFace());
-        for (Block b : payload) {
-            int c = forwardCoord(b, line.frontFace());
-            if (c > best) { best = c; edge = b; }
+        if (glued != null && !glued.isEmpty()) {
+            for (Block b : glued) if (!MovableBlocks.isMovable(b, registry)) return null;
+            return glued;
         }
-        return edge;
-    }
-
-    private static int forwardCoord(Block b, BlockFace f) {
-        return b.getX() * f.getModX() + b.getY() * f.getModY() + b.getZ() * f.getModZ();
+        Block front = line.head().getRelative(line.frontFace());   // auto-grab the single block directly ahead
+        return MovableBlocks.isMovable(front, registry) ? List.of(front) : List.of();
     }
 
     // ──────────────────────────────────────────────────────────────────────
@@ -351,9 +415,16 @@ final class ExtendablePistonManager {
 
     private void startMove(CustomBlockRegistry.LocationKey coreKey, PistonLine line, List<Block> payload,
                            BlockFace moveFace, int r) {
-        // The moving assembly: the rod (poles + head) + the head's payload (glued blocks or the block ahead).
+        // Capture the head's authored-glue offsets BEFORE assembly airs the head out to AIR (else readOffsets
+        // reads a non-skull → null → glue is lost on land).
+        int[] glueOffsets = new BlockAnchor(line.head(), () -> true).readOffsets();
+
+        // The moving assembly: the rod (poles + head) + the head's payload, deduped so a payload cell can't
+        // double a rod cell (double air-out/placement).
         List<Block> assembleBlocks = new ArrayList<>(line.rodBlocks());
-        assembleBlocks.addAll(payload);
+        Set<Long> cells = new HashSet<>();
+        for (Block b : line.rodBlocks()) cells.add(cellKey(b));
+        for (Block b : payload) if (cells.add(cellKey(b))) assembleBlocks.add(b);
         // Ghost "fake shaft inside the core": a pole at the core cell, so the sliding rod is contiguous
         // (fills what would otherwise be a gap). Copies an existing pole's appearance/orientation.
         Block template = firstPole(line.rodBlocks());
@@ -366,14 +437,22 @@ final class ExtendablePistonManager {
         // Whichever rod block lands on the core cell is skipped (consumed); the ghost fills the gap.
         ((BasicMechanism) mech).setProtectedCells(Set.of(coreKey));
 
-        Location start = mech.pivot(); // block-centered after assembly
         Vector3f dir = new Vector3f(moveFace.getModX(), moveFace.getModY(), moveFace.getModZ());
+        // Rebind glue on ANY disassembly (normal completion OR engine shutdown/vehicle death): head + payload
+        // translate by the same R, so the pre-move offsets stay valid on the landed head.
+        if (glueOffsets != null) {
+            Location landedHead = line.head().getLocation().add(dir.x * r, dir.y * r, dir.z * r);
+            mech.setOnDisassembled(placed ->
+                new BlockAnchor(landedHead.getBlock(), () -> true).writeOffsets(glueOffsets));
+        }
+
+        // Load the network only while sliding (after the mech==null guard, so an assembly failure can't leak
+        // phantom demand). Cleared on completion (advance) and on interruption (forget → removeNode).
+        network.addTransientDemand(coreKey, MOVE_DEMAND);
+
+        Location start = mech.pivot(); // block-centered after assembly
         Location target = start.clone().add(dir.x * r, dir.y * r, dir.z * r);
-        // Glue rebind: head + payload translate together, so the same offsets apply to the moved head.
-        int[] glueOffsets = new BlockAnchor(line.head(), () -> true).readOffsets();
-        Location newHeadLoc = line.head().getLocation().add(dir.x * r, dir.y * r, dir.z * r);
-        active.put(coreKey, new ActiveMove(coreKey, mech, target, dir,
-            assembleBlocks.size() + ghosts.size(), glueOffsets, newHeadLoc));
+        active.put(coreKey, new ActiveMove(coreKey, mech, target, dir, assembleBlocks.size() + ghosts.size()));
     }
 
     private @Nullable Block firstPole(List<Block> rod) {
@@ -396,12 +475,9 @@ final class ExtendablePistonManager {
         float step = clamp(SPEED_K * supply / Math.max(1, m.mass), MIN_STEP, MAX_STEP);
 
         if (remaining <= step + 1e-3) {
-            m.mech.move(m.target, 0f);   // snap to the block-centered target cell
-            m.mech.disassemble();        // lands on-grid; core cell skipped
-            if (m.glueOffsets != null && m.newHeadLoc.getWorld() != null) {
-                // Head + payload moved together → identical offsets, new origin. Rebind glue on the landed head.
-                new BlockAnchor(m.newHeadLoc.getBlock(), () -> true).writeOffsets(m.glueOffsets);
-            }
+            m.mech.move(m.target, 0f);              // snap to the block-centered target cell
+            m.mech.disassemble();                   // lands on-grid; core cell skipped; fires the glue-rebind hook
+            network.clearTransientDemand(m.coreKey); // release the network load
             return true;
         }
         Location next = cur.clone().add(m.dir.x * step, m.dir.y * step, m.dir.z * step);
@@ -444,18 +520,14 @@ final class ExtendablePistonManager {
         final Location target;
         final Vector3f dir;
         final int mass;
-        final int @Nullable [] glueOffsets;   // non-null if the head had authored glue to rebind on land
-        final Location newHeadLoc;
         int warmup = 2;                        // ticks to wait before the first move (mount + rotate(0) first)
         ActiveMove(CustomBlockRegistry.LocationKey coreKey, Mechanism mech, Location target,
-                   Vector3f dir, int mass, int @Nullable [] glueOffsets, Location newHeadLoc) {
+                   Vector3f dir, int mass) {
             this.coreKey = coreKey;
             this.mech = mech;
             this.target = target;
             this.dir = dir;
             this.mass = mass;
-            this.glueOffsets = glueOffsets;
-            this.newHeadLoc = newHeadLoc;
         }
     }
 }

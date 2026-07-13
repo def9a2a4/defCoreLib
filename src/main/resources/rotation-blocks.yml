@@ -524,7 +524,7 @@ blocks:
         display_entities:
           - texture: "@windmill_hub_fwd"
             tag: hub
-            transform: { translation: [0, 0.5, 0], scale: [2, 2, 2] }
+            transform: { translation: [0, 0.501, 0], scale: [2.004, 2.004, 2.004] }
             animation: none
             wall_offset: 0.001
           - { material: OAK_PLANKS, tag: paddle_0, transform: { translation: [0, 0.65, 0],       scale: [0.0625, 1, 0.48], left_rotation: [0, 0, 0, 1] },    wall_offset: 0.01 }
@@ -541,7 +541,7 @@ blocks:
         display_entities:
           - texture: "@windmill_hub_fwd"
             tag: hub
-            transform: { translation: [0, 0.5, 0], scale: [2, 2, 2], left_rotation: [90, 0, 1, 0] }
+            transform: { translation: [0, 0.501, 0], scale: [2.004, 2.004, 2.004], left_rotation: [90, 0, 1, 0] }
             animation: none
             wall_offset: 0.001
           - { material: OAK_PLANKS, tag: paddle_0, transform: { translation: [0, 0.65, 0],       scale: [0.48, 1, 0.0625], left_rotation: [0, 1, 0, 0] },    wall_offset: 0.01 }
@@ -1410,40 +1410,40 @@ blocks:
         display_entities:
           - texture: "@core_up"
             tag: core
-            transform: { translation: [0, 0.5, 0], scale: [2, 2, 2] }
+            transform: { translation: [0, 0.501, 0], scale: [2.004, 2.004, 2.004] }
       fwd_down:
         texture: "@core_up"
         display_entities:
           - texture: "@core_up"
             tag: core
-            transform: { translation: [0, 0.5, 0], scale: [2, 2, 2] }
+            transform: { translation: [0, 0.501, 0], scale: [2.004, 2.004, 2.004] }
       fwd_south:
         texture: "@core_fwd"
         display_entities:
           - texture: "@core_fwd"
             tag: core
-            transform: { translation: [0, 0.5, 0], scale: [2, 2, 2] }
+            transform: { translation: [0, 0.501, 0], scale: [2.004, 2.004, 2.004] }
             wall_offset: 0.001
       fwd_west:
         texture: "@core_fwd"
         display_entities:
           - texture: "@core_fwd"
             tag: core
-            transform: { translation: [0, 0.5, 0], scale: [2, 2, 2], left_rotation: [90, 0, 1, 0] }
+            transform: { translation: [0, 0.501, 0], scale: [2.004, 2.004, 2.004], left_rotation: [90, 0, 1, 0] }
             wall_offset: 0.001
       fwd_north:
         texture: "@core_fwd"
         display_entities:
           - texture: "@core_fwd"
             tag: core
-            transform: { translation: [0, 0.5, 0], scale: [2, 2, 2], left_rotation: [180, 0, 1, 0] }
+            transform: { translation: [0, 0.501, 0], scale: [2.004, 2.004, 2.004], left_rotation: [180, 0, 1, 0] }
             wall_offset: 0.001
       fwd_east:
         texture: "@core_fwd"
         display_entities:
           - texture: "@core_fwd"
             tag: core
-            transform: { translation: [0, 0.5, 0], scale: [2, 2, 2], left_rotation: [270, 0, 1, 0] }
+            transform: { translation: [0, 0.501, 0], scale: [2.004, 2.004, 2.004], left_rotation: [270, 0, 1, 0] }
             wall_offset: 0.001
     recipes:
       craft:
@@ -1516,36 +1516,39 @@ blocks:
       EAST: idle_x
       WEST: idle_x
     states:
+      # Fallbacks match the resolver's +axis output (outward = +axis): idle_y→UP, idle_x→EAST, idle_z→SOUTH.
+      # Cap display always uses @head_up (rotated by rotationFor); @head_fwd is the in-hand item only. Stub
+      # inner-flush to the pole; cap 0.5-thick plate nudged 0.25 down (floor) / 0.25 toward the pole (wall).
       idle_y:
         texture: "@head_up"
         display_entities:
           - texture: "@rod_toothed_up"
             tag: pole
-            transform: { translation: [0, 0.5, 0], scale: [1.002, 1.8, 1.002] }
+            transform: { translation: [0, 0.4, 0], scale: [1.002, 1.8, 1.002] }
           - texture: "@head_up"
             tag: cap
-            transform: { translation: [0, 0.75, 0], scale: [2.0, 0.5, 2.0] }
+            transform: { translation: [0, 0.5, 0], scale: [2.004, 1.0, 2.004] }
       idle_x:
         texture: "@head_fwd"
         display_entities:
           - texture: "@rod_toothed_up"
             tag: pole
-            transform: { translation: [-0.5, 0, 0], scale: [1.002, 1.8, 1.002], left_rotation: [90, 0, 0, 1] }
+            transform: { translation: [0.4, 0, 0], scale: [1.002, 1.8, 1.002], left_rotation: [-90, 0, 0, 1] }
             wall_offset: 0.001
-          - texture: "@head_fwd"
+          - texture: "@head_up"
             tag: cap
-            transform: { translation: [-0.75, 0, 0], scale: [2.0, 0.5, 2.0], left_rotation: [90, 0, 0, 1] }
+            transform: { translation: [0.5, 0, 0], scale: [2.004, 1.0, 2.004], left_rotation: [-90, 0, 0, 1] }
             wall_offset: 0.001
       idle_z:
         texture: "@head_fwd"
         display_entities:
           - texture: "@rod_toothed_up"
             tag: pole
-            transform: { translation: [0, 0, -0.5], scale: [1.002, 1.8, 1.002], left_rotation: [-90, 1, 0, 0] }
+            transform: { translation: [0, 0, 0.4], scale: [1.002, 1.8, 1.002], left_rotation: [90, 1, 0, 0] }
             wall_offset: 0.001
-          - texture: "@head_fwd"
+          - texture: "@head_up"
             tag: cap
-            transform: { translation: [0, 0, -0.75], scale: [2.0, 0.5, 2.0], left_rotation: [-90, 1, 0, 0] }
+            transform: { translation: [0, 0, 0.5], scale: [2.004, 1.0, 2.004], left_rotation: [90, 1, 0, 0] }
             wall_offset: 0.001
     recipes:
       craft:
