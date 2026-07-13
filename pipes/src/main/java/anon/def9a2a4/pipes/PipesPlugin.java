@@ -41,7 +41,6 @@ public class PipesPlugin extends JavaPlugin {
     private VariantRegistry variantRegistry;
     private WorldManager worldManager;
     private RecipeManager recipeManager;
-    private ConversionRecipeCraftListener conversionRecipeCraftListener;
 
     @Override
     public void onEnable() {
@@ -82,7 +81,7 @@ public class PipesPlugin extends JavaPlugin {
         recipeManager.registerRecipes();
 
         worldManager = new WorldManager(this, pipeManagers);
-        conversionRecipeCraftListener = new ConversionRecipeCraftListener(this, recipeManager);
+        ConversionRecipeCraftListener conversionRecipeCraftListener = new ConversionRecipeCraftListener(this, recipeManager);
         getServer().getPluginManager().registerEvents(new MachineEjectListener(pipeManagers), this);
         getServer().getPluginManager().registerEvents(worldManager, this);
         getServer().getPluginManager().registerEvents(conversionRecipeCraftListener, this);
@@ -162,7 +161,6 @@ public class PipesPlugin extends JavaPlugin {
 
         for (PipeManager manager : new ArrayList<>(pipeManagers.values())) {
             manager.reloadVariants(variantRegistry);
-            manager.refreshTransforms();
             manager.restartTasks();
         }
 

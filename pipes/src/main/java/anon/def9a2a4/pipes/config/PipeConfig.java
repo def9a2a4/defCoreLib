@@ -15,7 +15,7 @@ public class PipeConfig {
 
     public PipeConfig(FileConfiguration config) {
         this.debugParticles = config.getBoolean("global.debug.particles", false);
-        this.particleInterval = config.getInt("global.debug.particle-interval", 10);
+        this.particleInterval = Math.max(1, config.getInt("global.debug.particle-interval", 10));
 
         String mode = config.getString("worlds.mode", "");
         if ("allowlist".equalsIgnoreCase(mode)) {

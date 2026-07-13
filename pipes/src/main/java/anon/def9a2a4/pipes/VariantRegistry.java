@@ -65,10 +65,6 @@ public class VariantRegistry {
         return Collections.unmodifiableCollection(variants.values());
     }
 
-    public PipeVariant getDefaultVariant() {
-        return variants.values().stream().findFirst().orElse(null);
-    }
-
     public boolean hasVariants() {
         return !variants.isEmpty();
     }

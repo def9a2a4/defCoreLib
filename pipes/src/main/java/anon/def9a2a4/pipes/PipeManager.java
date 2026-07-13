@@ -7,9 +7,8 @@ import org.bukkit.Particle;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
-import org.bukkit.entity.ItemDisplay;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import anon.def9a2a4.corelib.CoreLibPlugin;
@@ -25,6 +24,7 @@ import org.joml.Vector3f;
 
 import anon.def9a2a4.pipes.config.DisplayConfig;
 
+import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -90,10 +90,6 @@ public class PipeManager {
 
     private boolean isHopper(Block block) {
         return block.getType() == Material.HOPPER;
-    }
-
-    private boolean isPipe(Block block) {
-        return pipes.containsKey(normalizeLocation(block.getLocation()));
     }
 
     /**
@@ -724,9 +720,20 @@ public class PipeManager {
         BlockFace approachFace = lastPipeData != null ? lastPipeData.facing().getOppositeFace() : null;
         if (approachFace == null || !destAdapter.canReceiveFrom(destBlock, approachFace)) return false;
 
+        // Atomic insertion: snapshot destination, insert all items, rollback on any failure.
+        // Prevents item duplication when some items fit but others don't — without rollback,
+        // the machine stalls (keeps inputs) while already-inserted items remain in the destination.
+        if (!(destBlock.getState() instanceof org.bukkit.block.Container container)) return false;
+        Inventory inv = container.getInventory();
+        ItemStack[] snapshot = Arrays.stream(inv.getContents())
+            .map(s -> s == null ? null : s.clone()).toArray(ItemStack[]::new);
+
         for (ItemStack item : items) {
             ItemStack leftover = destAdapter.insert(destBlock, item);
-            if (leftover != null) return false;
+            if (leftover != null) {
+                inv.setContents(snapshot);
+                return false;
+            }
         }
         return true;
     }
@@ -805,28 +812,6 @@ public class PipeManager {
         pathCache.clear();
         sleepUntil.clear();
         deadEndRecheckAt.clear();
-    }
-
-    public void refreshTransforms() {
-        for (Map.Entry<Location, PipeData> entry : pipes.entrySet()) {
-            Location loc = entry.getKey();
-            PipeData data = entry.getValue();
-            if (data.displayEntityIds() == null) continue;
-
-            for (int i = 0; i < data.displayEntityIds().size(); i++) {
-                UUID uuid = data.displayEntityIds().get(i);
-                Entity entity = world.getEntity(uuid);
-                if (entity instanceof ItemDisplay display) {
-                    Transformation transform;
-                    if (i == 1 && data.variant().behaviorType() == BehaviorType.CORNER) {
-                        transform = calculateCornerDirectionalTransformation(loc, data.facing());
-                    } else {
-                        transform = calculateTransformation(loc, data.facing(), data.variant());
-                    }
-                    display.setTransformation(transform);
-                }
-            }
-        }
     }
 
     public void restartTasks() {
