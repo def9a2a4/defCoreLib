@@ -118,16 +118,19 @@ public final class MechAdvancements {
     public void onAssemble(Location pivot, String type, boolean vertical, int blockCount) {
         List<Player> players = nearby(pivot);
         if (players.isEmpty()) return;
-        String node = switch (type) {
+        // The type-specific use-node (door/drawbridge/minecart/pistons) now lives under its craft-node,
+        // not under structures/assemble, so grant "It Moves!" directly for any assembly.
+        String typeNode = switch (type) {
             case "mech:rotator" -> vertical ? "structures/door" : "structures/drawbridge";
             case "mech:mechanism_minecart" -> "structures/minecart";
             case "mech:piston" -> "structures/pistons";
-            default -> "structures/assemble";
+            default -> null;
         };
         String sizeNode = blockCount >= 128 ? "structures/earthshaker"
                 : blockCount >= 32 ? "structures/big_move" : null;
         for (Player p : players) {
-            grant(p, node);
+            grant(p, "structures/assemble");
+            if (typeNode != null) grant(p, typeNode);
             if (sizeNode != null) grant(p, sizeNode);
             checkAggregates(p);
         }
