@@ -1,14 +1,18 @@
 package anon.def9a2a4.mech;
 
+import anon.def9a2a4.corelib.CustomBlockRegistry;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.advancement.Advancement;
 import org.bukkit.advancement.AdvancementProgress;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -58,18 +62,27 @@ public final class MechAdvancements {
             Map.entry("mech:press", "craft/press"),
             Map.entry("mech:placer", "craft/placer"),
             Map.entry("mech:redstone_motor", "craft/motor"),
-            Map.entry("mech:engine", "craft/engine"));
+            Map.entry("mech:engine", "craft/engine"),
+            Map.entry("mech:chain_pulley", "craft/chain_pulley"),
+            Map.entry("mech:suction_hopper", "craft/suction_hopper"),
+            Map.entry("mech:dough", "machines/dough"));
 
     // The machine craft nodes that together earn craft/master_machinist (tools/parts excluded).
     private static final Set<String> MACHINE_CRAFT_NODES = Set.of(
             "craft/shaft", "craft/gear", "craft/water_wheel", "craft/windmill_item",
-            "craft/clutch", "craft/reverser", "craft/drill", "craft/millstone", "craft/fan",
-            "craft/press", "craft/placer", "craft/motor", "craft/engine");
+            "craft/clutch", "craft/reverser", "craft/chain_pulley", "craft/drill", "craft/millstone",
+            "craft/fan", "craft/suction_hopper", "craft/press", "craft/placer", "craft/motor", "craft/engine");
 
-    // The branch capstones that together earn mastery/grand_engineer.
+    // The mastery capstones that together earn mastery/grand_engineer. Excludes windmill/huge, which is
+    // BetterBanners-gated (would make the finale unobtainable without that plugin).
     private static final Set<String> CAPSTONES = Set.of(
             "craft/master_machinist", "rotation/chain_max", "structures/earthshaker",
-            "windmill/huge", "structures/drawbridge");
+            "structures/drawbridge", "machines/farm_to_table");
+
+    // The processed goods that together earn machines/farm_to_table.
+    private static final Set<String> FOOD_PRODUCTS = Set.of(
+            "machines/flour", "machines/bread", "machines/juice",
+            "machines/oil", "machines/honey", "machines/dye");
 
     // ── Milestone entry points ─────────────────────────────────────────────
 
@@ -113,8 +126,9 @@ public final class MechAdvancements {
         }
     }
 
-    /** A rotation network became powered near {@code location} (rising edge only — see the core event). */
-    public void onPower(Location location, int supply, int demand, int memberCount) {
+    /** A rotation network became powered near {@code location} (rising edge only — see the core event).
+     *  {@code sourceTypes} are the block-type ids of the sources driving it. */
+    public void onPower(Location location, int supply, int demand, int memberCount, List<String> sourceTypes) {
         List<Player> players = nearby(location);
         if (players.isEmpty()) return;
         // Grant the highest reached tier; grantWithAncestors cascades to the lower ones.
@@ -125,13 +139,50 @@ public final class MechAdvancements {
                 : supply >= 15 ? "rotation/torque_15"
                 : supply >= 5 ? "rotation/torque_5" : null;
         boolean automation = supply > 0 && demand > 0;
+        boolean wind = sourceTypes.stream().anyMatch(s -> s.startsWith("mech:") && s.contains("windmill"));
+        boolean water = sourceTypes.contains("mech:water_wheel");
+        boolean engine = sourceTypes.contains("mech:engine");
         for (Player p : players) {
             grant(p, "rotation/first_power");
             if (chainNode != null) grant(p, chainNode);
             if (torqueNode != null) grant(p, torqueNode);
             if (automation) grant(p, "mastery/automation");
+            if (wind) grant(p, "rotation/wind_power");
+            if (water) grant(p, "rotation/water_power");
+            if (engine) grant(p, "rotation/engine_power");
             checkAggregates(p);
         }
+    }
+
+    /** A powered millstone/press ejected outputs near {@code location} — grant the product node(s).
+     *  Detects flour / seed oil / juice (custom items) and honey / dye (vanilla items). */
+    public void onMachineOutput(Location location, List<ItemStack> outputs) {
+        List<Player> players = nearby(location);
+        if (players.isEmpty()) return;
+        Set<String> nodes = new HashSet<>();
+        for (ItemStack out : outputs) {
+            if (out == null) continue;
+            String id = CustomBlockRegistry.getItemTypeId(out);
+            if (id != null) {
+                if (id.equals("mech:flour")) nodes.add("machines/flour");
+                else if (id.equals("mech:seed_oil")) nodes.add("machines/oil");
+                else if (id.endsWith("_juice")) nodes.add("machines/juice");
+            }
+            Material m = out.getType();
+            if (m == Material.HONEY_BOTTLE) nodes.add("machines/honey");
+            else if (m.name().endsWith("_DYE")) nodes.add("machines/dye");
+        }
+        if (nodes.isEmpty()) return;
+        for (Player p : players) {
+            for (String n : nodes) grant(p, n);
+            checkAggregates(p);
+        }
+    }
+
+    /** A player baked Dough into Bread (vanilla furnace extract). */
+    public void onBreadBaked(Player player) {
+        grant(player, "machines/bread");
+        checkAggregates(player);
     }
 
     /** Re-check aggregate capstones after a mech advancement was earned (also covers /mech advance). */
@@ -142,6 +193,7 @@ public final class MechAdvancements {
 
     private void checkAggregates(Player player) {
         if (allDone(player, MACHINE_CRAFT_NODES)) grant(player, "craft/master_machinist");
+        if (allDone(player, FOOD_PRODUCTS)) grant(player, "machines/farm_to_table");
         if (allDone(player, CAPSTONES)) grant(player, "mastery/grand_engineer");
     }
 

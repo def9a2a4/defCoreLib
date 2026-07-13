@@ -2,14 +2,17 @@ package anon.def9a2a4.mech;
 
 import anon.def9a2a4.corelib.CustomBlockRegistry;
 import anon.def9a2a4.corelib.CustomHeadBlock;
+import anon.def9a2a4.corelib.MachineEjectEvent;
 import anon.def9a2a4.corelib.MechanismAssembleEvent;
 import anon.def9a2a4.corelib.RotationNetworkPoweredEvent;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.inventory.CraftItemEvent;
+import org.bukkit.event.inventory.FurnaceExtractEvent;
 import org.bukkit.event.player.PlayerAdvancementDoneEvent;
 import org.bukkit.inventory.ItemStack;
 
@@ -62,7 +65,21 @@ public final class MechAdvancementListeners implements Listener {
     @EventHandler
     public void onPower(RotationNetworkPoweredEvent event) {
         advancements.onPower(event.getLocation(), event.getSupply(),
-                event.getDemand(), event.getMemberCount());
+                event.getDemand(), event.getMemberCount(), event.getSourceTypes());
+    }
+
+    /** A millstone/press ejected outputs → food/processing product nodes. */
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onMachineEject(MachineEjectEvent event) {
+        advancements.onMachineOutput(event.getBlock().getLocation().add(0.5, 0.5, 0.5),
+                event.getOutputs());
+    }
+
+    /** Extracting Bread from a furnace → the bake milestone. Nothing vanilla smelts into bread, so
+     *  BREAD here is always the mech dough→bread recipe (no false positives). */
+    @EventHandler
+    public void onFurnaceExtract(FurnaceExtractEvent event) {
+        if (event.getItemType() == Material.BREAD) advancements.onBreadBaked(event.getPlayer());
     }
 
     /** Re-evaluate aggregate capstones (master machinist / grand engineer) as mech advancements land. */

@@ -557,12 +557,26 @@ public class RotationNetwork {
             // already in a powered network). Idempotent grants + the companion's short-circuit absorb
             // the minor over-fire when a powered network merely grows.
             if (powered && !members.stream().allMatch(previouslyPowered::contains)) {
+                // Collect the network's source block-types (active SOURCE nodes + passive sources like
+                // windmills) so listeners can reward "power it with a windmill/water wheel/engine".
+                Set<String> sourceTypeIds = new HashSet<>();
+                for (CustomBlockRegistry.LocationKey loc : members) {
+                    RotationNode n = nodes.get(loc);
+                    if (n != null && n.role() == NodeRole.SOURCE) sourceTypeIds.add(n.blockTypeId());
+                }
+                for (CustomBlockRegistry.LocationKey ps : passiveSources) {
+                    Block pb = toBlock(ps);
+                    if (pb == null) continue;
+                    CustomHeadBlock t = registry.getTypeFromBlock(pb);
+                    if (t != null) sourceTypeIds.add(t.fullId());
+                }
+                List<String> sourceTypes = List.copyOf(sourceTypeIds);
                 for (CustomBlockRegistry.LocationKey loc : members) {
                     Block b = toBlock(loc);
                     if (b == null) continue;
                     Location center = b.getLocation().add(0.5, 0.5, 0.5);
                     Bukkit.getPluginManager().callEvent(new RotationNetworkPoweredEvent(
-                        center, netState.supply(), netState.demand(), members.size()));
+                        center, netState.supply(), netState.demand(), members.size(), sourceTypes));
                     break;
                 }
             }

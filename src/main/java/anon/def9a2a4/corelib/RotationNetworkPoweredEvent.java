@@ -5,6 +5,8 @@ import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
+
 /**
  * Fired once when a rotation network transitions from unpowered to powered (a false→true rising edge
  * in {@code RotationNetwork.doRecalculate}). Deliberately NOT fired on every recalculation — the
@@ -22,12 +24,15 @@ public class RotationNetworkPoweredEvent extends Event {
     private final int supply;
     private final int demand;
     private final int memberCount;
+    private final List<String> sourceTypes;
 
-    public RotationNetworkPoweredEvent(Location location, int supply, int demand, int memberCount) {
+    public RotationNetworkPoweredEvent(Location location, int supply, int demand, int memberCount,
+                                       List<String> sourceTypes) {
         this.location = location;
         this.supply = supply;
         this.demand = demand;
         this.memberCount = memberCount;
+        this.sourceTypes = List.copyOf(sourceTypes);
     }
 
     /** Location of a representative block in the network. A fresh clone, safe to mutate. */
@@ -41,6 +46,10 @@ public class RotationNetworkPoweredEvent extends Event {
 
     /** Number of blocks (nodes) in the network. */
     public int getMemberCount() { return memberCount; }
+
+    /** Distinct block-type ids of the sources driving this network (e.g. {@code mech:windmill},
+     *  {@code mech:water_wheel}, {@code mech:engine}). Unmodifiable. */
+    public List<String> getSourceTypes() { return sourceTypes; }
 
     @Override public @NotNull HandlerList getHandlers() { return HANDLERS; }
 
