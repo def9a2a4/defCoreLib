@@ -19,7 +19,7 @@ shafts and gears, branch or turn corners with gears, and gate the flow with clut
 - [**Windmill**](https://def9a2a4.github.io/defCoreLib-docs/item.html?id=mech%3Awindmill) - always spinning; low power. [**Large**](https://def9a2a4.github.io/defCoreLib-docs/item.html?id=mech%3Alarge_windmill) and [**Huge**](https://def9a2a4.github.io/defCoreLib-docs/item.html?id=mech%3Ahuge_windmill) windmills produce progressively more (crafted with large/huge banners - see Requires).
 - [**Water wheel**](https://def9a2a4.github.io/defCoreLib-docs/item.html?id=mech%3Awater_wheel) - wall-mounted; spins when placed next to water.
 - [**Engine**](https://def9a2a4.github.io/defCoreLib-docs/item.html?id=mech%3Aengine) - burns fuel (coal, logs, planks, blaze rods, lava) for high power; right-click to refuel.
-- [**Redstone generator**](https://def9a2a4.github.io/defCoreLib-docs/item.html?id=mech%3Agenerator) - steady power, toggled by a redstone signal. No fuel needed, but low power and expensive.
+- [**Redstone motor**](https://def9a2a4.github.io/defCoreLib-docs/item.html?id=mech%3Aredstone_motor) - steady power, toggled by a redstone signal. No fuel needed, but low power and expensive.
 
 ## Transmission
 
