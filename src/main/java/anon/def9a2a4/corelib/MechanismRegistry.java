@@ -33,6 +33,7 @@ public class MechanismRegistry {
 
     private final Map<UUID, BasicMechanism> activeMechanisms = new HashMap<>();
     private final Map<UUID, ColliderRef> colliderIndex = new HashMap<>(); // shulker UUID → ref
+    private final Set<UUID> tickWarned = new HashSet<>();  // mechs already warned about a tick throw (rate-limit)
 
     private @Nullable BukkitTask tickTask;
     private boolean colliderGlowEnabled = false;
@@ -453,10 +454,19 @@ public class MechanismRegistry {
     private void tickMechanisms() {
         long currentTick = Bukkit.getServer().getCurrentTick();
         for (BasicMechanism mech : activeMechanisms.values()) {
-            // Auto-follow: update transforms if vehicle moved (e.g., minecart on rails)
-            mech.updateFromVehicle();
-            updateAnimatedDisplays(mech, currentTick - mech.startTick);
-            // TODO: particle ticking for mechanism blocks
+            // Isolate each mechanism: a throw from one must not freeze the per-tick update of ALL
+            // mechanisms (doors/rotators/minecarts/pistons) until a restart. Warn once per mech.
+            try {
+                // Auto-follow: update transforms if vehicle moved (e.g., minecart on rails)
+                mech.updateFromVehicle();
+                updateAnimatedDisplays(mech, currentTick - mech.startTick);
+                // TODO: particle ticking for mechanism blocks
+            } catch (Throwable t) {
+                if (tickWarned.add(mech.id())) {
+                    plugin.getLogger().log(java.util.logging.Level.WARNING,
+                        "Mechanism " + mech.type() + " (" + mech.id() + ") threw during tick; skipping it", t);
+                }
+            }
         }
     }
 

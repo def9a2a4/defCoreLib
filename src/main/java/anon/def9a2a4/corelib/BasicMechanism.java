@@ -57,6 +57,10 @@ final class BasicMechanism implements Mechanism {
     // Optional glue rebind hook: invoked at disassembly with the blocks actually placed back.
     private @Nullable Consumer<List<Block>> onDisassembled;
 
+    // Guards against a second disassemble() (out-of-band teardown + a manager retry): a re-run would
+    // find the just-placed blocks solid and drop the whole structure as duplicate items.
+    private boolean disassembled;
+
     BasicMechanism(UUID id, String type, Location pivot, Vector3f rotationAxis,
                    Entity vehicle, org.bukkit.entity.BlockDisplay parent,
                    float rideOffset, boolean ownsVehicle,
@@ -258,6 +262,8 @@ final class BasicMechanism implements Mechanism {
     @Override
     public void disassemble() {
         checkMainThread();
+        if (disassembled) return;   // idempotent: a second pass would dupe the structure as items
+        disassembled = true;
         // Snap to 90° about the rotation axis. For Y this is yaw; for X/Z it tips a drawbridge
         // back to a cardinal orientation. 90° rotations about a cardinal axis map integer
         // offsets to integers, so block positions stay exact.
