@@ -126,6 +126,9 @@ public class MechanismRegistry {
         pivot.setY(snapY);
         pivot.setZ(snapZ);
         for (Block block : blocks) {
+            // A bare shaft can't carry its (rod-based) identity through a mechanism move — revert it
+            // to an encased head first, so it's captured/re-placed as a normal skull shaft.
+            if (registry.isChainShaft(block)) registry.revertChainShaftToHead(block);
             BlockData bd = block.getBlockData();
             Matrix4f local = new Matrix4f().translation(
                 (float) ((block.getX() + 0.5) - snapX),

@@ -139,6 +139,7 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         new DoorDemo(this, registry, mechanismRegistry, glueManager).register();
         RotationRotator rotationRotator = new RotationRotator(this, registry, rotationNetwork, mechanismRegistry, glueManager);
         rotationRotator.register();
+        new ExtendablePistonManager(this, registry, rotationNetwork, mechanismRegistry).register();
         mechanismMinecartManager = new MechanismMinecartManager(this, registry, mechanismRegistry, glueManager);
         glueAuthoring.setMinecartManager(mechanismMinecartManager);
         mechanismMinecartManager.register();
@@ -246,6 +247,11 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         if (mechanismRegistry != null) {
             mechanismRegistry.cleanupOrphanedEntities(event.getChunk());
         }
+        // Re-register bare (chain) shafts from their persistent rod displays. Unconditional (NOT
+        // gated by the chunk hint, which is wiped for chain-only chunks): identity lives on the rod
+        // entity, which is only available now that entities have loaded.
+        registry.restoreChainShaftsInChunk(event.getChunk());
+
         // Re-resolve dynamic display transforms now that entities are available
         org.bukkit.Chunk chunk = event.getChunk();
         if (registry.chunkMayHaveCustomBlocks(chunk)) {
@@ -524,6 +530,9 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
 
     private void handlePiston(List<Block> blocks, org.bukkit.event.Cancellable event) {
         for (Block block : blocks) {
+            // A bare shaft can't carry its (rod-based) identity through a move — revert it to an
+            // encased head first, so it then behaves exactly like a normal encased shaft under pistons.
+            if (registry.isChainShaft(block)) registry.revertChainShaftToHead(block);
             CustomHeadBlock type = registry.getTypeFromBlock(block);
             if (type == null) continue;
             if (type.cancelPistons()) {
@@ -572,6 +581,12 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
     public void onFluidFlowIntoCustomHead(org.bukkit.event.block.BlockFromToEvent event) {
         Block to = event.getToBlock();
         Material t = to.getType();
+        // A bare shaft is a real (waterloggable) CHAIN; water flowing in would otherwise trip the
+        // MONITOR handler below into tearing down its node/rod even though the chain isn't destroyed.
+        if (t == Material.CHAIN) {
+            if (registry.isChainShaft(to)) event.setCancelled(true);
+            return;
+        }
         if (t != Material.PLAYER_HEAD && t != Material.PLAYER_WALL_HEAD) return;
         if (registry.isCustomBlock(to)) {
             event.setCancelled(true);

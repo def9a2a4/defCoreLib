@@ -37,6 +37,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 
 /**
@@ -151,6 +152,18 @@ public class CustomBlockRegistry {
     // Animation direction: CW (default) or CCW per block location
     private final Map<LocationKey, RotationNetwork.SpinDirection> animationDirection = new HashMap<>();
 
+    // ── Bare shafts ────────────────────────────────────────────────────────
+    // A "bare" shaft is a real vanilla CHAIN block acting as mech:shaft. It has no PDC, so its
+    // identity is recovered from its persistent, tagged rod ItemDisplay (see restoreChainShaftsInChunk).
+    // This set is the runtime index; getTypeFromBlock resolves CHAIN + membership → the shaft type.
+    private final Set<LocationKey> chainShaftLocations = new HashSet<>();
+    // Last idle/spinning state rendered per bare shaft — churn guard so the spin drive only re-applies
+    // (respawns the rod) on an actual idle↔spinning transition, not on every unrelated recalc.
+    private final Map<LocationKey, String> chainShaftRenderedState = new HashMap<>();
+    // The mech:shaft type + a revert-to-encased-head handler, registered by RotationBlocks.
+    private @Nullable CustomHeadBlock chainShaftType;
+    private @Nullable Consumer<Block> chainShaftRevertHandler;
+
     private @Nullable BukkitTask redstoneTask;
     private @Nullable BukkitTask particleTask;
     private @Nullable BukkitTask customTickTask;
@@ -214,13 +227,19 @@ public class CustomBlockRegistry {
     }
 
     public @Nullable CustomHeadBlock getTypeFromBlock(Block block) {
-        if (block.getType() != Material.PLAYER_HEAD && block.getType() != Material.PLAYER_WALL_HEAD) {
-            return null;
+        Material m = block.getType();
+        if (m == Material.PLAYER_HEAD || m == Material.PLAYER_WALL_HEAD) {
+            if (!(block.getState() instanceof Skull skull)) return null;
+            String typeId = skull.getPersistentDataContainer().get(BLOCK_TYPE_KEY, PersistentDataType.STRING);
+            if (typeId == null) return null;
+            return types.get(typeId);
         }
-        if (!(block.getState() instanceof Skull skull)) return null;
-        String typeId = skull.getPersistentDataContainer().get(BLOCK_TYPE_KEY, PersistentDataType.STRING);
-        if (typeId == null) return null;
-        return types.get(typeId);
+        // Bare shaft: a CHAIN block in the runtime index (identity from its rod display).
+        if (m == Material.CHAIN && chainShaftType != null && !chainShaftLocations.isEmpty()
+                && chainShaftLocations.contains(LocationKey.of(block))) {
+            return chainShaftType;
+        }
+        return null;
     }
 
     public Collection<CustomHeadBlock> allTypes() {
@@ -340,17 +359,121 @@ public class CustomBlockRegistry {
         }
     }
 
-    /** Read current state from a skull's PDC. */
+    /** Read current state from a skull's PDC, or synthesize it for a bare (chain) shaft. */
     public @Nullable String getState(Block block) {
-        if (!(block.getState() instanceof Skull skull)) return null;
-        return skull.getPersistentDataContainer().get(STATE_KEY, PersistentDataType.STRING);
+        if (block.getState() instanceof Skull skull) {
+            return skull.getPersistentDataContainer().get(STATE_KEY, PersistentDataType.STRING);
+        }
+        if (isChainShaft(block)) {
+            String rendered = chainShaftRenderedState.get(LocationKey.of(block));
+            return rendered != null ? rendered : "idle_" + chainAxisSuffix(block);
+        }
+        return null;
     }
 
-    /** Write a new state to a skull's PDC. */
+    /** Write a new state to a skull's PDC. No-op for a bare (chain) shaft (state is synthesized). */
     public void setState(Block block, String state) {
         if (!(block.getState() instanceof Skull skull)) return;
         skull.getPersistentDataContainer().set(STATE_KEY, PersistentDataType.STRING, state);
         skull.update();
+    }
+
+    // ── Bare-shaft support ──────────────────────────────────────────────────
+
+    /** Register the mech:shaft type and the revert-to-head handler used on piston/mechanism moves. */
+    void setChainShaftSupport(CustomHeadBlock shaftType, java.util.function.Consumer<Block> revertHandler) {
+        this.chainShaftType = shaftType;
+        this.chainShaftRevertHandler = revertHandler;
+    }
+
+    /** True if {@code block} is a CHAIN currently acting as a bare shaft. */
+    boolean isChainShaft(Block block) {
+        return chainShaftType != null && !chainShaftLocations.isEmpty()
+                && block.getType() == Material.CHAIN
+                && chainShaftLocations.contains(LocationKey.of(block));
+    }
+
+    void addChainShaft(Block block) { chainShaftLocations.add(LocationKey.of(block)); }
+
+    void removeChainShaft(Block block) {
+        LocationKey key = LocationKey.of(block);
+        chainShaftLocations.remove(key);
+        chainShaftRenderedState.remove(key);
+    }
+
+    /** Convert a bare chain shaft back to an encased head (piston/mechanism move); no-op otherwise. */
+    void revertChainShaftToHead(Block block) {
+        if (chainShaftRevertHandler != null && isChainShaft(block)) {
+            chainShaftRevertHandler.accept(block);
+        }
+    }
+
+    /** Axis suffix (x/y/z) of a chain's Orientable blockdata, defaulting to y. */
+    private static String chainAxisSuffix(Block block) {
+        if (block.getBlockData() instanceof org.bukkit.block.data.Orientable o) {
+            return switch (o.getAxis()) {
+                case X -> "x";
+                case Z -> "z";
+                default -> "y";
+            };
+        }
+        return "y";
+    }
+
+    /**
+     * Drive a bare chain shaft's rod spin from network power. Returns true iff {@code block} is a
+     * chain shaft (i.e. the caller should stop). Only re-applies the display when idle↔spinning
+     * actually changed, so unrelated recalcs don't respawn (flicker) the rod.
+     */
+    boolean driveChainShaftSpinIfChain(Block block, boolean powered) {
+        if (!isChainShaft(block)) return false;
+        if (chainShaftType == null) return true;
+        LocationKey key = LocationKey.of(block);
+        String target = (powered ? "spinning_" : "idle_") + chainAxisSuffix(block);
+        if (target.equals(chainShaftRenderedState.get(key))) return true;
+        chainShaftRenderedState.put(key, target);
+        applyConfig(block, chainShaftType, target, 0);
+        return true;
+    }
+
+    /**
+     * Re-register bare chain shafts in a just-loaded chunk from their persistent rod displays.
+     * Runs unconditionally (not gated by the chunk hint, which is wiped for chain-only chunks).
+     */
+    void restoreChainShaftsInChunk(Chunk chunk) {
+        if (chainShaftType == null) return;
+        World world = chunk.getWorld();
+        if (!isNamespaceEnabledInWorld(chainShaftType.namespace(), world.getName())) return;
+        for (org.bukkit.entity.Entity entity : chunk.getEntities()) {
+            if (!(entity instanceof ItemDisplay display)) continue;
+            int[] xyz = parseShaftRodTag(display);
+            if (xyz == null) continue;
+            Block block = world.getBlockAt(xyz[0], xyz[1], xyz[2]);
+            // A rod at a CHAIN is a bare shaft; a rod at a PLAYER_HEAD is handled by the skull scan;
+            // anything else is an orphan (left for the orphan cleaner).
+            if (block.getType() != Material.CHAIN) continue;
+            LocationKey key = LocationKey.of(block);
+            if (chainShaftLocations.contains(key)) continue;
+            chainShaftLocations.add(key);
+            restoreBlock(block, chainShaftType, getState(block));
+        }
+    }
+
+    /** Parse the x,y,z from a {@code corelib:mech:shaft:x_y_z:rod} display tag, or null. */
+    private static @Nullable int[] parseShaftRodTag(Display display) {
+        for (String tag : display.getScoreboardTags()) {
+            if (!tag.startsWith("corelib:mech:shaft:") || !tag.endsWith(":rod")) continue;
+            String mid = tag.substring("corelib:mech:shaft:".length(), tag.length() - ":rod".length());
+            String[] parts = mid.split("_");
+            if (parts.length != 3) continue;
+            try {
+                return new int[]{ Integer.parseInt(parts[0]), Integer.parseInt(parts[1]),
+                        Integer.parseInt(parts[2]) };
+            } catch (NumberFormatException e) {
+                return null;
+            }
+        }
+        return null;
     }
 
     // ──────────────────────────────────────────────────────────────────────
@@ -515,6 +638,21 @@ public class CustomBlockRegistry {
         animationTracked.entrySet().removeIf(inChunk);
         animationDirection.entrySet().removeIf(inChunk);
 
+        // Bare chain shafts aren't tile entities, so the tile-entity unload dispatch above never fires
+        // their removeNode callback — do it explicitly, then drop them from the runtime indexes.
+        java.util.function.Predicate<LocationKey> keyInChunk = loc ->
+                loc.worldId().equals(world.getUID())
+                        && (loc.x() >> 4) == chunkX && (loc.z() >> 4) == chunkZ;
+        if (chainShaftType != null && chainShaftType.onChunkUnloadCallback() != null) {
+            for (LocationKey loc : chainShaftLocations) {
+                if (keyInChunk.test(loc)) {
+                    chainShaftType.onChunkUnloadCallback().accept(world.getBlockAt(loc.x(), loc.y(), loc.z()));
+                }
+            }
+        }
+        chainShaftLocations.removeIf(keyInChunk);
+        chainShaftRenderedState.entrySet().removeIf(inChunk);
+
         // Save open storages in this chunk
         saveStoragesInChunk(world, chunkX, chunkZ);
     }
@@ -640,6 +778,8 @@ public class CustomBlockRegistry {
         customBlockLocations.remove(key);
         animationTracked.remove(key);
         animationDirection.remove(key);
+        chainShaftLocations.remove(key);
+        chainShaftRenderedState.remove(key);
 
         // Remove display entities (use location-specific prefix to avoid hitting nearby blocks)
         if (type.hasDisplayEntities()) {

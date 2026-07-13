@@ -764,6 +764,9 @@ public class RotationNetwork {
 
         Block block = toBlock(loc);
         if (block == null) return;
+        // Bare (chain) shafts have no PDC state — drive their rod spin directly from network power,
+        // guarded so the rod is only re-applied on an actual idle↔spinning transition.
+        if (registry.driveChainShaftSpinIfChain(block, powered)) return;
         String current = registry.getState(block);
         if (current == null) return;
 

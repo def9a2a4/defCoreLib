@@ -168,15 +168,28 @@ final class RotationBlocks {
             .reactsToNeighbors(true)
             .onNeighborChange((b, face) -> recalcIfKnown(b, network))
             .onInteract((b, event) -> {
-                if (isWrench(event.getPlayer().getInventory().getItemInMainHand()))
-                    return wrenchInteract(b, event, network, registry);
-                return false;
+                if (!isWrench(event.getPlayer().getInventory().getItemInMainHand())) return false;
+                // Non-sneak wrench on a shaft toggles encased head ↔ bare chain (purely visual);
+                // sneak+wrench (and every other transmitter) keeps the inspect/debug behavior.
+                if ("mech:shaft".equals(blockId) && !event.getPlayer().isSneaking()) {
+                    return toggleShaftEncasing(b, event.getPlayer(), network, registry);
+                }
+                return wrenchInteract(b, event, network, registry);
             })
             .onChunkLoad((b, state) -> network.addNode(b, blockId,
                 RotationNetwork.axisFromState(state), role, power, gearLike))
             .onChunkUnload(b -> network.removeNode(CustomBlockRegistry.LocationKey.of(b)))
             .onBlockRemoved((b, state) -> network.removeNode(CustomBlockRegistry.LocationKey.of(b)))
             .build());
+
+        // Enable bare-shaft support once the shaft type is registered: give the registry the type
+        // (for CHAIN→shaft resolution) and a revert-to-head handler (piston/mechanism moves).
+        if ("mech:shaft".equals(blockId)) {
+            CustomHeadBlock shaftType = registry.getType(blockId);
+            if (shaftType != null) {
+                registry.setChainShaftSupport(shaftType, b -> makeShaftEncased(b, network, registry));
+            }
+        }
     }
 
     // ──────────────────────────────────────────────────────────────────────
@@ -1271,6 +1284,100 @@ final class RotationBlocks {
                 org.bukkit.Sound.BLOCK_COPPER_PLACE, 1f, 1.5f);
         block.getWorld().spawnParticle(Particle.WAX_ON,
                 block.getLocation().add(0.5, 0.5, 0.5), 10, 0.3, 0.3, 0.3, 0);
+    }
+
+    // ──────────────────────────────────────────────────────────────────────
+    // Shaft encasing toggle: encased PLAYER_HEAD ↔ bare CHAIN (purely visual)
+    // ──────────────────────────────────────────────────────────────────────
+
+    /** Wrench (non-sneak) on a shaft: swap its world block between head and chain. */
+    private static boolean toggleShaftEncasing(Block block, Player player,
+                                               RotationNetwork network, CustomBlockRegistry registry) {
+        boolean nowBare;
+        if (block.getType() == Material.CHAIN) {
+            makeShaftEncased(block, network, registry);
+            nowBare = false;
+        } else {
+            makeShaftBare(block, network, registry);
+            nowBare = true;
+        }
+        player.sendActionBar(Component.text(
+                nowBare ? "Shaft: bare (chain)" : "Shaft: encased", NamedTextColor.GOLD));
+        block.getWorld().playSound(block.getLocation().add(0.5, 0.5, 0.5),
+                org.bukkit.Sound.BLOCK_COPPER_PLACE, 1f, 1.3f);
+        block.getWorld().spawnParticle(Particle.WAX_ON,
+                block.getLocation().add(0.5, 0.5, 0.5), 10, 0.3, 0.3, 0.3, 0);
+        return true;
+    }
+
+    /** Encased head → bare CHAIN, keeping the same network node. */
+    static void makeShaftBare(Block block, RotationNetwork network, CustomBlockRegistry registry) {
+        String state = registry.getState(block);
+        RotationNetwork.Axis axis = RotationNetwork.axisFromState(state == null ? "idle_y" : state);
+        var key = CustomBlockRegistry.LocationKey.of(block);
+
+        block.setType(Material.CHAIN, false);
+        org.bukkit.block.data.BlockData bd = block.getBlockData();
+        if (bd instanceof org.bukkit.block.data.Orientable o) o.setAxis(toBukkitAxis(axis));
+        block.setBlockData(bd, false);
+
+        registry.addChainShaft(block);
+        if (network.getNode(key) == null) {
+            network.addNode(block, "mech:shaft", axis, RotationNetwork.NodeRole.TRANSMITTER, 0, false);
+        } else {
+            network.recalculate(key); // drives the rod via updateBlockState → driveChainShaftSpinIfChain
+        }
+    }
+
+    /** Bare CHAIN → encased head (canonical facing per axis; the shaft ring texture is symmetric). */
+    static void makeShaftEncased(Block block, RotationNetwork network, CustomBlockRegistry registry) {
+        RotationNetwork.Axis axis = block.getBlockData() instanceof org.bukkit.block.data.Orientable o
+                ? fromBukkitAxis(o.getAxis()) : RotationNetwork.Axis.Y;
+        var key = CustomBlockRegistry.LocationKey.of(block);
+        registry.removeChainShaft(block);
+
+        String state;
+        if (axis == RotationNetwork.Axis.Y) {
+            block.setType(Material.PLAYER_HEAD, false);
+            org.bukkit.block.data.BlockData bd = block.getBlockData();
+            if (bd instanceof org.bukkit.block.data.Rotatable r) r.setRotation(BlockFace.NORTH);
+            block.setBlockData(bd, false);
+            state = "idle_y";
+        } else {
+            BlockFace facing = axis == RotationNetwork.Axis.X ? BlockFace.EAST : BlockFace.NORTH;
+            block.setType(Material.PLAYER_WALL_HEAD, false);
+            org.bukkit.block.data.BlockData bd = block.getBlockData();
+            if (bd instanceof org.bukkit.block.data.Directional d) d.setFacing(facing);
+            block.setBlockData(bd, false);
+            state = axis == RotationNetwork.Axis.X ? "idle_x" : "idle_z";
+        }
+
+        CustomHeadBlock type = registry.getType("mech:shaft");
+        if (type != null) {
+            registry.markBlock(block, type, state);
+            registry.applyConfig(block, type, state, 0);
+        }
+        if (network.getNode(key) == null) {
+            network.addNode(block, "mech:shaft", axis, RotationNetwork.NodeRole.TRANSMITTER, 0, false);
+        } else {
+            network.recalculate(key);
+        }
+    }
+
+    private static org.bukkit.Axis toBukkitAxis(RotationNetwork.Axis a) {
+        return switch (a) {
+            case X -> org.bukkit.Axis.X;
+            case Z -> org.bukkit.Axis.Z;
+            default -> org.bukkit.Axis.Y;
+        };
+    }
+
+    private static RotationNetwork.Axis fromBukkitAxis(org.bukkit.Axis a) {
+        return switch (a) {
+            case X -> RotationNetwork.Axis.X;
+            case Z -> RotationNetwork.Axis.Z;
+            default -> RotationNetwork.Axis.Y;
+        };
     }
 
     // ──────────────────────────────────────────────────────────────────────
