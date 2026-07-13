@@ -1,0 +1,400 @@
+# Pipe block definitions — loaded by BlockLoader, overlaid by PipeBlockRegistrar.
+# Transforms are placeholders here; displayTransformResolver computes them at runtime.
+
+namespace: pipes
+
+textures:
+  # ── Copper (regular) ──
+  copper_item:        "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjU0OGJhYjNjNDhkYzg1ZWQzMzI4YWQ4YWM4NzE5ZDBjMTM0ODM5NzFkODE4ZWU2ZDIwOTc0ZDkxYTZlYjVlZiJ9fX0="
+  copper_head_h:      "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzdlZDVlZjUzMzAwNzczNWVlNDQwZTg0ZjU1M2ViZDY4ODYxZTAyZmM1MmE1ZmY5M2MyN2I1ODQyOTdiMzUwYSJ9fX0="
+  copper_head_up:     "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHBzOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlLzY5OWEwN2QyZGIxZGI5YTRlOTI2ZDdlNGE2YmUxYmUxZTk2ZWE4ZDMwMDhiNzFiYjU3YTJiNDdhYjY4N2I0NzcifX19"
+  copper_head_down:   "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHBzOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlLzY5OWEwN2QyZGIxZGI5YTRlOTI2ZDdlNGE2YmUxYmUxZTk2ZWE4ZDMwMDhiNzFiYjU3YTJiNDdhYjY4N2I0NzcifX19"
+  copper_display_h:   "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjU0OGJhYjNjNDhkYzg1ZWQzMzI4YWQ4YWM4NzE5ZDBjMTM0ODM5NzFkODE4ZWU2ZDIwOTc0ZDkxYTZlYjVlZiJ9fX0="
+  copper_display_up:  "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHBzOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlL2VlZGQxYjQ4MTAwMjU3MjJiMzBlYmJlMjBmMTI5OGE5MDgyNmM1MzQ1ZGU2MDJmYzE3ZGFlZDFlMDVkZWQ4ZDgifX19"
+  copper_display_down: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHBzOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlLzMyMjlmYTZhZDBlMDNmNjYyYmVlMjkwZWVhOGMxOWI4YTgxZDA2MDc1YjRhNTVhZjIxOWE3N2VhOWRhZjEzMjMifX19"
+
+  # ── Copper corner ──
+  copper_corner_item:    "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDBhNmU2YWE3Y2U5OWM4MWRhZjgxNmQ2OTYzOGQ1MmIyODgyYTI1NTg4ODAyMjJlOWE0NjZkY2VkYzg4MDE1YSJ9fX0="
+  copper_corner_head_h:  "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzdlZDVlZjUzMzAwNzczNWVlNDQwZTg0ZjU1M2ViZDY4ODYxZTAyZmM1MmE1ZmY5M2MyN2I1ODQyOTdiMzUwYSJ9fX0="
+  copper_corner_head_down: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHBzOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlLzY5OWEwN2QyZGIxZGI5YTRlOTI2ZDdlNGE2YmUxYmUxZTk2ZWE4ZDMwMDhiNzFiYjU3YTJiNDdhYjY4N2I0NzcifX19"
+  copper_corner_main:    "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDBhNmU2YWE3Y2U5OWM4MWRhZjgxNmQ2OTYzOGQ1MmIyODgyYTI1NTg4ODAyMjJlOWE0NjZkY2VkYzg4MDE1YSJ9fX0="
+  copper_corner_dir_h:   "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjU0OGJhYjNjNDhkYzg1ZWQzMzI4YWQ4YWM4NzE5ZDBjMTM0ODM5NzFkODE4ZWU2ZDIwOTc0ZDkxYTZlYjVlZiJ9fX0="
+  copper_corner_dir_down: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHBzOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlLzMyMjlmYTZhZDBlMDNmNjYyYmVlMjkwZWVhOGMxOWI4YTgxZDA2MDc1YjRhNTVhZjIxOWE3N2VhOWRhZjEzMjMifX19"
+
+  # ── Iron (regular) ──
+  iron_item:        "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvN2RhMWU3ZmU4ZGY1MzY5MjZmODgyMmM4MGQ5Y2E0NTU5YTlmMDUzZWYyYThhMTEyNmJiMzgzOGYwMTcxODc4NyJ9fX0="
+  iron_head_h:      "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTI1MThhY2NkNDRkMTAwYTQwMDhjYjhkNTk3YTkwYTUyMjcyNjU2ODYwNDc3MzI0OTIwM2U5ZDJiYTU3ZTRlNyJ9fX0="
+  iron_head_up:     "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGJiYjBiODI5MmQxZDVjMWViYzBkYjhiZjkxNTU5ODc5YTJiMGFmMjQ0NzY5NmJhMjBjOThlYmFmZWUxODBhOCJ9fX0="
+  iron_head_down:   "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGJiYjBiODI5MmQxZDVjMWViYzBkYjhiZjkxNTU5ODc5YTJiMGFmMjQ0NzY5NmJhMjBjOThlYmFmZWUxODBhOCJ9fX0="
+  iron_display_h:   "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvN2RhMWU3ZmU4ZGY1MzY5MjZmODgyMmM4MGQ5Y2E0NTU5YTlmMDUzZWYyYThhMTEyNmJiMzgzOGYwMTcxODc4NyJ9fX0="
+  iron_display_up:  "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzI4ZTIxMDQ5MTNlZTAyMGZhODNkMTFjYzVkNDUyMmIyMjYzNTBiM2JmZGY4MTEyMDllNmEwZTRmNzZhNjFjNyJ9fX0="
+  iron_display_down: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZGNmZTgwZThlYzY0YTQ2ODYxNzc4NGU3MzUyZDkwMTI1OWIyYzJkM2RhMDNjMjRiNWZhOTY1ZWE3MWExODc4OSJ9fX0="
+
+  # ── Iron corner ──
+  iron_corner_item:      "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDkxMjA5Y2I5ZGVhZGJmYmVkN2NkYWUxM2EyNWFiM2FlZjc1MGI2NzgzNmU1YmJiNmQ5ZjkwMDIzMDg1NjlkNyJ9fX0="
+  iron_corner_head_h:    "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTI1MThhY2NkNDRkMTAwYTQwMDhjYjhkNTk3YTkwYTUyMjcyNjU2ODYwNDc3MzI0OTIwM2U5ZDJiYTU3ZTRlNyJ9fX0="
+  iron_corner_head_down: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGJiYjBiODI5MmQxZDVjMWViYzBkYjhiZjkxNTU5ODc5YTJiMGFmMjQ0NzY5NmJhMjBjOThlYmFmZWUxODBhOCJ9fX0="
+  iron_corner_main:      "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDkxMjA5Y2I5ZGVhZGJmYmVkN2NkYWUxM2EyNWFiM2FlZjc1MGI2NzgzNmU1YmJiNmQ5ZjkwMDIzMDg1NjlkNyJ9fX0="
+  iron_corner_dir_h:     "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvN2RhMWU3ZmU4ZGY1MzY5MjZmODgyMmM4MGQ5Y2E0NTU5YTlmMDUzZWYyYThhMTEyNmJiMzgzOGYwMTcxODc4NyJ9fX0="
+  iron_corner_dir_down:  "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZGNmZTgwZThlYzY0YTQ2ODYxNzc4NGU3MzUyZDkwMTI1OWIyYzJkM2RhMDNjMjRiNWZhOTY1ZWE3MWExODc4OSJ9fX0="
+
+  # ── Gold (regular) ──
+  gold_item:        "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTFmYjkzOGNhM2YxMWEyODg5YTkzYjY4NzRjYWRmZDhjZjJhNTlkYjY3MmE0OWVmMjFhZmFiYmMwY2QzZjE4MSJ9fX0="
+  gold_head_h:      "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZWNlMGQ1ZGY5MTM0NDA5ZTk1NDFjMTY5Y2U1YmZlZWIwNmMyZTJlYjU3ZWFkODEyYjA1YjlkZDI5YWEyZjdjNSJ9fX0="
+  gold_head_up:     "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZmMxZGQzNGZiNjljMWMxOGExYmUyYzJjMjY0MzhmYjMxNWMyNGI4OWI3ZWJiZDUzNDc3MjdlZTUyZDYxZjRlOCJ9fX0="
+  gold_head_down:   "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZmMxZGQzNGZiNjljMWMxOGExYmUyYzJjMjY0MzhmYjMxNWMyNGI4OWI3ZWJiZDUzNDc3MjdlZTUyZDYxZjRlOCJ9fX0="
+  gold_display_h:   "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTFmYjkzOGNhM2YxMWEyODg5YTkzYjY4NzRjYWRmZDhjZjJhNTlkYjY3MmE0OWVmMjFhZmFiYmMwY2QzZjE4MSJ9fX0="
+  gold_display_up:  "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTg2MzRkOWFmYjZlNjkzNjUxMTM1MWY1ODY2ZDRiODIzOWI5MmFiNzdhMWIyYjg4ZDY2ZjY4ODUwNWNkNDBjMyJ9fX0="
+  gold_display_down: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNWJmM2Y0OGFjYmNkYWFmZjZmYzQ5ZDk3NDYyY2RhNzEzZDY0OGE0YmNiYzgyZWNmZmM4NzA2ZDM0YjFjNWQ2NyJ9fX0="
+
+  # ── Gold corner ──
+  gold_corner_item:      "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzc0ZDg4YjQ0MGNkNjhhOTZkZTQwZTE2N2U3ZjJhMzg2ZWE3MzUxYjkxY2Y5ZjFkM2I3YWVlMzM5MWZkZDBkMyJ9fX0="
+  gold_corner_head_h:    "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZWNlMGQ1ZGY5MTM0NDA5ZTk1NDFjMTY5Y2U1YmZlZWIwNmMyZTJlYjU3ZWFkODEyYjA1YjlkZDI5YWEyZjdjNSJ9fX0="
+  gold_corner_head_down: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZmMxZGQzNGZiNjljMWMxOGExYmUyYzJjMjY0MzhmYjMxNWMyNGI4OWI3ZWJiZDUzNDc3MjdlZTUyZDYxZjRlOCJ9fX0="
+  gold_corner_main:      "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzc0ZDg4YjQ0MGNkNjhhOTZkZTQwZTE2N2U3ZjJhMzg2ZWE3MzUxYjkxY2Y5ZjFkM2I3YWVlMzM5MWZkZDBkMyJ9fX0="
+  gold_corner_dir_h:     "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTFmYjkzOGNhM2YxMWEyODg5YTkzYjY4NzRjYWRmZDhjZjJhNTlkYjY3MmE0OWVmMjFhZmFiYmMwY2QzZjE4MSJ9fX0="
+  gold_corner_dir_down:  "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNWJmM2Y0OGFjYmNkYWFmZjZmYzQ5ZDk3NDYyY2RhNzEzZDY0OGE0YmNiYzgyZWNmZmM4NzA2ZDM0YjFjNWQ2NyJ9fX0="
+
+  # ── Oxidized copper (regular) ──
+  oxidized_item:        "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTMwYjY0NDViYjQ1M2ExM2I4ZTBjMjViNjJlYjdmYTIwYWZjYjU4MjI1MDJhYWVlM2RmYWQ2YTcxNjBiYzMxNyJ9fX0="
+  oxidized_head_h:      "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjIyNTRiMTE2Y2E4OGJjYzY1ZTkyN2NkYTRkY2FiNDc2ODhiNjNmNDk5ZTM2YTgyNDcxZTM5YjVmNzBhM2ZjZSJ9fX0="
+  oxidized_head_up:     "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDFmOWM2ODBjNmMwY2JhYjRiOTRjZjUxMWMzMGE2OTRjMTcwYjEyMGQ5MDdmODhiYjViYjY3MTllZjhhZWI3NSJ9fX0="
+  oxidized_head_down:   "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDFmOWM2ODBjNmMwY2JhYjRiOTRjZjUxMWMzMGE2OTRjMTcwYjEyMGQ5MDdmODhiYjViYjY3MTllZjhhZWI3NSJ9fX0="
+  oxidized_display_h:   "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTMwYjY0NDViYjQ1M2ExM2I4ZTBjMjViNjJlYjdmYTIwYWZjYjU4MjI1MDJhYWVlM2RmYWQ2YTcxNjBiYzMxNyJ9fX0="
+  oxidized_display_up:  "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvM2ZmNzA1MjFhMDdjNTVmZjBlZTVkNTJjNmM0NjJkODIxZjM4MDFhNmZkNzhkMTUxYzBkYWE0NDBiZDI2NDEyZCJ9fX0="
+  oxidized_display_down: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTA4OTdjOWY0ZTNhYmFhZDliMzY0MmYwMGMzYWI5MTJkMmQ5N2Y4YjI0MjY1ZjJmZDFlNGIyOTcwOTQwZWEyZiJ9fX0="
+
+  # ── Oxidized copper corner ──
+  oxidized_corner_item:      "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjAwMTYxNGNhYTI2N2RhY2ExMGQyMjI0YWNhN2M2YzAzNjA4ZGVlNGQyYWQzZGZmOTdhYzEyOWU3N2ZkY2ZhNCJ9fX0="
+  oxidized_corner_head_h:    "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjIyNTRiMTE2Y2E4OGJjYzY1ZTkyN2NkYTRkY2FiNDc2ODhiNjNmNDk5ZTM2YTgyNDcxZTM5YjVmNzBhM2ZjZSJ9fX0="
+  oxidized_corner_head_down: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDFmOWM2ODBjNmMwY2JhYjRiOTRjZjUxMWMzMGE2OTRjMTcwYjEyMGQ5MDdmODhiYjViYjY3MTllZjhhZWI3NSJ9fX0="
+  oxidized_corner_main:      "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjAwMTYxNGNhYTI2N2RhY2ExMGQyMjI0YWNhN2M2YzAzNjA4ZGVlNGQyYWQzZGZmOTdhYzEyOWU3N2ZkY2ZhNCJ9fX0="
+  oxidized_corner_dir_h:     "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTMwYjY0NDViYjQ1M2ExM2I4ZTBjMjViNjJlYjdmYTIwYWZjYjU4MjI1MDJhYWVlM2RmYWQ2YTcxNjBiYzMxNyJ9fX0="
+  oxidized_corner_dir_down:  "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTA4OTdjOWY0ZTNhYmFhZDliMzY0MmYwMGMzYWI5MTJkMmQ5N2Y4YjI0MjY1ZjJmZDFlNGIyOTcwOTQwZWEyZiJ9fX0="
+
+blocks:
+
+  # ═══════════════════════════════════════════════════════════════════════
+  # REGULAR PIPES (6 states: north, south, east, west, up, down)
+  # ═══════════════════════════════════════════════════════════════════════
+
+  copper_pipe:
+    name: "&6Copper Pipe"
+    lore:
+      - "&7Pulls items out of the container or pipe it is placed on."
+    texture: "@copper_head_h"
+    item_texture: "@copper_item"
+    drops: self
+    default_state: north
+    states:
+      north:
+        texture: "@copper_head_h"
+        display_entities:
+          - texture: "@copper_display_h"
+            tag: main
+            transform: { translation: [0, 0, 0], scale: [1, 1, 1] }
+      south: { copy_from: north }
+      east:  { copy_from: north }
+      west:  { copy_from: north }
+      up:
+        texture: "@copper_head_up"
+        display_entities:
+          - texture: "@copper_display_up"
+            tag: main
+            transform: { translation: [0, 0, 0], scale: [1, 1, 1] }
+      down:
+        texture: "@copper_head_down"
+        display_entities:
+          - texture: "@copper_display_down"
+            tag: main
+            transform: { translation: [0, 0, 0], scale: [1, 1, 1] }
+    recipes:
+      craft:
+        shaped:
+          - pattern: ["CCC", " R ", "CCC"]
+            key:
+              C: { material: COPPER_INGOT }
+              R: { material: REDSTONE }
+            amount: 4
+      unlock_advancement: "minecraft:story/smelt_iron"
+
+  iron_pipe:
+    name: "&7Iron Pipe"
+    lore:
+      - "&7Pulls items out of the container or pipe it is placed on."
+    texture: "@iron_head_h"
+    item_texture: "@iron_item"
+    drops: self
+    default_state: north
+    states:
+      north:
+        texture: "@iron_head_h"
+        display_entities:
+          - texture: "@iron_display_h"
+            tag: main
+            transform: { translation: [0, 0, 0], scale: [1, 1, 1] }
+      south: { copy_from: north }
+      east:  { copy_from: north }
+      west:  { copy_from: north }
+      up:
+        texture: "@iron_head_up"
+        display_entities:
+          - texture: "@iron_display_up"
+            tag: main
+            transform: { translation: [0, 0, 0], scale: [1, 1, 1] }
+      down:
+        texture: "@iron_head_down"
+        display_entities:
+          - texture: "@iron_display_down"
+            tag: main
+            transform: { translation: [0, 0, 0], scale: [1, 1, 1] }
+    recipes:
+      craft:
+        shaped:
+          - pattern: ["III", " R ", "III"]
+            key:
+              I: { material: IRON_INGOT }
+              R: { material: REDSTONE }
+            amount: 4
+      unlock_advancement: "minecraft:story/smelt_iron"
+
+  gold_pipe:
+    name: "&eGold Pipe"
+    lore:
+      - "&7Pulls items out of the container or pipe it is placed on."
+    texture: "@gold_head_h"
+    item_texture: "@gold_item"
+    drops: self
+    default_state: north
+    states:
+      north:
+        texture: "@gold_head_h"
+        display_entities:
+          - texture: "@gold_display_h"
+            tag: main
+            transform: { translation: [0, 0, 0], scale: [1, 1, 1] }
+      south: { copy_from: north }
+      east:  { copy_from: north }
+      west:  { copy_from: north }
+      up:
+        texture: "@gold_head_up"
+        display_entities:
+          - texture: "@gold_display_up"
+            tag: main
+            transform: { translation: [0, 0, 0], scale: [1, 1, 1] }
+      down:
+        texture: "@gold_head_down"
+        display_entities:
+          - texture: "@gold_display_down"
+            tag: main
+            transform: { translation: [0, 0, 0], scale: [1, 1, 1] }
+    recipes:
+      craft:
+        shaped:
+          - pattern: ["GGG", " R ", "GGG"]
+            key:
+              G: { material: GOLD_INGOT }
+              R: { material: REDSTONE }
+            amount: 4
+      unlock_advancement: "minecraft:story/smelt_iron"
+
+  oxidized_copper_pipe:
+    name: "&2Oxidized Copper Pipe"
+    lore:
+      - "&7Pulls items out of the container or pipe it is placed on."
+    texture: "@oxidized_head_h"
+    item_texture: "@oxidized_item"
+    drops: self
+    default_state: north
+    states:
+      north:
+        texture: "@oxidized_head_h"
+        display_entities:
+          - texture: "@oxidized_display_h"
+            tag: main
+            transform: { translation: [0, 0, 0], scale: [1, 1, 1] }
+      south: { copy_from: north }
+      east:  { copy_from: north }
+      west:  { copy_from: north }
+      up:
+        texture: "@oxidized_head_up"
+        display_entities:
+          - texture: "@oxidized_display_up"
+            tag: main
+            transform: { translation: [0, 0, 0], scale: [1, 1, 1] }
+      down:
+        texture: "@oxidized_head_down"
+        display_entities:
+          - texture: "@oxidized_display_down"
+            tag: main
+            transform: { translation: [0, 0, 0], scale: [1, 1, 1] }
+
+  # ═══════════════════════════════════════════════════════════════════════
+  # CORNER PIPES (5 states: north, south, east, west, down — NO up)
+  # ═══════════════════════════════════════════════════════════════════════
+
+  copper_corner_pipe:
+    name: "&6Copper Corner Pipe"
+    lore:
+      - "&7Pushed items into the direction it was placed. Must have another pipe feeding into it."
+    texture: "@copper_corner_head_h"
+    item_texture: "@copper_corner_item"
+    drops: self
+    default_state: north
+    states:
+      north:
+        texture: "@copper_corner_head_h"
+        display_entities:
+          - texture: "@copper_corner_main"
+            tag: main
+            transform: { translation: [0, 0, 0], scale: [1, 1, 1] }
+          - texture: "@copper_corner_dir_h"
+            tag: directional
+            transform: { translation: [0, 0, 0], scale: [1, 1, 1] }
+      south: { copy_from: north }
+      east:  { copy_from: north }
+      west:  { copy_from: north }
+      down:
+        texture: "@copper_corner_head_down"
+        display_entities:
+          - texture: "@copper_corner_main"
+            tag: main
+            transform: { translation: [0, 0, 0], scale: [1, 1, 1] }
+          - texture: "@copper_corner_dir_down"
+            tag: directional
+            transform: { translation: [0, 0, 0], scale: [1, 1, 1] }
+    recipes:
+      craft:
+        shaped:
+          - pattern: ["CCC", " RC", "CCC"]
+            key:
+              C: { material: COPPER_INGOT }
+              R: { material: REDSTONE }
+            amount: 4
+          - pattern: ["CCC", "CR ", "CCC"]
+            key:
+              C: { material: COPPER_INGOT }
+              R: { material: REDSTONE }
+            amount: 4
+      unlock_advancement: "minecraft:story/smelt_iron"
+
+  iron_corner_pipe:
+    name: "&7Iron Corner Pipe"
+    lore:
+      - "&7Pushed items into the direction it was placed. Must have another pipe feeding into it."
+    texture: "@iron_corner_head_h"
+    item_texture: "@iron_corner_item"
+    drops: self
+    default_state: north
+    states:
+      north:
+        texture: "@iron_corner_head_h"
+        display_entities:
+          - texture: "@iron_corner_main"
+            tag: main
+            transform: { translation: [0, 0, 0], scale: [1, 1, 1] }
+          - texture: "@iron_corner_dir_h"
+            tag: directional
+            transform: { translation: [0, 0, 0], scale: [1, 1, 1] }
+      south: { copy_from: north }
+      east:  { copy_from: north }
+      west:  { copy_from: north }
+      down:
+        texture: "@iron_corner_head_down"
+        display_entities:
+          - texture: "@iron_corner_main"
+            tag: main
+            transform: { translation: [0, 0, 0], scale: [1, 1, 1] }
+          - texture: "@iron_corner_dir_down"
+            tag: directional
+            transform: { translation: [0, 0, 0], scale: [1, 1, 1] }
+    recipes:
+      craft:
+        shaped:
+          - pattern: ["III", " RI", "III"]
+            key:
+              I: { material: IRON_INGOT }
+              R: { material: REDSTONE }
+            amount: 4
+          - pattern: ["III", "IR ", "III"]
+            key:
+              I: { material: IRON_INGOT }
+              R: { material: REDSTONE }
+            amount: 4
+      unlock_advancement: "minecraft:story/smelt_iron"
+
+  gold_corner_pipe:
+    name: "&eGold Corner Pipe"
+    lore:
+      - "&7Pushed items into the direction it was placed. Must have another pipe feeding into it."
+    texture: "@gold_corner_head_h"
+    item_texture: "@gold_corner_item"
+    drops: self
+    default_state: north
+    states:
+      north:
+        texture: "@gold_corner_head_h"
+        display_entities:
+          - texture: "@gold_corner_main"
+            tag: main
+            transform: { translation: [0, 0, 0], scale: [1, 1, 1] }
+          - texture: "@gold_corner_dir_h"
+            tag: directional
+            transform: { translation: [0, 0, 0], scale: [1, 1, 1] }
+      south: { copy_from: north }
+      east:  { copy_from: north }
+      west:  { copy_from: north }
+      down:
+        texture: "@gold_corner_head_down"
+        display_entities:
+          - texture: "@gold_corner_main"
+            tag: main
+            transform: { translation: [0, 0, 0], scale: [1, 1, 1] }
+          - texture: "@gold_corner_dir_down"
+            tag: directional
+            transform: { translation: [0, 0, 0], scale: [1, 1, 1] }
+    recipes:
+      craft:
+        shaped:
+          - pattern: ["GGG", " RG", "GGG"]
+            key:
+              G: { material: GOLD_INGOT }
+              R: { material: REDSTONE }
+            amount: 4
+          - pattern: ["GGG", "GR ", "GGG"]
+            key:
+              G: { material: GOLD_INGOT }
+              R: { material: REDSTONE }
+            amount: 4
+      unlock_advancement: "minecraft:story/smelt_iron"
+
+  oxidized_copper_corner_pipe:
+    name: "&2Oxidized Copper Corner Pipe"
+    lore:
+      - "&7Pushed items into the direction it was placed. Must have another pipe feeding into it."
+    texture: "@oxidized_corner_head_h"
+    item_texture: "@oxidized_corner_item"
+    drops: self
+    default_state: north
+    states:
+      north:
+        texture: "@oxidized_corner_head_h"
+        display_entities:
+          - texture: "@oxidized_corner_main"
+            tag: main
+            transform: { translation: [0, 0, 0], scale: [1, 1, 1] }
+          - texture: "@oxidized_corner_dir_h"
+            tag: directional
+            transform: { translation: [0, 0, 0], scale: [1, 1, 1] }
+      south: { copy_from: north }
+      east:  { copy_from: north }
+      west:  { copy_from: north }
+      down:
+        texture: "@oxidized_corner_head_down"
+        display_entities:
+          - texture: "@oxidized_corner_main"
+            tag: main
+            transform: { translation: [0, 0, 0], scale: [1, 1, 1] }
+          - texture: "@oxidized_corner_dir_down"
+            tag: directional
+            transform: { translation: [0, 0, 0], scale: [1, 1, 1] }

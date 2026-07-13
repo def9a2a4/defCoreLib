@@ -1,5 +1,6 @@
 package anon.def9a2a4.pipes;
 
+import anon.def9a2a4.corelib.WorldFilter;
 import org.bukkit.World;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -8,10 +9,6 @@ import org.bukkit.event.world.WorldUnloadEvent;
 
 import java.util.Map;
 
-/**
- * Manages per-world PipeManager lifecycle.
- * Creates a PipeManager when a world loads (if enabled), shuts it down on unload.
- */
 public class WorldManager implements Listener {
 
     private final PipesPlugin plugin;
@@ -22,12 +19,9 @@ public class WorldManager implements Listener {
         this.managers = managers;
     }
 
-    /**
-     * Initialize a PipeManager for the given world if pipes are enabled there.
-     * Scans for existing pipes and starts transfer tasks.
-     */
     public void initWorld(World world) {
-        if (!plugin.getPipeConfig().isWorldEnabled(world.getName())) {
+        WorldFilter filter = plugin.getPipeConfig().getWorldFilter();
+        if (filter != null && !filter.isEnabled(world.getName())) {
             return;
         }
         if (managers.containsKey(world)) {
@@ -40,9 +34,6 @@ public class WorldManager implements Listener {
         manager.startTasks();
     }
 
-    /**
-     * Shut down and remove the PipeManager for the given world.
-     */
     public void removeWorld(World world) {
         PipeManager manager = managers.remove(world);
         if (manager != null) {

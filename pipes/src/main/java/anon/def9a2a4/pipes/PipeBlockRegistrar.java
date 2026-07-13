@@ -2,113 +2,43 @@ package anon.def9a2a4.pipes;
 
 import anon.def9a2a4.corelib.CustomBlockRegistry;
 import anon.def9a2a4.corelib.CustomHeadBlock;
-import anon.def9a2a4.corelib.HeadUtil;
-import anon.def9a2a4.pipes.config.DisplayConfig;
-import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.event.block.BlockPlaceEvent;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.util.Transformation;
-import org.joml.AxisAngle4f;
-import org.joml.Vector3f;
 import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 
 public class PipeBlockRegistrar {
 
-    private static final Transformation PLACEHOLDER = new Transformation(
-            new Vector3f(0, 0, 0),
-            new AxisAngle4f(0, 0, 1, 0),
-            new Vector3f(1, 1, 1),
-            new AxisAngle4f(0, 0, 0, 1)
-    );
-
     public static void register(CustomBlockRegistry registry, PipesPlugin plugin) {
         for (PipeVariant variant : plugin.getVariantRegistry().getAllVariants()) {
-            registerVariant(registry, plugin, variant);
+            overlayVariant(registry, plugin, variant);
         }
     }
 
-    private static void registerVariant(CustomBlockRegistry registry, PipesPlugin plugin, PipeVariant variant) {
-        DisplayConfig.TextureSet textures = plugin.getDisplayConfig().getTextureSet(variant.getTextureSetId());
-        if (textures == null) {
-            plugin.getLogger().warning("Texture set '" + variant.getTextureSetId()
-                    + "' not found — skipping " + variant.getId() + " registration");
+    private static void overlayVariant(CustomBlockRegistry registry, PipesPlugin plugin, PipeVariant variant) {
+        String fullId = "pipes:" + variant.getId();
+        CustomHeadBlock base = registry.getType(fullId);
+        if (base == null) {
+            plugin.getLogger().warning("No YAML definition for " + fullId + " — skipping overlay");
             return;
         }
 
         boolean isCorner = variant.getBehaviorType() == BehaviorType.CORNER;
+        CustomHeadBlock.Builder builder = base.toBuilder();
 
-        ItemStack displayHorizontal = HeadUtil.createHead(textures.getItemDisplayTexture(BlockFace.NORTH), 1);
-        ItemStack displayUp = HeadUtil.createHead(textures.getItemDisplayTexture(BlockFace.UP), 1);
-        ItemStack displayDown = HeadUtil.createHead(textures.getItemDisplayTexture(BlockFace.DOWN), 1);
-
-        String headHorizontal = textures.getHeadTexture(BlockFace.NORTH);
-        String headUp = textures.getHeadTexture(BlockFace.UP);
-        String headDown = textures.getHeadTexture(BlockFace.DOWN);
-
-        String unlockAdv = plugin.getPipeConfig().getUnlockAdvancement();
-
-        CustomHeadBlock.Builder builder = CustomHeadBlock.builder("pipes", variant.getId())
-                .texture(headHorizontal)
-                .itemTexture(textures.item())
-                .name(variant.getDisplayName().decoration(TextDecoration.ITALIC, false))
-
-                .state("north", s -> s.texture(headHorizontal))
-                .state("south", s -> s.texture(headHorizontal))
-                .state("east", s -> s.texture(headHorizontal))
-                .state("west", s -> s.texture(headHorizontal))
-                .state("down", s -> s.texture(headDown))
-                .defaultState("north")
-                .playerHeadStates("down")
-
-                .drops(CustomHeadBlock.DropRule.self())
-                .breakOnPiston(true);
-
-        if (!isCorner) {
-            builder.state("up", s -> s.texture(headUp));
+        if (isCorner) {
+            builder.playerHeadStates("down");
+        } else {
             builder.playerHeadStates("up", "down");
         }
+        builder.breakOnPiston(true);
 
         if (isCorner) {
             builder.stateResolver(event -> resolveCornerFacing(event, plugin));
-
-            ItemStack directionalDisplay = HeadUtil.createHead(
-                    textures.getDirectionalDisplayTexture(BlockFace.NORTH), 1);
-            builder.displayEntities(List.of(
-                    new CustomHeadBlock.DisplayEntityConfig(displayHorizontal, PLACEHOLDER, "main", null, 0, 0f),
-                    new CustomHeadBlock.DisplayEntityConfig(directionalDisplay, PLACEHOLDER, "directional", null, 0, 0f)
-            ));
-
-            builder.displayItemResolver((block, tagSuffix) -> {
-                String state = registry.getState(block);
-                if ("directional".equals(tagSuffix)) {
-                    if ("down".equals(state)) {
-                        return HeadUtil.createHead(textures.getDirectionalDisplayTexture(BlockFace.DOWN), 1);
-                    }
-                    return HeadUtil.createHead(textures.getDirectionalDisplayTexture(BlockFace.NORTH), 1);
-                }
-                if ("down".equals(state)) return displayDown.clone();
-                return displayHorizontal.clone();
-            });
         } else {
             builder.stateResolver(event -> resolveRegularFacing(event, plugin));
-
-            builder.displayEntities(List.of(
-                    new CustomHeadBlock.DisplayEntityConfig(displayHorizontal, PLACEHOLDER, "main", null, 0, 0f)
-            ));
-
-            builder.displayItemResolver((block, tagSuffix) -> {
-                String state = registry.getState(block);
-                if (state == null) return displayHorizontal.clone();
-                return switch (state) {
-                    case "up" -> displayUp.clone();
-                    case "down" -> displayDown.clone();
-                    default -> displayHorizontal.clone();
-                };
-            });
         }
 
         builder.displayTransformResolver((block, state, config, idx) -> {
@@ -158,55 +88,36 @@ public class PipeBlockRegistrar {
             }
         });
 
-        if (unlockAdv != null && !unlockAdv.isEmpty() && !unlockAdv.equals("none")) {
-            builder.unlockAdvancement(unlockAdv);
-        }
-
         registry.register(builder.build());
         plugin.getLogger().info("Registered " + variant.getId() + " with CoreLib");
     }
 
     private static @Nullable String resolveRegularFacing(BlockPlaceEvent event, PipesPlugin plugin) {
-        if (!plugin.getPipeConfig().isWorldEnabled(event.getBlock().getWorld().getName())) {
-            return null;
-        }
+        if (!isWorldEnabled(plugin, event.getBlock())) return null;
 
         Block against = event.getBlockAgainst();
         BlockFace clickedFace = against.getFace(event.getBlockPlaced());
-
-        BlockFace facing;
-        if (clickedFace != null) {
-            facing = clickedFace;
-        } else {
-            facing = getPlayerFacing(event.getPlayer().getLocation().getYaw());
-        }
-
+        BlockFace facing = clickedFace != null ? clickedFace
+                : getPlayerFacing(event.getPlayer().getLocation().getYaw());
         return facing.name().toLowerCase();
     }
 
     private static @Nullable String resolveCornerFacing(BlockPlaceEvent event, PipesPlugin plugin) {
-        if (!plugin.getPipeConfig().isWorldEnabled(event.getBlock().getWorld().getName())) {
-            return null;
-        }
+        if (!isWorldEnabled(plugin, event.getBlock())) return null;
 
         Block against = event.getBlockAgainst();
         BlockFace clickedFace = against.getFace(event.getBlockPlaced());
+        BlockFace facing = clickedFace != null ? clickedFace
+                : getPlayerFacing(event.getPlayer().getLocation().getYaw());
 
-        BlockFace facing;
-        if (clickedFace != null) {
-            facing = clickedFace;
-        } else {
-            facing = getPlayerFacing(event.getPlayer().getLocation().getYaw());
-        }
-
-        // Corner pipes can't face UP — block placement below a block
-        if (facing == BlockFace.DOWN) {
-            return null;
-        }
-
-        // Corner pipes face toward the block placed against (invert)
+        if (facing == BlockFace.DOWN) return null;
         facing = facing.getOppositeFace();
         return facing.name().toLowerCase();
+    }
+
+    private static boolean isWorldEnabled(PipesPlugin plugin, Block block) {
+        var filter = plugin.getPipeConfig().getWorldFilter();
+        return filter == null || filter.isEnabled(block.getWorld().getName());
     }
 
     private static BlockFace getPlayerFacing(float yaw) {
