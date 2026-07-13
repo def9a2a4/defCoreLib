@@ -113,10 +113,10 @@ final class RotationBlocks {
         overlayStandard(registry, network, "mech:shaft",   RotationNetwork.NodeRole.TRANSMITTER, 0, false);
         overlayStandard(registry, network, "mech:gear",    RotationNetwork.NodeRole.TRANSMITTER, 0, true);
         // Reverser: a plain along-axis transmitter; reversal lives in RotationNetwork.getConnections
-        // (keyed off the "mech:reverser" id + live redstone + the output side captured at
-        // addNode). cancelPistons so a shove can't relocate it out from under that cached facing
-        // (its flip side is fixed at placement, not re-read live).
-        overlayStandard(registry, network, "mech:reverser", RotationNetwork.NodeRole.TRANSMITTER, 0, false, true);
+        // (keyed off the "mech:reverser" id + live redstone + the output side captured at addNode).
+        // It sets cancel_pistons in rotation-blocks.yml so a shove can't relocate it out from under
+        // that cached facing (its flip side is fixed at placement, not re-read live).
+        overlayStandard(registry, network, "mech:reverser", RotationNetwork.NodeRole.TRANSMITTER, 0, false);
         // Chain pulley: shaft-like transmitter + distance chain links (see ChainPulley). Instance holds
         // per-player link selection state, so it outlives register() via the callback captures.
         new ChainPulley(registry, network, config.chainPulleyMaxDistance).register();
@@ -151,20 +151,15 @@ final class RotationBlocks {
     private static void overlayStandard(CustomBlockRegistry registry, RotationNetwork network,
                                         String blockId, RotationNetwork.NodeRole role,
                                         int power, boolean gearLike) {
-        overlayStandard(registry, network, blockId, role, power, gearLike, false);
-    }
-
-    private static void overlayStandard(CustomBlockRegistry registry, RotationNetwork network,
-                                        String blockId, RotationNetwork.NodeRole role,
-                                        int power, boolean gearLike, boolean cancelPistons) {
         CustomHeadBlock block = registry.getType(blockId);
         if (block == null) {
             registry.getPlugin().getLogger().warning("RotationBlocks: block '" + blockId + "' not found — skipping overlay");
             return;
         }
+        // Piston behavior (cancel vs. break) is YAML-driven per block (cancel_pistons /
+        // break_on_piston) and carried through toBuilder(); the overlay leaves it untouched.
         registry.register(block.toBuilder()
             .drillable(false)
-            .cancelPistons(cancelPistons)
             .reactsToNeighbors(true)
             .onNeighborChange((b, face) -> recalcIfKnown(b, network))
             .onInteract((b, event) -> {
@@ -1065,9 +1060,9 @@ final class RotationBlocks {
         String blockId = "mech:drill";
         CustomHeadBlock block = registry.getType(blockId);
         if (block == null) { warn(registry, blockId); return; }
+        // Piston behavior is YAML-driven (drill sets cancel_pistons in rotation-blocks.yml).
         registry.register(block.toBuilder()
             .drillable(false)
-            .cancelPistons(true)
             .reactsToNeighbors(true)
             .tickInterval(drillTickInterval)
             .onNeighborChange((b, face) -> recalcIfKnown(b, network))

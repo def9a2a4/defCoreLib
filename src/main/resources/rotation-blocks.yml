@@ -70,6 +70,7 @@ blocks:
   # Transmitter: passes rotation power along its axis.
   # Display: Cut Copper head, 2x length along axis, 0.66x width.
   shaft:
+    break_on_piston: true
     name: "&eShaft"
     lore:
       - "&7Transmits rotational power"
@@ -136,6 +137,7 @@ blocks:
   #   X: R_Z(90) × R_Y(45) = [98.42, -0.3574, 0.3574, 0.8629]
   #   Z: R_X(-90) × R_Y(45) = [98.42, -0.8629, 0.3574, -0.3574]
   gear:
+    break_on_piston: true
     name: "&6Gear"
     lore:
       - "&7Transfers power along axis"
@@ -245,6 +247,7 @@ blocks:
   # a second to link (max 10 blocks). Power flows only once the links form a CLOSED loop. Placeholder
   # art reuses the shaft-ring + gear-disc heads; the network/link behavior is overlaid in ChainPulley.java.
   chain_pulley:
+    cancel_pistons: true
     name: "&eChain Pulley"
     lore:
       - "&7Links rotational power across a gap"
@@ -304,6 +307,7 @@ blocks:
   # ─── Clutch ─────────────────────────────────────────────────────────────
   # Transmitter: like a shaft, but disconnects when powered by redstone.
   clutch:
+    break_on_piston: true
     name: "&cClutch"
     lore:
       - "&7Transmits rotation power"
@@ -369,6 +373,7 @@ blocks:
   # Transmitter: like a shaft, but REVERSES spin direction when redstone powered.
   # Stays connected (unlike the clutch, which disconnects). Along-axis only.
   reverser:
+    cancel_pistons: true
     name: "&dReverser"
     lore:
       - "&7Transmits rotation power"
@@ -429,6 +434,7 @@ blocks:
   # with the Glue Brush, or just the attached block when nothing is glued). Right-click to
   # cycle the open angle (90/180/270).
   rotator:
+    cancel_pistons: true
     name: "&dRotator"
     lore:
       - "&7Swings blocks glued to it as a door/drawbridge"
@@ -492,6 +498,7 @@ blocks:
   # Source: 2 Power. Wall only. Spins when water is on perpendicular faces.
   # Display: 4 OAK_SLAB paddles at 90° intervals.
   water_wheel:
+    break_on_piston: true
     name: "&bWater Wheel"
     lore:
       - "&7Produces 2 Power when adjacent to water"
@@ -559,6 +566,7 @@ blocks:
   # Source: 5 Power. Needs fuel (coal, charcoal, etc). Any orientation.
   # Shaft display entity shows rotation direction. Smoke particles when running.
   engine:
+    break_on_piston: true
     name: "&4Engine"
     lore:
       - "&7Produces 5 Power when fueled"
@@ -724,6 +732,7 @@ blocks:
   # scales with surplus power. Powered from a shaft on top (Y axis).
   # Display: two smooth stone slabs — bottom static, top spins around Y.
   millstone:
+    break_on_piston: true
     name: "&7Millstone"
     lore:
       - "&7Grinds items from its storage when powered"
@@ -766,6 +775,7 @@ blocks:
   # on top (Y axis). Display (compressor): stone base + a bobbing smooth-stone slab
   # (the pressed material) under a downward-facing piston, with a shaft stub on top.
   press:
+    break_on_piston: true
     name: "&fExtractor Press"
     lore:
       - "&7Presses items from its storage when powered"
@@ -820,6 +830,7 @@ blocks:
   # plugin blocks and non-block items. Facing is read from the wall-head block data.
   # Display (placeholder): a scaled dispenser body — the vanilla block-placing machine.
   placer:
+    break_on_piston: true
     name: "&aBlock Placer"
     lore:
       - "&7Places blocks from its storage in front when powered"
@@ -898,6 +909,7 @@ blocks:
   # ─── Drill ──────────────────────────────────────────────────────────────
   # Consumer: 1 Power. Breaks the block in its facing direction every 2s.
   drill:
+    cancel_pistons: true
     name: "&8Drill"
     lore:
       - "&7Breaks blocks when powered"
@@ -962,6 +974,7 @@ blocks:
   # ─── Windmill ───────────────────────────────────────────────────────────
   # Source: 1 Power. Always spinning. Regular tier — 0.75 scale, NORMAL banners.
   windmill:
+    cancel_pistons: true
     name: "&aWindmill"
     lore:
       - "&7Produces 1 Power"
@@ -1040,6 +1053,7 @@ blocks:
   # Source: 5 Power. Always spinning. 3x scale of mech:windmill banners.
   # Same left_rotations, scale 0.75→2.25, blade origins 1.25 from center, Y -0.6.
   large_windmill:
+    cancel_pistons: true
     name: "&2Large Windmill"
     lore:
       - "&7Produces 5 Power"
@@ -1110,6 +1124,7 @@ blocks:
   # Same left_rotations as large_windmill, scale 2.25→3.0, blade origins 1.25→1.667, Y -0.25→-0.333.
   # Crafted only with Huge banners (enforced in Java via bannerTier).
   huge_windmill:
+    cancel_pistons: true
     name: "&bHuge Windmill"
     lore:
       - "&7Produces 15 Power"
@@ -1183,6 +1198,7 @@ blocks:
   # windmill (0.75 scale); states are idle_/spinning_ pairs so the network can
   # start/stop the spin by swapping the prefix while keeping orientation.
   fan:
+    cancel_pistons: true
     name: "&fFan"
     lore:
       - "&7Consumes rotation power to blow entities"
@@ -1268,6 +1284,7 @@ blocks:
   # Blade transforms mirror the fan; the hopper is a corner-anchored BlockDisplay so its
   # translation is -scale/2 to recenter. Wall blade offsets may want in-game tuning.
   suction_hopper:
+    cancel_pistons: true
     name: "&bSuction Hopper"
     lore:
       - "&7Pulls nearby dropped items inward while powered"
