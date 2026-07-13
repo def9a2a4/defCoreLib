@@ -1289,44 +1289,34 @@ blocks:
         texture: "@hopper_floor"
         display_entities:
           - { block_data: "minecraft:hopper[facing=down]", tag: hopper, transform: { translation: [-0.49, -0.615, -0.49], scale: [0.98, 0.98, 0.98] }, animation: none }
-          - { material: WHITE_BANNER, tag: blade_a, transform: { translation: [0.1875, 0.3625, 0],  scale: [0.375, 0.375, 0.375], left_rotation: [120, 1, 1, -1] } }
-          - { material: WHITE_BANNER, tag: blade_b, transform: { translation: [0, 0.3625, 0.1875],  scale: [0.375, 0.375, 0.375], left_rotation: [90, 1, 0, 0] } }
-          - { material: WHITE_BANNER, tag: blade_c, transform: { translation: [-0.1875, 0.3625, 0], scale: [0.375, 0.375, 0.375], left_rotation: [120, 1, -1, 1] } }
-          - { material: WHITE_BANNER, tag: blade_d, transform: { translation: [0, 0.3625, -0.1875], scale: [0.375, 0.375, 0.375], left_rotation: [180, 0, 1, -1] } }
+          - { block_data: "minecraft:white_carpet", tag: blade_a, transform: { translation: [-0.5, 0.346875, -0.15], scale: [1.0, 0.5, 0.3] } }
+          - { block_data: "minecraft:white_carpet", tag: blade_b, transform: { translation: [-0.15, 0.356875, -0.5], scale: [0.3, 0.5, 1.0] } }
       spinning_floor: { copy_from: idle_floor, texture: "@hopper_floor", animation: { type: rotate, axis: [0, 1, 0], speed: 6.0 } }
       # Wall states: spout points into the mounted wall (= the placement key); blades mirror the
       # fan's matching wall state and spin around the wall's normal axis (Z for n/s, X for e/w).
       idle_wall_n:
         display_entities:
           - { block_data: "minecraft:hopper[facing=down]", tag: hopper, transform: { translation: [-0.49, -0.49, 0.49], scale: [0.98, 0.98, 0.98], left_rotation: [-90, 1, 0, 0] }, wall_offset: 0.125, animation: none }
-          - { material: WHITE_BANNER, tag: blade_a, transform: { translation: [0.1875, 0, 0],  scale: [0.375, 0.375, 0.375], left_rotation: [-90, 0, 0, 1] }, wall_offset: -0.375 }
-          - { material: WHITE_BANNER, tag: blade_b, transform: { translation: [0, 0.1875, 0],  scale: [0.375, 0.375, 0.375] }, wall_offset: -0.375 }
-          - { material: WHITE_BANNER, tag: blade_c, transform: { translation: [-0.1875, 0, 0], scale: [0.375, 0.375, 0.375], left_rotation: [90, 0, 0, 1] }, wall_offset: -0.375 }
-          - { material: WHITE_BANNER, tag: blade_d, transform: { translation: [0, -0.1875, 0], scale: [0.375, 0.375, 0.375], left_rotation: [180, 0, 0, 1] }, wall_offset: -0.375 }
+          - { block_data: "minecraft:white_carpet", tag: blade_a, transform: { translation: [-0.5, 0.15, -0.015625], scale: [1.0, 0.5, 0.3], left_rotation: [90, 1, 0, 0] }, wall_offset: -0.375 }
+          - { block_data: "minecraft:white_carpet", tag: blade_b, transform: { translation: [-0.15, 0.5, -0.005625], scale: [0.3, 0.5, 1.0], left_rotation: [90, 1, 0, 0] }, wall_offset: -0.375 }
       spinning_wall_n: { copy_from: idle_wall_n, animation: { type: rotate, axis: [0, 0, 1], speed: 6.0 } }
       idle_wall_s:
         display_entities:
           - { block_data: "minecraft:hopper[facing=down]", tag: hopper, transform: { translation: [-0.49, 0.49, -0.49], scale: [0.98, 0.98, 0.98], left_rotation: [90, 1, 0, 0] }, wall_offset: 0.125, animation: none }
-          - { material: WHITE_BANNER, tag: blade_a, transform: { translation: [0.1875, 0, 0],  scale: [0.375, 0.375, 0.375], left_rotation: [180, 1, 1, 0] }, wall_offset: -0.375 }
-          - { material: WHITE_BANNER, tag: blade_b, transform: { translation: [0, 0.1875, 0],  scale: [0.375, 0.375, 0.375], left_rotation: [180, 0, 1, 0] }, wall_offset: -0.375 }
-          - { material: WHITE_BANNER, tag: blade_c, transform: { translation: [-0.1875, 0, 0], scale: [0.375, 0.375, 0.375], left_rotation: [180, 1, -1, 0] }, wall_offset: -0.375 }
-          - { material: WHITE_BANNER, tag: blade_d, transform: { translation: [0, -0.1875, 0], scale: [0.375, 0.375, 0.375], left_rotation: [180, 1, 0, 0] }, wall_offset: -0.375 }
+          - { block_data: "minecraft:white_carpet", tag: blade_a, transform: { translation: [-0.5, 0.15, -0.015625], scale: [1.0, 0.5, 0.3], left_rotation: [90, 1, 0, 0] }, wall_offset: -0.375 }
+          - { block_data: "minecraft:white_carpet", tag: blade_b, transform: { translation: [-0.15, 0.5, -0.005625], scale: [0.3, 0.5, 1.0], left_rotation: [90, 1, 0, 0] }, wall_offset: -0.375 }
       spinning_wall_s: { copy_from: idle_wall_s, animation: { type: rotate, axis: [0, 0, 1], speed: 6.0 } }
       idle_wall_w:
         display_entities:
           - { block_data: "minecraft:hopper[facing=down]", tag: hopper, transform: { translation: [-0.49, 0.49, -0.49], scale: [0.98, 0.98, 0.98], left_rotation: [-90, 0, 0, 1] }, wall_offset: 0.125, animation: none }
-          - { material: WHITE_BANNER, tag: blade_a, transform: { translation: [0, 0.1875, 0],  scale: [0.375, 0.375, 0.375], left_rotation: [-90, 0, 1, 0] }, wall_offset: -0.375 }
-          - { material: WHITE_BANNER, tag: blade_b, transform: { translation: [0, 0, 0.1875],  scale: [0.375, 0.375, 0.375], left_rotation: [120, 1, -1, -1] }, wall_offset: -0.375 }
-          - { material: WHITE_BANNER, tag: blade_c, transform: { translation: [0, -0.1875, 0], scale: [0.375, 0.375, 0.375], left_rotation: [180, 1, 0, -1] }, wall_offset: -0.375 }
-          - { material: WHITE_BANNER, tag: blade_d, transform: { translation: [0, 0, -0.1875], scale: [0.375, 0.375, 0.375], left_rotation: [-120, 1, 1, -1] }, wall_offset: -0.375 }
+          - { block_data: "minecraft:white_carpet", tag: blade_a, transform: { translation: [0.015625, -0.5, -0.15], scale: [1.0, 0.5, 0.3], left_rotation: [90, 0, 0, 1] }, wall_offset: -0.375 }
+          - { block_data: "minecraft:white_carpet", tag: blade_b, transform: { translation: [0.025625, -0.15, -0.5], scale: [0.3, 0.5, 1.0], left_rotation: [90, 0, 0, 1] }, wall_offset: -0.375 }
       spinning_wall_w: { copy_from: idle_wall_w, animation: { type: rotate, axis: [1, 0, 0], speed: 6.0 } }
       idle_wall_e:
         display_entities:
           - { block_data: "minecraft:hopper[facing=down]", tag: hopper, transform: { translation: [0.49, -0.49, -0.49], scale: [0.98, 0.98, 0.98], left_rotation: [90, 0, 0, 1] }, wall_offset: 0.125, animation: none }
-          - { material: WHITE_BANNER, tag: blade_a, transform: { translation: [0, 0.1875, 0],  scale: [0.375, 0.375, 0.375], left_rotation: [90, 0, 1, 0] }, wall_offset: -0.375 }
-          - { material: WHITE_BANNER, tag: blade_b, transform: { translation: [0, 0, 0.1875],  scale: [0.375, 0.375, 0.375], left_rotation: [120, 1, 1, 1] }, wall_offset: -0.375 }
-          - { material: WHITE_BANNER, tag: blade_c, transform: { translation: [0, -0.1875, 0], scale: [0.375, 0.375, 0.375], left_rotation: [180, 1, 0, 1] }, wall_offset: -0.375 }
-          - { material: WHITE_BANNER, tag: blade_d, transform: { translation: [0, 0, -0.1875], scale: [0.375, 0.375, 0.375], left_rotation: [-120, 1, -1, 1] }, wall_offset: -0.375 }
+          - { block_data: "minecraft:white_carpet", tag: blade_a, transform: { translation: [0.015625, -0.5, -0.15], scale: [1.0, 0.5, 0.3], left_rotation: [90, 0, 0, 1] }, wall_offset: -0.375 }
+          - { block_data: "minecraft:white_carpet", tag: blade_b, transform: { translation: [0.025625, -0.15, -0.5], scale: [0.3, 0.5, 1.0], left_rotation: [90, 0, 0, 1] }, wall_offset: -0.375 }
       spinning_wall_e: { copy_from: idle_wall_e, animation: { type: rotate, axis: [1, 0, 0], speed: 6.0 } }
     recipes:
       craft:
