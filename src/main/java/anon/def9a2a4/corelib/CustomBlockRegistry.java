@@ -254,8 +254,8 @@ public class CustomBlockRegistry {
     record OrphanScanResult(int orphans, int live, int skippedUnloaded, List<String> samples) {}
 
     /** Outcome of a display refresh: how many loaded custom blocks were re-applied and how many
-     *  air-owner orphan displays were found (removed when applied). */
-    record RefreshResult(int refreshed, int airOrphans) {}
+     *  orphan displays were found (removed when applied). */
+    record RefreshResult(int refreshed, int orphansRemoved) {}
 
     /** Owning custom block reference encoded in a block-attached display entity's tag. */
     private record DisplayOwnerTag(String fullId, int x, int y, int z) {}
@@ -264,11 +264,11 @@ public class CustomBlockRegistry {
      * Scan every loaded world for block-attached display entities whose parent custom block is
      * gone or has been replaced by a different block, optionally despawning them.
      *
-     * <p>Only tags whose {@code {ns}:{type}} is a registered custom-block type are considered, so
-     * mechanism-entity tags ({@code corelib:mech:{uuid}:…}), chain strands and banners are skipped
-     * while rotation-block displays (namespace {@code mech}) are included. Ownership is then verified
-     * against the skull's raw {@link #BLOCK_TYPE_KEY} PDC (or {@link #isChainShaft} for bare shafts),
-     * not the registry. A display whose owner sits in an unloaded chunk is counted but never removed.
+     * <p>Ownership is decided purely by the owner block: a matching {@link #BLOCK_TYPE_KEY} PDC skull
+     * (or a bare {@link #isChainShaft} CHAIN) is live, anything else is an orphan — so a display whose
+     * type was renamed or removed (its cell no longer holds a matching head) is correctly cleaned. The
+     * registry is not consulted. Banners and pulley-owned chain strands are skipped; mechanism-entity
+     * tags are skipped by shape. A display whose owner sits in an unloaded chunk is counted, not removed.
      *
      * @param remove if true, despawn each orphan; if false, only count (preview)
      */
@@ -299,7 +299,7 @@ public class CustomBlockRegistry {
     }
 
     /**
-     * Refresh every loaded custom block's displays and (optionally) clear air-owner orphans.
+     * Refresh every loaded custom block's displays and (optionally) clear orphans.
      *
      * <p>Timing-safe to invoke at runtime (e.g. from {@code /defcorelib refreshdisplays}): it only
      * touches already-loaded blocks and attached entities, so unlike a startup sweep it never races
@@ -307,11 +307,11 @@ public class CustomBlockRegistry {
      * removes that cell's existing displays and respawns the correct current ones — fixing a stale,
      * duplicate, or plain wrong display sitting on a block that still holds the right custom block
      * (which the orphan scanner cannot detect, since it classifies any display on a live block as
-     * "live"). Then, if {@code apply}, it despawns every block-attached display whose owner cell is
-     * now {@code AIR}. Air-owner is a deliberately conservative orphan test: it never touches a live
-     * block, an unmarked docs grid-preview head, or a bare chain shaft (their owner block is present).
+     * "live"). Then it runs {@link #scanOrphanedDisplays} to despawn genuine orphans (owner block
+     * gone or replaced, including renamed/removed types); live blocks, bare shafts and chain strands
+     * are preserved by that scan.
      *
-     * @param apply if true, actually re-apply configs and remove air-orphans; if false, only count
+     * @param apply if true, actually re-apply configs and remove orphans; if false, only count
      */
     RefreshResult refreshLoadedDisplays(boolean apply) {
         int refreshed = 0;
@@ -329,18 +329,10 @@ public class CustomBlockRegistry {
                 applyConfig(block, type, state, power);
             }
         }
-        int airOrphans = 0;
-        for (World world : Bukkit.getWorlds()) {
-            for (Display display : world.getEntitiesByClass(Display.class)) {
-                DisplayOwnerTag owner = parseBlockDisplayTag(display);
-                if (owner == null) continue;
-                if (!world.isChunkLoaded(owner.x() >> 4, owner.z() >> 4)) continue;
-                if (world.getBlockAt(owner.x(), owner.y(), owner.z()).getType() != Material.AIR) continue;
-                airOrphans++;
-                if (apply) display.remove();
-            }
-        }
-        return new RefreshResult(refreshed, airOrphans);
+        // Re-apply above fixed duplicate/wrong displays on live blocks; now sweep true orphans
+        // (owner block gone or replaced, including renamed/removed types) with the shared scanner.
+        OrphanScanResult scan = scanOrphanedDisplays(apply);
+        return new RefreshResult(refreshed, scan.orphans());
     }
 
     /** Extract the owning custom block reference from a block-attached display tag, or null if the
@@ -348,15 +340,15 @@ public class CustomBlockRegistry {
     private @Nullable DisplayOwnerTag parseBlockDisplayTag(Display display) {
         for (String tag : display.getScoreboardTags()) {
             if (!tag.startsWith("corelib:")) continue;
-            if (tag.startsWith("corelib:banner:")) continue;   // banners: host-block ownership, not skull PDC
+            if (tag.startsWith("corelib:banner:")) continue;             // banners: host-block ownership, not skull PDC
+            if (tag.startsWith("corelib:mech:chain_strand:")) continue;  // pulley-owned strand, not a block display
             String[] parts = tag.split(":");
             if (parts.length < 4) continue;
             String fullId = parts[1] + ":" + parts[2];
-            // Only real registered custom-block types carry a block-attached display we own. This admits
-            // rotation blocks (mech:shaft, mech:gear, mech:windmill, …) that the old blanket "corelib:mech:"
-            // skip wrongly excluded, while still skipping mechanism-entity tags (corelib:mech:{uuid}:…) and
-            // chain strands (corelib:mech:chain_strand:…) — neither of which is a registered type.
-            if (!types.containsKey(fullId)) continue;
+            // Ownership is decided purely by the owner block's PDC (see isOwnerPresent), NOT by registry
+            // membership — so a display whose type was renamed/removed (e.g. mech:generator) is correctly
+            // an orphan. Mechanism-entity tags (corelib:mech:{uuid}:…) are excluded below because their
+            // parts[3] is not an x_y_z triple.
             String[] coords = parts[3].split("_");
             if (coords.length != 3) continue;
             try {

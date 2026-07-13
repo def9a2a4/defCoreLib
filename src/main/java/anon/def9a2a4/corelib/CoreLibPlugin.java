@@ -1446,13 +1446,13 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
                 CustomBlockRegistry.RefreshResult result = registry.refreshLoadedDisplays(confirm);
                 if (confirm) {
                     sender.sendMessage(Component.text("Refreshed " + result.refreshed() + " custom block"
-                            + (result.refreshed() == 1 ? "" : "s") + ", removed " + result.airOrphans()
-                            + " orphaned display " + (result.airOrphans() == 1 ? "entity" : "entities") + ".",
+                            + (result.refreshed() == 1 ? "" : "s") + ", removed " + result.orphansRemoved()
+                            + " orphaned display " + (result.orphansRemoved() == 1 ? "entity" : "entities") + ".",
                             NamedTextColor.GREEN));
                 } else {
                     sender.sendMessage(Component.text("Would refresh " + result.refreshed() + " loaded custom block"
-                            + (result.refreshed() == 1 ? "" : "s") + " and remove " + result.airOrphans()
-                            + " air-orphan display " + (result.airOrphans() == 1 ? "entity" : "entities")
+                            + (result.refreshed() == 1 ? "" : "s") + " and remove " + result.orphansRemoved()
+                            + " orphaned display " + (result.orphansRemoved() == 1 ? "entity" : "entities")
                             + ". Run /defcorelib refreshdisplays confirm to apply.", NamedTextColor.YELLOW));
                 }
             }

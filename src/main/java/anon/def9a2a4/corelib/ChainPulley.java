@@ -62,8 +62,8 @@ final class ChainPulley {
     /**
      * Strand display type segment. Deliberately NOT "chain_pulley" so the block-display refresh
      * (which removes {@code corelib:mech:chain_pulley:<x>_<y>_<z>*} on every idle↔spinning state change)
-     * can't delete the strand. It is also not a registered custom-block type, so the orphan scanner's
-     * registry gate skips it (a live strand's owner is the pulley block, not a matching skull).
+     * can't delete the strand. A live strand's owner is the pulley block, not a matching skull, so the
+     * orphan scanner would mis-flag it — it is explicitly skipped there by its {@code chain_strand} tag.
      */
     private static final String STRAND_TYPE = "chain_strand";
 
