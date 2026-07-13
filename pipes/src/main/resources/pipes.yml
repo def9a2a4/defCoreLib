@@ -236,7 +236,7 @@ blocks:
   copper_corner_pipe:
     name: "&6Copper Corner Pipe"
     lore:
-      - "&7Pushed items into the direction it was placed. Must have another pipe feeding into it."
+      - "&7Pushes items into the direction it was placed. Must have another pipe feeding into it."
     texture: "@copper_corner_head_h"
     item_texture: "@copper_corner_item"
     drops: self
@@ -281,7 +281,7 @@ blocks:
   iron_corner_pipe:
     name: "&7Iron Corner Pipe"
     lore:
-      - "&7Pushed items into the direction it was placed. Must have another pipe feeding into it."
+      - "&7Pushes items into the direction it was placed. Must have another pipe feeding into it."
     texture: "@iron_corner_head_h"
     item_texture: "@iron_corner_item"
     drops: self
@@ -326,7 +326,7 @@ blocks:
   gold_corner_pipe:
     name: "&eGold Corner Pipe"
     lore:
-      - "&7Pushed items into the direction it was placed. Must have another pipe feeding into it."
+      - "&7Pushes items into the direction it was placed. Must have another pipe feeding into it."
     texture: "@gold_corner_head_h"
     item_texture: "@gold_corner_item"
     drops: self
@@ -371,7 +371,7 @@ blocks:
   oxidized_copper_corner_pipe:
     name: "&2Oxidized Copper Corner Pipe"
     lore:
-      - "&7Pushed items into the direction it was placed. Must have another pipe feeding into it."
+      - "&7Pushes items into the direction it was placed. Must have another pipe feeding into it."
     texture: "@oxidized_corner_head_h"
     item_texture: "@oxidized_corner_item"
     drops: self

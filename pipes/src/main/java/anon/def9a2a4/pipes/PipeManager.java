@@ -852,16 +852,5 @@ public class PipeManager {
                 location.getBlockZ());
     }
 
-    public BlockFace getFacingFromSkull(Block block) {
-        if (block.getType() == Material.PLAYER_WALL_HEAD) {
-            org.bukkit.block.data.Directional directional = (org.bukkit.block.data.Directional) block.getBlockData();
-            return directional.getFacing();
-        } else if (block.getType() == Material.PLAYER_HEAD) {
-            org.bukkit.block.data.Rotatable rotatable = (org.bukkit.block.data.Rotatable) block.getBlockData();
-            return rotatable.getRotation();
-        }
-        return BlockFace.NORTH;
-    }
-
     public record PipeData(BlockFace facing, List<UUID> displayEntityIds, PipeVariant variant) {}
 }

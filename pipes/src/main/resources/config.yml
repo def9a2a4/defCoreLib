@@ -29,174 +29,58 @@ variants:
   # Copper Pipe - standard pipe that pulls items from containers
   copper_pipe:
     behavior: REGULAR  # REGULAR or CORNER
-    display-name: "Copper Pipe"
-    lore:
-      - "Pulls items out of the container or pipe it is placed on."
-    # Per-variant transfer settings
     transfer:
-      # Ticks between item transfers (20 ticks = 1 second)
       interval-ticks: 10
-      # Number of items to transfer per operation
       items-per-transfer: 4
 
-    # Crafting recipes (supports multiple recipes per variant)
-    recipes:
-      - shape:
-          - "CCC"
-          - " R "
-          - "CCC"
-        ingredients:
-          C: COPPER_INGOT
-          R: REDSTONE
-        result-amount: 4
-
-  # Corner Pipe - only relays items, doesn't pull from containers
+  # Copper Corner Pipe - only relays items, doesn't pull from containers
   copper_corner_pipe:
     behavior: CORNER
-    display-name: "Copper Corner Pipe"
-    lore:
-      - "Pushed items into the direction it was placed. Must have another pipe feeding into it."
     transfer:
       interval-ticks: 10
       items-per-transfer: 4
-
-    recipes:
-      - shape:
-          - "CCC"
-          - " RC"
-          - "CCC"
-        ingredients:
-          C: COPPER_INGOT
-          R: REDSTONE
-        result-amount: 4
-      - shape:
-          - "CCC"
-          - "CR "
-          - "CCC"
-        ingredients:
-          C: COPPER_INGOT
-          R: REDSTONE
-        result-amount: 4
 
   # Iron Pipe - standard pipe that pulls items from containers
   iron_pipe:
     behavior: REGULAR
-    display-name: "Iron Pipe"
-    lore:
-      - "Pulls items out of the container or pipe it is placed on."
     transfer:
       interval-ticks: 10
       items-per-transfer: 8
-
-    recipes:
-      - shape:
-          - "III"
-          - " R "
-          - "III"
-        ingredients:
-          I: IRON_INGOT
-          R: REDSTONE
-        result-amount: 4
 
   # Iron Corner Pipe - only relays items, doesn't pull from containers
   iron_corner_pipe:
     behavior: CORNER
-    display-name: "Iron Corner Pipe"
-    lore:
-      - "Pushed items into the direction it was placed. Must have another pipe feeding into it."
     transfer:
       interval-ticks: 10
       items-per-transfer: 8
 
-    recipes:
-      - shape:
-          - "III"
-          - " RI"
-          - "III"
-        ingredients:
-          I: IRON_INGOT
-          R: REDSTONE
-        result-amount: 4
-      - shape:
-          - "III"
-          - "IR "
-          - "III"
-        ingredients:
-          I: IRON_INGOT
-          R: REDSTONE
-        result-amount: 4
-
   # Gold Pipe - standard pipe that pulls items from containers
   gold_pipe:
     behavior: REGULAR
-    display-name: "Gold Pipe"
-    lore:
-      - "Pulls items out of the container or pipe it is placed on."
     transfer:
       interval-ticks: 10
       items-per-transfer: 16
-
-    recipes:
-      - shape:
-          - "GGG"
-          - " R "
-          - "GGG"
-        ingredients:
-          G: GOLD_INGOT
-          R: REDSTONE
-        result-amount: 4
 
   # Gold Corner Pipe - only relays items, doesn't pull from containers
   gold_corner_pipe:
     behavior: CORNER
-    display-name: "Gold Corner Pipe"
-    lore:
-      - "Pushed items into the direction it was placed. Must have another pipe feeding into it."
     transfer:
       interval-ticks: 10
       items-per-transfer: 16
 
-    recipes:
-      - shape:
-          - "GGG"
-          - " RG"
-          - "GGG"
-        ingredients:
-          G: GOLD_INGOT
-          R: REDSTONE
-        result-amount: 4
-      - shape:
-          - "GGG"
-          - "GR "
-          - "GGG"
-        ingredients:
-          G: GOLD_INGOT
-          R: REDSTONE
-        result-amount: 4
-
-  # Oxidized Copper Pipe - obtained by throwing copper pipe into water cauldron
+  # Oxidized Copper Pipe - obtained via cauldron conversion
   oxidized_copper_pipe:
     behavior: REGULAR
-    display-name: "Oxidized Copper Pipe"
-    lore:
-      - "Pulls items out of the container or pipe it is placed on."
     transfer:
       interval-ticks: 10
       items-per-transfer: 1
 
-    # No recipes - obtained via cauldron conversion
-
-  # Oxidized Copper Corner Pipe - obtained by throwing corner pipe into water cauldron
+  # Oxidized Copper Corner Pipe - obtained via cauldron conversion
   oxidized_copper_corner_pipe:
     behavior: CORNER
-    display-name: "Oxidized Copper Corner Pipe"
-    lore:
-      - "Pushed items into the direction it was placed. Must have another pipe feeding into it."
     transfer:
       interval-ticks: 10
       items-per-transfer: 1
-
-    # No recipes - obtained via cauldron conversion
 
 # Cauldron conversions - throw pipe item into water cauldron to convert
 cauldron-conversions:

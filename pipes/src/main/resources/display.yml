@@ -132,15 +132,3 @@ adjustments:
       side: -0.75
       up: -0.75
       down: -0.5
-
-  # Global perpendicular offsets by pipe orientation
-  global-offset:
-    horizontal:
-      right: 0.0
-      up: 0.2495
-    up:
-      right: 0.0
-      up: 0.0
-    down:
-      right: 0.0
-      up: 0.0

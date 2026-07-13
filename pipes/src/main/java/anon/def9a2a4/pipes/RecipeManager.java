@@ -10,7 +10,6 @@ import org.bukkit.inventory.RecipeChoice;
 import org.bukkit.inventory.ShapelessRecipe;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -115,16 +114,6 @@ public class RecipeManager {
         for (NamespacedKey key : registeredRecipeKeys) {
             player.discoverRecipe(key);
         }
-    }
-
-    public void undiscoverAllRecipes(Player player) {
-        for (NamespacedKey key : registeredRecipeKeys) {
-            player.undiscoverRecipe(key);
-        }
-    }
-
-    public List<NamespacedKey> getRecipeKeys() {
-        return Collections.unmodifiableList(registeredRecipeKeys);
     }
 
     public boolean isConversionRecipe(NamespacedKey key) {
