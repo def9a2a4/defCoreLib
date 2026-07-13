@@ -16,6 +16,12 @@ permissions:
   pipes.admin:
     description: Allows access to all Pipes commands
     default: op
+    children:
+      pipes.reload: true
+      pipes.give: true
+      pipes.recipes: true
+      pipes.info: true
+      pipes.delete_all: true
   pipes.reload:
     description: Allows reloading the config
     default: op

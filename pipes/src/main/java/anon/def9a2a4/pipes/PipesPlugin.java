@@ -95,6 +95,10 @@ public class PipesPlugin extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        if (recipeManager != null) {
+            recipeManager.unregisterRecipes();
+        }
+        CoreLibPlugin.getInstance().getRegistry().clearCauldronConversions("pipes");
         for (PipeManager manager : pipeManagers.values()) {
             manager.shutdown();
         }
@@ -381,9 +385,18 @@ public class PipesPlugin extends JavaPlugin {
         if (section == null) return;
         for (String fromId : section.getKeys(false)) {
             String toId = section.getString(fromId);
-            if (toId != null) {
-                registry.registerCauldronConversion("pipes:" + fromId, "pipes:" + toId);
+            if (toId == null) continue;
+            String fullFrom = "pipes:" + fromId;
+            String fullTo = "pipes:" + toId;
+            if (registry.getType(fullFrom) == null) {
+                getLogger().warning("Cauldron conversion source '" + fromId + "' is not a registered block type");
+                continue;
             }
+            if (registry.getType(fullTo) == null) {
+                getLogger().warning("Cauldron conversion target '" + toId + "' is not a registered block type");
+                continue;
+            }
+            registry.registerCauldronConversion(fullFrom, fullTo);
         }
     }
 
