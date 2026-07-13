@@ -25,14 +25,16 @@ public class RotationNetworkPoweredEvent extends Event {
     private final int demand;
     private final int memberCount;
     private final List<String> sourceTypes;
+    private final boolean chainLoop;
 
     public RotationNetworkPoweredEvent(Location location, int supply, int demand, int memberCount,
-                                       List<String> sourceTypes) {
+                                       List<String> sourceTypes, boolean chainLoop) {
         this.location = location;
         this.supply = supply;
         this.demand = demand;
         this.memberCount = memberCount;
         this.sourceTypes = List.copyOf(sourceTypes);
+        this.chainLoop = chainLoop;
     }
 
     /** Location of a representative block in the network. A fresh clone, safe to mutate. */
@@ -50,6 +52,9 @@ public class RotationNetworkPoweredEvent extends Event {
     /** Distinct block-type ids of the sources driving this network (e.g. {@code mech:windmill},
      *  {@code mech:water_wheel}, {@code mech:engine}). Unmodifiable. */
     public List<String> getSourceTypes() { return sourceTypes; }
+
+    /** True if this network transmits power through a closed loop of chain pulleys. */
+    public boolean isChainLoop() { return chainLoop; }
 
     @Override public @NotNull HandlerList getHandlers() { return HANDLERS; }
 

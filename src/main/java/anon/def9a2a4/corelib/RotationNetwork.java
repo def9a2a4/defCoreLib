@@ -375,6 +375,7 @@ public class RotationNetwork {
             Set<CustomBlockRegistry.LocationKey> members = new HashSet<>();
             int supply = 0, demand = 0;
             boolean jammed = false;
+            boolean chainLoop = false;  // set when a member pulley transmits on a closed loop
 
             // BFS with direction propagation (tentative root = CW)
             Map<CustomBlockRegistry.LocationKey, SpinDirection> dirMap = new HashMap<>();
@@ -400,6 +401,7 @@ public class RotationNetwork {
                     if (partner != null && onClosedLoop(loc)) {
                         double dx = loc.x() - partner.x(), dy = loc.y() - partner.y(), dz = loc.z() - partner.z();
                         demand += (int) Math.ceil(Math.sqrt(dx * dx + dy * dy + dz * dz) / 10.0);
+                        chainLoop = true;
                     }
                 }
 
@@ -576,7 +578,7 @@ public class RotationNetwork {
                     if (b == null) continue;
                     Location center = b.getLocation().add(0.5, 0.5, 0.5);
                     Bukkit.getPluginManager().callEvent(new RotationNetworkPoweredEvent(
-                        center, netState.supply(), netState.demand(), members.size(), sourceTypes));
+                        center, netState.supply(), netState.demand(), members.size(), sourceTypes, chainLoop));
                     break;
                 }
             }
