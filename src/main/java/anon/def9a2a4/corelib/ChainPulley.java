@@ -58,8 +58,6 @@ final class ChainPulley {
         return m != null ? m : Material.matchMaterial("CHAIN");
     }
 
-    private static final int MAX_DIST = 32;
-    private static final double MAX_DIST_SQ = (double) MAX_DIST * MAX_DIST;
     private static final float DIAMETER = 0.33f;
     /** Chain strand length multiplier (the requested "2× longer"). */
     private static final float LENGTH_SCALE = 2f;
@@ -83,10 +81,15 @@ final class ChainPulley {
     private int spinTicks = 0;
     // Chain-strand head texture (the @chain art), captured at register().
     private String strandTexture = "";
+    // Max link distance (blocks), from rotation-config.yml chain-pulley.max-distance.
+    private final int maxDist;
+    private final double maxDistSq;
 
-    ChainPulley(CustomBlockRegistry registry, RotationNetwork network) {
+    ChainPulley(CustomBlockRegistry registry, RotationNetwork network, int maxDist) {
         this.registry = registry;
         this.network = network;
+        this.maxDist = maxDist;
+        this.maxDistSq = (double) maxDist * maxDist;
     }
 
     void register() {
@@ -172,11 +175,13 @@ final class ChainPulley {
             // No selection yet. A pulley that already has an outgoing chain → remove it (refund). One
             // that doesn't → select it as the link source. (Sneak can't reach here — the dispatcher
             // only routes sneak-clicks for the wrench, so unlink is a plain right-click.)
-            if (network.chainOutOf(key) != null) {
+            CustomBlockRegistry.LocationKey outPartner = network.chainOutOf(key);
+            if (outPartner != null) {
+                int refund = chainCost(key, outPartner);
                 clearPartner(b);
                 network.unlinkChain(key);
                 removeStrand(b.getLocation(), key);
-                refundChain(player);
+                refundChain(player, refund);
                 player.sendActionBar(Component.text("Chain removed", NamedTextColor.YELLOW));
                 return true;
             }
@@ -201,10 +206,20 @@ final class ChainPulley {
             player.sendActionBar(Component.text("Source pulley unavailable", NamedTextColor.RED));
             return true;
         }
+        int cost = chainCost(pending, key);
+        if (player.getGameMode() != GameMode.CREATIVE) {
+            ItemStack hand = player.getInventory().getItemInMainHand();
+            int have = hand.getType() == CHAIN_MATERIAL ? hand.getAmount() : 0;
+            if (have < cost) {
+                player.sendActionBar(Component.text(
+                    "Need " + cost + " chains for that distance (have " + have + ")", NamedTextColor.RED));
+                return true; // abort: no link, no consume
+            }
+        }
         writePartner(sourceBlock, key);
         network.linkChain(pending, key);
         spawnStrand(sourceBlock, key);
-        consumeChain(player);
+        consumeChain(player, cost);
         player.sendActionBar(network.onClosedLoop(pending)
             ? Component.text("Chain linked — loop closed, power flows!", NamedTextColor.GREEN)
             : Component.text("Chain linked — close the loop to transmit power", NamedTextColor.GOLD));
@@ -218,7 +233,9 @@ final class ChainPulley {
         if (!source.worldId().equals(target.worldId())) return "Pulleys are in different worlds";
         if (network.getNode(source) == null) return "Source pulley no longer exists";
         if (network.chainOutOf(source) != null) return "Source pulley already has an outgoing chain";
-        if (distSq(source, target) > MAX_DIST_SQ) return "Too far apart (max " + MAX_DIST + " blocks)";
+        CustomBlockRegistry.LocationKey targetOut = network.chainOutOf(target);
+        if (targetOut != null && targetOut.equals(source)) return "Those pulleys are already linked";
+        if (distSq(source, target) > maxDistSq) return "Too far apart (max " + maxDist + " blocks)";
         return null;
     }
 
@@ -355,14 +372,19 @@ final class ChainPulley {
         return w == null ? null : w.getBlockAt(k.x(), k.y(), k.z());
     }
 
-    private static void consumeChain(Player player) {
-        if (player.getGameMode() == GameMode.CREATIVE) return;
-        ItemStack hand = player.getInventory().getItemInMainHand();
-        if (hand.getType() == CHAIN_MATERIAL) hand.setAmount(hand.getAmount() - 1);
+    /** Number of chains a link costs = the rounded block distance between the two pulleys (min 1). */
+    private static int chainCost(CustomBlockRegistry.LocationKey a, CustomBlockRegistry.LocationKey b) {
+        return Math.max(1, (int) Math.round(Math.sqrt(distSq(a, b))));
     }
 
-    private static void refundChain(Player player) {
+    private static void consumeChain(Player player, int count) {
         if (player.getGameMode() == GameMode.CREATIVE) return;
-        player.getInventory().addItem(new ItemStack(CHAIN_MATERIAL));
+        ItemStack hand = player.getInventory().getItemInMainHand();
+        if (hand.getType() == CHAIN_MATERIAL) hand.setAmount(hand.getAmount() - count);
+    }
+
+    private static void refundChain(Player player, int count) {
+        if (player.getGameMode() == GameMode.CREATIVE) return;
+        player.getInventory().addItem(new ItemStack(CHAIN_MATERIAL, count));
     }
 }

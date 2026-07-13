@@ -31,6 +31,7 @@ final class RotationConfig {
     int suctionTickInterval = 2;
     int suctionPullRange = 1;          // Chebyshev radius: 1 → 3×3×3 cube
     double suctionPullStrength = 0.14; // fixed inward velocity (≈ fanMinPush)
+    int chainPulleyMaxDistance = 32;   // max chain-pulley link distance (blocks)
     Set<Material> drillBlacklist = Set.of(
             Material.OBSIDIAN, Material.CRYING_OBSIDIAN, Material.SPAWNER,
             Material.MOVING_PISTON, Material.REINFORCED_DEEPSLATE);
@@ -132,6 +133,12 @@ final class RotationConfig {
                     fuelValues.putIfAbsent(m, 3);
                 }
             }
+            loaded++;
+        }
+
+        ConfigurationSection chainPulley = yaml.getConfigurationSection("chain-pulley");
+        if (chainPulley != null) {
+            chainPulleyMaxDistance = chainPulley.getInt("max-distance", chainPulleyMaxDistance);
             loaded++;
         }
 

@@ -38,6 +38,9 @@ press:
 placer:
   tick-interval: 20   # ticks between placements (one block placed per cycle)
 
+chain-pulley:
+  max-distance: 32    # max distance (blocks) between two linked chain pulleys
+
 fuel:
   COAL: 16
   CHARCOAL: 12

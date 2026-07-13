@@ -119,7 +119,7 @@ final class RotationBlocks {
         overlayStandard(registry, network, "mech:reverser", RotationNetwork.NodeRole.TRANSMITTER, 0, false, true);
         // Chain pulley: shaft-like transmitter + distance chain links (see ChainPulley). Instance holds
         // per-player link selection state, so it outlives register() via the callback captures.
-        new ChainPulley(registry, network).register();
+        new ChainPulley(registry, network, config.chainPulleyMaxDistance).register();
         overlayClutch(registry, network);
         overlayWaterWheel(registry, network, config);
         overlayEngine(registry, network, fuelManager, config);

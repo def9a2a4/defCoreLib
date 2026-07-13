@@ -322,22 +322,32 @@ public class RotationNetwork {
             dirty.add(changed);
         }
 
-        // Always dirty neighbor networks (handles clutch unlock, new node, etc.)
-        RotationNode changedNode = nodes.get(changed);
-        if (changedNode != null) {
-            for (Connection conn : getConnections(changedNode)) {
-                Integer nid = nodeNetworkId.get(conn.neighbor());
-                if (nid != null && !dirty.containsAll(networkMembers.getOrDefault(nid, Set.of()))) {
+        // Always dirty neighbor networks (handles clutch unlock, new node, etc.) — TRANSITIVELY over
+        // getConnections, which includes chain-pulley distance edges. One hop isn't enough: closing a
+        // 3+ ring A→B→C→A must tear down EVERY ring member's network, or a member keeps a stale network
+        // id and the BFS skip-guard below drops it, fragmenting the merged component. Walk the whole
+        // reachable graph, tearing down each network as we reach it.
+        Deque<CustomBlockRegistry.LocationKey> frontier = new ArrayDeque<>(dirty);
+        while (!frontier.isEmpty()) {
+            RotationNode node = nodes.get(frontier.poll());
+            if (node == null) continue;
+            for (Connection conn : getConnections(node)) {
+                CustomBlockRegistry.LocationKey nb = conn.neighbor();
+                if (!nodes.containsKey(nb)) continue;
+                Integer nid = nodeNetworkId.get(nb);
+                if (nid != null) {
                     Set<CustomBlockRegistry.LocationKey> nMembers = networkMembers.remove(nid);
+                    resetPassiveSources(nid);
+                    networks.remove(nid);
                     if (nMembers != null) {
-                        dirty.addAll(nMembers);
                         for (CustomBlockRegistry.LocationKey dk : nMembers) {
                             nodeNetworkId.remove(dk);
                             nodeDirection.remove(dk);
+                            if (dirty.add(dk)) frontier.add(dk);
                         }
                     }
-                    resetPassiveSources(nid);
-                    networks.remove(nid);
+                } else if (dirty.add(nb)) {
+                    frontier.add(nb);
                 }
             }
         }
