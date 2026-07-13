@@ -1,5 +1,5 @@
 {
-  "parent": "mech:structures/door",
+  "parent": "mech:structures/assemble",
   "display": {
     "icon": {
       "id": "minecraft:player_head",

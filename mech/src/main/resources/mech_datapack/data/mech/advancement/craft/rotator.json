@@ -1,5 +1,5 @@
 {
-  "parent": "mech:craft/piston",
+  "parent": "mech:craft/gear",
   "display": {
     "icon": {
       "id": "minecraft:player_head",

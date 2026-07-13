@@ -2,7 +2,7 @@
   "parent": "mech:craft/millstone",
   "display": {
     "icon": {
-      "id": "minecraft:wheat"
+      "id": "minecraft:sugar"
     },
     "title": {
       "text": "Well Milled",

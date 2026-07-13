@@ -2,7 +2,7 @@
   "parent": "mech:machines/flour",
   "display": {
     "icon": {
-      "id": "minecraft:bread"
+      "id": "minecraft:wheat"
     },
     "title": {
       "text": "Rolling in Dough",
