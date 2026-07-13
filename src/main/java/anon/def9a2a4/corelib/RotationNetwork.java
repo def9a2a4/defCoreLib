@@ -606,55 +606,6 @@ public class RotationNetwork {
     }
 
     // ──────────────────────────────────────────────────────────────────────
-    // Batch chunk operations
-    // ──────────────────────────────────────────────────────────────────────
-
-    void removeNodesInChunk(UUID worldId, int chunkX, int chunkZ) {
-        Set<CustomBlockRegistry.LocationKey> toRemove = new HashSet<>();
-        Set<Integer> affectedNetworks = new HashSet<>();
-
-        for (var entry : nodes.entrySet()) {
-            CustomBlockRegistry.LocationKey k = entry.getKey();
-            if (k.worldId().equals(worldId) && (k.x() >> 4) == chunkX && (k.z() >> 4) == chunkZ) {
-                toRemove.add(k);
-                Integer nid = nodeNetworkId.get(k);
-                if (nid != null) affectedNetworks.add(nid);
-            }
-        }
-        if (toRemove.isEmpty()) return;
-
-        // Remove nodes + direction entries
-        for (CustomBlockRegistry.LocationKey k : toRemove) {
-            nodes.remove(k);
-            nodeNetworkId.remove(k);
-            nodeDirection.remove(k);
-            transientDemand.remove(k);
-        }
-
-        // Collect remaining dirty members of affected networks
-        Set<CustomBlockRegistry.LocationKey> dirty = new HashSet<>();
-        for (int nid : affectedNetworks) {
-            Set<CustomBlockRegistry.LocationKey> members = networkMembers.remove(nid);
-            if (members != null) {
-                members.removeAll(toRemove);
-                dirty.addAll(members);
-                for (CustomBlockRegistry.LocationKey dk : members) {
-                    nodeNetworkId.remove(dk);
-                    nodeDirection.remove(dk);
-                }
-            }
-            resetPassiveSources(nid);
-            networks.remove(nid);
-        }
-
-        // Rebuild affected components
-        for (CustomBlockRegistry.LocationKey start : dirty) {
-            if (nodeNetworkId.containsKey(start)) continue;
-            doRecalculate(start);
-        }
-    }
-
-    // ──────────────────────────────────────────────────────────────────────
     // Connection logic
     // ──────────────────────────────────────────────────────────────────────
 

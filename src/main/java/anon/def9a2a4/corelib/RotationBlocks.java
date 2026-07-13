@@ -1395,7 +1395,7 @@ final class RotationBlocks {
         if (network.getNode(key) != null) network.recalculate(key);
     }
 
-    private static boolean debugInteract(Block block, org.bukkit.event.player.PlayerInteractEvent event,
+    static boolean debugInteract(Block block, org.bukkit.event.player.PlayerInteractEvent event,
                                          RotationNetwork network, CustomBlockRegistry registry) {
         var key = CustomBlockRegistry.LocationKey.of(block);
         var node = network.getNode(key);

@@ -34,13 +34,13 @@ import java.util.UUID;
  * <p><b>Model.</b> Each pulley stores ONE outgoing partner (a directed functional graph) in its skull
  * PDC under {@link #OUT_KEY}. {@link RotationNetwork} injects that link as a distance edge only when
  * the pulley sits on a <em>closed loop</em> ({@link RotationNetwork#onClosedLoop}), so an open chain
- * renders but carries no power. Minimal loops: two pulleys linked {@code A→B} and {@code B→A}, or a
- * ring of three or more.
+ * renders but carries no power. Reverse-duplicate links are rejected, so the minimum working loop is a
+ * ring of three or more pulleys ({@code A→B→C→A}).
  *
- * <p><b>Link flow.</b> Right-click a pulley holding a {@link Material#CHAIN} to select it as the source;
- * right-click a second pulley (also holding a chain) to link source→target (max {@link #MAX_DIST}
- * blocks, same world, one outgoing link per pulley). Right-click a pulley that already has an outgoing
- * link (with no selection pending) to remove it (refunds a chain).
+ * <p><b>Link flow.</b> Right-click a pulley holding a chain to select it as the source; right-click a
+ * second pulley (also holding a chain) to link source→target (max distance from config, same world, one
+ * outgoing link per pulley). Right-click a pulley that already has an outgoing link (with no selection
+ * pending) to remove it (refunds the chains); breaking or gluing a linked pulley drops them instead.
  */
 final class ChainPulley {
 
@@ -73,7 +73,6 @@ final class ChainPulley {
     private final Map<UUID, CustomBlockRegistry.LocationKey> pendingSelection = new HashMap<>();
     // Live strand displays keyed by their source pulley, for the per-tick spin animation.
     private final Map<CustomBlockRegistry.LocationKey, StrandAnim> strands = new HashMap<>();
-    private int spinTicks = 0;
     // Max link distance (blocks), from rotation-config.yml chain-pulley.max-distance.
     private final int maxDist;
     private final double maxDistSq;
@@ -157,7 +156,16 @@ final class ChainPulley {
 
     private boolean handleInteract(Block b, PlayerInteractEvent event) {
         Player player = event.getPlayer();
-        if (player.getInventory().getItemInMainHand().getType() != CHAIN_MATERIAL) {
+        ItemStack mainHand = player.getInventory().getItemInMainHand();
+        // Wrench → inspect: the standard network debug (supply/demand/powered + member highlight, like
+        // every other rotation block) plus this pulley's chain-link status. Needs no chain in hand.
+        if (RotationBlocks.isWrench(mainHand)) {
+            event.setCancelled(true);
+            RotationBlocks.debugInteract(b, event, network, registry);
+            sendChainStatus(b, player);
+            return true;
+        }
+        if (mainHand.getType() != CHAIN_MATERIAL) {
             return false; // not linking — let placement / other handlers proceed
         }
         event.setCancelled(true); // don't place the chain block
@@ -183,19 +191,22 @@ final class ChainPulley {
             return true;
         }
 
-        // Second click → link pending (source) → this (target).
-        pendingSelection.remove(player.getUniqueId());
+        // Second click → link pending (source) → this (target). Keep the selection on a recoverable
+        // rejection (invalid target / not enough chains) so a bad second click doesn't force a reselect;
+        // clear it only on cancel, an unavailable source, or a successful link.
         if (pending.equals(key)) {
+            pendingSelection.remove(player.getUniqueId());
             player.sendActionBar(Component.text("Link cancelled", NamedTextColor.GRAY));
             return true;
         }
         String reject = validateLink(pending, key);
         if (reject != null) {
             player.sendActionBar(Component.text(reject, NamedTextColor.RED));
-            return true;
+            return true; // keep selection — right-click a different target to retry
         }
         Block sourceBlock = blockOf(pending);
         if (sourceBlock == null) {
+            pendingSelection.remove(player.getUniqueId());
             player.sendActionBar(Component.text("Source pulley unavailable", NamedTextColor.RED));
             return true;
         }
@@ -206,9 +217,10 @@ final class ChainPulley {
             if (have < cost) {
                 player.sendActionBar(Component.text(
                     "Need " + cost + " chains for that distance (have " + have + ")", NamedTextColor.RED));
-                return true; // abort: no link, no consume
+                return true; // keep selection — gather chains and retry
             }
         }
+        pendingSelection.remove(player.getUniqueId());
         writePartner(sourceBlock, key);
         network.linkChain(pending, key);
         spawnStrand(sourceBlock, key);
@@ -230,6 +242,26 @@ final class ChainPulley {
         if (targetOut != null && targetOut.equals(source)) return "Those pulleys are already linked";
         if (distSq(source, target) > maxDistSq) return "Too far apart (max " + maxDist + " blocks)";
         return null;
+    }
+
+    /** Wrench inspect: report this pulley's chain-link status (partner, loop, span/cost, selection). */
+    private void sendChainStatus(Block b, Player player) {
+        CustomBlockRegistry.LocationKey key = CustomBlockRegistry.LocationKey.of(b);
+        CustomBlockRegistry.LocationKey out = network.chainOutOf(key);
+        if (out == null) {
+            boolean selected = key.equals(pendingSelection.get(player.getUniqueId()));
+            player.sendMessage(Component.text(selected
+                ? "Chain: selected as link source — right-click another pulley to link"
+                : "Chain: not linked", NamedTextColor.GRAY));
+            return;
+        }
+        boolean closed = network.onClosedLoop(key);
+        int span = (int) Math.round(Math.sqrt(distSq(key, out)));
+        player.sendMessage(Component.text(
+            "Chain → " + out.x() + "," + out.y() + "," + out.z()
+            + " | loop " + (closed ? "closed" : "open")
+            + " | span " + span + " (cost " + chainCost(key, out) + ")",
+            closed ? NamedTextColor.GREEN : NamedTextColor.GOLD));
     }
 
     // ──────────────────────────────────────────────────────────────────────
@@ -281,7 +313,6 @@ final class ChainPulley {
     /** Per-tick: spin every powered chain about its long axis; drop dead displays. */
     private void tickStrands() {
         if (strands.isEmpty()) return;
-        spinTicks++;
         Iterator<Map.Entry<CustomBlockRegistry.LocationKey, StrandAnim>> it = strands.entrySet().iterator();
         while (it.hasNext()) {
             Map.Entry<CustomBlockRegistry.LocationKey, StrandAnim> e = it.next();

@@ -12,7 +12,6 @@ namespace: mech
 # Reference any of these from texture/item_texture/display_entities as "@alias".
 textures:
   chainwheel:        "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTliNzc4MjJhODNmZDBjNWFkMGEyMmE4ZWI5NzViNWIyM2Y1ODhkMTkzMzg4ZGE2MzNmZWZlMzFlMjZlOWU0NiJ9fX0="  # Chain Pulley — in-hand item + spinning wheel display
-  chain:             "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvY2JmZTg2MDJiZDAyNDA2YzYyNDNhZmIxMjE5YjczOWJhZmIyZGQwY2NkZmM1ZmI1ZDFlMzEwMDY5YTZkYTBmOCJ9fX0="  # Chain — strand between linked pulleys
   cut_copper:        "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTI4YmMyZGYzZGZmNWVjM2QxNDNhMmNlZWNiOTM4MjE4MzUxNmU5ZmFkZDdlNDA5YTVlYjQxNTUxNTc0YTI1ZiJ9fX0="  # Cut Copper — shaft/gear/engine/motor/drill rods
   gear_disc:         "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTM1NDhjNmJkZGYwMGQ1MDI5MjEyYjc0NjFkZGNhYTcyZTkyOGQ0M2YzYWIwMmEyYWJmNjgwYTYzZDI1MWVjNSJ9fX0="  # Copper Gear (modified) — gear discs
   drill_rod:         "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjcwMDQxYzZiZTc5OWNiNjliMTI3ZGYzNTU3NDIzMjIwM2UyYzI2MTkwN2IyZmQ1OGExNGVlNjkyOTg4ZTA3MyJ9fX0="  # Drill bit — drill display rod
@@ -292,9 +291,6 @@ blocks:
             transform: { translation: [0, 0.5, 0], scale: [1.5, 1.2, 1.5], left_rotation: [-90, 1, 0, 0] }
             wall_offset: 0.001
       spinning_z: { copy_from: idle_z, texture: "@windmill_hub_up", animation: { type: rotate, axis: [0, 0, 1], speed: 3.0 } }
-      # Texture-only pseudo-state: never entered by the network; exists so ChainPulley.java can read
-      # the @chain base64 via resolveTexture("strand", ...) for the runtime strand display.
-      strand: { texture: "@chain" }
     recipes:
       craft:
         shaped:
