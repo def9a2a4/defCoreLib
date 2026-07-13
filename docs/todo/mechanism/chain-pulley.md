@@ -6,8 +6,8 @@ to other pulleys by iron chain, so rotational power jumps a gap around a **close
 the living implementation status / round plan; the design rationale lives in `power-chains.md`.
 
 Code: `ChainPulley.java` (block overlay + link interaction + chain display), `RotationNetwork.java`
-(the `chainOut` distance-edge graph), `rotation-blocks.yml` (`chain_pulley` block + `strand` texture +
-recipe), `rotation-config.yml` (`chain-pulley.max-distance`), `RotationConfig.java`, `RotationBlocks.java`.
+(the `chainOut` distance-edge graph), `rotation-blocks.yml` (`chain_pulley` block + recipe),
+`rotation-config.yml` (`chain-pulley.max-distance`), `RotationConfig.java`, `RotationBlocks.java`.
 
 ## Model
 - **Directed functional graph.** Each pulley stores ONE outgoing partner in its skull PDC
@@ -23,8 +23,8 @@ recipe), `rotation-config.yml` (`chain-pulley.max-distance`), `RotationConfig.ja
   floor-windmill hub (`@windmill_hub_up`), in-hand item + spinning wheel display = `@chainwheel`.
 - Link UX: right-click a pulley with a chain to select, another to link; right-click a linked pulley to
   remove (refund). Directed, one outgoing link each, same-world, config-max-distance.
-- Chain visual: a single stretched `@chain` head display along the link, **rotating about its long axis
-  when the loop is powered** (per-tick ticker gated on `isPowered && onClosedLoop`).
+- Chain visual: a single stretched `IRON_CHAIN` block display along the link, **rotating about its long
+  axis when the loop is powered** (per-tick ticker gated on `isPowered && onClosedLoop`).
 - **Ring power fix:** `doRecalculate` teardown is transitive over `getConnections`, so closing a 3+ ring
   powers every member (previously fragmented, leaving far wheels dead).
 - Chain **cost = rounded block distance**; too few in hand → message, no link; unlink refunds the amount.
