@@ -2,8 +2,10 @@ package anon.def9a2a4.pipes;
 
 import anon.def9a2a4.corelib.CustomBlockRegistry;
 import anon.def9a2a4.corelib.CustomHeadBlock;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.block.data.Rotatable;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.jspecify.annotations.Nullable;
 
@@ -18,14 +20,14 @@ public class PipeBlockRegistrar {
     }
 
     private static void overlayVariant(CustomBlockRegistry registry, PipesPlugin plugin, PipeVariant variant) {
-        String fullId = "pipes:" + variant.getId();
+        String fullId = "pipes:" + variant.id();
         CustomHeadBlock base = registry.getType(fullId);
         if (base == null) {
             plugin.getLogger().warning("No YAML definition for " + fullId + " — skipping overlay");
             return;
         }
 
-        boolean isCorner = variant.getBehaviorType() == BehaviorType.CORNER;
+        boolean isCorner = variant.behaviorType() == BehaviorType.CORNER;
         CustomHeadBlock.Builder builder = base.toBuilder();
 
         if (isCorner) {
@@ -50,6 +52,13 @@ public class PipeBlockRegistrar {
         builder.onBlockPlaced((block, state) -> {
             PipeManager manager = plugin.getPipeManager(block.getWorld());
             if (manager == null) return;
+            if (block.getType() == Material.PLAYER_HEAD
+                    && block.getBlockData() instanceof Rotatable rotatable) {
+                BlockFace facing = parseFacing(state);
+                rotatable.setRotation(facing == BlockFace.UP || facing == BlockFace.DOWN
+                        ? BlockFace.NORTH : facing);
+                block.setBlockData(rotatable, false);
+            }
             BlockFace facing = parseFacing(state);
             manager.registerPipe(block.getLocation(), facing, List.of(), variant);
         });
@@ -89,7 +98,7 @@ public class PipeBlockRegistrar {
         });
 
         registry.register(builder.build());
-        plugin.getLogger().info("Registered " + variant.getId() + " with CoreLib");
+        plugin.getLogger().info("Registered " + variant.id() + " with CoreLib");
     }
 
     private static @Nullable String resolveRegularFacing(BlockPlaceEvent event, PipesPlugin plugin) {

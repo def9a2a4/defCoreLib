@@ -1,19 +1,5 @@
 # Copper Pipes Plugin Configuration
 
-# Recipe unlock settings
-recipes:
-  # Advancement required to unlock pipe recipes
-  # Set to "none" or "" to make recipes always available
-  # Examples:
-  #   minecraft:story/smelt_iron     - Acquire Hardware (smelt iron ingot)
-  #   minecraft:story/obtain_armor   - Suit Up
-  #   minecraft:nether/obtain_blaze_rod - Into Fire
-  unlock-advancement: "minecraft:story/smelt_iron"
-
-  # Show a message when recipes are unlocked
-  show-unlock-message: true
-  unlock-message: "<gold>You've unlocked pipe crafting recipes!"
-
 # World filter - control which worlds pipes can be used in
 # mode: "allowlist" (only listed worlds) or "blocklist" (all except listed worlds)
 # If mode is not set or empty, pipes are enabled in all worlds (default)
@@ -38,7 +24,7 @@ global:
     particle-interval: 10
 
 # Pipe variants - define as many as needed
-# Each variant references a texture-set from display.yml
+# Each variant defines behavior and transfer settings
 variants:
   # Copper Pipe - standard pipe that pulls items from containers
   copper_pipe:
@@ -46,8 +32,6 @@ variants:
     display-name: "Copper Pipe"
     lore:
       - "Pulls items out of the container or pipe it is placed on."
-    texture-set: copper  # References texture set in display.yml
-
     # Per-variant transfer settings
     transfer:
       # Ticks between item transfers (20 ticks = 1 second)
@@ -72,8 +56,6 @@ variants:
     display-name: "Copper Corner Pipe"
     lore:
       - "Pushed items into the direction it was placed. Must have another pipe feeding into it."
-    texture-set: copper_corner  # References texture set in display.yml
-
     transfer:
       interval-ticks: 10
       items-per-transfer: 4
@@ -102,8 +84,6 @@ variants:
     display-name: "Iron Pipe"
     lore:
       - "Pulls items out of the container or pipe it is placed on."
-    texture-set: iron
-
     transfer:
       interval-ticks: 10
       items-per-transfer: 8
@@ -124,8 +104,6 @@ variants:
     display-name: "Iron Corner Pipe"
     lore:
       - "Pushed items into the direction it was placed. Must have another pipe feeding into it."
-    texture-set: iron_corner
-
     transfer:
       interval-ticks: 10
       items-per-transfer: 8
@@ -154,8 +132,6 @@ variants:
     display-name: "Gold Pipe"
     lore:
       - "Pulls items out of the container or pipe it is placed on."
-    texture-set: gold
-
     transfer:
       interval-ticks: 10
       items-per-transfer: 16
@@ -176,8 +152,6 @@ variants:
     display-name: "Gold Corner Pipe"
     lore:
       - "Pushed items into the direction it was placed. Must have another pipe feeding into it."
-    texture-set: gold_corner
-
     transfer:
       interval-ticks: 10
       items-per-transfer: 16
@@ -206,8 +180,6 @@ variants:
     display-name: "Oxidized Copper Pipe"
     lore:
       - "Pulls items out of the container or pipe it is placed on."
-    texture-set: oxidized_copper
-
     transfer:
       interval-ticks: 10
       items-per-transfer: 1
@@ -220,8 +192,6 @@ variants:
     display-name: "Oxidized Copper Corner Pipe"
     lore:
       - "Pushed items into the direction it was placed. Must have another pipe feeding into it."
-    texture-set: oxidized_copper_corner
-
     transfer:
       interval-ticks: 10
       items-per-transfer: 1

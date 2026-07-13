@@ -9,7 +9,7 @@ depend: [DefCoreLib]
 commands:
   pipes:
     description: Pipes admin commands
-    usage: /pipes <help|reload|give|recipes|cleanup|info|delete_all>
+    usage: /pipes <help|reload|give|recipes|info|delete_all>
     permission: pipes.admin
 
 permissions:
@@ -24,9 +24,6 @@ permissions:
     default: op
   pipes.recipes:
     description: Allows unlocking all pipe recipes
-    default: op
-  pipes.cleanup:
-    description: Allows cleaning up orphaned display entities
     default: op
   pipes.info:
     description: Allows viewing pipe statistics
