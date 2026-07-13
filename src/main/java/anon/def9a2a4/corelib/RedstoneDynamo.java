@@ -39,24 +39,46 @@ final class RedstoneDynamo implements Listener {
 
     static final String BLOCK_ID = "mech:redstone_dynamo";
 
-    /** What network quantity the dynamo reports. */
+    /** What network quantity the dynamo reports. Menu icon: font head Σ / + / −. */
     enum Mode {
-        TOTAL("Total Power", "Total rotation supplied to the network", Material.LIME_CONCRETE),
-        USED("Used Power", "Power currently demanded by machines", Material.ORANGE_CONCRETE),
-        UNUSED("Unused Power", "Surplus power: supply minus demand", Material.LIGHT_BLUE_CONCRETE);
-        final String label, desc;
-        final Material icon;
-        Mode(String label, String desc, Material icon) { this.label = label; this.desc = desc; this.icon = icon; }
+        TOTAL("Total Power", "Total rotation supplied to the network", Tex.STONE_SIGMA, Tex.RS_SIGMA),
+        USED("Used Power", "Power currently demanded by machines", Tex.STONE_PLUS, Tex.RS_PLUS),
+        UNUSED("Unused Power", "Surplus power: supply minus demand", Tex.STONE_MINUS, Tex.RS_MINUS);
+        final String label, desc, stoneTex, selTex;
+        Mode(String label, String desc, String stoneTex, String selTex) {
+            this.label = label; this.desc = desc; this.stoneTex = stoneTex; this.selTex = selTex;
+        }
     }
 
-    /** How the raw value is mapped into a 0-15 redstone level. */
+    /** How the raw value is mapped into a 0-15 redstone level. Menu icon: font head = / % / /. */
     enum Scaling {
-        CLAMP("Clamp 0-15", "Value capped at 15", Material.COMPARATOR),
-        MOD15("Modulo 15", "Wraps around: value % 15", Material.REPEATER),
-        DIV15("Divide by 15", "value / 15 — for big networks", Material.REDSTONE_TORCH);
-        final String label, desc;
-        final Material icon;
-        Scaling(String label, String desc, Material icon) { this.label = label; this.desc = desc; this.icon = icon; }
+        CLAMP("Clamp 0-15", "Value capped at 15", Tex.STONE_EQ, Tex.RS_EQ),
+        MOD15("Modulo 15", "Wraps around: value % 15", Tex.STONE_PCT, Tex.RS_PCT),
+        DIV15("Divide by 15", "Floor division: value / 15", Tex.STONE_SLASH, Tex.RS_SLASH);
+        final String label, desc, stoneTex, selTex;
+        Scaling(String label, String desc, String stoneTex, String selTex) {
+            this.label = label; this.desc = desc; this.stoneTex = stoneTex; this.selTex = selTex;
+        }
+    }
+
+    /** Base64 head textures for the menu buttons (from ../HeadSmith/data/heads-db-b64.csv): the
+     *  stone font (Font (Cleanstone)) when unselected, the redstone-block font when selected.
+     *  Held in a separate class so the enum constants above can reference them (an enum constant
+     *  can't forward-reference a static field of its own class). */
+    private static final class Tex {
+        static final String STONE_SIGMA = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjdhMjNlNDM3MGJlMWM1NzRmNzZiOGMwMGViZjg0ZjgwZmNjNzIwMjYyN2MwYmFjMGE2MTg5MDM0MzQ2YTJkYiJ9fX0=";
+        static final String STONE_PLUS  = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMGEyMWViNGM1Nzc1MDcyOWE0OGI4OGU5YmJkYjk4N2ViNjI1MGE1YmMyMTU3YjU5MzE2ZjVmMTg4N2RiNSJ9fX0=";
+        static final String STONE_MINUS = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYThjNjdmZWQ3YTI0NzJiN2U5YWZkOGQ3NzJjMTNkYjdiODJjMzJjZWVmZjhkYjk3NzQ3NGMxMWU0NjExIn19fQ==";
+        static final String STONE_EQ    = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGZkMWZjMzBmYTU3ODE2M2NhNjVjNTllMmZmZGVjYWNlYjg0NmMwZjIxOWMxMmJjM2UxMDEyYjhhOWMzYmYifX19";
+        static final String STONE_SLASH = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMmQ1OTNmMDk0NWNiYjg1YThlMGJlN2Q5YTUyNjAxMGVlNzc0ODEwZjJiYzQyOGNkNGEyM2U0ZDIzMmVmZjgifX19";
+        static final String STONE_PCT   = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjg1YmU3NmRlMjhkZGNiMzlkMjgzZTNkNzFmNmVkNjNkZTg1NGY4Mzk2MjNlYzE4YTUzODBjODRmMWMyNWY5In19fQ==";
+        static final String RS_SIGMA = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjM3MjgxNzhhMTMzOTQzMGFhYzQ4NGZmMjI1NzNmOGVlNzRlZmY1ZGJkNGFlOTVkYjhmMmRmY2ZjMzUzYzEzMiJ9fX0=";
+        static final String RS_PLUS  = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjlmZjk4ODQyY2I2NjQwNWQyMGE4ZTZiMmVmZmFjNDYwMTBiOGY1NjAyZWE3MzI2ZDRkMTg1YjliNWRjZTA2In19fQ==";
+        static final String RS_MINUS = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjhkNWEzOGQ2YmZjYTU5Nzg2NDE3MzM2M2QyODRhOGQzMjljYWFkOTAxOGM2MzgxYjFiNDI5OWI4YjhiOTExYyJ9fX0=";
+        static final String RS_EQ    = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjczNjFhYTg4Zjc2YWZhYTk0NDZhOGRhMTU1NDI2M2YxMmFhM2ViMmUzMDJiMzlhNjFlODhiZTcxYzQ1MGJlMyJ9fX0=";
+        static final String RS_SLASH = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOWJjZDllMTk5ODAzYmUzYjljZDFmZDZmMmI5M2EzYzdlYWM2MmRlMGRkYWY1ZDlkMThlZDZmNTMzNDYzNjFmMiJ9fX0=";
+        static final String RS_PCT   = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTMzZDhjZDU3NzMzYTBlZWI3ZDg4OTgwZDViZmZkMDVjNjcxNGQ3YTZjZDhjODg1OGEzNmE3YzgzOThlMjNjMSJ9fX0=";
+        private Tex() {}
     }
 
     private static final NamespacedKey MODE_KEY = new NamespacedKey("mech", "dynamo_mode");
@@ -220,11 +242,11 @@ final class RedstoneDynamo implements Listener {
 
         for (int i = 0; i < MODES.length; i++) {
             Mode m = MODES[i];
-            inv.setItem(MODE_SLOTS[i], toggle(m.icon, m.label, m.desc, m == curMode));
+            inv.setItem(MODE_SLOTS[i], toggle(m.stoneTex, m.selTex, m.label, m.desc, m == curMode));
         }
         for (int i = 0; i < SCALINGS.length; i++) {
             Scaling s = SCALINGS[i];
-            inv.setItem(SCALING_SLOTS[i], toggle(s.icon, s.label, s.desc, s == curScaling));
+            inv.setItem(SCALING_SLOTS[i], toggle(s.stoneTex, s.selTex, s.label, s.desc, s == curScaling));
         }
     }
 
@@ -297,21 +319,21 @@ final class RedstoneDynamo implements Listener {
 
     // ── Item helpers ──────────────────────────────────────────────────────────────────────────────
 
-    private static ItemStack toggle(Material icon, String label, String desc, boolean selected) {
-        ItemStack it = new ItemStack(selected ? icon : Material.LIGHT_GRAY_STAINED_GLASS_PANE);
+    private static ItemStack toggle(String stoneTex, String selTex, String label, String desc, boolean selected) {
         Component name = Component.text(label, selected ? NamedTextColor.GREEN : NamedTextColor.WHITE)
                 .decoration(TextDecoration.ITALIC, false);
         List<Component> lore = List.of(
                 text(desc, NamedTextColor.GRAY),
                 text(selected ? "✔ Selected" : "Click to select",
                         selected ? NamedTextColor.GREEN : NamedTextColor.YELLOW));
-        ItemStack out = named(it, name, lore);
+        // Font head: stone glyph when unselected, redstone-block glyph when selected.
+        ItemStack head = HeadUtil.createHead(selected ? selTex : stoneTex, 1, name, lore, Map.of());
         if (selected) {
-            var meta = out.getItemMeta();
+            var meta = head.getItemMeta();
             meta.setEnchantmentGlintOverride(true);
-            out.setItemMeta(meta);
+            head.setItemMeta(meta);
         }
-        return out;
+        return head;
     }
 
     private static ItemStack named(ItemStack it, Component name, List<Component> lore) {
