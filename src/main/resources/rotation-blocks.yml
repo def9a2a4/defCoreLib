@@ -1535,9 +1535,9 @@ blocks:
             tag: pole
             transform: { translation: [0.4, 0, 0], scale: [1.002, 1.8, 1.002], left_rotation: [-90, 0, 0, 1] }
             wall_offset: 0.001
-          - texture: "@head_up"
+          - texture: "@head_fwd"
             tag: cap
-            transform: { translation: [0.5, 0, 0], scale: [2.004, 1.0, 2.004], left_rotation: [-90, 0, 0, 1] }
+            transform: { translation: [0.25, 0.501, 0], scale: [2.004, 2.004, 1.0], left_rotation: [90, 0, 1, 0] }
             wall_offset: 0.001
       idle_z:
         texture: "@head_fwd"
@@ -1546,9 +1546,9 @@ blocks:
             tag: pole
             transform: { translation: [0, 0, 0.4], scale: [1.002, 1.8, 1.002], left_rotation: [90, 1, 0, 0] }
             wall_offset: 0.001
-          - texture: "@head_up"
+          - texture: "@head_fwd"
             tag: cap
-            transform: { translation: [0, 0, 0.5], scale: [2.004, 1.0, 2.004], left_rotation: [90, 1, 0, 0] }
+            transform: { translation: [0, 0.501, 0.25], scale: [2.004, 2.004, 1.0] }
             wall_offset: 0.001
     recipes:
       craft:

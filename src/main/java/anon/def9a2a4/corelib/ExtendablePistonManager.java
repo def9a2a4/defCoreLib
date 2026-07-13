@@ -183,7 +183,8 @@ final class ExtendablePistonManager {
     private static final float CAP_W = 2.004f;       // cap width   (2x the 0.501 pole ⇒ 1.002 block)
     private static final float CAP_THICK = 1.0f;     // cap depth along the axis (0.5 block plate)
     private static final float STUB_T = 0.4f;        // stub inner end flush with the pole (u∈[-0.5,0.4])
-    private static final float CAP_T = 0.75f;        // cap anchor 0.25 past the block face (plate u∈[0.25,0.75])
+    private static final float CAP_T = 0.75f;        // vertical cap anchor 0.25 past the face (plate u∈[0.25,0.75])
+    private static final float WALL_CAP_OUT = 0.25f; // wall cap outer face flush with the block face (u∈[0,0.5])
 
     /**
      * Resolve display {@code idx} (0 = toothed pole-stub, 1 = wide cap) for a placed head. Both point toward
@@ -201,15 +202,17 @@ final class ExtendablePistonManager {
             return new Transformation(o.mul(STUB_T, new Vector3f()),
                 r, new Vector3f(POLE_W, STUB_LEN, POLE_W), R_IDENTITY);
         }
-        // Cap: 0.5-thick full-width plate ⟂ the axis, nudged onto the block — floor caps 0.25 down (world),
-        // wall caps 0.25 toward the pole (inward).
-        Vector3f capT = new Vector3f(o).mul(CAP_T);
+        // Cap idx 1 — a 0.5-thick plate. Vertical and wall heads use DIFFERENT head skins whose decorated art
+        // sits on different faces, so they need different rotation/scale:
         if (outward == BlockFace.UP || outward == BlockFace.DOWN) {
-            capT.add(0f, -0.25f, 0f);
-        } else {
-            capT.sub(o.x * 0.25f, o.y * 0.25f, o.z * 0.25f);
+            // Vertical: @head_up art on ±Y, thin-in-Y, +Y→outward. Nudged 0.25 down; down-cap lifted 0.5.
+            Vector3f capT = new Vector3f(o).mul(CAP_T).add(0f, -0.25f, 0f);
+            if (outward == BlockFace.DOWN) capT.add(0f, 0.5f, 0f);
+            return new Transformation(capT, r, new Vector3f(CAP_W, CAP_THICK, CAP_W), R_IDENTITY);
         }
-        return new Transformation(capT, r, new Vector3f(CAP_W, CAP_THICK, CAP_W), R_IDENTITY);
+        // Wall: @head_fwd art on ±Z, thin-in-Z, front(+Z)→outward, upright & vertically centred on the block.
+        Vector3f capT = new Vector3f(o).mul(WALL_CAP_OUT).add(0f, 0.501f, 0f);
+        return new Transformation(capT, faceRotation(outward), new Vector3f(CAP_W, CAP_W, CAP_THICK), R_IDENTITY);
     }
 
     /** +axis for the head's placement state ({@code idle_x/y/z}), or null if unknown. */
@@ -246,6 +249,21 @@ final class ExtendablePistonManager {
             case WEST  -> new AxisAngle4f(h, 0f, 0f, 1f);  // +Y → -X
             case SOUTH -> new AxisAngle4f(h, 1f, 0f, 0f);  // +Y → +Z
             case NORTH -> new AxisAngle4f(-h, 1f, 0f, 0f); // +Y → -Z
+            default    -> R_IDENTITY;
+        };
+    }
+
+    /**
+     * Rotation that maps the model's +Z (front) face onto {@code outward}, for the wall cap's @head_fwd skin.
+     * All rotations are about +Y, so the head stays upright. Only the four horizontal faces occur for walls.
+     */
+    private static AxisAngle4f faceRotation(BlockFace outward) {
+        float h = (float) (Math.PI / 2), p = (float) Math.PI;
+        return switch (outward) {
+            case SOUTH -> R_IDENTITY;                     // +Z → +Z
+            case NORTH -> new AxisAngle4f(p, 0f, 1f, 0f);  // +Z → -Z
+            case EAST  -> new AxisAngle4f(h, 0f, 1f, 0f);  // +Z → +X
+            case WEST  -> new AxisAngle4f(-h, 0f, 1f, 0f); // +Z → -X
             default    -> R_IDENTITY;
         };
     }
