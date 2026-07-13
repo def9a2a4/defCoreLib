@@ -65,13 +65,19 @@ public final class MechAdvancements {
             Map.entry("mech:engine", "craft/engine"),
             Map.entry("mech:chain_pulley", "craft/chain_pulley"),
             Map.entry("mech:suction_hopper", "craft/suction_hopper"),
-            Map.entry("mech:dough", "machines/dough"));
+            Map.entry("mech:dough", "machines/dough"),
+            Map.entry("mech:piston_core", "craft/piston"),
+            Map.entry("mech:piston_pole", "craft/piston"),
+            Map.entry("mech:piston_head", "craft/piston"),
+            Map.entry("mech:rotator", "craft/rotator"),
+            Map.entry("mech:mechanism_minecart", "craft/minecart"));
 
     // The machine craft nodes that together earn craft/master_machinist (tools/parts excluded).
     private static final Set<String> MACHINE_CRAFT_NODES = Set.of(
             "craft/shaft", "craft/gear", "craft/water_wheel", "craft/windmill_item",
             "craft/clutch", "craft/reverser", "craft/chain_pulley", "craft/drill", "craft/millstone",
-            "craft/fan", "craft/suction_hopper", "craft/press", "craft/placer", "craft/motor", "craft/engine");
+            "craft/fan", "craft/suction_hopper", "craft/press", "craft/placer", "craft/motor", "craft/engine",
+            "craft/piston", "craft/rotator", "craft/minecart");
 
     // The mastery capstones that together earn mastery/grand_engineer. Excludes windmill/huge, which is
     // BetterBanners-gated (would make the finale unobtainable without that plugin).
@@ -115,6 +121,7 @@ public final class MechAdvancements {
         String node = switch (type) {
             case "mech:rotator" -> vertical ? "structures/door" : "structures/drawbridge";
             case "mech:mechanism_minecart" -> "structures/minecart";
+            case "mech:piston" -> "structures/pistons";
             default -> "structures/assemble";
         };
         String sizeNode = blockCount >= 128 ? "structures/earthshaker"
@@ -128,7 +135,8 @@ public final class MechAdvancements {
 
     /** A rotation network became powered near {@code location} (rising edge only — see the core event).
      *  {@code sourceTypes} are the block-type ids of the sources driving it. */
-    public void onPower(Location location, int supply, int demand, int memberCount, List<String> sourceTypes) {
+    public void onPower(Location location, int supply, int demand, int memberCount,
+                        List<String> sourceTypes, boolean chainLoop) {
         List<Player> players = nearby(location);
         if (players.isEmpty()) return;
         // Grant the highest reached tier; grantWithAncestors cascades to the lower ones.
@@ -150,6 +158,7 @@ public final class MechAdvancements {
             if (wind) grant(p, "rotation/wind_power");
             if (water) grant(p, "rotation/water_power");
             if (engine) grant(p, "rotation/engine_power");
+            if (chainLoop) grant(p, "rotation/chain_loop");
             checkAggregates(p);
         }
     }

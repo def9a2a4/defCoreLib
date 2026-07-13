@@ -65,7 +65,7 @@ public final class MechAdvancementListeners implements Listener {
     @EventHandler
     public void onPower(RotationNetworkPoweredEvent event) {
         advancements.onPower(event.getLocation(), event.getSupply(),
-                event.getDemand(), event.getMemberCount(), event.getSourceTypes());
+                event.getDemand(), event.getMemberCount(), event.getSourceTypes(), event.isChainLoop());
     }
 
     /** A millstone/press ejected outputs → food/processing product nodes. */
