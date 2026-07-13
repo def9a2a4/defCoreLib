@@ -367,6 +367,14 @@ public class MechanismRegistry {
         }, 1L);
 
         activeMechanisms.put(mechId, mech);
+
+        // Surface assembly to companion plugins (e.g. the mech advancement system). Single choke
+        // point for every assembleMechanism overload; fired on the main thread, informational only.
+        boolean verticalAxis = Math.abs(rotationAxis.y) > 0.5f
+            && rotationAxis.x == 0f && rotationAxis.z == 0f;
+        Bukkit.getPluginManager().callEvent(
+            new MechanismAssembleEvent(mech, type, pivot.clone(), mech.blockCount(), verticalAxis));
+
         return mech;
     }
 

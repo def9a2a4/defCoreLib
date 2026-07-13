@@ -21,7 +21,9 @@ repositories {
 }
 
 dependencies {
-    compileOnly("io.papermc.paper:paper-api:1.21.8-R0.1-SNAPSHOT")
+    // 1.21.11 (matches the runtime) guarantees the datapack-discovery bootstrap API
+    // (LifecycleEvents.DATAPACK_DISCOVERY / registrar.discoverPack) needed by MechBootstrap.
+    compileOnly("io.papermc.paper:paper-api:1.21.11-R0.1-SNAPSHOT")
     implementation("org.bstats:bstats-bukkit:3.1.0")
     // The core DefCoreLib runtime (installed separately at runtime). Consume the root's `shadow`
     // configuration so the dependency on the shadowJar task is explicit (avoids Gradle's
@@ -34,7 +36,7 @@ tasks {
         val props = mapOf("version" to version)
         inputs.properties(props)
         filteringCharset = "UTF-8"
-        filesMatching("plugin.yml") {
+        filesMatching("paper-plugin.yml") {
             expand(props)
         }
     }

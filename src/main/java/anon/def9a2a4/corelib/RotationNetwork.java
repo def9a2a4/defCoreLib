@@ -307,11 +307,14 @@ public class RotationNetwork {
         // Scan ALL jammed networks, not just the changed one — neighbor networks also get torn down
         // and rebuilt below, and missing them replays the jam smoke/sound on a merge that stays jammed.
         Set<CustomBlockRegistry.LocationKey> previouslyJammed = new HashSet<>();
+        // Also snapshot members of already-powered networks, so the powered event below fires only on a
+        // false→true rising edge (a member not in this set gaining power), never on every recalc.
+        Set<CustomBlockRegistry.LocationKey> previouslyPowered = new HashSet<>();
         for (Map.Entry<Integer, NetworkState> e : networks.entrySet()) {
-            if (e.getValue().jammed()) {
-                Set<CustomBlockRegistry.LocationKey> m = networkMembers.get(e.getKey());
-                if (m != null) previouslyJammed.addAll(m);
-            }
+            Set<CustomBlockRegistry.LocationKey> m = networkMembers.get(e.getKey());
+            if (m == null) continue;
+            if (e.getValue().jammed()) previouslyJammed.addAll(m);
+            if (e.getValue().powered()) previouslyPowered.addAll(m);
         }
 
         // 1. Determine dirty set — clear old network indexes + directions
@@ -548,6 +551,20 @@ public class RotationNetwork {
             boolean powered = netState.powered();
             for (CustomBlockRegistry.LocationKey loc : members) {
                 updateBlockState(loc, powered);
+            }
+
+            // Rising edge only: fire once for a network that just became powered (some member was not
+            // already in a powered network). Idempotent grants + the companion's short-circuit absorb
+            // the minor over-fire when a powered network merely grows.
+            if (powered && !members.stream().allMatch(previouslyPowered::contains)) {
+                for (CustomBlockRegistry.LocationKey loc : members) {
+                    Block b = toBlock(loc);
+                    if (b == null) continue;
+                    Location center = b.getLocation().add(0.5, 0.5, 0.5);
+                    Bukkit.getPluginManager().callEvent(new RotationNetworkPoweredEvent(
+                        center, netState.supply(), netState.demand(), members.size()));
+                    break;
+                }
             }
         }
     }

@@ -1,0 +1,19 @@
+name: mech
+main: anon.def9a2a4.mech.MechPlugin
+bootstrapper: anon.def9a2a4.mech.MechBootstrap
+version: ${version}
+api-version: "1.21"
+author: def9a2a4
+description: Mechanism - rotation mechanisms, glue, mechanism minecarts, and advancements (content lives in DefCoreLib)
+dependencies:
+  server:
+    DefCoreLib:
+      load: BEFORE
+      required: true
+    bbanners:
+      load: BEFORE
+      required: false
+permissions:
+  mech.admin:
+    description: Mechanism admin commands (advance)
+    default: op
