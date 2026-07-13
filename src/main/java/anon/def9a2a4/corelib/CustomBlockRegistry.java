@@ -164,6 +164,11 @@ public class CustomBlockRegistry {
     private @Nullable CustomHeadBlock chainShaftType;
     private @Nullable Consumer<Block> chainShaftRevertHandler;
 
+    // Pluggable per-chunk restorers for custom blocks whose identity lives on an attached display
+    // entity rather than a skull PDC (e.g. bare chain shafts). Run for hinted chunks in onChunkLoad;
+    // each restores its own blocks and reports whether it kept ≥1 so the hint isn't wiped.
+    private final List<ChunkRestorer> chunkRestorers = new ArrayList<>();
+
     private @Nullable BukkitTask redstoneTask;
     private @Nullable BukkitTask particleTask;
     private @Nullable BukkitTask customTickTask;
@@ -434,6 +439,7 @@ public class CustomBlockRegistry {
     void setChainShaftSupport(CustomHeadBlock shaftType, java.util.function.Consumer<Block> revertHandler) {
         this.chainShaftType = shaftType;
         this.chainShaftRevertHandler = revertHandler;
+        registerChunkRestorer(this::restoreChainShaftsInChunk);
     }
 
     /** True if {@code block} is a CHAIN currently acting as a bare shaft. */
@@ -443,7 +449,10 @@ public class CustomBlockRegistry {
                 && chainShaftLocations.contains(LocationKey.of(block));
     }
 
-    void addChainShaft(Block block) { chainShaftLocations.add(LocationKey.of(block)); }
+    void addChainShaft(Block block) {
+        chainShaftLocations.add(LocationKey.of(block));
+        markChunkDirty(block);   // hint the chunk so onChunkLoad's gated restore finds this bare shaft
+    }
 
     void removeChainShaft(Block block) {
         LocationKey key = LocationKey.of(block);
@@ -488,12 +497,15 @@ public class CustomBlockRegistry {
 
     /**
      * Re-register bare chain shafts in a just-loaded chunk from their persistent rod displays.
-     * Runs unconditionally (not gated by the chunk hint, which is wiped for chain-only chunks).
+     * Registered as a {@link ChunkRestorer} in {@link #setChainShaftSupport}, so it runs only for
+     * hinted chunks (the hint is set on creation via {@link #addChainShaft}).
+     * @return true if the chunk holds at least one live bare shaft, so its hint is kept alive.
      */
-    void restoreChainShaftsInChunk(Chunk chunk) {
-        if (chainShaftType == null) return;
+    boolean restoreChainShaftsInChunk(Chunk chunk) {
+        if (chainShaftType == null) return false;
         World world = chunk.getWorld();
-        if (!isNamespaceEnabledInWorld(chainShaftType.namespace(), world.getName())) return;
+        if (!isNamespaceEnabledInWorld(chainShaftType.namespace(), world.getName())) return false;
+        boolean found = false;
         for (org.bukkit.entity.Entity entity : chunk.getEntities()) {
             if (!(entity instanceof ItemDisplay display)) continue;
             int[] xyz = parseShaftRodTag(display);
@@ -503,10 +515,12 @@ public class CustomBlockRegistry {
             // anything else is an orphan (left for the orphan cleaner).
             if (block.getType() != Material.CHAIN) continue;
             LocationKey key = LocationKey.of(block);
+            found = true;   // a live bare shaft here (already-known or newly restored) keeps the hint
             if (chainShaftLocations.contains(key)) continue;
             chainShaftLocations.add(key);
             restoreBlock(block, chainShaftType, getState(block));
         }
+        return found;
     }
 
     /** Parse the x,y,z from a {@code corelib:mech:shaft:x_y_z:rod} display tag, or null. */
@@ -524,6 +538,56 @@ public class CustomBlockRegistry {
             }
         }
         return null;
+    }
+
+    // ── Entity-hosted chunk restorers ────────────────────────────────────────
+
+    /**
+     * Restores custom blocks in a just-loaded chunk whose identity lives on an attached display
+     * entity rather than a skull PDC (e.g. bare chain shafts). Called from {@link #onChunkLoad} for
+     * hinted chunks only. Register via {@link #registerChunkRestorer}.
+     */
+    @FunctionalInterface
+    interface ChunkRestorer {
+        /** @return true if the chunk holds ≥1 live block of this kind (keeps the chunk hint alive). */
+        boolean restore(Chunk chunk);
+    }
+
+    void registerChunkRestorer(ChunkRestorer restorer) {
+        chunkRestorers.add(restorer);
+    }
+
+    /**
+     * True if the chunk holds any block-display entity carrying a corelib block tag
+     * ({@code corelib:{ns}:{type}:x_y_z[:suffix]}), whether or not that type is registered. Load-order
+     * safety for entity-hosted blocks — the analogue of the skull {@code foundAnyPdc} guard, so a hint
+     * isn't wiped for a type whose plugin hasn't registered its restorer yet.
+     */
+    private static boolean chunkHasCorelibBlockDisplay(Chunk chunk) {
+        for (org.bukkit.entity.Entity entity : chunk.getEntities()) {
+            if (!(entity instanceof Display display)) continue;
+            for (String tag : display.getScoreboardTags()) {
+                if (isCorelibBlockTag(tag)) return true;
+            }
+        }
+        return false;
+    }
+
+    /** Matches the {@code corelib:{ns}:{type}:{x_y_z}[:suffix]} block-display tag shape (3 int coords). */
+    private static boolean isCorelibBlockTag(String tag) {
+        if (!tag.startsWith("corelib:")) return false;
+        String[] parts = tag.split(":");
+        if (parts.length < 4) return false;
+        String[] coords = parts[3].split("_");
+        if (coords.length != 3) return false;
+        try {
+            Integer.parseInt(coords[0]);
+            Integer.parseInt(coords[1]);
+            Integer.parseInt(coords[2]);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
     }
 
     // ──────────────────────────────────────────────────────────────────────
@@ -562,13 +626,13 @@ public class CustomBlockRegistry {
     void onChunkLoad(Chunk chunk) {
         if (!chunkMayHaveCustomBlocks(chunk)) return;
 
-        boolean foundAnyPdc = false; // true if ANY skull has a corelib PDC key (even unrecognized)
+        boolean foundAny = false; // any corelib custom block (skull or entity-hosted) that keeps the hint
         for (BlockState tile : chunk.getTileEntities()) {
             if (!(tile instanceof Skull skull)) continue;
             String typeId = skull.getPersistentDataContainer().get(BLOCK_TYPE_KEY, PersistentDataType.STRING);
             if (typeId == null) continue;
 
-            foundAnyPdc = true; // Don't remove hint — a plugin for this type may load later
+            foundAny = true; // Don't remove hint — a plugin for this type may load later
 
             CustomHeadBlock type = types.get(typeId);
             if (type == null) continue;
@@ -579,8 +643,26 @@ public class CustomBlockRegistry {
             restoreBlock(block, type, state);
         }
 
-        // Only remove hint if the chunk has zero skulls with ANY corelib PDC entry
-        if (!foundAnyPdc) {
+        // Entity-hosted custom blocks (identity on an attached display, not a skull) — e.g. bare chain
+        // shafts. Each restorer restores its own and reports whether the chunk still holds any, so the
+        // hint survives. Isolated: a throwing restorer must never wipe a hint (stranding real blocks)
+        // or abort the others.
+        for (ChunkRestorer restorer : chunkRestorers) {
+            try {
+                foundAny |= restorer.restore(chunk);
+            } catch (Throwable t) {
+                foundAny = true;
+                plugin.getLogger().log(Level.WARNING,
+                    "Chunk restorer threw for chunk " + chunkKey(chunk) + "; keeping hint", t);
+            }
+        }
+
+        // About to wipe: keep the hint if any entity-hosted block display is present whose type isn't
+        // registered yet (plugin load order / reload) — the entity-hosted analogue of foundAnyPdc.
+        if (!foundAny && chunkHasCorelibBlockDisplay(chunk)) foundAny = true;
+
+        // Only remove the hint if nothing — skull, restorer, or entity-hosted display — was found.
+        if (!foundAny) {
             removeChunkHint(chunk);
         }
     }

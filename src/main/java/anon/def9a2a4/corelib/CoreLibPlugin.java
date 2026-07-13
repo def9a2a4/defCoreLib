@@ -248,10 +248,8 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         if (mechanismRegistry != null) {
             mechanismRegistry.cleanupOrphanedEntities(event.getChunk());
         }
-        // Re-register bare (chain) shafts from their persistent rod displays. Unconditional (NOT
-        // gated by the chunk hint, which is wiped for chain-only chunks): identity lives on the rod
-        // entity, which is only available now that entities have loaded.
-        registry.restoreChainShaftsInChunk(event.getChunk());
+        // Bare (chain) shafts are restored inside registry.onChunkLoad (above) via a registered
+        // ChunkRestorer, gated by the chunk hint that addChainShaft sets on creation — no per-chunk scan.
 
         // Re-resolve dynamic display transforms now that entities are available
         org.bukkit.Chunk chunk = event.getChunk();
