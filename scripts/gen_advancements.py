@@ -78,6 +78,13 @@ NODES = [
      "Craft a Reverser — flips a line's spin direction while it's redstone-powered."),
     ("craft/chain_pulley", "craft/reverser", "task", "@chainwheel", "Pull Yourself Together", "white",
      "Craft a Chain Pulley — link two pulleys with a chain to carry power across a gap."),
+    # moving machines: piston -> rotator -> minecart (the minecart recipe needs a rotator, cascade-safe)
+    ("craft/piston", "craft/gear", "task", "@core_fwd", "Reach Out", "white",
+     "Craft an Extendable Piston — a powered arm that pushes a glued structure out and pulls it back."),
+    ("craft/rotator", "craft/piston", "task", "@rotator_side", "Hinge Time", "white",
+     "Craft a Rotator — a hinge that swings a glued structure as a door or drawbridge."),
+    ("craft/minecart", "craft/rotator", "task", "minecraft:furnace_minecart", "Cart Blanche", "white",
+     "Craft a Mechanism Minecart — glue blocks onto it for a rideable moving structure."),
     # sources: windmill -> water wheel -> engine, with the motor as a leaf
     ("craft/windmill_item", "craft/shaft", "task", "@windmill_item", "Tilting at Windmills", "white",
      "Craft a Windmill — an always-spinning passive source; its blades take your four banners' patterns."),
@@ -111,6 +118,8 @@ NODES = [
      "Drive a network with a Water Wheel turned by the current."),
     ("rotation/wind_power", "windmill/plain", "task", "@windmill_item", "Winds of Change", "white",
      "Drive a network with a Windmill — free, fuel-less power on the breeze."),
+    ("rotation/chain_loop", "rotation/first_power", "goal", "@chain", "Closing the Loop", "yellow",
+     "Transmit power through a closed loop of Chain Pulleys."),
 
     # ── Structures / moving (granted when a mechanism assembles) ──
     ("structures/first_glue", "craft/glue_brush", "task", "minecraft:slime_ball", "Bound Together", "white",
@@ -127,6 +136,8 @@ NODES = [
      "Move a mechanism of 32 or more blocks."),
     ("structures/earthshaker", "structures/big_move", "challenge", "minecraft:slime_block", "Earthshaker", "light_purple",
      "Move a massive mechanism of 128 or more blocks."),
+    ("structures/pistons", "structures/assemble", "goal", "@head_fwd", "Reach for the Sky", "yellow",
+     "Extend an Extendable Piston to push a structure out and back."),
 
     # ── Windmills (granted when the windmill tier is placed) ──
     ("windmill/plain", "craft/windmill_item", "goal", "@windmill_item", "Windfall", "yellow",
