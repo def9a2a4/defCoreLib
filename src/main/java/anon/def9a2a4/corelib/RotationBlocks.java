@@ -127,6 +127,8 @@ final class RotationBlocks {
         overlayPress(registry, network, pressRecipes, config);
         overlayPlacer(registry, network, config);
         overlayRedstoneMotor(registry, network, config);
+        // Redstone Dynamo: a barrel-backed sensor (own class — holds per-block level state + a mode menu).
+        new RedstoneDynamo(registry, network, config).register();
         overlayDrill(registry, network, config);
         overlayFan(registry, network, config);
         overlaySuctionHopper(registry, network, config);

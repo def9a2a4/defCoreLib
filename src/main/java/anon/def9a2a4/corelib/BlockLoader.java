@@ -76,6 +76,10 @@ public final class BlockLoader {
         // Item base: a vanilla material (inventory-only items) or a head texture.
         String itemMat = sec.getString("item_material");
         if (itemMat != null) b.itemMaterial(Material.valueOf(itemMat.toUpperCase(java.util.Locale.ROOT)));
+        // Physical world block override (e.g. BARREL for the redstone dynamo): the head texture is
+        // rendered by a display entity while identity/state live in the block's tile-entity PDC.
+        String physMat = sec.getString("physical_material");
+        if (physMat != null) b.physicalMaterial(Material.valueOf(physMat.toUpperCase(java.util.Locale.ROOT)));
         // Base texture: required for placeable head blocks; optional when item_material is set.
         String tex = itemMat != null ? sec.getString("texture") : requireString(sec, "texture");
         if (tex != null) b.texture(resolveTexture(tex, textures));

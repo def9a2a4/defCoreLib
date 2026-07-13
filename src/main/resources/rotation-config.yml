@@ -41,6 +41,11 @@ placer:
 chain-pulley:
   max-distance: 32    # max distance (blocks) between two linked chain pulleys
 
+redstone_dynamo:
+  tick-interval: 10       # ticks between comparator-output refreshes
+  default-mode: TOTAL     # TOTAL | USED | UNUSED — which network quantity to report
+  default-scaling: CLAMP  # CLAMP | MOD15 | DIV15 — how to map the value into a 0-15 signal
+
 fuel:
   COAL: 16
   CHARCOAL: 12

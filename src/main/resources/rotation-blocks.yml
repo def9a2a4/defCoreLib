@@ -21,6 +21,7 @@ textures:
   chiselled_copper:  "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMmVkZDI0ODI1YzIxNzMwM2YyNmFmNTUyNjU3MGEyMTRhZWMyOWI5Mjk3YTY4NzcxNTFiYTUwZmNlZGZmN2ZmMSJ9fX0="  # Chiselled Copper — water wheel
   bronze_engine:     "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTE3MmMxZTcyOWUwY2EwMDE5M2FiNWQ0M2U4OTNmYWJlZGY1YTgwZmM2NDcyNTgxNzZlODUwMjQzMjg4NTkyNSJ9fX0="  # Bronze Ship Engine — engine
   copper_bulb:       "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODNhY2RjZWQ0ZjVhNDhlNzRlZGFkZDAxNGM1ZGU3ZGFmOWVmYjEyMWNlYWZiNmMxNWNkYjEzODc1NTk0ZmNkOSJ9fX0="  # Copper Bulb (powered) — redstone motor
+  dynamo_head:       "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODNhY2RjZWQ0ZjVhNDhlNzRlZGFkZDAxNGM1ZGU3ZGFmOWVmYjEyMWNlYWZiNmMxNWNkYjEzODc1NTk0ZmNkOSJ9fX0="  # PLACEHOLDER (copper bulb) — redstone dynamo; swap in the real skin later
   stone_slabs:       "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTUxZTcwMTY5ZWEwMGYwNGE5NDM5MjIxY2YzMzc3MDg0NDE1OWRkNzc1ZmM4ODMwZTMxMWZkOWI1Y2NkMjk2OSJ9fX0="  # Stone Slabs — millstone
   drill_head:        "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmRmYzY3MTJmOTRiMjc4YmE2MjM5YWJhMDQxMjZhM2JhZjAwMTExNWYzNTE0Mjk0ZDYxNWFmNzlkNmJmNGRhMCJ9fX0="  # Drill — drill placed head
   drill_item:        "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTI4Y2ZkMDY0YmQ0ODY2NmU2YTczOGMxNTJhNWZiYjA0MmJhNzJiNWU5MjkxMmUzZTJmNjk1MWVhOGYyNWQyZSJ9fX0="  # Drill — drill item
@@ -721,6 +722,49 @@ blocks:
               P: { material: PISTON }
               F: { material: BLAST_FURNACE }
               C: { material: COPPER_INGOT }
+
+  # ─── Redstone Dynamo ────────────────────────────────────────────────────
+  # The inverse of the Redstone Motor: reads the rotation network's power and emits an
+  # ANALOG 0-15 redstone signal a comparator can read. Physically a real BARREL (its facing
+  # encodes the rotation axis) disguised behind an oversized head display; it transmits
+  # rotation along its axis like a shaft (draws no power). Right-click opens a mode menu.
+  # The barrel is inert: can't be opened, hopper-proof, and drops only the dynamo item.
+  # (Behaviour, comparator fill, and menu live in RedstoneDynamo.java.)
+  redstone_dynamo:
+    name: "&cRedstone Dynamo"
+    lore:
+      - "&7Emits a redstone signal from"
+      - "&7your rotation network's power"
+      - "&7Read it with a comparator"
+    catalog_notes:
+      - "&fMeasures the rotation network it's wired into and emits an analog 0-15 redstone signal — read it with a comparator against any side."
+      - "&fRight-click to pick what it reports (total / used / unused power) and how it scales to 0-15 (clamp / mod-15 / ÷15)."
+      - "&fTransmits rotation along its axis like a shaft, and draws no power itself."
+      - "&7Wrench: show network debug info."
+    physical_material: BARREL
+    texture: "@dynamo_head"
+    drops: self
+    cancel_pistons: true
+    default_state: idle
+    states:
+      # Single static state — a head display scaled just over a full block to hide the barrel.
+      # The rotation axis comes from the barrel's facing (block-data), not from this state.
+      idle:
+        display_entities:
+          - texture: "@dynamo_head"
+            tag: shell
+            transform: { translation: [0, 0, 0], scale: [2.05, 2.05, 2.05] }
+    recipes:
+      craft:
+        shaped:
+          # Barrel body + bearing (rotation coupling) + comparator (signal output).
+          - pattern: [" C ", "RKR", "IBI"]
+            key:
+              C: { material: COMPARATOR }
+              R: { material: REDSTONE }
+              K: { material: BARREL }
+              I: { material: COPPER_INGOT }
+              B: { block: "mech:bearing" }
 
   # ─── Millstone ──────────────────────────────────────────────────────────
   # Consumer: 1 Power. WALL only — mounts on a block and pulls from it if it's a

@@ -335,7 +335,16 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         }
 
         // Convert non-skull blocks to skulls (e.g., slab items with item_material)
-        if (!isAlreadySkull) {
+        if (type.physicalMaterial() == Material.BARREL) {
+            // Barrel-backed block (e.g. redstone dynamo): replace the placed head with a real barrel whose
+            // facing encodes the rotation axis (attachment face → axis). A head disguise + PDC identity are
+            // applied afterwards (markBlock / applyConfig), same as any other custom block.
+            block.setType(Material.BARREL, false);
+            if (block.getBlockData() instanceof org.bukkit.block.data.Directional dir) {
+                dir.setFacing(placedOn);
+                block.setBlockData(dir, false);
+            }
+        } else if (!isAlreadySkull) {
             BlockFace clickedFace = event.getBlockAgainst().getFace(block);
             if (clickedFace != null && clickedFace != BlockFace.UP && clickedFace != BlockFace.DOWN) {
                 block.setType(Material.PLAYER_WALL_HEAD, false);
@@ -1052,6 +1061,32 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
             // Delay by 1 tick so Bukkit finishes removing the viewer first
             getServer().getScheduler().runTask(this, () -> registry.onStorageClosed(holder));
         }
+    }
+
+    // ──────────────────────────────────────────────────────────────────────
+    // Barrel-backed block protection (e.g. the redstone dynamo): the real barrel drives a comparator,
+    // but must behave like a solid mechanism — players can't open it and hoppers can't move its contents
+    // (which would corrupt the comparator reading the plugin maintains).
+    // ──────────────────────────────────────────────────────────────────────
+
+    @EventHandler(ignoreCancelled = true)
+    public void onManagedBarrelOpen(org.bukkit.event.inventory.InventoryOpenEvent event) {
+        if (isManagedBarrel(event.getInventory().getHolder())) event.setCancelled(true);
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onManagedBarrelMove(org.bukkit.event.inventory.InventoryMoveItemEvent event) {
+        if (isManagedBarrel(event.getSource().getHolder())
+                || isManagedBarrel(event.getDestination().getHolder())) {
+            event.setCancelled(true);
+        }
+    }
+
+    /** True if the inventory holder is a barrel that physically backs one of our custom blocks. */
+    private boolean isManagedBarrel(org.bukkit.inventory.InventoryHolder holder) {
+        if (!(holder instanceof org.bukkit.block.Container c)) return false;
+        Block b = c.getBlock();
+        return b.getType() == Material.BARREL && registry.isCustomBlock(b);
     }
 
     // ──────────────────────────────────────────────────────────────────────

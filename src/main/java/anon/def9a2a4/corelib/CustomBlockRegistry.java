@@ -8,7 +8,9 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
+import org.bukkit.block.Container;
 import org.bukkit.block.Skull;
+import org.bukkit.block.TileState;
 import org.bukkit.block.data.Directional;
 import org.bukkit.block.data.Levelled;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -205,12 +207,12 @@ public class CustomBlockRegistry {
             for (Chunk chunk : world.getLoadedChunks()) {
                 if (!hints.contains(chunkKey(chunk))) continue;
                 for (BlockState tile : chunk.getTileEntities()) {
-                    if (!(tile instanceof Skull skull)) continue;
-                    String id = skull.getPersistentDataContainer().get(BLOCK_TYPE_KEY, PersistentDataType.STRING);
+                    if (!(tile instanceof TileState ts) || !isCustomBlockMaterial(ts.getType())) continue;
+                    String id = ts.getPersistentDataContainer().get(BLOCK_TYPE_KEY, PersistentDataType.STRING);
                     if (!type.fullId().equals(id)) continue;
 
-                    Block block = skull.getBlock();
-                    String state = skull.getPersistentDataContainer().get(STATE_KEY, PersistentDataType.STRING);
+                    Block block = ts.getBlock();
+                    String state = ts.getPersistentDataContainer().get(STATE_KEY, PersistentDataType.STRING);
                     restoreBlock(block, type, state);
                 }
             }
@@ -231,11 +233,20 @@ public class CustomBlockRegistry {
         return item.getItemMeta().getPersistentDataContainer().get(BLOCK_TYPE_KEY, PersistentDataType.STRING);
     }
 
+    /** Materials that can physically back a custom block: player heads and barrel-backed blocks
+     *  (e.g. the redstone dynamo). Both carry identity in their tile-entity PDC. */
+    static boolean isCustomBlockMaterial(Material m) {
+        return m == Material.PLAYER_HEAD || m == Material.PLAYER_WALL_HEAD || m == Material.BARREL;
+    }
+
     public @Nullable CustomHeadBlock getTypeFromBlock(Block block) {
         Material m = block.getType();
-        if (m == Material.PLAYER_HEAD || m == Material.PLAYER_WALL_HEAD) {
-            if (!(block.getState() instanceof Skull skull)) return null;
-            String typeId = skull.getPersistentDataContainer().get(BLOCK_TYPE_KEY, PersistentDataType.STRING);
+        // Heads (the common case) and barrel-backed blocks (e.g. the redstone dynamo) both store their
+        // identity in the block's tile-entity PDC. A Skull is a TileState, so heads are unaffected; a
+        // vanilla barrel without our PDC key simply resolves to null.
+        if (m == Material.PLAYER_HEAD || m == Material.PLAYER_WALL_HEAD || m == Material.BARREL) {
+            if (!(block.getState() instanceof TileState tile)) return null;
+            String typeId = tile.getPersistentDataContainer().get(BLOCK_TYPE_KEY, PersistentDataType.STRING);
             if (typeId == null) return null;
             return types.get(typeId);
         }
@@ -375,11 +386,11 @@ public class CustomBlockRegistry {
         // A bare chain shaft is a CHAIN block (no skull PDC) whose sole identity is its rod display —
         // a live one must never be treated as an orphan (which would delete its only identity carrier).
         if (isChainShaft(block)) return true;
-        if (block.getType() != Material.PLAYER_HEAD && block.getType() != Material.PLAYER_WALL_HEAD) {
+        if (!isCustomBlockMaterial(block.getType())) {
             return false;
         }
-        if (!(block.getState() instanceof Skull skull)) return false;
-        String fullId = skull.getPersistentDataContainer().get(BLOCK_TYPE_KEY, PersistentDataType.STRING);
+        if (!(block.getState() instanceof TileState tile)) return false;
+        String fullId = tile.getPersistentDataContainer().get(BLOCK_TYPE_KEY, PersistentDataType.STRING);
         return owner.fullId().equals(fullId);
     }
 
@@ -399,14 +410,15 @@ public class CustomBlockRegistry {
 
     /** Write block type and initial state to a placed skull's PDC. */
     public void markBlock(Block block, CustomHeadBlock type, @Nullable String initialState) {
-        if (!(block.getState() instanceof Skull skull)) return;
-        PersistentDataContainer pdc = skull.getPersistentDataContainer();
+        // TileState covers both skulls and barrel-backed blocks (Skull extends TileState).
+        if (!(block.getState() instanceof TileState tile)) return;
+        PersistentDataContainer pdc = tile.getPersistentDataContainer();
         pdc.set(BLOCK_TYPE_KEY, PersistentDataType.STRING, type.fullId());
         String effectiveState = initialState != null ? initialState : type.defaultState();
         if (effectiveState != null) {
             pdc.set(STATE_KEY, PersistentDataType.STRING, effectiveState);
         }
-        skull.update();
+        tile.update();
         customBlockLocations.add(LocationKey.of(block));
         markChunkDirty(block);
         if (type.reactsToNeighbors()) {
@@ -416,8 +428,8 @@ public class CustomBlockRegistry {
 
     /** Read current state from a skull's PDC, or synthesize it for a bare (chain) shaft. */
     public @Nullable String getState(Block block) {
-        if (block.getState() instanceof Skull skull) {
-            return skull.getPersistentDataContainer().get(STATE_KEY, PersistentDataType.STRING);
+        if (block.getState() instanceof TileState tile) {
+            return tile.getPersistentDataContainer().get(STATE_KEY, PersistentDataType.STRING);
         }
         if (isChainShaft(block)) {
             String rendered = chainShaftRenderedState.get(LocationKey.of(block));
@@ -428,9 +440,9 @@ public class CustomBlockRegistry {
 
     /** Write a new state to a skull's PDC. No-op for a bare (chain) shaft (state is synthesized). */
     public void setState(Block block, String state) {
-        if (!(block.getState() instanceof Skull skull)) return;
-        skull.getPersistentDataContainer().set(STATE_KEY, PersistentDataType.STRING, state);
-        skull.update();
+        if (!(block.getState() instanceof TileState tile)) return;
+        tile.getPersistentDataContainer().set(STATE_KEY, PersistentDataType.STRING, state);
+        tile.update();
     }
 
     // ── Bare-shaft support ──────────────────────────────────────────────────
@@ -626,10 +638,10 @@ public class CustomBlockRegistry {
     void onChunkLoad(Chunk chunk) {
         if (!chunkMayHaveCustomBlocks(chunk)) return;
 
-        boolean foundAny = false; // any corelib custom block (skull or entity-hosted) that keeps the hint
+        boolean foundAny = false; // any corelib custom block (head/barrel or entity-hosted) that keeps the hint
         for (BlockState tile : chunk.getTileEntities()) {
-            if (!(tile instanceof Skull skull)) continue;
-            String typeId = skull.getPersistentDataContainer().get(BLOCK_TYPE_KEY, PersistentDataType.STRING);
+            if (!(tile instanceof TileState ts) || !isCustomBlockMaterial(ts.getType())) continue;
+            String typeId = ts.getPersistentDataContainer().get(BLOCK_TYPE_KEY, PersistentDataType.STRING);
             if (typeId == null) continue;
 
             foundAny = true; // Don't remove hint — a plugin for this type may load later
@@ -638,8 +650,8 @@ public class CustomBlockRegistry {
             if (type == null) continue;
             if (!isNamespaceEnabledInWorld(type.namespace(), chunk.getWorld().getName())) continue;
 
-            Block block = skull.getBlock();
-            String state = skull.getPersistentDataContainer().get(STATE_KEY, PersistentDataType.STRING);
+            Block block = ts.getBlock();
+            String state = ts.getPersistentDataContainer().get(STATE_KEY, PersistentDataType.STRING);
             restoreBlock(block, type, state);
         }
 
@@ -721,12 +733,12 @@ public class CustomBlockRegistry {
 
         // Dispatch chunk unload callbacks
         for (BlockState tile : chunk.getTileEntities()) {
-            if (!(tile instanceof Skull skull)) continue;
-            String typeId = skull.getPersistentDataContainer().get(BLOCK_TYPE_KEY, PersistentDataType.STRING);
+            if (!(tile instanceof TileState ts) || !isCustomBlockMaterial(ts.getType())) continue;
+            String typeId = ts.getPersistentDataContainer().get(BLOCK_TYPE_KEY, PersistentDataType.STRING);
             if (typeId == null) continue;
             CustomHeadBlock type = types.get(typeId);
             if (type != null && type.onChunkUnloadCallback() != null) {
-                type.onChunkUnloadCallback().accept(skull.getBlock());
+                type.onChunkUnloadCallback().accept(ts.getBlock());
             }
         }
 
@@ -851,6 +863,11 @@ public class CustomBlockRegistry {
                 if (dec.interpolationDuration() != 0) {
                     display.setInterpolationDuration(dec.interpolationDuration());
                 }
+                // A head disguising an opaque physical block (e.g. the dynamo's barrel) samples light at
+                // the block centre and would render dark — force it fully bright so the disguise reads solid.
+                if (type.physicalMaterial() != null) {
+                    display.setBrightness(new Display.Brightness(15, 15));
+                }
                 if (dec.animation() != null) {
                     if (anims == null) anims = new ArrayList<>();
                     anims.add(new AnimationTracked(display, dec.animation(),
@@ -900,6 +917,13 @@ public class CustomBlockRegistry {
         if (type.onBlockRemoved() != null) {
             String state = getState(block);
             type.onBlockRemoved().accept(block, state);
+        }
+
+        // Barrel-backed blocks (e.g. the dynamo) use a real container to drive a comparator; wipe its
+        // contents on any removal path (break / explosion / piston / burn all funnel through here) so the
+        // internal filler is never dropped or spilled — only the block's own item drops.
+        if (type.physicalMaterial() == Material.BARREL && block.getState() instanceof Container container) {
+            container.getInventory().clear();
         }
 
         LocationKey key = LocationKey.of(block);

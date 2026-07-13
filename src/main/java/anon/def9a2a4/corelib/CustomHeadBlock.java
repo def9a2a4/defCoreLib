@@ -251,6 +251,7 @@ public final class CustomHeadBlock {
     private final String texture;
     private final @Nullable String itemTexture; // optional: different texture for item in hand
     private final @Nullable Material itemMaterial;
+    private final @Nullable Material physicalMaterial; // non-null → place this world block (e.g. BARREL) instead of a player head
     private final boolean itemGlint;
     private final boolean unbreakable; // item form: unbreakable + hide the flag (e.g. wrench)
     private final boolean placeable; // false → inventory-only item (juices, oils, wrench)
@@ -321,6 +322,7 @@ public final class CustomHeadBlock {
         this.texture = b.texture;
         this.itemTexture = b.itemTexture;
         this.itemMaterial = b.itemMaterial;
+        this.physicalMaterial = b.physicalMaterial;
         this.itemGlint = b.itemGlint;
         this.unbreakable = b.unbreakable;
         this.placeable = b.placeable;
@@ -389,6 +391,8 @@ public final class CustomHeadBlock {
     public String texture() { return texture; }
     public @Nullable String itemTexture() { return itemTexture; }
     public @Nullable Material itemMaterial() { return itemMaterial; }
+    /** World block to place instead of a player head (e.g. BARREL), or null for the default head. */
+    public @Nullable Material physicalMaterial() { return physicalMaterial; }
     public boolean itemGlint() { return itemGlint; }
     public boolean unbreakable() { return unbreakable; }
     public boolean placeable() { return placeable; }
@@ -626,6 +630,7 @@ public final class CustomHeadBlock {
         b.texture = texture;
         b.itemTexture = itemTexture;
         b.itemMaterial = itemMaterial;
+        b.physicalMaterial = physicalMaterial;
         b.itemGlint = itemGlint;
         b.unbreakable = unbreakable;
         b.placeable = placeable;
@@ -684,6 +689,7 @@ public final class CustomHeadBlock {
         private @Nullable String texture;
         private @Nullable String itemTexture;
         private @Nullable Material itemMaterial;
+        private @Nullable Material physicalMaterial;
         private boolean itemGlint;
         private boolean unbreakable;
         private boolean placeable = true;
@@ -749,6 +755,9 @@ public final class CustomHeadBlock {
         public Builder texture(String base64) { this.texture = base64; return this; }
         public Builder itemTexture(String base64) { this.itemTexture = base64; return this; }
         public Builder itemMaterial(Material material) { this.itemMaterial = material; return this; }
+        /** Place this world block (e.g. BARREL) instead of a player head. The head texture is carried
+         *  by a display entity; identity/state live in the block's tile-entity PDC. */
+        public Builder physicalMaterial(Material material) { this.physicalMaterial = material; return this; }
         public Builder itemGlint(boolean glint) { this.itemGlint = glint; return this; }
         public Builder unbreakable(boolean v) { this.unbreakable = v; return this; }
         public Builder placeable(boolean value) { this.placeable = value; return this; }

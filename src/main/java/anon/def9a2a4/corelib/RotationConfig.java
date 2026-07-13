@@ -32,6 +32,9 @@ final class RotationConfig {
     int suctionPullRange = 1;          // Chebyshev radius: 1 → 3×3×3 cube
     double suctionPullStrength = 0.14; // fixed inward velocity (≈ fanMinPush)
     int chainPulleyMaxDistance = 32;   // max chain-pulley link distance (blocks)
+    int dynamoTickInterval = 10;       // redstone dynamo: ticks between comparator-output refreshes
+    String dynamoDefaultMode = "TOTAL";      // TOTAL | USED | UNUSED
+    String dynamoDefaultScaling = "CLAMP";   // CLAMP | MOD15 | DIV15
     Set<Material> drillBlacklist = Set.of(
             Material.OBSIDIAN, Material.CRYING_OBSIDIAN, Material.SPAWNER,
             Material.MOVING_PISTON, Material.REINFORCED_DEEPSLATE);
@@ -139,6 +142,14 @@ final class RotationConfig {
         ConfigurationSection chainPulley = yaml.getConfigurationSection("chain-pulley");
         if (chainPulley != null) {
             chainPulleyMaxDistance = chainPulley.getInt("max-distance", chainPulleyMaxDistance);
+            loaded++;
+        }
+
+        ConfigurationSection dynamo = yaml.getConfigurationSection("redstone_dynamo");
+        if (dynamo != null) {
+            dynamoTickInterval = dynamo.getInt("tick-interval", dynamoTickInterval);
+            dynamoDefaultMode = dynamo.getString("default-mode", dynamoDefaultMode);
+            dynamoDefaultScaling = dynamo.getString("default-scaling", dynamoDefaultScaling);
             loaded++;
         }
 
