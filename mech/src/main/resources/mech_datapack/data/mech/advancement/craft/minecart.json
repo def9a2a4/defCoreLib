@@ -1,0 +1,24 @@
+{
+  "parent": "mech:craft/rotator",
+  "display": {
+    "icon": {
+      "id": "minecraft:furnace_minecart"
+    },
+    "title": {
+      "text": "Cart Blanche",
+      "color": "white"
+    },
+    "description": {
+      "text": "Craft a Mechanism Minecart \u2014 glue blocks onto it for a rideable moving structure.",
+      "color": "gray"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "criteria": {
+    "impossible": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}
