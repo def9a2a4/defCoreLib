@@ -88,6 +88,7 @@ public class RecipeManager {
             if (sourceItem == null) continue;
 
             ShapelessRecipe shapelessRecipe = new ShapelessRecipe(key, result);
+            shapelessRecipe.setCategory(org.bukkit.inventory.recipe.CraftingBookCategory.REDSTONE);
             shapelessRecipe.addIngredient(new RecipeChoice.ExactChoice(sourceItem));
             shapelessRecipe.addIngredient(catalyst);
 
