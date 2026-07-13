@@ -30,7 +30,7 @@ recipe), `rotation-config.yml` (`chain-pulley.max-distance`), `RotationConfig.ja
 - Chain **cost = rounded block distance**; too few in hand → message, no link; unlink refunds the amount.
 - **Configurable** max link distance (`rotation-config.yml chain-pulley.max-distance`, default 32).
 
-## Round 6 (in progress) — two small items
+## Round 6 (in progress) — three small items
 1. **Lore** — drop the stale "(max 10 blocks apart)" from `chain_pulley` `catalog_notes` (distance is
    config-driven now; links cost chains + power). Rewrite number-free:
    ```yaml
@@ -44,9 +44,18 @@ recipe), `rotation-config.yml` (`chain-pulley.max-distance`), `RotationConfig.ja
    and `onClosedLoop(loc)`, `demand += ceil(dist(loc, chainOut.get(loc)) / 10)`. Live per-recalc, gated
    on the closed loop so a dead chain costs nothing.
 
-> Visual note (settled): keep the animated single stretched display. A static real-chain-segments look
-> and/or linear "sliding" motion were considered; sliding costs ~N transform packets/tick/viewer, so
-> it's deferred as an opt-in.
+3. **Display → single stretched chain BLOCK (was custom head).** Swap the strand from a custom-head
+   `ItemDisplay` to a real `IRON_CHAIN` `BlockDisplay`, stretched to span the gap and **rotating about
+   its long axis when powered** (keep the existing per-tick ticker; linear "sliding" is too costly/hard,
+   so rotation only). In `ChainPulley`: `spawnStrand` → `DisplayUtil.spawnBlock(anchor,
+   CHAIN_MATERIAL.createBlockData(), matrix, tag)`; geometry `orient = rotationTo(+Y, dir)`,
+   `translation = dir/2` (midpoint), `scale = (1, length, 1)`; matrix =
+   `T(pos)·R(orient)·Ry(angle)·S(scale)·T(-0.5,-0.5,-0.5)` — the trailing −0.5 is the BlockDisplay
+   corner-shift (ItemDisplay was centred and didn't need it). `StrandAnim.display` becomes `Display`;
+   `tickStrands` builds the same matrix with the live `angle`; drop the head texture (`strandTexture`,
+   `resolveTexture("strand")`) and the `LENGTH_SCALE`/`FORWARD_FRACTION`/`DIAMETER` constants (unused).
+
+> Sliding/translation motion was considered and rejected (too costly/hard) — rotation-about-axis only.
 
 ## Deferred: seamless auto-grab ski lift (next round)
 No player interaction — a normal minecart part of a rail contraption. A moving cart within a small

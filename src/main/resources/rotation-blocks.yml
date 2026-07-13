@@ -242,9 +242,9 @@ blocks:
       - "&7Links rotational power across a gap"
       - "&7Chain two pulleys into a loop"
     catalog_notes:
-      - "&fA transmitter you can link to another pulley with a chain."
-      - "&7Right-click one pulley with a chain, then another, to link them (max 10 blocks apart)."
-      - "&7Power only flows once the chain links form a closed loop."
+      - "&fA transmitter you can link to other pulleys with a chain."
+      - "&7Right-click one pulley with a chain, then another, to link them — uses chains equal to the distance."
+      - "&7Power flows only around a closed loop of three or more pulleys, and each link draws a little power."
     texture: "@windmill_hub_up"
     item_texture: "@chainwheel"
     drops: self
