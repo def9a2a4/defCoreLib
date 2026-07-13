@@ -253,6 +253,10 @@ public class CustomBlockRegistry {
     /** Outcome of an orphan scan. {@code samples} holds up to ~10 human-readable lines. */
     record OrphanScanResult(int orphans, int live, int skippedUnloaded, List<String> samples) {}
 
+    /** Outcome of a display refresh: how many loaded custom blocks were re-applied and how many
+     *  air-owner orphan displays were found (removed when applied). */
+    record RefreshResult(int refreshed, int airOrphans) {}
+
     /** Owning custom block reference encoded in a block-attached display entity's tag. */
     private record DisplayOwnerTag(String fullId, int x, int y, int z) {}
 
@@ -260,11 +264,11 @@ public class CustomBlockRegistry {
      * Scan every loaded world for block-attached display entities whose parent custom block is
      * gone or has been replaced by a different block, optionally despawning them.
      *
-     * <p>Identity is verified against the skull's raw {@link #BLOCK_TYPE_KEY} PDC string rather
-     * than the live type registry, so a display whose type merely isn't registered right now
-     * (plugin load order) is NOT treated as orphaned. Banner ({@code corelib:banner:}) and
-     * mechanism ({@code corelib:mech:}) display tags are skipped. A display whose owner sits in an
-     * unloaded chunk is counted but never removed.
+     * <p>Only tags whose {@code {ns}:{type}} is a registered custom-block type are considered, so
+     * mechanism-entity tags ({@code corelib:mech:{uuid}:…}), chain strands and banners are skipped
+     * while rotation-block displays (namespace {@code mech}) are included. Ownership is then verified
+     * against the skull's raw {@link #BLOCK_TYPE_KEY} PDC (or {@link #isChainShaft} for bare shafts),
+     * not the registry. A display whose owner sits in an unloaded chunk is counted but never removed.
      *
      * @param remove if true, despawn each orphan; if false, only count (preview)
      */
@@ -294,21 +298,72 @@ public class CustomBlockRegistry {
         return new OrphanScanResult(orphans, live, skippedUnloaded, samples);
     }
 
+    /**
+     * Refresh every loaded custom block's displays and (optionally) clear air-owner orphans.
+     *
+     * <p>Timing-safe to invoke at runtime (e.g. from {@code /defcorelib refreshdisplays}): it only
+     * touches already-loaded blocks and attached entities, so unlike a startup sweep it never races
+     * Paper's async entity load. For each loaded custom block it re-runs {@link #applyConfig}, which
+     * removes that cell's existing displays and respawns the correct current ones — fixing a stale,
+     * duplicate, or plain wrong display sitting on a block that still holds the right custom block
+     * (which the orphan scanner cannot detect, since it classifies any display on a live block as
+     * "live"). Then, if {@code apply}, it despawns every block-attached display whose owner cell is
+     * now {@code AIR}. Air-owner is a deliberately conservative orphan test: it never touches a live
+     * block, an unmarked docs grid-preview head, or a bare chain shaft (their owner block is present).
+     *
+     * @param apply if true, actually re-apply configs and remove air-orphans; if false, only count
+     */
+    RefreshResult refreshLoadedDisplays(boolean apply) {
+        int refreshed = 0;
+        // Snapshot: applyConfig mutates the tracking maps this iterates alongside.
+        for (LocationKey key : new ArrayList<>(customBlockLocations)) {
+            World world = Bukkit.getWorld(key.worldId());
+            if (world == null || !world.isChunkLoaded(key.x() >> 4, key.z() >> 4)) continue;
+            Block block = world.getBlockAt(key.x(), key.y(), key.z());
+            CustomHeadBlock type = getTypeFromBlock(block);
+            if (type == null) continue;
+            refreshed++;
+            if (apply) {
+                String state = getState(block);
+                int power = type.sensitivity() != CustomHeadBlock.Sensitivity.NONE ? readPower(block, type) : 0;
+                applyConfig(block, type, state, power);
+            }
+        }
+        int airOrphans = 0;
+        for (World world : Bukkit.getWorlds()) {
+            for (Display display : world.getEntitiesByClass(Display.class)) {
+                DisplayOwnerTag owner = parseBlockDisplayTag(display);
+                if (owner == null) continue;
+                if (!world.isChunkLoaded(owner.x() >> 4, owner.z() >> 4)) continue;
+                if (world.getBlockAt(owner.x(), owner.y(), owner.z()).getType() != Material.AIR) continue;
+                airOrphans++;
+                if (apply) display.remove();
+            }
+        }
+        return new RefreshResult(refreshed, airOrphans);
+    }
+
     /** Extract the owning custom block reference from a block-attached display tag, or null if the
      *  entity carries no such tag. Format: {@code corelib:{ns}:{type}:{x}_{y}_{z}[:{suffix}]}. */
     private @Nullable DisplayOwnerTag parseBlockDisplayTag(Display display) {
         for (String tag : display.getScoreboardTags()) {
             if (!tag.startsWith("corelib:")) continue;
-            if (tag.startsWith("corelib:banner:") || tag.startsWith("corelib:mech:")) continue;
+            if (tag.startsWith("corelib:banner:")) continue;   // banners: host-block ownership, not skull PDC
             String[] parts = tag.split(":");
             if (parts.length < 4) continue;
+            String fullId = parts[1] + ":" + parts[2];
+            // Only real registered custom-block types carry a block-attached display we own. This admits
+            // rotation blocks (mech:shaft, mech:gear, mech:windmill, …) that the old blanket "corelib:mech:"
+            // skip wrongly excluded, while still skipping mechanism-entity tags (corelib:mech:{uuid}:…) and
+            // chain strands (corelib:mech:chain_strand:…) — neither of which is a registered type.
+            if (!types.containsKey(fullId)) continue;
             String[] coords = parts[3].split("_");
             if (coords.length != 3) continue;
             try {
                 int x = Integer.parseInt(coords[0]);
                 int y = Integer.parseInt(coords[1]);
                 int z = Integer.parseInt(coords[2]);
-                return new DisplayOwnerTag(parts[1] + ":" + parts[2], x, y, z);
+                return new DisplayOwnerTag(fullId, x, y, z);
             } catch (NumberFormatException ignored) {
                 // Not a block-display tag (some other corelib tag shape) — keep scanning.
             }
@@ -320,6 +375,9 @@ public class CustomBlockRegistry {
      *  verified against the skull's raw {@link #BLOCK_TYPE_KEY} PDC (not the type registry). */
     private boolean isOwnerPresent(World world, DisplayOwnerTag owner) {
         Block block = world.getBlockAt(owner.x(), owner.y(), owner.z());
+        // A bare chain shaft is a CHAIN block (no skull PDC) whose sole identity is its rod display —
+        // a live one must never be treated as an orphan (which would delete its only identity carrier).
+        if (isChainShaft(block)) return true;
         if (block.getType() != Material.PLAYER_HEAD && block.getType() != Material.PLAYER_WALL_HEAD) {
             return false;
         }

@@ -62,7 +62,8 @@ final class ChainPulley {
     /**
      * Strand display type segment. Deliberately NOT "chain_pulley" so the block-display refresh
      * (which removes {@code corelib:mech:chain_pulley:<x>_<y>_<z>*} on every idle↔spinning state change)
-     * can't delete the strand — while still under {@code corelib:mech:} so the orphan scanner skips it.
+     * can't delete the strand. It is also not a registered custom-block type, so the orphan scanner's
+     * registry gate skips it (a live strand's owner is the pulley block, not a matching skull).
      */
     private static final String STRAND_TYPE = "chain_strand";
 
@@ -125,12 +126,14 @@ final class ChainPulley {
 
     private void handleBlockRemoved(Block b) {
         CustomBlockRegistry.LocationKey key = CustomBlockRegistry.LocationKey.of(b);
-        // This pulley's own outgoing strand goes away.
-        if (network.chainOutOf(key) != null) {
+        // This pulley's own outgoing strand goes away; return the chains that link cost.
+        CustomBlockRegistry.LocationKey outPartner = network.chainOutOf(key);
+        if (outPartner != null) {
             removeStrand(b.getLocation(), key);
             network.unlinkChain(key);
+            dropChains(b, chainCost(key, outPartner));
         }
-        // Any pulley whose link targets this one is now dangling — clear it.
+        // Any pulley whose link targets this one is now dangling — clear it and return its chains.
         for (CustomBlockRegistry.LocationKey src : network.chainIntoOf(key)) {
             network.unlinkChain(src);
             Block srcBlock = blockOf(src);
@@ -138,6 +141,7 @@ final class ChainPulley {
                 clearPartner(srcBlock);
                 removeStrand(srcBlock.getLocation(), src);
             }
+            dropChains(b, chainCost(src, key));
         }
         network.removeNode(key);
     }
@@ -375,5 +379,12 @@ final class ChainPulley {
     private static void refundChain(Player player, int count) {
         if (player.getGameMode() == GameMode.CREATIVE) return;
         player.getInventory().addItem(new ItemStack(CHAIN_MATERIAL, count));
+    }
+
+    /** Drop {@code count} chains into the world at a removed pulley (no player context on removal). */
+    private static void dropChains(Block b, int count) {
+        if (count <= 0) return;
+        b.getWorld().dropItemNaturally(b.getLocation().add(0.5, 0.5, 0.5),
+            new ItemStack(CHAIN_MATERIAL, count));
     }
 }

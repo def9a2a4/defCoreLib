@@ -12,6 +12,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.*;
+import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.world.ChunkLoadEvent;
@@ -629,6 +630,16 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         if (!support.getType().isSolid()) {
             event.setCancelled(true);
         }
+    }
+
+    // Endermen picking up blocks, falling blocks landing in the cell, silverfish, etc. would turn a
+    // custom head to air with no cleanup path — protect it, matching the water/physics protection above.
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    public void onEntityChangeCustomBlock(EntityChangeBlockEvent event) {
+        Block block = event.getBlock();
+        if (block.getType() != Material.PLAYER_HEAD && block.getType() != Material.PLAYER_WALL_HEAD) return;
+        if (!registry.isCustomBlock(block)) return; // fast set check before expensive PDC read
+        event.setCancelled(true);
     }
 
     // Creative middle-click — return correct custom item
@@ -1306,7 +1317,7 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!command.getName().equalsIgnoreCase("defcorelib")) return false;
         if (args.length == 0) {
-            sender.sendMessage(Component.text("Usage: /defcorelib <give|give_demo|give_demo_rotation|list|colliders|reloadbanners|cleanorphans>", NamedTextColor.YELLOW));
+            sender.sendMessage(Component.text("Usage: /defcorelib <give|give_demo|give_demo_rotation|list|colliders|reloadbanners|cleanorphans|refreshdisplays>", NamedTextColor.YELLOW));
             return true;
         }
 
@@ -1430,6 +1441,21 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
                     }
                 }
             }
+            case "refreshdisplays" -> {
+                boolean confirm = args.length >= 2 && args[1].equalsIgnoreCase("confirm");
+                CustomBlockRegistry.RefreshResult result = registry.refreshLoadedDisplays(confirm);
+                if (confirm) {
+                    sender.sendMessage(Component.text("Refreshed " + result.refreshed() + " custom block"
+                            + (result.refreshed() == 1 ? "" : "s") + ", removed " + result.airOrphans()
+                            + " orphaned display " + (result.airOrphans() == 1 ? "entity" : "entities") + ".",
+                            NamedTextColor.GREEN));
+                } else {
+                    sender.sendMessage(Component.text("Would refresh " + result.refreshed() + " loaded custom block"
+                            + (result.refreshed() == 1 ? "" : "s") + " and remove " + result.airOrphans()
+                            + " air-orphan display " + (result.airOrphans() == 1 ? "entity" : "entities")
+                            + ". Run /defcorelib refreshdisplays confirm to apply.", NamedTextColor.YELLOW));
+                }
+            }
             case "showcase" -> {
                 if (!(sender instanceof Player player)) {
                     sender.sendMessage(Component.text("Must be a player", NamedTextColor.RED));
@@ -1528,11 +1554,11 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         if (!command.getName().equalsIgnoreCase("defcorelib")) return List.of();
         if (args.length == 1) {
-            return List.of("give", "give_demo", "give_demo_rotation", "list", "colliders", "reloadbanners", "cleanorphans", "gluetest", "showcase").stream()
+            return List.of("give", "give_demo", "give_demo_rotation", "list", "colliders", "reloadbanners", "cleanorphans", "refreshdisplays", "gluetest", "showcase").stream()
                     .filter(s -> s.startsWith(args[0].toLowerCase()))
                     .toList();
         }
-        if (args.length == 2 && args[0].equalsIgnoreCase("cleanorphans")) {
+        if (args.length == 2 && (args[0].equalsIgnoreCase("cleanorphans") || args[0].equalsIgnoreCase("refreshdisplays"))) {
             return List.of("confirm").stream()
                     .filter(s -> s.startsWith(args[1].toLowerCase()))
                     .toList();

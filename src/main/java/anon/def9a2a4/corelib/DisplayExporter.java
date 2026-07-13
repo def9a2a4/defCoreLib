@@ -167,20 +167,9 @@ final class DisplayExporter implements Listener {
         if (keepAlive) {
             // Multi-block showcases live in the same world (windmill quadrant), but only in keep-alive:
             // the non-keepalive run halt(0)s immediately, so their deferred registration would never run.
-            //
-            // Clean-slate rebuild: blank every showcase cell to AIR first (Phase A), then — a few ticks
-            // later, once Paper's async entity load has attached the prior run's persisted displays —
-            // orphan-clear and rebuild (Phase B). Airing-first turns any stale/wrong display left on a
-            // still-valid cell into a true orphan, which is the only way scanOrphanedDisplays can remove
-            // it (it treats every display on a live block as "live", right one or not).
-            ShowcaseWorld.clearArea(world, showcases, log);   // Phase A: force-load + air all cells
-            setupViewing(world, log);                         // spawn/gamerules — build-independent
-            Bukkit.getScheduler().runTaskLater(plugin, () -> {
-                registry.scanOrphanedDisplays(true);          // Phase B: displays now loaded + orphaned
-                Map<ShowcaseSpec, Location> origins =
-                        ShowcaseWorld.placeAll(world, showcaseBuilder, showcases, log);
-                startShowcaseDriver(origins, log);
-            }, 20L);
+            Map<ShowcaseSpec, Location> origins = ShowcaseWorld.placeAll(world, showcaseBuilder, showcases, log);
+            startShowcaseDriver(origins, log);
+            setupViewing(world, log);
         }
         return out;
     }
