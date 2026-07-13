@@ -10,13 +10,12 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.Skull;
+import org.bukkit.entity.BlockDisplay;
 import org.bukkit.entity.Display;
-import org.bukkit.entity.ItemDisplay;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
-import org.bukkit.util.Transformation;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
@@ -58,12 +57,7 @@ final class ChainPulley {
         return m != null ? m : Material.matchMaterial("CHAIN");
     }
 
-    private static final float DIAMETER = 0.33f;
-    /** Chain strand length multiplier (the requested "2× longer"). */
-    private static final float LENGTH_SCALE = 2f;
-    /** Shift the strand this fraction of the wheel-to-wheel distance along the link (toward the partner). */
-    private static final float FORWARD_FRACTION = 0.5f;
-    /** Radians the powered strand rotates about its long axis per tick. */
+    /** Radians the powered chain rotates about its long axis per tick. */
     private static final float SPIN_RATE = 0.25f;
     /**
      * Strand display type segment. Deliberately NOT "chain_pulley" so the block-display refresh
@@ -79,8 +73,6 @@ final class ChainPulley {
     // Live strand displays keyed by their source pulley, for the per-tick spin animation.
     private final Map<CustomBlockRegistry.LocationKey, StrandAnim> strands = new HashMap<>();
     private int spinTicks = 0;
-    // Chain-strand head texture (the @chain art), captured at register().
-    private String strandTexture = "";
     // Max link distance (blocks), from rotation-config.yml chain-pulley.max-distance.
     private final int maxDist;
     private final double maxDistSq;
@@ -98,7 +90,6 @@ final class ChainPulley {
             registry.getPlugin().getLogger().warning("ChainPulley: block '" + PULLEY_ID + "' not found — skipping overlay");
             return;
         }
-        strandTexture = block.resolveTexture("strand", 0, null); // the @chain art (texture-only state)
         registry.register(block.toBuilder()
             .drillable(false)
             .reactsToNeighbors(true)
@@ -124,12 +115,10 @@ final class ChainPulley {
         CustomBlockRegistry.LocationKey partner = readPartner(b);
         if (partner != null) {
             network.linkChain(key, partner);
-            // Re-register the strand for animation: reuse the persisted display if it survived the
-            // reload, otherwise spawn a fresh one.
+            // Re-register for animation: reuse the persisted display if it survived the reload,
+            // otherwise spawn a fresh one.
             var existing = DisplayUtil.findByTag(b.getLocation(), strandTag(b.getLocation()), 1.5);
-            ItemDisplay disp = null;
-            for (Display d : existing) { if (d instanceof ItemDisplay id) { disp = id; break; } }
-            if (disp != null) registerStrand(b, partner, disp);
+            if (!existing.isEmpty()) registerStrand(b, partner, existing.get(0));
             else spawnStrand(b, partner);
         }
     }
@@ -240,25 +229,22 @@ final class ChainPulley {
     }
 
     // ──────────────────────────────────────────────────────────────────────
-    // Chain strand display (custom head, diameter 0.33, stretched source→target)
+    // Chain display: a single stretched IRON_CHAIN block display, rotating about its long axis
     // ──────────────────────────────────────────────────────────────────────
 
-    /** Spawn a fresh strand from source→target and register it for animation. */
+    /** Spawn a fresh chain display from source→target and register it for animation. */
     private void spawnStrand(Block source, CustomBlockRegistry.LocationKey target) {
         StrandAnim base = strandBase(source, target);
         if (base == null) return;
-        ItemStack head = HeadUtil.createHead(strandTexture, 1);
-        Transformation transform = new Transformation(
-            base.translation, new Quaternionf(base.orient), base.scale, new Quaternionf());
-        ItemDisplay display = DisplayUtil.spawn(
+        BlockDisplay display = DisplayUtil.spawnBlock(
             new Location(source.getWorld(), source.getX(), source.getY(), source.getZ()),
-            head, transform, strandTag(source.getLocation()));
+            CHAIN_MATERIAL.createBlockData(), base.matrix(0f), strandTag(source.getLocation()));
         base.display = display;
         strands.put(CustomBlockRegistry.LocationKey.of(source), base);
     }
 
-    /** Register an already-spawned (reloaded) strand display for animation. */
-    private void registerStrand(Block source, CustomBlockRegistry.LocationKey target, ItemDisplay display) {
+    /** Register an already-spawned (reloaded) chain display for animation. */
+    private void registerStrand(Block source, CustomBlockRegistry.LocationKey target, Display display) {
         StrandAnim base = strandBase(source, target);
         if (base == null) return;
         base.display = display;
@@ -266,9 +252,9 @@ final class ChainPulley {
     }
 
     /**
-     * Geometry for a strand: the head's long axis is local +Y (the Y-stretch is what links the two
-     * wheels, thin in X/Z), aimed along the gap, stretched to {@code length * LENGTH_SCALE}, centred on
-     * the midpoint. Anchor is the source block centre (DisplayUtil.spawn adds +0.5).
+     * Geometry for the chain: a single iron-chain block whose long axis is local +Y, aimed along the
+     * gap and stretched to the gap length, centred on the midpoint (thin X/Z = natural chain
+     * thickness). Anchor is the source block centre (DisplayUtil.spawnBlock adds +0.5).
      */
     private @Nullable StrandAnim strandBase(Block source, CustomBlockRegistry.LocationKey target) {
         float dx = target.x() - source.getX();
@@ -277,21 +263,18 @@ final class ChainPulley {
         float length = (float) Math.sqrt(dx * dx + dy * dy + dz * dz);
         if (length < 1e-3f) return null;
         Quaternionf orient = new Quaternionf().rotationTo(0f, 1f, 0f, dx, dy, dz);
-        // Midpoint, then nudged forward by FORWARD_FRACTION of the gap (toward the partner) so the
-        // strand isn't centred on the source block.
-        Vector3f translation = new Vector3f(
-            dx / 2f + dx * FORWARD_FRACTION, dy / 2f + dy * FORWARD_FRACTION, dz / 2f + dz * FORWARD_FRACTION);
-        Vector3f scale = new Vector3f(DIAMETER, length * LENGTH_SCALE, DIAMETER);
+        Vector3f translation = new Vector3f(dx / 2f, dy / 2f, dz / 2f); // midpoint
+        Vector3f scale = new Vector3f(1f, length, 1f);                  // stretched along +Y
         return new StrandAnim(orient, translation, scale);
     }
 
-    /** Remove a strand's display entity and stop animating it. */
+    /** Remove a chain display and stop animating it. */
     private void removeStrand(Location sourceLoc, CustomBlockRegistry.LocationKey sourceKey) {
         DisplayUtil.removeByTag(sourceLoc, strandTag(sourceLoc), 1.5);
         strands.remove(sourceKey);
     }
 
-    /** Per-tick: spin every powered strand about its long axis; drop dead displays. */
+    /** Per-tick: spin every powered chain about its long axis; drop dead displays. */
     private void tickStrands() {
         if (strands.isEmpty()) return;
         spinTicks++;
@@ -305,14 +288,7 @@ final class ChainPulley {
             if (!network.isPowered(e.getKey()) || !network.onClosedLoop(e.getKey())) continue;
             int sign = network.getDirection(e.getKey()) == RotationNetwork.SpinDirection.CCW ? -1 : 1;
             s.angle += SPIN_RATE * sign;
-            // T · Rorient · Ry(angle) · S — spins about the long (Y/stretch) axis; matches the spawn
-            // Transformation at angle 0.
-            Matrix4f m = new Matrix4f()
-                .translate(s.translation)
-                .rotate(s.orient)
-                .rotateY(s.angle)
-                .scale(s.scale);
-            s.display.setTransformationMatrix(m);
+            s.display.setTransformationMatrix(s.matrix(s.angle));
         }
     }
 
@@ -320,9 +296,9 @@ final class ChainPulley {
         return DisplayUtil.blockTag("mech", STRAND_TYPE, sourceLoc, null);
     }
 
-    /** Mutable animation state for one chain strand. */
+    /** Mutable animation state for one chain display. */
     private static final class StrandAnim {
-        @Nullable ItemDisplay display;
+        @Nullable Display display;
         final Quaternionf orient;
         final Vector3f translation;
         final Vector3f scale;
@@ -331,6 +307,19 @@ final class ChainPulley {
             this.orient = orient;
             this.translation = translation;
             this.scale = scale;
+        }
+
+        /**
+         * T(pos) · R(orient) · Ry(angle) · S(scale) · T(−0.5) — the trailing −0.5 centres the
+         * BlockDisplay unit cube (it renders from its MIN corner); Ry spins about the long (+Y) axis.
+         */
+        Matrix4f matrix(float angle) {
+            return new Matrix4f()
+                .translate(translation)
+                .rotate(orient)
+                .rotateY(angle)
+                .scale(scale)
+                .translate(-0.5f, -0.5f, -0.5f);
         }
     }
 
