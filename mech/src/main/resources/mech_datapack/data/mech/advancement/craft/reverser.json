@@ -1,5 +1,5 @@
 {
-  "parent": "mech:craft/gear",
+  "parent": "mech:craft/clutch",
   "display": {
     "icon": {
       "id": "minecraft:player_head",

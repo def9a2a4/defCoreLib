@@ -1,5 +1,5 @@
 {
-  "parent": "mech:rotation/first_power",
+  "parent": "mech:windmill/plain",
   "display": {
     "icon": {
       "id": "minecraft:player_head",

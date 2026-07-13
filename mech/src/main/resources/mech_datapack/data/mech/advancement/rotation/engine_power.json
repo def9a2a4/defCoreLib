@@ -1,5 +1,5 @@
 {
-  "parent": "mech:rotation/first_power",
+  "parent": "mech:rotation/torque_5",
   "display": {
     "icon": {
       "id": "minecraft:player_head",
@@ -19,7 +19,7 @@
       "color": "yellow"
     },
     "description": {
-      "text": "Drive a network with a fuelled Engine \u2014 burn fuel, make torque.",
+      "text": "Drive a network with a fuelled Engine (5 power).",
       "color": "gray"
     },
     "frame": "goal",

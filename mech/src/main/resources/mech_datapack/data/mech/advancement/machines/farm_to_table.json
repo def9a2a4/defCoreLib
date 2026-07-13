@@ -1,18 +1,18 @@
 {
-  "parent": "mech:craft/glue_brush",
+  "parent": "mech:machines/bread",
   "display": {
     "icon": {
-      "id": "minecraft:slime_ball"
+      "id": "minecraft:cake"
     },
     "title": {
-      "text": "Bound Together",
-      "color": "white"
+      "text": "Farm to Table",
+      "color": "light_purple"
     },
     "description": {
-      "text": "Glue blocks to a Rotator or Mechanism Minecart with the Glue Brush so they move as one.",
+      "text": "Produce every processed good: flour, bread, juice, oil, honey, and dye.",
       "color": "gray"
     },
-    "frame": "task",
+    "frame": "challenge",
     "show_toast": true,
     "announce_to_chat": true
   },

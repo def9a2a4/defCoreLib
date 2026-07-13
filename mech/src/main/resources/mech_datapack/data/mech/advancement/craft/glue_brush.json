@@ -1,5 +1,5 @@
 {
-  "parent": "mech:craft/bearing",
+  "parent": "mech:craft/wrench",
   "display": {
     "icon": {
       "id": "minecraft:brush"

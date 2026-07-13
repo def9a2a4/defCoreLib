@@ -1,15 +1,15 @@
 {
-  "parent": "mech:craft/glue_brush",
+  "parent": "mech:craft/press",
   "display": {
     "icon": {
-      "id": "minecraft:slime_ball"
+      "id": "minecraft:pink_dye"
     },
     "title": {
-      "text": "Bound Together",
+      "text": "Tie-Dye Champion",
       "color": "white"
     },
     "description": {
-      "text": "Glue blocks to a Rotator or Mechanism Minecart with the Glue Brush so they move as one.",
+      "text": "Press flowers into dye in an Extractor Press.",
       "color": "gray"
     },
     "frame": "task",

@@ -1,15 +1,15 @@
 {
-  "parent": "mech:craft/glue_brush",
+  "parent": "mech:craft/press",
   "display": {
     "icon": {
-      "id": "minecraft:slime_ball"
+      "id": "minecraft:honey_bottle"
     },
     "title": {
-      "text": "Bound Together",
+      "text": "The Bee's Knees",
       "color": "white"
     },
     "description": {
-      "text": "Glue blocks to a Rotator or Mechanism Minecart with the Glue Brush so they move as one.",
+      "text": "Press honeycomb into a Honey Bottle.",
       "color": "gray"
     },
     "frame": "task",

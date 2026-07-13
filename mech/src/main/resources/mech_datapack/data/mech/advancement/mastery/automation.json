@@ -1,5 +1,5 @@
 {
-  "parent": "mech:root",
+  "parent": "mech:rotation/first_power",
   "display": {
     "icon": {
       "id": "minecraft:player_head",

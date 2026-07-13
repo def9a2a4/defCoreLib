@@ -1,5 +1,5 @@
 {
-  "parent": "mech:root",
+  "parent": "mech:craft/shaft",
   "display": {
     "icon": {
       "id": "minecraft:player_head",

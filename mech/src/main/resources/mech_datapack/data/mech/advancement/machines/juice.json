@@ -1,15 +1,15 @@
 {
-  "parent": "mech:craft/glue_brush",
+  "parent": "mech:craft/press",
   "display": {
     "icon": {
-      "id": "minecraft:slime_ball"
+      "id": "minecraft:glow_berries"
     },
     "title": {
-      "text": "Bound Together",
+      "text": "Juicing",
       "color": "white"
     },
     "description": {
-      "text": "Glue blocks to a Rotator or Mechanism Minecart with the Glue Brush so they move as one.",
+      "text": "Press sugarcane or berries into juice with an Extractor Press.",
       "color": "gray"
     },
     "frame": "task",

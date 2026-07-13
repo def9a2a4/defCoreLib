@@ -1,5 +1,5 @@
 {
-  "parent": "mech:root",
+  "parent": "mech:craft/master_machinist",
   "display": {
     "icon": {
       "id": "minecraft:player_head",
@@ -19,7 +19,7 @@
       "color": "light_purple"
     },
     "description": {
-      "text": "Earn every branch capstone: Master Machinist, Rube Goldberg, Earthshaker, Lord of the Winds, and Lower the Drawbridge.",
+      "text": "Earn every mastery capstone: Master Machinist, Rube Goldberg, Earthshaker, Lower the Drawbridge, and Farm to Table.",
       "color": "gray"
     },
     "frame": "challenge",

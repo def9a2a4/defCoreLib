@@ -1,5 +1,5 @@
 {
-  "parent": "mech:craft/shaft",
+  "parent": "mech:craft/windmill_item",
   "display": {
     "icon": {
       "id": "minecraft:player_head",
