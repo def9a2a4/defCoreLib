@@ -124,10 +124,6 @@ public class PipesPlugin extends JavaPlugin {
             return handleGive(sender, args);
         }
 
-        if (args[0].equalsIgnoreCase("cleanup")) {
-            return handleCleanup(sender);
-        }
-
         if (args[0].equalsIgnoreCase("info")) {
             return handleInfo(sender);
         }
@@ -166,7 +162,7 @@ public class PipesPlugin extends JavaPlugin {
 
         for (PipeManager manager : new ArrayList<>(pipeManagers.values())) {
             manager.reloadVariants(variantRegistry);
-            manager.refreshAllDisplays();
+            manager.refreshTransforms();
             manager.restartTasks();
         }
 
@@ -252,27 +248,6 @@ public class PipesPlugin extends JavaPlugin {
         return true;
     }
 
-    private boolean handleCleanup(CommandSender sender) {
-        if (!sender.hasPermission("pipes.cleanup")) {
-            sender.sendMessage(Component.text("You don't have permission to cleanup orphaned displays.").color(NamedTextColor.RED));
-            return true;
-        }
-        int totalRemoved = 0;
-        for (PipeManager manager : pipeManagers.values()) {
-            int removed = manager.cleanupOrphanedDisplays();
-            if (removed > 0) {
-                sender.sendMessage(Component.text("Removed " + removed + " orphaned display(s) in " + manager.getWorld().getName()).color(NamedTextColor.GRAY));
-            }
-            totalRemoved += removed;
-        }
-        if (totalRemoved > 0) {
-            sender.sendMessage(Component.text("Cleanup complete! Removed " + totalRemoved + " orphaned display(s) total.").color(NamedTextColor.GREEN));
-        } else {
-            sender.sendMessage(Component.text("No orphaned displays found.").color(NamedTextColor.GREEN));
-        }
-        return true;
-    }
-
     private boolean handleInfo(CommandSender sender) {
         if (!sender.hasPermission("pipes.info")) {
             sender.sendMessage(Component.text("You don't have permission to view pipe info.").color(NamedTextColor.RED));
@@ -295,19 +270,6 @@ public class PipesPlugin extends JavaPlugin {
             }
         }
 
-        int totalOrphaned = 0;
-        for (PipeManager manager : managersToQuery) {
-            int orphaned = manager.countOrphanedDisplays();
-            if (orphaned > 0) {
-                sender.sendMessage(Component.text("Orphaned displays in " + manager.getWorld().getName() + ": " + orphaned).color(NamedTextColor.YELLOW));
-            }
-            totalOrphaned += orphaned;
-        }
-        if (totalOrphaned == 0) {
-            sender.sendMessage(Component.text("No orphaned displays found.").color(NamedTextColor.GREEN));
-        } else {
-            sender.sendMessage(Component.text("Total orphaned displays: " + totalOrphaned).color(NamedTextColor.YELLOW));
-        }
         return true;
     }
 
@@ -339,7 +301,7 @@ public class PipesPlugin extends JavaPlugin {
         if (!command.getName().equalsIgnoreCase("pipes")) return List.of();
 
         if (args.length == 1) {
-            return Stream.of("help", "reload", "give", "recipes", "cleanup", "info", "delete_all")
+            return Stream.of("help", "reload", "give", "recipes", "info", "delete_all")
                     .filter(s -> s.toLowerCase().startsWith(args[0].toLowerCase()))
                     .toList();
         }
@@ -349,7 +311,7 @@ public class PipesPlugin extends JavaPlugin {
             List<String> completions = new ArrayList<>();
             completions.add("ALL");
             for (PipeVariant variant : variantRegistry.getAllVariants()) {
-                completions.add(variant.getId());
+                completions.add(variant.id());
             }
             return completions.stream().filter(s -> s.toLowerCase().startsWith(prefix)).toList();
         }
@@ -376,10 +338,6 @@ public class PipesPlugin extends JavaPlugin {
         if (sender.hasPermission("pipes.recipes")) {
             sender.sendMessage(Component.text("/pipes recipes").color(NamedTextColor.WHITE)
                     .append(Component.text(" - Unlock all pipe recipes").color(NamedTextColor.GRAY)));
-        }
-        if (sender.hasPermission("pipes.cleanup")) {
-            sender.sendMessage(Component.text("/pipes cleanup").color(NamedTextColor.WHITE)
-                    .append(Component.text(" - Remove orphaned display entities").color(NamedTextColor.GRAY)));
         }
         if (sender.hasPermission("pipes.info")) {
             sender.sendMessage(Component.text("/pipes info").color(NamedTextColor.WHITE)
@@ -441,9 +399,20 @@ public class PipesPlugin extends JavaPlugin {
 
     public ItemStack getPipeItem(PipeVariant variant) {
         CustomBlockRegistry registry = CoreLibPlugin.getInstance().getRegistry();
-        CustomHeadBlock type = registry.getType("pipes:" + variant.getId());
+        CustomHeadBlock type = registry.getType("pipes:" + variant.id());
         if (type == null) return null;
         return type.createItem(1);
+    }
+
+    public PipeVariant getVariant(ItemStack item) {
+        if (item == null) return null;
+        String typeId = CustomBlockRegistry.getItemTypeId(item);
+        if (typeId == null || !typeId.startsWith("pipes:")) return null;
+        return variantRegistry.getVariant(typeId.substring("pipes:".length()));
+    }
+
+    public boolean isPipeItem(ItemStack item) {
+        return getVariant(item) != null;
     }
 
     private List<PipeManager> getQueryableManagers(CommandSender sender) {

@@ -12,20 +12,20 @@ import org.bukkit.entity.Item;
 import org.bukkit.entity.ItemDisplay;
 import org.bukkit.inventory.ItemStack;
 
-import anon.def9a2a4.pipes.adapter.ContainerAdapter;
-import anon.def9a2a4.pipes.adapter.ContainerAdapterRegistry;
+import anon.def9a2a4.corelib.CoreLibPlugin;
+import anon.def9a2a4.corelib.CustomBlockRegistry;
+import anon.def9a2a4.corelib.CustomHeadBlock;
+import anon.def9a2a4.corelib.container.ContainerAdapter;
+import anon.def9a2a4.corelib.container.ContainerAdapterRegistry;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Transformation;
 import org.bukkit.util.Vector;
 import org.joml.AxisAngle4f;
 import org.joml.Vector3f;
 
-import org.bukkit.Chunk;
-
 import anon.def9a2a4.pipes.config.DisplayConfig;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -71,133 +71,12 @@ public class PipeManager {
         pathCache.clear();
     }
 
-    public void unregisterPipe(Location location) {
-        Location normalized = normalizeLocation(location);
-        PipeData data = pipes.remove(normalized);
-        sleepUntil.remove(normalized);
-        pathCache.clear();
-
-        // Try to remove all entities by UUID first
-        boolean allRemoved = true;
-        if (data != null && data.displayEntityIds() != null) {
-            for (UUID uuid : data.displayEntityIds()) {
-                Entity entity = world.getEntity(uuid);
-                if (entity != null) {
-                    entity.remove();
-                } else {
-                    allRemoved = false;
-                }
-            }
-        } else {
-            allRemoved = false;
-        }
-
-        // Fallback: Find entities by scoreboard tag (handles UUID mismatch after restart)
-        if (!allRemoved) {
-            removeDisplaysByTag(normalized);
-        }
-    }
-
-    private void removeDisplaysByTag(Location location) {
-        Collection<Entity> nearby = world.getNearbyEntities(
-                location.clone().add(0.5, 0.5, 0.5),
-                1.0, 1.0, 1.0,
-                e -> e instanceof ItemDisplay
-        );
-
-        // Remove ALL matching entities, not just the first one
-        for (Entity entity : nearby) {
-            String pipeTag = PipeTags.getPipeTag(entity);
-            if (pipeTag != null && PipeTags.matchesLocation(pipeTag, location)) {
-                entity.remove();
-            }
-        }
-    }
-
     public boolean isPipe(Location location) {
         return pipes.containsKey(normalizeLocation(location));
     }
 
     public PipeData getPipeData(Location location) {
         return pipes.get(normalizeLocation(location));
-    }
-
-    public void updateDisplayEntity(Location pipeLocation) {
-        Location normalized = normalizeLocation(pipeLocation);
-        PipeData data = pipes.get(normalized);
-        if (data == null || data.displayEntityIds() == null || data.displayEntityIds().isEmpty()) return;
-
-        // For corner pipes, we need to update both displays differently
-        if (data.variant().getBehaviorType() == BehaviorType.CORNER) {
-            updateCornerDisplayEntities(normalized, data);
-        } else {
-            // Regular pipes have single display
-            UUID uuid = data.displayEntityIds().get(0);
-            Entity entity = world.getEntity(uuid);
-            if (entity instanceof ItemDisplay display) {
-                Transformation transformation = calculateTransformation(normalized, data.facing(), data.variant());
-                display.setTransformation(transformation);
-            }
-        }
-    }
-
-    private void updateCornerDisplayEntities(Location normalized, PipeData data) {
-        // Find entities by tag to determine which is directional
-        Collection<Entity> nearby = world.getNearbyEntities(
-                normalized.clone().add(0.5, 0.5, 0.5),
-                1.0, 1.0, 1.0,
-                e -> e instanceof ItemDisplay
-        );
-
-        for (Entity entity : nearby) {
-            String pipeTag = PipeTags.getPipeTag(entity);
-            if (pipeTag != null && PipeTags.matchesLocation(pipeTag, normalized)) {
-                ItemDisplay display = (ItemDisplay) entity;
-                if (PipeTags.isDirectionalTag(pipeTag)) {
-                    // Update directional display
-                    Transformation transformation = calculateCornerDirectionalTransformation(normalized, data.facing());
-                    display.setTransformation(transformation);
-                } else {
-                    // Update main (non-directional) display
-                    Transformation transformation = calculateCornerTransformation();
-                    display.setTransformation(transformation);
-                }
-            }
-        }
-    }
-
-    public List<ItemDisplay> spawnDisplayEntities(Location location, BlockFace facing, PipeVariant variant) {
-        List<ItemDisplay> displays = new ArrayList<>();
-        Location spawnLoc = location.clone().add(0.5, 0.5, 0.5);
-
-        // Spawn main display entity (non-directional for corner, directional for regular)
-        ItemStack pipeItem = plugin.getDisplayItem(variant, facing);
-        Transformation transformation = calculateTransformation(location, facing, variant);
-
-        ItemDisplay mainDisplay = world.spawn(spawnLoc, ItemDisplay.class, entity -> {
-            entity.setItemStack(pipeItem);
-            entity.setPersistent(true);
-            PipeTags.addPipeTag(entity, PipeTags.createTag(location, facing, variant));
-            entity.setTransformation(transformation);
-        });
-        displays.add(mainDisplay);
-
-        // For corner pipes, spawn a second directional display entity
-        if (variant.getBehaviorType() == BehaviorType.CORNER) {
-            // Use the corner variant's own directional display texture
-            ItemStack directionalItem = plugin.getDirectionalDisplayItem(variant, facing);
-            Transformation directionalTransformation = calculateCornerDirectionalTransformation(location, facing);
-
-            ItemDisplay directionalDisplay = world.spawn(spawnLoc, ItemDisplay.class, entity -> {
-                entity.setItemStack(directionalItem);
-                entity.setPersistent(true);
-                PipeTags.addPipeTag(entity, PipeTags.createDirectionalTag(location, facing, variant));
-                entity.setTransformation(directionalTransformation);
-            });
-            displays.add(directionalDisplay);
-        }
-
-        return displays;
     }
 
     private boolean isChest(Block block) {
@@ -224,7 +103,7 @@ public class PipeManager {
         // Check if it's a pipe first
         PipeData pipeData = getPipeData(sourceBlock.getLocation());
         if (pipeData != null) {
-            if (pipeData.variant().getBehaviorType() == BehaviorType.CORNER) {
+            if (pipeData.variant().behaviorType() == BehaviorType.CORNER) {
                 // Corner pipe outputs INTO this pipe if corner's facing == opposite of currentFacing
                 if (pipeData.facing() == currentFacing.getOppositeFace()) {
                     return "corner-into";
@@ -255,7 +134,7 @@ public class PipeManager {
     private String categorizeDestinationBlock(Block destBlock, BlockFace currentFacing) {
         PipeData pipeData = getPipeData(destBlock.getLocation());
         if (pipeData != null) {
-            if (pipeData.variant().getBehaviorType() == BehaviorType.CORNER) {
+            if (pipeData.variant().behaviorType() == BehaviorType.CORNER) {
                 // Corner outputs INTO this pipe if corner's facing == opposite of currentFacing
                 if (pipeData.facing() == currentFacing.getOppositeFace()) {
                     return "corner-into";
@@ -295,7 +174,7 @@ public class PipeManager {
 
     private Transformation calculateTransformation(Location pipeLocation, BlockFace facing, PipeVariant variant) {
         // Corner pipes use simple fixed transformation
-        if (variant.getBehaviorType() == BehaviorType.CORNER) {
+        if (variant.behaviorType() == BehaviorType.CORNER) {
             return calculateCornerTransformation();
         }
 
@@ -553,7 +432,7 @@ public class PipeManager {
             }
 
             // Phase offset check
-            int intervalTicks = Math.max(1, data.variant().getTransferIntervalTicks());
+            int intervalTicks = Math.max(1, data.variant().transferIntervalTicks());
             if (!isTransferDue(currentTick, loc, intervalTicks)) continue;
 
             if (transferItems(loc, data)) {
@@ -562,7 +441,7 @@ public class PipeManager {
         }
 
         for (Location loc : toRemove) {
-            unregisterPipe(loc);
+            removePipeData(loc);
         }
     }
 
@@ -603,7 +482,7 @@ public class PipeManager {
             return null;
         }
 
-        if (displayIndex == 1 && variant.getBehaviorType() == BehaviorType.CORNER) {
+        if (displayIndex == 1 && variant.behaviorType() == BehaviorType.CORNER) {
             return calculateCornerDirectionalTransformation(location, facing);
         }
         return calculateTransformation(location, facing, variant);
@@ -634,7 +513,7 @@ public class PipeManager {
         if (data == null) return false;
 
         // Corner pipes never pull items - they only relay when items are pushed into them
-        if (data.variant().getBehaviorType() == BehaviorType.CORNER) {
+        if (data.variant().behaviorType() == BehaviorType.CORNER) {
             return false;
         }
 
@@ -653,7 +532,7 @@ public class PipeManager {
         }
 
         // Start with this pipe's items per transfer and find minimum along path
-        int startingMax = data.variant().getItemsPerTransfer();
+        int startingMax = data.variant().itemsPerTransfer();
         CachedPath path = getOrBuildPath(pipeLocation, facing, startingMax);
 
         int maxToExtract = path.minItemsPerTransfer();
@@ -794,7 +673,7 @@ public class PipeManager {
 
         PipeData selfData = getPipeData(normalized);
         if (selfData != null) {
-            currentMinItems = Math.min(currentMinItems, selfData.variant().getItemsPerTransfer());
+            currentMinItems = Math.min(currentMinItems, selfData.variant().itemsPerTransfer());
         }
 
         Block nextBlock = normalized.getBlock().getRelative(facing);
@@ -834,7 +713,7 @@ public class PipeManager {
         if (data.facing() != BlockFace.DOWN) return null;
 
         CachedPath path = getOrBuildPath(pipeBlock.getLocation(), data.facing(),
-            data.variant().getItemsPerTransfer());
+            data.variant().itemsPerTransfer());
         if (path.destination() == null) return null;
 
         Block destBlock = path.destination().getBlock();
@@ -861,68 +740,13 @@ public class PipeManager {
     }
 
     /**
-     * Removes orphaned display entities in this manager's world.
-     * An orphaned display entity is one that has a pipe tag but no corresponding pipe block.
-     * @return The number of orphaned display entities removed
-     */
-    public int cleanupOrphanedDisplays() {
-        int removed = 0;
-        for (Entity entity : world.getEntities()) {
-            if (!(entity instanceof ItemDisplay)) continue;
-            if (!PipeTags.isPipeEntity(entity)) continue;
-
-            String pipeTag = PipeTags.getPipeTag(entity);
-            if (pipeTag == null) continue;
-
-            Location blockLoc = PipeTags.parseLocation(pipeTag, world);
-            if (blockLoc == null) continue;
-
-            Block block = blockLoc.getBlock();
-            Material type = block.getType();
-
-            // Check if there's a valid pipe block at this location
-            if (type != Material.PLAYER_HEAD && type != Material.PLAYER_WALL_HEAD) {
-                entity.remove();
-                removed++;
-            }
-        }
-        return removed;
-    }
-
-    /**
-     * Counts orphaned display entities in this manager's world.
-     * @return The number of orphaned display entities
-     */
-    public int countOrphanedDisplays() {
-        int count = 0;
-        for (Entity entity : world.getEntities()) {
-            if (!(entity instanceof ItemDisplay)) continue;
-            if (!PipeTags.isPipeEntity(entity)) continue;
-
-            String pipeTag = PipeTags.getPipeTag(entity);
-            if (pipeTag == null) continue;
-
-            Location blockLoc = PipeTags.parseLocation(pipeTag, world);
-            if (blockLoc == null) continue;
-
-            Block block = blockLoc.getBlock();
-            Material type = block.getType();
-
-            if (type != Material.PLAYER_HEAD && type != Material.PLAYER_WALL_HEAD) {
-                count++;
-            }
-        }
-        return count;
-    }
-
-    /**
      * Gets a count of registered pipes grouped by variant ID.
      * @return Map of variant ID to count
      */
     public Map<String, Integer> getPipeCountsByVariant() {
         Map<String, Integer> counts = new HashMap<>();
         for (PipeData data : pipes.values()) {
-            String variantId = data.variant().getId();
+            String variantId = data.variant().id();
             counts.merge(variantId, 1, Integer::sum);
         }
         return counts;
@@ -942,16 +766,19 @@ public class PipeManager {
      * @return The number of pipes deleted
      */
     public int deleteAllPipes() {
+        CustomBlockRegistry registry = CoreLibPlugin.getInstance().getRegistry();
         List<Location> toRemove = new ArrayList<>(pipes.keySet());
 
         for (Location loc : toRemove) {
-            // Remove the block
             Block block = loc.getBlock();
             if (block.getType() == Material.PLAYER_HEAD || block.getType() == Material.PLAYER_WALL_HEAD) {
+                CustomHeadBlock type = registry.getTypeFromBlock(block);
+                if (type != null) {
+                    registry.onBlockRemoved(block, type);
+                }
                 block.setType(Material.AIR);
             }
-            // Remove display entities and unregister
-            unregisterPipe(loc);
+            removePipeData(loc);
         }
 
         return toRemove.size();
@@ -968,11 +795,11 @@ public class PipeManager {
     public void reloadVariants(VariantRegistry registry) {
         for (Map.Entry<Location, PipeData> entry : pipes.entrySet()) {
             PipeData data = entry.getValue();
-            PipeVariant fresh = registry.getVariant(data.variant().getId());
+            PipeVariant fresh = registry.getVariant(data.variant().id());
             if (fresh != null && fresh != data.variant()) {
                 entry.setValue(new PipeData(data.facing(), data.displayEntityIds(), fresh));
             } else if (fresh == null) {
-                plugin.getLogger().warning("Variant '" + data.variant().getId() + "' no longer exists after reload; pipe at " + entry.getKey().toVector() + " is stale");
+                plugin.getLogger().warning("Variant '" + data.variant().id() + "' no longer exists after reload; pipe at " + entry.getKey().toVector() + " is stale");
             }
         }
         pathCache.clear();
@@ -980,9 +807,25 @@ public class PipeManager {
         deadEndRecheckAt.clear();
     }
 
-    public void refreshAllDisplays() {
-        for (Location location : new ArrayList<>(pipes.keySet())) {
-            updateDisplayEntity(location);
+    public void refreshTransforms() {
+        for (Map.Entry<Location, PipeData> entry : pipes.entrySet()) {
+            Location loc = entry.getKey();
+            PipeData data = entry.getValue();
+            if (data.displayEntityIds() == null) continue;
+
+            for (int i = 0; i < data.displayEntityIds().size(); i++) {
+                UUID uuid = data.displayEntityIds().get(i);
+                Entity entity = world.getEntity(uuid);
+                if (entity instanceof ItemDisplay display) {
+                    Transformation transform;
+                    if (i == 1 && data.variant().behaviorType() == BehaviorType.CORNER) {
+                        transform = calculateCornerDirectionalTransformation(loc, data.facing());
+                    } else {
+                        transform = calculateTransformation(loc, data.facing(), data.variant());
+                    }
+                    display.setTransformation(transform);
+                }
+            }
         }
     }
 
@@ -1007,111 +850,6 @@ public class PipeManager {
                 location.getBlockX(),
                 location.getBlockY(),
                 location.getBlockZ());
-    }
-
-    public void scanForExistingPipes() {
-        int count = 0;
-
-        for (Chunk chunk : world.getLoadedChunks()) {
-            count += scanChunk(chunk);
-        }
-
-        if (count > 0) {
-            plugin.getLogger().info("Restored " + count + " pipes in world " + world.getName());
-        }
-    }
-
-    public int scanChunk(Chunk chunk) {
-        if (!chunk.isLoaded() || chunk.getWorld() != world) {
-            return 0;
-        }
-
-        int count = 0;
-        VariantRegistry registry = plugin.getVariantRegistry();
-
-        // Group entities by location to handle multiple entities per pipe
-        Map<Location, List<UUID>> entityGroups = new HashMap<>();
-        Map<Location, BlockFace> facingByLocation = new HashMap<>();
-        Map<Location, PipeVariant> variantByLocation = new HashMap<>();
-
-        int migrated = 0;
-        for (Entity entity : chunk.getEntities()) {
-            if (!(entity instanceof ItemDisplay)) continue;
-
-            // Auto-migrate legacy scoreboard tags to PDC
-            if (PipeTags.migrateIfNeeded(entity)) {
-                migrated++;
-            }
-
-            String pipeTag = PipeTags.getPipeTag(entity);
-            if (pipeTag == null) continue;
-
-            Location location = PipeTags.parseLocation(pipeTag, world);
-            BlockFace facing = PipeTags.parseFacing(pipeTag);
-            String variantId = PipeTags.parseVariantId(pipeTag);
-
-            if (location == null || facing == null || variantId == null) continue;
-
-            PipeVariant variant = registry.getVariant(variantId);
-            if (variant == null) {
-                plugin.getLogger().warning("Unknown variant '" + variantId + "' for pipe at " + location);
-                continue;
-            }
-
-            Location normalized = normalizeLocation(location);
-
-            // Verify the pipe block still exists
-            Block block = location.getBlock();
-            if (block.getType() == Material.PLAYER_HEAD || block.getType() == Material.PLAYER_WALL_HEAD) {
-                // Group entities by location
-                entityGroups.computeIfAbsent(normalized, k -> new ArrayList<>()).add(entity.getUniqueId());
-                facingByLocation.put(normalized, facing);
-                variantByLocation.put(normalized, variant);
-            } else {
-                // Orphaned display entity - pipe block was removed while chunk was unloaded
-                entity.remove();
-            }
-        }
-
-        // Register all grouped pipes
-        for (Map.Entry<Location, List<UUID>> entry : entityGroups.entrySet()) {
-            Location location = entry.getKey();
-            if (!isPipe(location)) {
-                List<UUID> uuids = entry.getValue();
-                BlockFace facing = facingByLocation.get(location);
-                PipeVariant variant = variantByLocation.get(location);
-                registerPipe(location, facing, uuids, variant);
-                count++;
-            }
-        }
-
-        if (migrated > 0) {
-            plugin.getLogger().info("Migrated " + migrated + " pipe display(s) from scoreboard tags to PDC in chunk [" +
-                    chunk.getX() + ", " + chunk.getZ() + "]");
-        }
-
-        return count;
-    }
-
-    public void unloadPipesInChunk(Chunk chunk) {
-        if (chunk.getWorld() != world) return;
-
-        int chunkX = chunk.getX();
-        int chunkZ = chunk.getZ();
-
-        pipes.entrySet().removeIf(entry -> {
-            Location loc = entry.getKey();
-            int locChunkX = loc.getBlockX() >> 4;
-            int locChunkZ = loc.getBlockZ() >> 4;
-
-            if (locChunkX == chunkX && locChunkZ == chunkZ) {
-                sleepUntil.remove(loc);
-                deadEndRecheckAt.remove(loc);
-                return true;
-            }
-            return false;
-        });
-        pathCache.clear();
     }
 
     public BlockFace getFacingFromSkull(Block block) {

@@ -30,7 +30,6 @@ public class WorldManager implements Listener {
 
         PipeManager manager = new PipeManager(plugin, world);
         managers.put(world, manager);
-        manager.scanForExistingPipes();
         manager.startTasks();
     }
 
