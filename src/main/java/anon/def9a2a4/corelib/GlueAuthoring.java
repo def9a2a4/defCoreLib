@@ -39,7 +39,7 @@ import java.util.UUID;
 final class GlueAuthoring implements Listener {
 
     /** Custom-block ids that can own a glued structure (skull anchors). */
-    private static final Set<String> ANCHOR_IDS = Set.of("demo:door_controller", "mech:rotator");
+    private static final Set<String> ANCHOR_IDS = Set.of("demo:door_controller", "mech:rotator", "mech:piston_head");
 
     /** A cuboid-fill box larger than this many cells is rejected (avoids enumerating huge volumes). */
     private static final int MAX_BOX_VOLUME = 32_768;

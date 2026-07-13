@@ -46,17 +46,20 @@ final class ExtendablePistonManager {
     private final CustomBlockRegistry registry;
     private final RotationNetwork network;
     private final MechanismRegistry mechRegistry;
+    private final GlueManager glueManager;
 
     private final Set<CustomBlockRegistry.LocationKey> cores = new HashSet<>();
     private final Map<CustomBlockRegistry.LocationKey, ActiveMove> active = new HashMap<>();
     private int tickCounter = 0;
 
     ExtendablePistonManager(JavaPlugin plugin, CustomBlockRegistry registry,
-                            RotationNetwork network, MechanismRegistry mechRegistry) {
+                            RotationNetwork network, MechanismRegistry mechRegistry,
+                            GlueManager glueManager) {
         this.plugin = plugin;
         this.registry = registry;
         this.network = network;
         this.mechRegistry = mechRegistry;
+        this.glueManager = glueManager;
     }
 
     void register() {
@@ -136,12 +139,14 @@ final class ExtendablePistonManager {
         PistonLine line = detectLine(core);
         if (line == null) return;
 
+        List<Block> payload = resolvePayload(line);
         if (dir == RotationNetwork.SpinDirection.CW) {              // extend
-            int r = Math.min(line.backPoles(), clearAhead(line, line.backPoles()));
-            if (r > 0) startMove(coreKey, line, line.frontFace(), r);
+            Block edge = leadingEdge(line, payload);
+            int r = Math.min(line.backPoles(), clearAhead(edge, line.frontFace(), line.backPoles()));
+            if (r > 0) startMove(coreKey, line, payload, line.frontFace(), r);
         } else {                                                    // CCW → retract
             int r = Math.min(line.extension(), clearBehind(line, line.extension()));
-            if (r > 0) startMove(coreKey, line, line.frontFace().getOppositeFace(), r);
+            if (r > 0) startMove(coreKey, line, payload, line.frontFace().getOppositeFace(), r);
         }
     }
 
@@ -194,11 +199,11 @@ final class ExtendablePistonManager {
         return !run.isEmpty() && isType(run.get(run.size() - 1), HEAD_ID);
     }
 
-    private int clearAhead(PistonLine line, int max) {
-        Block b = line.head();
+    private int clearAhead(Block edge, BlockFace forward, int max) {
+        Block b = edge;
         int n = 0;
         for (int i = 0; i < max; i++) {
-            b = b.getRelative(line.frontFace());
+            b = b.getRelative(forward);
             if (isClear(b)) n++; else break;
         }
         return n;
@@ -215,19 +220,45 @@ final class ExtendablePistonManager {
         return n;
     }
 
+    /** The payload the head carries: the glue-authored structure, else the single block directly ahead. */
+    private List<Block> resolvePayload(PistonLine line) {
+        List<Block> glued = glueManager.resolveStructure(new BlockAnchor(line.head(), () -> true));
+        if (glued != null && !glued.isEmpty()) return glued;
+        Block front = line.head().getRelative(line.frontFace());
+        return front.getType().isAir() ? List.of() : List.of(front);
+    }
+
+    /** Furthest-forward cell of the moving assembly (head or a payload block) — for the obstruction check. */
+    private static Block leadingEdge(PistonLine line, List<Block> payload) {
+        Block edge = line.head();
+        int best = forwardCoord(edge, line.frontFace());
+        for (Block b : payload) {
+            int c = forwardCoord(b, line.frontFace());
+            if (c > best) { best = c; edge = b; }
+        }
+        return edge;
+    }
+
+    private static int forwardCoord(Block b, BlockFace f) {
+        return b.getX() * f.getModX() + b.getY() * f.getModY() + b.getZ() * f.getModZ();
+    }
+
     // ──────────────────────────────────────────────────────────────────────
     // Movement: assemble the rod, slide R cells, disassemble (core protected)
     // ──────────────────────────────────────────────────────────────────────
 
-    private void startMove(CustomBlockRegistry.LocationKey coreKey, PistonLine line,
+    private void startMove(CustomBlockRegistry.LocationKey coreKey, PistonLine line, List<Block> payload,
                            BlockFace moveFace, int r) {
+        // The moving assembly: the rod (poles + head) + the head's payload (glued blocks or the block ahead).
+        List<Block> assembleBlocks = new ArrayList<>(line.rodBlocks());
+        assembleBlocks.addAll(payload);
         // Ghost "fake shaft inside the core": a pole at the core cell, so the sliding rod is contiguous
         // (fills what would otherwise be a gap). Copies an existing pole's appearance/orientation.
         Block template = firstPole(line.rodBlocks());
         List<MechanismRegistry.GhostBlock> ghosts = template == null ? List.of()
             : List.of(new MechanismRegistry.GhostBlock(line.core().getLocation(), template));
 
-        Mechanism mech = mechRegistry.assembleMechanism(MECH_TYPE, line.rodBlocks(), ghosts,
+        Mechanism mech = mechRegistry.assembleMechanism(MECH_TYPE, assembleBlocks, ghosts,
             line.head().getLocation(), AXIS_Y, null);
         if (mech == null) return;
         // Whichever rod block lands on the core cell is skipped (consumed); the ghost fills the gap.
@@ -236,8 +267,11 @@ final class ExtendablePistonManager {
         Location start = mech.pivot(); // block-centered after assembly
         Vector3f dir = new Vector3f(moveFace.getModX(), moveFace.getModY(), moveFace.getModZ());
         Location target = start.clone().add(dir.x * r, dir.y * r, dir.z * r);
+        // Glue rebind: head + payload translate together, so the same offsets apply to the moved head.
+        int[] glueOffsets = new BlockAnchor(line.head(), () -> true).readOffsets();
+        Location newHeadLoc = line.head().getLocation().add(dir.x * r, dir.y * r, dir.z * r);
         active.put(coreKey, new ActiveMove(coreKey, mech, target, dir,
-            line.rodBlocks().size() + ghosts.size()));
+            assembleBlocks.size() + ghosts.size(), glueOffsets, newHeadLoc));
     }
 
     private @Nullable Block firstPole(List<Block> rod) {
@@ -247,6 +281,10 @@ final class ExtendablePistonManager {
 
     /** @return true when the move finished (disassembled) and should be dropped from {@code active}. */
     private boolean advance(ActiveMove m) {
+        // Let the assembly's deferred mount + initial rotate(0) run before we drive the first move,
+        // else the transform lands on still-unmounted displays (spawned pivot+2.5) → a ~0.5-block pop.
+        // Mirrors RotationRotator's 2-tick startup delay.
+        if (m.warmup > 0) { m.warmup--; return false; }
         Location cur = m.mech.pivot();
         double remaining = (m.target.getX() - cur.getX()) * m.dir.x
                          + (m.target.getY() - cur.getY()) * m.dir.y
@@ -258,6 +296,10 @@ final class ExtendablePistonManager {
         if (remaining <= step + 1e-3) {
             m.mech.move(m.target, 0f);   // snap to the block-centered target cell
             m.mech.disassemble();        // lands on-grid; core cell skipped
+            if (m.glueOffsets != null && m.newHeadLoc.getWorld() != null) {
+                // Head + payload moved together → identical offsets, new origin. Rebind glue on the landed head.
+                new BlockAnchor(m.newHeadLoc.getBlock(), () -> true).writeOffsets(m.glueOffsets);
+            }
             return true;
         }
         Location next = cur.clone().add(m.dir.x * step, m.dir.y * step, m.dir.z * step);
@@ -300,13 +342,18 @@ final class ExtendablePistonManager {
         final Location target;
         final Vector3f dir;
         final int mass;
+        final int @Nullable [] glueOffsets;   // non-null if the head had authored glue to rebind on land
+        final Location newHeadLoc;
+        int warmup = 2;                        // ticks to wait before the first move (mount + rotate(0) first)
         ActiveMove(CustomBlockRegistry.LocationKey coreKey, Mechanism mech, Location target,
-                   Vector3f dir, int mass) {
+                   Vector3f dir, int mass, int @Nullable [] glueOffsets, Location newHeadLoc) {
             this.coreKey = coreKey;
             this.mech = mech;
             this.target = target;
             this.dir = dir;
             this.mass = mass;
+            this.glueOffsets = glueOffsets;
+            this.newHeadLoc = newHeadLoc;
         }
     }
 }
