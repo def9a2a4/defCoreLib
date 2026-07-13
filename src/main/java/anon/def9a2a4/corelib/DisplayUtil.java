@@ -58,7 +58,10 @@ public final class DisplayUtil {
     public static BlockDisplay spawnBlock(Location blockLoc, BlockData data,
                                           Matrix4f transform, String scoreboardTag) {
         World world = blockLoc.getWorld();
-        Location spawnLoc = blockLoc.getBlock().getLocation().add(0.5, 0.5, 0.5);
+        // Mirror the ItemDisplay path above: use the passed location directly. Do NOT re-snap via
+        // getBlock().getLocation() — that floors away any fractional wall_offset the caller pre-applied
+        // (and floors a negative offset into the adjacent block), which broke block-display wall_offset.
+        Location spawnLoc = blockLoc.clone().add(0.5, 0.5, 0.5);
         return world.spawn(spawnLoc, BlockDisplay.class, display -> {
             display.setBlock(data);
             display.setPersistent(true);
