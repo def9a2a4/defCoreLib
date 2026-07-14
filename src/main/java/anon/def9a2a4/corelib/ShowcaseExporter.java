@@ -79,6 +79,17 @@ final class ShowcaseExporter {
         return blocks.size() + vanilla.size();
     }
 
+    /** Filesystem-safe {@code <id>.yml} name for one exported showcase, so each id lands in its own file
+     *  (and can't escape the export directory). Lower-cased; any run of non-{@code [a-z0-9_-]} chars —
+     *  including path separators and dots — collapses to a single underscore; empty falls back. */
+    static String fileNameFor(String id) {
+        String slug = (id == null ? "" : id).trim().toLowerCase(java.util.Locale.ROOT);
+        slug = slug.replaceAll("[^a-z0-9_-]+", "_");   // unsafe chars (incl. '/', '.') → '_'
+        slug = slug.replaceAll("^[_-]+|[_-]+$", "");   // trim leading/trailing separators
+        if (slug.isEmpty()) slug = "showcase";
+        return slug + ".yml";
+    }
+
     private static String posKey(Block b) {
         return b.getX() + "," + b.getY() + "," + b.getZ();
     }
