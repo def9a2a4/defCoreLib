@@ -100,13 +100,21 @@ public class MechanismRegistry {
         ArmorStand vehicle = vehicleLoc.getWorld().spawn(vehicleLoc, ArmorStand.class, as -> {
             as.setInvisible(true); as.setGravity(false); as.setSilent(true);
             as.setPersistent(true); as.setRotation(0, 0);
+            // Marker (zero-height) so the mounted display chain sits AT the pivot cell rather than ~1.975 up
+            // at the passenger-attachment height — a Display samples block-light at its entity Location, so
+            // this makes the moving structure lit by the block it renders on. Ride offset drops to 0 below;
+            // the collider carriers (separate marker ArmorStands, teleported) are unaffected.
+            as.setMarker(true);
             as.addScoreboardTag("corelib:mech:" + mechId + ":vehicle");
         });
         // We own the vehicle: if assembly throws (before it's registered in activeMechanisms), remove the
         // just-spawned persistent ArmorStand so it isn't orphaned in the world until the next chunk reload.
         try {
+            // rideOffset 0: the marker vehicle mounts the display chain at the pivot cell (see above), so
+            // rotate()/updateAnimatedDisplays have no passenger offset to compensate. If a marker's true
+            // passenger offset turns out non-zero on this platform, set it to that measured residual.
             return assembleCore(mechId, type, blocks, ghosts, pivot, rotationAxis, vehicle,
-                ARMORSTAND_RIDE_OFFSET, true, serializer);
+                0f, true, serializer);
         } catch (RuntimeException e) {
             vehicle.remove();
             throw e;
