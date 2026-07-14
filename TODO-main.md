@@ -1,0 +1,7 @@
+- textures/recipes -- agent has all info
+- fix displays for redstone dynamo
+- fixes for extender pistons
+  - shared movability guards: apply `MovableBlocks.isMovable` to the minecart default seed (block above cart), the rotator default seed (attachment block), and the glue brush (single + cuboid, with a rejection message) — was de-scoped to piston-only to avoid regressing shared glue/authoring
+  - crash-mid-slide persistence: a hard crash (not graceful /stop) while the rod is moving loses the rod blocks — mechanisms aren't persisted across restarts (engine-wide, affects all mechanisms)
+  - true double-ended piston: back head currently rides as a passive cap; direction-selected pushing from either end is deferred
+- more showcases?
