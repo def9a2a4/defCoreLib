@@ -309,21 +309,24 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         boolean isAlreadySkull = block.getType() == Material.PLAYER_HEAD
                 || block.getType() == Material.PLAYER_WALL_HEAD;
 
-        // Compute attachment face
+        // Compute attachment face. Ceiling detection runs BEFORE the skull/non-skull split: a head
+        // clicked against a block's underside hangs below it, but for a head ITEM the block is already a
+        // skull here and getAttachmentFace can't tell a ceiling from a floor/wall — so read the click
+        // directly and route opt-in blocks (allowed_faces contains UP) to UP. NOTE: UP/ceiling support
+        // currently assumes a skull-backed item; the non-skull base_block/physical_material branches
+        // below don't handle an UP facing.
         BlockFace placedOn;
-        if (isAlreadySkull) {
+        BlockFace clickedFace = event.getBlockAgainst() != null
+                ? event.getBlockAgainst().getFace(block) : null;
+        if (clickedFace == BlockFace.DOWN && type.placement() != null
+                && type.placement().allowedFaces().contains(BlockFace.UP)) {
+            placedOn = BlockFace.UP;                                      // ceiling — opt-in per block
+        } else if (isAlreadySkull) {
             placedOn = getAttachmentFace(block);
+        } else if (clickedFace != null && clickedFace != BlockFace.UP && clickedFace != BlockFace.DOWN) {
+            placedOn = clickedFace.getOppositeFace();                     // wall
         } else {
-            BlockFace clickedFace = event.getBlockAgainst().getFace(block);
-            if (clickedFace != null && clickedFace != BlockFace.UP && clickedFace != BlockFace.DOWN) {
-                placedOn = clickedFace.getOppositeFace();                 // wall
-            } else if (clickedFace == BlockFace.DOWN
-                    && type.placement() != null
-                    && type.placement().allowedFaces().contains(BlockFace.UP)) {
-                placedOn = BlockFace.UP;                                  // ceiling — opt-in per block
-            } else {
-                placedOn = BlockFace.DOWN;                                // floor
-            }
+            placedOn = BlockFace.DOWN;                                    // floor
         }
 
         // Check placement restrictions (before skull conversion so cancellation reverts cleanly)
@@ -372,7 +375,6 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
                 block.setBlockData(dir, false);
             }
         } else if (!isAlreadySkull) {
-            BlockFace clickedFace = event.getBlockAgainst().getFace(block);
             if (clickedFace != null && clickedFace != BlockFace.UP && clickedFace != BlockFace.DOWN) {
                 block.setType(Material.PLAYER_WALL_HEAD, false);
                 if (block.getBlockData() instanceof org.bukkit.block.data.Directional dir) {
