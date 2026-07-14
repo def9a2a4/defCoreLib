@@ -18,10 +18,9 @@ blocks:
     potion:
       base_type: HEALING
 
-  # Industrial oil pressed from seeds. Stackable (not a potion) so it works as fuel /
-  # a crafting reagent. item_material is a placeholder skin (real oil texture via a
-  # resource pack later); MAGMA_CREAM is stackable and is not a machine input, so a
-  # Seed Oil item is never mistaken for a press/mill ingredient.
+  # Industrial oil pressed from seeds, bottled. A HONEY_BOTTLE reskin: an amber/yellow bottle
+  # that reads as bottled oil, stacks to 16, and is not a machine input, so a Seed Oil item is
+  # never mistaken for a press/mill ingredient (and it stays stackable for fuel / reagent use).
   #   Uses: engine fuel (RotationBlocks engine onInteract, by PDC) and the iron/copper
   #   lantern recipes (RotationBlocks.registerSeedOilRecipes, seed oil + string as wick).
   seed_oil:
@@ -33,7 +32,7 @@ blocks:
       - "&fMade by pressing seeds in the [Extractor Press](mech:press)."
       - "&7Burn it in the [Engine](mech:engine) as fuel, or craft it with a string and"
       - "&7iron/copper nuggets into a lantern."
-    item_material: MAGMA_CREAM
+    item_material: HONEY_BOTTLE
     placeable: false
 
   # Ground from wheat in the millstone; feeds the flour -> dough -> bread chain.
@@ -49,8 +48,9 @@ blocks:
     placeable: false
 
   # Crafted from 3 flour + a water bucket; smelt in a furnace or smoker -> bread.
-  # BREAD reskin (placeholder). The dough->bread step is registered in Java
-  # (RotationBlocks.registerBakingRecipes) since it outputs vanilla bread.
+  # Custom head skin (raw base64). The dough->bread step is registered in Java
+  # (RotationBlocks.registerBakingRecipes) via an ExactChoice on this item, so it matches
+  # by the item's PDC regardless of the base material.
   dough:
     name: "&eDough"
     lore:
@@ -58,7 +58,7 @@ blocks:
     catalog_notes:
       - "&fCraft 3 [Flour](mech:flour) + a water bucket into dough (keeps the bucket)."
       - "&7Smelt dough in a furnace or smoker to bake it into bread."
-    item_material: BREAD
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODE2NmQ3OWRlNjRhYmI0NDU3YWI4N2ZhOGY2NzA2ZDU1Y2U2ODJlMTBkYjg0OWVhNmRkMTI0MDk1YjEyMjc2ZSJ9fX0="
     placeable: false
     recipes:
       craft:

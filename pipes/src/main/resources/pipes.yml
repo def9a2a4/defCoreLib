@@ -125,7 +125,7 @@ blocks:
     lore:
       - "&7Pulls items out of the container or pipe it is placed on."
     texture: "@iron_head_h"
-    item_texture: "@iron_item"
+    item_texture: "@iron_display_h"
     drops: self
     default_state: north
     states:
