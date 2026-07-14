@@ -7,6 +7,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.block.Container;
 import org.bukkit.block.TileState;
 import org.bukkit.block.data.Directional;
@@ -18,7 +19,10 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
+import org.bukkit.util.Transformation;
 import org.jspecify.annotations.Nullable;
+import org.joml.AxisAngle4f;
+import org.joml.Vector3f;
 
 import java.util.HashMap;
 import java.util.List;
@@ -131,6 +135,8 @@ final class RedstoneDynamo implements Listener {
             .onNeighborChange((b, face) -> recalcIfKnown(b))
             .onInteract(this::onInteract)
             .onTick(this::tick)
+            // Orient the disguise head along the barrel's facing (like a shaft aligns to its axis).
+            .displayTransformResolver((b, state, dec, idx) -> orientHead(b, dec.transform()))
             .onChunkLoad((b, state) -> network.addNode(b, BLOCK_ID, axisOf(b),
                 RotationNetwork.NodeRole.TRANSMITTER, 0, false))
             .onChunkUnload(this::forget)
@@ -155,6 +161,37 @@ final class RedstoneDynamo implements Listener {
     private static RotationNetwork.Axis axisOf(Block b) {
         if (b.getBlockData() instanceof Directional d) return RotationNetwork.axisFromFace(d.getFacing());
         return RotationNetwork.Axis.Y;
+    }
+
+    // ── Head orientation (points the disguise head along the barrel's facing) ──────────────────────
+
+    private static final AxisAngle4f R_IDENTITY = new AxisAngle4f(0f, 0f, 0f, 1f);
+    /** Distance from block centre to the head's anchor along its facing. Rotating about the block
+     *  centre and re-offsetting by {@code k · facing} keeps the head centred for every facing, and for
+     *  UP this is the vertical "nudge up" (was 0.5). Visual-tuning knob. */
+    private static final float SHELL_OFFSET = 0.52f;
+
+    /** Left-rotation + translation that turns the (default +Y) head to point toward the barrel's
+     *  facing while staying centred on the block; scale is carried through from the YAML transform.
+     *  Mirrors {@link ExtendablePistonManager}'s {@code rotationFor} / {@code o.mul(k)} approach. */
+    private static Transformation orientHead(Block b, Transformation base) {
+        BlockFace facing = (b.getBlockData() instanceof Directional d) ? d.getFacing() : BlockFace.UP;
+        Vector3f t = new Vector3f(facing.getModX(), facing.getModY(), facing.getModZ()).mul(SHELL_OFFSET);
+        return new Transformation(t, rotationForFace(facing), base.getScale(), R_IDENTITY);
+    }
+
+    /** Rotation mapping the model's +Y axis onto {@code facing} (same six cases as the piston head). */
+    private static AxisAngle4f rotationForFace(BlockFace facing) {
+        float h = (float) (Math.PI / 2), p = (float) Math.PI;
+        return switch (facing) {
+            case UP    -> R_IDENTITY;                      // +Y → +Y
+            case DOWN  -> new AxisAngle4f(p, 1f, 0f, 0f);  // +Y → -Y
+            case EAST  -> new AxisAngle4f(-h, 0f, 0f, 1f); // +Y → +X
+            case WEST  -> new AxisAngle4f(h, 0f, 0f, 1f);  // +Y → -X
+            case SOUTH -> new AxisAngle4f(h, 1f, 0f, 0f);  // +Y → +Z
+            case NORTH -> new AxisAngle4f(-h, 1f, 0f, 0f); // +Y → -Z
+            default    -> R_IDENTITY;
+        };
     }
 
     // ── Tick: recompute the level and drive the barrel/comparator ─────────────────────────────────
@@ -235,7 +272,7 @@ final class RedstoneDynamo implements Listener {
         ItemStack filler = named(new ItemStack(Material.GRAY_STAINED_GLASS_PANE), Component.empty(), List.of());
         for (int i = 0; i < inv.getSize(); i++) inv.setItem(i, filler);
 
-        inv.setItem(4, named(new ItemStack(Material.BARREL),
+        inv.setItem(4, named(new ItemStack(Material.COMPARATOR),
                 Component.text("Measure & Scale", NamedTextColor.GOLD).decoration(TextDecoration.ITALIC, false),
                 List.of(text("Top row: what to measure", NamedTextColor.GRAY),
                         text("Bottom row: how to scale to 0-15", NamedTextColor.GRAY))));
