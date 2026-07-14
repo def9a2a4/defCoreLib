@@ -52,9 +52,11 @@ final class RotationSolver {
         long cellKey() { return pack(x, y, z); }
     }
 
-    /** Per-node solve output, parallel to the input list. */
+    /** Per-node solve output, parallel to the input list. {@code surplus} is the node's component
+     *  surplus, {@code max(0, supply − demand)} — machines scale work with it (processing batch
+     *  size, fan push), mirroring the static network's {@code getNetworkStats} semantics. */
     record Result(int[] component, boolean[] powered,
-                  RotationNetwork.SpinDirection[] direction, boolean[] jammed) {}
+                  RotationNetwork.SpinDirection[] direction, boolean[] jammed, int[] surplus) {}
 
     private static long pack(int x, int y, int z) {
         // 21 bits per coordinate, offset-shifted — mechanism-local offsets are tiny (|v| ≤ ~256).
@@ -67,6 +69,7 @@ final class RotationSolver {
         boolean[] powered = new boolean[n];
         var direction = new RotationNetwork.SpinDirection[n];
         boolean[] jammed = new boolean[n];
+        int[] surplus = new int[n];
         java.util.Arrays.fill(component, -1);
 
         Map<Long, Integer> byCell = new HashMap<>(n * 2);
@@ -126,12 +129,14 @@ final class RotationSolver {
                 demand += nodes.get(i).demand();
             }
             boolean compPowered = !compJammed && supply > 0 && supply >= demand;
+            int compSurplus = Math.max(0, supply - demand);
             for (int i : members) {
                 powered[i] = compPowered;
                 jammed[i] = compJammed;
+                surplus[i] = compSurplus;
             }
         }
-        return new Result(component, powered, direction, jammed);
+        return new Result(component, powered, direction, jammed, surplus);
     }
 
     private record Edge(int to, boolean reverses) {}
