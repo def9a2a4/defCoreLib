@@ -77,6 +77,39 @@ BLOCK_FILES = [
     "corelib-items.yml",  # corelib-namespace inventory-only items (slime glue)
 ]
 
+# Block-definition files that live in a companion *module's* resource dir, not core's
+# src/main/resources. Same schema as BLOCK_FILES; given as full paths since RESOURCES is core-only.
+MODULE_BLOCK_FILES = [
+    ROOT / "pipes" / "src" / "main" / "resources" / "pipes.yml",  # Pipes (pipes namespace)
+]
+
+# Companion plugin that provides each namespace's blocks → (display name, Modrinth slug). Shown as a
+# "Download on Modrinth" link atop each item's detail page. corelib/demo ship in the base plugin.
+NAMESPACE_PLUGIN = {
+    "mech":             ("Mechanism", "mechanism"),
+    "verticalslabs":    ("VerticalSlabs", "vslab"),
+    "redstonedisplays": ("RedstoneDisplays", "redstonedisplays"),
+    "pipes":            ("Pipes", "pipes"),
+    "corelib":          ("DefCoreLib", "defcorelib"),
+    "demo":             ("DefCoreLib", "defcorelib"),
+}
+# Items that are corelib-namespaced but are actually BetterBanners content (BetterBanners has no
+# namespace of its own — its only catalog items are the large/huge banner tiers).
+BANNER_PLUGIN = ("BetterBanners", "betterbanners")
+BANNER_IDS = {"corelib:large_banner", "corelib:huge_banner"}
+
+
+def plugin_for(item: dict) -> dict | None:
+    """The companion plugin that ships an item's block → {name, slug}, or None if unknown."""
+    if item["fullId"] in BANNER_IDS:
+        name, slug = BANNER_PLUGIN
+    else:
+        entry = NAMESPACE_PLUGIN.get(item["namespace"])
+        if not entry:
+            return None
+        name, slug = entry
+    return {"name": name, "slug": slug}
+
 # Processing-machine recipe files → (machine block fullId, display label).
 # Each machine's input→output recipes attach to its own catalog entry.
 MACHINE_RECIPE_FILES = {
@@ -695,6 +728,14 @@ def main() -> int:
         print(f"  + {name}: {len(loaded)} items")
         items.extend(loaded)
 
+    for path in MODULE_BLOCK_FILES:
+        if not path.exists():
+            print(f"  ! skipping missing {path}", file=sys.stderr)
+            continue
+        loaded = load_block_file(path)
+        print(f"  + {path.name}: {len(loaded)} items")
+        items.extend(loaded)
+
     extras = load_extras(DOCS_DATA / "extras.yml")
     print(f"  + extras.yml: {len(extras)} items")
     items.extend(extras)
@@ -797,6 +838,12 @@ def main() -> int:
                 if out_item is not None:
                     out_item.setdefault("producedBy", []).append(
                         {"machine": machine_id, "machineType": label, "recipe": r})
+
+    # Tag each item with the companion plugin that ships it (drives the item-page Modrinth link).
+    for it in items:
+        plugin = plugin_for(it)
+        if plugin:
+            it["plugin"] = plugin
 
     catalog = {
         "namespaces": sorted({it["namespace"] for it in items}),

@@ -309,6 +309,18 @@ a.slot { text-decoration: none; color: inherit; }
 .detail-icon .placeholder { color: #555; }
 .detail-icon.glint { filter: drop-shadow(0 0 6px #b46cff); }
 .detail-name { margin: 0 0 4px; color: #fff; }
+.plugin-modrinth {
+  display: inline-block;
+  margin-top: 8px;
+  padding: 4px 10px;
+  border-radius: 5px;
+  background: #1bd96a;
+  color: #0a0a0a;
+  font-weight: 700;
+  font-size: 0.8em;
+  text-decoration: none;
+}
+.plugin-modrinth:hover { filter: brightness(1.1); }
 .detail-section { margin-top: 24px; }
 .detail-section .section-title { margin-top: 0; }
 

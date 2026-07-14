@@ -117,6 +117,14 @@ function noteHtml(line, itemsById) {
   return out;
 }
 
+// "Download <Plugin> on Modrinth" link for the companion plugin that ships this block. The generator
+// attaches item.plugin = {name, slug} per namespace (banners → BetterBanners); absent → no link.
+function pluginLinkHtml(item) {
+  if (!item.plugin?.slug) return '';
+  return `<a class="plugin-modrinth" href="https://modrinth.com/plugin/${esc(item.plugin.slug)}"
+    target="_blank" rel="noopener">Download ${esc(item.plugin.name)} on Modrinth ↗</a>`;
+}
+
 function renderItem(item, itemsById, showcasesById) {
   const detail = document.getElementById('detail');
   document.title = `DefCoreLib — ${stripColors(item.name)}`;
@@ -138,6 +146,7 @@ function renderItem(item, itemsById, showcasesById) {
       <div>
         <h1 class="detail-name">${mcText(item.name)}</h1>
         <div class="item-id">${esc(item.fullId)}</div>
+        ${pluginLinkHtml(item)}
       </div>
     </div>
     ${lore}
