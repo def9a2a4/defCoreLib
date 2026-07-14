@@ -9,6 +9,13 @@ public interface ContainerAdapter {
 
     boolean canReceive(Block block);
 
+    /** Whether this adapter reads/writes the block's REAL tile inventory. Adapters serving a
+     *  plugin-side virtual inventory (e.g. {@link RotationMachineAdapter}) override to false —
+     *  the locked-container guard in {@link ContainerAdapterRegistry} only applies to real ones. */
+    default boolean usesRealInventory() {
+        return true;
+    }
+
     default boolean canReceiveFrom(Block block, BlockFace approachFace) {
         return canReceive(block);
     }

@@ -1,5 +1,6 @@
 package anon.def9a2a4.corelib;
 
+import anon.def9a2a4.corelib.container.ContainerAdapterRegistry;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
@@ -634,7 +635,9 @@ final class RotationBlocks {
         Inventory internal = CoreLibPlugin.getInstance().getRegistry().getOrCreateStorage(machine);
         if (internal == null) return;
         Block host = machine.getRelative(facing.getOppositeFace());
-        if (!(host.getState() instanceof Container c)) return;
+        // Gateway resolution: null for non-containers AND locked plugin-owned ones (e.g. a dynamo).
+        Container c = ContainerAdapterRegistry.findVanillaContainer(host);
+        if (c == null) return;
         Inventory adjacent = c.getInventory();
         for (int i = 0; i < adjacent.getSize(); i++) {
             ItemStack item = adjacent.getItem(i);
@@ -659,7 +662,10 @@ final class RotationBlocks {
     private static boolean ejectOutputs(Block machine, List<ItemStack> outputs) {
         if (outputs.isEmpty()) return true;
         Block below = machine.getRelative(BlockFace.DOWN);
-        if (below.getState() instanceof Container oc) {
+        // Gateway resolution: a locked container (e.g. a dynamo) resolves to null → outputs fall
+        // through to the MachineEjectEvent/drop path below instead of entering it.
+        Container oc = ContainerAdapterRegistry.findVanillaContainer(below);
+        if (oc != null) {
             Inventory inv = oc.getInventory();
             ItemStack[] snapshot = java.util.Arrays.stream(inv.getContents())
                 .map(s -> s == null ? null : s.clone()).toArray(ItemStack[]::new);
@@ -948,7 +954,9 @@ final class RotationBlocks {
     private static void pushToMount(Block hopper, Inventory internal) {
         BlockFace mount = mountFace(hopper);
         Block target = hopper.getRelative(mount);
-        boolean isContainer = target.getState() instanceof Container;
+        // Gateway resolution: a locked container (e.g. a dynamo) resolves to null → the item is
+        // offered to listeners and otherwise RETAINED (this method's never-drop contract).
+        Container targetContainer = ContainerAdapterRegistry.findVanillaContainer(target);
 
         for (int i = 0; i < internal.getSize(); i++) {
             ItemStack it = internal.getItem(i);
@@ -956,8 +964,8 @@ final class RotationBlocks {
             ItemStack single = it.clone(); single.setAmount(1);
 
             boolean consumed;
-            if (isContainer) {
-                Inventory dest = ((Container) target.getState()).getInventory();
+            if (targetContainer != null) {
+                Inventory dest = targetContainer.getInventory();
                 consumed = dest.addItem(single).isEmpty();          // false → container full: keep, stop
             } else {
                 // No vanilla container: offer to listeners (Pipes). Single item → deliverFromAbove is

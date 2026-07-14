@@ -183,6 +183,11 @@ public class MechanismRegistry {
                     storage = registry.takeStorageSnapshot(block);
                 }
             } else if (block.getState() instanceof Container c) {
+                // Vanilla containers only: this is the non-custom branch, so a custom block's REAL
+                // tile inventory is never snapshotted here. That invariant is what keeps a locked
+                // container (e.g. the dynamo's comparator-drive barrel) safe when a glued structure
+                // carries it — its plugin-owned filler is wiped by onBlockRemoved on pickup (via
+                // airOutSourceBlocks) and refilled by its own tick on landing, never copied/restored.
                 Inventory orig = c.getInventory();
                 storage = Bukkit.createInventory(null, orig.getSize());
                 for (int s = 0; s < orig.getSize(); s++) {

@@ -1100,15 +1100,12 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         }
     }
 
-    /** True if the inventory holder is a real container that physically backs one of our custom
-     *  blocks (physical_material) and that type keeps the default container lock. The cheap
-     *  isCustomBlock set-guard runs before any type lookup (hopper events fire often). */
+    /** True if the inventory holder is a real container whose inventory is plugin-owned (a
+     *  physical_material custom block with the container lock). An event holder implies the chunk
+     *  is loaded, satisfying {@link CustomBlockRegistry#isLockedContainer}'s tracking precondition. */
     private boolean isManagedContainer(org.bukkit.inventory.InventoryHolder holder) {
         if (!(holder instanceof org.bukkit.block.Container c)) return false;
-        Block b = c.getBlock();
-        if (!registry.isCustomBlock(b)) return false;
-        CustomHeadBlock type = registry.getTypeFromBlock(b);
-        return type != null && type.physicalMaterial() != null && type.lockContainer();
+        return registry.isLockedContainer(c.getBlock());
     }
 
     // ──────────────────────────────────────────────────────────────────────

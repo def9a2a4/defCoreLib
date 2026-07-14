@@ -27,6 +27,13 @@ public class RotationMachineAdapter implements ContainerAdapter {
         return getStorageType(block) != null;
     }
 
+    /** This adapter serves the machine's VIRTUAL storage inventory, never the block's real tile
+     *  inventory — the locked-container guard doesn't apply to it. */
+    @Override
+    public boolean usesRealInventory() {
+        return false;
+    }
+
     @Override
     public boolean canReceiveFrom(Block block, BlockFace approachFace) {
         if (getStorageType(block) == null) return false;

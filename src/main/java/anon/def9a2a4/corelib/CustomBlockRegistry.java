@@ -442,6 +442,21 @@ public class CustomBlockRegistry {
         return customBlockLocations.contains(LocationKey.of(block));
     }
 
+    /**
+     * True if this block is a {@code physical_material} custom block whose REAL container inventory
+     * is plugin-owned ({@code lockContainer}) — item movement in or out must be refused everywhere
+     * (events, pipes, machines). Virtual {@code storage()} inventories are unaffected.
+     *
+     * <p>Only reliable once the block's chunk is loaded and the block is tracked — call it AFTER a
+     * state access ({@code getState()} / {@code instanceof Container}), which forces the chunk (and
+     * with it this registry's location index) to load. Returns false for untracked blocks.
+     */
+    public boolean isLockedContainer(Block block) {
+        if (!isCustomBlock(block)) return false;  // cheap set-guard (mirrors the event path)
+        CustomHeadBlock type = getTypeFromBlock(block);
+        return type != null && type.physicalMaterial() != null && type.lockContainer();
+    }
+
     // ──────────────────────────────────────────────────────────────────────
     // PDC operations on placed skull blocks
     // ──────────────────────────────────────────────────────────────────────
