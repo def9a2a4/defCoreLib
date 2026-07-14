@@ -347,7 +347,18 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         }
 
         // Convert non-skull blocks to skulls (e.g., slab items with item_material)
-        if (type.physicalMaterial() != null) {
+        if (type.baseBlock() != null) {
+            // Bare-first block (e.g. casing = OAK_PLANKS): replace the placed head with the base block.
+            // Its head texture is carried by a display entity; identity lives in the display-backed
+            // bare-block registry (addBareBlock below), not a block-entity PDC. Orient the base block to
+            // the attachment face when it supports it (guarded, like physical_material).
+            block.setType(type.baseBlock(), false);
+            if (block.getBlockData() instanceof org.bukkit.block.data.Directional dir
+                    && dir.getFaces().contains(placedOn)) {
+                dir.setFacing(placedOn);
+                block.setBlockData(dir, false);
+            }
+        } else if (type.physicalMaterial() != null) {
             // physical_material block (e.g. the dynamo's barrel): replace the placed head with the real
             // block, facing the attachment face when the material supports it (guarded — a horizontally-
             // restricted Directional would throw on DOWN). Disguise display + PDC identity are applied
@@ -399,8 +410,13 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         }
         final String state = resolvedState;
 
-        // Write PDC to the placed skull (with correct initial state)
-        registry.markBlock(block, type, state);
+        // Register identity: a bare-first block has no block-entity, so index it in the display-backed
+        // registry (durable chunk PDC + tagged display); everything else stamps the tile PDC.
+        if (type.baseBlock() != null) {
+            registry.addBareBlock(block, type);
+        } else {
+            registry.markBlock(block, type, state);
+        }
 
         // Copy captured display data from item → skull (windmill banners / water-wheel planks)
         if (meta instanceof org.bukkit.inventory.meta.SkullMeta skullMeta
@@ -556,9 +572,12 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
 
     private void handlePiston(List<Block> blocks, org.bukkit.event.Cancellable event) {
         for (Block block : blocks) {
-            // A bare shaft can't carry its (rod-based) identity through a move — revert it to an
-            // encased head first, so it then behaves exactly like a normal encased shaft under pistons.
-            if (registry.isChainShaft(block)) registry.revertChainShaftToHead(block);
+            // A bare block WITH a revert handler (the shaft) reverts to an encased head first, then
+            // behaves like a normal skull under pistons. A bare block WITHOUT one (the casing) has no
+            // head form; a vanilla piston would shove the base block and orphan its display/identity, so
+            // cancel the push. (Custom mechanisms still move it — MovableBlocks.isMovable stays true.)
+            registry.revertBareBlockForCapture(block);
+            if (registry.isBareBlock(block)) { event.setCancelled(true); return; }
             CustomHeadBlock type = registry.getTypeFromBlock(block);
             if (type == null) continue;
             if (type.cancelPistons()) {
@@ -613,8 +632,9 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         Material t = to.getType();
         // A bare shaft is a real (waterloggable) CHAIN; water flowing in would otherwise trip the
         // MONITOR handler below into tearing down its node/rod even though the chain isn't destroyed.
+        // (Only the CHAIN bare block is waterloggable; solid bare blocks like the casing can't be flowed into.)
         if (t == Material.CHAIN) {
-            if (registry.isChainShaft(to)) event.setCancelled(true);
+            if (registry.isBareBlock(to)) event.setCancelled(true);
             return;
         }
         if (t != Material.PLAYER_HEAD && t != Material.PLAYER_WALL_HEAD) return;

@@ -130,6 +130,8 @@ final class RotationRotator {
             if (!MovableBlocks.isMovable(seed, registry)) return;   // don't scoop air / immovable world blocks
             planks = List.of(seed);
         }
+        // Slime-style casing spread: a casing in the swung set drags its neighbours (transitively).
+        planks = CasingExpansion.expand(planks, registry, glueManager.maxSize());
 
         RotationNetwork.RotationNode node = network.getNode(key);
         if (node == null) return;

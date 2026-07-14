@@ -69,6 +69,7 @@ final class DoorDemo {
                 if (seed.getType().isAir()) return;
                 planks = List.of(seed);
             }
+            planks = CasingExpansion.expand(planks, registry, glueManager.maxSize());
             mech = mechRegistry.assembleMechanism("demo:door", planks,
                 head.getLocation().add(0.5, 0, 0.5), null);
             if (glued) mech.setOnDisassembled(p -> glueManager.setStructure(anchor, p));   // rebind only authored glue
@@ -122,6 +123,7 @@ final class DoorDemo {
                 if (seed.getType().isAir()) return;
                 planks = List.of(seed);
             }
+            planks = CasingExpansion.expand(planks, registry, glueManager.maxSize());
             mech = mechRegistry.assembleMechanism("demo:door", planks,
                 head.getLocation().add(0.5, 0, 0.5), null);
             if (glued) mech.setOnDisassembled(p -> glueManager.setStructure(anchor, p));   // rebind only authored glue

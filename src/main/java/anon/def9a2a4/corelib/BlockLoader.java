@@ -80,6 +80,11 @@ public final class BlockLoader {
         // rendered by a display entity while identity/state live in the block's tile-entity PDC.
         String physMat = sec.getString("physical_material");
         if (physMat != null) b.physicalMaterial(Material.valueOf(physMat.toUpperCase(java.util.Locale.ROOT)));
+        // Bare non-tile world block (e.g. CHAIN, OAK_PLANKS): head texture rendered by a display entity,
+        // identity/state carried by the display-backed bare-block registry (persisted chunk index + tagged
+        // display) rather than a block-entity PDC. Registered automatically for any type with base_block set.
+        String baseMat = sec.getString("base_block");
+        if (baseMat != null) b.baseBlock(Material.valueOf(baseMat.toUpperCase(java.util.Locale.ROOT)));
         // Base texture: required for placeable head blocks; optional when item_material is set.
         String tex = itemMat != null ? sec.getString("texture") : requireString(sec, "texture");
         if (tex != null) b.texture(resolveTexture(tex, textures));

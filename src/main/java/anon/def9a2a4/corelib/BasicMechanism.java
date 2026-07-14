@@ -394,7 +394,19 @@ final class BasicMechanism implements Mechanism {
 
         if (mb.customTypeId != null) {
             CustomHeadBlock type = registry.getType(mb.customTypeId);
-            if (type != null) {
+            if (type != null && type.baseBlock() != null) {
+                // Bare-first block (e.g. casing = OAK_PLANKS): no block-entity, so markBlock can't stamp
+                // it. The base block was placed by setBlockData above; register its identity in the
+                // display-backed registry (durable chunk PDC + tagged display) and respawn the display.
+                // (The shaft is captured/re-placed as an encased head — baseBlock() null — so it takes the
+                // skull path below.) A symmetric bare block has no rotatable state; keep the captured one.
+                String landedState = mb.customState;
+                registry.addBareBlock(target, type);
+                int power = registry.readPower(target, type);
+                registry.applyConfig(target, type, landedState, power);
+                registry.restoreBlock(target, type, landedState);
+                if (mb.storage != null) registry.restoreStorageSnapshot(target, mb.storage);
+            } else if (type != null) {
                 // The vanilla data was rotated above; re-derive the custom state for the landed
                 // orientation so it doesn't snap to an impossible state (and rejoins the network on the
                 // correct axis).

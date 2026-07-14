@@ -210,12 +210,14 @@ final class RotationBlocks {
             .onBlockRemoved((b, state) -> network.removeNode(CustomBlockRegistry.LocationKey.of(b)))
             .build());
 
-        // Enable bare-shaft support once the shaft type is registered: give the registry the type
-        // (for CHAIN→shaft resolution) and a revert-to-head handler (piston/mechanism moves).
+        // Enable bare-shaft support once the shaft type is registered: register CHAIN→shaft resolution
+        // and a revert-to-head handler (piston/mechanism moves). The shaft is skull-first (it places as
+        // an encased head and the wrench converts it to a bare CHAIN), so it declares no base_block and
+        // registers its bare material explicitly here.
         if ("mech:shaft".equals(blockId)) {
             CustomHeadBlock shaftType = registry.getType(blockId);
             if (shaftType != null) {
-                registry.setChainShaftSupport(shaftType, b -> makeShaftEncased(b, network, registry));
+                registry.registerBareBlock(shaftType, Material.CHAIN, b -> makeShaftEncased(b, network, registry));
             }
         }
     }
@@ -1433,7 +1435,7 @@ final class RotationBlocks {
         if (bd instanceof org.bukkit.block.data.Orientable o) o.setAxis(toBukkitAxis(axis));
         block.setBlockData(bd, false);
 
-        registry.addChainShaft(block);
+        registry.addBareBlock(block, registry.getType("mech:shaft"));
         if (network.getNode(key) == null) {
             network.addNode(block, "mech:shaft", axis, RotationNetwork.NodeRole.TRANSMITTER, 0, false);
         } else {
@@ -1446,7 +1448,7 @@ final class RotationBlocks {
         RotationNetwork.Axis axis = block.getBlockData() instanceof org.bukkit.block.data.Orientable o
                 ? fromBukkitAxis(o.getAxis()) : RotationNetwork.Axis.Y;
         var key = CustomBlockRegistry.LocationKey.of(block);
-        registry.removeChainShaft(block);
+        registry.removeBareBlock(block);
 
         String state;
         if (axis == RotationNetwork.Axis.Y) {

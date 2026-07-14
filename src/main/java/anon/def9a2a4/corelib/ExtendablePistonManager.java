@@ -478,7 +478,8 @@ final class ExtendablePistonManager {
         if (!addHeadPayload(out, line.frontHead(), line.frontFace())) return null;
         if (line.backHead() != null
                 && !addHeadPayload(out, line.backHead(), line.frontFace().getOppositeFace())) return null;
-        return out;
+        // Slime-style casing spread: a casing in the payload drags its neighbours (transitively).
+        return CasingExpansion.expand(out, registry, glueManager.maxSize());
     }
 
     /**

@@ -783,6 +783,43 @@ blocks:
               B: { block: "mech:bearing" }
               M: { material: COMPARATOR }
 
+  # ─── Mechanical Casing ────────────────────────────────────────────────────
+  # A full solid block that auto-glues to adjacent blocks like a vanilla slime block: any casing in a
+  # moving contraption drags its cardinal neighbours (transitively through other casings). Under the
+  # hood it is a real OAK_PLANKS "bare block" — its identity lives in the display-backed bare-block
+  # registry (durable chunk PDC + the tagged shell display), not a block-entity PDC. Movable by
+  # mechanisms; ordinary to drill/break. Slime propagation lives in CasingExpansion, hooked into every
+  # mover (piston / rotator / door / minecart / chain hoist). No Java overlay — pure data + base_block.
+  casing:
+    name: "&fMechanical Casing"
+    lore:
+      - "&7Sticks to adjacent blocks like slime —"
+      - "&7move it with any mechanism"
+    catalog_notes:
+      - "&fA full block that auto-glues to every adjacent block like a slime block — build a moving contraption without the glue brush."
+      - "&7Any casing carried by a piston, rotator, minecart, or chain hoist drags its neighbours along, spreading through other casings."
+      - "&7A vanilla piston moves a lone casing as an ordinary block (no slime spread)."
+    base_block: OAK_PLANKS
+    # Placeholder art: reuse the machine-frame skin. TODO: dedicated @casing skin (wood-framed casing).
+    texture: "@machine_base"
+    drops: self
+    default_state: idle
+    states:
+      # One shell head display scaled just over a full block (mirrors the dynamo) to hide the planks.
+      idle:
+        display_entities:
+          - texture: "@machine_base"
+            tag: shell
+            transform: { translation: [0, 0.501, 0], scale: [2.006, 2.006, 2.006] }
+    recipes:
+      craft:
+        shaped:
+          - pattern: ["CAC", "APA", "CAC"]
+            key:
+              C: { material: COPPER_INGOT }
+              A: { material: ANDESITE }
+              P: { material: OAK_PLANKS }
+
   # ─── Millstone ──────────────────────────────────────────────────────────
   # Consumer: 1 Power. WALL only — mounts on a block and pulls from it if it's a
   # container; outputs into the container below (or drops below). Batch size

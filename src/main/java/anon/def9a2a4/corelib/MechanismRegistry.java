@@ -158,9 +158,10 @@ public class MechanismRegistry {
         pivot.setY(snapY);
         pivot.setZ(snapZ);
         for (Block block : blocks) {
-            // A bare shaft can't carry its (rod-based) identity through a mechanism move — revert it
-            // to an encased head first, so it's captured/re-placed as a normal skull shaft.
-            if (registry.isChainShaft(block)) registry.revertChainShaftToHead(block);
+            // A bare block WITH a revert handler (the shaft) can't carry its identity through a move as
+            // bare, so revert it to an encased head first. A bare block WITHOUT one (the casing) is
+            // captured natively — getTypeFromBlock still resolves it, and placeBlock re-lands it bare.
+            registry.revertBareBlockForCapture(block);
             BlockData bd = block.getBlockData();
             Matrix4f local = new Matrix4f().translation(
                 (float) ((block.getX() + 0.5) - snapX),

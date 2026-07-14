@@ -192,17 +192,25 @@ public class CustomBlockRegistry {
     // Animation direction: CW (default) or CCW per block location
     private final Map<LocationKey, RotationNetwork.SpinDirection> animationDirection = new HashMap<>();
 
-    // ── Bare shafts ────────────────────────────────────────────────────────
-    // A "bare" shaft is a real vanilla CHAIN block acting as mech:shaft. It has no PDC, so its
-    // identity is recovered from its persistent, tagged rod ItemDisplay (see restoreChainShaftsInChunk).
-    // This set is the runtime index; getTypeFromBlock resolves CHAIN + membership → the shaft type.
-    private final Set<LocationKey> chainShaftLocations = new HashSet<>();
-    // Last idle/spinning state rendered per bare shaft — churn guard so the spin drive only re-applies
-    // (respawns the rod) on an actual idle↔spinning transition, not on every unrelated recalc.
-    private final Map<LocationKey, String> chainShaftRenderedState = new HashMap<>();
-    // The mech:shaft type + a revert-to-encased-head handler, registered by RotationBlocks.
-    private @Nullable CustomHeadBlock chainShaftType;
-    private @Nullable Consumer<Block> chainShaftRevertHandler;
+    // ── Bare blocks (display-backed, non-tile) ───────────────────────────────
+    // A "bare" block is a real vanilla block (CHAIN → mech:shaft, OAK_PLANKS → mech:casing, …) acting as
+    // a custom block. It has no block-entity PDC, so its identity is durably persisted in the CHUNK PDC
+    // (see BARE_BLOCKS_KEY) and mirrored by a persistent tagged display entity; bareLocations is the
+    // in-memory cache, rebuilt on load from the chunk PDC (+ a display-scan fallback). getTypeFromBlock
+    // resolves a registered base material + membership → the bare type. This system generalizes the
+    // original CHAIN-only "bare shaft"; shaft-specific behaviour (spin/axis) still lives in RotationBlocks.
+    private final Map<LocationKey, CustomHeadBlock> bareLocations = new HashMap<>();
+    // Registered bare types keyed by their base Material (one type per material: CHAIN→shaft, PLANKS→casing).
+    private final Map<Material, CustomHeadBlock> bareTypes = new HashMap<>();
+    // Optional per-type "revert to encased head before a mechanism captures me" handler (shaft has one;
+    // casing has none → it is captured natively). Keyed by type fullId.
+    private final Map<String, Consumer<Block>> bareRevertHandlers = new HashMap<>();
+    // Last idle/spinning state rendered per bare block — churn guard so the spin drive only re-applies
+    // (respawns the display) on an actual idle↔spinning transition, not on every unrelated recalc.
+    private final Map<LocationKey, String> bareRenderedState = new HashMap<>();
+    private boolean bareRestorerRegistered = false;  // register the generalized chunk restorer exactly once
+    // Chunk PDC key holding this chunk's durable bare-block index: "x,y,z=ns:id;…" (survives a hard crash).
+    static final NamespacedKey BARE_BLOCKS_KEY = new NamespacedKey("corelib", "bare_blocks");
 
     // Pluggable per-chunk restorers for custom blocks whose identity lives on an attached display
     // entity rather than a skull PDC (e.g. bare chain shafts). Run for hinted chunks in onChunkLoad;
@@ -231,6 +239,12 @@ public class CustomBlockRegistry {
 
     public void register(CustomHeadBlock type) {
         types.put(type.fullId(), type);
+        // Bare-first types (base_block set, e.g. casing = OAK_PLANKS) auto-register for identity
+        // resolution + chunk restore. Skull-first bare types (the shaft) instead call registerBareBlock
+        // explicitly with their revert handler, since their base_block isn't set (they place as a head).
+        if (type.baseBlock() != null && !bareTypes.containsKey(type.baseBlock())) {
+            registerBareBlock(type, type.baseBlock(), null);
+        }
         rescanLoadedChunks(type);
         if (finalized) {
             registerRecipesForType(type);
@@ -280,10 +294,11 @@ public class CustomBlockRegistry {
             if (typeId == null) return null;
             return types.get(typeId);
         }
-        // Bare shaft: a CHAIN block in the runtime index (identity from its rod display).
-        if (m == Material.CHAIN && chainShaftType != null && !chainShaftLocations.isEmpty()
-                && chainShaftLocations.contains(LocationKey.of(block))) {
-            return chainShaftType;
+        // Bare block: a registered base material (CHAIN, PLANKS, …) whose cell is in the runtime index
+        // (identity durably backed by the chunk PDC + its tagged display).
+        if (!bareLocations.isEmpty() && bareTypes.containsKey(m)) {
+            CustomHeadBlock t = bareLocations.get(LocationKey.of(block));
+            if (t != null) return t;
         }
         // physical_material-backed blocks (e.g. the dynamo's barrel): gate on the cheap runtime
         // location index BEFORE taking a tile snapshot, so explosion/piston/break sweeps over vanilla
@@ -320,7 +335,7 @@ public class CustomBlockRegistry {
      * gone or has been replaced by a different block, optionally despawning them.
      *
      * <p>Ownership is decided purely by the owner block: a matching {@link #BLOCK_TYPE_KEY} PDC skull
-     * (or a bare {@link #isChainShaft} CHAIN) is live, anything else is an orphan — so a display whose
+     * (or a bare {@link #isBareBlock} block) is live, anything else is an orphan — so a display whose
      * type was renamed or removed (its cell no longer holds a matching head) is correctly cleaned. The
      * registry is not consulted. Banners and pulley-owned chain strands are skipped; mechanism-entity
      * tags are skipped by shape. A display whose owner sits in an unloaded chunk is counted, not removed.
@@ -424,9 +439,9 @@ public class CustomBlockRegistry {
      *  the orphan scanner never deletes a live disguised block's display. */
     private boolean isOwnerPresent(World world, DisplayOwnerTag owner) {
         Block block = world.getBlockAt(owner.x(), owner.y(), owner.z());
-        // A bare chain shaft is a CHAIN block (no skull PDC) whose sole identity is its rod display —
-        // a live one must never be treated as an orphan (which would delete its only identity carrier).
-        if (isChainShaft(block)) return true;
+        // A bare block (CHAIN shaft, PLANKS casing, …) has no skull PDC; its display is one of its two
+        // identity carriers (the other is the chunk PDC) — a live one must never be orphan-swept.
+        if (isBareBlock(block)) return true;
         if (!(block.getState() instanceof TileState tile)) return false;
         String fullId = tile.getPersistentDataContainer().get(BLOCK_TYPE_KEY, PersistentDataType.STRING);
         return owner.fullId().equals(fullId);
@@ -479,14 +494,21 @@ public class CustomBlockRegistry {
         }
     }
 
-    /** Read current state from a skull's PDC, or synthesize it for a bare (chain) shaft. */
+    /** Read current state from a skull's PDC, or synthesize it for a bare (display-backed) block. */
     public @Nullable String getState(Block block) {
         if (block.getState() instanceof TileState tile) {
             return tile.getPersistentDataContainer().get(STATE_KEY, PersistentDataType.STRING);
         }
-        if (isChainShaft(block)) {
-            String rendered = chainShaftRenderedState.get(LocationKey.of(block));
-            return rendered != null ? rendered : "idle_" + chainAxisSuffix(block);
+        LocationKey key = LocationKey.of(block);
+        CustomHeadBlock bare = bareLocations.get(key);
+        if (bare != null) {
+            String rendered = bareRenderedState.get(key);
+            if (rendered != null) return rendered;
+            // Orientable bare blocks (the chain shaft) synthesize idle_+axis; others use their default state.
+            if (block.getBlockData() instanceof org.bukkit.block.data.Orientable) {
+                return "idle_" + chainAxisSuffix(block);
+            }
+            return bare.defaultState();
         }
         return null;
     }
@@ -498,38 +520,54 @@ public class CustomBlockRegistry {
         tile.update();
     }
 
-    // ── Bare-shaft support ──────────────────────────────────────────────────
+    // ── Bare-block support (display-backed, non-tile custom blocks) ───────────
 
-    /** Register the mech:shaft type and the revert-to-head handler used on piston/mechanism moves. */
-    void setChainShaftSupport(CustomHeadBlock shaftType, java.util.function.Consumer<Block> revertHandler) {
-        this.chainShaftType = shaftType;
-        this.chainShaftRevertHandler = revertHandler;
-        registerChunkRestorer(this::restoreChainShaftsInChunk);
-    }
-
-    /** True if {@code block} is a CHAIN currently acting as a bare shaft. */
-    boolean isChainShaft(Block block) {
-        return chainShaftType != null && !chainShaftLocations.isEmpty()
-                && block.getType() == Material.CHAIN
-                && chainShaftLocations.contains(LocationKey.of(block));
-    }
-
-    void addChainShaft(Block block) {
-        chainShaftLocations.add(LocationKey.of(block));
-        markChunkDirty(block);   // hint the chunk so onChunkLoad's gated restore finds this bare shaft
-    }
-
-    void removeChainShaft(Block block) {
-        LocationKey key = LocationKey.of(block);
-        chainShaftLocations.remove(key);
-        chainShaftRenderedState.remove(key);
-    }
-
-    /** Convert a bare chain shaft back to an encased head (piston/mechanism move); no-op otherwise. */
-    void revertChainShaftToHead(Block block) {
-        if (chainShaftRevertHandler != null && isChainShaft(block)) {
-            chainShaftRevertHandler.accept(block);
+    /**
+     * Register a bare block: a base material (CHAIN → shaft, OAK_PLANKS → casing, …) whose identity is
+     * carried by the chunk PDC + a tagged display, not a block-entity PDC. The base material is passed
+     * explicitly because a bare block may be either <em>bare-first</em> (placed as the base block —
+     * casing, which also sets {@code base_block} so it places as planks) or <em>skull-first</em>
+     * (placed as an encased head and converted to bare later — the shaft's wrench sets CHAIN).
+     * @param revertHandler optional — invoked to convert the bare block back to an encased head before a
+     *   mechanism captures it (the shaft uses this); pass {@code null} to be captured natively (casing).
+     */
+    void registerBareBlock(CustomHeadBlock type, Material base, @Nullable Consumer<Block> revertHandler) {
+        bareTypes.put(base, type);
+        if (revertHandler != null) bareRevertHandlers.put(type.fullId(), revertHandler);
+        if (!bareRestorerRegistered) {              // one generalized restorer covers all bare types
+            registerChunkRestorer(this::restoreBareBlocksInChunk);
+            bareRestorerRegistered = true;
         }
+    }
+
+    /** True if {@code block} is a registered base material currently acting as a bare custom block. */
+    boolean isBareBlock(Block block) {
+        return !bareLocations.isEmpty()
+                && bareTypes.containsKey(block.getType())
+                && bareLocations.containsKey(LocationKey.of(block));
+    }
+
+    /** Index a bare block: in-memory cache + durable chunk-PDC entry + chunk hint. */
+    void addBareBlock(Block block, CustomHeadBlock type) {
+        bareLocations.put(LocationKey.of(block), type);
+        writeBareCellToChunkPdc(block, type);
+        markChunkDirty(block);   // hint the chunk so onEntitiesLoad's gated restore runs
+    }
+
+    void removeBareBlock(Block block) {
+        LocationKey key = LocationKey.of(block);
+        bareLocations.remove(key);
+        bareRenderedState.remove(key);
+        removeBareCellFromChunkPdc(block);
+    }
+
+    /** Convert a bare block back to an encased head before a mechanism captures it; no-op if the type
+     *  has no revert handler (captured natively) or the block isn't a live bare block. */
+    void revertBareBlockForCapture(Block block) {
+        CustomHeadBlock type = bareLocations.get(LocationKey.of(block));
+        if (type == null) return;
+        Consumer<Block> h = bareRevertHandlers.get(type.fullId());
+        if (h != null) h.accept(block);
     }
 
     /** Axis suffix (x/y/z) of a chain's Orientable blockdata, defaulting to y. */
@@ -545,64 +583,163 @@ public class CustomBlockRegistry {
     }
 
     /**
-     * Drive a bare chain shaft's rod spin from network power. Returns true iff {@code block} is a
-     * chain shaft (i.e. the caller should stop). Only re-applies the display when idle↔spinning
-     * actually changed, so unrelated recalcs don't respawn (flicker) the rod.
+     * Drive a bare chain shaft's rod spin from network power. Returns true iff {@code block} is a bare
+     * block (i.e. the caller should stop). Only re-applies the display when idle↔spinning actually
+     * changed, so unrelated recalcs don't respawn (flicker) the rod. Only the (Orientable) shaft is ever
+     * driven this way; a non-spinning bare block would just no-op after the churn guard.
      */
     boolean driveChainShaftSpinIfChain(Block block, boolean powered) {
-        if (!isChainShaft(block)) return false;
-        if (chainShaftType == null) return true;
+        CustomHeadBlock type = bareLocations.get(LocationKey.of(block));
+        if (type == null || !bareTypes.containsKey(block.getType())) return false;
         LocationKey key = LocationKey.of(block);
         String target = (powered ? "spinning_" : "idle_") + chainAxisSuffix(block);
-        if (target.equals(chainShaftRenderedState.get(key))) return true;
-        chainShaftRenderedState.put(key, target);
-        applyConfig(block, chainShaftType, target, 0);
+        if (target.equals(bareRenderedState.get(key))) return true;
+        bareRenderedState.put(key, target);
+        applyConfig(block, type, target, 0);
         return true;
     }
 
+    // ── Bare-block chunk-PDC persistence (durable identity, survives a hard crash) ──
+
+    /** Add/update this cell in its chunk's durable bare-block index. */
+    private void writeBareCellToChunkPdc(Block block, CustomHeadBlock type) {
+        PersistentDataContainer pdc = block.getChunk().getPersistentDataContainer();
+        Map<String, String> cells = parseBareCells(pdc.get(BARE_BLOCKS_KEY, PersistentDataType.STRING));
+        cells.put(block.getX() + "," + block.getY() + "," + block.getZ(), type.fullId());
+        pdc.set(BARE_BLOCKS_KEY, PersistentDataType.STRING, serializeBareCells(cells));
+    }
+
+    /** Remove this cell from its chunk's durable bare-block index (clears the key when empty). */
+    private void removeBareCellFromChunkPdc(Block block) {
+        PersistentDataContainer pdc = block.getChunk().getPersistentDataContainer();
+        String raw = pdc.get(BARE_BLOCKS_KEY, PersistentDataType.STRING);
+        if (raw == null) return;
+        Map<String, String> cells = parseBareCells(raw);
+        if (cells.remove(block.getX() + "," + block.getY() + "," + block.getZ()) == null) return;
+        if (cells.isEmpty()) pdc.remove(BARE_BLOCKS_KEY);
+        else pdc.set(BARE_BLOCKS_KEY, PersistentDataType.STRING, serializeBareCells(cells));
+    }
+
+    private static Map<String, String> parseBareCells(@Nullable String raw) {
+        Map<String, String> out = new HashMap<>();
+        if (raw == null || raw.isEmpty()) return out;
+        for (String entry : raw.split(";")) {
+            int eq = entry.indexOf('=');
+            if (eq > 0) out.put(entry.substring(0, eq), entry.substring(eq + 1));
+        }
+        return out;
+    }
+
+    private static String serializeBareCells(Map<String, String> cells) {
+        StringBuilder sb = new StringBuilder();
+        for (Map.Entry<String, String> e : cells.entrySet()) {
+            if (sb.length() > 0) sb.append(';');
+            sb.append(e.getKey()).append('=').append(e.getValue());
+        }
+        return sb.toString();
+    }
+
     /**
-     * Re-register bare chain shafts in a just-loaded chunk from their persistent rod displays.
-     * Registered as a {@link ChunkRestorer} in {@link #setChainShaftSupport}, so it runs only for
-     * hinted chunks (the hint is set on creation via {@link #addChainShaft}).
-     * @return true if the chunk holds at least one live bare shaft, so its hint is kept alive.
+     * Re-index every bare block (CHAIN shaft, PLANKS casing, …) in a just-loaded chunk. Two passes:
+     * <ol>
+     *   <li><b>Live displays</b> — adopt any persistent tagged bare-block display whose block still
+     *       matches its type's {@code base_block}. This is the source of truth when present and also
+     *       heals the durable index for a placement made in the ≤5-min window before the last hint save.</li>
+     *   <li><b>Durable chunk-PDC cells</b> — for cells whose display was lost (block still present),
+     *       re-index and <b>respawn</b> the display; for cells whose block is gone (edited while
+     *       unloaded), prune the stale entry. This closes the "block present, display gone" gap.</li>
+     * </ol>
+     * Registered once in {@link #registerBareBlock}; runs from {@link #onEntitiesLoad}.
+     * @return true if the chunk holds ≥1 live bare block, so its hint is kept alive.
      */
-    boolean restoreChainShaftsInChunk(Chunk chunk) {
-        if (chainShaftType == null) return false;
+    boolean restoreBareBlocksInChunk(Chunk chunk) {
+        if (bareTypes.isEmpty()) return false;
         World world = chunk.getWorld();
-        if (!isNamespaceEnabledInWorld(chainShaftType.namespace(), world.getName())) return false;
         boolean found = false;
+        Set<LocationKey> seen = new HashSet<>();
+        // Read the durable index once; mutate the local copy and write back at most once (avoid O(n²)
+        // parse/serialize when a shaft-heavy chunk heals many cells at load).
+        PersistentDataContainer chunkPdc = chunk.getPersistentDataContainer();
+        Map<String, String> cells = parseBareCells(chunkPdc.get(BARE_BLOCKS_KEY, PersistentDataType.STRING));
+        boolean cellsDirty = false;
+
+        // Pass 1 — live tagged displays (source of truth when present; also heals a pre-save placement).
         for (org.bukkit.entity.Entity entity : chunk.getEntities()) {
-            if (!(entity instanceof ItemDisplay display)) continue;
-            int[] xyz = parseShaftRodTag(display);
-            if (xyz == null) continue;
-            Block block = world.getBlockAt(xyz[0], xyz[1], xyz[2]);
-            // A rod at a CHAIN is a bare shaft; a rod at a PLAYER_HEAD is handled by the skull scan;
-            // anything else is an orphan (left for the orphan cleaner).
-            if (block.getType() != Material.CHAIN) continue;
+            if (!(entity instanceof Display display)) continue;
+            BareTag bt = parseBareDisplayTag(display);
+            if (bt == null) continue;
+            CustomHeadBlock type = types.get(bt.typeId());
+            if (type == null || type.baseBlock() == null) continue;    // not a bare type (or unregistered)
+            if (!isNamespaceEnabledInWorld(type.namespace(), world.getName())) continue;
+            Block block = world.getBlockAt(bt.x(), bt.y(), bt.z());
+            if (block.getType() != type.baseBlock()) continue;         // block changed → orphan display, skip
             LocationKey key = LocationKey.of(block);
-            found = true;   // a live bare shaft here (already-known or newly restored) keeps the hint
-            if (chainShaftLocations.contains(key)) continue;
-            chainShaftLocations.add(key);
-            restoreBlock(block, chainShaftType, getState(block));
+            found = true;
+            seen.add(key);
+            String cellKey = block.getX() + "," + block.getY() + "," + block.getZ();
+            if (cells.put(cellKey, type.fullId()) == null) cellsDirty = true;   // heal the durable index
+            if (bareLocations.containsKey(key)) continue;
+            bareLocations.put(key, type);
+            restoreBlock(block, type, getState(block));
+        }
+
+        // Pass 2 — durable chunk-PDC cells whose display is missing.
+        for (Map.Entry<String, String> e : new ArrayList<>(cells.entrySet())) {
+            int[] xyz = parseCell(e.getKey());
+            if (xyz == null) continue;
+            CustomHeadBlock type = types.get(e.getValue());
+            if (type == null || type.baseBlock() == null) continue;
+            if (!isNamespaceEnabledInWorld(type.namespace(), world.getName())) continue;
+            Block block = world.getBlockAt(xyz[0], xyz[1], xyz[2]);
+            LocationKey key = LocationKey.of(block);
+            if (seen.contains(key)) continue;                          // already handled by a live display
+            if (block.getType() != type.baseBlock()) {                 // block gone while unloaded → prune
+                cells.remove(e.getKey());
+                cellsDirty = true;
+                continue;
+            }
+            found = true;
+            if (!bareLocations.containsKey(key)) {
+                bareLocations.put(key, type);
+                restoreBlock(block, type, getState(block));
+            }
+            applyConfig(block, type, getState(block), 0);              // respawn the lost display
+        }
+
+        if (cellsDirty) {
+            if (cells.isEmpty()) chunkPdc.remove(BARE_BLOCKS_KEY);
+            else chunkPdc.set(BARE_BLOCKS_KEY, PersistentDataType.STRING, serializeBareCells(cells));
         }
         return found;
     }
 
-    /** Parse the x,y,z from a {@code corelib:mech:shaft:x_y_z:rod} display tag, or null. */
-    private static @Nullable int[] parseShaftRodTag(Display display) {
+    /** A parsed {@code corelib:{ns}:{name}:{x_y_z}[:suffix]} display tag: fullId {@code ns:name} + coords. */
+    private record BareTag(String typeId, int x, int y, int z) {}
+
+    /** Parse the first {@code corelib:{ns}:{name}:{x_y_z}[:suffix]} tag on {@code display}, or null. */
+    private static @Nullable BareTag parseBareDisplayTag(Display display) {
         for (String tag : display.getScoreboardTags()) {
-            if (!tag.startsWith("corelib:mech:shaft:") || !tag.endsWith(":rod")) continue;
-            String mid = tag.substring("corelib:mech:shaft:".length(), tag.length() - ":rod".length());
-            String[] parts = mid.split("_");
-            if (parts.length != 3) continue;
-            try {
-                return new int[]{ Integer.parseInt(parts[0]), Integer.parseInt(parts[1]),
-                        Integer.parseInt(parts[2]) };
-            } catch (NumberFormatException e) {
-                return null;
-            }
+            if (!tag.startsWith("corelib:")) continue;
+            String[] parts = tag.split(":");
+            if (parts.length < 4) continue;                            // corelib:ns:name:coords[:suffix]
+            int[] xyz = parseUnderscoreCoords(parts[3]);
+            if (xyz == null) continue;
+            return new BareTag(parts[1] + ":" + parts[2], xyz[0], xyz[1], xyz[2]);
         }
         return null;
+    }
+
+    private static @Nullable int[] parseUnderscoreCoords(String s) { return parseCoords(s, "_"); }
+    private static @Nullable int[] parseCell(String s) { return parseCoords(s, ","); }
+
+    private static @Nullable int[] parseCoords(String s, String sep) {
+        String[] p = s.split(java.util.regex.Pattern.quote(sep));
+        if (p.length != 3) return null;
+        try {
+            return new int[]{ Integer.parseInt(p[0]), Integer.parseInt(p[1]), Integer.parseInt(p[2]) };
+        } catch (NumberFormatException e) {
+            return null;
+        }
     }
 
     // ── Entity-hosted chunk restorers ────────────────────────────────────────
@@ -662,8 +799,12 @@ public class CustomBlockRegistry {
 
     boolean chunkMayHaveCustomBlocks(Chunk chunk) {
         Set<String> hints = chunkHints.get(chunk.getWorld().getUID());
-        if (hints == null) return false;
-        return hints.contains(chunkKey(chunk));
+        if (hints != null && hints.contains(chunkKey(chunk))) return true;
+        // Durable fallback: a bare block persists its identity in the chunk PDC, which survives a hard
+        // crash even when the in-memory hint (saved only every ~5 min) was lost. This makes the chunk-PDC
+        // index authoritative for bare-block restore, so onEntitiesLoad still runs restoreBareBlocksInChunk.
+        return !bareTypes.isEmpty()
+                && chunk.getPersistentDataContainer().has(BARE_BLOCKS_KEY, PersistentDataType.STRING);
     }
 
     void markChunkDirty(Block block) {
@@ -862,22 +1003,21 @@ public class CustomBlockRegistry {
         animationTracked.entrySet().removeIf(inChunk);
         animationDirection.entrySet().removeIf(inChunk);
 
-        // Bare chain shafts aren't tile entities, so the tile-entity unload dispatch above never fires
-        // their removeNode callback — do it explicitly, then drop them from the runtime indexes.
+        // Bare blocks aren't tile entities, so the tile-entity unload dispatch above never fires their
+        // onChunkUnload callback — do it explicitly, then drop them from the runtime cache. The durable
+        // chunk-PDC index is left intact (it's the crash-safe identity store, reloaded next chunk load).
         java.util.function.Predicate<LocationKey> keyInChunk = loc ->
                 loc.worldId().equals(world.getUID())
                         && (loc.x() >> 4) == chunkX && (loc.z() >> 4) == chunkZ;
-        if (chainShaftType != null && chainShaftType.onChunkUnloadCallback() != null) {
-            // Snapshot: onChunkUnloadCallback runs arbitrary code that could untrack a shaft
-            // (onBlockRemoved removes from chainShaftLocations) mid-iteration → CME. Defensive.
-            for (LocationKey loc : new ArrayList<>(chainShaftLocations)) {
-                if (keyInChunk.test(loc)) {
-                    chainShaftType.onChunkUnloadCallback().accept(world.getBlockAt(loc.x(), loc.y(), loc.z()));
-                }
-            }
+        // Snapshot: an onChunkUnload callback runs arbitrary code that could untrack a bare block
+        // (onBlockRemoved mutates bareLocations) mid-iteration → CME. Defensive.
+        for (Map.Entry<LocationKey, CustomHeadBlock> e : new ArrayList<>(bareLocations.entrySet())) {
+            if (!keyInChunk.test(e.getKey())) continue;
+            Consumer<Block> cb = e.getValue().onChunkUnloadCallback();
+            if (cb != null) cb.accept(world.getBlockAt(e.getKey().x(), e.getKey().y(), e.getKey().z()));
         }
-        chainShaftLocations.removeIf(keyInChunk);
-        chainShaftRenderedState.entrySet().removeIf(inChunk);
+        bareLocations.keySet().removeIf(keyInChunk);
+        bareRenderedState.entrySet().removeIf(inChunk);
 
         // Save open storages in this chunk
         saveStoragesInChunk(world, chunkX, chunkZ);
@@ -1016,8 +1156,12 @@ public class CustomBlockRegistry {
         customBlockLocations.remove(key);
         animationTracked.remove(key);
         animationDirection.remove(key);
-        chainShaftLocations.remove(key);
-        chainShaftRenderedState.remove(key);
+        // Bare block: drop from the runtime cache AND the durable chunk-PDC index (any removal path —
+        // break / explosion / piston / burn / mechanism air-out — funnels through here).
+        if (bareLocations.remove(key) != null) {
+            bareRenderedState.remove(key);
+            removeBareCellFromChunkPdc(block);
+        }
 
         // Remove display entities (use location-specific prefix to avoid hitting nearby blocks)
         if (type.hasDisplayEntities()) {
