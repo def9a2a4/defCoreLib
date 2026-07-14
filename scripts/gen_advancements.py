@@ -87,6 +87,8 @@ NODES = [
      "Craft a Rotator — a hinge that swings a glued structure as a door or drawbridge."),
     ("craft/minecart", "craft/rotator", "task", "minecraft:furnace_minecart", "Cart Blanche", "white",
      "Craft a Mechanism Minecart — glue blocks onto it for a rideable moving structure."),
+    ("craft/chain_hoist", "craft/piston", "task", "@chainwheel", "Going Down", "white",
+     "Craft a Chain Hoist — a floor winch that raises and lowers a platform on a chain."),
     # sources: windmill -> water wheel -> engine, with the motor as a leaf
     ("craft/windmill_item", "craft/shaft", "task", "@windmill_item", "Tilting at Windmills", "white",
      "Craft a Windmill — an always-spinning passive source; its blades take your four banners' patterns."),
