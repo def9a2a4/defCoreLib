@@ -271,6 +271,7 @@ public final class CustomHeadBlock {
     private final List<DropRule> dropRules;
     private final boolean cancelPistons;
     private final boolean breakOnPiston;
+    private final boolean breakOnFluid;
     private final @Nullable SoundConfig placeSound;
     private final @Nullable SoundConfig breakSound;
     private final @Nullable SoundConfig interactSound;
@@ -343,6 +344,7 @@ public final class CustomHeadBlock {
         this.dropRules = List.copyOf(b.dropRules);
         this.cancelPistons = b.cancelPistons;
         this.breakOnPiston = b.breakOnPiston;
+        this.breakOnFluid = b.breakOnFluid;
         this.placeSound = b.placeSound;
         this.breakSound = b.breakSound;
         this.interactSound = b.interactSound;
@@ -416,6 +418,7 @@ public final class CustomHeadBlock {
     public List<DropRule> dropRules() { return dropRules; }
     public boolean cancelPistons() { return cancelPistons; }
     public boolean breakOnPiston() { return breakOnPiston; }
+    public boolean breakOnFluid() { return breakOnFluid; }
     public @Nullable SoundConfig placeSound() { return placeSound; }
     public @Nullable SoundConfig breakSound() { return breakSound; }
     public @Nullable SoundConfig interactSound() { return interactSound; }
@@ -654,6 +657,7 @@ public final class CustomHeadBlock {
         b.dropRules.addAll(dropRules);
         b.cancelPistons = cancelPistons;
         b.breakOnPiston = breakOnPiston;
+        b.breakOnFluid = breakOnFluid;
         b.placeSound = placeSound;
         b.breakSound = breakSound;
         b.interactSound = interactSound;
@@ -714,6 +718,7 @@ public final class CustomHeadBlock {
         private final List<DropRule> dropRules = new ArrayList<>();
         private boolean cancelPistons;
         private boolean breakOnPiston;
+        private boolean breakOnFluid;
         private @Nullable SoundConfig placeSound;
         private @Nullable SoundConfig breakSound;
         private @Nullable SoundConfig interactSound;
@@ -788,6 +793,9 @@ public final class CustomHeadBlock {
         public Builder drops(DropRule... rules) { this.dropRules.addAll(List.of(rules)); return this; }
         public Builder cancelPistons(boolean cancel) { this.cancelPistons = cancel; return this; }
         public Builder breakOnPiston(boolean value) { this.breakOnPiston = value; return this; }
+        /** Fluid (water/lava) flowing into this block breaks it and drops its real item instead of
+         *  being cancelled. Default false = the block survives fluid (unlike vanilla heads). */
+        public Builder breakOnFluid(boolean value) { this.breakOnFluid = value; return this; }
         public Builder placeSound(SoundConfig sound) { this.placeSound = sound; return this; }
         public Builder breakSound(SoundConfig sound) { this.breakSound = sound; return this; }
         public Builder interactSound(SoundConfig sound) { this.interactSound = sound; return this; }

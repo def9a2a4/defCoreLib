@@ -126,6 +126,7 @@ public final class BlockLoader {
         // Flags
         if (sec.getBoolean("cancel_pistons")) b.cancelPistons(true);
         if (sec.getBoolean("break_on_piston")) b.breakOnPiston(true);
+        if (sec.getBoolean("break_on_fluid")) b.breakOnFluid(true);
 
         // Sounds
         ConfigurationSection placeSoundSec = sec.getConfigurationSection("place_sound");

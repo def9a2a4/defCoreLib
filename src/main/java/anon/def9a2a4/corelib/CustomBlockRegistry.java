@@ -130,6 +130,44 @@ public class CustomBlockRegistry {
         meta.lore(sailLines);
     }
 
+    /** Carry captured display data (+ lore) from a placed skull back onto its dropped/picked item.
+     *  Dispatches: water-wheel-style ingredient capture, else the windmill banner path. Central so
+     *  every break path (mining, explosion, piston, fluid, drill) drops an identical item. */
+    static ItemStack enrichDrop(Block block, CustomHeadBlock type, ItemStack item) {
+        if (type.ingredientCapture() != null) {
+            if (block.getState() instanceof Skull skull) {
+                return type.ingredientCapture().enrich(skull, item);
+            }
+            return item;
+        }
+        return enrichItemWithBladeData(block, type, item);
+    }
+
+    /** Copy blade banner PDC from a placed skull onto an item + sail lore (windmill drops/pick). */
+    private static ItemStack enrichItemWithBladeData(Block block, CustomHeadBlock type, ItemStack item) {
+        if (type.displayItemResolver() == null) return item;
+        if (!(block.getState() instanceof Skull skull)) return item;
+        var skullPdc = skull.getPersistentDataContainer();
+
+        boolean hasAny = false;
+        for (var key : BLADE_KEYS) {
+            if (skullPdc.has(key, PersistentDataType.BYTE_ARRAY)) { hasAny = true; break; }
+        }
+        if (!hasAny) return item;
+
+        ItemStack enriched = item.clone();
+        var meta = enriched.getItemMeta();
+        copyBladePdc(skullPdc, meta.getPersistentDataContainer());
+        List<ItemStack> banners = new ArrayList<>();
+        for (var key : BLADE_KEYS) {
+            byte[] data = skullPdc.get(key, PersistentDataType.BYTE_ARRAY);
+            if (data != null) banners.add(ItemStack.deserializeBytes(data));
+        }
+        applySailLore(meta, banners);
+        enriched.setItemMeta(meta);
+        return enriched;
+    }
+
     private final JavaPlugin plugin;
 
     // Type registration: fullId → definition
@@ -556,8 +594,9 @@ public class CustomBlockRegistry {
 
     /**
      * Restores custom blocks in a just-loaded chunk whose identity lives on an attached display
-     * entity rather than a skull PDC (e.g. bare chain shafts). Called from {@link #onChunkLoad} for
-     * hinted chunks only. Register via {@link #registerChunkRestorer}.
+     * entity rather than a skull PDC (e.g. bare chain shafts). Called from {@link #onEntitiesLoad}
+     * for hinted chunks only — entities are not guaranteed present any earlier. Register via
+     * {@link #registerChunkRestorer}.
      */
     @FunctionalInterface
     interface ChunkRestorer {
@@ -638,15 +677,13 @@ public class CustomBlockRegistry {
     void onChunkLoad(Chunk chunk) {
         if (!chunkMayHaveCustomBlocks(chunk)) return;
 
-        boolean foundAny = false; // any corelib custom block (tile-hosted or entity-hosted) that keeps the hint
+        // Tile-hosted custom blocks (skulls / physical_material): tile entities ARE available at
+        // ChunkLoadEvent, so restore them here. Material-agnostic: recognition is the PDC itself,
+        // so a physical_material block keeps its hint even if its plugin hasn't registered yet.
         for (BlockState tile : chunk.getTileEntities()) {
-            // Material-agnostic: recognition is the PDC itself, so a physical_material block
-            // keeps its hint even if its plugin hasn't registered yet.
             if (!(tile instanceof TileState ts)) continue;
             String typeId = ts.getPersistentDataContainer().get(BLOCK_TYPE_KEY, PersistentDataType.STRING);
             if (typeId == null) continue;
-
-            foundAny = true; // Don't remove hint — a plugin for this type may load later
 
             CustomHeadBlock type = types.get(typeId);
             if (type == null) continue;
@@ -656,11 +693,25 @@ public class CustomBlockRegistry {
             String state = ts.getPersistentDataContainer().get(STATE_KEY, PersistentDataType.STRING);
             restoreBlock(block, type, state);
         }
+        // The hint-wipe decision happens in onEntitiesLoad: entity-hosted blocks (bare chain shafts)
+        // can't be checked yet — ChunkLoadEvent does not guarantee entities are loaded on Paper, and
+        // wiping here stranded chain-only chunks (their rod displays looked absent).
+    }
 
-        // Entity-hosted custom blocks (identity on an attached display, not a skull) — e.g. bare chain
-        // shafts. Each restorer restores its own and reports whether the chunk still holds any, so the
-        // hint survives. Isolated: a throwing restorer must never wipe a hint (stranding real blocks)
-        // or abort the others.
+    /**
+     * Entity-dependent restore pass, run at {@code EntitiesLoadEvent} (the first moment
+     * {@code chunk.getEntities()} is guaranteed complete on Paper): entity-hosted custom blocks
+     * (e.g. bare chain shafts, whose identity lives on a tagged rod ItemDisplay) and the chunk-hint
+     * wipe decision for empty chunks.
+     */
+    void onEntitiesLoad(Chunk chunk) {
+        if (!chunkMayHaveCustomBlocks(chunk)) return;
+
+        boolean foundAny = false; // any corelib custom block (tile-hosted or entity-hosted) that keeps the hint
+
+        // Entity-hosted custom blocks. Each restorer restores its own and reports whether the chunk
+        // still holds any, so the hint survives. Isolated: a throwing restorer must never wipe a hint
+        // (stranding real blocks) or abort the others.
         for (ChunkRestorer restorer : chunkRestorers) {
             try {
                 foundAny |= restorer.restore(chunk);
@@ -671,11 +722,23 @@ public class CustomBlockRegistry {
             }
         }
 
-        // About to wipe: keep the hint if any entity-hosted block display is present whose type isn't
-        // registered yet (plugin load order / reload) — the entity-hosted analogue of foundAnyPdc.
+        // Tile-hosted blocks were restored in onChunkLoad, but the wipe decision lives here — re-check
+        // the tile PDCs so a chunk holding only skulls/physical_material blocks keeps its hint.
+        if (!foundAny) {
+            for (BlockState tile : chunk.getTileEntities()) {
+                if (tile instanceof TileState ts
+                        && ts.getPersistentDataContainer().has(BLOCK_TYPE_KEY, PersistentDataType.STRING)) {
+                    foundAny = true;
+                    break;
+                }
+            }
+        }
+
+        // Keep the hint if any entity-hosted block display is present whose type isn't registered yet
+        // (plugin load order / reload) — the entity-hosted analogue of the tile-PDC re-check above.
         if (!foundAny && chunkHasCorelibBlockDisplay(chunk)) foundAny = true;
 
-        // Only remove the hint if nothing — skull, restorer, or entity-hosted display — was found.
+        // Only remove the hint if nothing — tile PDC, restorer, or entity-hosted display — was found.
         if (!foundAny) {
             removeChunkHint(chunk);
         }

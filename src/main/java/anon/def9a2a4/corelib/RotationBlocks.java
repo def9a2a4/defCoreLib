@@ -1126,7 +1126,9 @@ final class RotationBlocks {
             drillProgress.remove(key);
             if (targetType != null) {
                 if (targetType.storage() != null) registry.dropStorage(target);
-                ItemStack drop = targetType.createItem(1);
+                // Enrich BEFORE onBlockRemoved/setType destroy the tile PDC, so captured
+                // banner/ingredient data survives a drill break like any other break path.
+                ItemStack drop = CustomBlockRegistry.enrichDrop(target, targetType, targetType.createItem(1));
                 registry.onBlockRemoved(target, targetType);
                 target.getWorld().dropItemNaturally(target.getLocation().add(0.5, 0.5, 0.5), drop);
                 target.setType(Material.AIR);

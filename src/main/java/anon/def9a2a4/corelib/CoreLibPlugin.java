@@ -248,8 +248,10 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         if (mechanismRegistry != null) {
             mechanismRegistry.cleanupOrphanedEntities(event.getChunk());
         }
-        // Bare (chain) shafts are restored inside registry.onChunkLoad (above) via a registered
-        // ChunkRestorer, gated by the chunk hint that addChainShaft sets on creation — no per-chunk scan.
+        // Entity-hosted custom blocks (bare chain shafts, via registered ChunkRestorers) + the
+        // chunk-hint wipe decision. Must run here, not at ChunkLoadEvent: the rod ItemDisplay that
+        // carries a shaft's identity only exists once entities have loaded.
+        registry.onEntitiesLoad(event.getChunk());
 
         // Re-resolve dynamic display transforms now that entities are available
         org.bukkit.Chunk chunk = event.getChunk();
@@ -583,10 +585,14 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         }
     }
 
-    // Prevent flowing water/lava from destroying a placed custom head. The head cell is the
-    // flow's destination; vanilla would replace it and drop a plain (non-functional) head.
-    // Cancel at HIGH so the block is never destroyed. Cheap material pre-check before the Set
-    // lookup keeps this off the hot path for ordinary water tiles.
+    // Prevent flowing water/lava from destroying a placed custom head — or, for types opting in via
+    // break_on_fluid, break it ourselves so the REAL item drops. The head cell is the flow's
+    // destination; vanilla would replace it and drop a plain (non-functional) head, so the event is
+    // always cancelled for a custom head (BlockFromToEvent has no drop-suppression API). Identity is
+    // the skull PDC (getTypeFromBlock), not the in-memory set — the set can be stale after chunk
+    // reloads, and a stale miss here is exactly what used to leak plain heads. The material pre-check
+    // keeps the getState() read off the hot path for ordinary water tiles; physical_material blocks
+    // are validated solid, so a fluid can never target them and heads(+chain) are complete coverage.
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onFluidFlowIntoCustomHead(org.bukkit.event.block.BlockFromToEvent event) {
         Block to = event.getToBlock();
@@ -598,9 +604,43 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
             return;
         }
         if (t != Material.PLAYER_HEAD && t != Material.PLAYER_WALL_HEAD) return;
-        if (registry.isCustomBlock(to)) {
-            event.setCancelled(true);
+        CustomHeadBlock type = registry.getTypeFromBlock(to);
+        if (type == null) return;
+        event.setCancelled(true);
+        if (!type.breakOnFluid()) return; // default: the block simply survives the flow
+
+        // Opt-in fluid break: mirror the piston/mining break path — read everything off the tile
+        // PDC BEFORE removal destroys it, then drop and clear. The fluid refills the cell on its
+        // own subsequent flow ticks.
+        String state = registry.getState(to);
+        if (type.storage() != null) registry.dropStorage(to);
+        ItemStack selfDrop = enrichDrop(to, type, type.createItem(1));
+        if (type.breakSound() != null) {
+            var s = type.breakSound();
+            to.getWorld().playSound(to.getLocation().add(0.5, 0.5, 0.5), s.sound(), s.volume(), s.pitch());
         }
+        // Honor drop rules when one matches, but never let an environmental break destroy the item:
+        // with no matching self-drop rule the real item still drops (unlike player mining, there is
+        // no creative-mode or tool context here).
+        boolean dropped = false;
+        for (var rule : type.dropRules()) {
+            if (rule.inState() != null && !rule.inState().equals(state)) continue;
+            if (rule.isSelfDrop()) {
+                to.getWorld().dropItemNaturally(to.getLocation().add(0.5, 0.5, 0.5), selfDrop);
+            } else {
+                for (CustomHeadBlock.ItemDrop itemDrop : rule.drops()) {
+                    to.getWorld().dropItemNaturally(to.getLocation().add(0.5, 0.5, 0.5),
+                            new ItemStack(itemDrop.material(), itemDrop.amount()));
+                }
+            }
+            dropped = true;
+            break; // first matching rule wins
+        }
+        if (!dropped) {
+            to.getWorld().dropItemNaturally(to.getLocation().add(0.5, 0.5, 0.5), selfDrop);
+        }
+        registry.onBlockRemoved(to, type);
+        to.setType(Material.AIR, false);
     }
 
     // Water/lava flow destroying custom heads
@@ -614,23 +654,28 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         }
     }
 
-    // /fill, /setblock, physics-based destruction — cleanup without drops
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    // /fill, /setblock, physics-based destruction — cleanup without drops. setWillDrop(false)
+    // guarantees a destroy-mode command can never leak a plain vanilla head (HIGH, not MONITOR,
+    // because we mutate the event).
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onBlockDestroy(com.destroystokyo.paper.event.block.BlockDestroyEvent event) {
         Block block = event.getBlock();
         CustomHeadBlock type = registry.getTypeFromBlock(block);
         if (type == null) return;
+        event.setWillDrop(false);
         if (type.storage() != null) registry.dropStorage(block);
         registry.onBlockRemoved(block, type);
     }
 
     // Prevent wall-mounted custom skulls from popping off when support block is removed,
-    // but allow other physics (redstone propagation) to proceed normally
+    // but allow other physics (redstone propagation) to proceed normally. Identity is the skull PDC
+    // (getTypeFromBlock), NOT the in-memory set: a stale set-miss here let vanilla pop the head into
+    // a plain (non-functional) drop. The material pre-check bounds the getState() cost to actual
+    // heads; solid physical_material blocks have no pop-off physics, so heads are complete coverage.
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onPhysicsCancelForCustomSkulls(BlockPhysicsEvent event) {
         Block block = event.getBlock();
         if (block.getType() != Material.PLAYER_HEAD && block.getType() != Material.PLAYER_WALL_HEAD) return;
-        if (!registry.isCustomBlock(block)) return; // fast set check before expensive PDC read
         CustomHeadBlock type = registry.getTypeFromBlock(block);
         if (type == null) return;
         // Only cancel if the support block is gone (prevents pop-off without suppressing redstone)
@@ -641,13 +686,14 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         }
     }
 
-    // Endermen picking up blocks, falling blocks landing in the cell, silverfish, etc. would turn a
-    // custom head to air with no cleanup path — protect it, matching the water/physics protection above.
+    // Endermen picking up blocks, falling blocks landing in the cell, wither charges, silverfish, etc.
+    // would turn a custom block to air with no cleanup path — protect it, matching the water/physics
+    // protection above. getTypeFromBlock is the PDC for heads (authoritative even when the runtime set
+    // is stale) and the set-gated tile read for physical_material blocks; vanilla blocks cost one
+    // hash lookup, so no material pre-check is needed.
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onEntityChangeCustomBlock(EntityChangeBlockEvent event) {
-        Block block = event.getBlock();
-        if (block.getType() != Material.PLAYER_HEAD && block.getType() != Material.PLAYER_WALL_HEAD) return;
-        if (!registry.isCustomBlock(block)) return; // fast set check before expensive PDC read
+        if (registry.getTypeFromBlock(event.getBlock()) == null) return;
         event.setCancelled(true);
     }
 
@@ -857,40 +903,9 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
     }
 
     /** Carry captured display data (+ lore) from a placed skull back onto its dropped/picked item.
-     *  Dispatches: water-wheel-style ingredient capture, else the windmill banner path. */
+     *  Delegates to the shared registry helper so every break path drops an identical item. */
     private ItemStack enrichDrop(Block block, CustomHeadBlock type, ItemStack item) {
-        if (type.ingredientCapture() != null) {
-            if (block.getState() instanceof org.bukkit.block.Skull skull) {
-                return type.ingredientCapture().enrich(skull, item);
-            }
-            return item;
-        }
-        return enrichItemWithBladeData(block, type, item);
-    }
-
-    /** Copy blade banner PDC from a placed skull onto an item + sail lore (windmill drops/pick). */
-    private ItemStack enrichItemWithBladeData(Block block, CustomHeadBlock type, ItemStack item) {
-        if (type.displayItemResolver() == null) return item;
-        if (!(block.getState() instanceof org.bukkit.block.Skull skull)) return item;
-        var skullPdc = skull.getPersistentDataContainer();
-
-        boolean hasAny = false;
-        for (var key : CustomBlockRegistry.BLADE_KEYS) {
-            if (skullPdc.has(key, PersistentDataType.BYTE_ARRAY)) { hasAny = true; break; }
-        }
-        if (!hasAny) return item;
-
-        ItemStack enriched = item.clone();
-        var meta = enriched.getItemMeta();
-        CustomBlockRegistry.copyBladePdc(skullPdc, meta.getPersistentDataContainer());
-        java.util.List<ItemStack> banners = new java.util.ArrayList<>();
-        for (var key : CustomBlockRegistry.BLADE_KEYS) {
-            byte[] data = skullPdc.get(key, PersistentDataType.BYTE_ARRAY);
-            if (data != null) banners.add(ItemStack.deserializeBytes(data));
-        }
-        CustomBlockRegistry.applySailLore(meta, banners);
-        enriched.setItemMeta(meta);
-        return enriched;
+        return CustomBlockRegistry.enrichDrop(block, type, item);
     }
 
     // ──────────────────────────────────────────────────────────────────────
