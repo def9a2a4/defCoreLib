@@ -335,12 +335,14 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         }
 
         // Convert non-skull blocks to skulls (e.g., slab items with item_material)
-        if (type.physicalMaterial() == Material.BARREL) {
-            // Barrel-backed block (e.g. redstone dynamo): replace the placed head with a real barrel whose
-            // facing encodes the rotation axis (attachment face → axis). A head disguise + PDC identity are
-            // applied afterwards (markBlock / applyConfig), same as any other custom block.
-            block.setType(Material.BARREL, false);
-            if (block.getBlockData() instanceof org.bukkit.block.data.Directional dir) {
+        if (type.physicalMaterial() != null) {
+            // physical_material block (e.g. the dynamo's barrel): replace the placed head with the real
+            // block, facing the attachment face when the material supports it (guarded — a horizontally-
+            // restricted Directional would throw on DOWN). Disguise display + PDC identity are applied
+            // afterwards (markBlock / applyConfig), same as any other custom block.
+            block.setType(type.physicalMaterial(), false);
+            if (block.getBlockData() instanceof org.bukkit.block.data.Directional dir
+                    && dir.getFaces().contains(placedOn)) {
                 dir.setFacing(placedOn);
                 block.setBlockData(dir, false);
             }
@@ -1064,29 +1066,34 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
     }
 
     // ──────────────────────────────────────────────────────────────────────
-    // Barrel-backed block protection (e.g. the redstone dynamo): the real barrel drives a comparator,
-    // but must behave like a solid mechanism — players can't open it and hoppers can't move its contents
-    // (which would corrupt the comparator reading the plugin maintains).
+    // Container-backed disguised-block protection (e.g. the redstone dynamo's barrel drives a
+    // comparator): the block must behave like a solid mechanism — players can't open it and hoppers
+    // can't move its contents (which would corrupt the plugin-managed inventory). Opt out per type
+    // with lockContainer(false). Direct plugin API writes are unaffected (they fire neither event).
     // ──────────────────────────────────────────────────────────────────────
 
     @EventHandler(ignoreCancelled = true)
-    public void onManagedBarrelOpen(org.bukkit.event.inventory.InventoryOpenEvent event) {
-        if (isManagedBarrel(event.getInventory().getHolder())) event.setCancelled(true);
+    public void onManagedContainerOpen(org.bukkit.event.inventory.InventoryOpenEvent event) {
+        if (isManagedContainer(event.getInventory().getHolder())) event.setCancelled(true);
     }
 
     @EventHandler(ignoreCancelled = true)
-    public void onManagedBarrelMove(org.bukkit.event.inventory.InventoryMoveItemEvent event) {
-        if (isManagedBarrel(event.getSource().getHolder())
-                || isManagedBarrel(event.getDestination().getHolder())) {
+    public void onManagedContainerMove(org.bukkit.event.inventory.InventoryMoveItemEvent event) {
+        if (isManagedContainer(event.getSource().getHolder())
+                || isManagedContainer(event.getDestination().getHolder())) {
             event.setCancelled(true);
         }
     }
 
-    /** True if the inventory holder is a barrel that physically backs one of our custom blocks. */
-    private boolean isManagedBarrel(org.bukkit.inventory.InventoryHolder holder) {
+    /** True if the inventory holder is a real container that physically backs one of our custom
+     *  blocks (physical_material) and that type keeps the default container lock. The cheap
+     *  isCustomBlock set-guard runs before any type lookup (hopper events fire often). */
+    private boolean isManagedContainer(org.bukkit.inventory.InventoryHolder holder) {
         if (!(holder instanceof org.bukkit.block.Container c)) return false;
         Block b = c.getBlock();
-        return b.getType() == Material.BARREL && registry.isCustomBlock(b);
+        if (!registry.isCustomBlock(b)) return false;
+        CustomHeadBlock type = registry.getTypeFromBlock(b);
+        return type != null && type.physicalMaterial() != null && type.lockContainer();
     }
 
     // ──────────────────────────────────────────────────────────────────────

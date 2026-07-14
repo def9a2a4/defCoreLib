@@ -207,7 +207,7 @@ public class CustomBlockRegistry {
             for (Chunk chunk : world.getLoadedChunks()) {
                 if (!hints.contains(chunkKey(chunk))) continue;
                 for (BlockState tile : chunk.getTileEntities()) {
-                    if (!(tile instanceof TileState ts) || !isCustomBlockMaterial(ts.getType())) continue;
+                    if (!(tile instanceof TileState ts)) continue;
                     String id = ts.getPersistentDataContainer().get(BLOCK_TYPE_KEY, PersistentDataType.STRING);
                     if (!type.fullId().equals(id)) continue;
 
@@ -233,18 +233,10 @@ public class CustomBlockRegistry {
         return item.getItemMeta().getPersistentDataContainer().get(BLOCK_TYPE_KEY, PersistentDataType.STRING);
     }
 
-    /** Materials that can physically back a custom block: player heads and barrel-backed blocks
-     *  (e.g. the redstone dynamo). Both carry identity in their tile-entity PDC. */
-    static boolean isCustomBlockMaterial(Material m) {
-        return m == Material.PLAYER_HEAD || m == Material.PLAYER_WALL_HEAD || m == Material.BARREL;
-    }
-
     public @Nullable CustomHeadBlock getTypeFromBlock(Block block) {
         Material m = block.getType();
-        // Heads (the common case) and barrel-backed blocks (e.g. the redstone dynamo) both store their
-        // identity in the block's tile-entity PDC. A Skull is a TileState, so heads are unaffected; a
-        // vanilla barrel without our PDC key simply resolves to null.
-        if (m == Material.PLAYER_HEAD || m == Material.PLAYER_WALL_HEAD || m == Material.BARREL) {
+        // Heads (the common case) store identity in the skull's tile-entity PDC.
+        if (m == Material.PLAYER_HEAD || m == Material.PLAYER_WALL_HEAD) {
             if (!(block.getState() instanceof TileState tile)) return null;
             String typeId = tile.getPersistentDataContainer().get(BLOCK_TYPE_KEY, PersistentDataType.STRING);
             if (typeId == null) return null;
@@ -254,6 +246,15 @@ public class CustomBlockRegistry {
         if (m == Material.CHAIN && chainShaftType != null && !chainShaftLocations.isEmpty()
                 && chainShaftLocations.contains(LocationKey.of(block))) {
             return chainShaftType;
+        }
+        // physical_material-backed blocks (e.g. the dynamo's barrel): gate on the cheap runtime
+        // location index BEFORE taking a tile snapshot, so explosion/piston/break sweeps over vanilla
+        // chests/furnaces/barrels never pay a getState() here.
+        if (!customBlockLocations.isEmpty() && customBlockLocations.contains(LocationKey.of(block))) {
+            if (!(block.getState() instanceof TileState tile)) return null;
+            String typeId = tile.getPersistentDataContainer().get(BLOCK_TYPE_KEY, PersistentDataType.STRING);
+            if (typeId == null) return null;
+            return types.get(typeId);
         }
         return null;
     }
@@ -380,15 +381,14 @@ public class CustomBlockRegistry {
     }
 
     /** True if the block at the owner location is still the custom block named by the tag,
-     *  verified against the skull's raw {@link #BLOCK_TYPE_KEY} PDC (not the type registry). */
+     *  verified against the tile's raw {@link #BLOCK_TYPE_KEY} PDC (not the type registry). Material-
+     *  agnostic: any TileState (skull or physical_material block like the dynamo's barrel) counts, so
+     *  the orphan scanner never deletes a live disguised block's display. */
     private boolean isOwnerPresent(World world, DisplayOwnerTag owner) {
         Block block = world.getBlockAt(owner.x(), owner.y(), owner.z());
         // A bare chain shaft is a CHAIN block (no skull PDC) whose sole identity is its rod display —
         // a live one must never be treated as an orphan (which would delete its only identity carrier).
         if (isChainShaft(block)) return true;
-        if (!isCustomBlockMaterial(block.getType())) {
-            return false;
-        }
         if (!(block.getState() instanceof TileState tile)) return false;
         String fullId = tile.getPersistentDataContainer().get(BLOCK_TYPE_KEY, PersistentDataType.STRING);
         return owner.fullId().equals(fullId);
@@ -638,9 +638,11 @@ public class CustomBlockRegistry {
     void onChunkLoad(Chunk chunk) {
         if (!chunkMayHaveCustomBlocks(chunk)) return;
 
-        boolean foundAny = false; // any corelib custom block (head/barrel or entity-hosted) that keeps the hint
+        boolean foundAny = false; // any corelib custom block (tile-hosted or entity-hosted) that keeps the hint
         for (BlockState tile : chunk.getTileEntities()) {
-            if (!(tile instanceof TileState ts) || !isCustomBlockMaterial(ts.getType())) continue;
+            // Material-agnostic: recognition is the PDC itself, so a physical_material block
+            // keeps its hint even if its plugin hasn't registered yet.
+            if (!(tile instanceof TileState ts)) continue;
             String typeId = ts.getPersistentDataContainer().get(BLOCK_TYPE_KEY, PersistentDataType.STRING);
             if (typeId == null) continue;
 
@@ -731,9 +733,9 @@ public class CustomBlockRegistry {
         int chunkZ = chunk.getZ();
         World world = chunk.getWorld();
 
-        // Dispatch chunk unload callbacks
+        // Dispatch chunk unload callbacks (material-agnostic — recognition is the PDC itself)
         for (BlockState tile : chunk.getTileEntities()) {
-            if (!(tile instanceof TileState ts) || !isCustomBlockMaterial(ts.getType())) continue;
+            if (!(tile instanceof TileState ts)) continue;
             String typeId = ts.getPersistentDataContainer().get(BLOCK_TYPE_KEY, PersistentDataType.STRING);
             if (typeId == null) continue;
             CustomHeadBlock type = types.get(typeId);
@@ -919,10 +921,10 @@ public class CustomBlockRegistry {
             type.onBlockRemoved().accept(block, state);
         }
 
-        // Barrel-backed blocks (e.g. the dynamo) use a real container to drive a comparator; wipe its
-        // contents on any removal path (break / explosion / piston / burn all funnel through here) so the
-        // internal filler is never dropped or spilled — only the block's own item drops.
-        if (type.physicalMaterial() == Material.BARREL && block.getState() instanceof Container container) {
+        // Container-backed physical blocks (e.g. the dynamo's barrel) may hold plugin-managed filler
+        // (comparator drive); wipe it on any removal path (break / explosion / piston / burn all funnel
+        // through here) so the filler is never dropped or spilled — only the block's own item drops.
+        if (type.physicalMaterial() != null && block.getState() instanceof Container container) {
             container.getInventory().clear();
         }
 

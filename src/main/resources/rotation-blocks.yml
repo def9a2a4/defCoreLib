@@ -25,8 +25,9 @@ textures:
   motor_up_pwr:      "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjBmMzIwZjQ0ZjUwMTExNWNhNDYwM2Y0YmUxNTIzZjI3OWEwOWY1ZTM2ZjA3NzQ1MDExODM4NjI4ZTg4MmExNCJ9fX0="  # bulbs/motor-up-pwr — motor placed head, floor, running
   motor_fwd_dim:     "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjQ2MDRhYWE1MzBmODliMzgyYWFlMGQ3OGYyNGRmOGRkNjY5NzJlMTNkYzljMzNmZjMyMmRjNzA2MDRjZGQ3MyJ9fX0="  # bulbs/motor-fwd-dim — motor placed head, wall, off
   motor_fwd_pwr:     "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvN2E4MWE1ODFiMmE4NjE4NDU1MTRhOWIxMDExMTJjZDNiMGM2YjVhMmEyNGFlNGY0Nzg1MDM2MGFmMTZlNjExZCJ9fX0="  # bulbs/motor-fwd-pwr — motor placed head, wall, running + item
-  # Redstone dynamo: bulbs/dynamo-{up,fwd} — up=floor/ceiling, fwd=wall + item (no power variants).
-  dynamo_up:         "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNmI0YzdhOTU5ZjYyZDhiZDk2ZDMyMWUxYWRlMTFkY2QyNzk1MTg2NzBjYWRkYTQ5ZTcxMGM4YWQ2ZTZiODFhMSJ9fX0="  # bulbs/dynamo-up — dynamo shell, floor/ceiling
+  # Redstone dynamo: bulbs/dynamo-{up,fwd}. The block + item use fwd (single texture, oriented at
+  # runtime by RedstoneDynamo.orientHead); up is uploaded but currently unused.
+  dynamo_up:         "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNmI0YzdhOTU5ZjYyZDhiZDk2ZDMyMWUxYWRlMTFkY2QyNzk1MTg2NzBjYWRkYTQ5ZTcxMGM4YWQ2ZTZiODFhMSJ9fX0="  # bulbs/dynamo-up — unused (single-texture design)
   dynamo_fwd:        "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZmY1MTRhOGM2NDVhNzVhOGI3NDJmN2UyNWE5MTIwNTk4YTdmNTA3NmRhNzYwYmYxOTgyYTQ4YmQ4NGJjYWZlMiJ9fX0="  # bulbs/dynamo-fwd — dynamo shell, wall + item
   stone_slabs:       "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTUxZTcwMTY5ZWEwMGYwNGE5NDM5MjIxY2YzMzc3MDg0NDE1OWRkNzc1ZmM4ODMwZTMxMWZkOWI1Y2NkMjk2OSJ9fX0="  # Stone Slabs — millstone
   drill_head:        "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmRmYzY3MTJmOTRiMjc4YmE2MjM5YWJhMDQxMjZhM2JhZjAwMTExNWYzNTE0Mjk0ZDYxNWFmNzlkNmJmNGRhMCJ9fX0="  # Drill — drill placed head
@@ -759,29 +760,18 @@ blocks:
     texture: "@dynamo_fwd"
     drops: self
     cancel_pistons: true
-    default_state: idle_up
-    # Shaft-style up/fwd art: up skin on floor/ceiling placement, fwd skin on walls (+ item).
-    placement_state_map:
-      UP: idle_up
-      DOWN: idle_up
-      NORTH: idle_side
-      SOUTH: idle_side
-      EAST: idle_side
-      WEST: idle_side
+    default_state: idle
     states:
-      # Two orientation states — each a single "shell" head display scaled just over a full block
-      # to hide the barrel. RedstoneDynamo.orientHead overrides translation/rotation per barrel-facing
-      # (scale here is authoritative) and ignores the state name, so the chosen skin is oriented correctly.
-      idle_up:
-        display_entities:
-          - texture: "@dynamo_up"
-            tag: shell
-            transform: { translation: [0, 0.501, 0], scale: [2.001, 2.001, 2.001] }
-      idle_side:
+      # Single state, single fwd-art skin: one "shell" head display scaled just over a full block to
+      # hide the barrel. RedstoneDynamo.orientHead overrides translation/rotation per barrel-facing
+      # (front of the art turns to face the barrel's facing; scale here is authoritative).
+      # Scale budget: half-extent = 0.25*scale, so slack over the barrel face = 0.25*scale - 0.5.
+      # 2.006 -> 0.0015 slack, which must exceed |UP_NUDGE| (RedstoneDynamo) or a face pokes through.
+      idle:
         display_entities:
           - texture: "@dynamo_fwd"
             tag: shell
-            transform: { translation: [0, 0.501, 0], scale: [2.001, 2.001, 2.001] }
+            transform: { translation: [0, 0.501, 0], scale: [2.006, 2.006, 2.006] }
     recipes:
       craft:
         shaped:

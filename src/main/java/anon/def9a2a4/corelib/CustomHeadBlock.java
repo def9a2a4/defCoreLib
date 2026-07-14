@@ -252,6 +252,7 @@ public final class CustomHeadBlock {
     private final @Nullable String itemTexture; // optional: different texture for item in hand
     private final @Nullable Material itemMaterial;
     private final @Nullable Material physicalMaterial; // non-null → place this world block (e.g. BARREL) instead of a player head
+    private final boolean lockContainer; // physical_material containers: cancel open/hopper access (default true)
     private final boolean itemGlint;
     private final boolean unbreakable; // item form: unbreakable + hide the flag (e.g. wrench)
     private final boolean placeable; // false → inventory-only item (juices, oils, wrench)
@@ -323,6 +324,7 @@ public final class CustomHeadBlock {
         this.itemTexture = b.itemTexture;
         this.itemMaterial = b.itemMaterial;
         this.physicalMaterial = b.physicalMaterial;
+        this.lockContainer = b.lockContainer;
         this.itemGlint = b.itemGlint;
         this.unbreakable = b.unbreakable;
         this.placeable = b.placeable;
@@ -393,6 +395,8 @@ public final class CustomHeadBlock {
     public @Nullable Material itemMaterial() { return itemMaterial; }
     /** World block to place instead of a player head (e.g. BARREL), or null for the default head. */
     public @Nullable Material physicalMaterial() { return physicalMaterial; }
+    /** For container physical_material blocks: whether the framework blocks opening/hopper access. */
+    public boolean lockContainer() { return lockContainer; }
     public boolean itemGlint() { return itemGlint; }
     public boolean unbreakable() { return unbreakable; }
     public boolean placeable() { return placeable; }
@@ -631,6 +635,7 @@ public final class CustomHeadBlock {
         b.itemTexture = itemTexture;
         b.itemMaterial = itemMaterial;
         b.physicalMaterial = physicalMaterial;
+        b.lockContainer = lockContainer;
         b.itemGlint = itemGlint;
         b.unbreakable = unbreakable;
         b.placeable = placeable;
@@ -690,6 +695,7 @@ public final class CustomHeadBlock {
         private @Nullable String itemTexture;
         private @Nullable Material itemMaterial;
         private @Nullable Material physicalMaterial;
+        private boolean lockContainer = true;
         private boolean itemGlint;
         private boolean unbreakable;
         private boolean placeable = true;
@@ -756,8 +762,14 @@ public final class CustomHeadBlock {
         public Builder itemTexture(String base64) { this.itemTexture = base64; return this; }
         public Builder itemMaterial(Material material) { this.itemMaterial = material; return this; }
         /** Place this world block (e.g. BARREL) instead of a player head. The head texture is carried
-         *  by a display entity; identity/state live in the block's tile-entity PDC. */
+         *  by a display entity; identity/state live in the block's tile-entity PDC. The material must
+         *  be a solid, non-fluid-replaceable block (the head-specific fluid/entity protections don't
+         *  cover physical blocks; a solid block doesn't need them). */
         public Builder physicalMaterial(Material material) { this.physicalMaterial = material; return this; }
+
+        /** For container physical_material blocks: set false to allow players/hoppers to use the real
+         *  inventory (default true = locked, e.g. the dynamo's comparator-drive barrel). */
+        public Builder lockContainer(boolean lock) { this.lockContainer = lock; return this; }
         public Builder itemGlint(boolean glint) { this.itemGlint = glint; return this; }
         public Builder unbreakable(boolean v) { this.unbreakable = v; return this; }
         public Builder placeable(boolean value) { this.placeable = value; return this; }
@@ -904,6 +916,11 @@ public final class CustomHeadBlock {
             }
             if (cancelPistons && breakOnPiston) {
                 throw new IllegalStateException("cancelPistons and breakOnPiston are mutually exclusive");
+            }
+            if (physicalMaterial != null && !(physicalMaterial.isBlock() && physicalMaterial.isSolid())) {
+                // Non-solid physical blocks could be destroyed via paths (fluid, entity) that the
+                // head-specific protections don't cover, leaking displays and container contents.
+                throw new IllegalStateException("physical_material must be a solid block: " + physicalMaterial);
             }
             return new CustomHeadBlock(this);
         }

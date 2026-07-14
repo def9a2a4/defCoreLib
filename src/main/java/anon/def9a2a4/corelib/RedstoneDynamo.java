@@ -166,28 +166,42 @@ final class RedstoneDynamo implements Listener {
     // ── Head orientation (points the disguise head along the barrel's facing) ──────────────────────
 
     private static final AxisAngle4f R_IDENTITY = new AxisAngle4f(0f, 0f, 0f, 1f);
-    /** Raise the head in world +Y: half a block to sit it on the block, plus a hair. Always straight
-     *  up (not along the facing) so orientation never drags the head sideways. Visual-tuning knob. */
-    private static final float UP_NUDGE = 0.501f;
+    /** Tiny world-Y offset of the head's visual centre off exact block-centre (negative = lower).
+     *  Applied identically for all six facings. Visual-tuning knob — |value| must stay under the
+     *  head's slack over the barrel face (0.25·scale − 0.5; 0.0015 at the YAML scale of 2.006) or
+     *  the barrel's opposite face pokes through the disguise. */
+    private static final float UP_NUDGE = -0.0005f;
+    /** The head item model's visible centre sits this far below the display's transform origin, in
+     *  MODEL units (× scaleY ⇒ ≈ −0.5 block at scale 2.001). Rotation happens about that origin, so
+     *  centring must compensate by −R·c (see {@link #orientHead}). Empirical; calibrate in-game. */
+    private static final float HEAD_CENTER = -0.25f;
 
-    /** Left-rotation that turns the (default +Y) head to point along the barrel's facing, plus a fixed
-     *  world-up raise; scale is carried through from the YAML transform. */
+    /** Transform for the single fwd-art disguise head: rotate the model's +Z (front) onto the barrel's
+     *  facing, then translate so the head's VISUAL centre lands at block-centre (+ tiny nudge) for
+     *  every facing. The display matrix is T·R·S about the model origin, and the head's visible centre
+     *  is offset {@code c = (0, HEAD_CENTER·scaleY, 0)} from that origin — so rotating swings it unless
+     *  we set {@code T = (0, UP_NUDGE, 0) − R·c}, which yields worldCentre = (0, UP_NUDGE, 0) exactly.
+     *  Scale is carried through from the YAML transform (authoritative). */
     private static Transformation orientHead(Block b, Transformation base) {
         BlockFace facing = (b.getBlockData() instanceof Directional d) ? d.getFacing() : BlockFace.UP;
-        return new Transformation(new Vector3f(0f, UP_NUDGE, 0f), rotationForFace(facing),
-                base.getScale(), R_IDENTITY);
+        AxisAngle4f r = rotationForFace(facing);
+        Vector3f rc = r.transform(new Vector3f(0f, HEAD_CENTER * base.getScale().y, 0f));
+        Vector3f t = new Vector3f(0f, UP_NUDGE, 0f).sub(rc);
+        return new Transformation(t, r, base.getScale(), R_IDENTITY);
     }
 
-    /** Rotation mapping the model's +Y axis onto {@code facing} (same six cases as the piston head). */
+    /** Rotation mapping the model's +Z (front face) onto {@code facing}. Walls rotate about +Y only,
+     *  so the art stays upright and faces out of each wall distinctly (no 180° roll — the piston's
+     *  {@code faceRotation} table); UP/DOWN tip the front skyward/floorward about X. */
     private static AxisAngle4f rotationForFace(BlockFace facing) {
         float h = (float) (Math.PI / 2), p = (float) Math.PI;
         return switch (facing) {
-            case UP    -> R_IDENTITY;                      // +Y → +Y
-            case DOWN  -> new AxisAngle4f(p, 1f, 0f, 0f);  // +Y → -Y
-            case EAST  -> new AxisAngle4f(-h, 0f, 0f, 1f); // +Y → +X
-            case WEST  -> new AxisAngle4f(h, 0f, 0f, 1f);  // +Y → -X
-            case SOUTH -> new AxisAngle4f(h, 1f, 0f, 0f);  // +Y → +Z
-            case NORTH -> new AxisAngle4f(-h, 1f, 0f, 0f); // +Y → -Z
+            case SOUTH -> R_IDENTITY;                      // +Z → +Z
+            case NORTH -> new AxisAngle4f(p, 0f, 1f, 0f);  // +Z → -Z
+            case EAST  -> new AxisAngle4f(h, 0f, 1f, 0f);  // +Z → +X
+            case WEST  -> new AxisAngle4f(-h, 0f, 1f, 0f); // +Z → -X
+            case UP    -> new AxisAngle4f(-h, 1f, 0f, 0f); // +Z → +Y (front skyward, top of art → N)
+            case DOWN  -> new AxisAngle4f(h, 1f, 0f, 0f);  // +Z → -Y (front floorward)
             default    -> R_IDENTITY;
         };
     }
