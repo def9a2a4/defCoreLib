@@ -164,7 +164,10 @@ public class MechanismRegistry {
             if (chb != null) {
                 customType = chb.fullId();
                 customState = registry.getState(block);
-                decs = chb.resolveDisplayEntities(customState);
+                // Capture the neighbour-RESOLVED display transforms (not just the static YAML config) while the
+                // block is still live, so a MOVING block renders its real orientation in transit (e.g. a piston
+                // head pointing down, or a dynamo's facing) instead of the +axis fallback.
+                decs = resolveMovingDisplays(chb, block, customState, chb.resolveDisplayEntities(customState));
                 bdecs = chb.resolveBlockDisplayEntities(customState);
                 particles = chb.resolveParticles(customState);
                 // Capture spin direction + wall facing BEFORE onBlockRemoved() clears the direction.
@@ -212,7 +215,7 @@ public class MechanismRegistry {
             if (gchb != null) {
                 gType = gchb.fullId();
                 gState = registry.getState(tmpl);
-                gdecs = gchb.resolveDisplayEntities(gState);
+                gdecs = resolveMovingDisplays(gchb, tmpl, gState, gchb.resolveDisplayEntities(gState));
                 gbdecs = gchb.resolveBlockDisplayEntities(gState);
                 gparticles = gchb.resolveParticles(gState);
                 if (tmpl.getType() == Material.PLAYER_WALL_HEAD
@@ -379,6 +382,31 @@ public class MechanismRegistry {
             new MechanismAssembleEvent(mech, type, pivot.clone(), mech.blockCount(), verticalAxis));
 
         return mech;
+    }
+
+    /**
+     * If {@code chb} has a {@link CustomHeadBlock.DisplayTransformResolver}, return a COPY of {@code decs} with
+     * each entry's transform replaced by the resolver's neighbour-aware output — so a MOVING block carries the
+     * resolved orientation (e.g. a piston head's outward-facing cap) rather than the static YAML fallback.
+     * Returns {@code decs} unchanged when there is no resolver / nothing to resolve. Must be called while the
+     * block is still live (before air-out) so the resolver sees real neighbours. Copies the list because the
+     * source may be an immutable ({@code List.copyOf}) or a shared cached {@code StateConfig} list — mutating
+     * it in place would throw or corrupt every future placement.
+     */
+    private static List<CustomHeadBlock.DisplayEntityConfig> resolveMovingDisplays(
+            CustomHeadBlock chb, Block block, @Nullable String state,
+            @Nullable List<CustomHeadBlock.DisplayEntityConfig> decs) {
+        if (chb.displayTransformResolver() == null || decs == null || decs.isEmpty()) return decs;
+        List<CustomHeadBlock.DisplayEntityConfig> out = new ArrayList<>(decs);
+        for (int i = 0; i < out.size(); i++) {
+            CustomHeadBlock.DisplayEntityConfig d = out.get(i);
+            org.bukkit.util.Transformation resolved = chb.displayTransformResolver().resolve(block, state, d, i);
+            if (resolved != null) {
+                out.set(i, new CustomHeadBlock.DisplayEntityConfig(d.displayItem(), resolved, d.tagSuffix(),
+                    d.animation(), d.interpolationDuration(), d.wallOffset()));
+            }
+        }
+        return out;
     }
 
     /**

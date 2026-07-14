@@ -166,18 +166,16 @@ final class RedstoneDynamo implements Listener {
     // ── Head orientation (points the disguise head along the barrel's facing) ──────────────────────
 
     private static final AxisAngle4f R_IDENTITY = new AxisAngle4f(0f, 0f, 0f, 1f);
-    /** Distance from block centre to the head's anchor along its facing. Rotating about the block
-     *  centre and re-offsetting by {@code k · facing} keeps the head centred for every facing, and for
-     *  UP this is the vertical "nudge up" (was 0.5). Visual-tuning knob. */
-    private static final float SHELL_OFFSET = 0.52f;
+    /** Raise the head in world +Y: half a block to sit it on the block, plus a hair. Always straight
+     *  up (not along the facing) so orientation never drags the head sideways. Visual-tuning knob. */
+    private static final float UP_NUDGE = 0.501f;
 
-    /** Left-rotation + translation that turns the (default +Y) head to point toward the barrel's
-     *  facing while staying centred on the block; scale is carried through from the YAML transform.
-     *  Mirrors {@link ExtendablePistonManager}'s {@code rotationFor} / {@code o.mul(k)} approach. */
+    /** Left-rotation that turns the (default +Y) head to point along the barrel's facing, plus a fixed
+     *  world-up raise; scale is carried through from the YAML transform. */
     private static Transformation orientHead(Block b, Transformation base) {
         BlockFace facing = (b.getBlockData() instanceof Directional d) ? d.getFacing() : BlockFace.UP;
-        Vector3f t = new Vector3f(facing.getModX(), facing.getModY(), facing.getModZ()).mul(SHELL_OFFSET);
-        return new Transformation(t, rotationForFace(facing), base.getScale(), R_IDENTITY);
+        return new Transformation(new Vector3f(0f, UP_NUDGE, 0f), rotationForFace(facing),
+                base.getScale(), R_IDENTITY);
     }
 
     /** Rotation mapping the model's +Y axis onto {@code facing} (same six cases as the piston head). */

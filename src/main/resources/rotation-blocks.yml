@@ -754,9 +754,9 @@ blocks:
           - texture: "@dynamo_head"
             tag: shell
             # Sized just over a full block to hide the barrel with minimal overlap. Position/rotation
-            # are overridden per-facing by RedstoneDynamo.orientHead (this translation is the UP fallback);
+            # are overridden per-facing by RedstoneDynamo.orientHead (this translation is the fallback);
             # scale here is authoritative.
-            transform: { translation: [0, 0.52, 0], scale: [2.001, 2.001, 2.001] }
+            transform: { translation: [0, 0.501, 0], scale: [2.001, 2.001, 2.001] }
     recipes:
       craft:
         shaped:

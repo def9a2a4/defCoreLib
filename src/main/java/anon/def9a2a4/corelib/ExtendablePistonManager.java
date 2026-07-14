@@ -54,7 +54,6 @@ final class ExtendablePistonManager {
     private final Set<CustomBlockRegistry.LocationKey> cores = new HashSet<>();
     private final Map<CustomBlockRegistry.LocationKey, ActiveMove> active = new HashMap<>();
     private final Set<CustomBlockRegistry.LocationKey> warnedCores = new HashSet<>();  // rate-limit tick warnings
-    private final Map<CustomBlockRegistry.LocationKey, String> lastDiag = new HashMap<>();  // TEMP (Issue 7)
     private int tickCounter = 0;
 
     ExtendablePistonManager(JavaPlugin plugin, CustomBlockRegistry registry,
@@ -84,7 +83,8 @@ final class ExtendablePistonManager {
                 CustomBlockRegistry.LocationKey k = CustomBlockRegistry.LocationKey.of(b);
                 // Omni consumer: draws power from the first aligned shaft/gear on ANY face. Static base demand
                 // (default 1, like drill/fan/hopper) so the piston participates in the power economy — it slows
-                // co-resident consumers by their fair share, and its own speed scales with the leftover surplus.
+                // co-resident consumers by their fair share, and its own speed scales with supply minus other
+                // consumers' demand (its own base is added back in advance()).
                 network.addNode(b, CORE_ID, RotationNetwork.Axis.Y,
                     RotationNetwork.NodeRole.CONSUMER, config.getPower("piston_core", 1), false, true, null);
                 cores.add(k);
@@ -329,16 +329,16 @@ final class ExtendablePistonManager {
     }
 
     private void maybeTrigger(CustomBlockRegistry.LocationKey coreKey) {
-        if (!network.isPowered(coreKey)) { diag(coreKey, "not-powered"); return; }
+        if (!network.isPowered(coreKey)) return;
         RotationNetwork.SpinDirection dir = network.getDirection(coreKey);
-        if (dir == null) { diag(coreKey, "powered but no-direction"); return; }
+        if (dir == null) return;
         Block core = blockOf(coreKey);
         if (core == null) return;
         PistonLine line = detectLine(core);
-        if (line == null) { diag(coreKey, "no-line (state=" + registry.getState(core) + ")"); return; }
+        if (line == null) return;
 
         List<Block> payload = resolvePayload(line);
-        if (payload == null) { diag(coreKey, "payload-rejected"); return; }  // glued structure holds an immovable block
+        if (payload == null) return;                                // glued structure holds an immovable block — abort
         // Full moving assembly (rod + payload); the core cell is passable (ghost-filled, protected on land).
         List<Block> moving = new ArrayList<>(line.rodBlocks());
         moving.addAll(payload);
@@ -346,13 +346,10 @@ final class ExtendablePistonManager {
 
         if (dir == RotationNetwork.SpinDirection.CW) {              // extend
             int r = clearForAll(moving, footprint, line.frontFace(), line.backPoles());
-            diag(coreKey, "CW fwd=" + line.frontFace() + " back=" + line.backPoles()
-                + " front=" + line.frontPoles() + " r=" + r);
             if (r > 0) startMove(coreKey, line, payload, line.frontFace(), r, dir);
         } else {                                                    // CCW → retract
             BlockFace back = line.frontFace().getOppositeFace();
             int r = clearForAll(moving, footprint, back, line.extension());
-            diag(coreKey, "CCW back=" + back + " ext=" + line.extension() + " r=" + r);
             if (r > 0) startMove(coreKey, line, payload, back, r, dir);
         }
     }
@@ -538,11 +535,13 @@ final class ExtendablePistonManager {
         double remaining = (m.target.getX() - cur.getX()) * m.dir.x
                          + (m.target.getY() - cur.getY()) * m.dir.y
                          + (m.target.getZ() - cur.getZ()) * m.dir.z;
-        // Speed ∝ surplus/mass (like the rotator), capped by the configurable piston max-step, floored by
-        // MIN_STEP so it always creeps even at surplus 0 (soft manners — never hard-yields).
+        // Speed ∝ power/mass, capped by the configurable piston max-step, floored by MIN_STEP. `power` is
+        // supply minus OTHER consumers' demand: add back the piston's OWN base demand (which is folded into
+        // stats[1]) so it doesn't throttle its own speed — the rotator excludes its own demand the same way.
         int[] stats = network.getNetworkStats(m.coreKey);
-        int surplus = stats != null ? stats[0] - stats[1] : 0;
-        float step = clamp(SPEED_K * surplus / Math.max(1, m.mass), MIN_STEP, (float) config.pistonMaxStep);
+        int base = config.getPower("piston_core", 1);
+        int power = (stats != null ? stats[0] - stats[1] : 0) + base;
+        float step = clamp(SPEED_K * power / Math.max(1, m.mass), MIN_STEP, (float) config.pistonMaxStep);
 
         if (remaining <= step + 1e-3) {
             m.mech.move(m.target, 0f);   // snap to the block-centered target cell
@@ -603,13 +602,6 @@ final class ExtendablePistonManager {
         if (warnedCores.add(coreKey)) {
             plugin.getLogger().log(java.util.logging.Level.WARNING,
                 "ExtendablePiston: " + phase + " threw at " + coreKey + "; recovering", t);
-        }
-    }
-
-    /** TEMPORARY (Issue 7): log a core's trigger outcome, but only when it changes, to avoid per-scan spam. */
-    private void diag(CustomBlockRegistry.LocationKey coreKey, String msg) {
-        if (!msg.equals(lastDiag.put(coreKey, msg))) {
-            plugin.getLogger().info("[piston-diag] " + coreKey + " → " + msg);
         }
     }
 
