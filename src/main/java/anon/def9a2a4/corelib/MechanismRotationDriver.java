@@ -90,12 +90,19 @@ final class MechanismRotationDriver {
         @Nullable Location lastTarget;
     }
 
+    /** One conduit (pipe) riding the mechanism — a pure directed edge in the LOCAL frame. */
+    private record ConduitSpec(int blockIndex, int cellX, int cellY, int cellZ,
+                               BlockFace facing, MechanismConduits.Conduit props) {}
+
     private static final class MechState {
         final List<NodeSpec> specs;
         // Local cell (RotationSolver.pack) → block index, over ALL real blocks (chests included,
         // ghosts excluded) — machines find the travelling inventory of their neighbor through it.
         // Local-frame adjacency is orientation-invariant: neighbor = cell + localDirection.
         final Map<Long, Integer> indexByLocalCell = new HashMap<>();
+        final Map<Integer, NodeSpec> specByIndex = new HashMap<>();   // machine acceptance lookups
+        final List<ConduitSpec> conduits = new ArrayList<>();
+        final Map<Long, ConduitSpec> conduitByCell = new HashMap<>();
         RotationSolver.@Nullable Result result;
         boolean dirty = true;
         final Map<Integer, Integer> engineFuel = new HashMap<>();     // blockIndex → engine-ticks left
@@ -175,16 +182,30 @@ final class MechanismRotationDriver {
                 mb.spinReversed ? RotationNetwork.SpinDirection.CCW : RotationNetwork.SpinDirection.CW,
                 power(mb.customTypeId), actuateInterval(mb.customTypeId)));
         }
-        if (specs.isEmpty()) return;
-
         MechState st = new MechState(specs);
         // Cell map over ALL real blocks (not just rotation nodes): machines resolve neighboring
         // travelling inventories (chests, other machines) through it. Ghosts excluded by the bound.
+        // Conduits (pipes) are collected here too — they route items between those inventories.
         for (int i = 0; i < realBlockCount; i++) {
-            Vector3f t = mech.getBlock(i).localTransform.getTranslation(new Vector3f());
-            st.indexByLocalCell.put(
-                RotationSolver.pack(Math.round(t.x), Math.round(t.y), Math.round(t.z)), i);
+            MechanismBlockData bd = mech.getBlock(i);
+            Vector3f t = bd.localTransform.getTranslation(new Vector3f());
+            int bx = Math.round(t.x), by = Math.round(t.y), bz = Math.round(t.z);
+            st.indexByLocalCell.put(RotationSolver.pack(bx, by, bz), i);
+            MechanismConduits.Conduit conduit = MechanismConduits.get(bd.customTypeId);
+            if (conduit != null) {
+                BlockFace cf = conduit.facingFromState().apply(bd.customState());
+                if (cf != null) {
+                    ConduitSpec cs = new ConduitSpec(i, bx, by, bz, cf, conduit);
+                    st.conduits.add(cs);
+                    st.conduitByCell.put(RotationSolver.pack(bx, by, bz), cs);
+                }
+            }
         }
+        // Neither rotation parts nor conduits aboard → nothing for the driver to do here.
+        // (Conduits run without rotation power, exactly like ground pipes.)
+        if (specs.isEmpty() && st.conduits.isEmpty()) return;
+
+        for (NodeSpec s : specs) st.specByIndex.put(s.blockIndex(), s);
         for (NodeSpec s : specs) {
             if (s.meta().kind() == RotationConfig.MechKind.ENGINE) {
                 String cur = mech.getBlock(s.blockIndex()).customState();
@@ -204,6 +225,7 @@ final class MechanismRotationDriver {
         if (tickAge % ENGINE_INTERVAL == 0) tickEngines(mech, st);
         if (st.dirty) solveAndApply(mech, st);
         actuateConsumers(mech, st, tickAge);
+        tickConduits(mech, st, tickAge);
     }
 
     void onRemoved(BasicMechanism mech) {
@@ -401,9 +423,19 @@ final class MechanismRotationDriver {
         int batch = Math.min(maxBatch, Math.max(1, result.surplus()[k]));
 
         Inventory below = storageAtLocal(mech, st, s.cellX(), s.cellY() - 1, s.cellZ());
+        ConduitSpec pipeBelow = st.conduitByCell.get(
+            RotationSolver.pack(s.cellX(), s.cellY() - 1, s.cellZ()));
         java.util.function.Function<List<org.bukkit.inventory.ItemStack>, Boolean> eject;
         if (below != null) {
             eject = outputs -> insertAllAtomic(below, outputs);
+        } else if (pipeBelow != null && pipeBelow.facing() == BlockFace.DOWN) {
+            // Machine → down-pipe (deliverFromAbove analogue): push outputs atomically down the
+            // chain into its destination; anything less than a full fit stalls the machine.
+            ChainEnd end = walkChain(st, pipeBelow);
+            Integer destIdx = end.destCell() == null ? null : st.indexByLocalCell.get(end.destCell());
+            Inventory dest = destIdx == null ? null : mech.getStorage(destIdx);
+            if (dest == null || !acceptsInto(st, destIdx, end.entryDir())) return; // dead chain: stall
+            eject = outputs -> insertAllAtomic(dest, outputs);
         } else if (cardinal) {
             Vector3i cell = mech.liveCell(s.blockIndex());
             if (!world.isChunkLoaded(cell.x >> 4, cell.z >> 4)) return;
@@ -457,6 +489,129 @@ final class MechanismRotationDriver {
         RotationBlocks.DrillOutcome out = RotationBlocks.drillEffect(registry, target, facing,
             track.state, sourceId, config.drillBreakStages, config.drillBlacklist);
         track.state = out.next();
+    }
+
+    // ──────────────────────────────────────────────────────────────────────
+    // Conduits (pipes) aboard: directed facing-chains between travelling inventories,
+    // mirroring the Pipes ground model (corner bends, head-on terminates, min throughput).
+    // ──────────────────────────────────────────────────────────────────────
+
+    /** Where a facing-chain ends: the local cell just past the last conduit ({@code null} for a
+     *  loop / head-on dead end), the last conduit walked, the entry direction into the end cell,
+     *  and the chain's throughput (min itemsPerTransfer along it). */
+    private record ChainEnd(@Nullable Long destCell, ConduitSpec last, BlockFace entryDir, int minItems) {}
+
+    private static ChainEnd walkChain(MechState st, ConduitSpec start) {
+        BlockFace dir = start.facing();
+        ConduitSpec cur = start;
+        int minItems = start.props().itemsPerTransfer();
+        Set<Long> visited = new java.util.HashSet<>();
+        visited.add(RotationSolver.pack(start.cellX(), start.cellY(), start.cellZ()));
+        while (true) {
+            long next = RotationSolver.pack(cur.cellX() + dir.getModX(),
+                cur.cellY() + dir.getModY(), cur.cellZ() + dir.getModZ());
+            ConduitSpec nc = st.conduitByCell.get(next);
+            if (nc == null) return new ChainEnd(next, cur, dir, minItems);      // chain ends here
+            if (!visited.add(next)) return new ChainEnd(null, cur, dir, minItems);          // loop
+            if (nc.facing() == dir.getOppositeFace()) return new ChainEnd(null, nc, dir, minItems); // head-on
+            minItems = Math.min(minItems, nc.props().itemsPerTransfer());
+            dir = nc.facing();
+            cur = nc;
+        }
+    }
+
+    /** Destination acceptance, mirroring {@code RotationMachineAdapter.canReceiveFrom}: engines
+     *  accept from any side; other rotation machines only through their back (the chain must enter
+     *  along the machine's facing); plain storage blocks (chests) always accept. */
+    private boolean acceptsInto(MechState st, int destIndex, BlockFace entryDir) {
+        NodeSpec ms = st.specByIndex.get(destIndex);
+        if (ms == null) return true;                                     // plain container
+        if (ms.meta().kind() == RotationConfig.MechKind.ENGINE) return true;
+        return entryDir == ms.localFacing();
+    }
+
+    private void tickConduits(BasicMechanism mech, MechState st, long tickAge) {
+        if (st.conduits.isEmpty()) return;
+        World world = mech.pivot().getWorld();
+        if (world == null) return;
+
+        for (ConduitSpec c : st.conduits) {
+            if (c.props().corner()) continue;                            // corners never pull
+            long cellKey = RotationSolver.pack(c.cellX(), c.cellY(), c.cellZ());
+            // Phase-offset per conduit (mirror of PipeManager.isTransferDue) to spread work.
+            if (Math.floorMod(tickAge, c.props().intervalTicks())
+                    != Math.floorMod(Long.hashCode(cellKey), c.props().intervalTicks())) continue;
+
+            // Source = the travelling inventory behind the conduit. Rotation machines are NOT
+            // sources (ground parity: RotationMachineAdapter is insert-only — pipes can feed a
+            // machine but never drain one; machine output leaves via its own eject).
+            BlockFace back = c.facing().getOppositeFace();
+            Integer srcIdx = st.indexByLocalCell.get(RotationSolver.pack(
+                c.cellX() + back.getModX(), c.cellY() + back.getModY(), c.cellZ() + back.getModZ()));
+            if (srcIdx == null || st.specByIndex.containsKey(srcIdx)) continue;
+            Inventory source = mech.getStorage(srcIdx);
+            if (source == null) continue;
+
+            ChainEnd end = walkChain(st, c);
+            if (end.destCell() == null) continue;                        // loop/head-on: dead chain
+
+            Integer destIdx = st.indexByLocalCell.get(end.destCell());
+            if (destIdx != null) {
+                // A mechanism block ends the chain: transfer only into real storage through an
+                // accepted face — a storage-less or wrong-side block means NO transfer (ground
+                // parity: a pipe pointing at a non-container simply idles).
+                Inventory dest = mech.getStorage(destIdx);
+                if (dest == null || !acceptsInto(st, destIdx, end.entryDir())) continue;
+                transferChain(source, dest, end.minItems());
+            } else {
+                // No on-board destination: drop out the end of the chain at its live world cell,
+                // like a ground dead-end pipe (hopper-catchable). Needs a stable orientation.
+                if (!mech.isNearCardinal()) continue;
+                Vector3i lc = mech.liveCell(end.last().blockIndex());
+                BlockFace out = mech.liveDirection(end.entryDir());
+                if (out == null) continue;
+                int dx = lc.x + out.getModX(), dy = lc.y + out.getModY(), dz = lc.z + out.getModZ();
+                if (!world.isChunkLoaded(dx >> 4, dz >> 4)) continue;
+                org.bukkit.inventory.ItemStack taken = takeUpTo(source, end.minItems());
+                if (taken != null) {
+                    world.dropItem(new Location(world, dx + 0.5, dy + 0.5, dz + 0.5), taken);
+                }
+            }
+        }
+    }
+
+    /** Move up to {@code max} items of the first available stack from {@code source} into
+     *  {@code dest}; partial insert commits only what fit (mirror of the Pipes peek/commit). */
+    private static void transferChain(Inventory source, Inventory dest, int max) {
+        for (int i = 0; i < source.getSize(); i++) {
+            org.bukkit.inventory.ItemStack it = source.getItem(i);
+            if (it == null || it.getType().isAir()) continue;
+            int n = Math.min(it.getAmount(), max);
+            org.bukkit.inventory.ItemStack moving = it.clone();
+            moving.setAmount(n);
+            var leftover = dest.addItem(moving);
+            int inserted = n - leftover.values().stream()
+                .mapToInt(org.bukkit.inventory.ItemStack::getAmount).sum();
+            if (inserted <= 0) return;                                   // destination full
+            it.setAmount(it.getAmount() - inserted);
+            source.setItem(i, it.getAmount() <= 0 ? null : it);
+            return;                                                      // one stack type per cycle
+        }
+    }
+
+    /** Remove and return up to {@code max} items of the first available stack, or null when empty. */
+    private static org.bukkit.inventory.@Nullable ItemStack takeUpTo(Inventory source, int max) {
+        for (int i = 0; i < source.getSize(); i++) {
+            org.bukkit.inventory.ItemStack it = source.getItem(i);
+            if (it == null || it.getType().isAir()) continue;
+            int n = Math.min(it.getAmount(), max);
+            org.bukkit.inventory.ItemStack taken = it.clone();
+            taken.setAmount(n);
+            it.setAmount(it.getAmount() - n);
+            source.setItem(i, it.getAmount() <= 0 ? null : it);
+            return taken;
+        }
+        return null;
     }
 
     // ──────────────────────────────────────────────────────────────────────

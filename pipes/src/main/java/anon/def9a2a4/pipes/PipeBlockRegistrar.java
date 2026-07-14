@@ -16,6 +16,14 @@ public class PipeBlockRegistrar {
     public static void register(CustomBlockRegistry registry, PipesPlugin plugin) {
         for (PipeVariant variant : plugin.getVariantRegistry().getAllVariants()) {
             overlayVariant(registry, plugin, variant);
+            // Pipes keep transferring aboard moving mechanisms (carts, hoist platforms): register
+            // the variant's chain behaviour with corelib's mechanism driver, which mirrors the
+            // ground model (directed facing-chain, corner bends, per-variant throughput) over the
+            // mechanism's travelling inventories. Facing convention is ours, hence the resolver.
+            anon.def9a2a4.corelib.MechanismConduits.register("pipes:" + variant.id(),
+                variant.behaviorType() == BehaviorType.CORNER,
+                variant.transferIntervalTicks(), variant.itemsPerTransfer(),
+                PipeBlockRegistrar::parseFacing);
         }
     }
 
