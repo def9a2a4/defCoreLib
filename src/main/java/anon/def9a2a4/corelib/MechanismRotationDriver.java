@@ -58,20 +58,28 @@ final class MechanismRotationDriver {
     private final CustomBlockRegistry registry;
     private final EngineFuelManager fuelManager;
     private final RotationConfig config;
+    private final MachineRecipes millRecipes;
+    private final MachineRecipes pressRecipes;
 
     private final Map<UUID, MechState> states = new HashMap<>();
 
     MechanismRotationDriver(CustomBlockRegistry registry, EngineFuelManager fuelManager,
-                            RotationConfig config) {
+                            RotationConfig config, MachineRecipes millRecipes,
+                            MachineRecipes pressRecipes) {
         this.registry = registry;
         this.fuelManager = fuelManager;
         this.config = config;
+        this.millRecipes = millRecipes;
+        this.pressRecipes = pressRecipes;
     }
 
-    /** One rotation part of a mechanism — immutable while assembled. */
+    /** One rotation part of a mechanism — immutable while assembled. {@code localFacing} follows
+     *  the drill-PDC convention (wall head → its facing, floor head → DOWN); machines derive their
+     *  input side (behind = opposite) and the hopper its mount from it, in the LOCAL frame. */
     private record NodeSpec(int blockIndex, String typeId, RotationConfig.MechRotationMeta meta,
                             int cellX, int cellY, int cellZ,
                             RotationNetwork.Axis axis, boolean omni, @Nullable BlockFace omniExcludedFace,
+                            BlockFace localFacing,
                             RotationNetwork.SpinDirection dirPref,
                             int power, int actuateInterval) {}
 
@@ -84,6 +92,10 @@ final class MechanismRotationDriver {
 
     private static final class MechState {
         final List<NodeSpec> specs;
+        // Local cell (RotationSolver.pack) → block index, over ALL real blocks (chests included,
+        // ghosts excluded) — machines find the travelling inventory of their neighbor through it.
+        // Local-frame adjacency is orientation-invariant: neighbor = cell + localDirection.
+        final Map<Long, Integer> indexByLocalCell = new HashMap<>();
         RotationSolver.@Nullable Result result;
         boolean dirty = true;
         final Map<Integer, Integer> engineFuel = new HashMap<>();     // blockIndex → engine-ticks left
@@ -91,6 +103,27 @@ final class MechanismRotationDriver {
         final Map<Integer, DrillTrack> drills = new HashMap<>();      // blockIndex → break progress
 
         MechState(List<NodeSpec> specs) { this.specs = specs; }
+    }
+
+    /** Travelling inventory of the mechanism block at a LOCAL cell, or null (no block / no storage). */
+    private static @Nullable Inventory storageAtLocal(BasicMechanism mech, MechState st,
+                                                      int x, int y, int z) {
+        Integer idx = st.indexByLocalCell.get(RotationSolver.pack(x, y, z));
+        return idx == null ? null : mech.getStorage(idx);
+    }
+
+    /** Insert ALL outputs into {@code dest} atomically (snapshot/rollback — mirror of the container
+     *  branch of {@code RotationBlocks.ejectOutputs}). @return false when they didn't all fit. */
+    private static boolean insertAllAtomic(Inventory dest, List<org.bukkit.inventory.ItemStack> outputs) {
+        org.bukkit.inventory.ItemStack[] snapshot = java.util.Arrays.stream(dest.getContents())
+            .map(s -> s == null ? null : s.clone()).toArray(org.bukkit.inventory.ItemStack[]::new);
+        for (org.bukkit.inventory.ItemStack out : outputs) {
+            if (!dest.addItem(out).isEmpty()) {
+                dest.setContents(snapshot);
+                return false;
+            }
+        }
+        return true;
     }
 
     // ──────────────────────────────────────────────────────────────────────
@@ -138,12 +171,20 @@ final class MechanismRotationDriver {
                     : null;
 
             specs.add(new NodeSpec(i, mb.customTypeId, meta, cx, cy, cz, axis, omni, omniExcluded,
+                localFacing,
                 mb.spinReversed ? RotationNetwork.SpinDirection.CCW : RotationNetwork.SpinDirection.CW,
                 power(mb.customTypeId), actuateInterval(mb.customTypeId)));
         }
         if (specs.isEmpty()) return;
 
         MechState st = new MechState(specs);
+        // Cell map over ALL real blocks (not just rotation nodes): machines resolve neighboring
+        // travelling inventories (chests, other machines) through it. Ghosts excluded by the bound.
+        for (int i = 0; i < realBlockCount; i++) {
+            Vector3f t = mech.getBlock(i).localTransform.getTranslation(new Vector3f());
+            st.indexByLocalCell.put(
+                RotationSolver.pack(Math.round(t.x), Math.round(t.y), Math.round(t.z)), i);
+        }
         for (NodeSpec s : specs) {
             if (s.meta().kind() == RotationConfig.MechKind.ENGINE) {
                 String cur = mech.getBlock(s.blockIndex()).customState();
@@ -280,11 +321,28 @@ final class MechanismRotationDriver {
                         new Location(world, cell.x + 0.5, cell.y + 0.5, cell.z + 0.5),
                         cell.x, cell.y, cell.z, inv,
                         config.suctionPullRange, config.suctionPullStrength);
+                    // Feed ONE collected item into the travelling inventory this hopper is mounted
+                    // on (never drops — mirror of pushToMount, against the on-board container).
+                    BlockFace mount = s.localFacing() == BlockFace.DOWN
+                        ? BlockFace.DOWN : s.localFacing().getOppositeFace();
+                    Inventory mountInv = storageAtLocal(mech, st,
+                        s.cellX() + mount.getModX(), s.cellY() + mount.getModY(),
+                        s.cellZ() + mount.getModZ());
+                    if (mountInv != null) RotationBlocks.pullOne(inv, mountInv);
                 }
                 case PLACER -> {
                     if (!powered || !cardinal) continue;
                     Inventory inv = mech.getStorage(s.blockIndex());
                     if (inv == null) continue;
+                    // Refill from the on-board container behind the placer (the borer's rail feed):
+                    // behind = UP for a ceiling placer (its mount/cap face, consistent with
+                    // placerOmniExcludedFace), the facing's opposite for a wall placer.
+                    BlockFace behind = s.localFacing() == BlockFace.DOWN
+                        ? BlockFace.UP : s.localFacing().getOppositeFace();
+                    Inventory feed = storageAtLocal(mech, st,
+                        s.cellX() + behind.getModX(), s.cellY() + behind.getModY(),
+                        s.cellZ() + behind.getModZ());
+                    if (feed != null) RotationBlocks.pullOne(feed, inv);
                     BlockFace facing = mech.liveFacing(s.blockIndex());
                     if (facing == null) continue;
                     Vector3i cell = mech.liveCell(s.blockIndex());
@@ -293,7 +351,76 @@ final class MechanismRotationDriver {
                     if (!world.isChunkLoaded(tx >> 4, tz >> 4)) continue;
                     RotationBlocks.placerEffect(world.getBlockAt(tx, ty, tz), inv);
                 }
-                default -> { /* demand + spin visuals only (millstone/press/fan and custom kinds) */ }
+                case "mech:millstone" -> tickProcessing(mech, st, s, k, world, powered, cardinal,
+                    millRecipes, org.bukkit.Sound.BLOCK_GRINDSTONE_USE, config.millstoneMaxBatch);
+                case "mech:press" -> tickProcessing(mech, st, s, k, world, powered, cardinal,
+                    pressRecipes, org.bukkit.Sound.BLOCK_ANVIL_USE, config.pressMaxBatch);
+                case "mech:fan" -> {
+                    if (!powered || !cardinal) continue;
+                    // Blow direction mirrors the static blowDirection: floor fan blows UP, wall
+                    // fan blows its facing — rotated into the world by the live transform.
+                    BlockFace blowLocal = s.localFacing() == BlockFace.DOWN
+                        ? BlockFace.UP : s.localFacing();
+                    BlockFace blow = mech.liveDirection(blowLocal);
+                    if (blow == null) continue;
+                    Vector3i cell = mech.liveCell(s.blockIndex());
+                    if (!world.isChunkLoaded(cell.x >> 4, cell.z >> 4)) continue;
+                    RotationBlocks.fanEffect(world,
+                        new Location(world, cell.x + 0.5, cell.y + 0.5, cell.z + 0.5),
+                        blow, result.surplus()[k],
+                        config.fanRange, config.fanMinPush, config.fanMaxPush, config.fanPushPerPower);
+                }
+                default -> { /* demand + spin visuals only (custom kinds) */ }
+            }
+        }
+    }
+
+    /**
+     * Millstone/press aboard: pull one input from the on-board container behind, run the shared
+     * recipe loop against the machine's travelling storage, and eject into the on-board container
+     * below — else drop at the live world cell below (hopper-catchable; needs cardinal + loaded).
+     * Batch mirrors the static path exactly: {@code min(maxBatch, max(1, supply − demand))} — the
+     * solver's per-node surplus IS that same self-inclusive headroom, clamped to at least one
+     * cycle while powered.
+     */
+    private void tickProcessing(BasicMechanism mech, MechState st, NodeSpec s, int k, World world,
+                                boolean powered, boolean cardinal, MachineRecipes recipes,
+                                org.bukkit.Sound sound, int maxBatch) {
+        if (!powered) return;
+        Inventory in = mech.getStorage(s.blockIndex());
+        if (in == null) return;
+
+        BlockFace behind = s.localFacing() == BlockFace.DOWN
+            ? BlockFace.UP : s.localFacing().getOppositeFace();
+        Inventory feed = storageAtLocal(mech, st,
+            s.cellX() + behind.getModX(), s.cellY() + behind.getModY(), s.cellZ() + behind.getModZ());
+        if (feed != null) RotationBlocks.pullOne(feed, in);
+
+        RotationSolver.Result result = st.result;
+        if (result == null) return;
+        int batch = Math.min(maxBatch, Math.max(1, result.surplus()[k]));
+
+        Inventory below = storageAtLocal(mech, st, s.cellX(), s.cellY() - 1, s.cellZ());
+        java.util.function.Function<List<org.bukkit.inventory.ItemStack>, Boolean> eject;
+        if (below != null) {
+            eject = outputs -> insertAllAtomic(below, outputs);
+        } else if (cardinal) {
+            Vector3i cell = mech.liveCell(s.blockIndex());
+            if (!world.isChunkLoaded(cell.x >> 4, cell.z >> 4)) return;
+            Location dropAt = new Location(world, cell.x + 0.5, cell.y, cell.z + 0.5);
+            eject = outputs -> {
+                for (org.bukkit.inventory.ItemStack out : outputs) world.dropItem(dropAt, out);
+                return true;
+            };
+        } else {
+            return; // no on-board sink and mid-turn: hold until the next straight
+        }
+
+        if (RotationBlocks.processingEffect(in, batch, recipes, registry, eject)) {
+            Vector3i cell = mech.liveCell(s.blockIndex());
+            if (world.isChunkLoaded(cell.x >> 4, cell.z >> 4)) {
+                world.playSound(new Location(world, cell.x + 0.5, cell.y + 0.5, cell.z + 0.5),
+                    sound, 0.6f, 1f);
             }
         }
     }
@@ -346,6 +473,9 @@ final class MechanismRotationDriver {
             case "mech:drill" -> config.drillTickInterval;
             case "mech:suction_hopper" -> config.suctionTickInterval;
             case PLACER -> config.placerTickInterval;
+            case "mech:millstone" -> config.millstoneTickInterval;
+            case "mech:press" -> config.pressTickInterval;
+            case "mech:fan" -> config.fanTickInterval;
             default -> 20;
         };
     }

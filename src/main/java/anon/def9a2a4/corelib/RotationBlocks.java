@@ -685,19 +685,30 @@ final class RotationBlocks {
         // Gateway resolution: null for non-containers AND locked plugin-owned ones (e.g. a dynamo).
         Container c = ContainerAdapterRegistry.findVanillaContainer(host);
         if (c == null) return;
-        Inventory adjacent = c.getInventory();
-        for (int i = 0; i < adjacent.getSize(); i++) {
-            ItemStack item = adjacent.getItem(i);
+        pullOne(c.getInventory(), internal);
+    }
+
+    /**
+     * Move ONE item from {@code source} into {@code dest} (first slot that fully fits). The
+     * world-agnostic core of {@link #pullFromAdjacentContainer} — machines riding a mechanism
+     * feed from the travelling inventory of the neighboring mechanism block through this.
+     *
+     * @return true when an item moved
+     */
+    static boolean pullOne(Inventory source, Inventory dest) {
+        for (int i = 0; i < source.getSize(); i++) {
+            ItemStack item = source.getItem(i);
             if (item == null || item.getType().isAir()) continue;
             ItemStack single = item.clone();
             single.setAmount(1);
-            var leftover = internal.addItem(single);
+            var leftover = dest.addItem(single);
             if (leftover.isEmpty()) {
                 item.setAmount(item.getAmount() - 1);
-                adjacent.setItem(i, item.getAmount() <= 0 ? null : item);
-                return;
+                source.setItem(i, item.getAmount() <= 0 ? null : item);
+                return true;
             }
         }
+        return false;
     }
 
     /**
@@ -784,6 +795,23 @@ final class RotationBlocks {
         // stats = {supply, demand, count}; surplus headroom = supply - demand.
         int batch = Math.min(maxBatch, Math.max(1, stats[0] - stats[1]));
 
+        if (processingEffect(in, batch, recipes, registry, outputs -> ejectOutputs(machine, outputs))) {
+            machine.getWorld().playSound(machine.getLocation().add(0.5, 0.5, 0.5), sound, 0.6f, 1f);
+        }
+    }
+
+    /**
+     * The recipe-processing core of {@link #processingMachineTick}: up to {@code batch} recipe
+     * cycles against {@code in}, delivering each cycle's outputs through {@code eject} (return
+     * false = output full → stall; inputs are consumed only after delivery). World-agnostic — the
+     * caller owns the powered gate, input refill, batch sizing, eject destination, and sound, so
+     * millstones/presses riding a mechanism run the identical loop against travelling inventories
+     * ({@code MechanismRotationDriver}).
+     *
+     * @return true when at least one cycle processed
+     */
+    static boolean processingEffect(Inventory in, int batch, MachineRecipes recipes,
+            CustomBlockRegistry registry, java.util.function.Function<List<ItemStack>, Boolean> eject) {
         boolean processed = false;
         for (int done = 0; done < batch; done++) {
             MachineRecipes.Recipe recipe = null;
@@ -809,16 +837,13 @@ final class RotationBlocks {
             }
             if (missingEmpty) break;                                // no container to bottle into → stall
 
-            if (!outputs.isEmpty() && !ejectOutputs(machine, outputs)) break; // output full → stall
+            if (!outputs.isEmpty() && !eject.apply(outputs)) break; // output full → stall
 
             removeCount(in, recipe.input(), recipe.inputAmount());
             for (var e : empties.entrySet()) removeCount(in, e.getKey(), e.getValue());
             processed = true;
         }
-
-        if (processed) {
-            machine.getWorld().playSound(machine.getLocation().add(0.5, 0.5, 0.5), sound, 0.6f, 1f);
-        }
+        return processed;
     }
 
     // ──────────────────────────────────────────────────────────────────────
@@ -868,20 +893,29 @@ final class RotationBlocks {
         if (stats == null) return;
         // stats = {supply, demand, count}; surplus headroom = supply - demand (advisory).
         int surplus = Math.max(0, stats[0] - stats[1]);
-        double push = Math.min(fanMaxPush, fanMinPush + surplus * fanPushPerPower);
 
-        BlockFace dir = blowDirection(fan);
-        org.bukkit.util.Vector unit = dir.getDirection();   // unit-length
+        fanEffect(fan.getWorld(), fan.getLocation().add(0.5, 0.5, 0.5), blowDirection(fan), surplus,
+            fanRange, fanMinPush, fanMaxPush, fanPushPerPower);
+    }
 
-        // Beam: a 1-wide column from the fan extending fanRange blocks along `unit`.
-        Location center = fan.getLocation().add(0.5, 0.5, 0.5);
+    /**
+     * One fan work-step at an explicit position: push mobs/players/items along a {@code range}-long
+     * beam from {@code center} toward {@code blowDir}, with a directed airflow puff. Push =
+     * {@code min(maxPush, minPush + surplus·pushPerPower)}. Fully world-local — the caller owns the
+     * powered gate and surplus, so fans riding a mechanism blow at their live position
+     * ({@code MechanismRotationDriver}).
+     */
+    static void fanEffect(World world, Location center, BlockFace blowDir, int surplus,
+                          int range, double minPush, double maxPush, double pushPerPower) {
+        double push = Math.min(maxPush, minPush + surplus * pushPerPower);
+        org.bukkit.util.Vector unit = blowDir.getDirection();   // unit-length
 
         // Airflow feedback: a single directed puff just off the fan, drifting down the beam.
         Location p = center.clone().add(unit.clone().multiply(0.5));
         // count=0 → offset args act as the particle velocity; extra = drift speed.
-        fan.getWorld().spawnParticle(Particle.CLOUD, p, 0, unit.getX(), unit.getY(), unit.getZ(), 0.1);
+        world.spawnParticle(Particle.CLOUD, p, 0, unit.getX(), unit.getY(), unit.getZ(), 0.1);
 
-        Location far = center.clone().add(unit.clone().multiply(fanRange));
+        Location far = center.clone().add(unit.clone().multiply(range));
         org.bukkit.util.BoundingBox box = org.bukkit.util.BoundingBox.of(center.toVector(), far.toVector());
         // Inflate the two perpendicular axes to ~1 block wide (axis along `unit` stays the beam length).
         box.expand(
@@ -889,7 +923,7 @@ final class RotationBlocks {
             unit.getY() == 0 ? 0.5 : 0,
             unit.getZ() == 0 ? 0.5 : 0);
 
-        for (org.bukkit.entity.Entity e : fan.getWorld().getNearbyEntities(box)) {
+        for (org.bukkit.entity.Entity e : world.getNearbyEntities(box)) {
             // Mobs, players, dropped items only — excludes our own Display block visuals.
             if (!(e instanceof org.bukkit.entity.LivingEntity || e instanceof org.bukkit.entity.Item)) continue;
             org.bukkit.util.Vector v = e.getVelocity();

@@ -143,6 +143,12 @@ final class BasicMechanism implements Mechanism {
         MechanismBlockData mb = blocks.get(index);
         BlockFace local = mb.blockData instanceof org.bukkit.block.data.Directional d
             ? d.getFacing() : BlockFace.DOWN;
+        return liveDirection(local);
+    }
+
+    /** Any mechanism-local face rotated by the current transform (fan blow direction, hopper
+     *  mount, pipe chains). Null when mid-rotation leaves it off-axis. */
+    @Nullable BlockFace liveDirection(BlockFace local) {
         Vector3f v = currentTransform.transformDirection(
             new Vector3f(local.getModX(), local.getModY(), local.getModZ()), new Vector3f());
         int rx = Math.round(v.x), ry = Math.round(v.y), rz = Math.round(v.z);

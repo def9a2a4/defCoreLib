@@ -58,7 +58,8 @@ final class RotationSolver {
     record Result(int[] component, boolean[] powered,
                   RotationNetwork.SpinDirection[] direction, boolean[] jammed, int[] surplus) {}
 
-    private static long pack(int x, int y, int z) {
+    // Package-visible: MechanismRotationDriver keys its local-cell → block-index map the same way.
+    static long pack(int x, int y, int z) {
         // 21 bits per coordinate, offset-shifted — mechanism-local offsets are tiny (|v| ≤ ~256).
         return ((x & 0x1FFFFFL) << 42) | ((y & 0x1FFFFFL) << 21) | (z & 0x1FFFFFL);
     }
