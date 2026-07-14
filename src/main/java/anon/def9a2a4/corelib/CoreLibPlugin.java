@@ -1089,7 +1089,9 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
     @EventHandler
     public void onInventoryClose(org.bukkit.event.inventory.InventoryCloseEvent event) {
         if (event.getInventory().getHolder() instanceof StorageHolder holder) {
-            // Delay by 1 tick so Bukkit finishes removing the viewer first
+            // Delay by 1 tick so Bukkit finishes removing the viewer first. LOAD-BEARING beyond that:
+            // this deferral keeps openStorages.remove out of saveAllOpenStorages/saveStoragesInChunk's
+            // iteration — making it synchronous reintroduces a ConcurrentModificationException there.
             getServer().getScheduler().runTask(this, () -> registry.onStorageClosed(holder));
         }
     }
@@ -1565,7 +1567,8 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
                     }
                     List<Block> glued = glueManager.resolveStructure(anchor);
                     try {
-                        java.nio.file.Path out = getDataFolder().toPath().resolve("showcase-export.yml");
+                        java.nio.file.Path out = getDataFolder().toPath().resolve("showcase-exports")
+                            .resolve(ShowcaseExporter.fileNameFor(args[2]));
                         int n = ShowcaseExporter.export(args[2], anchor, glued, registry, out);
                         sender.sendMessage(Component.text("Exported '" + args[2] + "' (" + n + " blocks) → "
                             + out.toAbsolutePath(), NamedTextColor.GREEN));

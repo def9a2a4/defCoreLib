@@ -1216,6 +1216,9 @@ public class CustomBlockRegistry {
 
     void tickParticles() {
         int currentTick = Bukkit.getServer().getCurrentTick();
+        // NOT snapshotted (unlike tickCustomBlocks): safe ONLY because the body calls spawnParticle and
+        // sets entry.failed — it never places/removes a block that would mutate particleTracked. If a
+        // particle config ever gains a block-registering callback, snapshot this loop like tickCustomBlocks.
         for (var entry : particleTracked.values()) {
             Block block = entry.block;
             if (!block.getWorld().isChunkLoaded(block.getX() >> 4, block.getZ() >> 4)) continue;
@@ -1286,6 +1289,8 @@ public class CustomBlockRegistry {
 
     void tickAnimations() {
         long currentTick = Bukkit.getServer().getCurrentTick();
+        // NOT snapshotted (unlike tickCustomBlocks): safe ONLY because the body sets display transforms
+        // and never places/removes a block that would mutate animationTracked. Snapshot if that changes.
         for (var entry : animationTracked.values()) {
             for (var tracked : entry) {
                 if (!tracked.display.isValid()) continue;
@@ -1869,6 +1874,10 @@ public class CustomBlockRegistry {
 
     /** Save all open storages (called during shutdown and chunk unload). */
     void saveAllOpenStorages() {
+        // NOT snapshotted, yet safe: closeInventory() below fires InventoryCloseEvent, whose listener
+        // (CoreLibPlugin.onInventoryClose) DEFERS the openStorages.remove by a tick via runTask — so the
+        // map is not structurally mutated during this loop. That deferral is LOAD-BEARING for CME safety
+        // here and in saveStoragesInChunk; making onInventoryClose remove synchronously reintroduces a CME.
         for (var holder : openStorages.values()) {
             saveInventoryToPDC(holder.location(), holder.getInventory());
             new ArrayList<>(holder.getInventory().getViewers()).forEach(v -> v.closeInventory());
@@ -1878,6 +1887,9 @@ public class CustomBlockRegistry {
 
     /** Save open storages in a specific chunk. */
     void saveStoragesInChunk(World world, int chunkX, int chunkZ) {
+        // Safe for the same reason as saveAllOpenStorages: the predicate's closeInventory() →
+        // InventoryCloseEvent → onInventoryClose defers openStorages.remove by a tick. A synchronous
+        // remove there would CME this removeIf traversal.
         openStorages.entrySet().removeIf(e -> {
             LocationKey loc = e.getKey();
             if (loc.worldId().equals(world.getUID())

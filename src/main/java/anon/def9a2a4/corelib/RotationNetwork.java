@@ -282,6 +282,11 @@ public class RotationNetwork {
     // ──────────────────────────────────────────────────────────────────────
 
     public void recalculate(CustomBlockRegistry.LocationKey changed) {
+        // LOAD-BEARING re-entrancy guard: doRecalculate can synchronously fire block events /
+        // RotationNetworkPoweredEvent whose listeners call back into add/removeNode/recalculate. This flag
+        // routes re-entrant calls into pendingRecalcs instead of recursing into doRecalculate, which is what
+        // keeps the nodes/networks maps from being mutated mid-iteration. Preserve it if doRecalculate ever
+        // migrates onto RotationSolver.
         if (recalculating) {
             pendingRecalcs.add(changed);
             return;
