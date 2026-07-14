@@ -70,14 +70,15 @@ public final class MechAdvancements {
             Map.entry("mech:piston_pole", "craft/piston"),
             Map.entry("mech:piston_head", "craft/piston"),
             Map.entry("mech:rotator", "craft/rotator"),
-            Map.entry("mech:mechanism_minecart", "craft/minecart"));
+            Map.entry("mech:mechanism_minecart", "craft/minecart"),
+            Map.entry("mech:redstone_dynamo", "craft/dynamo"));
 
     // The machine craft nodes that together earn craft/master_machinist (tools/parts excluded).
     private static final Set<String> MACHINE_CRAFT_NODES = Set.of(
             "craft/shaft", "craft/gear", "craft/water_wheel", "craft/windmill_item",
             "craft/clutch", "craft/reverser", "craft/chain_pulley", "craft/drill", "craft/millstone",
             "craft/fan", "craft/suction_hopper", "craft/press", "craft/placer", "craft/motor", "craft/engine",
-            "craft/piston", "craft/rotator", "craft/minecart");
+            "craft/piston", "craft/rotator", "craft/minecart", "craft/dynamo");
 
     // The mastery capstones that together earn mastery/grand_engineer. Excludes windmill/huge, which is
     // BetterBanners-gated (would make the finale unobtainable without that plugin).

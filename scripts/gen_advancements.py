@@ -78,6 +78,8 @@ NODES = [
      "Craft a Reverser — flips a line's spin direction while it's redstone-powered."),
     ("craft/chain_pulley", "craft/reverser", "task", "@chainwheel", "Pull Yourself Together", "white",
      "Craft a Chain Pulley — link two pulleys with a chain to carry power across a gap."),
+    ("craft/dynamo", "craft/gear", "task", "minecraft:comparator", "Reading the Room", "white",
+     "Craft a Redstone Dynamo — reads your network's power and emits an analog redstone signal for a comparator."),
     # moving machines: piston -> rotator -> minecart (the minecart recipe needs a rotator, cascade-safe)
     ("craft/piston", "craft/gear", "task", "@core_fwd", "Reach Out", "white",
      "Craft an Extendable Piston — a powered arm that pushes a glued structure out and pulls it back."),
@@ -92,7 +94,7 @@ NODES = [
      "Craft a Water Wheel — a passive source worth 2 power, spun by water against a wall."),
     ("craft/engine", "craft/water_wheel", "goal", "@bronze_engine", "Full Steam", "yellow",
      "Craft an Engine — the strongest source at 5 power, but it burns furnace fuel to run."),
-    ("craft/motor", "craft/water_wheel", "task", "@copper_bulb", "Off the Grid", "white",
+    ("craft/motor", "craft/water_wheel", "task", "@motor_up_pwr", "Off the Grid", "white",
      "Craft a Redstone Motor — a steady 1-power source that runs while UNpowered by redstone."),
     ("craft/master_machinist", "craft/engine", "challenge", "@copper_gear", "Master Machinist", "light_purple",
      "Craft at least one of every Mechanism machine."),
