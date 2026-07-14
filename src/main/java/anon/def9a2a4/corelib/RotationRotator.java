@@ -131,7 +131,7 @@ final class RotationRotator {
             planks = List.of(seed);
         }
         // Slime-style casing spread: a casing in the swung set drags its neighbours (transitively).
-        planks = CasingExpansion.expand(planks, registry, glueManager.maxSize());
+        planks = CasingExpansion.withDerived(planks, registry, glueManager.maxSize());
 
         RotationNetwork.RotationNode node = network.getNode(key);
         if (node == null) return;

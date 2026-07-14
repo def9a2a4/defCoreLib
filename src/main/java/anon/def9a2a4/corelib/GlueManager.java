@@ -32,9 +32,13 @@ final class GlueManager {
     enum Result { OK, NOT_CONNECTED, CAP_HIT, ALREADY_GLUED, IS_ANCHOR, AXIS_INCOMPATIBLE }
 
     private final int maxSize;
+    // For casing detection (derived auto-glue) — see CasingExpansion. Nullable only for
+    // registry-less construction in tests; derived glue is skipped without it.
+    private final @Nullable CustomBlockRegistry registry;
 
-    GlueManager(int maxSize) {
+    GlueManager(int maxSize, @Nullable CustomBlockRegistry registry) {
         this.maxSize = maxSize;
+        this.registry = registry;
     }
 
     int maxSize() { return maxSize; }
@@ -62,15 +66,52 @@ final class GlueManager {
             if (b.getType().isAir()) continue; // block gone — skip
             out.add(b);
         }
+        // Derived casing auto-glue: casings touching the structure (or the anchor) join and spread
+        // casing-to-casing — computed fresh on every resolve, never stored (see CasingExpansion).
+        if (registry != null && !out.isEmpty()) {
+            out.addAll(CasingExpansion.derivedCasings(out, origin, registry, maxSize));
+        }
         return out;
+    }
+
+    /**
+     * Offsets of the DERIVED casing auto-glue for the authoring outline — the casings that would
+     * join at resolve time but are not stored. Seeds off the authored structure AND the anchor
+     * cell, so the root case (casings stacked directly on the anchor/cart, no authored glue yet)
+     * shows up in the outline too.
+     */
+    Set<Vector3i> derivedOffsets(Anchor a) {
+        Set<Vector3i> set = new LinkedHashSet<>();
+        if (registry == null) return set;
+        int[] o = a.readOffsets();
+        Block origin = a.originBlock();
+        World w = a.world();
+        int ox = origin.getX(), oy = origin.getY(), oz = origin.getZ();
+        List<Block> authored = new ArrayList<>();
+        if (o != null) {
+            for (int i = 0; i + 2 < o.length; i += 3) {
+                Block b = w.getBlockAt(ox + o[i], oy + o[i + 1], oz + o[i + 2]);
+                if (!b.getType().isAir()) authored.add(b);
+            }
+        }
+        for (Block d : CasingExpansion.derivedCasings(authored, origin, registry, maxSize)) {
+            set.add(new Vector3i(d.getX() - ox, d.getY() - oy, d.getZ() - oz));
+        }
+        return set;
     }
 
     /**
      * Overwrite the glued set from an explicit block list — used by the rebind-on-disassembly hook and
      * by the authoring cuboid/single-edit commit. No connectivity check (the caller is authoritative).
+     * Casings are never stored: their glue is derived fresh on every resolve (see
+     * {@link CasingExpansion}) — a rigid move preserves adjacency, so a casing that came along
+     * re-derives at its landed cell. Storing them would bake the auto-glue into authored offsets
+     * (stale once the casing is broken).
      */
     void setStructure(Anchor a, List<Block> blocks) {
-        a.writeOffsets(packBlocks(a, blocks));
+        List<Block> authored = registry == null ? blocks
+            : blocks.stream().filter(b -> !CasingExpansion.isCasing(b, registry)).toList();
+        a.writeOffsets(packBlocks(a, authored));
     }
 
     void unglueAll(Anchor a) { a.clearOffsets(); }

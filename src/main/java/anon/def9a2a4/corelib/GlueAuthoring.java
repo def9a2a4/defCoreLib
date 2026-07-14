@@ -26,6 +26,7 @@ import org.joml.Vector3i;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -112,10 +113,22 @@ final class GlueAuthoring implements Listener {
                 if (!session.anchor.isAtRest()) { actionBar(player, "Anchor is moving — wait", NamedTextColor.RED); return; }
                 session.touch(now());
                 if (sneak) {
+                    if (CasingExpansion.isCasing(clicked, registry)) {
+                        actionBar(player, "Casing glue is automatic — break the casing to detach it",
+                            NamedTextColor.YELLOW);
+                        return;
+                    }
                     if (glue.unglue(session.anchor, clicked)) {
                         feedback(player, clicked, false);
                     }
                 } else {
+                    // Casings auto-glue (derived at resolve, free, unremovable) — nothing to store.
+                    if (CasingExpansion.isCasing(clicked, registry)) {
+                        feedback(player, clicked, true);
+                        actionBar(player, "Casings glue automatically — no brush needed",
+                            NamedTextColor.GREEN);
+                        return;
+                    }
                     // Guard the AUTHOR path (not the sneak-unglue above, so a legacy immovable stays ungluable).
                     if (!MovableBlocks.isMovable(clicked, registry)) {
                         reject(player, clicked, "Can't glue that block");
@@ -271,9 +284,10 @@ final class GlueAuthoring implements Listener {
             return;
         }
         // Filter out immovable cells (like glueCuboid already filters air/anchor/already-glued) rather than
-        // rejecting the whole box for one bedrock.
+        // rejecting the whole box for one bedrock. Casings are filtered too — they auto-glue (derived).
         List<Block> movable = boxBlocks(a, clicked).stream()
-            .filter(b -> MovableBlocks.isMovable(b, registry)).toList();
+            .filter(b -> MovableBlocks.isMovable(b, registry))
+            .filter(b -> !CasingExpansion.isCasing(b, registry)).toList();
         GlueManager.FillResult r = glue.glueCuboid(s.anchor, movable,
             isDrawbridgeAnchor(s.anchor.originBlock()));
         damageBrush(player, r.added());
@@ -355,10 +369,13 @@ final class GlueAuthoring implements Listener {
         int ox = origin.getX(), oy = origin.getY(), oz = origin.getZ();
 
         // Green dust at the eight cube-corners of every glued block, deduped so corners shared by
-        // adjacent blocks render once (scales with extent, not block count).
+        // adjacent blocks render once (scales with extent, not block count). Derived casing
+        // auto-glue is unioned in — it IS glue, just not stored (recomputed each resolve).
         var green = new Particle.DustOptions(Color.LIME, 0.8f);
         Set<Long> seen = new HashSet<>();
-        for (Vector3i off : glue.offsets(s.anchor)) {
+        Set<Vector3i> outlined = new LinkedHashSet<>(glue.offsets(s.anchor));
+        outlined.addAll(glue.derivedOffsets(s.anchor));
+        for (Vector3i off : outlined) {
             int bx = ox + off.x, by = oy + off.y, bz = oz + off.z;
             if (!w.isChunkLoaded(bx >> 4, bz >> 4)) continue;
             spawnCorners(p, bx, by, bz, green, ox, oy, oz, seen);
