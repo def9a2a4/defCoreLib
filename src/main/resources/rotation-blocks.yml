@@ -901,14 +901,18 @@ blocks:
     drops: self
     storage: { layout: HOPPER }
     placement:
-      allowed_faces: [NORTH, SOUTH, EAST, WEST]
+      allowed_faces: [NORTH, SOUTH, EAST, WEST, UP]
     # Per-wall states orient the dispenser's front face OUTWARD (where it places blocks), like the
     # drill. Placement key = attachment/wall face = getFacing().getOppositeFace(); the dispenser
     # faces the opposite (outward). Only the dispenser's block_data facing differs between states —
     # the shaft (always +Y) and symmetric piston are identical everywhere. Shaft copied from press.
     # The dispenser is a corner-anchored BlockDisplay, so translation -scale/2 recenters the 0.7 cube.
+    # UP = ceiling placement: a floating head (see playerHeadStates in overlayPlacer) that stores
+    # facing DOWN — pulls from the container above and places into the cell below, powered from any
+    # side (omni). The dispenser faces down, the piston points down, and a @machine_base cap sits on
+    # top to read as the placed head. One symmetric pair (a ceiling head has no yaw).
     default_state: idle_n
-    placement_state_map: { NORTH: idle_s, SOUTH: idle_n, EAST: idle_w, WEST: idle_e }
+    placement_state_map: { NORTH: idle_s, SOUTH: idle_n, EAST: idle_w, WEST: idle_e, UP: idle_ceiling }
     states:
       idle_n:
         display_entities:
@@ -950,6 +954,18 @@ blocks:
           - { block_data: "minecraft:dispenser[facing=west]", tag: body, transform: { translation: [-0.35, -0.35, -0.35], scale: [0.7, 0.7, 0.7] } }
           - { texture: "@rod_up",        tag: shaft,  transform: { translation: [0, 0.5, 0], scale: [0.66, 0.5, 0.66] }, animation: { type: rotate, axis: [0, 1, 0], speed: 3.0 } }
           - { texture: "@placer_piston", tag: piston, transform: { translation: [0, 0, 0],   scale: [0.5, 0.5, 0.5] }, wall_offset: -0.375 }
+      # Ceiling: dispenser rotated to face down, piston pushed down, @machine_base cap on top (no top
+      # shaft — power arrives from a side). Powered → the cap spins, mirroring the wall shaft's spin.
+      idle_ceiling:
+        display_entities:
+          - { block_data: "minecraft:dispenser[facing=down]", tag: body,   transform: { translation: [-0.35, -0.35, -0.35], scale: [0.7, 0.7, 0.7] } }
+          - { texture: "@placer_piston",                      tag: piston, transform: { translation: [0, -0.375, 0],       scale: [0.5, 0.5, 0.5] } }
+          - { texture: "@machine_base",                       tag: cap,    transform: { translation: [0, 0.35, 0],          scale: [0.7, 0.3, 0.7] } }
+      spinning_ceiling:
+        display_entities:
+          - { block_data: "minecraft:dispenser[facing=down]", tag: body,   transform: { translation: [-0.35, -0.35, -0.35], scale: [0.7, 0.7, 0.7] } }
+          - { texture: "@placer_piston",                      tag: piston, transform: { translation: [0, -0.375, 0],       scale: [0.5, 0.5, 0.5] } }
+          - { texture: "@machine_base",                       tag: cap,    transform: { translation: [0, 0.35, 0],          scale: [0.7, 0.3, 0.7] }, animation: { type: rotate, axis: [0, 1, 0], speed: 3.0 } }
     recipes:
       craft:
         shaped:

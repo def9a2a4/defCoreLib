@@ -239,8 +239,10 @@ final class DisplayExporter implements Listener {
                 String mapped = type.placementStateMap().get(placedOn);
                 if (mapped != null) placement = mapped;
             }
-            String baseLabel = placedOn == BlockFace.DOWN ? "Floor" : ("Wall " + cap(placedOn.name()));
-            String baseId = placedOn == BlockFace.DOWN ? "floor" : ("wall_" + placedOn.name().toLowerCase());
+            String baseLabel = placedOn == BlockFace.DOWN ? "Floor"
+                    : placedOn == BlockFace.UP ? "Ceiling" : ("Wall " + cap(placedOn.name()));
+            String baseId = placedOn == BlockFace.DOWN ? "floor"
+                    : placedOn == BlockFace.UP ? "ceiling" : ("wall_" + placedOn.name().toLowerCase());
 
             // Resolve the idle (rest) state and its spinning/running sibling for this orientation.
             String[] pair = idleSpinPair(type, placement);

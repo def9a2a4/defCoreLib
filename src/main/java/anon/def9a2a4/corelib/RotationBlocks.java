@@ -483,9 +483,14 @@ final class RotationBlocks {
      * @param tick      per-cycle behavior while loaded (the machine's work)
      * @param interact  optional action for a non-wrench right-click; return {@code null} to fall
      *                  through to the default network-debug readout
-     * @param omniExcludedFace  when non-null, the machine is an <b>omni consumer</b> (powered from the
-     *                  first aligned shaft on any face); this yields the mounted face to exclude
-     *                  ({@code b -> null} scans all six). Null ⇒ ordinary single-axis consumer.
+     * @param omniExcludedFace  decided <b>per block</b>: when the function is non-null and returns a
+     *                  face for a given block, that block is an <b>omni consumer</b> (powered from the
+     *                  first aligned shaft on any face) with the returned face excluded ({@code b -> null}
+     *                  for the whole function, or a null <i>result</i>, means that block is an ordinary
+     *                  single-axis consumer using {@code axis}). Lets one block type be omni in some
+     *                  orientations and single-axis in others (e.g. the placer: omni only on a ceiling).
+     * @param playerHeadStates  optional state names that must render as a floating floor PLAYER_HEAD
+     *                  (the same core hook pipes uses for vertical orientations); null for none.
      */
     private record ConsumerSpec(
             String blockId,
@@ -496,7 +501,9 @@ final class RotationBlocks {
             @org.jetbrains.annotations.Nullable
             BiFunction<Block, org.bukkit.event.player.PlayerInteractEvent, Boolean> interact,
             @org.jetbrains.annotations.Nullable
-            Function<Block, BlockFace> omniExcludedFace) {}
+            Function<Block, BlockFace> omniExcludedFace,
+            @org.jetbrains.annotations.Nullable
+            String[] playerHeadStates) {}
 
     /**
      * Shared overlay for rotation CONSUMER machines (millstone, fan, press, …): the
@@ -509,7 +516,7 @@ final class RotationBlocks {
                                                ConsumerSpec spec) {
         CustomHeadBlock block = registry.getType(spec.blockId());
         if (block == null) { warn(registry, spec.blockId()); return; }
-        registry.register(block.toBuilder()
+        CustomHeadBlock.Builder builder = block.toBuilder()
             .drillable(false)
             .reactsToNeighbors(true)
             .tickInterval(spec.tickInterval())
@@ -526,18 +533,21 @@ final class RotationBlocks {
             .onTick(spec.tick())
             .onChunkLoad((b, state) -> {
                 storeFacingIfAbsent(b);
-                if (spec.omniExcludedFace() != null) {
+                // Omni is decided per block from the face function's result: a non-null face → omni
+                // (excluding it); a null result → ordinary single-axis consumer on spec.axis().
+                BlockFace omniEx = spec.omniExcludedFace() != null ? spec.omniExcludedFace().apply(b) : null;
+                if (omniEx != null) {
                     network.addNode(b, spec.blockId(), spec.axis().apply(b),
-                        RotationNetwork.NodeRole.CONSUMER, spec.power(), false,
-                        true, spec.omniExcludedFace().apply(b));
+                        RotationNetwork.NodeRole.CONSUMER, spec.power(), false, true, omniEx);
                 } else {
                     network.addNode(b, spec.blockId(), spec.axis().apply(b),
                         RotationNetwork.NodeRole.CONSUMER, spec.power(), false);
                 }
             })
             .onChunkUnload(b -> network.removeNode(CustomBlockRegistry.LocationKey.of(b)))
-            .onBlockRemoved((b, state) -> network.removeNode(CustomBlockRegistry.LocationKey.of(b)))
-            .build());
+            .onBlockRemoved((b, state) -> network.removeNode(CustomBlockRegistry.LocationKey.of(b)));
+        if (spec.playerHeadStates() != null) builder.playerHeadStates(spec.playerHeadStates());
+        registry.register(builder.build());
     }
 
     private static void overlayMillstone(CustomBlockRegistry registry, RotationNetwork network,
@@ -553,7 +563,7 @@ final class RotationBlocks {
             millstoneTickInterval,
             b -> processingMachineTick(b, network, millRecipes, registry,
                 millstoneMaxBatch, org.bukkit.Sound.BLOCK_GRINDSTONE_USE),
-            null, null));
+            null, null, null));
     }
 
     private static void overlayPress(CustomBlockRegistry registry, RotationNetwork network,
@@ -568,21 +578,27 @@ final class RotationBlocks {
             config.pressTickInterval,
             b -> processingMachineTick(b, network, pressRecipes, registry,
                 maxBatch, org.bukkit.Sound.BLOCK_ANVIL_USE),
-            null, null));
+            null, null, null));
     }
 
     private static void overlayPlacer(CustomBlockRegistry registry, RotationNetwork network,
                                       RotationConfig config) {
         // Wall-mounted, powered from the top (Y): a shaft above drives it, exactly like the
         // millstone. Pulls block items from the host container behind and places them into the
-        // cell in front (the wall-head facing direction), one per cycle.
+        // cell in front (the wall-head facing direction), one per cycle. On a CEILING the wall head
+        // is instead a floating PLAYER_HEAD facing DOWN: it pulls from the container above and places
+        // into the cell below (placerTick already handles facing==DOWN), and — since its top cell is
+        // now storage, not a shaft — it draws power omni-style from any side (exclude UP). Wall
+        // placements stay top-shaft (non-omni Axis.Y): the excluded-face function returns null there.
         overlayConsumerMachine(registry, network, new ConsumerSpec(
             "mech:placer",
             b -> RotationNetwork.Axis.Y,
             config.getPower("placer", 1),
             config.placerTickInterval,
             b -> placerTick(b, registry, network),
-            null, null));
+            null,
+            b -> readFacing(b) == BlockFace.DOWN ? BlockFace.UP : null,
+            new String[]{"idle_ceiling", "spinning_ceiling"}));
     }
 
     /**
@@ -792,7 +808,7 @@ final class RotationBlocks {
             config.getPower("fan", 1),
             config.fanTickInterval,
             b -> fanTick(b, network),
-            null, null));
+            null, null, null));
     }
 
     /** Direction the fan blows: outward from the mounted surface (floor → up, wall → its facing). */
@@ -881,7 +897,8 @@ final class RotationBlocks {
                 event.getPlayer().openInventory(inv);
                 return true;
             },
-            b -> mountFace(b)));                                // non-null ⇒ omni; exclude the mounted face
+            b -> mountFace(b),                                 // non-null ⇒ omni; exclude the mounted face
+            null));
     }
 
     /** While powered: pull dropped items inward, capture ones in the own cell, feed the mount. */

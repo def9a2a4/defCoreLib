@@ -308,9 +308,13 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         } else {
             BlockFace clickedFace = event.getBlockAgainst().getFace(block);
             if (clickedFace != null && clickedFace != BlockFace.UP && clickedFace != BlockFace.DOWN) {
-                placedOn = clickedFace.getOppositeFace();
+                placedOn = clickedFace.getOppositeFace();                 // wall
+            } else if (clickedFace == BlockFace.DOWN
+                    && type.placement() != null
+                    && type.placement().allowedFaces().contains(BlockFace.UP)) {
+                placedOn = BlockFace.UP;                                  // ceiling — opt-in per block
             } else {
-                placedOn = BlockFace.DOWN;
+                placedOn = BlockFace.DOWN;                                // floor
             }
         }
 
