@@ -41,6 +41,9 @@ placer:
 chain-pulley:
   max-distance: 32    # max distance (blocks) between two linked chain pulleys
 
+chain-hoist:
+  max-reserve: 64     # max chains held in a chain hoist's internal reserve (1 chain per block lowered)
+
 piston:
   max-step: 0.5       # extendable piston: cap on per-tick slide velocity (blocks/tick)
 
@@ -73,6 +76,7 @@ power:
   placer: 1
   suction_hopper: 1
   piston_core: 1   # base rotational demand of an extendable piston core (speed scales with surplus above this)
+  chain_hoist: 1   # base rotational demand of a chain hoist (lift speed scales with surplus above this)
 
 # How each rotation block behaves while assembled into a moving mechanism (minecart, door,
 # drawbridge). Its supply/demand comes from the `power:` map above — not repeated here.

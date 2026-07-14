@@ -309,6 +309,50 @@ blocks:
               C: { material: IRON_CHAIN }
               B: { block: "mech:bearing" }
 
+  # ─── Chain Hoist ──────────────────────────────────────────────────────────
+  # Create-style rope pulley. Floor only, rotation-powered CONSUMER (drawn from any adjacent shaft):
+  # CW spin LOWERS the platform beneath it (block below + its casing blob / glue), CCW RAISES it, as far
+  # as its internal chain reserve allows. Right-click with chains to load the reserve, sneak-right to
+  # withdraw. Behaviour, movement, reserve + rope live in ChainHoistManager.java. Reuses the chainwheel
+  # texture, stood on its side (vertical wheel, spinning about a horizontal axis) like a pulley.
+  chain_hoist:
+    cancel_pistons: true
+    name: "&eChain Hoist"
+    lore:
+      - "&7A powered winch — raises and lowers"
+      - "&7whatever hangs beneath it"
+    catalog_notes:
+      - "&fA floor winch: spin it one way to lower the platform below it, the other way to raise it back up."
+      - "&7Right-click with chains to load its reserve (sneak-right to take them back) — it pays out one chain per block lowered."
+      - "&7Build the platform from Mechanical Casing (or glue) so it moves as one; carried machines keep running."
+    texture: "@windmill_hub_up"
+    item_texture: "@chainwheel"
+    drops: self
+    default_state: idle
+    placement:
+      allowed_faces: [DOWN]
+    placement_state_map:
+      DOWN: idle
+    states:
+      # Bearing hub skull with a large chainwheel on its SIDE (vertical disc), spinning about a
+      # horizontal axis while the hoist is moving — copies the chain_pulley idle_x vertical transform.
+      idle:
+        texture: "@windmill_hub_up"
+        display_entities:
+          - texture: "@chainwheel"
+            tag: wheel
+            transform: { translation: [0, 0.5, 0], scale: [1.5, 1.2, 1.5], left_rotation: [90, 0, 0, 1] }
+      spinning: { copy_from: idle, texture: "@windmill_hub_up", animation: { type: rotate, axis: [1, 0, 0], speed: 3.0 } }
+    recipes:
+      craft:
+        shaped:
+          # A bearing over a chain column, framed with iron.
+          - pattern: ["ICI", "IBI", "ICI"]
+            key:
+              I: { material: IRON_INGOT }
+              C: { material: IRON_CHAIN }
+              B: { block: "mech:bearing" }
+
   # ─── Clutch ─────────────────────────────────────────────────────────────
   # Transmitter: like a shaft, but disconnects when powered by redstone.
   clutch:

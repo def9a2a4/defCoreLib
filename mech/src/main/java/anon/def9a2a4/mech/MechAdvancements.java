@@ -64,6 +64,7 @@ public final class MechAdvancements {
             Map.entry("mech:redstone_motor", "craft/motor"),
             Map.entry("mech:engine", "craft/engine"),
             Map.entry("mech:chain_pulley", "craft/chain_pulley"),
+            Map.entry("mech:chain_hoist", "craft/chain_hoist"),
             Map.entry("mech:suction_hopper", "craft/suction_hopper"),
             Map.entry("mech:dough", "machines/dough"),
             Map.entry("mech:piston_core", "craft/piston"),
@@ -78,7 +79,7 @@ public final class MechAdvancements {
             "craft/shaft", "craft/gear", "craft/water_wheel", "craft/windmill_item",
             "craft/clutch", "craft/reverser", "craft/chain_pulley", "craft/drill", "craft/millstone",
             "craft/fan", "craft/suction_hopper", "craft/press", "craft/placer", "craft/motor", "craft/engine",
-            "craft/piston", "craft/rotator", "craft/minecart", "craft/dynamo");
+            "craft/piston", "craft/rotator", "craft/minecart", "craft/dynamo", "craft/chain_hoist");
 
     // The mastery capstones that together earn mastery/grand_engineer. Excludes windmill/huge, which is
     // BetterBanners-gated (would make the finale unobtainable without that plugin).
