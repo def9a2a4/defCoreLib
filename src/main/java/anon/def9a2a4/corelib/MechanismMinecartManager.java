@@ -218,7 +218,10 @@ final class MechanismMinecartManager implements Listener {
     // Assembly / Disassembly
     // ──────────────────────────────────────────────────────────────────────
 
-    private void snapAndStop(Minecart minecart) {
+    /** Snap the cart to its cell center and stop it. Package-visible: GlueAuthoring snaps on
+     *  session open so glue offsets author against the cell the player sees (a cart parked on a
+     *  cell boundary would otherwise anchor the whole selection one block off). */
+    void snapAndStop(Minecart minecart) {
         org.bukkit.Location center = minecart.getLocation().getBlock().getLocation().add(0.5, 0, 0.5);
         center.setYaw(minecart.getLocation().getYaw());
         center.setPitch(0);

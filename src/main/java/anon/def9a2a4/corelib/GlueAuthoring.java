@@ -232,6 +232,10 @@ final class GlueAuthoring implements Listener {
                 return;
             }
         }
+        // Snap the cart to its cell center BEFORE anchoring: offsets resolve against the cart's
+        // live cell, and a cart parked straddling a cell boundary would author the whole selection
+        // against a cell the player didn't intend — assembling one block off.
+        if (minecartManager != null) minecartManager.snapAndStop(cart);
         // Offsets are relative to the cart's current cell, so the glued structure must be assembled in
         // place (power the rail under the stationary cart). isAtRest gates edits while it's active/moving.
         Anchor anchor = new EntityAnchor(cart, () -> minecartCanAuthor(cart));
