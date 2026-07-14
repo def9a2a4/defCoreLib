@@ -274,3 +274,29 @@ showcases:
       - { block: "WATER", at: [3, 1, 1], data: "[level=1]", physics: true }
     activate: passive
     expect: []
+
+  # ── Extendable piston: rotation slides a rod; sticky head shoves the payload ──
+  - id: double_extender_piston
+    name: "Motor → Reverser → Extendable Piston"
+    blurb: "A motor drives an extendable piston through a reverser; two poles give it a two-block reach that shoves an oak log."
+    description: >
+      The extendable piston is a rotation-powered ram. A passive motor feeds power through a
+      reverser and a shaft into the piston core; the core doesn't care which side the power
+      comes from — it draws from whichever shaft sits against it. Clockwise spin slides the rod
+      out and counter-clockwise pulls it back, and the reach is set by how many poles stack
+      behind the core: two here, so it throws two blocks (a "double extender"). The sticky head
+      carries the oak log in front of it along for the ride. A floor lever powers the reverser,
+      flipping the spin direction to switch the stroke between extend and retract.
+    blocks:
+      - { id: "mech:redstone_motor", facing: west,  at: [-1, 0, 0] }   # passive X source
+      - { id: "mech:reverser",       facing: west,  at: [0, 0, 0] }    # lever-driven direction flip
+      - { id: "mech:shaft",          facing: east,  at: [1, 0, 0] }    # X-axis bridge (export said 'down' → miswired)
+      - { id: "mech:piston_core",    facing: south, at: [2, 0, 0] }    # forward = north
+      - { id: "mech:piston_head",    facing: south, at: [2, 0, -1] }   # front (sticky) head
+      - { id: "mech:piston_pole",    facing: north, at: [2, 0, 1] }    # back poles → reach 2
+      - { id: "mech:piston_pole",    facing: north, at: [2, 0, 2] }
+    vanilla:
+      - { block: "LEVER",   at: [0, 0, -1], data: "[face=floor,facing=south,powered=true]" }  # powers reverser
+      - { block: "OAK_LOG", at: [2, 0, -2], data: "[axis=y]" }   # payload the head pushes
+    activate: passive
+    expect: []
