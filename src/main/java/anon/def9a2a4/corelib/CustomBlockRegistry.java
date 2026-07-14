@@ -1166,7 +1166,9 @@ public class CustomBlockRegistry {
     }
 
     void tickRedstone() {
-        for (var entry : redstoneTracked.values()) {
+        // Snapshot: transitionState/applyConfig below can place blocks that register/untrack, mutating
+        // redstoneTracked mid-iteration → ConcurrentModificationException (seen on join).
+        for (var entry : new ArrayList<>(redstoneTracked.values())) {
             Block block = entry.block;
             if (!block.getWorld().isChunkLoaded(block.getX() >> 4, block.getZ() >> 4)) continue;
 
@@ -1261,7 +1263,9 @@ public class CustomBlockRegistry {
 
     void tickCustomBlocks() {
         int currentTick = Bukkit.getServer().getCurrentTick();
-        for (var entry : tickTracked.values()) {
+        // Snapshot: an arbitrary onTick can place/remove blocks that register/untrack, mutating tickTracked
+        // mid-iteration → ConcurrentModificationException (seen on join).
+        for (var entry : new ArrayList<>(tickTracked.values())) {
             Block block = entry.block;
             if (!block.getWorld().isChunkLoaded(block.getX() >> 4, block.getZ() >> 4)) continue;
 
