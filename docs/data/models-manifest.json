@@ -6,6 +6,7 @@
   "barrel": true,
   "birch_slab": true,
   "blackstone_slab": true,
+  "bread": false,
   "brick_slab": true,
   "brush": false,
   "cherry_slab": true,
@@ -31,6 +32,7 @@
   "hopper": true,
   "jungle_slab": true,
   "lever": true,
+  "magma_cream": false,
   "mangrove_slab": true,
   "mossy_cobblestone_slab": true,
   "mossy_stone_brick_slab": true,
@@ -67,6 +69,7 @@
   "stone": true,
   "stone_brick_slab": true,
   "stone_slab": true,
+  "sugar": false,
   "tuff_brick_slab": true,
   "tuff_slab": true,
   "warped_slab": true,
@@ -76,5 +79,6 @@
   "waxed_oxidized_cut_copper_slab": true,
   "waxed_weathered_cut_copper_slab": true,
   "weathered_cut_copper_slab": true,
-  "white_banner": true
+  "white_banner": true,
+  "white_carpet": true
 }

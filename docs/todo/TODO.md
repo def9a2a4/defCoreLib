@@ -2,7 +2,7 @@
 
 # Main
 
-- per-state textures for redstone motor, engine, clutch, and maybe reverser?
+- per-state textures for redstone motor, engine, clutch, dynamo, and maybe reverser?
 - let the clutch merge two differently-rotating systems (if unpowered)?
 - gear logic still broken?
 - mechanism minecarts still broken. persistence, interaction, mmb, and 90 deg rotation on first place?
