@@ -359,10 +359,24 @@ final class ExtendablePistonManager {
     // ──────────────────────────────────────────────────────────────────────
 
     private @Nullable PistonLine detectLine(Block core) {
-        BlockFace forward = parseForward(registry.getState(core));
-        if (forward == null) return null;
+        // Forward is derived from the actual pole GEOMETRY (the faces holding a head-terminated
+        // run), not trusted from the stored fwd_* state: that state is resolved once from the
+        // placement click-face (coreForwardState) and is wrong for many natural build orders —
+        // a floor-placed core with a horizontal rod, or a core capping a pre-built rod (forward
+        // would point away from it). The stored state only breaks ties (a double-ended rod keeps
+        // the player's CW-slides-forward orientation) and is self-healed below on mismatch so the
+        // core's visuals and future scans agree with the geometry.
+        BlockFace stored = parseForward(registry.getState(core));
+        BlockFace forward = null;
+        for (BlockFace f : Faces.CARDINAL) {
+            if (!endsWithHead(walk(core, f))) continue;
+            if (forward == null) forward = f;      // first head-terminated face (deterministic order)
+            if (f == stored) { forward = f; break; } // stored orientation wins when geometry-valid
+        }
+        if (forward == null) return null;            // no pole run ends in a head on any face
+        healForwardState(core, forward, stored);
+
         List<Block> frontRun = walk(core, forward);                 // poles… then head (forward side)
-        if (!endsWithHead(frontRun)) return null;                   // must terminate in a head
         List<Block> backRun = walk(core, forward.getOppositeFace()); // poles… then optionally a back head
         Block frontHead = frontRun.get(frontRun.size() - 1);
         // A back head makes the piston double-ended (it leads the CCW/backward stroke). Whether or not the back
@@ -374,6 +388,18 @@ final class ExtendablePistonManager {
         rod.addAll(frontRun);
         rod.addAll(backRun);
         return new PistonLine(forward, core, backPoles, frontHead, backHead, frontPoles, rod);
+    }
+
+    /** One-time self-heal: re-point the stored {@code fwd_*} state (and with it the core's display
+     *  orientation) at the geometry-derived forward when they disagree — placement only guessed
+     *  from the click-face; the pole line is authoritative. Idempotent: once healed, the next
+     *  scan's stored state matches and this is a no-op. */
+    private void healForwardState(Block core, BlockFace forward, @Nullable BlockFace stored) {
+        if (forward == stored) return;
+        String target = "fwd_" + forward.name().toLowerCase(java.util.Locale.ROOT);
+        registry.setState(core, target);
+        CustomHeadBlock type = registry.getTypeFromBlock(core);
+        if (type != null) registry.applyConfig(core, type, target, 0);
     }
 
     /** Forward (extend) direction from the core's {@code fwd_*} state. */
