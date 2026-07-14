@@ -2,16 +2,22 @@ package anon.def9a2a4.corelib;
 
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.jspecify.annotations.Nullable;
 
 import java.util.EnumSet;
 import java.util.Set;
 
 /**
- * Shared piston-movability test. A block may be grabbed/pushed unless it is empty (air/fluid), a
- * hard-coded immovable material, or a custom block that opts out of being moved by a piston
- * (either {@code cancel_pistons} or {@code break_on_piston}). Mirrors vanilla-piston refusal
- * semantics so mechanisms never scoop up bedrock, world-boundary blocks, or live machinery.
+ * Shared MECHANISM-movability test: may a block be captured into a moving mechanism (glued to a
+ * cart/door/rotator, carried as an extendable-piston payload)? A block qualifies unless it is
+ * empty (air/fluid) or a hard-immovable world block (bedrock, spawners, portals, …).
+ *
+ * <p><b>Deliberately NOT vanilla-piston semantics.</b> Custom blocks are always mechanism-movable:
+ * {@code assembleCore} snapshots their identity/state/storage and tears down world-keyed tracking,
+ * and disassembly fully restores them — that round-trip is the basis of rotation parts working on
+ * mechanisms. The {@code cancel_pistons}/{@code break_on_piston} type flags protect skulls from
+ * <em>vanilla piston</em> relocation only, and are enforced separately in
+ * {@code CoreLibPlugin.onPistonExtend} — checking them here (as this class originally did) made
+ * every rotation part un-gluable.
  */
 final class MovableBlocks {
 
@@ -43,13 +49,12 @@ final class MovableBlocks {
         if (m != null) s.add(m);
     }
 
-    /** @return true if {@code b} may be grabbed/pushed by a piston-style mechanism. */
+    /** @return true if {@code b} may be captured/carried by a mechanism (glue, cart, piston payload).
+     *  {@code registry} is currently unused but kept: it's the hook for a future data-driven
+     *  {@code gluable: false} type flag should some custom block need to opt out. */
     static boolean isMovable(Block b, CustomBlockRegistry registry) {
         Material m = b.getType();
         if (m.isAir() || m == Material.WATER || m == Material.LAVA) return false;
-        if (IMMOVABLE.contains(m)) return false;
-        @Nullable CustomHeadBlock type = registry.getTypeFromBlock(b);
-        if (type != null && (type.cancelPistons() || type.breakOnPiston())) return false;
-        return true;
+        return !IMMOVABLE.contains(m);
     }
 }
