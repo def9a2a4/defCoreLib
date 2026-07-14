@@ -442,10 +442,14 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
                 registry.trackTick(block, type);
             }
 
-            // Fire placement callback (onBlockPlaced takes priority over onChunkLoadCallback)
+            // Fire BOTH callbacks: onBlockPlaced (placement-specific setup, e.g. skull-yaw snap)
+            // first, then onChunkLoadCallback (steady-state registration — network nodes etc.).
+            // These are complementary, not alternatives: the old either/or left a type that set
+            // both (extendable-piston core) unregistered until its chunk reloaded.
             if (type.onBlockPlaced() != null) {
                 type.onBlockPlaced().accept(block, state);
-            } else if (type.onChunkLoadCallback() != null) {
+            }
+            if (type.onChunkLoadCallback() != null) {
                 type.onChunkLoadCallback().accept(block, state);
             }
         });

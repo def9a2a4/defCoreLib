@@ -104,10 +104,14 @@ final class ShowcaseBuilder {
             if (type.onTick() != null && type.tickInterval() != null) {
                 registry.trackTick(block, type);
             }
-            // The place callback (else chunk-load callback) is where rotation blocks add their node.
+            // Fire BOTH callbacks, mirroring CoreLibPlugin's placement path: onBlockPlaced
+            // (placement-specific setup) then onChunkLoadCallback (steady-state registration —
+            // where rotation blocks add their network node). The old either/or left types that
+            // set both (extendable-piston core) unregistered until a chunk reload.
             if (type.onBlockPlaced() != null) {
                 type.onBlockPlaced().accept(block, fstate);
-            } else if (type.onChunkLoadCallback() != null) {
+            }
+            if (type.onChunkLoadCallback() != null) {
                 type.onChunkLoadCallback().accept(block, fstate);
             }
         });
