@@ -120,6 +120,12 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         } catch (IOException ignored) {}
         RotationBlocks.register(registry, rotationNetwork, fuelManager, millRecipes, pressRecipes, rotConfig);
 
+        // Rotation power on moving mechanisms: each assembled mechanism carries its own
+        // rotation network (engine burns travelling fuel; drill/placer/suction act at their
+        // live positions). Data-driven via rotation-config.yml `mechanism:`.
+        mechanismRegistry.setRotationDriver(
+            new MechanismRotationDriver(registry, fuelManager, rotConfig));
+
         // Anchor-owned block selection ("glue") — shared by doors/rotators (wired in D3).
         // The glue item itself is declared in corelib-items.yml (mech:glue_item).
         glueManager = new GlueManager(rotConfig.glueMaxSize);

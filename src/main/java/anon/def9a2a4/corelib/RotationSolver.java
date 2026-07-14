@@ -148,7 +148,9 @@ final class RotationSolver {
         }
 
         // Along-axis (checked first — load-bearing so same-axis gears along their shared axis
-        // connect shaft-like, not as a reversing mesh).
+        // connect shaft-like, not as a reversing mesh). An omni neighbor can only ever choose a
+        // node whose axis runs along their connecting face — i.e. it always sits on that node's
+        // ±axis — so the mutual omni back-edge is fully handled here.
         for (int sign : new int[]{+1, -1}) {
             Integer oi = neighborAlong(byCell, node, node.axis(), sign);
             if (oi == null) continue;
@@ -176,19 +178,6 @@ final class RotationSolver {
                         || RotationNetwork.bevelReverses(node.axis(), other.axis(), face);
                     result.add(new Edge(oi, reverses));
                 }
-            }
-        }
-        // Omni neighbors on non-axis faces may also have chosen us.
-        for (BlockFace face : Faces.CARDINAL) {
-            if (RotationNetwork.axisFromFace(face) == node.axis()) continue; // handled above
-            Integer oi = neighborAt(byCell, node, face);
-            if (oi == null) continue;
-            final int oiv = oi;
-            if (result.stream().anyMatch(e -> e.to() == oiv)) continue;
-            Node other = nodes.get(oi);
-            if (other.omni()) {
-                Integer chosen = omniAttach(nodes, byCell, other);
-                if (chosen != null && chosen == idx) result.add(new Edge(oi, false));
             }
         }
         return result;

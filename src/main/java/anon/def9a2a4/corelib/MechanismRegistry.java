@@ -38,6 +38,13 @@ public class MechanismRegistry {
     private @Nullable BukkitTask tickTask;
     private boolean colliderGlowEnabled = false;
 
+    // Powers rotation parts riding assembled mechanisms (built on assemble, ticked per mech,
+    // torn down on removal). Set by CoreLibPlugin once the rotation systems exist; null-safe
+    // so bare MechanismRegistry construction (tests, other consumers) keeps working.
+    private @Nullable MechanismRotationDriver rotationDriver;
+
+    void setRotationDriver(@Nullable MechanismRotationDriver driver) { this.rotationDriver = driver; }
+
     // Reusable work matrix for animation tick
     private final Matrix4f workMatrix = new Matrix4f();
 
@@ -384,6 +391,11 @@ public class MechanismRegistry {
 
         activeMechanisms.put(mechId, mech);
 
+        // Rotation parts keep functioning while riding: build the mechanism's own rotation
+        // network. Only the first blocks.size() entries are real — the ghost snapshots appended
+        // after them are appearance-only and may overlap real cells.
+        if (rotationDriver != null) rotationDriver.onAssembled(mech, blocks.size());
+
         // Surface assembly to companion plugins (e.g. the mech advancement system). Single choke
         // point for every assembleMechanism overload; fired on the main thread, informational only.
         boolean verticalAxis = Math.abs(rotationAxis.y) > 0.5f
@@ -521,6 +533,7 @@ public class MechanismRegistry {
                 // Auto-follow: update transforms if vehicle moved (e.g., minecart on rails)
                 mech.updateFromVehicle();
                 updateAnimatedDisplays(mech, currentTick - mech.startTick);
+                if (rotationDriver != null) rotationDriver.tick(mech, currentTick - mech.startTick);
                 // TODO: particle ticking for mechanism blocks
             } catch (Throwable t) {
                 if (tickWarned.add(mech.id())) {
@@ -612,6 +625,7 @@ public class MechanismRegistry {
 
     void onMechanismRemoved(BasicMechanism mech) {
         activeMechanisms.remove(mech.id());
+        if (rotationDriver != null) rotationDriver.onRemoved(mech);
         for (ColliderPair cp : mech.colliders) {
             colliderIndex.remove(cp.shulker().getUniqueId());
         }
