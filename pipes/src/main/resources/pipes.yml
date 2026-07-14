@@ -87,6 +87,10 @@ blocks:
     item_texture: "@copper_item"
     drops: self
     default_state: north
+    # Docs-catalog placement variants only (runtime uses the stateResolver): Floor → up-pipe, Wall → horizontal.
+    placement_state_map:
+      DOWN: up
+      NORTH: north
     states:
       north:
         texture: "@copper_head_h"
@@ -128,6 +132,10 @@ blocks:
     item_texture: "@iron_display_h"
     drops: self
     default_state: north
+    # Docs-catalog placement variants only (runtime uses the stateResolver): Floor → up-pipe, Wall → horizontal.
+    placement_state_map:
+      DOWN: up
+      NORTH: north
     states:
       north:
         texture: "@iron_head_h"
@@ -169,6 +177,10 @@ blocks:
     item_texture: "@gold_item"
     drops: self
     default_state: north
+    # Docs-catalog placement variants only (runtime uses the stateResolver): Floor → up-pipe, Wall → horizontal.
+    placement_state_map:
+      DOWN: up
+      NORTH: north
     states:
       north:
         texture: "@gold_head_h"
@@ -210,6 +222,10 @@ blocks:
     item_texture: "@oxidized_item"
     drops: self
     default_state: north
+    # Docs-catalog placement variants only (runtime uses the stateResolver): Floor → up-pipe, Wall → horizontal.
+    placement_state_map:
+      DOWN: up
+      NORTH: north
     states:
       north:
         texture: "@oxidized_head_h"
@@ -247,6 +263,10 @@ blocks:
     item_texture: "@copper_corner_item"
     drops: self
     default_state: north
+    # Docs-catalog placement variants only (runtime uses the stateResolver): Floor → down-corner, Wall → horizontal.
+    placement_state_map:
+      DOWN: down
+      NORTH: north
     states:
       north:
         texture: "@copper_corner_head_h"
@@ -294,6 +314,10 @@ blocks:
     item_texture: "@iron_corner_item"
     drops: self
     default_state: north
+    # Docs-catalog placement variants only (runtime uses the stateResolver): Floor → down-corner, Wall → horizontal.
+    placement_state_map:
+      DOWN: down
+      NORTH: north
     states:
       north:
         texture: "@iron_corner_head_h"
@@ -341,6 +365,10 @@ blocks:
     item_texture: "@gold_corner_item"
     drops: self
     default_state: north
+    # Docs-catalog placement variants only (runtime uses the stateResolver): Floor → down-corner, Wall → horizontal.
+    placement_state_map:
+      DOWN: down
+      NORTH: north
     states:
       north:
         texture: "@gold_corner_head_h"
@@ -388,6 +416,10 @@ blocks:
     item_texture: "@oxidized_corner_item"
     drops: self
     default_state: north
+    # Docs-catalog placement variants only (runtime uses the stateResolver): Floor → down-corner, Wall → horizontal.
+    placement_state_map:
+      DOWN: down
+      NORTH: north
     states:
       north:
         texture: "@oxidized_corner_head_h"

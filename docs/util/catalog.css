@@ -273,6 +273,19 @@ a.slot { text-decoration: none; color: inherit; }
   margin-left: 4px;
 }
 .counter.inline { display: inline; margin: 0; font-size: 0.6em; color: #888; }
+.section-modrinth {
+  font-size: 0.55em;
+  vertical-align: middle;
+  margin-left: 8px;
+  padding: 3px 9px;
+  border-radius: 5px;
+  background: #1bd96a;
+  color: #0a0a0a;
+  font-weight: 700;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.section-modrinth:hover { filter: brightness(1.1); }
 
 /* ── Vertical slabs section (compact grid) ─────────────────────────────── */
 .slab-grid {

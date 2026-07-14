@@ -98,8 +98,13 @@ function render() {
     if (!its.length) continue;
     total += its.length;
 
+    // All items in a namespace section share a providing plugin (banners → BetterBanners); link it.
+    const plugin = its.find((it) => it.plugin)?.plugin;
+    const modrinth = plugin
+      ? ` <a class="section-modrinth" href="https://modrinth.com/plugin/${esc(plugin.slug)}" target="_blank" rel="noopener">Download ${esc(plugin.name)} on Modrinth ↗</a>`
+      : '';
     const section = document.createElement('section');
-    section.innerHTML = `<h2 class="section-title">${esc(nsLabel(ns))} <span class="counter inline">${its.length} items</span></h2>`;
+    section.innerHTML = `<h2 class="section-title">${esc(nsLabel(ns))} <span class="counter inline">${its.length} items</span>${modrinth}</h2>`;
     const grid = document.createElement('div');
     grid.className = 'item-grid';
     its.forEach((it) => grid.appendChild(card(it)));
