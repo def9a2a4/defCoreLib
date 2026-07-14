@@ -1012,38 +1012,73 @@ public class CustomBlockRegistry {
         };
     }
 
-    /** EXTENDED reader: senses redstone through a 1-block wall (wall heads) or below (floor heads) by
-     *  reading the block 2 away.
+    /** EXTENDED reader: senses redstone at the head itself, at its mount cell (1 away — the wall
+     *  behind a wall head, or the block below a floor head, that a dust line normally powers), and 2
+     *  away (through a 1-block wall, or 2 below a floor head).
      *
-     *  <p>For {@code LEVEL} (analog indicators) it reads ONLY redstone dust, via the wire's own
-     *  {@code getPower()}. {@code getBlockPower()} is avoided here because it collapses to 15/0 for any
-     *  non-dust source (comparator, repeater, lever, powered block) — which would make an indicator
-     *  falsely display 15. So non-dust sources read 0 for LEVEL blocks.
+     *  <p>For {@code LEVEL} (analog indicators) it reads ONLY redstone dust, via {@link #dustPower},
+     *  so the three intended wirings all work: dust pointing directly into the head, dust powering the
+     *  mount cell, and dust 2-back / 2-below. {@code getBlockPower()} collapses to a flat 15 for any
+     *  non-dust source (comparator, repeater, lever, powered block), which would make an indicator
+     *  falsely display 15 — so non-dust sources read 0 for LEVEL blocks.
      *
      *  <p>For {@code BINARY} (on/off) blocks the exact level is irrelevant, so the 15/0
      *  {@code getBlockPower()} behaviour is fine and is kept — e.g. a door still opens from a
      *  lever/button/redstone block, not just dust. */
     private int readExtendedPower(Block block, CustomHeadBlock.Sensitivity sensitivity) {
-        Block extended = null;
+        Block oneAway = null, twoAway = null;
         if (block.getType() == Material.PLAYER_WALL_HEAD
                 && block.getBlockData() instanceof Directional directional) {
             BlockFace behind = directional.getFacing().getOppositeFace();
-            extended = block.getRelative(behind).getRelative(behind);   // 2 behind, through the wall
+            oneAway = block.getRelative(behind);            // the wall/support block a dust line powers
+            twoAway = oneAway.getRelative(behind);          // 2 behind, through the wall
         } else if (block.getType() == Material.PLAYER_HEAD) {
-            extended = block.getRelative(0, -2, 0);                      // 2 below
+            oneAway = block.getRelative(0, -1, 0);          // the block directly below
+            twoAway = block.getRelative(0, -2, 0);          // 2 below
         }
-
-        int dust = extended != null
-                && extended.getBlockData() instanceof org.bukkit.block.data.type.RedstoneWire wire
-                ? wire.getPower() : 0;
 
         if (sensitivity == CustomHeadBlock.Sensitivity.LEVEL) {
-            return dust;   // analog indicators: dust level only (non-dust reads 0, avoids the false 15)
+            // Analog, dust only (no false 15): dust into the head itself, the mount cell, or 2 away.
+            return Math.max(dustPower(block), Math.max(dustPower(oneAway), dustPower(twoAway)));
         }
-        // BINARY / on-off: any redstone source counts, level irrelevant — keep the original read.
-        int extendedPower = extended == null ? 0
-                : (extended.getType() == Material.REDSTONE_WIRE ? dust : extended.getBlockPower());
-        return Math.max(block.getBlockPower(), extendedPower);
+        // BINARY / on-off: any redstone source counts, exact level irrelevant. The head's own power is
+        // covered by block.getBlockPower(); cells are read wire-aware so dust sitting exactly at a cell
+        // reports its own carried level (getBlockPower returns 0 for a wire's own level).
+        return Math.max(block.getBlockPower(), Math.max(cellPower(oneAway), cellPower(twoAway)));
+    }
+
+    private static final BlockFace[] SIX_FACES = {
+            BlockFace.UP, BlockFace.DOWN, BlockFace.NORTH, BlockFace.SOUTH, BlockFace.EAST, BlockFace.WEST};
+
+    /** Dust-derived analog redstone level at a cell (0–15), suppressing non-dust sources.
+     *
+     *  <p>{@code getBlockPower()} accumulates its analog value from adjacent redstone DUST only (weak,
+     *  directional), and otherwise falls back to a flat 15 for any non-dust source. So a result of
+     *  1–14 is always genuine dust; only 15 is ambiguous and needs the neighbour check. A wire sitting
+     *  at the cell reports its own carried level (getBlockPower would give the power delivered to it,
+     *  not its own). Non-dust sources (lever/comparator/repeater/redstone block) contribute 0. */
+    private static int dustPower(@Nullable Block cell) {
+        if (cell == null) return 0;
+        if (cell.getBlockData() instanceof org.bukkit.block.data.type.RedstoneWire wire) {
+            return wire.getPower();                     // dust sitting at the cell → its own level
+        }
+        int bp = cell.getBlockPower();
+        if (bp < 15) return bp;                         // 0 or 1..14 → always genuine directional dust
+        for (BlockFace face : SIX_FACES) {              // bp == 15: real only if max-level dust is adjacent
+            if (cell.getRelative(face).getBlockData()
+                    instanceof org.bukkit.block.data.type.RedstoneWire w && w.getPower() == 15) {
+                return 15;
+            }
+        }
+        return 0;                                       // flat-15 fallback from a non-dust source
+    }
+
+    /** Redstone power at a cell for on/off (BINARY) sensing: a wire reports its own carried level;
+     *  anything else reports {@code getBlockPower()} (15/0 for non-dust sources). */
+    private static int cellPower(@Nullable Block cell) {
+        if (cell == null) return 0;
+        return cell.getBlockData() instanceof org.bukkit.block.data.type.RedstoneWire wire
+                ? wire.getPower() : cell.getBlockPower();
     }
 
     void trackRedstone(Block block, CustomHeadBlock type, int initialPower) {
