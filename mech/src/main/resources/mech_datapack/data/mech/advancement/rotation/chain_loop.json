@@ -2,7 +2,7 @@
   "parent": "mech:craft/chain_pulley",
   "display": {
     "icon": {
-      "id": "minecraft:chain"
+      "id": "minecraft:iron_chain"
     },
     "title": {
       "text": "Closing the Loop",

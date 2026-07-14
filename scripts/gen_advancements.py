@@ -118,7 +118,7 @@ NODES = [
      "Drive a network with a Water Wheel turned by the current."),
     ("rotation/wind_power", "windmill/plain", "task", "@windmill_item", "Winds of Change", "white",
      "Drive a network with a Windmill — free, fuel-less power on the breeze."),
-    ("rotation/chain_loop", "craft/chain_pulley", "goal", "minecraft:chain", "Closing the Loop", "yellow",
+    ("rotation/chain_loop", "craft/chain_pulley", "goal", "minecraft:iron_chain", "Closing the Loop", "yellow",
      "Transmit power through a closed loop of Chain Pulleys."),
 
     # ── Structures / moving (granted when a mechanism assembles) ──
