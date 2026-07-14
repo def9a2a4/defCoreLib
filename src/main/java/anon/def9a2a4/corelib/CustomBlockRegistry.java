@@ -868,7 +868,9 @@ public class CustomBlockRegistry {
                 loc.worldId().equals(world.getUID())
                         && (loc.x() >> 4) == chunkX && (loc.z() >> 4) == chunkZ;
         if (chainShaftType != null && chainShaftType.onChunkUnloadCallback() != null) {
-            for (LocationKey loc : chainShaftLocations) {
+            // Snapshot: onChunkUnloadCallback runs arbitrary code that could untrack a shaft
+            // (onBlockRemoved removes from chainShaftLocations) mid-iteration → CME. Defensive.
+            for (LocationKey loc : new ArrayList<>(chainShaftLocations)) {
                 if (keyInChunk.test(loc)) {
                     chainShaftType.onChunkUnloadCallback().accept(world.getBlockAt(loc.x(), loc.y(), loc.z()));
                 }

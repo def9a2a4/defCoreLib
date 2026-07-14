@@ -512,7 +512,9 @@ public class MechanismRegistry {
 
     private void tickMechanisms() {
         long currentTick = Bukkit.getServer().getCurrentTick();
-        for (BasicMechanism mech : activeMechanisms.values()) {
+        // Snapshot: a future in-body path that disassembles a mechanism would remove from
+        // activeMechanisms mid-iteration → CME. Defensive; body is read-only today.
+        for (BasicMechanism mech : new ArrayList<>(activeMechanisms.values())) {
             // Isolate each mechanism: a throw from one must not freeze the per-tick update of ALL
             // mechanisms (doors/rotators/minecarts/pistons) until a restart. Warn once per mech.
             try {
