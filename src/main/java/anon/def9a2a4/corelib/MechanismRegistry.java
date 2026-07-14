@@ -233,8 +233,13 @@ public class MechanismRegistry {
         // positioned onto the cells FIRST (synchronously), so removing the real blocks leaves no empty frame
         // (the flicker). The snapshot above still runs first, so the capture-order race is unaffected.
 
-        // 4. Spawn display + collider entities
-        Location spawnLoc = pivot.clone().add(0, 2.5, 0);
+        // 4. Spawn display + collider entities.
+        // Park the displays at the eventual MOUNTED anchor (pivot + rideOffset), not an arbitrary height:
+        // on the mount tick the vehicle's positionRider has already run, so the first entity-spawn packet
+        // carries this parked Y while the transform already subtracts rideOffset — any mismatch renders as a
+        // one-frame vertical offset that snaps out next tick (was pivot+2.5 → ~0.525 too high). Minecarts
+        // (rideOffset 0) park at the pivot and are re-teleported by their deferred mount anyway.
+        Location spawnLoc = pivot.clone().add(0, rideOffset, 0);
 
         // Parent BlockDisplay(AIR): invisible intermediary for multi-passenger support.
         // Minecarts only allow one passenger, so displays mount on parent, parent on vehicle.

@@ -42,6 +42,7 @@ final class ExtendablePistonManager {
     private static final int TRIGGER_PERIOD = 4;         // ticks between idle-core scans
     private static final float MIN_STEP = 0.08f;         // blocks/tick (floor so it always progresses)
     private static final float SPEED_K = 0.5f;
+    private static final int SETTLE_TICKS = 3;           // hold at the target before disassembly (client lerp)
     private static final Vector3f AXIS_Y = new Vector3f(0f, 1f, 0f);
 
     private final JavaPlugin plugin;
@@ -489,16 +490,24 @@ final class ExtendablePistonManager {
             ((BasicMechanism) mech).setProtectedCells(Set.of(coreKey));
             Vector3f dir = new Vector3f(moveFace.getModX(), moveFace.getModY(), moveFace.getModZ());
             // Runs on ANY disassembly (completion, power-cut/reverse stop, forget, engine teardown), AFTER the
-            // whole rod is placed. Compute the head's landed cell from the ACTUAL final pivot. Two jobs:
-            //   1. Re-resolve the head's display now that every pole carries its PDC — else a first-extend-from-
-            //      rest resolves the head before its neighbour pole exists and defaults to +axis (down flips up).
-            //   2. Rebind authored glue onto the landed head (if any).
+            // whole rod is placed. Two jobs:
+            //   1. Re-resolve the display of EVERY landed resolver-block — blocks land in list order with no
+            //      neighbour guarantee, so a head placed before its pole resolves against air and defaults to
+            //      +axis (a down head flips up). Covers the rod head AND any pushed payload head; by hook time
+            //      all cells are placed and PDC-stamped, so the resolver sees real neighbours.
+            //   2. Rebind authored glue onto the landed rod head (computed from the ACTUAL final pivot).
             mech.setOnDisassembled(placed -> {
-                Location p = mech.pivot();
-                Block landedHead = p.getWorld().getBlockAt(p.getBlockX(), p.getBlockY(), p.getBlockZ());
-                CustomHeadBlock ht = registry.getTypeFromBlock(landedHead);
-                if (ht != null) registry.resolveDisplayTransforms(landedHead, ht, registry.getState(landedHead));
-                if (glueOffsets != null) new BlockAnchor(landedHead, () -> true).writeOffsets(glueOffsets);
+                for (Block b : placed) {
+                    CustomHeadBlock t = registry.getTypeFromBlock(b);
+                    if (t != null && t.displayTransformResolver() != null) {
+                        registry.resolveDisplayTransforms(b, t, registry.getState(b));
+                    }
+                }
+                if (glueOffsets != null) {
+                    Location p = mech.pivot();
+                    Block landedHead = p.getWorld().getBlockAt(p.getBlockX(), p.getBlockY(), p.getBlockZ());
+                    new BlockAnchor(landedHead, () -> true).writeOffsets(glueOffsets);
+                }
             });
             Location start = mech.pivot(); // block-centered after assembly
             Location target = start.clone().add(dir.x * r, dir.y * r, dir.z * r);
@@ -521,6 +530,16 @@ final class ExtendablePistonManager {
         // else the transform lands on still-unmounted displays (spawned pivot+2.5) → a ~0.5-block pop.
         // Mirrors RotationRotator's 2-tick startup delay.
         if (m.warmup > 0) { m.warmup--; return false; }
+        // Settling: parked at the block-centered target, waiting out the client's ~3-tick entity interpolation
+        // so the rendered displays converge onto the target BEFORE the display→block swap — else the rendered
+        // rod trails the server by ~2-3×step and the landing reads as a forward teleport of the final gap.
+        if (m.settle >= 0) {
+            if (m.settle-- == 0) {
+                m.mech.disassemble();   // lands on-grid; core cell skipped; fires the glue/orientation hook
+                return true;
+            }
+            return false;
+        }
         Location cur = m.mech.pivot();
         // Stop-then-reverse: if power is cut OR the spin direction flips mid-slide, stop at the NEXT whole block
         // (don't run to the full planned target). Retarget to start + dir·ceil(progress); `start`/`target` are
@@ -545,8 +564,8 @@ final class ExtendablePistonManager {
 
         if (remaining <= step + 1e-3) {
             m.mech.move(m.target, 0f);   // snap to the block-centered target cell
-            m.mech.disassemble();        // lands on-grid; core cell skipped; fires the glue-rebind hook
-            return true;
+            m.settle = SETTLE_TICKS;     // hold here while the client catches up, then disassemble (above)
+            return false;
         }
         Location next = cur.clone().add(m.dir.x * step, m.dir.y * step, m.dir.z * step);
         m.mech.move(next, 0f);
@@ -620,6 +639,7 @@ final class ExtendablePistonManager {
         final int mass;
         final RotationNetwork.SpinDirection spinDir;  // the spin that started this move; a flip stops it
         int warmup = 2;                        // ticks to wait before the first move (mount + rotate(0) first)
+        int settle = -1;                       // ≥0: parked at target, counting down to disassembly (client lerp)
         ActiveMove(CustomBlockRegistry.LocationKey coreKey, Mechanism mech, Location start, Location target,
                    Vector3f dir, int mass, RotationNetwork.SpinDirection spinDir) {
             this.coreKey = coreKey;
