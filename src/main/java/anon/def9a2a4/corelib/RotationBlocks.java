@@ -613,7 +613,7 @@ final class RotationBlocks {
             config.placerTickInterval,
             b -> placerTick(b, registry, network),
             null,
-            b -> readFacing(b) == BlockFace.DOWN ? BlockFace.UP : null,
+            b -> placerOmniExcludedFace(readFacing(b)),
             new String[]{"idle_ceiling", "spinning_ceiling"}));
     }
 
@@ -1283,6 +1283,17 @@ final class RotationBlocks {
         } catch (IllegalArgumentException e) {
             return null;
         }
+    }
+
+    /**
+     * Placer rotation geometry from its stored facing — the single source of truth shared by the live
+     * overlay ({@link #overlayPlacer}) and the mechanism mock ({@link MechanismRotationDriver}) so the
+     * two can't drift: a ceiling placer (facing DOWN, a floating head) is an omni consumer excluding the
+     * storage/cap face UP; a wall placer is a plain single-axis-Y consumer (returns null → not omni).
+     */
+    static @org.jetbrains.annotations.Nullable BlockFace placerOmniExcludedFace(
+            @org.jetbrains.annotations.Nullable BlockFace facing) {
+        return facing == BlockFace.DOWN ? BlockFace.UP : null;
     }
 
     // ──────────────────────────────────────────────────────────────────────

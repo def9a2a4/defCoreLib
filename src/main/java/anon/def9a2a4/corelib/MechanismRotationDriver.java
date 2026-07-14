@@ -53,6 +53,8 @@ final class MechanismRotationDriver {
      *  non-rotation visual state — leave it alone; the node still participates in the graph. */
     private static final Set<String> SWAPPABLE_PREFIXES = Set.of("idle", "spinning", "running", "locked");
 
+    private static final String PLACER = "mech:placer";
+
     private final CustomBlockRegistry registry;
     private final EngineFuelManager fuelManager;
     private final RotationConfig config;
@@ -69,7 +71,7 @@ final class MechanismRotationDriver {
     /** One rotation part of a mechanism — immutable while assembled. */
     private record NodeSpec(int blockIndex, String typeId, RotationConfig.MechRotationMeta meta,
                             int cellX, int cellY, int cellZ,
-                            RotationNetwork.Axis axis, @Nullable BlockFace omniExcludedFace,
+                            RotationNetwork.Axis axis, boolean omni, @Nullable BlockFace omniExcludedFace,
                             RotationNetwork.SpinDirection dirPref,
                             int power, int actuateInterval) {}
 
@@ -123,11 +125,19 @@ final class MechanismRotationDriver {
                 case FROM_FACING -> RotationNetwork.axisFromFace(localFacing);
                 case OMNI -> RotationNetwork.Axis.Y; // nominal — omni edges ignore the axis
             };
-            BlockFace omniExcluded = meta.axisRule() == RotationConfig.MechAxisRule.OMNI
-                ? (localFacing == BlockFace.DOWN ? BlockFace.DOWN : localFacing.getOppositeFace())
-                : null;
+            // Placer is facing-conditional (mirrors RotationBlocks.overlayPlacer via the shared
+            // helper): a ceiling placer (localFacing DOWN) is omni excluding UP; a wall placer stays
+            // single-axis Y. The typeId guard is REQUIRED, not cosmetic — a floor drill also has
+            // localFacing == DOWN (FROM_STATE), and without the guard it would wrongly become omni.
+            BlockFace placerExcluded = PLACER.equals(mb.customTypeId)
+                ? RotationBlocks.placerOmniExcludedFace(localFacing) : null;
+            boolean omni = placerExcluded != null || meta.axisRule() == RotationConfig.MechAxisRule.OMNI;
+            BlockFace omniExcluded = placerExcluded != null ? placerExcluded
+                : meta.axisRule() == RotationConfig.MechAxisRule.OMNI
+                    ? (localFacing == BlockFace.DOWN ? BlockFace.DOWN : localFacing.getOppositeFace())
+                    : null;
 
-            specs.add(new NodeSpec(i, mb.customTypeId, meta, cx, cy, cz, axis, omniExcluded,
+            specs.add(new NodeSpec(i, mb.customTypeId, meta, cx, cy, cz, axis, omni, omniExcluded,
                 mb.spinReversed ? RotationNetwork.SpinDirection.CCW : RotationNetwork.SpinDirection.CW,
                 power(mb.customTypeId), actuateInterval(mb.customTypeId)));
         }
@@ -212,7 +222,7 @@ final class MechanismRotationDriver {
             int demand = s.meta().kind() == RotationConfig.MechKind.CONSUMER ? s.power() : 0;
             nodes.add(new RotationSolver.Node(s.cellX(), s.cellY(), s.cellZ(), s.axis(),
                 supplies ? s.power() : 0, demand, s.meta().gearLike(),
-                s.meta().axisRule() == RotationConfig.MechAxisRule.OMNI, s.omniExcludedFace(),
+                s.omni(), s.omniExcludedFace(),
                 supplies ? s.dirPref() : null));
         }
         RotationSolver.Result result = RotationSolver.solve(nodes);
@@ -271,7 +281,7 @@ final class MechanismRotationDriver {
                         cell.x, cell.y, cell.z, inv,
                         config.suctionPullRange, config.suctionPullStrength);
                 }
-                case "mech:placer" -> {
+                case PLACER -> {
                     if (!powered || !cardinal) continue;
                     Inventory inv = mech.getStorage(s.blockIndex());
                     if (inv == null) continue;
@@ -335,7 +345,7 @@ final class MechanismRotationDriver {
         return switch (typeId) {
             case "mech:drill" -> config.drillTickInterval;
             case "mech:suction_hopper" -> config.suctionTickInterval;
-            case "mech:placer" -> config.placerTickInterval;
+            case PLACER -> config.placerTickInterval;
             default -> 20;
         };
     }
