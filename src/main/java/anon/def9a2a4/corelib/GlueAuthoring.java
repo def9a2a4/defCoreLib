@@ -116,6 +116,11 @@ final class GlueAuthoring implements Listener {
                         feedback(player, clicked, false);
                     }
                 } else {
+                    // Guard the AUTHOR path (not the sneak-unglue above, so a legacy immovable stays ungluable).
+                    if (!MovableBlocks.isMovable(clicked, registry)) {
+                        reject(player, clicked, "Can't glue that block");
+                        return;
+                    }
                     GlueManager.Result res = glue.glue(session.anchor, clicked,
                         isDrawbridgeAnchor(session.anchor.originBlock()));
                     reportGlue(player, clicked, res);
@@ -265,7 +270,11 @@ final class GlueAuthoring implements Listener {
             actionBar(player, "Box too large (" + volume + " cells)", NamedTextColor.RED);
             return;
         }
-        GlueManager.FillResult r = glue.glueCuboid(s.anchor, boxBlocks(a, clicked),
+        // Filter out immovable cells (like glueCuboid already filters air/anchor/already-glued) rather than
+        // rejecting the whole box for one bedrock.
+        List<Block> movable = boxBlocks(a, clicked).stream()
+            .filter(b -> MovableBlocks.isMovable(b, registry)).toList();
+        GlueManager.FillResult r = glue.glueCuboid(s.anchor, movable,
             isDrawbridgeAnchor(s.anchor.originBlock()));
         damageBrush(player, r.added());
         player.playSound(player.getLocation(), Sound.BLOCK_SLIME_BLOCK_PLACE, 0.6f, 1.1f);

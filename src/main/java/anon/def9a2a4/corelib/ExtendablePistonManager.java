@@ -338,21 +338,20 @@ final class ExtendablePistonManager {
         PistonLine line = detectLine(core);
         if (line == null) return;
 
-        List<Block> payload = resolvePayload(line);
-        if (payload == null) return;                                // glued structure holds an immovable block — abort
-        // Full moving assembly (rod + payload); the core cell is passable (ghost-filled, protected on land).
+        // CW slides forward, CCW backward. Reach = the OPPOSITE side's pole reserve. Both heads are sticky
+        // (each carries its adjacent block), so the leading head pushes and the trailing head pulls.
+        boolean cw = dir == RotationNetwork.SpinDirection.CW;
+        BlockFace moveFace = cw ? line.frontFace() : line.frontFace().getOppositeFace();
+        int reserve = cw ? line.backPoles() : line.frontPoles();
+
+        List<Block> payload = collectPayload(line);
+        if (payload == null) return;                                // a glued structure holds an immovable — abort
+        // Full moving assembly (rod + both heads' payloads); the core cell is passable (ghost-filled).
         List<Block> moving = new ArrayList<>(line.rodBlocks());
         moving.addAll(payload);
         Set<Long> footprint = footprintKeys(moving, line.core());
-
-        if (dir == RotationNetwork.SpinDirection.CW) {              // extend
-            int r = clearForAll(moving, footprint, line.frontFace(), line.backPoles());
-            if (r > 0) startMove(coreKey, line, payload, line.frontFace(), r, dir);
-        } else {                                                    // CCW → retract
-            BlockFace back = line.frontFace().getOppositeFace();
-            int r = clearForAll(moving, footprint, back, line.extension());
-            if (r > 0) startMove(coreKey, line, payload, back, r, dir);
-        }
+        int r = clearForAll(moving, footprint, moveFace, reserve);
+        if (r > 0) startMove(coreKey, line, payload, moveFace, r, dir);
     }
 
     // ──────────────────────────────────────────────────────────────────────
@@ -364,16 +363,17 @@ final class ExtendablePistonManager {
         if (forward == null) return null;
         List<Block> frontRun = walk(core, forward);                 // poles… then head (forward side)
         if (!endsWithHead(frontRun)) return null;                   // must terminate in a head
-        List<Block> backRun = walk(core, forward.getOppositeFace()); // poles only (reserve)
-        Block head = frontRun.get(frontRun.size() - 1);
+        List<Block> backRun = walk(core, forward.getOppositeFace()); // poles… then optionally a back head
+        Block frontHead = frontRun.get(frontRun.size() - 1);
+        // A back head makes the piston double-ended (it leads the CCW/backward stroke). Whether or not the back
+        // run ends in a head, the POLE reserve excludes it — so the reach never consumes a head at the core.
+        Block backHead = endsWithHead(backRun) ? backRun.get(backRun.size() - 1) : null;
         int frontPoles = frontRun.size() - 1;
-        // A head on the BACK end rides along as a passive cap but is NOT a reserve pole — exclude it, else the
-        // reach over-counts and the back head gets silently consumed at the core cell.
-        int backPoles = endsWithHead(backRun) ? backRun.size() - 1 : backRun.size();
+        int backPoles = backHead != null ? backRun.size() - 1 : backRun.size();
         List<Block> rod = new ArrayList<>(frontRun.size() + backRun.size());
         rod.addAll(frontRun);
         rod.addAll(backRun);
-        return new PistonLine(forward, core, backPoles, head, frontPoles, rod);
+        return new PistonLine(forward, core, backPoles, frontHead, backHead, frontPoles, rod);
     }
 
     /** Forward (extend) direction from the core's {@code fwd_*} state. */
@@ -441,18 +441,34 @@ final class ExtendablePistonManager {
     }
 
     /**
-     * The payload the head carries: the glue-authored structure, else the single movable block directly ahead.
-     * Returns an empty list for "nothing to carry" and {@code null} to <em>reject the whole move</em> (a glued
-     * structure containing an immovable block — moving it would shear the structure).
+     * The full moving payload: BOTH heads' payloads, so the piston is sticky on both ends (leading head pushes,
+     * trailing head pulls — the rigid rod carries both blocks). Each head contributes its authored glue
+     * structure, else the single movable block off its outward face. Returns {@code null} to <em>reject the
+     * whole move</em> if any glued block is immovable (shear guard); an empty list means "nothing to carry".
+     * Duplicates are fine — {@code startMove} dedups by cell.
      */
-    private @Nullable List<Block> resolvePayload(PistonLine line) {
-        List<Block> glued = glueManager.resolveStructure(new BlockAnchor(line.head(), () -> true));
+    private @Nullable List<Block> collectPayload(PistonLine line) {
+        List<Block> out = new ArrayList<>();
+        if (!addHeadPayload(out, line.frontHead(), line.frontFace())) return null;
+        if (line.backHead() != null
+                && !addHeadPayload(out, line.backHead(), line.frontFace().getOppositeFace())) return null;
+        return out;
+    }
+
+    /**
+     * Add {@code head}'s payload to {@code out}: its glued structure, else the single movable block off its
+     * {@code outFace} (outward, away from the rod). @return {@code false} to reject the move (glued immovable).
+     */
+    private boolean addHeadPayload(List<Block> out, Block head, BlockFace outFace) {
+        List<Block> glued = glueManager.resolveStructure(new BlockAnchor(head, () -> true));
         if (glued != null && !glued.isEmpty()) {
-            for (Block b : glued) if (!MovableBlocks.isMovable(b, registry)) return null;
-            return glued;
+            for (Block b : glued) if (!MovableBlocks.isMovable(b, registry)) return false;
+            out.addAll(glued);
+            return true;
         }
-        Block front = line.head().getRelative(line.frontFace());   // auto-grab the single block directly ahead
-        return MovableBlocks.isMovable(front, registry) ? List.of(front) : List.of();
+        Block grab = head.getRelative(outFace);
+        if (MovableBlocks.isMovable(grab, registry)) out.add(grab);
+        return true;
     }
 
     // ──────────────────────────────────────────────────────────────────────
@@ -461,11 +477,17 @@ final class ExtendablePistonManager {
 
     private void startMove(CustomBlockRegistry.LocationKey coreKey, PistonLine line, List<Block> payload,
                            BlockFace moveFace, int r, RotationNetwork.SpinDirection spinDir) {
-        // Capture the head's authored-glue offsets BEFORE assembly airs the head out to AIR (else readOffsets
-        // reads a non-skull → null → glue is lost on land).
-        int[] glueOffsets = new BlockAnchor(line.head(), () -> true).readOffsets();
+        // Capture BOTH heads' authored-glue offsets BEFORE assembly airs the heads out to AIR (else readOffsets
+        // reads a non-skull → null → glue is lost on land). The back head's landed cell is the front head's
+        // landing (= pivot) plus the rigid front→back offset (yaw 0 → the integer offset is preserved).
+        final int[] frontGlue = new BlockAnchor(line.frontHead(), () -> true).readOffsets();
+        final int[] backGlue = line.backHead() != null
+            ? new BlockAnchor(line.backHead(), () -> true).readOffsets() : null;
+        final int bdx = line.backHead() != null ? line.backHead().getX() - line.frontHead().getX() : 0;
+        final int bdy = line.backHead() != null ? line.backHead().getY() - line.frontHead().getY() : 0;
+        final int bdz = line.backHead() != null ? line.backHead().getZ() - line.frontHead().getZ() : 0;
 
-        // The moving assembly: the rod (poles + head) + the head's payload, deduped so a payload cell can't
+        // The moving assembly: the rod (poles + head(s)) + the payload, deduped so a payload cell can't
         // double a rod cell (double air-out/placement).
         List<Block> assembleBlocks = new ArrayList<>(line.rodBlocks());
         Set<Long> cells = new HashSet<>();
@@ -480,8 +502,9 @@ final class ExtendablePistonManager {
         // Centered pivot (mirror the rotator): the engine re-centers only Y of the vehicle spawn, so a corner
         // pivot makes the displays spawn 0.5 off in X/Z until the first move(). Everything downstream re-snaps
         // X/Z to floor+0.5, so this is a pure display fix (identical block math).
+        // Pivot on the FRONT head (mech.pivot() must track it — the back-head rebind offset is relative to it).
         Mechanism mech = mechRegistry.assembleMechanism(MECH_TYPE, assembleBlocks, ghosts,
-            line.head().getLocation().add(0.5, 0, 0.5), AXIS_Y, null);
+            line.frontHead().getLocation().add(0.5, 0, 0.5), AXIS_Y, null);
         if (mech == null) return;
 
         // Guard the post-assembly setup: a throw before active.put would leave an assembled-but-untracked mech
@@ -495,7 +518,8 @@ final class ExtendablePistonManager {
             //      neighbour guarantee, so a head placed before its pole resolves against air and defaults to
             //      +axis (a down head flips up). Covers the rod head AND any pushed payload head; by hook time
             //      all cells are placed and PDC-stamped, so the resolver sees real neighbours.
-            //   2. Rebind authored glue onto the landed rod head (computed from the ACTUAL final pivot).
+            //   2. Rebind authored glue onto BOTH landed heads: the front head at the final pivot, the back
+            //      head at pivot + the rigid front→back offset.
             mech.setOnDisassembled(placed -> {
                 for (Block b : placed) {
                     CustomHeadBlock t = registry.getTypeFromBlock(b);
@@ -503,10 +527,14 @@ final class ExtendablePistonManager {
                         registry.resolveDisplayTransforms(b, t, registry.getState(b));
                     }
                 }
-                if (glueOffsets != null) {
-                    Location p = mech.pivot();
-                    Block landedHead = p.getWorld().getBlockAt(p.getBlockX(), p.getBlockY(), p.getBlockZ());
-                    new BlockAnchor(landedHead, () -> true).writeOffsets(glueOffsets);
+                Location p = mech.pivot();
+                if (frontGlue != null) {
+                    new BlockAnchor(p.getWorld().getBlockAt(p.getBlockX(), p.getBlockY(), p.getBlockZ()),
+                        () -> true).writeOffsets(frontGlue);
+                }
+                if (backGlue != null) {
+                    new BlockAnchor(p.getWorld().getBlockAt(p.getBlockX() + bdx, p.getBlockY() + bdy,
+                        p.getBlockZ() + bdz), () -> true).writeOffsets(backGlue);
                 }
             });
             Location start = mech.pivot(); // block-centered after assembly
@@ -624,9 +652,10 @@ final class ExtendablePistonManager {
         }
     }
 
-    /** A detected piston line. {@code extension} = front-pole count = cells the head sits past the core. */
-    private record PistonLine(BlockFace frontFace, Block core, int backPoles, Block head, int frontPoles,
-                              List<Block> rodBlocks) {
+    /** A detected piston line. {@code frontHead} always exists (the {@code fwd_*} side); {@code backHead} is
+     *  present only for a double-ended piston. {@code extension} = front-pole count = cells past the core. */
+    private record PistonLine(BlockFace frontFace, Block core, int backPoles, Block frontHead,
+                              @Nullable Block backHead, int frontPoles, List<Block> rodBlocks) {
         int extension() { return frontPoles; }
     }
 

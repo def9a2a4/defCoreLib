@@ -127,7 +127,7 @@ final class RotationRotator {
             planks = resolved;
         } else {
             Block seed = attachmentBlock(head);   // no glue → swing the block the rotator is placed on
-            if (seed.getType().isAir()) return;
+            if (!MovableBlocks.isMovable(seed, registry)) return;   // don't scoop air / immovable world blocks
             planks = List.of(seed);
         }
 

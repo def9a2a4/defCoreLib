@@ -240,7 +240,7 @@ final class MechanismMinecartManager implements Listener {
             blocks = resolved;
         } else {
             Block seed = state.minecart.getLocation().clone().add(0, 1, 0).getBlock();
-            if (seed.getType().isAir()) return;
+            if (!MovableBlocks.isMovable(seed, registry)) return;   // don't scoop air / immovable world blocks
             blocks = List.of(seed);
         }
 
