@@ -127,8 +127,9 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
             new MechanismRotationDriver(registry, fuelManager, rotConfig));
 
         // Anchor-owned block selection ("glue") — shared by doors/rotators (wired in D3).
-        // The glue item itself is declared in corelib-items.yml (mech:glue_item).
-        glueManager = new GlueManager(rotConfig.glueMaxSize);
+        // The glue item itself is declared in corelib-items.yml (mech:glue_item). The registry
+        // powers the derived casing auto-glue (CasingExpansion) at resolve time.
+        glueManager = new GlueManager(rotConfig.glueMaxSize, registry);
         glueAuthoring = new GlueAuthoring(this, registry, glueManager,
             rotConfig.glueOutlineInterval, rotConfig.glueSessionTimeout);
         getServer().getPluginManager().registerEvents(glueAuthoring, this);
@@ -147,6 +148,7 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         RotationRotator rotationRotator = new RotationRotator(this, registry, rotationNetwork, mechanismRegistry, glueManager);
         rotationRotator.register();
         new ExtendablePistonManager(this, registry, rotationNetwork, mechanismRegistry, glueManager, rotConfig).register();
+        new ChainHoistManager(this, registry, rotationNetwork, mechanismRegistry, glueManager, rotConfig).register();
         mechanismMinecartManager = new MechanismMinecartManager(this, registry, mechanismRegistry, glueManager);
         glueAuthoring.setMinecartManager(mechanismMinecartManager);
         mechanismMinecartManager.register();
@@ -562,22 +564,30 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
     // Piston handling
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onPistonExtend(BlockPistonExtendEvent event) {
-        handlePiston(event.getBlocks(), event);
+        handlePiston(event.getBlocks(), event.getDirection(), event);
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onPistonRetract(BlockPistonRetractEvent event) {
-        handlePiston(event.getBlocks(), event);
+        handlePiston(event.getBlocks(), event.getDirection(), event);
     }
 
-    private void handlePiston(List<Block> blocks, org.bukkit.event.Cancellable event) {
+    private void handlePiston(List<Block> blocks, BlockFace direction,
+                              org.bukkit.event.Cancellable event) {
+        // Bare blocks that ride the push (the casing): their base block moves like any vanilla block,
+        // but identity + shell display live in the bare-block registry keyed by cell — collect the
+        // old→new pairs and re-seat them once the piston animation lands (~3 ticks). Validated there,
+        // so a later-priority cancellation just leaves identities in place.
+        List<CustomBlockRegistry.BareMove> bareMoves = new ArrayList<>();
         for (Block block : blocks) {
             // A bare block WITH a revert handler (the shaft) reverts to an encased head first, then
-            // behaves like a normal skull under pistons. A bare block WITHOUT one (the casing) has no
-            // head form; a vanilla piston would shove the base block and orphan its display/identity, so
-            // cancel the push. (Custom mechanisms still move it — MovableBlocks.isMovable stays true.)
+            // behaves like a normal skull under pistons (its flags below take over). A bare block
+            // WITHOUT one (the casing) rides the push; its identity follows via moveBareBlocks.
             registry.revertBareBlockForCapture(block);
-            if (registry.isBareBlock(block)) { event.setCancelled(true); return; }
+            if (registry.isBareBlock(block)) {
+                bareMoves.add(new CustomBlockRegistry.BareMove(block, block.getRelative(direction)));
+                continue;
+            }
             CustomHeadBlock type = registry.getTypeFromBlock(block);
             if (type == null) continue;
             if (type.cancelPistons()) {
@@ -605,6 +615,13 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
                 registry.onBlockRemoved(block, type);
                 block.setType(Material.AIR, false);
             }
+        }
+        if (!bareMoves.isEmpty()) {
+            // The piston animation occupies the cells with MOVING_PISTON for ~2 ticks; re-seat the
+            // identities once everything has landed. moveBareBlocks validates per move, so nothing
+            // is lost if the event was cancelled by a later-priority handler.
+            getServer().getScheduler().runTaskLater(this,
+                () -> registry.moveBareBlocks(bareMoves), 3L);
         }
     }
 

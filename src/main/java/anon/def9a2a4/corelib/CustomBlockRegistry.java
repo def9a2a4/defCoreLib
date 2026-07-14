@@ -202,6 +202,10 @@ public class CustomBlockRegistry {
     private final Map<LocationKey, CustomHeadBlock> bareLocations = new HashMap<>();
     // Registered bare types keyed by their base Material (one type per material: CHAIN→shaft, PLANKS→casing).
     private final Map<Material, CustomHeadBlock> bareTypes = new HashMap<>();
+    // Reverse index: type fullId → its registered base Material. This — NOT CustomHeadBlock.baseBlock()
+    // — is the authority during chunk restore: a SKULL-FIRST bare type (the shaft: places as a head,
+    // wrench converts to bare CHAIN) has baseBlock() == null and registers its base only here.
+    private final Map<String, Material> bareBaseById = new HashMap<>();
     // Optional per-type "revert to encased head before a mechanism captures me" handler (shaft has one;
     // casing has none → it is captured natively). Keyed by type fullId.
     private final Map<String, Consumer<Block>> bareRevertHandlers = new HashMap<>();
@@ -295,10 +299,12 @@ public class CustomBlockRegistry {
             return types.get(typeId);
         }
         // Bare block: a registered base material (CHAIN, PLANKS, …) whose cell is in the runtime index
-        // (identity durably backed by the chunk PDC + its tagged display).
+        // (identity durably backed by the chunk PDC + its tagged display). Cross-check that the type
+        // indexed at this cell is the one registered for THIS material — a stale index entry under a
+        // block that changed material must not lend it the wrong identity.
         if (!bareLocations.isEmpty() && bareTypes.containsKey(m)) {
             CustomHeadBlock t = bareLocations.get(LocationKey.of(block));
-            if (t != null) return t;
+            if (t != null && bareTypes.get(m) == t) return t;
         }
         // physical_material-backed blocks (e.g. the dynamo's barrel): gate on the cheap runtime
         // location index BEFORE taking a tile snapshot, so explosion/piston/break sweeps over vanilla
@@ -533,6 +539,7 @@ public class CustomBlockRegistry {
      */
     void registerBareBlock(CustomHeadBlock type, Material base, @Nullable Consumer<Block> revertHandler) {
         bareTypes.put(base, type);
+        bareBaseById.put(type.fullId(), base);
         if (revertHandler != null) bareRevertHandlers.put(type.fullId(), revertHandler);
         if (!bareRestorerRegistered) {              // one generalized restorer covers all bare types
             registerChunkRestorer(this::restoreBareBlocksInChunk);
@@ -559,6 +566,45 @@ public class CustomBlockRegistry {
         bareLocations.remove(key);
         bareRenderedState.remove(key);
         removeBareCellFromChunkPdc(block);
+    }
+
+    /** One vanilla-piston relocation of a bare block: {@code from} is its pre-push cell, {@code to}
+     *  where the push lands it. */
+    record BareMove(Block from, Block to) {}
+
+    /**
+     * Re-seat bare-block identities after a vanilla piston moved their base blocks — called a few
+     * ticks post-event, once the pushed blocks have landed. Two-phase (clear every source cell,
+     * then index every landed cell) so a casing landing in another casing's old cell is handled in
+     * any order. Validated per move: if the source still holds the base material and the target
+     * doesn't, the push never happened (cancelled after our handler) — identity is kept in place.
+     */
+    void moveBareBlocks(List<BareMove> moves) {
+        List<Map.Entry<Block, CustomHeadBlock>> landed = new ArrayList<>(moves.size());
+        for (BareMove mv : moves) {
+            LocationKey fromKey = LocationKey.of(mv.from());
+            CustomHeadBlock type = bareLocations.get(fromKey);
+            if (type == null) continue;                        // already re-seated / removed
+            Material base = bareBaseById.get(type.fullId());
+            if (base == null) continue;
+            boolean atTarget = mv.to().getType() == base;
+            boolean atSource = mv.from().getType() == base;
+            if (atSource && !atTarget) continue;               // push didn't happen — keep in place
+            bareLocations.remove(fromKey);
+            bareRenderedState.remove(fromKey);
+            removeBareCellFromChunkPdc(mv.from());
+            if (type.hasDisplayEntities()) {
+                String tagPrefix = DisplayUtil.blockTagPrefix(type.namespace(), type.typeId(),
+                    mv.from().getLocation());
+                DisplayUtil.removeByTag(mv.from().getLocation(), tagPrefix, 1.5);
+            }
+            if (atTarget) landed.add(Map.entry(mv.to(), type));
+        }
+        for (Map.Entry<Block, CustomHeadBlock> e : landed) {   // mirror restore pass 2
+            addBareBlock(e.getKey(), e.getValue());
+            restoreBlock(e.getKey(), e.getValue(), getState(e.getKey()));
+            applyConfig(e.getKey(), e.getValue(), getState(e.getKey()), 0);
+        }
     }
 
     /** Convert a bare block back to an encased head before a mechanism captures it; no-op if the type
@@ -591,6 +637,10 @@ public class CustomBlockRegistry {
     boolean driveChainShaftSpinIfChain(Block block, boolean powered) {
         CustomHeadBlock type = bareLocations.get(LocationKey.of(block));
         if (type == null || !bareTypes.containsKey(block.getType())) return false;
+        // Only an Orientable bare block (the chain shaft) has idle_/spinning_ axis states to drive.
+        // A solid bare block (casing) must not be driven — synthesizing "idle_y" here would poison
+        // bareRenderedState and break getState()'s default-state contract for it.
+        if (!(block.getBlockData() instanceof org.bukkit.block.data.Orientable)) return true;
         LocationKey key = LocationKey.of(block);
         String target = (powered ? "spinning_" : "idle_") + chainAxisSuffix(block);
         if (target.equals(bareRenderedState.get(key))) return true;
@@ -669,10 +719,15 @@ public class CustomBlockRegistry {
             BareTag bt = parseBareDisplayTag(display);
             if (bt == null) continue;
             CustomHeadBlock type = types.get(bt.typeId());
-            if (type == null || type.baseBlock() == null) continue;    // not a bare type (or unregistered)
+            // Resolve the base material from the REGISTRATION (bareBaseById), not type.baseBlock():
+            // a skull-first bare type (the shaft) has baseBlock() == null but registers CHAIN — the
+            // baseBlock() check here silently skipped every shaft, losing its identity on reload and
+            // letting the orphan sweeper delete its rod display.
+            Material base = bareBaseById.get(bt.typeId());
+            if (type == null || base == null) continue;                // not a registered bare type
             if (!isNamespaceEnabledInWorld(type.namespace(), world.getName())) continue;
             Block block = world.getBlockAt(bt.x(), bt.y(), bt.z());
-            if (block.getType() != type.baseBlock()) continue;         // block changed → orphan display, skip
+            if (block.getType() != base) continue;                     // block changed → orphan display, skip
             LocationKey key = LocationKey.of(block);
             found = true;
             seen.add(key);
@@ -688,12 +743,13 @@ public class CustomBlockRegistry {
             int[] xyz = parseCell(e.getKey());
             if (xyz == null) continue;
             CustomHeadBlock type = types.get(e.getValue());
-            if (type == null || type.baseBlock() == null) continue;
+            Material base = bareBaseById.get(e.getValue());            // registration authority (see pass 1)
+            if (type == null || base == null) continue;
             if (!isNamespaceEnabledInWorld(type.namespace(), world.getName())) continue;
             Block block = world.getBlockAt(xyz[0], xyz[1], xyz[2]);
             LocationKey key = LocationKey.of(block);
             if (seen.contains(key)) continue;                          // already handled by a live display
-            if (block.getType() != type.baseBlock()) {                 // block gone while unloaded → prune
+            if (block.getType() != base) {                             // block gone while unloaded → prune
                 cells.remove(e.getKey());
                 cellsDirty = true;
                 continue;
