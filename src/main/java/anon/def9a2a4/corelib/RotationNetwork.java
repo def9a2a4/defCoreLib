@@ -811,7 +811,8 @@ public class RotationNetwork {
         return switch (axis) { case X -> dx; case Y -> dy; case Z -> dz; };
     }
 
-    private static boolean bevelReverses(Axis a, Axis b, BlockFace face) {
+    // Package-visible: RotationSolver mirrors these edge rules for mechanism-mounted rotation parts.
+    static boolean bevelReverses(Axis a, Axis b, BlockFace face) {
         int dx = face.getModX(), dy = face.getModY(), dz = face.getModZ();
         int dA = axisComponent(a, dx, dy, dz);
         int dB = axisComponent(b, dx, dy, dz);

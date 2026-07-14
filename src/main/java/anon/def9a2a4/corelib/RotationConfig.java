@@ -41,10 +41,43 @@ final class RotationConfig {
             Material.MOVING_PISTON, Material.REINFORCED_DEEPSLATE);
     Map<Material, Integer> fuelValues = new HashMap<>();
     Map<String, Integer> powerValues = new HashMap<>();
+    Map<String, MechRotationMeta> mechMetaValues = new HashMap<>();
+
+    // ── Mechanism-mode metadata (the `mechanism:` YAML section) ─────────────
+    // How each rotation block behaves while assembled into a moving mechanism
+    // (see MechanismRotationDriver). Data-driven like `power:`; power itself is
+    // NOT duplicated here — a mechanism node's supply/demand comes from the
+    // same `power:` map the static network uses.
+
+    /** Role of a rotation block while assembled into a mechanism. */
+    enum MechKind {
+        /** Passes power along; never supplies or consumes. */ TRANSMITTER,
+        /** Adds demand and actuates at its live world position. */ CONSUMER,
+        /** Fuel-burning source: supplies only while running (driver-owned fuel counter). */ ENGINE,
+        /** Always-on source while assembled (windmills; the redstone motor sees no redstone). */ CONSTANT_SOURCE
+    }
+
+    /** How a mechanism-mounted block's network axis is derived from its captured snapshot. */
+    enum MechAxisRule {
+        /** {@code RotationNetwork.axisFromState} on the captured state (shaft, gear, drill, …). */ FROM_STATE,
+        /** Always Y — driven by a shaft on top (millstone, press, placer). */ FIXED_Y,
+        /** {@code RotationNetwork.axisFromFace} on the captured facing (fan). */ FROM_FACING,
+        /** Omni consumer: draws from the first aligned neighbor on any non-mounted face (suction hopper). */ OMNI
+    }
+
+    record MechRotationMeta(MechKind kind, boolean gearLike, MechAxisRule axisRule) {}
+
+    /** Mechanism-mode metadata for a full block id ({@code mech:shaft}), or null when the block
+     *  takes no part in a mechanism's rotation network. Keyed by short name, like {@code power:}. */
+    @org.jetbrains.annotations.Nullable MechRotationMeta mechMeta(String blockTypeId) {
+        int i = blockTypeId.indexOf(':');
+        return mechMetaValues.get(i >= 0 ? blockTypeId.substring(i + 1) : blockTypeId);
+    }
 
     RotationConfig() {
         initDefaultFuel();
         initDefaultPower();
+        initDefaultMechMeta();
     }
 
     int load(InputStream stream, Logger logger) {
@@ -169,6 +202,44 @@ final class RotationConfig {
             loaded++;
         }
 
+        ConfigurationSection mechanism = yaml.getConfigurationSection("mechanism");
+        if (mechanism != null) {
+            for (String key : mechanism.getKeys(false)) {
+                ConfigurationSection entry = mechanism.getConfigurationSection(key);
+                String kindStr = entry != null ? entry.getString("kind") : mechanism.getString(key);
+                if (kindStr == null) {
+                    logger.warning("rotation-config: mechanism." + key + " has no 'kind' — skipping");
+                    continue;
+                }
+                if (kindStr.equalsIgnoreCase("none")) {   // opt a default entry out
+                    mechMetaValues.remove(key);
+                    continue;
+                }
+                MechKind kind; MechAxisRule axis;
+                try {
+                    kind = MechKind.valueOf(kindStr.toUpperCase(Locale.ROOT));
+                } catch (IllegalArgumentException e) {
+                    logger.warning("rotation-config: mechanism." + key + " unknown kind: " + kindStr);
+                    continue;
+                }
+                String axisStr = entry != null ? entry.getString("axis", "state") : "state";
+                axis = switch (axisStr.toLowerCase(Locale.ROOT)) {
+                    case "state" -> MechAxisRule.FROM_STATE;
+                    case "y" -> MechAxisRule.FIXED_Y;
+                    case "facing" -> MechAxisRule.FROM_FACING;
+                    case "omni" -> MechAxisRule.OMNI;
+                    default -> null;
+                };
+                if (axis == null) {
+                    logger.warning("rotation-config: mechanism." + key + " unknown axis: " + axisStr);
+                    continue;
+                }
+                boolean gearLike = entry != null && entry.getBoolean("gear_like", false);
+                mechMetaValues.put(key, new MechRotationMeta(kind, gearLike, axis));
+            }
+            loaded++;
+        }
+
         return loaded;
     }
 
@@ -208,5 +279,30 @@ final class RotationConfig {
         powerValues.put("press", 1);
         powerValues.put("placer", 1);
         powerValues.put("suction_hopper", 1);
+    }
+
+    private void initDefaultMechMeta() {
+        var t = new MechRotationMeta(MechKind.TRANSMITTER, false, MechAxisRule.FROM_STATE);
+        mechMetaValues.put("shaft", t);
+        mechMetaValues.put("reverser", t);        // redstone inert while riding → plain shaft
+        mechMetaValues.put("clutch", t);          // redstone inert → never locks
+        mechMetaValues.put("chain_pulley", t);    // chain edges deferred on mechanisms
+        mechMetaValues.put("redstone_dynamo", t);
+        mechMetaValues.put("water_wheel", t);     // no live water check while riding → never a source
+        mechMetaValues.put("gear", new MechRotationMeta(MechKind.TRANSMITTER, true, MechAxisRule.FROM_STATE));
+        mechMetaValues.put("engine", new MechRotationMeta(MechKind.ENGINE, false, MechAxisRule.FROM_STATE));
+        var src = new MechRotationMeta(MechKind.CONSTANT_SOURCE, false, MechAxisRule.FROM_STATE);
+        mechMetaValues.put("redstone_motor", src);
+        mechMetaValues.put("windmill", src);
+        mechMetaValues.put("large_windmill", src);
+        mechMetaValues.put("huge_windmill", src);
+        var consumer = new MechRotationMeta(MechKind.CONSUMER, false, MechAxisRule.FROM_STATE);
+        var consumerY = new MechRotationMeta(MechKind.CONSUMER, false, MechAxisRule.FIXED_Y);
+        mechMetaValues.put("drill", consumer);
+        mechMetaValues.put("millstone", consumerY);
+        mechMetaValues.put("press", consumerY);
+        mechMetaValues.put("placer", consumerY);
+        mechMetaValues.put("fan", new MechRotationMeta(MechKind.CONSUMER, false, MechAxisRule.FROM_FACING));
+        mechMetaValues.put("suction_hopper", new MechRotationMeta(MechKind.CONSUMER, false, MechAxisRule.OMNI));
     }
 }

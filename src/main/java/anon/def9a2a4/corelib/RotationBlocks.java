@@ -46,6 +46,36 @@ final class RotationBlocks {
     static final int SEED_OIL_FUEL_TICKS = 400;
 
     /**
+     * Engine fuel value of one item, in engine-ticks (1 engine-tick = 1s = 20 game ticks), or
+     * {@code <= 0} when the item is not fuel. One source of truth for the material table plus the
+     * Seed Oil special case (a custom item on a magma-cream skin — recognized by PDC id so real
+     * magma cream isn't fuel). Used by the static engine overlay and by engines riding a mechanism.
+     */
+    static int fuelTicksFor(ItemStack item, EngineFuelManager fuelManager) {
+        int fv = fuelManager.getFuelValue(item.getType());
+        if (fv <= 0 && "mech:seed_oil".equals(CustomBlockRegistry.getItemTypeId(item))) {
+            fv = SEED_OIL_FUEL_TICKS;
+        }
+        return fv;
+    }
+
+    /** Remove the first fuel item from {@code storage} and return its engine-tick value, or 0 when
+     *  the inventory holds no fuel. Shared by the static engine overlay and mechanism engines. */
+    static int consumeOneFuelItem(Inventory storage, EngineFuelManager fuelManager) {
+        for (int i = 0; i < storage.getSize(); i++) {
+            ItemStack it = storage.getItem(i);
+            if (it == null || it.getType().isAir()) continue;
+            int fv = fuelTicksFor(it, fuelManager);
+            if (fv > 0) {
+                it.setAmount(it.getAmount() - 1);
+                storage.setItem(i, it.getAmount() <= 0 ? null : it);
+                return fv;
+            }
+        }
+        return 0;
+    }
+
+    /**
      * Bake dough into bread. This is a vanilla output from a custom ingredient, which the
      * type-owned YAML recipe system can't express (a YAML recipe's result is always the
      * owning custom type's item), so it's registered here. Furnace + smoker, reload-safe.
@@ -405,22 +435,8 @@ final class RotationBlocks {
                 if (fuelManager.getFuel(key) <= 0) {
                     Inventory storage = registry.getOrCreateStorage(b);
                     if (storage != null) {
-                        for (int i = 0; i < storage.getSize(); i++) {
-                            ItemStack it = storage.getItem(i);
-                            if (it == null || it.getType().isAir()) continue;
-                            int fv = fuelManager.getFuelValue(it.getType());
-                            // Seed Oil is a custom item (not a fuel Material) — recognize it by PDC
-                            // so real magma cream (its placeholder skin) isn't treated as fuel.
-                            if (fv <= 0 && "mech:seed_oil".equals(CustomBlockRegistry.getItemTypeId(it))) {
-                                fv = SEED_OIL_FUEL_TICKS;
-                            }
-                            if (fv > 0) {
-                                fuelManager.addFuel(key, fv);
-                                it.setAmount(it.getAmount() - 1);
-                                storage.setItem(i, it.getAmount() <= 0 ? null : it);
-                                break;
-                            }
-                        }
+                        int fv = consumeOneFuelItem(storage, fuelManager);
+                        if (fv > 0) fuelManager.addFuel(key, fv);
                     }
                 }
 
@@ -614,14 +630,26 @@ final class RotationBlocks {
 
         BlockFace facing = readFacing(placer);
         if (facing == null) return;
-        Block target = placer.getRelative(facing);
-        if (!target.isReplaceable()) return; // front occupied → idle
-
         Inventory host = hostContainer(placer);
         if (host == null) return;
+        placerEffect(placer.getRelative(facing), host);
+    }
 
-        for (int i = 0; i < host.getSize(); i++) {
-            ItemStack it = host.getItem(i);
+    /**
+     * One placer work-step: set the first placeable vanilla block from {@code source} into a
+     * replaceable {@code target} cell (with sound + particles). Custom plugin head-blocks and
+     * non-block items are skipped; {@code setType} runs with physics. The caller owns the powered
+     * gate, the target cell, and the source inventory — the static path ({@link #placerTick})
+     * passes the facing cell + host storage; a placer riding a mechanism
+     * ({@code MechanismRotationDriver}) passes its live facing cell + travelling storage.
+     *
+     * @return true when a block was placed
+     */
+    static boolean placerEffect(Block target, Inventory source) {
+        if (!target.isReplaceable()) return false; // front occupied → idle
+
+        for (int i = 0; i < source.getSize(); i++) {
+            ItemStack it = source.getItem(i);
             if (it == null) continue;
             Material m = it.getType();
             if (!m.isBlock() || m.isAir()) continue;
@@ -629,14 +657,15 @@ final class RotationBlocks {
 
             target.setType(m);
             it.setAmount(it.getAmount() - 1);
-            host.setItem(i, it.getAmount() <= 0 ? null : it);
+            source.setItem(i, it.getAmount() <= 0 ? null : it);
 
             var placeSound = target.getBlockSoundGroup().getPlaceSound();
             target.getWorld().playSound(target.getLocation().add(0.5, 0.5, 0.5), placeSound, 1f, 1f);
             target.getWorld().spawnParticle(Particle.BLOCK, target.getLocation().add(0.5, 0.5, 0.5),
                 6, 0.25, 0.25, 0.25, 0.0, target.getBlockData());
-            return;
+            return true;
         }
+        return false;
     }
 
     /** Internal storage inventory of a machine, or null if the block has no storage configured. */
@@ -906,14 +935,28 @@ final class RotationBlocks {
         var key = CustomBlockRegistry.LocationKey.of(hopper);
         if (!network.isPowered(key)) return;
 
-        World world = hopper.getWorld();
-        Location center = hopper.getLocation().add(0.5, 0.5, 0.5);
         Inventory internal = registry.getOrCreateStorage(hopper);
         if (internal == null) return;
 
+        suctionEffect(hopper.getWorld(), hopper.getLocation().add(0.5, 0.5, 0.5),
+            hopper.getX(), hopper.getY(), hopper.getZ(),
+            internal, suctionPullRange, suctionPullStrength);
+
+        pushToMount(hopper, internal);
+    }
+
+    /**
+     * One suction work-step at an explicit position: nudge dropped items toward {@code center},
+     * capture ones inside the {@code cellX/Y/Z} cell into {@code internal}, spawn the airy
+     * particles. No powered gate, no storage lookup, no mount feeding — the caller owns those,
+     * so this serves both the static path ({@link #suctionTick}) and hoppers riding a mechanism
+     * ({@code MechanismRotationDriver}, which passes the live cell and the travelling inventory).
+     */
+    static void suctionEffect(World world, Location center, int cellX, int cellY, int cellZ,
+                              Inventory internal, int pullRange, double pullStrength) {
         // Half-extent = full cells (pullRange + 0.5) + a 0.25 margin per side, so pullRange 1 →
         // 1.75 → 3.5×3.5×3.5 box (the 3×3×3 cells plus a quarter-block reach on every face).
-        double r = suctionPullRange + 0.75;
+        double r = pullRange + 0.75;
         var box = org.bukkit.util.BoundingBox.of(center.toVector(), r, r, r);
         for (org.bukkit.entity.Entity e : world.getNearbyEntities(box)) {
             if (!(e instanceof org.bukkit.entity.Item item)) continue;   // Displays are not Items
@@ -921,8 +964,7 @@ final class RotationBlocks {
             Location il = item.getLocation();
 
             // Capture inside the block's own 1×1×1 cell.
-            if (il.getBlockX() == hopper.getX() && il.getBlockY() == hopper.getY()
-                    && il.getBlockZ() == hopper.getZ()) {
+            if (il.getBlockX() == cellX && il.getBlockY() == cellY && il.getBlockZ() == cellZ) {
                 ItemStack stack = item.getItemStack();
                 var leftover = internal.addItem(stack.clone());
                 if (leftover.isEmpty()) {
@@ -944,11 +986,9 @@ final class RotationBlocks {
             var unit = toCenter.multiply(1.0 / dist);
             var v = item.getVelocity();
             double along = v.dot(unit);
-            if (along < suctionPullStrength)
-                item.setVelocity(v.add(unit.clone().multiply(suctionPullStrength - along)));
+            if (along < pullStrength)
+                item.setVelocity(v.add(unit.clone().multiply(pullStrength - along)));
         }
-
-        pushToMount(hopper, internal);
 
         // Rare inward "airy" particles from a random cube point toward center (count=0 → offset=velocity).
         var rnd = java.util.concurrent.ThreadLocalRandom.current();
@@ -1075,8 +1115,15 @@ final class RotationBlocks {
     private static int suctionPullRange;
     private static double suctionPullStrength;
 
-    private record DrillState(int progress, Material targetMaterial) {}
+    /** Staged-break progress against one target material. Package-visible: the mechanism rotation
+     *  driver keeps its own per-(mechanism, block-index) instances — a riding drill's world cell
+     *  moves, so progress can't key on a world location. */
+    record DrillState(int progress, Material targetMaterial) {}
     private static final Map<CustomBlockRegistry.LocationKey, DrillState> drillProgress = new HashMap<>();
+
+    /** One {@link #drillEffect} step: the progress to carry into the next tick (null = start over)
+     *  and whether the target block was actually broken this tick. */
+    record DrillOutcome(@org.jetbrains.annotations.Nullable DrillState next, boolean broke) {}
 
     private static void overlayDrill(CustomBlockRegistry registry, RotationNetwork network,
                                       RotationConfig config) {
@@ -1126,29 +1173,45 @@ final class RotationBlocks {
 
         BlockFace facing = readFacing(drill);
         if (facing == null) return;
-        Block target = drill.getRelative(facing);
+        DrillOutcome out = drillEffect(registry, drill.getRelative(facing), facing,
+            drillProgress.get(key), key.hashCode(), drillBreakStages, drillBlacklist);
+        if (out.next() == null) drillProgress.remove(key);
+        else drillProgress.put(key, out.next());
+    }
+
+    /**
+     * One drill work-step against {@code target}: advance staged breaking, show the crack
+     * animation, and break the block (world-side drops) once the stages complete. World-coupled
+     * only through the target block itself — the caller supplies the powered gate, the target
+     * cell, and owns the progress state, so this serves both the static path ({@link #drillTick},
+     * keyed on the drill's world location) and drills riding a mechanism
+     * ({@code MechanismRotationDriver}, keyed per mechanism block index with a live target cell).
+     *
+     * @param prev     the caller's stored progress for this drill, or null when starting fresh
+     * @param sourceId stable {@code sendBlockDamage} id for this drill (distinct per drill)
+     */
+    static DrillOutcome drillEffect(CustomBlockRegistry registry, Block target, BlockFace facing,
+                                    @org.jetbrains.annotations.Nullable DrillState prev,
+                                    int sourceId, int breakStages, Set<Material> blacklist) {
         Material targetMat = target.getType();
 
         if (targetMat.isAir()) {
-            drillProgress.remove(key);
-            return;
+            return new DrillOutcome(null, false);
         }
-        if (target.isLiquid() || targetMat.getHardness() < 0 || drillBlacklist.contains(targetMat)) {
-            if (drillProgress.remove(key) != null) clearBreakAnimation(drill, facing);
-            return;
+        if (target.isLiquid() || targetMat.getHardness() < 0 || blacklist.contains(targetMat)) {
+            if (prev != null) clearBreakAnimationAt(target.getLocation(), sourceId);
+            return new DrillOutcome(null, false);
         }
 
         CustomHeadBlock targetType = registry.getTypeFromBlock(target);
         if (targetType != null && !targetType.drillable()) {
-            if (drillProgress.remove(key) != null) clearBreakAnimation(drill, facing);
-            return;
+            if (prev != null) clearBreakAnimationAt(target.getLocation(), sourceId);
+            return new DrillOutcome(null, false);
         }
 
-        DrillState state = drillProgress.get(key);
-        int progress = (state != null && state.targetMaterial == targetMat) ? state.progress + 1 : 1;
+        int progress = (prev != null && prev.targetMaterial() == targetMat) ? prev.progress() + 1 : 1;
 
-        if (progress >= drillBreakStages) {
-            drillProgress.remove(key);
+        if (progress >= breakStages) {
             if (targetType != null) {
                 if (targetType.storage() != null) registry.dropStorage(target);
                 // Enrich BEFORE onBlockRemoved/setType destroy the tile PDC, so captured
@@ -1160,18 +1223,16 @@ final class RotationBlocks {
             } else {
                 target.breakNaturally(NETHERITE_PICK);
             }
-            return;
+            return new DrillOutcome(null, true);
         }
 
-        drillProgress.put(key, new DrillState(progress, targetMat));
         Location targetLoc = target.getLocation();
-        int sourceId = key.hashCode();
-        float animProgress = (float) progress / drillBreakStages;
+        float animProgress = (float) progress / breakStages;
         for (Player p : targetLoc.getNearbyPlayers(DRILL_ANIM_RADIUS)) {
             p.sendBlockDamage(targetLoc, animProgress, sourceId);
         }
-
         spawnDrillParticles(target, facing.getOppositeFace());
+        return new DrillOutcome(new DrillState(progress, targetMat), false);
     }
 
     private static void spawnDrillParticles(Block target, BlockFace contactFace) {
@@ -1186,8 +1247,13 @@ final class RotationBlocks {
 
     private static void clearBreakAnimation(Block drill, @org.jetbrains.annotations.Nullable BlockFace facing) {
         if (facing == null) return;
-        Location targetLoc = drill.getRelative(facing).getLocation();
-        int sourceId = CustomBlockRegistry.LocationKey.of(drill).hashCode();
+        clearBreakAnimationAt(drill.getRelative(facing).getLocation(),
+            CustomBlockRegistry.LocationKey.of(drill).hashCode());
+    }
+
+    /** Reset the crack animation at a known target location (mechanism drills track their last
+     *  target cell explicitly — the drill itself has no world block to derive it from). */
+    static void clearBreakAnimationAt(Location targetLoc, int sourceId) {
         for (Player p : targetLoc.getNearbyPlayers(DRILL_ANIM_RADIUS)) {
             p.sendBlockDamage(targetLoc, 0.0f, sourceId);
         }

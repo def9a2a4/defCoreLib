@@ -23,8 +23,10 @@ public final class MechanismBlockData {
 
     // Captured at assembly from the live custom block (see MechanismRegistry.assembleCore):
     // spin direction (so a CCW source keeps spinning CCW inside the mechanism) and the wall-mounted
-    // facing (so wall_offset displays sit at the right depth). Both immutable once snapshotted.
-    final boolean spinReversed;
+    // facing (so wall_offset displays sit at the right depth). spinReversed is read by
+    // MechanismRegistry.updateAnimatedDisplays every tick and REWRITTEN by MechanismRotationDriver
+    // when the mechanism's own rotation network solves a direction (meshed gears counter-rotate).
+    boolean spinReversed;
     final @Nullable Vector3f wallFacing;
 
     // Mutable — updated by BasicMechanism.setBlockState()

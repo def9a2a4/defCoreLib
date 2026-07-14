@@ -5,6 +5,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.block.Container;
 import org.bukkit.entity.Display;
 import org.bukkit.entity.Entity;
@@ -111,6 +112,54 @@ final class BasicMechanism implements Mechanism {
     @Override
     public @Nullable Inventory getStorage(int blockIndex) {
         return blocks.get(blockIndex).storage;
+    }
+
+    // ──────────────────────────────────────────────────────────────────────
+    // Live-position queries (used by MechanismRotationDriver)
+    // ──────────────────────────────────────────────────────────────────────
+
+    /**
+     * The world cell a block currently occupies: {@code pivot + currentTransform·localTransform},
+     * floored. The pivot is block-centered and local offsets are integer center-to-center, so at
+     * near-cardinal orientations the sum sits at a cell center and floor() is exact — the same math
+     * as the collider repositioning in {@link #rotate} and the landing cells in {@link #disassemble}.
+     */
+    org.joml.Vector3i liveCell(int index) {
+        Vector3f off = currentTransform.transformPosition(
+            blocks.get(index).localTransform.getTranslation(new Vector3f()), new Vector3f());
+        return new org.joml.Vector3i(
+            (int) Math.floor(pivot.getX() + off.x),
+            (int) Math.floor(pivot.getY() + off.y),
+            (int) Math.floor(pivot.getZ() + off.z));
+    }
+
+    /**
+     * A block's current world facing: its local facing (wall head → {@code Directional.getFacing()},
+     * floor head → DOWN, matching the drill's facing-PDC convention) rotated by the mechanism's
+     * current transform. Matrix-based, so it is correct for any rotation axis (drawbridges too).
+     * Null when the mechanism is mid-rotation and the rotated facing isn't axis-aligned.
+     */
+    @Nullable BlockFace liveFacing(int index) {
+        MechanismBlockData mb = blocks.get(index);
+        BlockFace local = mb.blockData instanceof org.bukkit.block.data.Directional d
+            ? d.getFacing() : BlockFace.DOWN;
+        Vector3f v = currentTransform.transformDirection(
+            new Vector3f(local.getModX(), local.getModY(), local.getModZ()), new Vector3f());
+        int rx = Math.round(v.x), ry = Math.round(v.y), rz = Math.round(v.z);
+        for (BlockFace f : Faces.CARDINAL) {
+            if (f.getModX() == rx && f.getModY() == ry && f.getModZ() == rz) return f;
+        }
+        return null;
+    }
+
+    /**
+     * Whether the current rotation angle is within ~1° of a 90° multiple — the only orientations
+     * where integer local offsets map to unambiguous world cells. The rotation driver skips
+     * consumer actuation (not power/spin bookkeeping) while this is false.
+     */
+    boolean isNearCardinal() {
+        float m = Math.abs(currentYaw % 90f);
+        return m < 1.0f || m > 89.0f;
     }
 
     // ──────────────────────────────────────────────────────────────────────

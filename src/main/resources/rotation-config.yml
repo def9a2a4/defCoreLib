@@ -71,4 +71,40 @@ power:
   fan: 1
   press: 1
   placer: 1
+  suction_hopper: 1
   piston_core: 1   # base rotational demand of an extendable piston core (speed scales with surplus above this)
+
+# How each rotation block behaves while assembled into a moving mechanism (minecart, door,
+# drawbridge). Its supply/demand comes from the `power:` map above — not repeated here.
+#   kind:      transmitter — passes power along
+#              consumer    — draws power and works at its live world position
+#              engine      — supplies while burning fuel from its own travelling inventory
+#              constant_source — always supplies while assembled
+#              none        — remove a built-in entry (block ignored on mechanisms)
+#   axis:      state (default) — spin axis parsed from the captured state name
+#              y      — always driven from a shaft on top
+#              facing — spin axis follows the block's facing
+#              omni   — draws from the first aligned neighbor on any non-mounted face
+#   gear_like: meshes with adjacent gears (counter-rotation, bevels)
+# Notes: world redstone can't reach a block riding a mechanism, so the reverser/clutch pass
+# through unlocked, and the (inverted) redstone motor runs as a constant source. The water
+# wheel can't check for water while moving, so it only transmits.
+mechanism:
+  shaft:           { kind: transmitter }
+  gear:            { kind: transmitter, gear_like: true }
+  reverser:        { kind: transmitter }
+  clutch:          { kind: transmitter }
+  chain_pulley:    { kind: transmitter }
+  redstone_dynamo: { kind: transmitter }
+  water_wheel:     { kind: transmitter }
+  engine:          { kind: engine }
+  redstone_motor:  { kind: constant_source }
+  windmill:        { kind: constant_source }
+  large_windmill:  { kind: constant_source }
+  huge_windmill:   { kind: constant_source }
+  drill:           { kind: consumer }
+  millstone:       { kind: consumer, axis: y }
+  press:           { kind: consumer, axis: y }
+  placer:          { kind: consumer, axis: y }
+  fan:             { kind: consumer, axis: facing }
+  suction_hopper:  { kind: consumer, axis: omni }
