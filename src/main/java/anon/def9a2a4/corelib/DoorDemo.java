@@ -74,7 +74,7 @@ final class DoorDemo {
                 if (seed.getType().isAir()) return;
                 planks = List.of(seed);
             }
-            planks = CasingExpansion.withDerived(planks, registry, glueManager.maxSize(),
+            planks = StickySpread.withDerived(planks, registry, glueManager.maxSize(),
                 Set.of(key), MoverExclusion::blockedParticle);
             mech = mechRegistry.assembleMechanism("demo:door", planks,
                 head.getLocation().add(0.5, 0, 0.5), null);
@@ -136,7 +136,7 @@ final class DoorDemo {
                 if (seed.getType().isAir()) return;
                 planks = List.of(seed);
             }
-            planks = CasingExpansion.withDerived(planks, registry, glueManager.maxSize(),
+            planks = StickySpread.withDerived(planks, registry, glueManager.maxSize(),
                 Set.of(key), MoverExclusion::blockedParticle);
             mech = mechRegistry.assembleMechanism("demo:door", planks,
                 head.getLocation().add(0.5, 0, 0.5), null);

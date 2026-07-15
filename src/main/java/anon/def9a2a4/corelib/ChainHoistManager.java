@@ -279,7 +279,7 @@ final class ChainHoistManager {
             }
         }
         if (base.isEmpty()) base = List.of(seed);   // seed is checked movable by both callers
-        return CasingExpansion.withDerived(base, registry, glueManager.maxSize(),
+        return StickySpread.withDerived(base, registry, glueManager.maxSize(),
             excluded, MoverExclusion::blockedParticle);
     }
 
@@ -321,25 +321,19 @@ final class ChainHoistManager {
         Set<Long> cells = new HashSet<>();
         for (Block b : group) cells.add(cellKey(b));
 
-        // Our "self" cells — never captured into the platform: the hoist block, the WHOLE chain column
-        // (kept and swallowed links alike), and the drive train (network members + windmill passive
-        // sources). A casing directly under the hoist otherwise drags the hoist skull into the platform,
-        // which our own protected cell then consumes on landing.
+        // Our "self" cells — never captured into the platform: the hoist block and the WHOLE chain
+        // column (kept and swallowed links alike). A sticky block directly under the hoist otherwise
+        // drags the hoist skull into the platform, which our own protected cell then consumes on
+        // landing; one beside a mid-rope link would tear a chain out of the column.
         List<Block> hardware = new ArrayList<>(column);
         hardware.add(hoist);
-        Set<CustomBlockRegistry.LocationKey> excluded =
-            MoverExclusion.exclusionFor(network, hoistKey, hardware);
+        Set<CustomBlockRegistry.LocationKey> excluded = MoverExclusion.exclusionFor(hardware);
 
         // Whatever hangs under the chain rides along. Absent (a bare chain paying into air) the stroke is
         // the same, just chain-only — which is why there is no separate bare-rope path any more.
         Block seed = hoist.getRelative(0, -1 - startDepth, 0);
         int[] glue = null;
-        if (excluded.contains(CustomBlockRegistry.LocationKey.of(seed))) {
-            // Our own drive part sits under the rope (a gear routed to this cell). Never lift it; a
-            // descending stroke with chain falls through and fails clearForAll on it like any obstruction.
-            MoverExclusion.blockedParticle(hoist.getRelative(0, -startDepth, 0), seed);
-            if (group.isEmpty()) return;   // depth 0: the first link would land inside our own drive part
-        } else if (MovableBlocks.isMovable(seed, registry)) {
+        if (MovableBlocks.isMovable(seed, registry)) {
             List<Block> platform = resolveGroup(seed, excluded);
             if (platform == null) return;   // glued to something immovable — refuse rather than shear
             glue = new BlockAnchor(seed, () -> !active.containsKey(hoistKey)).readOffsets();  // pre air-out

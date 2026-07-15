@@ -249,7 +249,7 @@ final class MechanismMinecartManager implements Listener {
             blocks = List.of(seed);
         }
         // Slime-style casing spread: a casing in the carried set drags its neighbours (transitively).
-        blocks = CasingExpansion.withDerived(blocks, registry, glueManager.maxSize());
+        blocks = StickySpread.withDerived(blocks, registry, glueManager.maxSize());
 
         Mechanism mech = mechRegistry.assembleMechanism(MECH_MINECART_ID, blocks,
             state.minecart, MINECART_RIDE_OFFSET, null);

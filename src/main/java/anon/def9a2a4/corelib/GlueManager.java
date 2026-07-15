@@ -34,7 +34,7 @@ final class GlueManager {
     enum Result { OK, NOT_CONNECTED, CAP_HIT, ALREADY_GLUED, IS_ANCHOR, AXIS_INCOMPATIBLE }
 
     private final int maxSize;
-    // For casing detection (derived auto-glue) — see CasingExpansion. Nullable only for
+    // For sticky-block detection (derived auto-glue) — see StickySpread. Nullable only for
     // registry-less construction in tests; derived glue is skipped without it.
     private final @Nullable CustomBlockRegistry registry;
 
@@ -63,8 +63,8 @@ final class GlueManager {
     /**
      * As {@link #resolveStructure(Anchor)}, but cells in {@code excluded} (a mover's
      * {@link MoverExclusion} set) are filtered from BOTH the resolved authored list and the derived
-     * casing append. Authored offsets must be filtered too: nothing stops a player brush-gluing a
-     * mover's own core or drive shaft onto its head, and the movers' shear guards only reject
+     * sticky append. Authored offsets must be filtered too: nothing stops a player brush-gluing a
+     * mover's own core or rod onto its head, and the movers' shear guards only reject
      * <em>immovable</em> blocks — mover hardware is movable by design. Stored offsets are never
      * modified (rebind writes pre-move offsets verbatim; the barrier is resolve-time only).
      * {@code onBlocked} fires per filtered authored cell (null grabber → centre particle).
@@ -86,10 +86,10 @@ final class GlueManager {
             }
             out.add(b);
         }
-        // Derived casing auto-glue: casings touching the structure (or the anchor) join and spread
-        // casing-to-casing — computed fresh on every resolve, never stored (see CasingExpansion).
+        // Derived sticky auto-glue: sticky blocks touching the structure (or the anchor) join and
+        // bond by their family rules — computed fresh on every resolve, never stored (StickySpread).
         if (registry != null && !out.isEmpty()) {
-            out.addAll(CasingExpansion.derivedCasings(out, origin, registry, maxSize, excluded, onBlocked));
+            out.addAll(StickySpread.derived(out, origin, registry, maxSize, excluded, onBlocked));
         }
         return out;
     }
@@ -114,7 +114,7 @@ final class GlueManager {
                 if (!b.getType().isAir()) authored.add(b);
             }
         }
-        for (Block d : CasingExpansion.derivedCasings(authored, origin, registry, maxSize)) {
+        for (Block d : StickySpread.derived(authored, origin, registry, maxSize)) {
             set.add(new Vector3i(d.getX() - ox, d.getY() - oy, d.getZ() - oz));
         }
         return set;
@@ -123,10 +123,10 @@ final class GlueManager {
     /**
      * Rebind an anchor's glue after a mechanism ride: write the PRE-MOVE authored offsets,
      * transformed by the mechanism's snapped landing rotation (landed offset = R × old offset —
-     * 90°-snapped rigid moves map integer offsets to integers). Derived casing glue (casings and
-     * the leaves they drag, see {@link CasingExpansion}) never enters storage this way: a rigid
-     * move preserves adjacency, so it re-derives at the landed cells on the next resolve — storing
-     * it would bake casually-touching neighbours into authored glue. Blocks destroyed during
+     * 90°-snapped rigid moves map integer offsets to integers). Derived sticky glue (casings/slime/
+     * honey and the leaves they bond, see {@link StickySpread}) never enters storage this way: a
+     * rigid move preserves adjacency, so it re-derives at the landed cells on the next resolve —
+     * storing it would bake casually-touching neighbours into authored glue. Blocks destroyed during
      * landing linger in the stored offsets — harmless, {@link #resolveStructure} skips air.
      * No-op when {@code preMoveOffsets} is null (the anchor had no authored glue).
      */
@@ -147,13 +147,14 @@ final class GlueManager {
     /**
      * Overwrite the glued set from an explicit block list — used by the authoring cuboid/single-edit
      * commit (and the gluetest command). No connectivity check (the caller is authoritative).
-     * Casings are never stored: their glue is derived fresh on every resolve (see
-     * {@link CasingExpansion}). Movers rebind via {@link #rebindTransformed}, never through here —
-     * the landed payload contains derived casings/leaves that must not be baked into authored glue.
+     * Sticky blocks (casings/slime/honey) are never stored: their glue is derived fresh on every
+     * resolve (see {@link StickySpread}). Movers rebind via {@link #rebindTransformed}, never through
+     * here — the landed payload contains derived sticky blocks/leaves that must not be baked into
+     * authored glue.
      */
     void setStructure(Anchor a, List<Block> blocks) {
         List<Block> authored = registry == null ? blocks
-            : blocks.stream().filter(b -> !CasingExpansion.isCasing(b, registry)).toList();
+            : blocks.stream().filter(b -> !StickySpread.isSticky(b, registry)).toList();
         a.writeOffsets(packBlocks(a, authored));
     }
 

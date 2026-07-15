@@ -136,7 +136,7 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
 
         // Anchor-owned block selection ("glue") — shared by doors/rotators (wired in D3).
         // The glue item itself is declared in corelib-items.yml (mech:glue_item). The registry
-        // powers the derived casing auto-glue (CasingExpansion) at resolve time.
+        // powers the derived sticky auto-glue (StickySpread) at resolve time.
         glueManager = new GlueManager(rotConfig.glueMaxSize, registry);
         glueAuthoring = new GlueAuthoring(this, registry, glueManager,
             rotConfig.glueOutlineInterval, rotConfig.glueSessionTimeout);

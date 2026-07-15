@@ -277,15 +277,6 @@ public class RotationNetwork {
         return networkMembers.get(netId);
     }
 
-    /** The passive sources (windmills — boundary blocks, not graph nodes, so absent from
-     *  {@link #getNetworkMembers}) feeding this key's network. Empty set if none. */
-    public Set<CustomBlockRegistry.LocationKey> getNetworkPassiveSources(CustomBlockRegistry.LocationKey key) {
-        Integer netId = nodeNetworkId.get(key);
-        if (netId == null) return Set.of();
-        Set<CustomBlockRegistry.LocationKey> passives = networkPassiveSources.get(netId);
-        return passives != null ? passives : Set.of();
-    }
-
     // ──────────────────────────────────────────────────────────────────────
     // Recalculation
     // ──────────────────────────────────────────────────────────────────────

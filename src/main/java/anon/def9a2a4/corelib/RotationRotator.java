@@ -119,11 +119,9 @@ final class RotationRotator {
         int surplus = stats[0] - stats[1];
         if (surplus <= 0) { feedbackNoPower(head); return; }
 
-        // Our "self" cells — never swung: the head itself plus the drive train powering us (network
-        // members + windmill passive sources). An unglued rotator mounted directly on its own drive
-        // shaft therefore no-ops now instead of "swinging" the shaft in place.
-        Set<CustomBlockRegistry.LocationKey> excluded =
-            MoverExclusion.exclusionFor(network, key, List.of(head));
+        // Our "self" cell — never swung: the head itself (a sticky block beside it must not drag
+        // the controller into its own swing). Power components are ordinary cargo.
+        Set<CustomBlockRegistry.LocationKey> excluded = MoverExclusion.exclusionFor(List.of(head));
 
         Anchor anchor = new BlockAnchor(head, () -> !activeRotators.containsKey(key));
         List<Block> resolved = glueManager.resolveStructure(anchor,
@@ -136,15 +134,11 @@ final class RotationRotator {
             planks = resolved;
         } else {
             Block seed = attachmentBlock(head);   // no glue → swing the block the rotator is placed on
-            if (excluded.contains(CustomBlockRegistry.LocationKey.of(seed))) {   // our own drive train
-                MoverExclusion.blockedParticle(head, seed);
-                return;
-            }
             if (!MovableBlocks.isMovable(seed, registry)) return;   // don't scoop air / immovable world blocks
             planks = List.of(seed);
         }
-        // Slime-style casing spread: a casing in the swung set drags its neighbours (transitively).
-        planks = CasingExpansion.withDerived(planks, registry, glueManager.maxSize(),
+        // Sticky spread: a casing/slime/honey block in the swung set bonds its neighbours (transitively).
+        planks = StickySpread.withDerived(planks, registry, glueManager.maxSize(),
             excluded, MoverExclusion::blockedParticle);
 
         RotationNetwork.RotationNode node = network.getNode(key);

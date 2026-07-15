@@ -113,8 +113,8 @@ final class GlueAuthoring implements Listener {
                 if (!session.anchor.isAtRest()) { actionBar(player, "Anchor is moving — wait", NamedTextColor.RED); return; }
                 session.touch(now());
                 if (sneak) {
-                    if (CasingExpansion.isCasing(clicked, registry)) {
-                        actionBar(player, "Casing glue is automatic — break the casing to detach it",
+                    if (StickySpread.isSticky(clicked, registry)) {
+                        actionBar(player, "Sticky-block glue is automatic — break the block to detach it",
                             NamedTextColor.YELLOW);
                         return;
                     }
@@ -122,10 +122,10 @@ final class GlueAuthoring implements Listener {
                         feedback(player, clicked, false);
                     }
                 } else {
-                    // Casings auto-glue (derived at resolve, free, unremovable) — nothing to store.
-                    if (CasingExpansion.isCasing(clicked, registry)) {
+                    // Sticky blocks auto-glue (derived at resolve, free, unremovable) — nothing to store.
+                    if (StickySpread.isSticky(clicked, registry)) {
                         feedback(player, clicked, true);
-                        actionBar(player, "Casings glue automatically — no brush needed",
+                        actionBar(player, "Casings, slime and honey glue automatically — no brush needed",
                             NamedTextColor.GREEN);
                         return;
                     }
@@ -288,10 +288,10 @@ final class GlueAuthoring implements Listener {
             return;
         }
         // Filter out immovable cells (like glueCuboid already filters air/anchor/already-glued) rather than
-        // rejecting the whole box for one bedrock. Casings are filtered too — they auto-glue (derived).
+        // rejecting the whole box for one bedrock. Sticky blocks are filtered too — they auto-glue (derived).
         List<Block> movable = boxBlocks(a, clicked).stream()
             .filter(b -> MovableBlocks.isMovable(b, registry))
-            .filter(b -> !CasingExpansion.isCasing(b, registry)).toList();
+            .filter(b -> !StickySpread.isSticky(b, registry)).toList();
         GlueManager.FillResult r = glue.glueCuboid(s.anchor, movable,
             isDrawbridgeAnchor(s.anchor.originBlock()));
         damageBrush(player, r.added());

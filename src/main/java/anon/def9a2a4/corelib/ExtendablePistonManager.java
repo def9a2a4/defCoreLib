@@ -476,21 +476,20 @@ final class ExtendablePistonManager {
      * whole move</em> if any glued block is immovable (shear guard); an empty list means "nothing to carry".
      * Duplicates are fine — {@code startMove} dedups by cell.
      *
-     * <p>Every capture path is filtered through the piston's {@link MoverExclusion} set (core + rod +
-     * drive train): a casing chain running core→head must dead-end at the core, never pull it into the
-     * payload — a captured core is aired out and then silently consumed by its own protected cell.
+     * <p>Every capture path is filtered through the piston's {@link MoverExclusion} set (core + rod):
+     * a sticky chain running core→head must dead-end at the core, never pull it into the payload —
+     * a captured core is aired out and then silently consumed by its own protected cell.
      */
     private @Nullable List<Block> collectPayload(PistonLine line) {
         List<Block> hardware = new ArrayList<>(line.rodBlocks());
         hardware.add(line.core());
-        Set<CustomBlockRegistry.LocationKey> excluded = MoverExclusion.exclusionFor(
-            network, CustomBlockRegistry.LocationKey.of(line.core()), hardware);
+        Set<CustomBlockRegistry.LocationKey> excluded = MoverExclusion.exclusionFor(hardware);
         List<Block> out = new ArrayList<>();
         if (!addHeadPayload(out, line.frontHead(), line.frontFace(), excluded)) return null;
         if (line.backHead() != null
                 && !addHeadPayload(out, line.backHead(), line.frontFace().getOppositeFace(), excluded)) return null;
-        // Slime-style casing spread: a casing in the payload drags its neighbours (transitively).
-        return CasingExpansion.withDerived(out, registry, glueManager.maxSize(),
+        // Sticky spread: a casing/slime/honey block in the payload bonds its neighbours (transitively).
+        return StickySpread.withDerived(out, registry, glueManager.maxSize(),
             excluded, MoverExclusion::blockedParticle);
     }
 
@@ -508,10 +507,6 @@ final class ExtendablePistonManager {
             return true;
         }
         Block grab = head.getRelative(outFace);
-        if (excluded.contains(CustomBlockRegistry.LocationKey.of(grab))) {   // own hardware/drive train
-            MoverExclusion.blockedParticle(head, grab);
-            return true;
-        }
         if (MovableBlocks.isMovable(grab, registry)) out.add(grab);
         return true;
     }
