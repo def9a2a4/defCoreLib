@@ -455,6 +455,15 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         }
         int power = type.sensitivity() != CustomHeadBlock.Sensitivity.NONE ? registry.readPower(block, type) : 0;
 
+        // Texture the head synchronously, right after the setType normalization above. A DOWN/ceiling
+        // head is blanked by that setType, and the deferred applyConfig below can be skipped (its guard)
+        // or repaint too late — leaving the head textureless. Applying now guarantees a valid profile in
+        // the same tick the block is placed; the deferred applyConfig re-applies idempotently.
+        if (type.baseBlock() == null
+                && (block.getType() == Material.PLAYER_HEAD || block.getType() == Material.PLAYER_WALL_HEAD)) {
+            registry.applyTextureNow(block, type, state, power);
+        }
+
         // Schedule for next tick to ensure block state is fully initialized
         getServer().getScheduler().runTask(this, () -> {
             // Guard: block may have been broken between placement and this tick
@@ -749,25 +758,6 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         if (!support.getType().isSolid()) {
             event.setCancelled(true);
         }
-    }
-
-    // A bare block whose data is pinned (the casing's upside-down stair) must not push shape updates onto
-    // its neighbours: vanilla fires updateNeighbourShapes from the CHANGED cell, so placing or breaking a
-    // casing is what would make an adjacent upside-down stair snap into a corner against it. Cancelling
-    // here — at the casing's own cell — suppresses exactly that, and nothing else: a pinned bare block is
-    // static, so it has no shape/support physics of its own worth running.
-    // The converse (a neighbour reshaping the CASING) has no event to hook — Level.neighborShapeChanged
-    // fires none — but the stair rule only pairs same-half stairs, so an ordinary right-side-up staircase
-    // never touches an upside-down casing, and the worst case left is a casing's own hidden collider going
-    // 3/4 → 5/8 or 7/8.
-    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
-    public void onPhysicsCancelForPinnedBareBlocks(BlockPhysicsEvent event) {
-        Block block = event.getBlock();
-        // isBareBlock gates on bareTypes (a material lookup) before it builds a LocationKey, so an
-        // ordinary physics tick costs one map hit and leaves getTypeFromBlock untouched.
-        if (!registry.isBareBlock(block)) return;
-        CustomHeadBlock type = registry.getTypeFromBlock(block);
-        if (type != null && type.pinsBaseBlockData()) event.setCancelled(true);
     }
 
     // Water-bucket the other waterlogging vector shut. Flow is handled by the BlockFromToEvent guard
@@ -1386,21 +1376,7 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = false)
     public void onBlockPhysics(BlockPhysicsEvent event) {
-        Block changed = event.getBlock();
-        // Fast path: check if any neighbor is in the reactive set before doing expensive lookups
-        for (BlockFace face : Faces.CARDINAL) {
-            Block neighbor = changed.getRelative(face);
-            if (!registry.isNeighborReactive(neighbor)) continue;
-            // Only now do the expensive getTypeFromBlock lookup
-            CustomHeadBlock type = registry.getTypeFromBlock(neighbor);
-            if (type != null && type.onNeighborChange() != null) {
-                type.onNeighborChange().accept(neighbor, face.getOppositeFace());
-            }
-            if (type != null && type.displayTransformResolver() != null) {
-                String state = registry.getState(neighbor);
-                registry.resolveDisplayTransforms(neighbor, type, state);
-            }
-        }
+        registry.refreshReactiveNeighbors(event.getBlock());
     }
 
     // ──────────────────────────────────────────────────────────────────────

@@ -1,7 +1,9 @@
 package anon.def9a2a4.corelib;
 
+import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
+import org.bukkit.block.banner.PatternType;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.jspecify.annotations.Nullable;
 
@@ -36,6 +38,22 @@ final class ShowcaseSpec {
      *  {@code at}), or {@code fuel} (insert fuel into the block at {@code at}). */
     record Activate(String kind, @Nullable int[] at) {}
 
+    /** One dye + pattern layer of a banner's design (bottom to top, as {@link org.bukkit.inventory.meta.BannerMeta#setPatterns}
+     *  expects). Stored so the full design round-trips through {@code showcases.yml} even though the
+     *  current docs viewer renders every banner white. */
+    record PatternSpec(DyeColor color, PatternType pattern) {}
+
+    /** A BetterBanners banner placed programmatically by the showcase builder (a flag, a large/huge
+     *  banner, or a bed banner — none of these are blocks; they're player-interaction-spawned
+     *  ItemDisplay entities, so a showcase must place and capture them separately from {@code blocks}).
+     *  {@code item} is the base-color banner Material; {@code mode} is {@code flag | wall | standing |
+     *  bed}; {@code host} is the host block's offset (a fence/wall for flag, any block for wall/
+     *  standing, a bed for bed); {@code face} is the wall/standing mounting face (unused for flag/bed);
+     *  {@code step} (0-15) is the flag/standing rotation; {@code scale} is {@code 1.0/2.2/3.6} for
+     *  normal/large/huge; {@code patterns} is the full banner design (stored, not yet rendered). */
+    record BannerSpec(Material item, String mode, int[] host, @Nullable BlockFace face, int step,
+                       float scale, List<PatternSpec> patterns) {}
+
     /** A behavioural assertion (phase 2). {@code at} = offset from the build origin. */
     record Expect(String type, int[] at, @Nullable String value) {}
 
@@ -45,17 +63,19 @@ final class ShowcaseSpec {
     final String description;  // longer "deeper explanation" (detail page); defaults to blurb
     final List<BlockSpec> blocks;
     final List<VanillaSpec> vanilla;
+    final List<BannerSpec> banners;
     final Activate activate;
     final List<Expect> expect;
 
     ShowcaseSpec(String id, String name, String blurb, String description, List<BlockSpec> blocks,
-                 List<VanillaSpec> vanilla, Activate activate, List<Expect> expect) {
+                 List<VanillaSpec> vanilla, List<BannerSpec> banners, Activate activate, List<Expect> expect) {
         this.id = id;
         this.name = name;
         this.blurb = blurb;
         this.description = description;
         this.blocks = blocks;
         this.vanilla = vanilla;
+        this.banners = banners;
         this.activate = activate;
         this.expect = expect;
     }
@@ -96,6 +116,32 @@ final class ShowcaseSpec {
                     vanilla.add(new VanillaSpec(mat, at, str(m.get("data")),
                             Boolean.TRUE.equals(m.get("physics"))));
                 }
+                List<BannerSpec> banners = new ArrayList<>();
+                for (Object o : asList(entry.get("banners"))) {
+                    if (!(o instanceof Map<?, ?> m)) continue;
+                    Material item = Material.matchMaterial(str(m.get("item")) == null ? "" : str(m.get("item")));
+                    String mode = str(m.get("mode"));
+                    int[] host = vec(m.get("host"));
+                    if (item == null || mode == null || host == null) {
+                        log.warning("showcases.yml [" + id + "]: banner entry needs item + mode + host, skipped");
+                        continue;
+                    }
+                    BlockFace bface = str(m.get("face")) == null ? null : face(str(m.get("face")));
+                    int step = (m.get("step") instanceof Number n) ? n.intValue() : 0;
+                    float scale = (m.get("scale") instanceof Number n) ? n.floatValue() : 1.0f;
+                    List<PatternSpec> patterns = new ArrayList<>();
+                    for (Object po : asList(m.get("patterns"))) {
+                        if (!(po instanceof Map<?, ?> pm)) continue;
+                        DyeColor color = dyeColor(str(pm.get("color")));
+                        PatternType type = patternType(str(pm.get("pattern")));
+                        if (color == null || type == null) {
+                            log.warning("showcases.yml [" + id + "]: banner pattern needs valid color + pattern, skipped");
+                            continue;
+                        }
+                        patterns.add(new PatternSpec(color, type));
+                    }
+                    banners.add(new BannerSpec(item, mode, host, bface, step, scale, patterns));
+                }
                 Activate activate = parseActivate(entry.get("activate"));
                 List<Expect> expect = new ArrayList<>();
                 for (Object o : asList(entry.get("expect"))) {
@@ -110,7 +156,7 @@ final class ShowcaseSpec {
                 }
                 String shortBlurb = blurb == null ? "" : blurb;
                 out.put(id, new ShowcaseSpec(id, name == null ? id : name, shortBlurb,
-                        description == null ? shortBlurb : description, blocks, vanilla, activate, expect));
+                        description == null ? shortBlurb : description, blocks, vanilla, banners, activate, expect));
             } catch (Exception e) {
                 log.warning("showcases.yml: failed to parse an entry: " + e);
             }
@@ -147,6 +193,22 @@ final class ShowcaseSpec {
             v[i] = n.intValue();
         }
         return v;
+    }
+
+    private static @Nullable DyeColor dyeColor(@Nullable String s) {
+        if (s == null) return null;
+        try {
+            return DyeColor.valueOf(s.toUpperCase(java.util.Locale.ROOT));
+        } catch (IllegalArgumentException e) {
+            return null;
+        }
+    }
+
+    /** Resolve a banner pattern by its (stable, non-deprecated) identifier, e.g. {@code "border"},
+     *  {@code "creeper"} — not the deprecated {@code OldEnum} {@code valueOf}/{@code name()} shim, since
+     *  {@link PatternType} is registry-backed on modern Paper. */
+    private static @Nullable PatternType patternType(@Nullable String s) {
+        return s == null ? null : PatternType.getByIdentifier(s.toLowerCase(java.util.Locale.ROOT));
     }
 
     /** Placement face: down = floor (default); north/south/east/west = wall. */

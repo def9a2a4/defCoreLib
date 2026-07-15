@@ -1083,6 +1083,16 @@ public class CustomBlockRegistry {
     // Block lifecycle helpers
     // ──────────────────────────────────────────────────────────────────────
 
+    /**
+     * Apply only the head texture for a block's state/power. Synchronous and idempotent (the texture
+     * profile uses a deterministic UUID). Used to texture a head the instant it is placed, before the
+     * deferred {@link #applyConfig} runs — critical for DOWN/ceiling heads that a setType normalization
+     * blanks during placement.
+     */
+    public void applyTextureNow(Block block, CustomHeadBlock type, @Nullable String state, int power) {
+        HeadUtil.applyTexture(block, type.resolveTexture(state, power, getSkullFacing(block)));
+    }
+
     /** Apply the resolved config for a block's current state + power. */
     public void applyConfig(Block block, CustomHeadBlock type, @Nullable String state, int power) {
         // Texture (with directional support)
@@ -1227,6 +1237,27 @@ public class CustomBlockRegistry {
 
         // Remove light block
         clearLightBlock(block, type);
+    }
+
+    /**
+     * Recompute display transforms (and fire onNeighborChange) for every reactive custom block
+     * adjacent to {@code changed}. This mirrors {@link CoreLibPlugin#onBlockPhysics} for the case
+     * where a BlockPhysicsEvent is NOT emitted — i.e. when a custom block is placed/removed with
+     * physics suppressed, so neighbors never hear about the change on their own.
+     */
+    public void refreshReactiveNeighbors(Block changed) {
+        for (BlockFace face : Faces.CARDINAL) {
+            Block neighbor = changed.getRelative(face);
+            if (!isNeighborReactive(neighbor)) continue;
+            CustomHeadBlock type = getTypeFromBlock(neighbor);
+            if (type == null) continue;
+            if (type.onNeighborChange() != null) {
+                type.onNeighborChange().accept(neighbor, face.getOppositeFace());
+            }
+            if (type.displayTransformResolver() != null) {
+                resolveDisplayTransforms(neighbor, type, getState(neighbor));
+            }
+        }
     }
 
     void resolveDisplayTransforms(Block block, CustomHeadBlock type, @Nullable String state) {

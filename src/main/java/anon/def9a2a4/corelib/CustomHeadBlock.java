@@ -407,11 +407,8 @@ public final class CustomHeadBlock {
     public @Nullable Material baseBlock() { return baseBlock; }
     /** Exact data to pin {@link #baseBlock()} to wherever it is placed or landed, or null to take the
      *  block's default data (plus the placement-face auto-orient). Returns a defensive copy — Bukkit
-     *  BlockData is mutable, and the pin is shared by every block of this type. Use
-     *  {@link #pinsBaseBlockData()} on hot paths that only need the null check. */
+     *  BlockData is mutable, and the pin is shared by every block of this type. */
     public @Nullable BlockData baseBlockData() { return baseBlockData == null ? null : baseBlockData.clone(); }
-    /** Whether {@link #baseBlockData()} is set, without paying for the defensive copy. */
-    public boolean pinsBaseBlockData() { return baseBlockData != null; }
     /** For container physical_material blocks: whether the framework blocks opening/hopper access. */
     public boolean lockContainer() { return lockContainer; }
     public boolean itemGlint() { return itemGlint; }
