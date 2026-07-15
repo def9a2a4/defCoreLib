@@ -443,9 +443,13 @@ final class ChainHoistManager {
      * Span the transit rope over the stretch that has no real chain in it yet: from the moving platform's
      * top face up to the bottom face of the lowest laid link ({@code y0-ropeDepth}). Zero-length at both
      * ends of a stroke, so the handoff to real blocks is seamless.
+     *
+     * <p>The pivot is the seed block's CENTRE, not its corner — {@code MechanismRegistry.assembleCore}
+     * snaps it to the nearest block centre on all three axes so the whole mechanism shares one frame —
+     * so the platform's top face is half a block above it, not a whole one.
      */
-    private void liveRope(Block hoist, int ropeDepth, double platformBottomY) {
-        double platformTopY = platformBottomY + 1;
+    private void liveRope(Block hoist, int ropeDepth, double platformCentreY) {
+        double platformTopY = platformCentreY + 0.5;
         setRope(hoist, platformTopY, (hoist.getY() - ropeDepth) - platformTopY);
     }
 
