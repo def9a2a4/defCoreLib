@@ -2,8 +2,8 @@ package anon.def9a2a4.corelib;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import org.bukkit.Axis;
 import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -11,10 +11,11 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Skull;
+import org.bukkit.block.data.Orientable;
 import org.bukkit.block.data.Rotatable;
 import org.bukkit.entity.BlockDisplay;
-import org.bukkit.entity.Display;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -33,27 +34,33 @@ import java.util.logging.Level;
 
 /**
  * Chain Hoist (Create's "Rope Pulley"): a floor-placed vertical winch. It draws rotational power from
- * any adjacent shaft/gear (omni consumer) and, by spin direction, <b>lowers</b> (CW) or <b>raises</b>
- * (CCW) the platform directly beneath it — the block below plus its casing-connected blob (and any
- * authored glue) — as a moving {@link Mechanism}, exactly like {@link ExtendablePistonManager} but on
- * a fixed vertical axis and with no pole line. Travel depth is bounded by an internal <b>chain
- * reserve</b> loaded into the block: descending N cells spends N chains and pays out N blocks of rope;
- * rising refunds them.
+ * any adjacent shaft/gear (omni consumer) and, by spin direction, pays its rope <b>out</b> (CW) or reels
+ * it back <b>in</b> (CCW). The rope is <b>real {@code CHAIN} blocks</b> in the hoist's own column, laid
+ * one per block of travel out of the chains loaded into its 5-slot storage GUI — exactly like
+ * {@link ExtendablePistonManager} landing real pole blocks each stroke, but on a fixed vertical axis.
  *
- * <p>At rest the lowered platform is just <b>real world blocks</b> at depth {@code D} plus a static
- * rope display, so only {@code D} + the reserve persist (in the hoist's skull PDC) — no live mechanism
- * is serialized, mirroring the piston landing real blocks each stroke. Carried machinery stays live in
- * transit automatically via {@code MechanismRotationDriver} (built at the assemble choke point).
+ * <p>Whatever sits at the bottom of the rope rides along: if the cell under the rope holds a movable
+ * block, it plus its casing-connected blob (and any authored glue) travels as a {@link Mechanism}. If
+ * that cell is empty the rope still extends, so a hoist over a pit pays chain into open air until it
+ * reaches something. Carried machinery stays live in transit automatically via
+ * {@code MechanismRotationDriver} (built at the assemble choke point).
+ *
+ * <p><b>Invariant</b> — at extension {@code D} the hoist at {@code y0} owns real chains filling
+ * {@code y0-1 … y0-D}, and the platform's top block, if any, sits at {@code y0-D-1}. {@code D} is
+ * re-derived from where the platform actually landed on every stroke and the column is re-synced to it,
+ * so a cut power feed, a crash, or a player mining the rope mid-span self-heals instead of desyncing.
+ * At rest nothing but {@code D} (in the hoist's skull PDC) and real world blocks persist — no live
+ * mechanism is serialized. The stretched block-display rope exists only while a platform is in transit,
+ * spanning the cells whose real chains have not been laid yet.
  */
 final class ChainHoistManager {
 
     static final String HOIST_ID = "mech:chain_hoist";
     private static final String MECH_TYPE = "mech:chain_hoist";
-    /** Non-hoist tag family for the rope so the block-display refresh (which wipes
+    /** Non-hoist tag family for the in-transit rope so the block-display refresh (which wipes
      *  {@code corelib:mech:chain_hoist:*} on a state change) can't delete it — mirrors the pulley strand. */
     private static final String ROPE_TYPE = "chain_strand";
 
-    private static final NamespacedKey RESERVE_KEY = new NamespacedKey("mech", "chain_reserve");
     private static final NamespacedKey EXTENSION_KEY = new NamespacedKey("mech", "hoist_extension");
 
     // 1.21.9 renamed CHAIN → IRON_CHAIN; resolve by name so it compiles/runs on either API.
@@ -64,7 +71,7 @@ final class ChainHoistManager {
         return m != null ? m : Material.matchMaterial("CHAIN");
     }
 
-    private static final int TRIGGER_PERIOD = 4;         // ticks between idle-hoist scans
+    private static final int TRIGGER_PERIOD = 4;         // ticks between idle-hoist scans (= bare-rope cadence)
     private static final float MIN_STEP = 0.08f;         // blocks/tick floor (always progresses)
     private static final float SPEED_K = 0.5f;
     private static final int SETTLE_TICKS = 3;           // hold at target before disassembly (client lerp)
@@ -80,6 +87,9 @@ final class ChainHoistManager {
     private final Set<CustomBlockRegistry.LocationKey> hoists = new HashSet<>();
     private final Map<CustomBlockRegistry.LocationKey, ActiveMove> active = new HashMap<>();
     private final Map<CustomBlockRegistry.LocationKey, BlockDisplay> ropes = new HashMap<>();
+    /** Hoists spun up by the bare-rope path (which has no mechanism to bracket the animation), and the
+     *  tick each should idle again — a state change is only pushed on the transitions, not per step. */
+    private final Map<CustomBlockRegistry.LocationKey, Integer> spinUntil = new HashMap<>();
     private final Set<CustomBlockRegistry.LocationKey> warned = new HashSet<>();
     private int tickCounter = 0;
 
@@ -111,7 +121,7 @@ final class ChainHoistManager {
                     config.getPower("chain_hoist", 1), false, true, null);
                 hoists.add(CustomBlockRegistry.LocationKey.of(b));
                 setSpin(b, false);   // normalise to idle (a crash mid-move could leave 'spinning' persisted)
-                if (readExtension(b) > 0) rebuildRope(b, readExtension(b));   // re-render the resting rope
+                removeRope(b);       // the resting rope is real blocks; any display here is a crash leftover
             })
             .onChunkUnload(this::forget)
             .onBlockRemoved((b, state) -> onRemoved(b))
@@ -129,46 +139,17 @@ final class ChainHoistManager {
         }
     }
 
-    // ──────────────────────────────────────────────────────────────────────
-    // Chain-reserve interaction (deposit / withdraw)
-    // ──────────────────────────────────────────────────────────────────────
-
+    /**
+     * Wrench inspects; anything else falls through to the storage GUI (opened by the plugin's interact
+     * dispatch when this returns false), which is where the chains live.
+     */
     private boolean handleInteract(Block b, PlayerInteractEvent event) {
-        var player = event.getPlayer();
-        ItemStack hand = player.getInventory().getItemInMainHand();
-        if (RotationBlocks.isWrench(hand)) {
-            event.setCancelled(true);
-            RotationBlocks.debugInteract(b, event, network, registry);
-            player.sendMessage(Component.text("Chain reserve: " + readReserve(b) + "/" + config.chainHoistMaxReserve
-                + " | extension " + readExtension(b), NamedTextColor.GRAY));
-            return true;
-        }
-        // Sneak-right → withdraw the whole reserve to the player.
-        if (player.isSneaking()) {
-            int reserve = readReserve(b);
-            if (reserve <= 0) return false;   // nothing to take — let other handlers run
-            event.setCancelled(true);
-            writeReserve(b, 0);
-            if (player.getGameMode() != GameMode.CREATIVE) {
-                player.getInventory().addItem(new ItemStack(CHAIN_MATERIAL, reserve));
-            }
-            player.sendActionBar(Component.text("Withdrew " + reserve + " chains", NamedTextColor.YELLOW));
-            return true;
-        }
-        // Right-click with chains → deposit up to the cap.
-        if (hand.getType() != CHAIN_MATERIAL) return false;   // not depositing — let placement proceed
+        if (!RotationBlocks.isWrench(event.getPlayer().getInventory().getItemInMainHand())) return false;
         event.setCancelled(true);
-        int reserve = readReserve(b);
-        int space = config.chainHoistMaxReserve - reserve;
-        if (space <= 0) {
-            player.sendActionBar(Component.text("Reserve full (" + reserve + ")", NamedTextColor.RED));
-            return true;
-        }
-        int add = Math.min(space, hand.getAmount());
-        writeReserve(b, reserve + add);
-        if (player.getGameMode() != GameMode.CREATIVE) hand.setAmount(hand.getAmount() - add);
-        player.sendActionBar(Component.text("Chain reserve: " + (reserve + add) + "/" + config.chainHoistMaxReserve,
-            NamedTextColor.AQUA));
+        RotationBlocks.debugInteract(b, event, network, registry);
+        event.getPlayer().sendMessage(Component.text(
+            "Chains: " + countChains(registry.getOrCreateStorage(b)) + " | extension " + readExtension(b),
+            NamedTextColor.GRAY));
         return true;
     }
 
@@ -191,6 +172,7 @@ final class ChainHoistManager {
                 }
             }
         }
+        expireBareSpin();
         if (++tickCounter % TRIGGER_PERIOD == 0 && !hoists.isEmpty()) {
             for (CustomBlockRegistry.LocationKey k : new ArrayList<>(hoists)) {
                 if (active.containsKey(k)) continue;
@@ -209,29 +191,64 @@ final class ChainHoistManager {
         if (dir == null) return;
         Block hoist = blockOf(hoistKey);
         if (hoist == null) return;
-        boolean descend = dir == RotationNetwork.SpinDirection.CW;   // CW lowers, CCW raises
         int d = readExtension(hoist);
-        int chainsAvail = descend ? readReserve(hoist) : d;          // rising is capped by the current depth
-        if (chainsAvail <= 0) return;
+        if (dir == RotationNetwork.SpinDirection.CW) payOut(hoistKey, hoist, d, dir);
+        else reelIn(hoistKey, hoist, d, dir);
+    }
 
-        // Platform top = the block directly under the hoist at the current depth. Its casing blob (+ any
-        // authored glue) rides as one unit.
+    /** CW: lower. Slide the hanging platform down, or — with nothing hanging — pay bare rope into the air. */
+    private void payOut(CustomBlockRegistry.LocationKey hoistKey, Block hoist, int d,
+                        RotationNetwork.SpinDirection spinDir) {
+        Inventory inv = registry.getOrCreateStorage(hoist);
+        int avail = countChains(inv);
+        if (avail <= 0) return;
+
+        // The cell under the rope: the platform's top block if something hangs there, else the next
+        // cell the bare rope grows into.
         Block seed = hoist.getRelative(0, -1 - d, 0);
-        if (!MovableBlocks.isMovable(seed, registry)) return;
-        List<Block> group = resolveGroup(seed);
+        if (MovableBlocks.isMovable(seed, registry)) {
+            List<Block> group = resolveGroup(seed);
+            Set<Long> footprint = footprintKeys(group);
+            int steps = clearForAll(group, footprint, BlockFace.DOWN, avail);
+            if (steps <= 0) return;
+            startMove(hoistKey, hoist, seed, group, steps, true, spinDir, d);
+            return;
+        }
+        if (!isClear(seed) || seed.getY() < hoist.getWorld().getMinHeight()) return;   // bedrock etc.
+        placeChain(seed);
+        consumeChains(inv, 1);
+        writeExtension(hoist, d + 1);
+        markBareSpin(hoist, hoistKey);
+    }
 
-        BlockFace moveFace = descend ? BlockFace.DOWN : BlockFace.UP;
-        Set<Long> footprint = footprintKeys(group);
-        int steps = clearForAll(group, footprint, moveFace, chainsAvail);
-        if (steps <= 0) return;
-        startMove(hoistKey, hoist, seed, group, moveFace, steps, descend, dir, d);
+    /** CCW: raise. Slide the platform back up, or reel bare rope in a cell at a time. */
+    private void reelIn(CustomBlockRegistry.LocationKey hoistKey, Block hoist, int d,
+                        RotationNetwork.SpinDirection spinDir) {
+        if (d <= 0) return;
+        Block seed = hoist.getRelative(0, -1 - d, 0);
+        if (MovableBlocks.isMovable(seed, registry)) {
+            List<Block> group = resolveGroup(seed);
+            Set<Long> footprint = footprintKeys(group);
+            addRopeCells(hoist, d, footprint);   // our own rope is not an obstruction — we reel it in
+            int steps = clearForAll(group, footprint, BlockFace.UP, d);
+            if (steps <= 0) return;
+            startMove(hoistKey, hoist, seed, group, steps, false, spinDir, d);
+            return;
+        }
+        // Bare rope, nothing hanging. A mined-away link just shortens the rope with no refund.
+        Block bottom = hoist.getRelative(0, -d, 0);
+        if (isOwnRope(bottom)) {
+            bottom.setType(Material.AIR, false);
+            refundChains(registry.getOrCreateStorage(hoist), hoist, 1);
+        }
+        writeExtension(hoist, d - 1);
+        markBareSpin(hoist, hoistKey);
     }
 
     /** Platform = the seed's authored glue (rare — normally none) or the seed itself, expanded through casings. */
     private List<Block> resolveGroup(Block seed) {
-        List<Block> base;
         List<Block> glued = glueManager.resolveStructure(new BlockAnchor(seed, () -> true));
-        base = (glued != null && !glued.isEmpty()) ? glued : List.of(seed);
+        List<Block> base = (glued != null && !glued.isEmpty()) ? glued : List.of(seed);
         return CasingExpansion.withDerived(base, registry, glueManager.maxSize());
     }
 
@@ -240,8 +257,7 @@ final class ChainHoistManager {
     // ──────────────────────────────────────────────────────────────────────
 
     private void startMove(CustomBlockRegistry.LocationKey hoistKey, Block hoist, Block seed, List<Block> group,
-                           BlockFace moveFace, int steps, boolean descend, RotationNetwork.SpinDirection spinDir,
-                           int startDepth) {
+                           int steps, boolean descend, RotationNetwork.SpinDirection spinDir, int startDepth) {
         Anchor anchor = new BlockAnchor(seed, () -> !active.containsKey(hoistKey));
         final int[] glueOffsets = anchor.readOffsets();   // capture before air-out (null for a plain platform)
         final int seedDx = 0, seedDz = 0;                 // pivot is on the seed column
@@ -252,7 +268,12 @@ final class ChainHoistManager {
 
         try {
             setSpin(hoist, true);
-            Vector3f dir = new Vector3f(0f, descend ? -1f : 1f, 0f);
+            // Rising: the rope the platform is about to travel through has to go now — disassembly would
+            // overwrite those cells anyway. The transit display covers the gap; syncColumn below puts back
+            // any link the platform didn't actually reach.
+            if (!descend) stripRope(hoist, startDepth, steps);
+            final int deepest = descend ? startDepth + steps : startDepth;
+
             mech.setOnDisassembled(placed -> {
                 // Re-resolve any landed resolver-block displays (list order has no neighbour guarantee).
                 for (Block b : placed) {
@@ -267,20 +288,46 @@ final class ChainHoistManager {
                     new BlockAnchor(p.getWorld().getBlockAt(p.getBlockX() + seedDx, p.getBlockY(),
                         p.getBlockZ() + seedDz), () -> true).writeOffsets(glueOffsets);
                 }
-                // Commit the depth + reserve change and re-render the static resting rope.
-                int newDepth = descend ? startDepth + steps : startDepth - steps;
+                // Broken mid-stroke (onRemoved lands the platform on its way out): the platform is down
+                // safely, but there is no hoist left to own a rope or take a refund. Leave the world alone.
+                if (registry.getTypeFromBlock(hoist) == null) return;
+                // Depth comes from where the platform really landed, not from the steps we asked for: a
+                // power cut mid-stroke stops it short, and disassembly can drop a block instead of placing it.
+                int newDepth = depthFromLanding(hoist, placed, startDepth, deepest);
+                syncColumn(hoist, newDepth, deepest);
+                int delta = newDepth - startDepth;
+                Inventory inv = registry.getOrCreateStorage(hoist);
+                if (delta > 0) consumeChains(inv, delta);
+                else if (delta < 0) refundChains(inv, hoist, -delta);
                 writeExtension(hoist, newDepth);
-                adjustReserve(hoist, descend ? -steps : steps);
                 setSpin(hoist, false);
-                rebuildRope(hoist, newDepth);
+                removeRope(hoist);
             });
             Location start = mech.pivot();
-            Location target = start.clone().add(0, dir.y * steps, 0);
-            active.put(hoistKey, new ActiveMove(hoistKey, hoist, mech, start, target, dir, group.size(), spinDir));
+            Location target = start.clone().add(0, descend ? -steps : steps, 0);
+            active.put(hoistKey, new ActiveMove(hoistKey, hoist, mech, start, target,
+                descend ? -1f : 1f, group.size(), spinDir, descend ? startDepth : startDepth - steps));
         } catch (Throwable t) {
             safeDisassemble(mech, hoistKey);
             throw t;
         }
+    }
+
+    /**
+     * Re-derive the extension from the invariant "platform top block sits at {@code y0-D-1}", reading the
+     * highest cell in the hoist's own column that the platform actually landed in. Falls back to
+     * {@code startDepth} if the platform left the column entirely (every block dropped as an item).
+     */
+    private static int depthFromLanding(Block hoist, List<Block> placed, int startDepth, int deepest) {
+        int topY = Integer.MIN_VALUE;
+        for (Block b : placed) {
+            if (b.getX() == hoist.getX() && b.getZ() == hoist.getZ()
+                    && b.getY() < hoist.getY() && b.getY() > topY) {
+                topY = b.getY();
+            }
+        }
+        if (topY == Integer.MIN_VALUE) return startDepth;
+        return Math.max(0, Math.min(deepest, hoist.getY() - topY - 1));
     }
 
     /** @return true when the move finished (disassembled) and should be dropped from {@code active}. */
@@ -293,50 +340,90 @@ final class ChainHoistManager {
         Location cur = m.mech.pivot();
         // Stop at the next whole cell if power is cut or the spin flips mid-travel.
         if (!network.isPowered(m.hoistKey) || network.getDirection(m.hoistKey) != m.spinDir) {
-            double progress = (cur.getY() - m.start.getY()) * m.dir.y;
+            double progress = (cur.getY() - m.start.getY()) * m.dirY;
             int stopped = Math.max(0, (int) Math.ceil(progress - 1e-6));
-            m.target = m.start.clone().add(0, m.dir.y * stopped, 0);
+            m.target = m.start.clone().add(0, m.dirY * stopped, 0);
         }
-        double remaining = (m.target.getY() - cur.getY()) * m.dir.y;
+        double remaining = (m.target.getY() - cur.getY()) * m.dirY;
         int[] stats = network.getNetworkStats(m.hoistKey);
         int base = config.getPower("chain_hoist", 1);
         int power = (stats != null ? stats[0] - stats[1] : 0) + base;
         float step = clamp(SPEED_K * power / Math.max(1, m.mass), MIN_STEP, (float) config.pistonMaxStep);
 
-        if (remaining <= step + 1e-3) {
-            m.mech.move(m.target, 0f);
-            liveRope(m.hoist, m.target.getY());
-            m.settle = SETTLE_TICKS;
-            return false;
-        }
-        Location next = cur.clone().add(0, m.dir.y * step, 0);
+        boolean arrived = remaining <= step + 1e-3;
+        Location next = arrived ? m.target : cur.clone().add(0, m.dirY * step, 0);
         m.mech.move(next, 0f);
-        liveRope(m.hoist, next.getY());
+        liveRope(m.hoist, m.ropeDepth, next.getY());
+        if (arrived) m.settle = SETTLE_TICKS;
         return false;
     }
 
     // ──────────────────────────────────────────────────────────────────────
-    // Rope render (a stretched IRON_CHAIN block display from hoist → platform)
+    // The rope: real CHAIN blocks at rest, a stretched block display in transit
     // ──────────────────────────────────────────────────────────────────────
 
-    /** Rebuild the static resting rope for depth {@code d} (removes it when {@code d <= 0}). Used on a
-     *  completed move and on chunk load — clears any persisted/stale copy first, then sets the length. */
-    private void rebuildRope(Block hoist, int d) {
-        removeRope(hoist);
-        if (d > 0) setRope(hoist, d);
+    /**
+     * Make the real rope column match {@code depth}: chain filling {@code y0-1 … y0-depth}, none of ours
+     * below that down to {@code deepest}. Idempotent, so it doubles as the repair for a rope a player
+     * mined into or a stroke that stopped short.
+     */
+    private void syncColumn(Block hoist, int depth, int deepest) {
+        for (int i = 1; i <= depth; i++) {
+            Block c = hoist.getRelative(0, -i, 0);
+            if (isClear(c)) placeChain(c);
+        }
+        for (int i = depth + 1; i <= deepest; i++) {
+            Block c = hoist.getRelative(0, -i, 0);
+            if (isOwnRope(c)) c.setType(Material.AIR, false);
+        }
     }
 
-    /** Update the rope live to span from the hoist down to the moving platform pivot (block-centre Y).
-     *  Updates the existing display's matrix in place — no per-tick respawn (which would flicker). */
-    private void liveRope(Block hoist, double platformCentreY) {
-        double len = (hoist.getY() + 0.5) - platformCentreY;   // hoist centre → platform centre
-        if (len > 0.05) setRope(hoist, len); else removeRope(hoist);
+    /** Strip {@code n} links off the bottom of a {@code startDepth}-deep rope ({@code y0-startDepth} up). */
+    private void stripRope(Block hoist, int startDepth, int n) {
+        for (int i = 0; i < n; i++) {
+            Block c = hoist.getRelative(0, -(startDepth - i), 0);
+            if (isOwnRope(c)) c.setType(Material.AIR, false);
+        }
     }
 
-    /** Set the rope to a given length, updating the tracked display in place or spawning it if absent. */
-    private void setRope(Block hoist, double length) {
+    private static void placeChain(Block b) {
+        b.setType(CHAIN_MATERIAL, false);
+        if (b.getBlockData() instanceof Orientable o) {
+            o.setAxis(Axis.Y);
+            b.setBlockData(o, false);
+        }
+    }
+
+    /** A plain chain we may take: a chain <i>shaft</i> is also CHAIN, but it is in the bare-block index. */
+    private boolean isOwnRope(Block b) {
+        return b.getType() == CHAIN_MATERIAL && !registry.isBareBlock(b);
+    }
+
+    /** Rope cells that are really ours — passable for a rising platform, which reels them in as it goes. */
+    private void addRopeCells(Block hoist, int d, Set<Long> footprint) {
+        for (int i = 1; i <= d; i++) {
+            Block c = hoist.getRelative(0, -i, 0);
+            if (isOwnRope(c)) footprint.add(cellKey(c));
+        }
+    }
+
+    /**
+     * Span the transit display over the stretch of rope that has no real chain in it yet: from the bottom
+     * face of the lowest laid link ({@code y0-ropeDepth}) down to the moving platform's top face. Zero at
+     * both ends of a stroke, so the handoff to real blocks is seamless. Updates the existing display's
+     * matrix in place — a per-tick respawn would flicker.
+     */
+    private void liveRope(Block hoist, int ropeDepth, double platformBottomY) {
+        double topY = hoist.getY() - ropeDepth;
+        double len = topY - (platformBottomY + 1);   // platform top face
+        if (len > 0.05) setRope(hoist, topY, len);
+        else if (ropes.containsKey(CustomBlockRegistry.LocationKey.of(hoist))) removeRope(hoist);
+    }
+
+    private void setRope(Block hoist, double topY, double length) {
         Quaternionf orient = new Quaternionf().rotationTo(0f, 1f, 0f, 0f, -1f, 0f);
-        Vector3f translation = new Vector3f(0f, (float) (-length / 2.0), 0f);
+        // The display is anchored at the hoist's centre; place the rope's midpoint relative to that.
+        Vector3f translation = new Vector3f(0f, (float) ((topY - length / 2.0) - (hoist.getY() + 0.5)), 0f);
         Vector3f scale = new Vector3f(1f, (float) length, 1f);
         // T·R·S·T(-0.5): the trailing -0.5 centres the BlockDisplay unit cube (renders from its MIN corner).
         Matrix4f matrix = new Matrix4f()
@@ -353,13 +440,49 @@ final class ChainHoistManager {
     }
 
     private void removeRope(Block hoist) {
-        CustomBlockRegistry.LocationKey key = CustomBlockRegistry.LocationKey.of(hoist);
-        ropes.remove(key);
+        ropes.remove(CustomBlockRegistry.LocationKey.of(hoist));
         DisplayUtil.removeByTag(hoist.getLocation(), ropeTag(hoist), 2.0);   // also clears a persisted copy
     }
 
     private static String ropeTag(Block hoist) {
         return DisplayUtil.blockTag("mech", ROPE_TYPE, hoist.getLocation(), null);
+    }
+
+    // ──────────────────────────────────────────────────────────────────────
+    // Chain stock (the block's storage GUI is the reserve)
+    // ──────────────────────────────────────────────────────────────────────
+
+    private static int countChains(@Nullable Inventory inv) {
+        if (inv == null) return 0;
+        int n = 0;
+        for (ItemStack s : inv.getContents()) {
+            if (s != null && s.getType() == CHAIN_MATERIAL) n += s.getAmount();
+        }
+        return n;
+    }
+
+    /** Match {@link #countChains} exactly — by material, not by stack similarity, so a renamed chain that
+     *  counts as stock is also spendable (otherwise it would read as an inexhaustible supply). */
+    private static void consumeChains(@Nullable Inventory inv, int n) {
+        if (inv == null) return;
+        for (int i = 0; i < inv.getSize() && n > 0; i++) {
+            ItemStack s = inv.getItem(i);
+            if (s == null || s.getType() != CHAIN_MATERIAL) continue;
+            int take = Math.min(n, s.getAmount());
+            s.setAmount(s.getAmount() - take);
+            inv.setItem(i, s.getAmount() <= 0 ? null : s);
+            n -= take;
+        }
+    }
+
+    /** Reeled-in chain goes back to stock; what won't fit (5 slots) spills out on top of the hoist. */
+    private static void refundChains(@Nullable Inventory inv, Block hoist, int n) {
+        if (n <= 0) return;
+        ItemStack stack = new ItemStack(CHAIN_MATERIAL, n);
+        Map<Integer, ItemStack> leftover = inv == null ? Map.of(0, stack) : inv.addItem(stack);
+        for (ItemStack s : leftover.values()) {
+            hoist.getWorld().dropItemNaturally(hoist.getLocation().add(0.5, 1.0, 0.5), s);
+        }
     }
 
     // ──────────────────────────────────────────────────────────────────────
@@ -405,18 +528,35 @@ final class ChainHoistManager {
         network.removeNode(k);
         hoists.remove(k);
         warned.remove(k);
+        spinUntil.remove(k);
         ActiveMove m = active.remove(k);
         if (m != null) safeDisassemble(m.mech, k);   // land the platform instead of orphaning it
     }
 
-    /** Block removed (break / explosion / piston): drop the reserve, land any active platform, clear the rope. */
+    /** Block removed (break / explosion / piston): land any active platform, clear the transit display. The
+     *  rope stays as real harvestable chain; stock drops via the registry's storage handling. */
     private void onRemoved(Block b) {
-        int reserve = readReserve(b);
-        if (reserve > 0) {
-            b.getWorld().dropItemNaturally(b.getLocation().add(0.5, 0.5, 0.5), new ItemStack(CHAIN_MATERIAL, reserve));
-        }
         removeRope(b);
         forget(b);
+    }
+
+    /** Spin the wheel through a bare-rope step. Only the transitions push a state change (which rebuilds
+     *  displays); the steps in between just extend the deadline. */
+    private void markBareSpin(Block hoist, CustomBlockRegistry.LocationKey key) {
+        if (spinUntil.put(key, tickCounter + TRIGGER_PERIOD * 2) == null) setSpin(hoist, true);
+    }
+
+    private void expireBareSpin() {
+        if (spinUntil.isEmpty()) return;
+        var it = spinUntil.entrySet().iterator();
+        while (it.hasNext()) {
+            var e = it.next();
+            if (tickCounter < e.getValue()) continue;
+            Block b = blockOf(e.getKey());
+            // A platform stroke owns the spin state while it runs and clears it on landing.
+            if (b != null && !active.containsKey(e.getKey())) setSpin(b, false);
+            it.remove();
+        }
     }
 
     private void setSpin(Block hoist, boolean spinning) {
@@ -432,23 +572,15 @@ final class ChainHoistManager {
         if (network.getNode(k) != null) network.recalculate(k);
     }
 
-    // ── Skull-PDC reserve / extension counters ──
-
-    private int readReserve(Block b) { return readInt(b, RESERVE_KEY); }
-    private int readExtension(Block b) { return readInt(b, EXTENSION_KEY); }
-    private void writeReserve(Block b, int v) { writeInt(b, RESERVE_KEY, v); }
-    private void writeExtension(Block b, int v) { writeInt(b, EXTENSION_KEY, v); }
-    private void adjustReserve(Block b, int delta) { writeReserve(b, Math.max(0, readReserve(b) + delta)); }
-
-    private static int readInt(Block b, NamespacedKey key) {
+    private static int readExtension(Block b) {
         if (!(b.getState() instanceof Skull skull)) return 0;
-        Integer v = skull.getPersistentDataContainer().get(key, PersistentDataType.INTEGER);
+        Integer v = skull.getPersistentDataContainer().get(EXTENSION_KEY, PersistentDataType.INTEGER);
         return v == null ? 0 : v;
     }
 
-    private static void writeInt(Block b, NamespacedKey key, int v) {
+    private static void writeExtension(Block b, int v) {
         if (!(b.getState() instanceof Skull skull)) return;
-        skull.getPersistentDataContainer().set(key, PersistentDataType.INTEGER, v);
+        skull.getPersistentDataContainer().set(EXTENSION_KEY, PersistentDataType.INTEGER, Math.max(0, v));
         skull.update();
     }
 
@@ -476,21 +608,24 @@ final class ChainHoistManager {
         final Mechanism mech;
         final Location start;
         Location target;
-        final Vector3f dir;
+        final float dirY;
         final int mass;
         final RotationNetwork.SpinDirection spinDir;
+        /** Depth of the real chain already in the column for the whole stroke — where the transit rope starts. */
+        final int ropeDepth;
         int warmup = 2;
         int settle = -1;
         ActiveMove(CustomBlockRegistry.LocationKey hoistKey, Block hoist, Mechanism mech, Location start,
-                   Location target, Vector3f dir, int mass, RotationNetwork.SpinDirection spinDir) {
+                   Location target, float dirY, int mass, RotationNetwork.SpinDirection spinDir, int ropeDepth) {
             this.hoistKey = hoistKey;
             this.hoist = hoist;
             this.mech = mech;
             this.start = start;
             this.target = target;
-            this.dir = dir;
+            this.dirY = dirY;
             this.mass = mass;
             this.spinDir = spinDir;
+            this.ropeDepth = ropeDepth;
         }
     }
 }

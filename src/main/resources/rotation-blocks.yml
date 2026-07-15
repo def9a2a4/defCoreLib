@@ -72,6 +72,20 @@ textures:
   head_up:           "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTQ4YzAxMDIzYzdkODgxZWZlMThkZjczZDgyOWIzM2Q1OGQ1NzQ4ZTQzMDI3YzQ3ZWUxODFmYTQzNzE0YWI4YiJ9fX0="  # piston/head-up — piston head cap (floor/vertical)
   head_fwd:          "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzc1MDgyM2E4ZDU1ZTYxMTk5ZGFiMzZiZGJkOTgyMjljNTA5MmY3MGFjYzgyOTkyMzJiOWQ3MzFmODZkNjRhMSJ9fX0="  # piston/head-fwd — piston head cap (wall/horizontal) + item
 
+  # ── Casing cased art (assets/rotation/casing/cased/, via scripts/upload_skin.py) ──
+  casing_oak:        "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmYzNzU1YTU4MTUyMGQ4NjY3NDQwZDViYTYzMzAxODYzNjIwODBjNjk0ZjExNWIxMTU3OTA0NjUxOGQ1ODM5NSJ9fX0="  # casing/cased/oak.png
+  casing_acacia:     "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvM2YzMGI2ODczODA1NWRjNzY2OWQ4MTFjYWI4NWMxNjY2NmQzODcwMmMwZDNjNjUyZWYzOWZkNzFhNTA0Y2YxYiJ9fX0="  # casing/cased/acacia.png
+  casing_bamboo:     "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvY2Q1MTA2OGViMDQ0ODVjZjg5YWQzM2RkN2YxODI1MTQyMDE2OWI5MTg0OGViZDBkNWRmMjdmOWYxYmNlOWY4ZiJ9fX0="  # casing/cased/bamboo.png
+  casing_birch:      "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzBlYzUwODg4ZDk4ZTZlMDI3MGM4ZDdjMWM1ODI2NjAxNzQwNGE2NjNhMTcwZWE5NmUzMmQ5ZmZiNTY0OTY3OSJ9fX0="  # casing/cased/birch.png
+  casing_cherry:     "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTE4N2VlNDhlOTExYTk0ZjNlNzM1NDUyYjRhNjYwOTE1Y2EzNjJhNDU1MTM0ZDNkM2VkYTM2YmRmNjFjZWE0YiJ9fX0="  # casing/cased/cherry.png
+  casing_crimson:    "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWExNzAzZTRkOTQ3MDI3MDNlMTZmY2VlN2FkODAyOTE4ODI2YzNkNTMyMjc3OGVlYzI1YmVlZTE2MWUyYmIxNyJ9fX0="  # casing/cased/crimson.png
+  casing_dark_oak:   "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMThkNTNhODUxYmQzZmU5NDZmZGQyZGRhZmNmNzdiYzNlNzA4OGY5YWI5Mjk2NDY1MGZhZGZjYmQyODdhNDg1In19fQ=="  # casing/cased/dark_oak.png
+  casing_jungle:     "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzI1Y2VmZDliNmFiNjhlMDgzNjE4NjJhM2VkNDhlZWMxYmNhZTczNzlhYTY4ODVhOGNjYTdlZWQ4ZGUzZTRjZSJ9fX0="  # casing/cased/jungle.png
+  casing_mangrove:   "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDYyMjk3NTU1ZjRmZmJiNzE5MWQ3NGNhYjhlOGRjOGFjMGRmNDlkNTI2OTFiYzAyNjFmNzhlMjY4MzEzZTkxMyJ9fX0="  # casing/cased/mangrove.png
+  casing_pale_oak:   "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjg3NDZkM2ZkYWYyYzgwMDVmYTBlM2RkMjU2Mjg2MDQ2ZWQ4MmFiNDIwNWE3ZDFiMzdjOTFhMDBiOTVjMWE2MiJ9fX0="  # casing/cased/pale_oak.png
+  casing_spruce:     "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzBiYjRkOGEzMDYwMTU1NGJhMGViNmMzZWI5YWUwMjA5MjIyZDBjNGYzZDE4YzAzODAxYTEwZTU3NzNjMjg0ZSJ9fX0="  # casing/cased/spruce.png
+  casing_warped:     "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTcwNjAyMDdkMGRiYzNkZmUxNTgzZGFkMTI0NWYwNzBkNjU2ODZhM2QwMWI1YTVjMDFjNmM5YjFiODI1ZjQzMCJ9fX0="  # casing/cased/warped.png
+
 blocks:
 
   # ─── Shaft ──────────────────────────────────────────────────────────────
@@ -319,15 +333,17 @@ blocks:
     cancel_pistons: true
     name: "&eChain Hoist"
     lore:
-      - "&7A powered winch — raises and lowers"
-      - "&7whatever hangs beneath it"
+      - "&7A powered winch — pays out a chain"
+      - "&7to raise and lower what hangs beneath"
     catalog_notes:
-      - "&fA floor winch: spin it one way to lower the platform below it, the other way to raise it back up."
-      - "&7Right-click with chains to load its reserve (sneak-right to take them back) — it pays out one chain per block lowered."
+      - "&fA floor winch: spin it one way to pay its chain out downward, the other way to reel it back in."
+      - "&7Right-click to open its storage and load it with chains — it spends one chain per block of rope."
+      - "&7Whatever sits at the bottom of the chain rides along; with nothing there the chain just extends into the air."
       - "&7Build the platform from Mechanical Casing (or glue) so it moves as one; carried machines keep running."
     texture: "@windmill_hub_up"
     item_texture: "@chainwheel"
     drops: self
+    storage: { layout: HOPPER }
     default_state: idle
     placement:
       allowed_faces: [DOWN]

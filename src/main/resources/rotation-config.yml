@@ -41,9 +41,6 @@ placer:
 chain-pulley:
   max-distance: 32    # max distance (blocks) between two linked chain pulleys
 
-chain-hoist:
-  max-reserve: 64     # max chains held in a chain hoist's internal reserve (1 chain per block lowered)
-
 piston:
   max-step: 0.5       # extendable piston: cap on per-tick slide velocity (blocks/tick)
 
