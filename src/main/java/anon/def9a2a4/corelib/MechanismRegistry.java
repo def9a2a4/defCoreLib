@@ -59,6 +59,24 @@ public class MechanismRegistry {
         colliderRegistry.load(in, plugin.getLogger());
     }
 
+    /**
+     * Wall-mounted head/skull colliders: shift the ≤0.5 box toward the wall + up so it sits where the
+     * head renders instead of floating at the cell centre. Mirrors BlockShips' BlockStructureScanner
+     * wall-skull special case. The offset is block-local (rotates with the block via the reposition
+     * path). Gated on size ≤ 0.5 so a dragon head's full-block collider stays centred.
+     */
+    private static CollisionConfig applyWallHeadShift(CollisionConfig collision, BlockData bd) {
+        if (collision.size() <= 0.5f && bd instanceof org.bukkit.block.data.Directional dir) {
+            String name = bd.getMaterial().name();
+            if (name.endsWith("_WALL_HEAD") || name.endsWith("_WALL_SKULL")) {
+                org.bukkit.util.Vector f = dir.getFacing().getDirection();
+                return new CollisionConfig(true, collision.size(),
+                    new Vector3f(-(float) f.getX() * 0.25f, 0.25f, -(float) f.getZ() * 0.25f));
+            }
+        }
+        return collision;
+    }
+
     // ──────────────────────────────────────────────────────────────────────
     // Assembly
     // ──────────────────────────────────────────────────────────────────────
@@ -234,6 +252,7 @@ public class MechanismRegistry {
             CollisionConfig customCollision = chb != null ? chb.resolveCollision(customState) : null;
             CollisionConfig collision = customCollision != null
                 ? customCollision : colliderRegistry.get(bd.getMaterial(), bd);
+            collision = applyWallHeadShift(collision, bd);
             blockData.add(new MechanismBlockData(bd, local, collision,
                 customType, customState, decs, bdecs, particles, storage, spinReversed, wallFacing));
         }
@@ -272,6 +291,7 @@ public class MechanismRegistry {
             CollisionConfig gcustom = gchb != null ? gchb.resolveCollision(gState) : null;
             CollisionConfig gcollision = gcustom != null
                 ? gcustom : colliderRegistry.get(gbd.getMaterial(), gbd);
+            gcollision = applyWallHeadShift(gcollision, gbd);
             blockData.add(new MechanismBlockData(gbd, glocal, gcollision,
                 gType, gState, gdecs, gbdecs, gparticles, null, false, gwall));
         }

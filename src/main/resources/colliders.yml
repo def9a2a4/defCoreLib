@@ -3,7 +3,7 @@
 # Keys are a material name (e.g. STONE) or a #block-tag (e.g. #slabs). Any block NOT listed here
 # defaults to a full-block collider — so this file only needs the shapes that differ from a cube.
 #
-# Collider value forms (identical to the BlockShips schema this is ported from):
+# Collider value forms (ported from the BlockShips schema):
 #   collider omitted / true      -> full block (size 1.0, no offset)
 #   false                        -> no collider (block is pass-through while assembled)
 #   {size: 0.5, offset: [0,y,0]} -> scaled Shulker; offset is block-local, applied before the -0.5
@@ -13,7 +13,11 @@
 # is unsupported at its edges; top/double slabs and top stairs are full blocks. Battle-tested in
 # BlockShips; not geometrically perfect. Colliders are world-axis-aligned, so sub-cube shapes are
 # only exact on Y-axis (yaw) mechanisms — on X/Z drawbridges they approximate when tipped.
+#
+# Wall-mounted heads/skulls (size <= 0.5) get an extra runtime offset toward the wall in
+# MechanismRegistry (mirrors BlockShips), so they collide where they render.
 
+# ── Slabs / stairs / fences / walls (copper variants included via the vanilla #tags) ──
 "#slabs":
   type: conditional
   rules:
@@ -38,13 +42,52 @@
   size: 0.275
   offset: [0, 0.5, 0]
 
-"#fence_gates": false
-
 "#walls":
   size: 0.5
   offset: [0, 0, 0]
 
+# ── Thin / non-colliding blocks (pass-through while assembled) ──
+"#fence_gates": false
 "#doors": false
 "#trapdoors": false
 "#buttons": false
 "#pressure_plates": false
+"#wool_carpets": false
+"#banners": false
+lever: false
+redstone_wire: false
+redstone_torch: false
+redstone_wall_torch: false
+torch: false
+wall_torch: false
+soul_torch: false
+soul_wall_torch: false
+repeater: false
+comparator: false
+end_rod: false
+iron_door: false
+iron_trapdoor: false
+
+# ── Small solid shapes ──
+lightning_rod:
+  size: 0.1
+chest:
+  size: 0.9
+trapped_chest:
+  size: 0.9
+
+# ── Heads & skulls: half-size box (dragon = full block). Wall variants get the runtime wall shift. ──
+player_head: {size: 0.5}
+player_wall_head: {size: 0.5}
+zombie_head: {size: 0.5}
+zombie_wall_head: {size: 0.5}
+skeleton_skull: {size: 0.5}
+skeleton_wall_skull: {size: 0.5}
+wither_skeleton_skull: {size: 0.5}
+wither_skeleton_wall_skull: {size: 0.5}
+creeper_head: {size: 0.5}
+creeper_wall_head: {size: 0.5}
+piglin_head: {size: 0.5}
+piglin_wall_head: {size: 0.5}
+dragon_head: true
+dragon_wall_head: true
