@@ -233,19 +233,20 @@ final class ChainHoistManager {
         return d;
     }
 
-    /** CW: lower — pay one link out of the hoist, sliding the chain (and whatever hangs on it) down. */
+    /** CW: lower — pay chain out of the hoist, sliding it (and whatever hangs on it) down. */
     private void payOut(CustomBlockRegistry.LocationKey hoistKey, Block hoist, int d,
                         RotationNetwork.SpinDirection spinDir) {
-        if (countChains(registry.getOrCreateStorage(hoist)) <= 0) return;
+        int stock = countChains(registry.getOrCreateStorage(hoist));
+        if (stock <= 0) return;                                               // nothing left to pay out
         if (hoist.getY() - 1 - d < hoist.getWorld().getMinHeight()) return;   // out of world below
-        startMove(hoistKey, hoist, d, true, spinDir);
+        startMove(hoistKey, hoist, d, true, spinDir, stock);
     }
 
-    /** CCW: raise — slide the chain up one, swallowing its top link back into the hoist. */
+    /** CCW: raise — slide the chain up, swallowing its top links back into the hoist. */
     private void reelIn(CustomBlockRegistry.LocationKey hoistKey, Block hoist, int d,
                         RotationNetwork.SpinDirection spinDir) {
-        if (d <= 0) return;   // nothing paid out; there is no link to swallow
-        startMove(hoistKey, hoist, d, false, spinDir);
+        if (d <= 0) return;   // nothing paid out; there are no links to swallow
+        startMove(hoistKey, hoist, d, false, spinDir, d);
     }
 
     /** The real chain we own, top-down: {@code y0-1 … y0-d}. {@link #scanDepth} guarantees all d are ours. */
@@ -266,8 +267,9 @@ final class ChainHoistManager {
      * at a block that is gone; rejecting on an immovable mirrors {@code ExtendablePistonManager
      * .addHeadPayload}, which aborts rather than shear a structure around one.
      */
-    private @Nullable List<Block> resolveGroup(Block seed) {
-        List<Block> glued = glueManager.resolveStructure(new BlockAnchor(seed, () -> true));
+    private @Nullable List<Block> resolveGroup(Block seed, Set<CustomBlockRegistry.LocationKey> excluded) {
+        List<Block> glued = glueManager.resolveStructure(new BlockAnchor(seed, () -> true),
+            excluded, MoverExclusion::blockedParticle);
         List<Block> base = new ArrayList<>();
         if (glued != null) {
             for (Block b : glued) {
@@ -277,7 +279,8 @@ final class ChainHoistManager {
             }
         }
         if (base.isEmpty()) base = List.of(seed);   // seed is checked movable by both callers
-        return CasingExpansion.withDerived(base, registry, glueManager.maxSize());
+        return CasingExpansion.withDerived(base, registry, glueManager.maxSize(),
+            excluded, MoverExclusion::blockedParticle);
     }
 
     // ──────────────────────────────────────────────────────────────────────
@@ -285,46 +288,65 @@ final class ChainHoistManager {
     // ──────────────────────────────────────────────────────────────────────
 
     /**
-     * One stroke = one block, chain and load together, built exactly like {@link ExtendablePistonManager}'s
-     * rod. The chain slides <b>through</b> the hoist the way the rod slides through the piston core:
+     * One stroke, chain and load together, built like {@link ExtendablePistonManager}'s rod: the chain
+     * slides <b>through</b> the hoist the way the rod slides through the piston core.
      *
      * <ul>
-     *   <li><b>Blocks</b>: the real chain column plus the platform. Captured, they become displays riding
-     *       one vehicle — so every link stays welded to its neighbours and to the load for free. That is
-     *       the whole reason to do it this way; a separately-drawn rope cannot track a vehicle-carried
-     *       platform without predicting the client's interpolation.
-     *   <li><b>Ghost</b> (descending): a chain at the hoist's OWN cell. Ghosts are not aired out
-     *       ({@code MechanismRegistry.assembleCore}), so the hoist block is untouched — the new link simply
-     *       starts inside it and slides out. Data-only, because at depth 0 there is no chain in the world
-     *       to copy from.
-     *   <li><b>Protected cell</b>: the hoist. Rising, the top link lands there and is consumed — that IS
-     *       reeling in. Descending it is the abort guard: a stroke that lands at zero offset would
-     *       otherwise drop the ghost onto the hoist itself.
+     *   <li><b>Blocks</b>: the chain column that survives the stroke, plus the platform. Captured, they
+     *       become displays riding one vehicle — every link stays welded to its neighbours and to the load
+     *       for free. That is the whole point: a separately-drawn rope cannot track a vehicle-carried load
+     *       without predicting the client's interpolation.
+     *   <li><b>Ghost</b>: exactly ONE chain, the link currently <i>emerging</i>. It only ever has to cover
+     *       the sub-block gap — whole blocks behind it are laid as real chain by {@link #layLinks}, which
+     *       is what makes the stroke length unbounded. Ghosts are not aired out
+     *       ({@code MechanismRegistry.assembleCore}), so the one that starts in the hoist's own cell leaves
+     *       the hoist block untouched and simply slides out of it. Data-only: at depth 0 there is no chain
+     *       in the world to template from.
+     *   <li><b>Protected cell</b>: the hoist. Rising, the ghost lands exactly there and is discarded —
+     *       that IS the link being swallowed. Descending, it is also the abort guard: a stroke that lands
+     *       at zero offset would otherwise drop the ghost onto the hoist itself.
      * </ul>
      *
-     * <p>The pivot is the hoist's own cell, so {@code start}/{@code target} are just its centre ±1 and both
-     * the loaded and bare-chain cases share one frame.
+     * <p>Neither direction ever renders above the hoist: the ghost lives in {@code [y0-N, y0+1]} both ways.
+     * The pivot is the hoist's own cell, so the loaded and bare-chain cases share one frame.
      */
     private void startMove(CustomBlockRegistry.LocationKey hoistKey, Block hoist, int startDepth,
-                           boolean descend, RotationNetwork.SpinDirection spinDir) {
-        List<Block> group = new ArrayList<>(chainColumn(hoist, startDepth));
+                           boolean descend, RotationNetwork.SpinDirection spinDir, int want) {
+        // Reeling in, the top `want` links are the ones being swallowed: they are NOT captured (they would
+        // ride up past the hoist in plain view). layLinks deletes them one per block as the body rises,
+        // and the ghost covers the sub-block gap they leave.
+        int keep = descend ? startDepth : Math.max(0, startDepth - want);
+        List<Block> column = chainColumn(hoist, startDepth);
+        List<Block> group = new ArrayList<>(column.subList(startDepth - keep, startDepth));
         Set<Long> cells = new HashSet<>();
         for (Block b : group) cells.add(cellKey(b));
+
+        // Our "self" cells — never captured into the platform: the hoist block, the WHOLE chain column
+        // (kept and swallowed links alike), and the drive train (network members + windmill passive
+        // sources). A casing directly under the hoist otherwise drags the hoist skull into the platform,
+        // which our own protected cell then consumes on landing.
+        List<Block> hardware = new ArrayList<>(column);
+        hardware.add(hoist);
+        Set<CustomBlockRegistry.LocationKey> excluded =
+            MoverExclusion.exclusionFor(network, hoistKey, hardware);
 
         // Whatever hangs under the chain rides along. Absent (a bare chain paying into air) the stroke is
         // the same, just chain-only — which is why there is no separate bare-rope path any more.
         Block seed = hoist.getRelative(0, -1 - startDepth, 0);
-        Anchor anchor = null;
         int[] glue = null;
-        if (MovableBlocks.isMovable(seed, registry)) {
-            List<Block> platform = resolveGroup(seed);
-            if (platform == null) return;                       // glued to something immovable — refuse
-            anchor = new BlockAnchor(seed, () -> !active.containsKey(hoistKey));
-            glue = anchor.readOffsets();                        // before air-out; null for a plain platform
+        if (excluded.contains(CustomBlockRegistry.LocationKey.of(seed))) {
+            // Our own drive part sits under the rope (a gear routed to this cell). Never lift it; a
+            // descending stroke with chain falls through and fails clearForAll on it like any obstruction.
+            MoverExclusion.blockedParticle(hoist.getRelative(0, -startDepth, 0), seed);
+            if (group.isEmpty()) return;   // depth 0: the first link would land inside our own drive part
+        } else if (MovableBlocks.isMovable(seed, registry)) {
+            List<Block> platform = resolveGroup(seed, excluded);
+            if (platform == null) return;   // glued to something immovable — refuse rather than shear
+            glue = new BlockAnchor(seed, () -> !active.containsKey(hoistKey)).readOffsets();  // pre air-out
             // Dedup: casing drag can reach back into the chain we already hold (piston does the same).
             for (Block b : platform) if (cells.add(cellKey(b))) group.add(b);
-        } else if (!isClear(seed) && !descend) {
-            return;   // an immovable sits under the chain; nothing to lift
+        } else if (group.isEmpty() && !isClear(seed)) {
+            return;   // depth 0, nothing hanging, and the cell the first link would fill is solid
         }
 
         // The hoist cell is passable to our own body: the chain slides through it. Without this a reel-in
@@ -332,13 +354,14 @@ final class ChainHoistManager {
         Set<Long> footprint = new HashSet<>(cells);
         footprint.add(cellKey(hoist));
         BlockFace face = descend ? BlockFace.DOWN : BlockFace.UP;
-        if (clearForAll(group, footprint, face, 1) < 1) return;
+        int steps = clearForAll(group, footprint, face, want);
+        if (steps < 1) return;
 
-        List<MechanismRegistry.GhostBlock> ghosts = descend
-            ? List.of(new MechanismRegistry.GhostBlock(hoist.getLocation(), chainData()))
-            : List.of();
-
-        Mechanism mech = mechRegistry.assembleMechanism(MECH_TYPE, group, ghosts,
+        // The emerging link. Descending it starts inside the hoist; rising it starts directly above the
+        // body's top link, and lands back inside the hoist to be discarded.
+        Block ghostCell = descend ? hoist : hoist.getRelative(0, -steps, 0);
+        Mechanism mech = mechRegistry.assembleMechanism(MECH_TYPE, group,
+            List.of(new MechanismRegistry.GhostBlock(ghostCell.getLocation(), chainData())),
             hoist.getLocation().add(0.5, 0, 0.5), AXIS_Y, null);
 
         final int[] glueOffsets = glue;
@@ -372,11 +395,44 @@ final class ChainHoistManager {
             });
             Location start = mech.pivot();
             active.put(hoistKey, new ActiveMove(hoistKey, hoist, mech,
-                start, start.clone().add(0, descend ? -1 : 1, 0),
-                descend ? -1f : 1f, group.size() + ghosts.size(), spinDir));
+                start, start.clone().add(0, descend ? -steps : steps, 0),
+                descend ? -1f : 1f, group.size() + 1, spinDir, descend, steps, startDepth));
         } catch (Throwable t) {
             safeDisassemble(mech, hoistKey);
             throw t;
+        }
+    }
+
+    /**
+     * Lay down (or take up) the whole links the body has passed, so the column behind the emerging ghost is
+     * always solid. Called every tick; {@code linksDone} makes it idempotent.
+     *
+     * <p>Descending, link {@code k} is laid at {@code y0-k} once the body has travelled k blocks — the ghost
+     * is coincident with that cell at the moment it is laid, then slides on past it. The LAST link is
+     * skipped: that cell is where the ghost itself lands at disassembly, and laying it too would collide and
+     * spit out a chain as an item. Rising is the mirror: link k is deleted from {@code y0-steps+k} as the
+     * body clears it.
+     */
+    private void layLinks(ActiveMove m) {
+        int done = (int) Math.floor(Math.abs(m.mech.pivot().getY() - m.start.getY()) + 1e-6);
+        int limit = m.descend ? Math.min(done, m.steps - 1) : Math.min(done + 1, m.steps);
+        while (m.linksDone < limit) {
+            int k = ++m.linksDone;
+            if (m.descend) {
+                Block c = m.hoist.getRelative(0, -k, 0);
+                if (isClear(c)) placeChain(c);
+            } else {
+                Block c = m.hoist.getRelative(0, -m.steps + k - 1, 0);
+                if (isOwnRope(c)) c.setType(Material.AIR, false);
+            }
+        }
+    }
+
+    private static void placeChain(Block b) {
+        b.setType(CHAIN_MATERIAL, false);
+        if (b.getBlockData() instanceof Orientable o) {
+            o.setAxis(Axis.Y);
+            b.setBlockData(o, false);
         }
     }
 
@@ -414,6 +470,7 @@ final class ChainHoistManager {
         double dy = next.getY() - cur.getY();
         if (m.dirY > 0 && dy > 0) m.mech.carryRidersUp(dy);
         m.mech.move(next, 0f);
+        layLinks(m);   // fill in behind the emerging ghost, one real link per whole block travelled
         if (arrived) m.settle = SETTLE_TICKS;
         return false;
     }
@@ -559,11 +616,18 @@ final class ChainHoistManager {
         final float dirY;
         final int mass;
         final RotationNetwork.SpinDirection spinDir;
+        final boolean descend;
+        /** Blocks this stroke was planned for — the ghost's landing cell is {@code steps} below/above. */
+        final int steps;
+        final int startDepth;
+        /** Whole links already laid (descending) or taken up (rising). Makes {@link #layLinks} idempotent. */
+        int linksDone = 0;
         int warmup = 2;
         int settle = -1;
 
         ActiveMove(CustomBlockRegistry.LocationKey hoistKey, Block hoist, Mechanism mech, Location start,
-                   Location target, float dirY, int mass, RotationNetwork.SpinDirection spinDir) {
+                   Location target, float dirY, int mass, RotationNetwork.SpinDirection spinDir,
+                   boolean descend, int steps, int startDepth) {
             this.hoistKey = hoistKey;
             this.hoist = hoist;
             this.mech = mech;
@@ -572,6 +636,9 @@ final class ChainHoistManager {
             this.dirY = dirY;
             this.mass = mass;
             this.spinDir = spinDir;
+            this.descend = descend;
+            this.steps = steps;
+            this.startDepth = startDepth;
         }
     }
 }

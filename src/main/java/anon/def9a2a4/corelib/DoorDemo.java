@@ -59,7 +59,10 @@ final class DoorDemo {
         boolean freshAssembly = (mech == null);
         if (freshAssembly) {
             Anchor anchor = new BlockAnchor(head, () -> !activeDoors.containsKey(key));
-            List<Block> resolved = glueManager.resolveStructure(anchor);
+            // The controller head itself is excluded: a casing beside it would otherwise drag it into
+            // the swung set and the door would air out its own controller.
+            List<Block> resolved = glueManager.resolveStructure(anchor,
+                Set.of(key), MoverExclusion::blockedParticle);
             boolean glued = resolved != null && !resolved.isEmpty();
             // Pre-move snapshot: rebind stores ONLY authored glue (derived casings/leaves re-derive).
             final int[] authored = glued ? anchor.readOffsets() : null;
@@ -71,7 +74,8 @@ final class DoorDemo {
                 if (seed.getType().isAir()) return;
                 planks = List.of(seed);
             }
-            planks = CasingExpansion.withDerived(planks, registry, glueManager.maxSize());
+            planks = CasingExpansion.withDerived(planks, registry, glueManager.maxSize(),
+                Set.of(key), MoverExclusion::blockedParticle);
             mech = mechRegistry.assembleMechanism("demo:door", planks,
                 head.getLocation().add(0.5, 0, 0.5), null);
             final Mechanism assembled = mech;
@@ -117,7 +121,10 @@ final class DoorDemo {
         } else {
             // Fully opened + disassembled: re-assemble rotated planks, rotate to -90°
             Anchor anchor = new BlockAnchor(head, () -> !activeDoors.containsKey(key));
-            List<Block> resolved = glueManager.resolveStructure(anchor);
+            // The controller head itself is excluded: a casing beside it would otherwise drag it into
+            // the swung set and the door would air out its own controller.
+            List<Block> resolved = glueManager.resolveStructure(anchor,
+                Set.of(key), MoverExclusion::blockedParticle);
             boolean glued = resolved != null && !resolved.isEmpty();
             // Pre-move snapshot: rebind stores ONLY authored glue (derived casings/leaves re-derive).
             final int[] authored = glued ? anchor.readOffsets() : null;
@@ -129,7 +136,8 @@ final class DoorDemo {
                 if (seed.getType().isAir()) return;
                 planks = List.of(seed);
             }
-            planks = CasingExpansion.withDerived(planks, registry, glueManager.maxSize());
+            planks = CasingExpansion.withDerived(planks, registry, glueManager.maxSize(),
+                Set.of(key), MoverExclusion::blockedParticle);
             mech = mechRegistry.assembleMechanism("demo:door", planks,
                 head.getLocation().add(0.5, 0, 0.5), null);
             final Mechanism assembled = mech;

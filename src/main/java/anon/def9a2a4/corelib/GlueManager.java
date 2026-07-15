@@ -57,6 +57,20 @@ final class GlueManager {
      * An empty (non-null) list means "glued, but every block is gone".
      */
     @Nullable List<Block> resolveStructure(Anchor a) {
+        return resolveStructure(a, Set.of(), null);
+    }
+
+    /**
+     * As {@link #resolveStructure(Anchor)}, but cells in {@code excluded} (a mover's
+     * {@link MoverExclusion} set) are filtered from BOTH the resolved authored list and the derived
+     * casing append. Authored offsets must be filtered too: nothing stops a player brush-gluing a
+     * mover's own core or drive shaft onto its head, and the movers' shear guards only reject
+     * <em>immovable</em> blocks — mover hardware is movable by design. Stored offsets are never
+     * modified (rebind writes pre-move offsets verbatim; the barrier is resolve-time only).
+     * {@code onBlocked} fires per filtered authored cell (null grabber → centre particle).
+     */
+    @Nullable List<Block> resolveStructure(Anchor a, Set<CustomBlockRegistry.LocationKey> excluded,
+                                           java.util.function.@Nullable BiConsumer<Block, Block> onBlocked) {
         int[] o = a.readOffsets();
         if (o == null || o.length < 3 || o.length % 3 != 0) return null;
         World w = a.world();
@@ -66,12 +80,16 @@ final class GlueManager {
         for (int i = 0; i + 2 < o.length; i += 3) {
             Block b = w.getBlockAt(ox + o[i], oy + o[i + 1], oz + o[i + 2]);
             if (b.getType().isAir()) continue; // block gone — skip
+            if (excluded.contains(CustomBlockRegistry.LocationKey.of(b))) { // mover self cell — never captured
+                if (onBlocked != null) onBlocked.accept(null, b);
+                continue;
+            }
             out.add(b);
         }
         // Derived casing auto-glue: casings touching the structure (or the anchor) join and spread
         // casing-to-casing — computed fresh on every resolve, never stored (see CasingExpansion).
         if (registry != null && !out.isEmpty()) {
-            out.addAll(CasingExpansion.derivedCasings(out, origin, registry, maxSize));
+            out.addAll(CasingExpansion.derivedCasings(out, origin, registry, maxSize, excluded, onBlocked));
         }
         return out;
     }

@@ -12,6 +12,7 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.BiConsumer;
 
 /**
  * Derived auto-glue for the {@code mech:casing_<wood>} family. Casings behave like vanilla slime
@@ -52,6 +53,22 @@ final class CasingExpansion {
      */
     static List<Block> derivedCasings(Collection<Block> structure, @Nullable Block anchorCell,
                                       CustomBlockRegistry registry, int cap) {
+        return derivedCasings(structure, anchorCell, registry, cap, Set.of(), null);
+    }
+
+    /**
+     * As {@link #derivedCasings(Collection, Block, CustomBlockRegistry, int)}, but cells in
+     * {@code excluded} are barriers: never captured (and, being non-casings from the movers'
+     * perspective, never propagated through). Powered movers MUST pass their
+     * {@link MoverExclusion} set here or the spread pulls along the thing pushing it — their
+     * own core/rod/hoist and the drive train powering them. {@code onBlocked} fires once per
+     * skipped bond, (grabbing cell, excluded cell) — movers pass
+     * {@link MoverExclusion#blockedParticle}; repeat-render paths (authoring outline) pass null.
+     */
+    static List<Block> derivedCasings(Collection<Block> structure, @Nullable Block anchorCell,
+                                      CustomBlockRegistry registry, int cap,
+                                      Set<CustomBlockRegistry.LocationKey> excluded,
+                                      @Nullable BiConsumer<Block, Block> onBlocked) {
         Set<CustomBlockRegistry.LocationKey> present = new HashSet<>();
         for (Block b : structure) present.add(CustomBlockRegistry.LocationKey.of(b));
 
@@ -68,7 +85,12 @@ final class CasingExpansion {
             for (BlockFace f : Faces.CARDINAL) {
                 Block n = b.getRelative(f);
                 if (!isCasing(n, registry)) continue;
-                if (!seen.add(CustomBlockRegistry.LocationKey.of(n))) continue;
+                CustomBlockRegistry.LocationKey nk = CustomBlockRegistry.LocationKey.of(n);
+                if (excluded.contains(nk)) {                       // self cell — bond refused
+                    if (onBlocked != null && seen.add(nk)) onBlocked.accept(b, n);
+                    continue;
+                }
+                if (!seen.add(nk)) continue;
                 derived.add(n);
                 queue.add(n);
                 if (present.size() + derived.size() >= cap) return derived;
@@ -85,7 +107,12 @@ final class CasingExpansion {
                 Block n = b.getRelative(f);
                 boolean casing = isCasing(n, registry);
                 if (!casing && !MovableBlocks.isMovable(n, registry)) continue;   // not pulled
-                if (!seen.add(CustomBlockRegistry.LocationKey.of(n))) continue;
+                CustomBlockRegistry.LocationKey nk = CustomBlockRegistry.LocationKey.of(n);
+                if (excluded.contains(nk)) {                       // self cell — bond refused
+                    if (onBlocked != null && seen.add(nk)) onBlocked.accept(b, n);
+                    continue;
+                }
+                if (!seen.add(nk)) continue;
                 derived.add(n);
                 if (casing) queue.add(n);
                 if (present.size() + derived.size() >= cap) return derived;
@@ -96,9 +123,17 @@ final class CasingExpansion {
 
     /** {@code seed} plus its derived drag (casings + leaves) — for the movers' no-glue fallback seeds. */
     static List<Block> withDerived(List<Block> seed, CustomBlockRegistry registry, int cap) {
+        return withDerived(seed, registry, cap, Set.of(), null);
+    }
+
+    /** As {@link #withDerived(List, CustomBlockRegistry, int)} with an exclusion barrier — see
+     *  {@link #derivedCasings(Collection, Block, CustomBlockRegistry, int, Set, BiConsumer)}. */
+    static List<Block> withDerived(List<Block> seed, CustomBlockRegistry registry, int cap,
+                                   Set<CustomBlockRegistry.LocationKey> excluded,
+                                   @Nullable BiConsumer<Block, Block> onBlocked) {
         if (seed.isEmpty()) return seed;
         List<Block> out = new ArrayList<>(seed);
-        out.addAll(derivedCasings(seed, null, registry, cap));
+        out.addAll(derivedCasings(seed, null, registry, cap, excluded, onBlocked));
         return out;
     }
 }

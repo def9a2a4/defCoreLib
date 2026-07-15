@@ -119,8 +119,15 @@ final class RotationRotator {
         int surplus = stats[0] - stats[1];
         if (surplus <= 0) { feedbackNoPower(head); return; }
 
+        // Our "self" cells — never swung: the head itself plus the drive train powering us (network
+        // members + windmill passive sources). An unglued rotator mounted directly on its own drive
+        // shaft therefore no-ops now instead of "swinging" the shaft in place.
+        Set<CustomBlockRegistry.LocationKey> excluded =
+            MoverExclusion.exclusionFor(network, key, List.of(head));
+
         Anchor anchor = new BlockAnchor(head, () -> !activeRotators.containsKey(key));
-        List<Block> resolved = glueManager.resolveStructure(anchor);
+        List<Block> resolved = glueManager.resolveStructure(anchor,
+            excluded, MoverExclusion::blockedParticle);
         boolean glued = resolved != null && !resolved.isEmpty();
         // Pre-move snapshot: rebind stores ONLY authored glue (derived casings/leaves re-derive).
         final int[] authored = glued ? anchor.readOffsets() : null;
@@ -129,11 +136,16 @@ final class RotationRotator {
             planks = resolved;
         } else {
             Block seed = attachmentBlock(head);   // no glue → swing the block the rotator is placed on
+            if (excluded.contains(CustomBlockRegistry.LocationKey.of(seed))) {   // our own drive train
+                MoverExclusion.blockedParticle(head, seed);
+                return;
+            }
             if (!MovableBlocks.isMovable(seed, registry)) return;   // don't scoop air / immovable world blocks
             planks = List.of(seed);
         }
         // Slime-style casing spread: a casing in the swung set drags its neighbours (transitively).
-        planks = CasingExpansion.withDerived(planks, registry, glueManager.maxSize());
+        planks = CasingExpansion.withDerived(planks, registry, glueManager.maxSize(),
+            excluded, MoverExclusion::blockedParticle);
 
         RotationNetwork.RotationNode node = network.getNode(key);
         if (node == null) return;

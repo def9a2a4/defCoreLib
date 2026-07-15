@@ -350,6 +350,9 @@ final class ExtendablePistonManager {
         List<Block> moving = new ArrayList<>(line.rodBlocks());
         moving.addAll(payload);
         Set<Long> footprint = footprintKeys(moving, line.core());
+        // The ghost pole slides OUT of the core cell too — scan its ray as well, or a block that survived
+        // capture right beside the core (an excluded-barrier casing) silently eats the ghost's landing.
+        moving.add(line.core());
         int r = clearForAll(moving, footprint, moveFace, reserve);
         if (r > 0) startMove(coreKey, line, payload, moveFace, r, dir);
     }
@@ -472,28 +475,43 @@ final class ExtendablePistonManager {
      * structure, else the single movable block off its outward face. Returns {@code null} to <em>reject the
      * whole move</em> if any glued block is immovable (shear guard); an empty list means "nothing to carry".
      * Duplicates are fine — {@code startMove} dedups by cell.
+     *
+     * <p>Every capture path is filtered through the piston's {@link MoverExclusion} set (core + rod +
+     * drive train): a casing chain running core→head must dead-end at the core, never pull it into the
+     * payload — a captured core is aired out and then silently consumed by its own protected cell.
      */
     private @Nullable List<Block> collectPayload(PistonLine line) {
+        List<Block> hardware = new ArrayList<>(line.rodBlocks());
+        hardware.add(line.core());
+        Set<CustomBlockRegistry.LocationKey> excluded = MoverExclusion.exclusionFor(
+            network, CustomBlockRegistry.LocationKey.of(line.core()), hardware);
         List<Block> out = new ArrayList<>();
-        if (!addHeadPayload(out, line.frontHead(), line.frontFace())) return null;
+        if (!addHeadPayload(out, line.frontHead(), line.frontFace(), excluded)) return null;
         if (line.backHead() != null
-                && !addHeadPayload(out, line.backHead(), line.frontFace().getOppositeFace())) return null;
+                && !addHeadPayload(out, line.backHead(), line.frontFace().getOppositeFace(), excluded)) return null;
         // Slime-style casing spread: a casing in the payload drags its neighbours (transitively).
-        return CasingExpansion.withDerived(out, registry, glueManager.maxSize());
+        return CasingExpansion.withDerived(out, registry, glueManager.maxSize(),
+            excluded, MoverExclusion::blockedParticle);
     }
 
     /**
      * Add {@code head}'s payload to {@code out}: its glued structure, else the single movable block off its
      * {@code outFace} (outward, away from the rod). @return {@code false} to reject the move (glued immovable).
      */
-    private boolean addHeadPayload(List<Block> out, Block head, BlockFace outFace) {
-        List<Block> glued = glueManager.resolveStructure(new BlockAnchor(head, () -> true));
+    private boolean addHeadPayload(List<Block> out, Block head, BlockFace outFace,
+                                   Set<CustomBlockRegistry.LocationKey> excluded) {
+        List<Block> glued = glueManager.resolveStructure(new BlockAnchor(head, () -> true),
+            excluded, MoverExclusion::blockedParticle);
         if (glued != null && !glued.isEmpty()) {
             for (Block b : glued) if (!MovableBlocks.isMovable(b, registry)) return false;
             out.addAll(glued);
             return true;
         }
         Block grab = head.getRelative(outFace);
+        if (excluded.contains(CustomBlockRegistry.LocationKey.of(grab))) {   // own hardware/drive train
+            MoverExclusion.blockedParticle(head, grab);
+            return true;
+        }
         if (MovableBlocks.isMovable(grab, registry)) out.add(grab);
         return true;
     }
@@ -518,6 +536,7 @@ final class ExtendablePistonManager {
         // double a rod cell (double air-out/placement).
         List<Block> assembleBlocks = new ArrayList<>(line.rodBlocks());
         Set<Long> cells = new HashSet<>();
+        cells.add(cellKey(line.core()));   // the core must never assemble — gather excludes it; this backstops
         for (Block b : line.rodBlocks()) cells.add(cellKey(b));
         for (Block b : payload) if (cells.add(cellKey(b))) assembleBlocks.add(b);
         // Ghost "fake shaft inside the core": a pole at the core cell, so the sliding rod is contiguous
