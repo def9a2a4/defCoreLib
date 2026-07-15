@@ -303,7 +303,11 @@ final class RotationBlocks {
             })
             .onChunkLoad((b, state) -> {
                 RotationNetwork.Axis axis = RotationNetwork.axisFromState(state);
-                boolean spinning = state.startsWith("spinning_");
+                // Trust the water, not the saved state: a wheel captured mid-spin by a mechanism
+                // and disassembled onto dry land keeps its spinning_* state — seeding SOURCE from
+                // it would phantom-power neighbors until the first evaluateWaterWheel corrects.
+                boolean spinning = state.startsWith("spinning_")
+                        && Math.abs(flowSignal(b, axis)) > WATER_FLOW_MIN;
                 network.addNode(b, blockId, axis,
                     spinning ? RotationNetwork.NodeRole.SOURCE : RotationNetwork.NodeRole.TRANSMITTER,
                     spinning ? waterWheelPower : 0, false);

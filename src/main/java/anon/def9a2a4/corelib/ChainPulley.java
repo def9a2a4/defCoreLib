@@ -114,6 +114,23 @@ final class ChainPulley {
             RotationNetwork.NodeRole.TRANSMITTER, 0, false);
         CustomBlockRegistry.LocationKey partner = readPartner(b);
         if (partner != null) {
+            // The partner may have been removed while this chunk was unloaded (its
+            // handleBlockRemoved couldn't reach our skull PDC) — relinking blindly re-forms a
+            // powerless ghost strand to dead coordinates. If the partner's chunk is loaded,
+            // verify it still holds a pulley; if it doesn't, drop the stale link (the chains
+            // were already refunded/dropped when the partner was broken). A partner in an
+            // UNLOADED chunk keeps the current lazy-link behavior — onClosedLoop gates power.
+            if (b.getWorld().isChunkLoaded(partner.x() >> 4, partner.z() >> 4)) {
+                Block pb = b.getWorld().getBlockAt(partner.x(), partner.y(), partner.z());
+                CustomHeadBlock ptype = registry.getTypeFromBlock(pb);
+                if (ptype == null || !PULLEY_ID.equals(ptype.fullId())) {
+                    clearPartner(b);
+                    // Also delete the persisted strand display — the orphan scanner deliberately
+                    // skips chain_strand tags, so nothing else would ever clean it up.
+                    removeStrand(b.getLocation(), key);
+                    return;
+                }
+            }
             network.linkChain(key, partner);
             // Re-register for animation: reuse the persisted display if it survived the reload,
             // otherwise spawn a fresh one.
