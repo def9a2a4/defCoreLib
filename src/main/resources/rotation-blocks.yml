@@ -1001,68 +1001,77 @@ blocks:
       allowed_faces: [NORTH, SOUTH, EAST, WEST, UP]
     # Per-wall states orient the dispenser's front face OUTWARD (where it places blocks), like the
     # drill. Placement key = attachment/wall face = getFacing().getOppositeFace(); the dispenser
-    # faces the opposite (outward). Only the dispenser's block_data facing differs between states —
-    # the shaft (always +Y) and symmetric piston are identical everywhere. Shaft copied from press.
-    # The dispenser is a corner-anchored BlockDisplay, so translation -scale/2 recenters the 0.7 cube.
+    # faces the opposite (outward), so state `idle_X` ⇒ dispenser faces X ⇒ places toward X.
+    # The dispenser is a corner-anchored BlockDisplay, so translation -scale/2 recenters the cube:
+    # a near-full 0.9 body reads as MOUNTED in the cell rather than floating in it. `wall_offset: 0.1`
+    # then shifts it -facing·0.1 (see BasicMechanism.applyWallOffset), sinking its back into the wall
+    # so the front face clears the piston plate instead of swallowing it.
+    # Powered cue = the plate PUMPS toward the cell it places into — a `bob` along the facing axis
+    # (per state: n → [0,0,-1], s → [0,0,1], e → [1,0,0], w → [-1,0,0]). The plate's own front-face
+    # position stays orientation-agnostic via `wall_offset: -0.375` (= +facing·0.375). The top
+    # @rod_up shaft is the real power intake, so it stays and keeps its spin. Shaft copied from press.
     # UP = ceiling placement: a floating head (see playerHeadStates in overlayPlacer) that stores
     # facing DOWN — pulls from the container above and places into the cell below, powered from any
-    # side (omni). The dispenser faces down, the piston points down, and a @machine_base cap sits on
-    # top to read as the placed head. One symmetric pair (a ceiling head has no yaw).
+    # side (omni). No top shaft (power arrives from a side) and no wall_offset either: that's live-
+    # gated on PLAYER_WALL_HEAD (CustomBlockRegistry ~1162), so a ceiling head must bake the same
+    # offsets into `translation`. The @machine_base collar caps the join with the container above and
+    # is STATIC — the pump is the powered cue here too, matching the walls. One symmetric pair (a
+    # ceiling head has no yaw).
     default_state: idle_n
     placement_state_map: { NORTH: idle_s, SOUTH: idle_n, EAST: idle_w, WEST: idle_e, UP: idle_ceiling }
     states:
       idle_n:
         display_entities:
-          - { block_data: "minecraft:dispenser[facing=north]", tag: body, transform: { translation: [-0.35, -0.35, -0.35], scale: [0.7, 0.7, 0.7] } }
+          - { block_data: "minecraft:dispenser[facing=north]", tag: body, transform: { translation: [-0.45, -0.45, -0.45], scale: [0.9, 0.9, 0.9] }, wall_offset: 0.1 }
           - { texture: "@rod_up",        tag: shaft,  transform: { translation: [0, 0.5, 0], scale: [0.66, 0.5, 0.66] } }
           - { texture: "@placer_piston", tag: piston, transform: { translation: [0, 0, 0],   scale: [0.5, 0.5, 0.5] }, wall_offset: -0.375 }
       spinning_n:
         display_entities:
-          - { block_data: "minecraft:dispenser[facing=north]", tag: body, transform: { translation: [-0.35, -0.35, -0.35], scale: [0.7, 0.7, 0.7] } }
+          - { block_data: "minecraft:dispenser[facing=north]", tag: body, transform: { translation: [-0.45, -0.45, -0.45], scale: [0.9, 0.9, 0.9] }, wall_offset: 0.1 }
           - { texture: "@rod_up",        tag: shaft,  transform: { translation: [0, 0.5, 0], scale: [0.66, 0.5, 0.66] }, animation: { type: rotate, axis: [0, 1, 0], speed: 3.0 } }
-          - { texture: "@placer_piston", tag: piston, transform: { translation: [0, 0, 0],   scale: [0.5, 0.5, 0.5] }, wall_offset: -0.375 }
+          - { texture: "@placer_piston", tag: piston, transform: { translation: [0, 0, 0],   scale: [0.5, 0.5, 0.5] }, wall_offset: -0.375, animation: { type: bob, amplitude: 0.1, period: 16, axis: [0, 0, -1] } }
       idle_s:
         display_entities:
-          - { block_data: "minecraft:dispenser[facing=south]", tag: body, transform: { translation: [-0.35, -0.35, -0.35], scale: [0.7, 0.7, 0.7] } }
+          - { block_data: "minecraft:dispenser[facing=south]", tag: body, transform: { translation: [-0.45, -0.45, -0.45], scale: [0.9, 0.9, 0.9] }, wall_offset: 0.1 }
           - { texture: "@rod_up",        tag: shaft,  transform: { translation: [0, 0.5, 0], scale: [0.66, 0.5, 0.66] } }
           - { texture: "@placer_piston", tag: piston, transform: { translation: [0, 0, 0],   scale: [0.5, 0.5, 0.5] }, wall_offset: -0.375 }
       spinning_s:
         display_entities:
-          - { block_data: "minecraft:dispenser[facing=south]", tag: body, transform: { translation: [-0.35, -0.35, -0.35], scale: [0.7, 0.7, 0.7] } }
+          - { block_data: "minecraft:dispenser[facing=south]", tag: body, transform: { translation: [-0.45, -0.45, -0.45], scale: [0.9, 0.9, 0.9] }, wall_offset: 0.1 }
           - { texture: "@rod_up",        tag: shaft,  transform: { translation: [0, 0.5, 0], scale: [0.66, 0.5, 0.66] }, animation: { type: rotate, axis: [0, 1, 0], speed: 3.0 } }
-          - { texture: "@placer_piston", tag: piston, transform: { translation: [0, 0, 0],   scale: [0.5, 0.5, 0.5] }, wall_offset: -0.375 }
+          - { texture: "@placer_piston", tag: piston, transform: { translation: [0, 0, 0],   scale: [0.5, 0.5, 0.5] }, wall_offset: -0.375, animation: { type: bob, amplitude: 0.1, period: 16, axis: [0, 0, 1] } }
       idle_e:
         display_entities:
-          - { block_data: "minecraft:dispenser[facing=east]", tag: body, transform: { translation: [-0.35, -0.35, -0.35], scale: [0.7, 0.7, 0.7] } }
+          - { block_data: "minecraft:dispenser[facing=east]", tag: body, transform: { translation: [-0.45, -0.45, -0.45], scale: [0.9, 0.9, 0.9] }, wall_offset: 0.1 }
           - { texture: "@rod_up",        tag: shaft,  transform: { translation: [0, 0.5, 0], scale: [0.66, 0.5, 0.66] } }
           - { texture: "@placer_piston", tag: piston, transform: { translation: [0, 0, 0],   scale: [0.5, 0.5, 0.5] }, wall_offset: -0.375 }
       spinning_e:
         display_entities:
-          - { block_data: "minecraft:dispenser[facing=east]", tag: body, transform: { translation: [-0.35, -0.35, -0.35], scale: [0.7, 0.7, 0.7] } }
+          - { block_data: "minecraft:dispenser[facing=east]", tag: body, transform: { translation: [-0.45, -0.45, -0.45], scale: [0.9, 0.9, 0.9] }, wall_offset: 0.1 }
           - { texture: "@rod_up",        tag: shaft,  transform: { translation: [0, 0.5, 0], scale: [0.66, 0.5, 0.66] }, animation: { type: rotate, axis: [0, 1, 0], speed: 3.0 } }
-          - { texture: "@placer_piston", tag: piston, transform: { translation: [0, 0, 0],   scale: [0.5, 0.5, 0.5] }, wall_offset: -0.375 }
+          - { texture: "@placer_piston", tag: piston, transform: { translation: [0, 0, 0],   scale: [0.5, 0.5, 0.5] }, wall_offset: -0.375, animation: { type: bob, amplitude: 0.1, period: 16, axis: [1, 0, 0] } }
       idle_w:
         display_entities:
-          - { block_data: "minecraft:dispenser[facing=west]", tag: body, transform: { translation: [-0.35, -0.35, -0.35], scale: [0.7, 0.7, 0.7] } }
+          - { block_data: "minecraft:dispenser[facing=west]", tag: body, transform: { translation: [-0.45, -0.45, -0.45], scale: [0.9, 0.9, 0.9] }, wall_offset: 0.1 }
           - { texture: "@rod_up",        tag: shaft,  transform: { translation: [0, 0.5, 0], scale: [0.66, 0.5, 0.66] } }
           - { texture: "@placer_piston", tag: piston, transform: { translation: [0, 0, 0],   scale: [0.5, 0.5, 0.5] }, wall_offset: -0.375 }
       spinning_w:
         display_entities:
-          - { block_data: "minecraft:dispenser[facing=west]", tag: body, transform: { translation: [-0.35, -0.35, -0.35], scale: [0.7, 0.7, 0.7] } }
+          - { block_data: "minecraft:dispenser[facing=west]", tag: body, transform: { translation: [-0.45, -0.45, -0.45], scale: [0.9, 0.9, 0.9] }, wall_offset: 0.1 }
           - { texture: "@rod_up",        tag: shaft,  transform: { translation: [0, 0.5, 0], scale: [0.66, 0.5, 0.66] }, animation: { type: rotate, axis: [0, 1, 0], speed: 3.0 } }
-          - { texture: "@placer_piston", tag: piston, transform: { translation: [0, 0, 0],   scale: [0.5, 0.5, 0.5] }, wall_offset: -0.375 }
-      # Ceiling: dispenser rotated to face down, piston pushed down, @machine_base cap on top (no top
-      # shaft — power arrives from a side). Powered → the cap spins, mirroring the wall shaft's spin.
+          - { texture: "@placer_piston", tag: piston, transform: { translation: [0, 0, 0],   scale: [0.5, 0.5, 0.5] }, wall_offset: -0.375, animation: { type: bob, amplitude: 0.1, period: 16, axis: [-1, 0, 0] } }
+      # Ceiling: body y-translation -0.35 = -0.45 + 0.1, hand-baking the walls' `wall_offset: 0.1`
+      # back-nudge along -facing (= up) since wall_offset is inert on a floating head.
       idle_ceiling:
         display_entities:
-          - { block_data: "minecraft:dispenser[facing=down]", tag: body,   transform: { translation: [-0.35, -0.35, -0.35], scale: [0.7, 0.7, 0.7] } }
-          - { texture: "@placer_piston",                      tag: piston, transform: { translation: [0, -0.375, 0],       scale: [0.5, 0.5, 0.5] } }
-          - { texture: "@machine_base",                       tag: cap,    transform: { translation: [0, 0.35, 0],          scale: [0.7, 0.3, 0.7] } }
+          - { block_data: "minecraft:dispenser[facing=down]", tag: body,   transform: { translation: [-0.45, -0.35, -0.45], scale: [0.9, 0.9, 0.9] } }
+          - { texture: "@placer_piston",                      tag: piston, transform: { translation: [0, -0.375, 0],        scale: [0.5, 0.5, 0.5] } }
+          - { texture: "@machine_base",                       tag: collar, transform: { translation: [0, 0.5, 0],           scale: [0.7, 0.25, 0.7] } }
       spinning_ceiling:
         display_entities:
-          - { block_data: "minecraft:dispenser[facing=down]", tag: body,   transform: { translation: [-0.35, -0.35, -0.35], scale: [0.7, 0.7, 0.7] } }
-          - { texture: "@placer_piston",                      tag: piston, transform: { translation: [0, -0.375, 0],       scale: [0.5, 0.5, 0.5] } }
-          - { texture: "@machine_base",                       tag: cap,    transform: { translation: [0, 0.35, 0],          scale: [0.7, 0.3, 0.7] }, animation: { type: rotate, axis: [0, 1, 0], speed: 3.0 } }
+          - { block_data: "minecraft:dispenser[facing=down]", tag: body,   transform: { translation: [-0.45, -0.35, -0.45], scale: [0.9, 0.9, 0.9] } }
+          - { texture: "@placer_piston",                      tag: piston, transform: { translation: [0, -0.375, 0],        scale: [0.5, 0.5, 0.5] }, animation: { type: bob, amplitude: 0.1, period: 16, axis: [0, -1, 0] } }
+          - { texture: "@machine_base",                       tag: collar, transform: { translation: [0, 0.5, 0],           scale: [0.7, 0.25, 0.7] } }
     recipes:
       craft:
         shaped:

@@ -50,22 +50,27 @@ final class Animations {
         };
     }
 
-    /** Vertical bob (sine wave on Y axis).
+    /** Bob (sine wave) along an axis — Y by default, giving the classic vertical bob.
      *
-     * <p>Pre-multiplies (T × base) so the bob is a WORLD-space vertical translation,
-     * independent of the display's own scale/rotation — every bobbing display moves by
-     * the same {@code amplitude}. (Post-multiplying would push dy through the base's
-     * scale+rotation, so a scaled or flipped display would bob by a different magnitude /
-     * opposite direction.) Mirrors {@link #rotate}'s rigid-body approach.
+     * <p>Pre-multiplies (T × base) so the bob is a WORLD-space translation, independent of the
+     * display's own scale/rotation — every bobbing display moves by the same {@code amplitude}.
+     * (Post-multiplying would push the offset through the base's scale+rotation, so a scaled or
+     * flipped display would bob by a different magnitude / opposite direction.) Mirrors
+     * {@link #rotate}'s rigid-body approach.
+     *
+     * <p>{@code axis} sets the line of travel; the sine is symmetric, so an axis and its negation
+     * differ only by a half-cycle phase. Pointing it along a machine's facing turns the bob into a
+     * pump stroke.
      *
      * <p>{@code phaseTurns} offsets the sine (0.5 = anti-phase), so two displays on the
      * same block can bob together or in opposition. */
-    static DisplayAnimation bob(float amplitude, int periodTicks, float phaseTurns) {
+    static DisplayAnimation bob(float amplitude, int periodTicks, Vector3f axis, float phaseTurns) {
         float omega = omega(periodTicks);
         float phase = phaseTurns * TAU;
+        Vector3f norm = normalizedAxis(axis);
         return (base, tickAge, output) -> {
-            float dy = amplitude * (float) Math.sin(omega * tickAge + phase);
-            new Matrix4f().translation(0, dy, 0).mul(base, output);
+            float d = amplitude * (float) Math.sin(omega * tickAge + phase);
+            new Matrix4f().translation(norm.x * d, norm.y * d, norm.z * d).mul(base, output);
         };
     }
 

@@ -696,8 +696,9 @@ public final class BlockLoader {
             case "bob" -> {
                 float amplitude = (float) toDouble((Object) map.get("amplitude"), 0.1);
                 int period = toInt((Object) map.get("period"), 40);
+                Vector3f axis = parseVector3f(map.get("axis"), new Vector3f(0, 1, 0));
                 float phase = (float) toDouble((Object) map.get("phase"), 0.0);
-                yield Animations.bob(amplitude, period, phase);
+                yield Animations.bob(amplitude, period, axis, phase);
             }
             case "pulse" -> {
                 float min = (float) toDouble((Object) map.get("min_scale"), 0.8);
