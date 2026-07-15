@@ -14,8 +14,7 @@ drill:
   tick-interval: 4
   break-stages: 10
   blacklist:
-    - OBSIDIAN
-    - CRYING_OBSIDIAN
+    - BEDROCK
     - SPAWNER
     - MOVING_PISTON
     - REINFORCED_DEEPSLATE

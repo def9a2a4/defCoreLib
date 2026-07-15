@@ -37,7 +37,7 @@ final class RotationConfig {
     String dynamoDefaultMode = "TOTAL";      // TOTAL | USED | UNUSED
     String dynamoDefaultScaling = "CLAMP";   // CLAMP | MOD15 | DIV15
     Set<Material> drillBlacklist = Set.of(
-            Material.OBSIDIAN, Material.CRYING_OBSIDIAN, Material.SPAWNER,
+            Material.BEDROCK, Material.SPAWNER,
             Material.MOVING_PISTON, Material.REINFORCED_DEEPSLATE);
     Map<Material, Integer> fuelValues = new HashMap<>();
     Map<String, Integer> powerValues = new HashMap<>();
