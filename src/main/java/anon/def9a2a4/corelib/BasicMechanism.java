@@ -202,8 +202,13 @@ final class BasicMechanism implements Mechanism {
                 // correct; a wall head shifts +0.25 up and +0.25 toward its attachment face (= -wallFacing).
                 // Applied in the LOCAL frame on a COPY of dm so it swings with the door and doesn't corrupt
                 // the aux displays below (which reuse dm).
+                //   ...and a yaw so the head FACES its wall direction. The static block gets this from the
+                // real vanilla skull; the moving ItemDisplay is unrotated by default, so without this the
+                // head renders facing the wrong way. rotateY is post-multiplied (applied to the model first,
+                // before the translate/dm), i.e. the head yaws about its own centre, then is positioned.
                 Matrix4f wdm = new Matrix4f(dm).translate(
                     -mb.wallFacing.x * 0.25f, 0.25f, -mb.wallFacing.z * 0.25f);
+                wdm.rotateY(faceYawRadians(mb.wallFacing));
                 primary.setTransformationMatrix(wdm);
             } else {
                 primary.setTransformationMatrix(dm);
@@ -407,11 +412,16 @@ final class BasicMechanism implements Mechanism {
         if (mb.customTypeId != null) {
             CustomHeadBlock type = registry.getType(mb.customTypeId);
             if (type != null && type.baseBlock() != null) {
-                // Bare-first block (e.g. casing = OAK_PLANKS): no block-entity, so markBlock can't stamp
+                // Bare-first block (e.g. casing = OAK_STAIRS): no block-entity, so markBlock can't stamp
                 // it. The base block was placed by setBlockData above; register its identity in the
                 // display-backed registry (durable chunk PDC + tagged display) and respawn the display.
                 // (The shaft is captured/re-placed as an encased head — baseBlock() null — so it takes the
                 // skull path below.) A symmetric bare block has no rotatable state; keep the captured one.
+                // A type that pins its data is the exception: rotateBlockData above would have turned the
+                // casing's stair to a new facing, and a landed casing perpendicular to its neighbours is
+                // exactly what the pin exists to prevent. Re-assert it — the shell hides the stair anyway.
+                org.bukkit.block.data.BlockData pinned = type.baseBlockData();
+                if (pinned != null) target.setBlockData(pinned, false);
                 String landedState = mb.customState;
                 registry.addBareBlock(target, type);
                 int power = registry.readPower(target, type);
@@ -524,6 +534,21 @@ final class BasicMechanism implements Mechanism {
                 .rotate(t.getLeftRotation())
                 .scale(t.getScale())
                 .rotate(t.getRightRotation());
+    }
+
+    /**
+     * Yaw (radians, about +Y) that turns a wall head's primary ItemDisplay so its face points along the
+     * horizontal {@code facing}, matching the vanilla skull block's orientation on the static path. Only the
+     * four horizontal cardinals occur for wall heads. Mirrors the +Z→facing mapping in
+     * {@code ExtendablePistonManager.faceRotation}; if a bare skull's default face isn't +Z the baseline may
+     * need an in-game tweak (swap the north/south or east/west pair).
+     */
+    private static float faceYawRadians(Vector3f facing) {
+        float h = (float) (Math.PI / 2), p = (float) Math.PI;
+        if (facing.z < -0.5f) return p;    // north (-Z)
+        if (facing.x > 0.5f)  return h;    // east (+X)
+        if (facing.x < -0.5f) return -h;   // west (-X)
+        return 0f;                          // south (+Z), and the fallback
     }
 
     /**

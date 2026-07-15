@@ -12,6 +12,8 @@ namespace: mech
 # Reference any of these from texture/item_texture/display_entities as "@alias".
 textures:
   chainwheel:        "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTliNzc4MjJhODNmZDBjNWFkMGEyMmE4ZWI5NzViNWIyM2Y1ODhkMTkzMzg4ZGE2MzNmZWZlMzFlMjZlOWU0NiJ9fX0="  # Chain Pulley — in-hand item + spinning wheel display
+  chain_hoist_item:  "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDZiNzg5MDZmNDgwOGJhNmJmMmNkYmRmNDJhODZhMDEyYzk2NjVmN2QzYzY4ZTFjMzhkMzZkMmEyZmNhZmNiIn19fQ=="  # chain/chain-hoist-sideways — chain hoist in-hand item
+  chain_hoist_head:  "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHBzOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlLzMyMjlmYTZhZDBlMDNmNjYyYmVlMjkwZWVhOGMxOWI4YTgxZDA2MDc1YjRhNTVhZjIxOWE3N2VhOWRhZjEzMjMifX19"  # chain hoist placed head — shared with the Pipes plugin's copper_display_down
   cut_copper:        "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTI4YmMyZGYzZGZmNWVjM2QxNDNhMmNlZWNiOTM4MjE4MzUxNmU5ZmFkZDdlNDA5YTVlYjQxNTUxNTc0YTI1ZiJ9fX0="  # Cut Copper — shaft/gear/engine/motor/drill rods
   gear_disc:         "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTM1NDhjNmJkZGYwMGQ1MDI5MjEyYjc0NjFkZGNhYTcyZTkyOGQ0M2YzYWIwMmEyYWJmNjgwYTYzZDI1MWVjNSJ9fX0="  # Copper Gear (modified) — gear discs
   drill_rod:         "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjcwMDQxYzZiZTc5OWNiNjliMTI3ZGYzNTU3NDIzMjIwM2UyYzI2MTkwN2IyZmQ1OGExNGVlNjkyOTg4ZTA3MyJ9fX0="  # Drill bit — drill display rod
@@ -346,8 +348,8 @@ blocks:
       - "&7Right-click to open its storage and load it with chains — it spends one chain per block of rope."
       - "&7Whatever sits at the bottom of the chain rides along; with nothing there the chain just extends into the air."
       - "&7Build the platform from Mechanical Casing (or glue) so it moves as one; carried machines keep running."
-    texture: "@windmill_hub_up"
-    item_texture: "@chainwheel"
+    texture: "@chain_hoist_head"
+    item_texture: "@chain_hoist_item"
     drops: self
     storage: { layout: HOPPER }
     default_state: idle_x
@@ -366,7 +368,7 @@ blocks:
       # left_rotation, i.e. R_Z(90)*(0, 0.25*1.2, 0) = (-0.3, 0, 0) for the wheel; the rod's -0.5
       # is the same rule at scale.y 2.002 (copied from the shaft).
       idle_x:
-        texture: "@windmill_hub_up"
+        texture: "@chain_hoist_head"
         display_entities:
           - texture: "@rod_up"
             tag: axle
@@ -374,9 +376,9 @@ blocks:
           - texture: "@chainwheel"
             tag: wheel
             transform: { translation: [-0.3, 0, 0], scale: [1.5, 1.2, 1.5], left_rotation: [90, 0, 0, 1] }
-      spinning_x: { copy_from: idle_x, texture: "@windmill_hub_up", animation: { type: rotate, axis: [1, 0, 0], speed: 3.0 } }
+      spinning_x: { copy_from: idle_x, texture: "@chain_hoist_head", animation: { type: rotate, axis: [1, 0, 0], speed: 3.0 } }
       idle_z:
-        texture: "@windmill_hub_up"
+        texture: "@chain_hoist_head"
         display_entities:
           - texture: "@rod_up"
             tag: axle
@@ -384,7 +386,7 @@ blocks:
           - texture: "@chainwheel"
             tag: wheel
             transform: { translation: [0, 0, -0.3], scale: [1.5, 1.2, 1.5], left_rotation: [-90, 1, 0, 0] }
-      spinning_z: { copy_from: idle_z, texture: "@windmill_hub_up", animation: { type: rotate, axis: [0, 0, 1], speed: 3.0 } }
+      spinning_z: { copy_from: idle_z, texture: "@chain_hoist_head", animation: { type: rotate, axis: [0, 0, 1], speed: 3.0 } }
     recipes:
       craft:
         shaped:
@@ -870,13 +872,20 @@ blocks:
               M: { material: COMPARATOR }
 
   # ─── Mechanical Casing ────────────────────────────────────────────────────
-  # A full solid block that auto-glues to adjacent blocks like a vanilla slime block: any casing in a
-  # moving contraption drags its cardinal neighbours (transitively through other casings). Under the
-  # hood it is a real `<wood>_PLANKS` bare block (one variant per plank wood) — its identity lives in
-  # the display-backed bare-block registry (durable chunk PDC + the tagged shell display), not a
-  # block-entity PDC. Movable by mechanisms; ordinary to drill/break. Slime propagation lives in
-  # CasingExpansion, hooked into every mover (piston / rotator / door / minecart / chain hoist).
-  # No Java overlay — pure data + base_block.
+  # A block that auto-glues to adjacent blocks like a vanilla slime block: any casing in a moving
+  # contraption drags its cardinal neighbours (transitively through other casings). Slime propagation
+  # lives in CasingExpansion, hooked into every mover (piston / rotator / door / minecart / chain
+  # hoist). Movable by mechanisms; ordinary to drill/break. No Java overlay — pure data.
+  #
+  # Under the hood each variant is a real upside-down `<wood>_STAIRS` bare block — identity in the
+  # display-backed bare-block registry (durable chunk PDC + the tagged shell display), not a
+  # block-entity PDC. Stairs rather than planks because a stair does NOT occlude, and a display entity
+  # samples light at its own cell: inside an opaque plank the shell rendered pitch black. (The dynamo
+  # hits the same wall and buys out with setBrightness(15,15) — fine for one machine block, a glowing
+  # wall for something you place by the hundred.) The price is a 3/4 collider and a casing wall that
+  # casts no shade: "blocks light" and "a display inside it is lit" are the same property, so you
+  # cannot have both. base_block_data pins every copy to the same upside-down straight stair; see
+  # BASE_DATA in scripts/oneoff/gen_casings.py.
   casing_oak:
     name: "&fOak Mechanical Casing"
     lore:
@@ -887,7 +896,8 @@ blocks:
       - "&7Any casing carried by a piston, rotator, minecart, or chain hoist drags its neighbours along, spreading through other casings."
       - "&7A vanilla piston moves a lone casing as an ordinary block (no slime spread)."
       - "&7Comes in every plank wood — the center plank of the recipe picks the variant."
-    base_block: OAK_PLANKS
+    base_block: OAK_STAIRS
+    base_block_data: "[half=top,facing=north,shape=straight,waterlogged=false]"
     texture: "@casing_oak"
     drops: self
     default_state: idle
@@ -896,9 +906,10 @@ blocks:
         display_entities:
           - texture: "@casing_oak"
             tag: shell
-            # 1.888 = 2.006 × 16/17: shell half-extent 0.472 < 0.5, so the matching base
-            # plank shows as a thin inset frame around the cased face. Intentional (user-
-            # ratified) — do not "fix" back to full-cover 2.006.
+            # 1.888 = 2.006 × 16/17, and 17/16 is exactly the skull hat layer's inflate (8.5px vs 8):
+            # so the hat — which carries the frame art — lands flush at half-extent 0.5015 and
+            # neighbouring casings' frames meet cleanly instead of each poking 0.033 into the next.
+            # Do not "fix" to 2.006: that covers the stair, but doubles every seam line on a wall.
             transform: { translation: [0, 0.501, 0], scale: [1.888, 1.888, 1.888] }
     recipes:
       craft:
@@ -914,7 +925,8 @@ blocks:
       - "&7Sticks to adjacent blocks like slime —"
       - "&7move it with any mechanism"
     catalog_variant_of: casing_oak
-    base_block: ACACIA_PLANKS
+    base_block: ACACIA_STAIRS
+    base_block_data: "[half=top,facing=north,shape=straight,waterlogged=false]"
     texture: "@casing_acacia"
     drops: self
     default_state: idle
@@ -923,9 +935,10 @@ blocks:
         display_entities:
           - texture: "@casing_acacia"
             tag: shell
-            # 1.888 = 2.006 × 16/17: shell half-extent 0.472 < 0.5, so the matching base
-            # plank shows as a thin inset frame around the cased face. Intentional (user-
-            # ratified) — do not "fix" back to full-cover 2.006.
+            # 1.888 = 2.006 × 16/17, and 17/16 is exactly the skull hat layer's inflate (8.5px vs 8):
+            # so the hat — which carries the frame art — lands flush at half-extent 0.5015 and
+            # neighbouring casings' frames meet cleanly instead of each poking 0.033 into the next.
+            # Do not "fix" to 2.006: that covers the stair, but doubles every seam line on a wall.
             transform: { translation: [0, 0.501, 0], scale: [1.888, 1.888, 1.888] }
     recipes:
       craft:
@@ -941,7 +954,8 @@ blocks:
       - "&7Sticks to adjacent blocks like slime —"
       - "&7move it with any mechanism"
     catalog_variant_of: casing_oak
-    base_block: BAMBOO_PLANKS
+    base_block: BAMBOO_STAIRS
+    base_block_data: "[half=top,facing=north,shape=straight,waterlogged=false]"
     texture: "@casing_bamboo"
     drops: self
     default_state: idle
@@ -950,9 +964,10 @@ blocks:
         display_entities:
           - texture: "@casing_bamboo"
             tag: shell
-            # 1.888 = 2.006 × 16/17: shell half-extent 0.472 < 0.5, so the matching base
-            # plank shows as a thin inset frame around the cased face. Intentional (user-
-            # ratified) — do not "fix" back to full-cover 2.006.
+            # 1.888 = 2.006 × 16/17, and 17/16 is exactly the skull hat layer's inflate (8.5px vs 8):
+            # so the hat — which carries the frame art — lands flush at half-extent 0.5015 and
+            # neighbouring casings' frames meet cleanly instead of each poking 0.033 into the next.
+            # Do not "fix" to 2.006: that covers the stair, but doubles every seam line on a wall.
             transform: { translation: [0, 0.501, 0], scale: [1.888, 1.888, 1.888] }
     recipes:
       craft:
@@ -968,7 +983,8 @@ blocks:
       - "&7Sticks to adjacent blocks like slime —"
       - "&7move it with any mechanism"
     catalog_variant_of: casing_oak
-    base_block: BIRCH_PLANKS
+    base_block: BIRCH_STAIRS
+    base_block_data: "[half=top,facing=north,shape=straight,waterlogged=false]"
     texture: "@casing_birch"
     drops: self
     default_state: idle
@@ -977,9 +993,10 @@ blocks:
         display_entities:
           - texture: "@casing_birch"
             tag: shell
-            # 1.888 = 2.006 × 16/17: shell half-extent 0.472 < 0.5, so the matching base
-            # plank shows as a thin inset frame around the cased face. Intentional (user-
-            # ratified) — do not "fix" back to full-cover 2.006.
+            # 1.888 = 2.006 × 16/17, and 17/16 is exactly the skull hat layer's inflate (8.5px vs 8):
+            # so the hat — which carries the frame art — lands flush at half-extent 0.5015 and
+            # neighbouring casings' frames meet cleanly instead of each poking 0.033 into the next.
+            # Do not "fix" to 2.006: that covers the stair, but doubles every seam line on a wall.
             transform: { translation: [0, 0.501, 0], scale: [1.888, 1.888, 1.888] }
     recipes:
       craft:
@@ -995,7 +1012,8 @@ blocks:
       - "&7Sticks to adjacent blocks like slime —"
       - "&7move it with any mechanism"
     catalog_variant_of: casing_oak
-    base_block: CHERRY_PLANKS
+    base_block: CHERRY_STAIRS
+    base_block_data: "[half=top,facing=north,shape=straight,waterlogged=false]"
     texture: "@casing_cherry"
     drops: self
     default_state: idle
@@ -1004,9 +1022,10 @@ blocks:
         display_entities:
           - texture: "@casing_cherry"
             tag: shell
-            # 1.888 = 2.006 × 16/17: shell half-extent 0.472 < 0.5, so the matching base
-            # plank shows as a thin inset frame around the cased face. Intentional (user-
-            # ratified) — do not "fix" back to full-cover 2.006.
+            # 1.888 = 2.006 × 16/17, and 17/16 is exactly the skull hat layer's inflate (8.5px vs 8):
+            # so the hat — which carries the frame art — lands flush at half-extent 0.5015 and
+            # neighbouring casings' frames meet cleanly instead of each poking 0.033 into the next.
+            # Do not "fix" to 2.006: that covers the stair, but doubles every seam line on a wall.
             transform: { translation: [0, 0.501, 0], scale: [1.888, 1.888, 1.888] }
     recipes:
       craft:
@@ -1022,7 +1041,8 @@ blocks:
       - "&7Sticks to adjacent blocks like slime —"
       - "&7move it with any mechanism"
     catalog_variant_of: casing_oak
-    base_block: CRIMSON_PLANKS
+    base_block: CRIMSON_STAIRS
+    base_block_data: "[half=top,facing=north,shape=straight,waterlogged=false]"
     texture: "@casing_crimson"
     drops: self
     default_state: idle
@@ -1031,9 +1051,10 @@ blocks:
         display_entities:
           - texture: "@casing_crimson"
             tag: shell
-            # 1.888 = 2.006 × 16/17: shell half-extent 0.472 < 0.5, so the matching base
-            # plank shows as a thin inset frame around the cased face. Intentional (user-
-            # ratified) — do not "fix" back to full-cover 2.006.
+            # 1.888 = 2.006 × 16/17, and 17/16 is exactly the skull hat layer's inflate (8.5px vs 8):
+            # so the hat — which carries the frame art — lands flush at half-extent 0.5015 and
+            # neighbouring casings' frames meet cleanly instead of each poking 0.033 into the next.
+            # Do not "fix" to 2.006: that covers the stair, but doubles every seam line on a wall.
             transform: { translation: [0, 0.501, 0], scale: [1.888, 1.888, 1.888] }
     recipes:
       craft:
@@ -1049,7 +1070,8 @@ blocks:
       - "&7Sticks to adjacent blocks like slime —"
       - "&7move it with any mechanism"
     catalog_variant_of: casing_oak
-    base_block: DARK_OAK_PLANKS
+    base_block: DARK_OAK_STAIRS
+    base_block_data: "[half=top,facing=north,shape=straight,waterlogged=false]"
     texture: "@casing_dark_oak"
     drops: self
     default_state: idle
@@ -1058,9 +1080,10 @@ blocks:
         display_entities:
           - texture: "@casing_dark_oak"
             tag: shell
-            # 1.888 = 2.006 × 16/17: shell half-extent 0.472 < 0.5, so the matching base
-            # plank shows as a thin inset frame around the cased face. Intentional (user-
-            # ratified) — do not "fix" back to full-cover 2.006.
+            # 1.888 = 2.006 × 16/17, and 17/16 is exactly the skull hat layer's inflate (8.5px vs 8):
+            # so the hat — which carries the frame art — lands flush at half-extent 0.5015 and
+            # neighbouring casings' frames meet cleanly instead of each poking 0.033 into the next.
+            # Do not "fix" to 2.006: that covers the stair, but doubles every seam line on a wall.
             transform: { translation: [0, 0.501, 0], scale: [1.888, 1.888, 1.888] }
     recipes:
       craft:
@@ -1076,7 +1099,8 @@ blocks:
       - "&7Sticks to adjacent blocks like slime —"
       - "&7move it with any mechanism"
     catalog_variant_of: casing_oak
-    base_block: JUNGLE_PLANKS
+    base_block: JUNGLE_STAIRS
+    base_block_data: "[half=top,facing=north,shape=straight,waterlogged=false]"
     texture: "@casing_jungle"
     drops: self
     default_state: idle
@@ -1085,9 +1109,10 @@ blocks:
         display_entities:
           - texture: "@casing_jungle"
             tag: shell
-            # 1.888 = 2.006 × 16/17: shell half-extent 0.472 < 0.5, so the matching base
-            # plank shows as a thin inset frame around the cased face. Intentional (user-
-            # ratified) — do not "fix" back to full-cover 2.006.
+            # 1.888 = 2.006 × 16/17, and 17/16 is exactly the skull hat layer's inflate (8.5px vs 8):
+            # so the hat — which carries the frame art — lands flush at half-extent 0.5015 and
+            # neighbouring casings' frames meet cleanly instead of each poking 0.033 into the next.
+            # Do not "fix" to 2.006: that covers the stair, but doubles every seam line on a wall.
             transform: { translation: [0, 0.501, 0], scale: [1.888, 1.888, 1.888] }
     recipes:
       craft:
@@ -1103,7 +1128,8 @@ blocks:
       - "&7Sticks to adjacent blocks like slime —"
       - "&7move it with any mechanism"
     catalog_variant_of: casing_oak
-    base_block: MANGROVE_PLANKS
+    base_block: MANGROVE_STAIRS
+    base_block_data: "[half=top,facing=north,shape=straight,waterlogged=false]"
     texture: "@casing_mangrove"
     drops: self
     default_state: idle
@@ -1112,9 +1138,10 @@ blocks:
         display_entities:
           - texture: "@casing_mangrove"
             tag: shell
-            # 1.888 = 2.006 × 16/17: shell half-extent 0.472 < 0.5, so the matching base
-            # plank shows as a thin inset frame around the cased face. Intentional (user-
-            # ratified) — do not "fix" back to full-cover 2.006.
+            # 1.888 = 2.006 × 16/17, and 17/16 is exactly the skull hat layer's inflate (8.5px vs 8):
+            # so the hat — which carries the frame art — lands flush at half-extent 0.5015 and
+            # neighbouring casings' frames meet cleanly instead of each poking 0.033 into the next.
+            # Do not "fix" to 2.006: that covers the stair, but doubles every seam line on a wall.
             transform: { translation: [0, 0.501, 0], scale: [1.888, 1.888, 1.888] }
     recipes:
       craft:
@@ -1130,7 +1157,8 @@ blocks:
       - "&7Sticks to adjacent blocks like slime —"
       - "&7move it with any mechanism"
     catalog_variant_of: casing_oak
-    base_block: PALE_OAK_PLANKS
+    base_block: PALE_OAK_STAIRS
+    base_block_data: "[half=top,facing=north,shape=straight,waterlogged=false]"
     texture: "@casing_pale_oak"
     drops: self
     default_state: idle
@@ -1139,9 +1167,10 @@ blocks:
         display_entities:
           - texture: "@casing_pale_oak"
             tag: shell
-            # 1.888 = 2.006 × 16/17: shell half-extent 0.472 < 0.5, so the matching base
-            # plank shows as a thin inset frame around the cased face. Intentional (user-
-            # ratified) — do not "fix" back to full-cover 2.006.
+            # 1.888 = 2.006 × 16/17, and 17/16 is exactly the skull hat layer's inflate (8.5px vs 8):
+            # so the hat — which carries the frame art — lands flush at half-extent 0.5015 and
+            # neighbouring casings' frames meet cleanly instead of each poking 0.033 into the next.
+            # Do not "fix" to 2.006: that covers the stair, but doubles every seam line on a wall.
             transform: { translation: [0, 0.501, 0], scale: [1.888, 1.888, 1.888] }
     recipes:
       craft:
@@ -1157,7 +1186,8 @@ blocks:
       - "&7Sticks to adjacent blocks like slime —"
       - "&7move it with any mechanism"
     catalog_variant_of: casing_oak
-    base_block: SPRUCE_PLANKS
+    base_block: SPRUCE_STAIRS
+    base_block_data: "[half=top,facing=north,shape=straight,waterlogged=false]"
     texture: "@casing_spruce"
     drops: self
     default_state: idle
@@ -1166,9 +1196,10 @@ blocks:
         display_entities:
           - texture: "@casing_spruce"
             tag: shell
-            # 1.888 = 2.006 × 16/17: shell half-extent 0.472 < 0.5, so the matching base
-            # plank shows as a thin inset frame around the cased face. Intentional (user-
-            # ratified) — do not "fix" back to full-cover 2.006.
+            # 1.888 = 2.006 × 16/17, and 17/16 is exactly the skull hat layer's inflate (8.5px vs 8):
+            # so the hat — which carries the frame art — lands flush at half-extent 0.5015 and
+            # neighbouring casings' frames meet cleanly instead of each poking 0.033 into the next.
+            # Do not "fix" to 2.006: that covers the stair, but doubles every seam line on a wall.
             transform: { translation: [0, 0.501, 0], scale: [1.888, 1.888, 1.888] }
     recipes:
       craft:
@@ -1184,7 +1215,8 @@ blocks:
       - "&7Sticks to adjacent blocks like slime —"
       - "&7move it with any mechanism"
     catalog_variant_of: casing_oak
-    base_block: WARPED_PLANKS
+    base_block: WARPED_STAIRS
+    base_block_data: "[half=top,facing=north,shape=straight,waterlogged=false]"
     texture: "@casing_warped"
     drops: self
     default_state: idle
@@ -1193,9 +1225,10 @@ blocks:
         display_entities:
           - texture: "@casing_warped"
             tag: shell
-            # 1.888 = 2.006 × 16/17: shell half-extent 0.472 < 0.5, so the matching base
-            # plank shows as a thin inset frame around the cased face. Intentional (user-
-            # ratified) — do not "fix" back to full-cover 2.006.
+            # 1.888 = 2.006 × 16/17, and 17/16 is exactly the skull hat layer's inflate (8.5px vs 8):
+            # so the hat — which carries the frame art — lands flush at half-extent 0.5015 and
+            # neighbouring casings' frames meet cleanly instead of each poking 0.033 into the next.
+            # Do not "fix" to 2.006: that covers the stair, but doubles every seam line on a wall.
             transform: { translation: [0, 0.501, 0], scale: [1.888, 1.888, 1.888] }
     recipes:
       craft:
@@ -1450,16 +1483,14 @@ blocks:
     default_state: idle_z
     placement:
       allowed_faces: [NORTH, SOUTH, EAST, WEST, UP, DOWN]
-    # Keys are the ATTACHMENT face (the wall the head sticks to); the value's screw must point OUT of
-    # that wall, along the mining direction (= attachment.getOppositeFace()). So NORTH attachment mines
-    # SOUTH → idle_south_z, etc. (matches the placer/windmill/fan/piston_core convention.)
-    # UP = attached to the block above → hangs, mines DOWN (ceiling). DOWN = attached to the block below
-    # → sits on top, mines UP (floor). Both resolve to a floating PLAYER_HEAD via playerHeadStates.
+    # Wall entries: the static skull renders correctly with the straight (not crossed) mapping — leave
+    # these as-is. UP = attached to the block above → hangs, mines DOWN (ceiling). DOWN = attached to the
+    # block below → sits on top, mines UP (floor). Both resolve to a floating PLAYER_HEAD via playerHeadStates.
     placement_state_map:
-      NORTH: idle_south_z
-      SOUTH: idle_z
-      EAST: idle_x
-      WEST: idle_east_x
+      NORTH: idle_z
+      SOUTH: idle_south_z
+      EAST: idle_east_x
+      WEST: idle_x
       UP: idle_ceiling
       DOWN: idle_y
     states:

@@ -1191,17 +1191,12 @@ final class RotationBlocks {
             .onTick(b -> drillTick(b, registry, network))
             .onChunkLoad((b, state) -> {
                 storeFacingIfAbsent(b, state);
-                // A vertical drill (ceiling/floor floating head) can't take a shaft on its mounting face,
-                // so it draws power omni-style from any other side (excluding that face), like the ceiling
-                // placer. Wall drills stay single-axis on the state's axis.
-                BlockFace omniEx = drillOmniExcludedFace(readFacing(b));
-                if (omniEx != null) {
-                    network.addNode(b, blockId, RotationNetwork.Axis.Y,
-                        RotationNetwork.NodeRole.CONSUMER, drillPower, false, true, omniEx);
-                } else {
-                    network.addNode(b, blockId, RotationNetwork.axisFromState(state),
-                        RotationNetwork.NodeRole.CONSUMER, drillPower, false);
-                }
+                // Single-axis consumer. Wall drills spin on the state's axis; a vertical drill's state
+                // (idle_y/idle_ceiling) resolves to Axis.Y, so it draws power only along Y — from the shaft
+                // on its mounting side, since the mining face is the target block: an up-drill from the
+                // block below, a down-drill from the block above. A shaft on a side never powers it.
+                network.addNode(b, blockId, RotationNetwork.axisFromState(state),
+                    RotationNetwork.NodeRole.CONSUMER, drillPower, false);
             })
             .onChunkUnload(b -> {
                 drillProgress.remove(CustomBlockRegistry.LocationKey.of(b));
@@ -1305,20 +1300,20 @@ final class RotationBlocks {
 
     /**
      * How many break stages the drill takes on {@code mat}: proportional to how long a normal DIAMOND
-     * PICKAXE would take, ×1.5 (a small penalty), uncapped — so a stone block is quick and a hard one is
-     * slow, instead of the old flat 40 ticks for everything. Computed from block hardness rather than
-     * {@code Block#getDestroySpeed} so the timing is deterministic and version-independent: a diamond pick
-     * breaks a pickaxe-mineable block in {@code hardness × 1.5 / 8 s = hardness × 3.75} ticks; ×1.5 penalty
-     * ÷ {@code drillTickInterval} (one stage per actuation) gives the stage count. All blocks are treated
-     * at diamond-pick speed (non-pick blocks come out a touch fast — acceptable for a machine). Unbreakable
-     * blocks never reach here (filtered by {@code hardness < 0} / blacklist); hardness 0 → one stage.
-     * Shared by the static ({@link #drillTick}) and riding ({@code MechanismRotationDriver}) paths.
+     * PICKAXE would take, ×5 (the drill is deliberately slow), uncapped — so a stone block is quick-ish and
+     * a hard one is slow, instead of the old flat 40 ticks for everything. Computed from block hardness
+     * rather than {@code Block#getDestroySpeed} so the timing is deterministic and version-independent: a
+     * diamond pick breaks a pickaxe-mineable block in {@code hardness × 1.5 / 8 s = hardness × 3.75} ticks;
+     * ×5 penalty ÷ {@code drillTickInterval} (one stage per actuation) gives the stage count. All blocks are
+     * treated at diamond-pick speed (non-pick blocks come out a touch fast — acceptable for a machine).
+     * Unbreakable blocks never reach here (filtered by {@code hardness < 0} / blacklist); hardness 0 → one
+     * stage. Shared by the static ({@link #drillTick}) and riding ({@code MechanismRotationDriver}) paths.
      */
     private static int drillStagesFor(Material mat) {
         float hardness = mat.getHardness();
         if (hardness <= 0f) return 1;
         float diamondTicks = hardness * 3.75f;                 // hardness × 1.5 / 8 × 20
-        float penalised = diamondTicks * 1.5f;                 // small penalty over a real pick
+        float penalised = diamondTicks * 5.0f;                 // ×5 a real diamond pick (a machine, not a miracle)
         return Math.max(1, Math.round(penalised / Math.max(1, drillTickInterval)));
     }
 
@@ -1386,15 +1381,6 @@ final class RotationBlocks {
     static @org.jetbrains.annotations.Nullable BlockFace placerOmniExcludedFace(
             @org.jetbrains.annotations.Nullable BlockFace facing) {
         return facing == BlockFace.DOWN ? BlockFace.UP : null;
-    }
-
-    /** Vertical drill power geometry: a ceiling drill (facing DOWN) or floor drill (facing UP) is a
-     *  floating head whose mounting face (opposite the mining direction) is capped by the block it
-     *  hangs from / sits on, so it draws power omni-style from any other side, excluding that face. A
-     *  wall drill (cardinal facing, or null) returns null → ordinary single-axis consumer. */
-    private static @org.jetbrains.annotations.Nullable BlockFace drillOmniExcludedFace(
-            @org.jetbrains.annotations.Nullable BlockFace facing) {
-        return (facing == BlockFace.DOWN || facing == BlockFace.UP) ? facing.getOppositeFace() : null;
     }
 
     // ──────────────────────────────────────────────────────────────────────
