@@ -17,11 +17,13 @@ async function manifest() {
   return MANIFEST;
 }
 
-// Mirror scripts/generate_catalog.py canonical_block(): wool/banner default to white.
+// Mirror scripts/generate_catalog.py canonical_block(): wool/banner default to white,
+// iron_chain → chain (the 1.21.9+ IRON_CHAIN rename; pinned assets only ship the `chain` model).
 function canonical(ref) {
   let n = String(ref).split('[')[0].split(':').pop().toLowerCase();
   if (n.endsWith('_wool') || n === 'wool') return 'white_wool';
   if (n.endsWith('_banner') || n === 'banner') return 'white_banner';
+  if (n === 'iron_chain') return 'chain';
   return n;
 }
 

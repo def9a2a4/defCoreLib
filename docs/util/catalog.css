@@ -401,6 +401,12 @@ a.slot { text-decoration: none; color: inherit; }
 .variant-icon .slot-label { font-size: 11px; color: #cfcfcf; padding: 2px; word-break: break-word; }
 .variant-label { font-size: 0.82em; color: #aaa; margin-top: 4px; word-break: break-word; }
 
+/* Recipe-carrying swatches (folded wood variants): clickable, selected one highlighted. */
+.variant-clickable { cursor: pointer; }
+.variant-clickable:hover .variant-icon { border-color: #4ecca3; }
+.variant-selected .variant-icon { border-color: #4ecca3; box-shadow: 0 0 0 1px #4ecca3; }
+.variant-selected .variant-label { color: #4ecca3; }
+
 .transitions { margin-top: 14px; }
 .transition { font-size: 0.85em; color: #ccc; padding: 3px 0; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
 .trans-state { background: #2a2a2a; border: 1px solid #3a3a3a; border-radius: 4px; padding: 1px 8px; }

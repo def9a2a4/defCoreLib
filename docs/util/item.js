@@ -4,8 +4,8 @@ import {
 import { mountInHand, mountPlaced, hasInHand, toRenderBlock } from './viewers.js';
 import { thumbnailDataURL } from './placed3d.js';
 
-const GROUP_TITLES = { states: 'States', power: 'Redstone power', facing: 'By facing' };
-const GROUP_ORDER = ['states', 'power', 'facing'];
+const GROUP_TITLES = { woods: 'Woods', states: 'States', power: 'Redstone power', facing: 'By facing' };
+const GROUP_ORDER = ['woods', 'states', 'power', 'facing'];
 
 function showError(msg) {
   const err = document.getElementById('error');
@@ -14,23 +14,32 @@ function showError(msg) {
 }
 
 // Group variants by their `group` field, preserving generator order within a group.
+// Variants that carry their own `recipes` (folded per-wood cards, see generate_catalog.py)
+// render as clickable swatches; the first one starts selected (its recipes are the item's own).
 function variantsHtml(item) {
   if (!item.variants?.length) return '';
   const byGroup = new Map();
-  for (const v of item.variants) {
+  item.variants.forEach((v, i) => {
     if (!byGroup.has(v.group)) byGroup.set(v.group, []);
-    byGroup.get(v.group).push(v);
-  }
+    byGroup.get(v.group).push({ v, i });
+  });
   const groups = [...byGroup.keys()].sort((a, b) => GROUP_ORDER.indexOf(a) - GROUP_ORDER.indexOf(b));
 
+  let firstClickable = true;
   const sections = groups.map((g) => {
-    const cells = byGroup.get(g).map((v) => `
-      <div class="variant">
+    const cells = byGroup.get(g).map(({ v, i }) => {
+      const clickable = !!v.recipes;
+      const selected = clickable && firstClickable;
+      if (clickable) firstClickable = false;
+      const cls = `variant${clickable ? ' variant-clickable' : ''}${selected ? ' variant-selected' : ''}`;
+      return `
+      <div class="${cls}"${clickable ? ` data-variant-recipes="${i}"` : ''}>
         <div class="variant-icon">
           <span class="slot-label head-pending" data-head="${esc(v.textureUrl)}" data-title="${esc(v.label)}"></span>
         </div>
         <div class="variant-label">${esc(v.label)}</div>
-      </div>`).join('');
+      </div>`;
+    }).join('');
     return `<div class="variant-group">
       <div class="variant-group-title">${esc(GROUP_TITLES[g] || g)}</div>
       <div class="variant-row">${cells}</div>
@@ -153,7 +162,7 @@ function renderItem(item, itemsById, showcasesById) {
     ${notes}
     <div class="viewers" id="viewers"></div>
     ${item.recipes?.length || !item.producedBy?.length
-      ? `<div class="detail-section"><h2 class="section-title">Recipes</h2>${recipesHtml(item, itemsById)}</div>`
+      ? `<div class="detail-section"><h2 class="section-title">Recipes</h2><div id="recipes-body">${recipesHtml(item, itemsById)}</div></div>`
       : ''}
     ${item.producedBy?.length
       ? `<div class="detail-section"><h2 class="section-title">Obtained from</h2>${producedByHtml(item.producedBy, itemsById)}</div>`
@@ -165,8 +174,23 @@ function renderItem(item, itemsById, showcasesById) {
     ${usedInShowcasesHtml(item)}
   `;
   hydrateHeads(detail);
+  wireVariantSwatches(detail, item, itemsById);
   mountViewers(item);
   if (showcasesById) hydrateShowcaseThumbs(detail, showcasesById);
+}
+
+// Clicking a recipe-carrying swatch (a folded wood variant) swaps the Recipes grid to that
+// variant's recipes. Groups whose variants have no recipes (states/power/facing) stay inert.
+function wireVariantSwatches(detail, item, itemsById) {
+  const cells = detail.querySelectorAll('.variant[data-variant-recipes]');
+  const body = detail.querySelector('#recipes-body');
+  if (!cells.length || !body) return;
+  cells.forEach((cell) => cell.addEventListener('click', () => {
+    cells.forEach((c) => c.classList.toggle('variant-selected', c === cell));
+    const v = item.variants[Number(cell.dataset.variantRecipes)];
+    body.innerHTML = recipesHtml({ ...item, recipes: v.recipes }, itemsById);
+    hydrateHeads(body);
+  }));
 }
 
 // Registry of live viewer teardowns; released on navigation so WebGL contexts don't leak.

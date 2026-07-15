@@ -239,12 +239,15 @@ def parse_transitions(sec: dict) -> list[dict]:
 
 
 def canonical_block(name: str) -> str:
-    """Vanilla block/material id (lowercase, no namespace) with wool/banner → white."""
+    """Vanilla block/material id (lowercase, no namespace) with wool/banner → white,
+    iron_chain → chain (1.21.9+ IRON_CHAIN rename; pinned assets only ship the `chain` model)."""
     n = name.split(":")[-1].lower()
     if n.endswith("_wool") or n == "wool":
         return "white_wool"
     if n.endswith("_banner") or n == "banner":
         return "white_banner"
+    if n == "iron_chain":
+        return "chain"
     return n
 
 
@@ -268,7 +271,7 @@ def parse_block(namespace: str, block_id: str, sec: dict, aliases: dict) -> dict
     if isinstance(notes, str):
         notes = [notes]
 
-    return {
+    out = {
         "namespace": namespace,
         "id": block_id,
         "fullId": f"{namespace}:{block_id}",
@@ -283,6 +286,12 @@ def parse_block(namespace: str, block_id: str, sec: dict, aliases: dict) -> dict
         "inHand": in_hand,
         "placedVariants": [],   # filled from display-spec.json (headless export)
     }
+    # Docs-only key: this block is a cosmetic variant of another (e.g. casing woods) and gets
+    # folded into that parent's card as a swatch instead of keeping its own index entry.
+    variant_of = sec.get("catalog_variant_of")
+    if variant_of:
+        out["variantOf"] = variant_of if ":" in str(variant_of) else f"{namespace}:{variant_of}"
+    return out
 
 
 def load_block_file(path: Path) -> list[dict]:
@@ -773,6 +782,36 @@ def main() -> int:
     if unmatched:
         print(f"    ! {len(unmatched)} spec types with no catalog item: {', '.join(unmatched[:8])}"
               + (" …" if len(unmatched) > 8 else ""), file=sys.stderr)
+
+    # Fold `catalog_variant_of` children into their parent card as clickable swatches: only the
+    # parent keeps an index entry; every family member (parent first, then children in YAML order)
+    # becomes a "woods" variant carrying its own recipes so the item page can swap the recipe grid.
+    # Runs AFTER the display-spec match so child ids stay visible to the unmatched-spec check above;
+    # children's placedVariants are discarded with them (the 3D viewer shows the parent's skin).
+    variant_children: dict[str, list[dict]] = {}
+    for it in items:
+        if it.get("variantOf"):
+            variant_children.setdefault(it["variantOf"], []).append(it)
+    if variant_children:
+        by_full_id = {it["fullId"]: it for it in items}
+        for parent_id, kids in variant_children.items():
+            parent = by_full_id.get(parent_id)
+            if parent is None:
+                sys.exit(f"ERROR: catalog_variant_of parent {parent_id} not in the catalog "
+                         f"(children: {', '.join(k['fullId'] for k in kids)})")
+            # Swatch label = the id remainder after the family's common prefix ("casing_"),
+            # title-cased: casing_dark_oak -> "Dark Oak".
+            prefix = os.path.commonprefix([parent["id"]] + [k["id"] for k in kids])
+            swatches = [{
+                "group": "woods",
+                "label": member["id"][len(prefix):].replace("_", " ").title(),
+                "textureUrl": member["icon"].get("textureUrl"),
+                "recipes": member["recipes"],
+            } for member in [parent, *kids]]
+            parent["variants"] = swatches + parent["variants"]
+        items = [it for it in items if not it.get("variantOf")]
+        folded = sum(len(k) for k in variant_children.values())
+        print(f"  + folded {folded} variant item(s) into {len(variant_children)} parent card(s)")
 
     # Multi-block "showcases" (make showcase-capture). Optional input; when present, emit showcases.json
     # and fold its display refs into the vendoring pass below (pseudo-items reuse the placedVariants path).
