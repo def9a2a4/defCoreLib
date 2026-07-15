@@ -64,11 +64,16 @@ def entry(wood: str) -> str:
         display_entities:
           - texture: "@casing_{wood}"
             tag: shell
-            # 1.888 = 2.006 × 16/17, and 17/16 is exactly the skull hat layer's inflate (8.5px vs 8):
-            # so the hat — which carries the frame art — lands flush at half-extent 0.5015 and
-            # neighbouring casings' frames meet cleanly instead of each poking 0.033 into the next.
-            # Do not "fix" to 2.006: that covers the stair, but doubles every seam line on a wall.
-            transform: {{ translation: [0, 0.501, 0], scale: [1.888, 1.888, 1.888] }}
+            # The redstone dynamo's placement verbatim, and for the same reason: cover the block
+            # you are disguising. Half-extent = 0.25*scale = 0.5015, so 0.0015 of slack over the
+            # stair's face; the head model's visual centre sits HEAD_CENTER (-0.25) model-units
+            # below the transform origin, so it lands at 0.501 - 0.5015 = -0.0005 = the dynamo's
+            # UP_NUDGE, i.e. block centre. (RedstoneDynamo.orientHead computes exactly this T for
+            # identity rotation — it only differs from the yml when a barrel-facing rotates it.)
+            # Depends on make_cased.py baking the frame into the BASE layer and leaving the hat
+            # empty: a hat is inflated 17/16, so it would render at 0.5328 here and double every
+            # seam on a wall. Restoring a hat layer means going back to 1.888 (= 2.006 × 16/17).
+            transform: {{ translation: [0, 0.501, 0], scale: [2.006, 2.006, 2.006] }}
     recipes:
       craft:
         shaped:
