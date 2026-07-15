@@ -618,13 +618,24 @@ final class ExtendablePistonManager {
         float step = clamp(SPEED_K * power / Math.max(1, m.mass), MIN_STEP, (float) config.pistonMaxStep);
 
         if (remaining <= step + 1e-3) {
+            // Rising: carry riders up by the final delta BEFORE the colliders teleport up (see below).
+            if (m.dir.y > 0) carryUp(m, cur, m.target);
             m.mech.move(m.target, 0f);   // snap to the block-centered target cell
             m.settle = SETTLE_TICKS;     // hold here while the client catches up, then disassemble (above)
             return false;
         }
         Location next = cur.clone().add(m.dir.x * step, m.dir.y * step, m.dir.z * step);
+        // Rising: carry any entities standing on the platform up by this tick's delta BEFORE the colliders
+        // teleport up, so the shulker boxes don't clip through a rider (who would otherwise fall through).
+        if (m.dir.y > 0) carryUp(m, cur, next);
         m.mech.move(next, 0f);
         return false;
+    }
+
+    /** Lift riders standing on the mechanism by the vertical gap between {@code cur} and {@code next}. */
+    private static void carryUp(ActiveMove m, Location cur, Location next) {
+        double dy = next.getY() - cur.getY();
+        if (dy > 0) m.mech.carryRidersUp(dy);
     }
 
     // ──────────────────────────────────────────────────────────────────────

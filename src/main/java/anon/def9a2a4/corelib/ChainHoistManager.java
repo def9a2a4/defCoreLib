@@ -6,18 +6,15 @@ import org.bukkit.Axis;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.block.Skull;
 import org.bukkit.block.data.Orientable;
 import org.bukkit.block.data.Rotatable;
 import org.bukkit.entity.BlockDisplay;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
@@ -45,12 +42,15 @@ import java.util.logging.Level;
  * {@code MechanismRotationDriver} (built at the assemble choke point).
  *
  * <p><b>Invariant</b> — at extension {@code D} the hoist at {@code y0} owns real chains filling
- * {@code y0-1 … y0-D}, and the platform's top block, if any, sits at {@code y0-D-1}. {@code D} is
- * re-derived from where the platform actually landed on every stroke and the column is re-synced to it,
- * so a cut power feed, a crash, or a player mining the rope mid-span self-heals instead of desyncing.
- * At rest nothing but {@code D} (in the hoist's skull PDC) and real world blocks persist — no live
- * mechanism is serialized. The stretched block-display rope exists only while a platform is in transit,
- * spanning the cells whose real chains have not been laid yet.
+ * {@code y0-1 … y0-D}, and the platform's top block, if any, sits at {@code y0-D-1}. <b>{@code D} is
+ * never stored</b>: it is counted off the real chains on every trigger ({@link #scanDepth}), so the rope
+ * in the world is the single source of truth and cannot desync from itself. A cut power feed, a crash, or
+ * a player mining the rope mid-span is simply what the next scan reads. This mirrors
+ * {@link ExtendablePistonManager}, which likewise re-derives its whole rod geometry per trigger rather
+ * than trusting stored state.
+ *
+ * <p>At rest only real world blocks persist — no live mechanism is serialized. The block-display rope
+ * exists only while a platform is in transit, spanning the cells whose real chains are not laid yet.
  */
 final class ChainHoistManager {
 
@@ -59,8 +59,6 @@ final class ChainHoistManager {
     /** Non-hoist tag family for the in-transit rope so the block-display refresh (which wipes
      *  {@code corelib:mech:chain_hoist:*} on a state change) can't delete it — mirrors the pulley strand. */
     private static final String ROPE_TYPE = "chain_strand";
-
-    private static final NamespacedKey EXTENSION_KEY = new NamespacedKey("mech", "hoist_extension");
 
     // 1.21.9 renamed CHAIN → IRON_CHAIN; resolve by name so it compiles/runs on either API.
     private static final Material CHAIN_MATERIAL = resolveChain();
@@ -74,6 +72,24 @@ final class ChainHoistManager {
     private static final float MIN_STEP = 0.08f;         // blocks/tick floor (always progresses)
     private static final float SPEED_K = 0.5f;
     private static final int SETTLE_TICKS = 3;           // hold at target before disassembly (client lerp)
+    /**
+     * Ticks the rope is drawn BEHIND the platform's true position, so it meets the platform where the
+     * client actually renders it rather than where the server has it.
+     *
+     * <p>A mechanism translates purely by teleporting its vehicle ArmorStand ({@code BasicMechanism.move}
+     * — with yaw 0 the per-display matrix is a constant, so the displays' own interpolation never fires).
+     * An ArmorStand is not a Display, so its motion is vanilla's client-side entity lerp, which is not
+     * tunable from Bukkit: {@code pos += (target - pos) / 3} each tick. With the server advancing by
+     * {@code step} per tick the steady-state lag {@code L} solves {@code L = (2/3)L + step}, i.e.
+     * {@code L = 3·step} — 1.5 blocks at {@code pistonMaxStep}. A pure 3-tick delay reproduces exactly
+     * that, and unlike an interpolated rope it lags ONLY the moving end (see {@link #liveRope}).
+     *
+     * <p>Client-behaviour constant, so it is a tuning knob: ±1 if it reads over/under-lagged in game. Not
+     * ping-dependent — the lerp is client-side and shifts the rope's own packets equally.
+     * {@code ExtendablePistonManager.advance} documents the same ~3-tick lerp, and {@link #SETTLE_TICKS}
+     * exists to wait it out.
+     */
+    private static final int RENDER_LAG_TICKS = 3;
     private static final Vector3f AXIS_Y = new Vector3f(0f, 1f, 0f);
 
     private final JavaPlugin plugin;
@@ -180,7 +196,7 @@ final class ChainHoistManager {
         event.setCancelled(true);
         RotationBlocks.debugInteract(b, event, network, registry);
         event.getPlayer().sendMessage(Component.text(
-            "Chains: " + countChains(registry.getOrCreateStorage(b)) + " | extension " + readExtension(b),
+            "Chains: " + countChains(registry.getOrCreateStorage(b)) + " | extension " + scanDepth(b),
             NamedTextColor.GRAY));
         return true;
     }
@@ -223,9 +239,26 @@ final class ChainHoistManager {
         if (dir == null) return;
         Block hoist = blockOf(hoistKey);
         if (hoist == null) return;
-        int d = readExtension(hoist);
+        int d = scanDepth(hoist);
         if (dir == RotationNetwork.SpinDirection.CW) payOut(hoistKey, hoist, d, dir);
         else reelIn(hoistKey, hoist, d, dir);
+    }
+
+    /**
+     * The extension, counted off the real rope rather than remembered: contiguous chains of ours straight
+     * down from the hoist. Nothing is cached, so there is no second copy of the truth to desync — a link a
+     * player mined out, or a stroke that stopped short, is just what the next scan reads.
+     *
+     * <p>Costs {@code depth} palette reads per trigger, and only when powered ({@link #maybeTrigger} bails
+     * on the power check first). {@link #isOwnRope} short-circuits on the material, and excludes a chain
+     * <i>shaft</i> — a bare block — so shaft builds under a hoist are not mistaken for rope. Plain chains a
+     * player stacked under the hoist by hand ARE adopted, and reeling in banks them in its storage.
+     */
+    private int scanDepth(Block hoist) {
+        int min = hoist.getWorld().getMinHeight();
+        int d = 0;
+        while (hoist.getY() - 1 - d >= min && isOwnRope(hoist.getRelative(0, -1 - d, 0))) d++;
+        return d;
     }
 
     /** CW: lower. Slide the hanging platform down, or — with nothing hanging — pay bare rope into the air. */
@@ -240,6 +273,7 @@ final class ChainHoistManager {
         Block seed = hoist.getRelative(0, -1 - d, 0);
         if (MovableBlocks.isMovable(seed, registry)) {
             List<Block> group = resolveGroup(seed);
+            if (group == null || group.isEmpty()) return;
             Set<Long> footprint = footprintKeys(group);
             int steps = clearForAll(group, footprint, BlockFace.DOWN, avail);
             if (steps <= 0) return;
@@ -247,9 +281,8 @@ final class ChainHoistManager {
             return;
         }
         if (!isClear(seed) || seed.getY() < hoist.getWorld().getMinHeight()) return;   // bedrock etc.
-        placeChain(seed);
+        placeChain(seed);   // the chain IS the extension — laying it is the whole write
         consumeChains(inv, 1);
-        writeExtension(hoist, d + 1);
         markBareSpin(hoist, hoistKey);
     }
 
@@ -260,6 +293,7 @@ final class ChainHoistManager {
         Block seed = hoist.getRelative(0, -1 - d, 0);
         if (MovableBlocks.isMovable(seed, registry)) {
             List<Block> group = resolveGroup(seed);
+            if (group == null || group.isEmpty()) return;
             Set<Long> footprint = footprintKeys(group);
             addRopeCells(hoist, d, footprint);   // our own rope is not an obstruction — we reel it in
             int steps = clearForAll(group, footprint, BlockFace.UP, d);
@@ -267,20 +301,35 @@ final class ChainHoistManager {
             startMove(hoistKey, hoist, seed, group, steps, false, spinDir, d);
             return;
         }
-        // Bare rope, nothing hanging. A mined-away link just shortens the rope with no refund.
-        Block bottom = hoist.getRelative(0, -d, 0);
-        if (isOwnRope(bottom)) {
-            bottom.setType(Material.AIR, false);
-            refundChains(registry.getOrCreateStorage(hoist), hoist, 1);
-        }
-        writeExtension(hoist, d - 1);
+        // Bare rope, nothing hanging: swallow the bottom link. It IS ours — scanDepth counted it as the
+        // d-th contiguous link — so removing it is the whole write; the next scan reads d-1.
+        hoist.getRelative(0, -d, 0).setType(Material.AIR, false);
+        refundChains(registry.getOrCreateStorage(hoist), hoist, 1);
         markBareSpin(hoist, hoistKey);
     }
 
-    /** Platform = the seed's authored glue (rare — normally none) or the seed itself, expanded through casings. */
-    private List<Block> resolveGroup(Block seed) {
+    /**
+     * Platform = the seed's authored glue (rare — normally none) or the seed itself, expanded through
+     * casings. @return {@code null} to reject the move outright (a glued cell is immovable).
+     *
+     * <p>{@code GlueManager.resolveStructure} skips air but NOT water/lava, and never consults the
+     * immovable set — and {@code MechanismRegistry} filters nothing, trusting its caller entirely. So the
+     * guards below are the only thing between stale glue and a mechanism assembled around a drowned or
+     * bedrock cell. Skipping empties (rather than rejecting) treats them as what they are — glue pointing
+     * at a block that is gone; rejecting on an immovable mirrors {@code ExtendablePistonManager
+     * .addHeadPayload}, which aborts rather than shear a structure around one.
+     */
+    private @Nullable List<Block> resolveGroup(Block seed) {
         List<Block> glued = glueManager.resolveStructure(new BlockAnchor(seed, () -> true));
-        List<Block> base = (glued != null && !glued.isEmpty()) ? glued : List.of(seed);
+        List<Block> base = new ArrayList<>();
+        if (glued != null) {
+            for (Block b : glued) {
+                if (isClear(b)) continue;                                 // stale glue: gone or drowned
+                if (!MovableBlocks.isMovable(b, registry)) return null;   // immovable — shear guard
+                base.add(b);
+            }
+        }
+        if (base.isEmpty()) base = List.of(seed);   // seed is checked movable by both callers
         return CasingExpansion.withDerived(base, registry, glueManager.maxSize());
     }
 
@@ -326,12 +375,11 @@ final class ChainHoistManager {
                 // Depth comes from where the platform really landed, not from the steps we asked for: a
                 // power cut mid-stroke stops it short, and disassembly can drop a block instead of placing it.
                 int newDepth = depthFromLanding(hoist, placed, startDepth, deepest);
-                syncColumn(hoist, newDepth, deepest);
+                syncColumn(hoist, newDepth, deepest);   // laying/clearing the real chain IS the write
                 int delta = newDepth - startDepth;
                 Inventory inv = registry.getOrCreateStorage(hoist);
                 if (delta > 0) consumeChains(inv, delta);
                 else if (delta < 0) refundChains(inv, hoist, -delta);
-                writeExtension(hoist, newDepth);
                 setSpin(hoist, false);
                 removeRope(hoist);
             });
@@ -384,6 +432,10 @@ final class ChainHoistManager {
 
         boolean arrived = remaining <= step + 1e-3;
         Location next = arrived ? m.target : cur.clone().add(0, m.dirY * step, 0);
+        // Rising: carry any entities standing on the platform up by this tick's delta BEFORE the colliders
+        // teleport up, so the shulker boxes don't clip through a rider (who would otherwise fall through).
+        double dy = next.getY() - cur.getY();
+        if (m.dirY > 0 && dy > 0) m.mech.carryRidersUp(dy);
         m.mech.move(next, 0f);
         liveRope(m.hoist, m.ropeDepth, next.getY());
         if (arrived) m.settle = SETTLE_TICKS;
@@ -639,18 +691,6 @@ final class ChainHoistManager {
     private void recalcIfNode(Block b) {
         CustomBlockRegistry.LocationKey k = CustomBlockRegistry.LocationKey.of(b);
         if (network.getNode(k) != null) network.recalculate(k);
-    }
-
-    private static int readExtension(Block b) {
-        if (!(b.getState() instanceof Skull skull)) return 0;
-        Integer v = skull.getPersistentDataContainer().get(EXTENSION_KEY, PersistentDataType.INTEGER);
-        return v == null ? 0 : v;
-    }
-
-    private static void writeExtension(Block b, int v) {
-        if (!(b.getState() instanceof Skull skull)) return;
-        skull.getPersistentDataContainer().set(EXTENSION_KEY, PersistentDataType.INTEGER, Math.max(0, v));
-        skull.update();
     }
 
     private static @Nullable Block blockOf(CustomBlockRegistry.LocationKey k) {

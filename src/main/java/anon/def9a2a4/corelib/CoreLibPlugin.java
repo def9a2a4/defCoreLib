@@ -464,12 +464,25 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
             registry.applyTextureNow(block, type, state, power);
         }
 
+        // TEMP DEBUG (Bug 2): compare UP vs DOWN pipe placement server-side profile state.
+        final boolean pipeDebug = "pipes".equals(type.namespace())
+                && ("up".equals(state) || "down".equals(state));
+        if (pipeDebug) {
+            getLogger().info("[pipedbg] SYNC state=" + state + " mat=" + block.getType()
+                    + " tex=" + texTail(HeadUtil.getBlockTexture(block)));
+        }
+
         // Schedule for next tick to ensure block state is fully initialized
         getServer().getScheduler().runTask(this, () -> {
             // Guard: block may have been broken between placement and this tick
             if (registry.getTypeFromBlock(block) == null) return;
 
             registry.applyConfig(block, type, state, power);
+
+            if (pipeDebug) {
+                getLogger().info("[pipedbg] NEXTTICK state=" + state + " mat=" + block.getType()
+                        + " tex=" + texTail(HeadUtil.getBlockTexture(block)));
+            }
 
             // Register for redstone tracking if needed
             if (type.sensitivity() != CustomHeadBlock.Sensitivity.NONE) {
@@ -492,6 +505,12 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
                 type.onChunkLoadCallback().accept(block, state);
             }
         });
+    }
+
+    // TEMP DEBUG (Bug 2) — short signature of a base64 skull texture for log comparison.
+    private static String texTail(@org.jspecify.annotations.Nullable String base64) {
+        if (base64 == null) return "NULL";
+        return "len" + base64.length() + ":…" + base64.substring(Math.max(0, base64.length() - 12));
     }
 
     // ──────────────────────────────────────────────────────────────────────

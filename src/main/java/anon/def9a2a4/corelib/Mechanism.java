@@ -29,6 +29,11 @@ public interface Mechanism {
     /** Rotate in place (pivot stays, only transforms update). */
     void rotate(float yaw);
 
+    /** Lift entities standing on this mechanism's collision surface up by {@code dy} blocks, preserving
+     *  their horizontal/fall velocity, so a rising mechanism carries its riders instead of clipping
+     *  through them. No-op if dy <= 0. Call BEFORE the matching upward move(). */
+    default void carryRidersUp(double dy) {}
+
     /** Get block data for a specific index. */
     MechanismBlockData getBlock(int index);
 

@@ -4,6 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Particle;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Container;
@@ -13,12 +14,16 @@ import org.bukkit.entity.ItemDisplay;
 import org.bukkit.entity.Shulker;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.util.BoundingBox;
+import org.bukkit.util.Vector;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.function.Consumer;
 
@@ -272,6 +277,45 @@ final class BasicMechanism implements Mechanism {
         // (run every tick for all mechanisms) doesn't re-apply this teleport as drift next tick.
         this.previousVehicleLoc = vehicle.getLocation();
         this.previousVehicleYaw = this.previousVehicleLoc.getYaw();
+    }
+
+    @Override
+    public void carryRidersUp(double dy) {
+        checkMainThread();
+        if (dy <= 0 || colliders.isEmpty()) return;
+        World w = pivot.getWorld();
+        if (w == null) return;
+
+        Set<Entity> riders = new HashSet<>();
+        for (ColliderPair cp : colliders) {
+            BoundingBox box = cp.shulker().getBoundingBox();
+            // A thin slab straddling THIS collider's TOP face (whatever its real height is): catches an
+            // entity whose feet rest on it (feet Y ~= box.maxY) without dragging along something merely
+            // beside it.
+            BoundingBox top = new BoundingBox(
+                box.getMinX(), box.getMaxY() - 0.05, box.getMinZ(),
+                box.getMaxX(), box.getMaxY() + 0.30, box.getMaxZ());
+            for (Entity e : w.getNearbyEntities(top)) {
+                if (isMechanismEntity(e)) continue;   // never lift ANY mechanism's own colliders/carriers/etc.
+                riders.add(e);
+            }
+        }
+
+        for (Entity e : riders) {
+            Vector vel = e.getVelocity();                       // preserve horizontal + fall momentum
+            Location to = e.getLocation().add(0, dy, 0);         // keeps yaw/pitch (same Location)
+            TeleportCompat.teleport(e, to);                      // passenger-safe
+            e.setVelocity(vel);
+        }
+    }
+
+    /** True for any DefCoreLib mechanism entity — collider shulker, carrier, vehicle, parent, or display —
+     *  of ANY mechanism, identified by the shared "corelib:mech:" scoreboard-tag prefix. */
+    private static boolean isMechanismEntity(Entity e) {
+        for (String tag : e.getScoreboardTags()) {
+            if (tag.startsWith("corelib:mech:")) return true;
+        }
+        return false;
     }
 
     // ──────────────────────────────────────────────────────────────────────
