@@ -35,7 +35,7 @@ HEADER = """\
 
 OAK_NOTES = """\
     catalog_notes:
-      - "&fA full block that auto-glues to every adjacent block like a slime block — build a moving contraption without the glue brush."
+      - "&fAuto-glues to every adjacent block like a slime block — build a moving contraption without the glue brush."
       - "&7Any casing carried by a piston, rotator, minecart, or chain hoist drags its neighbours along, spreading through other casings."
       - "&7A vanilla piston moves a lone casing as an ordinary block (no slime spread)."
       - "&7Comes in every plank wood — the center plank of the recipe picks the variant."

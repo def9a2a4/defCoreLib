@@ -193,14 +193,15 @@ public class CustomBlockRegistry {
     private final Map<LocationKey, RotationNetwork.SpinDirection> animationDirection = new HashMap<>();
 
     // ── Bare blocks (display-backed, non-tile) ───────────────────────────────
-    // A "bare" block is a real vanilla block (CHAIN → mech:shaft, OAK_PLANKS → mech:casing_oak, …) acting as
+    // A "bare" block is a real vanilla block (CHAIN → mech:shaft, OAK_STAIRS → mech:casing_oak, …) acting as
     // a custom block. It has no block-entity PDC, so its identity is durably persisted in the CHUNK PDC
     // (see BARE_BLOCKS_KEY) and mirrored by a persistent tagged display entity; bareLocations is the
     // in-memory cache, rebuilt on load from the chunk PDC (+ a display-scan fallback). getTypeFromBlock
     // resolves a registered base material + membership → the bare type. This system generalizes the
     // original CHAIN-only "bare shaft"; shaft-specific behaviour (spin/axis) still lives in RotationBlocks.
     private final Map<LocationKey, CustomHeadBlock> bareLocations = new HashMap<>();
-    // Registered bare types keyed by their base Material (one type per material: CHAIN→shaft, PLANKS→casing).
+    // Registered bare types keyed by their base Material (one type per material: CHAIN→shaft,
+    // OAK_STAIRS→casing_oak, BIRCH_STAIRS→casing_birch, …).
     private final Map<Material, CustomHeadBlock> bareTypes = new HashMap<>();
     // Reverse index: type fullId → its registered base Material. This — NOT CustomHeadBlock.baseBlock()
     // — is the authority during chunk restore: a SKULL-FIRST bare type (the shaft: places as a head,
@@ -243,7 +244,7 @@ public class CustomBlockRegistry {
 
     public void register(CustomHeadBlock type) {
         types.put(type.fullId(), type);
-        // Bare-first types (base_block set, e.g. casing = OAK_PLANKS) auto-register for identity
+        // Bare-first types (base_block set, e.g. casing_oak = OAK_STAIRS) auto-register for identity
         // resolution + chunk restore. Skull-first bare types (the shaft) instead call registerBareBlock
         // explicitly with their revert handler, since their base_block isn't set (they place as a head).
         if (type.baseBlock() != null && !bareTypes.containsKey(type.baseBlock())) {
@@ -298,7 +299,7 @@ public class CustomBlockRegistry {
             if (typeId == null) return null;
             return types.get(typeId);
         }
-        // Bare block: a registered base material (CHAIN, PLANKS, …) whose cell is in the runtime index
+        // Bare block: a registered base material (CHAIN, the casing stairs, …) whose cell is in the runtime index
         // (identity durably backed by the chunk PDC + its tagged display). Cross-check that the type
         // indexed at this cell is the one registered for THIS material — a stale index entry under a
         // block that changed material must not lend it the wrong identity.
@@ -445,7 +446,7 @@ public class CustomBlockRegistry {
      *  the orphan scanner never deletes a live disguised block's display. */
     private boolean isOwnerPresent(World world, DisplayOwnerTag owner) {
         Block block = world.getBlockAt(owner.x(), owner.y(), owner.z());
-        // A bare block (CHAIN shaft, PLANKS casing, …) has no skull PDC; its display is one of its two
+        // A bare block (CHAIN shaft, stair casing, …) has no skull PDC; its display is one of its two
         // identity carriers (the other is the chunk PDC) — a live one must never be orphan-swept.
         if (isBareBlock(block)) return true;
         if (!(block.getState() instanceof TileState tile)) return false;
@@ -529,7 +530,7 @@ public class CustomBlockRegistry {
     // ── Bare-block support (display-backed, non-tile custom blocks) ───────────
 
     /**
-     * Register a bare block: a base material (CHAIN → shaft, OAK_PLANKS → casing, …) whose identity is
+     * Register a bare block: a base material (CHAIN → shaft, OAK_STAIRS → casing_oak, …) whose identity is
      * carried by the chunk PDC + a tagged display, not a block-entity PDC. The base material is passed
      * explicitly because a bare block may be either <em>bare-first</em> (placed as the base block —
      * casing, which also sets {@code base_block} so it places as planks) or <em>skull-first</em>
@@ -638,8 +639,8 @@ public class CustomBlockRegistry {
         CustomHeadBlock type = bareLocations.get(LocationKey.of(block));
         if (type == null || !bareTypes.containsKey(block.getType())) return false;
         // Only an Orientable bare block (the chain shaft) has idle_/spinning_ axis states to drive.
-        // A solid bare block (casing) must not be driven — synthesizing "idle_y" here would poison
-        // bareRenderedState and break getState()'s default-state contract for it.
+        // A non-Orientable one (the casing's stair) must not be driven — synthesizing "idle_y" here
+        // would poison bareRenderedState and break getState()'s default-state contract for it.
         if (!(block.getBlockData() instanceof org.bukkit.block.data.Orientable)) return true;
         LocationKey key = LocationKey.of(block);
         String target = (powered ? "spinning_" : "idle_") + chainAxisSuffix(block);
@@ -690,7 +691,7 @@ public class CustomBlockRegistry {
     }
 
     /**
-     * Re-index every bare block (CHAIN shaft, PLANKS casing, …) in a just-loaded chunk. Two passes:
+     * Re-index every bare block (CHAIN shaft, stair casing, …) in a just-loaded chunk. Two passes:
      * <ol>
      *   <li><b>Live displays</b> — adopt any persistent tagged bare-block display whose block still
      *       matches its type's {@code base_block}. This is the source of truth when present and also

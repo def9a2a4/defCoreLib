@@ -788,7 +788,7 @@ public final class CustomHeadBlock {
          *  cover physical blocks; a solid block doesn't need them). */
         public Builder physicalMaterial(Material material) { this.physicalMaterial = material; return this; }
 
-        /** Place a "bare" non-tile world block (e.g. CHAIN, OAK_PLANKS) instead of a player head. Its
+        /** Place a "bare" non-tile world block (e.g. CHAIN, OAK_STAIRS) instead of a player head. Its
          *  head texture is carried by a display entity, and its identity/state live in the display-backed
          *  bare-block registry (a persisted chunk index + the tagged display), NOT a block-entity PDC —
          *  the pattern the bare chain shaft uses, generalized. Must be a solid, non-fluid-replaceable block. */
