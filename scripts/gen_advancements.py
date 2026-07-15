@@ -55,6 +55,9 @@ NODES = [
      "Craft the Rotation Wrench — right-click a machine to rotate it in place."),
     ("craft/glue_brush", "craft/wrench", "task", "minecraft:brush", "Stuck On You", "white",
      "Craft the Glue Brush — pick exactly which blocks a Rotator or Minecart carries."),
+    ("craft/casing", "craft/glue_brush", "task", "@casing_oak", "Boxed In", "white",
+     "Craft a Mechanical Casing — it glues itself to its neighbours, no brush needed. "
+     "Comes in every plank wood."),
     ("craft/shaft", "craft/bearing", "task", "@rod_fwd", "First Shaft", "white",
      "Craft a Shaft — carries rotational power in a straight line along its axis."),
     ("craft/gear", "craft/shaft", "task", "@copper_gear", "Turning the Corner", "white",

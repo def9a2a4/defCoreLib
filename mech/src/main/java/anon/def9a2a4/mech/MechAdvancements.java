@@ -43,7 +43,8 @@ public final class MechAdvancements {
     }
 
     // Craftable mech item id → craft advancement node. Items without an entry still grant the root
-    // (first craft of any mech item). Windmill tiers all map to the single windmill_item craft node.
+    // (first craft of any mech item). Windmill tiers all map to the single windmill_item craft node,
+    // and all 12 casing woods to the single casing craft node.
     private static final Map<String, String> CRAFT_NODE_BY_ITEM = Map.ofEntries(
             Map.entry("mech:bearing", "craft/bearing"),
             Map.entry("mech:wrench", "craft/wrench"),
@@ -72,7 +73,19 @@ public final class MechAdvancements {
             Map.entry("mech:piston_head", "craft/piston"),
             Map.entry("mech:rotator", "craft/rotator"),
             Map.entry("mech:mechanism_minecart", "craft/minecart"),
-            Map.entry("mech:redstone_dynamo", "craft/dynamo"));
+            Map.entry("mech:redstone_dynamo", "craft/dynamo"),
+            Map.entry("mech:casing_oak", "craft/casing"),
+            Map.entry("mech:casing_acacia", "craft/casing"),
+            Map.entry("mech:casing_bamboo", "craft/casing"),
+            Map.entry("mech:casing_birch", "craft/casing"),
+            Map.entry("mech:casing_cherry", "craft/casing"),
+            Map.entry("mech:casing_crimson", "craft/casing"),
+            Map.entry("mech:casing_dark_oak", "craft/casing"),
+            Map.entry("mech:casing_jungle", "craft/casing"),
+            Map.entry("mech:casing_mangrove", "craft/casing"),
+            Map.entry("mech:casing_pale_oak", "craft/casing"),
+            Map.entry("mech:casing_spruce", "craft/casing"),
+            Map.entry("mech:casing_warped", "craft/casing"));
 
     // The machine craft nodes that together earn craft/master_machinist (tools/parts excluded).
     private static final Set<String> MACHINE_CRAFT_NODES = Set.of(
