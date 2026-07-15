@@ -305,6 +305,13 @@ final class BasicMechanism implements Mechanism {
         this.onDisassembled = callback;
     }
 
+    @Override
+    public Matrix4f landingRotation() {
+        float snappedYaw = Math.round(currentYaw / 90f) * 90f;
+        return new Matrix4f().rotate((float) Math.toRadians(-snappedYaw),
+                rotationAxis.x, rotationAxis.y, rotationAxis.z);
+    }
+
     // Cells that must never be overwritten on disassemble (e.g. a piston core the rod slides through).
     // A mechanism block whose landing cell is protected is discarded — not placed, not dropped.
     private java.util.@Nullable Set<CustomBlockRegistry.LocationKey> protectedCells = null;
@@ -323,8 +330,7 @@ final class BasicMechanism implements Mechanism {
         // back to a cardinal orientation. 90° rotations about a cardinal axis map integer
         // offsets to integers, so block positions stay exact.
         float snappedYaw = Math.round(currentYaw / 90f) * 90f;
-        Matrix4f rotation = new Matrix4f().rotate((float) Math.toRadians(-snappedYaw),
-                rotationAxis.x, rotationAxis.y, rotationAxis.z);
+        Matrix4f rotation = landingRotation();
 
         // The cells where blocks actually landed — handed to the glue rebind hook so an anchor's
         // offset set tracks the structure's new rest positions (dropped-as-item blocks are excluded).

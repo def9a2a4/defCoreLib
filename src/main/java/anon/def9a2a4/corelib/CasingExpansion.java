@@ -14,33 +14,41 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Derived auto-glue for {@code mech:casing} blocks. Casings glue themselves: any casing touching
- * the structure (or its anchor) joins, and the bond spreads casing-to-casing (6-dir, transitive).
- * Non-casing neighbours are never dragged — the casing graph defines the free structure; everything
- * else is authored with the brush.
+ * Derived auto-glue for the {@code mech:casing_<wood>} family. Casings behave like vanilla slime
+ * blocks: any casing touching the structure (or its anchor) joins, the bond spreads
+ * casing-to-casing (6-dir, transitive; wood variants mix freely), and every payload casing drags
+ * its movable cardinal neighbours along — non-casings join as <b>leaves</b> that don't propagate
+ * further (vanilla slime/honey semantics). Immovable neighbours are simply not pulled
+ * ({@link MovableBlocks#isMovable}); the mover's own obstruction check stops travel if one sits
+ * in the path.
  *
  * <p>The closure is <b>derived at resolution time, never stored</b>: {@link GlueManager} appends it
  * in {@code resolveStructure} and unions it into the authoring outline, and the mover fallback
  * seeds run through {@link #withDerived}. Derived glue therefore costs nothing, cannot be
  * un-brushed, and self-heals — place or break a casing while unassembled and the structure follows.
- * Rebind-on-disassembly stores only non-casing blocks: a rigid transform preserves adjacency, so
- * every casing that came along re-derives at its landed position on the next resolve.
+ * Rebind-on-disassembly re-writes only the pre-move authored offsets
+ * ({@link GlueManager#rebindTransformed}): a rigid move preserves adjacency, so every casing and
+ * leaf that came along re-derives at its landed position on the next resolve.
  */
 final class CasingExpansion {
 
-    static final String CASING_ID = "mech:casing";
+    // Any id starting "mech:casing_" joins the glue family by design of this gate — the
+    // casing_ prefix is reserved for glue-spreading blocks.
+    static final String CASING_ID_PREFIX = "mech:casing_";
 
     private CasingExpansion() {}
 
     static boolean isCasing(Block b, CustomBlockRegistry registry) {
         CustomHeadBlock t = registry.getTypeFromBlock(b);
-        return t != null && CASING_ID.equals(t.fullId());
+        return t != null && t.fullId().startsWith(CASING_ID_PREFIX);
     }
 
     /**
-     * The derived casings for a structure: casings 6-adjacent to {@code anchorCell} or to any
-     * structure cell, expanded casing-to-casing (BFS) — minus the cells already in
-     * {@code structure}. Total (structure + derived) is capped at {@code cap}.
+     * The derived drag for a structure: casings 6-adjacent to {@code anchorCell} or to any
+     * structure cell join, the bond spreads casing-to-casing (BFS), and every payload casing
+     * (structure or derived) pulls its movable non-casing cardinal neighbours in as leaves —
+     * minus the cells already in {@code structure}. Total (structure + derived) is capped at
+     * {@code cap}.
      */
     static List<Block> derivedCasings(Collection<Block> structure, @Nullable Block anchorCell,
                                       CustomBlockRegistry registry, int cap) {
@@ -48,8 +56,8 @@ final class CasingExpansion {
         for (Block b : structure) present.add(CustomBlockRegistry.LocationKey.of(b));
 
         // Frontier: the anchor cell plus every structure cell. Any casing touching one joins (the
-        // structure attracts casings); joined casings then spread the bond casing-to-casing below.
-        // Non-casing neighbours of a casing never join — only the brush authors those.
+        // structure attracts casings); payload casings then drag their neighbours below. Only
+        // casings attract here — a non-casing structure cell's neighbours are the brush's job.
         Set<CustomBlockRegistry.LocationKey> seen = new HashSet<>(present);
         Deque<Block> queue = new ArrayDeque<>();
         List<Block> derived = new ArrayList<>();
@@ -66,23 +74,27 @@ final class CasingExpansion {
                 if (present.size() + derived.size() >= cap) return derived;
             }
         }
+        // Casings already in the structure (authored or seed) drag too, not just derived ones.
+        for (Block b : structure) if (isCasing(b, registry)) queue.add(b);
 
-        // Spread casing-to-casing.
+        // Drag: every payload casing pulls its movable cardinal neighbours — casings propagate
+        // (slime-through-slime), anything else joins as a non-propagating leaf.
         while (!queue.isEmpty()) {
             Block b = queue.poll();
             for (BlockFace f : Faces.CARDINAL) {
                 Block n = b.getRelative(f);
-                if (!isCasing(n, registry)) continue;
+                boolean casing = isCasing(n, registry);
+                if (!casing && !MovableBlocks.isMovable(n, registry)) continue;   // not pulled
                 if (!seen.add(CustomBlockRegistry.LocationKey.of(n))) continue;
                 derived.add(n);
-                queue.add(n);
+                if (casing) queue.add(n);
                 if (present.size() + derived.size() >= cap) return derived;
             }
         }
         return derived;
     }
 
-    /** {@code seed} plus its derived casings — for the movers' no-glue fallback seeds. */
+    /** {@code seed} plus its derived drag (casings + leaves) — for the movers' no-glue fallback seeds. */
     static List<Block> withDerived(List<Block> seed, CustomBlockRegistry registry, int cap) {
         if (seed.isEmpty()) return seed;
         List<Block> out = new ArrayList<>(seed);

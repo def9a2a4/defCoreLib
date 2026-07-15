@@ -122,6 +122,8 @@ final class RotationRotator {
         Anchor anchor = new BlockAnchor(head, () -> !activeRotators.containsKey(key));
         List<Block> resolved = glueManager.resolveStructure(anchor);
         boolean glued = resolved != null && !resolved.isEmpty();
+        // Pre-move snapshot: rebind stores ONLY authored glue (derived casings/leaves re-derive).
+        final int[] authored = glued ? anchor.readOffsets() : null;
         List<Block> planks;
         if (glued) {
             planks = resolved;
@@ -138,7 +140,8 @@ final class RotationRotator {
         Vector3f axis = axisVec(node.axis());
         Mechanism mech = mechRegistry.assembleMechanism(ROTATOR_ID, planks,
             head.getLocation().add(0.5, 0, 0.5), axis, null);
-        if (glued) mech.setOnDisassembled(p -> glueManager.setStructure(anchor, p));   // rebind only authored glue
+        if (glued) mech.setOnDisassembled(p ->
+            glueManager.rebindTransformed(anchor, authored, mech.landingRotation()));
         activeRotators.put(key, mech);
 
         int mass = Math.max(1, mech.blockCount());

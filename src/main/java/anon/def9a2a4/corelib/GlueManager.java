@@ -11,6 +11,8 @@ import org.bukkit.block.data.Orientable;
 import org.bukkit.block.data.Rail;
 import org.bukkit.block.data.Rotatable;
 import org.bukkit.block.data.type.Slab;
+import org.joml.Matrix4f;
+import org.joml.Vector3f;
 import org.joml.Vector3i;
 import org.jspecify.annotations.Nullable;
 
@@ -101,12 +103,35 @@ final class GlueManager {
     }
 
     /**
-     * Overwrite the glued set from an explicit block list — used by the rebind-on-disassembly hook and
-     * by the authoring cuboid/single-edit commit. No connectivity check (the caller is authoritative).
+     * Rebind an anchor's glue after a mechanism ride: write the PRE-MOVE authored offsets,
+     * transformed by the mechanism's snapped landing rotation (landed offset = R × old offset —
+     * 90°-snapped rigid moves map integer offsets to integers). Derived casing glue (casings and
+     * the leaves they drag, see {@link CasingExpansion}) never enters storage this way: a rigid
+     * move preserves adjacency, so it re-derives at the landed cells on the next resolve — storing
+     * it would bake casually-touching neighbours into authored glue. Blocks destroyed during
+     * landing linger in the stored offsets — harmless, {@link #resolveStructure} skips air.
+     * No-op when {@code preMoveOffsets} is null (the anchor had no authored glue).
+     */
+    void rebindTransformed(Anchor a, int @Nullable [] preMoveOffsets, Matrix4f rotation) {
+        if (preMoveOffsets == null) return;
+        int[] out = new int[preMoveOffsets.length];
+        Vector3f v = new Vector3f();
+        for (int i = 0; i + 2 < preMoveOffsets.length; i += 3) {
+            v.set(preMoveOffsets[i], preMoveOffsets[i + 1], preMoveOffsets[i + 2]);
+            rotation.transformPosition(v);
+            out[i] = Math.round(v.x);
+            out[i + 1] = Math.round(v.y);
+            out[i + 2] = Math.round(v.z);
+        }
+        a.writeOffsets(out);
+    }
+
+    /**
+     * Overwrite the glued set from an explicit block list — used by the authoring cuboid/single-edit
+     * commit (and the gluetest command). No connectivity check (the caller is authoritative).
      * Casings are never stored: their glue is derived fresh on every resolve (see
-     * {@link CasingExpansion}) — a rigid move preserves adjacency, so a casing that came along
-     * re-derives at its landed cell. Storing them would bake the auto-glue into authored offsets
-     * (stale once the casing is broken).
+     * {@link CasingExpansion}). Movers rebind via {@link #rebindTransformed}, never through here —
+     * the landed payload contains derived casings/leaves that must not be baked into authored glue.
      */
     void setStructure(Anchor a, List<Block> blocks) {
         List<Block> authored = registry == null ? blocks

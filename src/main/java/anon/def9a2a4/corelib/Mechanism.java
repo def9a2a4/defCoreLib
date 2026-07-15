@@ -4,6 +4,7 @@ import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Display;
 import org.bukkit.inventory.Inventory;
+import org.joml.Matrix4f;
 import org.jspecify.annotations.Nullable;
 
 import java.util.List;
@@ -39,6 +40,13 @@ public interface Mechanism {
 
     /** Restore blocks to the world and remove all entities. */
     void disassemble();
+
+    /**
+     * The snapped (multiple-of-90° about the rotation axis) rigid rotation blocks land with on
+     * {@link #disassemble()} — maps integer block offsets to integers. Used by the glue rebind:
+     * landed offset = this × pre-move offset.
+     */
+    Matrix4f landingRotation();
 
     /**
      * Set a callback invoked at the end of {@link #disassemble()} with the blocks that were actually

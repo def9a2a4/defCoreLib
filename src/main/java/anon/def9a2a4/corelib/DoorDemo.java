@@ -61,6 +61,8 @@ final class DoorDemo {
             Anchor anchor = new BlockAnchor(head, () -> !activeDoors.containsKey(key));
             List<Block> resolved = glueManager.resolveStructure(anchor);
             boolean glued = resolved != null && !resolved.isEmpty();
+            // Pre-move snapshot: rebind stores ONLY authored glue (derived casings/leaves re-derive).
+            final int[] authored = glued ? anchor.readOffsets() : null;
             List<Block> planks;
             if (glued) {
                 planks = resolved;
@@ -72,7 +74,9 @@ final class DoorDemo {
             planks = CasingExpansion.withDerived(planks, registry, glueManager.maxSize());
             mech = mechRegistry.assembleMechanism("demo:door", planks,
                 head.getLocation().add(0.5, 0, 0.5), null);
-            if (glued) mech.setOnDisassembled(p -> glueManager.setStructure(anchor, p));   // rebind only authored glue
+            final Mechanism assembled = mech;
+            if (glued) mech.setOnDisassembled(p ->
+                glueManager.rebindTransformed(anchor, authored, assembled.landingRotation()));
             activeDoors.put(key, mech);
         }
 
@@ -115,6 +119,8 @@ final class DoorDemo {
             Anchor anchor = new BlockAnchor(head, () -> !activeDoors.containsKey(key));
             List<Block> resolved = glueManager.resolveStructure(anchor);
             boolean glued = resolved != null && !resolved.isEmpty();
+            // Pre-move snapshot: rebind stores ONLY authored glue (derived casings/leaves re-derive).
+            final int[] authored = glued ? anchor.readOffsets() : null;
             List<Block> planks;
             if (glued) {
                 planks = resolved;
@@ -126,7 +132,9 @@ final class DoorDemo {
             planks = CasingExpansion.withDerived(planks, registry, glueManager.maxSize());
             mech = mechRegistry.assembleMechanism("demo:door", planks,
                 head.getLocation().add(0.5, 0, 0.5), null);
-            if (glued) mech.setOnDisassembled(p -> glueManager.setStructure(anchor, p));   // rebind only authored glue
+            final Mechanism assembled = mech;
+            if (glued) mech.setOnDisassembled(p ->
+                glueManager.rebindTransformed(anchor, authored, assembled.landingRotation()));
             activeDoors.put(key, mech);
             targetYaw = -90f;
             timerDelay = 2; // wait for passenger mount

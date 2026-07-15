@@ -846,12 +846,13 @@ blocks:
   # ─── Mechanical Casing ────────────────────────────────────────────────────
   # A full solid block that auto-glues to adjacent blocks like a vanilla slime block: any casing in a
   # moving contraption drags its cardinal neighbours (transitively through other casings). Under the
-  # hood it is a real OAK_PLANKS "bare block" — its identity lives in the display-backed bare-block
-  # registry (durable chunk PDC + the tagged shell display), not a block-entity PDC. Movable by
-  # mechanisms; ordinary to drill/break. Slime propagation lives in CasingExpansion, hooked into every
-  # mover (piston / rotator / door / minecart / chain hoist). No Java overlay — pure data + base_block.
-  casing:
-    name: "&fMechanical Casing"
+  # hood it is a real `<wood>_PLANKS` bare block (one variant per plank wood) — its identity lives in
+  # the display-backed bare-block registry (durable chunk PDC + the tagged shell display), not a
+  # block-entity PDC. Movable by mechanisms; ordinary to drill/break. Slime propagation lives in
+  # CasingExpansion, hooked into every mover (piston / rotator / door / minecart / chain hoist).
+  # No Java overlay — pure data + base_block.
+  casing_oak:
+    name: "&fOak Mechanical Casing"
     lore:
       - "&7Sticks to adjacent blocks like slime —"
       - "&7move it with any mechanism"
@@ -859,26 +860,324 @@ blocks:
       - "&fA full block that auto-glues to every adjacent block like a slime block — build a moving contraption without the glue brush."
       - "&7Any casing carried by a piston, rotator, minecart, or chain hoist drags its neighbours along, spreading through other casings."
       - "&7A vanilla piston moves a lone casing as an ordinary block (no slime spread)."
+      - "&7Comes in every plank wood — the center plank of the recipe picks the variant."
     base_block: OAK_PLANKS
-    # Placeholder art: reuse the machine-frame skin. TODO: dedicated @casing skin (wood-framed casing).
-    texture: "@machine_base"
+    texture: "@casing_oak"
     drops: self
     default_state: idle
     states:
-      # One shell head display scaled just over a full block (mirrors the dynamo) to hide the planks.
       idle:
         display_entities:
-          - texture: "@machine_base"
+          - texture: "@casing_oak"
             tag: shell
-            transform: { translation: [0, 0.501, 0], scale: [2.006, 2.006, 2.006] }
+            # 1.888 = 2.006 × 16/17: shell half-extent 0.472 < 0.5, so the matching base
+            # plank shows as a thin inset frame around the cased face. Intentional (user-
+            # ratified) — do not "fix" back to full-cover 2.006.
+            transform: { translation: [0, 0.501, 0], scale: [1.888, 1.888, 1.888] }
     recipes:
       craft:
         shaped:
-          - pattern: ["CAC", "APA", "CAC"]
+          - pattern: ["N N", " P ", "N N"]   # X: iron-nugget corners, plank center (edges empty)
             key:
-              C: { material: COPPER_INGOT }
-              A: { material: ANDESITE }
+              N: { material: IRON_NUGGET }
               P: { material: OAK_PLANKS }
+
+  casing_acacia:
+    name: "&fAcacia Mechanical Casing"
+    lore:
+      - "&7Sticks to adjacent blocks like slime —"
+      - "&7move it with any mechanism"
+    catalog_variant_of: casing_oak
+    base_block: ACACIA_PLANKS
+    texture: "@casing_acacia"
+    drops: self
+    default_state: idle
+    states:
+      idle:
+        display_entities:
+          - texture: "@casing_acacia"
+            tag: shell
+            # 1.888 = 2.006 × 16/17: shell half-extent 0.472 < 0.5, so the matching base
+            # plank shows as a thin inset frame around the cased face. Intentional (user-
+            # ratified) — do not "fix" back to full-cover 2.006.
+            transform: { translation: [0, 0.501, 0], scale: [1.888, 1.888, 1.888] }
+    recipes:
+      craft:
+        shaped:
+          - pattern: ["N N", " P ", "N N"]   # X: iron-nugget corners, plank center (edges empty)
+            key:
+              N: { material: IRON_NUGGET }
+              P: { material: ACACIA_PLANKS }
+
+  casing_bamboo:
+    name: "&fBamboo Mechanical Casing"
+    lore:
+      - "&7Sticks to adjacent blocks like slime —"
+      - "&7move it with any mechanism"
+    catalog_variant_of: casing_oak
+    base_block: BAMBOO_PLANKS
+    texture: "@casing_bamboo"
+    drops: self
+    default_state: idle
+    states:
+      idle:
+        display_entities:
+          - texture: "@casing_bamboo"
+            tag: shell
+            # 1.888 = 2.006 × 16/17: shell half-extent 0.472 < 0.5, so the matching base
+            # plank shows as a thin inset frame around the cased face. Intentional (user-
+            # ratified) — do not "fix" back to full-cover 2.006.
+            transform: { translation: [0, 0.501, 0], scale: [1.888, 1.888, 1.888] }
+    recipes:
+      craft:
+        shaped:
+          - pattern: ["N N", " P ", "N N"]   # X: iron-nugget corners, plank center (edges empty)
+            key:
+              N: { material: IRON_NUGGET }
+              P: { material: BAMBOO_PLANKS }
+
+  casing_birch:
+    name: "&fBirch Mechanical Casing"
+    lore:
+      - "&7Sticks to adjacent blocks like slime —"
+      - "&7move it with any mechanism"
+    catalog_variant_of: casing_oak
+    base_block: BIRCH_PLANKS
+    texture: "@casing_birch"
+    drops: self
+    default_state: idle
+    states:
+      idle:
+        display_entities:
+          - texture: "@casing_birch"
+            tag: shell
+            # 1.888 = 2.006 × 16/17: shell half-extent 0.472 < 0.5, so the matching base
+            # plank shows as a thin inset frame around the cased face. Intentional (user-
+            # ratified) — do not "fix" back to full-cover 2.006.
+            transform: { translation: [0, 0.501, 0], scale: [1.888, 1.888, 1.888] }
+    recipes:
+      craft:
+        shaped:
+          - pattern: ["N N", " P ", "N N"]   # X: iron-nugget corners, plank center (edges empty)
+            key:
+              N: { material: IRON_NUGGET }
+              P: { material: BIRCH_PLANKS }
+
+  casing_cherry:
+    name: "&fCherry Mechanical Casing"
+    lore:
+      - "&7Sticks to adjacent blocks like slime —"
+      - "&7move it with any mechanism"
+    catalog_variant_of: casing_oak
+    base_block: CHERRY_PLANKS
+    texture: "@casing_cherry"
+    drops: self
+    default_state: idle
+    states:
+      idle:
+        display_entities:
+          - texture: "@casing_cherry"
+            tag: shell
+            # 1.888 = 2.006 × 16/17: shell half-extent 0.472 < 0.5, so the matching base
+            # plank shows as a thin inset frame around the cased face. Intentional (user-
+            # ratified) — do not "fix" back to full-cover 2.006.
+            transform: { translation: [0, 0.501, 0], scale: [1.888, 1.888, 1.888] }
+    recipes:
+      craft:
+        shaped:
+          - pattern: ["N N", " P ", "N N"]   # X: iron-nugget corners, plank center (edges empty)
+            key:
+              N: { material: IRON_NUGGET }
+              P: { material: CHERRY_PLANKS }
+
+  casing_crimson:
+    name: "&fCrimson Mechanical Casing"
+    lore:
+      - "&7Sticks to adjacent blocks like slime —"
+      - "&7move it with any mechanism"
+    catalog_variant_of: casing_oak
+    base_block: CRIMSON_PLANKS
+    texture: "@casing_crimson"
+    drops: self
+    default_state: idle
+    states:
+      idle:
+        display_entities:
+          - texture: "@casing_crimson"
+            tag: shell
+            # 1.888 = 2.006 × 16/17: shell half-extent 0.472 < 0.5, so the matching base
+            # plank shows as a thin inset frame around the cased face. Intentional (user-
+            # ratified) — do not "fix" back to full-cover 2.006.
+            transform: { translation: [0, 0.501, 0], scale: [1.888, 1.888, 1.888] }
+    recipes:
+      craft:
+        shaped:
+          - pattern: ["N N", " P ", "N N"]   # X: iron-nugget corners, plank center (edges empty)
+            key:
+              N: { material: IRON_NUGGET }
+              P: { material: CRIMSON_PLANKS }
+
+  casing_dark_oak:
+    name: "&fDark Oak Mechanical Casing"
+    lore:
+      - "&7Sticks to adjacent blocks like slime —"
+      - "&7move it with any mechanism"
+    catalog_variant_of: casing_oak
+    base_block: DARK_OAK_PLANKS
+    texture: "@casing_dark_oak"
+    drops: self
+    default_state: idle
+    states:
+      idle:
+        display_entities:
+          - texture: "@casing_dark_oak"
+            tag: shell
+            # 1.888 = 2.006 × 16/17: shell half-extent 0.472 < 0.5, so the matching base
+            # plank shows as a thin inset frame around the cased face. Intentional (user-
+            # ratified) — do not "fix" back to full-cover 2.006.
+            transform: { translation: [0, 0.501, 0], scale: [1.888, 1.888, 1.888] }
+    recipes:
+      craft:
+        shaped:
+          - pattern: ["N N", " P ", "N N"]   # X: iron-nugget corners, plank center (edges empty)
+            key:
+              N: { material: IRON_NUGGET }
+              P: { material: DARK_OAK_PLANKS }
+
+  casing_jungle:
+    name: "&fJungle Mechanical Casing"
+    lore:
+      - "&7Sticks to adjacent blocks like slime —"
+      - "&7move it with any mechanism"
+    catalog_variant_of: casing_oak
+    base_block: JUNGLE_PLANKS
+    texture: "@casing_jungle"
+    drops: self
+    default_state: idle
+    states:
+      idle:
+        display_entities:
+          - texture: "@casing_jungle"
+            tag: shell
+            # 1.888 = 2.006 × 16/17: shell half-extent 0.472 < 0.5, so the matching base
+            # plank shows as a thin inset frame around the cased face. Intentional (user-
+            # ratified) — do not "fix" back to full-cover 2.006.
+            transform: { translation: [0, 0.501, 0], scale: [1.888, 1.888, 1.888] }
+    recipes:
+      craft:
+        shaped:
+          - pattern: ["N N", " P ", "N N"]   # X: iron-nugget corners, plank center (edges empty)
+            key:
+              N: { material: IRON_NUGGET }
+              P: { material: JUNGLE_PLANKS }
+
+  casing_mangrove:
+    name: "&fMangrove Mechanical Casing"
+    lore:
+      - "&7Sticks to adjacent blocks like slime —"
+      - "&7move it with any mechanism"
+    catalog_variant_of: casing_oak
+    base_block: MANGROVE_PLANKS
+    texture: "@casing_mangrove"
+    drops: self
+    default_state: idle
+    states:
+      idle:
+        display_entities:
+          - texture: "@casing_mangrove"
+            tag: shell
+            # 1.888 = 2.006 × 16/17: shell half-extent 0.472 < 0.5, so the matching base
+            # plank shows as a thin inset frame around the cased face. Intentional (user-
+            # ratified) — do not "fix" back to full-cover 2.006.
+            transform: { translation: [0, 0.501, 0], scale: [1.888, 1.888, 1.888] }
+    recipes:
+      craft:
+        shaped:
+          - pattern: ["N N", " P ", "N N"]   # X: iron-nugget corners, plank center (edges empty)
+            key:
+              N: { material: IRON_NUGGET }
+              P: { material: MANGROVE_PLANKS }
+
+  casing_pale_oak:
+    name: "&fPale Oak Mechanical Casing"
+    lore:
+      - "&7Sticks to adjacent blocks like slime —"
+      - "&7move it with any mechanism"
+    catalog_variant_of: casing_oak
+    base_block: PALE_OAK_PLANKS
+    texture: "@casing_pale_oak"
+    drops: self
+    default_state: idle
+    states:
+      idle:
+        display_entities:
+          - texture: "@casing_pale_oak"
+            tag: shell
+            # 1.888 = 2.006 × 16/17: shell half-extent 0.472 < 0.5, so the matching base
+            # plank shows as a thin inset frame around the cased face. Intentional (user-
+            # ratified) — do not "fix" back to full-cover 2.006.
+            transform: { translation: [0, 0.501, 0], scale: [1.888, 1.888, 1.888] }
+    recipes:
+      craft:
+        shaped:
+          - pattern: ["N N", " P ", "N N"]   # X: iron-nugget corners, plank center (edges empty)
+            key:
+              N: { material: IRON_NUGGET }
+              P: { material: PALE_OAK_PLANKS }
+
+  casing_spruce:
+    name: "&fSpruce Mechanical Casing"
+    lore:
+      - "&7Sticks to adjacent blocks like slime —"
+      - "&7move it with any mechanism"
+    catalog_variant_of: casing_oak
+    base_block: SPRUCE_PLANKS
+    texture: "@casing_spruce"
+    drops: self
+    default_state: idle
+    states:
+      idle:
+        display_entities:
+          - texture: "@casing_spruce"
+            tag: shell
+            # 1.888 = 2.006 × 16/17: shell half-extent 0.472 < 0.5, so the matching base
+            # plank shows as a thin inset frame around the cased face. Intentional (user-
+            # ratified) — do not "fix" back to full-cover 2.006.
+            transform: { translation: [0, 0.501, 0], scale: [1.888, 1.888, 1.888] }
+    recipes:
+      craft:
+        shaped:
+          - pattern: ["N N", " P ", "N N"]   # X: iron-nugget corners, plank center (edges empty)
+            key:
+              N: { material: IRON_NUGGET }
+              P: { material: SPRUCE_PLANKS }
+
+  casing_warped:
+    name: "&fWarped Mechanical Casing"
+    lore:
+      - "&7Sticks to adjacent blocks like slime —"
+      - "&7move it with any mechanism"
+    catalog_variant_of: casing_oak
+    base_block: WARPED_PLANKS
+    texture: "@casing_warped"
+    drops: self
+    default_state: idle
+    states:
+      idle:
+        display_entities:
+          - texture: "@casing_warped"
+            tag: shell
+            # 1.888 = 2.006 × 16/17: shell half-extent 0.472 < 0.5, so the matching base
+            # plank shows as a thin inset frame around the cased face. Intentional (user-
+            # ratified) — do not "fix" back to full-cover 2.006.
+            transform: { translation: [0, 0.501, 0], scale: [1.888, 1.888, 1.888] }
+    recipes:
+      craft:
+        shaped:
+          - pattern: ["N N", " P ", "N N"]   # X: iron-nugget corners, plank center (edges empty)
+            key:
+              N: { material: IRON_NUGGET }
+              P: { material: WARPED_PLANKS }
 
   # ─── Millstone ──────────────────────────────────────────────────────────
   # Consumer: 1 Power. WALL only — mounts on a block and pulls from it if it's a

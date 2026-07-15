@@ -193,7 +193,7 @@ public class CustomBlockRegistry {
     private final Map<LocationKey, RotationNetwork.SpinDirection> animationDirection = new HashMap<>();
 
     // ── Bare blocks (display-backed, non-tile) ───────────────────────────────
-    // A "bare" block is a real vanilla block (CHAIN → mech:shaft, OAK_PLANKS → mech:casing, …) acting as
+    // A "bare" block is a real vanilla block (CHAIN → mech:shaft, OAK_PLANKS → mech:casing_oak, …) acting as
     // a custom block. It has no block-entity PDC, so its identity is durably persisted in the CHUNK PDC
     // (see BARE_BLOCKS_KEY) and mirrored by a persistent tagged display entity; bareLocations is the
     // in-memory cache, rebuilt on load from the chunk PDC (+ a display-scan fallback). getTypeFromBlock

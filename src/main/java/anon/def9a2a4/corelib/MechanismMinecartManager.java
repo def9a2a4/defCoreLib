@@ -238,6 +238,8 @@ final class MechanismMinecartManager implements Listener {
         Anchor anchor = new EntityAnchor(state.minecart, () -> state.mechanism == null);
         List<Block> resolved = glueManager.resolveStructure(anchor);
         boolean glued = resolved != null && !resolved.isEmpty();
+        // Pre-move snapshot: rebind stores ONLY authored glue (derived casings/leaves re-derive).
+        final int[] authored = glued ? anchor.readOffsets() : null;
         List<Block> blocks;
         if (glued) {
             blocks = resolved;
@@ -253,7 +255,8 @@ final class MechanismMinecartManager implements Listener {
             state.minecart, MINECART_RIDE_OFFSET, null);
         state.mechanism = mech;
         // Rebind only authored glue to where the blocks land so it tracks across rides.
-        if (glued) mech.setOnDisassembled(p -> glueManager.setStructure(anchor, p));
+        if (glued) mech.setOnDisassembled(p ->
+            glueManager.rebindTransformed(anchor, authored, mech.landingRotation()));
     }
 
     private void disassemble(MinecartState state) {
