@@ -341,10 +341,11 @@ blocks:
     cancel_pistons: true
     name: "&eChain Hoist"
     lore:
-      - "&7A powered winch — pays out a chain"
-      - "&7to raise and lower what hangs beneath"
+      - "&7Pays out chain to raise and lower what hangs beneath"
+      - "&7Driven by a shaft through it; CW lowers, CCW raises"
     catalog_notes:
-      - "&fA floor winch: spin it one way to pay its chain out downward, the other way to reel it back in."
+      - "&fA floor winch: spin it clockwise to pay its chain out downward, anticlockwise to reel it back in."
+      - "&7Driven by a shaft running straight through it — the axle lies across your view as you place it, and power carries on to the far side. A wrench reads out its axis."
       - "&7Right-click to open its storage and load it with chains — it spends one chain per block of rope."
       - "&7Whatever sits at the bottom of the chain rides along; with nothing there the chain just extends into the air."
       - "&7Build the platform from Mechanical Casing (or glue) so it moves as one; carried machines keep running."
