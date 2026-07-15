@@ -300,3 +300,28 @@ showcases:
       - { block: "OAK_LOG", at: [2, 0, -2], data: "[axis=y]" }   # payload the head pushes
     activate: passive
     expect: []
+
+  # ── Chain pulleys: power jumps a gap by chain, only around a CLOSED loop ────
+  - id: chain_pulley_relay
+    name: "Windmill → Chain Pulleys → Fan"
+    blurb: "Three chain-linked pulleys form a closed loop that carries a windmill's power across two gaps to spin a fan."
+    description: >
+      A chain pulley jumps rotational power across a gap with no shaft between the two ends —
+      link one to another with a chain and, once the links close into a loop, power flows all the
+      way around; an open chain renders but carries nothing. Here a windmill feeds the first
+      pulley directly below it, that pulley's chain reaches a second, the second's chain reaches a
+      third, and the third's chain closes the loop back to the first. A gear and fan sit above the
+      third pulley, drawing off the loop's power just like they would from an ordinary shaft. Each
+      live chain link also costs a little power of its own (more for a longer span), so a loop this
+      size needs a real source, not just a redstone motor.
+    blocks:
+      - { id: "mech:large_windmill", facing: down, at: [0, -1, 0] }   # passive Y source, 5 power
+      - { id: "mech:chain_pulley",   facing: down, at: [0, 0, 0], link: [4, 0, 0] }
+      - { id: "mech:chain_pulley",   facing: down, at: [4, 0, 0], link: [4, 0, 3] }
+      - { id: "mech:chain_pulley",   facing: down, at: [4, 0, 3], link: [0, 0, 0] }   # closes the loop
+      - { id: "mech:gear",           facing: down, at: [4, 1, 3] }   # Y axis, driven from the pulley below
+      - { id: "mech:fan",            facing: down, at: [4, 2, 3] }
+    activate: passive
+    expect:
+      - { type: network_powered, at: [4, 0, 3] }
+      - { type: spinning, at: [4, 2, 3] }
