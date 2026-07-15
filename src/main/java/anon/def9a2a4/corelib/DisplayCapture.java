@@ -10,6 +10,7 @@ import org.bukkit.entity.ItemDisplay;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.util.Transformation;
+import org.jspecify.annotations.Nullable;
 import org.joml.Matrix4f;
 
 import java.util.ArrayList;
@@ -87,6 +88,35 @@ final class DisplayCapture {
             out.add(rec);
         }
         return out;
+    }
+
+    /** Read one arbitrary Display entity (not owned by a custom-block type) into the docs record shape,
+     *  positioned relative to {@code cellCenter}. Used for auxiliary displays the type-scoped
+     *  {@link #readDisplays} misses — the chain-pulley strand (a BlockDisplay) and showcase banners
+     *  (ItemDisplays). No animation is baked (static frame). Returns null for an unhandled Display type. */
+    static @Nullable Map<String, Object> readRawDisplay(Display display, Location cellCenter) {
+        Map<String, Object> rec = new LinkedHashMap<>();
+        Location loc = display.getLocation();
+        rec.put("position", new double[]{
+                loc.getX() - cellCenter.getX(), loc.getY() - cellCenter.getY(), loc.getZ() - cellCenter.getZ()});
+        rec.put("matrix", arr(toMatrix(display.getTransformation())));
+        if (display instanceof ItemDisplay item) {
+            ItemStack stack = item.getItemStack();
+            if (stack != null && stack.getType() == Material.PLAYER_HEAD) {
+                rec.put("kind", "head");
+                rec.put("ref", textureUrl(itemTexture(stack)));
+            } else {
+                rec.put("kind", "item");
+                rec.put("ref", stack == null ? null : stack.getType().getKey().getKey());
+            }
+        } else if (display instanceof BlockDisplay bd) {
+            rec.put("kind", "block");
+            rec.put("ref", bd.getBlock().getAsString());
+        } else {
+            return null;
+        }
+        rec.put("animation", null);
+        return rec;
     }
 
     /** Bake a looping matrix track by sampling the real animation over its detected period. */

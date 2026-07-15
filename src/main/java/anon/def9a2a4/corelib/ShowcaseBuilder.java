@@ -104,6 +104,12 @@ final class ShowcaseBuilder {
             if (type.onTick() != null && type.tickInterval() != null) {
                 registry.trackTick(block, type);
             }
+            // Seed a chain-pulley link BEFORE onChunkLoadCallback (handleChunkLoad reads this PDC to
+            // linkChain + spawn the strand). Both the source and its target's callbacks run in this
+            // same synchronous batch, so onClosedLoop sees the whole ring at recalc time.
+            if (bs.link() != null && ChainPulley.PULLEY_ID.equals(type.fullId())) {
+                seedChainLink(world, ox, oy, oz, bs, block);
+            }
             // Fire BOTH callbacks, mirroring CoreLibPlugin's placement path: onBlockPlaced
             // (placement-specific setup) then onChunkLoadCallback (steady-state registration —
             // where rotation blocks add their network node). The old either/or left types that
@@ -116,6 +122,28 @@ final class ShowcaseBuilder {
             }
         });
         return true;
+    }
+
+    /** Validate and write a chain-pulley link from {@code source} to its {@code bs.link()} partner.
+     *  Skips (with a warning) a self-link or a target that isn't a chain-pulley — the builder bypasses
+     *  {@link ChainPulley}'s interactive {@code validateLink}, so guard the obvious mistakes here. */
+    private void seedChainLink(World world, int ox, int oy, int oz,
+                              ShowcaseSpec.BlockSpec bs, Block source) {
+        int[] link = bs.link();
+        int tx = ox + link[0], ty = oy + link[1], tz = oz + link[2];
+        Block target = world.getBlockAt(tx, ty, tz);
+        if (target.equals(source)) {
+            plugin.getLogger().warning("showcase: chain_pulley at " + java.util.Arrays.toString(bs.at())
+                    + " links to itself — skipped");
+            return;
+        }
+        CustomHeadBlock targetType = registry.getTypeFromBlock(target);
+        if (targetType == null || !ChainPulley.PULLEY_ID.equals(targetType.fullId())) {
+            plugin.getLogger().warning("showcase: chain_pulley link target " + java.util.Arrays.toString(link)
+                    + " is not a chain_pulley — skipped");
+            return;
+        }
+        ChainPulley.writeLinkPdc(source, new int[]{tx, ty, tz});
     }
 
     private void placeHead(Block block, boolean floor, BlockFace headFacing) {

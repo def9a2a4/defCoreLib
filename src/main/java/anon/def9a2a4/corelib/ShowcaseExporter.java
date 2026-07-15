@@ -48,6 +48,22 @@ final class ShowcaseExporter {
                 rec.put("id", type.fullId());
                 rec.put("facing", reverseFacing(b));
                 rec.put("at", at);
+                if (ChainPulley.PULLEY_ID.equals(type.fullId())) {
+                    int[] partner = ChainPulley.readLinkPdc(b);
+                    if (partner != null) {
+                        String pkey = partner[0] + "," + partner[1] + "," + partner[2];
+                        if (cells.containsKey(pkey)) {
+                            rec.put("link", List.of(partner[0] - origin.getX(),
+                                    partner[1] - origin.getY(), partner[2] - origin.getZ()));
+                        } else {
+                            // Chain partners are joined by chain, not glue, so a distant pulley may be
+                            // outside the exported (glue-marked) structure — its link would be lost.
+                            System.getLogger(ShowcaseExporter.class.getName()).log(System.Logger.Level.WARNING,
+                                "showcase export: chain_pulley at {0} links to {1}, outside the exported "
+                                + "structure — glue-mark all linked pulleys. Link dropped.", at, pkey);
+                        }
+                    }
+                }
                 blocks.add(rec);
             } else {
                 rec.put("block", b.getType().name());

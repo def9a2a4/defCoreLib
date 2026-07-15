@@ -182,6 +182,27 @@ final class ShowcaseRunner implements Listener {
                         : DisplayCapture.textureUrl(type.resolveTexture(state, 0, headFacing)));
                 rec.put("displays", DisplayCapture.readDisplays(type, block.getLocation(), state, true, false));
                 blocks.add(rec);
+
+                // Chain-pulley strand: a separate BlockDisplay (corelib:mech:chain_strand:…) not owned
+                // by the pulley type, so readDisplays misses it. Capture it as its own record so the
+                // linked chain renders. Static frame (a powered strand is mid-spin at capture time).
+                if (ChainPulley.PULLEY_ID.equals(bs.id())) {
+                    Location cellCenter = block.getLocation().add(0.5, 0.5, 0.5);
+                    List<Map<String, Object>> strandDisplays = new ArrayList<>();
+                    for (var d : DisplayUtil.findByTag(block.getLocation(),
+                            ChainPulley.strandTagPrefix(block.getLocation()), 2.0)) {
+                        Map<String, Object> raw = DisplayCapture.readRawDisplay(d, cellCenter);
+                        if (raw != null) strandDisplays.add(raw);
+                    }
+                    if (!strandDisplays.isEmpty()) {
+                        Map<String, Object> strandRec = new LinkedHashMap<>();
+                        strandRec.put("id", null);
+                        strandRec.put("offset", new int[]{bs.at()[0], bs.at()[1], bs.at()[2]});
+                        strandRec.put("baseHeadTextureUrl", null);
+                        strandRec.put("displays", strandDisplays);
+                        blocks.add(strandRec);
+                    }
+                }
             }
             // Vanilla support blocks: emit a single static "block" display so the webpage renders them
             // (bare material name — generate_catalog vendors the model; placed3d draws it corner-origin).

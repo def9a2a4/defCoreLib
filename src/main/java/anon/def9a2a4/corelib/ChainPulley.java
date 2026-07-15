@@ -345,6 +345,13 @@ final class ChainPulley {
     }
 
     private static String strandTag(Location sourceLoc) {
+        return strandTagPrefix(sourceLoc);
+    }
+
+    /** The scoreboard tag ({@code corelib:mech:chain_strand:<x>_<y>_<z>}) of the strand rooted at
+     *  {@code sourceLoc}. Package-private so the showcase capture can {@code findByTag} the strand
+     *  display (a plain {@code startsWith} prefix — every tag begins with {@code corelib:}). */
+    static String strandTagPrefix(Location sourceLoc) {
         return DisplayUtil.blockTag("mech", STRAND_TYPE, sourceLoc, null);
     }
 
@@ -380,16 +387,30 @@ final class ChainPulley {
     // ──────────────────────────────────────────────────────────────────────
 
     private CustomBlockRegistry.@Nullable LocationKey readPartner(Block b) {
-        if (!(b.getState() instanceof Skull skull)) return null;
-        int[] xyz = skull.getPersistentDataContainer().get(OUT_KEY, PersistentDataType.INTEGER_ARRAY);
-        if (xyz == null || xyz.length < 3) return null;
+        int[] xyz = readLinkPdc(b);
+        if (xyz == null) return null;
         return new CustomBlockRegistry.LocationKey(b.getWorld().getUID(), xyz[0], xyz[1], xyz[2]);
     }
 
     private void writePartner(Block b, CustomBlockRegistry.LocationKey partner) {
-        if (!(b.getState() instanceof Skull skull)) return;
+        writeLinkPdc(b, new int[]{ partner.x(), partner.y(), partner.z() });
+    }
+
+    /** Read a pulley's outgoing chain partner as absolute {@code {x,y,z}} (same world), or null.
+     *  Package-private so the showcase exporter can round-trip the link. */
+    static int @Nullable [] readLinkPdc(Block b) {
+        if (!(b.getState() instanceof Skull skull)) return null;
+        int[] xyz = skull.getPersistentDataContainer().get(OUT_KEY, PersistentDataType.INTEGER_ARRAY);
+        return (xyz == null || xyz.length < 3) ? null : new int[]{ xyz[0], xyz[1], xyz[2] };
+    }
+
+    /** Write a pulley's outgoing chain partner as absolute {@code {x,y,z}}. Package-private so the
+     *  showcase builder can seed a link before {@link #handleChunkLoad} wires it (which reads the PDC,
+     *  calls {@code linkChain}, and spawns the strand). */
+    static void writeLinkPdc(Block source, int[] absTarget) {
+        if (!(source.getState() instanceof Skull skull)) return;
         skull.getPersistentDataContainer().set(OUT_KEY, PersistentDataType.INTEGER_ARRAY,
-            new int[]{ partner.x(), partner.y(), partner.z() });
+            new int[]{ absTarget[0], absTarget[1], absTarget[2] });
         skull.update();
     }
 

@@ -21,8 +21,11 @@ import java.util.logging.Logger;
 final class ShowcaseSpec {
 
     /** One custom block in a showcase. {@code at} is [dx,dy,dz] from the build origin; {@code facing}
-     *  is the placement face (DOWN = floor). {@code state} is optional (defaults to the placement map). */
-    record BlockSpec(String id, BlockFace facing, int[] at, @Nullable String state) {}
+     *  is the placement face (DOWN = floor). {@code state} is optional (defaults to the placement map).
+     *  {@code link} is an optional [dx,dy,dz] offset of a chain-pulley partner (only meaningful for
+     *  {@code mech:chain_pulley}): the builder writes it into the pulley's chain-link PDC so the pair
+     *  transmits power, mirroring an in-game chain link. */
+    record BlockSpec(String id, BlockFace facing, int[] at, @Nullable String state, int @Nullable [] link) {}
 
     /** One vanilla support block (redstone, planks, container, …) at an offset. {@code data} is an
      *  optional Bukkit block-data string (e.g. {@code "[face=floor,powered=true]"} for a lit lever).
@@ -79,7 +82,7 @@ final class ShowcaseSpec {
                         log.warning("showcases.yml [" + id + "]: block entry needs id + at, skipped");
                         continue;
                     }
-                    blocks.add(new BlockSpec(bid, face, at, str(m.get("state"))));
+                    blocks.add(new BlockSpec(bid, face, at, str(m.get("state")), vec(m.get("link"))));
                 }
                 List<VanillaSpec> vanilla = new ArrayList<>();
                 for (Object o : asList(entry.get("vanilla"))) {
