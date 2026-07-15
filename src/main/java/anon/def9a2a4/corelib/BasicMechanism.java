@@ -280,14 +280,11 @@ final class BasicMechanism implements Mechanism {
         this.previousVehicleYaw = this.previousVehicleLoc.getYaw();
     }
 
-    // A RELATIVE teleport of +dy in Y — the client applies it as a smooth nudge (like knockback) rather
-    // than a hard "you are now here" snap that resets its movement prediction (which reads as "stuck").
-    // X/Z/YAW/PITCH are flagged relative too so the passed 0s add nothing (position/look unchanged), and
-    // VELOCITY_* preserve the rider's existing momentum natively instead of us overwriting it — which is
-    // what makes walking/looking on a rising platform feel free rather than fought.
+    // Preserve the rider's momentum ACROSS the teleport instead of us overwriting it with setVelocity()
+    // every tick — that re-imposed (downward) velocity while the collider rose into them, a tug-of-war
+    // that read as "stuck". These flags are velocity-only: Paper teleports always take an ABSOLUTE
+    // location (there is no position-relative teleport), so the target below must be current + dy.
     private static final TeleportFlag[] CARRY_FLAGS = {
-        TeleportFlag.Relative.X, TeleportFlag.Relative.Y, TeleportFlag.Relative.Z,
-        TeleportFlag.Relative.YAW, TeleportFlag.Relative.PITCH,
         TeleportFlag.Relative.VELOCITY_X, TeleportFlag.Relative.VELOCITY_Y,
         TeleportFlag.Relative.VELOCITY_Z, TeleportFlag.Relative.VELOCITY_ROTATION,
     };
@@ -314,9 +311,9 @@ final class BasicMechanism implements Mechanism {
             }
         }
 
-        Location step = new Location(w, 0, dy, 0);   // relative delta: only Y is non-zero
         for (Entity e : riders) {
-            e.teleport(step, PlayerTeleportEvent.TeleportCause.PLUGIN, CARRY_FLAGS);
+            Location to = e.getLocation().add(0, dy, 0);   // ABSOLUTE target; keeps x/z/yaw/pitch
+            e.teleport(to, PlayerTeleportEvent.TeleportCause.PLUGIN, CARRY_FLAGS);
         }
     }
 

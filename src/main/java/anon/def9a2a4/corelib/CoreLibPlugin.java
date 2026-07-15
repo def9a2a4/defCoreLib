@@ -164,6 +164,17 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         // Register recipes after all blocks are loaded
         registry.finalizeLoading();
 
+        // Restore custom blocks in chunks that were already loaded before our listener existed (spawn
+        // and force-loaded chunks load before plugins enable, and being resident never fire
+        // ChunkLoad/EntitiesLoad again). Deferred to the first tick on purpose: mech/pipes register
+        // their types in their own onEnable, which runs after ours, so sweeping inline would miss them.
+        getServer().getScheduler().runTask(this, () -> {
+            int swept = registry.restoreLoadedChunks();
+            if (swept > 0) {
+                getLogger().info("Restored custom blocks in " + swept + " already-loaded chunk(s)");
+            }
+        });
+
         // Bespoke recipes whose result is a vanilla item made from a custom ingredient
         // (the YAML recipe system only outputs the owning custom type's item):
         // dough → bread (furnace/smoker) and seed oil → iron/copper lantern.
@@ -465,11 +476,21 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
             // Force nearby clients to re-render the freshly-placed head. applyConfig sets the correct
             // skull profile server-side, but the client's placement-predicted head (notably one placed
             // against a block's underside → DOWN pipe) doesn't repaint from the normal block-entity
-            // broadcast — it stays a default "Steve" head until the chunk reloads. Re-sending the block
-            // makes the client drop that stale render and re-resolve the embedded texture. No-op for a
-            // head whose render already matched.
+            // broadcast — it stays a default "Steve" head until the chunk reloads. refreshHeadViewers
+            // pushes the block-entity (profile) to viewers so they re-resolve the embedded texture.
+            // A single send races the client's placement reconciliation and only lands sometimes, so
+            // repeat it over a few ticks — idempotent (same profile → no flicker), and placement is
+            // player-paced so the cost is trivial. No-op for a head whose render already matched.
             if (block.getType() == Material.PLAYER_HEAD || block.getType() == Material.PLAYER_WALL_HEAD) {
-                registry.refreshHeadViewers(block);
+                for (int d : new int[]{1, 3, 8}) {
+                    getServer().getScheduler().runTaskLater(this, () -> {
+                        if (registry.getTypeFromBlock(block) == null) return;
+                        if (block.getType() == Material.PLAYER_HEAD
+                                || block.getType() == Material.PLAYER_WALL_HEAD) {
+                            registry.refreshHeadViewers(block);
+                        }
+                    }, d);
+                }
             }
 
             // Register for redstone tracking if needed

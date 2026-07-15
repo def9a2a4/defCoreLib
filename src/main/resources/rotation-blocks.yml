@@ -1558,27 +1558,27 @@ blocks:
       DOWN: idle_y
     states:
       idle_ceiling:
-        # Placed head shows the screw skin; a static drill-placed-down collar sits flush at the top,
-        # widened in x/z; the screw hangs a block below and (in spinning_ceiling) rotates about Y.
+        # Placed head shows the screw skin; a static drill-placed-down collar sits near the top,
+        # widened in x/z; the screw hangs below and (in spinning_ceiling) rotates about Y.
         texture: "@screw_up"
         display_entities:
           - texture: "@screw_up"
             tag: rod
-            transform: { translation: [0, -1.0, 0], scale: [1.0, 1.0, 1.0], left_rotation: [180, 1, 0, 0] }
+            transform: { translation: [0, -0.5, 0], scale: [1.0, 1.0, 1.0], left_rotation: [180, 1, 0, 0] }
           - texture: "@drill_placed_down"
             tag: collar
-            transform: { translation: [0, 0, 0], scale: [1.333, 1.0, 1.333] }
+            transform: { translation: [0, 0.5, 0], scale: [1.333, 1.0, 1.333] }
       spinning_ceiling:
         # Written out (not copy_from) so animation applies only to the screw, leaving the collar static.
         texture: "@screw_up"
         display_entities:
           - texture: "@screw_up"
             tag: rod
-            transform: { translation: [0, -1.0, 0], scale: [1.0, 1.0, 1.0], left_rotation: [180, 1, 0, 0] }
+            transform: { translation: [0, -0.5, 0], scale: [1.0, 1.0, 1.0], left_rotation: [180, 1, 0, 0] }
             animation: { type: rotate, axis: [0, 1, 0], speed: 3.0 }
           - texture: "@drill_placed_down"
             tag: collar
-            transform: { translation: [0, 0, 0], scale: [1.333, 1.0, 1.333] }
+            transform: { translation: [0, 0.5, 0], scale: [1.333, 1.0, 1.333] }
       idle_y:
         texture: "@drill_placed_up"
         display_entities:

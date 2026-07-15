@@ -69,12 +69,19 @@ public class PipeBlockRegistrar {
             }
             BlockFace facing = parseFacing(state);
             manager.registerPipe(block.getLocation(), facing, List.of(), variant);
+            // CoreLib suppresses physics on custom-block placement, so adjacent pipes never get the
+            // BlockPhysicsEvent that would recompute their connection transform. Refresh them explicitly.
+            registry.refreshReactiveNeighbors(block);
         });
 
         builder.onBlockRemoved((block, state) -> {
             PipeManager manager = plugin.getPipeManager(block.getWorld());
             if (manager == null) return;
             manager.removePipeData(block.getLocation());
+            // Same physics-suppression gap on removal — refresh neighbors next tick, once this pipe's
+            // block is actually gone, so they recompute against the now-empty cell.
+            plugin.getServer().getScheduler().runTask(plugin,
+                    () -> registry.refreshReactiveNeighbors(block));
         });
 
         builder.onChunkLoad((block, state) -> {

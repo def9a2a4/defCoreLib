@@ -957,6 +957,39 @@ public class CustomBlockRegistry {
         }
     }
 
+    /**
+     * Enable-time recovery for chunks that were already loaded before our EntitiesLoadEvent listener
+     * existed. Paper loads worlds — and their spawn / force-loaded chunks — before it enables plugins,
+     * so those chunks fired ChunkLoad/EntitiesLoad already and, being resident, never fire them again.
+     *
+     * <p>{@link #rescanLoadedChunks} is the equivalent catch-up for tile-hosted blocks, but it walks
+     * {@code getTileEntities()} only — a bare block's host (a casing's stair, a shaft's CHAIN) has no
+     * tile entity, so it is invisible there and {@link #bareLocations} stays empty for it: the block
+     * decays to plain stairs/chain and its shell reads as an orphan to {@link #scanOrphanedDisplays}.
+     * This sweep closes that gap for every bare type at once (casings and shafts share one restorer,
+     * see {@link #registerBareBlock}).
+     *
+     * <p>Call once, on the first tick after enable — not during it: other plugins register their own
+     * types in their {@code onEnable}, which runs after ours.
+     *
+     * @return number of chunks swept
+     */
+    int restoreLoadedChunks() {
+        int swept = 0;
+        for (World world : Bukkit.getWorlds()) {
+            for (Chunk chunk : world.getLoadedChunks()) {
+                // Entities not loaded yet → the real EntitiesLoadEvent is still coming; let it do the
+                // work. Racing it would let restoreBareBlocksInChunk's pass 1 miss the live shell and
+                // pass 2 respawn a duplicate alongside it.
+                if (!chunk.isEntitiesLoaded()) continue;
+                if (!chunkMayHaveCustomBlocks(chunk)) continue;
+                onEntitiesLoad(chunk);
+                swept++;
+            }
+        }
+        return swept;
+    }
+
     /** Restore a single block's runtime state (light, particles, redstone tracking). */
     public void restoreBlock(Block block, CustomHeadBlock type, @Nullable String state) {
         // Restore light blocks
