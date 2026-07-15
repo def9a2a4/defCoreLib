@@ -204,6 +204,11 @@ public final class BlockLoader {
             b.particles(parseParticles(particleSec));
         }
 
+        // Custom collider (true / false / {size, offset}); absent → registry/default full block
+        if (sec.isSet("collision")) {
+            b.collision(CollisionConfig.fromYaml(sec.get("collision")));
+        }
+
         // Display entities
         List<?> displayList = sec.getList("display_entities");
         if (displayList != null) {
@@ -368,6 +373,12 @@ public final class BlockLoader {
             if (particleSec != null) {
                 sb.particles(parseParticles(particleSec));
             }
+        }
+
+        if (sec.getBoolean("no_collision")) {
+            sb.noCollision();
+        } else if (sec.isSet("collision")) {
+            sb.collision(CollisionConfig.fromYaml(sec.get("collision")));
         }
 
         parseStateDisplays(sb, sec, statesSec, stateName, textures);

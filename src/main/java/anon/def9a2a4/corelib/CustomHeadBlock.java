@@ -234,7 +234,9 @@ public final class CustomHeadBlock {
             @Nullable List<BlockDisplayEntityConfig> blockDisplayEntities,
             boolean clearLight,
             boolean clearParticles,
-            boolean clearDisplayEntities
+            boolean clearDisplayEntities,
+            @Nullable CollisionConfig collision,
+            boolean clearCollision
     ) {}
 
     // ──────────────────────────────────────────────────────────────────────
@@ -263,6 +265,7 @@ public final class CustomHeadBlock {
     private final @Nullable Map<BlockFace, String> directionalTextures;
     private final @Nullable LightConfig light;
     private final @Nullable ParticleConfig particles;
+    private final @Nullable CollisionConfig collision; // custom collider for mechanism assembly; null → registry/default
     private final List<DisplayEntityConfig> displayEntities;
     private final List<BlockDisplayEntityConfig> blockDisplayEntities;
     private final List<ShapedRecipeDef> shapedRecipes;
@@ -338,6 +341,7 @@ public final class CustomHeadBlock {
         this.directionalTextures = b.directionalTextures;
         this.light = b.light;
         this.particles = b.particles;
+        this.collision = b.collision;
         this.displayEntities = List.copyOf(b.displayEntities);
         this.blockDisplayEntities = List.copyOf(b.blockDisplayEntities);
         this.shapedRecipes = List.copyOf(b.shapedRecipes);
@@ -418,6 +422,7 @@ public final class CustomHeadBlock {
     public @Nullable Map<BlockFace, String> directionalTextures() { return directionalTextures; }
     public @Nullable LightConfig light() { return light; }
     public @Nullable ParticleConfig particles() { return particles; }
+    public @Nullable CollisionConfig collision() { return collision; }
     public List<DisplayEntityConfig> displayEntities() { return displayEntities; }
     public List<BlockDisplayEntityConfig> blockDisplayEntities() { return blockDisplayEntities; }
     public List<ShapedRecipeDef> shapedRecipes() { return shapedRecipes; }
@@ -572,6 +577,21 @@ public final class CustomHeadBlock {
         return particles;
     }
 
+    /**
+     * Resolve the effective collider for the current state. Returns null when this block declares no
+     * custom collider (the caller then falls through to the vanilla registry / full-block default).
+     */
+    public @Nullable CollisionConfig resolveCollision(@Nullable String state) {
+        if (state != null) {
+            StateConfig sc = states.get(state);
+            if (sc != null) {
+                if (sc.clearCollision()) return null;
+                if (sc.collision() != null) return sc.collision();
+            }
+        }
+        return collision;
+    }
+
     /** Resolve the effective display entities for the current state. */
     public List<DisplayEntityConfig> resolveDisplayEntities(@Nullable String state) {
         if (state != null) {
@@ -660,6 +680,7 @@ public final class CustomHeadBlock {
         b.directionalTextures = directionalTextures;
         b.light = light;
         b.particles = particles;
+        b.collision = collision;
         b.displayEntities.addAll(displayEntities);
         b.blockDisplayEntities.addAll(blockDisplayEntities);
         b.shapedRecipes.addAll(shapedRecipes);
@@ -723,6 +744,7 @@ public final class CustomHeadBlock {
         private @Nullable Map<BlockFace, String> directionalTextures;
         private @Nullable LightConfig light;
         private @Nullable ParticleConfig particles;
+        private @Nullable CollisionConfig collision;
         private final List<DisplayEntityConfig> displayEntities = new ArrayList<>();
         private final List<BlockDisplayEntityConfig> blockDisplayEntities = new ArrayList<>();
         private final List<ShapedRecipeDef> shapedRecipes = new ArrayList<>();
@@ -809,6 +831,7 @@ public final class CustomHeadBlock {
         public Builder directionalTextures(Map<BlockFace, String> textures) { this.directionalTextures = textures; return this; }
         public Builder light(int level, int offsetX, int offsetY, int offsetZ) { this.light = new LightConfig(level, offsetX, offsetY, offsetZ); return this; }
         public Builder particles(ParticleConfig config) { this.particles = config; return this; }
+        public Builder collision(CollisionConfig config) { this.collision = config; return this; }
         public Builder displayEntities(List<DisplayEntityConfig> configs) { this.displayEntities.addAll(configs); return this; }
         public Builder blockDisplayEntities(List<BlockDisplayEntityConfig> configs) { this.blockDisplayEntities.addAll(configs); return this; }
         public Builder shapedRecipe(ShapedRecipeDef recipe) { this.shapedRecipes.add(recipe); return this; }
@@ -835,7 +858,7 @@ public final class CustomHeadBlock {
 
         /** Declare a state with no overrides (inherits everything from base). */
         public Builder state(String name) {
-            this.states.put(name, new StateConfig(null, null, null, null, null, null, false, false, false));
+            this.states.put(name, new StateConfig(null, null, null, null, null, null, false, false, false, null, false));
             if (defaultState == null) defaultState = name;
             return this;
         }
@@ -986,9 +1009,11 @@ public final class CustomHeadBlock {
         private @Nullable ParticleConfig particles;
         private @Nullable List<DisplayEntityConfig> displayEntities;
         private @Nullable List<BlockDisplayEntityConfig> blockDisplayEntities;
+        private @Nullable CollisionConfig collision;
         private boolean clearLight;
         private boolean clearParticles;
         private boolean clearDisplayEntities;
+        private boolean clearCollision;
 
         public StateBuilder texture(String base64) { this.texture = base64; return this; }
         public StateBuilder directionalTextures(Map<BlockFace, String> textures) { this.directionalTextures = textures; return this; }
@@ -996,13 +1021,15 @@ public final class CustomHeadBlock {
         public StateBuilder noLight() { this.clearLight = true; return this; }
         public StateBuilder particles(ParticleConfig config) { this.particles = config; return this; }
         public StateBuilder noParticles() { this.clearParticles = true; return this; }
+        public StateBuilder collision(CollisionConfig config) { this.collision = config; return this; }
+        public StateBuilder noCollision() { this.clearCollision = true; return this; }
         public StateBuilder displayEntities(List<DisplayEntityConfig> configs) { this.displayEntities = configs; return this; }
         public StateBuilder blockDisplayEntities(List<BlockDisplayEntityConfig> configs) { this.blockDisplayEntities = configs; return this; }
         public StateBuilder noDisplayEntities() { this.clearDisplayEntities = true; return this; }
 
         StateConfig build() {
             return new StateConfig(texture, directionalTextures, light, particles, displayEntities,
-                    blockDisplayEntities, clearLight, clearParticles, clearDisplayEntities);
+                    blockDisplayEntities, clearLight, clearParticles, clearDisplayEntities, collision, clearCollision);
         }
     }
 

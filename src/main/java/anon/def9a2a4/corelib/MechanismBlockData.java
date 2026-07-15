@@ -17,8 +17,10 @@ public final class MechanismBlockData {
 
     public final BlockData blockData;
     public final Matrix4f localTransform;
-    public final boolean hasCollision;
-    public final float collisionScale;
+    // Effective collider for this block (custom-block config → vanilla registry → full-block default).
+    // NOTE: recovery-relevant — if the deferred MechanismSerializer restore path is ever implemented,
+    // this must be serialized or recovered colliders silently revert to full blocks.
+    public final CollisionConfig collision;
     public final @Nullable String customTypeId;
 
     // Captured at assembly from the live custom block (see MechanismRegistry.assembleCore):
@@ -38,7 +40,7 @@ public final class MechanismBlockData {
     Inventory storage;
 
     MechanismBlockData(BlockData blockData, Matrix4f localTransform,
-                       boolean hasCollision, float collisionScale,
+                       CollisionConfig collision,
                        @Nullable String customTypeId, String customState,
                        List<CustomHeadBlock.DisplayEntityConfig> displayEntityConfigs,
                        List<CustomHeadBlock.BlockDisplayEntityConfig> blockDisplayEntityConfigs,
@@ -47,8 +49,7 @@ public final class MechanismBlockData {
                        boolean spinReversed, @Nullable Vector3f wallFacing) {
         this.blockData = blockData;
         this.localTransform = localTransform;
-        this.hasCollision = hasCollision;
-        this.collisionScale = collisionScale;
+        this.collision = collision;
         this.customTypeId = customTypeId;
         this.customState = customState;
         this.displayEntityConfigs = displayEntityConfigs;

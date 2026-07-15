@@ -108,7 +108,7 @@ final class BasicMechanism implements Mechanism {
     @Override public int blockCount() { return blocks.size(); }
     @Override public float getCurrentYaw() { return currentYaw; }
     @Override public MechanismBlockData getBlock(int index) { return blocks.get(index); }
-    @Override public boolean hasCollision(int blockIndex) { return blocks.get(blockIndex).hasCollision; }
+    @Override public boolean hasCollision(int blockIndex) { return blocks.get(blockIndex).collision.enabled(); }
 
     @Override
     public Display primaryDisplay(int blockIndex) {
@@ -256,13 +256,14 @@ final class BasicMechanism implements Mechanism {
         }
 
         // Reposition collider carriers. localTransform is now center-based in all axes and the pivot
-        // is block-centered, so rotating the plain translation orbits the true block center. The -0.5 Y
-        // anchors the carrier at the cell bottom (the shulker box sits ~half a block above its carrier),
-        // matching the collider spawn in assembleCore.
+        // is block-centered, so rotating the plain translation orbits the true block center. A sub-cube
+        // collider's block-local offset is added inside the rotated frame (so it tracks the block through
+        // rotation), while the -0.5 Y — which anchors the feet-anchored shulker box to the cell bottom —
+        // is world-space and applied OUTSIDE the rotation. Matches the collider spawn in assembleCore.
         for (ColliderPair cp : colliders) {
-            Vector3f worldOff = rot.transformPosition(
-                blocks.get(cp.blockIndex()).localTransform.getTranslation(new Vector3f()),
-                new Vector3f());
+            MechanismBlockData mb = blocks.get(cp.blockIndex());
+            Vector3f local = mb.localTransform.getTranslation(new Vector3f()).add(mb.collision.offset());
+            Vector3f worldOff = rot.transformPosition(local, new Vector3f());
             TeleportCompat.teleport(cp.carrier(),
                 pivot.clone().add(worldOff.x, worldOff.y - 0.5, worldOff.z));
         }

@@ -56,6 +56,13 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         mechanismRegistry.startTasks();
         getServer().getPluginManager().registerEvents(this, this);
 
+        // Load vanilla-block collider shapes (slabs, stairs, fences, ...) for mechanism assembly.
+        try (InputStream colliderStream = getResource("colliders.yml")) {
+            if (colliderStream != null) {
+                mechanismRegistry.loadColliders(colliderStream);
+            }
+        } catch (IOException ignored) {}
+
         // Load demo blocks from YAML
         try (InputStream demoStream = getResource("demo-blocks.yml")) {
             if (demoStream != null) {

@@ -30,6 +30,7 @@ public class MechanismRegistry {
 
     private final JavaPlugin plugin;
     private final CustomBlockRegistry registry;
+    private final ColliderRegistry colliderRegistry = new ColliderRegistry(); // vanilla block → collider shape
 
     private final Map<UUID, BasicMechanism> activeMechanisms = new HashMap<>();
     private final Map<UUID, ColliderRef> colliderIndex = new HashMap<>(); // shulker UUID → ref
@@ -51,6 +52,11 @@ public class MechanismRegistry {
     public MechanismRegistry(JavaPlugin plugin, CustomBlockRegistry registry) {
         this.plugin = plugin;
         this.registry = registry;
+    }
+
+    /** Load vanilla-block collider shapes (colliders.yml) into the registry. */
+    public void loadColliders(java.io.InputStream in) {
+        colliderRegistry.load(in, plugin.getLogger());
     }
 
     // ──────────────────────────────────────────────────────────────────────
@@ -223,7 +229,12 @@ public class MechanismRegistry {
                 }
             }
 
-            blockData.add(new MechanismBlockData(bd, local, true, 1.0f,
+            // Resolve the collider: a custom block's own config wins, else the vanilla shape registry,
+            // else a full block (colliderRegistry.get returns DEFAULT for unlisted materials).
+            CollisionConfig customCollision = chb != null ? chb.resolveCollision(customState) : null;
+            CollisionConfig collision = customCollision != null
+                ? customCollision : colliderRegistry.get(bd.getMaterial(), bd);
+            blockData.add(new MechanismBlockData(bd, local, collision,
                 customType, customState, decs, bdecs, particles, storage, spinReversed, wallFacing));
         }
 
@@ -258,7 +269,10 @@ public class MechanismRegistry {
                     gwall = new Vector3f((float) f.getX(), (float) f.getY(), (float) f.getZ());
                 }
             }
-            blockData.add(new MechanismBlockData(gbd, glocal, true, 1.0f,
+            CollisionConfig gcustom = gchb != null ? gchb.resolveCollision(gState) : null;
+            CollisionConfig gcollision = gcustom != null
+                ? gcustom : colliderRegistry.get(gbd.getMaterial(), gbd);
+            blockData.add(new MechanismBlockData(gbd, glocal, gcollision,
                 gType, gState, gdecs, gbdecs, gparticles, null, false, gwall));
         }
 
@@ -337,12 +351,16 @@ public class MechanismRegistry {
             displaysPerBlock.add(group);
 
             // Collider: marker ArmorStand carrier + Shulker passenger
-            if (mb.hasCollision) {
+            if (mb.collision.enabled()) {
                 final int blockIdx = i;
+                final MechanismBlockData mbf = mb;
                 Vector3f initOff = mb.localTransform.getTranslation(new Vector3f());
-                // -0.5 Y: the shulker box (attachedFace DOWN, marker, peek 0) sits ~half a block above
-                // its carrier, so anchor the carrier at the cell bottom to center the box on the cell.
-                Location carrierLoc = pivot.clone().add(initOff.x, initOff.y - 0.5, initOff.z);
+                Vector3f off = mb.collision.offset();
+                // -0.5 Y: the shulker box (attachedFace DOWN, marker, peek 0) is feet-anchored, so anchor
+                // the carrier at the cell bottom to centre a full box. The block-local collider offset is
+                // added on top; at assembly the mechanism is at identity rotation so it applies directly
+                // (BasicMechanism.rotate rotates it thereafter). The -0.5 is world-space, never rotated.
+                Location carrierLoc = pivot.clone().add(initOff.x + off.x, initOff.y - 0.5 + off.y, initOff.z + off.z);
 
                 ArmorStand carrier = pivot.getWorld().spawn(carrierLoc, ArmorStand.class, as -> {
                     as.setInvisible(true); as.setGravity(false); as.setSilent(true);
@@ -357,6 +375,15 @@ public class MechanismRegistry {
                     s.setPeek(0);
                     s.setAttachedFace(org.bukkit.block.BlockFace.DOWN);
                     s.setGlowing(colliderGlowEnabled);
+                    // Resize the hitbox for sub-cube colliders. Only touch the attribute when size != 1.0
+                    // so the full-block path stays byte-identical to before. Set before addPassenger.
+                    if (mbf.collision.size() != 1.0f) {
+                        org.bukkit.attribute.Attribute scaleAttr = ScaleAttributeCompat.getScale();
+                        if (scaleAttr != null) {
+                            org.bukkit.attribute.AttributeInstance ai = s.getAttribute(scaleAttr);
+                            if (ai != null) ai.setBaseValue(mbf.collision.size());
+                        }
+                    }
                     s.addScoreboardTag("corelib:mech:" + mechId + ":" + blockIdx + ":collider");
                 });
                 carrier.addPassenger(shulker);

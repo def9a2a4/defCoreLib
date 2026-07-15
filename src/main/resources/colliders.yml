@@ -1,0 +1,50 @@
+# Per-block colliders for vanilla blocks inside a mechanism.
+#
+# Keys are a material name (e.g. STONE) or a #block-tag (e.g. #slabs). Any block NOT listed here
+# defaults to a full-block collider — so this file only needs the shapes that differ from a cube.
+#
+# Collider value forms (identical to the BlockShips schema this is ported from):
+#   collider omitted / true      -> full block (size 1.0, no offset)
+#   false                        -> no collider (block is pass-through while assembled)
+#   {size: 0.5, offset: [0,y,0]} -> scaled Shulker; offset is block-local, applied before the -0.5
+#   {type: conditional, rules}   -> pick per BlockData state (slab type, stair half, ...)
+#
+# NOTE (inherited from the uniform Shulker scale): a sub-1.0 box is a centred cube, so a bottom slab
+# is unsupported at its edges; top/double slabs and top stairs are full blocks. Battle-tested in
+# BlockShips; not geometrically perfect. Colliders are world-axis-aligned, so sub-cube shapes are
+# only exact on Y-axis (yaw) mechanisms — on X/Z drawbridges they approximate when tipped.
+
+"#slabs":
+  type: conditional
+  rules:
+    - condition: {type: BOTTOM}
+      collider: {size: 0.5, offset: [0, 0, 0]}
+    - condition: {type: TOP}
+      collider: {size: 0.5, offset: [0, 0.5, 0]}
+    - condition: {type: DOUBLE}
+      collider: true
+
+"#stairs":
+  type: conditional
+  rules:
+    # bottom straight acts like a half slab; a true step would need multiple colliders
+    - condition: {half: BOTTOM}
+      collider: {size: 0.5, offset: [0, 0, 0]}
+    # top half: full block
+    - condition: {half: TOP}
+      collider: true
+
+"#fences":
+  size: 0.275
+  offset: [0, 0.5, 0]
+
+"#fence_gates": false
+
+"#walls":
+  size: 0.5
+  offset: [0, 0, 0]
+
+"#doors": false
+"#trapdoors": false
+"#buttons": false
+"#pressure_plates": false
