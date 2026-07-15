@@ -1263,6 +1263,12 @@ final class RotationBlocks {
             } else {
                 target.breakNaturally(NETHERITE_PICK);
             }
+            // Clear the crack: the block is gone, but the client keeps this sourceId's destruction entry
+            // parked on the (now air) cell — invisible until the cell is re-solidified, when it re-renders.
+            // breakNaturally/setType send no destruction reset, so an explicit clear is required (mirrors
+            // the blacklist/non-drillable exits above). Removal is keyed by sourceId; the location only
+            // picks the recipients (players near the broken block).
+            clearBreakAnimationAt(target.getLocation(), sourceId);
             return new DrillOutcome(null, true);
         }
 
