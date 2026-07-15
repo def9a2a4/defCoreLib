@@ -63,6 +63,7 @@ textures:
   compressor_item:   "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvY2Q3Y2Y4NmY5ZjY1MzdkZDVkMThmMDAwNjE4ODdjY2Q1OWM0ZTc5NjY0Y2ViZDY1Y2FhN2ViMGUwMjcwMWViOCJ9fX0="  # dev/press/compressor — press item
   placer_item:       "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvM2M1ZjNjM2Q1ZDdiMWNlMGYzMjA0MGMxNDU0ZGFmODg3OGUxY2MyOTllMDI1YmFkMmU2OTE5ZWJhZTIxZmJiOCJ9fX0="  # block placer — item in hand
   placer_piston:     "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWYyZWZiNDJjYWFlNTYxZmUyZDk3YmY3MTFjY2MwNjQ3ZGU2OTVmZDJkZTIxZDljZGNiMTI5YmEyOTMzY2VkZiJ9fX0="  # block placer — symmetric piston display
+  pipe_up_display:   "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHBzOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlL2VlZGQxYjQ4MTAwMjU3MjJiMzBlYmJlMjBmMTI5OGE5MDgyNmM1MzQ1ZGU2MDJmYzE3ZGFlZDFlMDVkZWQ4ZDgifX19"  # eedd1b48 — copper-pipe UP display skin, copied from pipes.yml @copper_display_up (BlockLoader builds the alias map per YAML file, so pipes' aliases can't be referenced from here)
 
   # ── Extendable-piston art (from assets/rotation/piston/, via scripts/upload_skin.py) ──
   rod_toothed_up:    "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzk1YmUxN2I2ZTRiMGM3MWU2OTY1MzIxNDFhOWEwNDBhYThkMmIyOWRiNzJhZGI0ODlhODQyODE5MGZjZDE0MiJ9fX0="  # piston/rod-toothed-up — piston pole/head-stub display (all orientations)
@@ -1337,10 +1338,18 @@ blocks:
     # UP = ceiling placement: a floating head (see playerHeadStates in overlayPlacer) that stores
     # facing DOWN — pulls from the container above and places into the cell below, powered from any
     # side (omni). No top shaft (power arrives from a side) and no wall_offset either: that's live-
-    # gated on PLAYER_WALL_HEAD (CustomBlockRegistry ~1162), so a ceiling head must bake the same
-    # offsets into `translation`. The @machine_base collar caps the join with the container above and
+    # gated on PLAYER_WALL_HEAD (CustomBlockRegistry ~1162), so a ceiling head must bake its offsets
+    # straight into `translation`. A @pipe_up_display stub caps the join with the container above and
     # is STATIC — the pump is the powered cue here too, matching the walls. One symmetric pair (a
     # ceiling head has no yaw).
+    # Geometry cheat-sheet (both display kinds spawn at block CENTER, so the cell spans ±0.5):
+    #   BlockDisplay (block_data) is corner-anchored, model [0,1]³ → spans y ∈ [ty, ty+sy].
+    #   ItemDisplay (texture) HANGS DOWN from its origin, extent 0.5 at scale 1 → y ∈ [ty-0.5·sy, ty],
+    #   xz ∈ tx ± 0.25·s. (Ground truth: the shaft's full-block idle_y rod is translation [0,0.5,0]
+    #   scale [.66,2.002,.66] → y ∈ [-0.501, 0.5], exactly the cell. The file header's "bottom in Y"
+    #   describes the head's own model space; ItemDisplay centering renders it below the origin.)
+    # So the ceiling body at ty=-0.51 spans [-0.51, 0.39] — 0.01 proud of the cell floor, leaving the
+    # top 0.11 clear for the pipe stub (ty=0.5, scale 1 → y ∈ [0, 0.5], top flush with the cell).
     default_state: idle_n
     placement_state_map: { NORTH: idle_s, SOUTH: idle_n, EAST: idle_w, WEST: idle_e, UP: idle_ceiling }
     states:
@@ -1384,18 +1393,22 @@ blocks:
           - { block_data: "minecraft:dispenser[facing=west]", tag: body, transform: { translation: [-0.45, -0.45, -0.45], scale: [0.9, 0.9, 0.9] }, wall_offset: 0.1 }
           - { texture: "@rod_up",        tag: shaft,  transform: { translation: [0, 0.5, 0], scale: [0.66, 0.5, 0.66] }, animation: { type: rotate, axis: [0, 1, 0], speed: 3.0 } }
           - { texture: "@placer_piston", tag: piston, transform: { translation: [0, 0, 0],   scale: [0.5, 0.5, 0.5] }, wall_offset: -0.375, animation: { type: bob, amplitude: 0.1, period: 16, axis: [-1, 0, 0] } }
-      # Ceiling: body y-translation -0.35 = -0.45 + 0.1, hand-baking the walls' `wall_offset: 0.1`
-      # back-nudge along -facing (= up) since wall_offset is inert on a floating head.
+      # Ceiling-only placed head: the placer's own item skin instead of the block-level @machine_base
+      # machine face. Per-state `texture:` is resolved by CustomHeadBlock.resolveTexture and re-applied
+      # by applyConfig on every idle⇄spinning flip, so it survives the RotationNetwork toggle. Same
+      # pattern as the shaft block's per-axis ring skins above.
       idle_ceiling:
+        texture: "@placer_item"
         display_entities:
-          - { block_data: "minecraft:dispenser[facing=down]", tag: body,   transform: { translation: [-0.45, -0.35, -0.45], scale: [0.9, 0.9, 0.9] } }
+          - { block_data: "minecraft:dispenser[facing=down]", tag: body,   transform: { translation: [-0.45, -0.51, -0.45], scale: [0.9, 0.9, 0.9] } }
           - { texture: "@placer_piston",                      tag: piston, transform: { translation: [0, -0.375, 0],        scale: [0.5, 0.5, 0.5] } }
-          - { texture: "@machine_base",                       tag: collar, transform: { translation: [0, 0.5, 0],           scale: [0.7, 0.25, 0.7] } }
+          - { texture: "@pipe_up_display",                    tag: pipe,   transform: { translation: [0, 0.5, 0],           scale: [1, 1, 1] } }
       spinning_ceiling:
+        texture: "@placer_item"
         display_entities:
-          - { block_data: "minecraft:dispenser[facing=down]", tag: body,   transform: { translation: [-0.45, -0.35, -0.45], scale: [0.9, 0.9, 0.9] } }
+          - { block_data: "minecraft:dispenser[facing=down]", tag: body,   transform: { translation: [-0.45, -0.51, -0.45], scale: [0.9, 0.9, 0.9] } }
           - { texture: "@placer_piston",                      tag: piston, transform: { translation: [0, -0.375, 0],        scale: [0.5, 0.5, 0.5] }, animation: { type: bob, amplitude: 0.1, period: 16, axis: [0, -1, 0] } }
-          - { texture: "@machine_base",                       tag: collar, transform: { translation: [0, 0.5, 0],           scale: [0.7, 0.25, 0.7] } }
+          - { texture: "@pipe_up_display",                    tag: pipe,   transform: { translation: [0, 0.5, 0],           scale: [1, 1, 1] } }
     recipes:
       craft:
         shaped:
@@ -1436,13 +1449,28 @@ blocks:
               P: { material: PISTON }
     default_state: idle_z
     placement:
-      allowed_faces: [NORTH, SOUTH, EAST, WEST]
+      allowed_faces: [NORTH, SOUTH, EAST, WEST, UP, DOWN]
+    # Keys are the ATTACHMENT face (the wall the head sticks to); the value's screw must point OUT of
+    # that wall, along the mining direction (= attachment.getOppositeFace()). So NORTH attachment mines
+    # SOUTH → idle_south_z, etc. (matches the placer/windmill/fan/piston_core convention.)
+    # UP = attached to the block above → hangs, mines DOWN (ceiling). DOWN = attached to the block below
+    # → sits on top, mines UP (floor). Both resolve to a floating PLAYER_HEAD via playerHeadStates.
     placement_state_map:
-      NORTH: idle_z
-      SOUTH: idle_south_z
-      EAST: idle_east_x
-      WEST: idle_x
+      NORTH: idle_south_z
+      SOUTH: idle_z
+      EAST: idle_x
+      WEST: idle_east_x
+      UP: idle_ceiling
+      DOWN: idle_y
     states:
+      idle_ceiling:
+        display_entities:
+          - texture: "@screw_up"
+            tag: rod
+            # Vertical mirror of idle_y: screw points DOWN (−Y) so a ceiling-mounted drill bites the
+            # block below. Transform mirrors idle_y across the horizontal plane; tune in-game if needed.
+            transform: { translation: [0, 0.75, 0], scale: [0.66, 1.0, 0.66], left_rotation: [180, 1, 0, 0] }
+      spinning_ceiling: { copy_from: idle_ceiling, animation: { type: rotate, axis: [0, 1, 0], speed: 3.0 } }
       idle_y:
         display_entities:
           - texture: "@screw_up"

@@ -554,7 +554,7 @@ final class RotationBlocks {
             })
             .onTick(spec.tick())
             .onChunkLoad((b, state) -> {
-                storeFacingIfAbsent(b);
+                storeFacingIfAbsent(b, state);
                 // Omni is decided per block from the face function's result: a non-null face → omni
                 // (excluding it); a null result → ordinary single-axis consumer on spec.axis().
                 BlockFace omniEx = spec.omniExcludedFace() != null ? spec.omniExcludedFace().apply(b) : null;
@@ -1185,11 +1185,23 @@ final class RotationBlocks {
                     return wrenchInteract(b, event, network, registry);
                 return false;
             })
+            // Vertical states render as a floating floor PLAYER_HEAD (ceiling drill mines down, floor
+            // drill mines up) — the same hook the placer/pipes use for non-wall orientations.
+            .playerHeadStates("idle_ceiling", "spinning_ceiling", "idle_y", "spinning_y")
             .onTick(b -> drillTick(b, registry, network))
             .onChunkLoad((b, state) -> {
-                storeFacingIfAbsent(b);
-                network.addNode(b, blockId, RotationNetwork.axisFromState(state),
-                    RotationNetwork.NodeRole.CONSUMER, drillPower, false);
+                storeFacingIfAbsent(b, state);
+                // A vertical drill (ceiling/floor floating head) can't take a shaft on its mounting face,
+                // so it draws power omni-style from any other side (excluding that face), like the ceiling
+                // placer. Wall drills stay single-axis on the state's axis.
+                BlockFace omniEx = drillOmniExcludedFace(readFacing(b));
+                if (omniEx != null) {
+                    network.addNode(b, blockId, RotationNetwork.Axis.Y,
+                        RotationNetwork.NodeRole.CONSUMER, drillPower, false, true, omniEx);
+                } else {
+                    network.addNode(b, blockId, RotationNetwork.axisFromState(state),
+                        RotationNetwork.NodeRole.CONSUMER, drillPower, false);
+                }
             })
             .onChunkUnload(b -> {
                 drillProgress.remove(CustomBlockRegistry.LocationKey.of(b));
@@ -1238,6 +1250,15 @@ final class RotationBlocks {
         if (targetMat.isAir()) {
             return new DrillOutcome(null, false);
         }
+        // Can't-break gate: air (above), then liquids / unbreakables / the configured blacklist, then
+        // custom blocks that opt out via drillable(false) (below). Two things to know:
+        //  - Unbreakable world blocks (bedrock, barrier, portals, command blocks, structure blocks) are
+        //    caught ONLY by getHardness() < 0. Finite-hardness protected blocks are NOT caught here:
+        //    VAULT / TRIAL_SPAWNER are mechanism-immovable (MovableBlocks.IMMOVABLE) yet remain drillable.
+        //    Known asymmetry, intentionally left as-is.
+        //  - `blacklist` (drillBlacklist) is hand-duplicated in THREE places — RotationConfig's default,
+        //    rotation-config.yml's `drill.blacklist`, and MovableBlocks.IMMOVABLE's leading five — edit
+        //    them together.
         if (target.isLiquid() || targetMat.getHardness() < 0 || blacklist.contains(targetMat)) {
             if (prev != null) clearBreakAnimationAt(target.getLocation(), sourceId);
             return new DrillOutcome(null, false);
@@ -1249,9 +1270,10 @@ final class RotationBlocks {
             return new DrillOutcome(null, false);
         }
 
+        int stages = drillStagesFor(targetMat);
         int progress = (prev != null && prev.targetMaterial() == targetMat) ? prev.progress() + 1 : 1;
 
-        if (progress >= breakStages) {
+        if (progress >= stages) {
             if (targetType != null) {
                 if (targetType.storage() != null) registry.dropStorage(target);
                 // Enrich BEFORE onBlockRemoved/setType destroy the tile PDC, so captured
@@ -1273,12 +1295,31 @@ final class RotationBlocks {
         }
 
         Location targetLoc = target.getLocation();
-        float animProgress = (float) progress / breakStages;
+        float animProgress = (float) progress / stages;
         for (Player p : targetLoc.getNearbyPlayers(DRILL_ANIM_RADIUS)) {
             p.sendBlockDamage(targetLoc, animProgress, sourceId);
         }
         spawnDrillParticles(target, facing.getOppositeFace());
         return new DrillOutcome(new DrillState(progress, targetMat), false);
+    }
+
+    /**
+     * How many break stages the drill takes on {@code mat}: proportional to how long a normal DIAMOND
+     * PICKAXE would take, ×1.5 (a small penalty), uncapped — so a stone block is quick and a hard one is
+     * slow, instead of the old flat 40 ticks for everything. Computed from block hardness rather than
+     * {@code Block#getDestroySpeed} so the timing is deterministic and version-independent: a diamond pick
+     * breaks a pickaxe-mineable block in {@code hardness × 1.5 / 8 s = hardness × 3.75} ticks; ×1.5 penalty
+     * ÷ {@code drillTickInterval} (one stage per actuation) gives the stage count. All blocks are treated
+     * at diamond-pick speed (non-pick blocks come out a touch fast — acceptable for a machine). Unbreakable
+     * blocks never reach here (filtered by {@code hardness < 0} / blacklist); hardness 0 → one stage.
+     * Shared by the static ({@link #drillTick}) and riding ({@code MechanismRotationDriver}) paths.
+     */
+    private static int drillStagesFor(Material mat) {
+        float hardness = mat.getHardness();
+        if (hardness <= 0f) return 1;
+        float diamondTicks = hardness * 3.75f;                 // hardness × 1.5 / 8 × 20
+        float penalised = diamondTicks * 1.5f;                 // small penalty over a real pick
+        return Math.max(1, Math.round(penalised / Math.max(1, drillTickInterval)));
     }
 
     private static void spawnDrillParticles(Block target, BlockFace contactFace) {
@@ -1305,7 +1346,7 @@ final class RotationBlocks {
         }
     }
 
-    private static void storeFacingIfAbsent(Block block) {
+    private static void storeFacingIfAbsent(Block block, @org.jetbrains.annotations.Nullable String state) {
         if (!(block.getState() instanceof Skull skull)) return;
         if (skull.getPersistentDataContainer().has(DRILL_FACING_KEY)) return;
 
@@ -1314,7 +1355,12 @@ final class RotationBlocks {
                 && block.getBlockData() instanceof org.bukkit.block.data.Directional dir) {
             facing = dir.getFacing();
         } else {
-            facing = BlockFace.DOWN;
+            // Floating/floor PLAYER_HEAD: a floor head carries no pitch, so the vertical mining direction
+            // comes from the placed state — an "up" state (idle_y/spinning_y, screw points up) mines the
+            // block ABOVE (floor-mounted drill); anything else, incl. the ceiling state, mines the block
+            // BELOW. Default DOWN keeps legacy floor heads and the ceiling placer unchanged.
+            facing = (state != null && (state.startsWith("idle_y") || state.startsWith("spinning_y")))
+                ? BlockFace.UP : BlockFace.DOWN;
         }
         skull.getPersistentDataContainer().set(DRILL_FACING_KEY, PersistentDataType.STRING, facing.name());
         skull.update();
@@ -1340,6 +1386,15 @@ final class RotationBlocks {
     static @org.jetbrains.annotations.Nullable BlockFace placerOmniExcludedFace(
             @org.jetbrains.annotations.Nullable BlockFace facing) {
         return facing == BlockFace.DOWN ? BlockFace.UP : null;
+    }
+
+    /** Vertical drill power geometry: a ceiling drill (facing DOWN) or floor drill (facing UP) is a
+     *  floating head whose mounting face (opposite the mining direction) is capped by the block it
+     *  hangs from / sits on, so it draws power omni-style from any other side, excluding that face. A
+     *  wall drill (cardinal facing, or null) returns null → ordinary single-axis consumer. */
+    private static @org.jetbrains.annotations.Nullable BlockFace drillOmniExcludedFace(
+            @org.jetbrains.annotations.Nullable BlockFace facing) {
+        return (facing == BlockFace.DOWN || facing == BlockFace.UP) ? facing.getOppositeFace() : null;
     }
 
     // ──────────────────────────────────────────────────────────────────────
