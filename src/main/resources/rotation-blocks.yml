@@ -55,6 +55,8 @@ textures:
   fan_item:          "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNmJkYzYxNTVmY2Y0YThmMDZkNDZhYmY5MGFhNjJmNzE1NGRhNGY2NGRkMzhhNjdmMGMzODBhMGJkZjZhOWQwMyJ9fX0="  # fan/fan-item — fan item
   screw_up:          "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmUzNDhlNDIyMjNjNDBlOWU0MDUxODY2YjM3NjNlZDViNTEzYTk3OWZkNWNhMTUxODFmZmExYTAxZTk2NDM1YiJ9fX0="  # screw-up-new — drill display entity
   screw_fwd:         "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTNhMWZiMzA4YWU3NzhhZDRjZDZhOTkzNGZhOTlhYzUzMWIzYWZmOTYwMmZiODA1ZTkzYjE0YjI3NmFhODExZiJ9fX0="  # screw-fwd-new — drill item
+  drill_placed_up:   "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTFhNGQ3MTZmODMxOGI2NTcwMTRjMmE2M2JkZjZmYzg0YjU0OTc5ZjI2ZGFmMDMwNGMzZjM4YTEzMDNjZTU1YiJ9fX0="  # drill-placed-up — up drill placed head
+  drill_placed_down: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTk2MDE0OGI3MmU2MGU0ODE4YWFlY2VhYWQzZTVjNmQ1YzQwZmY0YTZiNzExMDU4Y2Y1MmZlM2NlOTVkNGZhNyJ9fX0="  # drill-placed-down — down drill static collar
   clutch_up:         "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMmUyMWZjMGM1MTVmMGRiY2I0ZDhiNjk2ZGUyNWE2MTgxOTgzZjhkYjk3ZDQ4YTI1M2Q0NmY0YzVmZjUyNzNjOCJ9fX0="  # clutch-up — clutch head (floor)
   clutch_fwd:        "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjI4ZTA2YzU2MDU0Y2Q5MGYzOWU5ZDA4ZTFiMjA3OTc0NjUwM2Y1MjE1OGJhMDk4YjljYmRlODJlODZkMGE5NyJ9fX0="  # clutch-fwd — clutch head (wall) + item
   reverser_up:       "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODMyYTg3MGEzNDMwMmViYThhMTNiYzI2ZWZjMGM5ZDQwOWJkYWYzYWRjZTBkMzUzZGEzOTNkMWM0YjgxODI0MyJ9fX0="  # reverser-up — reverser head (floor)
@@ -76,18 +78,18 @@ textures:
   head_fwd:          "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzc1MDgyM2E4ZDU1ZTYxMTk5ZGFiMzZiZGJkOTgyMjljNTA5MmY3MGFjYzgyOTkyMzJiOWQ3MzFmODZkNjRhMSJ9fX0="  # piston/head-fwd — piston head cap (wall/horizontal) + item
 
   # ── Casing cased art (assets/rotation/casing/cased/, via scripts/upload_skin.py) ──
-  casing_oak:        "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmYzNzU1YTU4MTUyMGQ4NjY3NDQwZDViYTYzMzAxODYzNjIwODBjNjk0ZjExNWIxMTU3OTA0NjUxOGQ1ODM5NSJ9fX0="  # casing/cased/oak.png
-  casing_acacia:     "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvM2YzMGI2ODczODA1NWRjNzY2OWQ4MTFjYWI4NWMxNjY2NmQzODcwMmMwZDNjNjUyZWYzOWZkNzFhNTA0Y2YxYiJ9fX0="  # casing/cased/acacia.png
-  casing_bamboo:     "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvY2Q1MTA2OGViMDQ0ODVjZjg5YWQzM2RkN2YxODI1MTQyMDE2OWI5MTg0OGViZDBkNWRmMjdmOWYxYmNlOWY4ZiJ9fX0="  # casing/cased/bamboo.png
-  casing_birch:      "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzBlYzUwODg4ZDk4ZTZlMDI3MGM4ZDdjMWM1ODI2NjAxNzQwNGE2NjNhMTcwZWE5NmUzMmQ5ZmZiNTY0OTY3OSJ9fX0="  # casing/cased/birch.png
-  casing_cherry:     "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTE4N2VlNDhlOTExYTk0ZjNlNzM1NDUyYjRhNjYwOTE1Y2EzNjJhNDU1MTM0ZDNkM2VkYTM2YmRmNjFjZWE0YiJ9fX0="  # casing/cased/cherry.png
-  casing_crimson:    "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWExNzAzZTRkOTQ3MDI3MDNlMTZmY2VlN2FkODAyOTE4ODI2YzNkNTMyMjc3OGVlYzI1YmVlZTE2MWUyYmIxNyJ9fX0="  # casing/cased/crimson.png
-  casing_dark_oak:   "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMThkNTNhODUxYmQzZmU5NDZmZGQyZGRhZmNmNzdiYzNlNzA4OGY5YWI5Mjk2NDY1MGZhZGZjYmQyODdhNDg1In19fQ=="  # casing/cased/dark_oak.png
-  casing_jungle:     "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzI1Y2VmZDliNmFiNjhlMDgzNjE4NjJhM2VkNDhlZWMxYmNhZTczNzlhYTY4ODVhOGNjYTdlZWQ4ZGUzZTRjZSJ9fX0="  # casing/cased/jungle.png
-  casing_mangrove:   "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDYyMjk3NTU1ZjRmZmJiNzE5MWQ3NGNhYjhlOGRjOGFjMGRmNDlkNTI2OTFiYzAyNjFmNzhlMjY4MzEzZTkxMyJ9fX0="  # casing/cased/mangrove.png
-  casing_pale_oak:   "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjg3NDZkM2ZkYWYyYzgwMDVmYTBlM2RkMjU2Mjg2MDQ2ZWQ4MmFiNDIwNWE3ZDFiMzdjOTFhMDBiOTVjMWE2MiJ9fX0="  # casing/cased/pale_oak.png
-  casing_spruce:     "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzBiYjRkOGEzMDYwMTU1NGJhMGViNmMzZWI5YWUwMjA5MjIyZDBjNGYzZDE4YzAzODAxYTEwZTU3NzNjMjg0ZSJ9fX0="  # casing/cased/spruce.png
-  casing_warped:     "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTcwNjAyMDdkMGRiYzNkZmUxNTgzZGFkMTI0NWYwNzBkNjU2ODZhM2QwMWI1YTVjMDFjNmM5YjFiODI1ZjQzMCJ9fX0="  # casing/cased/warped.png
+  casing_oak:        "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjhiMjhlNmVhZWZkOWRmY2RkYzQzOTg0YmI5M2VkZTc4M2RjNzlkMDUzMGY1YjhiMDdjYzMyN2FhMjdjNGQwOCJ9fX0="  # casing/cased/oak.png
+  casing_acacia:     "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzA3ZmEwMjZjZDNkNDNlMzNkODI4ZTBlNDE5NTA2MWI2YzlmZTM2OWNmZDYzZjk0NmQ0ZjMyYTcxZmNhMzVlOCJ9fX0="  # casing/cased/acacia.png
+  casing_bamboo:     "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZWQ1ZTMyZTM5Yjg2NDEzNDg3MjdiYjAwNjNkY2NmOTc2YzY2NzlmYjg3NzUwYmE2YWZkZjY0NGE5NDM5ZjlkMiJ9fX0="  # casing/cased/bamboo.png
+  casing_birch:      "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNWI5M2JlZDU4NmE5N2U1NWZjNGU3ZGNmN2EzYTRlZTk0ODkxZGQ1NjIxMjE0Y2E5N2FmODgzMTFkMGYyMmM1MyJ9fX0="  # casing/cased/birch.png
+  casing_cherry:     "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvM2Y4Nzc5MTdhNmJiMDYxYThkNTA4MGQ1YTU3MzgzZmU1Y2E3ZWQxY2E3NWJkZDZkZGVlNmE4MzA1ZjA1NzY0NCJ9fX0="  # casing/cased/cherry.png
+  casing_crimson:    "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmUyYjgxNTcwNjE4YzFjOGYzNDZmZTYwYjAxMmY3ZTc2M2Y5ZWQ3ZDY0YjhkYzM5ODlhZGVmZTQyZDVlZDRmMSJ9fX0="  # casing/cased/crimson.png
+  casing_dark_oak:   "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZGYyNDk3MzliMDBhODI1YjQ2OTlmZDhjZjA3ZTViODUyNmFkYmIyNWFjNWUzZTM4MGYxZDQ1ZWYzZjNiYzg0YiJ9fX0="  # casing/cased/dark_oak.png
+  casing_jungle:     "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOWRlYmZjYmI4ZjYyN2EzNGM0ZTQ2Y2FmZmNmN2I4YmY0NmY3NmZhZTViMzhiZjNlZDE3MmM4ZTgyODhhZDJkMCJ9fX0="  # casing/cased/jungle.png
+  casing_mangrove:   "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzcwZmM5MzM3MDlhNDliZGUyNjc1YWUwOGFkYWRkMmUyNGUwYjQyMTlmYzM2NWY2YTlhMGYwYmY5YTdmNGM1ZCJ9fX0="  # casing/cased/mangrove.png
+  casing_pale_oak:   "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDdjM2ZiN2JmZTQwYmM3NzYyZDYxMTM3NGM1ZDZjYmEyMjNkNGIxODA5MWYxY2NlZjZiYmM4YWFmYmI2N2JhOSJ9fX0="  # casing/cased/pale_oak.png
+  casing_spruce:     "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDk4MzhhZTBmZjI2ZmQ4YmE2YmJlMTBiZDY1Y2U0OWY3NDNlZWQxNTNhMDRiZGE5Y2I2MWIzNTY2YzQzY2ZjMCJ9fX0="  # casing/cased/spruce.png
+  casing_warped:     "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTBlMzA2ZjM0OTY0ZGM3NmEwZGFmZjRiMTRmNDAzNTM0MzhlNWJmYTBmNWIzMzU4YTUxYWExY2FjYWIwMmQzYiJ9fX0="  # casing/cased/warped.png
 
 blocks:
 
@@ -907,11 +909,16 @@ blocks:
         display_entities:
           - texture: "@casing_oak"
             tag: shell
-            # 1.888 = 2.006 × 16/17, and 17/16 is exactly the skull hat layer's inflate (8.5px vs 8):
-            # so the hat — which carries the frame art — lands flush at half-extent 0.5015 and
-            # neighbouring casings' frames meet cleanly instead of each poking 0.033 into the next.
-            # Do not "fix" to 2.006: that covers the stair, but doubles every seam line on a wall.
-            transform: { translation: [0, 0.501, 0], scale: [1.888, 1.888, 1.888] }
+            # The redstone dynamo's placement verbatim, and for the same reason: cover the block
+            # you are disguising. Half-extent = 0.25*scale = 0.5015, so 0.0015 of slack over the
+            # stair's face; the head model's visual centre sits HEAD_CENTER (-0.25) model-units
+            # below the transform origin, so it lands at 0.501 - 0.5015 = -0.0005 = the dynamo's
+            # UP_NUDGE, i.e. block centre. (RedstoneDynamo.orientHead computes exactly this T for
+            # identity rotation — it only differs from the yml when a barrel-facing rotates it.)
+            # Depends on make_cased.py baking the frame into the BASE layer and leaving the hat
+            # empty: a hat is inflated 17/16, so it would render at 0.5328 here and double every
+            # seam on a wall. Restoring a hat layer means going back to 1.888 (= 2.006 × 16/17).
+            transform: { translation: [0, 0.501, 0], scale: [2.006, 2.006, 2.006] }
     recipes:
       craft:
         shaped:
@@ -936,11 +943,16 @@ blocks:
         display_entities:
           - texture: "@casing_acacia"
             tag: shell
-            # 1.888 = 2.006 × 16/17, and 17/16 is exactly the skull hat layer's inflate (8.5px vs 8):
-            # so the hat — which carries the frame art — lands flush at half-extent 0.5015 and
-            # neighbouring casings' frames meet cleanly instead of each poking 0.033 into the next.
-            # Do not "fix" to 2.006: that covers the stair, but doubles every seam line on a wall.
-            transform: { translation: [0, 0.501, 0], scale: [1.888, 1.888, 1.888] }
+            # The redstone dynamo's placement verbatim, and for the same reason: cover the block
+            # you are disguising. Half-extent = 0.25*scale = 0.5015, so 0.0015 of slack over the
+            # stair's face; the head model's visual centre sits HEAD_CENTER (-0.25) model-units
+            # below the transform origin, so it lands at 0.501 - 0.5015 = -0.0005 = the dynamo's
+            # UP_NUDGE, i.e. block centre. (RedstoneDynamo.orientHead computes exactly this T for
+            # identity rotation — it only differs from the yml when a barrel-facing rotates it.)
+            # Depends on make_cased.py baking the frame into the BASE layer and leaving the hat
+            # empty: a hat is inflated 17/16, so it would render at 0.5328 here and double every
+            # seam on a wall. Restoring a hat layer means going back to 1.888 (= 2.006 × 16/17).
+            transform: { translation: [0, 0.501, 0], scale: [2.006, 2.006, 2.006] }
     recipes:
       craft:
         shaped:
@@ -965,11 +977,16 @@ blocks:
         display_entities:
           - texture: "@casing_bamboo"
             tag: shell
-            # 1.888 = 2.006 × 16/17, and 17/16 is exactly the skull hat layer's inflate (8.5px vs 8):
-            # so the hat — which carries the frame art — lands flush at half-extent 0.5015 and
-            # neighbouring casings' frames meet cleanly instead of each poking 0.033 into the next.
-            # Do not "fix" to 2.006: that covers the stair, but doubles every seam line on a wall.
-            transform: { translation: [0, 0.501, 0], scale: [1.888, 1.888, 1.888] }
+            # The redstone dynamo's placement verbatim, and for the same reason: cover the block
+            # you are disguising. Half-extent = 0.25*scale = 0.5015, so 0.0015 of slack over the
+            # stair's face; the head model's visual centre sits HEAD_CENTER (-0.25) model-units
+            # below the transform origin, so it lands at 0.501 - 0.5015 = -0.0005 = the dynamo's
+            # UP_NUDGE, i.e. block centre. (RedstoneDynamo.orientHead computes exactly this T for
+            # identity rotation — it only differs from the yml when a barrel-facing rotates it.)
+            # Depends on make_cased.py baking the frame into the BASE layer and leaving the hat
+            # empty: a hat is inflated 17/16, so it would render at 0.5328 here and double every
+            # seam on a wall. Restoring a hat layer means going back to 1.888 (= 2.006 × 16/17).
+            transform: { translation: [0, 0.501, 0], scale: [2.006, 2.006, 2.006] }
     recipes:
       craft:
         shaped:
@@ -994,11 +1011,16 @@ blocks:
         display_entities:
           - texture: "@casing_birch"
             tag: shell
-            # 1.888 = 2.006 × 16/17, and 17/16 is exactly the skull hat layer's inflate (8.5px vs 8):
-            # so the hat — which carries the frame art — lands flush at half-extent 0.5015 and
-            # neighbouring casings' frames meet cleanly instead of each poking 0.033 into the next.
-            # Do not "fix" to 2.006: that covers the stair, but doubles every seam line on a wall.
-            transform: { translation: [0, 0.501, 0], scale: [1.888, 1.888, 1.888] }
+            # The redstone dynamo's placement verbatim, and for the same reason: cover the block
+            # you are disguising. Half-extent = 0.25*scale = 0.5015, so 0.0015 of slack over the
+            # stair's face; the head model's visual centre sits HEAD_CENTER (-0.25) model-units
+            # below the transform origin, so it lands at 0.501 - 0.5015 = -0.0005 = the dynamo's
+            # UP_NUDGE, i.e. block centre. (RedstoneDynamo.orientHead computes exactly this T for
+            # identity rotation — it only differs from the yml when a barrel-facing rotates it.)
+            # Depends on make_cased.py baking the frame into the BASE layer and leaving the hat
+            # empty: a hat is inflated 17/16, so it would render at 0.5328 here and double every
+            # seam on a wall. Restoring a hat layer means going back to 1.888 (= 2.006 × 16/17).
+            transform: { translation: [0, 0.501, 0], scale: [2.006, 2.006, 2.006] }
     recipes:
       craft:
         shaped:
@@ -1023,11 +1045,16 @@ blocks:
         display_entities:
           - texture: "@casing_cherry"
             tag: shell
-            # 1.888 = 2.006 × 16/17, and 17/16 is exactly the skull hat layer's inflate (8.5px vs 8):
-            # so the hat — which carries the frame art — lands flush at half-extent 0.5015 and
-            # neighbouring casings' frames meet cleanly instead of each poking 0.033 into the next.
-            # Do not "fix" to 2.006: that covers the stair, but doubles every seam line on a wall.
-            transform: { translation: [0, 0.501, 0], scale: [1.888, 1.888, 1.888] }
+            # The redstone dynamo's placement verbatim, and for the same reason: cover the block
+            # you are disguising. Half-extent = 0.25*scale = 0.5015, so 0.0015 of slack over the
+            # stair's face; the head model's visual centre sits HEAD_CENTER (-0.25) model-units
+            # below the transform origin, so it lands at 0.501 - 0.5015 = -0.0005 = the dynamo's
+            # UP_NUDGE, i.e. block centre. (RedstoneDynamo.orientHead computes exactly this T for
+            # identity rotation — it only differs from the yml when a barrel-facing rotates it.)
+            # Depends on make_cased.py baking the frame into the BASE layer and leaving the hat
+            # empty: a hat is inflated 17/16, so it would render at 0.5328 here and double every
+            # seam on a wall. Restoring a hat layer means going back to 1.888 (= 2.006 × 16/17).
+            transform: { translation: [0, 0.501, 0], scale: [2.006, 2.006, 2.006] }
     recipes:
       craft:
         shaped:
@@ -1052,11 +1079,16 @@ blocks:
         display_entities:
           - texture: "@casing_crimson"
             tag: shell
-            # 1.888 = 2.006 × 16/17, and 17/16 is exactly the skull hat layer's inflate (8.5px vs 8):
-            # so the hat — which carries the frame art — lands flush at half-extent 0.5015 and
-            # neighbouring casings' frames meet cleanly instead of each poking 0.033 into the next.
-            # Do not "fix" to 2.006: that covers the stair, but doubles every seam line on a wall.
-            transform: { translation: [0, 0.501, 0], scale: [1.888, 1.888, 1.888] }
+            # The redstone dynamo's placement verbatim, and for the same reason: cover the block
+            # you are disguising. Half-extent = 0.25*scale = 0.5015, so 0.0015 of slack over the
+            # stair's face; the head model's visual centre sits HEAD_CENTER (-0.25) model-units
+            # below the transform origin, so it lands at 0.501 - 0.5015 = -0.0005 = the dynamo's
+            # UP_NUDGE, i.e. block centre. (RedstoneDynamo.orientHead computes exactly this T for
+            # identity rotation — it only differs from the yml when a barrel-facing rotates it.)
+            # Depends on make_cased.py baking the frame into the BASE layer and leaving the hat
+            # empty: a hat is inflated 17/16, so it would render at 0.5328 here and double every
+            # seam on a wall. Restoring a hat layer means going back to 1.888 (= 2.006 × 16/17).
+            transform: { translation: [0, 0.501, 0], scale: [2.006, 2.006, 2.006] }
     recipes:
       craft:
         shaped:
@@ -1081,11 +1113,16 @@ blocks:
         display_entities:
           - texture: "@casing_dark_oak"
             tag: shell
-            # 1.888 = 2.006 × 16/17, and 17/16 is exactly the skull hat layer's inflate (8.5px vs 8):
-            # so the hat — which carries the frame art — lands flush at half-extent 0.5015 and
-            # neighbouring casings' frames meet cleanly instead of each poking 0.033 into the next.
-            # Do not "fix" to 2.006: that covers the stair, but doubles every seam line on a wall.
-            transform: { translation: [0, 0.501, 0], scale: [1.888, 1.888, 1.888] }
+            # The redstone dynamo's placement verbatim, and for the same reason: cover the block
+            # you are disguising. Half-extent = 0.25*scale = 0.5015, so 0.0015 of slack over the
+            # stair's face; the head model's visual centre sits HEAD_CENTER (-0.25) model-units
+            # below the transform origin, so it lands at 0.501 - 0.5015 = -0.0005 = the dynamo's
+            # UP_NUDGE, i.e. block centre. (RedstoneDynamo.orientHead computes exactly this T for
+            # identity rotation — it only differs from the yml when a barrel-facing rotates it.)
+            # Depends on make_cased.py baking the frame into the BASE layer and leaving the hat
+            # empty: a hat is inflated 17/16, so it would render at 0.5328 here and double every
+            # seam on a wall. Restoring a hat layer means going back to 1.888 (= 2.006 × 16/17).
+            transform: { translation: [0, 0.501, 0], scale: [2.006, 2.006, 2.006] }
     recipes:
       craft:
         shaped:
@@ -1110,11 +1147,16 @@ blocks:
         display_entities:
           - texture: "@casing_jungle"
             tag: shell
-            # 1.888 = 2.006 × 16/17, and 17/16 is exactly the skull hat layer's inflate (8.5px vs 8):
-            # so the hat — which carries the frame art — lands flush at half-extent 0.5015 and
-            # neighbouring casings' frames meet cleanly instead of each poking 0.033 into the next.
-            # Do not "fix" to 2.006: that covers the stair, but doubles every seam line on a wall.
-            transform: { translation: [0, 0.501, 0], scale: [1.888, 1.888, 1.888] }
+            # The redstone dynamo's placement verbatim, and for the same reason: cover the block
+            # you are disguising. Half-extent = 0.25*scale = 0.5015, so 0.0015 of slack over the
+            # stair's face; the head model's visual centre sits HEAD_CENTER (-0.25) model-units
+            # below the transform origin, so it lands at 0.501 - 0.5015 = -0.0005 = the dynamo's
+            # UP_NUDGE, i.e. block centre. (RedstoneDynamo.orientHead computes exactly this T for
+            # identity rotation — it only differs from the yml when a barrel-facing rotates it.)
+            # Depends on make_cased.py baking the frame into the BASE layer and leaving the hat
+            # empty: a hat is inflated 17/16, so it would render at 0.5328 here and double every
+            # seam on a wall. Restoring a hat layer means going back to 1.888 (= 2.006 × 16/17).
+            transform: { translation: [0, 0.501, 0], scale: [2.006, 2.006, 2.006] }
     recipes:
       craft:
         shaped:
@@ -1139,11 +1181,16 @@ blocks:
         display_entities:
           - texture: "@casing_mangrove"
             tag: shell
-            # 1.888 = 2.006 × 16/17, and 17/16 is exactly the skull hat layer's inflate (8.5px vs 8):
-            # so the hat — which carries the frame art — lands flush at half-extent 0.5015 and
-            # neighbouring casings' frames meet cleanly instead of each poking 0.033 into the next.
-            # Do not "fix" to 2.006: that covers the stair, but doubles every seam line on a wall.
-            transform: { translation: [0, 0.501, 0], scale: [1.888, 1.888, 1.888] }
+            # The redstone dynamo's placement verbatim, and for the same reason: cover the block
+            # you are disguising. Half-extent = 0.25*scale = 0.5015, so 0.0015 of slack over the
+            # stair's face; the head model's visual centre sits HEAD_CENTER (-0.25) model-units
+            # below the transform origin, so it lands at 0.501 - 0.5015 = -0.0005 = the dynamo's
+            # UP_NUDGE, i.e. block centre. (RedstoneDynamo.orientHead computes exactly this T for
+            # identity rotation — it only differs from the yml when a barrel-facing rotates it.)
+            # Depends on make_cased.py baking the frame into the BASE layer and leaving the hat
+            # empty: a hat is inflated 17/16, so it would render at 0.5328 here and double every
+            # seam on a wall. Restoring a hat layer means going back to 1.888 (= 2.006 × 16/17).
+            transform: { translation: [0, 0.501, 0], scale: [2.006, 2.006, 2.006] }
     recipes:
       craft:
         shaped:
@@ -1168,11 +1215,16 @@ blocks:
         display_entities:
           - texture: "@casing_pale_oak"
             tag: shell
-            # 1.888 = 2.006 × 16/17, and 17/16 is exactly the skull hat layer's inflate (8.5px vs 8):
-            # so the hat — which carries the frame art — lands flush at half-extent 0.5015 and
-            # neighbouring casings' frames meet cleanly instead of each poking 0.033 into the next.
-            # Do not "fix" to 2.006: that covers the stair, but doubles every seam line on a wall.
-            transform: { translation: [0, 0.501, 0], scale: [1.888, 1.888, 1.888] }
+            # The redstone dynamo's placement verbatim, and for the same reason: cover the block
+            # you are disguising. Half-extent = 0.25*scale = 0.5015, so 0.0015 of slack over the
+            # stair's face; the head model's visual centre sits HEAD_CENTER (-0.25) model-units
+            # below the transform origin, so it lands at 0.501 - 0.5015 = -0.0005 = the dynamo's
+            # UP_NUDGE, i.e. block centre. (RedstoneDynamo.orientHead computes exactly this T for
+            # identity rotation — it only differs from the yml when a barrel-facing rotates it.)
+            # Depends on make_cased.py baking the frame into the BASE layer and leaving the hat
+            # empty: a hat is inflated 17/16, so it would render at 0.5328 here and double every
+            # seam on a wall. Restoring a hat layer means going back to 1.888 (= 2.006 × 16/17).
+            transform: { translation: [0, 0.501, 0], scale: [2.006, 2.006, 2.006] }
     recipes:
       craft:
         shaped:
@@ -1197,11 +1249,16 @@ blocks:
         display_entities:
           - texture: "@casing_spruce"
             tag: shell
-            # 1.888 = 2.006 × 16/17, and 17/16 is exactly the skull hat layer's inflate (8.5px vs 8):
-            # so the hat — which carries the frame art — lands flush at half-extent 0.5015 and
-            # neighbouring casings' frames meet cleanly instead of each poking 0.033 into the next.
-            # Do not "fix" to 2.006: that covers the stair, but doubles every seam line on a wall.
-            transform: { translation: [0, 0.501, 0], scale: [1.888, 1.888, 1.888] }
+            # The redstone dynamo's placement verbatim, and for the same reason: cover the block
+            # you are disguising. Half-extent = 0.25*scale = 0.5015, so 0.0015 of slack over the
+            # stair's face; the head model's visual centre sits HEAD_CENTER (-0.25) model-units
+            # below the transform origin, so it lands at 0.501 - 0.5015 = -0.0005 = the dynamo's
+            # UP_NUDGE, i.e. block centre. (RedstoneDynamo.orientHead computes exactly this T for
+            # identity rotation — it only differs from the yml when a barrel-facing rotates it.)
+            # Depends on make_cased.py baking the frame into the BASE layer and leaving the hat
+            # empty: a hat is inflated 17/16, so it would render at 0.5328 here and double every
+            # seam on a wall. Restoring a hat layer means going back to 1.888 (= 2.006 × 16/17).
+            transform: { translation: [0, 0.501, 0], scale: [2.006, 2.006, 2.006] }
     recipes:
       craft:
         shaped:
@@ -1226,11 +1283,16 @@ blocks:
         display_entities:
           - texture: "@casing_warped"
             tag: shell
-            # 1.888 = 2.006 × 16/17, and 17/16 is exactly the skull hat layer's inflate (8.5px vs 8):
-            # so the hat — which carries the frame art — lands flush at half-extent 0.5015 and
-            # neighbouring casings' frames meet cleanly instead of each poking 0.033 into the next.
-            # Do not "fix" to 2.006: that covers the stair, but doubles every seam line on a wall.
-            transform: { translation: [0, 0.501, 0], scale: [1.888, 1.888, 1.888] }
+            # The redstone dynamo's placement verbatim, and for the same reason: cover the block
+            # you are disguising. Half-extent = 0.25*scale = 0.5015, so 0.0015 of slack over the
+            # stair's face; the head model's visual centre sits HEAD_CENTER (-0.25) model-units
+            # below the transform origin, so it lands at 0.501 - 0.5015 = -0.0005 = the dynamo's
+            # UP_NUDGE, i.e. block centre. (RedstoneDynamo.orientHead computes exactly this T for
+            # identity rotation — it only differs from the yml when a barrel-facing rotates it.)
+            # Depends on make_cased.py baking the frame into the BASE layer and leaving the hat
+            # empty: a hat is inflated 17/16, so it would render at 0.5328 here and double every
+            # seam on a wall. Restoring a hat layer means going back to 1.888 (= 2.006 × 16/17).
+            transform: { translation: [0, 0.501, 0], scale: [2.006, 2.006, 2.006] }
     recipes:
       craft:
         shaped:
@@ -1496,19 +1558,34 @@ blocks:
       DOWN: idle_y
     states:
       idle_ceiling:
+        # Placed head shows the screw skin; a static drill-placed-down collar sits flush at the top,
+        # widened in x/z; the screw hangs a block below and (in spinning_ceiling) rotates about Y.
+        texture: "@screw_up"
         display_entities:
           - texture: "@screw_up"
             tag: rod
-            # Vertical mirror of idle_y: screw points DOWN (−Y) so a ceiling-mounted drill bites the
-            # block below. Transform mirrors idle_y across the horizontal plane; tune in-game if needed.
-            transform: { translation: [0, 0.75, 0], scale: [0.66, 1.0, 0.66], left_rotation: [180, 1, 0, 0] }
-      spinning_ceiling: { copy_from: idle_ceiling, animation: { type: rotate, axis: [0, 1, 0], speed: 3.0 } }
+            transform: { translation: [0, -1.0, 0], scale: [1.0, 1.0, 1.0], left_rotation: [180, 1, 0, 0] }
+          - texture: "@drill_placed_down"
+            tag: collar
+            transform: { translation: [0, 0, 0], scale: [1.333, 1.0, 1.333] }
+      spinning_ceiling:
+        # Written out (not copy_from) so animation applies only to the screw, leaving the collar static.
+        texture: "@screw_up"
+        display_entities:
+          - texture: "@screw_up"
+            tag: rod
+            transform: { translation: [0, -1.0, 0], scale: [1.0, 1.0, 1.0], left_rotation: [180, 1, 0, 0] }
+            animation: { type: rotate, axis: [0, 1, 0], speed: 3.0 }
+          - texture: "@drill_placed_down"
+            tag: collar
+            transform: { translation: [0, 0, 0], scale: [1.333, 1.0, 1.333] }
       idle_y:
+        texture: "@drill_placed_up"
         display_entities:
           - texture: "@screw_up"
             tag: rod
-            transform: { translation: [0, -0.75, 0], scale: [0.66, 1.0, 0.66] }
-      spinning_y: { copy_from: idle_y, animation: { type: rotate, axis: [0, 1, 0], speed: 3.0 } }
+            transform: { translation: [0, 0.5, 0], scale: [0.66, 1.0, 0.66] }
+      spinning_y: { copy_from: idle_y, texture: "@drill_placed_up", animation: { type: rotate, axis: [0, 1, 0], speed: 3.0 } }
       idle_x:
         display_entities:
           - texture: "@screw_up"

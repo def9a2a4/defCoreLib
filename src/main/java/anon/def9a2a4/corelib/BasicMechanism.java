@@ -1,5 +1,6 @@
 package anon.def9a2a4.corelib;
 
+import io.papermc.paper.entity.TeleportFlag;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -12,10 +13,10 @@ import org.bukkit.entity.Display;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.ItemDisplay;
 import org.bukkit.entity.Shulker;
+import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.BoundingBox;
-import org.bukkit.util.Vector;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.jspecify.annotations.Nullable;
@@ -279,6 +280,18 @@ final class BasicMechanism implements Mechanism {
         this.previousVehicleYaw = this.previousVehicleLoc.getYaw();
     }
 
+    // A RELATIVE teleport of +dy in Y — the client applies it as a smooth nudge (like knockback) rather
+    // than a hard "you are now here" snap that resets its movement prediction (which reads as "stuck").
+    // X/Z/YAW/PITCH are flagged relative too so the passed 0s add nothing (position/look unchanged), and
+    // VELOCITY_* preserve the rider's existing momentum natively instead of us overwriting it — which is
+    // what makes walking/looking on a rising platform feel free rather than fought.
+    private static final TeleportFlag[] CARRY_FLAGS = {
+        TeleportFlag.Relative.X, TeleportFlag.Relative.Y, TeleportFlag.Relative.Z,
+        TeleportFlag.Relative.YAW, TeleportFlag.Relative.PITCH,
+        TeleportFlag.Relative.VELOCITY_X, TeleportFlag.Relative.VELOCITY_Y,
+        TeleportFlag.Relative.VELOCITY_Z, TeleportFlag.Relative.VELOCITY_ROTATION,
+    };
+
     @Override
     public void carryRidersUp(double dy) {
         checkMainThread();
@@ -301,11 +314,9 @@ final class BasicMechanism implements Mechanism {
             }
         }
 
+        Location step = new Location(w, 0, dy, 0);   // relative delta: only Y is non-zero
         for (Entity e : riders) {
-            Vector vel = e.getVelocity();                       // preserve horizontal + fall momentum
-            Location to = e.getLocation().add(0, dy, 0);         // keeps yaw/pitch (same Location)
-            TeleportCompat.teleport(e, to);                      // passenger-safe
-            e.setVelocity(vel);
+            e.teleport(step, PlayerTeleportEvent.TeleportCause.PLUGIN, CARRY_FLAGS);
         }
     }
 

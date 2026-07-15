@@ -1085,13 +1085,22 @@ public class CustomBlockRegistry {
     // ──────────────────────────────────────────────────────────────────────
 
     /**
-     * Apply only the head texture for a block's state/power. Synchronous and idempotent (the texture
-     * profile uses a deterministic UUID). Used to texture a head the instant it is placed, before the
-     * deferred {@link #applyConfig} runs — critical for DOWN/ceiling heads that a setType normalization
-     * blanks during placement.
+     * Force nearby clients to re-render a placed head. The correct skull profile is already set
+     * server-side by {@link #applyConfig}, but a client's placement-predicted head — notably a DOWN
+     * pipe placed against a block's underside — can stay a default "Steve" head until its chunk
+     * reloads, because the normal block-entity broadcast doesn't repaint a just-placed block. Re-sending
+     * the block + its block-entity makes the client drop the stale render and re-resolve the embedded
+     * texture (no Mojang lookup, so the deterministic shared UP/DOWN texture UUID is not a factor).
+     * A no-op for heads whose render already matched.
      */
-    public void applyTextureNow(Block block, CustomHeadBlock type, @Nullable String state, int power) {
-        HeadUtil.applyTexture(block, type.resolveTexture(state, power, getSkullFacing(block)));
+    public void refreshHeadViewers(Block block) {
+        // sendBlockUpdate (unlike sendBlockChange, which sends only the block *state*) pushes the
+        // tile-entity — i.e. the skull's profile-with-textures — so the client re-resolves and repaints.
+        if (!(block.getState() instanceof org.bukkit.block.TileState tile)) return;
+        org.bukkit.Location loc = block.getLocation();
+        for (org.bukkit.entity.Player p : block.getWorld().getPlayersSeeingChunk(block.getChunk())) {
+            p.sendBlockUpdate(loc, tile);
+        }
     }
 
     /** Apply the resolved config for a block's current state + power. */

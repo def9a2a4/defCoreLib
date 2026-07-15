@@ -134,9 +134,20 @@ public class MechanismRegistry {
             false, serializer);
     }
 
-    /** A synthetic block for {@link #assembleMechanism}: renders {@code template}'s appearance at
-     *  {@code target}, without touching whatever real block occupies {@code target}. */
-    public record GhostBlock(Location target, Block template) {}
+    /**
+     * A synthetic block for {@link #assembleMechanism}: renders an appearance at {@code target} without
+     * touching whatever real block occupies {@code target}.
+     *
+     * <p>Give it a {@code template} <b>Block</b> when the ghost should mirror a real block that already
+     * exists, including its custom-head identity/state/displays — the piston's internal pole copies a real
+     * pole that way. Give it plain {@code data} when there is no such block to point at: the chain hoist's
+     * new link is conjured from an item in its storage, and at extension 0 there is no chain in the world
+     * to template from. Exactly one of the two is set.
+     */
+    public record GhostBlock(Location target, @Nullable Block template, @Nullable BlockData data) {
+        public GhostBlock(Location target, Block template) { this(target, template, null); }
+        public GhostBlock(Location target, BlockData data) { this(target, null, data); }
+    }
 
     private Mechanism assembleCore(UUID mechId, String type, List<Block> blocks, List<GhostBlock> ghosts,
                                     Location pivot, Vector3f rotationAxis, Entity vehicle, float rideOffset,
@@ -221,8 +232,8 @@ public class MechanismRegistry {
         // (the target cell holds another real block, e.g. the piston core). On disassemble they place
         // like normal blocks; a protected target cell is skipped (see BasicMechanism).
         for (GhostBlock ghost : ghosts) {
-            Block tmpl = ghost.template();
-            BlockData gbd = tmpl.getBlockData();
+            Block tmpl = ghost.template();   // null for a data-only ghost (no real block to mirror)
+            BlockData gbd = tmpl != null ? tmpl.getBlockData() : ghost.data();
             Matrix4f glocal = new Matrix4f().translation(
                 (float) ((ghost.target().getBlockX() + 0.5) - snapX),
                 (float) ((ghost.target().getBlockY() + 0.5) - snapY),
@@ -232,7 +243,9 @@ public class MechanismRegistry {
             List<CustomHeadBlock.BlockDisplayEntityConfig> gbdecs = null;
             CustomHeadBlock.ParticleConfig gparticles = null;
             Vector3f gwall = null;
-            CustomHeadBlock gchb = registry.getTypeFromBlock(tmpl);
+            // A data-only ghost mirrors no real block, so it has no custom-head identity to copy — it
+            // renders as plain BlockData and lands as one.
+            CustomHeadBlock gchb = tmpl == null ? null : registry.getTypeFromBlock(tmpl);
             if (gchb != null) {
                 gType = gchb.fullId();
                 gState = registry.getState(tmpl);

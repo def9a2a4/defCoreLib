@@ -455,23 +455,6 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         }
         int power = type.sensitivity() != CustomHeadBlock.Sensitivity.NONE ? registry.readPower(block, type) : 0;
 
-        // Texture the head synchronously, right after the setType normalization above. A DOWN/ceiling
-        // head is blanked by that setType, and the deferred applyConfig below can be skipped (its guard)
-        // or repaint too late — leaving the head textureless. Applying now guarantees a valid profile in
-        // the same tick the block is placed; the deferred applyConfig re-applies idempotently.
-        if (type.baseBlock() == null
-                && (block.getType() == Material.PLAYER_HEAD || block.getType() == Material.PLAYER_WALL_HEAD)) {
-            registry.applyTextureNow(block, type, state, power);
-        }
-
-        // TEMP DEBUG (Bug 2): compare UP vs DOWN pipe placement server-side profile state.
-        final boolean pipeDebug = "pipes".equals(type.namespace())
-                && ("up".equals(state) || "down".equals(state));
-        if (pipeDebug) {
-            getLogger().info("[pipedbg] SYNC state=" + state + " mat=" + block.getType()
-                    + " tex=" + texTail(HeadUtil.getBlockTexture(block)));
-        }
-
         // Schedule for next tick to ensure block state is fully initialized
         getServer().getScheduler().runTask(this, () -> {
             // Guard: block may have been broken between placement and this tick
@@ -479,9 +462,14 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
 
             registry.applyConfig(block, type, state, power);
 
-            if (pipeDebug) {
-                getLogger().info("[pipedbg] NEXTTICK state=" + state + " mat=" + block.getType()
-                        + " tex=" + texTail(HeadUtil.getBlockTexture(block)));
+            // Force nearby clients to re-render the freshly-placed head. applyConfig sets the correct
+            // skull profile server-side, but the client's placement-predicted head (notably one placed
+            // against a block's underside → DOWN pipe) doesn't repaint from the normal block-entity
+            // broadcast — it stays a default "Steve" head until the chunk reloads. Re-sending the block
+            // makes the client drop that stale render and re-resolve the embedded texture. No-op for a
+            // head whose render already matched.
+            if (block.getType() == Material.PLAYER_HEAD || block.getType() == Material.PLAYER_WALL_HEAD) {
+                registry.refreshHeadViewers(block);
             }
 
             // Register for redstone tracking if needed
@@ -505,12 +493,6 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
                 type.onChunkLoadCallback().accept(block, state);
             }
         });
-    }
-
-    // TEMP DEBUG (Bug 2) — short signature of a base64 skull texture for log comparison.
-    private static String texTail(@org.jspecify.annotations.Nullable String base64) {
-        if (base64 == null) return "NULL";
-        return "len" + base64.length() + ":…" + base64.substring(Math.max(0, base64.length() - 12));
     }
 
     // ──────────────────────────────────────────────────────────────────────
