@@ -354,15 +354,24 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
 
         // Convert non-skull blocks to skulls (e.g., slab items with item_material)
         if (type.baseBlock() != null) {
-            // Bare-first block (e.g. casing = OAK_PLANKS): replace the placed head with the base block.
+            // Bare-first block (e.g. casing = OAK_STAIRS): replace the placed head with the base block.
             // Its head texture is carried by a display entity; identity lives in the display-backed
-            // bare-block registry (addBareBlock below), not a block-entity PDC. Orient the base block to
-            // the attachment face when it supports it (guarded, like physical_material).
-            block.setType(type.baseBlock(), false);
-            if (block.getBlockData() instanceof org.bukkit.block.data.Directional dir
-                    && dir.getFaces().contains(placedOn)) {
-                dir.setFacing(placedOn);
-                block.setBlockData(dir, false);
+            // bare-block registry (addBareBlock below), not a block-entity PDC.
+            org.bukkit.block.data.BlockData pinned = type.baseBlockData();
+            if (pinned != null) {
+                // Pinned data (the casing's upside-down straight stair) is authoritative: every copy must
+                // be identical, or vanilla's stair-shape rule starts cornering them against each other.
+                // Deliberately skips the placement-face orient below — the facing must not vary.
+                block.setBlockData(pinned, false);
+            } else {
+                block.setType(type.baseBlock(), false);
+                // Orient the base block to the attachment face when it supports it (guarded, like
+                // physical_material).
+                if (block.getBlockData() instanceof org.bukkit.block.data.Directional dir
+                        && dir.getFaces().contains(placedOn)) {
+                    dir.setFacing(placedOn);
+                    block.setBlockData(dir, false);
+                }
             }
         } else if (type.physicalMaterial() != null) {
             // physical_material block (e.g. the dynamo's barrel): replace the placed head with the real
@@ -644,17 +653,19 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
     // always cancelled for a custom head (BlockFromToEvent has no drop-suppression API). Identity is
     // the skull PDC (getTypeFromBlock), not the in-memory set — the set can be stale after chunk
     // reloads, and a stale miss here is exactly what used to leak plain heads. The material pre-check
-    // keeps the getState() read off the hot path for ordinary water tiles; physical_material blocks
-    // are validated solid, so a fluid can never target them and heads(+chain) are complete coverage.
+    // keeps the getState() read off the hot path for ordinary water tiles (isBareBlock does its own,
+    // on bareTypes, before it touches a LocationKey); physical_material blocks are validated solid, so
+    // a fluid can never target them and heads + bare blocks are complete coverage.
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onFluidFlowIntoCustomHead(org.bukkit.event.block.BlockFromToEvent event) {
         Block to = event.getToBlock();
         Material t = to.getType();
-        // A bare shaft is a real (waterloggable) CHAIN; water flowing in would otherwise trip the
-        // MONITOR handler below into tearing down its node/rod even though the chain isn't destroyed.
-        // (Only the CHAIN bare block is waterloggable; solid bare blocks like the casing can't be flowed into.)
-        if (t == Material.CHAIN) {
-            if (registry.isBareBlock(to)) event.setCancelled(true);
+        // Bare blocks are real world blocks and several are waterloggable (the shaft's CHAIN, the casing's
+        // stair); water flowing in would otherwise trip the MONITOR handler below into tearing down their
+        // node/display even though the block isn't destroyed. Cancelling also keeps them un-waterlogged,
+        // which is why the casing's pinned data can trust waterlogged=false to stay false.
+        if (registry.isBareBlock(to)) {
+            event.setCancelled(true);
             return;
         }
         if (t != Material.PLAYER_HEAD && t != Material.PLAYER_WALL_HEAD) return;
@@ -738,6 +749,33 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         if (!support.getType().isSolid()) {
             event.setCancelled(true);
         }
+    }
+
+    // A bare block whose data is pinned (the casing's upside-down stair) must not push shape updates onto
+    // its neighbours: vanilla fires updateNeighbourShapes from the CHANGED cell, so placing or breaking a
+    // casing is what would make an adjacent upside-down stair snap into a corner against it. Cancelling
+    // here — at the casing's own cell — suppresses exactly that, and nothing else: a pinned bare block is
+    // static, so it has no shape/support physics of its own worth running.
+    // The converse (a neighbour reshaping the CASING) has no event to hook — Level.neighborShapeChanged
+    // fires none — but the stair rule only pairs same-half stairs, so an ordinary right-side-up staircase
+    // never touches an upside-down casing, and the worst case left is a casing's own hidden collider going
+    // 3/4 → 5/8 or 7/8.
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    public void onPhysicsCancelForPinnedBareBlocks(BlockPhysicsEvent event) {
+        Block block = event.getBlock();
+        // isBareBlock gates on bareTypes (a material lookup) before it builds a LocationKey, so an
+        // ordinary physics tick costs one map hit and leaves getTypeFromBlock untouched.
+        if (!registry.isBareBlock(block)) return;
+        CustomHeadBlock type = registry.getTypeFromBlock(block);
+        if (type != null && type.pinsBaseBlockData()) event.setCancelled(true);
+    }
+
+    // Water-bucket the other waterlogging vector shut. Flow is handled by the BlockFromToEvent guard
+    // above; this is the player pouring a bucket straight into a casing's cell, which vanilla would
+    // waterlog in place (a stair is SimpleWaterloggedBlock) without ever firing BlockFromToEvent.
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    public void onBucketEmptyIntoBareBlock(org.bukkit.event.player.PlayerBucketEmptyEvent event) {
+        if (registry.isBareBlock(event.getBlock())) event.setCancelled(true);
     }
 
     // Endermen picking up blocks, falling blocks landing in the cell, wither charges, silverfish, etc.

@@ -2,6 +2,7 @@ package anon.def9a2a4.corelib;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
@@ -80,11 +81,25 @@ public final class BlockLoader {
         // rendered by a display entity while identity/state live in the block's tile-entity PDC.
         String physMat = sec.getString("physical_material");
         if (physMat != null) b.physicalMaterial(Material.valueOf(physMat.toUpperCase(java.util.Locale.ROOT)));
-        // Bare non-tile world block (e.g. CHAIN, OAK_PLANKS): head texture rendered by a display entity,
+        // Bare non-tile world block (e.g. CHAIN, OAK_STAIRS): head texture rendered by a display entity,
         // identity/state carried by the display-backed bare-block registry (persisted chunk index + tagged
         // display) rather than a block-entity PDC. Registered automatically for any type with base_block set.
         String baseMat = sec.getString("base_block");
-        if (baseMat != null) b.baseBlock(Material.valueOf(baseMat.toUpperCase(java.util.Locale.ROOT)));
+        Material baseBlock = null;
+        if (baseMat != null) {
+            baseBlock = Material.valueOf(baseMat.toUpperCase(java.util.Locale.ROOT));
+            b.baseBlock(baseBlock);
+        }
+        // Optional: pin the bare block's data wherever it is placed or landed, as a Bukkit BlockData
+        // string — either bare properties ("[half=top,facing=north]") or a full "minecraft:oak_stairs[…]".
+        // The casing uses it to stay an upside-down straight stair whoever places it, however it lands.
+        String baseData = sec.getString("base_block_data");
+        if (baseData != null) {
+            if (baseBlock == null) throw new IllegalArgumentException("base_block_data requires base_block");
+            b.baseBlockData(baseData.startsWith("[")
+                ? Bukkit.createBlockData(baseBlock, baseData)   // throws IllegalArgumentException on a bad string
+                : Bukkit.createBlockData(baseData));
+        }
         // Base texture: required for placeable head blocks; optional when item_material is set.
         String tex = itemMat != null ? sec.getString("texture") : requireString(sec, "texture");
         if (tex != null) b.texture(resolveTexture(tex, textures));

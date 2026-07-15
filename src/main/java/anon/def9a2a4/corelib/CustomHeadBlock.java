@@ -6,6 +6,7 @@ import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.block.data.BlockData;
 import org.bukkit.util.Transformation;
 import org.bukkit.util.Vector;
 import org.jspecify.annotations.Nullable;
@@ -252,7 +253,8 @@ public final class CustomHeadBlock {
     private final @Nullable String itemTexture; // optional: different texture for item in hand
     private final @Nullable Material itemMaterial;
     private final @Nullable Material physicalMaterial; // non-null → place this world block (e.g. BARREL) instead of a player head
-    private final @Nullable Material baseBlock; // non-null → a "bare" non-tile world block (e.g. CHAIN, OAK_PLANKS) whose identity lives in the display-backed bare-block registry, not a PDC
+    private final @Nullable Material baseBlock; // non-null → a "bare" non-tile world block (e.g. CHAIN, OAK_STAIRS) whose identity lives in the display-backed bare-block registry, not a PDC
+    private final @Nullable BlockData baseBlockData; // non-null → pin the bare block to exactly this data on place/land (the casing's upside-down stair); also suppresses the Directional auto-orient
     private final boolean lockContainer; // physical_material containers: cancel open/hopper access (default true)
     private final boolean itemGlint;
     private final boolean unbreakable; // item form: unbreakable + hide the flag (e.g. wrench)
@@ -327,6 +329,7 @@ public final class CustomHeadBlock {
         this.itemMaterial = b.itemMaterial;
         this.physicalMaterial = b.physicalMaterial;
         this.baseBlock = b.baseBlock;
+        this.baseBlockData = b.baseBlockData;
         this.lockContainer = b.lockContainer;
         this.itemGlint = b.itemGlint;
         this.unbreakable = b.unbreakable;
@@ -399,9 +402,16 @@ public final class CustomHeadBlock {
     public @Nullable Material itemMaterial() { return itemMaterial; }
     /** World block to place instead of a player head (e.g. BARREL), or null for the default head. */
     public @Nullable Material physicalMaterial() { return physicalMaterial; }
-    /** "Bare" non-tile world block (e.g. CHAIN, OAK_PLANKS) whose identity lives in the display-backed
+    /** "Bare" non-tile world block (e.g. CHAIN, OAK_STAIRS) whose identity lives in the display-backed
      *  bare-block registry rather than a block-entity PDC, or null for skull/physical_material blocks. */
     public @Nullable Material baseBlock() { return baseBlock; }
+    /** Exact data to pin {@link #baseBlock()} to wherever it is placed or landed, or null to take the
+     *  block's default data (plus the placement-face auto-orient). Returns a defensive copy — Bukkit
+     *  BlockData is mutable, and the pin is shared by every block of this type. Use
+     *  {@link #pinsBaseBlockData()} on hot paths that only need the null check. */
+    public @Nullable BlockData baseBlockData() { return baseBlockData == null ? null : baseBlockData.clone(); }
+    /** Whether {@link #baseBlockData()} is set, without paying for the defensive copy. */
+    public boolean pinsBaseBlockData() { return baseBlockData != null; }
     /** For container physical_material blocks: whether the framework blocks opening/hopper access. */
     public boolean lockContainer() { return lockContainer; }
     public boolean itemGlint() { return itemGlint; }
@@ -644,6 +654,7 @@ public final class CustomHeadBlock {
         b.itemMaterial = itemMaterial;
         b.physicalMaterial = physicalMaterial;
         b.baseBlock = baseBlock;
+        b.baseBlockData = baseBlockData;
         b.lockContainer = lockContainer;
         b.itemGlint = itemGlint;
         b.unbreakable = unbreakable;
@@ -706,6 +717,7 @@ public final class CustomHeadBlock {
         private @Nullable Material itemMaterial;
         private @Nullable Material physicalMaterial;
         private @Nullable Material baseBlock;
+        private @Nullable BlockData baseBlockData;
         private boolean lockContainer = true;
         private boolean itemGlint;
         private boolean unbreakable;
@@ -784,6 +796,11 @@ public final class CustomHeadBlock {
          *  bare-block registry (a persisted chunk index + the tagged display), NOT a block-entity PDC —
          *  the pattern the bare chain shaft uses, generalized. Must be a solid, non-fluid-replaceable block. */
         public Builder baseBlock(Material material) { this.baseBlock = material; return this; }
+
+        /** Pin the bare block to exactly this data wherever it is placed or landed (the casing's
+         *  upside-down stair). Also suppresses the placement-face auto-orient, so a pinned type's
+         *  facing never varies with how the player clicked. */
+        public Builder baseBlockData(BlockData data) { this.baseBlockData = data; return this; }
 
         /** For container physical_material blocks: set false to allow players/hoppers to use the real
          *  inventory (default true = locked, e.g. the dynamo's comparator-drive barrel). */
@@ -949,6 +966,15 @@ public final class CustomHeadBlock {
                 }
                 if (!baseBlock.isBlock()) {
                     throw new IllegalStateException("base_block must be a placeable block: " + baseBlock);
+                }
+            }
+            if (baseBlockData != null) {
+                if (baseBlock == null) {
+                    throw new IllegalStateException("base_block_data requires base_block");
+                }
+                if (baseBlockData.getMaterial() != baseBlock) {
+                    throw new IllegalStateException("base_block_data is " + baseBlockData.getMaterial()
+                            + " but base_block is " + baseBlock);
                 }
             }
             return new CustomHeadBlock(this);
