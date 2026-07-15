@@ -1140,6 +1140,10 @@ final class RotationBlocks {
     private static final NamespacedKey DRILL_FACING_KEY = new NamespacedKey("mech", "drill_facing");
 
     private static final ItemStack NETHERITE_PICK = new ItemStack(Material.NETHERITE_PICKAXE);
+    /** Reference tool for break-time pacing (see {@link #drillStagesFor}). */
+    private static final ItemStack DIAMOND_PICK = new ItemStack(Material.DIAMOND_PICKAXE);
+    /** Floor on drill break time (ticks) so soft blocks aren't near-instant. ~0.75 s. */
+    private static final int DRILL_MIN_TICKS = 15;
     private static final double DRILL_ANIM_RADIUS = 48.0;
 
     private static Set<Material> drillBlacklist;
@@ -1265,7 +1269,7 @@ final class RotationBlocks {
             return new DrillOutcome(null, false);
         }
 
-        int stages = drillStagesFor(targetMat);
+        int stages = drillStagesFor(target);
         int progress = (prev != null && prev.targetMaterial() == targetMat) ? prev.progress() + 1 : 1;
 
         if (progress >= stages) {
@@ -1299,22 +1303,27 @@ final class RotationBlocks {
     }
 
     /**
-     * How many break stages the drill takes on {@code mat}: proportional to how long a normal DIAMOND
-     * PICKAXE would take, ×5 (the drill is deliberately slow), uncapped — so a stone block is quick-ish and
-     * a hard one is slow, instead of the old flat 40 ticks for everything. Computed from block hardness
-     * rather than {@code Block#getDestroySpeed} so the timing is deterministic and version-independent: a
-     * diamond pick breaks a pickaxe-mineable block in {@code hardness × 1.5 / 8 s = hardness × 3.75} ticks;
-     * ×5 penalty ÷ {@code drillTickInterval} (one stage per actuation) gives the stage count. All blocks are
-     * treated at diamond-pick speed (non-pick blocks come out a touch fast — acceptable for a machine).
-     * Unbreakable blocks never reach here (filtered by {@code hardness < 0} / blacklist); hardness 0 → one
-     * stage. Shared by the static ({@link #drillTick}) and riding ({@code MechanismRotationDriver}) paths.
+     * How many break stages the drill takes on {@code target}: the block's REAL break time for a diamond
+     * pickaxe, floored at {@link #DRILL_MIN_TICKS} so soft blocks aren't near-instant. {@code getDestroySpeed}
+     * returns the pick's mining SPEED on this block (default 1.0; 8.0 when effective, 1.0 when not — so
+     * non-pickaxe blocks like dirt/wood are correctly slower than stone), and vanilla break time is then
+     * {@code hardness × 30 / speed} ticks (a diamond pick can harvest everything, so the /30 branch, never
+     * /100). No multiplier and no cap: stone/deepslate hit the ~0.75 s floor, an iron block ≈1 s, obsidian
+     * ≈9.4 s — its true diamond-pick time (not the runaway the old hardness×5 gave). Unbreakables never reach
+     * here (filtered by {@code hardness < 0} / blacklist). Shared by the static ({@link #drillTick}) and
+     * riding ({@code MechanismRotationDriver}) paths.
      */
-    private static int drillStagesFor(Material mat) {
-        float hardness = mat.getHardness();
-        if (hardness <= 0f) return 1;
-        float diamondTicks = hardness * 3.75f;                 // hardness × 1.5 / 8 × 20
-        float penalised = diamondTicks * 5.0f;                 // ×5 a real diamond pick (a machine, not a miracle)
-        return Math.max(1, Math.round(penalised / Math.max(1, drillTickInterval)));
+    private static int drillStagesFor(Block target) {
+        float hardness = target.getType().getHardness();
+        int ticks;
+        if (hardness <= 0f) {
+            ticks = DRILL_MIN_TICKS;
+        } else {
+            float speed = target.getDestroySpeed(DIAMOND_PICK);
+            if (speed <= 0f) speed = 1f;
+            ticks = Math.max(DRILL_MIN_TICKS, (int) Math.ceil(hardness * 30.0 / speed));
+        }
+        return Math.max(1, Math.round(ticks / (float) Math.max(1, drillTickInterval)));
     }
 
     private static void spawnDrillParticles(Block target, BlockFace contactFace) {
