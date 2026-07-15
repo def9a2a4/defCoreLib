@@ -291,6 +291,11 @@ blocks:
       # Bearing hub skull (texture @bearing) with a large spinning chainwheel display entity on top.
       # spinning_* inherits the display and adds a rotate animation about its axis.
       # (idle_x/z + spinning_x/z are unreachable under floor-only placement but kept for completeness.)
+      #
+      # idle_y's [0, 0.5, 0] is a lift to sit the wheel on top of the hub, NOT a centring value
+      # (centring would be 0.25*scale.y = 0.3). It is only harmless because it lies on the Y spin
+      # axis, where the pre-multiplied rotate leaves it fixed. Do not copy it to a horizontal axis:
+      # off-axis translation orbits. idle_x/z below use the centring value on their own axis.
       idle_y:
         texture: "@windmill_hub_up"
         display_entities:
@@ -303,7 +308,7 @@ blocks:
         display_entities:
           - texture: "@chainwheel"
             tag: wheel
-            transform: { translation: [0, 0.5, 0], scale: [1.5, 1.2, 1.5], left_rotation: [90, 0, 0, 1] }
+            transform: { translation: [-0.3, 0, 0], scale: [1.5, 1.2, 1.5], left_rotation: [90, 0, 0, 1] }
             wall_offset: 0.001
       spinning_x: { copy_from: idle_x, texture: "@windmill_hub_up", animation: { type: rotate, axis: [1, 0, 0], speed: 3.0 } }
       idle_z:
@@ -311,7 +316,7 @@ blocks:
         display_entities:
           - texture: "@chainwheel"
             tag: wheel
-            transform: { translation: [0, 0.5, 0], scale: [1.5, 1.2, 1.5], left_rotation: [-90, 1, 0, 0] }
+            transform: { translation: [0, 0, -0.3], scale: [1.5, 1.2, 1.5], left_rotation: [-90, 1, 0, 0] }
             wall_offset: 0.001
       spinning_z: { copy_from: idle_z, texture: "@windmill_hub_up", animation: { type: rotate, axis: [0, 0, 1], speed: 3.0 } }
     recipes:
@@ -344,21 +349,41 @@ blocks:
     item_texture: "@chainwheel"
     drops: self
     storage: { layout: HOPPER }
-    default_state: idle
+    default_state: idle_x
+    # Floor only. The X-vs-Z axle comes from the placer's yaw (ChainHoistManager's stateResolver,
+    # which outranks placement_state_map), since the clicked face is always DOWN and so can't say.
     placement:
       allowed_faces: [DOWN]
-    placement_state_map:
-      DOWN: idle
     states:
-      # Bearing hub skull with a large chainwheel on its SIDE (vertical disc), spinning about a
-      # horizontal axis while the hoist is moving — copies the chain_pulley idle_x vertical transform.
-      idle:
+      # A chainwheel on a horizontal axle running through the block: the rod is the shaft the power
+      # arrives on, the wheel is what the chain runs over.
+      #
+      # Both translations lie ON the spin axis. That is load-bearing, not incidental: the rotate
+      # animation PRE-multiplies about the block centre (DisplayAnimation.rotate), so it rotates the
+      # static translation too — any component perpendicular to the axis becomes an orbit radius
+      # instead of a spin. Centring a head needs |translation| = 0.25*scale.y rotated by
+      # left_rotation, i.e. R_Z(90)*(0, 0.25*1.2, 0) = (-0.3, 0, 0) for the wheel; the rod's -0.5
+      # is the same rule at scale.y 2.002 (copied from the shaft).
+      idle_x:
         texture: "@windmill_hub_up"
         display_entities:
+          - texture: "@rod_up"
+            tag: axle
+            transform: { translation: [-0.5, 0, 0], scale: [0.66, 2.002, 0.66], left_rotation: [90, 0, 0, 1] }
           - texture: "@chainwheel"
             tag: wheel
-            transform: { translation: [0, 0.5, 0], scale: [1.5, 1.2, 1.5], left_rotation: [90, 0, 0, 1] }
-      spinning: { copy_from: idle, texture: "@windmill_hub_up", animation: { type: rotate, axis: [1, 0, 0], speed: 3.0 } }
+            transform: { translation: [-0.3, 0, 0], scale: [1.5, 1.2, 1.5], left_rotation: [90, 0, 0, 1] }
+      spinning_x: { copy_from: idle_x, texture: "@windmill_hub_up", animation: { type: rotate, axis: [1, 0, 0], speed: 3.0 } }
+      idle_z:
+        texture: "@windmill_hub_up"
+        display_entities:
+          - texture: "@rod_up"
+            tag: axle
+            transform: { translation: [0, 0, -0.5], scale: [0.66, 2.002, 0.66], left_rotation: [-90, 1, 0, 0] }
+          - texture: "@chainwheel"
+            tag: wheel
+            transform: { translation: [0, 0, -0.3], scale: [1.5, 1.2, 1.5], left_rotation: [-90, 1, 0, 0] }
+      spinning_z: { copy_from: idle_z, texture: "@windmill_hub_up", animation: { type: rotate, axis: [0, 0, 1], speed: 3.0 } }
     recipes:
       craft:
         shaped:

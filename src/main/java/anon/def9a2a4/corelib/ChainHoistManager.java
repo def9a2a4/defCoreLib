@@ -20,7 +20,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.joml.Matrix4f;
-import org.joml.Quaternionf;
 import org.joml.Vector3f;
 import org.jspecify.annotations.Nullable;
 
@@ -86,7 +85,8 @@ final class ChainHoistManager {
 
     private final Set<CustomBlockRegistry.LocationKey> hoists = new HashSet<>();
     private final Map<CustomBlockRegistry.LocationKey, ActiveMove> active = new HashMap<>();
-    private final Map<CustomBlockRegistry.LocationKey, BlockDisplay> ropes = new HashMap<>();
+    /** In-transit rope, one display per chain link, bottom-up. Real CHAIN blocks take over at rest. */
+    private final Map<CustomBlockRegistry.LocationKey, List<BlockDisplay>> ropes = new HashMap<>();
     /** Hoists spun up by the bare-rope path (which has no mechanism to bracket the animation), and the
      *  tick each should idle again — a state change is only pushed on the transitions, not per step. */
     private final Map<CustomBlockRegistry.LocationKey, Integer> spinUntil = new HashMap<>();
@@ -113,30 +113,62 @@ final class ChainHoistManager {
             .drillable(false)
             .cancelPistons(true)
             .reactsToNeighbors(true)
+            .stateResolver(ChainHoistManager::resolvePlacementState)
             .onNeighborChange((b, face) -> recalcIfNode(b))
             .onInteract(this::handleInteract)
             .onChunkLoad((b, state) -> {
-                // Omni consumer on Y: draws power from the first aligned shaft on any face (like the piston core).
-                network.addNode(b, HOIST_ID, RotationNetwork.Axis.Y, RotationNetwork.NodeRole.CONSUMER,
-                    config.getPower("chain_hoist", 1), false, true, null);
+                // In-line consumer on its own horizontal axle: a shaft runs through it, so the network
+                // links it to both its ±axis neighbours and power crosses it (see getConnections).
+                String s = healAxisState(b, state);
+                network.addNode(b, HOIST_ID, RotationNetwork.axisFromState(s),
+                    RotationNetwork.NodeRole.CONSUMER, config.getPower("chain_hoist", 1), false);
                 hoists.add(CustomBlockRegistry.LocationKey.of(b));
                 setSpin(b, false);   // normalise to idle (a crash mid-move could leave 'spinning' persisted)
                 removeRope(b);       // the resting rope is real blocks; any display here is a crash leftover
             })
             .onChunkUnload(this::forget)
             .onBlockRemoved((b, state) -> onRemoved(b))
-            .onBlockPlaced((b, state) -> snapFloorRotation(b))
+            .onBlockPlaced(ChainHoistManager::snapFloorRotation)
             .build());
 
         Bukkit.getScheduler().runTaskTimer(plugin, this::tick, 1L, 1L);
     }
 
-    /** Snap the floor head's 16-way skull yaw to grid-aligned NORTH (display entities are world-framed). */
-    private static void snapFloorRotation(Block b) {
+    /**
+     * The axle runs across the placer's view: facing north/south gives an X axle, east/west a Z one.
+     * The clicked face is always DOWN on a floor block and so can't carry this, and {@code onBlockPlaced}
+     * runs a tick later without the player — the resolver is the only hook that sees them. Never returns
+     * null: that would cancel the placement.
+     */
+    private static String resolvePlacementState(org.bukkit.event.block.BlockPlaceEvent event) {
+        float yaw = (event.getPlayer().getLocation().getYaw() % 360f + 360f) % 360f;
+        boolean alongZ = yaw >= 315f || yaw < 45f || (yaw >= 135f && yaw < 225f);   // facing south / north
+        return alongZ ? "idle_x" : "idle_z";
+    }
+
+    /** Snap the floor head's 16-way skull yaw to the cardinal its axle runs on, so the head art lines
+     *  up with the rod (display entities are world-framed; the vanilla skull follows the placer's look). */
+    private static void snapFloorRotation(Block b, String state) {
         if (b.getType() == Material.PLAYER_HEAD && b.getBlockData() instanceof Rotatable r) {
-            r.setRotation(BlockFace.NORTH);
+            r.setRotation(RotationNetwork.axisFromState(state) == RotationNetwork.Axis.X
+                ? BlockFace.EAST : BlockFace.NORTH);
             b.setBlockData(r, false);
         }
+    }
+
+    /**
+     * v2 hoists persisted an axis-less {@code "idle"}/{@code "spinning"}, which {@link
+     * RotationNetwork#axisFromState} reads as the Y axis — leaving them unpowerable by any shaft and
+     * feeding {@link #setSpin} a state with no suffix to preserve. Adopt the X axle so one keeps
+     * working across the upgrade instead of going inert.
+     */
+    private String healAxisState(Block b, @Nullable String state) {
+        if (state != null && state.indexOf('_') >= 0) return state;
+        CustomHeadBlock t = registry.getType(HOIST_ID);
+        if (t == null) return "idle_x";
+        registry.setState(b, "idle_x");
+        registry.applyConfig(b, t, "idle_x", 0);
+        return "idle_x";
     }
 
     /**
@@ -408,44 +440,71 @@ final class ChainHoistManager {
     }
 
     /**
-     * Span the transit display over the stretch of rope that has no real chain in it yet: from the bottom
-     * face of the lowest laid link ({@code y0-ropeDepth}) down to the moving platform's top face. Zero at
-     * both ends of a stroke, so the handoff to real blocks is seamless. Updates the existing display's
-     * matrix in place — a per-tick respawn would flicker.
+     * Span the transit rope over the stretch that has no real chain in it yet: from the moving platform's
+     * top face up to the bottom face of the lowest laid link ({@code y0-ropeDepth}). Zero-length at both
+     * ends of a stroke, so the handoff to real blocks is seamless.
      */
     private void liveRope(Block hoist, int ropeDepth, double platformBottomY) {
-        double topY = hoist.getY() - ropeDepth;
-        double len = topY - (platformBottomY + 1);   // platform top face
-        if (len > 0.05) setRope(hoist, topY, len);
-        else if (ropes.containsKey(CustomBlockRegistry.LocationKey.of(hoist))) removeRope(hoist);
+        double platformTopY = platformBottomY + 1;
+        setRope(hoist, platformTopY, (hoist.getY() - ropeDepth) - platformTopY);
     }
 
-    private void setRope(Block hoist, double topY, double length) {
-        Quaternionf orient = new Quaternionf().rotationTo(0f, 1f, 0f, 0f, -1f, 0f);
-        // The display is anchored at the hoist's centre; place the rope's midpoint relative to that.
-        Vector3f translation = new Vector3f(0f, (float) ((topY - length / 2.0) - (hoist.getY() + 0.5)), 0f);
-        Vector3f scale = new Vector3f(1f, (float) length, 1f);
-        // T·R·S·T(-0.5): the trailing -0.5 centres the BlockDisplay unit cube (renders from its MIN corner).
-        Matrix4f matrix = new Matrix4f()
-            .translate(translation).rotate(orient).scale(scale).translate(-0.5f, -0.5f, -0.5f);
+    /**
+     * Render {@code length} blocks of rope upward from {@code bottomY} as one display per link, rather
+     * than one display stretched over the span (which renders a single elongated link). Links sit flush
+     * to the platform, so the only sub-height one is the newest, at the top: it grows 0→1 at the hoist
+     * and is then promoted to a full link — which is what reads as a link being paid out of the block,
+     * and swallowed by it on the way back up. Matrices are updated in place; a per-tick respawn flickers.
+     */
+    private void setRope(Block hoist, double bottomY, double length) {
         CustomBlockRegistry.LocationKey key = CustomBlockRegistry.LocationKey.of(hoist);
-        BlockDisplay rope = ropes.get(key);
-        if (rope != null && rope.isValid()) {
-            rope.setTransformationMatrix(matrix);
+        int want = length > 0.05 ? (int) Math.ceil(length - 1e-6) : 0;
+        List<BlockDisplay> links = ropes.get(key);
+        if (want == 0) {
+            if (links != null) removeRope(hoist);
             return;
         }
-        // Anchor at the hoist block; DisplayUtil.spawnBlock adds +0.5 to reach the block centre.
-        ropes.put(key, DisplayUtil.spawnBlock(hoist.getLocation(), CHAIN_MATERIAL.createBlockData(),
-            matrix, ropeTag(hoist)));
+        if (links == null) ropes.put(key, links = new ArrayList<>(want));
+        while (links.size() > want) {                      // reeling in: the top link is swallowed
+            BlockDisplay d = links.remove(links.size() - 1);
+            if (d.isValid()) d.remove();
+        }
+        for (int i = 0; i < want; i++) {
+            float h = (float) Math.max(0.001, Math.min(1.0, length - i));   // 0 scale = degenerate matrix
+            // Anchored at the hoist block (spawnBlock adds +0.5 to its centre), so place each link's
+            // midpoint relative to that. T·S·T(-0.5): the trailing -0.5 centres the BlockDisplay unit
+            // cube, which renders from its MIN corner. No rotation — a chain is symmetric about Y.
+            Matrix4f m = new Matrix4f()
+                .translate(0f, (float) ((bottomY + i + h / 2.0) - (hoist.getY() + 0.5)), 0f)
+                .scale(1f, h, 1f)
+                .translate(-0.5f, -0.5f, -0.5f);
+            BlockDisplay d = i < links.size() ? links.get(i) : null;
+            if (d != null && d.isValid()) d.setTransformationMatrix(m);
+            else if (d != null) links.set(i, spawnLink(hoist, m, i));
+            else links.add(spawnLink(hoist, m, i));
+        }
+    }
+
+    private static BlockDisplay spawnLink(Block hoist, Matrix4f matrix, int index) {
+        BlockDisplay d = DisplayUtil.spawnBlock(hoist.getLocation(), CHAIN_MATERIAL.createBlockData(),
+            matrix, DisplayUtil.blockTag("mech", ROPE_TYPE, hoist.getLocation(), String.valueOf(index)));
+        // Match the platform's own displays (MechanismRegistry): those interpolate each 1-tick hop over
+        // 2 ticks, so a rope applied instantly would run ahead of them and visibly detach from the thing
+        // it is carrying — up to a block of daylight at pistonMaxStep.
+        d.setInterpolationDuration(2);
+        d.setViewRange(64f);
+        return d;
     }
 
     private void removeRope(Block hoist) {
-        ropes.remove(CustomBlockRegistry.LocationKey.of(hoist));
-        DisplayUtil.removeByTag(hoist.getLocation(), ropeTag(hoist), 2.0);   // also clears a persisted copy
+        List<BlockDisplay> links = ropes.remove(CustomBlockRegistry.LocationKey.of(hoist));
+        if (links != null) for (BlockDisplay d : links) if (d.isValid()) d.remove();
+        // Sweep by prefix too: catches links persisted through a crash, whose entities we no longer hold.
+        DisplayUtil.removeByTag(hoist.getLocation(), ropeTagPrefix(hoist), 2.0);
     }
 
-    private static String ropeTag(Block hoist) {
-        return DisplayUtil.blockTag("mech", ROPE_TYPE, hoist.getLocation(), null);
+    private static String ropeTagPrefix(Block hoist) {
+        return DisplayUtil.blockTagPrefix("mech", ROPE_TYPE, hoist.getLocation());
     }
 
     // ──────────────────────────────────────────────────────────────────────
@@ -559,10 +618,16 @@ final class ChainHoistManager {
         }
     }
 
+    /** Swap the idle/spinning prefix while keeping the axle suffix — the suffix IS the node's axis
+     *  (axisFromState), so overwriting the whole state would unpower the hoist. Clutch-style. */
     private void setSpin(Block hoist, boolean spinning) {
         CustomHeadBlock t = registry.getType(HOIST_ID);
         if (t == null) return;
-        String state = spinning ? "spinning" : "idle";
+        String current = registry.getState(hoist);
+        if (current == null) return;
+        int i = current.lastIndexOf('_');
+        String state = (spinning ? "spinning_" : "idle_") + (i < 0 ? "x" : current.substring(i + 1));
+        if (state.equals(current)) return;   // applyConfig respawns every display; don't churn per tick
         registry.setState(hoist, state);
         registry.applyConfig(hoist, t, state, 0);
     }
