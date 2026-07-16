@@ -8,6 +8,7 @@
   "blackstone_slab": true,
   "brick_slab": true,
   "brush": false,
+  "chain": true,
   "cherry_slab": true,
   "cobbled_deepslate_slab": true,
   "cobblestone": true,
