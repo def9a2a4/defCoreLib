@@ -256,15 +256,25 @@ final class BasicMechanism implements Mechanism {
             }
         }
 
-        // Reposition collider carriers. localTransform is now center-based in all axes and the pivot
-        // is block-centered, so rotating the plain translation orbits the true block center. A sub-cube
-        // collider's block-local offset is added inside the rotated frame (so it tracks the block through
-        // rotation), while the -0.5 Y — which anchors the feet-anchored shulker box to the cell bottom —
-        // is world-space and applied OUTSIDE the rotation. Matches the collider spawn in assembleCore.
+        repositionColliders();
+    }
+
+    /**
+     * Teleport each free collider carrier to its cell under the current pivot + transform. Called from
+     * rotate() (orientation changed) AND updateFromVehicle() (pivot translated) — colliders are not
+     * parent passengers, so neither the parent teleport nor a frozen rotation moves them on their own.
+     *
+     * <p>localTransform is center-based in all axes and the pivot is block-centered, so rotating the
+     * plain translation orbits the true block center. A sub-cube collider's block-local offset is added
+     * inside the rotated frame (so it tracks the block through rotation), while the -0.5 Y — which
+     * anchors the feet-anchored shulker box to the cell bottom — is world-space and applied OUTSIDE the
+     * rotation. Matches the collider spawn in assembleCore.
+     */
+    private void repositionColliders() {
         for (ColliderPair cp : colliders) {
             MechanismBlockData mb = blocks.get(cp.blockIndex());
             Vector3f local = mb.localTransform.getTranslation(new Vector3f()).add(mb.collision.offset());
-            Vector3f worldOff = rot.transformPosition(local, new Vector3f());
+            Vector3f worldOff = currentTransform.transformPosition(local, new Vector3f());
             TeleportCompat.teleport(cp.carrier(),
                 pivot.clone().add(worldOff.x, worldOff.y - 0.5, worldOff.z));
         }
@@ -625,6 +635,10 @@ final class BasicMechanism implements Mechanism {
             parentLoc.setPitch(0);
             TeleportCompat.teleport(parent, parentLoc);
         }
+        // Colliders aren't parent passengers — they're free carriers positioned only by the collider
+        // loop, which used to run via the per-tick rotate() below. With rotation frozen, follow the
+        // translated pivot here so the shulker hitboxes track the moving cart (identity transform).
+        repositionColliders();
         // Rotation frozen for now: the yaw-fold below recomputes orientation ABSOLUTELY each tick as
         // fold(rawYaw − assemblyYaw) into ±90°, which is correct only for a NET turn within ±90° of
         // assembly. A net turn >90° (two curves = 180°) wraps the folded delta back toward 0°, so the
