@@ -204,11 +204,14 @@ final class ShowcaseSpec {
         }
     }
 
-    /** Resolve a banner pattern by its (stable, non-deprecated) identifier, e.g. {@code "border"},
-     *  {@code "creeper"} — not the deprecated {@code OldEnum} {@code valueOf}/{@code name()} shim, since
-     *  {@link PatternType} is registry-backed on modern Paper. */
+    /** Resolve a vanilla banner pattern by its bare identifier (e.g. {@code "border"}, {@code "creeper"};
+     *  implicitly the {@code minecraft} namespace) via {@code Registry.BANNER_PATTERN.get} —
+     *  {@link PatternType} is registry-backed on modern Paper, so this (not the deprecated
+     *  {@code OldEnum} {@code valueOf}/{@code getByIdentifier}/{@code Registry.match} shims) is the
+     *  supported lookup. */
     private static @Nullable PatternType patternType(@Nullable String s) {
-        return s == null ? null : PatternType.getByIdentifier(s.toLowerCase(java.util.Locale.ROOT));
+        return s == null ? null : org.bukkit.Registry.BANNER_PATTERN.get(
+                org.bukkit.NamespacedKey.minecraft(s.toLowerCase(java.util.Locale.ROOT)));
     }
 
     /** Placement face: down = floor (default); north/south/east/west = wall. */
