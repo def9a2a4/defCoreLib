@@ -39,8 +39,12 @@ import java.util.UUID;
  */
 final class GlueAuthoring implements Listener {
 
-    /** Custom-block ids that can own a glued structure (skull anchors). */
-    private static final Set<String> ANCHOR_IDS = Set.of("demo:door_controller", "mech:rotator", "mech:piston_head");
+    /** Custom-block ids that can own a glued structure (skull anchors). The chain hoist is the odd one
+     *  out: its PDC is on the skull like the rest, but its offsets are relative to the platform seed
+     *  below the chain end ({@link HoistAnchor}), and its session also opens from that seed block
+     *  ({@link #owningHoist}). */
+    private static final Set<String> ANCHOR_IDS =
+        Set.of("demo:door_controller", "mech:rotator", "mech:piston_head", ChainHoistManager.HOIST_ID);
 
     /** A cuboid-fill box larger than this many cells is rejected (avoids enumerating huge volumes). */
     private static final int MAX_BOX_VOLUME = 32_768;
@@ -66,8 +70,16 @@ final class GlueAuthoring implements Listener {
         this.sessionTimeout = sessionTimeout;
     }
 
+    /** Set post-construction like {@link #setMinecartManager} — supplies the mid-stroke gate for hoist
+     *  anchors. Null-safe throughout (a null manager just means hoist anchors always read at rest). */
+    private ChainHoistManager hoistManager;
+
     void setMinecartManager(MechanismMinecartManager minecartManager) {
         this.minecartManager = minecartManager;
+    }
+
+    void setChainHoistManager(ChainHoistManager hoistManager) {
+        this.hoistManager = hoistManager;
     }
 
     void start() {
@@ -101,9 +113,28 @@ final class GlueAuthoring implements Listener {
                 } else if (session != null) {
                     event.setCancelled(true);
                     if (!session.anchor.isAtRest()) { actionBar(player, "Anchor is moving — wait", NamedTextColor.RED); return; }
+                    if (closeIfDrifted(player, session)) return;
+                    // Clicking the session's own origin (a hoist's platform block) toggles it closed,
+                    // mirroring the skull toggle — otherwise the click that opened it would set a
+                    // confusing corner A on the second press.
+                    if (session.originKey != null
+                            && session.originKey.equals(CustomBlockRegistry.LocationKey.of(clicked))) {
+                        sessions.remove(player.getUniqueId());
+                        actionBar(player, "Glue: session closed", NamedTextColor.GRAY);
+                        return;
+                    }
                     handleCorner(player, session, clicked);
+                } else {
+                    // No session, non-anchor block: the block at the bottom of a hoist's chain column
+                    // is that hoist's platform seed — open (or sneak-clear) the hoist's session from
+                    // it, so a fully-extended hoist is authorable without reaching the head.
+                    Block owner = owningHoist(clicked);
+                    if (owner != null) {
+                        event.setCancelled(true);
+                        if (sneak) unglueAllAt(player, owner);
+                        else toggleSession(player, owner);
+                    }
                 }
-                // else: holding glue, no session, non-anchor block → don't interfere
             }
             case LEFT_CLICK_BLOCK -> {
                 if (session == null) return;
@@ -111,6 +142,7 @@ final class GlueAuthoring implements Listener {
                 if (clicked == null) return;
                 event.setCancelled(true);
                 if (!session.anchor.isAtRest()) { actionBar(player, "Anchor is moving — wait", NamedTextColor.RED); return; }
+                if (closeIfDrifted(player, session)) return;
                 session.touch(now());
                 if (sneak) {
                     if (StickySpread.isSticky(clicked, registry)) {
@@ -122,6 +154,14 @@ final class GlueAuthoring implements Listener {
                         feedback(player, clicked, false);
                     }
                 } else {
+                    // The rope's right-of-way: chain links, the hoist head, and everything above it in
+                    // the hoist's own column. Refused before the sticky courtesy message — a casing in
+                    // the corridor does NOT ride (mover hardware exclusion), so "glues automatically"
+                    // would be a lie there.
+                    if (session.anchor instanceof HoistAnchor h && h.inRopeColumn(clicked)) {
+                        reject(player, clicked, "That's the chain's path");
+                        return;
+                    }
                     // Sticky blocks auto-glue (derived at resolve, free, unremovable) — nothing to store.
                     if (StickySpread.isSticky(clicked, registry)) {
                         feedback(player, clicked, true);
@@ -136,7 +176,7 @@ final class GlueAuthoring implements Listener {
                     }
                     GlueManager.Result res = glue.glue(session.anchor, clicked,
                         isDrawbridgeAnchor(session.anchor.originBlock()));
-                    reportGlue(player, clicked, res);
+                    reportGlue(player, clicked, res, session.anchor);
                     if (res == GlueManager.Result.OK) damageBrush(player, 1);
                 }
             }
@@ -207,8 +247,23 @@ final class GlueAuthoring implements Listener {
                 return;
             }
         }
-        Anchor anchor = new BlockAnchor(anchorBlock, () -> true);
-        sessions.put(id, new GlueSession(anchor, id, now()));
+        Anchor anchor = anchorFor(anchorBlock);
+        // Mid-stroke a hoist's origin is meaningless (its column is aired out) — mirror the minecart
+        // overload's settled-first gate. Plain BlockAnchors always read at rest here.
+        if (!anchor.isAtRest()) {
+            actionBar(player, "Anchor is moving — wait", NamedTextColor.RED);
+            return;
+        }
+        Object originKey = null;
+        if (anchor instanceof HoistAnchor) {
+            Block seed = anchor.originBlock();
+            if (!MovableBlocks.isMovable(seed, registry)) {
+                actionBar(player, "Nothing under the chain to glue to", NamedTextColor.RED);
+                return;
+            }
+            originKey = CustomBlockRegistry.LocationKey.of(seed);   // drift guard — see GlueSession
+        }
+        sessions.put(id, new GlueSession(anchor, id, now(), originKey));
         player.playSound(player.getLocation(), Sound.BLOCK_SLIME_BLOCK_PLACE, 0.6f, 1.4f);
         actionBar(player, "Glue: editing (" + glue.offsets(anchor).size() + " blocks)", NamedTextColor.GREEN);
     }
@@ -255,7 +310,7 @@ final class GlueAuthoring implements Listener {
     }
 
     private void unglueAllAt(Player player, Block anchorBlock) {
-        Anchor anchor = new BlockAnchor(anchorBlock, () -> true);
+        Anchor anchor = anchorFor(anchorBlock);
         glue.unglueAll(anchor);
         GlueSession s = sessions.get(player.getUniqueId());
         if (s != null && s.anchor.identityKey().equals(anchor.identityKey())) s.cornerA = null;
@@ -289,9 +344,15 @@ final class GlueAuthoring implements Listener {
         }
         // Filter out immovable cells (like glueCuboid already filters air/anchor/already-glued) rather than
         // rejecting the whole box for one bedrock. Sticky blocks are filtered too — they auto-glue (derived).
+        // Hoist sessions also drop the rope's right-of-way (the column above the seed) — origin snapshotted
+        // once, not per cell: inRopeColumn re-scans the chain on every call.
+        Block ropeOrigin = s.anchor instanceof HoistAnchor ? s.anchor.originBlock() : null;
         List<Block> movable = boxBlocks(a, clicked).stream()
             .filter(b -> MovableBlocks.isMovable(b, registry))
-            .filter(b -> !StickySpread.isSticky(b, registry)).toList();
+            .filter(b -> !StickySpread.isSticky(b, registry))
+            .filter(b -> ropeOrigin == null || b.getX() != ropeOrigin.getX()
+                || b.getZ() != ropeOrigin.getZ() || b.getY() <= ropeOrigin.getY())
+            .toList();
         GlueManager.FillResult r = glue.glueCuboid(s.anchor, movable,
             isDrawbridgeAnchor(s.anchor.originBlock()));
         damageBrush(player, r.added());
@@ -363,6 +424,18 @@ final class GlueAuthoring implements Listener {
                 actionBar(p, "Glue: session timed out", NamedTextColor.GRAY);
                 continue;
             }
+            // Hoist mid-stroke: the aired-out column makes the dynamic origin meaningless — freeze the
+            // outline (timeout above still counts) rather than draw from a garbage cell.
+            if (!s.anchor.isAtRest()) continue;
+            // Dynamic-origin drift (chain length changed: a completed stroke, a hand-placed or mined
+            // link) — the stored offsets no longer mean what the outline showed. Close; reopening is
+            // one click. Must use it.remove(), not closeIfDrifted (we're mid-iteration).
+            if (s.originKey != null && !s.originKey.equals(
+                    CustomBlockRegistry.LocationKey.of(s.anchor.originBlock()))) {
+                it.remove();
+                actionBar(p, "Platform moved — reopen the glue session", NamedTextColor.YELLOW);
+                continue;
+            }
             renderOutline(p, s);
         }
     }
@@ -427,6 +500,40 @@ final class GlueAuthoring implements Listener {
         return type != null && ANCHOR_IDS.contains(type.fullId());
     }
 
+    /** The right {@link Anchor} for an anchor block: hoists get the dynamic-origin {@link HoistAnchor}
+     *  (PDC on the skull, offsets relative to the platform seed below the chain end) — including via
+     *  {@link #startBlockSession}, whose hoist exports become seed-relative (intended). */
+    private Anchor anchorFor(Block block) {
+        if (ChainHoistManager.isHoist(block, registry)) {
+            return new HoistAnchor(block, registry,
+                () -> hoistManager == null || !hoistManager.isMoving(block));
+        }
+        return new BlockAnchor(block, () -> true);
+    }
+
+    /** The hoist owning {@code clicked} as its platform seed, or null: walk up the chain column and
+     *  require a hoist on top. Matches exactly the block below the chain end (below the hoist itself
+     *  at extension 0) — the same contiguity {@code scanDepth} uses, so it opens sessions precisely on
+     *  what a stroke would move. Bounded by build height. */
+    private @org.jspecify.annotations.Nullable Block owningHoist(Block clicked) {
+        int maxY = clicked.getWorld().getMaxHeight();
+        Block up = clicked.getRelative(0, 1, 0);
+        while (up.getY() <= maxY && ChainHoistManager.isOwnRope(up, registry)) {
+            up = up.getRelative(0, 1, 0);
+        }
+        return ChainHoistManager.isHoist(up, registry) ? up : null;
+    }
+
+    /** Dynamic-origin drift guard for edit paths (the outline tick inlines this — iterator). Returns
+     *  true when it closed the session. */
+    private boolean closeIfDrifted(Player player, GlueSession s) {
+        if (s.originKey == null) return false;
+        if (s.originKey.equals(CustomBlockRegistry.LocationKey.of(s.anchor.originBlock()))) return false;
+        sessions.remove(player.getUniqueId());
+        actionBar(player, "Platform moved — reopen the glue session", NamedTextColor.YELLOW);
+        return true;
+    }
+
     /** Whether this anchor's mechanism rotates about a horizontal (X/Z drawbridge) axis. */
     private boolean isDrawbridgeAnchor(Block anchorBlock) {
         CustomHeadBlock type = registry.getTypeFromBlock(anchorBlock);
@@ -437,13 +544,21 @@ final class GlueAuthoring implements Listener {
         return axis == RotationNetwork.Axis.X || axis == RotationNetwork.Axis.Z;
     }
 
-    private void reportGlue(Player player, Block block, GlueManager.Result r) {
+    private void reportGlue(Player player, Block block, GlueManager.Result r, Anchor anchor) {
         switch (r) {
             case OK -> feedback(player, block, true);
             case ALREADY_GLUED -> actionBar(player, "Already glued", NamedTextColor.YELLOW);
             case CAP_HIT -> reject(player, block, "Glue cap reached (" + glue.maxSize() + ")");
             case NOT_CONNECTED -> reject(player, block, "Not connected to the structure");
-            case IS_ANCHOR -> actionBar(player, "That's the hinge", NamedTextColor.RED);
+            // The origin cell: a hinge skull everywhere else, but a hoist's is its platform top —
+            // brushing it is a reasonable first instinct, and it DOES ride (resolveGroup adds it).
+            case IS_ANCHOR -> {
+                if (anchor instanceof HoistAnchor) {
+                    actionBar(player, "Platform top is included automatically", NamedTextColor.YELLOW);
+                } else {
+                    actionBar(player, "That's the hinge", NamedTextColor.RED);
+                }
+            }
             case AXIS_INCOMPATIBLE -> reject(player, block, "Won't rotate on a drawbridge");
         }
     }

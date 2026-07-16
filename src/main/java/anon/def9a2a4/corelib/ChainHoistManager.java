@@ -244,10 +244,33 @@ final class ChainHoistManager {
      * player stacked under the hoist by hand ARE adopted, and reeling in banks them in its storage.
      */
     private int scanDepth(Block hoist) {
+        return scanDepth(hoist, registry);
+    }
+
+    /** Static form for callers outside a manager instance ({@link HoistAnchor}) — same scan. */
+    static int scanDepth(Block hoist, CustomBlockRegistry registry) {
         int min = hoist.getWorld().getMinHeight();
         int d = 0;
-        while (hoist.getY() - 1 - d >= min && isOwnRope(hoist.getRelative(0, -1 - d, 0))) d++;
+        while (hoist.getY() - 1 - d >= min && isOwnRope(hoist.getRelative(0, -1 - d, 0), registry)) d++;
         return d;
+    }
+
+    /** The cell hoist glue is anchored at: the block below the chain end — below the hoist itself at
+     *  extension 0. Never stored, like the depth it derives from; {@link HoistAnchor} recomputes it from
+     *  the live column on every call. */
+    static Block platformSeed(Block hoist, CustomBlockRegistry registry) {
+        return hoist.getRelative(0, -1 - scanDepth(hoist, registry), 0);
+    }
+
+    /** Whether this block is a chain hoist head — {@link GlueAuthoring}'s anchor-construction gate. */
+    static boolean isHoist(Block b, CustomBlockRegistry registry) {
+        CustomHeadBlock t = registry.getTypeFromBlock(b);
+        return t != null && HOIST_ID.equals(t.fullId());
+    }
+
+    /** Whether this hoist has a stroke in flight — {@link HoistAnchor}'s atRest supply for authoring. */
+    boolean isMoving(Block hoist) {
+        return active.containsKey(CustomBlockRegistry.LocationKey.of(hoist));
     }
 
     /** CW: lower — pay chain out of the hoist, sliding it (and whatever hangs on it) down. */
@@ -275,8 +298,9 @@ final class ChainHoistManager {
     }
 
     /**
-     * Platform = the seed's authored glue (rare — normally none) or the seed itself, expanded through
-     * casings. @return {@code null} to reject the move outright (a glued cell is immovable).
+     * Platform = the hoist's authored glue (brushed via {@link HoistAnchor}, offsets relative to the
+     * seed) or, without any, the seed skull's own glue (legacy) — plus the movable seed itself, expanded
+     * through casings. @return {@code null} to reject the move outright (a glued cell is immovable).
      *
      * <p>{@code GlueManager.resolveStructure} skips air but NOT water/lava, and never consults the
      * immovable set — and {@code MechanismRegistry} filters nothing, trusting its caller entirely. So the
@@ -292,18 +316,29 @@ final class ChainHoistManager {
      * universal here, not a mistake. Since the gather re-runs every trigger, emitting it puffs forever at
      * the bottom of the chain — loudest when the hoist is fully extended and can no longer move.
      */
-    private @Nullable List<Block> resolveGroup(Block seed, Set<CustomBlockRegistry.LocationKey> excluded) {
-        List<Block> glued = glueManager.resolveStructure(new BlockAnchor(seed, () -> true),
-            excluded, null);
+    private @Nullable List<Block> resolveGroup(Block hoist, Block seed,
+                                               Set<CustomBlockRegistry.LocationKey> excluded) {
+        // Authored sources are EITHER-OR, never unioned: hoist-held glue (HoistAnchor — where the brush
+        // stores it) wins; a glue-bearing skull riding as the seed (rotator head on a hanging platform)
+        // is consulted only without it. A union could carry up to twice the glue cap.
+        HoistAnchor hoistGlue = new HoistAnchor(hoist, registry, () -> true);
+        Anchor anchor = glueManager.hasGlue(hoistGlue) ? hoistGlue : new BlockAnchor(seed, () -> true);
+        List<Block> glued = glueManager.resolveStructure(anchor, excluded, null);
         List<Block> base = new ArrayList<>();
+        boolean seedIn = false;
         if (glued != null) {
             for (Block b : glued) {
                 if (isClear(b)) continue;                                 // stale glue: gone or drowned
                 if (!MovableBlocks.isMovable(b, registry)) return null;   // immovable — shear guard
                 base.add(b);
+                if (cellKey(b) == cellKey(seed)) seedIn = true;           // sticky seed can arrive derived
             }
         }
-        if (base.isEmpty()) base = List.of(seed);   // seed is checked movable by both callers
+        // The seed rides whenever it is movable — NOT only as an empty-glue fallback. It is offset
+        // (0,0,0) from the hoist anchor: unauthorable (IS_ANCHOR) and never returned by
+        // resolveStructure, so leaving it to the fallback would strand an authored platform's top
+        // block for a landing link to solid-win against.
+        if (!seedIn && MovableBlocks.isMovable(seed, registry)) base.add(seed);
         return StickySpread.withDerived(base, registry, glueManager.maxSize(),
             excluded, null);
     }
@@ -350,13 +385,19 @@ final class ChainHoistManager {
 
         // Whatever hangs under the chain rides along. Absent (a bare chain paying into air) the stroke is
         // the same, just chain-only — which is why there is no separate bare-rope path any more.
+        // Authored hoist glue is explicit intent, so it rides even when the seed cell itself was broken
+        // after authoring (resolveGroup still vets every glued cell individually).
         Block seed = hoist.getRelative(0, -1 - startDepth, 0);
         List<Block> load = List.of();
-        int[] glue = null;
-        if (MovableBlocks.isMovable(seed, registry)) {
-            List<Block> platform = resolveGroup(seed, excluded);
+        int[] seedGlue = null;
+        if (MovableBlocks.isMovable(seed, registry)
+                || glueManager.hasGlue(new HoistAnchor(hoist, registry, () -> true))) {
+            List<Block> platform = resolveGroup(hoist, seed, excluded);
             if (platform == null) return;   // glued to something immovable — refuse rather than shear
-            glue = new BlockAnchor(seed, () -> !active.containsKey(hoistKey)).readOffsets();  // pre air-out
+            // Legacy skull-as-seed glue only. Hoist-held glue (HoistAnchor) never needs the landing
+            // rebind below: its PDC sits on the unmoved hoist, and a stroke is a whole-block Y
+            // translation of seed and platform together, so seed-relative offsets are invariant.
+            seedGlue = new BlockAnchor(seed, () -> !active.containsKey(hoistKey)).readOffsets();  // pre air-out
             load = platform;
             for (Block b : platform) cells.add(cellKey(b));
         }
@@ -373,9 +414,18 @@ final class ChainHoistManager {
         // 0). Emphatically NOT the hoist at the top: the emerging ghost slides DOWN out of the hoist and never
         // leads, so a top ray runs the whole chain column (all footprint) and, capped, never reaches the cell
         // below a long chain — the pass-through bug. advance re-probes from here every block as the body drops.
-        List<Block> frontier = descend
-            ? (load.isEmpty() ? List.of(hoist.getRelative(0, -startDepth, 0)) : load)
-            : List.of();
+        // The bottom link joins whenever the SEED cell isn't riding (bare chain, or authored glue hanging
+        // beside a broken seed): without it nothing probes the cell the rope itself pays into, and every
+        // blocked emerging link would solid-win into an item, hole-punching the column.
+        List<Block> frontier = List.of();
+        if (descend) {
+            boolean seedRides = false;
+            long seedCell = cellKey(seed);
+            for (Block b : load) if (cellKey(b) == seedCell) { seedRides = true; break; }
+            List<Block> f = new ArrayList<>(load);
+            if (!seedRides) f.add(hoist.getRelative(0, -startDepth, 0));
+            frontier = f;
+        }
 
         // `span` = whole blocks this mover may travel: rising's fixed swallow count, and descending's budget
         // cap for advance's target gating. Capture: descending the whole column; rising all but the top
@@ -425,7 +475,7 @@ final class ChainHoistManager {
         // excludes the landed links. Every bail is above this line; the hook below always runs after it.
         if (descend) consumeChains(registry.getOrCreateStorage(hoist), budget);
 
-        final int[] glueOffsets = glue;
+        final int[] glueOffsets = seedGlue;
         final int seedDy = -1 - startDepth;   // seed's offset from the pivot (= the hoist) at t=0
         // Rising: links layLinks actually AIRED (not merely passed) — the exact refund. A link a player
         // mined out mid-rise was never ours to bank; counting deletions instead of re-scanning the world
@@ -587,6 +637,10 @@ final class ChainHoistManager {
 
     /** A plain chain we may take: a chain <i>shaft</i> is also CHAIN, but it is in the bare-block index. */
     private boolean isOwnRope(Block b) {
+        return isOwnRope(b, registry);
+    }
+
+    static boolean isOwnRope(Block b, CustomBlockRegistry registry) {
         return b.getType() == CHAIN_MATERIAL && !registry.isBareBlock(b);
     }
 
