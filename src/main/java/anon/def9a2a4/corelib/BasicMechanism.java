@@ -311,10 +311,8 @@ final class BasicMechanism implements Mechanism {
         this.previousVehicleYaw = this.previousVehicleLoc.getYaw();
     }
 
-    // Preserve the rider's momentum ACROSS the teleport instead of us overwriting it with setVelocity()
-    // every tick — that re-imposed (downward) velocity while the collider rose into them, a tug-of-war
-    // that read as "stuck". These flags are velocity-only: Paper teleports always take an ABSOLUTE
-    // location (there is no position-relative teleport), so the target below must be current + dy.
+    // Velocity-preserving teleport flags (the position part is always absolute; these keep the rider's
+    // existing momentum from being zeroed by the teleport). See carryRidersUp.
     private static final TeleportFlag[] CARRY_FLAGS = {
         TeleportFlag.Relative.VELOCITY_X, TeleportFlag.Relative.VELOCITY_Y,
         TeleportFlag.Relative.VELOCITY_Z, TeleportFlag.Relative.VELOCITY_ROTATION,
@@ -342,8 +340,11 @@ final class BasicMechanism implements Mechanism {
             }
         }
 
+        // Teleport each rider up by dy to an ABSOLUTE target (current + dy — keeps x/z/yaw/pitch). The
+        // CARRY_FLAGS preserve their existing momentum across the teleport instead of us re-imposing it, so
+        // horizontal walking and fall/jump velocity carry through.
         for (Entity e : riders) {
-            Location to = e.getLocation().add(0, dy, 0);   // ABSOLUTE target; keeps x/z/yaw/pitch
+            Location to = e.getLocation().add(0, dy, 0);
             e.teleport(to, PlayerTeleportEvent.TeleportCause.PLUGIN, CARRY_FLAGS);
         }
     }
@@ -604,7 +605,18 @@ final class BasicMechanism implements Mechanism {
             parentLoc.setPitch(0);
             TeleportCompat.teleport(parent, parentLoc);
         }
-        rotate(yaw - assemblyYaw);
+        // Fold the delta into (-90°, 90°] before rotating. A minecart's raw yaw flips ~180° when it
+        // reverses along a straight rail; the raw delta would swing the whole structure 180° through
+        // walls in one tick (and, once docked, embed it permanently). Folding maps a straight-rail
+        // reversal to 0° (keep orientation) while a genuine 90° curve stays 90°. KNOWN LIMIT: this is
+        // correct only for a NET orientation within ±90° of assembly — any cumulative turn >90° before
+        // docking (two same-direction curves, a 135° arc) mis-orients an asymmetric structure (and it
+        // docks that way, since landingRotation() snaps the same currentYaw). Self-consistent (blocks
+        // land where shown), not a cell corruption; the exact fix is a cumulative-turn accumulator (deferred).
+        float delta = yaw - assemblyYaw;
+        while (delta > 90f)  delta -= 180f;
+        while (delta < -90f) delta += 180f;
+        rotate(delta);
         previousVehicleLoc = loc.clone();
         previousVehicleYaw = yaw;
     }
