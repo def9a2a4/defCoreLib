@@ -297,11 +297,6 @@ blocks:
               C: { material: COPPER_INGOT }
               R: { material: REDSTONE }
             amount: 4
-          - pattern: ["CCC", "CR ", "CCC"]
-            key:
-              C: { material: COPPER_INGOT }
-              R: { material: REDSTONE }
-            amount: 4
       unlock_advancement: "minecraft:story/smelt_iron"
 
   iron_corner_pipe:
@@ -348,11 +343,6 @@ blocks:
               I: { material: IRON_INGOT }
               R: { material: REDSTONE }
             amount: 4
-          - pattern: ["III", "IR ", "III"]
-            key:
-              I: { material: IRON_INGOT }
-              R: { material: REDSTONE }
-            amount: 4
       unlock_advancement: "minecraft:story/smelt_iron"
 
   gold_corner_pipe:
@@ -395,11 +385,6 @@ blocks:
       craft:
         shaped:
           - pattern: ["GGG", " RG", "GGG"]
-            key:
-              G: { material: GOLD_INGOT }
-              R: { material: REDSTONE }
-            amount: 4
-          - pattern: ["GGG", "GR ", "GGG"]
             key:
               G: { material: GOLD_INGOT }
               R: { material: REDSTONE }

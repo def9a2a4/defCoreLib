@@ -393,12 +393,14 @@ blocks:
     recipes:
       craft:
         shaped:
-          # A bearing over a chain column, framed with iron.
-          - pattern: ["ICI", "IBI", "ICI"]
+          # A chain pulley over a sticky piston, chain-fed and framed with iron and copper.
+          - pattern: ["IHI", "CPC", "ISI"]
             key:
               I: { material: IRON_INGOT }
-              C: { material: IRON_CHAIN }
-              B: { block: "mech:bearing" }
+              H: { material: IRON_CHAIN }
+              C: { material: COPPER_INGOT }
+              P: { block: "mech:chain_pulley" }
+              S: { material: STICKY_PISTON }
 
   # ─── Clutch ─────────────────────────────────────────────────────────────
   # Transmitter: like a shaft, but disconnects when powered by redstone.
