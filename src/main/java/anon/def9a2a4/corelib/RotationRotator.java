@@ -2,13 +2,21 @@ package anon.def9a2a4.corelib;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Skull;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
@@ -22,15 +30,16 @@ import java.util.*;
  * <p>A CONSUMER block (floor → door about Y, wall → drawbridge about X/Z). It is <b>stateless</b> —
  * it has no "open"/"closed". On a <b>redstone rising edge</b> (off→on) it checks it has rotation
  * power, resolves its structure (authored glue, else the single block it's placed on), and rotates it
- * once by the target angle (right-click to cycle 90/180/270) in the network's current spin direction:
- * CW → +angle, CCW → −angle. Reverse the network (a redstone reverser, or wrench the source) to rotate
- * the other way; each pulse is one rotation, then real blocks are restored.
+ * once by the target angle (right-click opens a menu to pick 90/180/270/360) in the network's current
+ * spin direction. Reverse the network (a redstone reverser, or wrench the source) to rotate the other
+ * way; each pulse is one rotation, then real blocks are restored. A 360° target is a full spin that
+ * lands the structure back in its original cells.
  *
  * <p>Swing speed is locked at start to {@code clamp(K * surplus / mass)}; while swinging the rotator
  * registers transient network demand so contending rotators slow each other down. Block selection is
  * the glued selection, defaulting to the single attachment block when no glue is authored.
  */
-final class RotationRotator {
+final class RotationRotator implements Listener {
 
     private static final String ROTATOR_ID = "mech:rotator";
 
@@ -42,6 +51,15 @@ final class RotationRotator {
     private static final int SWING_DEMAND = 2;
 
     private static final NamespacedKey TARGET_KEY = new NamespacedKey("mech", "rotator_target");
+
+    // Angle-selection GUI: one button per target angle. Slots on the middle row, mirroring the
+    // RedstoneDynamo mode menu ({10,12,14,16}). ANGLES/ANGLE_SLOTS/ANGLE_LABELS are index-aligned.
+    private static final int[] ANGLES = {90, 180, 270, 360};
+    private static final int[] ANGLE_SLOTS = {10, 12, 14, 16};
+    private static final String[] ANGLE_LABELS = {
+        "90° — quarter turn", "180° — half turn", "270° — three-quarter turn", "360° — full spin"
+    };
+    private static final int DEFAULT_TARGET = 90;
 
     private final JavaPlugin plugin;
     private final CustomBlockRegistry registry;
@@ -86,6 +104,8 @@ final class RotationRotator {
             .onChunkUnload(b -> { cleanup(b); network.removeNode(CustomBlockRegistry.LocationKey.of(b)); })
             .onBlockRemoved((b, state) -> { cleanup(b); network.removeNode(CustomBlockRegistry.LocationKey.of(b)); })
             .build());
+        // Self-register for the angle-selection menu's click handler (mirrors RedstoneDynamo).
+        plugin.getServer().getPluginManager().registerEvents(this, plugin);
     }
 
     /** Number of swings this hinge has committed since load (for the showcase test harness). */
@@ -153,7 +173,7 @@ final class RotationRotator {
         int mass = Math.max(1, mech.blockCount());
         float speed = clamp(SPEED_K * surplus / mass, MIN_DEG, MAX_DEG);
         int targetAngle = readTarget(head);
-        float target = (dir == RotationNetwork.SpinDirection.CW) ? targetAngle : -targetAngle;
+        float target = (dir == RotationNetwork.SpinDirection.CW) ? -targetAngle : targetAngle;
         network.addTransientDemand(key, SWING_DEMAND);
 
         swingCount.merge(key, 1, Integer::sum);
@@ -195,11 +215,11 @@ final class RotationRotator {
     }
 
     // ──────────────────────────────────────────────────────────────────────
-    // Interaction: cycle the target angle (90 → 180 → 270 → 90)
+    // Interaction: wrench → status readout; empty hand → angle-selection menu
     // ──────────────────────────────────────────────────────────────────────
 
     private boolean onInteract(Block head, org.bukkit.event.player.PlayerInteractEvent event) {
-        var player = event.getPlayer();
+        Player player = event.getPlayer();
         var key = CustomBlockRegistry.LocationKey.of(head);
         if (RotationBlocks.isWrench(player.getInventory().getItemInMainHand())) {
             RotationNetwork.SpinDirection dir = network.getDirection(key);
@@ -211,16 +231,90 @@ final class RotationRotator {
                 NamedTextColor.GOLD));
             return true;
         }
-        int next = switch (readTarget(head)) {
-            case 90 -> 180;
-            case 180 -> 270;
-            default -> 90;
-        };
-        writeTarget(head, next);
-        player.sendActionBar(Component.text("Rotator angle: " + next + "°", NamedTextColor.LIGHT_PURPLE));
+        // Empty/other hand → open the angle menu (return true cancels the event, so the head's
+        // vanilla interaction never fires).
+        openMenu(player, head);
+        return true;
+    }
+
+    // ──────────────────────────────────────────────────────────────────────
+    // Angle-selection GUI (mirrors the RedstoneDynamo mode menu)
+    // ──────────────────────────────────────────────────────────────────────
+
+    private void openMenu(Player player, Block head) {
+        RotatorModeHolder holder = new RotatorModeHolder(head.getLocation());
+        Inventory inv = Bukkit.createInventory(holder, 27,
+            Component.text("Rotator Angle", NamedTextColor.LIGHT_PURPLE));
+        holder.setInventory(inv);
+        populate(inv, readTarget(head));
+        player.openInventory(inv);
+    }
+
+    private void populate(Inventory inv, int current) {
+        ItemStack filler = named(new ItemStack(Material.GRAY_STAINED_GLASS_PANE), Component.empty(), List.of());
+        for (int i = 0; i < inv.getSize(); i++) inv.setItem(i, filler);
+
+        inv.setItem(4, named(new ItemStack(Material.CLOCK),
+            Component.text("Rotation Angle", NamedTextColor.LIGHT_PURPLE).decoration(TextDecoration.ITALIC, false),
+            List.of(text("How far each pulse turns the structure.", NamedTextColor.GRAY),
+                    text("Spin direction still comes from the network.", NamedTextColor.GRAY))));
+
+        for (int i = 0; i < ANGLES.length; i++) {
+            inv.setItem(ANGLE_SLOTS[i], angleButton(ANGLES[i], ANGLE_LABELS[i], ANGLES[i] == current));
+        }
+    }
+
+    @EventHandler
+    public void onMenuClick(InventoryClickEvent event) {
+        if (!(event.getInventory().getHolder() instanceof RotatorModeHolder holder)) return;
+        event.setCancelled(true); // read-only menu
+        if (!(event.getWhoClicked() instanceof Player player)) return;
+
+        Block head = holder.blockLocation().getBlock();
+        if (registry.getTypeFromBlock(head) == null) { player.closeInventory(); return; } // block gone
+
+        int angle = angleForSlot(event.getRawSlot());
+        if (angle <= 0) return;
+
+        writeTarget(head, angle);
         head.getWorld().playSound(head.getLocation().add(0.5, 0.5, 0.5),
             Sound.BLOCK_COPPER_PLACE, 0.6f, 1.4f);
-        return true;
+        populate(event.getInventory(), angle); // refresh highlight in place
+    }
+
+    private static int angleForSlot(int slot) {
+        for (int i = 0; i < ANGLE_SLOTS.length; i++) if (ANGLE_SLOTS[i] == slot) return ANGLES[i];
+        return -1;
+    }
+
+    // ── Item helpers (italic-off discipline mirrors RedstoneDynamo) ──────────────────────────────
+
+    private static ItemStack angleButton(int angle, String label, boolean selected) {
+        ItemStack it = new ItemStack(Material.CLOCK, Math.max(1, angle / 90));
+        Component name = Component.text(label, selected ? NamedTextColor.GREEN : NamedTextColor.WHITE)
+            .decoration(TextDecoration.ITALIC, false);
+        List<Component> lore = List.of(
+            text(selected ? "✔ Selected" : "Click to select",
+                selected ? NamedTextColor.GREEN : NamedTextColor.YELLOW));
+        it = named(it, name, lore);
+        if (selected) {
+            var meta = it.getItemMeta();
+            meta.setEnchantmentGlintOverride(true);
+            it.setItemMeta(meta);
+        }
+        return it;
+    }
+
+    private static ItemStack named(ItemStack it, Component name, List<Component> lore) {
+        var meta = it.getItemMeta();
+        meta.displayName(name);
+        if (!lore.isEmpty()) meta.lore(lore);
+        it.setItemMeta(meta);
+        return it;
+    }
+
+    private static Component text(String s, NamedTextColor color) {
+        return Component.text(s, color).decoration(TextDecoration.ITALIC, false);
     }
 
     private void feedbackNoPower(Block head) {
@@ -261,9 +355,9 @@ final class RotationRotator {
     }
 
     private int readTarget(Block head) {
-        if (!(head.getState() instanceof Skull skull)) return 90;
+        if (!(head.getState() instanceof Skull skull)) return DEFAULT_TARGET;
         Integer v = skull.getPersistentDataContainer().get(TARGET_KEY, PersistentDataType.INTEGER);
-        return (v == null) ? 90 : v;
+        return (v == null) ? DEFAULT_TARGET : v;
     }
 
     private void writeTarget(Block head, int target) {

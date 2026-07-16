@@ -461,6 +461,17 @@ final class RotationBlocks {
                 if (state == null || !state.startsWith("running_")) return;
                 int remaining = fuelManager.tick(key);
                 if (remaining <= 0) {
+                    // Fuel counter hit zero this tick. Before idling, pull the next fuel item from
+                    // storage in the SAME tick so a running engine doesn't drop power for a full tick
+                    // cycle at every fuel-item boundary. Only fall through to idle when nothing's left.
+                    Inventory storage = registry.getOrCreateStorage(b);
+                    if (storage != null) {
+                        int fv = consumeOneFuelItem(storage, fuelManager);
+                        if (fv > 0) {
+                            fuelManager.addFuel(key, fv);
+                            return; // stays running_ — no power gap
+                        }
+                    }
                     // Out of fuel — transition to idle
                     String axis = state.substring(state.lastIndexOf('_') + 1);
                     String target = "idle_" + axis;

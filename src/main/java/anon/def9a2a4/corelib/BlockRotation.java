@@ -66,6 +66,11 @@ public final class BlockRotation {
      */
     static String rotateCustomState(CustomHeadBlock type, String state, BlockData landed) {
         if (state == null || type.placementStateMap() == null || type.stateResolver() != null) return state;
+        // Non-Directional heads (floor/ceiling PLAYER_HEAD) carry no facing in their BlockData, so
+        // attachmentFace can't tell UP from DOWN and would collapse a ceiling drill (idle_ceiling, mines
+        // down) to its floor state (idle_y, mines up). The captured vertical state is already correct
+        // under any move — Y-rotation and translation never flip up/down — so keep it as-is.
+        if (!(landed instanceof org.bukkit.block.data.Directional)) return state;
         BlockFace key = attachmentFace(landed);
         String mapped = type.placementStateMap().get(key);
         if (mapped == null) return state;

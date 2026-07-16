@@ -262,8 +262,16 @@ final class MechanismRotationDriver {
             } else if (running) {
                 fuel--;
                 if (fuel <= 0) {
-                    st.engineRunning.put(idx, false);
-                    st.dirty = true;
+                    // Burn counter hit zero — pull the next fuel item in the SAME tick so the engine
+                    // doesn't stop for a full interval at every fuel-item boundary. Only stop when
+                    // storage is dry. On a successful refill we keep running and leave st.dirty alone
+                    // (the engine never changed running state, so no re-solve is needed).
+                    Inventory inv = mech.getStorage(idx);
+                    if (inv != null) fuel += RotationBlocks.consumeOneFuelItem(inv, fuelManager);
+                    if (fuel <= 0) {
+                        st.engineRunning.put(idx, false);
+                        st.dirty = true;
+                    }
                 }
             }
             st.engineFuel.put(idx, Math.max(fuel, 0));
