@@ -58,10 +58,19 @@ final class MechanismMinecartManager implements Listener {
     private final Map<UUID, MinecartState> tracked = new HashMap<>();
     private BukkitTask tickTask;
 
-    private static final class MinecartState {
+    // Package-visible: CartCollision (terrain collision, Part B) reads/writes the heading + resume state.
+    static final class MinecartState {
         final Minecart minecart;
         Mechanism mechanism;       // null when unassembled
         boolean wasOnPoweredRail;  // edge detection
+
+        // Terrain-collision state (Part B). Transient across /reload — rebuilt as the cart moves.
+        int headingAxis = 0;       // 0 = X, 2 = Z
+        int headingSign = 0;       // +1 / -1; 0 until inited at assemble / first motion
+        boolean autoStopped = false;
+        double lastGap = CartCollision.DEFAULT_MAX_SPEED;
+        boolean kicked = false;    // a resume kick is in flight
+        double kickAnchorX, kickAnchorZ;
 
         MinecartState(Minecart minecart) {
             this.minecart = minecart;
@@ -175,10 +184,17 @@ final class MechanismMinecartManager implements Listener {
 
             // Freeze a glued, unassembled cart so its glue can't drift: with max speed 0 the physics step
             // clamps any velocity to 0, so the cart never crosses a cell (and originBlock() stays put).
-            // Restore vanilla speed once assembled (it must ride) or unglued.
+            // An assembled cart rides — its maxSpeed is now the terrain-collision clamp (Part B). Unglued /
+            // no-mechanism carts get vanilla speed. Written EVERY tick so a stale 0 self-heals post-/reload.
             boolean frozen = state.mechanism == null
                 && glueManager.hasGlue(new EntityAnchor(state.minecart, () -> true));
-            state.minecart.setMaxSpeed(frozen ? 0.0d : DEFAULT_MINECART_MAX_SPEED);
+            if (frozen) {
+                state.minecart.setMaxSpeed(0.0d);
+            } else if (state.mechanism == null) {
+                state.minecart.setMaxSpeed(DEFAULT_MINECART_MAX_SPEED);
+            } else {
+                updateAssembledCartCollision(state, (BasicMechanism) state.mechanism);
+            }
 
             boolean onPowered = isOnPoweredActivatorRail(state.minecart);
 
@@ -193,6 +209,80 @@ final class MechanismMinecartManager implements Listener {
 
             state.wasOnPoweredRail = onPowered;
         }
+    }
+
+    /**
+     * Per-tick terrain collision for an assembled mechanism cart (Part B). Order: B2 backstop (undo any
+     * penetration from last tick's physics) → resolve heading → break fragiles in the path → B1 clamp
+     * (write maxSpeed) → resume kick (a docked cart whose path reopened needs a push).
+     */
+    private void updateAssembledCartCollision(MinecartState state, BasicMechanism mech) {
+        CartCollision.resnapIfPenetrating(mech, state);
+
+        boolean wasStopped = state.autoStopped;
+        boolean atRest = CartCollision.resolveHeading(state);
+        org.bukkit.util.Vector v = state.minecart.getVelocity();
+        double vmag = Math.hypot(v.getX(), v.getZ());
+
+        if (!atRest || state.autoStopped) {
+            CartCollision.breakFragilesAhead(mech, state, atRest ? CartCollision.RESUME_KICK : vmag);
+        }
+
+        double maxSpeed = CartCollision.clampedMaxSpeed(mech, state, atRest);
+        state.minecart.setMaxSpeed(maxSpeed);
+
+        handleResume(state, vmag);
+
+        // Feedback: hint the rider the first time the cart docks against an obstacle.
+        if (state.autoStopped && !wasStopped) {
+            for (Entity passenger : state.minecart.getPassengers()) {
+                if (passenger instanceof org.bukkit.entity.Player p) {
+                    p.sendActionBar(net.kyori.adventure.text.Component.text(
+                        "Mechanism blocked — clear the path, or break the cart to recover"));
+                }
+            }
+        }
+    }
+
+    /** Push a docked cart back into motion once its path reopens; disarm once it has genuinely departed. */
+    private void handleResume(MinecartState state, double vmag) {
+        if (!state.autoStopped) { state.kicked = false; return; }
+        Minecart cart = state.minecart;
+        // Departed under its own power (player push / powered rail / downhill) → disarm, don't re-kick.
+        if (vmag >= CartCollision.RESUME_KICK) { state.autoStopped = false; state.kicked = false; return; }
+        if (state.kicked) {
+            double dx = cart.getLocation().getX() - state.kickAnchorX;
+            double dz = cart.getLocation().getZ() - state.kickAnchorZ;
+            if (Math.hypot(dx, dz) >= CartCollision.RESUME_CLEAR_DIST) {
+                state.autoStopped = false;
+                state.kicked = false;
+                return;
+            }
+        }
+        // Kick only while slow (don't overwrite a powered rail that's already accelerating it away).
+        if (state.lastGap > CartCollision.RESUME_GAP_OPEN && vmag < CartCollision.RESUME_KICK) {
+            org.bukkit.util.Vector dir = state.headingAxis == 0
+                ? new org.bukkit.util.Vector(state.headingSign, 0, 0)
+                : new org.bukkit.util.Vector(0, 0, state.headingSign);
+            cart.setVelocity(dir.multiply(CartCollision.RESUME_KICK));
+            if (!state.kicked) {
+                state.kicked = true;
+                state.kickAnchorX = cart.getLocation().getX();
+                state.kickAnchorZ = cart.getLocation().getZ();
+            }
+        }
+    }
+
+    /** Seed the collision heading from the cart's yaw at assembly, so the at-rest scan is never degenerate. */
+    private void initHeading(MinecartState state) {
+        float yaw = ((state.minecart.getLocation().getYaw() % 360f) + 360f) % 360f;
+        if (yaw < 45f || yaw >= 315f)      { state.headingAxis = 2; state.headingSign = 1; }   // +Z (south)
+        else if (yaw < 135f)               { state.headingAxis = 0; state.headingSign = -1; }  // -X (west)
+        else if (yaw < 225f)               { state.headingAxis = 2; state.headingSign = -1; }  // -Z (north)
+        else                               { state.headingAxis = 0; state.headingSign = 1; }   // +X (east)
+        state.autoStopped = false;
+        state.kicked = false;
+        state.lastGap = CartCollision.DEFAULT_MAX_SPEED;
     }
 
     /** Whether this cart currently has an assembled mechanism (used by glue authoring's at-rest gate). */
@@ -264,6 +354,7 @@ final class MechanismMinecartManager implements Listener {
         Mechanism mech = mechRegistry.assembleMechanism(MECH_MINECART_ID, blocks,
             state.minecart, MINECART_RIDE_OFFSET, null);
         state.mechanism = mech;
+        initHeading(state);
         // Rebind only authored glue to where the blocks land so it tracks across rides.
         if (glued) mech.setOnDisassembled(p ->
             glueManager.rebindTransformed(anchor, authored, mech.landingRotation()));

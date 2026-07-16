@@ -386,6 +386,18 @@ whole point of work block B).
   that drives carts by velocity/teleport must coexist with that (and with each cart's own mechanism-follow).
 - `setMaxSpeed` is **per-entity**; after this v2 refinement the freeze only writes it on frozen carts, so the
   train system can treat `maxSpeed` as its own on every non-`corelib:frozen` cart.
+  - **AMENDED (terrain-collision round, `CartCollision`):** an ASSEMBLED mechanism cart no longer gets a
+    plain `0.4` — its `maxSpeed` is now the **terrain-collision clamp** (`gap − EPS`, `CartCollision
+    .clampedMaxSpeed`, written every tick in `updateAssembledCartCollision`). This is the SOLE `maxSpeed`
+    writer for assembled carts. A train system must route assembled-cart speed **through** this clamp
+    (e.g. `min(trainSpeed, collisionClamp)`), never write `setMaxSpeed` on an assembled cart directly, or
+    it will clobber collision. Frozen (glued-unassembled) carts still get `0`; non-mechanism carts get `0.4`.
+  - Known limits (this round): B0 yaw-fold mis-orients an asymmetric structure after any cumulative >90°
+    turn before docking (self-consistent, not a cell corruption); a cart docks behind an unmined row unless
+    a drill tiles the leading face; an UNMANNED cart stops at unloaded-chunk borders and at collidable
+    fragiles (no rider to attribute the `BlockBreakEvent`); cross-mechanism (cart↔cart, piston↔mech)
+    collision is a SEPARATE later round (B3). Curve corner collision is approximate (no collider inflation
+    yet) — the B2 re-snap backstop catches overshoot.
 - Cart identity: one `rotation:mechanism_minecart` item (was `demo:mechanism_minecart` — see the
   companion-workstream rename above) → one `RideableMinecart`, tagged `corelib:mechanism_minecart` +
   a PDC key, tracked by UUID in `MechanismMinecartManager.tracked`.

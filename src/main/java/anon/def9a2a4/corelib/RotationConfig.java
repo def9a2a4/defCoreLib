@@ -29,7 +29,7 @@ final class RotationConfig {
     int pressMaxBatch = 8;
     int placerTickInterval = 20;
     int suctionTickInterval = 2;
-    int suctionPullRange = 1;          // Chebyshev radius: 1 → 3×3×3 cube
+    double suctionPullRange = 2.5;     // pull-box side = 2*(range+0.75); 2.5 → 6.5×6.5×6.5 cube
     double suctionPullStrength = 0.14; // fixed inward velocity (≈ fanMinPush)
     int chainPulleyMaxDistance = 32;   // max chain-pulley link distance (blocks)
     double pistonMaxStep = 0.5;        // extendable piston: cap on per-tick slide velocity (blocks/tick)
@@ -146,7 +146,7 @@ final class RotationConfig {
         ConfigurationSection suction = yaml.getConfigurationSection("suction_hopper");
         if (suction != null) {
             suctionTickInterval = suction.getInt("tick-interval", suctionTickInterval);
-            suctionPullRange    = suction.getInt("pull-range", suctionPullRange);
+            suctionPullRange    = suction.getDouble("pull-range", suctionPullRange);
             suctionPullStrength = suction.getDouble("pull-strength", suctionPullStrength);
             loaded++;
         }

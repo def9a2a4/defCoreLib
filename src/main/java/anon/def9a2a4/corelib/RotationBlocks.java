@@ -1004,9 +1004,10 @@ final class RotationBlocks {
      * ({@code MechanismRotationDriver}, which passes the live cell and the travelling inventory).
      */
     static void suctionEffect(World world, Location center, int cellX, int cellY, int cellZ,
-                              Inventory internal, int pullRange, double pullStrength) {
-        // Half-extent = full cells (pullRange + 0.5) + a 0.25 margin per side, so pullRange 1 →
-        // 1.75 → 3.5×3.5×3.5 box (the 3×3×3 cells plus a quarter-block reach on every face).
+                              Inventory internal, double pullRange, double pullStrength) {
+        // Half-extent = pullRange + a 0.25 margin per side beyond the cell reach, so the pull box
+        // side is 2*(pullRange + 0.75): pullRange 1 → 3.5³, 2.5 → 6.5³. Item capture still only
+        // happens in the hopper's own 1×1×1 cell below; this box governs the inward pull.
         double r = pullRange + 0.75;
         var box = org.bukkit.util.BoundingBox.of(center.toVector(), r, r, r);
         for (org.bukkit.entity.Entity e : world.getNearbyEntities(box)) {
@@ -1167,7 +1168,7 @@ final class RotationBlocks {
     private static double fanMaxPush;
     private static double fanPushPerPower;
     private static int suctionTickInterval;
-    private static int suctionPullRange;
+    private static double suctionPullRange;
     private static double suctionPullStrength;
 
     /** Staged-break progress against one target material. Package-visible: the mechanism rotation
