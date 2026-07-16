@@ -420,6 +420,13 @@ final class BasicMechanism implements Mechanism {
         // back to a cardinal orientation. 90° rotations about a cardinal axis map integer
         // offsets to integers, so block positions stay exact.
         float snappedYaw = Math.round(currentYaw / 90f) * 90f;
+        // Settle the LIVE transform to the snapped landing before placing. Placement + glue snap via
+        // landingRotation() regardless, but a mid-motion teardown (e.g. a rotator whose chunk unloads
+        // mid-spin) leaves currentYaw at an arbitrary angle, so the lingering displays/colliders would
+        // sit a quarter-turn off the cells the blocks land in. Driving currentYaw to snappedYaw makes
+        // displays, colliders, glue and placement all coincide. No-op for a mechanism already at a
+        // cardinal angle (currentYaw == 0 for every non-rotating type).
+        if (currentYaw != snappedYaw) rotate(snappedYaw);
         Matrix4f rotation = landingRotation();
 
         // The cells where blocks actually landed — handed to the glue rebind hook so an anchor's

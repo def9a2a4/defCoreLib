@@ -129,7 +129,9 @@ final class MechanismMinecartManager implements Listener {
             if (!(entity instanceof Minecart)) continue;
             MinecartState state = tracked.remove(entity.getUniqueId());
             if (state != null && state.mechanism != null) {
-                state.mechanism.disassemble();
+                // Go through the wrapper (snapAndStop first) so a cart caught mid-block by the unload
+                // lands its blocks on-grid, matching the glue — not offset by the cart's fractional pos.
+                disassemble(state);
             }
         }
     }
