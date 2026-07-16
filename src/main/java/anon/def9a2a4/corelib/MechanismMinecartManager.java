@@ -116,6 +116,24 @@ final class MechanismMinecartManager implements Listener {
         }
     }
 
+    /**
+     * A chunk's entities are unloading — cleanly disassemble any assembled mechanism cart it hosts
+     * WHILE the chunk is still loaded (blocks writable), then drop tracking. Symmetric counterpart
+     * to {@link #scanChunkForMinecarts}. Without this the tick guard would only notice the cart once
+     * its chunk is already unloading ({@code !isValid()}) and disassemble against a dead chunk —
+     * racing block-writes/entity-removal, orphaning displays and losing the aired-out real blocks.
+     * Unassembled carts just drop tracking; they are re-registered on the matching EntitiesLoad.
+     */
+    void onEntitiesUnload(List<Entity> entities) {
+        for (Entity entity : entities) {
+            if (!(entity instanceof Minecart)) continue;
+            MinecartState state = tracked.remove(entity.getUniqueId());
+            if (state != null && state.mechanism != null) {
+                state.mechanism.disassemble();
+            }
+        }
+    }
+
     void shutdown() {
         if (tickTask != null) tickTask.cancel();
         // Disassemble all active mechanisms
@@ -176,11 +194,14 @@ final class MechanismMinecartManager implements Listener {
         Iterator<Map.Entry<UUID, MinecartState>> it = tracked.entrySet().iterator();
         while (it.hasNext()) {
             MinecartState state = it.next().getValue();
-            if (!state.minecart.isValid() || state.minecart.isDead()) {
+            if (state.minecart.isDead()) {                  // truly destroyed
                 if (state.mechanism != null) state.mechanism.disassemble();
                 it.remove();
                 continue;
             }
+            if (!state.minecart.isValid()) {                // chunk unloaded — onEntitiesUnload owns the
+                continue;                                   // clean disassemble; do NOT disassemble here
+            }                                               // against a dead chunk (races/loses blocks)
 
             // Freeze a glued, unassembled cart so its glue can't drift: with max speed 0 the physics step
             // clamps any velocity to 0, so the cart never crosses a cell (and originBlock() stays put).

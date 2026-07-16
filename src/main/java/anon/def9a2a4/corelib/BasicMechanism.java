@@ -612,18 +612,18 @@ final class BasicMechanism implements Mechanism {
             parentLoc.setPitch(0);
             TeleportCompat.teleport(parent, parentLoc);
         }
-        // Fold the delta into (-90°, 90°] before rotating. A minecart's raw yaw flips ~180° when it
-        // reverses along a straight rail; the raw delta would swing the whole structure 180° through
-        // walls in one tick (and, once docked, embed it permanently). Folding maps a straight-rail
-        // reversal to 0° (keep orientation) while a genuine 90° curve stays 90°. KNOWN LIMIT: this is
-        // correct only for a NET orientation within ±90° of assembly — any cumulative turn >90° before
-        // docking (two same-direction curves, a 135° arc) mis-orients an asymmetric structure (and it
-        // docks that way, since landingRotation() snaps the same currentYaw). Self-consistent (blocks
-        // land where shown), not a cell corruption; the exact fix is a cumulative-turn accumulator (deferred).
-        float delta = yaw - assemblyYaw;
-        while (delta > 90f)  delta -= 180f;
-        while (delta < -90f) delta += 180f;
-        rotate(delta);
+        // Rotation frozen for now: the yaw-fold below recomputes orientation ABSOLUTELY each tick as
+        // fold(rawYaw − assemblyYaw) into ±90°, which is correct only for a NET turn within ±90° of
+        // assembly. A net turn >90° (two curves = 180°) wraps the folded delta back toward 0°, so the
+        // structure ends at its initial orientation instead of turned. Until a cumulative-turn
+        // accumulator lands (integrate per-tick signed heading change; treat a 1-tick ~180° jump as a
+        // reversal→no-rotation, real arcs accumulate), the mechanism follows the cart's POSITION but
+        // keeps its assembly orientation. Assembly calls rotate(0), so currentYaw stays 0 and
+        // landingRotation() snaps to the assembly orientation — self-consistent. Old drive:
+        // float delta = yaw - assemblyYaw;
+        // while (delta > 90f)  delta -= 180f;
+        // while (delta < -90f) delta += 180f;
+        // rotate(delta);
         previousVehicleLoc = loc.clone();
         previousVehicleYaw = yaw;
     }

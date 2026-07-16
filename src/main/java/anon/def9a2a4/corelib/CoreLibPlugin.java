@@ -297,6 +297,16 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         }
     }
 
+    // Paper EntitiesUnloadEvent: fires as a chunk's entities unload but while the chunk is still
+    // loaded and its blocks are writable — the safe window to cleanly disassemble an assembled
+    // mechanism cart (return its blocks to the world) before it becomes an orphaned ghost.
+    @EventHandler
+    public void onEntitiesUnload(org.bukkit.event.world.EntitiesUnloadEvent event) {
+        if (mechanismMinecartManager != null) {
+            mechanismMinecartManager.onEntitiesUnload(event.getEntities());
+        }
+    }
+
     // ──────────────────────────────────────────────────────────────────────
     // Block placement — detect custom block items, write PDC, apply config
     // ──────────────────────────────────────────────────────────────────────
