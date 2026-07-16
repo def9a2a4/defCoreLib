@@ -722,7 +722,8 @@ public class MechanismRegistry {
         });
     }
 
-    private BlockDisplay spawnMechBlockDisplay(Location loc, BlockData data,
+    /** Package-private: also used by {@link BasicMechanism#appendGhost} to add a block mid-flight. */
+    BlockDisplay spawnMechBlockDisplay(Location loc, BlockData data,
                                                UUID mechId, int blockIdx, String role) {
         return loc.getWorld().spawn(loc, BlockDisplay.class, d -> {
             d.setBlock(data);

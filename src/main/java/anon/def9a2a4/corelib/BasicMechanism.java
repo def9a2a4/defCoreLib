@@ -9,6 +9,7 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Container;
+import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.Display;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.ItemDisplay;
@@ -267,6 +268,35 @@ final class BasicMechanism implements Mechanism {
             TeleportCompat.teleport(cp.carrier(),
                 pivot.clone().add(worldOff.x, worldOff.y - 0.5, worldOff.z));
         }
+    }
+
+    /**
+     * Append a synthetic block to a mechanism that is already in flight, at {@code localOffset} from the
+     * pivot. It rides the rigid body from this instant and lands like any other block on disassembly (a
+     * protected landing cell is still skipped).
+     *
+     * <p>For a mover that <b>creates</b> material as it travels — the chain hoist pays a new link out of
+     * its own cell every block — rather than sliding a pre-built rod like the piston. Assembly-time ghosts
+     * can't express that: every link a stroke will ever need would have to exist at t=0, stacked in plain
+     * air above the hoist. The alternative, writing real blocks into the world mid-stroke, is worse: the
+     * body is drawn at the client's interpolated position, so a block placed at the server's position
+     * appears ahead of it, and a stroke cut short lands the body on top of what it already wrote.
+     *
+     * <p>Appended blocks carry {@link CollisionConfig#NONE}: colliders are spawned per block at assembly and
+     * indexed by position, and nothing here needs one — the load underneath carries the riders.
+     */
+    void appendGhost(Vector3f localOffset, BlockData data) {
+        checkMainThread();
+        if (disassembled) return;
+        MechanismBlockData mb = new MechanismBlockData(data,
+            new Matrix4f().translation(localOffset), CollisionConfig.NONE,
+            null, null, null, null, null, null, false, null);
+        int index = blocks.size();
+        blocks.add(mb);
+        Display d = mechanismRegistry.spawnMechBlockDisplay(parent.getLocation(), data, id, index, "display");
+        parent.addPassenger(d);
+        displaysPerBlock.add(new ArrayList<>(List.of(d)));
+        rotate(currentYaw);   // place it on the body now, rather than a frame late at the pivot
     }
 
     @Override
