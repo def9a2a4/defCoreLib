@@ -123,3 +123,53 @@ piglin_head: {size: 0.5}
 piglin_wall_head: {size: 0.5}
 dragon_head: true
 dragon_wall_head: true
+
+# ── Snow / rails / cross-shaped plants: no collision in vanilla → pass-through ──
+# (Blocks with real vanilla collision are intentionally NOT listed and stay full: snow_block, lily_pad,
+#  sea_pickle, cactus, bamboo, sweet_berry_bush, hoppers, cauldrons.)
+snow: false                  # the SNOW layer only; SNOW_BLOCK stays full
+"#rails": false              # rail + powered/detector/activator rail
+
+# plants
+"#saplings": false
+"#small_flowers": false
+"#tall_flowers": false
+short_grass: false
+fern: false
+tall_grass: false
+large_fern: false
+dead_bush: false
+bush: false
+firefly_bush: false
+leaf_litter: false
+pink_petals: false
+brown_mushroom: false
+red_mushroom: false
+crimson_fungus: false
+warped_fungus: false
+crimson_roots: false
+warped_roots: false
+nether_sprouts: false
+vine: false
+weeping_vines: false
+weeping_vines_plant: false
+twisting_vines: false
+twisting_vines_plant: false
+cave_vines: false
+cave_vines_plant: false
+glow_lichen: false
+hanging_roots: false
+spore_blossom: false
+wheat: false
+carrots: false
+potatoes: false
+beetroots: false
+nether_wart: false
+cocoa: false
+torchflower_crop: false
+pitcher_crop: false
+sugar_cane: false
+seagrass: false
+tall_seagrass: false
+kelp: false
+kelp_plant: false
