@@ -19,7 +19,7 @@
       "color": "white"
     },
     "description": {
-      "text": "Craft a Mechanical Casing \u2014 it glues itself to its neighbours, no brush needed. Comes in every plank wood.",
+      "text": "Craft a Mechanical Casing \u2014 casings bond to each other into a moving frame, no brush needed. Comes in every plank wood.",
       "color": "gray"
     },
     "frame": "task",

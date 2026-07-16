@@ -59,8 +59,8 @@ final class DoorDemo {
         boolean freshAssembly = (mech == null);
         if (freshAssembly) {
             Anchor anchor = new BlockAnchor(head, () -> !activeDoors.containsKey(key));
-            // The controller head itself is excluded: a casing beside it would otherwise drag it into
-            // the swung set and the door would air out its own controller.
+            // The controller head itself is excluded: slime/honey beside it (or a stray authored
+            // offset) would otherwise drag it into the swung set and air out its own controller.
             List<Block> resolved = glueManager.resolveStructure(anchor,
                 Set.of(key), MoverExclusion::blockedParticle);
             boolean glued = resolved != null && !resolved.isEmpty();
@@ -71,7 +71,7 @@ final class DoorDemo {
                 planks = resolved;
             } else {
                 Block seed = attachmentBlock(head);   // no glue → swing the block the door is placed on
-                if (seed.getType().isAir()) return;
+                if (!MovableBlocks.isMovable(seed, registry)) return;   // no air/immovables (match rotator/cart)
                 planks = List.of(seed);
             }
             planks = StickySpread.withDerived(planks, registry, glueManager.maxSize(),
@@ -121,8 +121,8 @@ final class DoorDemo {
         } else {
             // Fully opened + disassembled: re-assemble rotated planks, rotate to -90°
             Anchor anchor = new BlockAnchor(head, () -> !activeDoors.containsKey(key));
-            // The controller head itself is excluded: a casing beside it would otherwise drag it into
-            // the swung set and the door would air out its own controller.
+            // The controller head itself is excluded: slime/honey beside it (or a stray authored
+            // offset) would otherwise drag it into the swung set and air out its own controller.
             List<Block> resolved = glueManager.resolveStructure(anchor,
                 Set.of(key), MoverExclusion::blockedParticle);
             boolean glued = resolved != null && !resolved.isEmpty();
@@ -133,7 +133,7 @@ final class DoorDemo {
                 planks = resolved;
             } else {
                 Block seed = attachmentBlock(head);   // no glue → swing the block the door is placed on
-                if (seed.getType().isAir()) return;
+                if (!MovableBlocks.isMovable(seed, registry)) return;   // no air/immovables (match rotator/cart)
                 planks = List.of(seed);
             }
             planks = StickySpread.withDerived(planks, registry, glueManager.maxSize(),

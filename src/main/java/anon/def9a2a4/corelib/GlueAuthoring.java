@@ -373,8 +373,9 @@ final class GlueAuthoring implements Listener {
         int ox = origin.getX(), oy = origin.getY(), oz = origin.getZ();
 
         // Green dust at the eight cube-corners of every glued block, deduped so corners shared by
-        // adjacent blocks render once (scales with extent, not block count). Derived casing
-        // auto-glue is unioned in — it IS glue, just not stored (recomputed each resolve).
+        // adjacent blocks render once (scales with extent, not block count). Derived sticky
+        // auto-glue (casings/slime/honey + leaves) is unioned in — it IS glue, just not stored
+        // (recomputed each resolve).
         var green = new Particle.DustOptions(Color.LIME, 0.8f);
         Set<Long> seen = new HashSet<>();
         Set<Vector3i> outlined = new LinkedHashSet<>(glue.offsets(s.anchor));

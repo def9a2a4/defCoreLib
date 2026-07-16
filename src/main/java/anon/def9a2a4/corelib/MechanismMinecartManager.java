@@ -3,6 +3,7 @@ package anon.def9a2a4.corelib;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.Chunk;
 import org.bukkit.World;
 import org.bukkit.entity.Display;
@@ -232,13 +233,21 @@ final class MechanismMinecartManager implements Listener {
     private void assemble(MinecartState state) {
         snapAndStop(state.minecart);
 
+        // The cart's "self" cells — never captured: the rail it rides and the block below it. The cart
+        // has no block hardware of its own, but slime/honey in the carried set could otherwise scoop
+        // the track out from under it (casings can't — they bond only to casings).
+        Block railCell = state.minecart.getLocation().getBlock();
+        Set<CustomBlockRegistry.LocationKey> excluded =
+            MoverExclusion.exclusionFor(List.of(railCell, railCell.getRelative(BlockFace.DOWN)));
+
         // Structure = the cart's glued selection (offsets in the cart's PDC, resolved relative to its
         // current cell — glued blocks must be co-located with the cart: assemble in place). With no
         // authored glue, default to the single block directly above the cart.
         Anchor anchor = new EntityAnchor(state.minecart, () -> state.mechanism == null);
-        List<Block> resolved = glueManager.resolveStructure(anchor);
+        List<Block> resolved = glueManager.resolveStructure(anchor,
+            excluded, MoverExclusion::blockedParticle);
         boolean glued = resolved != null && !resolved.isEmpty();
-        // Pre-move snapshot: rebind stores ONLY authored glue (derived casings/leaves re-derive).
+        // Pre-move snapshot: rebind stores ONLY authored glue (derived sticky blocks/leaves re-derive).
         final int[] authored = glued ? anchor.readOffsets() : null;
         List<Block> blocks;
         if (glued) {
@@ -248,8 +257,9 @@ final class MechanismMinecartManager implements Listener {
             if (!MovableBlocks.isMovable(seed, registry)) return;   // don't scoop air / immovable world blocks
             blocks = List.of(seed);
         }
-        // Slime-style casing spread: a casing in the carried set drags its neighbours (transitively).
-        blocks = StickySpread.withDerived(blocks, registry, glueManager.maxSize());
+        // Sticky spread: casings bond their casing frame; slime/honey drag their movable neighbours.
+        blocks = StickySpread.withDerived(blocks, registry, glueManager.maxSize(),
+            excluded, MoverExclusion::blockedParticle);
 
         Mechanism mech = mechRegistry.assembleMechanism(MECH_MINECART_ID, blocks,
             state.minecart, MINECART_RIDE_OFFSET, null);

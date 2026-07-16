@@ -137,27 +137,33 @@ None of this is implemented yet (verified).*
 > (guarded by the re-entrancy queue), and the passive-source boundary-scan face-axis asymmetry
 > (intended — wrong-axis windmills shouldn't connect).
 
-### Block D — Glue (shared block selection; `rotation-mechanisms.md` Phase 3, not started)
+### Block D — Glue (shared block selection) — **SHIPPED** (commits `881fd65`→`f7db17b`, plus the sticky rework `29fadaf`/`cb2de53`/`b2fedef`)
 
-> **Replaces 3 flood-fill sites now + 1 later:** `RotationRotator.floodFill`, `MinecartShipManager`
-> flood-fill, `DoorDemo.floodFill` — and eventually BlockShips `BlockStructureScanner` (the 4th
-> consumer, once Block E lands). One selection layer for all mechanism block-grabbing.
+> **Replaced the 3 flood-fill sites:** `RotationRotator`, minecarts, `DoorDemo` all select via
+> `GlueManager.resolveStructure(anchor)`; BlockShips `BlockStructureScanner` remains the 4th
+> consumer for Block E. One selection layer for all mechanism block-grabbing.
 
-- [ ] **D1.** `GlueManager` + anchor-owned PDC offset storage (`glue`/`unglue`/`resolveStructure`).
-  Define the **`Anchor` abstraction** over **block-with-PDC (skull hinge)** vs
-  **entity-with-PDC (minecart)** — all glue ops go through it.
-  - ✅ Skull-PDC round-trip is auto-persisted by `CustomBlockRegistry` (`markBlock`/`setState` →
-    `skull.update()`, restored on chunk load) — verified; hinge glue persists for free.
-  - ⚠️ **D↔E dependency:** the **minecart entity-PDC has no restore/load path today** —
-    `MechanismSerializer` is only invoked on disassemble. Minecart glue persistence needs Block E's
-    persistence/recovery work (or a minimal entity-PDC save/load). Hinge glue can ship without E.
-- [ ] **D2.** Glue-mode authoring UX (slime-glue item, sessions, particle outline, cuboid fill,
-  connectivity/cap), incl. the three interaction-conflict fixes vs `onPlayerInteract`.
-- [ ] **D3.** Retrofit Rotator/DoorDemo and `MinecartShipManager` to `resolveStructure(anchor)` with
-  flood-fill fallback — **removes the Phase-2 plank-leak caveat** and the need for B6.
-  - ⚠️ **Highest-regression-risk item after A2:** this is a block-*selection* rewrite — a bug here
-    assembles/disassembles the **wrong blocks**. Verify the glue path reproduces flood-fill selection
-    (assemble/disassemble parity on doors *and* minecarts) **before** removing the flood-fill fallback.
+- [x] **D1.** `GlueManager` + anchor-owned PDC offset storage (`glue`/`unglue`/`resolveStructure`),
+  with the `Anchor` abstraction over skull-PDC (`BlockAnchor`) and entity-PDC (`EntityAnchor`).
+  - ✅ Skull-PDC round-trip auto-persisted; hinge glue persists for free.
+  - ⚠️ **D↔E dependency (still open):** the minecart entity-PDC has no restore/load path —
+    minecart glue persistence remains gated on Block E's persistence/recovery work.
+- [x] **D2.** Glue-mode authoring UX (`GlueAuthoring`: brush item, sessions, particle outline,
+  cuboid fill, connectivity/cap). Connectivity counts the derived sticky closure, so authored glue
+  connects THROUGH casing frames (`b2fedef`).
+- [x] **D3.** Rotator/DoorDemo/minecarts (and piston heads + hoist platforms) all resolve through
+  glue; flood-fill remains only as the movers' single-block fallback seed.
+
+**Sticky families (`StickySpread`, supersedes the earlier casing auto-glue design):** derived
+auto-glue computed fresh at every resolve, never stored. Casings (`mech:casing_*`) bond ONLY to
+other casings — frame connectors, they never grab machinery or world blocks. Vanilla SLIME_BLOCK
+grabs every movable neighbour except honey, propagating slime→slime; HONEY mirrors (never slime).
+A grabbed sticky block spreads onward by its own family rule. Movers pass a `MoverExclusion` set of
+their STRUCTURAL cells only (piston core+rod, hoist+chain column, rotator/door head, minecart rail
+cell + below) — refused bonds puff WAX_OFF (throttled). Power components are deliberately ordinary
+cargo: capturing one tears its node down cleanly and a mid-move power cut parks the stroke.
+Cross-mover capture (A's slime grabbing B's hardware) is accepted and documented in
+`MoverExclusion`'s javadoc.
 
 ### Block E — BlockShips integration (`blockships-integration.md`; depends on A, ideally B)
 *Reviewed against the real BlockShips source (`ship/ShipInstance.java`, `DisplayShip.java`,

@@ -892,12 +892,12 @@ blocks:
   casing_oak:
     name: "&fOak Mechanical Casing"
     lore:
-      - "&7Sticks to adjacent blocks like slime —"
-      - "&7move it with any mechanism"
+      - "&7Bonds to other casings, forming a"
+      - "&7frame any mechanism can move"
     catalog_notes:
-      - "&fAuto-glues to every adjacent block like a slime block — build a moving contraption without the glue brush."
-      - "&7Any casing carried by a piston, rotator, minecart, or chain hoist drags its neighbours along, spreading through other casings."
-      - "&7A vanilla piston moves a lone casing as an ordinary block (no slime spread)."
+      - "&fBonds to adjacent casings (any wood mixes), forming a rigid frame — build a moving contraption without the glue brush."
+      - "&7Casings never grab other blocks. Attach machinery and decoration with slime or honey blocks (which grab everything except each other), or the glue brush."
+      - "&7A vanilla piston moves a lone casing as an ordinary block (no spread)."
       - "&7Comes in every plank wood — the center plank of the recipe picks the variant."
     base_block: OAK_STAIRS
     base_block_data: "[half=top,facing=north,shape=straight,waterlogged=false]"
@@ -930,8 +930,8 @@ blocks:
   casing_acacia:
     name: "&fAcacia Mechanical Casing"
     lore:
-      - "&7Sticks to adjacent blocks like slime —"
-      - "&7move it with any mechanism"
+      - "&7Bonds to other casings, forming a"
+      - "&7frame any mechanism can move"
     catalog_variant_of: casing_oak
     base_block: ACACIA_STAIRS
     base_block_data: "[half=top,facing=north,shape=straight,waterlogged=false]"
@@ -964,8 +964,8 @@ blocks:
   casing_bamboo:
     name: "&fBamboo Mechanical Casing"
     lore:
-      - "&7Sticks to adjacent blocks like slime —"
-      - "&7move it with any mechanism"
+      - "&7Bonds to other casings, forming a"
+      - "&7frame any mechanism can move"
     catalog_variant_of: casing_oak
     base_block: BAMBOO_STAIRS
     base_block_data: "[half=top,facing=north,shape=straight,waterlogged=false]"
@@ -998,8 +998,8 @@ blocks:
   casing_birch:
     name: "&fBirch Mechanical Casing"
     lore:
-      - "&7Sticks to adjacent blocks like slime —"
-      - "&7move it with any mechanism"
+      - "&7Bonds to other casings, forming a"
+      - "&7frame any mechanism can move"
     catalog_variant_of: casing_oak
     base_block: BIRCH_STAIRS
     base_block_data: "[half=top,facing=north,shape=straight,waterlogged=false]"
@@ -1032,8 +1032,8 @@ blocks:
   casing_cherry:
     name: "&fCherry Mechanical Casing"
     lore:
-      - "&7Sticks to adjacent blocks like slime —"
-      - "&7move it with any mechanism"
+      - "&7Bonds to other casings, forming a"
+      - "&7frame any mechanism can move"
     catalog_variant_of: casing_oak
     base_block: CHERRY_STAIRS
     base_block_data: "[half=top,facing=north,shape=straight,waterlogged=false]"
@@ -1066,8 +1066,8 @@ blocks:
   casing_crimson:
     name: "&fCrimson Mechanical Casing"
     lore:
-      - "&7Sticks to adjacent blocks like slime —"
-      - "&7move it with any mechanism"
+      - "&7Bonds to other casings, forming a"
+      - "&7frame any mechanism can move"
     catalog_variant_of: casing_oak
     base_block: CRIMSON_STAIRS
     base_block_data: "[half=top,facing=north,shape=straight,waterlogged=false]"
@@ -1100,8 +1100,8 @@ blocks:
   casing_dark_oak:
     name: "&fDark Oak Mechanical Casing"
     lore:
-      - "&7Sticks to adjacent blocks like slime —"
-      - "&7move it with any mechanism"
+      - "&7Bonds to other casings, forming a"
+      - "&7frame any mechanism can move"
     catalog_variant_of: casing_oak
     base_block: DARK_OAK_STAIRS
     base_block_data: "[half=top,facing=north,shape=straight,waterlogged=false]"
@@ -1134,8 +1134,8 @@ blocks:
   casing_jungle:
     name: "&fJungle Mechanical Casing"
     lore:
-      - "&7Sticks to adjacent blocks like slime —"
-      - "&7move it with any mechanism"
+      - "&7Bonds to other casings, forming a"
+      - "&7frame any mechanism can move"
     catalog_variant_of: casing_oak
     base_block: JUNGLE_STAIRS
     base_block_data: "[half=top,facing=north,shape=straight,waterlogged=false]"
@@ -1168,8 +1168,8 @@ blocks:
   casing_mangrove:
     name: "&fMangrove Mechanical Casing"
     lore:
-      - "&7Sticks to adjacent blocks like slime —"
-      - "&7move it with any mechanism"
+      - "&7Bonds to other casings, forming a"
+      - "&7frame any mechanism can move"
     catalog_variant_of: casing_oak
     base_block: MANGROVE_STAIRS
     base_block_data: "[half=top,facing=north,shape=straight,waterlogged=false]"
@@ -1202,8 +1202,8 @@ blocks:
   casing_pale_oak:
     name: "&fPale Oak Mechanical Casing"
     lore:
-      - "&7Sticks to adjacent blocks like slime —"
-      - "&7move it with any mechanism"
+      - "&7Bonds to other casings, forming a"
+      - "&7frame any mechanism can move"
     catalog_variant_of: casing_oak
     base_block: PALE_OAK_STAIRS
     base_block_data: "[half=top,facing=north,shape=straight,waterlogged=false]"
@@ -1236,8 +1236,8 @@ blocks:
   casing_spruce:
     name: "&fSpruce Mechanical Casing"
     lore:
-      - "&7Sticks to adjacent blocks like slime —"
-      - "&7move it with any mechanism"
+      - "&7Bonds to other casings, forming a"
+      - "&7frame any mechanism can move"
     catalog_variant_of: casing_oak
     base_block: SPRUCE_STAIRS
     base_block_data: "[half=top,facing=north,shape=straight,waterlogged=false]"
@@ -1270,8 +1270,8 @@ blocks:
   casing_warped:
     name: "&fWarped Mechanical Casing"
     lore:
-      - "&7Sticks to adjacent blocks like slime —"
-      - "&7move it with any mechanism"
+      - "&7Bonds to other casings, forming a"
+      - "&7frame any mechanism can move"
     catalog_variant_of: casing_oak
     base_block: WARPED_STAIRS
     base_block_data: "[half=top,facing=north,shape=straight,waterlogged=false]"

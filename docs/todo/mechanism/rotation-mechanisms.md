@@ -4,9 +4,13 @@ Network-driven, redstone-controlled doors and drawbridges, built by bridging the
 network to the mechanism system, plus a reusable block-selection ("glue") layer. Three phases
 (plus a small Phase 0), each independently shippable and testable in-game.
 
-> **Status (2026-06-29):** Phase 0 ✅, Phase 1 (reverser) ✅, Phase 2 (rotator + mechanism
+> **Status (2026-07-16):** Phase 0 ✅, Phase 1 (reverser) ✅, Phase 2 (rotator + mechanism
 > axis-generalization) ✅ **shipped** (commits `c1e8767`, `9b1feb0`, + the pulse-trigger rework).
-> Phase 3 (glue) **not started**. The Rotator design changed during implementation — it is now
+> Phase 3 (glue) ✅ **shipped** (`881fd65`→`f7db17b`; sticky-family rework `29fadaf`/`cb2de53`/
+> `b2fedef` — see Block D in `rotation-and-mechanism-fixes.md` for the as-built semantics: casings
+> bond only casings; vanilla slime/honey are the universal grabbers, mutually immune; movers
+> exclude their structural cells). The Phase-3 section below is the original DESIGN, kept for
+> rationale — the as-built system differs. The Rotator design changed during implementation — it is now
 > **stateless and redstone-pulse-triggered**, not the open/closed direction-polled machine
 > originally written below; sections 2a/2b have been corrected. See **Remaining issues** at the
 > bottom for what's left (chiefly the drawbridge rotation origin and glue).
@@ -250,8 +254,9 @@ ride; reload → the anchor still remembers its set; hit the cap → message.
    (see 2a) across `MechanismRegistry` + `BasicMechanism` + `DoorDemo` + `MinecartShipManager` +
    `RotationRotator`, with in-game iteration. Risk: must keep the working Y-door and minecart paths
    exact. **The naive center-Y-only fix is wrong** (breaks both).
-2. **Phase 3 — Glue (not started).** The anchor-owned block-selection layer below; until it lands,
-   selection is oak-planks flood-fill, so same-material doors/drawbridges over-grab.
+2. **Phase 3 — Glue: ✅ shipped.** The anchor-owned selection layer + derived sticky families
+   (`StickySpread`) replaced the oak-planks flood-fill everywhere; see the status note at the top
+   and Block D in `rotation-and-mechanism-fixes.md`.
 3. **Placeholder textures.** Reverser uses `@copper_gear`, rotator uses `@iron_block` — both need
    distinct hinge/gearbox head textures.
 4. **Tuning constants are hardcoded** in `RotationRotator` (`SPEED_K=8`, `MIN_DEG=1.5`,

@@ -80,6 +80,10 @@ final class GlueManager {
         for (int i = 0; i + 2 < o.length; i += 3) {
             Block b = w.getBlockAt(ox + o[i], oy + o[i + 1], oz + o[i + 2]);
             if (b.getType().isAir()) continue; // block gone — skip
+            // Sticky cells are never authored (setStructure/the brush filter them) — but offsets stored
+            // before the sticky rework may contain them. Skip: they re-derive below while adjacent, and
+            // stop being baked (a stored casing island no longer moves without a live bond).
+            if (registry != null && StickySpread.isSticky(b, registry)) continue;
             if (excluded.contains(CustomBlockRegistry.LocationKey.of(b))) { // mover self cell — never captured
                 if (onBlocked != null) onBlocked.accept(null, b);
                 continue;

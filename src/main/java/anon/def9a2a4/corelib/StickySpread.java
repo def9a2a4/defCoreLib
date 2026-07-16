@@ -119,18 +119,23 @@ final class StickySpread {
         if (anchorCell != null) frontier.add(anchorCell);
         frontier.addAll(structure);
         for (Block b : frontier) {
+            // A sticky frontier cell attracts only what it sticks to (a slime seed must not attract
+            // honey); non-sticky structure cells attract every family — the structure attracts sticky.
+            Family bf = familyOf(b, registry);
             for (BlockFace f : Faces.CARDINAL) {
                 Block n = b.getRelative(f);
-                if (familyOf(n, registry) == null) continue;
+                Family nf = familyOf(n, registry);
+                if (nf == null) continue;
+                if (bf != null && !sticksTo(bf, nf)) continue;
                 CustomBlockRegistry.LocationKey nk = CustomBlockRegistry.LocationKey.of(n);
                 if (excluded.contains(nk)) {                       // mover self cell — bond refused
                     if (onBlocked != null && seen.add(nk)) onBlocked.accept(b, n);
                     continue;
                 }
                 if (!seen.add(nk)) continue;
+                if (present.size() + derived.size() >= cap) return derived;   // cap is a hard ceiling
                 derived.add(n);
                 queue.add(n);
-                if (present.size() + derived.size() >= cap) return derived;
             }
         }
         // Sticky blocks already in the structure (authored or seed) bond too, not just derived ones.
@@ -153,9 +158,9 @@ final class StickySpread {
                     continue;
                 }
                 if (!seen.add(nk)) continue;
+                if (present.size() + derived.size() >= cap) return derived;   // cap is a hard ceiling
                 derived.add(n);
                 if (nf != null) queue.add(n);
-                if (present.size() + derived.size() >= cap) return derived;
             }
         }
         return derived;
