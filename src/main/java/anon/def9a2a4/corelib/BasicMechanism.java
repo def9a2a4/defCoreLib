@@ -568,6 +568,12 @@ final class BasicMechanism implements Mechanism {
         parent.remove(); // Entity.remove() implicitly ejects from vehicle
         if (ownsVehicle) {
             vehicle.remove();
+        } else if (vehicle != null) {
+            // Non-owned vehicle (e.g. a mechanism minecart) survives disassembly, but assembly tagged
+            // it corelib:mech:{id}:vehicle (MechanismRegistry.assembleMechanism). Strip that tag now —
+            // otherwise on the next chunk load cleanupOrphanedEntities sees a tag whose mech is gone
+            // from activeMechanisms and reaps the cart (taking its PDC-stored glue with it).
+            vehicle.removeScoreboardTag("corelib:mech:" + id() + ":vehicle");
         }
     }
 

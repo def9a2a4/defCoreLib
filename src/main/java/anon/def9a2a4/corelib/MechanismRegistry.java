@@ -585,6 +585,10 @@ public class MechanismRegistry {
      */
     public void cleanupOrphanedEntities(org.bukkit.Chunk chunk) {
         for (Entity entity : chunk.getEntities()) {
+            // A mechanism minecart is a first-class persistent entity, not a disposable mech display.
+            // Never reap it here — even after a hard crash left its stale corelib:mech:{id}:vehicle tag
+            // (disassembly never ran to strip it), the cart and its PDC-stored glue must survive.
+            if (entity.getScoreboardTags().contains("corelib:mechanism_minecart")) continue;
             for (String tag : entity.getScoreboardTags()) {
                 if (!tag.startsWith("corelib:mech:")) continue;
                 // Tag format: "corelib:mech:{uuid}:{index}:{role}" or "corelib:mech:{uuid}:{role}"
