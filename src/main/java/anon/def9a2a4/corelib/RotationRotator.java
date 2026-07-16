@@ -71,6 +71,10 @@ final class RotationRotator implements Listener {
     private final Map<CustomBlockRegistry.LocationKey, BukkitTask> activeTasks = new HashMap<>();
     // Last redstone-power state, for off→on rising-edge detection.
     private final Map<CustomBlockRegistry.LocationKey, Boolean> lastPowered = new HashMap<>();
+    // Last server tick a rotator's network was recalculated — collapses a redstone pulse's burst of
+    // BlockPhysicsEvents into one recalc per tick (a full O(network) rebuild is far too expensive to
+    // run per physics event, and redstone power isn't part of the network topology anyway).
+    private final Map<CustomBlockRegistry.LocationKey, Long> lastRecalcTick = new HashMap<>();
     // Swings committed per hinge — survives a swing's transient teardown so the showcase harness can
     // assert a swing actually happened.
     private final Map<CustomBlockRegistry.LocationKey, Integer> swingCount = new HashMap<>();
@@ -118,8 +122,16 @@ final class RotationRotator implements Listener {
     // ──────────────────────────────────────────────────────────────────────
 
     private void onNeighborChange(Block head) {
-        recalc(head);
         var key = CustomBlockRegistry.LocationKey.of(head);
+        // Debounce the recalc to once per tick per node: a single redstone pulse fires a burst of
+        // BlockPhysicsEvents, and recalc() is a full network teardown + BFS rebuild. A real structural
+        // change still recalcs (next tick at latest); the once-per-tick recalc reflects the tick's
+        // final state, and redstone power is not a network input so collapsing the burst is lossless.
+        long tick = Bukkit.getServer().getCurrentTick();
+        if (!Long.valueOf(tick).equals(lastRecalcTick.get(key))) {
+            lastRecalcTick.put(key, tick);
+            recalc(head);
+        }
         boolean now = head.getBlockPower() > 0;
         boolean was = lastPowered.getOrDefault(key, false);
         lastPowered.put(key, now); // update first → repeated same-tick neighbor events are idempotent
@@ -210,6 +222,7 @@ final class RotationRotator implements Listener {
         if (task != null) task.cancel();
         network.clearTransientDemand(key);
         lastPowered.remove(key);
+        lastRecalcTick.remove(key);
         Mechanism mech = activeRotators.remove(key);
         if (mech != null) mech.disassemble();
     }
