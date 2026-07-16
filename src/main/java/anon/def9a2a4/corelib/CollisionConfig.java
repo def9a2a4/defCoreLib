@@ -5,6 +5,7 @@ import org.joml.Vector3f;
 
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 /**
  * Per-block collider descriptor for a mechanism block.
@@ -21,6 +22,8 @@ import java.util.Map;
  * to the top half — identical to BlockShips' numbers.</p>
  */
 public final class CollisionConfig {
+
+    private static final Logger LOG = Logger.getLogger("DefCoreLib");
 
     public final boolean enabled;
     public final float size;
@@ -78,12 +81,19 @@ public final class CollisionConfig {
             Vector3f offset = parseOffset(map.get("offset"));
             return new CollisionConfig(true, size, offset);
         }
+        // A bare scalar (e.g. `chest: 0.9` instead of `chest: {size: 0.9}`) reaches here — warn rather
+        // than silently treat it as a full block, since it's an easy authoring mistake.
+        LOG.warning("Unrecognized collider value '" + value + "' (use true/false or {size, offset}); "
+            + "treating as full block");
         return DEFAULT;
     }
 
     private static Vector3f parseOffset(Object offsetObj) {
         if (offsetObj instanceof List<?> list && list.size() >= 3) {
             return new Vector3f(toFloat(list.get(0)), toFloat(list.get(1)), toFloat(list.get(2)));
+        }
+        if (offsetObj != null) {
+            LOG.warning("Ignoring malformed collider offset " + offsetObj + " (expected [x, y, z]); using [0, 0, 0]");
         }
         return new Vector3f(0, 0, 0);
     }

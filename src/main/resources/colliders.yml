@@ -47,12 +47,16 @@
   offset: [0, 0, 0]
 
 # ── Thin / non-colliding blocks (pass-through while assembled) ──
+# NOTE: a `false` block has no collider, so it won't support or carry riders. A rising piston/hoist
+# platform's walkable TOP surface should be a solid or slab block, not one of these pass-through blocks.
 "#fence_gates": false
 "#doors": false
 "#trapdoors": false
 "#buttons": false
 "#pressure_plates": false
 "#wool_carpets": false
+moss_carpet: false           # not in #wool_carpets
+pale_moss_carpet: false
 "#banners": false
 "#candles": false            # covers candle + all coloured candles
 "#standing_signs": false

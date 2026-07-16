@@ -38,6 +38,7 @@ public class MechanismRegistry {
 
     private @Nullable BukkitTask tickTask;
     private boolean colliderGlowEnabled = false;
+    private boolean scaleWarned = false; // one-time guard for the missing-scale-attribute warning
 
     // Powers rotation parts riding assembled mechanisms (built on assemble, ticked per mech,
     // torn down on removal). Set by CoreLibPlugin once the rotation systems exist; null-safe
@@ -59,19 +60,30 @@ public class MechanismRegistry {
         colliderRegistry.load(in, plugin.getLogger());
     }
 
+    /** Warn once if a sub-cube collider is requested but the scale attribute can't be applied. */
+    private void warnScaleUnavailable() {
+        if (scaleWarned) return;
+        scaleWarned = true;
+        plugin.getLogger().warning("generic.scale attribute unavailable — sub-cube mechanism colliders "
+            + "(slabs, heads, fences, ...) will collide as full blocks. Requires MC 1.20.5+.");
+    }
+
     /**
      * Wall-mounted head/skull colliders: shift the ≤0.5 box toward the wall + up so it sits where the
      * head renders instead of floating at the cell centre. Mirrors BlockShips' BlockStructureScanner
      * wall-skull special case. The offset is block-local (rotates with the block via the reposition
-     * path). Gated on size ≤ 0.5 so a dragon head's full-block collider stays centred.
+     * path). Gated on size ≤ 0.5 so a dragon head's full-block collider stays centred (shifting a full
+     * box toward the wall would push it out of the cell). The shift is ADDED to any author-supplied
+     * offset so a custom wall-head block keeps its configured offset.
      */
     private static CollisionConfig applyWallHeadShift(CollisionConfig collision, BlockData bd) {
         if (collision.size() <= 0.5f && bd instanceof org.bukkit.block.data.Directional dir) {
             String name = bd.getMaterial().name();
             if (name.endsWith("_WALL_HEAD") || name.endsWith("_WALL_SKULL")) {
                 org.bukkit.util.Vector f = dir.getFacing().getDirection();
-                return new CollisionConfig(true, collision.size(),
-                    new Vector3f(-(float) f.getX() * 0.25f, 0.25f, -(float) f.getZ() * 0.25f));
+                Vector3f shifted = new Vector3f(collision.offset())
+                    .add(-(float) f.getX() * 0.25f, 0.25f, -(float) f.getZ() * 0.25f);
+                return new CollisionConfig(true, collision.size(), shifted);
             }
         }
         return collision;
@@ -399,10 +411,10 @@ public class MechanismRegistry {
                     // so the full-block path stays byte-identical to before. Set before addPassenger.
                     if (mbf.collision.size() != 1.0f) {
                         org.bukkit.attribute.Attribute scaleAttr = ScaleAttributeCompat.getScale();
-                        if (scaleAttr != null) {
-                            org.bukkit.attribute.AttributeInstance ai = s.getAttribute(scaleAttr);
-                            if (ai != null) ai.setBaseValue(mbf.collision.size());
-                        }
+                        org.bukkit.attribute.AttributeInstance ai =
+                            scaleAttr != null ? s.getAttribute(scaleAttr) : null;
+                        if (ai != null) ai.setBaseValue(mbf.collision.size());
+                        else warnScaleUnavailable();
                     }
                     s.addScoreboardTag("corelib:mech:" + mechId + ":" + blockIdx + ":collider");
                 });
