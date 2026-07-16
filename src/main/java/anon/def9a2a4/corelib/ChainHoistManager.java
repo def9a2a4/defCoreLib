@@ -73,9 +73,16 @@ final class ChainHoistManager {
     private static final float MIN_STEP = 0.08f;         // blocks/tick floor (always progresses)
     private static final float SPEED_K = 0.5f;
     private static final int SETTLE_TICKS = 3;           // hold at target before disassembly (client lerp)
-    /** Blocks per stroke. A stroke is committed at assembly and re-checks nothing but power while it runs,
-     *  so this bounds how stale its obstruction scan can get; the trigger just re-fires for a longer drop. */
-    private static final int MAX_STROKE = 8;
+    /** Blocks/tick ceiling. MUST stay {@code < 1}: the descending obstruction scan verifies one cell per tick
+     *  ({@link #advance}), which is only sound if the body crosses at most one whole cell per tick. Independent
+     *  of the operator-configurable {@code pistonMaxStep} for exactly that reason (which can be set ≥ 1). */
+    private static final float HOIST_MAX_STEP = 0.95f;
+    /** Soft cap on blocks a single continuous mover pays out before it settles and lets the trigger re-fire.
+     *  Purely a perf/entity bound — each descended block appends a live BlockDisplay to one parent and re-rotates
+     *  the whole body, so an uncapped full-stock (320) drop is O(n²). Ordinary drops are far shorter and never
+     *  hit this; a very deep drop sees at most one brief seam per cap. NOT an obstruction commit — that is now
+     *  re-verified every block, so the cap can be large without risking pass-through. */
+    private static final int HOIST_MAX_RUN = 48;
     private static final Vector3f AXIS_Y = new Vector3f(0f, 1f, 0f);
 
     private final JavaPlugin plugin;
@@ -248,17 +255,16 @@ final class ChainHoistManager {
                         RotationNetwork.SpinDirection spinDir) {
         int stock = countChains(registry.getOrCreateStorage(hoist));
         if (stock <= 0) return;   // nothing left to pay out
-        // Capped, not `stock`: five slots of chain is 320, and a stroke is committed at assembly — nothing
-        // re-checks obstruction while it travels, and it cannot be interrupted except by cutting power. The
-        // trigger re-fires every TRIGGER_PERIOD, so a long drop is just several strokes, each re-scanning.
-        startMove(hoistKey, hoist, d, true, spinDir, Math.min(stock, MAX_STROKE));
+        // One continuous mover per drop, bounded only by the soft perf cap (obstruction is re-verified every
+        // block in advance, so this is not a commit). A drop deeper than the cap is finished by the next trigger.
+        startMove(hoistKey, hoist, d, true, spinDir, Math.min(stock, HOIST_MAX_RUN));
     }
 
     /** CCW: raise — slide the chain up, swallowing its top links back into the hoist. */
     private void reelIn(CustomBlockRegistry.LocationKey hoistKey, Block hoist, int d,
                         RotationNetwork.SpinDirection spinDir) {
         if (d <= 0) return;   // nothing paid out; there are no links to swallow
-        startMove(hoistKey, hoist, d, false, spinDir, Math.min(d, MAX_STROKE));
+        startMove(hoistKey, hoist, d, false, spinDir, Math.min(d, HOIST_MAX_RUN));
     }
 
     /** The real chain we own, top-down: {@code y0-1 … y0-d}. {@link #scanDepth} guarantees all d are ours. */
@@ -330,7 +336,7 @@ final class ChainHoistManager {
      * The pivot is the hoist's own cell, so the loaded and bare-chain cases share one frame.
      */
     private void startMove(CustomBlockRegistry.LocationKey hoistKey, Block hoist, int startDepth,
-                           boolean descend, RotationNetwork.SpinDirection spinDir, int want) {
+                           boolean descend, RotationNetwork.SpinDirection spinDir, int budget) {
         List<Block> column = chainColumn(hoist, startDepth);
         Set<Long> cells = new HashSet<>();
 
@@ -362,27 +368,40 @@ final class ChainHoistManager {
         for (Block b : column) footprint.add(cellKey(b));
         footprint.add(cellKey(hoist));   // the chain slides through the hoist, as the rod does the core
 
-        // Ray origins. The load, plus — descending — the hoist's own cell, because the emerging link starts
-        // there and is not in any list (the piston probes its core's ray for exactly this reason). Rising,
-        // the column must NOT be probed: every cell a link crosses is a column cell and so already in the
-        // footprint, but its ray would run on past the hoist into whatever sits above it, and a floor there
-        // would clamp every reel-in to one block.
-        List<Block> probe = new ArrayList<>(load);
-        if (descend) probe.add(hoist);
-        BlockFace face = descend ? BlockFace.DOWN : BlockFace.UP;
-        int steps = clearForAll(probe, footprint, face, want);
-        if (steps < 1) return;
+        // Leading edge = the body's LOWEST cells, the only ones that can hit something descending. That is the
+        // hanging load, or — bare — the bottom real link at y0-startDepth (which is the hoist itself at depth
+        // 0). Emphatically NOT the hoist at the top: the emerging ghost slides DOWN out of the hoist and never
+        // leads, so a top ray runs the whole chain column (all footprint) and, capped, never reaches the cell
+        // below a long chain — the pass-through bug. advance re-probes from here every block as the body drops.
+        List<Block> frontier = descend
+            ? (load.isEmpty() ? List.of(hoist.getRelative(0, -startDepth, 0)) : load)
+            : List.of();
 
-        // Capture. Descending, the whole column. Rising, all but the top `steps`: those are the ones being
-        // swallowed, and layLinks deletes them from the world as the body clears each — capturing them
-        // would ride them up past the hoist in plain view. `steps`, not `want`: a stroke clamped short that
-        // still dropped `want` links would leave the uncaptured remainder standing in its own path.
-        List<Block> group = new ArrayList<>(column.subList(descend ? 0 : steps, column.size()));
+        // Descending: one static check from the true leading edge, only to bail before assembling when nothing
+        // can move (a hoist resting powered on a floor would otherwise churn a mechanism every trigger). With
+        // budget >> startDepth the ray exits the column and reads the real clearance; advance owns per-block
+        // re-verification from here, so r0 >= 1 is all this needs. Rising skips obstruction entirely: the load
+        // is pulled up into its own (footprint) column toward the protected hoist — there is no external cell
+        // to hit, and probing up past the hoist would clamp every reel-in to one block.
+        if (descend && clearForAll(frontier, footprint, BlockFace.DOWN, budget) < 1) return;
+
+        // `span` = whole blocks this mover may travel: rising's fixed swallow count, and descending's budget
+        // cap for advance's target gating. Capture: descending the whole column; rising all but the top
+        // `span` links (those are swallowed — layLinks deletes them as the body clears each; capturing them
+        // would ride them up past the hoist in plain view).
+        int span = budget;
+        List<Block> group = new ArrayList<>(column.subList(descend ? 0 : span, column.size()));
         group.addAll(load);
+
+        // Speed mass from the LOAD only (computed before assembly airs the load out) — chain paid out never
+        // slows the hoist. A deliberate departure from the piston, whose mass includes its whole rod; here the
+        // "rod" grows, so counting it makes the drop decay from ceiling to floor as it extends.
+        int mass = 1;
+        for (Block b : load) if (b.getType() != CHAIN_MATERIAL) mass++;
 
         // The emerging link. Descending it starts inside the hoist and layLinks appends one more per block;
         // rising it starts above the body's top link and lands back inside the hoist to be discarded.
-        Block ghostCell = descend ? hoist : hoist.getRelative(0, -steps, 0);
+        Block ghostCell = descend ? hoist : hoist.getRelative(0, -span, 0);
         Mechanism mech = mechRegistry.assembleMechanism(MECH_TYPE, group,
             List.of(new MechanismRegistry.GhostBlock(ghostCell.getLocation(), chainData())),
             hoist.getLocation().add(0.5, 0, 0.5), AXIS_Y, null);
@@ -421,9 +440,11 @@ final class ChainHoistManager {
                 setSpin(hoist, false);
             });
             Location start = mech.pivot();
+            // Descending starts aimed one (guard-verified) cell down and grows the target block-by-block in
+            // advance; rising commits its whole fixed span up front (no obstruction to re-check).
+            Location target = start.clone().add(0, descend ? -1 : span, 0);
             active.put(hoistKey, new ActiveMove(hoistKey, hoist, mech,
-                start, start.clone().add(0, descend ? -steps : steps, 0),
-                descend ? -1f : 1f, group.size() + 1, spinDir, descend, steps));
+                start, target, descend ? -1f : 1f, mass, spinDir, descend, span, startDepth, frontier));
         } catch (Throwable t) {
             safeDisassemble(mech, hoistKey);
             throw t;
@@ -445,11 +466,14 @@ final class ChainHoistManager {
      * item drop.
      *
      * <p>Rising is the mirror and needs no appends: the body simply carries {@code steps} fewer links, and
-     * the doomed ones are deleted from the world here as the body clears each cell.
+     * the doomed ones are deleted from the world here as the rising body reaches each cell. Deletion lags to
+     * {@code done} (not {@code done + 1}): the real link is cleared as the load's top display arrives at it,
+     * not a whole block early — otherwise the chain visibly vanishes ahead of the load. The arrival tick
+     * ({@code done == steps}) still clears every remaining link, so nothing lands on a solid cell.
      */
     private void layLinks(ActiveMove m) {
         int done = (int) Math.floor(Math.abs(m.mech.pivot().getY() - m.start.getY()) + 1e-6);
-        int limit = m.descend ? done : Math.min(done + 1, m.steps);
+        int limit = m.descend ? done : Math.min(done, m.steps);
         while (m.linksDone < limit) {
             int k = ++m.linksDone;
             if (m.descend) {
@@ -476,17 +500,32 @@ final class ChainHoistManager {
             return false;
         }
         Location cur = m.mech.pivot();
-        // Stop at the next whole cell if power is cut or the spin flips mid-travel.
-        if (!network.isPowered(m.hoistKey) || network.getDirection(m.hoistKey) != m.spinDir) {
+        boolean powered = network.isPowered(m.hoistKey) && network.getDirection(m.hoistKey) == m.spinDir;
+        if (!powered) {
+            // Stop at the next whole cell if power is cut or the spin flips mid-travel.
             double progress = (cur.getY() - m.start.getY()) * m.dirY;
             int stopped = Math.max(0, (int) Math.ceil(progress - 1e-6));
             m.target = m.start.clone().add(0, m.dirY * stopped, 0);
+        } else if (m.descend) {
+            // Per-block obstruction re-verify. Grow the target ONE verified cell at a time, and never faster
+            // than the body reaches it — an unbounded "++target while clear" races the target ~12 cells ahead
+            // of the body at the MIN_STEP floor, and the body then coasts through cells nothing checked. So
+            // gate on the body being within one block of the current target: `unlocked` is the target depth,
+            // and before extending to unlocked+1 we probe the exact cell the front would newly enter (the
+            // leading edge shifted to its current depth). Freezing here lands the body on the last clear cell.
+            int unlocked = (int) Math.round(m.start.getY() - m.target.getY());
+            if (cur.getY() - m.target.getY() < 1.0 && unlocked < m.steps && frontierClear(m, unlocked)) {
+                m.target = m.start.clone().add(0, -(unlocked + 1), 0);
+            }
         }
         double remaining = (m.target.getY() - cur.getY()) * m.dirY;
         int[] stats = network.getNetworkStats(m.hoistKey);
         int base = config.getPower("chain_hoist", 1);
         int power = (stats != null ? stats[0] - stats[1] : 0) + base;
-        float step = clamp(SPEED_K * power / Math.max(1, m.mass), MIN_STEP, (float) config.pistonMaxStep);
+        // Ceiling held < 1 (HOIST_MAX_STEP) regardless of the operator-configurable pistonMaxStep: the
+        // per-block probe above assumes the body crosses at most one whole cell per tick.
+        float ceil = Math.min((float) config.pistonMaxStep, HOIST_MAX_STEP);
+        float step = clamp(SPEED_K * power / Math.max(1, m.mass), MIN_STEP, ceil);
 
         boolean arrived = remaining <= step + 1e-3;
         Location next = arrived ? m.target : cur.clone().add(0, m.dirY * step, 0);
@@ -545,6 +584,22 @@ final class ChainHoistManager {
     // ──────────────────────────────────────────────────────────────────────
     // Obstruction / footprint (copied from ExtendablePistonManager — single-axis, local region)
     // ──────────────────────────────────────────────────────────────────────
+
+    /** Empty footprint for the in-flight probe: mid-stroke every captured cell is already aired out, so the
+     *  body's own cells read as clear and only genuine external obstructions remain to be found. */
+    private static final Set<Long> NO_FOOTPRINT = Set.of();
+
+    /**
+     * True if the cell a descending body would newly enter to reach depth {@code unlocked + 1} is clear.
+     * Reuses the piston's per-moving-block {@link #clearForAll} so a wide/stacked load is checked at every
+     * one of its bottom cells, not just one column. The leading-edge blocks are the body's rest positions;
+     * shifting each down by {@code unlocked} places the ray one cell below the front at its current depth.
+     */
+    private boolean frontierClear(ActiveMove m, int unlocked) {
+        List<Block> at = new ArrayList<>(m.frontier.size());
+        for (Block b : m.frontier) at.add(b.getRelative(0, -unlocked, 0));
+        return clearForAll(at, NO_FOOTPRINT, BlockFace.DOWN, 1) >= 1;
+    }
 
     private int clearForAll(List<Block> moving, Set<Long> footprint, BlockFace face, int max) {
         int best = max;
@@ -649,8 +704,14 @@ final class ChainHoistManager {
         final int mass;
         final RotationNetwork.SpinDirection spinDir;
         final boolean descend;
-        /** Blocks this stroke was planned for — the ghost's landing cell is {@code steps} below/above. */
+        /** Rising: the fixed swallow count (ghost lands {@code steps} above). Descending: the budget cap
+         *  (soft run cap / stock) the per-block target gating in {@link #advance} may grow the target to. */
         final int steps;
+        /** Real chain depth at assembly — the descending front sits {@code startDepth} below the pivot. */
+        final int startDepth;
+        /** Descending leading-edge blocks (load, or the bottom bare link) at their rest positions; shifted
+         *  down by the current depth each tick to re-probe obstruction. Empty rising (no obstruction scan). */
+        final List<Block> frontier;
         /** Links appended (descending) or taken up (rising) so far. Makes {@link #layLinks} idempotent. */
         int linksDone = 0;
         int warmup = 2;
@@ -658,7 +719,7 @@ final class ChainHoistManager {
 
         ActiveMove(CustomBlockRegistry.LocationKey hoistKey, Block hoist, Mechanism mech, Location start,
                    Location target, float dirY, int mass, RotationNetwork.SpinDirection spinDir,
-                   boolean descend, int steps) {
+                   boolean descend, int steps, int startDepth, List<Block> frontier) {
             this.hoistKey = hoistKey;
             this.hoist = hoist;
             this.mech = mech;
@@ -669,6 +730,8 @@ final class ChainHoistManager {
             this.spinDir = spinDir;
             this.descend = descend;
             this.steps = steps;
+            this.startDepth = startDepth;
+            this.frontier = frontier;
         }
     }
 }
