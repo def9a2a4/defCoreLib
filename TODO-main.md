@@ -10,6 +10,27 @@
   regardless of the target cell (on a full reel it already lands on the protected hoist cell; on a
   partial reel it currently mints). Descending ghosts are unaffected — they are real paid-out chain
   covered by the descend reservation.
+- hoist glue authoring — follow-ups (from review of the authoring commit):
+  - **dual glue sources aren't reconciled.** `resolveGroup` takes hoist-held glue OR legacy
+    seed-skull glue either-or, but `startMove` still separately reads and rebinds the seed skull's
+    own glue (`seedGlue`). If a glue-bearing skull rides as the seed AND the hoist has authored glue,
+    the skull's sub-structure isn't captured (either-or skipped it) yet its offsets get rebound on
+    landing — a corner-of-corner desync. Pick one source and document it, or union under a single cap.
+  - **a load-top that is itself an anchor block hijacks the session.** If the block directly under the
+    chain is a rotator / piston-head / door-controller, `isAnchor(clicked)` is true so clicking it opens
+    a session on THAT block (head-relative), not the hoist — `owningHoist` only runs for non-anchor
+    blocks. Author such loads from the hoist head or a rope link, or add a disambiguation.
+  - **session lingers if the hoist head is broken mid-session** — reads/writes no-op against the
+    now-non-skull cell until timeout. Close the session on head removal.
+  - **`inRopeColumn` is unbounded upward** — a platform block can never occupy the hoist's own X/Z
+    column above the seed (can't wrap/surround the chain). Confirm this is the intended limitation.
+  - **verify end-to-end** — the feature was reviewed statically only. Build + drive on test-server:
+    both entry points (head / load-top / rope link), corridor rejection, a lower/raise cycle carrying
+    the glued platform, and glue persistence across chunk reload.
+  - **scope check:** the authoring working-set also touched `BasicMechanism.destroy` (vehicle-tag strip)
+    and `MechanismRegistry.cleanupOrphanedEntities` (skip `corelib:mechanism_minecart`) — these are
+    minecart glue-survival fixes, unrelated to the hoist. Keep them only if intended as a minecart fix;
+    otherwise they don't belong with hoist glue.
 - fix displays for redstone dynamo
 - fixes for extender pistons
   - shared movability guards: apply `MovableBlocks.isMovable` to the minecart default seed (block above cart), the rotator default seed (attachment block), and the glue brush (single + cuboid, with a rejection message) — was de-scoped to piston-only to avoid regressing shared glue/authoring
