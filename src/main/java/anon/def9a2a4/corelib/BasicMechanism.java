@@ -291,6 +291,7 @@ final class BasicMechanism implements Mechanism {
         MechanismBlockData mb = new MechanismBlockData(data,
             new Matrix4f().translation(localOffset), CollisionConfig.NONE,
             null, null, null, null, null, null, false, null);
+        mb.ghost = true;
         int index = blocks.size();
         blocks.add(mb);
         Display d = mechanismRegistry.spawnMechBlockDisplay(parent.getLocation(), data, id, index, "display");
@@ -456,6 +457,12 @@ final class BasicMechanism implements Mechanism {
                 target.breakNaturally();
                 placeBlock(target, mb, snappedYaw);
                 placed.add(target);
+            } else if (mb.ghost && target.getBlockData().equals(mb.blockData)) {
+                // A blocked GHOST whose cell already holds its identical block is discarded silently:
+                // ghosts are data-only (never captured from the world), so dropping one here mints an
+                // item from nothing. The concrete case: a hoist reel-in stopped short lands its emerging
+                // ghost link on the still-real swallowed link it was visually duplicating — solid-wins
+                // dropped a phantom chain item on every interrupted rise (farmable by pulsing power).
             } else {
                 // Solid block wins — explosion effect + drop mechanism block as item
                 target.getWorld().spawnParticle(Particle.EXPLOSION,

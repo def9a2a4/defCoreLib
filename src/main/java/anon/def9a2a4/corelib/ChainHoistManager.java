@@ -377,19 +377,32 @@ final class ChainHoistManager {
             ? (load.isEmpty() ? List.of(hoist.getRelative(0, -startDepth, 0)) : load)
             : List.of();
 
-        // Descending: one static check from the true leading edge, only to bail before assembling when nothing
-        // can move (a hoist resting powered on a floor would otherwise churn a mechanism every trigger). With
-        // budget >> startDepth the ray exits the column and reads the real clearance; advance owns per-block
-        // re-verification from here, so r0 >= 1 is all this needs. Rising skips obstruction entirely: the load
-        // is pulled up into its own (footprint) column toward the protected hoist — there is no external cell
-        // to hit, and probing up past the hoist would clamp every reel-in to one block.
-        if (descend && clearForAll(frontier, footprint, BlockFace.DOWN, budget) < 1) return;
-
         // `span` = whole blocks this mover may travel: rising's fixed swallow count, and descending's budget
         // cap for advance's target gating. Capture: descending the whole column; rising all but the top
         // `span` links (those are swallowed — layLinks deletes them as the body clears each; capturing them
         // would ride them up past the hoist in plain view).
         int span = budget;
+        if (descend) {
+            // One static check from the true leading edge, only to bail before assembling when nothing
+            // can move (a hoist resting powered on a floor would otherwise churn a mechanism every trigger).
+            // With budget >> startDepth the ray exits the column and reads the real clearance; advance owns
+            // per-block re-verification from here, so r0 >= 1 is all this needs.
+            if (clearForAll(frontier, footprint, BlockFace.DOWN, budget) < 1) return;
+        } else {
+            // Rising: clamp the WHOLE committed span by the LOAD's upward clearance — a load wider than the
+            // rope (a platform under a floor with a 1×1 rope hole) otherwise rises into occupied external
+            // cells and is dropped as items at landing. Rays are cast from load cells ONLY, never from
+            // column links or the hoist: only the seed occupies the hoist's own column (everything above it
+            // is footprint rope), and its ray tops out at y0-1 since span <= startDepth — while a tall
+            // side-load's rays pass BESIDE the hoist and clamp on real ceilings. That is what makes this
+            // safe where the old full-body probe was not (a chain link's ray ran THROUGH the hoist into the
+            // ceiling above and clamped every reel-in under a mounting). The clamp is up-front, not
+            // per-block: rising's ghost/swallow accounting needs `span` final at assembly time — the ghost
+            // lands on the protected hoist cell only when the stroke runs its full span. Bare chain (empty
+            // load) is a no-op here: clearForAll of no blocks returns max.
+            span = Math.min(span, clearForAll(load, footprint, BlockFace.UP, span));
+            if (span < 1) return;
+        }
         List<Block> group = new ArrayList<>(column.subList(descend ? 0 : span, column.size()));
         group.addAll(load);
 
@@ -406,8 +419,18 @@ final class ChainHoistManager {
             List.of(new MechanismRegistry.GhostBlock(ghostCell.getLocation(), chainData())),
             hoist.getLocation().add(0.5, 0, 0.5), AXIS_Y, null);
 
+        // RESERVE the descend's whole budget now; the landing hook refunds the un-travelled remainder.
+        // Billing against a reservation instead of an end-of-stroke consume means a mid-stroke GUI
+        // withdrawal can never out-race the bill, and a hoist broken mid-stroke drops stock that already
+        // excludes the landed links. Every bail is above this line; the hook below always runs after it.
+        if (descend) consumeChains(registry.getOrCreateStorage(hoist), budget);
+
         final int[] glueOffsets = glue;
         final int seedDy = -1 - startDepth;   // seed's offset from the pivot (= the hoist) at t=0
+        // Rising: links layLinks actually AIRED (not merely passed) — the exact refund. A link a player
+        // mined out mid-rise was never ours to bank; counting deletions instead of re-scanning the world
+        // is what closes that dupe (and the wedged-intruder refund dupe on descend, below).
+        final int[] linksDeleted = new int[1];
         try {
             ((BasicMechanism) mech).setProtectedCells(Set.of(hoistKey));
             setSpin(hoist, true);
@@ -430,21 +453,42 @@ final class ChainHoistManager {
                 // consumer FIRST — the skull and its PDC are still there, so getTypeFromBlock would say the
                 // hoist is alive and we would bill an inventory dropStorage has already emptied (free
                 // chains) and re-apply state to a block one statement from AIR (orphaned displays). `dying`
-                // is the only signal available at that instant.
-                if (dying.contains(hoistKey)) return;
-                // Bill from what actually landed, not from what we asked for: re-scan and pay the delta.
-                int delta = scanDepth(hoist) - startDepth;
+                // is the only signal available at that instant. Descend is already square — the reservation
+                // pre-paid the landed links. Rising banked links into an inventory that just hit the floor:
+                // drop them as items so the matter isn't destroyed.
+                if (dying.contains(hoistKey)) {
+                    if (!descend && linksDeleted[0] > 0) {
+                        hoist.getWorld().dropItemNaturally(hoist.getLocation().add(0.5, 1.0, 0.5),
+                            new ItemStack(CHAIN_MATERIAL, linksDeleted[0]));
+                    }
+                    return;
+                }
+                // Bill from what THIS STROKE did — never from a world re-scan. The old
+                // `scanDepth − startDepth` bill read the column at landing, and the aired-out column is
+                // world-reachable mid-stroke: a block wedged at y0-1 punctured the scan (it stops at the
+                // first non-rope cell) and turned a full descend into a full REFUND while the paid-out
+                // chain hung below the intruder — a repeatable dupe. The manager is the sole authority on
+                // matter it authored this stroke: descend materializes exactly ceil(travel) links on every
+                // exit path (arrival M → M, forced fractional park → floor+1; a link blocked at landing
+                // drops as an item the reservation already paid for), and rising banks exactly the links
+                // layLinks aired. scanDepth remains the depth truth at TRIGGER time — just never the bill.
                 Inventory inv = registry.getOrCreateStorage(hoist);
-                if (delta > 0) consumeChains(inv, delta);
-                else if (delta < 0) refundChains(inv, hoist, -delta);
+                if (descend) {
+                    int travelled = Math.max(0, Math.min(budget,
+                        (int) Math.ceil(hoist.getY() - mech.pivot().getY() - 1e-6)));
+                    refundChains(inv, hoist, budget - travelled);
+                } else {
+                    refundChains(inv, hoist, linksDeleted[0]);
+                }
                 setSpin(hoist, false);
             });
             Location start = mech.pivot();
             // Descending starts aimed one (guard-verified) cell down and grows the target block-by-block in
-            // advance; rising commits its whole fixed span up front (no obstruction to re-check).
+            // advance; rising commits its whole clamped span up front (the ghost contract needs it final).
             Location target = start.clone().add(0, descend ? -1 : span, 0);
             active.put(hoistKey, new ActiveMove(hoistKey, hoist, mech,
-                start, target, descend ? -1f : 1f, mass, spinDir, descend, span, startDepth, frontier));
+                start, target, descend ? -1f : 1f, mass, spinDir, descend, span, startDepth, frontier,
+                linksDeleted));
         } catch (Throwable t) {
             safeDisassemble(mech, hoistKey);
             throw t;
@@ -480,7 +524,9 @@ final class ChainHoistManager {
                 ((BasicMechanism) m.mech).appendGhost(new Vector3f(0f, k, 0f), chainData());
             } else {
                 Block c = m.hoist.getRelative(0, -m.steps + k - 1, 0);
-                if (isOwnRope(c)) c.setType(Material.AIR, false);
+                // Count only links actually aired: a player-mined gap is skipped here AND skipped by the
+                // refund (billing banks m.linksDeleted, not the requested span).
+                if (isOwnRope(c)) { c.setType(Material.AIR, false); m.linksDeleted[0]++; }
             }
         }
     }
@@ -714,12 +760,15 @@ final class ChainHoistManager {
         final List<Block> frontier;
         /** Links appended (descending) or taken up (rising) so far. Makes {@link #layLinks} idempotent. */
         int linksDone = 0;
+        /** Rising: links {@link #layLinks} actually AIRED (skips player-mined gaps). Shared with the
+         *  billing hook, which refunds exactly this — see the counter-billing comment in startMove. */
+        final int[] linksDeleted;
         int warmup = 2;
         int settle = -1;
 
         ActiveMove(CustomBlockRegistry.LocationKey hoistKey, Block hoist, Mechanism mech, Location start,
                    Location target, float dirY, int mass, RotationNetwork.SpinDirection spinDir,
-                   boolean descend, int steps, int startDepth, List<Block> frontier) {
+                   boolean descend, int steps, int startDepth, List<Block> frontier, int[] linksDeleted) {
             this.hoistKey = hoistKey;
             this.hoist = hoist;
             this.mech = mech;
@@ -732,6 +781,7 @@ final class ChainHoistManager {
             this.steps = steps;
             this.startDepth = startDepth;
             this.frontier = frontier;
+            this.linksDeleted = linksDeleted;
         }
     }
 }

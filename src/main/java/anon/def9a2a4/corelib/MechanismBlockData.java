@@ -31,6 +31,12 @@ public final class MechanismBlockData {
     boolean spinReversed;
     final @Nullable Vector3f wallFacing;
 
+    // True for ghost blocks (assembly GhostBlocks and BasicMechanism.appendGhost): data-only members
+    // that were never captured from the world. Landing rules differ — a blocked ghost whose cell
+    // already holds its identical block is discarded, not dropped (dropping would mint an item from
+    // nothing; see BasicMechanism.disassemble).
+    boolean ghost;
+
     // Mutable — updated by BasicMechanism.setBlockState()
     // Nullable but not annotated: @Nullable cannot be applied to qualified inner type names
     String customState;

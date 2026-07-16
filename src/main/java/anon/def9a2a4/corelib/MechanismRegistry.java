@@ -304,8 +304,10 @@ public class MechanismRegistry {
             CollisionConfig gcollision = gcustom != null
                 ? gcustom : colliderRegistry.get(gbd.getMaterial(), gbd);
             gcollision = applyWallHeadShift(gcollision, gbd);
-            blockData.add(new MechanismBlockData(gbd, glocal, gcollision,
-                gType, gState, gdecs, gbdecs, gparticles, null, false, gwall));
+            MechanismBlockData gmb = new MechanismBlockData(gbd, glocal, gcollision,
+                gType, gState, gdecs, gbdecs, gparticles, null, false, gwall);
+            gmb.ghost = true;
+            blockData.add(gmb);
         }
 
         // Steps 2-3 (tear down custom-block tracking + air out the source blocks) are deferred to AFTER the
