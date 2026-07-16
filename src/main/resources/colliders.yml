@@ -54,6 +54,11 @@
 "#pressure_plates": false
 "#wool_carpets": false
 "#banners": false
+"#candles": false            # covers candle + all coloured candles
+"#standing_signs": false
+"#wall_signs": false
+"#ceiling_hanging_signs": false
+"#wall_hanging_signs": false
 lever: false
 redstone_wire: false
 redstone_torch: false
@@ -62,11 +67,30 @@ torch: false
 wall_torch: false
 soul_torch: false
 soul_wall_torch: false
+copper_torch: false
+copper_wall_torch: false
 repeater: false
 comparator: false
 end_rod: false
 iron_door: false
 iron_trapdoor: false
+iron_bars: false
+glass_pane: false
+"*_stained_glass_pane": false
+iron_chain: false
+copper_chain: false
+"*_copper_chain": false
+lantern: false
+soul_lantern: false
+copper_lantern: false
+"*_copper_lantern": false
+"*_shelf": false
+ladder: false
+brewing_stand: false
+flower_pot: false
+"potted_*": false
+"*_copper_door": false
+"*_copper_trapdoor": false
 
 # ── Small solid shapes ──
 lightning_rod:
@@ -75,6 +99,10 @@ chest:
   size: 0.9
 trapped_chest:
   size: 0.9
+"*copper_chest":
+  size: 0.9
+"*copper_grate":
+  size: 0.5
 
 # ── Heads & skulls: half-size box (dragon = full block). Wall variants get the runtime wall shift. ──
 player_head: {size: 0.5}

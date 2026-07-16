@@ -95,24 +95,31 @@ final class GlueManager {
     }
 
     /**
-     * Offsets of the DERIVED casing auto-glue for the authoring outline — the casings that would
-     * join at resolve time but are not stored. Seeds off the authored structure AND the anchor
-     * cell, so the root case (casings stacked directly on the anchor/cart, no authored glue yet)
-     * shows up in the outline too.
+     * Offsets of the DERIVED sticky auto-glue for the authoring outline — the sticky blocks (and
+     * their leaves) that would join at resolve time but are not stored. Seeds off the authored
+     * structure AND the anchor cell, so the root case (casings stacked directly on the anchor/cart,
+     * no authored glue yet) shows up in the outline too.
      */
     Set<Vector3i> derivedOffsets(Anchor a) {
+        return derivedFrom(a, offsets(a));
+    }
+
+    /**
+     * The derived sticky closure over an explicit authored offset set, as offsets. Beyond the
+     * outline, this is what lets authored glue connect THROUGH sticky blocks: everything here moves
+     * with the structure at resolve time, so it all counts as connectivity for {@link #glue} /
+     * {@link #glueCuboid} — brushing the plank on the far side of a casing frame works.
+     */
+    private Set<Vector3i> derivedFrom(Anchor a, Set<Vector3i> authoredOffsets) {
         Set<Vector3i> set = new LinkedHashSet<>();
         if (registry == null) return set;
-        int[] o = a.readOffsets();
         Block origin = a.originBlock();
         World w = a.world();
         int ox = origin.getX(), oy = origin.getY(), oz = origin.getZ();
-        List<Block> authored = new ArrayList<>();
-        if (o != null) {
-            for (int i = 0; i + 2 < o.length; i += 3) {
-                Block b = w.getBlockAt(ox + o[i], oy + o[i + 1], oz + o[i + 2]);
-                if (!b.getType().isAir()) authored.add(b);
-            }
+        List<Block> authored = new ArrayList<>(authoredOffsets.size());
+        for (Vector3i v : authoredOffsets) {
+            Block b = w.getBlockAt(ox + v.x, oy + v.y, oz + v.z);
+            if (!b.getType().isAir()) authored.add(b);
         }
         for (Block d : StickySpread.derived(authored, origin, registry, maxSize)) {
             set.add(new Vector3i(d.getX() - ox, d.getY() - oy, d.getZ() - oz));
@@ -170,9 +177,11 @@ final class GlueManager {
     }
 
     /**
-     * Authoring: add one block. Connectivity- and cap-checked. On a horizontal-axis (drawbridge) anchor,
-     * orientation-bearing blocks are rejected — {@code BlockRotation} can only rotate about Y, so stairs/
-     * slabs/etc. (and custom skulls) can't be validly represented after an X/Z rotation.
+     * Authoring: add one block. Connectivity- and cap-checked; the derived sticky closure counts as
+     * connectivity (a casing frame bridges authored glue — it rides along at resolve, so brushing
+     * the block on its far side is legitimately connected). On a horizontal-axis (drawbridge)
+     * anchor, orientation-bearing blocks are rejected — {@code BlockRotation} can only rotate about
+     * Y, so stairs/slabs/etc. (and custom skulls) can't be validly represented after an X/Z rotation.
      */
     Result glue(Anchor a, Block b, boolean horizontalAxis) {
         Block origin = a.originBlock();
@@ -183,7 +192,9 @@ final class GlueManager {
         Set<Vector3i> set = offsets(a);
         if (set.contains(off)) return Result.ALREADY_GLUED;
         if (set.size() >= maxSize) return Result.CAP_HIT;
-        if (!connects(off, set)) return Result.NOT_CONNECTED;
+        Set<Vector3i> connectors = new LinkedHashSet<>(set);
+        connectors.addAll(derivedFrom(a, set));
+        if (!connects(off, connectors)) return Result.NOT_CONNECTED;
         set.add(off);
         a.writeOffsets(packOffsets(set));
         return Result.OK;
@@ -196,7 +207,9 @@ final class GlueManager {
      * Authoring: glue the anchor-connected subset of an explicit candidate block list (a cuboid). Filters
      * out air, the anchor cell, already-glued cells, and (on a horizontal-axis drawbridge) orientation-
      * bearing blocks; then grows the set by fixpoint from the origin / existing glued cells until nothing
-     * more connects or the cap is hit.
+     * more connects or the cap is hit. The derived sticky closure counts as connectivity, and is
+     * recomputed per pass — an accepted block can attract a new casing frame that in turn bridges to
+     * candidates on its far side.
      */
     FillResult glueCuboid(Anchor a, List<Block> candidates, boolean horizontalAxis) {
         Block origin = a.originBlock();
@@ -215,12 +228,15 @@ final class GlueManager {
         boolean changed = true;
         while (changed && accepted.size() < maxSize) {
             changed = false;
+            Set<Vector3i> connectors = new LinkedHashSet<>(accepted);
+            connectors.addAll(derivedFrom(a, accepted));
             var it = pending.iterator();
             while (it.hasNext()) {
                 if (accepted.size() >= maxSize) break;
                 Vector3i off = it.next();
-                if (connects(off, accepted)) {
+                if (connects(off, connectors)) {
                     accepted.add(off);
+                    connectors.add(off);   // accepted cells connect immediately; new derived waits a pass
                     it.remove();
                     changed = true;
                 }

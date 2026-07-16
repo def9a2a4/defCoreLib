@@ -16,6 +16,7 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.EnumMap;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -124,7 +125,11 @@ public final class ColliderRegistry {
         };
     }
 
-    /** Resolve a config key to materials: {@code #tag} → block-tag members, else a single material. */
+    /**
+     * Resolve a config key to materials: {@code #tag} → block-tag members; a key containing {@code *}
+     * → every material whose name matches the wildcard (e.g. {@code *_stained_glass_pane},
+     * {@code potted_*}); else a single material. Ported from BlockShips' WildcardMatcher.
+     */
     private static Set<Material> resolveKey(String key, Logger log) {
         if (key.startsWith("#")) {
             String tagName = key.substring(1).toLowerCase(Locale.ROOT);
@@ -134,6 +139,15 @@ public final class ColliderRegistry {
                 return Set.of();
             }
             return tag.getValues();
+        }
+        if (key.indexOf('*') >= 0) {
+            String regex = key.toLowerCase(Locale.ROOT).replace("*", ".*");
+            EnumSet<Material> matched = EnumSet.noneOf(Material.class);
+            for (Material m : Material.values()) {
+                if (m.isBlock() && m.name().toLowerCase(Locale.ROOT).matches(regex)) matched.add(m);
+            }
+            if (matched.isEmpty()) log.warning("[colliders.yml] Wildcard matched no blocks: " + key);
+            return matched;
         }
         Material m = Material.matchMaterial(key);
         if (m == null) {
