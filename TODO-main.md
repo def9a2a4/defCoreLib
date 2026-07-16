@@ -1,4 +1,15 @@
 - textures/recipes -- agent has all info
+- **hoist reel-in chain dupe (farmable).** Reeling a load up, if a player mines a swallowed chain
+  link and then stops the reel-in partway (cut power / redstone clock), the emerging "swallowed"
+  ghost link lands on the now-air cell via `placeBlock` and mints a real chain from nothing — rising
+  has no reservation to pay for it. Repeatable by pulsing power. The 5aced89 ghost discard-on-identical
+  only handles the case where that cell still holds an identical real chain
+  (`BasicMechanism.disassemble`: `mb.ghost && target.getBlockData().equals(mb.blockData)`); the
+  mined-to-air case falls through to `placeBlock`. Fix: a RISING emerging-ghost is visual-only (it
+  represents a link being swallowed into the hoist) and must NEVER materialize — discard it at landing
+  regardless of the target cell (on a full reel it already lands on the protected hoist cell; on a
+  partial reel it currently mints). Descending ghosts are unaffected — they are real paid-out chain
+  covered by the descend reservation.
 - fix displays for redstone dynamo
 - fixes for extender pistons
   - shared movability guards: apply `MovableBlocks.isMovable` to the minecart default seed (block above cart), the rotator default seed (attachment block), and the glue brush (single + cuboid, with a rejection message) — was de-scoped to piston-only to avoid regressing shared glue/authoring
