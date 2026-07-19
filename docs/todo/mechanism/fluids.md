@@ -70,9 +70,12 @@ lava alike) · steam engine stack supplies **20 power** (new top of the source l
   sieve water tank); sizes in config. This is also the pipes-visible way to feed
   machines.
 
-### 2. Liquid pump (`mech:pump`)
+### 2. Copper Water Pump (`mech:pump`)
 
 - Rotation **CONSUMER**, **power 4**, cycle ~40 ticks, **1 unit per cycle**.
+- **WATER ONLY** (playtest decision, 2026-07-19): the copper pump ignores a lava
+  intake. Lava transport stays in the pipe capability model (iron pipes carry lava)
+  for a future iron-tier pump; nothing else moves lava today.
 - **Floor-placeable only, axis-aligned X/Z** — the chain-hoist placement pattern
   (`ChainHoistManager.resolvePlacementState`: placement yaw → `idle_x`/`idle_z`,
   `snapFloorRotation` for the skull, `healAxisState` on load). Like the hoist it is an
