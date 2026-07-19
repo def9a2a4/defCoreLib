@@ -63,6 +63,13 @@ textures:
   reverser_fwd:      "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjk1MWJlMGM0NzVlMTE5ZTk2YWQxYzgzODU5MTI0MGYyZjVmYTEyODFmZTUyNTZlMmY2YzVlZWZlZWI3MzA3YiJ9fX0="  # reverser-fwd — reverser head (wall) + item
   machine_base:      "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTlmMzdmMWNiZDQ3YzM1MDQ1MTFiZjMzYzU4YzNhMjUyYjYwNzEzZWM1ZmM1NDMzZDg4N2Q0YTBkOTk2MjEwIn19fQ=="  # 59f37f1c — millstone + press placed head
   sieve_item:        "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOWRiZjc2YTA5NWMxNjAyNGU5YmFhNDhmNjAyZWIxODljMzdlYjNiZDUxMDcwZTE1YWI0OWFiMjE2YjA3YjFiMSJ9fX0="  # 9dbf76a0 — sieve item in hand
+  # ── Steam stack + pump art (assets/rotation/boiler/, via scripts/upload_skin.py) ──
+  copper_tank:       "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDgxZDIxMGRmOTRlYWNiMTM4ZmYwZjdjNmRjMjI3N2ZiNGJlN2RlNjJkY2VlZjUyZDk2MDgyMzIyZmJjOTk5OCJ9fX0="  # 481d210d — copper-tank — boiler shell + item
+  burner_lit:        "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOWQ4MmU1MGJiZGM4NmFiODZiNWYzODdkNDg5N2ViZTllMWU5NjdhOWMxNmEzYWY5NDRhZmE0ZjE0NWE3NjRiZiJ9fX0="  # 9d82e50b — burner — burner lit shell + item
+  burner_unlit:      "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzkwYThkMTMyMTg2OGRkNWRhNjZhMWExNjMwOWZhMmI3NWE5NWNjZmQ3OWQ3NzJhZTFlMzZhMzAxZjY0MDZiZSJ9fX0="  # c90a8d13 — burner-unlit — burner unlit shell
+  piston_copper:     "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNmU3Zjk1ODgyMTMwMWQ5MDMyNTgzNGJlY2E5MTU5YTM2OGZmN2NlZjVjYTYxN2UzNWFlNTk1OGNlYWNjNjNkMSJ9fX0="  # 6e7f9588 — piston-copper-down — steam piston head + item
+  pump_valve_up:     "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvY2MxMjZhNDc1Zjc2NDQzNWE5ZDIyY2NmNDgzNzZiZTIwY2YwYmJjNTI2ODI3NjU3N2EwZmM5ZGM0YTJhMzZjZiJ9fX0="  # cc126a47 — copper-pipe-valve-up — pump placed head
+  pump_valve_fwd:    "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjU2NzkyOTY1YjYwNmJhODVmODdhNTEwY2ViZTExMGMwNTk5ZmI2OTgxNTEwNWU2MDZlMTA2YzU5MTlkMTRjMiJ9fX0="  # b5679296 — copper-pipe-valve-fwd — pump item in hand
   hopper_floor:      "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHBzOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlLzY5OWEwN2QyZGIxZGI5YTRlOTI2ZDdlNGE2YmUxYmUxZTk2ZWE4ZDMwMDhiNzFiYjU3YTJiNDdhYjY4N2I0NzcifX19"  # 699a07d2 — copper-pipe floor/down head skin; distinct floor look for the suction hopper (swap freely)
   suction_hopper_item: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjQ4NWY3ODVhYTE1MTQ3MDg1MzM0N2Y2MDMyOTUxZTExYmZiZWQ4Yzc3ZTY5MjVkNTc4YjlhNjM2NmZiNDQ2MiJ9fX0="  # suction-hopper/suction-hopper — suction hopper item
   compressor_item:   "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvY2Q3Y2Y4NmY5ZjY1MzdkZDVkMThmMDAwNjE4ODdjY2Q1OWM0ZTc5NjY0Y2ViZDY1Y2FhN2ViMGUwMjcwMWViOCJ9fX0="  # dev/press/compressor — press item
@@ -1410,12 +1417,13 @@ blocks:
     break_on_piston: true
     name: "&6Sieve"
     lore:
-      - "&7Pans items from its storage when powered"
+      - "&7Pans items from its storage when powered — needs water"
       - "&7Powered from the top; sifts gravel & sand for nuggets, flint & finds below"
     catalog_notes:
       - "&fPans gravel, sand, red sand, dirt, and soul sand from its storage while powered by a shaft on top, dropping any finds into a container below."
       - "&fEvery find is chance-based — a cycle can wash an input away with nothing to show. Gravel is the ore-panning feedstock; sand is the fine-panning gamble."
-      - "&7Pans more per cycle the more surplus power the network has, up to a cap."
+      - "&fPanning needs WATER: right-click with a water bucket to fill its tank (or feed it by liquid pipe). It sips a bucket every so many pans and idles dry with a dusty rattle."
+      - "&7Right-click with an empty hand to read the tank level."
     # Stone machine head (shared with the millstone/press); sieve skin in hand.
     texture: "@machine_base"
     item_texture: "@sieve_item"
@@ -1446,6 +1454,271 @@ blocks:
               M: { material: SMOOTH_STONE_SLAB }
               C: { material: COPPER_INGOT }
               H: { material: HOPPER }
+
+  # ─── Copper Water Pump ────────────────────────────────────────────────────
+  # Consumer: 4 Power. FLOOR only, axle on X/Z from placement yaw (chain-hoist pattern) —
+  # a shaft runs through it and power crosses to the far side. Moves ONE bucket-unit of
+  # WATER per cycle vertically: intake below (source block / cauldron / tank), discharge
+  # above (endpoint or pipe chain). Water only — lava pumping is reserved for a future
+  # iron-tier pump. Wrench flips the flow direction.
+  # Display: an up-pipe replica (the pipes plugin's mid-run vertical pipe render, widened
+  # past 1 block-width so it fully covers the 0.5-wide skull underneath — at pipe
+  # width 0.499 the skull's valve texture peeks through and reads as a misrotated block)
+  # plus the thin copper-grate intake at the bottom and a through-shaft on the axle
+  # (chain-hoist recipe) so the coupling axis is visible; the shaft spins while powered.
+  pump:
+    break_on_piston: true
+    name: "&bCopper Water Pump"
+    lore:
+      - "&7Pumps a bucket of water upward each cycle when powered"
+      - "&7Driven by a shaft through it; wrench flips the flow"
+    catalog_notes:
+      - "&fSits over its water: drains the source block, cauldron, or tank below and discharges one bucket per cycle to the block or pipe network above."
+      - "&fPipes route the water to the first vessel that can take it — every pipe along the way must connect. Water only: it will not lift lava."
+      - "&7Driven by a shaft running straight through it (the axle lies across your view as you place it); a wrench reverses the flow direction."
+    texture: "@pump_valve_up"
+    item_texture: "@pump_valve_up"
+    drops: self
+    default_state: idle_x
+    # Floor only. X-vs-Z axle from the placer's yaw (RotationBlocks.axisPlacementState).
+    # The through-shaft renders along that axle (idle_x = E-W, idle_z = N-S) — the same
+    # axis RotationNetwork.axisFromState couples power on, so what you see is what
+    # connects. Shaft transforms are the chain-hoist recipe (rod on the centerline).
+    placement:
+      allowed_faces: [DOWN]
+    states:
+      idle_x:
+        display_entities:
+          - texture: "@pipe_up_display"
+            tag: body
+            transform: { translation: [0, 0.5015, 0], scale: [1.06, 2.006, 1.06] }
+          - { material: COPPER_GRATE, tag: intake, transform: { translation: [0, -0.45, 0], scale: [0.75, 0.16, 0.75] } }
+          - texture: "@rod_up"
+            tag: axle
+            transform: { translation: [-0.5, 0, 0], scale: [0.66, 2.002, 0.66], left_rotation: [90, 0, 0, 1] }
+      spinning_x:
+        display_entities:
+          - texture: "@pipe_up_display"
+            tag: body
+            transform: { translation: [0, 0.5015, 0], scale: [1.06, 2.006, 1.06] }
+          - { material: COPPER_GRATE, tag: intake, transform: { translation: [0, -0.45, 0], scale: [0.75, 0.16, 0.75] } }
+          - texture: "@rod_up"
+            tag: axle
+            transform: { translation: [-0.5, 0, 0], scale: [0.66, 2.002, 0.66], left_rotation: [90, 0, 0, 1] }
+            animation: { type: rotate, axis: [1, 0, 0], speed: 3.0 }
+      idle_z:
+        display_entities:
+          - texture: "@pipe_up_display"
+            tag: body
+            transform: { translation: [0, 0.5015, 0], scale: [1.06, 2.006, 1.06] }
+          - { material: COPPER_GRATE, tag: intake, transform: { translation: [0, -0.45, 0], scale: [0.75, 0.16, 0.75] } }
+          - texture: "@rod_up"
+            tag: axle
+            transform: { translation: [0, 0, -0.5], scale: [0.66, 2.002, 0.66], left_rotation: [-90, 1, 0, 0] }
+      spinning_z:
+        display_entities:
+          - texture: "@pipe_up_display"
+            tag: body
+            transform: { translation: [0, 0.5015, 0], scale: [1.06, 2.006, 1.06] }
+          - { material: COPPER_GRATE, tag: intake, transform: { translation: [0, -0.45, 0], scale: [0.75, 0.16, 0.75] } }
+          - texture: "@rod_up"
+            tag: axle
+            transform: { translation: [0, 0, -0.5], scale: [0.66, 2.002, 0.66], left_rotation: [-90, 1, 0, 0] }
+            animation: { type: rotate, axis: [0, 0, 1], speed: 3.0 }
+    recipes:
+      craft:
+        shaped:
+          # Copper shell: a pipe segment on top (the valve body), piston plunger and
+          # bearing flanking the bucket chamber, a copper-grate intake screen at the
+          # bottom. Uses the Pipes plugin's copper pipe — when Pipes is absent the
+          # recipe is skipped entirely (unresolvable block ingredients skip the recipe).
+          - pattern: ["CEC", "PUB", "CGC"]
+            key:
+              C: { material: COPPER_INGOT }
+              E: { block: "pipes:copper_pipe" }
+              P: { material: PISTON }
+              U: { material: BUCKET }
+              B: { block: "mech:bearing" }
+              G: { material: COPPER_GRATE }
+
+  # ─── Burner (steam stack, bottom) ─────────────────────────────────────────
+  # Dumb fuel box: HOPPER storage burned down by the steam piston two blocks above
+  # (shared EngineFuelManager, keyed here). Right-click opens the fuel GUI with a
+  # seconds readout. Lit/unlit display driven by the piston. PLACEHOLDER art: a
+  # blast-furnace shell.
+  burner:
+    break_on_piston: true
+    name: "&cBurner"
+    lore:
+      - "&7Burns fuel to heat a boiler placed on top"
+      - "&7Bottom of the steam stack: burner, boiler, steam piston"
+    catalog_notes:
+      - "&fThe firebox of the steam engine: load it with fuel (coal, wood, lava buckets — anything the engine burns) and stack a [Boiler](mech:boiler) and [Steam Piston](mech:steam_piston) on top."
+      - "&7Right-click to open its fuel storage and read the remaining burn time."
+    texture: "@burner_unlit"
+    item_texture: "@burner_lit"
+    drops: self
+    storage: { layout: HOPPER }
+    placement:
+      allowed_faces: [DOWN]
+    default_state: unlit
+    states:
+      # Bottom-aligned 12/16-tall shell (skull hidden; head-display models hang down from
+      # their translation point, so top sits at 0.2525 − epsilon-scaled ≈ 12/16 above the
+      # floor). Yaw comes from overlayBurner's displayTransformResolver: the shell fronts
+      # whoever placed it (skull Rotatable, snapped to a cardinal on placement).
+      # The cap grate is centered on its translation (material displays center; extent =
+      # scale): spans shell top (~0.7525) to the top of the block cell.
+      unlit:
+        display_entities:
+          - texture: "@burner_unlit"
+            tag: shell
+            transform: { translation: [0, 0.2525, 0], scale: [2.006, 1.5045, 2.006] }
+          - { material: EXPOSED_COPPER_GRATE, tag: cap, transform: { translation: [0, 0.3765, 0], scale: [1.0, 0.248, 1.0] } }
+      lit:
+        display_entities:
+          - texture: "@burner_lit"
+            tag: shell
+            transform: { translation: [0, 0.2525, 0], scale: [2.006, 1.5045, 2.006] }
+          - { material: EXPOSED_COPPER_GRATE, tag: cap, transform: { translation: [0, 0.3765, 0], scale: [1.0, 0.248, 1.0] } }
+        particles:
+          type: FLAME
+          count: 1
+          speed: 0.01
+          interval: 6
+          floor_offset: [0, 0.375, 0]
+    recipes:
+      craft:
+        shaped:
+          # A blast-furnace firebox in a copper jacket over an iron base (open chimney top).
+          - pattern: ["C C", "CFC", "III"]
+            key:
+              C: { material: COPPER_INGOT }
+              F: { material: BLAST_FURNACE }
+              I: { material: IRON_INGOT }
+
+  # ─── Boiler (steam stack, middle) ─────────────────────────────────────────
+  # A waxed copper chest in the world (dynamo pattern — tile entity, so FluidTanks
+  # keeps the water level in the chest's own PDC; lockContainer default seals its
+  # 27 slots; WAXED so it never oxidizes). Shell display = casing/dynamo placement.
+  # Fill by liquid pipe (machine-tank endpoint) or water-bucket right-click. Flame
+  # particles while the stack runs (driven by the steam piston above).
+  boiler:
+    name: "&fBoiler"
+    lore:
+      - "&7Boils piped-in water over a burner; a steam piston on top makes power"
+      - "&7Middle of the steam stack: burner, boiler, steam piston"
+    catalog_notes:
+      - "&fHolds the steam engine's water: stack it on a [Burner](mech:burner), put a [Steam Piston](mech:steam_piston) on top, and keep it fed — by [Copper Water Pump](mech:pump) and pipes, or by hand with water buckets."
+      - "&7The running stack sips a bucket of water roughly every minute and stops dry."
+    physical_material: WAXED_COPPER_CHEST
+    cancel_pistons: true
+    texture: "@copper_tank"
+    item_texture: "@copper_tank"
+    drops: self
+    default_state: idle
+    states:
+      # The casing/dynamo shell placement verbatim: cover the chest being disguised.
+      idle:
+        display_entities:
+          - texture: "@copper_tank"
+            tag: shell
+            transform: { translation: [0, 0.501, 0], scale: [2.006, 2.006, 2.006] }
+      running:
+        copy_from: idle
+        particles:
+          type: FLAME
+          count: 2
+          speed: 0.01
+          interval: 4
+          floor_offset: [0, 1.0, 0]   # flush with the shell top
+    recipes:
+      craft:
+        shaped:
+          # A copper tank with glass sight windows around the bucket chamber.
+          - pattern: ["CCC", "GUG", "CCC"]
+            key:
+              C: { material: COPPER_INGOT }
+              G: { material: GLASS }
+              U: { material: BUCKET }
+
+  # ─── Steam Piston (steam stack, top) ──────────────────────────────────────
+  # The stack's SOURCE: 20 Power on its horizontal X/Z axle (chain-hoist placement —
+  # floor only, axle across the placer's view, power exits both sides at piston level).
+  # Runs only while the boiler below has water and the burner below that is burning.
+  # Display (PLACEHOLDER art): piston body + a bobbing head plate + spinning axle rod,
+  # steam clouds while running. Mixed per-entity animations, so no state-level shortcut.
+  steam_piston:
+    break_on_piston: true
+    name: "&fSteam Piston"
+    lore:
+      - "&720 Power while its boiler and burner below are fed"
+      - "&7Top of the steam stack; drives shafts along its axle"
+    catalog_notes:
+      - "&fThe strongest power source: stack it on a [Boiler](mech:boiler) over a [Burner](mech:burner), feed fuel and water, and it drives 20 Power into shafts on both sides of its axle."
+      - "&7The axle lies across your view as you place it; a wrench reads out the network."
+    texture: "@piston_copper"
+    item_texture: "@piston_copper"
+    drops: self
+    placement:
+      allowed_faces: [DOWN]
+    default_state: idle_x
+    states:
+      idle_x:
+        display_entities:
+          - texture: "@rod_up"
+            tag: axle
+            transform: { translation: [-0.5, 0, 0], scale: [0.6, 2.002, 0.6], left_rotation: [90, 0, 0, 1] }
+          - { material: COPPER_BLOCK, tag: head, transform: { translation: [0, 0.18, 0],  scale: [0.6, 0.6, 0.6] } }
+      running_x:
+        display_entities:
+          - texture: "@rod_up"
+            tag: axle
+            transform: { translation: [-0.5, 0, 0], scale: [0.6, 2.002, 0.6], left_rotation: [90, 0, 0, 1] }
+            animation: { type: rotate, axis: [1, 0, 0], speed: 3.0 }
+          - material: COPPER_BLOCK
+            tag: head
+            transform: { translation: [0, 0.18, 0], scale: [0.6, 0.6, 0.6] }
+            animation: { type: bob, amplitude: 0.12, period: 40, phase: 0 }
+        particles:
+          type: CLOUD
+          count: 1
+          speed: 0.01
+          interval: 8
+          floor_offset: [0, 0.9, 0]
+      idle_z:
+        display_entities:
+          - texture: "@rod_up"
+            tag: axle
+            transform: { translation: [0, 0, -0.5], scale: [0.6, 2.002, 0.6], left_rotation: [-90, 1, 0, 0] }
+          - { material: COPPER_BLOCK, tag: head, transform: { translation: [0, 0.18, 0],  scale: [0.6, 0.6, 0.6] } }
+      running_z:
+        display_entities:
+          - texture: "@rod_up"
+            tag: axle
+            transform: { translation: [0, 0, -0.5], scale: [0.6, 2.002, 0.6], left_rotation: [-90, 1, 0, 0] }
+            animation: { type: rotate, axis: [0, 0, 1], speed: 3.0 }
+          - material: COPPER_BLOCK
+            tag: head
+            transform: { translation: [0, 0.18, 0], scale: [0.6, 0.6, 0.6] }
+            animation: { type: bob, amplitude: 0.12, period: 40, phase: 0 }
+        particles:
+          type: CLOUD
+          count: 1
+          speed: 0.01
+          interval: 8
+          floor_offset: [0, 0.9, 0]
+    recipes:
+      craft:
+        shaped:
+          # A gear between bearings (the crank) over a piston in a copper frame.
+          # Two rows — placeable at any height in the 3x3 grid.
+          - pattern: ["BEB", "CPC"]
+            key:
+              B: { block: "mech:bearing" }
+              E: { block: "mech:gear" }
+              C: { material: COPPER_INGOT }
+              P: { material: PISTON }
 
   # ─── Block Placer ─────────────────────────────────────────────────────────
   # Consumer: 1 Power. WALL only — mounts on a container and places its blocks into

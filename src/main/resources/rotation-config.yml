@@ -37,6 +37,15 @@ press:
 sieve:
   tick-interval: 40   # fixed panning cycle length, in ticks (slower than mill/press on purpose)
   max-batch: 1        # one item panned per cycle — surplus power does not speed it up
+  tank-units: 4       # water tank capacity, in buckets (pipe-fillable or bucket right-click)
+  water-per-cycles: 16 # pans per bucket of water; a dry sieve idles
+
+pump:
+  tick-interval: 40   # ticks per pump cycle (one whole-bucket unit moved per cycle)
+
+steam:
+  boiler-tank-units: 8      # boiler water tank capacity, in buckets
+  water-interval-ticks: 1200 # running time per boiler water unit (~60 s)
 
 placer:
   tick-interval: 20   # ticks between placements (one block placed per cycle)
@@ -68,12 +77,14 @@ power:
   huge_windmill: 15
   water_wheel: 2
   engine: 10
+  steam_piston: 20
   redstone_motor: 1
   drill: 5
   millstone: 5
   fan: 2
   press: 4
   sieve: 10
+  pump: 4
   placer: 2
   suction_hopper: 3
   piston_core: 1   # base rotational demand of an extendable piston core (speed scales with surplus above this)
