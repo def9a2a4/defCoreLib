@@ -372,15 +372,23 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
             placedOn = BlockFace.DOWN;                                    // floor
         }
 
-        // Check placement restrictions (before skull conversion so cancellation reverts cleanly)
+        // Check placement restrictions (before skull conversion so cancellation reverts cleanly).
+        // A floor-capable block (allowed_faces contains DOWN) clicked against a wall/ceiling is
+        // coerced to a floor placement in the same cell instead of being refused.
+        boolean coercedToFloor = false;
         if (type.placement() != null) {
             CustomHeadBlock.PlacementConfig pc = type.placement();
             if (!pc.allowedFaces().isEmpty() && !pc.allowedFaces().contains(placedOn)) {
-                event.setCancelled(true);
-                event.getPlayer().sendMessage(
-                        net.kyori.adventure.text.Component.text("Cannot place this block here",
-                                net.kyori.adventure.text.format.NamedTextColor.RED));
-                return;
+                if (pc.allowedFaces().contains(BlockFace.DOWN)) {
+                    placedOn = BlockFace.DOWN;
+                    coercedToFloor = true;
+                } else {
+                    event.setCancelled(true);
+                    event.getPlayer().sendMessage(
+                            net.kyori.adventure.text.Component.text("Cannot place this block here",
+                                    net.kyori.adventure.text.format.NamedTextColor.RED));
+                    return;
+                }
             }
             if (pc.requireSolid()) {
                 Block support = block.getRelative(placedOn);
@@ -427,7 +435,8 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
                 block.setBlockData(dir, false);
             }
         } else if (!isAlreadySkull) {
-            if (clickedFace != null && clickedFace != BlockFace.UP && clickedFace != BlockFace.DOWN) {
+            if (!coercedToFloor
+                    && clickedFace != null && clickedFace != BlockFace.UP && clickedFace != BlockFace.DOWN) {
                 block.setType(Material.PLAYER_WALL_HEAD, false);
                 if (block.getBlockData() instanceof org.bukkit.block.data.Directional dir) {
                     dir.setFacing(clickedFace);
@@ -435,6 +444,16 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
                 }
             } else {
                 block.setType(Material.PLAYER_HEAD, false);
+            }
+        }
+
+        // Ground a coerced wall placement: vanilla put a wall head against the clicked face;
+        // re-set it as a floor head facing the placer (cardinal, like a floor click would).
+        if (coercedToFloor && block.getType() == Material.PLAYER_WALL_HEAD) {
+            block.setType(Material.PLAYER_HEAD, false);
+            if (block.getBlockData() instanceof org.bukkit.block.data.Rotatable rot) {
+                rot.setRotation(event.getPlayer().getFacing().getOppositeFace());
+                block.setBlockData(rot, false);
             }
         }
 

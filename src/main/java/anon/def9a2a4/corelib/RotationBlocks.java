@@ -158,6 +158,10 @@ final class RotationBlocks {
         overlayMillstone(registry, network, millRecipes, config);
         overlayPress(registry, network, pressRecipes, config);
         overlaySieve(registry, network, sieveRecipes, config);
+        overlayPump(registry, network, config);
+        overlayBurner(registry, fuelManager);
+        overlayBoiler(registry, config);
+        overlaySteamPiston(registry, network, fuelManager, config);
         overlayPlacer(registry, network, config);
         overlayRedstoneMotor(registry, network, config);
         // Redstone Dynamo: a barrel-backed sensor (own class — holds per-block level state + a mode menu).
@@ -632,22 +636,490 @@ final class RotationBlocks {
             null, null, null));
     }
 
+    /** Pan cycles since the sieve last drank a water unit. In-memory only (a restart forgives a
+     *  partial count — same tolerance as the fuel manager's tick granularity). */
+    private static final Map<CustomBlockRegistry.LocationKey, Integer> sievePansSinceDrink = new HashMap<>();
+
     private static void overlaySieve(CustomBlockRegistry registry, RotationNetwork network,
                                      MachineRecipes sieveRecipes, RotationConfig config) {
         int maxBatch = config.sieveMaxBatch;
+        int waterPerCycles = Math.max(1, config.sieveWaterPerCycles);
+        anon.def9a2a4.corelib.fluid.FluidTanks.registerTank("mech:sieve",
+            anon.def9a2a4.corelib.fluid.FluidType.WATER, config.sieveTankUnits);
         // Same processing geometry as the millstone/press: wall-mounted, powered from the top (Y),
         // host container behind, outputs ejected below. All recipe outputs are chance-based, so a
         // cycle can consume its input and pay out nothing — but a completely full output container
         // still stalls the machine (the empty-roll capacity probe in processingEffect/ejectOutputs),
         // matching mill/press back-pressure.
+        //
+        // Panning also needs WATER: a whole-bucket tank on the block (FluidTanks), filled by a
+        // liquid pipe (machine-tank endpoint) or a water-bucket right-click. One unit is drunk
+        // every `waterPerCycles` processed pans; a dry sieve idles with a dust cue. (A sieve
+        // riding a mechanism pans without water for now — travelling tank state is out of scope.)
         overlayConsumerMachine(registry, network, new ConsumerSpec(
             "mech:sieve",
             b -> RotationNetwork.Axis.Y,
             config.getPower("sieve", 10),
             config.sieveTickInterval,
-            b -> processingMachineTick(b, network, sieveRecipes, registry,
-                maxBatch, org.bukkit.Sound.ITEM_BRUSH_BRUSHING_GRAVEL),
-            null, null, null));
+            b -> {
+                var key = CustomBlockRegistry.LocationKey.of(b);
+                if (anon.def9a2a4.corelib.fluid.FluidTanks.units(b) <= 0) {
+                    if (network.isPowered(key)) sieveDryCue(b);
+                    return;
+                }
+                boolean processed = processingMachineTick(b, network, sieveRecipes, registry,
+                    maxBatch, org.bukkit.Sound.ITEM_BRUSH_BRUSHING_GRAVEL);
+                if (!processed) return;
+                int pans = sievePansSinceDrink.merge(key, 1, Integer::sum);
+                if (pans >= waterPerCycles) {
+                    sievePansSinceDrink.remove(key);
+                    anon.def9a2a4.corelib.fluid.FluidTanks.takeUnit(b);
+                }
+            },
+            (b, event) -> tankBucketInteract("Sieve", b, event),
+            null, null));
+    }
+
+    /** Powered but dry: a soft dusty rattle instead of panning. */
+    private static void sieveDryCue(Block sieve) {
+        var center = sieve.getLocation().add(0.5, 0.6, 0.5);
+        sieve.getWorld().playSound(center, org.bukkit.Sound.BLOCK_SAND_STEP, 0.35f, 0.7f);
+        sieve.getWorld().spawnParticle(org.bukkit.Particle.WHITE_ASH, center, 4, 0.2, 0.1, 0.2, 0);
+    }
+
+    // ──────────────────────────────────────────────────────────────────────
+    // Liquid pump: in-line X/Z consumer moving whole-bucket fluid units vertically
+    // ──────────────────────────────────────────────────────────────────────
+
+    private static final NamespacedKey PUMP_REVERSE_KEY = new NamespacedKey("mech", "pump_reverse");
+
+    private static void overlayPump(CustomBlockRegistry registry, RotationNetwork network,
+                                    RotationConfig config) {
+        CustomHeadBlock block = registry.getType("mech:pump");
+        if (block == null) { warn(registry, "mech:pump"); return; }
+        // Floor-only, axis-aligned like the chain hoist: the axle lies across the placer's view
+        // and power crosses to both ±axis neighbours. Fluid moves vertically: intake below,
+        // output above (a fluid endpoint directly, or a pipe chain routed via FluidRouting);
+        // a wrench flips the flow. All units are whole buckets (docs/todo/mechanism/fluids.md).
+        registry.register(block.toBuilder()
+            .drillable(false)
+            .reactsToNeighbors(true)
+            .tickInterval(config.pumpTickInterval)
+            .stateResolver(RotationBlocks::axisPlacementState)
+            .onBlockPlaced(RotationBlocks::snapAxisFloorRotation)
+            .onNeighborChange((b, face) -> recalcIfKnown(b, network))
+            .onInteract((b, event) -> {
+                if (!isWrench(event.getPlayer().getInventory().getItemInMainHand())) return false;
+                boolean reversed = togglePumpReverse(b);
+                event.getPlayer().sendActionBar(net.kyori.adventure.text.Component.text(
+                    reversed ? "Pump: drawing from above, discharging below"
+                             : "Pump: drawing from below, discharging above",
+                    net.kyori.adventure.text.format.NamedTextColor.YELLOW));
+                return true;
+            })
+            .onTick(b -> pumpTick(b, network))
+            .onChunkLoad((b, state) -> network.addNode(b, "mech:pump",
+                RotationNetwork.axisFromState(healAxisStateOrX(state)),
+                RotationNetwork.NodeRole.CONSUMER, config.getPower("pump", 4), false))
+            .onChunkUnload(b -> network.removeNode(CustomBlockRegistry.LocationKey.of(b)))
+            .onBlockRemoved((b, state) -> network.removeNode(CustomBlockRegistry.LocationKey.of(b)))
+            .build());
+    }
+
+    /** Placement yaw → X/Z axle state, exactly the chain hoist's rule: the axle lies across
+     *  the placer's view (facing north/south → axle runs X). */
+    private static String axisPlacementState(org.bukkit.event.block.BlockPlaceEvent event) {
+        float yaw = (event.getPlayer().getLocation().getYaw() % 360f + 360f) % 360f;
+        boolean alongZ = yaw >= 315f || yaw < 45f || (yaw >= 135f && yaw < 225f);
+        return alongZ ? "idle_x" : "idle_z";
+    }
+
+    /** Snap the floor skull's vanilla 16-way yaw to the nearest cardinal, keeping the direction
+     *  the placer gave it (burner: the shell display fronts the placer via orientShellToSkull). */
+    private static void snapCardinalFloorRotation(Block b, String state) {
+        if (b.getType() == Material.PLAYER_HEAD
+                && b.getBlockData() instanceof org.bukkit.block.data.Rotatable r) {
+            BlockFace cardinal = nearestCardinal(r.getRotation());
+            if (cardinal != r.getRotation()) {
+                r.setRotation(cardinal);
+                b.setBlockData(r, false);
+            }
+        }
+    }
+
+    private static BlockFace nearestCardinal(BlockFace f) {
+        return switch (f) {
+            case NORTH, NORTH_NORTH_EAST, NORTH_NORTH_WEST, NORTH_WEST -> BlockFace.NORTH;
+            case EAST, EAST_NORTH_EAST, EAST_SOUTH_EAST, NORTH_EAST -> BlockFace.EAST;
+            case SOUTH, SOUTH_SOUTH_EAST, SOUTH_SOUTH_WEST, SOUTH_EAST -> BlockFace.SOUTH;
+            case WEST, WEST_NORTH_WEST, WEST_SOUTH_WEST, SOUTH_WEST -> BlockFace.WEST;
+            default -> BlockFace.SOUTH;
+        };
+    }
+
+    /** Yaw the yml shell transform so the art's front (+Z at identity = SOUTH) points where the
+     *  skull's Rotatable does — the Rotatable sibling of {@code RedstoneDynamo.orientHead} (same
+     *  angle table, walls only). Safe for translations on the Y axis (the burner shell's), which
+     *  a yaw rotation leaves in place; the model is x/z-centred at its origin, so it stays put. */
+    private static org.bukkit.util.Transformation orientShellToSkull(
+            Block b, org.bukkit.util.Transformation base) {
+        BlockFace facing = (b.getBlockData() instanceof org.bukkit.block.data.Rotatable r)
+            ? nearestCardinal(r.getRotation()) : BlockFace.SOUTH;
+        float h = (float) (Math.PI / 2), p = (float) Math.PI;
+        org.joml.AxisAngle4f rot = switch (facing) {
+            case NORTH -> new org.joml.AxisAngle4f(p, 0f, 1f, 0f);   // +Z → -Z
+            case EAST  -> new org.joml.AxisAngle4f(h, 0f, 1f, 0f);   // +Z → +X
+            case WEST  -> new org.joml.AxisAngle4f(-h, 0f, 1f, 0f);  // +Z → -X
+            default    -> new org.joml.AxisAngle4f(0f, 0f, 1f, 0f);  // SOUTH: identity
+        };
+        return new org.bukkit.util.Transformation(
+            base.getTranslation(), new org.joml.Quaternionf(rot), base.getScale(),
+            base.getRightRotation());
+    }
+
+    /** Snap the floor skull's 16-way yaw to the cardinal the axle runs on (hoist pattern). */
+    private static void snapAxisFloorRotation(Block b, String state) {
+        if (b.getType() == Material.PLAYER_HEAD
+                && b.getBlockData() instanceof org.bukkit.block.data.Rotatable r) {
+            r.setRotation(RotationNetwork.axisFromState(state) == RotationNetwork.Axis.X
+                ? BlockFace.EAST : BlockFace.NORTH);
+            b.setBlockData(r, false);
+        }
+    }
+
+    /** A state whose axis parses to Y (stale/missing) heals to the X axle default. */
+    private static String healAxisStateOrX(String state) {
+        if (state == null || RotationNetwork.axisFromState(state) == RotationNetwork.Axis.Y)
+            return "idle_x";
+        return state;
+    }
+
+    private static boolean togglePumpReverse(Block pump) {
+        if (!(pump.getState() instanceof org.bukkit.block.Skull skull)) return false;
+        var pdc = skull.getPersistentDataContainer();
+        boolean reversed = pdc.has(PUMP_REVERSE_KEY);
+        if (reversed) pdc.remove(PUMP_REVERSE_KEY);
+        else pdc.set(PUMP_REVERSE_KEY, org.bukkit.persistence.PersistentDataType.BYTE, (byte) 1);
+        skull.update();
+        return !reversed;
+    }
+
+    private static boolean isPumpReversed(Block pump) {
+        return pump.getState() instanceof org.bukkit.block.Skull skull
+            && skull.getPersistentDataContainer().has(PUMP_REVERSE_KEY);
+    }
+
+    /**
+     * One pump cycle: while powered, move ONE unit of WATER from the intake side to the
+     * discharge side. Intake must be a fluid endpoint directly adjacent (source block /
+     * cauldron / tank); discharge is an adjacent endpoint or a pipe chain routed by the pipes
+     * plugin ({@link anon.def9a2a4.corelib.fluid.FluidRouting}). Delivery happens BEFORE the
+     * drain, so a failed route (blocked chain, full vessel) never destroys fluid — the pump
+     * just idles. Water only: the copper pump ignores a lava intake (lava pumping is reserved
+     * for a future iron-tier pump).
+     */
+    private static void pumpTick(Block pump, RotationNetwork network) {
+        var key = CustomBlockRegistry.LocationKey.of(pump);
+        if (!network.isPowered(key)) return;
+
+        boolean reversed = isPumpReversed(pump);
+        Block intake = pump.getRelative(reversed ? BlockFace.UP : BlockFace.DOWN);
+        Block outlet = pump.getRelative(reversed ? BlockFace.DOWN : BlockFace.UP);
+
+        anon.def9a2a4.corelib.fluid.FluidEndpoint provider =
+            anon.def9a2a4.corelib.fluid.FluidEndpoints.providing(intake);
+        if (provider == null) return;
+        anon.def9a2a4.corelib.fluid.FluidType fluid = provider.provided(intake);
+        if (fluid != anon.def9a2a4.corelib.fluid.FluidType.WATER) return;
+
+        boolean delivered;
+        anon.def9a2a4.corelib.fluid.FluidEndpoint acceptor =
+            anon.def9a2a4.corelib.fluid.FluidEndpoints.accepting(outlet, fluid);
+        if (acceptor != null) {
+            delivered = acceptor.fill(outlet, fluid);
+        } else if (anon.def9a2a4.corelib.fluid.FluidRouting.isConduit(outlet, fluid)) {
+            delivered = anon.def9a2a4.corelib.fluid.FluidRouting.push(outlet, fluid);
+        } else {
+            return;
+        }
+        if (!delivered || !provider.drain(intake, fluid)) return;
+
+        var center = pump.getLocation().add(0.5, 0.5, 0.5);
+        pump.getWorld().playSound(center, org.bukkit.Sound.ITEM_BUCKET_FILL, 0.5f, 1.1f);
+        pump.getWorld().spawnParticle(org.bukkit.Particle.SPLASH, center.clone().add(0, 0.4, 0),
+            6, 0.15, 0.1, 0.15, 0);
+    }
+
+    // ──────────────────────────────────────────────────────────────────────
+    // Steam stack: burner (fuel) → boiler (water, disguised copper chest) → steam piston (SOURCE)
+    // ──────────────────────────────────────────────────────────────────────
+
+    private static final String BURNER_ID = "mech:burner";
+    private static final String BOILER_ID = "mech:boiler";
+    private static final String STEAM_PISTON_ID = "mech:steam_piston";
+
+    /** Interval ticks accumulated toward the boiler's next water unit, per piston. In-memory —
+     *  a restart forgives a partial minute, same tolerance as the sieve's pan counter. */
+    private static final Map<CustomBlockRegistry.LocationKey, Integer> steamWaterTicks = new HashMap<>();
+    /** Churn guard for the boiler's rendered state (applyConfig respawns displays, so only
+     *  re-apply on an actual idle↔running transition). In-memory: after a reload the first
+     *  piston tick re-applies the right state. */
+    private static final Map<CustomBlockRegistry.LocationKey, String> boilerRendered = new HashMap<>();
+
+    /** The burner is a dumb fuel box: storage + the shared fuel-manager lifecycle. The steam
+     *  piston (the stack controller) burns it down and drives its lit/unlit display. */
+    private static void overlayBurner(CustomBlockRegistry registry, EngineFuelManager fuelManager) {
+        CustomHeadBlock block = registry.getType(BURNER_ID);
+        if (block == null) { warn(registry, BURNER_ID); return; }
+        registry.register(block.toBuilder()
+            .drillable(false)
+            .onBlockPlaced(RotationBlocks::snapCardinalFloorRotation)
+            .displayTransformResolver((b, state, dec, idx) -> orientShellToSkull(b, dec.transform()))
+            .onInteract((b, event) -> {
+                Inventory inv = registry.getOrCreateStorage(b);
+                if (inv == null) return false;
+                int fuelTicks = fuelManager.getFuel(CustomBlockRegistry.LocationKey.of(b));
+                var view = event.getPlayer().openInventory(inv);
+                if (view != null) view.setTitle("Burner - " + fuelTicks + "s fuel");
+                return true;
+            })
+            .onChunkLoad((b, state) -> fuelManager.readFromPDC(b))
+            .onChunkUnload(b -> {
+                fuelManager.writeToPDC(b);
+                fuelManager.remove(CustomBlockRegistry.LocationKey.of(b));
+            })
+            .onBlockRemoved((b, state) -> fuelManager.remove(CustomBlockRegistry.LocationKey.of(b)))
+            .build());
+    }
+
+    /** The boiler is a copper chest disguised by its tank shell (dynamo pattern — the default
+     *  lockContainer seals the chest inventory), holding the stack's water tank in its tile
+     *  entity's PDC. Fillable by pipe (machine-tank endpoint) or water bucket. Its
+     *  idle/running display is driven by the steam piston above. */
+    private static void overlayBoiler(CustomBlockRegistry registry, RotationConfig config) {
+        CustomHeadBlock block = registry.getType(BOILER_ID);
+        if (block == null) { warn(registry, BOILER_ID); return; }
+        anon.def9a2a4.corelib.fluid.FluidTanks.registerTank(BOILER_ID,
+            anon.def9a2a4.corelib.fluid.FluidType.WATER, config.boilerTankUnits);
+        registry.register(block.toBuilder()
+            .onBlockPlaced((b, state) -> {
+                // Belt-and-braces: never let two adjacent boilers merge into a double chest.
+                if (b.getBlockData() instanceof org.bukkit.block.data.type.Chest chest
+                        && chest.getType() != org.bukkit.block.data.type.Chest.Type.SINGLE) {
+                    chest.setType(org.bukkit.block.data.type.Chest.Type.SINGLE);
+                    b.setBlockData(chest, false);
+                }
+            })
+            .onInteract((b, event) -> {
+                Boolean handled = tankBucketInteract("Boiler", b, event);
+                if (handled != null) return handled;
+                if (event.getPlayer().getInventory().getItemInMainHand().getType().isAir()) {
+                    var spec = anon.def9a2a4.corelib.fluid.FluidTanks.spec(b);
+                    event.getPlayer().sendActionBar(net.kyori.adventure.text.Component.text(
+                        "Boiler water: " + anon.def9a2a4.corelib.fluid.FluidTanks.units(b) + "/"
+                            + (spec == null ? 0 : spec.capacity()) + " buckets",
+                        net.kyori.adventure.text.format.NamedTextColor.AQUA));
+                    return true;
+                }
+                return false;
+            })
+            .onBlockRemoved((b, state) -> {
+                anon.def9a2a4.corelib.fluid.FluidTanks.clear(b);
+                boilerRendered.remove(CustomBlockRegistry.LocationKey.of(b));
+            })
+            .build());
+    }
+
+    private static void overlaySteamPiston(CustomBlockRegistry registry, RotationNetwork network,
+                                           EngineFuelManager fuelManager, RotationConfig config) {
+        int steamPower = config.getPower("steam_piston", 20);
+        CustomHeadBlock block = registry.getType(STEAM_PISTON_ID);
+        if (block == null) { warn(registry, STEAM_PISTON_ID); return; }
+        // Floor-only, axle on X/Z from placement yaw (hoist pattern) — the SOURCE sits in-line
+        // on its horizontal axle, power exits to both sides at piston level. Runs the engine's
+        // removeNode+addNode SOURCE↔TRANSMITTER discipline, gated on the stack below it:
+        // a burning burner two below and a watered boiler one below.
+        registry.register(block.toBuilder()
+            .drillable(false)
+            .reactsToNeighbors(true)
+            .tickInterval(20)
+            .stateResolver(RotationBlocks::axisPlacementState)
+            .onBlockPlaced(RotationBlocks::snapAxisFloorRotation)
+            .onNeighborChange((b, face) -> recalcIfKnown(b, network))
+            .onInteract((b, event) -> {
+                if (isWrench(event.getPlayer().getInventory().getItemInMainHand()))
+                    return wrenchInteract(b, event, network, registry);
+                if (event.getPlayer().getInventory().getItemInMainHand().getType().isAir()) {
+                    steamStatusReadout(b, registry, fuelManager, steamPower, event.getPlayer());
+                    return true;
+                }
+                return false;
+            })
+            .onTick(b -> steamPistonTick(b, network, fuelManager, registry, steamPower, config))
+            .onChunkLoad((b, state) -> {
+                boolean running = state != null && state.startsWith("running_");
+                network.addNode(b, STEAM_PISTON_ID,
+                    RotationNetwork.axisFromState(healAxisStateOrX(state)),
+                    running ? RotationNetwork.NodeRole.SOURCE : RotationNetwork.NodeRole.TRANSMITTER,
+                    running ? steamPower : 0, false);
+            })
+            .onChunkUnload(b -> {
+                var key = CustomBlockRegistry.LocationKey.of(b);
+                network.removeNode(key);
+                steamWaterTicks.remove(key);
+            })
+            .onBlockRemoved((b, state) -> {
+                var key = CustomBlockRegistry.LocationKey.of(b);
+                network.removeNode(key);
+                steamWaterTicks.remove(key);
+            })
+            .build());
+    }
+
+    private static boolean isType(CustomBlockRegistry registry, Block b, String typeId) {
+        CustomHeadBlock type = registry.getTypeFromBlock(b);
+        return type != null && typeId.equals(type.fullId());
+    }
+
+    /** Empty-hand click on the piston: say exactly which stack gate is failing (the tick's
+     *  checks, verbatim) so a dead stack is diagnosable in-game. */
+    private static void steamStatusReadout(Block piston, CustomBlockRegistry registry,
+            EngineFuelManager fuelManager, int steamPower, org.bukkit.entity.Player player) {
+        Block boiler = piston.getRelative(BlockFace.DOWN);
+        Block burner = boiler.getRelative(BlockFace.DOWN);
+        String state = registry.getState(piston);
+        boolean running = state != null && state.startsWith("running_");
+        String msg;
+        if (!isType(registry, boiler, BOILER_ID)) {
+            msg = "Steam piston: needs a Boiler directly below";
+        } else if (!isType(registry, burner, BURNER_ID)) {
+            msg = "Steam piston: needs a Burner below the boiler";
+        } else if (fuelManager.getFuel(CustomBlockRegistry.LocationKey.of(burner)) <= 0) {
+            msg = "Steam piston: burner has no fuel";
+        } else if (anon.def9a2a4.corelib.fluid.FluidTanks.units(boiler) <= 0) {
+            var spec = anon.def9a2a4.corelib.fluid.FluidTanks.spec(boiler);
+            msg = "Steam piston: boiler needs water (0/"
+                + (spec == null ? 0 : spec.capacity()) + " buckets)";
+        } else {
+            msg = running ? "Steam piston: running — " + steamPower + " power"
+                          : "Steam piston: starting…";
+        }
+        player.sendActionBar(net.kyori.adventure.text.Component.text(
+            msg, running ? net.kyori.adventure.text.format.NamedTextColor.GREEN
+                         : net.kyori.adventure.text.format.NamedTextColor.YELLOW));
+    }
+
+    /**
+     * The steam stack's controller, on the piston (interval 20 like the engine): validate
+     * burner+boiler below, feed the burner's fuel counter from its storage (shared
+     * {@link EngineFuelManager}, keyed by the BURNER's location — same boundary-refill trick as
+     * the engine so power never gaps between fuel items), drink one boiler water unit per
+     * configured interval, and flip the piston SOURCE↔TRANSMITTER + all three displays.
+     */
+    private static void steamPistonTick(Block piston, RotationNetwork network,
+            EngineFuelManager fuelManager, CustomBlockRegistry registry, int steamPower,
+            RotationConfig config) {
+        var key = CustomBlockRegistry.LocationKey.of(piston);
+        String state = registry.getState(piston);
+        boolean running = state != null && state.startsWith("running_");
+        String axis = state != null && state.contains("_")
+            ? state.substring(state.lastIndexOf('_') + 1) : "x";
+
+        Block boiler = piston.getRelative(BlockFace.DOWN);
+        Block burner = boiler.getRelative(BlockFace.DOWN);
+        boolean stackOk = isType(registry, boiler, BOILER_ID) && isType(registry, burner, BURNER_ID);
+
+        boolean hasFuel = false;
+        if (stackOk) {
+            var burnerKey = CustomBlockRegistry.LocationKey.of(burner);
+            if (fuelManager.getFuel(burnerKey) <= 0) {
+                Inventory storage = registry.getOrCreateStorage(burner);
+                if (storage != null) {
+                    int fv = consumeOneFuelItem(storage, fuelManager);
+                    if (fv > 0) fuelManager.addFuel(burnerKey, fv);
+                }
+            }
+            if (running && fuelManager.getFuel(burnerKey) > 0 && fuelManager.tick(burnerKey) <= 0) {
+                Inventory storage = registry.getOrCreateStorage(burner);
+                if (storage != null) {
+                    int fv = consumeOneFuelItem(storage, fuelManager);
+                    if (fv > 0) fuelManager.addFuel(burnerKey, fv);
+                }
+            }
+            hasFuel = fuelManager.getFuel(burnerKey) > 0;
+        }
+        boolean hasWater = stackOk && anon.def9a2a4.corelib.fluid.FluidTanks.units(boiler) > 0;
+        boolean shouldRun = stackOk && hasFuel && hasWater;
+
+        if (shouldRun && running) {
+            // Drink one boiler unit per configured interval of running time.
+            int accrued = steamWaterTicks.merge(key, 20, Integer::sum);
+            if (accrued >= config.steamWaterIntervalTicks) {
+                steamWaterTicks.remove(key);
+                anon.def9a2a4.corelib.fluid.FluidTanks.takeUnit(boiler);
+            }
+        }
+        if (shouldRun == running) {
+            if (stackOk) applySteamPartStates(registry, burner, boiler, running);
+            return;
+        }
+
+        // Transition: flip piston state + node role, and the part displays with it.
+        String target = (shouldRun ? "running_" : "idle_") + axis;
+        registry.setState(piston, target);
+        CustomHeadBlock type = registry.getTypeFromBlock(piston);
+        if (type != null) registry.applyConfig(piston, type, target, 0);
+        network.removeNode(key);
+        network.addNode(piston, STEAM_PISTON_ID, RotationNetwork.axisFromState(target),
+            shouldRun ? RotationNetwork.NodeRole.SOURCE : RotationNetwork.NodeRole.TRANSMITTER,
+            shouldRun ? steamPower : 0, false);
+        if (!shouldRun) steamWaterTicks.remove(key);
+        if (stackOk) applySteamPartStates(registry, burner, boiler, shouldRun);
+    }
+
+    /** Drive the burner's lit/unlit skull state and the boiler's rendered idle/running
+     *  shell (churn-guarded — applyConfig respawns displays). */
+    private static void applySteamPartStates(CustomBlockRegistry registry, Block burner,
+                                             Block boiler, boolean running) {
+        String burnerTarget = running ? "lit" : "unlit";
+        if (!burnerTarget.equals(registry.getState(burner))) {
+            registry.setState(burner, burnerTarget);
+            CustomHeadBlock burnerType = registry.getTypeFromBlock(burner);
+            if (burnerType != null && burnerType.states().containsKey(burnerTarget)) {
+                registry.applyConfig(burner, burnerType, burnerTarget, 0);
+            }
+        }
+        String boilerTarget = running ? "running" : "idle";
+        var boilerKey = CustomBlockRegistry.LocationKey.of(boiler);
+        if (!boilerTarget.equals(boilerRendered.get(boilerKey))) {
+            boilerRendered.put(boilerKey, boilerTarget);
+            CustomHeadBlock boilerType = registry.getTypeFromBlock(boiler);
+            if (boilerType != null && boilerType.states().containsKey(boilerTarget)) {
+                registry.applyConfig(boiler, boilerType, boilerTarget, 0);
+            }
+        }
+    }
+
+    /** Right-click with a water bucket fills one tank unit; anything else falls through. */
+    private static @org.jetbrains.annotations.Nullable Boolean tankBucketInteract(
+            String label, Block block, org.bukkit.event.player.PlayerInteractEvent event) {
+        var player = event.getPlayer();
+        ItemStack held = player.getInventory().getItemInMainHand();
+        if (held.getType() != Material.WATER_BUCKET) return null;
+        if (!anon.def9a2a4.corelib.fluid.FluidTanks.addUnit(block)) {
+            player.sendActionBar(net.kyori.adventure.text.Component.text(
+                label + " tank is full", net.kyori.adventure.text.format.NamedTextColor.YELLOW));
+            return true;
+        }
+        player.getInventory().setItemInMainHand(new ItemStack(Material.BUCKET));
+        block.getWorld().playSound(block.getLocation().add(0.5, 0.5, 0.5),
+            org.bukkit.Sound.ITEM_BUCKET_EMPTY, 0.7f, 1f);
+        var spec = anon.def9a2a4.corelib.fluid.FluidTanks.spec(block);
+        player.sendActionBar(net.kyori.adventure.text.Component.text(
+            label + " water: " + anon.def9a2a4.corelib.fluid.FluidTanks.units(block) + "/"
+                + (spec == null ? 0 : spec.capacity()) + " buckets",
+            net.kyori.adventure.text.format.NamedTextColor.AQUA));
+        return true;
     }
 
     private static void overlayPlacer(CustomBlockRegistry registry, RotationNetwork network,
@@ -859,24 +1331,30 @@ final class RotationBlocks {
      * while powered, pull recipe inputs from the host container behind and eject results below,
      * a batch per cycle sized by surplus power. Inputs are consumed only after outputs are delivered
      * (stall-safe). Reused by every machine via a recipe map + sound + batch cap.
+     *
+     * @return true when at least one recipe cycle processed this tick (the sieve meters its
+     *         water consumption off this; other callers ignore it)
      */
-    private static void processingMachineTick(Block machine, RotationNetwork network,
+    private static boolean processingMachineTick(Block machine, RotationNetwork network,
             MachineRecipes recipes, CustomBlockRegistry registry, int maxBatch, org.bukkit.Sound sound) {
         var key = CustomBlockRegistry.LocationKey.of(machine);
-        if (!network.isPowered(key)) return;
+        if (!network.isPowered(key)) return false;
 
         pullFromAdjacentContainer(machine);
         Inventory in = hostContainer(machine);
-        if (in == null) return;
+        if (in == null) return false;
 
         int[] stats = network.getNetworkStats(key);
-        if (stats == null) return;
+        if (stats == null) return false;
         // stats = {supply, demand, count}; surplus headroom = supply - demand.
         int batch = Math.min(maxBatch, Math.max(1, stats[0] - stats[1]));
 
-        if (processingEffect(in, batch, recipes, registry, outputs -> ejectOutputs(machine, outputs))) {
+        boolean processed =
+            processingEffect(in, batch, recipes, registry, outputs -> ejectOutputs(machine, outputs));
+        if (processed) {
             machine.getWorld().playSound(machine.getLocation().add(0.5, 0.5, 0.5), sound, 0.6f, 1f);
         }
+        return processed;
     }
 
     /**

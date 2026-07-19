@@ -29,6 +29,11 @@ final class RotationConfig {
     int pressMaxBatch = 8;
     int sieveTickInterval = 40;
     int sieveMaxBatch = 1;
+    int sieveTankUnits = 4;
+    int sieveWaterPerCycles = 16;
+    int pumpTickInterval = 40;
+    int boilerTankUnits = 8;
+    int steamWaterIntervalTicks = 1200;   // running time per boiler water unit (~60 s)
     int placerTickInterval = 20;
     int suctionTickInterval = 2;
     double suctionPullRange = 2.5;     // pull-box side = 2*(range+0.75); 2.5 → 6.5×6.5×6.5 cube
@@ -143,6 +148,21 @@ final class RotationConfig {
         if (sieve != null) {
             sieveTickInterval = sieve.getInt("tick-interval", sieveTickInterval);
             sieveMaxBatch = sieve.getInt("max-batch", sieveMaxBatch);
+            sieveTankUnits = sieve.getInt("tank-units", sieveTankUnits);
+            sieveWaterPerCycles = sieve.getInt("water-per-cycles", sieveWaterPerCycles);
+            loaded++;
+        }
+
+        ConfigurationSection pump = yaml.getConfigurationSection("pump");
+        if (pump != null) {
+            pumpTickInterval = pump.getInt("tick-interval", pumpTickInterval);
+            loaded++;
+        }
+
+        ConfigurationSection steam = yaml.getConfigurationSection("steam");
+        if (steam != null) {
+            boilerTankUnits = steam.getInt("boiler-tank-units", boilerTankUnits);
+            steamWaterIntervalTicks = steam.getInt("water-interval-ticks", steamWaterIntervalTicks);
             loaded++;
         }
 

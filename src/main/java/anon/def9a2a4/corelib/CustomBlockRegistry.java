@@ -1972,6 +1972,12 @@ public class CustomBlockRegistry {
         // Shaped recipes
         for (CustomHeadBlock.ShapedRecipeDef r : type.shapedRecipes()) {
             try {
+                String missing = firstUnresolvableBlockIngredient(r.key().values());
+                if (missing != null) {
+                    plugin.getLogger().info("Skipping recipe '" + prefix + r.id() + "' — ingredient '"
+                            + missing + "' is not registered (optional plugin absent?)");
+                    continue;
+                }
                 org.bukkit.NamespacedKey key = new org.bukkit.NamespacedKey(plugin, prefix + r.id());
                 org.bukkit.inventory.ItemStack result = type.createItem(r.amount());
                 org.bukkit.inventory.ShapedRecipe recipe = new org.bukkit.inventory.ShapedRecipe(key, result);
@@ -1998,6 +2004,12 @@ public class CustomBlockRegistry {
         // Shapeless recipes
         for (CustomHeadBlock.ShapelessRecipeDef r : type.shapelessRecipes()) {
             try {
+                String missing = firstUnresolvableBlockIngredient(r.ingredients());
+                if (missing != null) {
+                    plugin.getLogger().info("Skipping recipe '" + prefix + r.id() + "' — ingredient '"
+                            + missing + "' is not registered (optional plugin absent?)");
+                    continue;
+                }
                 org.bukkit.NamespacedKey key = new org.bukkit.NamespacedKey(plugin, prefix + r.id());
                 org.bukkit.inventory.ItemStack result = type.createItem(r.amount());
                 org.bukkit.inventory.ShapelessRecipe recipe = new org.bukkit.inventory.ShapelessRecipe(key, result);
@@ -2047,6 +2059,18 @@ public class CustomBlockRegistry {
                 trackAdvancementRecipe(type.unlockAdvancement(), registeredRecipeKeys.get(i));
             }
         }
+    }
+
+    /** The id of the first {@code block:} ingredient that doesn't resolve to a registered type,
+     *  or null when all resolve. A recipe with an unresolvable block ingredient is SKIPPED at
+     *  registration — that is how a recipe soft-depends on another plugin's block (e.g. the pump
+     *  needs {@code pipes:copper_pipe}: no Pipes plugin, no pump recipe). */
+    private @Nullable String firstUnresolvableBlockIngredient(
+            java.util.Collection<CustomHeadBlock.IngredientSpec> specs) {
+        for (CustomHeadBlock.IngredientSpec spec : specs) {
+            if (spec.isBlock() && getType(spec.blockId()) == null) return spec.blockId();
+        }
+        return null;
     }
 
     /** RecipeChoice for a custom-block ingredient: an ExactChoice of the referenced type's item,
