@@ -698,7 +698,8 @@ final class RotationBlocks {
         CustomHeadBlock block = registry.getType("mech:pump");
         if (block == null) { warn(registry, "mech:pump"); return; }
         // Floor-only, axis-aligned like the chain hoist: the axle lies across the placer's view
-        // and power crosses to both ±axis neighbours. Fluid moves vertically: intake below,
+        // and power crosses to both ±axis neighbours; the valve skull fronts the placer
+        // (snapAxisFacingRotation). Fluid moves vertically: intake below,
         // output above (a fluid endpoint directly, or a pipe chain routed via FluidRouting);
         // a wrench flips the flow. All units are whole buckets (docs/todo/mechanism/fluids.md).
         registry.register(block.toBuilder()
@@ -706,7 +707,7 @@ final class RotationBlocks {
             .reactsToNeighbors(true)
             .tickInterval(config.pumpTickInterval)
             .stateResolver(RotationBlocks::axisPlacementState)
-            .onBlockPlaced(RotationBlocks::snapAxisFloorRotation)
+            .onBlockPlaced(RotationBlocks::snapAxisFacingRotation)
             .onNeighborChange((b, face) -> recalcIfKnown(b, network))
             .onInteract((b, event) -> {
                 if (!isWrench(event.getPlayer().getInventory().getItemInMainHand())) return false;
@@ -718,9 +719,13 @@ final class RotationBlocks {
                 return true;
             })
             .onTick(b -> pumpTick(b, network))
-            .onChunkLoad((b, state) -> network.addNode(b, "mech:pump",
-                RotationNetwork.axisFromState(healAxisStateOrX(state)),
-                RotationNetwork.NodeRole.CONSUMER, config.getPower("pump", 4), false))
+            .onChunkLoad((b, state) -> {
+                // Heals legacy skulls snapped parallel to the axle; no-op once perpendicular.
+                snapAxisFacingRotation(b, state);
+                network.addNode(b, "mech:pump",
+                    RotationNetwork.axisFromState(healAxisStateOrX(state)),
+                    RotationNetwork.NodeRole.CONSUMER, config.getPower("pump", 4), false);
+            })
             .onChunkUnload(b -> network.removeNode(CustomBlockRegistry.LocationKey.of(b)))
             .onBlockRemoved((b, state) -> network.removeNode(CustomBlockRegistry.LocationKey.of(b)))
             .build());
@@ -791,6 +796,34 @@ final class RotationBlocks {
         return new org.bukkit.util.Transformation(
             base.getTranslation(), new org.joml.Quaternionf(rot), base.getScale(),
             base.getRightRotation());
+    }
+
+    /** Nearest cardinal perpendicular to the shaft axis, from the face's direction vector.
+     *  A projection: cardinals it emits map to themselves, so it is safe on both the fresh
+     *  16-way placement rotation and an already-snapped skull. Ties (a legacy skull sitting
+     *  exactly parallel to the axle) break to SOUTH (X axle) / EAST (Z axle). */
+    private static BlockFace perpendicularCardinal(BlockFace sixteen, RotationNetwork.Axis axis) {
+        var dir = sixteen.getDirection();
+        return switch (axis) {
+            case Z -> dir.getX() < 0 ? BlockFace.WEST : BlockFace.EAST;
+            default -> dir.getZ() < 0 ? BlockFace.NORTH : BlockFace.SOUTH;
+        };
+    }
+
+    /** Snap the floor skull toward the placer, clamped perpendicular to the axle (the pump's
+     *  valve art peeks through the body and should front whoever placed it). The vanilla
+     *  16-way rotation already points at the placer; we keep its perpendicular component.
+     *  Idempotent, so it doubles as the chunk-load heal for legacy axis-parallel skulls. */
+    private static void snapAxisFacingRotation(Block b, String state) {
+        if (b.getType() == Material.PLAYER_HEAD
+                && b.getBlockData() instanceof org.bukkit.block.data.Rotatable r) {
+            BlockFace facing = perpendicularCardinal(r.getRotation(),
+                RotationNetwork.axisFromState(healAxisStateOrX(state)));
+            if (facing != r.getRotation()) {
+                r.setRotation(facing);
+                b.setBlockData(r, false);
+            }
+        }
     }
 
     /** Snap the floor skull's 16-way yaw to the cardinal the axle runs on (hoist pattern). */

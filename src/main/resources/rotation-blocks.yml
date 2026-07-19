@@ -716,7 +716,7 @@ blocks:
         copy_from: idle_x
         animation: { type: rotate, axis: [1, 0, 0], speed: 3.0 }
         particles:
-          type: CAMPFIRE_COSY_SMOKE
+          type: WHITE_SMOKE
           count: 1
           speed: 0.02
           interval: 10
@@ -725,7 +725,7 @@ blocks:
         copy_from: idle_y
         animation: { type: rotate, axis: [0, 1, 0], speed: 3.0 }
         particles:
-          type: CAMPFIRE_COSY_SMOKE
+          type: WHITE_SMOKE
           count: 1
           speed: 0.02
           interval: 10
@@ -734,7 +734,7 @@ blocks:
         copy_from: idle_z
         animation: { type: rotate, axis: [0, 0, 1], speed: 3.0 }
         particles:
-          type: CAMPFIRE_COSY_SMOKE
+          type: WHITE_SMOKE
           count: 1
           speed: 0.02
           interval: 10
@@ -1586,7 +1586,7 @@ blocks:
           count: 1
           speed: 0.01
           interval: 6
-          floor_offset: [0, 0.375, 0]
+          floor_offset: [0, 0.75, 0]
     recipes:
       craft:
         shaped:
@@ -1626,12 +1626,6 @@ blocks:
             transform: { translation: [0, 0.501, 0], scale: [2.006, 2.006, 2.006] }
       running:
         copy_from: idle
-        particles:
-          type: FLAME
-          count: 2
-          speed: 0.01
-          interval: 4
-          floor_offset: [0, 0.75, 0]   # at the top of the burner display below
     recipes:
       craft:
         shaped:
@@ -1681,7 +1675,7 @@ blocks:
             transform: { translation: [0, 0, 0], scale: [0.75, 0.75, 0.75] }
             animation: { type: bob, amplitude: 0.125, period: 40, phase: 0 }
         particles:
-          type: CLOUD
+          type: WHITE_SMOKE
           count: 1
           speed: 0.01
           interval: 8
@@ -1703,7 +1697,7 @@ blocks:
             transform: { translation: [0, 0, 0], scale: [0.75, 0.75, 0.75] }
             animation: { type: bob, amplitude: 0.125, period: 40, phase: 0 }
         particles:
-          type: CLOUD
+          type: WHITE_SMOKE
           count: 1
           speed: 0.01
           interval: 8
