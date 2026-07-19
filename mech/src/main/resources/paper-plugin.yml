@@ -13,6 +13,12 @@ dependencies:
     bbanners:
       load: BEFORE
       required: false
+    # Optional: the pump recipe uses pipes:copper_pipe as an ingredient. Pipes must load
+    # first so the block is registered when mech's recipes resolve; without Pipes the
+    # pump recipe is skipped (CustomBlockRegistry skips unresolvable block ingredients).
+    Pipes:
+      load: BEFORE
+      required: false
 permissions:
   mech.admin:
     description: Mechanism admin commands (advance)
