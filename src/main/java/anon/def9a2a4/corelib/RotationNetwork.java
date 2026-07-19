@@ -8,7 +8,6 @@ import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.block.Skull;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jspecify.annotations.Nullable;
@@ -602,8 +601,8 @@ public class RotationNetwork {
     @Nullable SpinDirection readStoredDirection(CustomBlockRegistry.LocationKey key) {
         Block block = toBlock(key);
         if (block == null) return null;
-        if (!(block.getState() instanceof Skull skull)) return null;
-        String val = skull.getPersistentDataContainer().get(SPIN_DIR_KEY, PersistentDataType.STRING);
+        if (!(block.getState() instanceof org.bukkit.block.TileState tile)) return null;
+        String val = tile.getPersistentDataContainer().get(SPIN_DIR_KEY, PersistentDataType.STRING);
         if (val == null) return null;
         return switch (val) {
             case "cw" -> SpinDirection.CW;

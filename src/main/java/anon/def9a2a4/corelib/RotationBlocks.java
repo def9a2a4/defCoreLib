@@ -13,6 +13,7 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Container;
 import org.bukkit.block.Skull;
+import org.bukkit.block.TileState;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
@@ -310,8 +311,11 @@ final class RotationBlocks {
             .tickInterval(10)
             .onNeighborChange((b, face) -> evaluateWaterWheel(b, network, registry, waterWheelPower))
             .onTick(b -> evaluateWaterWheel(b, network, registry, waterWheelPower))
+            // The world block is a waxed copper chest: keep it (and custom chest neighbors —
+            // other wheels, boilers) from vanilla double-chest merging.
+            .onBlockPlaced((b, state) -> healChestMerges(registry, b))
             // Each paddle renders the plank matching the slab it was crafted with; captured onto
-            // the skull PDC per-tag and listed in "Paddles:" lore (see IngredientCapture).
+            // the tile PDC per-tag and listed in "Paddles:" lore (see IngredientCapture).
             .ingredientCapture(PADDLE_CAPTURE)
             .onInteract((b, event) -> {
                 if (isWrench(event.getPlayer().getInventory().getItemInMainHand())) {
@@ -367,15 +371,15 @@ final class RotationBlocks {
         // NOTE: CW = positive rotation about the YAML axis; if a wheel spins against its
         // current, swap the two SpinDirection values below.
         boolean dirChanged = false;
-        if (spinning && b.getState() instanceof Skull skull) {
+        if (spinning && b.getState() instanceof TileState tile) {
             RotationNetwork.SpinDirection desired = signal > 0
                     ? RotationNetwork.SpinDirection.CW : RotationNetwork.SpinDirection.CCW;
             boolean enteringSpin = !state.startsWith("spinning_");
             if (enteringSpin || network.readStoredDirection(key) != desired) {
-                skull.getPersistentDataContainer().set(RotationNetwork.SPIN_DIR_KEY,
+                tile.getPersistentDataContainer().set(RotationNetwork.SPIN_DIR_KEY,
                         PersistentDataType.STRING,
                         desired == RotationNetwork.SpinDirection.CW ? "cw" : "ccw");
-                skull.update();
+                tile.update();
                 dirChanged = true;
             }
         }
@@ -954,23 +958,30 @@ final class RotationBlocks {
         }
     }
 
+    /** Belt-and-braces for chest-backed blocks (boiler, water wheel): never let the placed
+     *  block merge into a double chest. Vanilla pairs BOTH halves, so heal the cardinal
+     *  neighbors too — without this a custom chest next door keeps its paired half and
+     *  renders offset/rotated. Any custom chest neighbor qualifies (a wheel can sit
+     *  beside a boiler; both are waxed copper chests). */
+    private static void healChestMerges(CustomBlockRegistry registry, Block b) {
+        unpairChest(b);
+        for (BlockFace face : new BlockFace[]{
+                BlockFace.NORTH, BlockFace.SOUTH, BlockFace.EAST, BlockFace.WEST}) {
+            Block n = b.getRelative(face);
+            if (n.getBlockData() instanceof org.bukkit.block.data.type.Chest
+                    && registry.getTypeFromBlock(n) != null) {
+                unpairChest(n);
+            }
+        }
+    }
+
     private static void overlayBoiler(CustomBlockRegistry registry, RotationConfig config) {
         CustomHeadBlock block = registry.getType(BOILER_ID);
         if (block == null) { warn(registry, BOILER_ID); return; }
         anon.def9a2a4.corelib.fluid.FluidTanks.registerTank(BOILER_ID,
             anon.def9a2a4.corelib.fluid.FluidType.WATER, config.boilerTankUnits);
         registry.register(block.toBuilder()
-            .onBlockPlaced((b, state) -> {
-                // Belt-and-braces: never let two adjacent boilers merge into a double chest.
-                // Vanilla pairs BOTH halves, so heal the cardinal neighbors too — without this
-                // an existing boiler next door keeps its paired half and renders offset/rotated.
-                unpairChest(b);
-                for (BlockFace face : new BlockFace[]{
-                        BlockFace.NORTH, BlockFace.SOUTH, BlockFace.EAST, BlockFace.WEST}) {
-                    Block n = b.getRelative(face);
-                    if (isType(registry, n, BOILER_ID)) unpairChest(n);
-                }
-            })
+            .onBlockPlaced((b, state) -> healChestMerges(registry, b))
             // The tank art fronts the placer: yaw the shell to the chest's facing (set from the
             // placer in CoreLibPlugin's physical_material placement, vanilla-chest style).
             .displayTransformResolver((b, state, dec, idx) -> orientShellToFacing(b, dec.transform()))
@@ -2111,17 +2122,17 @@ final class RotationBlocks {
 
     private static void toggleSourceDirection(Block block, CustomBlockRegistry.LocationKey key,
                                                Player player, RotationNetwork network) {
-        if (!(block.getState() instanceof Skull skull)) return;
-        String val = skull.getPersistentDataContainer().get(
+        if (!(block.getState() instanceof TileState tile)) return;
+        String val = tile.getPersistentDataContainer().get(
                 RotationNetwork.SPIN_DIR_KEY, PersistentDataType.STRING);
         RotationNetwork.SpinDirection oldDir = val == null ? RotationNetwork.SpinDirection.CW
                 : "ccw".equals(val) ? RotationNetwork.SpinDirection.CCW : RotationNetwork.SpinDirection.CW;
         RotationNetwork.SpinDirection newDir = oldDir.reversed();
 
-        skull.getPersistentDataContainer().set(
+        tile.getPersistentDataContainer().set(
                 RotationNetwork.SPIN_DIR_KEY, PersistentDataType.STRING,
                 newDir == RotationNetwork.SpinDirection.CW ? "cw" : "ccw");
-        skull.update();
+        tile.update();
 
         if (network.getNode(key) != null) {
             network.recalculate(key);

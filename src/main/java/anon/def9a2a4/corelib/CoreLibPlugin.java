@@ -502,20 +502,22 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
             registry.markBlock(block, type, state);
         }
 
-        // Copy captured display data from item → skull (windmill banners / water-wheel planks)
+        // Copy captured display data from item → block tile (windmill banners / water-wheel
+        // planks). The item is always a head (SkullMeta); the placed block may be a skull OR
+        // a physical_material tile entity (the water wheel's chest), so target any TileState.
         if (meta instanceof org.bukkit.inventory.meta.SkullMeta skullMeta
-                && block.getState() instanceof org.bukkit.block.Skull skull) {
+                && block.getState() instanceof org.bukkit.block.TileState tile) {
             if (type.displayItemResolver() != null) {
                 CustomBlockRegistry.copyBladePdc(
                         skullMeta.getPersistentDataContainer(),
-                        skull.getPersistentDataContainer());
+                        tile.getPersistentDataContainer());
             }
             if (type.ingredientCapture() != null) {
                 type.ingredientCapture().copyPdc(
                         skullMeta.getPersistentDataContainer(),
-                        skull.getPersistentDataContainer());
+                        tile.getPersistentDataContainer());
             }
-            skull.update();
+            tile.update();
         }
 
         // Play place sound

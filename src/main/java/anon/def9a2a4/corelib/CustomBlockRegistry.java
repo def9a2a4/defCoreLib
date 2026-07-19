@@ -135,8 +135,8 @@ public class CustomBlockRegistry {
      *  every break path (mining, explosion, piston, fluid, drill) drops an identical item. */
     static ItemStack enrichDrop(Block block, CustomHeadBlock type, ItemStack item) {
         if (type.ingredientCapture() != null) {
-            if (block.getState() instanceof Skull skull) {
-                return type.ingredientCapture().enrich(skull, item);
+            if (block.getState() instanceof TileState tile) {
+                return type.ingredientCapture().enrich(tile, item);
             }
             return item;
         }

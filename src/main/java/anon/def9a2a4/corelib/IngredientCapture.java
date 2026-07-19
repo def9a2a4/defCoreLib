@@ -6,7 +6,7 @@ import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.block.Block;
-import org.bukkit.block.Skull;
+import org.bukkit.block.TileState;
 import org.bukkit.inventory.CraftingInventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -88,8 +88,8 @@ public record IngredientCapture(
 
     /** The captured display item for a display tag, or null (⇒ keep the YAML default). */
     static @Nullable ItemStack resolveDisplay(Block block, String tagSuffix) {
-        if (!(block.getState() instanceof Skull skull)) return null;
-        byte[] data = skull.getPersistentDataContainer().get(key(tagSuffix), PersistentDataType.BYTE_ARRAY);
+        if (!(block.getState() instanceof TileState tile)) return null;
+        byte[] data = tile.getPersistentDataContainer().get(key(tagSuffix), PersistentDataType.BYTE_ARRAY);
         if (data == null) return null;
         try {
             return ItemStack.deserializeBytes(data);
@@ -98,14 +98,14 @@ public record IngredientCapture(
         }
     }
 
-    /** Copy captured data skull→item and re-apply lore (for drops / pick-block). */
-    ItemStack enrich(Skull skull, ItemStack item) {
+    /** Copy captured data tile→item and re-apply lore (for drops / pick-block). */
+    ItemStack enrich(TileState tile, ItemStack item) {
         ItemStack out = item.clone();
         ItemMeta meta = out.getItemMeta();
-        copyPdc(skull.getPersistentDataContainer(), meta.getPersistentDataContainer());
+        copyPdc(tile.getPersistentDataContainer(), meta.getPersistentDataContainer());
         List<ItemStack> captured = new ArrayList<>();
         for (String tag : slotTags.values()) {
-            byte[] data = skull.getPersistentDataContainer().get(key(tag), PersistentDataType.BYTE_ARRAY);
+            byte[] data = tile.getPersistentDataContainer().get(key(tag), PersistentDataType.BYTE_ARRAY);
             if (data == null) continue;
             try {
                 captured.add(ItemStack.deserializeBytes(data));
