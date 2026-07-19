@@ -86,7 +86,7 @@ public class PipesPlugin extends JavaPlugin {
         // world gets its catch-up sweep scheduled via initWorld.
         legacyMigrator = new LegacyPipeMigrator(this, coreLibRegistry);
         getServer().getPluginManager().registerEvents(legacyMigrator, this);
-        coreLibRegistry.registerForeignOrphanDetector("pipes-legacy", legacyMigrator::isOrphanedLegacyDisplay);
+        coreLibRegistry.registerForeignOrphanDetector("pipes-legacy", legacyMigrator::inspectLegacyDisplay);
 
         worldManager = new WorldManager(this, pipeManagers);
         ConversionRecipeCraftListener conversionRecipeCraftListener = new ConversionRecipeCraftListener(this, recipeManager);

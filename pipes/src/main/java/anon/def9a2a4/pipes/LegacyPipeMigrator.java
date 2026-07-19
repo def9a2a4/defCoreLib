@@ -46,6 +46,11 @@ import java.util.UUID;
  * before they exist on Paper), plus a catch-up sweep per world after init and via /pipes migrate.
  * Every path is idempotent and stateless per chunk, so re-entry and repeat visits are safe.
  *
+ * <p>Once a legacy display group has been judged, its displays are always removed — adopted,
+ * stale, or conflicting. The only paths that leave legacy displays in place are the deliberately
+ * conservative ones: unknown/unconfigured variants (retried after a config fix) and out-of-chunk
+ * tags whose target chunk is unloaded (never force a chunk load; retried on every visit).
+ *
  * <p>Sunset: delete this class (plus its wiring in PipesPlugin/WorldManager/plugin.yml and the
  * foreign-orphan detector registration) once servers report zero migrations across a full cycle.
  */
@@ -53,8 +58,7 @@ public final class LegacyPipeMigrator implements Listener {
 
     private static final NamespacedKey LEGACY_PIPE_TAG = new NamespacedKey("pipe", "tag");
     private static final String LEGACY_SCOREBOARD_PREFIX = "pipe:";
-    private static final String DIR_SUFFIX = "_dir";
-    private static final String HEAD_SUFFIX = "_head";
+    private static final String[] DISPLAY_SUFFIXES = {"_dir", "_head"};
 
     /** Skull profile UUID every legacy pipe head carries — constant since the legacy plugin's first
      *  release, and overwritten by applyConfig on adoption, so it survives only on unmigrated heads.
@@ -98,14 +102,14 @@ public final class LegacyPipeMigrator implements Listener {
         }
     }
 
-    private record LegacyTag(String variantId, int x, int y, int z, BlockFace facing, boolean main) {}
+    private record LegacyTag(String variantId, int x, int y, int z, BlockFace facing) {}
 
     /** Normalized tag value (no {@code pipe:} prefix) and whether it came from the unambiguous PDC key. */
     private record RawTag(String value, boolean fromPdc) {}
 
     private record Coord(int x, int y, int z) {}
 
-    private record Tagged(ItemDisplay display, RawTag raw, LegacyTag tag) {}
+    private record Tagged(ItemDisplay display, LegacyTag tag) {}
 
     @EventHandler
     public void onEntitiesLoad(EntitiesLoadEvent event) {
@@ -168,7 +172,7 @@ public final class LegacyPipeMigrator implements Listener {
                 continue;
             }
             groups.computeIfAbsent(new Coord(tag.x(), tag.y(), tag.z()), c -> new ArrayList<>())
-                    .add(new Tagged(display, raw, tag));
+                    .add(new Tagged(display, tag));
         }
 
         // Pass 2: judge each coordinate group.
@@ -180,13 +184,12 @@ public final class LegacyPipeMigrator implements Listener {
             if (!inChunk) {
                 // WorldEdit-copied or teleported display: its tag points at another chunk. Judge only
                 // against an observably loaded target — never force a sync chunk load from inside
-                // EntitiesLoadEvent. Undecidable → leave; retried on every load of this chunk.
-                if (world.isChunkLoaded(c.x() >> 4, c.z() >> 4)) {
-                    Block target = world.getBlockAt(c.x(), c.y(), c.z());
-                    if (!isHead(target) || corelibTypeId(target) != null) {
-                        orphans += removeAll(members);
-                    }
-                    // else: bare head elsewhere — a real legacy pipe candidate; its own chunk's pass owns it.
+                // EntitiesLoadEvent. Undecidable → leave; retried on every load of this chunk. A live
+                // legacy head elsewhere is left for its own chunk's pass; once adopted there, its cell
+                // is corelib-marked and this copy is swept on the next visit.
+                if (world.isChunkLoaded(c.x() >> 4, c.z() >> 4)
+                        && isStrayTarget(world.getBlockAt(c.x(), c.y(), c.z()))) {
+                    orphans += removeAll(members);
                 }
                 continue;
             }
@@ -208,30 +211,32 @@ public final class LegacyPipeMigrator implements Listener {
                 continue;
             }
 
-            // Identity comes ONLY from non-suffixed main tags: dev-era _dir tags can carry a
-            // different facing, and duplicated mains were a known legacy bug.
-            Set<String> mains = new HashSet<>();
-            LegacyTag main = null;
+            // Identity by consensus across ALL surviving tags: a _dir/_head tag names the same
+            // variant+facing as the main tag, so a pipe whose main display was killed is still
+            // adoptable. Dev-era _dir facings can disagree — on conflict, identity is untrustworthy:
+            // remove the displays (the priority is clearing old entities) and leave the head.
+            Set<String> identities = new HashSet<>();
             for (Tagged t : members) {
-                if (t.tag().main()) {
-                    mains.add(t.tag().variantId() + ":" + t.tag().facing().name());
-                    main = t.tag();
-                }
+                identities.add(t.tag().variantId() + ":" + t.tag().facing().name());
             }
-            if (main == null || mains.size() != 1) {
+            if (identities.size() != 1) {
+                orphans += removeAll(members);
+                residue++;
                 plugin.getLogger().warning("Legacy pipe at " + world.getName() + " "
-                        + c.x() + "," + c.y() + "," + c.z() + " has "
-                        + (main == null ? "no main display tag" : "conflicting main display tags")
-                        + " — left untouched.");
+                        + c.x() + "," + c.y() + "," + c.z()
+                        + " had conflicting display tags — removed the displays; re-place the pipe by hand.");
                 continue;
             }
+            LegacyTag identity = members.get(0).tag();
 
-            String variantId = main.variantId();
+            String variantId = identity.variantId();
             CustomHeadBlock type = registry.getType("pipes:" + variantId);
             PipeVariant variant = plugin.getVariantRegistry().getVariant(variantId);
             if (type == null || variant == null) {
                 // Un-overlaid YAML types have no callbacks/transform resolver and would produce a
-                // broken pipe — treat "registered but not configured" the same as unknown.
+                // broken pipe — treat "registered but not configured" the same as unknown. The ONE
+                // case that deliberately leaves displays behind: destroying them would erase the only
+                // identity, and a config fix makes the next load adopt cleanly.
                 unknown++;
                 if (warnedVariants.add(variantId)) {
                     plugin.getLogger().warning("Legacy pipe variant '" + variantId
@@ -252,29 +257,27 @@ public final class LegacyPipeMigrator implements Listener {
             }
 
             // Adopt.
-            String state = main.facing().name().toLowerCase(Locale.ROOT);
+            String state = identity.facing().name().toLowerCase(Locale.ROOT);
             if (!type.states().containsKey(state)) {
                 plugin.getLogger().warning("Legacy pipe at " + world.getName() + " "
                         + c.x() + "," + c.y() + "," + c.z() + " has invalid facing '" + state
                         + "' for " + variantId + " — using default state.");
                 state = type.defaultState();
             }
+            // markBlock FIRST, then display removal: a crash in between lands in the
+            // "already corelib-marked" branch next load, which finishes the cleanup.
             registry.markBlock(block, type, state);
             removeAll(members);
-            // Order matters: restoreBlock registers the pipe (onChunkLoad callback) BEFORE applyConfig
-            // resolves display transforms, which prefer registered PipeData over the state fallback.
-            registry.restoreBlock(block, type, state);
-            registry.applyConfig(block, type, state, 0);
-            registry.refreshHeadViewers(block);
-            // Same physics-suppression gap as placement: neighbors never hear about the change.
-            registry.refreshReactiveNeighbors(block);
+            reanchor(block, type, state);
             migrated++;
         }
 
-        // Pass 3: tile sweep — self-heal corelib pipe skulls that lost runtime/hint state without
-        // any legacy displays surviving (crash between migration and the periodic hint flush), and
-        // count legacy heads whose displays were purged (identity unrecoverable — report only).
-        for (BlockState tile : chunk.getTileEntities()) {
+        // Pass 3: skull sweep (no-snapshot, head-filtered) — self-heal corelib pipe skulls that lost
+        // runtime/hint state without any legacy displays surviving (crash between migration and the
+        // periodic hint flush), and count legacy heads whose displays were purged (identity
+        // unrecoverable — report only).
+        for (BlockState tile : chunk.getTileEntities(
+                b -> b.getType() == Material.PLAYER_HEAD || b.getType() == Material.PLAYER_WALL_HEAD, false)) {
             if (!(tile instanceof Skull skull)) continue;
             Block block = tile.getBlock();
             String typeId = skull.getPersistentDataContainer().get(CORELIB_BLOCK_TYPE, PersistentDataType.STRING);
@@ -292,37 +295,68 @@ public final class LegacyPipeMigrator implements Listener {
     }
 
     /**
-     * Conservative orphan test plugged into CoreLib's /defcorelib cleanorphans scan: true only when
+     * Foreign-orphan detector plugged into CoreLib's /defcorelib cleanorphans scan. ORPHAN only when
      * the display carries a legacy pipe identity AND its target block is observably not a legacy
-     * pipe head. Never forces chunk loads; a bare head target is an adoption candidate, not an
-     * orphan — that's migrateChunk's call to make.
+     * pipe head; UNKNOWN when the target chunk is unloaded (never force a load — CoreLib reports it
+     * as skipped); KEEP otherwise (including a live unmigrated pipe head — adoption is
+     * migrateChunk's job, not the orphan scan's).
      */
-    public boolean isOrphanedLegacyDisplay(Display display) {
-        if (!(display instanceof ItemDisplay)) return false;
+    public CustomBlockRegistry.ForeignOrphanVerdict inspectLegacyDisplay(Display display) {
+        if (!(display instanceof ItemDisplay)) return CustomBlockRegistry.ForeignOrphanVerdict.KEEP;
         RawTag raw = rawLegacyTag(display);
-        if (raw == null) return false;
+        if (raw == null) return CustomBlockRegistry.ForeignOrphanVerdict.KEEP;
         LegacyTag tag = parse(raw.value());
-        if (tag == null) return raw.fromPdc();
+        if (tag == null) {
+            // Corrupt under our PDC key → ours, junk; unparseable scoreboard tag → maybe foreign, keep.
+            return raw.fromPdc() ? CustomBlockRegistry.ForeignOrphanVerdict.ORPHAN
+                    : CustomBlockRegistry.ForeignOrphanVerdict.KEEP;
+        }
         World world = display.getWorld();
-        if (!world.isChunkLoaded(tag.x() >> 4, tag.z() >> 4)) return false;
-        Block block = world.getBlockAt(tag.x(), tag.y(), tag.z());
-        return !isHead(block) || corelibTypeId(block) != null;
+        if (!world.isChunkLoaded(tag.x() >> 4, tag.z() >> 4)) {
+            return CustomBlockRegistry.ForeignOrphanVerdict.UNKNOWN;
+        }
+        return isStrayTarget(world.getBlockAt(tag.x(), tag.y(), tag.z()))
+                ? CustomBlockRegistry.ForeignOrphanVerdict.ORPHAN
+                : CustomBlockRegistry.ForeignOrphanVerdict.KEEP;
+    }
+
+    /** The one shared judgment for a legacy display's target cell: stray unless the block is still
+     *  an unmigrated legacy pipe head (head material + no corelib PDC + legacy skull profile).
+     *  Single getState() snapshot covers all three checks. */
+    private static boolean isStrayTarget(Block block) {
+        if (!isHead(block)) return true;
+        BlockState state = block.getState();
+        if (state instanceof TileState tile && tile.getPersistentDataContainer()
+                .has(CORELIB_BLOCK_TYPE, PersistentDataType.STRING)) {
+            return true;
+        }
+        return !(state instanceof Skull skull) || !hasLegacyProfile(skull);
     }
 
     /** Re-anchor an already-corelib pipe block whose runtime tracking is missing — the crash-window
      *  case where the block PDC saved but the chunk hint didn't, so CoreLib's restore never saw it.
-     *  markBlock re-registers the hint; restore + applyConfig rebuild function and displays. */
+     *  markBlock re-registers the hint; reanchor rebuilds function and displays. */
     private boolean selfHeal(Block block, String typeId, PipeManager manager) {
         if (manager.isPipe(block.getLocation())) return false;
         CustomHeadBlock type = registry.getType(typeId);
         if (type == null) return false;
         String state = registry.getState(block);
         registry.markBlock(block, type, state);
+        reanchor(block, type, state);
+        return true;
+    }
+
+    /** Shared tail of adoption and self-heal. Order matters: restoreBlock registers the pipe
+     *  (onChunkLoad callback) BEFORE applyConfig resolves display transforms, which prefer
+     *  registered PipeData over the state fallback — don't "fix" this to match other call sites.
+     *  power=0 is correct while no pipe type is redstone-sensitive; a sensitive type would need
+     *  the real power here (readPower is CoreLib-internal). */
+    private void reanchor(Block block, CustomHeadBlock type, @Nullable String state) {
         registry.restoreBlock(block, type, state);
         registry.applyConfig(block, type, state, 0);
         registry.refreshHeadViewers(block);
+        // Same physics-suppression gap as placement: neighbors never hear about the change.
         registry.refreshReactiveNeighbors(block);
-        return true;
     }
 
     private static int removeAll(List<Tagged> members) {
@@ -363,14 +397,12 @@ public final class LegacyPipeMigrator implements Listener {
     }
 
     private static @Nullable LegacyTag parse(String raw) {
-        boolean main = true;
         String working = raw;
-        if (working.endsWith(HEAD_SUFFIX)) {
-            working = working.substring(0, working.length() - HEAD_SUFFIX.length());
-            main = false;
-        } else if (working.endsWith(DIR_SUFFIX)) {
-            working = working.substring(0, working.length() - DIR_SUFFIX.length());
-            main = false;
+        for (String suffix : DISPLAY_SUFFIXES) {
+            if (working.endsWith(suffix)) {
+                working = working.substring(0, working.length() - suffix.length());
+                break;
+            }
         }
         int colon = working.indexOf(':');
         if (colon <= 0 || colon >= working.length() - 1) return null;
@@ -380,7 +412,7 @@ public final class LegacyPipeMigrator implements Listener {
         try {
             return new LegacyTag(variantId,
                     Integer.parseInt(parts[0]), Integer.parseInt(parts[1]), Integer.parseInt(parts[2]),
-                    BlockFace.valueOf(parts[3]), main);
+                    BlockFace.valueOf(parts[3]));
         } catch (IllegalArgumentException e) {
             return null;
         }
