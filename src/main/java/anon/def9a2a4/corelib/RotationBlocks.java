@@ -765,6 +765,22 @@ final class RotationBlocks {
             Block b, org.bukkit.util.Transformation base) {
         BlockFace facing = (b.getBlockData() instanceof org.bukkit.block.data.Rotatable r)
             ? nearestCardinal(r.getRotation()) : BlockFace.SOUTH;
+        return yawShell(base, facing);
+    }
+
+    /** The Directional sibling of {@link #orientShellToSkull}: yaw the shell to a real block's
+     *  facing (boiler: the copper chest fronts the placer, chest-style). */
+    private static org.bukkit.util.Transformation orientShellToFacing(
+            Block b, org.bukkit.util.Transformation base) {
+        BlockFace facing = (b.getBlockData() instanceof org.bukkit.block.data.Directional d)
+            ? d.getFacing() : BlockFace.SOUTH;
+        return yawShell(base, facing);
+    }
+
+    /** Rebuild {@code base} with a yaw pointing the art's front (+Z at identity = SOUTH) at
+     *  {@code facing}. Same angle table as {@code RedstoneDynamo.rotationForFace}'s wall cases. */
+    private static org.bukkit.util.Transformation yawShell(
+            org.bukkit.util.Transformation base, BlockFace facing) {
         float h = (float) (Math.PI / 2), p = (float) Math.PI;
         org.joml.AxisAngle4f rot = switch (facing) {
             case NORTH -> new org.joml.AxisAngle4f(p, 0f, 1f, 0f);   // +Z → -Z
@@ -896,6 +912,15 @@ final class RotationBlocks {
      *  lockContainer seals the chest inventory), holding the stack's water tank in its tile
      *  entity's PDC. Fillable by pipe (machine-tank endpoint) or water bucket. Its
      *  idle/running display is driven by the steam piston above. */
+    /** Force a chest block back to a SINGLE half (no-op for non-chests / already-single). */
+    private static void unpairChest(Block b) {
+        if (b.getBlockData() instanceof org.bukkit.block.data.type.Chest chest
+                && chest.getType() != org.bukkit.block.data.type.Chest.Type.SINGLE) {
+            chest.setType(org.bukkit.block.data.type.Chest.Type.SINGLE);
+            b.setBlockData(chest, false);
+        }
+    }
+
     private static void overlayBoiler(CustomBlockRegistry registry, RotationConfig config) {
         CustomHeadBlock block = registry.getType(BOILER_ID);
         if (block == null) { warn(registry, BOILER_ID); return; }
@@ -904,12 +929,18 @@ final class RotationBlocks {
         registry.register(block.toBuilder()
             .onBlockPlaced((b, state) -> {
                 // Belt-and-braces: never let two adjacent boilers merge into a double chest.
-                if (b.getBlockData() instanceof org.bukkit.block.data.type.Chest chest
-                        && chest.getType() != org.bukkit.block.data.type.Chest.Type.SINGLE) {
-                    chest.setType(org.bukkit.block.data.type.Chest.Type.SINGLE);
-                    b.setBlockData(chest, false);
+                // Vanilla pairs BOTH halves, so heal the cardinal neighbors too — without this
+                // an existing boiler next door keeps its paired half and renders offset/rotated.
+                unpairChest(b);
+                for (BlockFace face : new BlockFace[]{
+                        BlockFace.NORTH, BlockFace.SOUTH, BlockFace.EAST, BlockFace.WEST}) {
+                    Block n = b.getRelative(face);
+                    if (isType(registry, n, BOILER_ID)) unpairChest(n);
                 }
             })
+            // The tank art fronts the placer: yaw the shell to the chest's facing (set from the
+            // placer in CoreLibPlugin's physical_material placement, vanilla-chest style).
+            .displayTransformResolver((b, state, dec, idx) -> orientShellToFacing(b, dec.transform()))
             .onInteract((b, event) -> {
                 Boolean handled = tankBucketInteract("Boiler", b, event);
                 if (handled != null) return handled;

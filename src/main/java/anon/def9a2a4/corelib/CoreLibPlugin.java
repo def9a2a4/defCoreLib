@@ -429,10 +429,19 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
             // restricted Directional would throw on DOWN). Disguise display + PDC identity are applied
             // afterwards (markBlock / applyConfig), same as any other custom block.
             block.setType(type.physicalMaterial(), false);
-            if (block.getBlockData() instanceof org.bukkit.block.data.Directional dir
-                    && dir.getFaces().contains(placedOn)) {
-                dir.setFacing(placedOn);
-                block.setBlockData(dir, false);
+            if (block.getBlockData() instanceof org.bukkit.block.data.Directional dir) {
+                if (dir.getFaces().contains(placedOn)) {
+                    dir.setFacing(placedOn);
+                    block.setBlockData(dir, false);
+                } else {
+                    // Horizontal-only Directional (e.g. the boiler's chest) placed on the floor:
+                    // front toward the placer, like a vanilla chest placement.
+                    BlockFace toward = event.getPlayer().getFacing().getOppositeFace();
+                    if (dir.getFaces().contains(toward)) {
+                        dir.setFacing(toward);
+                        block.setBlockData(dir, false);
+                    }
+                }
             }
         } else if (!isAlreadySkull) {
             if (!coercedToFloor
