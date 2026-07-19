@@ -62,6 +62,7 @@ textures:
   reverser_up:       "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODMyYTg3MGEzNDMwMmViYThhMTNiYzI2ZWZjMGM5ZDQwOWJkYWYzYWRjZTBkMzUzZGEzOTNkMWM0YjgxODI0MyJ9fX0="  # reverser-up — reverser head (floor)
   reverser_fwd:      "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjk1MWJlMGM0NzVlMTE5ZTk2YWQxYzgzODU5MTI0MGYyZjVmYTEyODFmZTUyNTZlMmY2YzVlZWZlZWI3MzA3YiJ9fX0="  # reverser-fwd — reverser head (wall) + item
   machine_base:      "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTlmMzdmMWNiZDQ3YzM1MDQ1MTFiZjMzYzU4YzNhMjUyYjYwNzEzZWM1ZmM1NDMzZDg4N2Q0YTBkOTk2MjEwIn19fQ=="  # 59f37f1c — millstone + press placed head
+  sieve_item:        "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOWRiZjc2YTA5NWMxNjAyNGU5YmFhNDhmNjAyZWIxODljMzdlYjNiZDUxMDcwZTE1YWI0OWFiMjE2YjA3YjFiMSJ9fX0="  # 9dbf76a0 — sieve item in hand
   hopper_floor:      "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHBzOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlLzY5OWEwN2QyZGIxZGI5YTRlOTI2ZDdlNGE2YmUxYmUxZTk2ZWE4ZDMwMDhiNzFiYjU3YTJiNDdhYjY4N2I0NzcifX19"  # 699a07d2 — copper-pipe floor/down head skin; distinct floor look for the suction hopper (swap freely)
   suction_hopper_item: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjQ4NWY3ODVhYTE1MTQ3MDg1MzM0N2Y2MDMyOTUxZTExYmZiZWQ4Yzc3ZTY5MjVkNTc4YjlhNjM2NmZiNDQ2MiJ9fX0="  # suction-hopper/suction-hopper — suction hopper item
   compressor_item:   "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvY2Q3Y2Y4NmY5ZjY1MzdkZDVkMThmMDAwNjE4ODdjY2Q1OWM0ZTc5NjY0Y2ViZDY1Y2FhN2ViMGUwMjcwMWViOCJ9fX0="  # dev/press/compressor — press item
@@ -1396,6 +1397,52 @@ blocks:
             key:
               B: { block: "mech:bearing" }
               P: { material: PISTON }
+              M: { material: SMOOTH_STONE_SLAB }
+              C: { material: COPPER_INGOT }
+              H: { material: HOPPER }
+
+  # ─── Sieve ────────────────────────────────────────────────────────────────
+  # Consumer: 1 Power. WALL only — mounts on a container, pans its gravel/sand/dirt
+  # for nuggets, flint, and other small finds (all chance-based; see sieve-recipes.yml),
+  # ejected below. Powered from a shaft on top (Y axis), like the millstone.
+  # Display (millstone geometry): static slab base, spinning copper-grate mesh on top.
+  sieve:
+    break_on_piston: true
+    name: "&6Sieve"
+    lore:
+      - "&7Pans items from its storage when powered"
+      - "&7Powered from the top; sifts gravel & sand for nuggets, flint & finds below"
+    catalog_notes:
+      - "&fPans gravel, sand, red sand, dirt, and soul sand from its storage while powered by a shaft on top, dropping any finds into a container below."
+      - "&fEvery find is chance-based — a cycle can wash an input away with nothing to show. Gravel is the ore-panning feedstock; sand is the fine-panning gamble."
+      - "&7Pans more per cycle the more surplus power the network has, up to a cap."
+    # Stone machine head (shared with the millstone/press); sieve skin in hand.
+    texture: "@machine_base"
+    item_texture: "@sieve_item"
+    drops: self
+    storage: { layout: HOPPER }
+    placement:
+      allowed_faces: [NORTH, SOUTH, EAST, WEST]
+    default_state: idle
+    states:
+      # Millstone-style split — bottom slab static, copper-grate mesh on top rotates
+      # around Y when spinning. Receives power from a shaft on top (UP face).
+      # Mesh fills the top half of the cell: 0.5 tall, center at 0.75.
+      idle:
+        display_entities:
+          - { material: SMOOTH_STONE_SLAB, tag: base_slab, transform: { translation: [0, 0.0, 0], scale: [0.8, 1.0, 0.8] }, animation: none }
+          - { material: COPPER_GRATE,      tag: mesh,      transform: { translation: [0, 0.25, 0], scale: [0.8, 0.5, 0.8] } }
+      spinning: { copy_from: idle, animation: { type: rotate, axis: [0, 1, 0], speed: 3.0 } }
+    recipes:
+      craft:
+        shaped:
+          # A stack of two smooth stone slabs + copper on the right, topped by a
+          # lightning rod (power intake) and a bearing; a copper grate as the mesh.
+          - pattern: [" LB", " GH", " MC"]
+            key:
+              L: { material: LIGHTNING_ROD }
+              B: { block: "mech:bearing" }
+              G: { material: COPPER_GRATE }
               M: { material: SMOOTH_STONE_SLAB }
               C: { material: COPPER_INGOT }
               H: { material: HOPPER }

@@ -34,6 +34,10 @@ press:
   tick-interval: 20   # fixed press cycle length, in ticks
   max-batch: 8        # cap on items pressed per cycle (batch scales with surplus power)
 
+sieve:
+  tick-interval: 20   # fixed panning cycle length, in ticks
+  max-batch: 8        # cap on items panned per cycle (batch scales with surplus power)
+
 placer:
   tick-interval: 20   # ticks between placements (one block placed per cycle)
 
@@ -69,6 +73,7 @@ power:
   millstone: 1
   fan: 1
   press: 1
+  sieve: 1
   placer: 1
   suction_hopper: 1
   piston_core: 1   # base rotational demand of an extendable piston core (speed scales with surplus above this)
@@ -105,6 +110,7 @@ mechanism:
   drill:           { kind: consumer }
   millstone:       { kind: consumer, axis: y }
   press:           { kind: consumer, axis: y }
+  sieve:           { kind: consumer, axis: y }
   placer:          { kind: consumer, axis: y }
   fan:             { kind: consumer, axis: facing }
   suction_hopper:  { kind: consumer, axis: omni }

@@ -125,14 +125,22 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
                 pressRecipes.load(pressStream, getLogger());
             }
         } catch (IOException ignored) {}
-        RotationBlocks.register(registry, rotationNetwork, fuelManager, millRecipes, pressRecipes, rotConfig);
+        MachineRecipes sieveRecipes = new MachineRecipes();
+        try (InputStream sieveStream = getResource("sieve-recipes.yml")) {
+            if (sieveStream != null) {
+                sieveRecipes.load(sieveStream, getLogger());
+            }
+        } catch (IOException ignored) {}
+        RotationBlocks.register(registry, rotationNetwork, fuelManager, millRecipes, pressRecipes,
+            sieveRecipes, rotConfig);
 
         // Rotation power on moving mechanisms: each assembled mechanism carries its own
         // rotation network (engine burns travelling fuel; drill/placer/suction/millstone/press/fan
         // act at their live positions, exchanging items with neighboring on-board inventories).
         // Data-driven via rotation-config.yml `mechanism:`.
         mechanismRegistry.setRotationDriver(
-            new MechanismRotationDriver(registry, fuelManager, rotConfig, millRecipes, pressRecipes));
+            new MechanismRotationDriver(registry, fuelManager, rotConfig, millRecipes, pressRecipes,
+                sieveRecipes));
 
         // Anchor-owned block selection ("glue") — shared by doors/rotators (wired in D3).
         // The glue item itself is declared in corelib-items.yml (mech:glue_item). The registry

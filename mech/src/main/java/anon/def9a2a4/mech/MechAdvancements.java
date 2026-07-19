@@ -61,6 +61,7 @@ public final class MechAdvancements {
             Map.entry("mech:millstone", "craft/millstone"),
             Map.entry("mech:fan", "craft/fan"),
             Map.entry("mech:press", "craft/press"),
+            Map.entry("mech:sieve", "craft/sieve"),
             Map.entry("mech:placer", "craft/placer"),
             Map.entry("mech:redstone_motor", "craft/motor"),
             Map.entry("mech:engine", "craft/engine"),
@@ -91,7 +92,8 @@ public final class MechAdvancements {
     private static final Set<String> MACHINE_CRAFT_NODES = Set.of(
             "craft/shaft", "craft/gear", "craft/water_wheel", "craft/windmill_item",
             "craft/clutch", "craft/reverser", "craft/chain_pulley", "craft/drill", "craft/millstone",
-            "craft/fan", "craft/suction_hopper", "craft/press", "craft/placer", "craft/motor", "craft/engine",
+            "craft/fan", "craft/suction_hopper", "craft/press", "craft/sieve", "craft/placer",
+            "craft/motor", "craft/engine",
             "craft/piston", "craft/rotator", "craft/minecart", "craft/dynamo", "craft/chain_hoist");
 
     // The mastery capstones that together earn mastery/grand_engineer. Excludes windmill/huge, which is

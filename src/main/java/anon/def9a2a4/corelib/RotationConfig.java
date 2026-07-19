@@ -27,6 +27,8 @@ final class RotationConfig {
     double fanPushPerPower = 0.08;
     int pressTickInterval = 20;
     int pressMaxBatch = 8;
+    int sieveTickInterval = 20;
+    int sieveMaxBatch = 8;
     int placerTickInterval = 20;
     int suctionTickInterval = 2;
     double suctionPullRange = 2.5;     // pull-box side = 2*(range+0.75); 2.5 → 6.5×6.5×6.5 cube
@@ -134,6 +136,13 @@ final class RotationConfig {
         if (press != null) {
             pressTickInterval = press.getInt("tick-interval", pressTickInterval);
             pressMaxBatch = press.getInt("max-batch", pressMaxBatch);
+            loaded++;
+        }
+
+        ConfigurationSection sieve = yaml.getConfigurationSection("sieve");
+        if (sieve != null) {
+            sieveTickInterval = sieve.getInt("tick-interval", sieveTickInterval);
+            sieveMaxBatch = sieve.getInt("max-batch", sieveMaxBatch);
             loaded++;
         }
 

@@ -60,17 +60,19 @@ final class MechanismRotationDriver {
     private final RotationConfig config;
     private final MachineRecipes millRecipes;
     private final MachineRecipes pressRecipes;
+    private final MachineRecipes sieveRecipes;
 
     private final Map<UUID, MechState> states = new HashMap<>();
 
     MechanismRotationDriver(CustomBlockRegistry registry, EngineFuelManager fuelManager,
                             RotationConfig config, MachineRecipes millRecipes,
-                            MachineRecipes pressRecipes) {
+                            MachineRecipes pressRecipes, MachineRecipes sieveRecipes) {
         this.registry = registry;
         this.fuelManager = fuelManager;
         this.config = config;
         this.millRecipes = millRecipes;
         this.pressRecipes = pressRecipes;
+        this.sieveRecipes = sieveRecipes;
     }
 
     /** One rotation part of a mechanism — immutable while assembled. {@code localFacing} follows
@@ -385,6 +387,8 @@ final class MechanismRotationDriver {
                     millRecipes, org.bukkit.Sound.BLOCK_GRINDSTONE_USE, config.millstoneMaxBatch);
                 case "mech:press" -> tickProcessing(mech, st, s, k, world, powered, cardinal,
                     pressRecipes, org.bukkit.Sound.BLOCK_ANVIL_USE, config.pressMaxBatch);
+                case "mech:sieve" -> tickProcessing(mech, st, s, k, world, powered, cardinal,
+                    sieveRecipes, org.bukkit.Sound.ITEM_BRUSH_BRUSHING_GRAVEL, config.sieveMaxBatch);
                 case "mech:fan" -> {
                     if (!powered || !cardinal) continue;
                     // Blow direction mirrors the static blowDirection: floor fan blows UP, wall
@@ -638,6 +642,7 @@ final class MechanismRotationDriver {
             case PLACER -> config.placerTickInterval;
             case "mech:millstone" -> config.millstoneTickInterval;
             case "mech:press" -> config.pressTickInterval;
+            case "mech:sieve" -> config.sieveTickInterval;
             case "mech:fan" -> config.fanTickInterval;
             default -> 20;
         };

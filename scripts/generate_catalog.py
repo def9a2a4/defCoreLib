@@ -115,6 +115,7 @@ def plugin_for(item: dict) -> dict | None:
 MACHINE_RECIPE_FILES = {
     "mech:millstone": ("mill-recipes.yml", "Milling"),
     "mech:press": ("press-recipes.yml", "Pressing"),
+    "mech:sieve": ("sieve-recipes.yml", "Sifting"),
 }
 
 # Output materials that are bottled, so producing them consumes an empty glass bottle

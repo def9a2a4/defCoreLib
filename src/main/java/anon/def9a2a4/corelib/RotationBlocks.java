@@ -139,7 +139,8 @@ final class RotationBlocks {
 
     static void register(CustomBlockRegistry registry, RotationNetwork network,
                          EngineFuelManager fuelManager, MachineRecipes millRecipes,
-                         MachineRecipes pressRecipes, RotationConfig config) {
+                         MachineRecipes pressRecipes, MachineRecipes sieveRecipes,
+                         RotationConfig config) {
         // Overlay callbacks onto YAML-loaded blocks
         overlayStandard(registry, network, "mech:shaft",   RotationNetwork.NodeRole.TRANSMITTER, 0, false);
         overlayStandard(registry, network, "mech:gear",    RotationNetwork.NodeRole.TRANSMITTER, 0, true);
@@ -156,6 +157,7 @@ final class RotationBlocks {
         overlayEngine(registry, network, fuelManager, config);
         overlayMillstone(registry, network, millRecipes, config);
         overlayPress(registry, network, pressRecipes, config);
+        overlaySieve(registry, network, sieveRecipes, config);
         overlayPlacer(registry, network, config);
         overlayRedstoneMotor(registry, network, config);
         // Redstone Dynamo: a barrel-backed sensor (own class — holds per-block level state + a mode menu).
@@ -611,6 +613,23 @@ final class RotationBlocks {
             config.pressTickInterval,
             b -> processingMachineTick(b, network, pressRecipes, registry,
                 maxBatch, org.bukkit.Sound.BLOCK_ANVIL_USE),
+            null, null, null));
+    }
+
+    private static void overlaySieve(CustomBlockRegistry registry, RotationNetwork network,
+                                     MachineRecipes sieveRecipes, RotationConfig config) {
+        int maxBatch = config.sieveMaxBatch;
+        // Same processing geometry as the millstone/press: wall-mounted, powered from the top (Y),
+        // host container behind, outputs ejected below. All recipe outputs are chance-based, so a
+        // cycle can consume its input and pay out nothing — the shared loop handles empty output
+        // lists (eject is skipped, the input is still consumed).
+        overlayConsumerMachine(registry, network, new ConsumerSpec(
+            "mech:sieve",
+            b -> RotationNetwork.Axis.Y,
+            config.getPower("sieve", 1),
+            config.sieveTickInterval,
+            b -> processingMachineTick(b, network, sieveRecipes, registry,
+                maxBatch, org.bukkit.Sound.ITEM_BRUSH_BRUSHING_GRAVEL),
             null, null, null));
     }
 
