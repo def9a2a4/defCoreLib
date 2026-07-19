@@ -177,7 +177,13 @@ final class GlueAuthoring implements Listener {
                     GlueManager.Result res = glue.glue(session.anchor, clicked,
                         isDrawbridgeAnchor(session.anchor.originBlock()));
                     reportGlue(player, clicked, res, session.anchor);
-                    if (res == GlueManager.Result.OK) damageBrush(player, 1);
+                    if (res == GlueManager.Result.OK) {
+                        damageBrush(player, 1);
+                        if (GlueAppliedEvent.hasListeners()) {
+                            Bukkit.getPluginManager().callEvent(
+                                new GlueAppliedEvent(player, session.anchor.originBlock(), 1));
+                        }
+                    }
                 }
             }
             case RIGHT_CLICK_AIR -> {
@@ -356,6 +362,10 @@ final class GlueAuthoring implements Listener {
         GlueManager.FillResult r = glue.glueCuboid(s.anchor, movable,
             isDrawbridgeAnchor(s.anchor.originBlock()));
         damageBrush(player, r.added());
+        if (r.added() > 0 && GlueAppliedEvent.hasListeners()) {
+            Bukkit.getPluginManager().callEvent(
+                new GlueAppliedEvent(player, s.anchor.originBlock(), r.added()));
+        }
         player.playSound(player.getLocation(), Sound.BLOCK_SLIME_BLOCK_PLACE, 0.6f, 1.1f);
         actionBar(player, "+" + r.added() + " glued, " + r.skipped() + " skipped", NamedTextColor.GREEN);
     }

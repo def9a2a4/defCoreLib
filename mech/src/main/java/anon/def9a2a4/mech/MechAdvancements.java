@@ -12,6 +12,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -99,13 +100,41 @@ public final class MechAdvancements {
     // The mastery capstones that together earn mastery/grand_engineer. Excludes windmill/huge, which is
     // BetterBanners-gated (would make the finale unobtainable without that plugin).
     private static final Set<String> CAPSTONES = Set.of(
-            "craft/master_machinist", "rotation/chain_max", "structures/earthshaker",
-            "structures/drawbridge", "machines/farm_to_table");
+            "craft/master_machinist", "mastery/operator", "rotation/chain_max",
+            "structures/earthshaker", "structures/drawbridge", "machines/farm_to_table");
 
     // The processed goods that together earn machines/farm_to_table.
     private static final Set<String> FOOD_PRODUCTS = Set.of(
             "machines/flour", "machines/bread", "machines/juice",
             "machines/oil", "machines/honey", "machines/dye");
+
+    // Acting machine type → use/ milestone (chain hoist is missing on purpose: its strokes arrive as
+    // MechanismAssembleEvents, handled in onAssemble).
+    private static final Map<String, String> USE_NODE_BY_MACHINE = Map.of(
+            "mech:drill", "use/drill",
+            "mech:fan", "use/fan",
+            "mech:placer", "use/placer",
+            "mech:suction_hopper", "use/suction_hopper",
+            "mech:redstone_dynamo", "use/dynamo",
+            "mech:clutch", "use/clutch",
+            "mech:reverser", "use/reverser");
+
+    // The use/ milestones that together earn mastery/operator.
+    private static final Set<String> USE_NODES = Set.of(
+            "use/drill", "use/fan", "use/placer", "use/suction_hopper",
+            "use/chain_hoist", "use/dynamo", "use/clutch", "use/reverser");
+
+    // Millstone outputs that count as ore milling. QUARTZ is excluded on purpose: it's also produced
+    // by the quartz-block unpacking recipe, which isn't ore processing.
+    private static final Set<Material> ORE_MILL_OUTPUTS = Set.of(
+            Material.RAW_IRON, Material.RAW_GOLD, Material.RAW_COPPER, Material.COAL,
+            Material.GOLD_NUGGET, Material.REDSTONE, Material.LAPIS_LAZULI,
+            Material.DIAMOND, Material.EMERALD, Material.NETHERITE_SCRAP);
+
+    /** Fans/suction hoppers act every few ticks while powered — cap the nearby-player scans they can
+     *  trigger. Grants are idempotent, so dropping repeat signals inside the window loses nothing. */
+    private static final int ACT_THROTTLE_TICKS = 20;
+    private final Map<String, Integer> lastActedTick = new HashMap<>();
 
     // ── Milestone entry points ─────────────────────────────────────────────
 
@@ -141,6 +170,8 @@ public final class MechAdvancements {
             case "mech:rotator" -> vertical ? "structures/door" : "structures/drawbridge";
             case "mech:mechanism_minecart" -> "structures/minecart";
             case "mech:piston" -> "structures/pistons";
+            // Every hoist stroke assembles the platform, so a stroke IS the use milestone.
+            case "mech:chain_hoist" -> "use/chain_hoist";
             default -> null;
         };
         String sizeNode = blockCount >= 128 ? "structures/earthshaker"
@@ -183,29 +214,69 @@ public final class MechAdvancements {
         }
     }
 
-    /** A powered millstone/press ejected outputs near {@code location} — grant the product node(s).
-     *  Detects flour / seed oil / juice (custom items) and honey / dye (vanilla items). */
-    public void onMachineOutput(Location location, List<ItemStack> outputs) {
-        List<Player> players = nearby(location);
-        if (players.isEmpty()) return;
+    /** A processing machine delivered outputs near {@code location} — grant the product node(s).
+     *  Gated by {@code machineType}: the millstone and the sieve can produce the same minerals, so
+     *  item inspection alone would credit ore milling for a lucky pan (and vice versa). */
+    public void onMachineOutput(Location location, String machineType, List<ItemStack> outputs) {
+        boolean mill = "mech:millstone".equals(machineType);
+        boolean press = "mech:press".equals(machineType);
+        boolean sieve = "mech:sieve".equals(machineType);
+        if (!mill && !press && !sieve) return;
         Set<String> nodes = new HashSet<>();
         for (ItemStack out : outputs) {
             if (out == null) continue;
             String id = CustomBlockRegistry.getItemTypeId(out);
             if (id != null) {
-                if (id.equals("mech:flour")) nodes.add("machines/flour");
-                else if (id.equals("mech:seed_oil")) nodes.add("machines/oil");
-                else if (id.endsWith("_juice")) nodes.add("machines/juice");
+                if (mill && id.equals("mech:flour")) nodes.add("machines/flour");
+                else if (press && id.equals("mech:seed_oil")) nodes.add("machines/oil");
+                else if (press && id.endsWith("_juice")) nodes.add("machines/juice");
             }
             Material m = out.getType();
-            if (m == Material.HONEY_BOTTLE) nodes.add("machines/honey");
-            else if (m.name().endsWith("_DYE")) nodes.add("machines/dye");
+            if (press) {
+                if (m == Material.HONEY_BOTTLE) nodes.add("machines/honey");
+                else if (m.name().endsWith("_DYE")) nodes.add("machines/dye");
+            }
+            if (mill) {
+                if (m == Material.SAND || m == Material.RED_SAND) nodes.add("machines/sand");
+                else if (ORE_MILL_OUTPUTS.contains(m)) {
+                    nodes.add("machines/ore_milled");
+                    if (m == Material.DIAMOND || m == Material.EMERALD) nodes.add("machines/precious");
+                    else if (m == Material.NETHERITE_SCRAP) nodes.add("machines/netherite");
+                }
+            }
+            if (sieve) {
+                nodes.add("machines/panning"); // any delivered payout counts — empty cycles never eject
+                if (m == Material.DIAMOND || m == Material.EMERALD) nodes.add("machines/pan_treasure");
+            }
         }
         if (nodes.isEmpty()) return;
+        List<Player> players = nearby(location);
         for (Player p : players) {
             for (String n : nodes) grant(p, n);
             checkAggregates(p);
         }
+    }
+
+    /** A machine performed its action (drill broke, fan pushed, clutch gated, …) near {@code location}.
+     *  Throttled per machine type: hot emitters (a fan over a mob farm) otherwise re-scan for nearby
+     *  players every effect tick for a grant that short-circuits anyway. */
+    public void onMachineActed(Location location, String machineType) {
+        String node = USE_NODE_BY_MACHINE.get(machineType);
+        if (node == null) return;
+        int now = Bukkit.getCurrentTick();
+        Integer last = lastActedTick.get(machineType);
+        if (last != null && now - last < ACT_THROTTLE_TICKS) return;
+        lastActedTick.put(machineType, now);
+        for (Player p : nearby(location)) {
+            grant(p, node);
+            checkAggregates(p);
+        }
+    }
+
+    /** A player committed glue with the brush — the "Bound Together" moment. */
+    public void onGlueApplied(Player player) {
+        grant(player, "structures/first_glue");
+        checkAggregates(player);
     }
 
     /** A player baked Dough into Bread (vanilla furnace extract). */
@@ -223,6 +294,7 @@ public final class MechAdvancements {
     private void checkAggregates(Player player) {
         if (allDone(player, MACHINE_CRAFT_NODES)) grant(player, "craft/master_machinist");
         if (allDone(player, FOOD_PRODUCTS)) grant(player, "machines/farm_to_table");
+        if (allDone(player, USE_NODES)) grant(player, "mastery/operator");
         if (allDone(player, CAPSTONES)) grant(player, "mastery/grand_engineer");
     }
 

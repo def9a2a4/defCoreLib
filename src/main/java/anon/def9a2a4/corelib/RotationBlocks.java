@@ -196,7 +196,17 @@ final class RotationBlocks {
         registry.register(block.toBuilder()
             .drillable(false)
             .reactsToNeighbors(true)
-            .onNeighborChange((b, face) -> recalcIfKnown(b, network))
+            .onNeighborChange((b, face) -> {
+                // Reverser use-milestone: redstone-powered on a live line == actively flipping spin.
+                // Fires on any neighbor update while in that state — listeners are expected to be
+                // idempotent (mech throttles + short-circuits on already-done advancements).
+                if ("mech:reverser".equals(blockId) && MachineActedEvent.hasListeners()
+                        && b.getBlockPower() > 0
+                        && network.isPowered(CustomBlockRegistry.LocationKey.of(b))) {
+                    org.bukkit.Bukkit.getPluginManager().callEvent(new MachineActedEvent(b, blockId));
+                }
+                recalcIfKnown(b, network);
+            })
             .onInteract((b, event) -> {
                 if (!isWrench(event.getPlayer().getInventory().getItemInMainHand())) return false;
                 // Non-sneak wrench on a shaft toggles encased head ↔ bare chain (purely visual);
@@ -245,9 +255,15 @@ final class RotationBlocks {
                 String axis = state.substring(state.lastIndexOf('_') + 1);
                 String target = rsPowered ? "locked_" + axis : "idle_" + axis;
                 if (!target.equals(state)) {
+                    // "Gated a live line": powered-state must be read BEFORE the lock recalcs it away.
+                    boolean gatedLive = rsPowered && MachineActedEvent.hasListeners()
+                        && network.isPowered(CustomBlockRegistry.LocationKey.of(b));
                     registry.setState(b, target);
                     CustomHeadBlock type = registry.getTypeFromBlock(b);
                     if (type != null) registry.applyConfig(b, type, target, 0);
+                    if (gatedLive) {
+                        org.bukkit.Bukkit.getPluginManager().callEvent(new MachineActedEvent(b, blockId));
+                    }
                 }
                 recalcIfKnown(b, network);
             })
@@ -668,7 +684,9 @@ final class RotationBlocks {
         if (facing == null) return;
         Inventory host = hostContainer(placer);
         if (host == null) return;
-        placerEffect(placer.getRelative(facing), host);
+        if (placerEffect(placer.getRelative(facing), host) && MachineActedEvent.hasListeners()) {
+            org.bukkit.Bukkit.getPluginManager().callEvent(new MachineActedEvent(placer, "mech:placer"));
+        }
     }
 
     /**
@@ -767,19 +785,31 @@ final class RotationBlocks {
                     return false;
                 }
             }
+            fireProduced(machine, outputs);
             return true;
         }
         MachineEjectEvent event = new MachineEjectEvent(machine, BlockFace.DOWN, outputs);
         Bukkit.getPluginManager().callEvent(event);
         return switch (event.getResult()) {
-            case HANDLED -> true;
+            case HANDLED -> { fireProduced(machine, outputs); yield true; }
             case STALL   -> false;
             case DEFAULT -> {
                 for (ItemStack out : outputs)
                     machine.getWorld().dropItem(machine.getLocation().add(0.5, 0.0, 0.5), out);
+                fireProduced(machine, outputs);
                 yield true;
             }
         };
+    }
+
+    /** Announce a successful (non-stall) output delivery. Only {@link #ejectOutputs} calls this —
+     *  never pass-through forwarding ({@link #pushToMount}), so listeners can trust the outputs were
+     *  produced by this machine. Type id resolved lazily: only when someone listens. */
+    private static void fireProduced(Block machine, List<ItemStack> outputs) {
+        if (!MachineProducedEvent.hasListeners()) return;
+        CustomHeadBlock type = CoreLibPlugin.getInstance().getRegistry().getTypeFromBlock(machine);
+        Bukkit.getPluginManager().callEvent(
+            new MachineProducedEvent(machine, type == null ? "" : type.fullId(), outputs));
     }
 
     /** The empty container an output of this material is bottled into, or null if none is needed. */
@@ -928,8 +958,11 @@ final class RotationBlocks {
         // stats = {supply, demand, count}; surplus headroom = supply - demand (advisory).
         int surplus = Math.max(0, stats[0] - stats[1]);
 
-        fanEffect(fan.getWorld(), fan.getLocation().add(0.5, 0.5, 0.5), blowDirection(fan), surplus,
-            fanRange, fanMinPush, fanMaxPush, fanPushPerPower);
+        int pushed = fanEffect(fan.getWorld(), fan.getLocation().add(0.5, 0.5, 0.5), blowDirection(fan),
+            surplus, fanRange, fanMinPush, fanMaxPush, fanPushPerPower);
+        if (pushed > 0 && MachineActedEvent.hasListeners()) {
+            Bukkit.getPluginManager().callEvent(new MachineActedEvent(fan, "mech:fan"));
+        }
     }
 
     /**
@@ -938,9 +971,11 @@ final class RotationBlocks {
      * {@code min(maxPush, minPush + surplus·pushPerPower)}. Fully world-local — the caller owns the
      * powered gate and surplus, so fans riding a mechanism blow at their live position
      * ({@code MechanismRotationDriver}).
+     *
+     * @return number of entities whose velocity was actually adjusted this step
      */
-    static void fanEffect(World world, Location center, BlockFace blowDir, int surplus,
-                          int range, double minPush, double maxPush, double pushPerPower) {
+    static int fanEffect(World world, Location center, BlockFace blowDir, int surplus,
+                         int range, double minPush, double maxPush, double pushPerPower) {
         double push = Math.min(maxPush, minPush + surplus * pushPerPower);
         org.bukkit.util.Vector unit = blowDir.getDirection();   // unit-length
 
@@ -957,6 +992,7 @@ final class RotationBlocks {
             unit.getY() == 0 ? 0.5 : 0,
             unit.getZ() == 0 ? 0.5 : 0);
 
+        int pushed = 0;
         for (org.bukkit.entity.Entity e : world.getNearbyEntities(box)) {
             // Mobs, players, dropped items only — excludes our own Display block visuals.
             if (!(e instanceof org.bukkit.entity.LivingEntity || e instanceof org.bukkit.entity.Item)) continue;
@@ -965,8 +1001,10 @@ final class RotationBlocks {
             if (along < push) {
                 // Nudge the along-beam speed up to `push`; never accelerate past it (avoids runaway).
                 e.setVelocity(v.add(unit.clone().multiply(push - along)));
+                pushed++;
             }
         }
+        return pushed;
     }
 
     // ──────────────────────────────────────────────────────────────────────
@@ -1008,9 +1046,12 @@ final class RotationBlocks {
         Inventory internal = registry.getOrCreateStorage(hopper);
         if (internal == null) return;
 
-        suctionEffect(hopper.getWorld(), hopper.getLocation().add(0.5, 0.5, 0.5),
+        boolean captured = suctionEffect(hopper.getWorld(), hopper.getLocation().add(0.5, 0.5, 0.5),
             hopper.getX(), hopper.getY(), hopper.getZ(),
             internal, suctionPullRange, suctionPullStrength);
+        if (captured && MachineActedEvent.hasListeners()) {
+            Bukkit.getPluginManager().callEvent(new MachineActedEvent(hopper, "mech:suction_hopper"));
+        }
 
         pushToMount(hopper, internal);
     }
@@ -1022,12 +1063,13 @@ final class RotationBlocks {
      * so this serves both the static path ({@link #suctionTick}) and hoppers riding a mechanism
      * ({@code MechanismRotationDriver}, which passes the live cell and the travelling inventory).
      */
-    static void suctionEffect(World world, Location center, int cellX, int cellY, int cellZ,
-                              Inventory internal, double pullRange, double pullStrength) {
+    static boolean suctionEffect(World world, Location center, int cellX, int cellY, int cellZ,
+                                 Inventory internal, double pullRange, double pullStrength) {
         // Half-extent = pullRange + a 0.25 margin per side beyond the cell reach, so the pull box
         // side is 2*(pullRange + 0.75): pullRange 1 → 3.5³, 2.5 → 6.5³. Item capture still only
         // happens in the hopper's own 1×1×1 cell below; this box governs the inward pull.
         double r = pullRange + 0.75;
+        boolean captured = false;
         var box = org.bukkit.util.BoundingBox.of(center.toVector(), r, r, r);
         for (org.bukkit.entity.Entity e : world.getNearbyEntities(box)) {
             if (!(e instanceof org.bukkit.entity.Item item)) continue;   // Displays are not Items
@@ -1040,11 +1082,13 @@ final class RotationBlocks {
                 var leftover = internal.addItem(stack.clone());
                 if (leftover.isEmpty()) {
                     item.remove();
+                    captured = true;
                 } else {
                     int remaining = leftover.values().iterator().next().getAmount();
                     if (remaining != stack.getAmount()) {         // partial fit; full-block → leave as-is
                         ItemStack keep = stack.clone(); keep.setAmount(remaining);
                         item.setItemStack(keep);
+                        captured = true;
                     }
                 }
                 continue;                                          // captured items aren't also pulled
@@ -1072,6 +1116,7 @@ final class RotationBlocks {
             if (inward.lengthSquared() > 1e-4) inward.normalize();
             world.spawnParticle(Particle.CLOUD, p, 0, inward.getX(), inward.getY(), inward.getZ(), 0.1);
         }
+        return captured;
     }
 
     /**
@@ -1259,6 +1304,9 @@ final class RotationBlocks {
             drillProgress.get(key), key.hashCode(), drillBreakStages, drillBlacklist);
         if (out.next() == null) drillProgress.remove(key);
         else drillProgress.put(key, out.next());
+        if (out.broke() && MachineActedEvent.hasListeners()) {
+            Bukkit.getPluginManager().callEvent(new MachineActedEvent(drill, "mech:drill"));
+        }
     }
 
     /**

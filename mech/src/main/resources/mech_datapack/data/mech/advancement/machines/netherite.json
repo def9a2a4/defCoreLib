@@ -1,0 +1,24 @@
+{
+  "parent": "mech:machines/ore_milled",
+  "display": {
+    "icon": {
+      "id": "minecraft:netherite_scrap"
+    },
+    "title": {
+      "text": "Scraping By",
+      "color": "light_purple"
+    },
+    "description": {
+      "text": "Mill Ancient Debris into Netherite Scrap.",
+      "color": "gray"
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "criteria": {
+    "impossible": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

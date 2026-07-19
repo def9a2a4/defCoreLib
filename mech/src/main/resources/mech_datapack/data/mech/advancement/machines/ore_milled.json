@@ -1,0 +1,24 @@
+{
+  "parent": "mech:craft/millstone",
+  "display": {
+    "icon": {
+      "id": "minecraft:raw_iron"
+    },
+    "title": {
+      "text": "Mineral Rights",
+      "color": "white"
+    },
+    "description": {
+      "text": "Mill an ore block in the Millstone for a better yield than mining it raw.",
+      "color": "gray"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "criteria": {
+    "impossible": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

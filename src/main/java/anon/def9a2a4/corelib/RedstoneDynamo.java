@@ -217,6 +217,9 @@ final class RedstoneDynamo implements Listener {
         if (prev != null && prev == level) return;
         applyLevel(container.getInventory(), level);
         lastLevel.put(key, level);
+        if (level > 0 && MachineActedEvent.hasListeners()) {
+            org.bukkit.Bukkit.getPluginManager().callEvent(new MachineActedEvent(b, "mech:redstone_dynamo"));
+        }
     }
 
     private static int rawValue(int[] stats, Mode mode) {

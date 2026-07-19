@@ -1,5 +1,5 @@
 {
-  "parent": "mech:craft/glue_brush",
+  "parent": "mech:rotation/first_power",
   "display": {
     "icon": {
       "id": "minecraft:player_head",
@@ -8,21 +8,21 @@
           "properties": [
             {
               "name": "textures",
-              "value": "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjhiMjhlNmVhZWZkOWRmY2RkYzQzOTg0YmI5M2VkZTc4M2RjNzlkMDUzMGY1YjhiMDdjYzMyN2FhMjdjNGQwOCJ9fX0="
+              "value": "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTlmMzdmMWNiZDQ3YzM1MDQ1MTFiZjMzYzU4YzNhMjUyYjYwNzEzZWM1ZmM1NDMzZDg4N2Q0YTBkOTk2MjEwIn19fQ=="
             }
           ]
         }
       }
     },
     "title": {
-      "text": "Boxed In",
-      "color": "white"
+      "text": "Shift Supervisor",
+      "color": "light_purple"
     },
     "description": {
-      "text": "Craft a Mechanical Casing \u2014 casings bond to each other into a moving frame, no brush needed. Comes in every plank wood.",
+      "text": "Operate every machine: drill, fan, placer, suction hopper, chain hoist, dynamo, clutch, and reverser.",
       "color": "gray"
     },
-    "frame": "task",
+    "frame": "challenge",
     "show_toast": true,
     "announce_to_chat": true
   },

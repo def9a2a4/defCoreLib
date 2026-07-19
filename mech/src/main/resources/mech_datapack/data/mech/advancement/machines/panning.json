@@ -1,0 +1,24 @@
+{
+  "parent": "mech:craft/sieve",
+  "display": {
+    "icon": {
+      "id": "minecraft:flint"
+    },
+    "title": {
+      "text": "Panning Out",
+      "color": "white"
+    },
+    "description": {
+      "text": "Get a payout from the Sieve \u2014 every pan is a gamble.",
+      "color": "gray"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "criteria": {
+    "impossible": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

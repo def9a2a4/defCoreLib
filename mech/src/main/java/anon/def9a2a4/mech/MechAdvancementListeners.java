@@ -2,7 +2,9 @@ package anon.def9a2a4.mech;
 
 import anon.def9a2a4.corelib.CustomBlockRegistry;
 import anon.def9a2a4.corelib.CustomHeadBlock;
-import anon.def9a2a4.corelib.MachineEjectEvent;
+import anon.def9a2a4.corelib.GlueAppliedEvent;
+import anon.def9a2a4.corelib.MachineActedEvent;
+import anon.def9a2a4.corelib.MachineProducedEvent;
 import anon.def9a2a4.corelib.MechanismAssembleEvent;
 import anon.def9a2a4.corelib.RotationNetworkPoweredEvent;
 import org.bukkit.Material;
@@ -68,11 +70,26 @@ public final class MechAdvancementListeners implements Listener {
                 event.getDemand(), event.getMemberCount(), event.getSourceTypes(), event.isChainLoop());
     }
 
-    /** A millstone/press ejected outputs → food/processing product nodes. */
+    /** A processing machine (millstone/press/sieve) delivered outputs → product nodes. Fired only on
+     *  successful deliveries (container below, pipe handler, or ground drop) — never on stalls or
+     *  suction-hopper pass-through, so the outputs are genuinely this machine's produce. */
     @EventHandler(priority = EventPriority.MONITOR)
-    public void onMachineEject(MachineEjectEvent event) {
+    public void onMachineProduced(MachineProducedEvent event) {
         advancements.onMachineOutput(event.getBlock().getLocation().add(0.5, 0.5, 0.5),
-                event.getOutputs());
+                event.getMachineType(), event.getOutputs());
+    }
+
+    /** A machine performed its action (drill broke a block, fan pushed, clutch gated a live line, …). */
+    @EventHandler
+    public void onMachineActed(MachineActedEvent event) {
+        advancements.onMachineActed(event.getBlock().getLocation().add(0.5, 0.5, 0.5),
+                event.getMachineType());
+    }
+
+    /** A player committed glue with the brush → "Bound Together". */
+    @EventHandler
+    public void onGlueApplied(GlueAppliedEvent event) {
+        advancements.onGlueApplied(event.getPlayer());
     }
 
     /** Extracting Bread from a furnace → the bake milestone. Nothing vanilla smelts into bread, so

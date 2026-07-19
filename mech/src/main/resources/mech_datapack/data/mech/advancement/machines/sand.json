@@ -1,0 +1,24 @@
+{
+  "parent": "mech:craft/millstone",
+  "display": {
+    "icon": {
+      "id": "minecraft:sand"
+    },
+    "title": {
+      "text": "Pound Sand",
+      "color": "white"
+    },
+    "description": {
+      "text": "Mill the rock chain down \u2014 cobblestone to gravel to sand.",
+      "color": "gray"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "criteria": {
+    "impossible": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "parent": "mech:machines/panning",
+  "display": {
+    "icon": {
+      "id": "minecraft:emerald"
+    },
+    "title": {
+      "text": "Strike It Rich",
+      "color": "light_purple"
+    },
+    "description": {
+      "text": "Pan an emerald or a diamond out of the Sieve.",
+      "color": "gray"
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "criteria": {
+    "impossible": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

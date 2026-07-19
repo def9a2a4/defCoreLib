@@ -56,7 +56,7 @@ NODES = [
     ("craft/glue_brush", "craft/wrench", "task", "minecraft:brush", "Stuck On You", "white",
      "Craft the Glue Brush — pick exactly which blocks a Rotator or Minecart carries."),
     ("craft/casing", "craft/glue_brush", "task", "@casing_oak", "Boxed In", "white",
-     "Craft a Mechanical Casing — it glues itself to its neighbours, no brush needed. "
+     "Craft a Mechanical Casing — casings bond to each other into a moving frame, no brush needed. "
      "Comes in every plank wood."),
     ("craft/shaft", "craft/bearing", "task", "@rod_fwd", "First Shaft", "white",
      "Craft a Shaft — carries rotational power in a straight line along its axis."),
@@ -67,6 +67,8 @@ NODES = [
      "Craft a Millstone — grinds its stored items (wheat→flour, ores→more) while powered from above."),
     ("craft/press", "craft/millstone", "task", "@compressor_item", "Under Pressure", "white",
      "Craft an Extractor Press — squeezes stored items into juices, oils, honey, and dyes."),
+    ("craft/sieve", "craft/millstone", "task", "@sieve_item", "Pan Handler", "white",
+     "Craft a Sieve — pans gravel and sand for nuggets, flint, and rare finds."),
     ("craft/drill", "craft/gear", "task", "@screw_fwd", "Boring Work", "white",
      "Craft a Drill — breaks the block directly in front of it while powered."),
     ("craft/placer", "craft/drill", "task", "@placer_item", "Autoplacement", "white",
@@ -154,6 +156,24 @@ NODES = [
     ("windmill/huge", "windmill/large", "challenge", "@windmill_item", "Lord of the Winds", "light_purple",
      "Build a Huge Windmill (15 power) — craft it with Huge banners (needs BetterBanners)."),
 
+    # ── Machine use milestones (granted the first time each machine actually acts) ──
+    ("use/drill", "craft/drill", "task", "@drill_item", "Bit by Bit", "white",
+     "Break your first block with a powered Drill."),
+    ("use/fan", "craft/fan", "task", "@fan_item", "Blown Away", "white",
+     "Push a mob, player, or dropped item with a Fan's airstream."),
+    ("use/placer", "craft/placer", "task", "@placer_item", "Brick by Brick", "white",
+     "Have a Block Placer set a block from its storage into the world."),
+    ("use/suction_hopper", "craft/suction_hopper", "task", "@suction_hopper_item", "Clean Sweep", "white",
+     "Vacuum a dropped item into a Suction Hopper."),
+    ("use/chain_hoist", "craft/chain_hoist", "goal", "@chain_hoist_item", "Heavy Lifting", "yellow",
+     "Raise or lower a platform with a Chain Hoist."),
+    ("use/dynamo", "craft/dynamo", "task", "@dynamo_up", "Signal Boost", "white",
+     "Read live network power out of a Redstone Dynamo with a comparator signal."),
+    ("use/clutch", "craft/clutch", "task", "@clutch_fwd", "Pump the Brakes", "white",
+     "Cut power to a spinning network by locking a Clutch with redstone."),
+    ("use/reverser", "craft/reverser", "task", "@reverser_fwd", "About-Face", "white",
+     "Flip a network's spin direction with a redstone-powered Reverser."),
+
     # ── Food / processing spine (granted when the machine ejects the product) ──
     ("machines/flour", "craft/millstone", "task", "minecraft:sugar", "Well Milled", "white",
      "Grind wheat into Flour in a powered Millstone."),
@@ -172,11 +192,28 @@ NODES = [
     ("machines/farm_to_table", "machines/bread", "challenge", "minecraft:cake", "Farm to Table", "light_purple",
      "Produce every processed good: flour, bread, juice, oil, honey, and dye."),
 
+    # ── Ore processing (millstone mineral recipes) + panning (sieve) ──
+    ("machines/sand", "craft/millstone", "task", "minecraft:sand", "Pound Sand", "white",
+     "Mill the rock chain down — cobblestone to gravel to sand."),
+    ("machines/ore_milled", "craft/millstone", "task", "minecraft:raw_iron", "Mineral Rights", "white",
+     "Mill an ore block in the Millstone for a better yield than mining it raw."),
+    ("machines/precious", "machines/ore_milled", "goal", "minecraft:diamond", "Rough Cut", "yellow",
+     "Mill diamond or emerald ore — precious stones, occasionally doubled."),
+    ("machines/netherite", "machines/ore_milled", "challenge", "minecraft:netherite_scrap", "Scraping By", "light_purple",
+     "Mill Ancient Debris into Netherite Scrap."),
+    ("machines/panning", "craft/sieve", "task", "minecraft:flint", "Panning Out", "white",
+     "Get a payout from the Sieve — every pan is a gamble."),
+    ("machines/pan_treasure", "machines/panning", "challenge", "minecraft:emerald", "Strike It Rich", "light_purple",
+     "Pan an emerald or a diamond out of the Sieve."),
+
     # ── Mastery capstones ──
     ("mastery/automation", "rotation/first_power", "challenge", "@machine_base", "Set It and Forget It", "light_purple",
      "Run a network that both makes power and drives a working machine at the same time."),
+    ("mastery/operator", "rotation/first_power", "challenge", "@machine_base", "Shift Supervisor", "light_purple",
+     "Operate every machine: drill, fan, placer, suction hopper, chain hoist, dynamo, clutch, and reverser."),
     ("mastery/grand_engineer", "craft/master_machinist", "challenge", "@bronze_engine", "Grand Engineer", "light_purple",
-     "Earn every mastery capstone: Master Machinist, Rube Goldberg, Earthshaker, Lower the Drawbridge, and Farm to Table."),
+     "Earn every mastery capstone: Master Machinist, Shift Supervisor, Rube Goldberg, Earthshaker, "
+     "Lower the Drawbridge, and Farm to Table."),
 ]
 
 
