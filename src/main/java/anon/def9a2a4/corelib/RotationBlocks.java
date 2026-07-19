@@ -704,7 +704,8 @@ final class RotationBlocks {
         // Floor-only, axis-aligned like the chain hoist: the axle lies across the placer's view
         // and power crosses to both ±axis neighbours; the valve skull fronts the placer
         // (snapAxisFacingRotation). Fluid moves vertically: intake below,
-        // output above (a fluid endpoint directly, or a pipe chain routed via FluidRouting);
+        // output above (a fluid endpoint directly, or a pipe chain routed via FluidRouting;
+        // the body display stretches up to meet a horizontal corner pipe — pumpBodyTransform);
         // a wrench flips the flow. All units are whole buckets (docs/todo/mechanism/fluids.md).
         registry.register(block.toBuilder()
             .drillable(false)
@@ -712,6 +713,8 @@ final class RotationBlocks {
             .tickInterval(config.pumpTickInterval)
             .stateResolver(RotationBlocks::axisPlacementState)
             .onBlockPlaced(RotationBlocks::snapAxisFacingRotation)
+            .displayTransformResolver((b, state, dec, idx) ->
+                pumpBodyTransform(registry, config, b, dec))
             .onNeighborChange((b, face) -> recalcIfKnown(b, network))
             .onInteract((b, event) -> {
                 if (!isWrench(event.getPlayer().getInventory().getItemInMainHand())) return false;
@@ -733,6 +736,47 @@ final class RotationBlocks {
             .onChunkUnload(b -> network.removeNode(CustomBlockRegistry.LocationKey.of(b)))
             .onBlockRemoved((b, state) -> network.removeNode(CustomBlockRegistry.LocationKey.of(b)))
             .build());
+    }
+
+    /** Pump display resolver: only the body is ever touched — null for the intake and,
+     *  critically, the axle, whose spin-animation base is the raw yml transform. The body
+     *  branch must never return null either way: resolveDisplayTransforms skips null, so
+     *  a null-when-no-corner contract would leave the body stretched after the corner
+     *  above is broken. Repeated setTransformation with an equal value is a DataWatcher
+     *  no-op, so water-physics churn beside the pump doesn't resend. */
+    private static org.bukkit.util.Transformation pumpBodyTransform(
+            CustomBlockRegistry registry, RotationConfig config, Block b,
+            CustomHeadBlock.DisplayEntityConfig dec) {
+        if (!"body".equals(dec.tagSuffix())) return null;
+        org.bukkit.util.Transformation t = dec.transform();
+        if (!horizontalCornerAbove(registry, b)) return t;
+        // Head-display models hang down from their translation point: +d translation and
+        // +2d scale raise the top by d while pinning the bottom to the pump's floor,
+        // reaching the corner's elbow like a vertical pipe below a corner does.
+        float d = (float) config.pumpStretchToCorner;
+        return new org.bukkit.util.Transformation(
+            new org.joml.Vector3f(t.getTranslation()).add(0f, d, 0f),
+            t.getLeftRotation(),
+            new org.joml.Vector3f(t.getScale()).add(0f, 2f * d, 0f),
+            t.getRightRotation());
+    }
+
+    /** True when the block above is a pipes-plugin corner pipe in a horizontal state —
+     *  the pump's vertical output handing off sideways. Reads corelib's own registry
+     *  (pipe blocks register through BlockLoader), so no Pipes API is needed and this is
+     *  simply false when Pipes is absent. Best-effort id match: corelib can't see pipes'
+     *  BehaviorType. The down corner is excluded on purpose — it discharges into the
+     *  pump, so a connected column would lie. */
+    private static boolean horizontalCornerAbove(CustomBlockRegistry registry, Block b) {
+        Block above = b.getRelative(BlockFace.UP);
+        CustomHeadBlock type = registry.getTypeFromBlock(above);
+        if (type == null || !"pipes".equals(type.namespace())
+                || !type.typeId().endsWith("_corner_pipe")) {
+            return false;
+        }
+        String state = registry.getState(above);
+        return "north".equals(state) || "south".equals(state)
+            || "east".equals(state) || "west".equals(state);
     }
 
     /** Placement yaw → X/Z axle state, exactly the chain hoist's rule: the axle lies across

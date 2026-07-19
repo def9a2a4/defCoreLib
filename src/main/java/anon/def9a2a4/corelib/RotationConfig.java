@@ -32,6 +32,7 @@ final class RotationConfig {
     int sieveTankUnits = 4;
     int sieveWaterPerCycles = 16;
     int pumpTickInterval = 40;
+    double pumpStretchToCorner = 0.1985; // body-top raise under a corner pipe; 1.0015 + d = 1.2, a vertical pipe's height under a corner
     int boilerTankUnits = 8;
     int steamWaterIntervalTicks = 1200;   // running time per boiler water unit (~60 s)
     int placerTickInterval = 20;
@@ -156,6 +157,7 @@ final class RotationConfig {
         ConfigurationSection pump = yaml.getConfigurationSection("pump");
         if (pump != null) {
             pumpTickInterval = pump.getInt("tick-interval", pumpTickInterval);
+            pumpStretchToCorner = pump.getDouble("stretch-to-corner", pumpStretchToCorner);
             loaded++;
         }
 
