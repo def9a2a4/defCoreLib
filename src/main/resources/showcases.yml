@@ -21,8 +21,9 @@ showcases:
     description: >
       A complete production line. A drill chews through the cobblestone in front of it
       (as if fed by a cobblestone generator), and the rubble drops into a hopper and barrel.
-      Power comes from two passive-ish sources side by side — a large windmill and an engine —
-      whose rotation is gathered through a clutch and a cluster of gears, then carried down
+      Power comes from two passive-ish sources side by side — a huge windmill and an engine,
+      enough combined supply for the whole tower of machines — whose rotation is gathered
+      through a clutch and a cluster of gears, then carried down
       vertical shafts to a pair of stacked millstones. The first millstone grinds cobblestone
       into gravel; the second grinds that gravel into sand. A placer at the foot of the column
       takes the finished sand and sets it down as a real block in the world.
@@ -32,7 +33,9 @@ showcases:
       - { id: "mech:gear",           facing: down,  at: [0, 0, -1] }
       - { id: "mech:gear",           facing: north, at: [0, 0, 1] }
       - { id: "mech:engine",         facing: south, at: [0, 0, 2] }
-      - { id: "mech:large_windmill", facing: north, at: [0, 0, 3] }
+      # Huge windmill (15) + engine (10) = 25 supply vs 17 demand (drill 5 + 2 millstones 10 + placer 2)
+      # — a large windmill's 5 left the tower underpowered under the dfed5d0 power tiers.
+      - { id: "mech:huge_windmill", facing: north, at: [0, 0, 3] }
       - { id: "mech:drill",          facing: east,  at: [-2, 0, 0] }
       - { id: "mech:gear",           facing: down,  at: [-1, 0, -1] }
       - { id: "mech:shaft",          facing: down,  at: [0, -1, -1] }
@@ -98,19 +101,27 @@ showcases:
   # ── Motor-powered (passive: spins by default — do NOT pulse it) ─────────
   - id: redstone_motor_drill
     name: "Motor → Drill"
-    blurb: "A redstone motor powers a drill that bores forward through solid stone."
+    blurb: "A bank of five redstone motors powers a drill that bores forward through solid stone."
     description: >
-      The motor is a passive power source — it spins on its own (and redstone DISABLES it, rather
-      than enabling it). Its rotation feeds through a clutch into a drill, which bores into whatever block
-      sits in front of its bit, breaking it in stages. A clutch passes power straight through like a
-      shaft, but a redstone signal disengages it — a quick way to stop the drill without unpowering the
-      motor. Because rotation only couples along a block's spin axis, the three blocks sit in a line.
+      Motors are passive power sources — they spin on their own (and redstone DISABLES them, rather
+      than enabling them) — but each one supplies just a single unit of power, and a drill demands five.
+      So five motors sit coupled in a line, their rotation summing along the shared axle before it feeds
+      through a clutch into the drill, which bores into whatever block sits in front of its bit, breaking
+      it in stages. A clutch passes power straight through like a shaft, but a redstone signal disengages
+      it — a quick way to stop the drill without unpowering the motors. Because rotation only couples
+      along a block's spin axis, everything sits in one line.
     blocks:
       # Horizontal Z column (all Z axis, coupled along N/S). `facing` is the clicked face → the head
       # points the OPPOSITE way, so the drill is `south` to bore NORTH (−z) into the stone — NOT into
       # its own clutch on the +z side. Motor/clutch direction is irrelevant (Z axis either way).
       # The clutch transmits power like a shaft, but can be switched off with redstone to cut the drill.
+      # FIVE motors: each supplies 1 power and the drill demands 5 (rotation-config power tiers) —
+      # co-axial in-line sources sum their supply on one network.
       - { id: "mech:redstone_motor", facing: south, at: [0, 0, 2] }
+      - { id: "mech:redstone_motor", facing: south, at: [0, 0, 3] }
+      - { id: "mech:redstone_motor", facing: south, at: [0, 0, 4] }
+      - { id: "mech:redstone_motor", facing: south, at: [0, 0, 5] }
+      - { id: "mech:redstone_motor", facing: south, at: [0, 0, 6] }
       - { id: "mech:clutch",    facing: north, at: [0, 0, 1] }
       - { id: "mech:drill",     facing: south, at: [0, 0, 0] }   # bores north (−z) into the stone
     vanilla:
@@ -122,12 +133,16 @@ showcases:
 
   - id: redstone_motor_fan
     name: "Motor → Fan"
-    blurb: "A redstone motor spins a shaft up into a fan that blows a gust of air — no fuel needed."
+    blurb: "A pair of redstone motors spins a shaft up into a fan that blows a gust of air — no fuel needed."
     description: >
-      A passive motor spins on its own and drives a shaft up into a fan. Unlike the fuel-burning
-      engine, the motor needs no upkeep — it runs continuously until a redstone signal disables it.
-      The fan turns that rotation into a directed gust that pushes entities away from its face.
+      Passive motors spin on their own and drive a shaft up into a fan. Unlike the fuel-burning
+      engine, motors need no upkeep — they run continuously until a redstone signal disables them.
+      Each motor supplies one unit of power and the fan demands two, so a second motor sits coupled
+      below the first on the same vertical axle. The fan turns that rotation into a directed gust
+      that pushes entities away from its face.
     blocks:
+      # TWO motors: 1 power each vs the fan's demand of 2 — stacked co-axially on the Y axle.
+      - { id: "mech:redstone_motor", facing: down, at: [0, -1, 0] }
       - { id: "mech:redstone_motor", facing: down, at: [0, 0, 0] }
       - { id: "mech:shaft",     facing: down, at: [0, 1, 0] }
       - { id: "mech:fan",       facing: down, at: [0, 2, 0] }
@@ -170,11 +185,13 @@ showcases:
     name: "Gearbox Corner"
     blurb: "A motor's vertical power meshes through gears to turn a 90° corner and drive a fan sideways."
     description: >
-      A shaft only carries rotation straight along its axis; gears turn the corner. Here the passive
-      motor spins a vertical (Y) gear, which meshes with a second gear mounted at 90° (X) beside it —
-      a bevel pair. The horizontal gear then drives a fan on its own axis, so power that entered going up
-      leaves going sideways.
+      A shaft only carries rotation straight along its axis; gears turn the corner. Here a pair of
+      passive motors (one power unit each — the fan demands two) spins a vertical (Y) gear, which meshes
+      with a second gear mounted at 90° (X) beside it — a bevel pair. The horizontal gear then drives a
+      fan on its own axis, so power that entered going up leaves going sideways.
     blocks:
+      # TWO motors: 1 power each vs the fan's demand of 2 — stacked co-axially on the Y axle.
+      - { id: "mech:redstone_motor", facing: down, at: [0, -1, 0] }   # Y source
       - { id: "mech:redstone_motor", facing: down, at: [0, 0, 0] }   # Y source
       - { id: "mech:gear",      facing: down, at: [0, 1, 0] }   # Y gear, driven from below
       - { id: "mech:gear",      facing: west, at: [1, 1, 0] }   # X gear, meshes perpendicular
@@ -208,13 +225,18 @@ showcases:
   # ── Press: second processing machine (piston bobs under power) ──────────
   - id: redstone_motor_press
     name: "Motor → Press"
-    blurb: "A motor drives a vertical shaft into a press whose piston bobs to squeeze a barrel's contents."
+    blurb: "A tower of motors drives a vertical shaft into a press whose piston bobs to squeeze a barrel's contents."
     description: >
       The press is a Y-axis machine like the millstone: it takes power from directly above and extracts
-      juices, oils and dyes from items in the barrel it mounts on. A passive motor keeps its piston
-      bobbing without any fuel. (This demo shows the motion; a running press needs items in the barrel to
-      actually produce anything.)
+      juices, oils and dyes from items in the barrel it mounts on. Passive motors keep its piston
+      bobbing without any fuel — each supplies one unit of power against the press's demand of four,
+      so four motors stack coupled on the same vertical axle. (This demo shows the motion; a running
+      press needs items in the barrel to actually produce anything.)
     blocks:
+      # FOUR motors: 1 power each vs the press's demand of 4 — stacked co-axially on the Y axle.
+      - { id: "mech:redstone_motor", facing: down,  at: [0, 5, 0] }   # Y source
+      - { id: "mech:redstone_motor", facing: down,  at: [0, 4, 0] }   # Y source
+      - { id: "mech:redstone_motor", facing: down,  at: [0, 3, 0] }   # Y source
       - { id: "mech:redstone_motor", facing: down,  at: [0, 2, 0] }   # Y source
       - { id: "mech:shaft",     facing: down,  at: [0, 1, 0] }
       - { id: "mech:press",     facing: south, at: [0, 0, 0] }   # Y machine, mounts on +z block
