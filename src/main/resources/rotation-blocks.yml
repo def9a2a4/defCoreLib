@@ -1492,7 +1492,7 @@ blocks:
           - texture: "@pipe_up_display"
             tag: body
             transform: { translation: [0, 0.5015, 0], scale: [1.06, 2.006, 1.06] }
-          - { material: COPPER_GRATE, tag: intake, transform: { translation: [0, -0.45, 0], scale: [0.75, 0.16, 0.75] } }
+          - { material: COPPER_GRATE, tag: intake, transform: { translation: [0, -0.59375, 0], scale: [0.75, 0.3125, 0.75] } }
           - texture: "@rod_up"
             tag: axle
             transform: { translation: [-0.5, 0, 0], scale: [0.66, 2.002, 0.66], left_rotation: [90, 0, 0, 1] }
@@ -1501,7 +1501,7 @@ blocks:
           - texture: "@pipe_up_display"
             tag: body
             transform: { translation: [0, 0.5015, 0], scale: [1.06, 2.006, 1.06] }
-          - { material: COPPER_GRATE, tag: intake, transform: { translation: [0, -0.45, 0], scale: [0.75, 0.16, 0.75] } }
+          - { material: COPPER_GRATE, tag: intake, transform: { translation: [0, -0.59375, 0], scale: [0.75, 0.3125, 0.75] } }
           - texture: "@rod_up"
             tag: axle
             transform: { translation: [-0.5, 0, 0], scale: [0.66, 2.002, 0.66], left_rotation: [90, 0, 0, 1] }
@@ -1511,7 +1511,7 @@ blocks:
           - texture: "@pipe_up_display"
             tag: body
             transform: { translation: [0, 0.5015, 0], scale: [1.06, 2.006, 1.06] }
-          - { material: COPPER_GRATE, tag: intake, transform: { translation: [0, -0.45, 0], scale: [0.75, 0.16, 0.75] } }
+          - { material: COPPER_GRATE, tag: intake, transform: { translation: [0, -0.59375, 0], scale: [0.75, 0.3125, 0.75] } }
           - texture: "@rod_up"
             tag: axle
             transform: { translation: [0, 0, -0.5], scale: [0.66, 2.002, 0.66], left_rotation: [-90, 1, 0, 0] }
@@ -1520,7 +1520,7 @@ blocks:
           - texture: "@pipe_up_display"
             tag: body
             transform: { translation: [0, 0.5015, 0], scale: [1.06, 2.006, 1.06] }
-          - { material: COPPER_GRATE, tag: intake, transform: { translation: [0, -0.45, 0], scale: [0.75, 0.16, 0.75] } }
+          - { material: COPPER_GRATE, tag: intake, transform: { translation: [0, -0.59375, 0], scale: [0.75, 0.3125, 0.75] } }
           - texture: "@rod_up"
             tag: axle
             transform: { translation: [0, 0, -0.5], scale: [0.66, 2.002, 0.66], left_rotation: [-90, 1, 0, 0] }
@@ -1631,7 +1631,7 @@ blocks:
           count: 2
           speed: 0.01
           interval: 4
-          floor_offset: [0, 1.0, 0]   # flush with the shell top
+          floor_offset: [0, 0.75, 0]   # at the top of the burner display below
     recipes:
       craft:
         shaped:
@@ -1669,7 +1669,7 @@ blocks:
           - texture: "@rod_up"
             tag: axle
             transform: { translation: [-0.5, 0, 0], scale: [0.6, 2.002, 0.6], left_rotation: [90, 0, 0, 1] }
-          - { material: COPPER_BLOCK, tag: head, transform: { translation: [0, 0.18, 0],  scale: [0.6, 0.6, 0.6] } }
+          - { material: COPPER_BLOCK, tag: head, transform: { translation: [0, 0, 0],  scale: [0.75, 0.75, 0.75] } }
       running_x:
         display_entities:
           - texture: "@rod_up"
@@ -1678,8 +1678,8 @@ blocks:
             animation: { type: rotate, axis: [1, 0, 0], speed: 3.0 }
           - material: COPPER_BLOCK
             tag: head
-            transform: { translation: [0, 0.18, 0], scale: [0.6, 0.6, 0.6] }
-            animation: { type: bob, amplitude: 0.12, period: 40, phase: 0 }
+            transform: { translation: [0, 0, 0], scale: [0.75, 0.75, 0.75] }
+            animation: { type: bob, amplitude: 0.125, period: 40, phase: 0 }
         particles:
           type: CLOUD
           count: 1
@@ -1691,7 +1691,7 @@ blocks:
           - texture: "@rod_up"
             tag: axle
             transform: { translation: [0, 0, -0.5], scale: [0.6, 2.002, 0.6], left_rotation: [-90, 1, 0, 0] }
-          - { material: COPPER_BLOCK, tag: head, transform: { translation: [0, 0.18, 0],  scale: [0.6, 0.6, 0.6] } }
+          - { material: COPPER_BLOCK, tag: head, transform: { translation: [0, 0, 0],  scale: [0.75, 0.75, 0.75] } }
       running_z:
         display_entities:
           - texture: "@rod_up"
@@ -1700,8 +1700,8 @@ blocks:
             animation: { type: rotate, axis: [0, 0, 1], speed: 3.0 }
           - material: COPPER_BLOCK
             tag: head
-            transform: { translation: [0, 0.18, 0], scale: [0.6, 0.6, 0.6] }
-            animation: { type: bob, amplitude: 0.12, period: 40, phase: 0 }
+            transform: { translation: [0, 0, 0], scale: [0.75, 0.75, 0.75] }
+            animation: { type: bob, amplitude: 0.125, period: 40, phase: 0 }
         particles:
           type: CLOUD
           count: 1
