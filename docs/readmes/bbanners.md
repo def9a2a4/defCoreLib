@@ -18,6 +18,8 @@ Flag banners, larger size banner tiers, and bed banners. Purely server-side pape
 
 To remove banners on beds, flag banners, or large banners, break the block they were placed on, or right click the block with shears. Large/Huge banners placed on the floor behave like regular banners, in that they can be facing different directions. Flag banners can also be facing any direction, and a single "pole" can have many flag banners.
 
+Banners placed on blocks that get moved by a [Mechanism](https://github.com/def9a2a4/defCoreLib/blob/main/docs/readmes/mech.md) (doors, rotators, minecart structures, ...) ride along and re-attach where the structure lands — or drop as items when the landing orientation can't host them (e.g. a drawbridge tipping a wall banner sideways).
+
 
 ## Images
 

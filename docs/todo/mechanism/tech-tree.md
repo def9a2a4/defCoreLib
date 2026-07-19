@@ -37,7 +37,8 @@ left, what reuses existing code, what needs new subsystems, and the open decisio
    (till/plant/bonemeal/shear), tool durability via `Damageable`.
 6. **Alloy tools/armor** — extend the custom-item layer with enchantments + `ArmorTrim` (+ optional
    attribute components); recipes via ExactChoice.
-7. **Fluid handling** — large, none. Gates freezer/pump. **Deferred.**
+7. **Fluid handling** — designed in [fluids.md](fluids.md) (bucket-unit fluids over the
+   existing pipe chains + rotation-powered pump). Gates freezer/pump. Not started.
 
 ## Dependency-ordered waves
 
@@ -69,7 +70,8 @@ left, what reuses existing code, what needs new subsystems, and the open decisio
   custom via `markBlock`), **Gauges** (SU → comparator via container-fill; reads `getNetworkStats`).
 
 ### Deferred
-Freezer / Pump (need fluids) · tier-2 gears/shafts (skip for now) · Chains (network change; tracked
+Freezer / Pump — fluids now designed in [fluids.md](fluids.md) (pump is its Wave A); freezer still
+needs a recipe story · tier-2 gears/shafts (skip for now) · Chains (network change; tracked
 in TODO.md).
 
 ## Open decisions (unresolved)
@@ -77,8 +79,8 @@ in TODO.md).
   jumping to the alloy capstone vs world-automation vs utility/sensors.
 - **Alloy furnace form:** full multiblock + Storage UI (matches the stated vision; needs detection)
   vs a single custom block (simpler, loses the build-it feel).
-- **Fluids:** keep deferring (recommended) vs build the subsystem now (unlocks freezer/pump/smeltery
-  fluids).
+- **Fluids:** design settled in [fluids.md](fluids.md) (bucket units, consumed sources, pump +
+  steam stack); remaining question is build timing vs the alloy capstone.
 
 ## Key file references
 `RotationBlocks.java` (`overlayConsumerMachine`, `processingMachineTick`, `drillTick`, `fanTick`,

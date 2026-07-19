@@ -45,6 +45,7 @@
 - [blockships-integration.md](mechanism/blockships-integration.md) — BlockShips integration plan (4 phases, not started)
 - [display-system-refactor.md](display-system-refactor.md) — display elegance refactor; Phases 1/2 done, 2b blocked, 3 deferred
 - [minecarts.md](mechanism/minecarts.md) — minecart mechanism off-center pivot bug (open) + 7 deferred issues
+- [fluids.md](mechanism/fluids.md) — fluid subsystem design (liquid pipes + pump, lava-on-iron, water-gated sieve, steam engine stack); build waves + open decisions, not started
 - [pipes.md](pipes.md) — Pipes → CoreLib migration plan
 - [redstone-cables.md](redstone-cables.md) — redstone-cables demo plugin plan
 - [rotation-mechanisms.md](mechanism/rotation-mechanisms.md) — Reverser → Rotator → Glue: network-driven doors/drawbridges bridging rotation-power to mechanisms (3 phases, not started)
