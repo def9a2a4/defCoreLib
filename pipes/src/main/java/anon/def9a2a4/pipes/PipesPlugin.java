@@ -91,6 +91,9 @@ public class PipesPlugin extends JavaPlugin {
         worldManager = new WorldManager(this, pipeManagers);
         ConversionRecipeCraftListener conversionRecipeCraftListener = new ConversionRecipeCraftListener(this, recipeManager);
         getServer().getPluginManager().registerEvents(new MachineEjectListener(pipeManagers), this);
+        // Fluid transport handshake: corelib's pump routes fluid units through pipe chains via
+        // this walker (dependency-inverted like MachineEjectListener/MechanismConduits).
+        anon.def9a2a4.corelib.fluid.FluidRouting.register(new FluidPipeWalker(pipeManagers));
         getServer().getPluginManager().registerEvents(worldManager, this);
         getServer().getPluginManager().registerEvents(conversionRecipeCraftListener, this);
 

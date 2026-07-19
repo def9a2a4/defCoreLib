@@ -1,11 +1,14 @@
 package anon.def9a2a4.pipes;
 
+import anon.def9a2a4.corelib.fluid.FluidType;
 import org.bukkit.configuration.ConfigurationSection;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Logger;
 
 public class VariantRegistry {
@@ -54,7 +57,19 @@ public class VariantRegistry {
         int intervalTicks = Math.max(1, section.getInt("transfer.interval-ticks", 10));
         int itemsPerTransfer = Math.max(1, section.getInt("transfer.items-per-transfer", 1));
 
-        return new PipeVariant(id, behavior, intervalTicks, itemsPerTransfer);
+        // Fluid capability (pump-driven transport): absent list = item-only pipe.
+        Set<FluidType> fluids = EnumSet.noneOf(FluidType.class);
+        for (String name : section.getStringList("fluids")) {
+            FluidType fluid = FluidType.fromName(name);
+            if (fluid == null) {
+                logger.warning("Variant '" + id + "': unknown fluid '" + name + "' — ignored");
+            } else {
+                fluids.add(fluid);
+            }
+        }
+
+        return new PipeVariant(id, behavior, intervalTicks, itemsPerTransfer,
+            Collections.unmodifiableSet(fluids));
     }
 
     public PipeVariant getVariant(String id) {

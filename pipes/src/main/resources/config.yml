@@ -29,6 +29,7 @@ variants:
   # Copper Pipe - standard pipe that pulls items from containers
   copper_pipe:
     behavior: REGULAR  # REGULAR or CORNER
+    fluids: [water]          # pump-driven fluid transport; lava needs iron
     transfer:
       interval-ticks: 10
       items-per-transfer: 4
@@ -36,6 +37,7 @@ variants:
   # Copper Corner Pipe - only relays items, doesn't pull from containers
   copper_corner_pipe:
     behavior: CORNER
+    fluids: [water]          # pump-driven fluid transport; lava needs iron
     transfer:
       interval-ticks: 10
       items-per-transfer: 4
@@ -43,6 +45,7 @@ variants:
   # Iron Pipe - standard pipe that pulls items from containers
   iron_pipe:
     behavior: REGULAR
+    fluids: [water, lava]    # only iron can carry lava
     transfer:
       interval-ticks: 10
       items-per-transfer: 8
@@ -50,6 +53,7 @@ variants:
   # Iron Corner Pipe - only relays items, doesn't pull from containers
   iron_corner_pipe:
     behavior: CORNER
+    fluids: [water, lava]    # only iron can carry lava
     transfer:
       interval-ticks: 10
       items-per-transfer: 8
@@ -57,6 +61,7 @@ variants:
   # Gold Pipe - standard pipe that pulls items from containers
   gold_pipe:
     behavior: REGULAR
+    fluids: [water]          # pump-driven fluid transport; lava needs iron
     transfer:
       interval-ticks: 10
       items-per-transfer: 16
@@ -64,6 +69,7 @@ variants:
   # Gold Corner Pipe - only relays items, doesn't pull from containers
   gold_corner_pipe:
     behavior: CORNER
+    fluids: [water]          # pump-driven fluid transport; lava needs iron
     transfer:
       interval-ticks: 10
       items-per-transfer: 16
@@ -71,6 +77,7 @@ variants:
   # Oxidized Copper Pipe - obtained via cauldron conversion
   oxidized_copper_pipe:
     behavior: REGULAR
+    fluids: [water]          # pump-driven fluid transport; lava needs iron
     transfer:
       interval-ticks: 10
       items-per-transfer: 1
@@ -78,6 +85,7 @@ variants:
   # Oxidized Copper Corner Pipe - obtained via cauldron conversion
   oxidized_copper_corner_pipe:
     behavior: CORNER
+    fluids: [water]          # pump-driven fluid transport; lava needs iron
     transfer:
       interval-ticks: 10
       items-per-transfer: 1

@@ -16,6 +16,9 @@ import anon.def9a2a4.corelib.CustomBlockRegistry;
 import anon.def9a2a4.corelib.CustomHeadBlock;
 import anon.def9a2a4.corelib.container.ContainerAdapter;
 import anon.def9a2a4.corelib.container.ContainerAdapterRegistry;
+import anon.def9a2a4.corelib.fluid.FluidEndpoint;
+import anon.def9a2a4.corelib.fluid.FluidEndpoints;
+import anon.def9a2a4.corelib.fluid.FluidType;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Transformation;
 import org.bukkit.util.Vector;
@@ -742,6 +745,55 @@ public class PipeManager {
             }
         }
         return true;
+    }
+
+    /** Whether {@code block} is a registered pipe whose variant can carry {@code fluid}. */
+    public boolean isFluidConduit(Block block, FluidType fluid) {
+        PipeData data = getPipeData(normalizeLocation(block.getLocation()));
+        return data != null && data.variant().fluids().contains(fluid);
+    }
+
+    /**
+     * Pump-driven fluid transport: walk the chain from {@code firstPipe} (following pipe
+     * facings, corner bends included — the same geometry as {@link #findDestination}) and
+     * deliver ONE unit of {@code fluid} into the first accepting {@link FluidEndpoints}
+     * endpoint. Differences from the item walk, all deliberate:
+     * <ul>
+     *   <li>every segment must carry the fluid (lava needs iron end to end);</li>
+     *   <li>endpoints are fluid endpoints, not containers;</li>
+     *   <li>a chain that ends in the world does NOT spill — fluids never drop as items, the
+     *       pump just stalls (an air cell only receives fluid as a source block via the
+     *       world-source endpoint, which is the normal "pump out" case);</li>
+     *   <li>uncached — one walk per pump cycle (~2 s), not worth a fluid-keyed path cache.</li>
+     * </ul>
+     *
+     * @return true when the unit was delivered — the pump then drains its intake
+     */
+    public boolean pushFluid(Block firstPipe, FluidType fluid) {
+        Location current = normalizeLocation(firstPipe.getLocation());
+        PipeData data = getPipeData(current);
+        if (data == null || !data.variant().fluids().contains(fluid)) return false;
+        BlockFace facing = data.facing();
+
+        Set<Location> visited = new HashSet<>();
+        while (true) {
+            visited.add(current);
+
+            Block nextBlock = current.getBlock().getRelative(facing);
+            Location nextLoc = normalizeLocation(nextBlock.getLocation());
+            if (visited.contains(nextLoc)) return false;                  // loop
+
+            FluidEndpoint endpoint = FluidEndpoints.accepting(nextBlock, fluid);
+            if (endpoint != null) return endpoint.fill(nextBlock, fluid);
+
+            PipeData next = getPipeData(nextLoc);
+            if (next == null) return false;                               // dead end / full vessel
+            if (!next.variant().fluids().contains(fluid)) return false;   // segment can't carry it
+            if (next.facing() == facing.getOppositeFace()) return false;  // head-on pipe
+
+            current = nextLoc;
+            facing = next.facing();
+        }
     }
 
     public void shutdown() {
