@@ -7,66 +7,71 @@
 #
 # Balance:
 #   - Every output is chance-based: a cycle can consume its input and pay out nothing.
+#     (A completely full output container still stalls the machine — no input loss
+#     while backed up.)
 #   - Gravel is the ore-panning feedstock (nuggets/flint, rare gems); sand/red sand are
 #     the fine-panning gamble; dirt/soul sand are flavor tables.
 #   - Millstone keeps the deterministic GRAVEL -> SAND recipe as the reliable sand
-#     source; the sieve's 35% sand is a by-product, not a substitute.
+#     source; the sieve's sand is a by-product, not a substitute.
 #   - Renewability: cobblestone -> gravel (millstone) -> sieve keeps nuggets/flint
-#     renewable but lossy.
+#     renewable but lossy. Gem chances are deliberately tiny and the sieve is slow
+#     and hungry (40-tick cycle, batch cap 1, 10 power) so an automated
+#     cobble->gravel->sieve chain is a trickle, not a diamond printer:
+#     at the 0.5 items/s cap, ~1 diamond / 1000 gravel ~= one every ~33 minutes.
 
 recipes:
   # ── Gravel: ore panning ──
   - input: GRAVEL
     outputs:
-      - { output: SAND,             chance: 0.35 }   # by-product, not guaranteed
-      - { output: FLINT,            chance: 0.25 }
-      - { output: IRON_NUGGET,      chance: 0.15 }
-      - { output: COPPER_NUGGET,    chance: 0.15 }
-      - { output: GOLD_NUGGET,      chance: 0.08 }
-      - { output: COAL,             chance: 0.05 }
-      - { output: RAW_IRON,         chance: 0.02 }
-      - { output: RAW_COPPER,       chance: 0.02 }
-      - { output: AMETHYST_SHARD,   chance: 0.02 }
-      - { output: LAPIS_LAZULI,     chance: 0.02 }
-      - { output: EMERALD,          chance: 0.01 }
-      - { output: DIAMOND,          chance: 0.003 }
+      - { output: SAND,             chance: 0.25 }   # by-product, not guaranteed
+      - { output: FLINT,            chance: 0.18 }
+      - { output: IRON_NUGGET,      chance: 0.10 }
+      - { output: COPPER_NUGGET,    chance: 0.10 }
+      - { output: GOLD_NUGGET,      chance: 0.05 }
+      - { output: COAL,             chance: 0.03 }
+      - { output: RAW_IRON,         chance: 0.01 }
+      - { output: RAW_COPPER,       chance: 0.01 }
+      - { output: AMETHYST_SHARD,   chance: 0.01 }
+      - { output: LAPIS_LAZULI,     chance: 0.01 }
+      - { output: EMERALD,          chance: 0.003 }
+      - { output: DIAMOND,          chance: 0.001 }
 
   # ── Sand: fine panning (beach/river finds) ──
   - input: SAND
     outputs:
-      - { output: CLAY_BALL,        chance: 0.20 }
-      - { output: BONE_MEAL,        chance: 0.12 }
-      - { output: GOLD_NUGGET,      chance: 0.10 }
-      - { output: COPPER_NUGGET,    chance: 0.08 }
-      - { output: REDSTONE,         chance: 0.05 }
-      - { output: PRISMARINE_SHARD, chance: 0.03 }
-      - { output: KELP,             chance: 0.03 }
+      - { output: CLAY_BALL,        chance: 0.14 }
+      - { output: BONE_MEAL,        chance: 0.08 }
+      - { output: GOLD_NUGGET,      chance: 0.06 }
+      - { output: COPPER_NUGGET,    chance: 0.05 }
+      - { output: REDSTONE,         chance: 0.03 }
+      - { output: PRISMARINE_SHARD, chance: 0.02 }
+      - { output: KELP,             chance: 0.02 }
       - { output: SEA_PICKLE,       chance: 0.01 }
-      - { output: RAW_GOLD,         chance: 0.01 }
+      - { output: QUARTZ,           chance: 0.005 }
 
   # ── Red sand: gold-heavy badlands panning ──
   - input: RED_SAND
     outputs:
-      - { output: GOLD_NUGGET,      chance: 0.18 }
-      - { output: COPPER_NUGGET,    chance: 0.10 }
-      - { output: REDSTONE,         chance: 0.08 }
-      - { output: QUARTZ,           chance: 0.04 }
-      - { output: RAW_GOLD,         chance: 0.02 }
+      - { output: GOLD_NUGGET,      chance: 0.12 }
+      - { output: COPPER_NUGGET,    chance: 0.06 }
+      - { output: REDSTONE,         chance: 0.05 }
+      - { output: QUARTZ,           chance: 0.03 }
+      - { output: RAW_GOLD,         chance: 0.01 }
 
   # ── Dirt: garden sifting ──
   - input: DIRT
     outputs:
-      - { output: WHEAT_SEEDS,      chance: 0.15 }
-      - { output: CLAY_BALL,        chance: 0.10 }
-      - { output: BONE_MEAL,        chance: 0.10 }
-      - { output: STICK,            chance: 0.10 }
-      - { output: POTATO,           chance: 0.03 }
-      - { output: CARROT,           chance: 0.03 }
+      - { output: WHEAT_SEEDS,      chance: 0.10 }
+      - { output: CLAY_BALL,        chance: 0.07 }
+      - { output: BONE_MEAL,        chance: 0.07 }
+      - { output: STICK,            chance: 0.07 }
+      - { output: POTATO,           chance: 0.02 }
+      - { output: CARROT,           chance: 0.02 }
 
   # ── Soul sand: nether panning ──
   - input: SOUL_SAND
     outputs:
-      - { output: BONE_MEAL,        chance: 0.20 }
-      - { output: QUARTZ,           chance: 0.12 }
-      - { output: GOLD_NUGGET,      chance: 0.12 }
-      - { output: GHAST_TEAR,       chance: 0.01 }
+      - { output: BONE_MEAL,        chance: 0.14 }
+      - { output: QUARTZ,           chance: 0.08 }
+      - { output: GOLD_NUGGET,      chance: 0.08 }
+      - { output: GHAST_TEAR,       chance: 0.005 }

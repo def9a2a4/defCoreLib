@@ -35,8 +35,8 @@ press:
   max-batch: 8        # cap on items pressed per cycle (batch scales with surplus power)
 
 sieve:
-  tick-interval: 20   # fixed panning cycle length, in ticks
-  max-batch: 8        # cap on items panned per cycle (batch scales with surplus power)
+  tick-interval: 40   # fixed panning cycle length, in ticks (slower than mill/press on purpose)
+  max-batch: 1        # one item panned per cycle — surplus power does not speed it up
 
 placer:
   tick-interval: 20   # ticks between placements (one block placed per cycle)
@@ -45,7 +45,7 @@ chain-pulley:
   max-distance: 32    # max distance (blocks) between two linked chain pulleys
 
 piston:
-  max-step: 0.5       # extendable piston: cap on per-tick slide velocity (blocks/tick)
+  max-step: 0.25      # extendable piston (+ chain hoist) cap on per-tick slide velocity (blocks/tick)
 
 redstone_dynamo:
   tick-interval: 10       # ticks between comparator-output refreshes
@@ -67,15 +67,15 @@ power:
   large_windmill: 5
   huge_windmill: 15
   water_wheel: 2
-  engine: 5
+  engine: 10
   redstone_motor: 1
-  drill: 1
-  millstone: 1
-  fan: 1
-  press: 1
-  sieve: 1
-  placer: 1
-  suction_hopper: 1
+  drill: 5
+  millstone: 5
+  fan: 2
+  press: 4
+  sieve: 10
+  placer: 2
+  suction_hopper: 3
   piston_core: 1   # base rotational demand of an extendable piston core (speed scales with surplus above this)
   chain_hoist: 1   # base rotational demand of a chain hoist (lift speed scales with surplus above this)
 

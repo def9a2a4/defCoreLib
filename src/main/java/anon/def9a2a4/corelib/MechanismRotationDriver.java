@@ -122,8 +122,11 @@ final class MechanismRotationDriver {
     }
 
     /** Insert ALL outputs into {@code dest} atomically (snapshot/rollback — mirror of the container
-     *  branch of {@code RotationBlocks.ejectOutputs}). @return false when they didn't all fit. */
+     *  branch of {@code RotationBlocks.ejectOutputs}). An empty list is a capacity probe, like the
+     *  static path: all-chance recipes stall on a full destination even when a cycle rolls nothing.
+     *  @return false when they didn't all fit. */
     private static boolean insertAllAtomic(Inventory dest, List<org.bukkit.inventory.ItemStack> outputs) {
+        if (outputs.isEmpty()) return RotationBlocks.hasRoomForAnything(dest);
         org.bukkit.inventory.ItemStack[] snapshot = java.util.Arrays.stream(dest.getContents())
             .map(s -> s == null ? null : s.clone()).toArray(org.bukkit.inventory.ItemStack[]::new);
         for (org.bukkit.inventory.ItemStack out : outputs) {

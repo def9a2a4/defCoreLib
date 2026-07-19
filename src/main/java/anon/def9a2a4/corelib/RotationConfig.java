@@ -27,14 +27,14 @@ final class RotationConfig {
     double fanPushPerPower = 0.08;
     int pressTickInterval = 20;
     int pressMaxBatch = 8;
-    int sieveTickInterval = 20;
-    int sieveMaxBatch = 8;
+    int sieveTickInterval = 40;
+    int sieveMaxBatch = 1;
     int placerTickInterval = 20;
     int suctionTickInterval = 2;
     double suctionPullRange = 2.5;     // pull-box side = 2*(range+0.75); 2.5 → 6.5×6.5×6.5 cube
     double suctionPullStrength = 0.14; // fixed inward velocity (≈ fanMinPush)
     int chainPulleyMaxDistance = 32;   // max chain-pulley link distance (blocks)
-    double pistonMaxStep = 0.5;        // extendable piston: cap on per-tick slide velocity (blocks/tick)
+    double pistonMaxStep = 0.25;       // extendable piston (+ hoist): cap on per-tick slide velocity (blocks/tick)
     int dynamoTickInterval = 10;       // redstone dynamo: ticks between comparator-output refreshes
     String dynamoDefaultMode = "TOTAL";      // TOTAL | USED | UNUSED
     String dynamoDefaultScaling = "CLAMP";   // CLAMP | MOD15 | DIV15

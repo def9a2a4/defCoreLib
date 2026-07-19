@@ -22,7 +22,7 @@ import java.util.logging.Logger;
  * <p>An output is either a vanilla material or a custom block/item referenced by its
  * {@code namespace:id} (produced via {@link CustomHeadBlock#createItem}). Recipes support
  * {@code input_amount} (items consumed per application) and per-output {@code chance}
- * ({@code < 1.0} reserved for the future sieve; mill/press recipes use 1.0).
+ * ({@code < 1.0}: the sieve's tables are all-chance; mill/press recipes are mostly 1.0).
  *
  * <p>YAML schema (both forms accepted; the scalar form keeps mill-recipes.yml valid):
  * <pre>

@@ -428,7 +428,7 @@ final class RotationBlocks {
 
     private static void overlayEngine(CustomBlockRegistry registry, RotationNetwork network,
                                       EngineFuelManager fuelManager, RotationConfig config) {
-        int enginePower = config.getPower("engine", 5);
+        int enginePower = config.getPower("engine", 10);
         String blockId = "mech:engine";
         CustomHeadBlock block = registry.getType(blockId);
         if (block == null) { warn(registry, blockId); return; }
@@ -610,7 +610,7 @@ final class RotationBlocks {
         overlayConsumerMachine(registry, network, new ConsumerSpec(
             "mech:millstone",
             b -> RotationNetwork.Axis.Y,
-            config.getPower("millstone", 1),
+            config.getPower("millstone", 5),
             millstoneTickInterval,
             b -> processingMachineTick(b, network, millRecipes, registry,
                 millstoneMaxBatch, org.bukkit.Sound.BLOCK_GRINDSTONE_USE),
@@ -625,7 +625,7 @@ final class RotationBlocks {
         overlayConsumerMachine(registry, network, new ConsumerSpec(
             "mech:press",
             b -> RotationNetwork.Axis.Y,
-            config.getPower("press", 1),
+            config.getPower("press", 4),
             config.pressTickInterval,
             b -> processingMachineTick(b, network, pressRecipes, registry,
                 maxBatch, org.bukkit.Sound.BLOCK_ANVIL_USE),
@@ -637,12 +637,13 @@ final class RotationBlocks {
         int maxBatch = config.sieveMaxBatch;
         // Same processing geometry as the millstone/press: wall-mounted, powered from the top (Y),
         // host container behind, outputs ejected below. All recipe outputs are chance-based, so a
-        // cycle can consume its input and pay out nothing — the shared loop handles empty output
-        // lists (eject is skipped, the input is still consumed).
+        // cycle can consume its input and pay out nothing — but a completely full output container
+        // still stalls the machine (the empty-roll capacity probe in processingEffect/ejectOutputs),
+        // matching mill/press back-pressure.
         overlayConsumerMachine(registry, network, new ConsumerSpec(
             "mech:sieve",
             b -> RotationNetwork.Axis.Y,
-            config.getPower("sieve", 1),
+            config.getPower("sieve", 10),
             config.sieveTickInterval,
             b -> processingMachineTick(b, network, sieveRecipes, registry,
                 maxBatch, org.bukkit.Sound.ITEM_BRUSH_BRUSHING_GRAVEL),
@@ -661,7 +662,7 @@ final class RotationBlocks {
         overlayConsumerMachine(registry, network, new ConsumerSpec(
             "mech:placer",
             b -> RotationNetwork.Axis.Y,
-            config.getPower("placer", 1),
+            config.getPower("placer", 2),
             config.placerTickInterval,
             b -> placerTick(b, registry, network),
             null,
@@ -768,13 +769,17 @@ final class RotationBlocks {
      * (all-or-nothing, so a multi-output recipe never half-fills a container that has room for
      * only some outputs), else drop them below. Returns false (stall — caller keeps the input)
      * only when a container below can't hold every output.
+     *
+     * <p>An <b>empty</b> outputs list is a capacity probe: all-chance recipes (sieve, glass→sand)
+     * can roll nothing, and without the probe those cycles would consume input past a completely
+     * full container — the one case where mill/press-style back-pressure must still stall.
      */
     private static boolean ejectOutputs(Block machine, List<ItemStack> outputs) {
-        if (outputs.isEmpty()) return true;
         Block below = machine.getRelative(BlockFace.DOWN);
         // Gateway resolution: a locked container (e.g. a dynamo) resolves to null → outputs fall
         // through to the MachineEjectEvent/drop path below instead of entering it.
         Container oc = ContainerAdapterRegistry.findVanillaContainer(below);
+        if (outputs.isEmpty()) return oc == null || hasRoomForAnything(oc.getInventory());
         if (oc != null) {
             Inventory inv = oc.getInventory();
             ItemStack[] snapshot = java.util.Arrays.stream(inv.getContents())
@@ -800,6 +805,16 @@ final class RotationBlocks {
                 yield true;
             }
         };
+    }
+
+    /** True when {@code inv} could accept at least one more item of some kind: an empty slot or a
+     *  non-full stack. The cheap capacity probe behind empty (all-chances-missed) output rolls. */
+    static boolean hasRoomForAnything(Inventory inv) {
+        for (ItemStack it : inv.getStorageContents()) {
+            if (it == null || it.getType().isAir() || it.getAmount() < it.getMaxStackSize())
+                return true;
+        }
+        return false;
     }
 
     /** Announce a successful (non-stall) output delivery. Only {@link #ejectOutputs} calls this —
@@ -867,7 +882,10 @@ final class RotationBlocks {
     /**
      * The recipe-processing core of {@link #processingMachineTick}: up to {@code batch} recipe
      * cycles against {@code in}, delivering each cycle's outputs through {@code eject} (return
-     * false = output full → stall; inputs are consumed only after delivery). World-agnostic — the
+     * false = output full → stall; inputs are consumed only after delivery). {@code eject} is
+     * called even with an EMPTY outputs list — that call is a capacity probe (see
+     * {@link #hasRoomForAnything}) so all-chance recipes still stall on a full destination
+     * instead of consuming input on nothing-rolls. World-agnostic — the
      * caller owns the powered gate, input refill, batch sizing, eject destination, and sound, so
      * millstones/presses riding a mechanism run the identical loop against travelling inventories
      * ({@code MechanismRotationDriver}).
@@ -901,7 +919,10 @@ final class RotationBlocks {
             }
             if (missingEmpty) break;                                // no container to bottle into → stall
 
-            if (!outputs.isEmpty() && !eject.apply(outputs)) break; // output full → stall
+            // Always eject — an empty list is a capacity probe (all-chance recipes can roll
+            // nothing; a completely full destination must still back-pressure to a stall
+            // instead of silently consuming input).
+            if (!eject.apply(outputs)) break;                       // output full → stall
 
             removeCount(in, recipe.input(), recipe.inputAmount());
             for (var e : empties.entrySet()) removeCount(in, e.getKey(), e.getValue());
@@ -925,7 +946,7 @@ final class RotationBlocks {
         overlayConsumerMachine(registry, network, new ConsumerSpec(
             "mech:fan",
             b -> fanAxis(readFacing(b)),
-            config.getPower("fan", 1),
+            config.getPower("fan", 2),
             config.fanTickInterval,
             b -> fanTick(b, network),
             null, null, null));
@@ -1025,7 +1046,7 @@ final class RotationBlocks {
         overlayConsumerMachine(registry, network, new ConsumerSpec(
             "mech:suction_hopper",
             b -> RotationNetwork.Axis.Y,                       // nominal; omni ignores the stored axis
-            config.getPower("suction_hopper", 1),
+            config.getPower("suction_hopper", 3),
             config.suctionTickInterval,
             b -> suctionTick(b, network, registry),
             (b, event) -> {                                    // right-click opens the 5-slot GUI
@@ -1250,7 +1271,7 @@ final class RotationBlocks {
         drillBlacklist = config.drillBlacklist;
         drillTickInterval = config.drillTickInterval;
         drillBreakStages = config.drillBreakStages;
-        int drillPower = config.getPower("drill", 1);
+        int drillPower = config.getPower("drill", 5);
         String blockId = "mech:drill";
         CustomHeadBlock block = registry.getType(blockId);
         if (block == null) { warn(registry, blockId); return; }

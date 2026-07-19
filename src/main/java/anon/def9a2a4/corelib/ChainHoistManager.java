@@ -71,7 +71,7 @@ final class ChainHoistManager {
 
     private static final int TRIGGER_PERIOD = 4;         // ticks between idle-hoist scans
     private static final float MIN_STEP = 0.08f;         // blocks/tick floor (always progresses)
-    private static final float SPEED_K = 0.5f;
+    private static final float SPEED_K = 0.25f;
     private static final int SETTLE_TICKS = 3;           // hold at target before disassembly (client lerp)
     /** Blocks/tick ceiling. MUST stay {@code < 1}: the descending obstruction scan verifies one cell per tick
      *  ({@link #advance}), which is only sound if the body crosses at most one whole cell per tick. Independent

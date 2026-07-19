@@ -41,7 +41,7 @@ final class ExtendablePistonManager {
 
     private static final int TRIGGER_PERIOD = 4;         // ticks between idle-core scans
     private static final float MIN_STEP = 0.08f;         // blocks/tick (floor so it always progresses)
-    private static final float SPEED_K = 0.5f;
+    private static final float SPEED_K = 0.25f;
     private static final int SETTLE_TICKS = 3;           // hold at the target before disassembly (client lerp)
     private static final Vector3f AXIS_Y = new Vector3f(0f, 1f, 0f);
 
