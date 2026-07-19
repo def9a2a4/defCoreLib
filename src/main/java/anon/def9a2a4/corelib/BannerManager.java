@@ -414,6 +414,174 @@ public class BannerManager implements Listener {
         }
     }
 
+    // ── Mechanism riding ─────────────────────────────────────────────────
+    // Banners hosted on a block a mechanism captures ride the moving structure and re-attach on
+    // landing (see MechanismRegistry.assembleCore / BasicMechanism.disassemble). None of this is
+    // gated on `active`: banners placed while bbanners was installed must keep riding after it is
+    // removed, mirroring the cleanup handlers above.
+
+    /** Result of {@link #captureForMechanism}: the snapshots plus the live world displays they came
+     *  from (removed by the caller once the host blocks are aired out — NOT here, so an assembly
+     *  failure before air-out leaves the world banners untouched). */
+    record CapturedBanners(List<BannerAttachment> attachments, List<Display> worldDisplays) {}
+
+    /**
+     * Snapshot every BetterBanners display hosted on {@code host} (tag-keyed to its coords). Returns
+     * null when the block hosts none. Does not remove or mutate the world displays.
+     *
+     * <p>Known edge: {@code findByTag} only sees loaded chunks, so a host on a loaded-chunk edge
+     * whose large-banner display sits in an adjacent unloaded chunk is captured banner-less (the
+     * stale display is then swept on that chunk's next load). Rare — the entity-load radius normally
+     * covers neighbors.
+     */
+    @org.jspecify.annotations.Nullable CapturedBanners captureForMechanism(Block host) {
+        String prefix = TAG_PREFIX + blockKey(host) + ":";
+        List<Display> displays = DisplayUtil.findByTag(host.getLocation(), prefix, SEARCH_RADIUS);
+        if (displays.isEmpty()) return null;
+
+        List<BannerAttachment> attachments = new ArrayList<>();
+        List<Display> world = new ArrayList<>();
+        for (Display display : displays) {
+            if (!(display instanceof ItemDisplay itemDisplay)) continue;
+            String face = extractFace(itemDisplay);
+            ItemStack item = itemDisplay.getItemStack();
+            if (face == null || item == null || item.getType().isAir()) continue;
+            attachments.add(new BannerAttachment(item.clone(), face,
+                    itemDisplay.getTransformation(), faceAnchor(face)));
+            world.add(itemDisplay);
+        }
+        return attachments.isEmpty() ? null : new CapturedBanners(attachments, world);
+    }
+
+    /** Host-block-local center of the cell a faceKey's display anchors at (large/huge banners spawn
+     *  in the neighbor cell toward their face; flags and bed banners anchor at the host itself). */
+    private static Vector3f faceAnchor(String faceKey) {
+        return switch (faceKey) {
+            case "north" -> new Vector3f(0, 0, -1);
+            case "south" -> new Vector3f(0, 0, 1);
+            case "east" -> new Vector3f(1, 0, 0);
+            case "west" -> new Vector3f(-1, 0, 0);
+            case "up" -> new Vector3f(0, 1, 0);
+            case "down" -> new Vector3f(0, -1, 0);
+            default -> new Vector3f(); // rot{N} / bed / block
+        };
+    }
+
+    /**
+     * Re-attach captured banners to their landed host, rotated by {@code snappedYaw} — a 90°
+     * multiple about Y (the caller has already routed non-Y landings to an item drop). Per face:
+     * a tag conflict (something already on that side) or a failed spawn drops the item instead —
+     * never silently lost. {@code BLOCK_FACE_KEY} entries are skipped (restored via block placement).
+     */
+    void placeLandedBanners(Block host, List<BannerAttachment> attachments, float snappedYaw) {
+        int rotSteps = Math.floorMod(Math.round(snappedYaw / 90f), 4);
+        Set<String> handledFaces = new HashSet<>();
+        for (BannerAttachment att : attachments) {
+            if (att.isBlockBanner() || !handledFaces.add(att.faceKey())) continue;
+            ItemStack item = att.item().asQuantity(1);
+            float scale = LargeBannerRecipes.isHugeBanner(item) ? HUGE_SCALE
+                    : LargeBannerRecipes.isLargeBanner(item) ? LARGE_SCALE : NORMAL_SCALE;
+            String face = att.faceKey();
+
+            if (face.startsWith("rot")) {
+                int step;
+                try {
+                    step = Integer.parseInt(face.substring(3));
+                } catch (NumberFormatException e) {
+                    dropLanded(host, item);
+                    continue;
+                }
+                int newStep = Math.floorMod(step + 4 * rotSteps, 16);
+                float yaw = stepToYaw(newStep);
+                String tag = TAG_PREFIX + blockKey(host) + ":rot" + newStep;
+                spawnLandedPair(host, host.getLocation(),
+                        flagTransform(yaw, scale), flagBackTransform(yaw, scale), item, tag);
+            } else if (face.equals("up") || face.equals("down")) {
+                BlockFace clickedFace = face.equals("up") ? BlockFace.UP : BlockFace.DOWN;
+                // standingTransform's left rotation is a pure Y quaternion rotateY(toRadians(-yaw)):
+                // recover yaw as -2·atan2(y,w), add the landing turn, and SNAP to the 22.5° grid so
+                // float round-trip error can't drift across repeated ride cycles.
+                Quaternionf q = att.transformation().getLeftRotation();
+                float yaw = -(float) Math.toDegrees(2.0 * Math.atan2(q.y(), q.w()));
+                float newYaw = stepToYaw(yawToStep(yaw + snappedYaw));
+                String tag = TAG_PREFIX + blockKey(host) + ":" + face;
+                spawnLandedSingle(host, host.getRelative(clickedFace).getLocation(),
+                        standingTransform(newYaw, scale, clickedFace), item, tag);
+            } else if (face.equals("bed")) {
+                if (host.getBlockData() instanceof org.bukkit.block.data.type.Bed bedData
+                        && bedData.getPart() == org.bukkit.block.data.type.Bed.Part.FOOT) {
+                    String tag = TAG_PREFIX + blockKey(host) + ":bed";
+                    spawnLandedSingle(host, host.getLocation(),
+                            bedBannerTransform(bedData.getFacing()), item, tag);
+                } else {
+                    dropLanded(host, item); // landed host is no longer a bed foot
+                }
+            } else {
+                BlockFace oldFace = faceFromKey(face);
+                if (oldFace == null) {
+                    dropLanded(host, item);
+                    continue;
+                }
+                BlockFace newFace = BlockRotation.rotateBlockFace(oldFace, snappedYaw);
+                String tag = TAG_PREFIX + blockKey(host) + ":" + newFace.name().toLowerCase();
+                // Occupied neighbor cell is fine — displays overlap blocks, matching placement.
+                spawnLandedSingle(host, host.getRelative(newFace).getLocation(),
+                        wallTransform(newFace, scale), item, tag);
+            }
+        }
+    }
+
+    private static @org.jspecify.annotations.Nullable BlockFace faceFromKey(String faceKey) {
+        return switch (faceKey) {
+            case "north" -> BlockFace.NORTH;
+            case "south" -> BlockFace.SOUTH;
+            case "east" -> BlockFace.EAST;
+            case "west" -> BlockFace.WEST;
+            default -> null;
+        };
+    }
+
+    private void spawnLandedSingle(Block host, Location anchorLoc, Transformation t,
+                                   ItemStack item, String tag) {
+        if (!DisplayUtil.findByTag(host.getLocation(), tag, SEARCH_RADIUS).isEmpty()) {
+            dropLanded(host, item); // side already taken (e.g. a player placed one mid-flight)
+            return;
+        }
+        ItemDisplay d = DisplayUtil.spawn(anchorLoc, item, t, tag);
+        if (!d.isValid()) {
+            // Landing triggered from a chunk-unload disassemble: an entity spawned after the
+            // entity-save point can silently miss the save. Drop the item instead of losing it.
+            d.remove();
+            dropLanded(host, item);
+        }
+    }
+
+    private void spawnLandedPair(Block host, Location anchorLoc, Transformation front,
+                                 Transformation back, ItemStack item, String tag) {
+        if (!DisplayUtil.findByTag(host.getLocation(), tag, SEARCH_RADIUS).isEmpty()) {
+            dropLanded(host, item);
+            return;
+        }
+        ItemDisplay f = DisplayUtil.spawn(anchorLoc, item, front, tag);
+        ItemDisplay b = DisplayUtil.spawn(anchorLoc, item, back, tag);
+        if (!f.isValid() || !b.isValid()) {
+            f.remove();
+            b.remove();
+            dropLanded(host, item);
+        }
+    }
+
+    private static void dropLanded(Block host, ItemStack item) {
+        host.getWorld().dropItemNaturally(
+                host.getLocation().add(0.5, 0.5, 0.5), item.asQuantity(1));
+    }
+
+    /** Drop any banners hosted on {@code block} as items and remove their displays — for movers that
+     *  air out a block WITHOUT capturing it (e.g. the chain hoist swallowing rope links). */
+    void dropBannersAt(Block block) {
+        handleRemoval(block, true);
+    }
+
     // ── Orphan cleanup ───────────────────────────────────────────────────
 
     @EventHandler

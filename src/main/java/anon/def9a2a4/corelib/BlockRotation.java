@@ -99,7 +99,9 @@ public final class BlockRotation {
         return new String[]{null, state};
     }
 
-    private static BlockFace rotateBlockFace(BlockFace face, float yawDegrees) {
+    /** Package-private: also used by {@link BannerManager#placeLandedBanners} to rotate a landed
+     *  wall-banner face. UP/DOWN pass through unchanged; negative yaw self-normalizes. */
+    static BlockFace rotateBlockFace(BlockFace face, float yawDegrees) {
         if (face == BlockFace.UP || face == BlockFace.DOWN) return face;
         float baseYaw = blockFaceToYaw(face);
         float newYaw = (baseYaw + yawDegrees) % 360;

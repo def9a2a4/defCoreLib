@@ -176,6 +176,9 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         // Banner systems
         bannerManager = new BannerManager(this);
         getServer().getPluginManager().registerEvents(bannerManager, this);
+        // Banners ride mechanisms: capture at assembly, re-attach on landing. Always on (like the
+        // cleanup handlers) — placed banners must keep riding even if bbanners is later removed.
+        mechanismRegistry.setBannerManager(bannerManager);
         largeBannerRecipes = new LargeBannerRecipes(this);
         getServer().getPluginManager().registerEvents(largeBannerRecipes, this);
 

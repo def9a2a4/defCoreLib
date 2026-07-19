@@ -47,6 +47,11 @@ final class BasicMechanism implements Mechanism {
     final org.bukkit.entity.BlockDisplay parent; // invisible intermediary — all displays mount here
     final float rideOffset; // passenger riding offset — varies by vehicle entity type
     final List<List<Display>> displaysPerBlock;
+    // Parallel to displaysPerBlock/blocks: the banner ItemDisplays riding each block (one per
+    // BannerAttachment in blocks.get(i).banners, same order; empty list for banner-less/ghost
+    // blocks). Kept OUT of displaysPerBlock so the group shape [primary, itemExtras…, blockExtras…]
+    // and its positional indexing (rotate/updateAnimatedDisplays/setBlockState) stay untouched.
+    final List<List<Display>> bannerDisplaysPerBlock;
     final List<ColliderPair> colliders;
     final List<MechanismBlockData> blocks;
     final CustomBlockRegistry registry;
@@ -73,6 +78,7 @@ final class BasicMechanism implements Mechanism {
                    Entity vehicle, org.bukkit.entity.BlockDisplay parent,
                    float rideOffset, boolean ownsVehicle,
                    List<List<Display>> displaysPerBlock,
+                   List<List<Display>> bannerDisplaysPerBlock,
                    List<ColliderPair> colliders,
                    List<MechanismBlockData> blocks,
                    CustomBlockRegistry registry,
@@ -86,6 +92,7 @@ final class BasicMechanism implements Mechanism {
         this.rideOffset = rideOffset;
         this.ownsVehicle = ownsVehicle;
         this.displaysPerBlock = displaysPerBlock;
+        this.bannerDisplaysPerBlock = bannerDisplaysPerBlock;
         this.colliders = colliders;
         this.blocks = blocks;
         this.registry = registry;
@@ -254,6 +261,24 @@ final class BasicMechanism implements Mechanism {
                     group.get(idx).setTransformationMatrix(bd);
                 }
             }
+
+            // Banner displays (parallel structure): dm (center frame, ride-compensated) shifted to
+            // the attachment's anchor cell, then the captured display transformation — the exact
+            // composition of the standing world display at identity rotation, so it swings with the
+            // body about any axis.
+            List<Display> bannerGroup = bannerDisplaysPerBlock.get(i);
+            if (!bannerGroup.isEmpty() && mb.banners != null) {
+                int n = Math.min(bannerGroup.size(), mb.banners.size());
+                for (int b = 0; b < n; b++) {
+                    Display bd = bannerGroup.get(b);
+                    if (!bd.isValid()) continue;
+                    BannerAttachment att = mb.banners.get(b);
+                    Matrix4f m = new Matrix4f(dm)
+                        .translate(att.anchorOffset().x, att.anchorOffset().y, att.anchorOffset().z)
+                        .mul(transformToMatrix(att.transformation()));
+                    bd.setTransformationMatrix(m);
+                }
+            }
         }
 
         repositionColliders();
@@ -307,6 +332,7 @@ final class BasicMechanism implements Mechanism {
         Display d = mechanismRegistry.spawnMechBlockDisplay(parent.getLocation(), data, id, index, "display");
         parent.addPassenger(d);
         displaysPerBlock.add(new ArrayList<>(List.of(d)));
+        bannerDisplaysPerBlock.add(new ArrayList<>()); // keep the parallel structure aligned
         rotate(currentYaw);   // place it on the body now, rather than a frame late at the pivot
     }
 
@@ -439,11 +465,30 @@ final class BasicMechanism implements Mechanism {
         if (currentYaw != snappedYaw) rotate(snappedYaw);
         Matrix4f rotation = landingRotation();
 
+        // Banner landing frame: quarter-turns about the rotation axis. Only a Y-axis landing (or a
+        // net-zero turn about any axis) leaves a banner's up-vector at +Y — anything else (X/Z
+        // drawbridge at 90/180/270) has no re-attachable orientation, so banners drop as items.
+        // floorMod, not %: rotators spin CW with NEGATIVE yaw, and a bare % would mint
+        // non-canonical rot-tags downstream (see BlockRotation's identical normalization).
+        int rotSteps = Math.floorMod(Math.round(snappedYaw / 90f), 4);
+        boolean upright = Math.abs(rotationAxis.y) > 0.5f || rotSteps == 0;
+
         // The cells where blocks actually landed — handed to the glue rebind hook so an anchor's
         // offset set tracks the structure's new rest positions (dropped-as-item blocks are excluded).
         List<Block> placed = new ArrayList<>(blocks.size());
 
+        // Two-pass landing, mirroring airOutSourceBlocks' two-pass removal in reverse: supports
+        // first, attachables second — an attachable (banner/torch/sign/…) placed before its support
+        // exists pops during setBlockData and drops WITHOUT its captured block-entity data.
+        List<Integer> landingOrder = new ArrayList<>(blocks.size());
         for (int i = 0; i < blocks.size(); i++) {
+            if (!FragileBlocks.isAttachable(blocks.get(i).blockData.getMaterial())) landingOrder.add(i);
+        }
+        for (int i = 0; i < blocks.size(); i++) {
+            if (FragileBlocks.isAttachable(blocks.get(i).blockData.getMaterial())) landingOrder.add(i);
+        }
+
+        for (int i : landingOrder) {
             MechanismBlockData mb = blocks.get(i);
             Vector3f worldOffset = rotation.transformPosition(
                 mb.localTransform.getTranslation(new Vector3f()), new Vector3f());
@@ -461,8 +506,10 @@ final class BasicMechanism implements Mechanism {
             }
             Block target = blockLoc.getBlock();
 
-            // Protected cell (e.g. the piston core the rod slid through): consume the block silently.
+            // Protected cell (e.g. the piston core the rod slid through): consume the block silently
+            // — but never its banners; those items would vanish with it.
             if (protectedCells != null && protectedCells.contains(CustomBlockRegistry.LocationKey.of(target))) {
+                dropBannerItems(blockLoc, mb);
                 continue;
             }
 
@@ -470,10 +517,12 @@ final class BasicMechanism implements Mechanism {
                     || target.getType() == Material.LAVA) {
                 placeBlock(target, mb, snappedYaw);
                 placed.add(target);
+                landBanners(target, mb, snappedYaw, upright);
             } else if (FragileBlocks.isFragile(target.getType())) {
                 target.breakNaturally();
                 placeBlock(target, mb, snappedYaw);
                 placed.add(target);
+                landBanners(target, mb, snappedYaw, upright);
             } else if (mb.ghost && target.getBlockData().equals(mb.blockData)) {
                 // A blocked GHOST whose cell already holds its identical block is discarded silently:
                 // ghosts are data-only (never captured from the world), so dropping one here mints an
@@ -486,6 +535,15 @@ final class BasicMechanism implements Mechanism {
                     blockLoc.clone().add(0.5, 0.5, 0.5), 1);
                 dropBlockAsItem(blockLoc, mb);
             }
+        }
+
+        // Banner mech-displays go NOW, not via the 1-tick deferral below: the re-attached world
+        // banner's spawn packet renders this same tick, so deferring would only z-fight two
+        // coincident banners for a frame. (removeAllEntities re-visits them — Entity.remove is
+        // idempotent.) The deferral stays for primary/extras, whose landed custom-block displays
+        // need the frame.
+        for (List<Display> bannerGroup : bannerDisplaysPerBlock) {
+            for (Display d : bannerGroup) d.remove();
         }
 
         // Unregister now so the tick loop won't re-touch this disassembled mech. For an owned vehicle, DEFER
@@ -506,6 +564,18 @@ final class BasicMechanism implements Mechanism {
     @Override
     public void destroy() {
         checkMainThread();
+        // destroy() discards the blocks by design, but the riding banners' world displays are
+        // already gone (removed at capture) — dropping nothing here would delete the items with
+        // no trace. Drop them at each block's live cell.
+        World w = pivot.getWorld();
+        if (w != null) {
+            for (int i = 0; i < blocks.size(); i++) {
+                MechanismBlockData mb = blocks.get(i);
+                if (mb.banners == null) continue;
+                org.joml.Vector3i cell = liveCell(i);
+                dropBannerItems(new Location(w, cell.x, cell.y, cell.z), mb);
+            }
+        }
         removeAllEntities();
         if (mechanismRegistry != null) mechanismRegistry.onMechanismRemoved(this);
     }
@@ -515,7 +585,25 @@ final class BasicMechanism implements Mechanism {
     // ──────────────────────────────────────────────────────────────────────
 
     private void placeBlock(Block target, MechanismBlockData mb, float snappedYaw) {
-        target.setBlockData(BlockRotation.rotateBlockData(mb.blockData, snappedYaw));
+        // Attachables land physics-suppressed (matching airOutSourceBlocks' physics-false removal):
+        // the two-pass landing order puts supports first, but a support that was consumed/dropped
+        // would still pop the attachable DURING setBlockData — before its block-entity data
+        // (banner patterns) is written back, dropping a blank item.
+        boolean attachable = FragileBlocks.isAttachable(mb.blockData.getMaterial());
+        target.setBlockData(BlockRotation.rotateBlockData(mb.blockData, snappedYaw), !attachable);
+
+        // Vanilla banner block: write the captured patterns back into the landed block entity
+        // (the orientation was already rotated by rotateBlockData above).
+        if (mb.banners != null && target.getState() instanceof org.bukkit.block.Banner bannerState) {
+            for (BannerAttachment att : mb.banners) {
+                if (!att.isBlockBanner()) continue;
+                if (att.item().getItemMeta() instanceof org.bukkit.inventory.meta.BannerMeta meta) {
+                    bannerState.setPatterns(meta.getPatterns());
+                    bannerState.update(true, false);
+                }
+                break;
+            }
+        }
 
         if (mb.customTypeId != null) {
             CustomHeadBlock type = registry.getType(mb.customTypeId);
@@ -560,10 +648,18 @@ final class BasicMechanism implements Mechanism {
         if (mb.customTypeId != null) {
             CustomHeadBlock type = registry.getType(mb.customTypeId);
             drop = (type != null) ? type.createItem(1) : new ItemStack(mb.blockData.getMaterial());
-        } else {
+        } else if (blockBannerItem(mb) != null) {
+            // A vanilla banner block drops its captured pattern-carrying item. Also load-bearing for
+            // wall banners: *_WALL_BANNER has no item form, so new ItemStack() below would throw.
+            drop = blockBannerItem(mb).asQuantity(1);
+        } else if (mb.blockData.getMaterial().isItem()) {
             drop = new ItemStack(mb.blockData.getMaterial());
+        } else {
+            drop = null; // block-only material with no item mapping (e.g. wall variants) — no drop
         }
-        loc.getWorld().dropItemNaturally(loc.clone().add(0.5, 0.5, 0.5), drop);
+        if (drop != null) {
+            loc.getWorld().dropItemNaturally(loc.clone().add(0.5, 0.5, 0.5), drop);
+        }
 
         if (mb.storage != null) {
             for (ItemStack item : mb.storage.getContents()) {
@@ -572,10 +668,58 @@ final class BasicMechanism implements Mechanism {
                 }
             }
         }
+
+        // A dropped host takes its riding BetterBanners down with it — as items, never silently.
+        dropBannerItems(loc, mb);
+    }
+
+    /** The BLOCK_FACE_KEY attachment's item (a vanilla banner block's pattern-carrying drop), or null. */
+    private static @Nullable ItemStack blockBannerItem(MechanismBlockData mb) {
+        if (mb.banners == null) return null;
+        for (BannerAttachment att : mb.banners) {
+            if (att.isBlockBanner()) return att.item();
+        }
+        return null;
+    }
+
+    /**
+     * Re-attach or drop this block's riding BetterBanners at its landed host. Non-upright landings
+     * (X/Z drawbridge quarter/half turns) have no valid banner orientation — drop. The BLOCK entry
+     * is excluded throughout: the vanilla banner block itself landed via placeBlock.
+     */
+    private void landBanners(Block target, MechanismBlockData mb, float snappedYaw, boolean upright) {
+        if (mb.banners == null) return;
+        boolean hasEntityBanners = false;
+        for (BannerAttachment att : mb.banners) {
+            if (!att.isBlockBanner()) { hasEntityBanners = true; break; }
+        }
+        if (!hasEntityBanners) return;
+        BannerManager bm = mechanismRegistry != null ? mechanismRegistry.bannerManager() : null;
+        if (bm == null || !upright) {
+            dropBannerItems(target.getLocation(), mb);
+            return;
+        }
+        bm.placeLandedBanners(target, mb.banners, snappedYaw);
+    }
+
+    /** Drop one banner item per distinct faceKey (a flag's front/back pair is ONE item — mirrors
+     *  BannerManager.handleRemoval), skipping the BLOCK entry (dropped with the block itself). */
+    private void dropBannerItems(Location loc, MechanismBlockData mb) {
+        if (mb.banners == null) return;
+        World w = loc.getWorld();
+        if (w == null) return;
+        Set<String> droppedFaces = new HashSet<>();
+        for (BannerAttachment att : mb.banners) {
+            if (att.isBlockBanner() || !droppedFaces.add(att.faceKey())) continue;
+            w.dropItemNaturally(loc.clone().add(0.5, 0.5, 0.5), att.item().asQuantity(1));
+        }
     }
 
     void removeAllEntities() {
         for (var group : displaysPerBlock) {
+            for (Display d : group) d.remove();
+        }
+        for (var group : bannerDisplaysPerBlock) {
             for (Display d : group) d.remove();
         }
         for (ColliderPair cp : colliders) {

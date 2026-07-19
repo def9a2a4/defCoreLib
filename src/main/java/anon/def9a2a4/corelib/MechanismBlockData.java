@@ -37,6 +37,11 @@ public final class MechanismBlockData {
     // nothing; see BasicMechanism.disassemble).
     boolean ghost;
 
+    // Banner attachments captured with this block (set post-construction, like ghost): BetterBanners
+    // displays hosted on this block, plus at most one BLOCK_FACE_KEY entry synthesized from a vanilla
+    // banner block's patterns. Order matches BasicMechanism.bannerDisplaysPerBlock for this index.
+    @Nullable List<BannerAttachment> banners;
+
     // Mutable — updated by BasicMechanism.setBlockState()
     // Nullable but not annotated: @Nullable cannot be applied to qualified inner type names
     String customState;

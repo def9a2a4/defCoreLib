@@ -47,6 +47,16 @@ public class MechanismRegistry {
 
     void setRotationDriver(@Nullable MechanismRotationDriver driver) { this.rotationDriver = driver; }
 
+    // Lets BetterBanners displays (flag/large/huge/bed — standalone ItemDisplays keyed to a host
+    // block's coords) ride assembled mechanisms and re-attach on landing. Set by CoreLibPlugin;
+    // null-safe so bare MechanismRegistry construction keeps working. Always on when set — banner
+    // riding is core behavior, independent of the bbanners plugin's placement gate.
+    private @Nullable BannerManager bannerManager;
+
+    void setBannerManager(@Nullable BannerManager bm) { this.bannerManager = bm; }
+
+    @Nullable BannerManager bannerManager() { return bannerManager; }
+
     // Reusable work matrix for animation tick
     private final Matrix4f workMatrix = new Matrix4f();
 
@@ -204,6 +214,9 @@ public class MechanismRegistry {
         pivot.setX(snapX);
         pivot.setY(snapY);
         pivot.setZ(snapZ);
+        // Live BetterBanners world displays captured below. Removed only AFTER airOutSourceBlocks
+        // succeeds — any assembly throw before that leaves the world banners (and their items) intact.
+        List<Display> capturedWorldBanners = new ArrayList<>();
         for (Block block : blocks) {
             // A bare block WITH a revert handler (the shaft) can't carry its identity through a move as
             // bare, so revert it to an encased head first. A bare block WITHOUT one (the casing) is
@@ -265,8 +278,29 @@ public class MechanismRegistry {
             CollisionConfig collision = customCollision != null
                 ? customCollision : colliderRegistry.get(bd.getMaterial(), bd);
             collision = applyWallHeadShift(collision, bd);
-            blockData.add(new MechanismBlockData(bd, local, collision,
-                customType, customState, decs, bdecs, particles, storage, spinReversed, wallFacing));
+            MechanismBlockData mbd = new MechanismBlockData(bd, local, collision,
+                customType, customState, decs, bdecs, particles, storage, spinReversed, wallFacing);
+
+            // Banner attachments: BetterBanners displays hosted on this block, plus a synthesized
+            // entry carrying a vanilla banner block's patterns (its block-entity NBT is otherwise
+            // lost, and its primary BlockDisplay renders nothing in transit).
+            List<BannerAttachment> banners = null;
+            if (bannerManager != null) {
+                BannerManager.CapturedBanners cap = bannerManager.captureForMechanism(block);
+                if (cap != null) {
+                    banners = new ArrayList<>(cap.attachments());
+                    capturedWorldBanners.addAll(cap.worldDisplays());
+                }
+            }
+            if (chb == null && block.getState() instanceof org.bukkit.block.Banner bannerState) {
+                BannerAttachment blockBanner = vanillaBannerAttachment(bannerState, bd);
+                if (blockBanner != null) {
+                    if (banners == null) banners = new ArrayList<>();
+                    banners.add(blockBanner);
+                }
+            }
+            mbd.banners = banners;
+            blockData.add(mbd);
         }
 
         // 1b. Snapshot GHOST blocks — synthetic copies of a template's appearance at a target cell.
@@ -334,6 +368,11 @@ public class MechanismRegistry {
         });
 
         List<List<Display>> displaysPerBlock = new ArrayList<>();
+        // Banner displays are a PARALLEL per-block structure, not appended to the display groups:
+        // the groups' [primary, itemExtras…, blockExtras…] shape is indexed positionally by
+        // rotate()/updateAnimatedDisplays and rewritten wholesale by setBlockState, so a tail of
+        // banner displays inside the group would need clamps in four loops to stay collision-free.
+        List<List<Display>> bannerDisplaysPerBlock = new ArrayList<>();
         List<ColliderPair> colliders = new ArrayList<>();
 
         for (int i = 0; i < blockData.size(); i++) {
@@ -384,6 +423,17 @@ public class MechanismRegistry {
             }
             displaysPerBlock.add(group);
 
+            // Banner displays: one ItemDisplay per attachment (a flag = 2), positioned by the
+            // banner loop in BasicMechanism.rotate(). Ghost blocks have banners == null → empty.
+            List<Display> bannerGroup = new ArrayList<>();
+            if (mb.banners != null) {
+                for (int b = 0; b < mb.banners.size(); b++) {
+                    bannerGroup.add(spawnMechDisplay(spawnLoc, mb.banners.get(b).item().clone(),
+                        mechId, i, "banner_" + b));
+                }
+            }
+            bannerDisplaysPerBlock.add(bannerGroup);
+
             // Collider: marker ArmorStand carrier + Shulker passenger
             if (mb.collision.enabled()) {
                 final int blockIdx = i;
@@ -427,7 +477,8 @@ public class MechanismRegistry {
 
         // 5. Create mechanism, register colliders
         BasicMechanism mech = new BasicMechanism(mechId, type, pivot, rotationAxis, vehicle, parentDisplay,
-            rideOffset, ownsVehicle, displaysPerBlock, colliders, blockData, registry, serializer);
+            rideOffset, ownsVehicle, displaysPerBlock, bannerDisplaysPerBlock, colliders, blockData,
+            registry, serializer);
         mech.mechanismRegistry = this;
 
         for (ColliderPair cp : colliders) {
@@ -444,6 +495,9 @@ public class MechanismRegistry {
                 for (var group : displaysPerBlock) {
                     for (Display d : group) parentDisplay.addPassenger(d);
                 }
+                for (var group : bannerDisplaysPerBlock) {
+                    for (Display d : group) parentDisplay.addPassenger(d);
+                }
                 vehicle.addPassenger(parentDisplay);
                 mech.rotate(0);
                 updateAnimatedDisplays(mech, 0L);
@@ -452,13 +506,21 @@ public class MechanismRegistry {
                 throw e;                    // the owning overload's catch then removes the vehicle
             }
             airOutSourceBlocks(blocks);
+            // Remove the captured world banner displays only now: same tick as the mount (no
+            // double-render frame), and any throw up to here — including inside airOutSourceBlocks'
+            // rotation-network recalc — leaves the world banners (and their items) untouched.
+            for (Display d : capturedWorldBanners) d.remove();
         } else {
             // External vehicle (minecart): remove the real blocks now, then defer the mount one tick —
             // minecarts silently reject addPassenger for non-living entities at the NMS level.
             airOutSourceBlocks(blocks);
+            for (Display d : capturedWorldBanners) d.remove(); // see owned branch — after air-out
             Bukkit.getScheduler().runTaskLater(plugin, () -> {
                 if (!vehicle.isValid()) { mech.disassemble(); return; } // vehicle died during the delay tick
                 for (var group : displaysPerBlock) {
+                    for (Display d : group) parentDisplay.addPassenger(d);
+                }
+                for (var group : bannerDisplaysPerBlock) {
                     for (Display d : group) parentDisplay.addPassenger(d);
                 }
                 // Start the parent at the SNAPPED pivot, not the raw vehicle position, which may have drifted
@@ -512,6 +574,67 @@ public class MechanismRegistry {
             }
         }
         return out;
+    }
+
+    // Vanilla-banner in-transit rendering constants — starting values, tune in-game as needed
+    // (same precedent as BannerManager's flag transforms). The banner ITEM model renders as the full
+    // 3D banner (cloth + pole), so the standing case just yaws it in place; the wall case shifts it
+    // toward its attachment face and up to roughly match the block-entity's cloth position (the item
+    // model's pole has no vanilla wall equivalent — accepted approximation).
+    private static final float VANILLA_BANNER_SCALE = 1.0f;
+    private static final float VANILLA_STANDING_Y = 0.0f;
+    private static final float VANILLA_WALL_Y = 0.6f;
+    private static final float VANILLA_WALL_DEPTH = 0.38f; // toward the wall from the cell center
+
+    /**
+     * Synthesize the attachment that carries a vanilla banner BLOCK through a move: the equivalent
+     * banner item (patterns via BannerMeta — also the drop for a blocked landing; wall-banner
+     * materials have no item form, so {@code new ItemStack(*_WALL_BANNER)} would throw) plus a
+     * block-local transform approximating the block-entity render. Null if the material can't be
+     * mapped to an item (never expected for the 16 vanilla colors).
+     */
+    private static @Nullable BannerAttachment vanillaBannerAttachment(org.bukkit.block.Banner state,
+                                                                      BlockData bd) {
+        Material itemMat = Material.getMaterial(
+            bd.getMaterial().name().replace("_WALL_BANNER", "_BANNER"));
+        if (itemMat == null || !itemMat.isItem()) return null;
+        ItemStack item = new ItemStack(itemMat);
+        if (item.getItemMeta() instanceof org.bukkit.inventory.meta.BannerMeta meta) {
+            meta.setPatterns(state.getPatterns());
+            item.setItemMeta(meta);
+        }
+        return new BannerAttachment(item, BannerAttachment.BLOCK_FACE_KEY,
+            vanillaBannerTransform(bd), new Vector3f());
+    }
+
+    private static org.bukkit.util.Transformation vanillaBannerTransform(BlockData bd) {
+        Vector3f translation = new Vector3f(0, VANILLA_STANDING_Y, 0);
+        float yaw = 0f;
+        if (bd instanceof org.bukkit.block.data.Rotatable rot) {
+            // Standing banner: 16-step rotation, same SOUTH=0 · 22.5°/step table as BlockRotation.
+            yaw = switch (rot.getRotation()) {
+                case SOUTH -> 0; case SOUTH_SOUTH_WEST -> 22.5f; case SOUTH_WEST -> 45;
+                case WEST_SOUTH_WEST -> 67.5f; case WEST -> 90; case WEST_NORTH_WEST -> 112.5f;
+                case NORTH_WEST -> 135; case NORTH_NORTH_WEST -> 157.5f; case NORTH -> 180;
+                case NORTH_NORTH_EAST -> 202.5f; case NORTH_EAST -> 225; case EAST_NORTH_EAST -> 247.5f;
+                case EAST -> 270; case EAST_SOUTH_EAST -> 292.5f; case SOUTH_EAST -> 315;
+                case SOUTH_SOUTH_EAST -> 337.5f; default -> 0;
+            };
+        } else if (bd instanceof org.bukkit.block.data.Directional dir) {
+            // Wall banner: cloth faces `facing`, hangs against the opposite (attachment) face.
+            org.bukkit.util.Vector f = dir.getFacing().getDirection();
+            translation = new Vector3f(
+                -(float) f.getX() * VANILLA_WALL_DEPTH, VANILLA_WALL_Y,
+                -(float) f.getZ() * VANILLA_WALL_DEPTH);
+            yaw = switch (dir.getFacing()) {
+                case SOUTH -> 0; case WEST -> 90; case NORTH -> 180; case EAST -> 270; default -> 0;
+            };
+        }
+        return new org.bukkit.util.Transformation(
+            translation,
+            new org.joml.Quaternionf().rotateY((float) Math.toRadians(-yaw)),
+            new Vector3f(VANILLA_BANNER_SCALE, VANILLA_BANNER_SCALE, VANILLA_BANNER_SCALE),
+            new org.joml.Quaternionf());
     }
 
     /**
@@ -722,6 +845,14 @@ public class MechanismRegistry {
      *  just-placed blocks' own displays have a frame to render first (avoids the landing flicker). The mech is
      *  already unregistered by the caller, so the lingering entities are never ticked. */
     void deferEntityRemoval(BasicMechanism mech) {
+        // During onDisable (shutdown() disassembling live mechs) the scheduler rejects new tasks
+        // (IllegalPluginAccessException) — which used to throw AFTER block placement and send every
+        // owned mech through shutdown()'s scary "removing entities without block restore" fallback.
+        // There is no next frame to defer for at shutdown; remove synchronously.
+        if (!plugin.isEnabled()) {
+            mech.removeAllEntities();
+            return;
+        }
         Bukkit.getScheduler().runTaskLater(plugin, mech::removeAllEntities, 1L);
     }
 

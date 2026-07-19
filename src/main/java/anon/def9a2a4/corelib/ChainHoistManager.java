@@ -576,7 +576,14 @@ final class ChainHoistManager {
                 Block c = m.hoist.getRelative(0, -m.steps + k - 1, 0);
                 // Count only links actually aired: a player-mined gap is skipped here AND skipped by the
                 // refund (billing banks m.linksDeleted, not the requested span).
-                if (isOwnRope(c)) { c.setType(Material.AIR, false); m.linksDeleted[0]++; }
+                if (isOwnRope(c)) {
+                    // Chains are flag hosts: a banner on a swallowed link would be silently orphaned
+                    // by this event-less air-out (then deleted by the orphan sweep). Drop it instead.
+                    BannerManager bm = mechRegistry.bannerManager();
+                    if (bm != null) bm.dropBannersAt(c);
+                    c.setType(Material.AIR, false);
+                    m.linksDeleted[0]++;
+                }
             }
         }
     }
