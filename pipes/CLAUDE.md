@@ -90,6 +90,10 @@ Transfer runs on a per-variant configurable interval (default: 10 ticks = 0.5 se
 
 CoreLib handles persistence via PDC tags on player head blocks (`corelib:block_type → "pipes:copper_pipe"`). On chunk load, CoreLib fires the `onChunkLoad` callback registered by `PipeBlockRegistrar`, which re-registers the pipe in `PipeManager`'s in-memory map. Display entities are managed entirely by CoreLib.
 
+### Legacy migration (standalone Pipes ≤ v0.2.0)
+
+`LegacyPipeMigrator` adopts pipes from the old standalone plugin (identity on `ItemDisplay`s via the `pipe:tag` PDC / `pipe:` scoreboard tag, no block PDC) into the CoreLib format on `EntitiesLoadEvent`, per-world catch-up sweeps, and `/pipes migrate`. It also removes stray legacy displays and plugs a foreign-orphan detector into CoreLib so `/defcorelib cleanorphans` sees them. Sunset: delete the class + its wiring (PipesPlugin, WorldManager, plugin.yml) in v0.4.0 once servers report zero migrations.
+
 ## Config Files
 
 - **pipes.yml** (in JAR, not user-editable): Block definitions — textures, shaped recipes, drops, display entity config. Loaded by `BlockLoader`.

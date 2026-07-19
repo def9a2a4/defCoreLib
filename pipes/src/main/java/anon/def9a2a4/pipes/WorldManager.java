@@ -31,6 +31,9 @@ public class WorldManager implements Listener {
         PipeManager manager = new PipeManager(plugin, world);
         managers.put(world, manager);
         manager.startTasks();
+        // Resident chunks (spawn, force-loaded) fired EntitiesLoadEvent before this world was
+        // enabled and never will again — catch up their legacy pipes now.
+        plugin.scheduleLegacySweep(world);
     }
 
     public void removeWorld(World world) {

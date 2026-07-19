@@ -41,6 +41,7 @@ public class PipesPlugin extends JavaPlugin {
     private VariantRegistry variantRegistry;
     private WorldManager worldManager;
     private RecipeManager recipeManager;
+    private LegacyPipeMigrator legacyMigrator;
 
     @Override
     public void onEnable() {
@@ -80,6 +81,13 @@ public class PipesPlugin extends JavaPlugin {
         recipeManager = new RecipeManager(this);
         recipeManager.registerRecipes();
 
+        // Legacy (standalone Pipes <= v0.2.0) compat shim: adopts old pipes into the CoreLib format
+        // and cleans their stray displays. Constructed before the initWorld loop so every enabled
+        // world gets its catch-up sweep scheduled via initWorld.
+        legacyMigrator = new LegacyPipeMigrator(this, coreLibRegistry);
+        getServer().getPluginManager().registerEvents(legacyMigrator, this);
+        coreLibRegistry.registerForeignOrphanDetector("pipes-legacy", legacyMigrator::isOrphanedLegacyDisplay);
+
         worldManager = new WorldManager(this, pipeManagers);
         ConversionRecipeCraftListener conversionRecipeCraftListener = new ConversionRecipeCraftListener(this, recipeManager);
         getServer().getPluginManager().registerEvents(new MachineEjectListener(pipeManagers), this);
@@ -98,6 +106,7 @@ public class PipesPlugin extends JavaPlugin {
         if (recipeManager != null) {
             recipeManager.unregisterRecipes();
         }
+        CoreLibPlugin.getInstance().getRegistry().unregisterForeignOrphanDetector("pipes-legacy");
         CoreLibPlugin.getInstance().getRegistry().clearCauldronConversions("pipes");
         for (PipeManager manager : pipeManagers.values()) {
             manager.shutdown();
@@ -135,7 +144,35 @@ public class PipesPlugin extends JavaPlugin {
             return handleDeleteAll(sender);
         }
 
+        if (args[0].equalsIgnoreCase("migrate")) {
+            return handleMigrate(sender);
+        }
+
         sendHelp(sender);
+        return true;
+    }
+
+    /** Schedule a one-tick-later legacy sweep for a freshly enabled world. Called from
+     *  WorldManager.initWorld so startup, WorldLoadEvent, and /pipes reload all funnel through the
+     *  same path (spawn chunks are already resident and never re-fire EntitiesLoadEvent). */
+    void scheduleLegacySweep(World world) {
+        if (legacyMigrator == null) return;
+        getServer().getScheduler().runTask(this, () -> {
+            LegacyPipeMigrator.Result r = legacyMigrator.sweepWorld(world);
+            if (!r.isEmpty()) {
+                getLogger().info("Legacy pipe migration (" + world.getName() + "): " + r.describe());
+            }
+        });
+    }
+
+    private boolean handleMigrate(CommandSender sender) {
+        if (!sender.hasPermission("pipes.migrate")) {
+            sender.sendMessage(Component.text("You don't have permission to migrate legacy pipes.").color(NamedTextColor.RED));
+            return true;
+        }
+        LegacyPipeMigrator.Result r = legacyMigrator.sweepLoadedChunks();
+        sender.sendMessage(Component.text("Legacy pipe sweep: " + r.describe()).color(NamedTextColor.GREEN));
+        sender.sendMessage(Component.text("Unloaded chunks migrate automatically when they load.").color(NamedTextColor.GRAY));
         return true;
     }
 
@@ -303,7 +340,7 @@ public class PipesPlugin extends JavaPlugin {
         if (!command.getName().equalsIgnoreCase("pipes")) return List.of();
 
         if (args.length == 1) {
-            return Stream.of("help", "reload", "give", "recipes", "info", "delete_all")
+            return Stream.of("help", "reload", "give", "recipes", "info", "delete_all", "migrate")
                     .filter(s -> s.toLowerCase().startsWith(args[0].toLowerCase()))
                     .toList();
         }
@@ -348,6 +385,10 @@ public class PipesPlugin extends JavaPlugin {
         if (sender.hasPermission("pipes.delete_all")) {
             sender.sendMessage(Component.text("/pipes delete_all").color(NamedTextColor.WHITE)
                     .append(Component.text(" - Delete all pipes (dangerous!)").color(NamedTextColor.GRAY)));
+        }
+        if (sender.hasPermission("pipes.migrate")) {
+            sender.sendMessage(Component.text("/pipes migrate").color(NamedTextColor.WHITE)
+                    .append(Component.text(" - Migrate legacy (v0.2.0) pipes in loaded chunks").color(NamedTextColor.GRAY)));
         }
     }
 

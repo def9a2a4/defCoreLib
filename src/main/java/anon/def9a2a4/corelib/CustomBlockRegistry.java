@@ -40,6 +40,7 @@ import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 import java.util.logging.Level;
 
 /**
@@ -337,6 +338,26 @@ public class CustomBlockRegistry {
     /** Owning custom block reference encoded in a block-attached display entity's tag. */
     private record DisplayOwnerTag(String fullId, int x, int y, int z) {}
 
+    /** Detectors for foreign (non-corelib-tagged) orphaned displays, e.g. a companion plugin's
+     *  legacy display scheme. Consulted by {@link #scanOrphanedDisplays} for displays that carry
+     *  no corelib block tag. Keyed by a caller-chosen id so plugins can unregister on disable. */
+    private final Map<String, Predicate<Display>> foreignOrphanDetectors = new LinkedHashMap<>();
+
+    /**
+     * Register a detector that identifies orphaned displays from a foreign tagging scheme, so
+     * {@code /defcorelib cleanorphans} can sweep them alongside corelib-tagged orphans.
+     *
+     * <p>The detector must be conservative — return true only when the display is provably stale —
+     * and must never force chunk loads (return false when the owner's chunk is unloaded).
+     */
+    public void registerForeignOrphanDetector(String id, Predicate<Display> isOrphan) {
+        foreignOrphanDetectors.put(id, isOrphan);
+    }
+
+    public void unregisterForeignOrphanDetector(String id) {
+        foreignOrphanDetectors.remove(id);
+    }
+
     /**
      * Scan every loaded world for block-attached display entities whose parent custom block is
      * gone or has been replaced by a different block, optionally despawning them.
@@ -346,6 +367,8 @@ public class CustomBlockRegistry {
      * type was renamed or removed (its cell no longer holds a matching head) is correctly cleaned. The
      * registry is not consulted. Banners and pulley-owned chain strands are skipped; mechanism-entity
      * tags are skipped by shape. A display whose owner sits in an unloaded chunk is counted, not removed.
+     * Displays with no corelib tag are offered to any registered foreign-orphan detectors
+     * ({@link #registerForeignOrphanDetector}) before being ignored.
      *
      * @param remove if true, despawn each orphan; if false, only count (preview)
      */
@@ -355,7 +378,22 @@ public class CustomBlockRegistry {
         for (World world : Bukkit.getWorlds()) {
             for (Display display : world.getEntitiesByClass(Display.class)) {
                 DisplayOwnerTag owner = parseBlockDisplayTag(display);
-                if (owner == null) continue;
+                if (owner == null) {
+                    // No corelib tag — give registered foreign-scheme detectors (e.g. legacy pipes) a look.
+                    for (Map.Entry<String, Predicate<Display>> det : foreignOrphanDetectors.entrySet()) {
+                        if (det.getValue().test(display)) {
+                            orphans++;
+                            if (samples.size() < 10) {
+                                org.bukkit.Location l = display.getLocation();
+                                samples.add(world.getName() + " " + l.getBlockX() + "," + l.getBlockY()
+                                        + "," + l.getBlockZ() + " [" + det.getKey() + "]");
+                            }
+                            if (remove) display.remove();
+                            break;
+                        }
+                    }
+                    continue;
+                }
                 if (!world.isChunkLoaded(owner.x() >> 4, owner.z() >> 4)) {
                     skippedUnloaded++;
                     continue;

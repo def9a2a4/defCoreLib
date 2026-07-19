@@ -9,7 +9,7 @@ depend: [DefCoreLib]
 commands:
   pipes:
     description: Pipes admin commands
-    usage: /pipes <help|reload|give|recipes|info|delete_all>
+    usage: /pipes <help|reload|give|recipes|info|delete_all|migrate>
     permission: pipes.admin
 
 permissions:
@@ -22,6 +22,7 @@ permissions:
       pipes.recipes: true
       pipes.info: true
       pipes.delete_all: true
+      pipes.migrate: true
   pipes.reload:
     description: Allows reloading the config
     default: op
@@ -36,4 +37,7 @@ permissions:
     default: op
   pipes.delete_all:
     description: Allows deleting all pipes
+    default: op
+  pipes.migrate:
+    description: Allows sweeping loaded chunks for legacy (v0.2.0) pipes
     default: op
