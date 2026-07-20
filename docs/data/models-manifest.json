@@ -34,7 +34,6 @@
   "furnace_minecart": false,
   "golden_axe": false,
   "granite_slab": true,
-  "grass_block": true,
   "honey_bottle": false,
   "hopper": true,
   "jungle_slab": true,
@@ -65,8 +64,8 @@
   "red_nether_brick_slab": true,
   "red_sandstone_slab": true,
   "redstone_torch": true,
-  "redstone_wire": false,
-  "repeater": false,
+  "redstone_wire": true,
+  "repeater": true,
   "resin_brick_slab": true,
   "sand": true,
   "sandstone_slab": true,
@@ -91,6 +90,5 @@
   "waxed_weathered_cut_copper_slab": true,
   "weathered_cut_copper_slab": true,
   "white_banner": true,
-  "white_carpet": true,
-  "white_concrete": true
+  "white_carpet": true
 }
