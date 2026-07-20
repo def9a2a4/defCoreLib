@@ -22,7 +22,7 @@ MACHINE POWER TIERS AND BALANCE
   a starter windmill no longer runs everything. The engine supplies 10.
 - Piston cores and chain hoists still draw 1 but move at half speed.
 - Sieve loot chances reduced across the board; sand's rare drop is now
-  quartz instead of raw gold.
+  quartz instead of raw gold (red sand still pans raw gold).
 - Fixed: chance-based recipes (sieve, millstone glass->sand) no longer
   consume input while the output container below is full -- the machine
   stalls like the mill and press do.
@@ -35,7 +35,7 @@ RECIPES
   simply not registered.
 
 ADVANCEMENTS
-- 15 new advancement nodes: "use" milestones for the drill, fan,
+- 16 new advancement nodes: "use" milestones for the drill, fan,
   placer, suction hopper, chain hoist, dynamo, clutch, and reverser,
   plus an operator capstone required by Grand Engineer; ore branches
   to precious/netherite for the millstone; panning treasure for the
@@ -48,6 +48,9 @@ ADVANCEMENTS
 
 OTHER
 - Water wheel and boiler now sit on sealed copper-chest tile entities;
-  adjacent custom chest blocks no longer render merged/offset.
+  adjacent custom chest blocks no longer render merged/offset. Water
+  wheels placed before v0.3.1 keep working unchanged.
+- The pump and boiler now face the player who places them, and the
+  pump body stretches up to meet a horizontal corner pipe above.
 - Visual polish: pump intake and valve art, boiler flame placement,
   larger steam piston head, unified machine smoke particles.

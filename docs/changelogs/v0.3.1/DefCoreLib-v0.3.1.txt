@@ -34,7 +34,7 @@ MACHINE POWER TIERS AND BALANCE
   a starter windmill no longer runs everything. The engine supplies 10.
 - Piston cores and chain hoists still draw 1 but move at half speed.
 - Sieve loot chances reduced across the board; sand's rare drop is now
-  quartz instead of raw gold.
+  quartz instead of raw gold (red sand still pans raw gold).
 - Fixed: chance-based recipes (sieve, millstone glass->sand) no longer
   consume input while the output container below is full -- the machine
   stalls like the mill and press do.
@@ -43,22 +43,25 @@ BANNERS RIDE MECHANISMS
 - BetterBanners displays and vanilla banners (patterns intact) on a
   moving mechanism are carried in transit and re-attached on landing.
   If the landing spot can't host the banner, it drops as an item --
-  banners are never silently destroyed.
+  banners are never silently destroyed. Banners on rope links that a
+  chain hoist reels in drop as items too.
 - Fixed a crash when a moved wall banner had to drop as an item.
 
 LEGACY PIPE MIGRATION (pipes plugin)
 - Pipes placed with the old standalone plugin (v0.2.0 and earlier),
   which stopped working under v0.3.0, are now automatically adopted
-  into the current format as their chunks load; /pipes migrate sweeps a
-  whole world on demand. Stray displays from broken legacy pipes are
-  cleaned up. The migration shim will be removed in v0.4.0.
+  into the current format as their chunks load; /pipes migrate sweeps
+  all loaded chunks on demand. Stray displays from broken legacy
+  pipes are cleaned up. The migration shim will be removed in v0.4.0.
 
-RECIPES AND ADVANCEMENTS (mech plugin)
+RECIPES
 - New craft recipes for the sieve, Copper Water Pump, burner, boiler,
-  and steam piston. mech soft-depends on Pipes: with Pipes installed
-  the pump recipe uses a copper pipe as the valve body; without it the
-  pump recipe is simply not registered.
-- 15 new advancement nodes: "use" milestones for eight machines and
+  and steam piston. The mech plugin soft-depends on Pipes: with Pipes
+  installed the pump recipe uses a copper pipe as the valve body;
+  without it the pump recipe is simply not registered.
+
+ADVANCEMENTS (mech plugin)
+- 16 new advancement nodes: "use" milestones for eight machines and
   components, an operator capstone required by Grand Engineer, ore
   branches to precious/netherite, panning treasure, and Pan Handler
   for crafting the sieve.
@@ -69,7 +72,10 @@ RECIPES AND ADVANCEMENTS (mech plugin)
 
 OTHER
 - Water wheel and boiler now sit on sealed copper-chest tile entities;
-  adjacent custom chest blocks no longer render merged/offset.
+  adjacent custom chest blocks no longer render merged/offset. Water
+  wheels placed before v0.3.1 keep working unchanged.
+- The pump and boiler now face the player who places them, and the
+  pump body stretches up to meet a horizontal corner pipe above.
 - Visual polish: pump intake and valve art, boiler flame placement,
   larger steam piston head, unified machine smoke particles.
 - New events for companion plugins: GlueAppliedEvent,
