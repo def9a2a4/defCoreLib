@@ -1,0 +1,24 @@
+{
+    "_comment": "Vanilla redstone dust has no block/redstone_wire.json — it's a multipart blockstate over dot/line models, and the capture doesn't carry connection state anyway. Hand-authored stand-in: two full-length line planes crossed at 90° (full-cell, so adjacent wire cells read as connected). The dust textures are grayscale, tinted at runtime in vanilla; the custom `tint` face key (consumed by blockmodel.js, passed through verbatim by vendor_models) supplies the red.",
+    "textures": {
+        "particle": "block/redstone_dust_line0",
+        "line": "block/redstone_dust_line0"
+    },
+    "elements": [
+        {   "from": [ 0, 0.25, 0 ],
+            "to": [ 16, 0.25, 16 ],
+            "faces": {
+                "up":   { "uv": [ 0, 0, 16, 16 ], "texture": "#line", "tint": "#c93000" },
+                "down": { "uv": [ 0, 0, 16, 16 ], "texture": "#line", "tint": "#c93000" }
+            }
+        },
+        {   "from": [ 0, 0.5, 0 ],
+            "to": [ 16, 0.5, 16 ],
+            "rotation": { "origin": [ 8, 0.5, 8 ], "axis": "y", "angle": 90 },
+            "faces": {
+                "up":   { "uv": [ 0, 0, 16, 16 ], "texture": "#line", "tint": "#c93000" },
+                "down": { "uv": [ 0, 0, 16, 16 ], "texture": "#line", "tint": "#c93000" }
+            }
+        }
+    ]
+}

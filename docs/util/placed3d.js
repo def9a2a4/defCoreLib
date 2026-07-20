@@ -31,6 +31,16 @@ function canonical(ref) {
 // translucent cubes. Water color is the vanilla map/tint blue.
 const FLUIDS = { water: 0x3f76e4, lava: 0xd45a12 };
 
+// Fluid surface height from the ref's [level=N] blockstate: 0 = still source (14/16), 1-7 flowing
+// (each step 2/16 lower, floored at 2/16), ≥8 falling (full column). No level → source height.
+function fluidHeight(ref) {
+  const m = /\blevel=(\d+)/.exec(String(ref));
+  if (!m) return 14 / 16;
+  const level = Number(m[1]);
+  if (level === 0 || level >= 8) return 14 / 16;
+  return Math.max(2, 14 - 2 * level) / 16;
+}
+
 function makeViewer(container, { dist = 3.4, target = [0, 0, 0] } = {}) {
   const width = container.clientWidth || 300;
   const height = container.clientHeight || 300;
@@ -65,7 +75,7 @@ async function buildDisplayObject(de, models) {
   // BlockDisplays read back corner-origin; ItemDisplays read back centered.
   const centered = de.kind !== 'block';
   const id = canonical(de.ref);
-  if (id in FLUIDS) return fluidBox(FLUIDS[id], { centered });
+  if (id in FLUIDS) return fluidBox(FLUIDS[id], { centered, height: fluidHeight(de.ref) });
   if (models[id]) {
     try { return await buildBlockMesh(id, { centered }); }
     catch { return fallbackBox(0xcccccc, { centered }); }

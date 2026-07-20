@@ -85,7 +85,12 @@ function buildElement(el, textures, centered) {
     if (texRef.startsWith('#')) texRef = textures[texRef.slice(1)];
     if (!texRef) return TRANSPARENT;
     setFaceUV(geo, i, face.uv || [0, 0, 16, 16]);
-    return new THREE.MeshBasicMaterial({ map: loadTexture(texRef), side: THREE.FrontSide });
+    // alphaTest cuts out transparent texels (dust lines, torch tips, chain) that would otherwise
+    // render black; opaque textures are unaffected. A face `tint` (custom key, hex string — used by
+    // bundled models over grayscale vanilla textures) multiplies into the map.
+    const opts = { map: loadTexture(texRef), side: THREE.FrontSide, alphaTest: 0.5 };
+    if (face.tint) opts.color = new THREE.Color(face.tint);
+    return new THREE.MeshBasicMaterial(opts);
   });
 
   const mesh = new THREE.Mesh(geo, materials);
@@ -129,17 +134,17 @@ export function fallbackBox(color = 0xcccccc, { centered = true } = {}) {
 }
 
 /** Fluid blocks (water/lava) have no block model — the engine renders them specially — so build a
- *  tinted translucent cube instead. Height 14/16 matches a vanilla still-source surface; seated on
- *  the block floor under the same origin convention as fallbackBox. */
-export function fluidBox(color, { centered = true } = {}) {
-  const HEIGHT = 14 / 16;
+ *  tinted translucent cube instead. Default height 14/16 matches a vanilla still-source surface
+ *  (flowing cells pass a lower height); seated on the block floor under the same origin convention
+ *  as fallbackBox. */
+export function fluidBox(color, { centered = true, height = 14 / 16 } = {}) {
   const group = new THREE.Group();
   const mesh = new THREE.Mesh(
-    new THREE.BoxGeometry(1, HEIGHT, 1),
+    new THREE.BoxGeometry(1, height, 1),
     new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.6, depthWrite: false }),
   );
-  if (centered) mesh.position.set(0, -0.5 + HEIGHT / 2, 0);
-  else mesh.position.set(0.5, HEIGHT / 2, 0.5);
+  if (centered) mesh.position.set(0, -0.5 + height / 2, 0);
+  else mesh.position.set(0.5, height / 2, 0.5);
   group.add(mesh);
   return group;
 }
