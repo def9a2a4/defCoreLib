@@ -42,6 +42,10 @@ sieve:
 
 pump:
   tick-interval: 40   # ticks per pump cycle (one whole-bucket unit moved per cycle)
+  # Body-top raise when a horizontal corner pipe sits above: top goes 1.0015 → 1.2 (rel.
+  # pump floor), where a vertical pipe under a corner ends (pipes display.yml
+  # corner-pipe.up: -0.3; elbow bottom at 1.225). Re-derive if pipes re-tunes those.
+  stretch-to-corner: 0.1985
 
 steam:
   boiler-tank-units: 8      # boiler water tank capacity, in buckets

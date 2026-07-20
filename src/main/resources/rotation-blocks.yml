@@ -603,8 +603,12 @@ blocks:
   # ─── Water Wheel ────────────────────────────────────────────────────────
   # Source: 2 Power. Wall only. Spins when water is on perpendicular faces.
   # Display: 4 OAK_SLAB paddles at 90° intervals.
+  # In the world it's a disguised waxed copper chest (dynamo/boiler pattern — tile
+  # entity holds identity + spin/paddle PDC; lockContainer default seals its slots).
+  # The 2.004 hub cube fully covers the chest model.
   water_wheel:
     break_on_piston: true
+    physical_material: WAXED_COPPER_CHEST
     name: "&bWater Wheel"
     lore:
       - "&7Produces 2 Power when adjacent to water"
