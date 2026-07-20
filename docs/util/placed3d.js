@@ -7,7 +7,7 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { loadSkin, skullMesh } from './head3d.js';
-import { buildBlockMesh, fallbackBox, texturesSettled } from './blockmodel.js';
+import { buildBlockMesh, fallbackBox, fluidBox, texturesSettled } from './blockmodel.js';
 
 let MANIFEST = null;
 async function manifest() {
@@ -26,6 +26,10 @@ function canonical(ref) {
   if (n === 'iron_chain') return 'chain';
   return n;
 }
+
+// Fluids have no vendored block model (models-manifest marks them false); render as tinted
+// translucent cubes. Water color is the vanilla map/tint blue.
+const FLUIDS = { water: 0x3f76e4, lava: 0xd45a12 };
 
 function makeViewer(container, { dist = 3.4, target = [0, 0, 0] } = {}) {
   const width = container.clientWidth || 300;
@@ -61,6 +65,7 @@ async function buildDisplayObject(de, models) {
   // BlockDisplays read back corner-origin; ItemDisplays read back centered.
   const centered = de.kind !== 'block';
   const id = canonical(de.ref);
+  if (id in FLUIDS) return fluidBox(FLUIDS[id], { centered });
   if (models[id]) {
     try { return await buildBlockMesh(id, { centered }); }
     catch { return fallbackBox(0xcccccc, { centered }); }

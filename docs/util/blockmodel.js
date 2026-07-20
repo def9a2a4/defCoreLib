@@ -127,3 +127,19 @@ export function fallbackBox(color = 0xcccccc, { centered = true } = {}) {
   group.add(mesh);
   return group;
 }
+
+/** Fluid blocks (water/lava) have no block model — the engine renders them specially — so build a
+ *  tinted translucent cube instead. Height 14/16 matches a vanilla still-source surface; seated on
+ *  the block floor under the same origin convention as fallbackBox. */
+export function fluidBox(color, { centered = true } = {}) {
+  const HEIGHT = 14 / 16;
+  const group = new THREE.Group();
+  const mesh = new THREE.Mesh(
+    new THREE.BoxGeometry(1, HEIGHT, 1),
+    new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.6, depthWrite: false }),
+  );
+  if (centered) mesh.position.set(0, -0.5 + HEIGHT / 2, 0);
+  else mesh.position.set(0.5, HEIGHT / 2, 0.5);
+  group.add(mesh);
+  return group;
+}
