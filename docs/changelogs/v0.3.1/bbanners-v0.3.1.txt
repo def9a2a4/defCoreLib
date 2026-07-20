@@ -1,0 +1,6 @@
+bbanners v0.3.1
+
+- Version bump to match DefCoreLib v0.3.1; no changes to this jar.
+- Note: DefCoreLib v0.3.1 makes BetterBanners displays survive riding
+  moving mechanisms -- carried in transit, re-attached on landing, and
+  dropped as items when the landing can't host them.

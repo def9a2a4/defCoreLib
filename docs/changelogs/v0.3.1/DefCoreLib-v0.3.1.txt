@@ -1,0 +1,78 @@
+DefCoreLib v0.3.1
+
+Fluid handling arrives: a core fluid framework, the Copper Water Pump,
+fluid-carrying pipes, a water-gated sieve, and a burner -> boiler ->
+steam piston power stack. Also: tiered machine power, banners that
+survive riding mechanisms, and automatic migration of legacy pipes.
+
+FLUID HANDLING (NEW)
+- New core fluid framework: whole-bucket water/lava units, an endpoint
+  registry (machine tank > cauldron > world source), per-machine tanks,
+  and a routing seam that the Pipes plugin plugs into.
+- Copper Water Pump: floor-mounted machine that moves one bucket per
+  cycle from below to a tank, cauldron, or pipe chain above. Wrench to
+  reverse. A blocked route stalls the pump; fluid is never destroyed.
+  Water only -- lava pumping is reserved for a future iron-tier pump.
+- Steam stack: burner -> boiler -> steam piston, a new fuel-driven
+  power source supplying 20 power. An empty-hand click reads out the
+  stack status and names whatever is missing (fuel, water, boiler).
+- Pipes carry fluids (pipes plugin): one bucket-unit per pump cycle
+  travels the chain, corners included, to the first accepting endpoint.
+  Every variant carries water; only iron pipes carry lava end to end.
+  A dead-ended chain stalls the pump instead of spilling.
+- Sieve now requires water: fill its tank by pipe or bucket; each batch
+  of pans drinks one unit. A dry sieve idles with a dust cue.
+
+NEW MACHINE: SIEVE
+- Powered panning machine, wall-mounted on a container like the
+  millstone and press. Washes gravel, sand, red sand, dirt, and soul
+  sand into flint, nuggets, and rare finds (gems included, at low odds).
+
+MACHINE POWER TIERS AND BALANCE
+- Machines now draw power by work value (fan/placer 2, suction hopper
+  3, press/pump 4, drill/millstone 5, sieve 10) instead of a flat 1, so
+  a starter windmill no longer runs everything. The engine supplies 10.
+- Piston cores and chain hoists still draw 1 but move at half speed.
+- Sieve loot chances reduced across the board; sand's rare drop is now
+  quartz instead of raw gold.
+- Fixed: chance-based recipes (sieve, millstone glass->sand) no longer
+  consume input while the output container below is full -- the machine
+  stalls like the mill and press do.
+
+BANNERS RIDE MECHANISMS
+- BetterBanners displays and vanilla banners (patterns intact) on a
+  moving mechanism are carried in transit and re-attached on landing.
+  If the landing spot can't host the banner, it drops as an item --
+  banners are never silently destroyed.
+- Fixed a crash when a moved wall banner had to drop as an item.
+
+LEGACY PIPE MIGRATION (pipes plugin)
+- Pipes placed with the old standalone plugin (v0.2.0 and earlier),
+  which stopped working under v0.3.0, are now automatically adopted
+  into the current format as their chunks load; /pipes migrate sweeps a
+  whole world on demand. Stray displays from broken legacy pipes are
+  cleaned up. The migration shim will be removed in v0.4.0.
+
+RECIPES AND ADVANCEMENTS (mech plugin)
+- New craft recipes for the sieve, Copper Water Pump, burner, boiler,
+  and steam piston. mech soft-depends on Pipes: with Pipes installed
+  the pump recipe uses a copper pipe as the valve body; without it the
+  pump recipe is simply not registered.
+- 15 new advancement nodes: "use" milestones for eight machines and
+  components, an operator capstone required by Grand Engineer, ore
+  branches to precious/netherite, panning treasure, and Pan Handler
+  for crafting the sieve.
+- Fixed: products delivered straight into a container below now count
+  toward product advancements; suction-hopper pass-through no longer
+  false-grants; "Bound Together" fires on brushing glue, not the first
+  assembly.
+
+OTHER
+- Water wheel and boiler now sit on sealed copper-chest tile entities;
+  adjacent custom chest blocks no longer render merged/offset.
+- Visual polish: pump intake and valve art, boiler flame placement,
+  larger steam piston head, unified machine smoke particles.
+- New events for companion plugins: GlueAppliedEvent,
+  MachineActedEvent, MachineProducedEvent.
+- Docs: fluids design doc; the 3D block viewer renders water and lava
+  as tinted translucent cubes; showcases updated for the power tiers.

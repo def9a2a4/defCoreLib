@@ -1,0 +1,53 @@
+mech v0.3.1
+
+FLUID MACHINES (NEW)
+- Copper Water Pump: floor-mounted machine that moves one bucket per
+  cycle from below to a tank, cauldron, or pipe chain above. Wrench to
+  reverse. A blocked route stalls the pump; fluid is never destroyed.
+  Water only -- lava pumping is reserved for a future iron-tier pump.
+- Steam stack: burner -> boiler -> steam piston, a new fuel-driven
+  power source supplying 20 power. An empty-hand click reads out the
+  stack status and names whatever is missing (fuel, water, boiler).
+- Sieve now requires water: fill its tank by pipe or bucket; each batch
+  of pans drinks one unit. A dry sieve idles with a dust cue.
+
+NEW MACHINE: SIEVE
+- Powered panning machine, wall-mounted on a container like the
+  millstone and press. Washes gravel, sand, red sand, dirt, and soul
+  sand into flint, nuggets, and rare finds (gems included, at low odds).
+
+MACHINE POWER TIERS AND BALANCE
+- Machines now draw power by work value (fan/placer 2, suction hopper
+  3, press/pump 4, drill/millstone 5, sieve 10) instead of a flat 1, so
+  a starter windmill no longer runs everything. The engine supplies 10.
+- Piston cores and chain hoists still draw 1 but move at half speed.
+- Sieve loot chances reduced across the board; sand's rare drop is now
+  quartz instead of raw gold.
+- Fixed: chance-based recipes (sieve, millstone glass->sand) no longer
+  consume input while the output container below is full -- the machine
+  stalls like the mill and press do.
+
+RECIPES
+- New craft recipes for the sieve, Copper Water Pump, burner, boiler,
+  and steam piston.
+- mech now soft-depends on Pipes: with Pipes installed the pump recipe
+  uses a copper pipe as the valve body; without it the pump recipe is
+  simply not registered.
+
+ADVANCEMENTS
+- 15 new advancement nodes: "use" milestones for the drill, fan,
+  placer, suction hopper, chain hoist, dynamo, clutch, and reverser,
+  plus an operator capstone required by Grand Engineer; ore branches
+  to precious/netherite for the millstone; panning treasure for the
+  sieve; and a Pan Handler craft advancement for the new sieve.
+- Fixed: machine products delivered straight into a container below now
+  count toward product advancements, and items merely passing through a
+  suction hopper no longer grant them.
+- "Bound Together" now fires when you brush glue on, instead of on the
+  first assembly.
+
+OTHER
+- Water wheel and boiler now sit on sealed copper-chest tile entities;
+  adjacent custom chest blocks no longer render merged/offset.
+- Visual polish: pump intake and valve art, boiler flame placement,
+  larger steam piston head, unified machine smoke particles.

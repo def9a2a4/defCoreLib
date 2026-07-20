@@ -1,0 +1,20 @@
+pipes v0.3.1
+
+FLUID TRANSPORT (NEW)
+- Pipes can now carry fluids pushed by DefCoreLib's Copper Water Pump:
+  one bucket-unit per pump cycle travels the chain (corners included)
+  to the first accepting tank, cauldron, or world endpoint.
+- Every pipe variant carries water; only iron pipes carry lava, end to
+  end. Item transport is unaffected.
+- A dead-ended chain stalls the pump instead of spilling fluid.
+
+LEGACY PIPE MIGRATION
+- Pipes placed with the old standalone plugin (v0.2.0 and earlier),
+  which stopped working under v0.3.0, are now automatically adopted
+  into the current format as their chunks load; /pipes migrate sweeps a
+  whole world on demand. Verified on a real world: 176 pipes across all
+  8 variants migrated with zero leftover display entities.
+- Stray display entities from broken legacy pipes are cleaned up, and
+  /defcorelib cleanorphans now reports legacy strays it could not yet
+  judge (unloaded chunks) as skipped instead of ignoring them.
+- The migration shim will be removed in v0.4.0.
