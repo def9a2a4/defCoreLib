@@ -347,3 +347,149 @@ showcases:
     expect:
       - { type: network_powered, at: [4, 0, 3] }
       - { type: spinning, at: [4, 2, 3] }
+
+  # ── Steam sieve: water wheels feed a boiler and a wet sieve; steam drives the sieve ──
+  # Exported from a live build with ShowcaseExporter; water restored by hand (the glue-based
+  # exporter can't capture fluids).
+  - id: steam_sieve
+    name: "Steam Sieve"
+    blurb: "Water wheels drive pumps that feed a boiler and a sieve; the steam stack above works the sieve through an overhead gear bridge."
+    description: >
+      The full water-and-steam production chain. Three water wheels ride a concrete-walled
+      stream and gear their rotation west through a redstone dynamo into a pair of pumps:
+      one pump lifts water through copper pipes into the boiler, the other feeds the sieve's
+      supply line. A burner under the boiler turns that water into steam, and the steam
+      piston on top drives the roof shaft run — north along the top and down an overhead
+      gear bridge into the sieve, which shakes its contents down into barrels. A clutch
+      branch south of the stack, gated by a redstone torch, ties the roof run into the pump
+      train, and the dynamo's output feeds a comparator circuit with a digital power readout.
+      An engine on the wheel axle stands by as backup power, plumbed to a fuel barrel.
+    blocks:
+      # Steam stack: burner heats the boiler; the steam piston on top is the power head.
+      - { id: "mech:burner",       facing: down, at: [0, -2, 0] }
+      - { id: "mech:boiler",       facing: down, at: [0, -1, 0] }
+      - { id: "mech:steam_piston", facing: down, at: [0, 0, 0] }
+      # Roof shaft run north from the stack, over the gear bridge, down into the sieve.
+      - { id: "mech:shaft", facing: south, at: [0, 0, -1] }
+      - { id: "mech:shaft", facing: down,  at: [0, 0, -2] }
+      - { id: "mech:shaft", facing: down,  at: [0, 0, -3] }
+      - { id: "mech:shaft", facing: north, at: [0, 0, -4] }
+      - { id: "mech:gear",  facing: south, at: [0, 0, -5] }
+      - { id: "mech:gear",  facing: down,  at: [0, 1, -5] }
+      - { id: "mech:gear",  facing: down,  at: [1, 1, -5] }
+      - { id: "mech:gear",  facing: down,  at: [2, 1, -5] }
+      - { id: "mech:shaft", facing: down,  at: [2, 0, -5] }
+      - { id: "mech:sieve", facing: north, at: [2, -1, -5] }
+      # Clutch branch south of the stack (redstone torch below gates it), dropping to the pump train.
+      - { id: "mech:shaft",  facing: north, at: [0, 0, 1] }
+      - { id: "mech:clutch", facing: north, at: [0, 0, 2] }
+      - { id: "mech:gear",   facing: north, at: [0, 0, 3] }
+      - { id: "mech:gear",   facing: east,  at: [1, 0, 3] }
+      - { id: "mech:gear",   facing: down,  at: [2, 0, 3] }
+      - { id: "mech:gear",   facing: down,  at: [2, -1, 3] }
+      - { id: "mech:gear",   facing: down,  at: [2, -1, 2] }
+      # Water wheels in the walled stream, geared west through the dynamo into the pumps.
+      - { id: "mech:water_wheel",     facing: down,  at: [5, -2, 0] }
+      - { id: "mech:water_wheel",     facing: down,  at: [5, -2, -1] }
+      - { id: "mech:water_wheel",     facing: down,  at: [5, -2, -2] }
+      - { id: "mech:shaft",           facing: north, at: [5, -2, 1] }
+      - { id: "mech:gear",            facing: north, at: [5, -2, 2] }
+      - { id: "mech:engine",          facing: south, at: [5, -2, 3] }   # backup power on the wheel axle
+      - { id: "mech:gear",            facing: east,  at: [4, -2, 2] }
+      - { id: "mech:shaft",           facing: down,  at: [3, -2, 2] }
+      - { id: "mech:gear",            facing: east,  at: [2, -2, 2] }
+      - { id: "mech:redstone_dynamo", facing: down,  at: [1, -2, 2] }
+      - { id: "mech:gear",            facing: south, at: [2, -2, 1] }
+      # Pumps: [2,-2,0] lifts water west into the boiler; [2,-2,-2] feeds the sieve line.
+      - { id: "mech:pump",  facing: down, at: [2, -2, 0] }
+      - { id: "mech:shaft", facing: down, at: [2, -2, -1] }
+      - { id: "mech:pump",  facing: down, at: [2, -2, -2] }
+      # Pipes: boiler feed, sieve feed, and the engine's fuel line from the barrel.
+      - { id: "pipes:copper_pipe",          facing: east,  at: [1, -1, 0] }
+      - { id: "pipes:copper_corner_pipe",   facing: west,  at: [2, -1, 0] }
+      - { id: "pipes:copper_corner_pipe",   facing: north, at: [2, -1, -2] }
+      - { id: "pipes:copper_pipe",          facing: south, at: [2, -1, -3] }
+      - { id: "pipes:copper_pipe",          facing: south, at: [2, -1, -4] }
+      - { id: "pipes:oxidized_copper_pipe", facing: south, at: [5, -2, 4] }
+      # Dynamo power readout.
+      - { id: "redstonedisplays:digital_indicator", facing: east, at: [-1, -2, 5] }
+    vanilla:
+      # Clutch gate: unlit torch under the clutch branch.
+      - { block: "REDSTONE_TORCH", at: [0, -1, 2], data: "[lit=false]" }
+      # Dynamo readout circuit: comparator/repeaters/wire into a target block and the indicator.
+      - { block: "SMOOTH_STONE",  at: [0, -2, 2] }
+      - { block: "REPEATER",      at: [0, -2, 3], data: "[delay=1,facing=south,locked=false,powered=true]" }
+      - { block: "REDSTONE_WIRE", at: [0, -2, 4], data: "[east=side,north=side,power=7,south=side,west=none]" }
+      - { block: "TARGET",        at: [0, -2, 5], data: "[power=0]" }
+      - { block: "COMPARATOR",    at: [1, -2, 3], data: "[facing=north,mode=compare,powered=true]" }
+      - { block: "REDSTONE_WIRE", at: [1, -2, 4], data: "[east=none,north=side,power=8,south=side,west=side]" }
+      - { block: "REDSTONE_WIRE", at: [1, -2, 5], data: "[east=side,north=side,power=7,south=none,west=side]" }
+      - { block: "REPEATER",      at: [2, -2, 5], data: "[delay=1,facing=west,locked=false,powered=true]" }
+      - { block: "REDSTONE_WIRE", at: [3, -2, 5], data: "[east=side,north=none,power=15,south=none,west=side]" }
+      - { block: "HOPPER",        at: [4, -2, 5], data: "[enabled=false,facing=east]" }
+      - { block: "BARREL",        at: [4, -1, 5], data: "[facing=up,open=false]" }
+      # Engine fuel barrel (feeds the oxidized pipe line).
+      - { block: "BARREL", at: [5, -2, 5], data: "[facing=up,open=false]" }
+      # Sieve output barrels.
+      - { block: "BARREL",       at: [2, -2, -5], data: "[facing=up,open=false]" }
+      - { block: "SMOOTH_STONE", at: [2, -2, -6] }
+      - { block: "BARREL",       at: [2, -1, -6], data: "[facing=south,open=false]" }
+      # Stream water, restored by hand: sources in the walled channel beside the wheels spill
+      # west over their rims (`physics: true` lets it flow during capture).
+      - { block: "WATER", at: [6, -1, 0],  physics: true }
+      - { block: "WATER", at: [6, -1, -1], physics: true }
+      - { block: "WATER", at: [6, -1, -2], physics: true }
+      # Pump intakes: the two cells left open in the y=-3 floor, directly under each pump.
+      - { block: "WATER", at: [2, -3, 0],  physics: true }
+      - { block: "WATER", at: [2, -3, -2], physics: true }
+      # Stream channel walls.
+      - { block: "WHITE_CONCRETE", at: [5, -2, -3] }
+      - { block: "WHITE_CONCRETE", at: [5, -1, -3] }
+      - { block: "WHITE_CONCRETE", at: [5, -1, 1] }
+      - { block: "WHITE_CONCRETE", at: [4, -2, -3] }
+      - { block: "WHITE_CONCRETE", at: [4, -2, 1] }
+      - { block: "WHITE_CONCRETE", at: [3, -2, 1] }
+      - { block: "WHITE_CONCRETE", at: [6, -2, -3] }
+      - { block: "WHITE_CONCRETE", at: [6, -2, -2] }
+      - { block: "WHITE_CONCRETE", at: [6, -2, -1] }
+      - { block: "WHITE_CONCRETE", at: [6, -2, 0] }
+      - { block: "WHITE_CONCRETE", at: [6, -2, 1] }
+      - { block: "WHITE_CONCRETE", at: [6, -1, -3] }
+      - { block: "WHITE_CONCRETE", at: [6, -1, 1] }
+      - { block: "WHITE_CONCRETE", at: [7, -2, -2] }
+      - { block: "WHITE_CONCRETE", at: [7, -2, -1] }
+      - { block: "WHITE_CONCRETE", at: [7, -2, 0] }
+      - { block: "WHITE_CONCRETE", at: [7, -1, -2] }
+      - { block: "WHITE_CONCRETE", at: [7, -1, -1] }
+      - { block: "WHITE_CONCRETE", at: [7, -1, 0] }
+      # Floor (y=-3), with the two pump-intake cells left open at [2,-3,0] / [2,-3,-2].
+      - { block: "DIRT",           at: [5, -3, -3] }
+      - { block: "WHITE_CONCRETE", at: [5, -3, -2] }
+      - { block: "WHITE_CONCRETE", at: [5, -3, -1] }
+      - { block: "WHITE_CONCRETE", at: [5, -3, 0] }
+      - { block: "GRASS_BLOCK",    at: [5, -3, 1], data: "[snowy=false]" }
+      - { block: "WHITE_CONCRETE", at: [4, -3, -3] }
+      - { block: "WHITE_CONCRETE", at: [4, -3, 1] }
+      - { block: "WHITE_CONCRETE", at: [3, -3, -3] }
+      - { block: "WHITE_CONCRETE", at: [3, -3, 1] }
+      - { block: "WHITE_CONCRETE", at: [2, -3, -3] }
+      - { block: "WHITE_CONCRETE", at: [2, -3, 1] }
+      - { block: "WHITE_CONCRETE", at: [1, -3, -3] }
+      - { block: "WHITE_CONCRETE", at: [1, -3, -2] }
+      - { block: "WHITE_CONCRETE", at: [1, -3, -1] }
+      - { block: "WHITE_CONCRETE", at: [1, -3, 0] }
+      - { block: "WHITE_CONCRETE", at: [1, -3, 1] }
+      - { block: "DIRT",           at: [0, -3, 2] }
+      - { block: "WHITE_CONCRETE", at: [0, -3, 3] }
+      - { block: "WHITE_CONCRETE", at: [0, -3, 4] }
+      - { block: "WHITE_CONCRETE", at: [0, -3, 5] }
+      - { block: "WHITE_CONCRETE", at: [-1, -3, 5] }
+      - { block: "WHITE_CONCRETE", at: [1, -3, 5] }
+      - { block: "WHITE_CONCRETE", at: [2, -3, 5] }
+      - { block: "WHITE_CONCRETE", at: [3, -3, 5] }
+      - { block: "WHITE_CONCRETE", at: [4, -3, 5] }
+      - { block: "WHITE_CONCRETE", at: [5, -3, 5] }
+    activate: passive
+    # No expects: like water_wheel_fan, flowing-water power is unreliable in the 80-tick capture
+    # window, and the boiler tank only fills via the pump chain — don't gate CI on either.
+    expect: []
