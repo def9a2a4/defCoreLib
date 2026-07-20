@@ -206,24 +206,17 @@ final class ShowcaseRunner implements Listener {
             }
             // Vanilla support blocks: emit a single static "block" display so the webpage renders them
             // (bare material name — generate_catalog vendors the model; placed3d draws it corner-origin).
+            // Fluids are skipped here: `physics: true` water/lava spreads after placement, so the spec
+            // cells aren't the render truth — the world scan below captures the settled extent instead.
             for (ShowcaseSpec.VanillaSpec vs : spec.vanilla) {
-                Map<String, Object> display = new LinkedHashMap<>();
-                display.put("kind", "block");
-                display.put("ref", vs.material().getKey().getKey());   // e.g. "oak_planks"
-                // A "block" display is corner-origin ([0,1]³, center +0.5), but the capture frame's origin
-                // is the cell CENTER (positions are entity − (corner+0.5)). Shift −0.5 so the cube centers
-                // on the cell, matching the custom blocks — exactly what a real corner BlockDisplay records.
-                display.put("position", new double[]{-0.5, -0.5, -0.5});
-                display.put("matrix", new float[]{1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1});
-                display.put("animation", null);
-
-                Map<String, Object> rec = new LinkedHashMap<>();
-                rec.put("id", null);
-                rec.put("offset", new int[]{vs.at()[0], vs.at()[1], vs.at()[2]});
-                rec.put("baseHeadTextureUrl", null);
-                rec.put("displays", List.of(display));
-                blocks.add(rec);
+                if (isFluid(vs.material())) continue;
+                blocks.add(vanillaRecord(vs.material().getKey().getKey(),
+                        vs.at()[0], vs.at()[1], vs.at()[2]));
             }
+            // World fluids: scan the build's bounding box (padded 3 out/down, 1 up — well inside the
+            // 16-block z spacing between showcases) and emit every water/lava cell with its level so
+            // the viewer can size flowing water (`water[level=3]`).
+            for (Map<String, Object> rec : captureFluids(spec, origin)) blocks.add(rec);
             Map<String, Object> sc = new LinkedHashMap<>();
             sc.put("id", spec.id);
             sc.put("name", spec.name);
@@ -245,6 +238,65 @@ final class ShowcaseRunner implements Listener {
         } catch (Throwable t) {
             log.severe("[showcase] capture write failed: " + t);
         }
+    }
+
+    private static boolean isFluid(org.bukkit.Material m) {
+        return m == org.bukkit.Material.WATER || m == org.bukkit.Material.LAVA;
+    }
+
+    /** The static single-"block"-display record used for vanilla support blocks and world fluids. */
+    private static Map<String, Object> vanillaRecord(String ref, int dx, int dy, int dz) {
+        Map<String, Object> display = new LinkedHashMap<>();
+        display.put("kind", "block");
+        display.put("ref", ref);   // e.g. "oak_planks", "water[level=3]"
+        // A "block" display is corner-origin ([0,1]³, center +0.5), but the capture frame's origin
+        // is the cell CENTER (positions are entity − (corner+0.5)). Shift −0.5 so the cube centers
+        // on the cell, matching the custom blocks — exactly what a real corner BlockDisplay records.
+        display.put("position", new double[]{-0.5, -0.5, -0.5});
+        display.put("matrix", new float[]{1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1});
+        display.put("animation", null);
+
+        Map<String, Object> rec = new LinkedHashMap<>();
+        rec.put("id", null);
+        rec.put("offset", new int[]{dx, dy, dz});
+        rec.put("baseHeadTextureUrl", null);
+        rec.put("displays", List.of(display));
+        return rec;
+    }
+
+    /** Every water/lava cell inside the spec's padded bounding box, as vanilla records with the fluid
+     *  level baked into the ref ({@code water[level=N]}; 0 = source, 1-7 flowing, ≥8 falling). */
+    private List<Map<String, Object>> captureFluids(ShowcaseSpec spec, Location origin) {
+        int minX = 0, minY = 0, minZ = 0, maxX = 0, maxY = 0, maxZ = 0;
+        boolean first = true;
+        List<int[]> ats = new ArrayList<>();
+        for (ShowcaseSpec.BlockSpec bs : spec.blocks) ats.add(bs.at());
+        for (ShowcaseSpec.VanillaSpec vs : spec.vanilla) ats.add(vs.at());
+        for (int[] at : ats) {
+            if (first) {
+                minX = maxX = at[0]; minY = maxY = at[1]; minZ = maxZ = at[2];
+                first = false;
+            } else {
+                minX = Math.min(minX, at[0]); maxX = Math.max(maxX, at[0]);
+                minY = Math.min(minY, at[1]); maxY = Math.max(maxY, at[1]);
+                minZ = Math.min(minZ, at[2]); maxZ = Math.max(maxZ, at[2]);
+            }
+        }
+        List<Map<String, Object>> out = new ArrayList<>();
+        if (first) return out;
+        for (int x = minX - 3; x <= maxX + 3; x++) {
+            for (int y = minY - 3; y <= maxY + 1; y++) {
+                for (int z = minZ - 3; z <= maxZ + 3; z++) {
+                    Block b = blockAt(origin, new int[]{x, y, z});
+                    if (!isFluid(b.getType())) continue;
+                    int level = b.getBlockData() instanceof org.bukkit.block.data.Levelled l
+                            ? l.getLevel() : 0;
+                    out.add(vanillaRecord(b.getType().getKey().getKey() + "[level=" + level + "]",
+                            x, y, z));
+                }
+            }
+        }
+        return out;
     }
 
     // ── Helpers ──────────────────────────────────────────────────────────────

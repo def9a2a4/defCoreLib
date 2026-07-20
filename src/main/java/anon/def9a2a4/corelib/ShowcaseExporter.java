@@ -47,6 +47,12 @@ final class ShowcaseExporter {
             if (type != null) {
                 rec.put("id", type.fullId());
                 rec.put("facing", reverseFacing(b));
+                // `facing` alone can't round-trip orientation: every floor head reads back "down", and
+                // stateResolver blocks (pipes, hoists) can't re-resolve without a real placement. The
+                // corelib:state token IS the orientation source of truth (axis / pipe facing), and
+                // ShowcaseBuilder honors an explicit `state` before any placement_state_map fallback.
+                String state = registry.getState(b);
+                if (state != null) rec.put("state", state);
                 rec.put("at", at);
                 if (ChainPulley.PULLEY_ID.equals(type.fullId())) {
                     int[] partner = ChainPulley.readLinkPdc(b);
