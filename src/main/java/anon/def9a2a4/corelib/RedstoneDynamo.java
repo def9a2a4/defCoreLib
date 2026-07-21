@@ -184,26 +184,10 @@ final class RedstoneDynamo implements Listener {
      *  Scale is carried through from the YAML transform (authoritative). */
     private static Transformation orientHead(Block b, Transformation base) {
         BlockFace facing = (b.getBlockData() instanceof Directional d) ? d.getFacing() : BlockFace.UP;
-        AxisAngle4f r = rotationForFace(facing);
+        AxisAngle4f r = Faces.rotationForFace(facing);
         Vector3f rc = r.transform(new Vector3f(0f, HEAD_CENTER * base.getScale().y, 0f));
         Vector3f t = new Vector3f(0f, UP_NUDGE, 0f).sub(rc);
         return new Transformation(t, r, base.getScale(), R_IDENTITY);
-    }
-
-    /** Rotation mapping the model's +Z (front face) onto {@code facing}. Walls rotate about +Y only,
-     *  so the art stays upright and faces out of each wall distinctly (no 180° roll — the piston's
-     *  {@code faceRotation} table); UP/DOWN tip the front skyward/floorward about X. */
-    private static AxisAngle4f rotationForFace(BlockFace facing) {
-        float h = (float) (Math.PI / 2), p = (float) Math.PI;
-        return switch (facing) {
-            case SOUTH -> R_IDENTITY;                      // +Z → +Z
-            case NORTH -> new AxisAngle4f(p, 0f, 1f, 0f);  // +Z → -Z
-            case EAST  -> new AxisAngle4f(h, 0f, 1f, 0f);  // +Z → +X
-            case WEST  -> new AxisAngle4f(-h, 0f, 1f, 0f); // +Z → -X
-            case UP    -> new AxisAngle4f(-h, 1f, 0f, 0f); // +Z → +Y (front skyward, top of art → N)
-            case DOWN  -> new AxisAngle4f(h, 1f, 0f, 0f);  // +Z → -Y (front floorward)
-            default    -> R_IDENTITY;
-        };
     }
 
     // ── Tick: recompute the level and drive the barrel/comparator ─────────────────────────────────

@@ -30,6 +30,14 @@ fan:
   max-push: 0.5       # cap on per-tick push velocity
   push-per-power: 0.08 # extra push velocity per surplus power
 
+powered-dispenser:
+  power-cap: 10         # network power above this adds no more boost ("over 10 does nothing")
+  min-boost: 0.4        # extra launch velocity (blocks/tick) at minimum power
+  boost-per-power: 0.2  # extra launch velocity per unit of network power (reaches max-boost near 10)
+  max-boost: 2.0        # cap for arrows/items (arrow ~1.1 b/t base -> ~3.1 b/t at max power)
+  tnt-max-boost: 1.5    # separate cap for thrown primed TNT (forward throw)
+  min-straightness: 0.8 # spread reduction at minimum power (1.0 = perfectly straight; dead straight at cap)
+
 press:
   tick-interval: 20   # fixed press cycle length, in ticks
   max-batch: 8        # cap on items pressed per cycle (batch scales with surplus power)
@@ -91,6 +99,7 @@ power:
   pump: 4
   placer: 2
   suction_hopper: 3
+  powered_dispenser: 1   # light constant demand — any powered network (supply >= 1) activates the launcher
   piston_core: 1   # base rotational demand of an extendable piston core (speed scales with surplus above this)
   chain_hoist: 1   # base rotational demand of a chain hoist (lift speed scales with surplus above this)
 

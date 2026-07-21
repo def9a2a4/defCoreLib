@@ -163,7 +163,10 @@ public final class BlockLoader {
             for (String f : placementSec.getStringList("allowed_faces")) {
                 faces.add(BlockFace.valueOf(f.toUpperCase()));
             }
-            b.placement(new CustomHeadBlock.PlacementConfig(faces, placementSec.getBoolean("require_solid")));
+            CustomHeadBlock.FacingMode facingMode = CustomHeadBlock.FacingMode.valueOf(
+                    placementSec.getString("facing", "attachment").toUpperCase());
+            b.placement(new CustomHeadBlock.PlacementConfig(
+                    faces, placementSec.getBoolean("require_solid"), facingMode));
         }
 
         // Placement face → initial state map

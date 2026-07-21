@@ -44,6 +44,14 @@ final class RotationConfig {
     int dynamoTickInterval = 10;       // redstone dynamo: ticks between comparator-output refreshes
     String dynamoDefaultMode = "TOTAL";      // TOTAL | USED | UNUSED
     String dynamoDefaultScaling = "CLAMP";   // CLAMP | MOD15 | DIV15
+    // Powered dispenser: extra launch velocity (blocks/tick) added along the facing when powered.
+    // Boost scales with the network's supplied power, clamped at poweredDispenserPowerCap.
+    int poweredDispenserPowerCap = 10;        // "anything over 10 power does nothing"
+    double poweredDispenserMinBoost = 0.4;    // boost floor when powered
+    double poweredDispenserBoostPerPower = 0.2;
+    double poweredDispenserMaxBoost = 2.0;    // cap for arrows/items (~3.1 b/t arrow at max power)
+    double poweredDispenserTntMaxBoost = 1.5; // forward TNT throw at max power
+    double poweredDispenserMinStraightness = 0.8; // spread reduction at min power (1.0 = dead straight)
     Set<Material> drillBlacklist = Set.of(
             Material.BEDROCK, Material.SPAWNER,
             Material.MOVING_PISTON, Material.REINFORCED_DEEPSLATE);
@@ -135,6 +143,17 @@ final class RotationConfig {
             fanMinPush = fan.getDouble("min-push", fanMinPush);
             fanMaxPush = fan.getDouble("max-push", fanMaxPush);
             fanPushPerPower = fan.getDouble("push-per-power", fanPushPerPower);
+            loaded++;
+        }
+
+        ConfigurationSection pd = yaml.getConfigurationSection("powered-dispenser");
+        if (pd != null) {
+            poweredDispenserPowerCap = pd.getInt("power-cap", poweredDispenserPowerCap);
+            poweredDispenserMinBoost = pd.getDouble("min-boost", poweredDispenserMinBoost);
+            poweredDispenserBoostPerPower = pd.getDouble("boost-per-power", poweredDispenserBoostPerPower);
+            poweredDispenserMaxBoost = pd.getDouble("max-boost", poweredDispenserMaxBoost);
+            poweredDispenserTntMaxBoost = pd.getDouble("tnt-max-boost", poweredDispenserTntMaxBoost);
+            poweredDispenserMinStraightness = pd.getDouble("min-straightness", poweredDispenserMinStraightness);
             loaded++;
         }
 
@@ -310,6 +329,7 @@ final class RotationConfig {
         powerValues.put("press", 1);
         powerValues.put("placer", 1);
         powerValues.put("suction_hopper", 1);
+        powerValues.put("powered_dispenser", 1);
     }
 
     private void initDefaultMechMeta() {

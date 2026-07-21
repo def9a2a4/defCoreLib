@@ -430,17 +430,16 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
             // afterwards (markBlock / applyConfig), same as any other custom block.
             block.setType(type.physicalMaterial(), false);
             if (block.getBlockData() instanceof org.bukkit.block.data.Directional dir) {
-                if (dir.getFaces().contains(placedOn)) {
-                    dir.setFacing(placedOn);
+                BlockFace desired = placementFacing(type, event.getPlayer(), placedOn);
+                if (!dir.getFaces().contains(desired)) {
+                    // Horizontal-only Directional (e.g. the boiler's chest) that can't take the desired
+                    // face (floor placement, or a vertical toward-player look): front toward the placer,
+                    // like a vanilla chest placement.
+                    desired = event.getPlayer().getFacing().getOppositeFace();
+                }
+                if (dir.getFaces().contains(desired)) {
+                    dir.setFacing(desired);
                     block.setBlockData(dir, false);
-                } else {
-                    // Horizontal-only Directional (e.g. the boiler's chest) placed on the floor:
-                    // front toward the placer, like a vanilla chest placement.
-                    BlockFace toward = event.getPlayer().getFacing().getOppositeFace();
-                    if (dir.getFaces().contains(toward)) {
-                        dir.setFacing(toward);
-                        block.setBlockData(dir, false);
-                    }
                 }
             }
         } else if (!isAlreadySkull) {
@@ -575,6 +574,30 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
                 type.onChunkLoadCallback().accept(block, state);
             }
         });
+    }
+
+    /**
+     * The facing a directional physical/base block should take on placement, per its
+     * {@link CustomHeadBlock.FacingMode}. Default {@code ATTACHMENT} keeps the historical behaviour
+     * (face the surface it was placed against); {@code TOWARD_PLAYER} mirrors a vanilla dispenser.
+     */
+    private static BlockFace placementFacing(CustomHeadBlock type, org.bukkit.entity.Player player,
+                                             BlockFace placedOn) {
+        if (type.placement() != null
+                && type.placement().facing() == CustomHeadBlock.FacingMode.TOWARD_PLAYER) {
+            return nearestLookingDirection(player).getOppositeFace();
+        }
+        return placedOn;
+    }
+
+    /** The axis-aligned direction the player is looking most strongly along (incl. up/down) — the
+     *  vanilla {@code Direction.getNearest(lookAngle)} rule used by dispenser/dropper/observer. */
+    private static BlockFace nearestLookingDirection(org.bukkit.entity.Player player) {
+        org.bukkit.util.Vector dir = player.getEyeLocation().getDirection();
+        double ax = Math.abs(dir.getX()), ay = Math.abs(dir.getY()), az = Math.abs(dir.getZ());
+        if (ay >= ax && ay >= az) return dir.getY() > 0 ? BlockFace.UP : BlockFace.DOWN;
+        if (ax >= az) return dir.getX() > 0 ? BlockFace.EAST : BlockFace.WEST;
+        return dir.getZ() > 0 ? BlockFace.SOUTH : BlockFace.NORTH;
     }
 
     // ──────────────────────────────────────────────────────────────────────

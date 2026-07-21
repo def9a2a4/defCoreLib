@@ -188,8 +188,20 @@ public final class CustomHeadBlock {
         @Nullable String resolve(org.bukkit.event.block.BlockPlaceEvent event);
     }
 
+    /** How a directional physical/base block is oriented on placement. */
+    public enum FacingMode {
+        /** Face the attachment surface (default — a shaft/head points at the block it was placed against). */
+        ATTACHMENT,
+        /** Face the placer like a vanilla dispenser: nearest-looking direction (incl. up/down), reversed. */
+        TOWARD_PLAYER
+    }
+
     /** Placement restrictions. */
-    public record PlacementConfig(Set<BlockFace> allowedFaces, boolean requireSolid) {}
+    public record PlacementConfig(Set<BlockFace> allowedFaces, boolean requireSolid, FacingMode facing) {
+        public PlacementConfig(Set<BlockFace> allowedFaces, boolean requireSolid) {
+            this(allowedFaces, requireSolid, FacingMode.ATTACHMENT);
+        }
+    }
 
     /** Inventory layout for storage blocks. */
     public enum InventoryLayout {

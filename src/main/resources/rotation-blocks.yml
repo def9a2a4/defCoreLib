@@ -75,6 +75,7 @@ textures:
   compressor_item:   "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvY2Q3Y2Y4NmY5ZjY1MzdkZDVkMThmMDAwNjE4ODdjY2Q1OWM0ZTc5NjY0Y2ViZDY1Y2FhN2ViMGUwMjcwMWViOCJ9fX0="  # dev/press/compressor — press item
   placer_item:       "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvM2M1ZjNjM2Q1ZDdiMWNlMGYzMjA0MGMxNDU0ZGFmODg3OGUxY2MyOTllMDI1YmFkMmU2OTE5ZWJhZTIxZmJiOCJ9fX0="  # block placer — item in hand
   placer_piston:     "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWYyZWZiNDJjYWFlNTYxZmUyZDk3YmY3MTFjY2MwNjQ3ZGU2OTVmZDJkZTIxZDljZGNiMTI5YmEyOTMzY2VkZiJ9fX0="  # block placer — symmetric piston display
+  powered_dispenser: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmEzNzI1YzM4NDc2ODgxOWQzOWI0Y2QyMGU3OWMyOGE0ZGE3MzdjZjlkYTlmYmVlZTgxYjk4MDc2M2I5NzI4YiJ9fX0="  # powered dispenser — in-hand item head (assets/misc/powered-dispenser.png)
   pipe_up_display:   "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHBzOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlL2VlZGQxYjQ4MTAwMjU3MjJiMzBlYmJlMjBmMTI5OGE5MDgyNmM1MzQ1ZGU2MDJmYzE3ZGFlZDFlMDVkZWQ4ZDgifX19"  # eedd1b48 — copper-pipe UP display skin, copied from pipes.yml @copper_display_up (BlockLoader builds the alias map per YAML file, so pipes' aliases can't be referenced from here)
 
   # ── Extendable-piston art (from assets/rotation/piston/, via scripts/upload_skin.py) ──
@@ -1837,6 +1838,59 @@ blocks:
               C: { material: COPPER_INGOT }
               P: { material: PISTON }
               H: { material: HOPPER }
+
+  # ─── Powered Dispenser ────────────────────────────────────────────────────
+  # A REAL vanilla DISPENSER (physical_material) wearing two glowing red-eye item displays and a
+  # custom "Powered Dispenser" name. Unpowered it IS a vanilla dispenser — GUI, hoppers, item pipes,
+  # and redstone are all vanilla (the Java overlay sets lockContainer(false)). Fed rotation power from
+  # ANY face (omni consumer, PoweredDispenser.java) it launches whatever it dispenses faster and
+  # straighter along its facing — arrows fly harder, TNT is thrown forward, items sail out — scaling
+  # with the network's spare power up to a cap. `placement: { facing: toward_player }` gives it the
+  # vanilla dispenser placement rule (face the placer, incl. up/down); the eyes ride the mouth face,
+  # rotated to the live facing by the overlay's display resolver.
+  powered_dispenser:
+    name: "&cPowered Dispenser"
+    lore:
+      - "&7A dispenser with a rotation-driven"
+      - "&7launcher: powered dispenses fly"
+      - "&7faster and straighter"
+    catalog_notes:
+      - "&fWorks exactly like a vanilla dispenser until you feed it rotation power from any side."
+      - "&fPowered, it launches arrows and items harder and straighter — extra speed scales with the network's total power, up to a cap."
+      - "&fDispensed TNT is thrown forward instead of dropping in place."
+      - "&7Wrench: show network debug info."
+    physical_material: DISPENSER
+    texture: "@powered_dispenser"
+    placement: { facing: toward_player }
+    drops: self
+    cancel_pistons: true
+    default_state: idle
+    states:
+      idle:
+        # Two red item-display "eyes", each exactly 1px × 2px × 1px (1px=1/16 block), pixel-aligned to
+        # the world grid. Authored for FACING=SOUTH (+Z); PoweredDispenser.eyeTransform rotates them onto
+        # the live facing (Faces.rotationForFace maps +Z → outward normal), and for up/down flattens them
+        # to either side in X, centered on Z. physical_material item displays render fullbright → glow.
+        #   x = ±2.5/16  → 1px-wide eyes in pixel columns 5 and 10 (4px gap), symmetric about centre.
+        #                  (eyeTransform also uses this X as the ±X spread on up/down faces.)
+        #   y = +2/16    → 2px-tall, faces on pixel lines (rows 9-11). Side facings only — eyeTransform
+        #                  zeros Y on up/down so those eyes stay centered on Z.
+        #   z = 8.5/16   → 1px-deep, proud in the pixel cell just outside the 0.5 face (faces at 0.5 and
+        #                  0.5625; the coplanar inner face is self-occluded, so no z-fight).
+        display_entities:
+          - { material: RED_CONCRETE, tag: eye_l, transform: { translation: [-0.15625, 0.125, 0.53125], scale: [0.0625, 0.125, 0.0625] } }
+          - { material: RED_CONCRETE, tag: eye_r, transform: { translation: [ 0.15625, 0.125, 0.53125], scale: [0.0625, 0.125, 0.0625] } }
+    recipes:
+      craft:
+        shaped:
+          # Slime cap over a piston flanked by two bearings (rotation coupling), above a dispenser + redstone.
+          - pattern: [" S ", "BPB", "RDR"]
+            key:
+              S: { material: SLIME_BLOCK }
+              B: { block: "mech:bearing" }
+              P: { material: PISTON }
+              D: { material: DISPENSER }
+              R: { material: REDSTONE }
 
   # ─── Drill ──────────────────────────────────────────────────────────────
   # Consumer: 1 Power. Breaks the block in its facing direction every 2s.
