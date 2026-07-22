@@ -37,6 +37,7 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
     private CustomBlockRegistry registry;
     private MechanismRegistry mechanismRegistry;
     private MechanismMinecartManager mechanismMinecartManager;
+    private CustomCartManager customCartManager;
     private GlueManager glueManager;
     private GlueAuthoring glueAuthoring;
     private ShowcaseBuilder showcaseBuilder;
@@ -88,6 +89,14 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         try (InputStream rsdStream = getResource("redstone-displays.yml")) {
             if (rsdStream != null) {
                 BlockLoader.load(rsdStream, registry, getLogger());
+            }
+        } catch (IOException ignored) {}
+
+        // BetterMinecarts content: fuel carts, junctions, destructor rail (recipes gated behind the
+        // `bmc` companion plugin). Runtime behaviour is wired below via the cart/rail managers.
+        try (InputStream cartsStream = getResource("carts-blocks.yml")) {
+            if (cartsStream != null) {
+                BlockLoader.load(cartsStream, registry, getLogger());
             }
         } catch (IOException ignored) {}
 
@@ -173,6 +182,18 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         mechanismMinecartManager.register();
         getServer().getPluginManager().registerEvents(mechanismMinecartManager, this);
 
+        // BetterMinecarts fuel carts (coal tender + blast-furnace cart). Content in carts-blocks.yml;
+        // tuning in carts-config.yml; recipes gated behind the `bmc` companion.
+        CartConfig cartConfig = new CartConfig();
+        try (InputStream cartsCfgStream = getResource("carts-config.yml")) {
+            if (cartsCfgStream != null) {
+                cartConfig.load(cartsCfgStream, getLogger());
+            }
+        } catch (IOException ignored) {}
+        customCartManager = new CustomCartManager(this, registry, cartConfig);
+        customCartManager.register();
+        getServer().getPluginManager().registerEvents(customCartManager, this);
+
         // Banner systems
         bannerManager = new BannerManager(this);
         getServer().getPluginManager().registerEvents(bannerManager, this);
@@ -221,6 +242,9 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         }
         if (mechanismMinecartManager != null) {
             mechanismMinecartManager.shutdown();
+        }
+        if (customCartManager != null) {
+            customCartManager.shutdown();
         }
         if (mechanismRegistry != null) {
             mechanismRegistry.shutdown();
@@ -285,6 +309,9 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         if (mechanismMinecartManager != null) {
             mechanismMinecartManager.scanChunkForMinecarts(event.getChunk());
         }
+        if (customCartManager != null) {
+            customCartManager.scanChunk(event.getChunk());
+        }
         // Clean up orphaned mechanism entities from previous sessions
         if (mechanismRegistry != null) {
             mechanismRegistry.cleanupOrphanedEntities(event.getChunk());
@@ -318,6 +345,9 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
     public void onEntitiesUnload(org.bukkit.event.world.EntitiesUnloadEvent event) {
         if (mechanismMinecartManager != null) {
             mechanismMinecartManager.onEntitiesUnload(event.getEntities());
+        }
+        if (customCartManager != null) {
+            customCartManager.onEntitiesUnload(event.getEntities());
         }
     }
 

@@ -1893,7 +1893,7 @@ public class CustomBlockRegistry {
     // Recipes for these namespaces are withheld by default and only registered once a companion
     // plugin (vslab / mech / rsd) calls enableRecipes(...). Every OTHER namespace (corelib, pipes, …)
     // registers exactly as before (default-allow), so third-party runtime registrars are unaffected.
-    private static final Set<String> GATED_NAMESPACES = Set.of("demo", "verticalslabs", "mech", "redstonedisplays");
+    private static final Set<String> GATED_NAMESPACES = Set.of("demo", "verticalslabs", "mech", "redstonedisplays", "bmc");
     private final Set<String> enabledRecipeNamespaces = new HashSet<>();
     // Per-type guard so an enable can't double-register a type's recipes (idempotency).
     private final Set<String> recipeRegisteredTypes = new HashSet<>();

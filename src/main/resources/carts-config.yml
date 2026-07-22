@@ -1,0 +1,19 @@
+# BetterMinecarts tuning. Loaded by CartConfig; consumed by the cart / train / rail managers.
+
+# Fuel accepted by the coal tender and blast-furnace cart inventories, and how long each item burns
+# (game ticks) when a blast-furnace cart consumes it. Any material NOT listed here is rejected from
+# a cart's fuel-only inventory. Values mirror vanilla furnace burn times.
+fuel:
+  COAL: 1600
+  CHARCOAL: 1600
+  COAL_BLOCK: 16000
+  DRIED_KELP_BLOCK: 4000
+  BLAZE_ROD: 2400
+
+# Speeds are in blocks/tick (0.4 = vanilla 8 b/s, 1.0 = 20 b/s, 2.0 = 40 b/s).
+carts:
+  # Top speed of a plain furnace-minecart locomotive.
+  furnace-cart-speed: 0.4
+  # Top speed of a blast-furnace-cart locomotive. Only reachable once trains position-drive (M3+);
+  # a solo blast-furnace cart on vanilla physics is capped at the vanilla 0.4 until then.
+  blast-furnace-cart-speed: 2.0

@@ -1,0 +1,49 @@
+# BetterMinecarts content — namespace "bmc". Recipes gated behind the BetterMinecarts companion.
+#
+# The fuel carts (coal tender, blast-furnace cart) are item-only: right-clicking a rail with the item
+# spawns a vanilla HopperMinecart (native 5-slot inventory + hopper interop), tagged and re-skinned in
+# code (CustomCartManager) — the cart's block render is set via Minecart#setDisplayBlockData, not YAML.
+# Junctions and the destructor rail (bare rails) are added here in a later milestone.
+
+namespace: bmc
+
+blocks:
+  coal_cart:
+    name: "&6Coal Minecart"
+    lore:
+      - "&7Right-click a rail to spawn a fuel tender."
+      - "&7Feeds furnace & blast-furnace carts in its train."
+      - "&7Accepts only fuel; hoppers above/beside fill it."
+    catalog_notes:
+      - "&fRight-click a rail to spawn a coal tender: a minecart with a 5-slot, fuel-only inventory rendered as a block of coal."
+      - "&fCouple it into a train and it automatically feeds any furnace or blast-furnace cart in that train."
+      - "&7Hoppers above or beside the track can refill it as it passes."
+    item_material: CHEST_MINECART
+    item_glint: true
+    placeable: false
+    recipes:
+      craft:
+        shapeless:
+          - ingredients:
+              - { material: COAL_BLOCK }
+              - { material: MINECART }
+              - { material: CHEST }
+
+  blast_furnace_cart:
+    name: "&cBlast Furnace Minecart"
+    lore:
+      - "&7Right-click a rail to spawn a fast locomotive."
+      - "&7A furnace cart with a fuel-only inventory,"
+      - "&7much higher top speed."
+    catalog_notes:
+      - "&fRight-click a rail to spawn a blast-furnace locomotive: like a furnace minecart, but with a 5-slot, fuel-only inventory and a far higher configurable top speed."
+      - "&fPowers a whole train from anywhere in the consist."
+    item_material: FURNACE_MINECART
+    item_glint: true
+    placeable: false
+    recipes:
+      craft:
+        shapeless:
+          - ingredients:
+              - { material: BLAST_FURNACE }
+              - { material: MINECART }

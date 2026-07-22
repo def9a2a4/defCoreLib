@@ -211,12 +211,18 @@ final class MechanismMinecartManager implements Listener {
             // no-mechanism carts get vanilla speed. Written EVERY tick so a stale 0 self-heals post-/reload.
             boolean frozen = state.mechanism == null
                 && glueManager.hasGlue(new EntityAnchor(state.minecart, () -> true));
+            // The corelib:frozen tag is the reload-survivable contract other systems read: a frozen cart
+            // must never be coupled or moved (see docs/todo/mechanism/minecarts-v2.md). Written every tick
+            // alongside the maxSpeed so a stale tag self-heals post-reload.
             if (frozen) {
                 state.minecart.setMaxSpeed(0.0d);
+                state.minecart.addScoreboardTag("corelib:frozen");
             } else if (state.mechanism == null) {
                 state.minecart.setMaxSpeed(DEFAULT_MINECART_MAX_SPEED);
+                state.minecart.removeScoreboardTag("corelib:frozen");
             } else {
                 updateAssembledCartCollision(state, (BasicMechanism) state.mechanism);
+                state.minecart.removeScoreboardTag("corelib:frozen");
             }
 
             boolean onPowered = isOnPoweredActivatorRail(state.minecart);

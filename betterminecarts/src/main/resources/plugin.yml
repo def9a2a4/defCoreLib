@@ -1,0 +1,7 @@
+name: BetterMinecarts
+main: anon.def9a2a4.betterminecarts.BetterMinecartsPlugin
+version: ${version}
+api-version: "1.21"
+author: def9a2a4
+description: Minecart trains, fuel carts, junctions, and the roller (content lives in DefCoreLib)
+depend: [DefCoreLib]
