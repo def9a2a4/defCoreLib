@@ -467,13 +467,16 @@ final class CartTrainManager implements Listener {
         // Establish (or, after a rebuild, re-establish) travel direction from a push / retained velocity.
         // A parked train stays on vanilla physics until nudged; a moving one that rebuilt resumes from
         // its carts' velocity hints. No engine and no push → nothing to drive.
-        if (!train.moving && !establishHeading(train)) return;
+        if (!train.moving && !establishHeading(train, engines > 0)) return;
 
         if (engines > 0) {
-            // Power/weight: acceleration falls with train length (1/n) and rises with engine count.
-            // Max speed stays length-independent (trainMax above) per the requirement.
+            // Power/weight: acceleration is proportional to (active engines / total carts) — it falls with
+            // train length (1/n) and rises with engine count — while max speed stays length-independent
+            // (trainMax). A freshly-started powered train ramps from ~0 rather than jumping to push speed.
             double accel = config.baseAccel * engines / n;
             train.speed = Math.min(train.speed + accel, trainMax);
+            // Burn fuel only while actually driving — a parked/primed engine doesn't drain (see C4).
+            for (Member m : ord) if (carts.isBlastCart(m.cart)) carts.consumeBurnTick(m.cart);
         } else {
             train.speed -= config.rollingDrag;
             if (train.speed <= 1e-4) { park(train); return; }
@@ -582,8 +585,10 @@ final class CartTrainManager implements Listener {
         train.chainDisplays.clear();
     }
 
-    /** Establish travel direction from a member's push; order the train front→back and seed leaderState. */
-    private boolean establishHeading(CartTrain train) {
+    /** Establish travel direction from a member's push; order the train front→back and seed leaderState.
+     *  {@code hasEngine}: a powered train uses the push only for direction and accelerates from its
+     *  current speed; an engineless (coasting) train adopts the push magnitude as its speed. */
+    private boolean establishHeading(CartTrain train, boolean hasEngine) {
         List<Member> ord = train.order;
         Vector heading = null;
         double pushMag = 0;
@@ -597,8 +602,11 @@ final class CartTrainManager implements Listener {
             }
         }
         if (heading == null) return false;
-        // Seed speed from the push so a fresh start doesn't stutter and a rebuild keeps its momentum.
-        train.speed = Math.max(train.speed, pushMag);
+        // The push establishes DIRECTION. Only an engineless train adopts its magnitude as speed — it has
+        // no other source and must roll at the push speed, then decay via rolling drag. A powered train
+        // ignores the shove speed and accelerates from its current speed (0 on a fresh start, or the value
+        // inherited across a chunk-border rebuild), so it visibly ramps up instead of jumping to full.
+        if (!hasEngine) train.speed = Math.max(train.speed, pushMag);
 
         // Order front→back: the front is the endpoint furthest along the heading. If endpoint b (the
         // current tail) projects ahead of endpoint a on the heading, reverse so index 0 is the front.

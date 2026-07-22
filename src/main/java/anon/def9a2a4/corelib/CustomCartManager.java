@@ -352,11 +352,13 @@ final class CustomCartManager implements Listener {
             }
         }
 
+        // Burn-DOWN is driven by CartTrainManager while the train moves (parked engines stay primed but
+        // don't drain — see consumeBurnTick / C4). Here we only ignite and show the "lit" smoke.
         if (state.burnTicks > 0) {
-            state.burnTicks--;
-            if (cart.getWorld() != null) {
-                cart.getWorld().spawnParticle(org.bukkit.Particle.SMOKE,
-                    cart.getLocation().add(0, 0.6, 0), 1, 0.05, 0.05, 0.05, 0.0);
+            // Chimney-style rising smoke from the top of the blast furnace while lit (throttled).
+            if (cart.getWorld() != null && ticks % 3 == 0) {
+                cart.getWorld().spawnParticle(org.bukkit.Particle.CAMPFIRE_COSY_SMOKE,
+                    cart.getLocation().add(0, 0.9, 0), 1, 0.06, 0.02, 0.06, 0.012);
             }
         }
     }
@@ -369,10 +371,24 @@ final class CustomCartManager implements Listener {
     /** True if this minecart is our coal tender. */
     boolean isCoalCart(Minecart cart) { return typeOf(cart) == CartType.COAL; }
 
-    /** Remaining burn ticks for a blast-furnace cart (0 if not tracked / not a blast cart). */
+    /** Remaining burn ticks for a blast-furnace cart (0 if not a blast cart). Falls back to the entity
+     *  PDC when the cart isn't in {@code tracked} yet, so an engine adopted a tick behind the train
+     *  manager isn't briefly seen as unfuelled (which would stutter the train / skew its accel ratio). */
     int burnTicks(Minecart cart) {
         CartState s = tracked.get(cart.getUniqueId());
-        return s != null && s.type == CartType.BLAST ? s.burnTicks : 0;
+        if (s != null && s.type == CartType.BLAST) return s.burnTicks;
+        if (typeOf(cart) == CartType.BLAST) {
+            Integer stored = cart.getPersistentDataContainer().get(fuelTicksKey, PersistentDataType.INTEGER);
+            return stored != null ? stored : 0;
+        }
+        return 0;
+    }
+
+    /** Consume one burn tick from a driven blast-furnace cart. The train drive loop calls this only while
+     *  the train is actually moving, so a fuelled engine parked at a dead end doesn't silently drain. */
+    void consumeBurnTick(Minecart cart) {
+        CartState s = tracked.get(cart.getUniqueId());
+        if (s != null && s.type == CartType.BLAST && s.burnTicks > 0) s.burnTicks--;
     }
 
     /** Top up a blast-furnace cart's burn counter (tender feeding). No-op if not a tracked blast cart. */
