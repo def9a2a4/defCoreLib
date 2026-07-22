@@ -173,7 +173,7 @@ final class PoweredDispenser implements Listener {
         return new Transformation(t, r, base.getScale(), Faces.identity());
     }
 
-    // ── Boost: three exact-source paths ─────────────────────────────────────────────────────────────
+    // ── Boost: gate the dispense, correct the spawned entity one tick later ─────────────────────────
 
     /** Boost magnitudes for the current network state; {@code straight} in [minStraightness, 1]. */
     private record Boost(double boost, double tnt, double straight) {}

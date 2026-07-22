@@ -85,6 +85,7 @@
   "tuff_slab": true,
   "warped_slab": true,
   "water": false,
+  "waxed_copper_chest": false,
   "waxed_cut_copper_slab": true,
   "waxed_exposed_cut_copper_slab": true,
   "waxed_oxidized_cut_copper_slab": true,
