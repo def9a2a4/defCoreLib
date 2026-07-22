@@ -12,10 +12,14 @@ import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.entity.BlockDisplay;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Minecart;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.minecart.PoweredMinecart;
+import org.joml.Matrix4f;
+import org.joml.Quaternionf;
+import org.joml.Vector3f;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -56,7 +60,10 @@ final class CartTrainManager implements Listener {
     private static final String TAG_BLAST = "corelib:blast_furnace_cart";
     private static final String TAG_MECHANISM = "corelib:mechanism_minecart";
     private static final String TAG_FROZEN = "corelib:frozen";
+    private static final String TAG_CHAIN = "corelib:cart_chain";
     private static final long PENDING_TIMEOUT_TICKS = 200L;
+    private static final double CHAIN_Y = 0.35d;   // coupling height above a cart's origin
+    private static final float CHAIN_WIDTH = 1.0f;
 
     private final JavaPlugin plugin;
     private final CartConfig config;
@@ -88,6 +95,7 @@ final class CartTrainManager implements Listener {
         double speed;
         boolean moving;                            // heading established (from a push)?
         RailPathWalker.RailState leaderState;
+        final List<BlockDisplay> chainDisplays = new ArrayList<>();   // one per coupling (size = order-1)
     }
 
     private record PendingLink(UUID cart, long expiry) {}
@@ -103,6 +111,7 @@ final class CartTrainManager implements Listener {
 
     void shutdown() {
         if (tickTask != null) tickTask.cancel();
+        for (CartTrain t : trains) clearChainDisplays(t);
         members.clear();
         trains.clear();
         pending.clear();
@@ -316,6 +325,7 @@ final class CartTrainManager implements Listener {
         // Snapshot old speeds so a rebuild keeps momentum (keyed by any surviving member).
         Map<UUID, Double> oldSpeed = new HashMap<>();
         for (CartTrain t : trains) for (Member m : t.order) oldSpeed.put(m.cart.getUniqueId(), t.speed);
+        for (CartTrain t : trains) clearChainDisplays(t);   // fresh trains respawn their own chains
         for (Member m : members.values()) m.train = null;
         trains.clear();
 
@@ -393,6 +403,7 @@ final class CartTrainManager implements Listener {
             if (!ok) { dirty = true; continue; }
             if (feed) feedTrain(train);
             drive(train);
+            updateChainDisplays(train);   // after placing carts, so chains track their final positions
         }
     }
 
@@ -442,6 +453,49 @@ final class CartTrainManager implements Listener {
         cart.setVelocity(heading.clone().multiply(speed));
     }
 
+    // ── Chain visuals (one BlockDisplay per coupling, stretched between the carts) ──────────────────
+
+    /** Keep one chain BlockDisplay per coupling, positioned/oriented between consecutive carts. */
+    private void updateChainDisplays(CartTrain train) {
+        List<Member> ord = train.order;
+        int need = Math.max(0, ord.size() - 1);
+        train.chainDisplays.removeIf(d -> d == null || d.isDead());
+        while (train.chainDisplays.size() > need) {
+            BlockDisplay d = train.chainDisplays.remove(train.chainDisplays.size() - 1);
+            if (!d.isDead()) d.remove();
+        }
+        while (train.chainDisplays.size() < need) {
+            Location loc = ord.get(train.chainDisplays.size()).cart.getLocation().add(0, CHAIN_Y, 0);
+            BlockDisplay d = loc.getWorld().spawn(loc, BlockDisplay.class, bd -> {
+                bd.setBlock(Material.CHAIN.createBlockData());
+                bd.setPersistent(false);   // respawned from the train on reload; no orphans survive restart
+                bd.addScoreboardTag(TAG_CHAIN);
+            });
+            train.chainDisplays.add(d);
+        }
+        for (int i = 0; i < need; i++) {
+            BlockDisplay d = train.chainDisplays.get(i);
+            Location pa = ord.get(i).cart.getLocation().add(0, CHAIN_Y, 0);
+            Location pb = ord.get(i + 1).cart.getLocation().add(0, CHAIN_Y, 0);
+            d.teleport(pa);
+            Vector dir = pb.toVector().subtract(pa.toVector());
+            double len = dir.length();
+            if (len < 1e-4) continue;
+            Vector3f unit = new Vector3f((float) dir.getX(), (float) dir.getY(), (float) dir.getZ()).normalize();
+            Quaternionf rot = new Quaternionf().rotationTo(new Vector3f(0, 1, 0), unit);
+            // Map the block model's bottom-centre → cart A and top-centre → cart B: rotate the vertical
+            // chain onto the coupling direction, stretch to the gap, and re-centre the cell in XZ.
+            Matrix4f m = new Matrix4f().rotate(rot).scale(CHAIN_WIDTH, (float) len, CHAIN_WIDTH)
+                .translate(-0.5f, 0f, -0.5f);
+            d.setTransformationMatrix(m);
+        }
+    }
+
+    private void clearChainDisplays(CartTrain train) {
+        for (BlockDisplay d : train.chainDisplays) if (d != null && !d.isDead()) d.remove();
+        train.chainDisplays.clear();
+    }
+
     /** Establish travel direction from a member's push; order the train front→back and seed leaderState. */
     private boolean establishHeading(CartTrain train) {
         List<Member> ord = train.order;
@@ -460,9 +514,11 @@ final class CartTrainManager implements Listener {
         // Seed speed from the push so a fresh start doesn't stutter and a rebuild keeps its momentum.
         train.speed = Math.max(train.speed, pushMag);
 
+        // Order front→back: the front is the endpoint furthest along the heading. If endpoint b (the
+        // current tail) projects ahead of endpoint a on the heading, reverse so index 0 is the front.
         Member a = ord.get(0), b = ord.get(ord.size() - 1);
         Vector ab = b.cart.getLocation().toVector().subtract(a.cart.getLocation().toVector());
-        if (ab.getX() * heading.getX() + ab.getZ() * heading.getZ() < 0) Collections.reverse(ord);
+        if (ab.getX() * heading.getX() + ab.getZ() * heading.getZ() > 0) Collections.reverse(ord);
 
         Minecart front = ord.get(0).cart;
         Block rail = railUnder(front);

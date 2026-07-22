@@ -115,46 +115,35 @@ final class RailPathWalker {
         RailState s = start.copy();
         double remaining = distance;
         double step = Math.max(0.05, subStep);
-        Vector lastHeading = null;
 
         while (remaining > 1e-6) {
             Rail data = railData(s.rail);
-            if (data == null) return blocked(s);
+            if (data == null) return finish(s, true);
             double segLen = segmentLength(data.getShape());
             double move = Math.min(step, remaining);
-            double dtBefore = s.t;
-            s.t += move / segLen;
+            double dt = move / segLen;
 
-            if (s.t < 1.0) {
+            if (s.t + dt < 1.0) {
+                s.t += dt;
                 remaining -= move;
-                Vector p = pathPoint(s, dtBefore);
-                lastHeading = headingBetween(s, dtBefore, s.t);
-                if (remaining <= 1e-6) return new Step(s, p, lastHeading, false);
                 continue;
             }
-
-            // Reached this rail's exit edge — hop to the next rail block.
-            remaining -= (1.0 - dtBefore) * segLen;
+            // Consume the rest of this rail's arc, then hop to the connected rail out of the exit face.
+            remaining -= (1.0 - s.t) * segLen;
             BlockFace exit = toFace(data.getShape(), s.fromFace);
             RailState next = hop(s, exit);
             if (next == null) {
-                // Park exactly at the exit edge of the current rail.
-                Vector p = edgePoint(s.rail, exit, railTopY(s.rail, data.getShape(), exit));
-                return new Step(s, p, faceDir(exit).clone(), true);
+                s.t = 1.0;                 // park exactly at the exit edge
+                return finish(s, true);
             }
-            lastHeading = faceDir(exit).clone();
-            s = next;
-            if (remaining <= 1e-6) {
-                return new Step(s, pathPoint(s, s.t), lastHeading, false);
-            }
+            s = next;                      // enters the new rail at t = 0
         }
-        return new Step(s, pathPoint(s, s.t), lastHeading != null ? lastHeading : faceDir(toFace(railData(s.rail).getShape(), s.fromFace)), false);
+        return finish(s, false);
     }
 
-    private static Step blocked(RailState s) {
-        Rail data = railData(s.rail);
-        BlockFace f = data != null ? toFace(data.getShape(), s.fromFace) : s.fromFace.getOppositeFace();
-        return new Step(s, pathPoint(s, s.t), faceDir(f).clone(), true);
+    /** Package a step: world position at the current arc parameter + the local path tangent as heading. */
+    private static Step finish(RailState s, boolean blocked) {
+        return new Step(s, pathPoint(s, s.t), tangentAt(s), blocked);
     }
 
     /** Move to the neighbouring rail out of {@code exit}, trying same-level, then up (climb a slope),
@@ -285,15 +274,18 @@ final class RailPathWalker {
         return new Vector(0.5 + f.getModX() * 0.5, 0, 0.5 + f.getModZ() * 0.5);
     }
 
-    /** Unit travel heading between two parameters on the current rail (for the client velocity hint). */
-    private static Vector headingBetween(RailState state, double t0, double t1) {
-        Vector a = pathPoint(state, t0);
-        Vector b = pathPoint(state, t1);
-        Vector d = b.subtract(a);
-        if (d.lengthSquared() < 1e-9) {
-            Rail data = railData(state.rail);
-            return faceDir(toFace(data.getShape(), state.fromFace)).clone();
-        }
+    /** Local unit travel tangent (horizontal) at the state's current arc parameter — the true heading
+     *  along the rail, including the curving direction mid-arc (so a cart follows a curve smoothly
+     *  rather than snapping to a cardinal face). Sampled by finite difference around t. */
+    private static Vector tangentAt(RailState s) {
+        Rail data = railData(s.rail);
+        if (data == null) return new Vector(0, 0, 1);
+        double e = 0.03;
+        double t0 = Math.max(0.0, s.t - e);
+        double t1 = Math.min(1.0, s.t + e);
+        Vector d = pathPoint(s, t1).subtract(pathPoint(s, t0));
+        d.setY(0);
+        if (d.lengthSquared() < 1e-9) return faceDir(toFace(data.getShape(), s.fromFace)).clone();
         return d.normalize();
     }
 
