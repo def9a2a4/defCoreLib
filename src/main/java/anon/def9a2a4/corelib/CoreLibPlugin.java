@@ -10,6 +10,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
+import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.*;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
@@ -184,23 +185,10 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         mechanismMinecartManager.register();
         getServer().getPluginManager().registerEvents(mechanismMinecartManager, this);
 
-        // BetterMinecarts fuel carts (coal tender + blast-furnace cart). Content in carts-blocks.yml;
-        // tuning in carts-config.yml; recipes gated behind the `bmc` companion.
-        CartConfig cartConfig = new CartConfig();
-        try (InputStream cartsCfgStream = getResource("carts-config.yml")) {
-            if (cartsCfgStream != null) {
-                cartConfig.load(cartsCfgStream, getLogger());
-            }
-        } catch (IOException ignored) {}
-        customCartManager = new CustomCartManager(this, registry, cartConfig);
-        customCartManager.register();
-        getServer().getPluginManager().registerEvents(customCartManager, this);
-        // Minecart trains (chain coupling + position-driven movement). Reads engine/fuel state from the
-        // cart manager; owns movement for all coupled carts and solo blast-furnace engines.
-        cartTrainManager = new CartTrainManager(this, cartConfig, customCartManager);
-        customCartManager.setTrainManager(cartTrainManager);
-        cartTrainManager.register();
-        getServer().getPluginManager().registerEvents(cartTrainManager, this);
+        // BetterMinecarts fuel carts + minecart trains: the entire runtime (listeners + tick tasks) is
+        // gated behind the BetterMinecarts companion, which calls enableCarts()/disableCarts() from its
+        // own enable/disable (mirroring enableRecipes("bmc")). Without the companion the carts' block/item
+        // types still load (above), but no cart/coupling behaviour is active — minecarts stay vanilla.
 
         // Banner systems
         bannerManager = new BannerManager(this);
@@ -251,12 +239,7 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         if (mechanismMinecartManager != null) {
             mechanismMinecartManager.shutdown();
         }
-        if (customCartManager != null) {
-            customCartManager.shutdown();
-        }
-        if (cartTrainManager != null) {
-            cartTrainManager.shutdown();
-        }
+        disableCarts();
         if (cartSpike != null) {
             cartSpike.stop();
         }
@@ -267,6 +250,48 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
             registry.shutdown();
         }
         instance = null;
+    }
+
+    /**
+     * Activate the BetterMinecarts runtime — the fuel-cart manager and the minecart-train manager
+     * (listeners + per-tick tasks). Called by the BetterMinecarts companion's onEnable (which runs
+     * after ours, so worlds/chunks are loaded and register()'s scan adopts existing carts). Idempotent.
+     */
+    public void enableCarts() {
+        if (customCartManager != null) return;   // already active
+        CartConfig cartConfig = new CartConfig();
+        try (InputStream cartsCfgStream = getResource("carts-config.yml")) {
+            if (cartsCfgStream != null) {
+                cartConfig.load(cartsCfgStream, getLogger());
+            }
+        } catch (IOException ignored) {}
+        customCartManager = new CustomCartManager(this, registry, cartConfig);
+        customCartManager.register();
+        getServer().getPluginManager().registerEvents(customCartManager, this);
+        // Minecart trains (chain coupling + position-driven movement). Reads engine/fuel state from the
+        // cart manager; owns movement for all coupled carts and solo blast-furnace engines.
+        cartTrainManager = new CartTrainManager(this, cartConfig, customCartManager);
+        customCartManager.setTrainManager(cartTrainManager);
+        cartTrainManager.register();
+        getServer().getPluginManager().registerEvents(cartTrainManager, this);
+    }
+
+    /**
+     * Tear down the BetterMinecarts runtime: cancel tick tasks + persist/park (shutdown()), unregister
+     * the listeners (shutdown() does not), and drop the managers so the null-guarded entity-load/unload
+     * callbacks no-op. Called from onDisable and from the companion's onDisable. Null-safe / idempotent.
+     */
+    public void disableCarts() {
+        if (customCartManager != null) {
+            customCartManager.shutdown();
+            HandlerList.unregisterAll(customCartManager);
+            customCartManager = null;
+        }
+        if (cartTrainManager != null) {
+            cartTrainManager.shutdown();
+            HandlerList.unregisterAll(cartTrainManager);
+            cartTrainManager = null;
+        }
     }
 
     public static CoreLibPlugin getInstance() {

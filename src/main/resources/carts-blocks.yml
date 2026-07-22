@@ -50,3 +50,52 @@ blocks:
           - ingredients:
               - { material: BLAST_FURNACE }
               - { material: MINECART }
+
+  # ── Rails ──────────────────────────────────────────────────────────────────
+  # Placed as real rails (base_block); identity + persistence come from CoreLib's bare-block chunk index,
+  # behaviour from CartRailsManager. The item icon is a vanilla rail (item_material); no custom texture.
+
+  junction:
+    name: "&eMinecart Junction"
+    lore:
+      - "&7A crossing rail: a cart passing over it keeps"
+      - "&7its heading and goes straight instead of curving."
+    catalog_notes:
+      - "&fPlace where two straight tracks cross. A cart crossing it continues straight in the direction it was already travelling, so north–south and east–west lines can intersect without turning carts."
+    base_block: RAIL
+    item_material: RAIL
+    item_glint: true
+    drops: self
+    recipes:
+      craft:
+        shaped:
+          - amount: 2
+            pattern:
+              - " R "
+              - "RIR"
+              - " R "
+            key:
+              R: { material: RAIL }
+              I: { material: IRON_INGOT }
+
+  destructor_rail:
+    name: "&cDestructor Rail"
+    lore:
+      - "&7Destroys any minecart that passes over it,"
+      - "&7depositing the cart item and its contents into"
+      - "&7the container directly below (else on the ground)."
+      - "&7Mechanism minecarts pass over unharmed."
+    catalog_notes:
+      - "&fA detector rail that recycles a passing minecart: it ejects any riders, then drops the cart item, everything in its inventory, and any coupling chains into the barrel / dropper / dispenser directly below — or onto the ground if there is no container."
+      - "&7Mechanism minecarts are exempt and pass over unharmed."
+    base_block: DETECTOR_RAIL
+    item_material: DETECTOR_RAIL
+    item_glint: true
+    drops: self
+    recipes:
+      craft:
+        shapeless:
+          - ingredients:
+              - { material: DETECTOR_RAIL }
+              - { material: POINTED_DRIPSTONE }
+              - { material: HOPPER }

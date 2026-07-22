@@ -62,10 +62,14 @@ final class CartTrainManager implements Listener {
     private static final String TAG_FROZEN = "corelib:frozen";
     private static final String TAG_CHAIN = "corelib:cart_chain";
     private static final long PENDING_TIMEOUT_TICKS = 200L;
-    private static final double CHAIN_Y = -0.2d;    // coupler height relative to a cart's location (near the rail)
+    private static final double CHAIN_Y = 0.05d;    // coupler height relative to a cart's location (just above the rail)
     private static final double HALF_CART = 0.5d;   // half a minecart length — couple end-to-end, not centre-to-centre
     private static final float CHAIN_WIDTH = 1.0f;  // natural chain-model thickness (ChainPulley convention)
-    private static final int CHAIN_INTERP = 3;      // display teleport/interp duration to match minecart client lerp
+    private static final int CHAIN_INTERP = 1;      // 1-tick teleport/interp: matches the 20 TPS teleport cadence
+    // Forward-predict the chain endpoints by this fraction of each cart's per-tick velocity hint. The client
+    // dead-reckons a minecart forward from setVelocity, so it's *drawn* ~1 tick ahead of its server position;
+    // the chain must sample that drawn position or it trails by ~speed blocks while moving. Empirical knob.
+    private static final double LERP_LEAD = 1.0d;
 
     // 1.21.9 (Copper Age) renamed CHAIN → IRON_CHAIN; resolve by name so it works on 1.21.8..1.21.11+
     // (mirrors ChainPulley.resolveChain). Used for the display block, the drop item, and the item check.
@@ -547,14 +551,19 @@ final class CartTrainManager implements Listener {
         Vector down = new Vector(0, CHAIN_Y, 0);
         for (int i = 0; i < need; i++) {
             BlockDisplay d = train.chainDisplays.get(i);
-            Location la = ord.get(i).cart.getLocation();
-            Location lb = ord.get(i + 1).cart.getLocation();
+            Minecart cartA = ord.get(i).cart, cartB = ord.get(i + 1).cart;
+            Location la = cartA.getLocation();
+            Location lb = cartB.getLocation();
             Vector along = lb.toVector().subtract(la.toVector());
-            if (along.lengthSquared() < 1e-8) { d.teleport(la.add(0, CHAIN_Y, 0)); continue; }
+            if (along.lengthSquared() < 1e-8) { d.setTransformationMatrix(new Matrix4f().scale(0f)); continue; }
             Vector unit3 = along.clone().normalize();
-            // Endpoints are the carts' adjacent ends (half a cart in from each centre), near the rail.
-            Vector endA = la.toVector().add(unit3.clone().multiply(HALF_CART)).add(down);
-            Vector endB = lb.toVector().subtract(unit3.clone().multiply(HALF_CART)).add(down);
+            // Endpoints = the carts' adjacent ends (half a cart in from each centre), near the rail, and
+            // forward-predicted by the cart's velocity hint so the chain tracks where each cart is *drawn*
+            // (the client dead-reckons the minecart ahead of its server position while moving).
+            Vector leadA = cartA.getVelocity().clone().multiply(LERP_LEAD);
+            Vector leadB = cartB.getVelocity().clone().multiply(LERP_LEAD);
+            Vector endA = la.toVector().add(unit3.clone().multiply(HALF_CART)).add(down).add(leadA);
+            Vector endB = lb.toVector().subtract(unit3.clone().multiply(HALF_CART)).add(down).add(leadB);
             Vector span = endB.subtract(endA);
             float len = (float) span.length();
             d.teleport(endA.toLocation(la.getWorld()));

@@ -7,7 +7,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 /**
  * BetterMinecarts companion. All content — the coal/blast-furnace fuel carts, minecart trains,
  * junctions, and the destructor rail — lives in DefCoreLib under the {@code bmc} namespace, shipped
- * recipe-less. This plugin enables those recipes (mirroring the mech companion).
+ * recipe-less and with the cart runtime gated off. This plugin enables those recipes and activates the
+ * cart runtime (fuel carts + minecart trains) via {@code enableCarts()} — mirroring the mech companion.
  */
 public final class BetterMinecartsPlugin extends JavaPlugin {
 
@@ -20,6 +21,7 @@ public final class BetterMinecartsPlugin extends JavaPlugin {
             return;
         }
         core.getRegistry().enableRecipes("bmc");
+        core.enableCarts();
         getLogger().info("BetterMinecarts recipes enabled.");
     }
 
@@ -28,6 +30,7 @@ public final class BetterMinecartsPlugin extends JavaPlugin {
         CoreLibPlugin core = CoreLibPlugin.getInstance();
         if (core != null) {
             core.getRegistry().disableRecipes("bmc");
+            core.disableCarts();
         }
     }
 }
