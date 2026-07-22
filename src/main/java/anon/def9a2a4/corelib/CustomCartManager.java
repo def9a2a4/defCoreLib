@@ -26,9 +26,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitTask;
-import org.bukkit.util.Vector;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -73,7 +71,6 @@ final class CustomCartManager implements Listener {
         final HopperMinecart cart;
         final CartType type;
         int burnTicks;          // blast-furnace cart only; 0 = not burning
-        Vector heading;         // last significant horizontal travel direction (unit), or null
 
         CartState(HopperMinecart cart, CartType type) {
             this.cart = cart;
@@ -89,6 +86,9 @@ final class CustomCartManager implements Listener {
 
     private final Map<UUID, CartState> tracked = new HashMap<>();
     private BukkitTask tickTask;
+    private CartTrainManager trainManager;   // notified when a drivable engine spawns
+
+    void setTrainManager(CartTrainManager trainManager) { this.trainManager = trainManager; }
 
     CustomCartManager(org.bukkit.plugin.java.JavaPlugin plugin, CustomBlockRegistry registry, CartConfig config) {
         this.plugin = plugin;
@@ -151,10 +151,16 @@ final class CustomCartManager implements Listener {
     }
 
     /** The cart type of an entity, from its PDC marker, or null if it isn't one of ours. */
-    private CartType typeOf(HopperMinecart cart) {
+    private CartType typeOf(Minecart cart) {
         String t = cart.getPersistentDataContainer().get(cartTypeKey, PersistentDataType.STRING);
         if ("coal".equals(t)) return CartType.COAL;
         if ("blast".equals(t)) return CartType.BLAST;
+        return null;
+    }
+
+    /** Remove and return one whitelisted fuel item from this cart's inventory (tender feeding), or null. */
+    ItemStack takeOneFuelFrom(Minecart cart) {
+        if (cart instanceof HopperMinecart hm) return takeOneFuel(hm.getInventory());
         return null;
     }
 
@@ -182,6 +188,9 @@ final class CustomCartManager implements Listener {
                 type == CartType.COAL ? "coal" : "blast");
         });
         tracked.put(cart.getUniqueId(), new CartState(cart, type));
+        // A blast-furnace cart is a self-propelled engine → register it with the train manager now so it
+        // drives as a size-1 train without waiting for a chunk reload. Coal tenders join a train on link.
+        if (type == CartType.BLAST && trainManager != null) trainManager.trackCart(cart);
 
         if (event.getPlayer().getGameMode() != GameMode.CREATIVE) {
             item.setAmount(item.getAmount() - 1);
@@ -220,7 +229,8 @@ final class CustomCartManager implements Listener {
     private void tickBlast(CartState state) {
         HopperMinecart cart = state.cart;
 
-        // Refuel: when idle, consume one whitelisted fuel item from the inventory.
+        // Fuel bookkeeping only — movement is owned by CartTrainManager (position-driving). When idle,
+        // consume one whitelisted fuel item from the cart's own inventory to start a new burn.
         if (state.burnTicks <= 0) {
             ItemStack fuel = takeOneFuel(cart.getInventory());
             if (fuel != null) {
@@ -230,26 +240,38 @@ final class CustomCartManager implements Listener {
 
         if (state.burnTicks > 0) {
             state.burnTicks--;
-
-            // Track heading from the cart's own motion; sustain it (furnace-cart feel). Vanilla clamps
-            // to maxSpeed, so a solo cart tops out at the vanilla 0.4 until trains position-drive it.
-            Vector v = cart.getVelocity();
-            double horiz = Math.hypot(v.getX(), v.getZ());
-            if (horiz > 0.02) {
-                state.heading = new Vector(v.getX(), 0, v.getZ()).normalize();
-            }
-            if (state.heading != null) {
-                double speed = Math.min(config.blastFurnaceCartSpeed, config.furnaceCartSpeed);
-                cart.setVelocity(new Vector(state.heading.getX() * speed, v.getY(), state.heading.getZ() * speed));
-            }
-
-            // Burning cue.
             if (cart.getWorld() != null) {
                 cart.getWorld().spawnParticle(org.bukkit.Particle.SMOKE,
                     cart.getLocation().add(0, 0.6, 0), 1, 0.05, 0.05, 0.05, 0.0);
             }
         }
     }
+
+    // ── Accessors for CartTrainManager (engine power + tender fuel) ──────────
+
+    /** True if this minecart is our blast-furnace cart (a train engine). */
+    boolean isBlastCart(Minecart cart) { return typeOf(cart) == CartType.BLAST; }
+
+    /** True if this minecart is our coal tender. */
+    boolean isCoalCart(Minecart cart) { return typeOf(cart) == CartType.COAL; }
+
+    /** Remaining burn ticks for a blast-furnace cart (0 if not tracked / not a blast cart). */
+    int burnTicks(Minecart cart) {
+        CartState s = tracked.get(cart.getUniqueId());
+        return s != null && s.type == CartType.BLAST ? s.burnTicks : 0;
+    }
+
+    /** Top up a blast-furnace cart's burn counter (tender feeding). No-op if not a tracked blast cart. */
+    void addBurnTicks(Minecart cart, int add) {
+        CartState s = tracked.get(cart.getUniqueId());
+        if (s != null && s.type == CartType.BLAST) s.burnTicks += add;
+    }
+
+    /** Whether a material is accepted as fuel (delegates to the shared whitelist). */
+    boolean isFuel(Material m) { return config.isFuel(m); }
+
+    /** Burn ticks one unit of a fuel material yields. */
+    int fuelBurnTicks(Material m) { return config.burnTicks(m); }
 
     /** Remove and return one whitelisted fuel item (amount 1) from an inventory, or null. */
     private ItemStack takeOneFuel(Inventory inv) {

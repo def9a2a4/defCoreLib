@@ -14,6 +14,19 @@ fuel:
 carts:
   # Top speed of a plain furnace-minecart locomotive.
   furnace-cart-speed: 0.4
-  # Top speed of a blast-furnace-cart locomotive. Only reachable once trains position-drive (M3+);
-  # a solo blast-furnace cart on vanilla physics is capped at the vanilla 0.4 until then.
-  blast-furnace-cart-speed: 2.0
+  # Top speed of a blast-furnace-cart locomotive (position-driven; independent of train length).
+  blast-furnace-cart-speed: 1.0
+
+  # ── Train drive (position-driven, arc-length rail-walking) ──
+  # Arc-length gap kept between coupled carts.
+  spacing: 1.5
+  # Rail-walk sub-step granularity so fast carts never skip a rail block.
+  sub-step: 0.25
+  # Acceleration per tick per engine, scaled by 1 / (train length).
+  base-accel: 0.02
+  # Speed a coasting (engine-less, previously-pushed) train loses per tick.
+  rolling-drag: 0.01
+  # Max straight-line distance between two carts to couple them.
+  max-link-distance: 3.0
+  # Engine fuel level (ticks) below which a tender in the same train tops it up.
+  feed-threshold-ticks: 600

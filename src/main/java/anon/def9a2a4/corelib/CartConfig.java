@@ -22,8 +22,22 @@ final class CartConfig {
 
     /** Vanilla furnace-minecart locomotive top speed (blocks/tick). */
     double furnaceCartSpeed = 0.4d;
-    /** Blast-furnace-cart top speed (blocks/tick). Only reachable once trains position-drive. */
-    double blastFurnaceCartSpeed = 2.0d;
+    /** Blast-furnace-cart top speed (blocks/tick). */
+    double blastFurnaceCartSpeed = 1.0d;
+
+    // ── Train drive (model B: position-driven, arc-length rail-walking) ──────
+    /** Arc-length gap kept between coupled carts (blocks). */
+    double spacing = 1.5d;
+    /** Rail-walk sub-step granularity (blocks) so fast carts never skip a rail. */
+    double subStep = 0.25d;
+    /** Acceleration per tick per engine, scaled by 1/size (blocks/tick²). */
+    double baseAccel = 0.02d;
+    /** Speed a coasting (engine-less) train loses per tick (blocks/tick²). */
+    double rollingDrag = 0.01d;
+    /** Max straight-line distance between two carts to couple them (blocks). */
+    double maxLinkDistance = 3.0d;
+    /** Engine fuel level (ticks) below which a tender tops it up. */
+    int feedThresholdTicks = 600;
 
     CartConfig() {
         // Baked-in defaults (vanilla furnace burn times), overridden by the file if present.
@@ -54,6 +68,12 @@ final class CartConfig {
         if (carts != null) {
             furnaceCartSpeed = carts.getDouble("furnace-cart-speed", furnaceCartSpeed);
             blastFurnaceCartSpeed = carts.getDouble("blast-furnace-cart-speed", blastFurnaceCartSpeed);
+            spacing = carts.getDouble("spacing", spacing);
+            subStep = carts.getDouble("sub-step", subStep);
+            baseAccel = carts.getDouble("base-accel", baseAccel);
+            rollingDrag = carts.getDouble("rolling-drag", rollingDrag);
+            maxLinkDistance = carts.getDouble("max-link-distance", maxLinkDistance);
+            feedThresholdTicks = carts.getInt("feed-threshold-ticks", feedThresholdTicks);
         }
     }
 

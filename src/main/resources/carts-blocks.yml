@@ -27,7 +27,7 @@ blocks:
           - ingredients:
               - { material: COAL_BLOCK }
               - { material: MINECART }
-              - { material: CHEST }
+              - { material: DROPPER }
 
   blast_furnace_cart:
     name: "&cBlast Furnace Minecart"

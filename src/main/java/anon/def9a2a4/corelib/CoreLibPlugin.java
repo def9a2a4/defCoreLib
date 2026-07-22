@@ -38,6 +38,8 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
     private MechanismRegistry mechanismRegistry;
     private MechanismMinecartManager mechanismMinecartManager;
     private CustomCartManager customCartManager;
+    private CartTrainManager cartTrainManager;
+    private CartSpike cartSpike;   // M3a throwaway movement-spike harness (/defcorelib spike)
     private GlueManager glueManager;
     private GlueAuthoring glueAuthoring;
     private ShowcaseBuilder showcaseBuilder;
@@ -193,6 +195,12 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         customCartManager = new CustomCartManager(this, registry, cartConfig);
         customCartManager.register();
         getServer().getPluginManager().registerEvents(customCartManager, this);
+        // Minecart trains (chain coupling + position-driven movement). Reads engine/fuel state from the
+        // cart manager; owns movement for all coupled carts and solo blast-furnace engines.
+        cartTrainManager = new CartTrainManager(this, cartConfig, customCartManager);
+        customCartManager.setTrainManager(cartTrainManager);
+        cartTrainManager.register();
+        getServer().getPluginManager().registerEvents(cartTrainManager, this);
 
         // Banner systems
         bannerManager = new BannerManager(this);
@@ -245,6 +253,12 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         }
         if (customCartManager != null) {
             customCartManager.shutdown();
+        }
+        if (cartTrainManager != null) {
+            cartTrainManager.shutdown();
+        }
+        if (cartSpike != null) {
+            cartSpike.stop();
         }
         if (mechanismRegistry != null) {
             mechanismRegistry.shutdown();
@@ -312,6 +326,9 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         if (customCartManager != null) {
             customCartManager.scanChunk(event.getChunk());
         }
+        if (cartTrainManager != null) {
+            cartTrainManager.scanChunk(event.getChunk());
+        }
         // Clean up orphaned mechanism entities from previous sessions
         if (mechanismRegistry != null) {
             mechanismRegistry.cleanupOrphanedEntities(event.getChunk());
@@ -348,6 +365,9 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         }
         if (customCartManager != null) {
             customCartManager.onEntitiesUnload(event.getEntities());
+        }
+        if (cartTrainManager != null) {
+            cartTrainManager.onEntitiesUnload(event.getEntities());
         }
     }
 
@@ -1575,7 +1595,7 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!command.getName().equalsIgnoreCase("defcorelib")) return false;
         if (args.length == 0) {
-            sender.sendMessage(Component.text("Usage: /defcorelib <give|give_demo|give_demo_rotation|list|colliders|reloadbanners|cleanorphans|refreshdisplays>", NamedTextColor.YELLOW));
+            sender.sendMessage(Component.text("Usage: /defcorelib <give|give_demo|give_demo_rotation|list|colliders|reloadbanners|cleanorphans|refreshdisplays|spike>", NamedTextColor.YELLOW));
             return true;
         }
 
@@ -1802,6 +1822,33 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
                     glueManager.setStructure(anchor, planks);
                     sender.sendMessage(Component.text("Froze " + planks.size()
                         + " connected oak planks as glue", NamedTextColor.GREEN));
+                }
+            }
+            case "spike" -> {
+                if (!(sender instanceof Player player)) {
+                    sender.sendMessage(Component.text("Must be a player", NamedTextColor.RED));
+                    return true;
+                }
+                if (cartSpike == null) cartSpike = new CartSpike(this);
+                if (args.length >= 2 && args[1].equalsIgnoreCase("stop")) {
+                    cartSpike.stop();
+                    sender.sendMessage(Component.text("Spike stopped.", NamedTextColor.YELLOW));
+                    return true;
+                }
+                double speed = 1.0;
+                if (args.length >= 2) {
+                    try {
+                        speed = Math.max(0.05, Math.min(4.0, Double.parseDouble(args[1])));
+                    } catch (NumberFormatException e) {
+                        sender.sendMessage(Component.text("Usage: /defcorelib spike <speed b/t | stop>",
+                            NamedTextColor.YELLOW));
+                        return true;
+                    }
+                }
+                if (cartSpike.isRunning()) {
+                    cartSpike.setSpeed(speed);
+                } else {
+                    cartSpike.start(player, speed);
                 }
             }
             default -> sender.sendMessage(Component.text("Unknown subcommand: " + args[0], NamedTextColor.RED));
