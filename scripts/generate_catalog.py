@@ -166,6 +166,10 @@ def parse_ingredient(node) -> dict | None:
         return {"kind": "material", "value": str(node["material"]).upper()}
     if "tag" in node:
         return {"kind": "tag", "value": str(node["tag"]).lower()}
+    if "materials" in node:
+        # "any of these" — show the first variant's icon as representative.
+        mats = node["materials"] or []
+        return {"kind": "material", "value": str(mats[0]).upper()} if mats else None
     return None
 
 

@@ -216,12 +216,18 @@ public final class CustomHeadBlock {
 
     // ── Recipe records ───────────────────────────────────────────────────
 
-    /** An ingredient: a material, a reference to another custom block by fullId, or a material tag. */
-    public record IngredientSpec(@Nullable Material material, @Nullable String blockId, org.bukkit.@Nullable Tag<Material> tag) {
-        public IngredientSpec(@Nullable Material material, @Nullable String blockId) { this(material, blockId, null); }
+    /** An ingredient: a material, a reference to another custom block by fullId, a material tag, or an
+     *  explicit set of accepted materials ("any of these", e.g. every copper-grate variant). */
+    public record IngredientSpec(@Nullable Material material, @Nullable String blockId,
+                                 org.bukkit.@Nullable Tag<Material> tag, @Nullable List<Material> materials) {
+        public IngredientSpec(@Nullable Material material, @Nullable String blockId, org.bukkit.@Nullable Tag<Material> tag) {
+            this(material, blockId, tag, null);
+        }
+        public IngredientSpec(@Nullable Material material, @Nullable String blockId) { this(material, blockId, null, null); }
         public boolean isMaterial() { return material != null; }
         public boolean isBlock() { return blockId != null; }
         public boolean isTag() { return tag != null; }
+        public boolean isMaterials() { return materials != null; }
     }
 
     /** Shaped crafting recipe definition. */

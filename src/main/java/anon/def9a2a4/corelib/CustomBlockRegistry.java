@@ -1988,6 +1988,9 @@ public class CustomBlockRegistry {
                     if (spec.isTag()) {
                         recipe.setIngredient(entry.getKey(),
                                 new org.bukkit.inventory.RecipeChoice.MaterialChoice(spec.tag()));
+                    } else if (spec.isMaterials()) {
+                        recipe.setIngredient(entry.getKey(),
+                                new org.bukkit.inventory.RecipeChoice.MaterialChoice(spec.materials()));
                     } else if (spec.isMaterial()) {
                         recipe.setIngredient(entry.getKey(), spec.material());
                     } else if (spec.isBlock()) {
@@ -2015,7 +2018,11 @@ public class CustomBlockRegistry {
                 org.bukkit.inventory.ShapelessRecipe recipe = new org.bukkit.inventory.ShapelessRecipe(key, result);
                 recipe.setCategory(categoryFor(type));
                 for (CustomHeadBlock.IngredientSpec spec : r.ingredients()) {
-                    if (spec.isMaterial()) {
+                    if (spec.isTag()) {
+                        recipe.addIngredient(new org.bukkit.inventory.RecipeChoice.MaterialChoice(spec.tag()));
+                    } else if (spec.isMaterials()) {
+                        recipe.addIngredient(new org.bukkit.inventory.RecipeChoice.MaterialChoice(spec.materials()));
+                    } else if (spec.isMaterial()) {
                         recipe.addIngredient(spec.material());
                     } else if (spec.isBlock()) {
                         recipe.addIngredient(choiceForBlock(spec.blockId()));

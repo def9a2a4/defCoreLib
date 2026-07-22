@@ -345,7 +345,19 @@ public final class BlockLoader {
             if (tag == null) throw new IllegalArgumentException("Unknown item tag: " + tagName);
             return new CustomHeadBlock.IngredientSpec(null, null, tag);
         }
-        throw new IllegalArgumentException("Ingredient must have 'material', 'block', or 'tag' key");
+        Object matsObj = map.get("materials");
+        if (matsObj instanceof List<?> list) {
+            List<Material> mats = new ArrayList<>();
+            for (Object o : list) {
+                String n = String.valueOf(o).toUpperCase(java.util.Locale.ROOT);
+                Material m = Material.matchMaterial(n);
+                if (m == null) throw new IllegalArgumentException("Unknown material: " + n);
+                mats.add(m);
+            }
+            if (mats.isEmpty()) throw new IllegalArgumentException("Ingredient 'materials' list is empty");
+            return new CustomHeadBlock.IngredientSpec(null, null, null, mats);
+        }
+        throw new IllegalArgumentException("Ingredient must have 'material', 'block', 'tag', or 'materials' key");
     }
 
     // ── Parsers ──────────────────────────────────────────────────────────

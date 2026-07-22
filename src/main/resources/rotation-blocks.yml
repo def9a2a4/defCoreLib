@@ -1594,13 +1594,12 @@ blocks:
           floor_offset: [0, 0.75, 0]
     recipes:
       craft:
-        shaped:
-          # A blast-furnace firebox in a copper jacket over an iron base (open chimney top).
-          - pattern: ["C C", "CFC", "III"]
-            key:
-              C: { material: COPPER_INGOT }
-              F: { material: BLAST_FURNACE }
-              I: { material: IRON_INGOT }
+        shapeless:
+          # A blast-furnace firebox + a dropper mechanism + a copper grate (any oxidation/waxed variant).
+          - ingredients:
+              - { material: BLAST_FURNACE }
+              - { material: DROPPER }
+              - { materials: [COPPER_GRATE, EXPOSED_COPPER_GRATE, WEATHERED_COPPER_GRATE, OXIDIZED_COPPER_GRATE, WAXED_COPPER_GRATE, WAXED_EXPOSED_COPPER_GRATE, WAXED_WEATHERED_COPPER_GRATE, WAXED_OXIDIZED_COPPER_GRATE] }
 
   # ─── Boiler (steam stack, middle) ─────────────────────────────────────────
   # A waxed copper chest in the world (dynamo pattern — tile entity, so FluidTanks

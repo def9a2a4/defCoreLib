@@ -326,7 +326,7 @@ final class DisplayExporter implements Listener {
         variant.put("id", vid);
         variant.put("label", label);
         variant.put("baseHeadTextureUrl",
-                type.itemMaterial() != null ? null
+                (type.itemMaterial() != null || type.physicalMaterial() != null) ? null
                         : DisplayCapture.textureUrl(type.resolveTexture(state, 0, headFacing)));
         // Base-head placement: a floor PLAYER_HEAD is seated, a PLAYER_WALL_HEAD is mounted
         // vertically-centred and pushed onto the wall. The frontend seats the skull accordingly.

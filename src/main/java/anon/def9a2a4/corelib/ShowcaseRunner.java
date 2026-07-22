@@ -178,7 +178,7 @@ final class ShowcaseRunner implements Listener {
                 rec.put("id", bs.id());   // custom-block fullId, for showcase↔item interlinking
                 rec.put("offset", new int[]{bs.at()[0], bs.at()[1], bs.at()[2]});
                 rec.put("facing", floor ? "floor" : "wall_" + bs.facing().name().toLowerCase());
-                rec.put("baseHeadTextureUrl", type.itemMaterial() != null ? null
+                rec.put("baseHeadTextureUrl", (type.itemMaterial() != null || type.physicalMaterial() != null) ? null
                         : DisplayCapture.textureUrl(type.resolveTexture(state, 0, headFacing)));
                 rec.put("displays", DisplayCapture.readDisplays(type, block.getLocation(), state, true, false));
                 blocks.add(rec);

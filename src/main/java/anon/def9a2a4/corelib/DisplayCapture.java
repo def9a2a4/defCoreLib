@@ -40,6 +40,11 @@ final class DisplayCapture {
     static List<Map<String, Object>> readDisplays(CustomHeadBlock type, Location scratch, String state,
             boolean animate, boolean reversed) {
         List<Map<String, Object>> out = new ArrayList<>();
+        // physical_material blocks are a real vanilla block in the world (dispenser, barrel, chest…) that
+        // the viewer never draws on its own — it only renders base-head + display entities. Emit a
+        // synthetic full-cell block record so the body shows. (Blocks that also wear a covering shell
+        // display, e.g. the dynamo, hide this behind the shell — harmless.)
+        if (type.physicalMaterial() != null) out.add(physicalBlockRecord(type));
         if (!type.hasDisplayEntities()) return out;
 
         Location blockLoc = scratch.getBlock().getLocation();
@@ -115,6 +120,21 @@ final class DisplayCapture {
         } else {
             return null;
         }
+        rec.put("animation", null);
+        return rec;
+    }
+
+    /** A full-cell BlockDisplay-shaped record for a {@code physical_material} block. Corner-origin model
+     *  ([0,1]³) translated to −0.5 fills the cell centred on the block centre, matching the viewer's
+     *  {@code kind:"block"} (centered:false) convention. Facing isn't baked — the viewer ignores
+     *  blockstate rotation (same limitation as the placer's dispenser body). */
+    private static Map<String, Object> physicalBlockRecord(CustomHeadBlock type) {
+        Map<String, Object> rec = new LinkedHashMap<>();
+        rec.put("tag", "physical");
+        rec.put("position", new double[]{0, 0, 0});
+        rec.put("matrix", arr(new Matrix4f().translation(-0.5f, -0.5f, -0.5f)));
+        rec.put("kind", "block");
+        rec.put("ref", type.physicalMaterial().createBlockData().getAsString());
         rec.put("animation", null);
         return rec;
     }
