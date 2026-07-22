@@ -127,11 +127,11 @@ blocks:
   wrench:
     name: "&6Rotation Wrench"
     lore:
-      - "&7Rotates rotation-power blocks."
-      - "&7Right-click a machine to turn it."
+      - "&7Reads a rotation machine's network info."
+      - "&7Right-click a machine to inspect it."
     catalog_notes:
-      - "&fRight-click any rotation machine to rotate it in place."
-      - "&fPlacing a machine points its face at the block face you click, so the wrench is the quick way to re-aim it afterward."
+      - "&fRight-click a rotation machine to read its network info — power, connections, and spin direction."
+      - "&fSome machines have a custom wrench action (a power source flips its spin direction). It never rotates or re-aims a machine."
       - "&7Unbreakable — one wrench lasts forever."
     item_material: GOLDEN_AXE
     placeable: false

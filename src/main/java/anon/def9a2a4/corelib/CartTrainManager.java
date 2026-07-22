@@ -62,8 +62,19 @@ final class CartTrainManager implements Listener {
     private static final String TAG_FROZEN = "corelib:frozen";
     private static final String TAG_CHAIN = "corelib:cart_chain";
     private static final long PENDING_TIMEOUT_TICKS = 200L;
-    private static final double CHAIN_Y = 0.35d;   // coupling height above a cart's origin
-    private static final float CHAIN_WIDTH = 1.0f;
+    private static final double CHAIN_Y = -0.2d;    // coupler height relative to a cart's location (near the rail)
+    private static final double HALF_CART = 0.5d;   // half a minecart length — couple end-to-end, not centre-to-centre
+    private static final float CHAIN_WIDTH = 1.0f;  // natural chain-model thickness (ChainPulley convention)
+    private static final int CHAIN_INTERP = 3;      // display teleport/interp duration to match minecart client lerp
+
+    // 1.21.9 (Copper Age) renamed CHAIN → IRON_CHAIN; resolve by name so it works on 1.21.8..1.21.11+
+    // (mirrors ChainPulley.resolveChain). Used for the display block, the drop item, and the item check.
+    private static final Material CHAIN_MATERIAL = resolveChain();
+
+    private static Material resolveChain() {
+        Material m = Material.matchMaterial("IRON_CHAIN");
+        return m != null ? m : Material.matchMaterial("CHAIN");
+    }
 
     private final JavaPlugin plugin;
     private final CartConfig config;
@@ -86,7 +97,6 @@ final class CartTrainManager implements Listener {
 
     private static final class Member {
         final Minecart cart;
-        CartTrain train;
         Member(Minecart cart) { this.cart = cart; }
     }
 
@@ -111,7 +121,7 @@ final class CartTrainManager implements Listener {
 
     void shutdown() {
         if (tickTask != null) tickTask.cancel();
-        for (CartTrain t : trains) clearChainDisplays(t);
+        for (CartTrain t : trains) { park(t); clearChainDisplays(t); }   // park first: no runaway on /reload
         members.clear();
         trains.clear();
         pending.clear();
@@ -125,14 +135,30 @@ final class CartTrainManager implements Listener {
 
     /** Adopt drivable carts in a freshly-loaded chunk: linked carts (tag) and blast-furnace engines. */
     void scanChunk(Chunk chunk) {
+        List<Minecart> added = new ArrayList<>();
         for (Entity e : chunk.getEntities()) {
             if (!(e instanceof Minecart cart)) continue;
             if (members.containsKey(cart.getUniqueId())) continue;
             Set<String> tags = cart.getScoreboardTags();
             if (tags.contains(TAG_MEMBER) || tags.contains(TAG_BLAST)) {
                 members.put(cart.getUniqueId(), new Member(cart));
+                added.add(cart);
                 dirty = true;
             }
+        }
+        for (Minecart cart : added) reconcileLinks(cart);
+    }
+
+    /** Drop any coupling on {@code cart} whose partner is loaded but doesn't list {@code cart} back —
+     *  a stale one-directional link left when the cart was uncoupled while its partner was unloaded.
+     *  Without this, reloading the partner would silently re-form a train the player explicitly split. */
+    private void reconcileLinks(Minecart cart) {
+        for (UUID pid : partners(cart)) {
+            if (Bukkit.getEntity(pid) instanceof Minecart other && !partners(other).contains(cart.getUniqueId())) {
+                removePartner(cart, pid);
+                dirty = true;
+            }
+            // Unresolvable partner (unloaded or dead): leave it; reconciled when it (re)loads.
         }
     }
 
@@ -159,7 +185,7 @@ final class CartTrainManager implements Listener {
             }
             return;
         }
-        if (held.getType() != Material.CHAIN) return;
+        if (held.getType() != CHAIN_MATERIAL) return;
         event.setCancelled(true);   // don't mount while coupling
         handleChainClick(player, cart, held);
     }
@@ -213,9 +239,14 @@ final class CartTrainManager implements Listener {
         addPartner(other, cart);
         members.putIfAbsent(cart.getUniqueId(), new Member(cart));
         members.putIfAbsent(other.getUniqueId(), new Member(other));
-        dirty = true;
         cart.getWorld().playSound(cart.getLocation(), Sound.BLOCK_CHAIN_PLACE, 1f, 1f);
         player.sendActionBar(Component.text("Coupled!", NamedTextColor.GREEN));
+
+        // Rebuild now and snap the new consist into a tidy formation on the rail (if it isn't moving).
+        rebuildTrains();
+        CartTrain t = trainContaining(cart);
+        if (t != null && !t.moving) snapFormation(t);
+        else dirty = true;
     }
 
     private boolean canCouple(Minecart cart) {
@@ -230,11 +261,13 @@ final class CartTrainManager implements Listener {
         for (UUID pid : ps) {
             if (Bukkit.getEntity(pid) instanceof Minecart other) {
                 removePartner(other, cart.getUniqueId());
+                parkCart(other);   // instant: don't leave a former partner at maxSpeed 100
             }
             dropped++;
         }
         writePartners(cart, Collections.emptySet());
         cart.removeScoreboardTag(TAG_MEMBER);
+        parkCart(cart);
         if (dropped > 0) dropChains(cart.getLocation(), dropped);
         dirty = true;
     }
@@ -255,7 +288,10 @@ final class CartTrainManager implements Listener {
         if (ps.isEmpty() && !members.containsKey(cart.getUniqueId())) return;
         int dropped = 0;
         for (UUID pid : ps) {
-            if (Bukkit.getEntity(pid) instanceof Minecart other) removePartner(other, cart.getUniqueId());
+            if (Bukkit.getEntity(pid) instanceof Minecart other) {
+                removePartner(other, cart.getUniqueId());
+                parkCart(other);   // instant: a surviving neighbour must not keep maxSpeed 100
+            }
             dropped++;
         }
         if (dropped > 0) dropChains(cart.getLocation(), dropped);
@@ -264,7 +300,7 @@ final class CartTrainManager implements Listener {
     }
 
     private void dropChains(Location loc, int count) {
-        loc.getWorld().dropItemNaturally(loc, new ItemStack(Material.CHAIN, count));
+        loc.getWorld().dropItemNaturally(loc, new ItemStack(CHAIN_MATERIAL, count));
     }
 
     // ── PDC coupling storage ─────────────────────────────────────────────────
@@ -324,9 +360,12 @@ final class CartTrainManager implements Listener {
         dirty = false;
         // Snapshot old speeds so a rebuild keeps momentum (keyed by any surviving member).
         Map<UUID, Double> oldSpeed = new HashMap<>();
-        for (CartTrain t : trains) for (Member m : t.order) oldSpeed.put(m.cart.getUniqueId(), t.speed);
+        Set<UUID> oldMembers = new HashSet<>();
+        for (CartTrain t : trains) for (Member m : t.order) {
+            oldSpeed.put(m.cart.getUniqueId(), t.speed);
+            oldMembers.add(m.cart.getUniqueId());
+        }
         for (CartTrain t : trains) clearChainDisplays(t);   // fresh trains respawn their own chains
-        for (Member m : members.values()) m.train = null;
         trains.clear();
 
         Set<UUID> visited = new HashSet<>();
@@ -350,7 +389,6 @@ final class CartTrainManager implements Listener {
 
             CartTrain train = new CartTrain();
             train.order = orderComponent(comp);
-            for (Member m : train.order) m.train = train;
             // Inherit speed (momentum) but not moving/leaderState: a rebuilt train re-establishes its
             // heading next tick from the carts' retained velocity hints (drive → establishHeading), so a
             // train crossing a chunk border resumes seamlessly rather than NPE-ing on a null leaderState.
@@ -359,6 +397,15 @@ final class CartTrainManager implements Listener {
                 if (sp != null) { train.speed = sp; break; }
             }
             trains.add(train);
+        }
+
+        // Park any cart that was in a driven train but no longer is (uncoupled / split off / lone
+        // non-engine) — otherwise it keeps maxSpeed 100 + residual velocity and rockets away.
+        Set<UUID> stillDriven = new HashSet<>();
+        for (CartTrain t : trains) for (Member m : t.order) stillDriven.add(m.cart.getUniqueId());
+        for (UUID id : oldMembers) {
+            if (stillDriven.contains(id)) continue;
+            if (Bukkit.getEntity(id) instanceof Minecart mc) parkCart(mc);
         }
     }
 
@@ -423,6 +470,8 @@ final class CartTrainManager implements Listener {
         if (!train.moving && !establishHeading(train)) return;
 
         if (engines > 0) {
+            // Power/weight: acceleration falls with train length (1/n) and rises with engine count.
+            // Max speed stays length-independent (trainMax above) per the requirement.
             double accel = config.baseAccel * engines / n;
             train.speed = Math.min(train.speed + accel, trainMax);
         } else {
@@ -432,30 +481,45 @@ final class CartTrainManager implements Listener {
 
         RailPathWalker.Step s = RailPathWalker.advance(train.leaderState, train.speed, config.subStep);
         train.leaderState = s.state;
-        Minecart leader = ord.get(0).cart;
-        place(leader, s.position, s.heading, train.speed);
-
-        for (int i = 1; i < n; i++) {
-            RailPathWalker.Step f = RailPathWalker.advance(RailPathWalker.flip(train.leaderState),
-                i * config.spacing, config.subStep);
-            Vector travel = f.heading.clone().multiply(-1);   // flip walked backward; face travel dir
-            place(ord.get(i).cart, f.position, travel, train.speed);
-        }
+        place(ord.get(0).cart, s.position, s.heading, train.speed, true);
+        placeFollowers(train, train.speed, true);
 
         if (s.blocked) park(train);   // end of track — stop after placing
     }
 
-    /** Position-drive one cart to a computed rail point (teleport + velocity hint, vanilla clamp out). */
-    private void place(Minecart cart, Vector pos, Vector heading, double speed) {
+    /** Place followers ord[1..] each {@code spacing} behind the one ahead (chaining from the leader).
+     *  O(n): each cart walks a single {@code spacing} hop, and follows the exact path of the cart ahead
+     *  (so cars can't diverge at a fork behind them). {@code driving} = position-drive, else static snap. */
+    private void placeFollowers(CartTrain train, double speed, boolean driving) {
+        List<Member> ord = train.order;
+        RailPathWalker.RailState prev = train.leaderState;
+        for (int i = 1; i < ord.size(); i++) {
+            RailPathWalker.Step f = RailPathWalker.advance(RailPathWalker.flip(prev), config.spacing, config.subStep);
+            Vector travel = f.heading.clone().multiply(-1);   // walked backward; face the travel direction
+            place(ord.get(i).cart, f.position, travel, speed, driving);
+            prev = RailPathWalker.flip(f.state);              // this follower's travel-oriented state
+        }
+    }
+
+    /** Position a cart at a computed rail point. {@code driving}: raise the clamp + velocity hint so it
+     *  keeps moving; otherwise snap it static and parked (maxSpeed 0.4, zero velocity). */
+    private void place(Minecart cart, Vector pos, Vector heading, double speed, boolean driving) {
         Location loc = RailPathWalker.toLocation(cart.getWorld(), pos, heading);
-        cart.setMaxSpeed(100.0d);
-        cart.teleport(loc, TeleportFlag.EntityState.RETAIN_PASSENGERS);
-        cart.setVelocity(heading.clone().multiply(speed));
+        if (driving) {
+            cart.setMaxSpeed(100.0d);
+            cart.teleport(loc, TeleportFlag.EntityState.RETAIN_PASSENGERS);
+            cart.setVelocity(heading.clone().multiply(speed));
+        } else {
+            cart.teleport(loc, TeleportFlag.EntityState.RETAIN_PASSENGERS);
+            parkCart(cart);
+        }
     }
 
     // ── Chain visuals (one BlockDisplay per coupling, stretched between the carts) ──────────────────
 
-    /** Keep one chain BlockDisplay per coupling, positioned/oriented between consecutive carts. */
+    /** Keep one chain BlockDisplay per coupling, positioned/oriented between consecutive carts.
+     *  Follows the ChainPulley strand convention: anchor at cart A's end, bake the A→B offset into the
+     *  matrix (midpoint-centred, all-axis −0.5), and interpolate so it tracks the client-lerped carts. */
     private void updateChainDisplays(CartTrain train) {
         List<Member> ord = train.order;
         int need = Math.max(0, ord.size() - 1);
@@ -467,28 +531,50 @@ final class CartTrainManager implements Listener {
         while (train.chainDisplays.size() < need) {
             Location loc = ord.get(train.chainDisplays.size()).cart.getLocation().add(0, CHAIN_Y, 0);
             BlockDisplay d = loc.getWorld().spawn(loc, BlockDisplay.class, bd -> {
-                bd.setBlock(Material.CHAIN.createBlockData());
+                bd.setBlock(chainBlockData());
                 bd.setPersistent(false);   // respawned from the train on reload; no orphans survive restart
+                bd.setTeleportDuration(CHAIN_INTERP);
+                bd.setInterpolationDuration(CHAIN_INTERP);
+                bd.setViewRange(64f);
+                bd.setBrightness(new org.bukkit.entity.Display.Brightness(15, 15));
                 bd.addScoreboardTag(TAG_CHAIN);
             });
             train.chainDisplays.add(d);
         }
+        Vector down = new Vector(0, CHAIN_Y, 0);
         for (int i = 0; i < need; i++) {
             BlockDisplay d = train.chainDisplays.get(i);
-            Location pa = ord.get(i).cart.getLocation().add(0, CHAIN_Y, 0);
-            Location pb = ord.get(i + 1).cart.getLocation().add(0, CHAIN_Y, 0);
-            d.teleport(pa);
-            Vector dir = pb.toVector().subtract(pa.toVector());
-            double len = dir.length();
-            if (len < 1e-4) continue;
-            Vector3f unit = new Vector3f((float) dir.getX(), (float) dir.getY(), (float) dir.getZ()).normalize();
-            Quaternionf rot = new Quaternionf().rotationTo(new Vector3f(0, 1, 0), unit);
-            // Map the block model's bottom-centre → cart A and top-centre → cart B: rotate the vertical
-            // chain onto the coupling direction, stretch to the gap, and re-centre the cell in XZ.
-            Matrix4f m = new Matrix4f().rotate(rot).scale(CHAIN_WIDTH, (float) len, CHAIN_WIDTH)
-                .translate(-0.5f, 0f, -0.5f);
+            Location la = ord.get(i).cart.getLocation();
+            Location lb = ord.get(i + 1).cart.getLocation();
+            Vector along = lb.toVector().subtract(la.toVector());
+            if (along.lengthSquared() < 1e-8) { d.teleport(la.add(0, CHAIN_Y, 0)); continue; }
+            Vector unit3 = along.clone().normalize();
+            // Endpoints are the carts' adjacent ends (half a cart in from each centre), near the rail.
+            Vector endA = la.toVector().add(unit3.clone().multiply(HALF_CART)).add(down);
+            Vector endB = lb.toVector().subtract(unit3.clone().multiply(HALF_CART)).add(down);
+            Vector span = endB.subtract(endA);
+            float len = (float) span.length();
+            d.teleport(endA.toLocation(la.getWorld()));
+            if (len < 1e-4f) continue;
+            Vector3f spanF = new Vector3f((float) span.getX(), (float) span.getY(), (float) span.getZ());
+            Quaternionf orient = new Quaternionf().rotationTo(new Vector3f(0, 1, 0), new Vector3f(spanF).normalize());
+            // T(midpoint)·R(+Y→span)·S(width,len,width)·T(−0.5): centre the unit cube on all axes, stretch
+            // along +Y to the gap, aim it A→B, and shift to the midpoint (relative to the endA anchor).
+            Matrix4f m = new Matrix4f()
+                .translate(spanF.x * 0.5f, spanF.y * 0.5f, spanF.z * 0.5f)
+                .rotate(orient)
+                .scale(CHAIN_WIDTH, len, CHAIN_WIDTH)
+                .translate(-0.5f, -0.5f, -0.5f);
+            d.setInterpolationDelay(0);
             d.setTransformationMatrix(m);
         }
+    }
+
+    /** Chain block data with axis pinned to Y (the long axis the strand matrix assumes). */
+    private static org.bukkit.block.data.BlockData chainBlockData() {
+        org.bukkit.block.data.BlockData data = CHAIN_MATERIAL.createBlockData();
+        if (data instanceof org.bukkit.block.data.Orientable o) o.setAxis(org.bukkit.Axis.Y);
+        return data;
     }
 
     private void clearChainDisplays(CartTrain train) {
@@ -532,10 +618,50 @@ final class CartTrainManager implements Listener {
     private void park(CartTrain train) {
         train.moving = false;
         train.speed = 0;
-        for (Member m : train.order) {
-            m.cart.setMaxSpeed(0.4d);       // restore vanilla so a fresh push can restart it
-            m.cart.setVelocity(new Vector(0, 0, 0));
+        for (Member m : train.order) parkCart(m.cart);
+    }
+
+    /** Snap a parked train's carts onto the rail at uniform {@code spacing}, aligned along the coupling.
+     *  Called right after coupling so the carts jump into a tidy consist instead of sitting where the
+     *  player left them. Anchors on an endpoint and lays the rest out behind it toward their side. */
+    private void snapFormation(CartTrain train) {
+        List<Member> ord = train.order;
+        if (ord.size() < 2) return;
+        Minecart anchor = ord.get(0).cart;
+        Block rail = railUnder(anchor);
+        if (rail == null) return;
+        Vector dir = ord.get(1).cart.getLocation().toVector().subtract(anchor.getLocation().toVector());
+        dir.setY(0);
+        if (dir.lengthSquared() < 1e-6) return;
+        dir.normalize();
+        // Leader heading points AWAY from the followers, so "behind" (where placeFollowers lays them) is
+        // toward their current side.
+        RailPathWalker.RailState st = RailPathWalker.initOn(rail, dir.clone().multiply(-1));
+        if (st == null) return;
+        train.leaderState = st;
+        train.moving = false;
+        train.speed = 0;
+        RailPathWalker.Step lead = RailPathWalker.advance(st, 0, config.subStep);
+        place(anchor, lead.position, dir, 0, false);
+        placeFollowers(train, 0, false);
+        updateChainDisplays(train);
+    }
+
+    /** The loaded train currently containing {@code cart}, or null. */
+    private CartTrain trainContaining(Minecart cart) {
+        for (CartTrain t : trains) for (Member m : t.order) {
+            if (m.cart.getUniqueId().equals(cart.getUniqueId())) return t;
         }
+        return null;
+    }
+
+    /** Restore vanilla physics on a single cart: reset the maxSpeed clamp (we drive at 100) and zero
+     *  velocity. MUST be called on every cart that stops being position-driven (park, uncouple, split,
+     *  shutdown) — otherwise it keeps maxSpeed 100 + residual velocity and vanilla launches it away. */
+    private void parkCart(Minecart cart) {
+        if (cart == null || cart.isDead()) return;
+        cart.setMaxSpeed(0.4d);
+        cart.setVelocity(new Vector(0, 0, 0));
     }
 
     // ── Engines & fuel ────────────────────────────────────────────────────────
@@ -549,6 +675,10 @@ final class CartTrainManager implements Listener {
         return carts.isBlastCart(cart) ? config.blastFurnaceCartSpeed : config.furnaceCartSpeed;
     }
 
+    /** Cap on an engine's stored fuel from tender feeding — a coal block (16000) shouldn't dump its
+     *  whole burn into a cart that only needed a top-up. */
+    private static final int MAX_ENGINE_FUEL = 6000;
+
     /** Top up under-fuelled engines from any tender (coal cart) in the same train. */
     private void feedTrain(CartTrain train) {
         for (Member m : train.order) {
@@ -561,9 +691,10 @@ final class CartTrainManager implements Listener {
 
             ItemStack fuel = takeTenderFuel(train);
             if (fuel == null) return;   // no tender fuel left this cycle
-            int burn = carts.fuelBurnTicks(fuel.getType());
-            if (blast) carts.addBurnTicks(cart, burn);
-            else ((PoweredMinecart) cart).setFuel(((PoweredMinecart) cart).getFuel() + burn);
+            int add = Math.min(carts.fuelBurnTicks(fuel.getType()), MAX_ENGINE_FUEL - level);
+            if (add <= 0) continue;
+            if (blast) carts.addBurnTicks(cart, add);
+            else ((PoweredMinecart) cart).setFuel(level + add);
         }
     }
 

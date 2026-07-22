@@ -683,7 +683,7 @@ blocks:
       - "&7Produces 5 Power when fueled"
       - "&7Right-click to open fuel storage"
     catalog_notes:
-      - "&fThe strongest source at 5 Power, but it burns fuel — right-click to open its fuel slot."
+      - "&fA strong 5-Power source, but it burns fuel — right-click to open its fuel slot."
       - "&fEats the usual furnace fuels: coal, charcoal, blaze rods, lava buckets, logs, planks, sticks, and so on. Higher-value fuels last longer."
       - "&7Puffs smoke while it's running. Can face any direction."
     # Bronze Ship Engine (9172c1e7)

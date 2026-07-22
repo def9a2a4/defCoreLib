@@ -2317,38 +2317,19 @@ public class CustomBlockRegistry {
     public void loadInventoryFromPDC(Block block, org.bukkit.inventory.Inventory inv) {
         if (!(block.getState() instanceof org.bukkit.block.Skull skull)) return;
         String data = skull.getPersistentDataContainer().get(INVENTORY_KEY, PersistentDataType.STRING);
-        if (data == null) return;
-        try {
-            byte[] bytes = java.util.Base64.getDecoder().decode(data);
-            var stream = new java.io.ByteArrayInputStream(bytes);
-            var ois = new org.bukkit.util.io.BukkitObjectInputStream(stream);
-            int size = ois.readInt();
-            for (int i = 0; i < size; i++) {
-                inv.setItem(i, (ItemStack) ois.readObject());
-            }
-            ois.close();
-        } catch (Exception e) {
-            plugin.getLogger().warning("Failed to load inventory: " + e.getMessage());
-        }
+        InventoryUtil.decode(data, inv, plugin.getLogger());
     }
 
     private void saveInventoryToPDC(org.bukkit.Location loc, org.bukkit.inventory.Inventory inv) {
         Block block = loc.getBlock();
         if (!(block.getState() instanceof org.bukkit.block.Skull skull)) return;
-        try {
-            var stream = new java.io.ByteArrayOutputStream();
-            var oos = new org.bukkit.util.io.BukkitObjectOutputStream(stream);
-            oos.writeInt(inv.getSize());
-            for (int i = 0; i < inv.getSize(); i++) {
-                oos.writeObject(inv.getItem(i));
-            }
-            oos.close();
-            String data = java.util.Base64.getEncoder().encodeToString(stream.toByteArray());
-            skull.getPersistentDataContainer().set(INVENTORY_KEY, PersistentDataType.STRING, data);
-            skull.update();
-        } catch (Exception e) {
-            plugin.getLogger().warning("Failed to save inventory: " + e.getMessage());
+        String data = InventoryUtil.encode(inv);
+        if (data == null) {
+            plugin.getLogger().warning("Failed to save inventory at " + loc);
+            return;
         }
+        skull.getPersistentDataContainer().set(INVENTORY_KEY, PersistentDataType.STRING, data);
+        skull.update();
     }
 
     /**

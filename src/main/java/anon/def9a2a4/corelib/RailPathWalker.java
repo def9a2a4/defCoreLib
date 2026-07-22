@@ -70,7 +70,9 @@ final class RailPathWalker {
      */
     static RailState flip(RailState s) {
         Rail data = railData(s.rail);
-        if (data == null) return s.copy();
+        // Missing rail (block edit / chunk edge): still reverse t so the parameter is consistent; the
+        // next advance() off a null rail returns blocked anyway, so fromFace can't be resolved here.
+        if (data == null) return new RailState(s.rail, s.fromFace, 1.0 - s.t);
         BlockFace to = toFace(data.getShape(), s.fromFace);
         return new RailState(s.rail, to, 1.0 - s.t);
     }

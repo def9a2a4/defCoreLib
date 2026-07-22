@@ -1,8 +1,9 @@
 # BetterMinecarts content — namespace "bmc". Recipes gated behind the BetterMinecarts companion.
 #
 # The fuel carts (coal tender, blast-furnace cart) are item-only: right-clicking a rail with the item
-# spawns a vanilla HopperMinecart (native 5-slot inventory + hopper interop), tagged and re-skinned in
-# code (CustomCartManager) — the cart's block render is set via Minecart#setDisplayBlockData, not YAML.
+# spawns a plain RideableMinecart, tagged and re-skinned in code (CustomCartManager) — the block render
+# is set via Minecart#setDisplayBlockData, not YAML. Each cart carries a plugin-managed, fuel-only
+# inventory (layout below) serialized to the entity's PDC; right-click opens it with a custom title.
 # Junctions and the destructor rail (bare rails) are added here in a later milestone.
 
 namespace: bmc
@@ -21,6 +22,7 @@ blocks:
     item_material: CHEST_MINECART
     item_glint: true
     placeable: false
+    storage: { layout: DROPPER }
     recipes:
       craft:
         shapeless:
@@ -41,6 +43,7 @@ blocks:
     item_material: FURNACE_MINECART
     item_glint: true
     placeable: false
+    storage: { layout: HOPPER }
     recipes:
       craft:
         shapeless:
