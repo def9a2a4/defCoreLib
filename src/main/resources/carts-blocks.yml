@@ -15,7 +15,7 @@ textures:
   rail-junction:            "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvY2M5NmU4Y2QyOWJjNWQwMjQ4ZDMzMzhlMDBjZmY1NWVlYzFiOGQ4MDY2MjA4Y2Y0YTk0YWRmOGQ2NzFkN2Y2OSJ9fX0="  # rail-junction — junction item + world shell
   rail-destructor:          "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjE0ODkzZjVlOGNlNmIzZmQ5OGY5MWJmYzM1MGE5NWRiNTIzY2VlOTMzOGI1ZjNmNDY3OGZiOTQ3ZGU1MTk3ZCJ9fX0="  # rail-destructor — destructor item + world shell
   minecart-dispenser:       "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvN2FiNzhhYmMyMGQ4MmYyZWI3OTlhMTk4NmFiZjZjYmFlYmZhNmYzZDgyZThiNWRiMmI2NWUyMzk1MzVlNzlkNyJ9fX0="  # cart-dispenser — dispenser-cart in-hand item
-  rail-controller:          "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzk2MWM3NWMwOWMzMTJlNjllZjdiMGZkNDU1ZDgyZmQ3NTkzYzc1NmVhNzAzMDcwYmE1YzcwMzFkZWE1ZmQxYyJ9fX0="  # rail-controller — controller item + directional world shell
+  rail-controller:          "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzk2MWM3NWMwOWMzMTJlNjllZjdiMGZkNDU1ZDgyZmQ3NTkzYzc1NmVhNzAzMDcwYmE1YzcwMzFkZWE1ZmQxYyJ9fX0="  # rail-controller — controller item + world shell
 
 blocks:
   coal_cart:
@@ -155,11 +155,10 @@ blocks:
       - "&7full power = top speed, weaker = slower."
       - "&7No effect on trains without a lit blast cart."
     catalog_notes:
-      - "&fA rail that sets the cruise speed of a passing blast-furnace locomotive by its redstone signal strength (0–15 → stopped-ish … full speed). The train accelerates or brakes toward that target and holds it until the next controller."
-      - "&7Only affects a train that has a lit (fueled) blast-furnace cart; its arrow orients along the track."
-    # POWERED_RAIL (not RAIL): the bare-block index gates identity by material, so two bmc RAIL types would
-    # collide with the junction — a powered rail is a distinct material and reads its redstone signal natively.
-    base_block: POWERED_RAIL
+      - "&fA rail that sets the cruise speed of a passing blast-furnace locomotive by its redstone signal strength: 0 → stop, 15 → full speed, linear between. The train accelerates or brakes toward that target while it is over the controller, and resumes full speed once clear of it."
+      - "&7Build a RUN of these — braking is gradual (~13 blocks to stop from full), so a single rail barely changes speed; a zone of unpowered controllers makes a stop-and-hold station that departs when re-powered."
+      - "&7Only affects a train that has a lit (fueled) blast-furnace cart."
+    base_block: RAIL
     texture: "@rail-controller"
     item_glint: true
     drops: self

@@ -118,14 +118,14 @@ final class CartRailsManager implements Listener {
     }
 
     boolean isController(Block b) {
-        return b != null && b.getType() == Material.POWERED_RAIL && isType(b, CONTROLLER_ID);
+        return b != null && b.getType() == Material.RAIL && isType(b, CONTROLLER_ID);
     }
 
     /** Target cruise speed a controller rail sets for a fueled blast cart, from its redstone signal
-     *  strength (blocks/tick). {@code -1} = no signal → release any prior target (resume full speed). */
+     *  strength (blocks/tick), linear: 0 → 0 (stop), 15 → controller-max (full). Applied only while a
+     *  member is over the controller; the train resumes full speed once clear. */
     double controllerTarget(Block b) {
-        int power = b.getBlockPower();
-        return power == 0 ? -1.0 : (power / 15.0) * config.controllerMaxSpeed;
+        return (b.getBlockPower() / 15.0) * config.controllerMaxSpeed;
     }
 
     private boolean isType(Block b, String fullId) {
@@ -224,6 +224,22 @@ final class CartRailsManager implements Listener {
         } else if (m == Material.DETECTOR_RAIL) {
             if (isDestructor(b)) destroy(cart, b);   // exemption checked in destroy()
         }
+    }
+
+    // ── Wrench: report a controller rail's redstone signal + resulting target speed ──────────────────
+
+    @EventHandler(priority = EventPriority.NORMAL)
+    public void onWrenchRail(org.bukkit.event.player.PlayerInteractEvent event) {
+        if (event.getAction() != org.bukkit.event.block.Action.RIGHT_CLICK_BLOCK) return;
+        if (event.getHand() != org.bukkit.inventory.EquipmentSlot.HAND) return;
+        if (!RotationBlocks.isWrench(event.getItem())) return;
+        Block b = event.getClickedBlock();
+        if (b == null || !isController(b)) return;
+        event.setCancelled(true);
+        int power = b.getBlockPower();
+        event.getPlayer().sendActionBar(net.kyori.adventure.text.Component.text(
+            String.format("Controller: signal %d/15 → %.2f b/t", power, controllerTarget(b)),
+            net.kyori.adventure.text.format.NamedTextColor.GREEN));
     }
 
     // ── Anti-slope: a custom rail must never become an ascending rail — break it if it does ──────────

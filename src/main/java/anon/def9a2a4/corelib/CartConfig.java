@@ -48,6 +48,9 @@ final class CartConfig {
     /** Emit dynamic light (via the optional DynLight plugin) from a lit blast-furnace cart. */
     boolean dynamicLights = true;
 
+    /** Render the chain-coupler display between coupled carts. False = trains still work, just no chain visual. */
+    boolean chainVisuals = true;
+
     CartConfig() {
         // Baked-in defaults (vanilla furnace burn times), overridden by the file if present.
         fuelBurnTicks.put(Material.COAL, 1600);
@@ -89,6 +92,7 @@ final class CartConfig {
         }
 
         dynamicLights = yaml.getBoolean("dynamic-lights", dynamicLights);
+        chainVisuals = yaml.getBoolean("chain-visuals", chainVisuals);
     }
 
     /** Whether a material may enter a cart's fuel-only inventory. */

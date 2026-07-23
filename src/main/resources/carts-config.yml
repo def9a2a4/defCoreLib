@@ -36,10 +36,15 @@ carts:
   controller-max-speed: 1.0
   # Speed a train sheds per tick while braking down to a lower controller cap.
   brake-rate: 0.04
-  # Launch speed of an item fired upward by a dispenser minecart.
-  dispense-velocity: 0.3
+  # Multiplier on the vanilla-dispenser eject velocity when a dispenser minecart fires (1.0 = exactly
+  # like a real dispenser; raise for a stronger pop).
+  dispense-velocity: 1.0
 
 # Emit dynamic light from a lit blast-furnace cart (level 5, only while burning) via the optional
 # DynLight plugin (https://github.com/def9a2a4/dynlight). Purely a scoreboard-tag integration — no
 # dependency; inert when DynLight is absent. Set false to never tag carts.
 dynamic-lights: true
+
+# Render the chain-coupler display between coupled carts. Trains work identically either way; set false
+# to hide the chain visual entirely (e.g. if you dislike it or want fewer display entities).
+chain-visuals: true

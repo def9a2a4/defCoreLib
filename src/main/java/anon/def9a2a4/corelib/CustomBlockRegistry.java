@@ -247,7 +247,9 @@ public class CustomBlockRegistry {
         // Bare-first types (base_block set, e.g. casing_oak = OAK_STAIRS) auto-register for identity
         // resolution + chunk restore. Skull-first bare types (the shaft) instead call registerBareBlock
         // explicitly with their revert handler, since their base_block isn't set (they place as a head).
-        if (type.baseBlock() != null && !bareTypes.containsKey(type.baseBlock())) {
+        // Gate on the type's own fullId, not the material, so multiple bare types CAN share one base
+        // material (e.g. bmc:junction + bmc:controller_rail both on RAIL) — identity is per-location.
+        if (type.baseBlock() != null && !bareBaseById.containsKey(type.fullId())) {
             registerBareBlock(type, type.baseBlock(), null);
         }
         rescanLoadedChunks(type);
@@ -300,12 +302,13 @@ public class CustomBlockRegistry {
             return types.get(typeId);
         }
         // Bare block: a registered base material (CHAIN, the casing stairs, …) whose cell is in the runtime index
-        // (identity durably backed by the chunk PDC + its tagged display). Cross-check that the type
-        // indexed at this cell is the one registered for THIS material — a stale index entry under a
-        // block that changed material must not lend it the wrong identity.
+        // (identity durably backed by the chunk PDC + its tagged display). Cross-check that the located type's
+        // OWN registered base material equals this block's material — a stale index entry under a block that
+        // changed material must not lend it the wrong identity. (Keying on the located type's base, rather than
+        // the single-slot bareTypes value, lets several bare types share one material — e.g. two RAIL types.)
         if (!bareLocations.isEmpty() && bareTypes.containsKey(m)) {
             CustomHeadBlock t = bareLocations.get(LocationKey.of(block));
-            if (t != null && bareTypes.get(m) == t) return t;
+            if (t != null && m == bareBaseById.get(t.fullId())) return t;
         }
         // physical_material-backed blocks (e.g. the dynamo's barrel): gate on the cheap runtime
         // location index BEFORE taking a tile snapshot, so explosion/piston/break sweeps over vanilla

@@ -373,17 +373,31 @@ final class CustomCartManager implements Listener {
             && b.getBlockData() instanceof org.bukkit.block.data.type.RedstoneRail rr && rr.isPowered();
     }
 
-    /** Launch one item from the cart's inventory in the fire direction (dispenser-style). */
+    /** Launch one item from the cart's inventory like a dispenser firing along {@link #DISPENSE_DIR}.
+     *  Reproduces vanilla {@code DefaultDispenseItemBehavior.spawnItem}: base speed {@code 0.2+rand*0.1}
+     *  along the facing axis, a literal {@code 0.2} upward baseline, and a triangular ±spread per axis —
+     *  the scatter + pop that distinguishes a dispenser from a plain dropper. */
     private void fireOne(CartState state) {
         ItemStack one = takeOne(state.inv, m -> true);
         if (one == null) return;
+        var r = java.util.concurrent.ThreadLocalRandom.current();
+        double d3 = 0.2 + r.nextDouble() * 0.1;
+        double spread = 0.0172275 * 6;
+        org.bukkit.util.Vector v = new org.bukkit.util.Vector(
+            triangle(r, DISPENSE_DIR.getModX() * d3, spread),
+            triangle(r, 0.2, spread),                        // vanilla hardcodes the Y centre at 0.2
+            triangle(r, DISPENSE_DIR.getModZ() * d3, spread))
+            .multiply(config.dispenseVelocity);
         Location loc = state.cart.getLocation().add(0, 0.5, 0);
         org.bukkit.entity.Item drop = state.cart.getWorld().dropItem(loc, one);
-        drop.setVelocity(new org.bukkit.util.Vector(
-            DISPENSE_DIR.getModX(), DISPENSE_DIR.getModY(), DISPENSE_DIR.getModZ())
-            .multiply(config.dispenseVelocity));
+        drop.setVelocity(v);
         drop.setPickupDelay(20);
         state.cart.getWorld().playSound(loc, org.bukkit.Sound.BLOCK_DISPENSER_DISPENSE, 0.6f, 1.0f);
+    }
+
+    /** Vanilla {@code RandomSource.triangle(center, range)}: {@code center + range*(rand − rand)}. */
+    private static double triangle(java.util.random.RandomGenerator r, double center, double range) {
+        return center + range * (r.nextDouble() - r.nextDouble());
     }
 
     /**
