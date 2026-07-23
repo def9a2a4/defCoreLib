@@ -63,7 +63,7 @@ textures:
   reverser_up:       "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODMyYTg3MGEzNDMwMmViYThhMTNiYzI2ZWZjMGM5ZDQwOWJkYWYzYWRjZTBkMzUzZGEzOTNkMWM0YjgxODI0MyJ9fX0="  # reverser-up — reverser head (floor)
   reverser_fwd:      "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjk1MWJlMGM0NzVlMTE5ZTk2YWQxYzgzODU5MTI0MGYyZjVmYTEyODFmZTUyNTZlMmY2YzVlZWZlZWI3MzA3YiJ9fX0="  # reverser-fwd — reverser head (wall) + item
   machine_base:      "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTlmMzdmMWNiZDQ3YzM1MDQ1MTFiZjMzYzU4YzNhMjUyYjYwNzEzZWM1ZmM1NDMzZDg4N2Q0YTBkOTk2MjEwIn19fQ=="  # 59f37f1c — millstone + press placed head
-  throttle_lever:    "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjk1MWJlMGM0NzVlMTE5ZTk2YWQxYzgzODU5MTI0MGYyZjVmYTEyODFmZTUyNTZlMmY2YzVlZWZlZWI3MzA3YiJ9fX0="  # PLACEHOLDER (reverser head) — throttle lever in-hand item icon; swap for real art later
+  throttle_lever:    "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTliOTQ2Yjk2MjMxNTVlYzFlMDdjYzRiZmFhNDQzMDhmYWU3ZmZmMDg0ZTZhNjY3ODE4NjYzNTYyYzE3M2RkNyJ9fX0="  # assets/misc/throttle-lever.png — throttle lever in-hand item icon
   sieve_item:        "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOWRiZjc2YTA5NWMxNjAyNGU5YmFhNDhmNjAyZWIxODljMzdlYjNiZDUxMDcwZTE1YWI0OWFiMjE2YjA3YjFiMSJ9fX0="  # 9dbf76a0 — sieve item in hand
   # ── Steam stack + pump art (assets/rotation/boiler/, via scripts/upload_skin.py) ──
   copper_tank:       "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDgxZDIxMGRmOTRlYWNiMTM4ZmYwZjdjNmRjMjI3N2ZiNGJlN2RlNjJkY2VlZjUyZDk2MDgyMzIyZmJjOTk5OCJ9fX0="  # 481d210d — copper-tank — boiler shell + item
@@ -924,19 +924,20 @@ blocks:
         # Display origin is the block CENTRE (DisplayUtil.spawnBlock), so translations are relative to
         # centre: floor = y -0.5, and X/Z centred = -scale/2.
         display_entities:
-          # Handle — spruce fence, 2x smaller (scale 0.5), upright on the floor centre. This is only the
-          # level-0 rest pose; ThrottleLever.java tilts it about X per output level (tip swings in ±Z).
+          # Handle — spruce fence, 2x smaller (scale 0.5), upright, base lifted 0.2 above floor centre.
+          # This is only the level-0 rest pose; ThrottleLever.java tilts it about X per output level
+          # (tip swings in ±Z) and pins the base to the same lifted point.
           - block_data: "minecraft:spruce_fence"
             tag: handle
-            transform: { translation: [-0.25, -0.5, -0.25], scale: [0.5, 0.5, 0.5] }
-          # One redstone block + one dispenser, same size, flush with the floor, symmetric at the +Z and
-          # -Z swing ends (the level-15 and level-0 tip positions).
+            transform: { translation: [-0.25, -0.3, -0.25], scale: [0.5, 0.5, 0.5] }
+          # One redstone block + one dispenser, same size, flush with the floor, just touching at z=0
+          # (the redstone block sits on the +Z swing end, the dispenser on the -Z end).
           - block_data: "minecraft:redstone_block"
             tag: rblock
-            transform: { translation: [-0.125, -0.5, 0.225], scale: [0.25, 0.25, 0.25] }
+            transform: { translation: [-0.125, -0.5, 0.0], scale: [0.25, 0.25, 0.25] }
           - block_data: "minecraft:dispenser[facing=down]"
             tag: dispenser
-            transform: { translation: [-0.125, -0.5, -0.475], scale: [0.25, 0.25, 0.25] }
+            transform: { translation: [-0.125, -0.5, -0.25], scale: [0.25, 0.25, 0.25] }
     recipes:
       craft:
         shaped:

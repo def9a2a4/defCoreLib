@@ -67,8 +67,9 @@ final class ThrottleLever implements Listener {
     /** Fence bottom-centre in block-model space (a block model spans [0,1]³). */
     private static final Vector3f MODEL_BASE = new Vector3f(0.5f, 0f, 0.5f);
     /** Where the fence base should sit, relative to the display's origin. DisplayUtil.spawnBlock spawns
-     *  at the block CENTRE, so the floor centre is half a block below the origin. */
-    private static final Vector3f FLOOR_CENTRE = new Vector3f(0f, -0.5f, 0f);
+     *  at the block CENTRE; the floor centre is half a block below, and the base is lifted 0.2 above
+     *  that (Y = -0.3) so the handle clears the dressing blocks. */
+    private static final Vector3f HANDLE_BASE = new Vector3f(0f, -0.3f, 0f);
     private static final AxisAngle4f R_IDENTITY = new AxisAngle4f(0f, 0f, 0f, 1f);
 
     /** Number head-font textures 0-15 for the menu buttons (from {@code redstonedisplays:digital_indicator}). */
@@ -252,15 +253,15 @@ final class ThrottleLever implements Listener {
 
     /** Tilt the fence about its base by the level's angle, at {@link #HANDLE_SCALE}. The display's
      *  origin is the block CENTRE (DisplayUtil.spawnBlock) and a BlockDisplay renders its [0,1]³ model
-     *  from there, so we translate by {@code FLOOR_CENTRE − R·(scale·MODEL_BASE)} to pin the fence base
-     *  to the floor centre while the handle swings. */
+     *  from there, so we translate by {@code HANDLE_BASE − R·(scale·MODEL_BASE)} to pin the fence base
+     *  to the lifted floor centre while the handle swings. */
     private static Transformation handleTransform(int level) {
         float t = clamp(level) / 15f;
         float rad = (float) Math.toRadians(MIN_ANGLE + (MAX_ANGLE - MIN_ANGLE) * t);
         AxisAngle4f r = new AxisAngle4f(rad, TILT_AXIS.x, TILT_AXIS.y, TILT_AXIS.z);
         Vector3f scaledBase = new Vector3f(MODEL_BASE).mul(HANDLE_SCALE);
         Vector3f rsb = r.transform(scaledBase); // mutates → R·(scale·MODEL_BASE)
-        Vector3f translation = new Vector3f(FLOOR_CENTRE).sub(rsb);
+        Vector3f translation = new Vector3f(HANDLE_BASE).sub(rsb);
         return new Transformation(translation, r,
                 new Vector3f(HANDLE_SCALE, HANDLE_SCALE, HANDLE_SCALE), R_IDENTITY);
     }
