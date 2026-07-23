@@ -275,8 +275,11 @@ final class CartRailsManager implements Listener {
             Rail rail = RailPathWalker.railData(cur);
             if (rail == null) return;
             Rail.Shape shape = rail.getShape();
-            if (RailPathWalker.isAscending(shape) || RailPathWalker.isCurve(shape)) {
-                breakRail(cur, type);          // custom rails stay straight+flat
+            // Slopes: break any custom rail. Curves: break only ORIENTABLE rails (destructor + controller —
+            // their flat square shell can't depict a curve). A junction is a 4-way crossing whose vanilla
+            // RAIL rests curved at a real intersection, so it must NOT be curve-broken.
+            if (RailPathWalker.isAscending(shape) || (isOrientableRail(cur) && RailPathWalker.isCurve(shape))) {
+                breakRail(cur, type);
             } else if (isOrientableRail(cur)) {
                 reorientDisplays(cur, shapeFace(cur));   // settle-correction: follow the rail's new axis
             }
