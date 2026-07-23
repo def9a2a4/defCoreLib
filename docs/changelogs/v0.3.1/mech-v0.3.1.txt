@@ -47,11 +47,16 @@ RECIPES
   simply not registered.
 
 ADVANCEMENTS
-- 16 new advancement nodes: "use" milestones for the drill, fan,
-  placer, suction hopper, chain hoist, dynamo, clutch, and reverser,
-  plus an operator capstone required by Grand Engineer; ore branches
-  to precious/netherite for the millstone; panning treasure for the
-  sieve; and a Pan Handler craft advancement for the new sieve.
+- New "use" milestones for the drill, fan, placer, suction hopper,
+  chain hoist, dynamo, clutch, reverser, and mechanical dispenser,
+  plus an operator capstone required by Grand Engineer.
+- Craft and power milestones for this release's new blocks: the
+  throttle lever, Copper Water Pump, mechanical dispenser, and the
+  full steam stack (burner, boiler, steam piston) with a steam-power
+  network milestone.
+- Millstone ore branches to precious/netherite; the sieve's panning
+  payout ("Panning Out") and its treasure branch; a Pan Handler craft
+  advancement for the sieve.
 - Fixed: machine products delivered straight into a container below now
   count toward product advancements, and items merely passing through a
   suction hopper no longer grant them.
