@@ -63,9 +63,12 @@ final class ThrottleLever implements Listener {
     private static final float MIN_ANGLE = -45f;
     private static final float MAX_ANGLE = 45f;
     private static final float HANDLE_SCALE = 0.5f;                       // 2x smaller
-    private static final Vector3f TILT_AXIS = new Vector3f(1f, 0f, 0f);   // tilt in the Z plane
-    /** Rotation/scale pivot in block-model space: the fence's base centre (floor centre). */
-    private static final Vector3f PIVOT = new Vector3f(0.5f, 0f, 0.5f);
+    private static final Vector3f TILT_AXIS = new Vector3f(1f, 0f, 0f);   // tilt about X → tip swings in ±Z
+    /** Fence bottom-centre in block-model space (a block model spans [0,1]³). */
+    private static final Vector3f MODEL_BASE = new Vector3f(0.5f, 0f, 0.5f);
+    /** Where the fence base should sit, relative to the display's origin. DisplayUtil.spawnBlock spawns
+     *  at the block CENTRE, so the floor centre is half a block below the origin. */
+    private static final Vector3f FLOOR_CENTRE = new Vector3f(0f, -0.5f, 0f);
     private static final AxisAngle4f R_IDENTITY = new AxisAngle4f(0f, 0f, 0f, 1f);
 
     /** Number head-font textures 0-15 for the menu buttons (from {@code redstonedisplays:digital_indicator}). */
@@ -118,12 +121,15 @@ final class ThrottleLever implements Listener {
     private void onLoad(Block b) {
         int level = readLevel(b);
         levelCache.put(CustomBlockRegistry.LocationKey.of(b), level);
-        applyPower(b, level);
-        // Displays are (re)spawned by applyConfig around this callback; set the handle angle next tick
-        // once they're guaranteed to exist.
+        // Defer to next tick: displays are (re)spawned by applyConfig around this callback, and we'd
+        // rather not drive a physics update mid chunk-load. The plate's power persists with the block,
+        // so only re-assert it if it actually drifted (e.g. an entity was on the plate at unload).
         Bukkit.getScheduler().runTask(registry.getPlugin(), () -> {
-            if (isThrottle(b)) updateHandle(b, levelCache.getOrDefault(
-                    CustomBlockRegistry.LocationKey.of(b), level));
+            if (!isThrottle(b)) return;
+            if (!(b.getBlockData() instanceof AnaloguePowerable ap) || ap.getPower() != level) {
+                applyPower(b, level);
+            }
+            updateHandle(b, level);
         });
     }
 
@@ -244,16 +250,17 @@ final class ThrottleLever implements Listener {
         }
     }
 
-    /** Rotation about {@link #PIVOT} (fence base centre) by the level's angle, at {@link #HANDLE_SCALE}.
-     *  BlockDisplay renders its model in [0,1]³ about the block's min corner, so we translate by
-     *  {@code PIVOT − R·(scale·PIVOT)} to keep the base fixed while the handle swings. */
+    /** Tilt the fence about its base by the level's angle, at {@link #HANDLE_SCALE}. The display's
+     *  origin is the block CENTRE (DisplayUtil.spawnBlock) and a BlockDisplay renders its [0,1]³ model
+     *  from there, so we translate by {@code FLOOR_CENTRE − R·(scale·MODEL_BASE)} to pin the fence base
+     *  to the floor centre while the handle swings. */
     private static Transformation handleTransform(int level) {
         float t = clamp(level) / 15f;
         float rad = (float) Math.toRadians(MIN_ANGLE + (MAX_ANGLE - MIN_ANGLE) * t);
         AxisAngle4f r = new AxisAngle4f(rad, TILT_AXIS.x, TILT_AXIS.y, TILT_AXIS.z);
-        Vector3f scaledPivot = new Vector3f(PIVOT).mul(HANDLE_SCALE);
-        Vector3f rsp = r.transform(scaledPivot); // mutates → R·(scale·PIVOT)
-        Vector3f translation = new Vector3f(PIVOT).sub(rsp);
+        Vector3f scaledBase = new Vector3f(MODEL_BASE).mul(HANDLE_SCALE);
+        Vector3f rsb = r.transform(scaledBase); // mutates → R·(scale·MODEL_BASE)
+        Vector3f translation = new Vector3f(FLOOR_CENTRE).sub(rsb);
         return new Transformation(translation, r,
                 new Vector3f(HANDLE_SCALE, HANDLE_SCALE, HANDLE_SCALE), R_IDENTITY);
     }

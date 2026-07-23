@@ -172,9 +172,14 @@ blocks:
             transform: { translation: [0, -0.4275, 0], scale: [1.88141, 0.9995, 1.88141] }
     recipes:
       craft:
-        shapeless:
+        shaped:
           - amount: 2
-            ingredients:
-              - { material: RAIL }
-              - { material: REPEATER }
-              - { material: REDSTONE }
+            pattern:
+              - " C "
+              - "ODO"
+              - " R "
+            key:
+              C: { material: COMPARATOR }
+              O: { material: COPPER_INGOT }
+              D: { material: DETECTOR_RAIL }
+              R: { material: REDSTONE }

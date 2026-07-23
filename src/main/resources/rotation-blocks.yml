@@ -921,22 +921,22 @@ blocks:
         # All visuals are BlockDisplay entities (block_data:), so the flat iron plate underneath is
         # dressed over. Transforms below are the level-0 rest pose / static dressing — visual tuning
         # knobs. ThrottleLever.java overrides the "handle" transform per output level to tilt it.
+        # Display origin is the block CENTRE (DisplayUtil.spawnBlock), so translations are relative to
+        # centre: floor = y -0.5, and X/Z centred = -scale/2.
         display_entities:
-          # Handle — spruce fence, 2x smaller (scale 0.5), base at floor centre.
+          # Handle — spruce fence, 2x smaller (scale 0.5), upright on the floor centre. This is only the
+          # level-0 rest pose; ThrottleLever.java tilts it about X per output level (tip swings in ±Z).
           - block_data: "minecraft:spruce_fence"
             tag: handle
-            transform: { translation: [0.25, 0.0, 0.25], scale: [0.5, 0.5, 0.5] }
-          # Quarter-size redstone block, flush with the floor, offset to one side.
+            transform: { translation: [-0.25, -0.5, -0.25], scale: [0.5, 0.5, 0.5] }
+          # One redstone block + one dispenser, same size, flush with the floor, symmetric at the +Z and
+          # -Z swing ends (the level-15 and level-0 tip positions).
           - block_data: "minecraft:redstone_block"
             tag: rblock
-            transform: { translation: [0.05, 0.0, 0.375], scale: [0.25, 0.25, 0.25] }
-          # Down-facing dispensers at the +/- swing sides, flush with the floor.
+            transform: { translation: [-0.125, -0.5, 0.225], scale: [0.25, 0.25, 0.25] }
           - block_data: "minecraft:dispenser[facing=down]"
-            tag: disp_pos
-            transform: { translation: [0.6, 0.0, 0.2], scale: [0.35, 0.2, 0.35] }
-          - block_data: "minecraft:dispenser[facing=down]"
-            tag: disp_neg
-            transform: { translation: [0.05, 0.0, 0.2], scale: [0.35, 0.2, 0.35] }
+            tag: dispenser
+            transform: { translation: [-0.125, -0.5, -0.475], scale: [0.25, 0.25, 0.25] }
     recipes:
       craft:
         shaped:
