@@ -62,6 +62,9 @@ NODES = [
      "Craft a Shaft — carries rotational power in a straight line along its axis."),
     ("craft/gear", "craft/shaft", "task", "@copper_gear", "Turning the Corner", "white",
      "Craft a Gear — meshes with gears on its sides to turn power around a 90° corner."),
+    # transmission: chain pulley carries power across a gap (shaft → gear → pulley)
+    ("craft/chain_pulley", "craft/gear", "task", "@chainwheel", "Pull Yourself Together", "white",
+     "Craft a Chain Pulley — link two pulleys with a chain to carry power across a gap."),
     # machines: consumer chain, spatial chain, control chain
     ("craft/millstone", "craft/gear", "task", "@stone_slabs", "Grind House", "white",
      "Craft a Millstone — grinds its stored items (wheat→flour, ores→more) while powered from above."),
@@ -83,8 +86,6 @@ NODES = [
      "Craft a Clutch — a shaft that disconnects and cuts power when it receives a redstone signal."),
     ("craft/reverser", "craft/clutch", "task", "@reverser_fwd", "Reverse Course", "white",
      "Craft a Reverser — flips a line's spin direction while it's redstone-powered."),
-    ("craft/chain_pulley", "craft/reverser", "task", "@chainwheel", "Pull Yourself Together", "white",
-     "Craft a Chain Pulley — link two pulleys with a chain to carry power across a gap."),
     ("craft/dynamo", "craft/gear", "task", "minecraft:comparator", "Reading the Room", "white",
      "Craft a Redstone Dynamo — reads your network's power and emits an analog redstone signal for a comparator."),
     ("craft/throttle_lever", "craft/gear", "task", "@throttle_lever", "Hands On", "white",
@@ -99,7 +100,7 @@ NODES = [
      "Craft a Rotator — a hinge that swings a glued structure as a door or drawbridge."),
     ("craft/minecart", "craft/rotator", "task", "minecraft:furnace_minecart", "Cart Blanche", "white",
      "Craft a Mechanical Minecart — glue blocks onto it for a rideable moving structure."),
-    ("craft/chain_hoist", "craft/piston", "task", "@chainwheel", "Going Down", "white",
+    ("craft/chain_hoist", "craft/piston", "task", "@chain_hoist_item", "Going Down", "white",
      "Craft a Chain Hoist — a floor winch that raises and lowers a platform on a chain."),
     # sources: windmill -> water wheel -> engine, with the motor as a leaf
     ("craft/windmill_item", "craft/shaft", "task", "@windmill_item", "Tilting at Windmills", "white",
