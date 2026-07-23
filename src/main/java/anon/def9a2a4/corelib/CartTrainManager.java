@@ -661,7 +661,9 @@ final class CartTrainManager implements Listener {
                 .rotate(orient)
                 .scale(CHAIN_WIDTH, (float) chainLen, CHAIN_WIDTH)
                 .translate(-0.5f, -0.5f, -0.5f);
-            link.display.setInterpolationDelay(0);
+            // Set ONLY the matrix each tick — never re-arm the interpolation (setInterpolationDelay), which
+            // would restart the transform lerp from the block's identity (vertical) pose every tick → flash.
+            // interpolationDuration is set once at spawn; this matches the mechanism displays' proven recipe.
             link.display.setTransformationMatrix(m);
         }
         // Trim links past the current coupling count (train shrank / split).
