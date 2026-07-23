@@ -941,12 +941,13 @@ blocks:
     recipes:
       craft:
         shaped:
-          # Lever (control) over an iron weighted plate (the analog body) over a redstone block (source).
-          - pattern: ["L", "P", "R"]
+          - pattern: [" T ", "RIC", "SSS"]
             key:
-              L: { material: LEVER }
-              P: { material: HEAVY_WEIGHTED_PRESSURE_PLATE }
-              R: { material: REDSTONE_BLOCK }
+              T: { material: STICK }
+              R: { material: REDSTONE }             # redstone dust
+              I: { material: IRON_INGOT }
+              C: { material: COBBLESTONE }
+              S: { material: SMOOTH_STONE_SLAB }
 
   # ─── Mechanical Casing ────────────────────────────────────────────────────
   # A block that auto-glues to adjacent blocks like a vanilla slime block: any casing in a moving

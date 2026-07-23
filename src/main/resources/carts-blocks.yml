@@ -26,7 +26,7 @@ blocks:
       - "&7Feeds furnace & blast-furnace carts in its train."
       - "&7Accepts only fuel; hoppers above/beside fill it."
     catalog_notes:
-      - "&fRight-click a rail to spawn a coal tender: a minecart with a 5-slot, fuel-only inventory rendered as a block of coal."
+      - "&fRight-click a rail to spawn a coal tender: a minecart with a 9-slot, fuel-only inventory rendered as a block of coal."
       - "&fCouple it into a train and it automatically feeds any furnace or blast-furnace cart in that train."
       - "&7Hoppers above or beside the track can refill it as it passes."
     texture: "@minecart-coal"
