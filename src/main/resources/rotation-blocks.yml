@@ -907,7 +907,7 @@ blocks:
       - "&7Emits a redstone signal of a"
       - "&7strength you dial in (0-15)"
     catalog_notes:
-      - "&fA set-and-forget analog redstone source: right-click to pick an output strength 0-15."
+      - "&fA set-and-forget analog redstone source: right-click to raise the output, sneak-right-click to lower it (0-15)."
       - "&fPowers adjacent redstone directly (weighted-plate rules) — run dust/lamps against it."
       - "&7Ignores footsteps: stepping on it will not change the signal."
     base_block: HEAVY_WEIGHTED_PRESSURE_PLATE

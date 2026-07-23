@@ -7,16 +7,21 @@ import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.AnaloguePowerable;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.Display;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.block.BlockPhysicsEvent;
+import org.bukkit.event.block.BlockPistonExtendEvent;
 import org.bukkit.event.block.BlockRedstoneEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.util.Transformation;
 import org.joml.AxisAngle4f;
@@ -170,6 +175,50 @@ final class ThrottleLever implements Listener {
         if (b == null || b.getType() != PLATE) return;
         if (levelCache.get(CustomBlockRegistry.LocationKey.of(b)) == null && !isThrottle(b)) return;
         event.setCancelled(true);
+    }
+
+    // ── Physics: float the plate; a piston breaks it cleanly ──────────────────────────────────────
+
+    /** A weighted pressure plate needs a solid support block below and pops off (dropping a vanilla
+     *  plate + orphaning our displays/PDC) when it's removed. The registry's pop-off guard only covers
+     *  head materials, so cancel physics for our plate to float it like a custom head. Fires for every
+     *  block update in the world — bail on the material check before anything costlier. */
+    @EventHandler(ignoreCancelled = true)
+    public void onPhysics(BlockPhysicsEvent event) {
+        Block b = event.getBlock();
+        if (b.getType() != PLATE) return;
+        if (levelCache.get(CustomBlockRegistry.LocationKey.of(b)) == null && !isThrottle(b)) return;
+        event.setCancelled(true);
+    }
+
+    /** A pressure plate's DESTROY push-reaction means a piston moving into it just breaks it (it's never
+     *  in {@code getBlocks()}, so CoreLibPlugin's handlePiston never sees it) — vanilla drops a raw
+     *  plate and leaves our displays/PDC behind. Intercept the destination cells and break it ourselves:
+     *  drop the throttle-lever item and clean up, clearing the cell so vanilla drops nothing. Only extend
+     *  matters — a retract never pushes into (or pulls) a DESTROY-reaction plate. */
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    public void onPistonExtend(BlockPistonExtendEvent event) {
+        BlockFace dir = event.getDirection();
+        breakLever(event.getBlock().getRelative(dir)); // cell right in front of the piston head
+        for (Block b : event.getBlocks()) {
+            breakLever(b.getRelative(dir));            // each pushed block's destination cell
+        }
+    }
+
+    private void breakLever(Block b) {
+        if (!isLeverPlate(b)) return;
+        CustomHeadBlock type = registry.getType(BLOCK_ID);
+        if (type == null) return;
+        registry.onBlockRemoved(b, type);                                  // displays + tracking + forget
+        ItemStack drop = type.createItem(1);
+        b.getWorld().dropItemNaturally(b.getLocation().add(0.5, 0.5, 0.5), drop);
+        b.setType(Material.AIR, false);                                    // no vanilla plate drop
+    }
+
+    /** True if the block is one of our throttle-lever plates (cache fast-path, then registry lookup). */
+    private boolean isLeverPlate(Block b) {
+        if (b.getType() != PLATE) return false;
+        return levelCache.get(CustomBlockRegistry.LocationKey.of(b)) != null || isThrottle(b);
     }
 
     private void applyPower(Block b, int level) {
