@@ -9,8 +9,8 @@ NEW BLOCK: THROTTLE LEVER
   the vanilla step and click are suppressed. Floor placement only.
 - The spruce-fence handle tilts to show the current strength; the
   setting survives breaks, reloads, and restarts.
-- Craft: a lever over an iron weighted pressure plate over a redstone
-  block.
+- Craft: a stick over a row of redstone dust, iron ingot, and
+  cobblestone, over three smooth stone slabs.
 
 FLUID MACHINES (NEW)
 - Copper Water Pump: floor-mounted machine that moves one bucket per

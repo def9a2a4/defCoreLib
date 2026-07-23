@@ -86,6 +86,9 @@ final class ThrottleLever implements Listener {
         registry.register(block.toBuilder()
             .drillable(false)
             .onChunkLoad((b, state) -> onLoad(b)) // also fires on initial placement
+            // Drop the cache entry only — the durable level lives in the chunk PDC and must survive an
+            // unload (unlike onBlockRemoved's forget, which deletes the PDC cell).
+            .onChunkUnload(b -> levelCache.remove(CustomBlockRegistry.LocationKey.of(b)))
             .onBlockRemoved((b, state) -> forget(b))
             .build());
         // Interaction (right-click ±1) and the output pinning are handled by our own listeners rather
@@ -195,8 +198,13 @@ final class ThrottleLever implements Listener {
      *  in {@code getBlocks()}, so CoreLibPlugin's handlePiston never sees it) — vanilla drops a raw
      *  plate and leaves our displays/PDC behind. Intercept the destination cells and break it ourselves:
      *  drop the throttle-lever item and clean up, clearing the cell so vanilla drops nothing. Only extend
-     *  matters — a retract never pushes into (or pulls) a DESTROY-reaction plate. */
-    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+     *  matters — a retract never pushes into (or pulls) a DESTROY-reaction plate.
+     *
+     *  <p>Runs at MONITOR/ignoreCancelled so it only fires once the push is final — a region plugin that
+     *  cancels the extend at HIGHEST runs first, so we never destroy a lever whose push was blocked. The
+     *  event is still dispatched before the blocks actually move, so clearing the cell here suppresses
+     *  the vanilla plate drop as intended. */
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPistonExtend(BlockPistonExtendEvent event) {
         BlockFace dir = event.getDirection();
         breakLever(event.getBlock().getRelative(dir)); // cell right in front of the piston head
