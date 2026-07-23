@@ -28,6 +28,10 @@ carts:
   rolling-drag: 0.01
   # Max straight-line distance between two carts to couple them.
   max-link-distance: 3.0
+  # Straight-line distance past which a coupling snaps on its own (drops the chain). A powered train is
+  # re-placed at 'spacing' each tick so it never trips this; it only fires when a parked/pushed/teleported
+  # train is pulled apart. Must be larger than 'spacing'; set to 0 to disable the break mechanic.
+  couple-break-distance: 4.0
   # Engine fuel level (ticks) below which a tender in the same train tops it up.
   feed-threshold-ticks: 600
 

@@ -288,6 +288,39 @@ final class CartTrainManager implements Listener {
         dirty = true;
     }
 
+    /** If any coupling in {@code train} is stretched past {@code couple-break-distance} (or its two carts have
+     *  ended up in different worlds), sever that one link and return true. Consecutive {@code order} pairs are
+     *  exactly the couplings — each train component is a simple path (≤2 links/cart, no cycles). */
+    private boolean breakOverstretched(CartTrain train) {
+        double d = config.coupleBreakDistance;
+        if (d <= 0) return false;
+        double d2 = d * d;
+        List<Member> ord = train.order;
+        for (int i = 0; i + 1 < ord.size(); i++) {
+            Minecart a = ord.get(i).cart, b = ord.get(i + 1).cart;
+            if (a.getWorld() != b.getWorld() || a.getLocation().distanceSquared(b.getLocation()) > d2) {
+                severLink(a, b);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /** Sever just the A–B coupling (each cart's other links stay intact), dropping one chain at the midpoint
+     *  with a break sound + particle. The overstretch safety-valve; {@code rebuildTrains} re-forms the halves. */
+    private void severLink(Minecart a, Minecart b) {
+        removePartner(a, b.getUniqueId());
+        removePartner(b, a.getUniqueId());
+        parkCart(a);
+        parkCart(b);
+        Location mid = a.getWorld() == b.getWorld()
+            ? a.getLocation().add(b.getLocation()).multiply(0.5) : a.getLocation();
+        dropChains(mid, 1);
+        mid.getWorld().playSound(mid, Sound.BLOCK_CHAIN_BREAK, 1f, 1f);
+        mid.getWorld().spawnParticle(Particle.WAX_OFF, mid.clone().add(0, 0.4, 0), 8, 0.15, 0.15, 0.15, 0);
+        dirty = true;
+    }
+
     // ── Destruction ──────────────────────────────────────────────────────────
 
     // NORMAL priority: runs before CustomCartManager's HIGH handler (which drops the custom item and
@@ -499,6 +532,9 @@ final class CartTrainManager implements Listener {
             boolean ok = true;
             for (Member m : train.order) if (m.cart.isDead() || !m.cart.isValid()) { ok = false; break; }
             if (!ok) { dirty = true; continue; }
+            // Snap any coupling stretched past the break distance (a parked/pushed/teleported train can
+            // drift apart; a powered one is re-placed at spacing each tick so it never trips this).
+            if (breakOverstretched(train)) { dirty = true; continue; }   // train changed — rebuild next tick
             if (feed) feedTrain(train);
             drive(train);
             updateChainDisplays(train);   // after placing carts, so chains track their final positions

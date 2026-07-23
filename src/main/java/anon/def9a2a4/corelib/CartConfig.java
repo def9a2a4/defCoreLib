@@ -36,6 +36,9 @@ final class CartConfig {
     double rollingDrag = 0.01d;
     /** Max straight-line distance between two carts to couple them (blocks). */
     double maxLinkDistance = 3.0d;
+    /** Straight-line distance (blocks) past which a coupling snaps on its own; must exceed {@code spacing};
+     *  {@code <= 0} disables the break mechanic. */
+    double coupleBreakDistance = 4.0d;
     /** Engine fuel level (ticks) below which a tender tops it up. */
     int feedThresholdTicks = 600;
     /** Cruise speed a controller rail sets at full redstone signal (blocks/tick); scales with power/15. */
@@ -85,6 +88,7 @@ final class CartConfig {
             baseAccel = carts.getDouble("base-accel", baseAccel);
             rollingDrag = carts.getDouble("rolling-drag", rollingDrag);
             maxLinkDistance = carts.getDouble("max-link-distance", maxLinkDistance);
+            coupleBreakDistance = carts.getDouble("couple-break-distance", coupleBreakDistance);
             feedThresholdTicks = carts.getInt("feed-threshold-ticks", feedThresholdTicks);
             controllerMaxSpeed = carts.getDouble("controller-max-speed", controllerMaxSpeed);
             brakeRate = carts.getDouble("brake-rate", brakeRate);
