@@ -63,12 +63,17 @@ final class CartTrainManager implements Listener {
     private static final String TAG_FROZEN = "corelib:frozen";
     private static final String TAG_CHAIN = "corelib:cart_chain";
     private static final long PENDING_TIMEOUT_TICKS = 200L;
-    // Chain-coupler visual. One free BlockDisplay per coupling, teleported to the midpoint (teleportDuration 1
-    // → smooth position) with the transform matrix SNAPPED (interpolationDuration 0). No carrier (MC-261202
-    // bobs passengers of a teleported display) and no transform interpolation (a teleport would restart it
-    // from the chain's identity/vertical pose → flash). See updateChainDisplays.
+    // Chain-coupler visual. One free BlockDisplay per coupling, teleported to the midpoint with the transform
+    // matrix SNAPPED (interpolationDuration 0). No carrier (MC-261202 bobs passengers of a teleported display)
+    // and no transform interpolation (a teleport would restart it from the chain's identity/vertical pose →
+    // flash). See updateChainDisplays.
     private static final double HALF_CART = 0.5d;   // half a minecart length — bridge the adjacent ends, not centre-to-centre
     private static final float CHAIN_WIDTH = 1.0f;  // natural chain-model thickness (ChainPulley convention)
+    // Position-interpolation window (ticks) for the chain, matched to the minecart's own ~3-tick client lerp.
+    // A default minecart (old, non-experimental interpolation) is re-teleported every tick and trails its
+    // server position by ~1-2 ticks; a display at teleportDuration 1 trails only ~1, so it renders ahead of
+    // the lagging carts. Trailing the chain by the same window puts it back on the coupling. (Tune in {2,3,4}.)
+    private static final int CHAIN_TELEPORT_DURATION = 3;
 
     // 1.21.9 (Copper Age) renamed CHAIN → IRON_CHAIN; resolve by name so it works on 1.21.8..1.21.11+
     // (mirrors ChainPulley.resolveChain). Used for the display block, the drop item, and the item check.
@@ -121,8 +126,7 @@ final class CartTrainManager implements Listener {
     void register() {
         for (World world : Bukkit.getWorlds()) {
             for (Chunk chunk : world.getLoadedChunks()) {
-                sweepOrphanChains(chunk);   // reap chain entities orphaned by a crash / reload before re-adopting
-                scanChunk(chunk);
+                scanChunk(chunk);   // scanChunk sweeps orphan chains itself, then adopts drivable carts
             }
         }
         tickTask = Bukkit.getScheduler().runTaskTimer(plugin, this::tick, 1L, 1L);
@@ -142,8 +146,11 @@ final class CartTrainManager implements Listener {
         if (members.putIfAbsent(cart.getUniqueId(), new Member(cart)) == null) dirty = true;
     }
 
-    /** Adopt drivable carts in a freshly-loaded chunk: linked carts (tag) and blast-furnace engines. */
+    /** Adopt drivable carts in a freshly-loaded chunk: linked carts (tag) and blast-furnace engines.
+     *  Sweeps any chain displays orphaned by a crash/reload first — safe on every load, since chains are
+     *  non-persistent so a live one would already have despawned with its chunk. */
     void scanChunk(Chunk chunk) {
+        sweepOrphanChains(chunk);
         List<Minecart> added = new ArrayList<>();
         for (Entity e : chunk.getEntities()) {
             if (!(e instanceof Minecart cart)) continue;
@@ -676,7 +683,7 @@ final class CartTrainManager implements Listener {
         return mid.getWorld().spawn(mid, BlockDisplay.class, bd -> {
             bd.setBlock(chainBlockData());
             bd.setPersistent(false);   // respawned from the train on reload; no orphan survives a restart
-            bd.setTeleportDuration(1);        // position: smooth 1-tick chase toward each new midpoint
+            bd.setTeleportDuration(CHAIN_TELEPORT_DURATION);   // position: trail the carts by their own ~3-tick lerp window
             bd.setInterpolationDuration(0);   // transform: snap (no interpolation → can't flash or ease-bob)
             bd.setViewRange(64f);
             bd.setBrightness(new org.bukkit.entity.Display.Brightness(15, 15));

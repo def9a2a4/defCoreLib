@@ -4,7 +4,8 @@
 # spawns a plain RideableMinecart, tagged and re-skinned in code (CustomCartManager) — the block render
 # is set via Minecart#setDisplayBlockData, not YAML. Each cart carries a plugin-managed, fuel-only
 # inventory (layout below) serialized to the entity's PDC; right-click opens it with a custom title.
-# Junctions and the destructor rail (bare rails) are added here in a later milestone.
+# The special rails — junction, destructor, and controller (bare rails) — are defined below and wired
+# in CartRailsManager. The dispenser cart fires straight up when it crosses a powered activator rail.
 
 namespace: bmc
 

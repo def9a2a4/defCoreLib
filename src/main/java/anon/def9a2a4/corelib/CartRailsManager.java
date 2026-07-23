@@ -122,8 +122,9 @@ final class CartRailsManager implements Listener {
     }
 
     /** Target cruise speed a controller rail sets for a fueled blast cart, from its redstone signal
-     *  strength (blocks/tick), linear: 0 → 0 (stop), 15 → controller-max (full). Applied only while a
-     *  member is over the controller; the train resumes full speed once clear. */
+     *  strength (blocks/tick), linear: 0 → 0 (stop), 15 → controller-max (full). The cart REMEMBERS this
+     *  target (persisted on its entity PDC) and holds it after leaving the rail — the train keeps the set
+     *  speed instead of snapping back to full. See CartTrainManager.drive(). */
     double controllerTarget(Block b) {
         return (b.getBlockPower() / 15.0) * config.controllerMaxSpeed;
     }

@@ -437,6 +437,7 @@ final class CustomCartManager implements Listener {
             case ENDER_PEARL -> spawnProjectile(w, loc, dir, org.bukkit.entity.EnderPearl.class);
             case EXPERIENCE_BOTTLE -> spawnProjectile(w, loc, dir, org.bukkit.entity.ThrownExpBottle.class);
             case FIRE_CHARGE -> spawnProjectile(w, loc, dir, org.bukkit.entity.SmallFireball.class);
+            case WIND_CHARGE -> spawnProjectile(w, loc, dir, org.bukkit.entity.WindCharge.class);
             case SPLASH_POTION, LINGERING_POTION -> {
                 org.bukkit.entity.ThrownPotion p = w.spawn(loc, org.bukkit.entity.ThrownPotion.class);
                 p.setItem(item);

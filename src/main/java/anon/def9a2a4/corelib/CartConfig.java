@@ -43,7 +43,7 @@ final class CartConfig {
     /** Speed a train sheds per tick when braking toward a lower controller cap (blocks/tick²). */
     double brakeRate = 0.04d;
     /** Launch speed of an item fired by a dispenser minecart (blocks/tick). */
-    double dispenseVelocity = 0.3d;
+    double dispenseVelocity = 0.4d;
 
     /** Emit dynamic light (via the optional DynLight plugin) from a lit blast-furnace cart. */
     boolean dynamicLights = true;
