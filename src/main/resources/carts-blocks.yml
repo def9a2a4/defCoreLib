@@ -156,7 +156,7 @@ blocks:
       - "&7full power = top speed, weaker = slower."
       - "&7No effect on trains without a lit blast cart."
     catalog_notes:
-      - "&fA rail that sets the cruise speed of a passing blast-furnace locomotive by its redstone signal strength: 0 → stop, 15 → full speed, linear between. The train accelerates or brakes toward that target while it is over the controller, and resumes full speed once clear of it."
+      - "&fA rail that sets the cruise speed of a passing blast-furnace locomotive by its redstone signal strength: 0 → stop, 15 → full speed, linear between. The train accelerates or brakes toward that target and holds it even after leaving the rail — place another controller to set a new one."
       - "&7Build a RUN of these — braking is gradual (~13 blocks to stop from full), so a single rail barely changes speed; a zone of unpowered controllers makes a stop-and-hold station that departs when re-powered."
       - "&7Only affects a train that has a lit (fueled) blast-furnace cart."
     base_block: RAIL

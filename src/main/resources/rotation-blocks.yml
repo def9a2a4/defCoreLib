@@ -63,6 +63,7 @@ textures:
   reverser_up:       "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODMyYTg3MGEzNDMwMmViYThhMTNiYzI2ZWZjMGM5ZDQwOWJkYWYzYWRjZTBkMzUzZGEzOTNkMWM0YjgxODI0MyJ9fX0="  # reverser-up — reverser head (floor)
   reverser_fwd:      "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjk1MWJlMGM0NzVlMTE5ZTk2YWQxYzgzODU5MTI0MGYyZjVmYTEyODFmZTUyNTZlMmY2YzVlZWZlZWI3MzA3YiJ9fX0="  # reverser-fwd — reverser head (wall) + item
   machine_base:      "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTlmMzdmMWNiZDQ3YzM1MDQ1MTFiZjMzYzU4YzNhMjUyYjYwNzEzZWM1ZmM1NDMzZDg4N2Q0YTBkOTk2MjEwIn19fQ=="  # 59f37f1c — millstone + press placed head
+  throttle_lever:    "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjk1MWJlMGM0NzVlMTE5ZTk2YWQxYzgzODU5MTI0MGYyZjVmYTEyODFmZTUyNTZlMmY2YzVlZWZlZWI3MzA3YiJ9fX0="  # PLACEHOLDER (reverser head) — throttle lever in-hand item icon; swap for real art later
   sieve_item:        "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOWRiZjc2YTA5NWMxNjAyNGU5YmFhNDhmNjAyZWIxODljMzdlYjNiZDUxMDcwZTE1YWI0OWFiMjE2YjA3YjFiMSJ9fX0="  # 9dbf76a0 — sieve item in hand
   # ── Steam stack + pump art (assets/rotation/boiler/, via scripts/upload_skin.py) ──
   copper_tank:       "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDgxZDIxMGRmOTRlYWNiMTM4ZmYwZjdjNmRjMjI3N2ZiNGJlN2RlNjJkY2VlZjUyZDk2MDgyMzIyZmJjOTk5OCJ9fX0="  # 481d210d — copper-tank — boiler shell + item
@@ -889,6 +890,62 @@ blocks:
               R: { material: REDSTONE }
               B: { block: "mech:bearing" }
               M: { material: COMPARATOR }
+
+  # ─── Throttle Lever ───────────────────────────────────────────────────────
+  # A hand-set analog redstone SOURCE, disguised as a lever. Physically a real
+  # HEAVY_WEIGHTED_PRESSURE_PLATE (iron) placed as a bare block (identity in the chunk PDC, no tile
+  # entity): a weighted pressure plate is the only vanilla block whose emitted 0-15 level is settable
+  # via AnaloguePowerable block data, so its own `power` carries the signal and drives adjacent
+  # redstone directly. A BlockRedstoneEvent override (ThrottleLever.java) pins that output, so it is
+  # NOT a working pressure plate — stepping on it can't move the signal, and the player step/click is
+  # cancelled. Right-click opens a 0-15 picker (number head-font icons, like the dynamo menu). The
+  # spruce-fence "handle" display tilts -45deg (0) .. +45deg (15); a quarter redstone block and two
+  # down-facing dispensers dress the base. (All behaviour + the handle angle live in ThrottleLever.java.)
+  throttle_lever:
+    name: "&cThrottle Lever"
+    lore:
+      - "&7Emits a redstone signal of a"
+      - "&7strength you dial in (0-15)"
+    catalog_notes:
+      - "&fA set-and-forget analog redstone source: right-click to pick an output strength 0-15."
+      - "&fPowers adjacent redstone directly (weighted-plate rules) — run dust/lamps against it."
+      - "&7Ignores footsteps: stepping on it will not change the signal."
+    base_block: HEAVY_WEIGHTED_PRESSURE_PLATE
+    texture: "@throttle_lever"          # in-hand item icon (placeholder)
+    drops: self
+    default_state: idle
+    placement:
+      allowed_faces: [DOWN]             # floor placement only (needs solid support below)
+    states:
+      idle:
+        # All visuals are BlockDisplay entities (block_data:), so the flat iron plate underneath is
+        # dressed over. Transforms below are the level-0 rest pose / static dressing — visual tuning
+        # knobs. ThrottleLever.java overrides the "handle" transform per output level to tilt it.
+        display_entities:
+          # Handle — spruce fence, 2x smaller (scale 0.5), base at floor centre.
+          - block_data: "minecraft:spruce_fence"
+            tag: handle
+            transform: { translation: [0.25, 0.0, 0.25], scale: [0.5, 0.5, 0.5] }
+          # Quarter-size redstone block, flush with the floor, offset to one side.
+          - block_data: "minecraft:redstone_block"
+            tag: rblock
+            transform: { translation: [0.05, 0.0, 0.375], scale: [0.25, 0.25, 0.25] }
+          # Down-facing dispensers at the +/- swing sides, flush with the floor.
+          - block_data: "minecraft:dispenser[facing=down]"
+            tag: disp_pos
+            transform: { translation: [0.6, 0.0, 0.2], scale: [0.35, 0.2, 0.35] }
+          - block_data: "minecraft:dispenser[facing=down]"
+            tag: disp_neg
+            transform: { translation: [0.05, 0.0, 0.2], scale: [0.35, 0.2, 0.35] }
+    recipes:
+      craft:
+        shaped:
+          # Lever (control) over an iron weighted plate (the analog body) over a redstone block (source).
+          - pattern: ["L", "P", "R"]
+            key:
+              L: { material: LEVER }
+              P: { material: HEAVY_WEIGHTED_PRESSURE_PLATE }
+              R: { material: REDSTONE_BLOCK }
 
   # ─── Mechanical Casing ────────────────────────────────────────────────────
   # A block that auto-glues to adjacent blocks like a vanilla slime block: any casing in a moving

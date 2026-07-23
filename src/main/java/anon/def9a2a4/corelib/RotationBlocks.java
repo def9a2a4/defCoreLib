@@ -167,6 +167,8 @@ final class RotationBlocks {
         overlayRedstoneMotor(registry, network, config);
         // Redstone Dynamo: a barrel-backed sensor (own class — holds per-block level state + a mode menu).
         new RedstoneDynamo(registry, network, config).register();
+        // Throttle Lever: a hand-set analog redstone source (own class — pressure-plate body + level menu).
+        new ThrottleLever(registry).register();
         overlayDrill(registry, network, config);
         overlayFan(registry, network, config);
         overlaySuctionHopper(registry, network, config);
