@@ -1,5 +1,5 @@
 {
-  "parent": "mech:craft/engine",
+  "parent": "mech:craft/placer",
   "display": {
     "icon": {
       "id": "minecraft:player_head",
@@ -8,21 +8,21 @@
           "properties": [
             {
               "name": "textures",
-              "value": "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWU1ZWRmZTkwMTU2Y2U5YjViNmI4MDc5M2RjMmNiZmU4NTBkZGVjODU2Yzk5ZWViZGUzMTc3NWNjZTk1NjA0MSJ9fX0="
+              "value": "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmEzNzI1YzM4NDc2ODgxOWQzOWI0Y2QyMGU3OWMyOGE0ZGE3MzdjZjlkYTlmYmVlZTgxYjk4MDc2M2I5NzI4YiJ9fX0="
             }
           ]
         }
       }
     },
     "title": {
-      "text": "Master Machinist",
-      "color": "light_purple"
+      "text": "Dispense With It",
+      "color": "white"
     },
     "description": {
-      "text": "Craft one of each core Mechanism machine.",
+      "text": "Craft a Mechanical Dispenser \u2014 fires its stored items into the world each cycle while powered.",
       "color": "gray"
     },
-    "frame": "challenge",
+    "frame": "task",
     "show_toast": true,
     "announce_to_chat": true
   },

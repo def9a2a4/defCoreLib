@@ -73,6 +73,8 @@ NODES = [
      "Craft a Drill — breaks the block directly in front of it while powered."),
     ("craft/placer", "craft/drill", "task", "@placer_item", "Autoplacement", "white",
      "Craft a Block Placer — places its stored blocks into the world, one per cycle, while powered."),
+    ("craft/dispenser", "craft/placer", "task", "@mechanical_dispenser", "Dispense With It", "white",
+     "Craft a Mechanical Dispenser — fires its stored items into the world each cycle while powered."),
     ("craft/fan", "craft/placer", "task", "@fan_item", "Fan Favourite", "white",
      "Craft a Fan — blows a ~5-block beam that pushes mobs, players, and dropped items away."),
     ("craft/suction_hopper", "craft/fan", "task", "@hopper_floor", "Hoover Dam", "white",
@@ -85,6 +87,11 @@ NODES = [
      "Craft a Chain Pulley — link two pulleys with a chain to carry power across a gap."),
     ("craft/dynamo", "craft/gear", "task", "minecraft:comparator", "Reading the Room", "white",
      "Craft a Redstone Dynamo — reads your network's power and emits an analog redstone signal for a comparator."),
+    ("craft/throttle_lever", "craft/gear", "task", "@throttle_lever", "Hands On", "white",
+     "Craft a Throttle Lever — a hand-set analog redstone source; right-click to raise the output, "
+     "sneak-right-click to lower it (0-15)."),
+    ("craft/pump", "craft/gear", "task", "@pump_valve_fwd", "Priming the Pump", "white",
+     "Craft a Copper Water Pump — moves a bucket of water per cycle up into a tank, cauldron, or pipe."),
     # moving machines: piston -> rotator -> minecart (the minecart recipe needs a rotator, cascade-safe)
     ("craft/piston", "craft/gear", "task", "@core_fwd", "Reach Out", "white",
      "Craft a Mechanical Piston — a powered arm that pushes a glued structure out and pulls it back."),
@@ -100,11 +107,18 @@ NODES = [
     ("craft/water_wheel", "craft/windmill_item", "task", "@water_wheel_copper", "Paddle Power", "white",
      "Craft a Water Wheel — a passive source worth 2 power, spun by water against a wall."),
     ("craft/engine", "craft/water_wheel", "goal", "@bronze_engine", "Full Steam", "yellow",
-     "Craft an Engine — the strongest source at 5 power, but it burns furnace fuel to run."),
+     "Craft an Engine — a strong 10-power source, but it burns furnace fuel to run."),
     ("craft/motor", "craft/water_wheel", "task", "@motor_up_pwr", "Off the Grid", "white",
      "Craft a Redstone Motor — a steady 1-power source that runs while UNpowered by redstone."),
+    # steam stack: burner -> boiler -> steam piston (the strongest source)
+    ("craft/burner", "craft/engine", "task", "@burner_lit", "Feel the Burn", "white",
+     "Craft a Burner — the firebox at the base of a steam stack; feed it fuel to heat the boiler."),
+    ("craft/boiler", "craft/burner", "task", "@copper_tank", "Full of Hot Water", "white",
+     "Craft a Boiler — sits over a Burner and turns water into the steam that drives a Steam Piston."),
+    ("craft/steam_piston", "craft/boiler", "goal", "@piston_copper", "Steam Age", "yellow",
+     "Craft a Steam Piston — the top of the steam stack and the strongest source at 20 power."),
     ("craft/master_machinist", "craft/engine", "challenge", "@copper_gear", "Master Machinist", "light_purple",
-     "Craft at least one of every Mechanism machine."),
+     "Craft one of each core Mechanism machine."),
 
     # ── Rotation power (granted when a network becomes powered) ──
     ("rotation/first_power", "craft/shaft", "goal", "@shaft_ring_up", "It Lives", "yellow",
@@ -112,7 +126,9 @@ NODES = [
     ("rotation/torque_5", "rotation/first_power", "task", "@copper_gear", "Getting Torque-y", "white",
      "Drive a network supplying 5 or more power."),
     ("rotation/engine_power", "craft/engine", "goal", "@bronze_engine", "Ignition", "yellow",
-     "Drive a network with a fuelled Engine (5 power)."),
+     "Drive a network with a fuelled Engine (10 power)."),
+    ("rotation/steam_power", "craft/steam_piston", "goal", "@piston_copper", "Steaming Ahead", "yellow",
+     "Drive a network with a Steam Piston — 20 power off a fuelled steam stack."),
     ("rotation/torque_15", "rotation/torque_5", "goal", "@copper_gear", "Powerhouse", "yellow",
      "Drive a network supplying 15 or more power — a huge windmill's worth."),
     ("rotation/torque_30", "rotation/torque_15", "challenge", "@copper_gear", "Overdrive", "light_purple",
@@ -173,6 +189,8 @@ NODES = [
      "Cut power to a spinning network by locking a Clutch with redstone."),
     ("use/reverser", "craft/reverser", "task", "@reverser_fwd", "About-Face", "white",
      "Flip a network's spin direction with a redstone-powered Reverser."),
+    ("use/dispenser", "craft/dispenser", "task", "@mechanical_dispenser", "Fire in the Hole", "white",
+     "Have a Mechanical Dispenser fire an item from its storage while powered."),
 
     # ── Food / processing spine (granted when the machine ejects the product) ──
     ("machines/flour", "craft/millstone", "task", "minecraft:sugar", "Well Milled", "white",

@@ -19,7 +19,7 @@
       "color": "yellow"
     },
     "description": {
-      "text": "Drive a network with a fuelled Engine (5 power).",
+      "text": "Drive a network with a fuelled Engine (10 power).",
       "color": "gray"
     },
     "frame": "goal",

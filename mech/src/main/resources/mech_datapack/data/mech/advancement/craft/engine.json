@@ -19,7 +19,7 @@
       "color": "yellow"
     },
     "description": {
-      "text": "Craft an Engine \u2014 the strongest source at 5 power, but it burns furnace fuel to run.",
+      "text": "Craft an Engine \u2014 a strong 10-power source, but it burns furnace fuel to run.",
       "color": "gray"
     },
     "frame": "goal",

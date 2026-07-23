@@ -76,6 +76,14 @@ public final class MechAdvancements {
             Map.entry("mech:rotator", "craft/rotator"),
             Map.entry("mech:mechanism_minecart", "craft/minecart"),
             Map.entry("mech:redstone_dynamo", "craft/dynamo"),
+            // v0.3.1 blocks — earnable but intentionally NOT in MACHINE_CRAFT_NODES (keeps
+            // master_machinist earnable for players who predate them).
+            Map.entry("mech:throttle_lever", "craft/throttle_lever"),
+            Map.entry("mech:mechanical_dispenser", "craft/dispenser"),
+            Map.entry("mech:pump", "craft/pump"),
+            Map.entry("mech:burner", "craft/burner"),
+            Map.entry("mech:boiler", "craft/boiler"),
+            Map.entry("mech:steam_piston", "craft/steam_piston"),
             Map.entry("mech:casing_oak", "craft/casing"),
             Map.entry("mech:casing_acacia", "craft/casing"),
             Map.entry("mech:casing_bamboo", "craft/casing"),
@@ -117,7 +125,9 @@ public final class MechAdvancements {
             "mech:suction_hopper", "use/suction_hopper",
             "mech:redstone_dynamo", "use/dynamo",
             "mech:clutch", "use/clutch",
-            "mech:reverser", "use/reverser");
+            "mech:reverser", "use/reverser",
+            // use/dispenser is NOT in USE_NODES (keeps mastery/operator earnable for existing players).
+            "mech:mechanical_dispenser", "use/dispenser");
 
     // The use/ milestones that together earn mastery/operator.
     private static final Set<String> USE_NODES = Set.of(
@@ -132,7 +142,10 @@ public final class MechAdvancements {
             Material.DIAMOND, Material.EMERALD, Material.NETHERITE_SCRAP);
 
     /** Fans/suction hoppers act every few ticks while powered — cap the nearby-player scans they can
-     *  trigger. Grants are idempotent, so dropping repeat signals inside the window loses nothing. */
+     *  trigger. Keyed per machine INSTANCE (type + position), not per type: a shared per-type window
+     *  would let one always-on machine starve a second same-type machine's grant (and thus a player's
+     *  use/* → mastery/operator). Grants are idempotent, so dropping repeats inside the window loses
+     *  nothing. Bounded by the number of placed machines. */
     private static final int ACT_THROTTLE_TICKS = 20;
     private final Map<String, Integer> lastActedTick = new HashMap<>();
 
@@ -201,6 +214,7 @@ public final class MechAdvancements {
         boolean wind = sourceTypes.stream().anyMatch(s -> s.startsWith("mech:") && s.contains("windmill"));
         boolean water = sourceTypes.contains("mech:water_wheel");
         boolean engine = sourceTypes.contains("mech:engine");
+        boolean steam = sourceTypes.contains("mech:steam_piston");
         for (Player p : players) {
             grant(p, "rotation/first_power");
             if (chainNode != null) grant(p, chainNode);
@@ -209,6 +223,7 @@ public final class MechAdvancements {
             if (wind) grant(p, "rotation/wind_power");
             if (water) grant(p, "rotation/water_power");
             if (engine) grant(p, "rotation/engine_power");
+            if (steam) grant(p, "rotation/steam_power");
             if (chainLoop) grant(p, "rotation/chain_loop");
             checkAggregates(p);
         }
@@ -264,9 +279,11 @@ public final class MechAdvancements {
         String node = USE_NODE_BY_MACHINE.get(machineType);
         if (node == null) return;
         int now = Bukkit.getCurrentTick();
-        Integer last = lastActedTick.get(machineType);
+        String tkey = machineType + "@" + location.getBlockX() + ","
+                + location.getBlockY() + "," + location.getBlockZ();
+        Integer last = lastActedTick.get(tkey);
         if (last != null && now - last < ACT_THROTTLE_TICKS) return;
-        lastActedTick.put(machineType, now);
+        lastActedTick.put(tkey, now);
         for (Player p : nearby(location)) {
             grant(p, node);
             checkAggregates(p);

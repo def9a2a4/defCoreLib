@@ -1,5 +1,5 @@
 {
-  "parent": "mech:craft/engine",
+  "parent": "mech:craft/burner",
   "display": {
     "icon": {
       "id": "minecraft:player_head",
@@ -8,21 +8,21 @@
           "properties": [
             {
               "name": "textures",
-              "value": "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWU1ZWRmZTkwMTU2Y2U5YjViNmI4MDc5M2RjMmNiZmU4NTBkZGVjODU2Yzk5ZWViZGUzMTc3NWNjZTk1NjA0MSJ9fX0="
+              "value": "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDgxZDIxMGRmOTRlYWNiMTM4ZmYwZjdjNmRjMjI3N2ZiNGJlN2RlNjJkY2VlZjUyZDk2MDgyMzIyZmJjOTk5OCJ9fX0="
             }
           ]
         }
       }
     },
     "title": {
-      "text": "Master Machinist",
-      "color": "light_purple"
+      "text": "Full of Hot Water",
+      "color": "white"
     },
     "description": {
-      "text": "Craft one of each core Mechanism machine.",
+      "text": "Craft a Boiler \u2014 sits over a Burner and turns water into the steam that drives a Steam Piston.",
       "color": "gray"
     },
-    "frame": "challenge",
+    "frame": "task",
     "show_toast": true,
     "announce_to_chat": true
   },

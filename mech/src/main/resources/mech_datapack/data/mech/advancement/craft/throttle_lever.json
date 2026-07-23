@@ -1,5 +1,5 @@
 {
-  "parent": "mech:craft/engine",
+  "parent": "mech:craft/gear",
   "display": {
     "icon": {
       "id": "minecraft:player_head",
@@ -8,21 +8,21 @@
           "properties": [
             {
               "name": "textures",
-              "value": "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWU1ZWRmZTkwMTU2Y2U5YjViNmI4MDc5M2RjMmNiZmU4NTBkZGVjODU2Yzk5ZWViZGUzMTc3NWNjZTk1NjA0MSJ9fX0="
+              "value": "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTliOTQ2Yjk2MjMxNTVlYzFlMDdjYzRiZmFhNDQzMDhmYWU3ZmZmMDg0ZTZhNjY3ODE4NjYzNTYyYzE3M2RkNyJ9fX0="
             }
           ]
         }
       }
     },
     "title": {
-      "text": "Master Machinist",
-      "color": "light_purple"
+      "text": "Hands On",
+      "color": "white"
     },
     "description": {
-      "text": "Craft one of each core Mechanism machine.",
+      "text": "Craft a Throttle Lever \u2014 a hand-set analog redstone source; right-click to raise the output, sneak-right-click to lower it (0-15).",
       "color": "gray"
     },
-    "frame": "challenge",
+    "frame": "task",
     "show_toast": true,
     "announce_to_chat": true
   },

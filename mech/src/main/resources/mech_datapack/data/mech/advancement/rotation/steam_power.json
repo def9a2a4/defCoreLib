@@ -1,5 +1,5 @@
 {
-  "parent": "mech:craft/engine",
+  "parent": "mech:craft/steam_piston",
   "display": {
     "icon": {
       "id": "minecraft:player_head",
@@ -8,21 +8,21 @@
           "properties": [
             {
               "name": "textures",
-              "value": "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWU1ZWRmZTkwMTU2Y2U5YjViNmI4MDc5M2RjMmNiZmU4NTBkZGVjODU2Yzk5ZWViZGUzMTc3NWNjZTk1NjA0MSJ9fX0="
+              "value": "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNmU3Zjk1ODgyMTMwMWQ5MDMyNTgzNGJlY2E5MTU5YTM2OGZmN2NlZjVjYTYxN2UzNWFlNTk1OGNlYWNjNjNkMSJ9fX0="
             }
           ]
         }
       }
     },
     "title": {
-      "text": "Master Machinist",
-      "color": "light_purple"
+      "text": "Steaming Ahead",
+      "color": "yellow"
     },
     "description": {
-      "text": "Craft one of each core Mechanism machine.",
+      "text": "Drive a network with a Steam Piston \u2014 20 power off a fuelled steam stack.",
       "color": "gray"
     },
-    "frame": "challenge",
+    "frame": "goal",
     "show_toast": true,
     "announce_to_chat": true
   },
