@@ -31,7 +31,7 @@ final class CartConfig {
     /** Rail-walk sub-step granularity (blocks) so fast carts never skip a rail. */
     double subStep = 0.25d;
     /** Acceleration per tick per engine, scaled by 1/size (blocks/tick²). */
-    double baseAccel = 0.02d;
+    double baseAccel = 0.01d;
     /** Speed a coasting (engine-less) train loses per tick (blocks/tick²). */
     double rollingDrag = 0.01d;
     /** Max straight-line distance between two carts to couple them (blocks). */
@@ -56,11 +56,11 @@ final class CartConfig {
 
     CartConfig() {
         // Baked-in defaults (vanilla furnace burn times), overridden by the file if present.
-        fuelBurnTicks.put(Material.COAL, 1600);
-        fuelBurnTicks.put(Material.CHARCOAL, 1600);
-        fuelBurnTicks.put(Material.COAL_BLOCK, 16000);
-        fuelBurnTicks.put(Material.DRIED_KELP_BLOCK, 4000);
-        fuelBurnTicks.put(Material.BLAZE_ROD, 2400);
+        fuelBurnTicks.put(Material.COAL, 800);
+        fuelBurnTicks.put(Material.CHARCOAL, 800);
+        fuelBurnTicks.put(Material.COAL_BLOCK, 8000);
+        fuelBurnTicks.put(Material.DRIED_KELP_BLOCK, 2000);
+        fuelBurnTicks.put(Material.BLAZE_ROD, 1200);
     }
 
     void load(InputStream stream, Logger logger) {

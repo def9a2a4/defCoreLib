@@ -587,7 +587,7 @@ final class CartTrainManager implements Listener {
         // Controller rail (persistent): while a fuelled blast cart sits on a controller it REMEMBERS that
         // signal's target (0 → stop, 15 → full, linear), and keeps it after leaving — so it holds a set
         // speed instead of snapping back. The train drives to the most-restrictive remembered target over
-        // its fuelled blast carts (−1 = unset → full). Inert without a lit blast cart.
+        // its fuelled blast carts (−1 = unset → half top speed). Inert without a lit blast cart.
         double effTarget = trainMax;
         if (rails != null && hasFueledBlast) {
             double t = Double.MAX_VALUE;
@@ -596,7 +596,7 @@ final class CartTrainManager implements Listener {
                 Block rb = railUnder(m.cart);
                 if (rb != null && rails.isController(rb)) carts.setTargetSpeed(m.cart, rails.controllerTarget(rb));
                 double ts = carts.targetSpeed(m.cart);
-                t = Math.min(t, ts < 0 ? trainMax : ts);
+                t = Math.min(t, ts < 0 ? trainMax * 0.5 : ts);   // unset blast cart defaults to HALF speed
             }
             if (t != Double.MAX_VALUE) effTarget = Math.min(trainMax, t);
         }

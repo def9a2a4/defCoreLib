@@ -108,7 +108,7 @@ final class CustomCartManager implements Listener {
         Inventory inv;          // plugin-managed; single source of truth while loaded
         int burnTicks;          // blast-furnace cart only; 0 = not burning
         boolean wasOnActivator; // dispenser cart: edge-detect entering a powered activator rail
-        double targetSpeed = -1; // blast cart: controller-set cruise target (b/t); -1 = unset → full
+        double targetSpeed = -1; // blast cart: controller-set cruise target (b/t); -1 = unset → half top speed
 
         CartState(Minecart cart, CartType type) {
             this.cart = cart;
@@ -308,7 +308,7 @@ final class CustomCartManager implements Listener {
     private void adjustBlastSpeed(CartState state, int delta, InventoryClickEvent event) {
         double max = config.controllerMaxSpeed;
         if (max <= 0) return;
-        double cur = state.targetSpeed < 0 ? max : state.targetSpeed;
+        double cur = state.targetSpeed < 0 ? max * 0.5 : state.targetSpeed;   // unset → half
         int level = Math.max(0, Math.min(15, (int) Math.round(cur / max * 15.0) + delta));
         state.targetSpeed = max * level / 15.0;
         event.getView().setTitle(cartGuiTitle(state));
@@ -439,7 +439,7 @@ final class CustomCartManager implements Listener {
             ? net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacySection().serialize(type.name())
             : state.type.itemId;
         if (state.type != CartType.BLAST) return base;
-        double eff = state.targetSpeed < 0 ? config.controllerMaxSpeed : state.targetSpeed;
+        double eff = state.targetSpeed < 0 ? config.controllerMaxSpeed * 0.5 : state.targetSpeed;   // unset → half
         return base + " §7- " + String.format("%.1f m/s", eff * MPS_PER_BT);
     }
 
@@ -627,10 +627,11 @@ final class CustomCartManager implements Listener {
         // Burn-DOWN is driven by CartTrainManager while the train moves (parked engines stay primed but
         // don't drain — see consumeBurnTick / C4). Here we only ignite and show the "lit" smoke.
         if (state.burnTicks > 0) {
-            // Chimney-style rising smoke from the top of the blast furnace while lit (throttled).
+            // Chimney-style rising smoke from the top of the blast furnace while lit (throttled). count=0 so
+            // the (dx,dy,dz) offset is the particle's velocity → a real upward puff; jitter the spawn a touch.
             if (cart.getWorld() != null && ticks % 3 == 0) {
-                cart.getWorld().spawnParticle(org.bukkit.Particle.CAMPFIRE_COSY_SMOKE,
-                    cart.getLocation().add(0, 0.9, 0), 1, 0.06, 0.02, 0.06, 0.012);
+                Location smoke = cart.getLocation().add((Math.random() - 0.5) * 0.12, 0.9, (Math.random() - 0.5) * 0.12);
+                cart.getWorld().spawnParticle(org.bukkit.Particle.CAMPFIRE_COSY_SMOKE, smoke, 0, 0.0, 0.08, 0.0, 0.03);
             }
         }
 
@@ -703,7 +704,7 @@ final class CustomCartManager implements Listener {
         if (s != null && s.type == CartType.BLAST) s.burnTicks += add;
     }
 
-    /** A blast cart's remembered controller cruise target (b/t); {@code -1} = unset → full speed. */
+    /** A blast cart's remembered controller cruise target (b/t); {@code -1} = unset → half top speed. */
     double targetSpeed(Minecart cart) {
         CartState s = tracked.get(cart.getUniqueId());
         return s != null ? s.targetSpeed : -1;

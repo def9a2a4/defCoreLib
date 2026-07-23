@@ -4,11 +4,11 @@
 # (game ticks) when a blast-furnace cart consumes it. Any material NOT listed here is rejected from
 # a cart's fuel-only inventory. Values mirror vanilla furnace burn times.
 fuel:
-  COAL: 1600
-  CHARCOAL: 1600
-  COAL_BLOCK: 16000
-  DRIED_KELP_BLOCK: 4000
-  BLAZE_ROD: 2400
+  COAL: 800
+  CHARCOAL: 800
+  COAL_BLOCK: 8000
+  DRIED_KELP_BLOCK: 2000
+  BLAZE_ROD: 1200
 
 # Speeds are in blocks/tick (0.4 = vanilla 8 b/s, 1.0 = 20 b/s, 2.0 = 40 b/s).
 carts:
@@ -23,7 +23,7 @@ carts:
   # Rail-walk sub-step granularity so fast carts never skip a rail block.
   sub-step: 0.25
   # Acceleration per tick per engine, scaled by 1 / (train length).
-  base-accel: 0.02
+  base-accel: 0.01
   # Speed a coasting (engine-less, previously-pushed) train loses per tick.
   rolling-drag: 0.01
   # Max straight-line distance between two carts to couple them.
