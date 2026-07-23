@@ -12,8 +12,8 @@ namespace: bmc
 textures:
   minecart-coal:            "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODhkNGZmOTBhMWFiMGRlZTI3NTAzMWNkMTFlYjY4Y2MzMDE0NTI2NDE3ODM1NTQ1MjMzNjAwODA1NjFkM2RjOCJ9fX0="  # cart-coal — coal-cart in-hand item
   minecart-blast-furnace:   "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTAxYTg3NWNmMDc2OTFlNzNhZTRlOWViNGJkZDdiMTI5MjQzY2YxNDUyN2RlNDY0ZDU3MTM2YjU4NTk5NDk2MiJ9fX0="  # cart-blast-furnace — blast-cart in-hand item
-  rail-junction:            "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzg5ZTM5NzFjYjYyMDhmYTM5MWU5MTRiZGFkNjEwYzg0NmY4MGRmODVjMjE3ZWRmMjk4ZjAxY2ZlOTdhMGE1ZiJ9fX0="  # rail-junction — junction item + world shell
-  rail-destructor:          "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvM2FkYmYwODNmZjExN2IwODc5MGIzZDUxZWMxYmI2ZjYzMWQ3MzhjZTI0NTlmZTczYzY0Njc0ZmZlN2ZkYzQzZCJ9fX0="  # rail-destructor — destructor item + world shell
+  rail-junction:            "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvY2M5NmU4Y2QyOWJjNWQwMjQ4ZDMzMzhlMDBjZmY1NWVlYzFiOGQ4MDY2MjA4Y2Y0YTk0YWRmOGQ2NzFkN2Y2OSJ9fX0="  # rail-junction — junction item + world shell
+  rail-destructor:          "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjE0ODkzZjVlOGNlNmIzZmQ5OGY5MWJmYzM1MGE5NWRiNTIzY2VlOTMzOGI1ZjNmNDY3OGZiOTQ3ZGU1MTk3ZCJ9fX0="  # rail-destructor — destructor item + world shell
 
 blocks:
   coal_cart:
@@ -82,7 +82,7 @@ blocks:
         display_entities:
           - texture: "@rail-junction"
             tag: shell
-            transform: { translation: [0, -0.45875, 0], scale: [1.88141, 1.999, 1.88141] }
+            transform: { translation: [0, -0.4275, 0], scale: [1.88141, 0.9995, 1.88141] }
     recipes:
       craft:
         shaped:
@@ -115,7 +115,7 @@ blocks:
         display_entities:
           - texture: "@rail-destructor"
             tag: shell
-            transform: { translation: [0, -0.45875, 0], scale: [1.88141, 1.999, 1.88141] }
+            transform: { translation: [0, -0.4275, 0], scale: [1.88141, 0.9995, 1.88141] }
     recipes:
       craft:
         shapeless:

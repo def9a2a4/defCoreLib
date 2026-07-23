@@ -7,5 +7,5 @@ description: Shared core library for def plugins
 commands:
   defcorelib:
     description: DefCoreLib admin commands
-    usage: /defcorelib <give|give_demo|list|colliders|reloadbanners|cleanorphans|spike> [args...]
+    usage: /defcorelib <give|give_demo|list|colliders|reloadbanners|cleanorphans> [args...]
     permission: corelib.admin

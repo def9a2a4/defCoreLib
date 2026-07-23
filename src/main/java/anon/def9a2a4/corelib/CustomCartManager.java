@@ -44,7 +44,7 @@ import java.util.UUID;
  * The BetterMinecarts fuel carts: the coal tender ({@code bmc:coal_cart}) and the blast-furnace cart
  * ({@code bmc:blast_furnace_cart}). Both are item-only (declared in carts-blocks.yml) and, when the
  * item is right-clicked on a rail, spawn a plain {@link RideableMinecart} — the same base entity the
- * mechanism carts and the movement spike use. We re-skin it via {@link Minecart#setDisplayBlockData}
+ * mechanism carts use. We re-skin it via {@link Minecart#setDisplayBlockData}
  * and give it a plugin-managed, fuel-only inventory (a 9-slot dropper for the tender, a 5-slot hopper
  * for the blast cart) serialized to the entity's PDC. The GUI opens with a custom title on right-click;
  * hoppers above/beside the track feed it (native hopper-minecart interop reimplemented here). The
@@ -139,6 +139,11 @@ final class CustomCartManager implements Listener {
     void shutdown() {
         if (tickTask != null) tickTask.cancel();
         for (CartState state : tracked.values()) {
+            // Close any open GUI before we stop guarding it, so items added during the disable window
+            // aren't voided (the close-writeback + fuel-only listeners are about to be unregistered).
+            if (state.inv != null) {
+                for (var v : new ArrayList<>(state.inv.getViewers())) v.closeInventory();
+            }
             persist(state);
         }
         for (BlockDisplay marker : burnLight.values()) {
