@@ -91,6 +91,9 @@ final class CartTrainManager implements Listener {
     private boolean dirty = true;   // trains need rebuilding
     private long tickCount;
     private BukkitTask tickTask;
+    private CartRailsManager rails;   // junction alignment + destructor rail (position-driven carts)
+
+    void setRailsManager(CartRailsManager rails) { this.rails = rails; }
 
     CartTrainManager(JavaPlugin plugin, CartConfig config, CustomCartManager carts) {
         this.plugin = plugin;
@@ -307,6 +310,27 @@ final class CartTrainManager implements Listener {
         loc.getWorld().dropItemNaturally(loc, new ItemStack(CHAIN_MATERIAL, count));
     }
 
+    /** Detach {@code cart} from its train and RETURN its chain drops instead of dropping them, so a caller
+     *  (the destructor rail) can route them into a container. Mirrors {@link #severAndDrop} otherwise. */
+    List<ItemStack> detachAndCollectChains(Minecart cart) {
+        Set<UUID> ps = partners(cart);
+        int dropped = 0;
+        for (UUID pid : ps) {
+            if (Bukkit.getEntity(pid) instanceof Minecart other) {
+                removePartner(other, cart.getUniqueId());
+                parkCart(other);
+            }
+            dropped++;
+        }
+        writePartners(cart, Collections.emptySet());
+        cart.removeScoreboardTag(TAG_MEMBER);
+        members.remove(cart.getUniqueId());
+        dirty = true;
+        List<ItemStack> out = new ArrayList<>();
+        if (dropped > 0) out.add(new ItemStack(CHAIN_MATERIAL, dropped));
+        return out;
+    }
+
     // ── PDC coupling storage ─────────────────────────────────────────────────
 
     private Set<UUID> partners(Minecart cart) {
@@ -486,10 +510,39 @@ final class CartTrainManager implements Listener {
             if (train.speed <= 1e-4) { park(train); return; }
         }
 
+        // Pre-align any junction the leader is about to cross so RailPathWalker walks straight through it
+        // (teleported carts don't fire VehicleMoveEvent, so the rail manager can't see them). Look ahead
+        // ∝ speed so fast trains still align in time.
+        if (rails != null) {
+            RailPathWalker.Step cur = RailPathWalker.advance(train.leaderState, 0, config.subStep);
+            rails.alignJunctionsAlong(ord.get(0).cart.getWorld(), cur.position, cur.heading,
+                Math.max(1.0, train.speed) + 1.0);
+        }
+
         RailPathWalker.Step s = RailPathWalker.advance(train.leaderState, train.speed, config.subStep);
         train.leaderState = s.state;
         place(ord.get(0).cart, s.position, s.heading, train.speed, true);
         placeFollowers(train, train.speed, true);
+
+        // Destructor rail: any member sitting on one is recycled (drops → container below), splitting the
+        // train. Collect first (rail block resolves to null once the cart is removed), act, then rebuild.
+        if (rails != null) {
+            List<Minecart> deadCarts = null;
+            List<Block> deadRails = null;
+            for (Member m : ord) {
+                Block rb = railUnder(m.cart);
+                if (rb != null && rails.isDestructor(rb)) {
+                    if (deadCarts == null) { deadCarts = new ArrayList<>(); deadRails = new ArrayList<>(); }
+                    deadCarts.add(m.cart);
+                    deadRails.add(rb);
+                }
+            }
+            if (deadCarts != null) {
+                for (int i = 0; i < deadCarts.size(); i++) rails.destroy(deadCarts.get(i), deadRails.get(i));
+                dirty = true;
+                return;   // train changed under us — rebuild next tick
+            }
+        }
 
         if (s.blocked) park(train);   // end of track — stop after placing
     }

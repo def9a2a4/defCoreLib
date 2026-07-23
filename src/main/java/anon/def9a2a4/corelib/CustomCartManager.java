@@ -208,6 +208,25 @@ final class CustomCartManager implements Listener {
         return (s != null && s.inv != null) ? takeOneFuel(s.inv) : null;
     }
 
+    /** Stop tracking a bmc cart and return its drops (the custom cart item + every inventory item), or
+     *  null if it isn't one of ours. Used by the destructor rail — the caller removes the entity itself.
+     *  Closes any open GUI and clears the inventory so nothing is dropped twice. */
+    java.util.List<ItemStack> collectCartDrops(Minecart cart) {
+        CartState state = tracked.remove(cart.getUniqueId());
+        if (state == null) return null;
+        java.util.List<ItemStack> out = new ArrayList<>();
+        CustomHeadBlock itemType = registry.getType(state.type.itemId);
+        if (itemType != null) out.add(itemType.createItem(1));
+        if (state.inv != null) {
+            for (var v : new ArrayList<>(state.inv.getViewers())) v.closeInventory();
+            for (ItemStack s : state.inv.getContents()) {
+                if (s != null && !s.getType().isAir()) out.add(s);
+            }
+            state.inv.clear();
+        }
+        return out;
+    }
+
     // ── Placement: right-click a rail with a cart item ──────────────────────
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)

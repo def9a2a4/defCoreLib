@@ -40,6 +40,7 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
     private MechanismMinecartManager mechanismMinecartManager;
     private CustomCartManager customCartManager;
     private CartTrainManager cartTrainManager;
+    private CartRailsManager cartRailsManager;
     private CartSpike cartSpike;   // M3a throwaway movement-spike harness (/defcorelib spike)
     private GlueManager glueManager;
     private GlueAuthoring glueAuthoring;
@@ -274,6 +275,11 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         customCartManager.setTrainManager(cartTrainManager);
         cartTrainManager.register();
         getServer().getPluginManager().registerEvents(cartTrainManager, this);
+        // Special rails (junction + destructor). Event-driven for physics carts; the train manager calls
+        // into it for position-driven carts. Identity/persistence come from the bare-block chunk index.
+        cartRailsManager = new CartRailsManager(this, registry, customCartManager, cartTrainManager);
+        cartTrainManager.setRailsManager(cartRailsManager);
+        getServer().getPluginManager().registerEvents(cartRailsManager, this);
     }
 
     /**
@@ -291,6 +297,10 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
             cartTrainManager.shutdown();
             HandlerList.unregisterAll(cartTrainManager);
             cartTrainManager = null;
+        }
+        if (cartRailsManager != null) {
+            HandlerList.unregisterAll(cartRailsManager);
+            cartRailsManager = null;
         }
     }
 
