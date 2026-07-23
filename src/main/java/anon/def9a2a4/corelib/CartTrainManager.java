@@ -63,14 +63,14 @@ final class CartTrainManager implements Listener {
     private static final String TAG_FROZEN = "corelib:frozen";
     private static final String TAG_CHAIN = "corelib:cart_chain";
     private static final long PENDING_TIMEOUT_TICKS = 200L;
-    // Chain-coupler visual. Each coupling gets one BlockDisplay teleported to the midpoint of its two carts
-    // (position channel) with the transform matrix carrying ONLY orientation+scale (matrix channel) — the two
-    // client interpolators then control orthogonal DOF and can't beat against each other. See updateChainDisplays.
+    // Chain-coupler visual. One free BlockDisplay per coupling, teleported to the midpoint (teleportDuration 1
+    // → smooth position) with the transform matrix SNAPPED (interpolationDuration 0). No carrier (MC-261202
+    // bobs passengers of a teleported display) and no transform interpolation (a teleport would restart it
+    // from the chain's identity/vertical pose → flash). See updateChainDisplays.
     private static final double CHAIN_Y = 0.3d;     // chain height above the cart location (tune in-game)
-    private static final double CHAIN_LEAD = 1.0d;  // forward lead (× speed) matching the carts' client dead-reckon so the chain isn't drawn trailing
+    private static final double CHAIN_LEAD = 0.5d;  // forward lead (× speed) matching the carts' client dead-reckon so the chain isn't drawn trailing (tune in-game)
     private static final double HALF_CART = 0.5d;   // half a minecart length — bridge the adjacent ends, not centre-to-centre
     private static final float CHAIN_WIDTH = 1.0f;  // natural chain-model thickness (ChainPulley convention)
-    private static final int CHAIN_INTERP = 2;      // matrix-interpolation ticks so orientation eases through curves instead of popping
 
     // 1.21.9 (Copper Age) renamed CHAIN → IRON_CHAIN; resolve by name so it works on 1.21.8..1.21.11+
     // (mirrors ChainPulley.resolveChain). Used for the display block, the drop item, and the item check.
@@ -113,25 +113,7 @@ final class CartTrainManager implements Listener {
         double speed;
         boolean moving;                            // heading established (from a push)?
         RailPathWalker.RailState leaderState;
-        final List<ChainLink> chainLinks = new ArrayList<>();   // one per coupling (size = order-1)
-    }
-
-    /** One chain coupling: the visible chain {@code display} rides an invisible {@code carrier}
-     *  {@code BlockDisplay(AIR)} as a passenger. The plugin teleports only the carrier (position); the
-     *  display is never teleported, so its transform interpolation is never perturbed → no vertical flash.
-     *  Mirrors the mechanism moving-display pattern ({@code MechanismRegistry}/{@code BasicMechanism}). */
-    private static final class ChainLink {
-        final BlockDisplay carrier;   // invisible AIR display, teleported each tick — carries the position
-        final BlockDisplay display;   // the chain, a passenger of the carrier — never teleported
-        ChainLink(BlockDisplay carrier, BlockDisplay display) {
-            this.carrier = carrier;
-            this.display = display;
-        }
-        boolean dead() { return carrier == null || carrier.isDead() || display == null || display.isDead(); }
-        void despawn() {
-            if (display != null && !display.isDead()) display.remove();   // passenger first
-            if (carrier != null && !carrier.isDead()) carrier.remove();
-        }
+        final List<BlockDisplay> chainDisplays = new ArrayList<>();   // one per coupling (size = order-1)
     }
 
     private record PendingLink(UUID cart, long expiry) {}
@@ -627,86 +609,76 @@ final class CartTrainManager implements Listener {
         }
     }
 
-    // ── Chain visuals (chain display rides an invisible carrier the plugin teleports; never teleport the ──
-    //    visible display — a position packet perturbs its transform interpolation and flashes it vertical) ──
+    // ── Chain visuals (one free BlockDisplay per coupling, teleported to the midpoint; transform SNAPPED) ──
 
-    /** Keep one chain link per coupling. The visible chain rides an invisible AIR carrier as a passenger;
-     *  each tick the plugin teleports only the carrier to the coupling midpoint (position) and sets the
-     *  chain's transform matrix (orientation+scale). Because the chain display itself is never teleported,
-     *  its transform interpolation is never perturbed → no vertical/horizontal flash. The midpoint is
-     *  order-agnostic, so train reordering needs no special-casing. */
+    /** Keep one chain BlockDisplay per coupling. Each tick the display is teleported to the coupling midpoint
+     *  ({@code teleportDuration 1} → smooth position) and its transform matrix (orientation+scale) is SNAPPED
+     *  ({@code interpolationDuration 0}). No carrier/passenger (MC-261202 jitters passengers of a teleported
+     *  display → the vertical bob) and no transform interpolation (a per-tick teleport would restart it from
+     *  the block's identity/vertical pose → the flash). Snapped orientation is invisible on straights and only
+     *  a brief per-tick step on tight curves. The midpoint is order-agnostic, so reordering needs no handling. */
     private void updateChainDisplays(CartTrain train) {
         if (!config.chainVisuals) { clearChainDisplays(train); return; }
         List<Member> ord = train.order;
         int need = Math.max(0, ord.size() - 1);
         for (int i = 0; i < need; i++) {
             Minecart cartA = ord.get(i).cart, cartB = ord.get(i + 1).cart;
-            // span = B − A; travel direction points toward the front (ord[0]); zero-lead when parked.
             Vector a = cartA.getLocation().toVector();
             Vector b = cartB.getLocation().toVector();
             Vector span = b.clone().subtract(a);
             double full = span.length();
+            // Forward lead so the chain sits under the carts' client-dead-reckoned (drawn-ahead) positions.
+            // Flattened to horizontal (a slope's chord would otherwise inject a speed-scaled vertical wobble);
+            // zero at rest.
             Vector lead = full < 1e-4 ? new Vector()
                 : a.clone().subtract(b).normalize().multiply(train.speed * CHAIN_LEAD);
+            lead.setY(0);
             Vector midVec = a.clone().add(b).multiply(0.5).add(lead);
             midVec.setY(midVec.getY() + CHAIN_Y);
             Location mid = midVec.toLocation(cartA.getWorld());   // yaw/pitch 0 → world-aligned frame
 
-            ChainLink link = i < train.chainLinks.size() ? train.chainLinks.get(i) : null;
-            if (link == null || link.dead()) {
-                if (link != null) link.despawn();
-                link = spawnChainLink(mid);   // spawn AT the midpoint → no slide-in on spawn/rebuild
-                if (i < train.chainLinks.size()) train.chainLinks.set(i, link);
-                else train.chainLinks.add(link);
+            BlockDisplay d = i < train.chainDisplays.size() ? train.chainDisplays.get(i) : null;
+            if (d == null || d.isDead()) {
+                d = spawnChainDisplay(mid);   // spawn AT the midpoint → no slide-in on spawn/rebuild
+                if (i < train.chainDisplays.size()) train.chainDisplays.set(i, d);
+                else train.chainDisplays.add(d);
             }
-            // Position: teleport only the CARRIER, and only when the target moved (a parked train sends none).
-            if (link.carrier.getLocation().distanceSquared(mid) > 1e-6) link.carrier.teleport(mid);
+            // Position: teleport only when the target moved (a parked train sends nothing). A teleport writes
+            // position only — it never resets the (snapped) transform value, so no stuck-vertical on straights.
+            if (d.getLocation().distanceSquared(mid) > 1e-6) d.teleport(mid);
 
             double chainLen = full - 2 * HALF_CART;   // bridge just the gap between the adjacent ends
-            if (full < 1e-4 || chainLen < 1e-3) { link.display.setTransformationMatrix(new Matrix4f().scale(0f)); continue; }
-            // Orientation+scale only (no translation — the carrier positions it; the −0.5 re-centres the unit
-            // cube). Aim local +Y along the span, stretch to the gap length. Set on the (never-teleported)
-            // display so its interpolation is undisturbed.
+            if (full < 1e-4 || chainLen < 1e-3) { d.setTransformationMatrix(new Matrix4f().scale(0f)); continue; }
+            // Orientation+scale only (no translation — the entity is already at the centre; the −0.5 re-centres
+            // the unit cube). Aim local +Y along the span, stretch to the gap length. Snapped (no delay/interp).
             Vector3f spanF = new Vector3f((float) span.getX(), (float) span.getY(), (float) span.getZ());
             Quaternionf orient = new Quaternionf().rotationTo(new Vector3f(0, 1, 0), new Vector3f(spanF).normalize());
             Matrix4f m = new Matrix4f()
                 .rotate(orient)
                 .scale(CHAIN_WIDTH, (float) chainLen, CHAIN_WIDTH)
                 .translate(-0.5f, -0.5f, -0.5f);
-            // Set ONLY the matrix each tick — never re-arm the interpolation (setInterpolationDelay), which
-            // would restart the transform lerp from the block's identity (vertical) pose every tick → flash.
-            // interpolationDuration is set once at spawn; this matches the mechanism displays' proven recipe.
-            link.display.setTransformationMatrix(m);
+            d.setTransformationMatrix(m);
         }
-        // Trim links past the current coupling count (train shrank / split).
-        while (train.chainLinks.size() > need) {
-            train.chainLinks.remove(train.chainLinks.size() - 1).despawn();
+        // Trim displays past the current coupling count (train shrank / split).
+        while (train.chainDisplays.size() > need) {
+            BlockDisplay d = train.chainDisplays.remove(train.chainDisplays.size() - 1);
+            if (!d.isDead()) d.remove();
         }
     }
 
-    /** Spawn a chain link at {@code mid}: an invisible AIR carrier (teleported for position) plus the chain
-     *  display mounted on it as a passenger (never teleported). Hand-rolled (not DisplayUtil.spawnBlock,
-     *  which forces persistent) so both are non-persistent and carry the moving-display settings. */
-    private ChainLink spawnChainLink(Location mid) {
-        World w = mid.getWorld();
-        BlockDisplay carrier = w.spawn(mid, BlockDisplay.class, c -> {
-            c.setBlock(Material.AIR.createBlockData());   // invisible — carries position only
-            c.setPersistent(false);
-            c.setTeleportDuration(1);   // smooth 1-tick position chase toward each new midpoint
-            c.setViewRange(64f);
-            c.addScoreboardTag(TAG_CHAIN);
-        });
-        BlockDisplay display = w.spawn(mid, BlockDisplay.class, bd -> {
+    /** Spawn a chain BlockDisplay at {@code mid}. Hand-rolled (not DisplayUtil.spawnBlock, which forces
+     *  persistent) so it's non-persistent and carries the moving-display settings: smooth position via
+     *  {@code teleportDuration 1}, transform SNAPPED via {@code interpolationDuration 0}. */
+    private BlockDisplay spawnChainDisplay(Location mid) {
+        return mid.getWorld().spawn(mid, BlockDisplay.class, bd -> {
             bd.setBlock(chainBlockData());
-            bd.setPersistent(false);
-            bd.setTeleportDuration(0);   // never teleported — position comes from the carrier
-            bd.setInterpolationDuration(CHAIN_INTERP);   // matrix eases orientation through curves, undisturbed
+            bd.setPersistent(false);   // respawned from the train on reload; no orphan survives a restart
+            bd.setTeleportDuration(1);        // position: smooth 1-tick chase toward each new midpoint
+            bd.setInterpolationDuration(0);   // transform: snap (no interpolation → can't flash or ease-bob)
             bd.setViewRange(64f);
             bd.setBrightness(new org.bukkit.entity.Display.Brightness(15, 15));
             bd.addScoreboardTag(TAG_CHAIN);
         });
-        carrier.addPassenger(display);   // BlockDisplay-on-BlockDisplay mounts synchronously (mech precedent)
-        return new ChainLink(carrier, display);
     }
 
     /** Chain block data with axis pinned to Y (the long axis the strand matrix assumes). */
@@ -717,8 +689,8 @@ final class CartTrainManager implements Listener {
     }
 
     private void clearChainDisplays(CartTrain train) {
-        for (ChainLink link : train.chainLinks) if (link != null) link.despawn();
-        train.chainLinks.clear();
+        for (BlockDisplay d : train.chainDisplays) if (d != null && !d.isDead()) d.remove();
+        train.chainDisplays.clear();
     }
 
     /** Remove any stray chain entities (armor stands + block displays tagged {@link #TAG_CHAIN}) left in a
