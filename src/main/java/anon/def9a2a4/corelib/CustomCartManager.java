@@ -94,6 +94,7 @@ final class CustomCartManager implements Listener {
         int burnTicks;          // blast-furnace cart only; 0 = not burning
         boolean wasOnActivator; // dispenser cart: edge-detect entering a powered activator rail
         double targetSpeed = -1; // blast cart: controller-set cruise target (b/t); -1 = unset → full
+        BlockFace dispenseDir = BlockFace.UP; // dispenser cart: fire direction (wrench-set toward player)
 
         CartState(Minecart cart, CartType type) {
             this.cart = cart;
@@ -108,6 +109,7 @@ final class CustomCartManager implements Listener {
     private final NamespacedKey fuelTicksKey;   // entity PDC: blast-furnace burn counter
     private final NamespacedKey cartInvKey;     // entity PDC: serialized inventory contents
     private final NamespacedKey cartTargetKey;  // entity PDC: blast-cart controller cruise target (double)
+    private final NamespacedKey cartDispenseDirKey; // entity PDC: dispenser-cart fire direction (face name)
 
     private final Map<UUID, CartState> tracked = new HashMap<>();
     /** Per-burning-blast-cart DynLight marker: an invisible, non-persistent BlockDisplay tagged
@@ -130,6 +132,7 @@ final class CustomCartManager implements Listener {
         this.fuelTicksKey = new NamespacedKey(plugin, "cart_fuel_ticks");
         this.cartInvKey = new NamespacedKey(plugin, "cart_inventory");
         this.cartTargetKey = new NamespacedKey(plugin, "cart_target_speed");
+        this.cartDispenseDirKey = new NamespacedKey(plugin, "cart_dispense_dir");
     }
 
     void register() {
@@ -178,7 +181,10 @@ final class CustomCartManager implements Listener {
             if (stored != null) state.burnTicks = stored;
             Double target = pdc.get(cartTargetKey, PersistentDataType.DOUBLE);
             if (target != null) state.targetSpeed = target;
+            String dir = pdc.get(cartDispenseDirKey, PersistentDataType.STRING);
+            if (dir != null) try { state.dispenseDir = BlockFace.valueOf(dir); } catch (IllegalArgumentException ignored) {}
             tracked.put(cart.getUniqueId(), state);
+            if (type == CartType.DISPENSER) applyDispenserFacing(state);   // restore the rendered facing
         }
     }
 
@@ -221,6 +227,7 @@ final class CustomCartManager implements Listener {
         PersistentDataContainer pdc = state.cart.getPersistentDataContainer();
         pdc.set(fuelTicksKey, PersistentDataType.INTEGER, state.burnTicks);
         pdc.set(cartTargetKey, PersistentDataType.DOUBLE, state.targetSpeed);
+        pdc.set(cartDispenseDirKey, PersistentDataType.STRING, state.dispenseDir.name());
         if (state.inv != null) {
             String data = InventoryUtil.encode(state.inv);
             if (data != null) pdc.set(cartInvKey, PersistentDataType.STRING, data);
@@ -286,6 +293,7 @@ final class CustomCartManager implements Listener {
         CartState state = new CartState(cart, type);
         buildInv(state);
         tracked.put(cart.getUniqueId(), state);
+        if (type == CartType.DISPENSER) applyDispenserFacing(state);   // render the DISPENSER facing UP
         // A blast-furnace cart is a self-propelled engine → register it with the train manager now so it
         // drives as a size-1 train without waiting for a chunk reload. Coal tenders join a train on link.
         if (type == CartType.BLAST && trainManager != null) trainManager.trackCart(cart);
@@ -321,8 +329,23 @@ final class CustomCartManager implements Listener {
         CartState state = tracked.get(cart.getUniqueId());
         if (state == null || state.inv == null) return;
         // Coupling/uncoupling (chain or shears) is owned by CartTrainManager — defer to it and don't open.
-        Material held = event.getPlayer().getInventory().getItemInMainHand().getType();
+        ItemStack mainHand = event.getPlayer().getInventory().getItemInMainHand();
+        Material held = mainHand.getType();
         if (held == Material.SHEARS || isChain(held)) return;
+
+        // Wrench on a dispenser cart aims it at the player (nearest of the 6 faces) instead of opening.
+        if (state.type == CartType.DISPENSER && RotationBlocks.isWrench(mainHand)) {
+            event.setCancelled(true);
+            org.bukkit.util.Vector toPlayer = event.getPlayer().getEyeLocation().toVector()
+                .subtract(cart.getLocation().add(0, 0.5, 0).toVector());
+            state.dispenseDir = nearestFace(toPlayer);
+            cart.getPersistentDataContainer().set(cartDispenseDirKey, PersistentDataType.STRING, state.dispenseDir.name());
+            applyDispenserFacing(state);
+            event.getPlayer().sendActionBar(net.kyori.adventure.text.Component.text(
+                "Dispenser points " + state.dispenseDir, net.kyori.adventure.text.format.NamedTextColor.AQUA));
+            event.getPlayer().playSound(cart.getLocation(), org.bukkit.Sound.BLOCK_DISPENSER_FAIL, 0.8f, 1.2f);
+            return;
+        }
 
         event.setCancelled(true);   // suppress the rideable mount
         org.bukkit.inventory.InventoryView view = event.getPlayer().openInventory(state.inv);
@@ -375,8 +398,21 @@ final class CustomCartManager implements Listener {
         }
     }
 
-    /** Direction a dispenser cart fires items — fixed UP for now (later: switchable per cart). */
-    private static final BlockFace DISPENSE_DIR = BlockFace.UP;
+    /** Render a dispenser cart's block facing its current fire direction, so the model matches where it
+     *  shoots. Minecart display blocks are world-aligned, so the DISPENSER's front points that way. */
+    private void applyDispenserFacing(CartState state) {
+        org.bukkit.block.data.BlockData bd = Bukkit.createBlockData(Material.DISPENSER);
+        if (bd instanceof org.bukkit.block.data.Directional d) { d.setFacing(state.dispenseDir); bd = d; }
+        state.cart.setDisplayBlockData(bd);
+    }
+
+    /** The cardinal face (one of 6) that {@code v} points most strongly toward. */
+    private static BlockFace nearestFace(org.bukkit.util.Vector v) {
+        double ax = Math.abs(v.getX()), ay = Math.abs(v.getY()), az = Math.abs(v.getZ());
+        if (ay >= ax && ay >= az) return v.getY() >= 0 ? BlockFace.UP : BlockFace.DOWN;
+        if (ax >= az) return v.getX() >= 0 ? BlockFace.EAST : BlockFace.WEST;
+        return v.getZ() >= 0 ? BlockFace.SOUTH : BlockFace.NORTH;
+    }
 
     /** Fire one item each time the cart rolls onto a powered activator rail (rising edge). */
     private void tickDispenser(CartState state) {
@@ -396,15 +432,15 @@ final class CustomCartManager implements Listener {
     /** Launch speed for projectile payloads (arrows, snowballs, …) fired by a dispenser cart. */
     private static final double PROJECTILE_SPEED = 1.5;
 
-    /** Fire one item from the cart's inventory like a dispenser aimed along {@link #DISPENSE_DIR}: a
+    /** Fire one item from the cart's inventory like a dispenser aimed along the cart's fire direction: a
      *  projectile item (arrow, snowball, potion, …) spawns as its REAL projectile entity; anything else
      *  is ejected as an item entity with dispenser-like scatter. */
     private void fireOne(CartState state) {
         ItemStack one = takeOne(state.inv, m -> true);
         if (one == null) return;
         World w = state.cart.getWorld();
-        org.bukkit.util.Vector dir = new org.bukkit.util.Vector(
-            DISPENSE_DIR.getModX(), DISPENSE_DIR.getModY(), DISPENSE_DIR.getModZ());
+        BlockFace f = state.dispenseDir;
+        org.bukkit.util.Vector dir = new org.bukkit.util.Vector(f.getModX(), f.getModY(), f.getModZ());
         Location mouth = state.cart.getLocation().add(0, 0.5, 0).add(dir.clone().multiply(0.5));
         if (!dispenseProjectile(w, mouth, dir, one)) ejectItem(w, mouth, dir, one);
         w.playSound(mouth, org.bukkit.Sound.BLOCK_DISPENSER_DISPENSE, 0.8f, 1.0f);
