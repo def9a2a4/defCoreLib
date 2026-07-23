@@ -14,6 +14,8 @@ textures:
   minecart-blast-furnace:   "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTAxYTg3NWNmMDc2OTFlNzNhZTRlOWViNGJkZDdiMTI5MjQzY2YxNDUyN2RlNDY0ZDU3MTM2YjU4NTk5NDk2MiJ9fX0="  # cart-blast-furnace — blast-cart in-hand item
   rail-junction:            "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvY2M5NmU4Y2QyOWJjNWQwMjQ4ZDMzMzhlMDBjZmY1NWVlYzFiOGQ4MDY2MjA4Y2Y0YTk0YWRmOGQ2NzFkN2Y2OSJ9fX0="  # rail-junction — junction item + world shell
   rail-destructor:          "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjE0ODkzZjVlOGNlNmIzZmQ5OGY5MWJmYzM1MGE5NWRiNTIzY2VlOTMzOGI1ZjNmNDY3OGZiOTQ3ZGU1MTk3ZCJ9fX0="  # rail-destructor — destructor item + world shell
+  minecart-dispenser:       "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvN2FiNzhhYmMyMGQ4MmYyZWI3OTlhMTk4NmFiZjZjYmFlYmZhNmYzZDgyZThiNWRiMmI2NWUyMzk1MzVlNzlkNyJ9fX0="  # cart-dispenser — dispenser-cart in-hand item
+  rail-controller:          "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzk2MWM3NWMwOWMzMTJlNjllZjdiMGZkNDU1ZDgyZmQ3NTkzYzc1NmVhNzAzMDcwYmE1YzcwMzFkZWE1ZmQxYyJ9fX0="  # rail-controller — controller item + directional world shell
 
 blocks:
   coal_cart:
@@ -56,6 +58,27 @@ blocks:
         shapeless:
           - ingredients:
               - { material: BLAST_FURNACE }
+              - { material: MINECART }
+
+  dispenser_cart:
+    name: "&bDispenser Minecart"
+    lore:
+      - "&7Right-click a rail to spawn a dispenser cart."
+      - "&7Holds any items in a 9-slot inventory."
+      - "&7Fires one item upward each time it rolls"
+      - "&7over a powered activator rail."
+    catalog_notes:
+      - "&fRight-click a rail to spawn a dispenser minecart: a 3×3 inventory that launches one item straight up every time it crosses a powered activator rail."
+      - "&7Hoppers above/beside the track load it; unlike the fuel carts it accepts any item."
+    texture: "@minecart-dispenser"
+    item_glint: true
+    placeable: false
+    storage: { layout: DROPPER }
+    recipes:
+      craft:
+        shapeless:
+          - ingredients:
+              - { material: DISPENSER }
               - { material: MINECART }
 
   # ── Rails ──────────────────────────────────────────────────────────────────
@@ -101,10 +124,10 @@ blocks:
       - "&7Destroys any minecart that passes over it,"
       - "&7depositing the cart item and its contents into"
       - "&7the container directly below (else on the ground)."
-      - "&7Mechanism minecarts pass over unharmed."
+      - "&7Mechanical minecarts pass over unharmed."
     catalog_notes:
       - "&fA detector rail that recycles a passing minecart: it ejects any riders, then drops the cart item, everything in its inventory, and any coupling chains into the barrel / dropper / dispenser directly below — or onto the ground if there is no container."
-      - "&7Mechanism minecarts are exempt and pass over unharmed."
+      - "&7Mechanical minecarts are exempt and pass over unharmed."
     base_block: DETECTOR_RAIL
     texture: "@rail-destructor"
     item_glint: true
@@ -123,3 +146,35 @@ blocks:
               - { material: DETECTOR_RAIL }
               - { material: POINTED_DRIPSTONE }
               - { material: HOPPER }
+
+  controller_rail:
+    name: "&aController Rail"
+    lore:
+      - "&7Sets the target speed of a fueled blast-furnace"
+      - "&7cart passing over it, from its redstone signal:"
+      - "&7full power = top speed, weaker = slower."
+      - "&7No effect on trains without a lit blast cart."
+    catalog_notes:
+      - "&fA rail that sets the cruise speed of a passing blast-furnace locomotive by its redstone signal strength (0–15 → stopped-ish … full speed). The train accelerates or brakes toward that target and holds it until the next controller."
+      - "&7Only affects a train that has a lit (fueled) blast-furnace cart; its arrow orients along the track."
+    # POWERED_RAIL (not RAIL): the bare-block index gates identity by material, so two bmc RAIL types would
+    # collide with the junction — a powered rail is a distinct material and reads its redstone signal natively.
+    base_block: POWERED_RAIL
+    texture: "@rail-controller"
+    item_glint: true
+    drops: self
+    default_state: idle
+    states:
+      idle:
+        display_entities:
+          - texture: "@rail-controller"
+            tag: shell
+            transform: { translation: [0, -0.4275, 0], scale: [1.88141, 0.9995, 1.88141] }
+    recipes:
+      craft:
+        shapeless:
+          - amount: 2
+            ingredients:
+              - { material: RAIL }
+              - { material: REPEATER }
+              - { material: REDSTONE }

@@ -31,6 +31,14 @@ carts:
   # Engine fuel level (ticks) below which a tender in the same train tops it up.
   feed-threshold-ticks: 600
 
+  # ── Special rails ──
+  # Cruise speed a controller rail enforces at full redstone signal (blocks/tick); scales with power/15.
+  controller-max-speed: 1.0
+  # Speed a train sheds per tick while braking down to a lower controller cap.
+  brake-rate: 0.04
+  # Launch speed of an item fired upward by a dispenser minecart.
+  dispense-velocity: 0.3
+
 # Emit dynamic light from a lit blast-furnace cart (level 5, only while burning) via the optional
 # DynLight plugin (https://github.com/def9a2a4/dynlight). Purely a scoreboard-tag integration — no
 # dependency; inert when DynLight is absent. Set false to never tag carts.

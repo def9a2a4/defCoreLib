@@ -36,7 +36,7 @@ fan:
   max-push: 0.5       # cap on per-tick push velocity
   push-per-power: 0.08 # extra push velocity per surplus power
 
-powered-dispenser:
+mechanical-dispenser:
   power-cap: 10         # network power above this adds no more boost ("over 10 does nothing")
   min-boost: 0.4        # extra launch velocity (blocks/tick) at minimum power
   boost-per-power: 0.2  # extra launch velocity per unit of network power (reaches max-boost near 10)
@@ -72,7 +72,7 @@ chain-pulley:
   max-distance: 32    # max distance (blocks) between two linked chain pulleys
 
 piston:
-  max-step: 0.25      # extendable piston (+ chain hoist) cap on per-tick slide velocity (blocks/tick)
+  max-step: 0.25      # mechanical piston (+ chain hoist) cap on per-tick slide velocity (blocks/tick)
 
 redstone_dynamo:
   tick-interval: 10       # ticks between comparator-output refreshes
@@ -105,8 +105,8 @@ power:
   pump: 4
   placer: 2
   suction_hopper: 3
-  powered_dispenser: 1   # light constant demand — any powered network (supply >= 1) activates the launcher
-  piston_core: 1   # base rotational demand of an extendable piston core (speed scales with surplus above this)
+  mechanical_dispenser: 1   # light constant demand — any powered network (supply >= 1) activates the launcher
+  piston_core: 1   # base rotational demand of a mechanical piston core (speed scales with surplus above this)
   chain_hoist: 1   # base rotational demand of a chain hoist (lift speed scales with surplus above this)
 
 # How each rotation block behaves while assembled into a moving mechanism (minecart, door,

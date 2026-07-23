@@ -170,8 +170,8 @@ final class RotationBlocks {
         overlayDrill(registry, network, config);
         overlayFan(registry, network, config);
         overlaySuctionHopper(registry, network, config);
-        // Powered Dispenser: a real vanilla dispenser (own class — holds a dispense-boost listener).
-        new PoweredDispenser(registry, network, config).register();
+        // Mechanical Dispenser: a real vanilla dispenser (own class — holds a dispense-boost listener).
+        new MechanicalDispenser(registry, network, config).register();
 
         // Passive sources — detected at network boundary, no callbacks needed
         network.registerPassiveSource("mech:windmill", config.getPower("windmill", 1));

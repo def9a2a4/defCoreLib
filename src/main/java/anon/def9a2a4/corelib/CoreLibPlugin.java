@@ -274,7 +274,8 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         getServer().getPluginManager().registerEvents(cartTrainManager, this);
         // Special rails (junction + destructor). Event-driven for physics carts; the train manager calls
         // into it for position-driven carts. Identity/persistence come from the bare-block chunk index.
-        cartRailsManager = new CartRailsManager(this, registry, customCartManager, cartTrainManager);
+        cartRailsManager = new CartRailsManager(this, registry, customCartManager, cartTrainManager, cartConfig);
+        cartRailsManager.installOverlays();   // orient the controller arrow along the track
         cartTrainManager.setRailsManager(cartRailsManager);
         getServer().getPluginManager().registerEvents(cartRailsManager, this);
     }

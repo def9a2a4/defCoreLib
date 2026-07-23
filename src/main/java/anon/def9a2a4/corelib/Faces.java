@@ -20,7 +20,7 @@ final class Faces {
      * Rotation mapping a display model's +Z (front) face onto {@code facing}. Horizontal faces rotate
      * about +Y only, so the art stays upright and faces out of each wall distinctly (no 180° roll);
      * UP/DOWN tip the front skyward/floorward about X. Shared by every head/eye disguise that orients
-     * to a block's facing (redstone dynamo, powered dispenser, …).
+     * to a block's facing (redstone dynamo, mechanical dispenser, …).
      */
     static AxisAngle4f rotationForFace(BlockFace facing) {
         float h = (float) (Math.PI / 2), p = (float) Math.PI;

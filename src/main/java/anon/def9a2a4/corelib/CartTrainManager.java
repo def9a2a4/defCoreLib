@@ -12,6 +12,7 @@ import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.BlockDisplay;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Minecart;
@@ -62,14 +63,13 @@ final class CartTrainManager implements Listener {
     private static final String TAG_FROZEN = "corelib:frozen";
     private static final String TAG_CHAIN = "corelib:cart_chain";
     private static final long PENDING_TIMEOUT_TICKS = 200L;
-    private static final double CHAIN_Y = 0.05d;    // coupler height relative to a cart's location (just above the rail)
-    private static final double HALF_CART = 0.5d;   // half a minecart length — couple end-to-end, not centre-to-centre
+    // Chain-coupler visual. The display rides an invisible marker ArmorStand that is a passenger of cart A,
+    // so it inherits the cart's own client-drawn motion — ONE interpolation clock, never teleported. Only the
+    // transformation matrix (the cart-A→cart-B span) is driven per tick. See updateChainDisplays.
+    private static final double CHAIN_Y = -0.2d;    // net vertical offset from the passenger seat to the chain centre (tune in-game)
+    private static final double HALF_CART = 0.5d;   // half a minecart length — bridge the adjacent ends, not centre-to-centre
     private static final float CHAIN_WIDTH = 1.0f;  // natural chain-model thickness (ChainPulley convention)
-    private static final int CHAIN_INTERP = 1;      // 1-tick teleport/interp: matches the 20 TPS teleport cadence
-    // Forward-predict the chain endpoints by this fraction of each cart's per-tick velocity hint. The client
-    // dead-reckons a minecart forward from setVelocity, so it's *drawn* ~1 tick ahead of its server position;
-    // the chain must sample that drawn position or it trails by ~speed blocks while moving. Empirical knob.
-    private static final double LERP_LEAD = 1.0d;
+    private static final int CHAIN_INTERP = 2;      // matrix-interpolation ticks (>1 gives jitter headroom over the 1-tick update)
 
     // 1.21.9 (Copper Age) renamed CHAIN → IRON_CHAIN; resolve by name so it works on 1.21.8..1.21.11+
     // (mirrors ChainPulley.resolveChain). Used for the display block, the drop item, and the item check.
@@ -111,8 +111,30 @@ final class CartTrainManager implements Listener {
         List<Member> order = new ArrayList<>();   // one endpoint → the other; index 0 = front once moving
         double speed;
         boolean moving;                            // heading established (from a push)?
+        double controllerTarget = -1;              // controller-rail cruise target for a fueled blast cart; -1 = none
         RailPathWalker.RailState leaderState;
-        final List<BlockDisplay> chainDisplays = new ArrayList<>();   // one per coupling (size = order-1)
+        final List<ChainLink> chainLinks = new ArrayList<>();   // one per coupling (size = order-1)
+    }
+
+    /** One chain coupling: an invisible marker ArmorStand riding cart A carries the stretched chain
+     *  BlockDisplay as its passenger, so the display inherits cart A's client-drawn motion (a single
+     *  interpolation clock — the display itself is never teleported). {@code anchor} is cart A's UUID;
+     *  if the train reorders (e.g. {@link #establishHeading} reverses it) the anchor for a slot changes
+     *  and the link is torn down + re-spawned on the correct cart. */
+    private static final class ChainLink {
+        final UUID anchor;              // cart A's UUID — the cart this link is mounted on
+        final ArmorStand stand;         // marker passenger of cart A
+        final BlockDisplay display;     // chain, passenger of the stand
+        boolean mounted;                // stand successfully seated on cart A yet?
+        ChainLink(UUID anchor, ArmorStand stand, BlockDisplay display) {
+            this.anchor = anchor;
+            this.stand = stand;
+            this.display = display;
+        }
+        void despawn() {
+            if (display != null && !display.isDead()) display.remove();   // passenger first
+            if (stand != null && !stand.isDead()) stand.remove();
+        }
     }
 
     private record PendingLink(UUID cart, long expiry) {}
@@ -121,7 +143,10 @@ final class CartTrainManager implements Listener {
 
     void register() {
         for (World world : Bukkit.getWorlds()) {
-            for (Chunk chunk : world.getLoadedChunks()) scanChunk(chunk);
+            for (Chunk chunk : world.getLoadedChunks()) {
+                sweepOrphanChains(chunk);   // reap chain entities orphaned by a crash / reload before re-adopting
+                scanChunk(chunk);
+            }
         }
         tickTask = Bukkit.getScheduler().runTaskTimer(plugin, this::tick, 1L, 1L);
     }
@@ -488,8 +513,10 @@ final class CartTrainManager implements Listener {
 
         int engines = 0;
         double trainMax = 0;
+        boolean hasFueledBlast = false;
         for (Member m : ord) {
             if (isEngine(m.cart)) { engines++; trainMax = Math.max(trainMax, engineSpeed(m.cart)); }
+            if (carts.isBlastCart(m.cart) && carts.burnTicks(m.cart) > 0) hasFueledBlast = true;
         }
 
         // Establish (or, after a rebuild, re-establish) travel direction from a push / retained velocity.
@@ -497,12 +524,23 @@ final class CartTrainManager implements Listener {
         // its carts' velocity hints. No engine and no push → nothing to drive.
         if (!train.moving && !establishHeading(train, engines > 0)) return;
 
+        // Controller rail: the leader crossing one sets the target speed of a fueled blast cart (persists
+        // as the train travels; a power-0 controller releases it). Inert unless a fueled blast cart is aboard.
+        if (rails != null) {
+            Block lead = railUnder(ord.get(0).cart);
+            if (lead != null && rails.isController(lead)) train.controllerTarget = rails.controllerTarget(lead);
+        }
+        double effTarget = (train.controllerTarget >= 0 && hasFueledBlast)
+            ? Math.min(trainMax, train.controllerTarget) : trainMax;
+
         if (engines > 0) {
             // Power/weight: acceleration is proportional to (active engines / total carts) — it falls with
-            // train length (1/n) and rises with engine count — while max speed stays length-independent
-            // (trainMax). A freshly-started powered train ramps from ~0 rather than jumping to push speed.
+            // train length (1/n) and rises with engine count — while the target stays length-independent.
+            // A freshly-started powered train ramps from ~0; a controller can pull the target below the max,
+            // in which case we brake toward it.
             double accel = config.baseAccel * engines / n;
-            train.speed = Math.min(train.speed + accel, trainMax);
+            if (train.speed > effTarget) train.speed = Math.max(effTarget, train.speed - config.brakeRate);
+            else train.speed = Math.min(train.speed + accel, effTarget);
             // Burn fuel only while actually driving — a parked/primed engine doesn't drain (see C4).
             for (Member m : ord) if (carts.isBlastCart(m.cart)) carts.consumeBurnTick(m.cart);
         } else {
@@ -575,64 +613,101 @@ final class CartTrainManager implements Listener {
         }
     }
 
-    // ── Chain visuals (one BlockDisplay per coupling, stretched between the carts) ──────────────────
+    // ── Chain visuals (one chain BlockDisplay per coupling, carried as a passenger of cart A) ─────────
 
-    /** Keep one chain BlockDisplay per coupling, positioned/oriented between consecutive carts.
-     *  Follows the ChainPulley strand convention: anchor at cart A's end, bake the A→B offset into the
-     *  matrix (midpoint-centred, all-axis −0.5), and interpolate so it tracks the client-lerped carts. */
+    /** Keep one chain link per coupling. Each is a marker ArmorStand riding cart A that carries the chain
+     *  BlockDisplay as a passenger, so the display inherits cart A's own client-drawn motion (a single
+     *  interpolation clock — never teleported). Only the transform matrix (the A→B span) is driven per
+     *  tick; the ChainPulley strand convention (midpoint-centred, aim +Y along the span, all-axis −0.5).
+     *  A link is re-anchored if its cart-A changed (train reversed) and torn down when the coupling goes. */
     private void updateChainDisplays(CartTrain train) {
         List<Member> ord = train.order;
         int need = Math.max(0, ord.size() - 1);
-        train.chainDisplays.removeIf(d -> d == null || d.isDead());
-        while (train.chainDisplays.size() > need) {
-            BlockDisplay d = train.chainDisplays.remove(train.chainDisplays.size() - 1);
-            if (!d.isDead()) d.remove();
-        }
-        while (train.chainDisplays.size() < need) {
-            Location loc = ord.get(train.chainDisplays.size()).cart.getLocation().add(0, CHAIN_Y, 0);
-            BlockDisplay d = loc.getWorld().spawn(loc, BlockDisplay.class, bd -> {
-                bd.setBlock(chainBlockData());
-                bd.setPersistent(false);   // respawned from the train on reload; no orphans survive restart
-                bd.setTeleportDuration(CHAIN_INTERP);
-                bd.setInterpolationDuration(CHAIN_INTERP);
-                bd.setViewRange(64f);
-                bd.setBrightness(new org.bukkit.entity.Display.Brightness(15, 15));
-                bd.addScoreboardTag(TAG_CHAIN);
-            });
-            train.chainDisplays.add(d);
-        }
-        Vector down = new Vector(0, CHAIN_Y, 0);
         for (int i = 0; i < need; i++) {
-            BlockDisplay d = train.chainDisplays.get(i);
             Minecart cartA = ord.get(i).cart, cartB = ord.get(i + 1).cart;
-            Location la = cartA.getLocation();
-            Location lb = cartB.getLocation();
-            Vector along = lb.toVector().subtract(la.toVector());
-            if (along.lengthSquared() < 1e-8) { d.setTransformationMatrix(new Matrix4f().scale(0f)); continue; }
-            Vector unit3 = along.clone().normalize();
-            // Endpoints = the carts' adjacent ends (half a cart in from each centre), near the rail, and
-            // forward-predicted by the cart's velocity hint so the chain tracks where each cart is *drawn*
-            // (the client dead-reckons the minecart ahead of its server position while moving).
-            Vector leadA = cartA.getVelocity().clone().multiply(LERP_LEAD);
-            Vector leadB = cartB.getVelocity().clone().multiply(LERP_LEAD);
-            Vector endA = la.toVector().add(unit3.clone().multiply(HALF_CART)).add(down).add(leadA);
-            Vector endB = lb.toVector().subtract(unit3.clone().multiply(HALF_CART)).add(down).add(leadB);
-            Vector span = endB.subtract(endA);
-            float len = (float) span.length();
-            d.teleport(endA.toLocation(la.getWorld()));
-            if (len < 1e-4f) continue;
-            Vector3f spanF = new Vector3f((float) span.getX(), (float) span.getY(), (float) span.getZ());
-            Quaternionf orient = new Quaternionf().rotationTo(new Vector3f(0, 1, 0), new Vector3f(spanF).normalize());
-            // T(midpoint)·R(+Y→span)·S(width,len,width)·T(−0.5): centre the unit cube on all axes, stretch
-            // along +Y to the gap, aim it A→B, and shift to the midpoint (relative to the endA anchor).
-            Matrix4f m = new Matrix4f()
-                .translate(spanF.x * 0.5f, spanF.y * 0.5f, spanF.z * 0.5f)
-                .rotate(orient)
-                .scale(CHAIN_WIDTH, len, CHAIN_WIDTH)
-                .translate(-0.5f, -0.5f, -0.5f);
-            d.setInterpolationDelay(0);
-            d.setTransformationMatrix(m);
+            ChainLink link = i < train.chainLinks.size() ? train.chainLinks.get(i) : null;
+            // Drop a link that died, or whose anchor no longer matches cart A (the train reordered).
+            if (link != null && (link.display == null || link.display.isDead()
+                    || !cartA.getUniqueId().equals(link.anchor))) {
+                link.despawn();
+                link = null;
+            }
+            if (link == null) {
+                link = spawnChainLink(cartA);
+                if (i < train.chainLinks.size()) train.chainLinks.set(i, link);
+                else train.chainLinks.add(link);
+            }
+            positionChain(link, cartA, cartB);
         }
+        // Trim links past the current coupling count (train shrank / split).
+        while (train.chainLinks.size() > need) {
+            train.chainLinks.remove(train.chainLinks.size() - 1).despawn();
+        }
+    }
+
+    /** Spawn a chain link's ArmorStand + BlockDisplay at cart A and mount the display on the stand now.
+     *  The stand is seated on cart A on the NEXT tick (minecarts reject a same-tick, freshly-spawned
+     *  passenger at the NMS level — see MechanismRegistry's deferred mount); {@link #positionChain}
+     *  completes the mount and hides the display until then. */
+    private ChainLink spawnChainLink(Minecart cartA) {
+        Location loc = cartA.getLocation();
+        World w = loc.getWorld();
+        BlockDisplay d = w.spawn(loc, BlockDisplay.class, bd -> {
+            bd.setBlock(chainBlockData());
+            bd.setPersistent(false);   // respawned from the train on reload; no orphan survives a restart
+            bd.setInterpolationDuration(CHAIN_INTERP);
+            bd.setViewRange(64f);
+            bd.setBrightness(new org.bukkit.entity.Display.Brightness(15, 15));
+            bd.setTransformationMatrix(new Matrix4f().scale(0f));   // hidden until first positioned
+            bd.addScoreboardTag(TAG_CHAIN);
+        });
+        ArmorStand stand = w.spawn(loc, ArmorStand.class, as -> {
+            as.setMarker(true);
+            as.setInvisible(true);
+            as.setGravity(false);
+            as.setSilent(true);
+            as.setInvulnerable(true);
+            as.setPersistent(false);
+            as.setRotation(0f, 0f);   // world-aligned frame: the passenger display inherits this yaw
+            as.addScoreboardTag(TAG_CHAIN);
+        });
+        stand.addPassenger(d);   // owned ArmorStand accepts a passenger synchronously (unlike a minecart)
+        return new ChainLink(cartA.getUniqueId(), stand, d);
+    }
+
+    /** Complete the deferred mount (skipping while a player rides cart A) and drive the chain's transform
+     *  matrix from the server-position span. Position is carried by the passenger stack — never teleport
+     *  the display. */
+    private void positionChain(ChainLink link, Minecart cartA, Minecart cartB) {
+        BlockDisplay d = link.display;
+        if (d == null || d.isDead()) return;
+        if (!link.mounted) {
+            // Seat the stand on cart A. Skip while a player occupies the single seat (retry when it frees);
+            // otherwise the first attempt lands on the tick after spawn and succeeds.
+            if (cartA.isValid() && cartA.getPassengers().isEmpty() && cartA.addPassenger(link.stand)) {
+                link.mounted = true;
+            } else {
+                d.setTransformationMatrix(new Matrix4f().scale(0f));   // stay hidden until mounted
+                return;
+            }
+        }
+        // span = cart B − cart A (server positions); the shared per-tick dead-reckon cancels in the diff.
+        Vector span = cartB.getLocation().toVector().subtract(cartA.getLocation().toVector());
+        double full = span.length();
+        double chainLen = full - 2 * HALF_CART;   // bridge just the gap between the adjacent ends
+        if (full < 1e-4 || chainLen < 1e-3) { d.setTransformationMatrix(new Matrix4f().scale(0f)); return; }
+        Vector3f spanF = new Vector3f((float) span.getX(), (float) span.getY(), (float) span.getZ());
+        Quaternionf orient = new Quaternionf().rotationTo(new Vector3f(0, 1, 0), new Vector3f(spanF).normalize());
+        // Origin is the display's seat (≈ cart A + a fixed seat offset). Translation to the chain centre =
+        // span/2 (to the midpoint) + CHAIN_Y (net seat→chain vertical). Then aim +Y along the span, stretch
+        // to the gap length, and −0.5 to centre the unit cube. World-aligned (stand yaw 0 → no double-rotate).
+        Matrix4f m = new Matrix4f()
+            .translate(spanF.x * 0.5f, spanF.y * 0.5f + (float) CHAIN_Y, spanF.z * 0.5f)
+            .rotate(orient)
+            .scale(CHAIN_WIDTH, (float) chainLen, CHAIN_WIDTH)
+            .translate(-0.5f, -0.5f, -0.5f);
+        d.setInterpolationDelay(0);
+        d.setTransformationMatrix(m);
     }
 
     /** Chain block data with axis pinned to Y (the long axis the strand matrix assumes). */
@@ -643,8 +718,20 @@ final class CartTrainManager implements Listener {
     }
 
     private void clearChainDisplays(CartTrain train) {
-        for (BlockDisplay d : train.chainDisplays) if (d != null && !d.isDead()) d.remove();
-        train.chainDisplays.clear();
+        for (ChainLink link : train.chainLinks) if (link != null) link.despawn();
+        train.chainLinks.clear();
+    }
+
+    /** Remove any stray chain entities (armor stands + block displays tagged {@link #TAG_CHAIN}) left in a
+     *  chunk — non-persistent ones shouldn't survive a clean restart, but this reaps anything orphaned by a
+     *  crash or {@code /reload} so no invisible marker stands accumulate. */
+    private void sweepOrphanChains(Chunk chunk) {
+        for (Entity e : chunk.getEntities()) {
+            if ((e instanceof BlockDisplay || e instanceof ArmorStand)
+                    && e.getScoreboardTags().contains(TAG_CHAIN)) {
+                e.remove();
+            }
+        }
     }
 
     /** Establish travel direction from a member's push; order the train front→back and seed leaderState.
@@ -688,6 +775,7 @@ final class CartTrainManager implements Listener {
     private void park(CartTrain train) {
         train.moving = false;
         train.speed = 0;
+        train.controllerTarget = -1;   // a stopped train isn't held to an old controller cap
         for (Member m : train.order) parkCart(m.cart);
     }
 

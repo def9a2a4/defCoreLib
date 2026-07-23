@@ -87,11 +87,11 @@ NODES = [
      "Craft a Redstone Dynamo — reads your network's power and emits an analog redstone signal for a comparator."),
     # moving machines: piston -> rotator -> minecart (the minecart recipe needs a rotator, cascade-safe)
     ("craft/piston", "craft/gear", "task", "@core_fwd", "Reach Out", "white",
-     "Craft an Extendable Piston — a powered arm that pushes a glued structure out and pulls it back."),
+     "Craft a Mechanical Piston — a powered arm that pushes a glued structure out and pulls it back."),
     ("craft/rotator", "craft/gear", "task", "@rotator_side", "Hinge Time", "white",
      "Craft a Rotator — a hinge that swings a glued structure as a door or drawbridge."),
     ("craft/minecart", "craft/rotator", "task", "minecraft:furnace_minecart", "Cart Blanche", "white",
-     "Craft a Mechanism Minecart — glue blocks onto it for a rideable moving structure."),
+     "Craft a Mechanical Minecart — glue blocks onto it for a rideable moving structure."),
     ("craft/chain_hoist", "craft/piston", "task", "@chainwheel", "Going Down", "white",
      "Craft a Chain Hoist — a floor winch that raises and lowers a platform on a chain."),
     # sources: windmill -> water wheel -> engine, with the motor as a leaf
@@ -132,7 +132,7 @@ NODES = [
 
     # ── Structures / moving (granted when a mechanism assembles) ──
     ("structures/first_glue", "craft/glue_brush", "task", "minecraft:slime_ball", "Bound Together", "white",
-     "Glue blocks to a Rotator or Mechanism Minecart with the Glue Brush so they move as one."),
+     "Glue blocks to a Rotator or Mechanical Minecart with the Glue Brush so they move as one."),
     ("structures/assemble", "structures/first_glue", "goal", "minecraft:slime_block", "It Moves!", "yellow",
      "Assemble a glued structure into a moving mechanism."),
     ("structures/door", "craft/rotator", "goal", "@rotator_up", "Open Sesame", "yellow",
@@ -140,13 +140,13 @@ NODES = [
     ("structures/drawbridge", "craft/rotator", "goal", "@rotator_side", "Lower the Drawbridge", "yellow",
      "Swing a wall-mounted Rotator as a drawbridge."),
     ("structures/minecart", "craft/minecart", "challenge", "minecraft:furnace_minecart", "All Aboard", "light_purple",
-     "Assemble and move a Mechanism Minecart — a structure that rides the rails."),
+     "Assemble and move a Mechanical Minecart — a structure that rides the rails."),
     ("structures/big_move", "structures/assemble", "challenge", "minecraft:piston", "Moving Day", "light_purple",
      "Move a mechanism of 32 or more blocks."),
     ("structures/earthshaker", "structures/big_move", "challenge", "minecraft:slime_block", "Earthshaker", "light_purple",
      "Move a massive mechanism of 128 or more blocks."),
     ("structures/pistons", "craft/piston", "goal", "@head_fwd", "Reach for the Sky", "yellow",
-     "Extend an Extendable Piston to push a structure out and back."),
+     "Extend a Mechanical Piston to push a structure out and back."),
 
     # ── Windmills (granted when the windmill tier is placed) ──
     ("windmill/plain", "craft/windmill_item", "goal", "@windmill_item", "Windfall", "yellow",

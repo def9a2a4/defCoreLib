@@ -57,8 +57,10 @@ final class CustomCartManager implements Listener {
 
     static final String COAL_CART_ID = "bmc:coal_cart";
     static final String BLAST_CART_ID = "bmc:blast_furnace_cart";
+    static final String DISPENSER_CART_ID = "bmc:dispenser_cart";
     static final String TAG_COAL = "corelib:coal_cart";
     static final String TAG_BLAST = "corelib:blast_furnace_cart";
+    static final String TAG_DISPENSER = "corelib:dispenser_cart";
 
     /** Faces from which an adjacent hopper (pointing at the cart) may push fuel in — sides + above. */
     private static final BlockFace[] PUSH_FACES = {
@@ -66,25 +68,31 @@ final class CustomCartManager implements Listener {
     };
 
     enum CartType {
-        COAL(COAL_CART_ID, TAG_COAL, Material.COAL_BLOCK),
-        BLAST(BLAST_CART_ID, TAG_BLAST, Material.BLAST_FURNACE);
+        COAL(COAL_CART_ID, TAG_COAL, Material.COAL_BLOCK, "coal", true),
+        BLAST(BLAST_CART_ID, TAG_BLAST, Material.BLAST_FURNACE, "blast", true),
+        DISPENSER(DISPENSER_CART_ID, TAG_DISPENSER, Material.DISPENSER, "dispenser", false);
 
         final String itemId;
         final String tag;
         final Material display;
+        final String pdc;         // entity-PDC marker value
+        final boolean fuelOnly;   // inventory restricted to fuel? (dispenser holds any item)
 
-        CartType(String itemId, String tag, Material display) {
+        CartType(String itemId, String tag, Material display, String pdc, boolean fuelOnly) {
             this.itemId = itemId;
             this.tag = tag;
             this.display = display;
+            this.pdc = pdc;
+            this.fuelOnly = fuelOnly;
         }
     }
 
     static final class CartState {
         final Minecart cart;
         final CartType type;
-        Inventory inv;          // plugin-managed, fuel-only; single source of truth while loaded
+        Inventory inv;          // plugin-managed; single source of truth while loaded
         int burnTicks;          // blast-furnace cart only; 0 = not burning
+        boolean wasOnActivator; // dispenser cart: edge-detect entering a powered activator rail
 
         CartState(Minecart cart, CartType type) {
             this.cart = cart;
@@ -216,8 +224,8 @@ final class CustomCartManager implements Listener {
     /** The cart type of an entity, from its PDC marker, or null if it isn't one of ours. */
     private CartType typeOf(Minecart cart) {
         String t = cart.getPersistentDataContainer().get(cartTypeKey, PersistentDataType.STRING);
-        if ("coal".equals(t)) return CartType.COAL;
-        if ("blast".equals(t)) return CartType.BLAST;
+        if (t == null) return null;
+        for (CartType type : CartType.values()) if (type.pdc.equals(t)) return type;
         return null;
     }
 
@@ -267,8 +275,7 @@ final class CustomCartManager implements Listener {
             m.setPersistent(true);
             m.addScoreboardTag(type.tag);
             m.setDisplayBlockData(Bukkit.createBlockData(type.display));
-            m.getPersistentDataContainer().set(cartTypeKey, PersistentDataType.STRING,
-                type == CartType.COAL ? "coal" : "blast");
+            m.getPersistentDataContainer().set(cartTypeKey, PersistentDataType.STRING, type.pdc);
         });
         CartState state = new CartState(cart, type);
         buildInv(state);
@@ -344,7 +351,39 @@ final class CustomCartManager implements Listener {
             if (!state.cart.isValid()) continue;   // chunk unloading; onEntitiesUnload owns cleanup
             if (feedTick) tryFillFromNeighbors(state);
             if (state.type == CartType.BLAST) tickBlast(state);
+            else if (state.type == CartType.DISPENSER) tickDispenser(state);
         }
+    }
+
+    /** Direction a dispenser cart fires items — fixed UP for now (later: switchable per cart). */
+    private static final BlockFace DISPENSE_DIR = BlockFace.UP;
+
+    /** Fire one item each time the cart rolls onto a powered activator rail (rising edge). */
+    private void tickDispenser(CartState state) {
+        boolean powered = isOnPoweredActivatorRail(state.cart);
+        if (powered && !state.wasOnActivator) fireOne(state);
+        state.wasOnActivator = powered;
+    }
+
+    /** True if the cart sits on a powered activator rail (checks the cart's block, then one below). */
+    private static boolean isOnPoweredActivatorRail(Minecart cart) {
+        Block b = cart.getLocation().getBlock();
+        if (b.getType() != Material.ACTIVATOR_RAIL) b = b.getRelative(0, -1, 0);
+        return b.getType() == Material.ACTIVATOR_RAIL
+            && b.getBlockData() instanceof org.bukkit.block.data.type.RedstoneRail rr && rr.isPowered();
+    }
+
+    /** Launch one item from the cart's inventory in the fire direction (dispenser-style). */
+    private void fireOne(CartState state) {
+        ItemStack one = takeOne(state.inv, m -> true);
+        if (one == null) return;
+        Location loc = state.cart.getLocation().add(0, 0.5, 0);
+        org.bukkit.entity.Item drop = state.cart.getWorld().dropItem(loc, one);
+        drop.setVelocity(new org.bukkit.util.Vector(
+            DISPENSE_DIR.getModX(), DISPENSE_DIR.getModY(), DISPENSE_DIR.getModZ())
+            .multiply(config.dispenseVelocity));
+        drop.setPickupDelay(20);
+        state.cart.getWorld().playSound(loc, org.bukkit.Sound.BLOCK_DISPENSER_DISPENSE, 0.6f, 1.0f);
     }
 
     /**
@@ -360,22 +399,23 @@ final class CustomCartManager implements Listener {
             if (nb.getBlockData() instanceof org.bukkit.block.data.type.Hopper hd
                 && nb.getState() instanceof Container c
                 && nb.getRelative(hd.getFacing()).equals(base)) {
-                pullOneFuel(c.getInventory(), state.inv);
+                pullInto(state, c.getInventory());
             }
         }
 
         Block above = base.getRelative(BlockFace.UP);
         if (!(above.getBlockData() instanceof org.bukkit.block.data.type.Hopper)
             && above.getState() instanceof Container c) {
-            pullOneFuel(c.getInventory(), state.inv);   // cart self-pulls from a container above
+            pullInto(state, c.getInventory());   // cart self-pulls from a container above
         }
     }
 
-    /** Move one whitelisted fuel item from {@code source} into {@code dest}; bounce it back if full. */
-    private void pullOneFuel(Inventory source, Inventory dest) {
-        ItemStack one = takeOneFuel(source);
+    /** Move one accepted item from {@code source} into the cart's inventory; bounce it back if full.
+     *  Fuel carts accept only fuel; the dispenser cart accepts any item. */
+    private void pullInto(CartState state, Inventory source) {
+        ItemStack one = takeOne(source, state.type.fuelOnly ? config::isFuel : m -> true);
         if (one == null) return;
-        Map<Integer, ItemStack> leftover = dest.addItem(one);
+        Map<Integer, ItemStack> leftover = state.inv.addItem(one);
         for (ItemStack l : leftover.values()) source.addItem(l);
     }
 
@@ -478,10 +518,15 @@ final class CustomCartManager implements Listener {
 
     /** Remove and return one whitelisted fuel item (amount 1) from an inventory, or null. */
     private ItemStack takeOneFuel(Inventory inv) {
+        return takeOne(inv, config::isFuel);
+    }
+
+    /** Remove and return one item (amount 1) accepted by {@code accept} from an inventory, or null. */
+    private static ItemStack takeOne(Inventory inv, java.util.function.Predicate<Material> accept) {
         if (inv == null) return null;
         for (int i = 0; i < inv.getSize(); i++) {
             ItemStack stack = inv.getItem(i);
-            if (stack == null || stack.getType().isAir() || !config.isFuel(stack.getType())) continue;
+            if (stack == null || stack.getType().isAir() || !accept.test(stack.getType())) continue;
             ItemStack one = stack.clone();
             one.setAmount(1);
             stack.setAmount(stack.getAmount() - 1);
@@ -493,15 +538,24 @@ final class CustomCartManager implements Listener {
 
     // ── Fuel-only inventory guards ──────────────────────────────────────────
 
-    /** Whether an inventory belongs to a cart we manage (and is thus fuel-only). */
+    /** Whether an inventory belongs to a cart we manage. */
     private boolean isCartInventory(InventoryHolder holder) {
         return holder instanceof CartStorageHolder;
+    }
+
+    /** Whether a cart GUI is fuel-restricted (coal/blast) vs accepts any item (dispenser). Defaults to
+     *  restrictive if the cart isn't tracked, so we never accidentally open a fuel cart to arbitrary items. */
+    private boolean isFuelOnly(InventoryHolder holder) {
+        if (!(holder instanceof CartStorageHolder h)) return true;
+        CartState s = tracked.get(h.cart().getUniqueId());
+        return s == null || s.type.fuelOnly;
     }
 
     @EventHandler(ignoreCancelled = true)
     public void onCartClick(InventoryClickEvent event) {
         Inventory top = event.getView().getTopInventory();
         if (!isCartInventory(top.getHolder())) return;
+        if (!isFuelOnly(top.getHolder())) return;   // dispenser cart: any item allowed
 
         InventoryAction action = event.getAction();
         boolean clickedTop = event.getClickedInventory() == top;
@@ -536,6 +590,7 @@ final class CustomCartManager implements Listener {
     public void onCartDrag(InventoryDragEvent event) {
         Inventory top = event.getView().getTopInventory();
         if (!isCartInventory(top.getHolder())) return;
+        if (!isFuelOnly(top.getHolder())) return;   // dispenser cart: any item allowed
         if (config.isFuel(event.getOldCursor().getType())) return;
         int topSize = top.getSize();
         for (int raw : event.getRawSlots()) {

@@ -11,6 +11,7 @@ namespace: mech
 # ── Named texture registry ─────────────────────────────────────────────────────
 # Reference any of these from texture/item_texture/display_entities as "@alias".
 textures:
+  minecart-lodestone: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjcxOGM2Y2VhOTI3NmM3ODljM2I4N2JjZWM2ZjkxMzI4YThmYmFiOTY2MjZlNWZjZWZmMTFjNGFkNzlkNDA1NSJ9fX0="  # cart-lodestone — mechanism-minecart in-hand item
   chainwheel:        "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTliNzc4MjJhODNmZDBjNWFkMGEyMmE4ZWI5NzViNWIyM2Y1ODhkMTkzMzg4ZGE2MzNmZWZlMzFlMjZlOWU0NiJ9fX0="  # Chain Pulley — in-hand item + spinning wheel display
   chain_hoist_item:  "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDZiNzg5MDZmNDgwOGJhNmJmMmNkYmRmNDJhODZhMDEyYzk2NjVmN2QzYzY4ZTFjMzhkMzZkMmEyZmNhZmNiIn19fQ=="  # chain/chain-hoist-sideways — chain hoist in-hand item
   chain_hoist_head:  "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHBzOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlLzMyMjlmYTZhZDBlMDNmNjYyYmVlMjkwZWVhOGMxOWI4YTgxZDA2MDc1YjRhNTVhZjIxOWE3N2VhOWRhZjEzMjMifX19"  # chain hoist placed head — shared with the Pipes plugin's copper_display_down
@@ -75,7 +76,7 @@ textures:
   compressor_item:   "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvY2Q3Y2Y4NmY5ZjY1MzdkZDVkMThmMDAwNjE4ODdjY2Q1OWM0ZTc5NjY0Y2ViZDY1Y2FhN2ViMGUwMjcwMWViOCJ9fX0="  # dev/press/compressor — press item
   placer_item:       "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvM2M1ZjNjM2Q1ZDdiMWNlMGYzMjA0MGMxNDU0ZGFmODg3OGUxY2MyOTllMDI1YmFkMmU2OTE5ZWJhZTIxZmJiOCJ9fX0="  # block placer — item in hand
   placer_piston:     "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWYyZWZiNDJjYWFlNTYxZmUyZDk3YmY3MTFjY2MwNjQ3ZGU2OTVmZDJkZTIxZDljZGNiMTI5YmEyOTMzY2VkZiJ9fX0="  # block placer — symmetric piston display
-  powered_dispenser: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmEzNzI1YzM4NDc2ODgxOWQzOWI0Y2QyMGU3OWMyOGE0ZGE3MzdjZjlkYTlmYmVlZTgxYjk4MDc2M2I5NzI4YiJ9fX0="  # powered dispenser — in-hand item head (assets/misc/powered-dispenser.png)
+  mechanical_dispenser: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmEzNzI1YzM4NDc2ODgxOWQzOWI0Y2QyMGU3OWMyOGE0ZGE3MzdjZjlkYTlmYmVlZTgxYjk4MDc2M2I5NzI4YiJ9fX0="  # mechanical dispenser — in-hand item head (assets/misc/mechanical-dispenser.png)
   pipe_up_display:   "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHBzOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlL2VlZGQxYjQ4MTAwMjU3MjJiMzBlYmJlMjBmMTI5OGE5MDgyNmM1MzQ1ZGU2MDJmYzE3ZGFlZDFlMDVkZWQ4ZDgifX19"  # eedd1b48 — copper-pipe UP display skin, copied from pipes.yml @copper_display_up (BlockLoader builds the alias map per YAML file, so pipes' aliases can't be referenced from here)
 
   # ── Extendable-piston art (from assets/rotation/piston/, via scripts/upload_skin.py) ──
@@ -1838,17 +1839,17 @@ blocks:
               P: { material: PISTON }
               H: { material: HOPPER }
 
-  # ─── Powered Dispenser ────────────────────────────────────────────────────
+  # ─── Mechanical Dispenser ─────────────────────────────────────────────────
   # A REAL vanilla DISPENSER (physical_material) wearing two glowing red-eye item displays and a
-  # custom "Powered Dispenser" name. Unpowered it IS a vanilla dispenser — GUI, hoppers, item pipes,
+  # custom "Mechanical Dispenser" name. Unpowered it IS a vanilla dispenser — GUI, hoppers, item pipes,
   # and redstone are all vanilla (the Java overlay sets lockContainer(false)). Fed rotation power from
-  # ANY face (omni consumer, PoweredDispenser.java) it launches whatever it dispenses faster and
+  # ANY face (omni consumer, MechanicalDispenser.java) it launches whatever it dispenses faster and
   # straighter along its facing — arrows fly harder, TNT is thrown forward, items sail out — scaling
   # with the network's spare power up to a cap. `placement: { facing: toward_player }` gives it the
   # vanilla dispenser placement rule (face the placer, incl. up/down); the eyes ride the mouth face,
   # rotated to the live facing by the overlay's display resolver.
-  powered_dispenser:
-    name: "&cPowered Dispenser"
+  mechanical_dispenser:
+    name: "&cMechanical Dispenser"
     lore:
       - "&7A dispenser with a rotation-driven"
       - "&7launcher: powered dispenses fly"
@@ -1859,7 +1860,7 @@ blocks:
       - "&fDispensed TNT is thrown forward instead of dropping in place."
       - "&7Wrench: show network debug info."
     physical_material: DISPENSER
-    texture: "@powered_dispenser"
+    texture: "@mechanical_dispenser"
     placement: { facing: toward_player }
     drops: self
     cancel_pistons: true
@@ -1867,7 +1868,7 @@ blocks:
     states:
       idle:
         # Two red item-display "eyes", each exactly 1px × 2px × 1px (1px=1/16 block), pixel-aligned to
-        # the world grid. Authored for FACING=SOUTH (+Z); PoweredDispenser.eyeTransform rotates them onto
+        # the world grid. Authored for FACING=SOUTH (+Z); MechanicalDispenser.eyeTransform rotates them onto
         # the live facing (Faces.rotationForFace maps +Z → outward normal), and for up/down flattens them
         # to either side in X, centered on Z. physical_material item displays render fullbright → glow.
         #   x = ±2.5/16  → 1px-wide eyes in pixel columns 5 and 10 (4px gap), symmetric about centre.
@@ -2369,7 +2370,7 @@ blocks:
   # Item-only (placeable: false): right-clicking a rail spawns a minecart entity.
   # Spawn/tick/assemble/destroy logic lives in MechanismMinecartManager (Java).
   mechanism_minecart:
-    name: "&6Mechanism Minecart"
+    name: "&6Mechanical Minecart"
     lore:
       - "&7Right-click a rail to spawn a cart."
       - "&7Glue blocks to it, then power an"
@@ -2378,7 +2379,7 @@ blocks:
       - "&fRight-click a rail to spawn a cart, then glue blocks onto it with the [Glue Brush](mech:glue_item)."
       - "&fPush it onto a powered activator rail (or right-click the cart) to assemble the glued blocks into a rideable moving structure; another activator rail disassembles it back into blocks."
       - "&7It's an item you use on a rail, not a block you place in the world."
-    item_material: FURNACE_MINECART
+    texture: "@minecart-lodestone"
     item_glint: true
     placeable: false
     recipes:
@@ -2392,7 +2393,7 @@ blocks:
               O: { block: "mech:rotator" }
               M: { material: MINECART }
 
-  # ─── Extendable Piston (arm-only MVP) ───────────────────────────────────
+  # ─── Mechanical Piston (arm-only MVP) ───────────────────────────────────
   # A fixed piston_core draws rotational power from any adjacent shaft/gear (omni consumer). Along its
   # pole line [poles][CORE][poles][HEAD], the whole rod slides by spin direction: CW extends, CCW
   # retracts. Behaviour lives in ExtendablePistonManager.java. Placeholder textures for now.
@@ -2404,7 +2405,7 @@ blocks:
       - "&7Rotation-powered piston base"
       - "&7Spin CW to extend, CCW to retract"
     catalog_notes:
-      - "&fThe powered base of an extendable piston. Feed it rotational power from any side."
+      - "&fThe powered base of a mechanical piston. Feed it rotational power from any side."
       - "&7Build a line of piston poles through it, capped by a piston head; reach = poles behind the core."
       - "&7Placement decides 'forward' — the direction it pushes."
     # Full-block cube display (2x head = 1 block on all axes), like the windmill hub. core-up for the

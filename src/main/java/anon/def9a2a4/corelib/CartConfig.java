@@ -38,6 +38,12 @@ final class CartConfig {
     double maxLinkDistance = 3.0d;
     /** Engine fuel level (ticks) below which a tender tops it up. */
     int feedThresholdTicks = 600;
+    /** Cruise speed a controller rail sets at full redstone signal (blocks/tick); scales with power/15. */
+    double controllerMaxSpeed = 1.0d;
+    /** Speed a train sheds per tick when braking toward a lower controller cap (blocks/tick²). */
+    double brakeRate = 0.04d;
+    /** Launch speed of an item fired by a dispenser minecart (blocks/tick). */
+    double dispenseVelocity = 0.3d;
 
     /** Emit dynamic light (via the optional DynLight plugin) from a lit blast-furnace cart. */
     boolean dynamicLights = true;
@@ -77,6 +83,9 @@ final class CartConfig {
             rollingDrag = carts.getDouble("rolling-drag", rollingDrag);
             maxLinkDistance = carts.getDouble("max-link-distance", maxLinkDistance);
             feedThresholdTicks = carts.getInt("feed-threshold-ticks", feedThresholdTicks);
+            controllerMaxSpeed = carts.getDouble("controller-max-speed", controllerMaxSpeed);
+            brakeRate = carts.getDouble("brake-rate", brakeRate);
+            dispenseVelocity = carts.getDouble("dispense-velocity", dispenseVelocity);
         }
 
         dynamicLights = yaml.getBoolean("dynamic-lights", dynamicLights);

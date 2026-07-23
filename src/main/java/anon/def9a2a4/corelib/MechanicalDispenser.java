@@ -32,10 +32,10 @@ import org.joml.AxisAngle4f;
 import org.joml.Vector3f;
 
 /**
- * Powered Dispenser — a real vanilla {@code DISPENSER} that becomes a launcher when fed rotation power.
+ * Mechanical Dispenser — a real vanilla {@code DISPENSER} that becomes a launcher when fed rotation power.
  *
  * <p>Physically it is a {@code DISPENSER} (identity/state in its tile PDC), wearing two glowing red-eye
- * item displays and a "Powered Dispenser" custom name. Unpowered it is a plain dispenser: the overlay
+ * item displays and a "Mechanical Dispenser" custom name. Unpowered it is a plain dispenser: the overlay
  * sets {@code lockContainer(false)} so the vanilla GUI, hoppers, and item pipes all work, and the boost
  * handlers early-return, leaving vanilla dispensing untouched.
  *
@@ -51,10 +51,10 @@ import org.joml.Vector3f;
  * projectiles (arrows/snowballs/eggs/potions/xp bottles), TNT, and fireballs. Fireworks are left alone
  * (self-propelled); fireballs/wind-charges are re-aimed (acceleration-driven) plus given a speed kick.
  */
-final class PoweredDispenser implements Listener {
+final class MechanicalDispenser implements Listener {
 
-    static final String BLOCK_ID = "mech:powered_dispenser";
-    private static final String BOOSTED_META = "mech_powered_dispenser_boosted";
+    static final String BLOCK_ID = "mech:mechanical_dispenser";
+    private static final String BOOSTED_META = "mech_mechanical_dispenser_boosted";
 
     private final CustomBlockRegistry registry;
     private final RotationNetwork network;
@@ -62,16 +62,16 @@ final class PoweredDispenser implements Listener {
     private final int powerCap;
     private final double minBoost, boostPerPower, maxBoost, tntMaxBoost, minStraightness;
 
-    PoweredDispenser(CustomBlockRegistry registry, RotationNetwork network, RotationConfig config) {
+    MechanicalDispenser(CustomBlockRegistry registry, RotationNetwork network, RotationConfig config) {
         this.registry = registry;
         this.network = network;
-        this.power = config.getPower("powered_dispenser", 1);
-        this.powerCap = Math.max(1, config.poweredDispenserPowerCap);
-        this.minBoost = config.poweredDispenserMinBoost;
-        this.boostPerPower = config.poweredDispenserBoostPerPower;
-        this.maxBoost = config.poweredDispenserMaxBoost;
-        this.tntMaxBoost = config.poweredDispenserTntMaxBoost;
-        this.minStraightness = config.poweredDispenserMinStraightness;
+        this.power = config.getPower("mechanical_dispenser", 1);
+        this.powerCap = Math.max(1, config.mechanicalDispenserPowerCap);
+        this.minBoost = config.mechanicalDispenserMinBoost;
+        this.boostPerPower = config.mechanicalDispenserBoostPerPower;
+        this.maxBoost = config.mechanicalDispenserMaxBoost;
+        this.tntMaxBoost = config.mechanicalDispenserTntMaxBoost;
+        this.minStraightness = config.mechanicalDispenserMinStraightness;
     }
 
     void register() {
@@ -122,7 +122,7 @@ final class PoweredDispenser implements Listener {
 
     /** Initial title at placement. */
     private static void nameDispenser(Block b) {
-        setName(b, Component.text("Powered Dispenser"));
+        setName(b, Component.text("Mechanical Dispenser"));
     }
 
     private static void setName(Block b, Component name) {
@@ -132,14 +132,14 @@ final class PoweredDispenser implements Listener {
         }
     }
 
-    /** "Powered Dispenser — ⚡N" (N = network power driving the boost) when powered, else "no power". */
+    /** "Mechanical Dispenser — ⚡N" (N = network power driving the boost) when powered, else "no power". */
     private Component liveName(Block b) {
         var key = CustomBlockRegistry.LocationKey.of(b);
         int[] stats = network.getNetworkStats(key);
         if (stats != null && network.isPowered(key)) {
-            return Component.text("Powered Dispenser — ⚡" + Math.min(powerCap, Math.max(0, stats[0])));
+            return Component.text("Mechanical Dispenser — ⚡" + Math.min(powerCap, Math.max(0, stats[0])));
         }
-        return Component.text("Powered Dispenser — no power");
+        return Component.text("Mechanical Dispenser — no power");
     }
 
     /** Break/explosion: spill the dispenser's contents before the framework wipes the inventory. */

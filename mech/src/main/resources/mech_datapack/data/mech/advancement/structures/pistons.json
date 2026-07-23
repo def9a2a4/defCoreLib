@@ -19,7 +19,7 @@
       "color": "yellow"
     },
     "description": {
-      "text": "Extend an Extendable Piston to push a structure out and back.",
+      "text": "Extend a Mechanical Piston to push a structure out and back.",
       "color": "gray"
     },
     "frame": "goal",

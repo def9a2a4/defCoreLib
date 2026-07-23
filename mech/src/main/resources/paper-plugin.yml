@@ -4,7 +4,7 @@ bootstrapper: anon.def9a2a4.mech.MechBootstrap
 version: ${version}
 api-version: "1.21"
 author: def9a2a4
-description: Mechanism - rotation mechanisms, glue, mechanism minecarts, and advancements (content lives in DefCoreLib)
+description: Mechanism - rotation mechanisms, glue, mechanical minecarts, and advancements (content lives in DefCoreLib)
 dependencies:
   server:
     DefCoreLib:

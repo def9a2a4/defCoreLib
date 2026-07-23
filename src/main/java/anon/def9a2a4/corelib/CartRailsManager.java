@@ -41,17 +41,45 @@ final class CartRailsManager implements Listener {
 
     static final String JUNCTION_ID = "bmc:junction";
     static final String DESTRUCTOR_ID = "bmc:destructor_rail";
+    static final String CONTROLLER_ID = "bmc:controller_rail";
     private static final String TAG_MECHANISM = "corelib:mechanism_minecart";
 
     private final CustomBlockRegistry registry;
     private final CustomCartManager carts;
     private final CartTrainManager trains;
+    private final CartConfig config;
 
     CartRailsManager(JavaPlugin plugin, CustomBlockRegistry registry,
-                     CustomCartManager carts, CartTrainManager trains) {
+                     CustomCartManager carts, CartTrainManager trains, CartConfig config) {
         this.registry = registry;
         this.carts = carts;
         this.trains = trains;
+        this.config = config;
+    }
+
+    /** Overlay the controller rail's display so its arrow orients along the track it's placed on. Called
+     *  once after the bmc blocks load (the type is resolvable). Re-derived live from the rail shape, so no
+     *  facing needs to be persisted. */
+    void installOverlays() {
+        CustomHeadBlock controller = registry.getType(CONTROLLER_ID);
+        if (controller == null) return;
+        registry.register(controller.toBuilder()
+            .displayTransformResolver((b, state, cfg, idx) -> orientArrow(b, cfg))
+            .build());
+    }
+
+    /** Orient the controller arrow along the rail's straight axis (2-way; a bare rail can't persist a
+     *  chosen 4-way facing). Keeps the authored translation + scale, replaces only the rotation. */
+    private org.bukkit.util.Transformation orientArrow(Block b, CustomHeadBlock.DisplayEntityConfig cfg) {
+        org.bukkit.util.Transformation base = cfg.transform();
+        BlockFace face = BlockFace.SOUTH;
+        if (RailPathWalker.railData(b) instanceof Rail rail) {
+            BlockFace[] faces = RailPathWalker.connectedFaces(rail.getShape());
+            if (faces.length > 0) face = faces[0];
+        }
+        return new org.bukkit.util.Transformation(
+            base.getTranslation(), Faces.rotationForFace(face), base.getScale(),
+            new org.joml.AxisAngle4f(0f, 0f, 0f, 1f));
     }
 
     // ── Identity ────────────────────────────────────────────────────────────
@@ -62,6 +90,17 @@ final class CartRailsManager implements Listener {
 
     boolean isDestructor(Block b) {
         return b != null && b.getType() == Material.DETECTOR_RAIL && isType(b, DESTRUCTOR_ID);
+    }
+
+    boolean isController(Block b) {
+        return b != null && b.getType() == Material.POWERED_RAIL && isType(b, CONTROLLER_ID);
+    }
+
+    /** Target cruise speed a controller rail sets for a fueled blast cart, from its redstone signal
+     *  strength (blocks/tick). {@code -1} = no signal → release any prior target (resume full speed). */
+    double controllerTarget(Block b) {
+        int power = b.getBlockPower();
+        return power == 0 ? -1.0 : (power / 15.0) * config.controllerMaxSpeed;
     }
 
     private boolean isType(Block b, String fullId) {
