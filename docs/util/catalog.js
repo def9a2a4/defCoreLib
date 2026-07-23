@@ -4,7 +4,7 @@ import {
 import { thumbnailDataURL, placedVariantBlocks } from './placed3d.js';
 
 const SLAB_NAMESPACE = 'verticalslabs';
-const NS_LABELS = { mech: 'Mechanism', demo: 'Demo', corelib: 'Core' };
+const NS_LABELS = { mech: 'Mechanism', demo: 'Demo', corelib: 'Core', bmc: 'BetterMinecarts' };
 const NS_PRIORITY = ['mech', 'corelib', 'demo'];   // shown first, in this order; others follow alphabetically
 
 // Non-slab namespaces in display order: priority ones first, then the rest alphabetically.

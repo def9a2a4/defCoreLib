@@ -1,5 +1,17 @@
 mech v0.3.1
 
+NEW BLOCK: THROTTLE LEVER
+- A hand-set analog redstone source. Right-click to step the output
+  up by 1, sneak-right-click to step it down (0-15); it powers
+  adjacent redstone directly at that level (weighted-plate rules --
+  run dust or lamps against it).
+- Not a pressure plate: stepping on it never changes the signal, and
+  the vanilla step and click are suppressed. Floor placement only.
+- The spruce-fence handle tilts to show the current strength; the
+  setting survives breaks, reloads, and restarts.
+- Craft: a lever over an iron weighted pressure plate over a redstone
+  block.
+
 FLUID MACHINES (NEW)
 - Copper Water Pump: floor-mounted machine that moves one bucket per
   cycle from below to a tank, cauldron, or pipe chain above. Wrench to
