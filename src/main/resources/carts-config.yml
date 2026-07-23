@@ -30,3 +30,8 @@ carts:
   max-link-distance: 3.0
   # Engine fuel level (ticks) below which a tender in the same train tops it up.
   feed-threshold-ticks: 600
+
+# Emit dynamic light from a lit blast-furnace cart (level 5, only while burning) via the optional
+# DynLight plugin (https://github.com/def9a2a4/dynlight). Purely a scoreboard-tag integration — no
+# dependency; inert when DynLight is absent. Set false to never tag carts.
+dynamic-lights: true

@@ -8,6 +8,13 @@
 
 namespace: bmc
 
+# Player-head skins (base64), produced from assets/minecarts/*.png via scripts/upload_skin.py.
+textures:
+  minecart-coal:            "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODhkNGZmOTBhMWFiMGRlZTI3NTAzMWNkMTFlYjY4Y2MzMDE0NTI2NDE3ODM1NTQ1MjMzNjAwODA1NjFkM2RjOCJ9fX0="  # cart-coal — coal-cart in-hand item
+  minecart-blast-furnace:   "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTAxYTg3NWNmMDc2OTFlNzNhZTRlOWViNGJkZDdiMTI5MjQzY2YxNDUyN2RlNDY0ZDU3MTM2YjU4NTk5NDk2MiJ9fX0="  # cart-blast-furnace — blast-cart in-hand item
+  rail-junction:            "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzg5ZTM5NzFjYjYyMDhmYTM5MWU5MTRiZGFkNjEwYzg0NmY4MGRmODVjMjE3ZWRmMjk4ZjAxY2ZlOTdhMGE1ZiJ9fX0="  # rail-junction — junction item + world shell
+  rail-destructor:          "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvM2FkYmYwODNmZjExN2IwODc5MGIzZDUxZWMxYmI2ZjYzMWQ3MzhjZTI0NTlmZTczYzY0Njc0ZmZlN2ZkYzQzZCJ9fX0="  # rail-destructor — destructor item + world shell
+
 blocks:
   coal_cart:
     name: "&6Coal Minecart"
@@ -19,7 +26,7 @@ blocks:
       - "&fRight-click a rail to spawn a coal tender: a minecart with a 5-slot, fuel-only inventory rendered as a block of coal."
       - "&fCouple it into a train and it automatically feeds any furnace or blast-furnace cart in that train."
       - "&7Hoppers above or beside the track can refill it as it passes."
-    item_material: CHEST_MINECART
+    texture: "@minecart-coal"
     item_glint: true
     placeable: false
     storage: { layout: DROPPER }
@@ -40,7 +47,7 @@ blocks:
     catalog_notes:
       - "&fRight-click a rail to spawn a blast-furnace locomotive: like a furnace minecart, but with a 5-slot, fuel-only inventory and a far higher configurable top speed."
       - "&fPowers a whole train from anywhere in the consist."
-    item_material: FURNACE_MINECART
+    texture: "@minecart-blast-furnace"
     item_glint: true
     placeable: false
     storage: { layout: HOPPER }
@@ -53,7 +60,8 @@ blocks:
 
   # ── Rails ──────────────────────────────────────────────────────────────────
   # Placed as real rails (base_block); identity + persistence come from CoreLib's bare-block chunk index,
-  # behaviour from CartRailsManager. The item icon is a vanilla rail (item_material); no custom texture.
+  # behaviour from CartRailsManager. The item + a world display-entity "shell" both use a custom head skin
+  # (the vanilla rail underneath stays plain). The shell transform is a tune knob — see the note below.
 
   junction:
     name: "&eMinecart Junction"
@@ -63,9 +71,18 @@ blocks:
     catalog_notes:
       - "&fPlace where two straight tracks cross. A cart crossing it continues straight in the direction it was already travelling, so north–south and east–west lines can intersect without turning carts."
     base_block: RAIL
-    item_material: RAIL
+    texture: "@rail-junction"
     item_glint: true
     drops: self
+    # Head shell over the rail. translation is from block-centre (DisplayUtil adds 0.5). X/Z are 1/17
+    # narrower than Y (1.999×16/17) to shed the head's hat inflation; translation.y is a tune knob.
+    default_state: idle
+    states:
+      idle:
+        display_entities:
+          - texture: "@rail-junction"
+            tag: shell
+            transform: { translation: [0, -0.45875, 0], scale: [1.88141, 1.999, 1.88141] }
     recipes:
       craft:
         shaped:
@@ -89,9 +106,16 @@ blocks:
       - "&fA detector rail that recycles a passing minecart: it ejects any riders, then drops the cart item, everything in its inventory, and any coupling chains into the barrel / dropper / dispenser directly below — or onto the ground if there is no container."
       - "&7Mechanism minecarts are exempt and pass over unharmed."
     base_block: DETECTOR_RAIL
-    item_material: DETECTOR_RAIL
+    texture: "@rail-destructor"
     item_glint: true
     drops: self
+    default_state: idle
+    states:
+      idle:
+        display_entities:
+          - texture: "@rail-destructor"
+            tag: shell
+            transform: { translation: [0, -0.45875, 0], scale: [1.88141, 1.999, 1.88141] }
     recipes:
       craft:
         shapeless:

@@ -41,7 +41,6 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
     private CustomCartManager customCartManager;
     private CartTrainManager cartTrainManager;
     private CartRailsManager cartRailsManager;
-    private CartSpike cartSpike;   // M3a throwaway movement-spike harness (/defcorelib spike)
     private GlueManager glueManager;
     private GlueAuthoring glueAuthoring;
     private ShowcaseBuilder showcaseBuilder;
@@ -123,6 +122,7 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
                 rotConfig.load(configStream, getLogger());
             }
         } catch (IOException ignored) {}
+        mechanismRegistry.setDynamicLights(rotConfig.dynamicLights);
         rotationNetwork = new RotationNetwork(this, registry);
         rotationNetwork.setMaxNetworkSize(rotConfig.maxNetworkSize);
         fuelManager = new EngineFuelManager(rotConfig.fuelValues);
@@ -241,9 +241,6 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
             mechanismMinecartManager.shutdown();
         }
         disableCarts();
-        if (cartSpike != null) {
-            cartSpike.stop();
-        }
         if (mechanismRegistry != null) {
             mechanismRegistry.shutdown();
         }
@@ -1630,7 +1627,7 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!command.getName().equalsIgnoreCase("defcorelib")) return false;
         if (args.length == 0) {
-            sender.sendMessage(Component.text("Usage: /defcorelib <give|give_demo|give_demo_rotation|list|colliders|reloadbanners|cleanorphans|refreshdisplays|spike>", NamedTextColor.YELLOW));
+            sender.sendMessage(Component.text("Usage: /defcorelib <give|give_demo|give_demo_rotation|list|colliders|reloadbanners|cleanorphans|refreshdisplays>", NamedTextColor.YELLOW));
             return true;
         }
 
@@ -1857,33 +1854,6 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
                     glueManager.setStructure(anchor, planks);
                     sender.sendMessage(Component.text("Froze " + planks.size()
                         + " connected oak planks as glue", NamedTextColor.GREEN));
-                }
-            }
-            case "spike" -> {
-                if (!(sender instanceof Player player)) {
-                    sender.sendMessage(Component.text("Must be a player", NamedTextColor.RED));
-                    return true;
-                }
-                if (cartSpike == null) cartSpike = new CartSpike(this);
-                if (args.length >= 2 && args[1].equalsIgnoreCase("stop")) {
-                    cartSpike.stop();
-                    sender.sendMessage(Component.text("Spike stopped.", NamedTextColor.YELLOW));
-                    return true;
-                }
-                double speed = 1.0;
-                if (args.length >= 2) {
-                    try {
-                        speed = Math.max(0.05, Math.min(4.0, Double.parseDouble(args[1])));
-                    } catch (NumberFormatException e) {
-                        sender.sendMessage(Component.text("Usage: /defcorelib spike <speed b/t | stop>",
-                            NamedTextColor.YELLOW));
-                        return true;
-                    }
-                }
-                if (cartSpike.isRunning()) {
-                    cartSpike.setSpeed(speed);
-                } else {
-                    cartSpike.start(player, speed);
                 }
             }
             default -> sender.sendMessage(Component.text("Unknown subcommand: " + args[0], NamedTextColor.RED));

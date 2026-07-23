@@ -39,6 +39,9 @@ final class CartConfig {
     /** Engine fuel level (ticks) below which a tender tops it up. */
     int feedThresholdTicks = 600;
 
+    /** Emit dynamic light (via the optional DynLight plugin) from a lit blast-furnace cart. */
+    boolean dynamicLights = true;
+
     CartConfig() {
         // Baked-in defaults (vanilla furnace burn times), overridden by the file if present.
         fuelBurnTicks.put(Material.COAL, 1600);
@@ -75,6 +78,8 @@ final class CartConfig {
             maxLinkDistance = carts.getDouble("max-link-distance", maxLinkDistance);
             feedThresholdTicks = carts.getInt("feed-threshold-ticks", feedThresholdTicks);
         }
+
+        dynamicLights = yaml.getBoolean("dynamic-lights", dynamicLights);
     }
 
     /** Whether a material may enter a cart's fuel-only inventory. */

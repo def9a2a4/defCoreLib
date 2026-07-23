@@ -3,6 +3,12 @@ max-network-size: 256
 # Hitting the cap logs a warning + shows smoke at the anchor (no longer silent).
 max-structure-size: 256
 
+# Emit dynamic light from light-emitting blocks carried by a moving mechanism (torch, glowstone,
+# sea lantern, …), using each block's vanilla light level, via the optional DynLight plugin
+# (https://github.com/def9a2a4/dynlight). Purely a scoreboard-tag integration — no dependency;
+# inert when DynLight is absent. Set false to never tag mechanism blocks.
+dynamic-lights: true
+
 # "Glue": author-controlled block selection for doors/rotators (replaces same-material flood-fill).
 glue:
   max-size: 256           # cap on a glued selection (defaults to max-structure-size if omitted)

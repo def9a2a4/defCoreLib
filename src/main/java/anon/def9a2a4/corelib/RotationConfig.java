@@ -13,6 +13,7 @@ final class RotationConfig {
 
     int maxNetworkSize = 256;
     int maxStructureSize = 256; // default cap for glued selections; overridable via glue.max-size
+    boolean dynamicLights = true; // tag light-emitting mechanism blocks for the optional DynLight plugin
     int glueMaxSize = 256;      // cap on a glued selection; defaults to maxStructureSize
     int glueOutlineInterval = 5;
     int glueSessionTimeout = 2400;
@@ -102,6 +103,7 @@ final class RotationConfig {
 
         maxNetworkSize = yaml.getInt("max-network-size", maxNetworkSize);
         maxStructureSize = yaml.getInt("max-structure-size", maxStructureSize);
+        dynamicLights = yaml.getBoolean("dynamic-lights", dynamicLights);
         glueMaxSize = maxStructureSize; // default; overridden by glue.max-size below
 
         ConfigurationSection glue = yaml.getConfigurationSection("glue");

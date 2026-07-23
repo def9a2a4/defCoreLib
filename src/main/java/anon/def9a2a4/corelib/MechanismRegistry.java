@@ -38,6 +38,7 @@ public class MechanismRegistry {
 
     private @Nullable BukkitTask tickTask;
     private boolean colliderGlowEnabled = false;
+    private boolean dynamicLightsEnabled = true; // tag light-emitting blocks for the optional DynLight plugin
     private boolean scaleWarned = false; // one-time guard for the missing-scale-attribute warning
 
     // Powers rotation parts riding assembled mechanisms (built on assemble, ticked per mech,
@@ -375,11 +376,46 @@ public class MechanismRegistry {
         List<List<Display>> bannerDisplaysPerBlock = new ArrayList<>();
         List<ColliderPair> colliders = new ArrayList<>();
 
+        // Pre-compute DynLight tags: map each light-emitting block (by vanilla light level) to its
+        // primary display, skipping blocks fully enclosed by opaque neighbours (interior lights that
+        // can't shine out). Mirrors BlockShips' ship-light pre-compute (ShipInstance#400-431). The tag
+        // is applied inside the display spawn below because DynLight registers on EntitySpawnEvent.
+        // Ghost blocks are appearance-only snapshots that may overlap real cells, so they're excluded.
+        Map<Integer, Integer> lightByBlock = new HashMap<>();
+        if (dynamicLightsEnabled) {
+            int[][] neighbours = {{1,0,0},{-1,0,0},{0,1,0},{0,-1,0},{0,0,1},{0,0,-1}};
+            Map<String, Integer> posIndex = new HashMap<>();
+            for (int i = 0; i < blockData.size(); i++) {
+                MechanismBlockData mb = blockData.get(i);
+                if (mb.ghost) continue;
+                Vector3f t = mb.localTransform.getTranslation(new Vector3f());
+                posIndex.put(Math.round(t.x) + "," + Math.round(t.y) + "," + Math.round(t.z), i);
+            }
+            for (int i = 0; i < blockData.size(); i++) {
+                MechanismBlockData mb = blockData.get(i);
+                if (mb.ghost) continue;
+                int level = mb.blockData.getLightEmission();
+                if (level <= 0) continue;
+                Vector3f t = mb.localTransform.getTranslation(new Vector3f());
+                int x = Math.round(t.x), y = Math.round(t.y), z = Math.round(t.z);
+                boolean allOpaque = true;
+                for (int[] d : neighbours) {
+                    Integer ni = posIndex.get((x + d[0]) + "," + (y + d[1]) + "," + (z + d[2]));
+                    if (ni == null || !blockData.get(ni).blockData.getMaterial().isOccluding()) {
+                        allOpaque = false;
+                        break;
+                    }
+                }
+                if (!allOpaque) lightByBlock.put(i, level);
+            }
+        }
+
         for (int i = 0; i < blockData.size(); i++) {
             MechanismBlockData mb = blockData.get(i);
             List<Display> group = new ArrayList<>();
 
-            // Primary display
+            // Primary display. Carries the DynLight tag when this block emits light (see lightByBlock).
+            int dynLight = lightByBlock.getOrDefault(i, 0);
             Display primary;
             if (mb.customTypeId != null) {
                 CustomHeadBlock chbType = registry.getType(mb.customTypeId);
@@ -389,9 +425,9 @@ public class MechanismRegistry {
                 ItemStack headItem = tex != null
                     ? HeadUtil.createHead(tex, 1)
                     : new ItemStack(Material.PLAYER_HEAD);
-                primary = spawnMechDisplay(spawnLoc, headItem, mechId, i, "display");
+                primary = spawnMechDisplay(spawnLoc, headItem, mechId, i, "display", dynLight);
             } else {
-                primary = spawnMechBlockDisplay(spawnLoc, mb.blockData, mechId, i, "display");
+                primary = spawnMechBlockDisplay(spawnLoc, mb.blockData, mechId, i, "display", dynLight);
             }
             group.add(primary);
 
@@ -700,6 +736,11 @@ public class MechanismRegistry {
         return colliderGlowEnabled;
     }
 
+    /** Enable/disable tagging light-emitting mechanism blocks for the DynLight companion. */
+    void setDynamicLights(boolean enabled) {
+        this.dynamicLightsEnabled = enabled;
+    }
+
     /**
      * Remove orphaned mechanism entities from a chunk. These are entities tagged
      * corelib:mech:* from previous sessions where the mechanism was not properly
@@ -862,24 +903,36 @@ public class MechanismRegistry {
 
     private ItemDisplay spawnMechDisplay(Location loc, ItemStack item,
                                          UUID mechId, int blockIdx, String role) {
+        return spawnMechDisplay(loc, item, mechId, blockIdx, role, 0);
+    }
+
+    private ItemDisplay spawnMechDisplay(Location loc, ItemStack item,
+                                         UUID mechId, int blockIdx, String role, int dynLight) {
         return loc.getWorld().spawn(loc, ItemDisplay.class, d -> {
             d.setItemStack(item);
             d.setTeleportDuration(0); d.setShadowRadius(0f); d.setShadowStrength(0f);
             d.setViewRange(64f); d.setPersistent(true); d.setGravity(false);
             d.setInterpolationDuration(2);
             d.addScoreboardTag("corelib:mech:" + mechId + ":" + blockIdx + ":" + role);
+            if (dynLight > 0) d.addScoreboardTag(DynLightTags.tag(dynLight));
         });
     }
 
     /** Package-private: also used by {@link BasicMechanism#appendGhost} to add a block mid-flight. */
     BlockDisplay spawnMechBlockDisplay(Location loc, BlockData data,
                                                UUID mechId, int blockIdx, String role) {
+        return spawnMechBlockDisplay(loc, data, mechId, blockIdx, role, 0);
+    }
+
+    private BlockDisplay spawnMechBlockDisplay(Location loc, BlockData data,
+                                               UUID mechId, int blockIdx, String role, int dynLight) {
         return loc.getWorld().spawn(loc, BlockDisplay.class, d -> {
             d.setBlock(data);
             d.setTeleportDuration(0); d.setShadowRadius(0f); d.setShadowStrength(0f);
             d.setViewRange(64f); d.setPersistent(true); d.setGravity(false);
             d.setInterpolationDuration(2);
             d.addScoreboardTag("corelib:mech:" + mechId + ":" + blockIdx + ":" + role);
+            if (dynLight > 0) d.addScoreboardTag(DynLightTags.tag(dynLight));
         });
     }
 }

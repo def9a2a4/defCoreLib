@@ -3,12 +3,14 @@ package anon.def9a2a4.corelib;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.GameMode;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Container;
+import org.bukkit.entity.BlockDisplay;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Minecart;
 import org.bukkit.entity.minecart.RideableMinecart;
@@ -98,6 +100,12 @@ final class CustomCartManager implements Listener {
     private final NamespacedKey cartInvKey;     // entity PDC: serialized inventory contents
 
     private final Map<UUID, CartState> tracked = new HashMap<>();
+    /** Per-burning-blast-cart DynLight marker: an invisible, non-persistent BlockDisplay tagged
+     *  {@code dynlight:5} that follows the cart while lit. Spawning/removing it toggles the light,
+     *  since DynLight detects the tag on entity spawn (not on live tag edits). */
+    private final Map<UUID, BlockDisplay> burnLight = new HashMap<>();
+    /** Light level a lit blast-furnace cart emits (like a vanilla lit furnace, dimmer). */
+    private static final int BLAST_LIGHT_LEVEL = 5;
     private BukkitTask tickTask;
     private long ticks;
     private CartTrainManager trainManager;   // notified when a drivable engine spawns
@@ -133,6 +141,10 @@ final class CustomCartManager implements Listener {
         for (CartState state : tracked.values()) {
             persist(state);
         }
+        for (BlockDisplay marker : burnLight.values()) {
+            if (marker.isValid()) marker.remove();
+        }
+        burnLight.clear();
         tracked.clear();
     }
 
@@ -158,6 +170,8 @@ final class CustomCartManager implements Listener {
             if (!(entity instanceof Minecart)) continue;
             CartState state = tracked.remove(entity.getUniqueId());
             if (state != null) persist(state);
+            // Drop tracking of the marker too; it is non-persistent and despawns with the chunk.
+            burnLight.remove(entity.getUniqueId());
         }
     }
 
@@ -214,6 +228,7 @@ final class CustomCartManager implements Listener {
     java.util.List<ItemStack> collectCartDrops(Minecart cart) {
         CartState state = tracked.remove(cart.getUniqueId());
         if (state == null) return null;
+        removeBurnLight(cart.getUniqueId());   // drop the lit-blast light with the cart
         java.util.List<ItemStack> out = new ArrayList<>();
         CustomHeadBlock itemType = registry.getType(state.type.itemId);
         if (itemType != null) out.add(itemType.createItem(1));
@@ -320,7 +335,7 @@ final class CustomCartManager implements Listener {
         Iterator<Map.Entry<UUID, CartState>> it = tracked.entrySet().iterator();
         while (it.hasNext()) {
             CartState state = it.next().getValue();
-            if (state.cart.isDead()) { it.remove(); continue; }
+            if (state.cart.isDead()) { removeBurnLight(state.cart.getUniqueId()); it.remove(); continue; }
             if (!state.cart.isValid()) continue;   // chunk unloading; onEntitiesUnload owns cleanup
             if (feedTick) tryFillFromNeighbors(state);
             if (state.type == CartType.BLAST) tickBlast(state);
@@ -380,6 +395,40 @@ final class CustomCartManager implements Listener {
                     cart.getLocation().add(0, 0.9, 0), 1, 0.06, 0.02, 0.06, 0.012);
             }
         }
+
+        updateBurnLight(state);
+    }
+
+    // ── DynLight: lit blast cart glows via an optional companion plugin (tag-only, no dependency) ──
+
+    /** Sync a blast cart's DynLight marker with its burn state + position: spawn/follow while lit,
+     *  remove when it goes out. No-op (and removes any marker) when dynamic lights are disabled. */
+    private void updateBurnLight(CartState state) {
+        UUID id = state.cart.getUniqueId();
+        if (config.dynamicLights && state.burnTicks > 0) {
+            BlockDisplay marker = burnLight.get(id);
+            Location loc = state.cart.getLocation();
+            if (marker == null || !marker.isValid()) {
+                marker = state.cart.getWorld().spawn(loc, BlockDisplay.class, d -> {
+                    d.setBlock(Bukkit.createBlockData(Material.AIR));
+                    d.setPersistent(false);   // not saved to disk; removed on chunk unload → no orphans
+                    d.setGravity(false);
+                    d.setViewRange(64f);
+                    d.addScoreboardTag(DynLightTags.tag(BLAST_LIGHT_LEVEL)); // set at spawn so DynLight detects it
+                });
+                burnLight.put(id, marker);
+            } else {
+                marker.teleport(loc);
+            }
+        } else {
+            removeBurnLight(id);
+        }
+    }
+
+    /** Remove a cart's DynLight marker (→ EntityRemoveEvent → DynLight drops the light). */
+    private void removeBurnLight(UUID id) {
+        BlockDisplay marker = burnLight.remove(id);
+        if (marker != null && marker.isValid()) marker.remove();
     }
 
     // ── Accessors for CartTrainManager (engine power + tender fuel) ──────────
@@ -496,6 +545,7 @@ final class CustomCartManager implements Listener {
         if (!(event.getVehicle() instanceof Minecart cart)) return;
         CartState state = tracked.remove(cart.getUniqueId());
         if (state == null) return;
+        removeBurnLight(cart.getUniqueId());   // drop the lit-blast light with the cart
 
         event.setCancelled(true);
         World world = cart.getWorld();
