@@ -67,8 +67,6 @@ final class CartTrainManager implements Listener {
     // → smooth position) with the transform matrix SNAPPED (interpolationDuration 0). No carrier (MC-261202
     // bobs passengers of a teleported display) and no transform interpolation (a teleport would restart it
     // from the chain's identity/vertical pose → flash). See updateChainDisplays.
-    private static final double CHAIN_Y = 0.3d;     // chain height above the cart location (tune in-game)
-    private static final double CHAIN_LEAD = 0.5d;  // forward lead (× speed) matching the carts' client dead-reckon so the chain isn't drawn trailing (tune in-game)
     private static final double HALF_CART = 0.5d;   // half a minecart length — bridge the adjacent ends, not centre-to-centre
     private static final float CHAIN_WIDTH = 1.0f;  // natural chain-model thickness (ChainPulley convention)
 
@@ -422,12 +420,21 @@ final class CartTrainManager implements Listener {
             CartTrain train = new CartTrain();
             train.order = orderComponent(comp);
             // Inherit speed (momentum) but not moving/leaderState: a rebuilt train re-establishes its
-            // heading next tick from the carts' retained velocity hints (drive → establishHeading), so a
-            // train crossing a chunk border resumes seamlessly rather than NPE-ing on a null leaderState.
+            // heading next tick from the carts' retained velocity hints (drive → establishHeading). Only
+            // keep the inherited speed if the component is genuinely MID-TRAVEL — some member still carries
+            // a live horizontal velocity (place() set it to heading*speed last tick, e.g. a train crossing a
+            // chunk border). A component at rest starts at 0 so a freshly-pushed engine ramps up instead of
+            // snapping to a stale lingering speed. On a merge of two moving trains, take the most-restrictive
+            // (lowest) old speed so the result is deterministic rather than order-dependent.
+            boolean moving = false;
+            double inherited = Double.MAX_VALUE;
             for (Member m : train.order) {
+                Vector v = m.cart.getVelocity();
+                if (v.getX() * v.getX() + v.getZ() * v.getZ() > 0.1 * 0.1) moving = true;
                 Double sp = oldSpeed.get(m.cart.getUniqueId());
-                if (sp != null) { train.speed = sp; break; }
+                if (sp != null) inherited = Math.min(inherited, sp);
             }
+            train.speed = (moving && inherited != Double.MAX_VALUE) ? inherited : 0.0d;
             trains.add(train);
         }
 
@@ -627,14 +634,10 @@ final class CartTrainManager implements Listener {
             Vector b = cartB.getLocation().toVector();
             Vector span = b.clone().subtract(a);
             double full = span.length();
-            // Forward lead so the chain sits under the carts' client-dead-reckoned (drawn-ahead) positions.
-            // Flattened to horizontal (a slope's chord would otherwise inject a speed-scaled vertical wobble);
-            // zero at rest.
-            Vector lead = full < 1e-4 ? new Vector()
-                : a.clone().subtract(b).normalize().multiply(train.speed * CHAIN_LEAD);
-            lead.setY(0);
-            Vector midVec = a.clone().add(b).multiply(0.5).add(lead);
-            midVec.setY(midVec.getY() + CHAIN_Y);
+            // Chain sits at the plain midpoint of the two carts' server positions — no forward lead, no
+            // height bump. (Both fudges were speed-scaled and fought the carts' own client motion; stripped
+            // to see the honest baseline.)
+            Vector midVec = a.clone().add(b).multiply(0.5);
             Location mid = midVec.toLocation(cartA.getWorld());   // yaw/pitch 0 → world-aligned frame
 
             BlockDisplay d = i < train.chainDisplays.size() ? train.chainDisplays.get(i) : null;
