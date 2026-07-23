@@ -93,14 +93,28 @@ final class CartRailsManager implements Listener {
         }
     }
 
-    /** Orient an orientable rail's shell to its stored 4-way facing (defaults to SOUTH before capture).
-     *  Keeps the authored translation + scale, replaces only the rotation. */
+    /** Orient an orientable rail's shell to FOLLOW the underlying rail's live shape (its N–S / E–W axis),
+     *  with the stored placement facing only picking the head/tail direction within that axis. Keeps the
+     *  authored translation + scale, replaces only the rotation. Because {@code displayTransformResolver}
+     *  marks these rails neighbour-reactive, CoreLib re-runs this whenever a neighbour changes the shape —
+     *  so the shell self-heals; {@link #onRailPhysics} adds a deferred settle-correction on top. */
     private org.bukkit.util.Transformation orientRail(Block b, CustomHeadBlock.DisplayEntityConfig cfg) {
         org.bukkit.util.Transformation base = cfg.transform();
-        BlockFace face = facings.getOrDefault(CustomBlockRegistry.LocationKey.of(b), BlockFace.SOUTH);
         return new org.bukkit.util.Transformation(
-            base.getTranslation(), Faces.rotationForFace(face), base.getScale(),
+            base.getTranslation(), Faces.rotationForFace(shapeFace(b)), base.getScale(),
             new org.joml.AxisAngle4f(0f, 0f, 0f, 1f));
+    }
+
+    /** The cardinal face the shell should point along: the rail's live shape gives the axis (N–S / E–W),
+     *  the stored placement facing chooses which of the two ends the arrow points to (cosmetic head/tail —
+     *  neither rail acts directionally). Falls back to the stored facing (or SOUTH) if the block isn't a
+     *  readable rail. Curved shapes never persist (broken in onRailPhysics), so the axis is always cardinal. */
+    private BlockFace shapeFace(Block b) {
+        BlockFace stored = facings.get(CustomBlockRegistry.LocationKey.of(b));
+        Rail rail = RailPathWalker.railData(b);
+        if (rail == null) return stored != null ? stored : BlockFace.SOUTH;
+        BlockFace[] axis = RailPathWalker.connectedFaces(rail.getShape());
+        return (stored != null && (stored == axis[0] || stored == axis[1])) ? stored : axis[0];
     }
 
     private boolean isOrientableRail(Block b) {
@@ -243,7 +257,8 @@ final class CartRailsManager implements Listener {
             net.kyori.adventure.text.format.NamedTextColor.GREEN));
     }
 
-    // ── Anti-slope: a custom rail must never become an ascending rail — break it if it does ──────────
+    // ── Anti-slope/curve: a custom rail must stay straight+flat — break it if it slopes or curves,
+    //    else re-point its shell to the settled shape (the shell's flat square can't depict a curve) ────
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onRailPhysics(BlockPhysicsEvent event) {
@@ -251,14 +266,19 @@ final class CartRailsManager implements Listener {
         Material m = b.getType();
         if (m != Material.RAIL && m != Material.DETECTOR_RAIL && m != Material.POWERED_RAIL) return;
         if (ourRailType(b) == null) return;
-        // The re-shape may not be applied at event time; check next tick and break if it went ascending.
+        // The re-shape may not be applied at event time; act next tick once the shape has settled.
         Location loc = b.getLocation();
         Bukkit.getScheduler().runTask(plugin, () -> {
             Block cur = loc.getBlock();
             CustomHeadBlock type = ourRailType(cur);
             if (type == null) return;
-            if (RailPathWalker.railData(cur) instanceof Rail rail && RailPathWalker.isAscending(rail.getShape())) {
-                breakRail(cur, type);
+            Rail rail = RailPathWalker.railData(cur);
+            if (rail == null) return;
+            Rail.Shape shape = rail.getShape();
+            if (RailPathWalker.isAscending(shape) || RailPathWalker.isCurve(shape)) {
+                breakRail(cur, type);          // custom rails stay straight+flat
+            } else if (isOrientableRail(cur)) {
+                reorientDisplays(cur, shapeFace(cur));   // settle-correction: follow the rail's new axis
             }
         });
     }
@@ -281,11 +301,16 @@ final class CartRailsManager implements Listener {
     public void onPlaceOrientedRail(BlockPlaceEvent event) {
         Block b = event.getBlockPlaced();
         if (!isOrientableRail(b)) return;
-        BlockFace face = horizontalFacing(event.getPlayer());
-        rememberFacing(b, face);
-        // The shell spawned during CoreLib's HIGH applyConfig with the default facing — re-point it now
-        // (the freshly-placed bare block isn't in the reactive set yet, so a neighbour refresh won't reach it).
-        reorientDisplays(b, face);
+        rememberFacing(b, horizontalFacing(event.getPlayer()));   // captures the cosmetic head/tail tiebreak
+        // The shell already exists (spawned synchronously during CoreLib's HIGH applyConfig, before this
+        // HIGHEST handler). Defer the re-point one tick so the rail's SHAPE has settled — shapeFace() reads
+        // the live axis, and a freshly-placed block isn't in the reactive set yet so no neighbour refresh
+        // would reach it otherwise.
+        Location loc = b.getLocation();
+        Bukkit.getScheduler().runTask(plugin, () -> {
+            Block cur = loc.getBlock();
+            if (isOrientableRail(cur)) reorientDisplays(cur, shapeFace(cur));
+        });
     }
 
     @EventHandler
