@@ -40,7 +40,6 @@ import net.kyori.adventure.text.format.NamedTextColor;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -341,13 +340,23 @@ final class CustomCartManager implements Listener {
         java.util.List<ItemStack> out = new ArrayList<>();
         CustomHeadBlock itemType = registry.getType(state.type.itemId);
         if (itemType != null) out.add(itemType.createItem(1));
-        if (state.inv != null) {
-            for (var v : new ArrayList<>(state.inv.getViewers())) v.closeInventory();
-            for (ItemStack s : state.inv.getContents()) {
-                if (s != null && !s.getType().isAir()) out.add(s);
-            }
-            state.inv.clear();
+        out.addAll(cartInvDrops(state));
+        return out;
+    }
+
+    /** Droppable inventory contents for a destroyed cart: the blast cart yields only its three fuel slots
+     *  (its filler panes + speed buttons are UI, not loot); every other cart yields all contents. Closes any
+     *  open viewers and clears the inventory. */
+    private List<ItemStack> cartInvDrops(CartState state) {
+        List<ItemStack> out = new ArrayList<>();
+        if (state.inv == null) return out;
+        for (var v : new ArrayList<>(state.inv.getViewers())) v.closeInventory();
+        int n = state.type == CartType.BLAST ? BLAST_FUEL_SLOTS : state.inv.getSize();
+        for (int i = 0; i < n; i++) {
+            ItemStack s = state.inv.getItem(i);
+            if (s != null && !s.getType().isAir()) out.add(s);
         }
+        state.inv.clear();
         return out;
     }
 
@@ -458,10 +467,12 @@ final class CustomCartManager implements Listener {
     private void tick() {
         ticks++;
         boolean feedTick = (ticks % 8 == 0);
-        Iterator<Map.Entry<UUID, CartState>> it = tracked.entrySet().iterator();
-        while (it.hasNext()) {
-            CartState state = it.next().getValue();
-            if (state.cart.isDead()) { removeBurnLight(state.cart.getUniqueId()); it.remove(); continue; }
+        // Snapshot: ticking a cart can spawn entities / move it across a chunk border, which fires
+        // EntitiesLoadEvent → scanChunk → tracked.put and would CME a live iterator. Carts added mid-tick
+        // are simply picked up next tick.
+        for (CartState state : new ArrayList<>(tracked.values())) {
+            UUID id = state.cart.getUniqueId();
+            if (state.cart.isDead()) { removeBurnLight(id); tracked.remove(id); continue; }
             if (!state.cart.isValid()) continue;   // chunk unloading; onEntitiesUnload owns cleanup
             if (feedTick) tryFillFromNeighbors(state);
             if (state.type == CartType.BLAST) tickBlast(state);
@@ -829,16 +840,10 @@ final class CustomCartManager implements Listener {
         World world = cart.getWorld();
         org.bukkit.Location loc = cart.getLocation();
 
-        // Drop the custom cart item (not a vanilla minecart) + its inventory contents.
+        // Drop the custom cart item (not a vanilla minecart) + its inventory contents (fuel only for blast).
         CustomHeadBlock itemType = registry.getType(state.type.itemId);
         if (itemType != null) world.dropItemNaturally(loc, itemType.createItem(1));
-        if (state.inv != null) {
-            for (var v : new ArrayList<>(state.inv.getViewers())) v.closeInventory();
-            for (ItemStack stack : state.inv.getContents()) {
-                if (stack != null && !stack.getType().isAir()) world.dropItemNaturally(loc, stack);
-            }
-            state.inv.clear();
-        }
+        for (ItemStack stack : cartInvDrops(state)) world.dropItemNaturally(loc, stack);
         cart.remove();
     }
 

@@ -1,4 +1,4 @@
-# Inventory-only custom items in the `corelib` namespace (non-placeable).
+# Inventory-only custom items in the `mech` namespace (non-placeable).
 # Same model as custom-items.yml: a CustomHeadBlock with item_material + placeable:false,
 # so they reuse createItem / give / docs with no parallel item system. Behavior is wired
 # in Java by id (e.g. GlueItem.isGlueItem checks the block_type PDC == corelib:glue_item).
