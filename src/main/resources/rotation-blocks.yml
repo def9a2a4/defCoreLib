@@ -898,9 +898,9 @@ blocks:
   # via AnaloguePowerable block data, so its own `power` carries the signal and drives adjacent
   # redstone directly. A BlockRedstoneEvent override (ThrottleLever.java) pins that output, so it is
   # NOT a working pressure plate — stepping on it can't move the signal, and the player step/click is
-  # cancelled. Right-click opens a 0-15 picker (number head-font icons, like the dynamo menu). The
-  # spruce-fence "handle" display tilts -45deg (0) .. +45deg (15); a quarter redstone block and two
-  # down-facing dispensers dress the base. (All behaviour + the handle angle live in ThrottleLever.java.)
+  # cancelled. Right-click steps the output up by 1, sneak-right-click steps it down (0-15). The
+  # spruce-fence "handle" display tilts -45deg (0) .. +45deg (15); a quarter redstone block and a
+  # down-facing dispenser dress the base. (All behaviour + the handle angle live in ThrottleLever.java.)
   throttle_lever:
     name: "&cThrottle Lever"
     lore:
