@@ -376,14 +376,17 @@ public class MechanismRegistry {
         List<List<Display>> bannerDisplaysPerBlock = new ArrayList<>();
         List<ColliderPair> colliders = new ArrayList<>();
 
-        // Pre-compute DynLight tags: map each light-emitting block (by vanilla light level) to its
-        // primary display, skipping blocks fully enclosed by opaque neighbours (interior lights that
-        // can't shine out). Mirrors BlockShips' ship-light pre-compute (ShipInstance#400-431). The tag
-        // is applied inside the display spawn below because DynLight registers on EntitySpawnEvent.
+        // Pre-compute DynLight tags: map each light-emitting block (by vanilla light level) to a
+        // COLLIDER-owning block index, so the tag rides a collider Shulker (a free carrier teleported
+        // to the block's real cell each tick), not a mounted display (all mounted displays share the
+        // parent's position, so DynLight would emit their light at the pivot). Mirrors BlockShips
+        // (ShipInstance#400-455): occlusion-cull interior lights, then assign each light to its own
+        // collider or, if it has none (torch/lantern → CollisionConfig.NONE), a neighbouring collider.
         // Ghost blocks are appearance-only snapshots that may overlap real cells, so they're excluded.
-        Map<Integer, Integer> lightByBlock = new HashMap<>();
+        Map<Integer, Integer> colliderLight = new HashMap<>();
         if (dynamicLightsEnabled) {
             int[][] neighbours = {{1,0,0},{-1,0,0},{0,1,0},{0,-1,0},{0,0,1},{0,0,-1}};
+            int[][] delegatePriority = {{0,-1,0},{1,0,0},{-1,0,0},{0,0,1},{0,0,-1},{0,1,0}};
             Map<String, Integer> posIndex = new HashMap<>();
             for (int i = 0; i < blockData.size(); i++) {
                 MechanismBlockData mb = blockData.get(i);
@@ -398,6 +401,7 @@ public class MechanismRegistry {
                 if (level <= 0) continue;
                 Vector3f t = mb.localTransform.getTranslation(new Vector3f());
                 int x = Math.round(t.x), y = Math.round(t.y), z = Math.round(t.z);
+                // Occlusion cull: skip lights fully enclosed by present, opaque neighbours.
                 boolean allOpaque = true;
                 for (int[] d : neighbours) {
                     Integer ni = posIndex.get((x + d[0]) + "," + (y + d[1]) + "," + (z + d[2]));
@@ -406,7 +410,19 @@ public class MechanismRegistry {
                         break;
                     }
                 }
-                if (!allOpaque) lightByBlock.put(i, level);
+                if (allOpaque) continue;
+                // Assign the emission to a collider: this block's own, else a neighbour's (by priority).
+                if (mb.collision.enabled()) {
+                    colliderLight.merge(i, level, Math::max);
+                } else {
+                    for (int[] d : delegatePriority) {
+                        Integer ni = posIndex.get((x + d[0]) + "," + (y + d[1]) + "," + (z + d[2]));
+                        if (ni != null && blockData.get(ni).collision.enabled()) {
+                            colliderLight.merge(ni, level, Math::max);
+                            break;
+                        }
+                    }
+                }
             }
         }
 
@@ -414,8 +430,7 @@ public class MechanismRegistry {
             MechanismBlockData mb = blockData.get(i);
             List<Display> group = new ArrayList<>();
 
-            // Primary display. Carries the DynLight tag when this block emits light (see lightByBlock).
-            int dynLight = lightByBlock.getOrDefault(i, 0);
+            // Primary display
             Display primary;
             if (mb.customTypeId != null) {
                 CustomHeadBlock chbType = registry.getType(mb.customTypeId);
@@ -425,9 +440,9 @@ public class MechanismRegistry {
                 ItemStack headItem = tex != null
                     ? HeadUtil.createHead(tex, 1)
                     : new ItemStack(Material.PLAYER_HEAD);
-                primary = spawnMechDisplay(spawnLoc, headItem, mechId, i, "display", dynLight);
+                primary = spawnMechDisplay(spawnLoc, headItem, mechId, i, "display");
             } else {
-                primary = spawnMechBlockDisplay(spawnLoc, mb.blockData, mechId, i, "display", dynLight);
+                primary = spawnMechBlockDisplay(spawnLoc, mb.blockData, mechId, i, "display");
             }
             group.add(primary);
 
@@ -474,6 +489,7 @@ public class MechanismRegistry {
             if (mb.collision.enabled()) {
                 final int blockIdx = i;
                 final MechanismBlockData mbf = mb;
+                final int dynLight = colliderLight.getOrDefault(i, 0); // 0 = no light on this collider
                 Vector3f initOff = mb.localTransform.getTranslation(new Vector3f());
                 Vector3f off = mb.collision.offset();
                 // -0.5 Y: the shulker box (attachedFace DOWN, marker, peek 0) is feet-anchored, so anchor
@@ -505,6 +521,9 @@ public class MechanismRegistry {
                         else warnScaleUnavailable();
                     }
                     s.addScoreboardTag("corelib:mech:" + mechId + ":" + blockIdx + ":collider");
+                    // DynLight: tag the collider Shulker (a free carrier at the block's real cell, not
+                    // a mounted display) so its light emits at the block, not the mechanism pivot.
+                    if (dynLight > 0) s.addScoreboardTag(DynLightTags.tag(dynLight));
                 });
                 carrier.addPassenger(shulker);
                 colliders.add(new ColliderPair(carrier, shulker, i));
@@ -903,36 +922,24 @@ public class MechanismRegistry {
 
     private ItemDisplay spawnMechDisplay(Location loc, ItemStack item,
                                          UUID mechId, int blockIdx, String role) {
-        return spawnMechDisplay(loc, item, mechId, blockIdx, role, 0);
-    }
-
-    private ItemDisplay spawnMechDisplay(Location loc, ItemStack item,
-                                         UUID mechId, int blockIdx, String role, int dynLight) {
         return loc.getWorld().spawn(loc, ItemDisplay.class, d -> {
             d.setItemStack(item);
             d.setTeleportDuration(0); d.setShadowRadius(0f); d.setShadowStrength(0f);
             d.setViewRange(64f); d.setPersistent(true); d.setGravity(false);
             d.setInterpolationDuration(2);
             d.addScoreboardTag("corelib:mech:" + mechId + ":" + blockIdx + ":" + role);
-            if (dynLight > 0) d.addScoreboardTag(DynLightTags.tag(dynLight));
         });
     }
 
     /** Package-private: also used by {@link BasicMechanism#appendGhost} to add a block mid-flight. */
     BlockDisplay spawnMechBlockDisplay(Location loc, BlockData data,
                                                UUID mechId, int blockIdx, String role) {
-        return spawnMechBlockDisplay(loc, data, mechId, blockIdx, role, 0);
-    }
-
-    private BlockDisplay spawnMechBlockDisplay(Location loc, BlockData data,
-                                               UUID mechId, int blockIdx, String role, int dynLight) {
         return loc.getWorld().spawn(loc, BlockDisplay.class, d -> {
             d.setBlock(data);
             d.setTeleportDuration(0); d.setShadowRadius(0f); d.setShadowStrength(0f);
             d.setViewRange(64f); d.setPersistent(true); d.setGravity(false);
             d.setInterpolationDuration(2);
             d.addScoreboardTag("corelib:mech:" + mechId + ":" + blockIdx + ":" + role);
-            if (dynLight > 0) d.addScoreboardTag(DynLightTags.tag(dynLight));
         });
     }
 }
