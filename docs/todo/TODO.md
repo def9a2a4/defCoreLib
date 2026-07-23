@@ -13,8 +13,8 @@
   bespoke path (`captureBannerIngredients` / `BLADE_KEYS` / `displayItemResolver` + tier-swap
   retarget). Water-wheel paddles already use `IngredientCapture`; unify the two.
 - minecart stuff:
-  - chaining minecarts
-  - blast funace minecart
+  - chaining minecarts ✅ done (position-driven trains + chain coupler)
+  - blast furnace minecart ✅ done (self-propelled engine + controller-rail speed)
   - copper rails?
   - faster tier of rails?
   - quad junctions?
