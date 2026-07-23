@@ -449,6 +449,11 @@ final class CartTrainManager implements Listener {
             trains.add(train);
         }
 
+        // A rebuilt train starts moving=false; until drive() re-establishes heading and re-raises the
+        // clamp via place(), damp its carts to the vanilla maxSpeed (keeping velocity direction) so they
+        // don't coast on vanilla physics at the leaked 100 → "instant max speed".
+        for (CartTrain t : trains) for (Member m : t.order) undriveCart(m.cart);
+
         // Park any cart that was in a driven train but no longer is (uncoupled / split off / lone
         // non-engine) — otherwise it keeps maxSpeed 100 + residual velocity and rockets away.
         Set<UUID> stillDriven = new HashSet<>();
@@ -519,17 +524,24 @@ final class CartTrainManager implements Listener {
         // Establish (or, after a rebuild, re-establish) travel direction from a push / retained velocity.
         // A parked train stays on vanilla physics until nudged; a moving one that rebuilt resumes from
         // its carts' velocity hints. No engine and no push → nothing to drive.
-        if (!train.moving && !establishHeading(train, engines > 0)) return;
+        if (!train.moving && !establishHeading(train, engines > 0)) {
+            for (Member m : ord) parkCart(m.cart);   // no heading → not driven → don't leave it at clamp 100
+            return;
+        }
 
-        // Controller rail (zone-based): while ANY member sits on a controller and the train has a fuelled
-        // blast cart, the target speed is the most-restrictive controller signal it's over (0 → stop,
-        // 15 → full, linear). Off the zone it resumes full speed. Inert without a lit blast cart.
+        // Controller rail (persistent): while a fuelled blast cart sits on a controller it REMEMBERS that
+        // signal's target (0 → stop, 15 → full, linear), and keeps it after leaving — so it holds a set
+        // speed instead of snapping back. The train drives to the most-restrictive remembered target over
+        // its fuelled blast carts (−1 = unset → full). Inert without a lit blast cart.
         double effTarget = trainMax;
         if (rails != null && hasFueledBlast) {
             double t = Double.MAX_VALUE;
             for (Member m : ord) {
+                if (!(carts.isBlastCart(m.cart) && carts.burnTicks(m.cart) > 0)) continue;
                 Block rb = railUnder(m.cart);
-                if (rb != null && rails.isController(rb)) t = Math.min(t, rails.controllerTarget(rb));
+                if (rb != null && rails.isController(rb)) carts.setTargetSpeed(m.cart, rails.controllerTarget(rb));
+                double ts = carts.targetSpeed(m.cart);
+                t = Math.min(t, ts < 0 ? trainMax : ts);
             }
             if (t != Double.MAX_VALUE) effTarget = Math.min(trainMax, t);
         }
@@ -806,6 +818,16 @@ final class CartTrainManager implements Listener {
         if (cart == null || cart.isDead()) return;
         cart.setMaxSpeed(0.4d);
         cart.setVelocity(new Vector(0, 0, 0));
+    }
+
+    /** Reset the maxSpeed clamp WITHOUT zeroing velocity. A rebuilt train starts {@code moving=false} and
+     *  must keep its velocity DIRECTION so {@link #establishHeading} can re-derive heading — but it must
+     *  not be left at the driven clamp (100), or vanilla physics coasts the cart at its inherited speed
+     *  until drive re-adopts it (the "starts instantly at max speed" bug). drive() re-raises to 100 via
+     *  {@link #place} the same/next tick once it actually drives the cart. */
+    private void undriveCart(Minecart cart) {
+        if (cart == null || cart.isDead()) return;
+        cart.setMaxSpeed(0.4d);
     }
 
     // ── Engines & fuel ────────────────────────────────────────────────────────

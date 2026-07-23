@@ -93,6 +93,7 @@ final class CustomCartManager implements Listener {
         Inventory inv;          // plugin-managed; single source of truth while loaded
         int burnTicks;          // blast-furnace cart only; 0 = not burning
         boolean wasOnActivator; // dispenser cart: edge-detect entering a powered activator rail
+        double targetSpeed = -1; // blast cart: controller-set cruise target (b/t); -1 = unset → full
 
         CartState(Minecart cart, CartType type) {
             this.cart = cart;
@@ -106,6 +107,7 @@ final class CustomCartManager implements Listener {
     private final NamespacedKey cartTypeKey;   // entity PDC: "coal" / "blast"
     private final NamespacedKey fuelTicksKey;   // entity PDC: blast-furnace burn counter
     private final NamespacedKey cartInvKey;     // entity PDC: serialized inventory contents
+    private final NamespacedKey cartTargetKey;  // entity PDC: blast-cart controller cruise target (double)
 
     private final Map<UUID, CartState> tracked = new HashMap<>();
     /** Per-burning-blast-cart DynLight marker: an invisible, non-persistent BlockDisplay tagged
@@ -127,6 +129,7 @@ final class CustomCartManager implements Listener {
         this.cartTypeKey = new NamespacedKey(plugin, "cart_type");
         this.fuelTicksKey = new NamespacedKey(plugin, "cart_fuel_ticks");
         this.cartInvKey = new NamespacedKey(plugin, "cart_inventory");
+        this.cartTargetKey = new NamespacedKey(plugin, "cart_target_speed");
     }
 
     void register() {
@@ -173,6 +176,8 @@ final class CustomCartManager implements Listener {
             PersistentDataContainer pdc = cart.getPersistentDataContainer();
             Integer stored = pdc.get(fuelTicksKey, PersistentDataType.INTEGER);
             if (stored != null) state.burnTicks = stored;
+            Double target = pdc.get(cartTargetKey, PersistentDataType.DOUBLE);
+            if (target != null) state.targetSpeed = target;
             tracked.put(cart.getUniqueId(), state);
         }
     }
@@ -215,6 +220,7 @@ final class CustomCartManager implements Listener {
         if (state.cart.isDead()) return;
         PersistentDataContainer pdc = state.cart.getPersistentDataContainer();
         pdc.set(fuelTicksKey, PersistentDataType.INTEGER, state.burnTicks);
+        pdc.set(cartTargetKey, PersistentDataType.DOUBLE, state.targetSpeed);
         if (state.inv != null) {
             String data = InventoryUtil.encode(state.inv);
             if (data != null) pdc.set(cartInvKey, PersistentDataType.STRING, data);
@@ -319,7 +325,21 @@ final class CustomCartManager implements Listener {
         if (held == Material.SHEARS || isChain(held)) return;
 
         event.setCancelled(true);   // suppress the rideable mount
-        event.getPlayer().openInventory(state.inv);
+        org.bukkit.inventory.InventoryView view = event.getPlayer().openInventory(state.inv);
+        // A blast cart shows its remembered controller cruise target next to its name (set at open time,
+        // like the Engine/Burner fuel readout). Mirrors RotationBlocks' view.setTitle pattern.
+        if (view != null && state.type == CartType.BLAST) view.setTitle(cartGuiTitle(state));
+    }
+
+    /** GUI title for a cart: the block's display name, plus (for a blast cart) its remembered cruise target. */
+    private String cartGuiTitle(CartState state) {
+        CustomHeadBlock type = registry.getType(state.type.itemId);
+        String base = (type != null && type.name() != null)
+            ? net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacySection().serialize(type.name())
+            : state.type.itemId;
+        if (state.type != CartType.BLAST) return base;
+        String speed = state.targetSpeed < 0 ? "full" : String.format("%.2f b/t", state.targetSpeed);
+        return base + " §7— " + speed;
     }
 
     /** Chain material, resilient to the 1.21.9 {@code CHAIN → IRON_CHAIN} rename. */
@@ -373,26 +393,75 @@ final class CustomCartManager implements Listener {
             && b.getBlockData() instanceof org.bukkit.block.data.type.RedstoneRail rr && rr.isPowered();
     }
 
-    /** Launch one item from the cart's inventory like a dispenser firing along {@link #DISPENSE_DIR}.
-     *  Reproduces vanilla {@code DefaultDispenseItemBehavior.spawnItem}: base speed {@code 0.2+rand*0.1}
-     *  along the facing axis, a literal {@code 0.2} upward baseline, and a triangular ±spread per axis —
-     *  the scatter + pop that distinguishes a dispenser from a plain dropper. */
+    /** Launch speed for projectile payloads (arrows, snowballs, …) fired by a dispenser cart. */
+    private static final double PROJECTILE_SPEED = 1.5;
+
+    /** Fire one item from the cart's inventory like a dispenser aimed along {@link #DISPENSE_DIR}: a
+     *  projectile item (arrow, snowball, potion, …) spawns as its REAL projectile entity; anything else
+     *  is ejected as an item entity with dispenser-like scatter. */
     private void fireOne(CartState state) {
         ItemStack one = takeOne(state.inv, m -> true);
         if (one == null) return;
+        World w = state.cart.getWorld();
+        org.bukkit.util.Vector dir = new org.bukkit.util.Vector(
+            DISPENSE_DIR.getModX(), DISPENSE_DIR.getModY(), DISPENSE_DIR.getModZ());
+        Location mouth = state.cart.getLocation().add(0, 0.5, 0).add(dir.clone().multiply(0.5));
+        if (!dispenseProjectile(w, mouth, dir, one)) ejectItem(w, mouth, dir, one);
+        w.playSound(mouth, org.bukkit.Sound.BLOCK_DISPENSER_DISPENSE, 0.8f, 1.0f);
+    }
+
+    /** Spawn {@code item} as its real dispenser projectile aimed along {@code dir}; returns false if the
+     *  item isn't a projectile payload (caller ejects it as an item instead). Covers the common ones. */
+    private boolean dispenseProjectile(World w, Location loc, org.bukkit.util.Vector dir, ItemStack item) {
+        switch (item.getType()) {
+            case ARROW, TIPPED_ARROW, SPECTRAL_ARROW -> {
+                Class<? extends org.bukkit.entity.AbstractArrow> type = item.getType() == Material.SPECTRAL_ARROW
+                    ? org.bukkit.entity.SpectralArrow.class : org.bukkit.entity.Arrow.class;
+                org.bukkit.entity.AbstractArrow arrow = w.spawnArrow(loc, dir, (float) PROJECTILE_SPEED, 3f, type);
+                arrow.setPickupStatus(org.bukkit.entity.AbstractArrow.PickupStatus.ALLOWED);
+                if (arrow instanceof org.bukkit.entity.Arrow a
+                    && item.getItemMeta() instanceof org.bukkit.inventory.meta.PotionMeta pm) {
+                    if (pm.getBasePotionType() != null) a.setBasePotionType(pm.getBasePotionType());
+                    for (org.bukkit.potion.PotionEffect e : pm.getCustomEffects()) a.addCustomEffect(e, true);
+                }
+            }
+            case SNOWBALL -> spawnProjectile(w, loc, dir, org.bukkit.entity.Snowball.class);
+            case EGG -> spawnProjectile(w, loc, dir, org.bukkit.entity.Egg.class);
+            case ENDER_PEARL -> spawnProjectile(w, loc, dir, org.bukkit.entity.EnderPearl.class);
+            case EXPERIENCE_BOTTLE -> spawnProjectile(w, loc, dir, org.bukkit.entity.ThrownExpBottle.class);
+            case FIRE_CHARGE -> spawnProjectile(w, loc, dir, org.bukkit.entity.SmallFireball.class);
+            case SPLASH_POTION, LINGERING_POTION -> {
+                org.bukkit.entity.ThrownPotion p = w.spawn(loc, org.bukkit.entity.ThrownPotion.class);
+                p.setItem(item);
+                p.setVelocity(dir.clone().multiply(PROJECTILE_SPEED));
+            }
+            case FIREWORK_ROCKET -> {
+                org.bukkit.entity.Firework f = w.spawn(loc, org.bukkit.entity.Firework.class);
+                if (item.getItemMeta() instanceof org.bukkit.inventory.meta.FireworkMeta fm) f.setFireworkMeta(fm);
+                f.setVelocity(dir.clone().multiply(PROJECTILE_SPEED));
+            }
+            default -> { return false; }
+        }
+        return true;
+    }
+
+    private static void spawnProjectile(World w, Location loc, org.bukkit.util.Vector dir,
+                                        Class<? extends org.bukkit.entity.Projectile> type) {
+        org.bukkit.entity.Projectile p = w.spawn(loc, type);
+        p.setVelocity(dir.clone().multiply(PROJECTILE_SPEED));
+    }
+
+    /** Eject a non-projectile item like a dispenser: launch along the fire axis + perpendicular scatter. */
+    private void ejectItem(World w, Location loc, org.bukkit.util.Vector dir, ItemStack item) {
         var r = java.util.concurrent.ThreadLocalRandom.current();
-        double d3 = 0.2 + r.nextDouble() * 0.1;
-        double spread = 0.0172275 * 6;
+        double launch = config.dispenseVelocity, spread = 0.0172275 * 6;
         org.bukkit.util.Vector v = new org.bukkit.util.Vector(
-            triangle(r, DISPENSE_DIR.getModX() * d3, spread),
-            triangle(r, 0.2, spread),                        // vanilla hardcodes the Y centre at 0.2
-            triangle(r, DISPENSE_DIR.getModZ() * d3, spread))
-            .multiply(config.dispenseVelocity);
-        Location loc = state.cart.getLocation().add(0, 0.5, 0);
-        org.bukkit.entity.Item drop = state.cart.getWorld().dropItem(loc, one);
+            dir.getX() * launch + (dir.getX() == 0 ? triangle(r, 0, spread) : 0),
+            dir.getY() * launch + (dir.getY() == 0 ? triangle(r, 0, spread) : 0),
+            dir.getZ() * launch + (dir.getZ() == 0 ? triangle(r, 0, spread) : 0));
+        org.bukkit.entity.Item drop = w.dropItem(loc, item);
         drop.setVelocity(v);
         drop.setPickupDelay(20);
-        state.cart.getWorld().playSound(loc, org.bukkit.Sound.BLOCK_DISPENSER_DISPENSE, 0.6f, 1.0f);
     }
 
     /** Vanilla {@code RandomSource.triangle(center, range)}: {@code center + range*(rand − rand)}. */
@@ -522,6 +591,18 @@ final class CustomCartManager implements Listener {
     void addBurnTicks(Minecart cart, int add) {
         CartState s = tracked.get(cart.getUniqueId());
         if (s != null && s.type == CartType.BLAST) s.burnTicks += add;
+    }
+
+    /** A blast cart's remembered controller cruise target (b/t); {@code -1} = unset → full speed. */
+    double targetSpeed(Minecart cart) {
+        CartState s = tracked.get(cart.getUniqueId());
+        return s != null ? s.targetSpeed : -1;
+    }
+
+    /** Set a blast cart's remembered controller cruise target (persisted to PDC on unload/shutdown). */
+    void setTargetSpeed(Minecart cart, double v) {
+        CartState s = tracked.get(cart.getUniqueId());
+        if (s != null) s.targetSpeed = v;
     }
 
     /** Whether a material is accepted as fuel (delegates to the shared whitelist). */

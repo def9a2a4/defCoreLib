@@ -36,9 +36,9 @@ carts:
   controller-max-speed: 1.0
   # Speed a train sheds per tick while braking down to a lower controller cap.
   brake-rate: 0.04
-  # Multiplier on the vanilla-dispenser eject velocity when a dispenser minecart fires (1.0 = exactly
-  # like a real dispenser; raise for a stronger pop).
-  dispense-velocity: 1.0
+  # Launch speed (blocks/tick) for a NON-projectile item ejected by a dispenser minecart (projectile
+  # items — arrows, snowballs, potions … — spawn as their real projectile instead). ~0.4 ≈ a 2-block pop.
+  dispense-velocity: 0.4
 
 # Emit dynamic light from a lit blast-furnace cart (level 5, only while burning) via the optional
 # DynLight plugin (https://github.com/def9a2a4/dynlight). Purely a scoreboard-tag integration — no
