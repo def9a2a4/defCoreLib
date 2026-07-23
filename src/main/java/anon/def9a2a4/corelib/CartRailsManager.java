@@ -1,6 +1,8 @@
 package anon.def9a2a4.corelib;
 
 import anon.def9a2a4.corelib.container.ContainerAdapterRegistry;
+import org.bukkit.Bukkit;
+import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -8,22 +10,30 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Container;
 import org.bukkit.block.data.Rail;
+import org.bukkit.entity.Display;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Minecart;
+import org.bukkit.entity.Player;
 import org.bukkit.entity.minecart.CommandMinecart;
 import org.bukkit.entity.minecart.ExplosiveMinecart;
 import org.bukkit.entity.minecart.PoweredMinecart;
 import org.bukkit.entity.minecart.StorageMinecart;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockPhysicsEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.vehicle.VehicleMoveEvent;
+import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * BetterMinecarts rail types: {@code bmc:junction} (a crossing that keeps a cart's heading straight
@@ -44,42 +54,57 @@ final class CartRailsManager implements Listener {
     static final String CONTROLLER_ID = "bmc:controller_rail";
     private static final String TAG_MECHANISM = "corelib:mechanism_minecart";
 
+    private final JavaPlugin plugin;
     private final CustomBlockRegistry registry;
     private final CustomCartManager carts;
     private final CartTrainManager trains;
     private final CartConfig config;
 
+    /** Player-chosen 4-way facing of an orientable rail (destructor / controller). A bare rail stores no
+     *  native facing, so we keep it here and mirror it to the block's chunk PDC for durability. */
+    private final java.util.Map<CustomBlockRegistry.LocationKey, BlockFace> facings = new java.util.HashMap<>();
+    private final org.bukkit.NamespacedKey railFacingKey;
+
     CartRailsManager(JavaPlugin plugin, CustomBlockRegistry registry,
                      CustomCartManager carts, CartTrainManager trains, CartConfig config) {
+        this.plugin = plugin;
         this.registry = registry;
         this.carts = carts;
         this.trains = trains;
         this.config = config;
+        this.railFacingKey = new org.bukkit.NamespacedKey("corelib", "cart_rail_facing");
     }
 
-    /** Overlay the controller rail's display so its arrow orients along the track it's placed on. Called
-     *  once after the bmc blocks load (the type is resolvable). Re-derived live from the rail shape, so no
-     *  facing needs to be persisted. */
+    /** Overlay the orientable rails (destructor + controller) so their display shell faces the direction
+     *  the player placed them (task C). Also hooks removal so the facing entry is dropped with the block.
+     *  Called once after the bmc blocks load. */
     void installOverlays() {
-        CustomHeadBlock controller = registry.getType(CONTROLLER_ID);
-        if (controller == null) return;
-        registry.register(controller.toBuilder()
-            .displayTransformResolver((b, state, cfg, idx) -> orientArrow(b, cfg))
-            .build());
+        for (String id : new String[]{DESTRUCTOR_ID, CONTROLLER_ID}) {
+            CustomHeadBlock type = registry.getType(id);
+            if (type == null) continue;
+            registry.register(type.toBuilder()
+                .displayTransformResolver((b, state, cfg, idx) -> orientRail(b, cfg))
+                .onBlockRemoved((b, state) -> forgetFacing(b))
+                .build());
+        }
+        // Chunks already loaded before we enabled won't fire ChunkLoadEvent — seed their facings now.
+        for (World world : Bukkit.getWorlds()) {
+            for (Chunk chunk : world.getLoadedChunks()) loadChunkFacings(chunk);
+        }
     }
 
-    /** Orient the controller arrow along the rail's straight axis (2-way; a bare rail can't persist a
-     *  chosen 4-way facing). Keeps the authored translation + scale, replaces only the rotation. */
-    private org.bukkit.util.Transformation orientArrow(Block b, CustomHeadBlock.DisplayEntityConfig cfg) {
+    /** Orient an orientable rail's shell to its stored 4-way facing (defaults to SOUTH before capture).
+     *  Keeps the authored translation + scale, replaces only the rotation. */
+    private org.bukkit.util.Transformation orientRail(Block b, CustomHeadBlock.DisplayEntityConfig cfg) {
         org.bukkit.util.Transformation base = cfg.transform();
-        BlockFace face = BlockFace.SOUTH;
-        if (RailPathWalker.railData(b) instanceof Rail rail) {
-            BlockFace[] faces = RailPathWalker.connectedFaces(rail.getShape());
-            if (faces.length > 0) face = faces[0];
-        }
+        BlockFace face = facings.getOrDefault(CustomBlockRegistry.LocationKey.of(b), BlockFace.SOUTH);
         return new org.bukkit.util.Transformation(
             base.getTranslation(), Faces.rotationForFace(face), base.getScale(),
             new org.joml.AxisAngle4f(0f, 0f, 0f, 1f));
+    }
+
+    private boolean isOrientableRail(Block b) {
+        return isDestructor(b) || isController(b);
     }
 
     // ── Identity ────────────────────────────────────────────────────────────
@@ -199,5 +224,119 @@ final class CartRailsManager implements Listener {
         } else if (m == Material.DETECTOR_RAIL) {
             if (isDestructor(b)) destroy(cart, b);   // exemption checked in destroy()
         }
+    }
+
+    // ── Anti-slope: a custom rail must never become an ascending rail — break it if it does ──────────
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onRailPhysics(BlockPhysicsEvent event) {
+        Block b = event.getBlock();
+        Material m = b.getType();
+        if (m != Material.RAIL && m != Material.DETECTOR_RAIL && m != Material.POWERED_RAIL) return;
+        if (ourRailType(b) == null) return;
+        // The re-shape may not be applied at event time; check next tick and break if it went ascending.
+        Location loc = b.getLocation();
+        Bukkit.getScheduler().runTask(plugin, () -> {
+            Block cur = loc.getBlock();
+            CustomHeadBlock type = ourRailType(cur);
+            if (type == null) return;
+            if (RailPathWalker.railData(cur) instanceof Rail rail && RailPathWalker.isAscending(rail.getShape())) {
+                breakRail(cur, type);
+            }
+        });
+    }
+
+    /** The custom-rail type at {@code b}, or null if it isn't one of ours. */
+    private CustomHeadBlock ourRailType(Block b) {
+        return (isJunction(b) || isDestructor(b) || isController(b)) ? registry.getTypeFromBlock(b) : null;
+    }
+
+    /** Break a custom rail: drop its item, clear identity/display/PDC, then remove the world block. */
+    private void breakRail(Block block, CustomHeadBlock type) {
+        block.getWorld().dropItemNaturally(block.getLocation().add(0.5, 0.5, 0.5), type.createItem(1));
+        registry.onBlockRemoved(block, type);   // clears bare identity + display + chunk PDC (+ our facing via overlay)
+        block.setType(Material.AIR);
+    }
+
+    // ── 4-way orientable display (destructor + controller): capture, persist, reload ────────────────
+
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    public void onPlaceOrientedRail(BlockPlaceEvent event) {
+        Block b = event.getBlockPlaced();
+        if (!isOrientableRail(b)) return;
+        BlockFace face = horizontalFacing(event.getPlayer());
+        rememberFacing(b, face);
+        // The shell spawned during CoreLib's HIGH applyConfig with the default facing — re-point it now
+        // (the freshly-placed bare block isn't in the reactive set yet, so a neighbour refresh won't reach it).
+        reorientDisplays(b, face);
+    }
+
+    @EventHandler
+    public void onChunkLoad(ChunkLoadEvent event) {
+        loadChunkFacings(event.getChunk());
+    }
+
+    /** Re-point an already-spawned shell to {@code face} in place (keeps its authored translation+scale). */
+    private void reorientDisplays(Block b, BlockFace face) {
+        CustomHeadBlock type = registry.getTypeFromBlock(b);
+        if (type == null) return;
+        String prefix = DisplayUtil.blockTagPrefix(type.namespace(), type.typeId(), b.getLocation());
+        for (Display d : DisplayUtil.findByTag(b.getLocation(), prefix, 1.5)) {
+            org.bukkit.util.Transformation cur = d.getTransformation();
+            d.setTransformation(new org.bukkit.util.Transformation(
+                cur.getTranslation(), Faces.rotationForFace(face), cur.getScale(),
+                new org.joml.AxisAngle4f(0f, 0f, 0f, 1f)));
+        }
+    }
+
+    /** The horizontal direction a player is looking (yaw → N/E/S/W), ignoring pitch. */
+    private static BlockFace horizontalFacing(Player p) {
+        float yaw = ((p.getYaw() % 360) + 360) % 360;
+        if (yaw >= 45 && yaw < 135) return BlockFace.WEST;
+        if (yaw >= 135 && yaw < 225) return BlockFace.NORTH;
+        if (yaw >= 225 && yaw < 315) return BlockFace.EAST;
+        return BlockFace.SOUTH;
+    }
+
+    private void rememberFacing(Block b, BlockFace face) {
+        facings.put(CustomBlockRegistry.LocationKey.of(b), face);
+        writeChunkFacings(b.getChunk());
+    }
+
+    private void forgetFacing(Block b) {
+        if (facings.remove(CustomBlockRegistry.LocationKey.of(b)) != null) writeChunkFacings(b.getChunk());
+    }
+
+    /** Populate {@link #facings} from a chunk's persisted facing string (called on chunk load + startup). */
+    void loadChunkFacings(Chunk chunk) {
+        String data = chunk.getPersistentDataContainer().get(railFacingKey, PersistentDataType.STRING);
+        if (data == null || data.isEmpty()) return;
+        UUID w = chunk.getWorld().getUID();
+        for (String cell : data.split(";")) {
+            int eq = cell.indexOf('=');
+            if (eq < 0) continue;
+            String[] xyz = cell.substring(0, eq).split(",");
+            if (xyz.length != 3) continue;
+            try {
+                facings.put(new CustomBlockRegistry.LocationKey(w,
+                        Integer.parseInt(xyz[0]), Integer.parseInt(xyz[1]), Integer.parseInt(xyz[2])),
+                    BlockFace.valueOf(cell.substring(eq + 1)));
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    /** Rewrite a chunk's persisted facing string from the in-memory map (all cells in that chunk). */
+    private void writeChunkFacings(Chunk chunk) {
+        UUID w = chunk.getWorld().getUID();
+        StringBuilder sb = new StringBuilder();
+        for (var e : facings.entrySet()) {
+            CustomBlockRegistry.LocationKey k = e.getKey();
+            if (!k.worldId().equals(w) || (k.x() >> 4) != chunk.getX() || (k.z() >> 4) != chunk.getZ()) continue;
+            if (sb.length() > 0) sb.append(';');
+            sb.append(k.x()).append(',').append(k.y()).append(',').append(k.z()).append('=').append(e.getValue().name());
+        }
+        var pdc = chunk.getPersistentDataContainer();
+        if (sb.length() == 0) pdc.remove(railFacingKey);
+        else pdc.set(railFacingKey, PersistentDataType.STRING, sb.toString());
     }
 }

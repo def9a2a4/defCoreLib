@@ -485,6 +485,19 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
             }
         }
 
+        // A custom rail (junction / destructor / controller) may not be placed onto another rail: vanilla
+        // seats a rail on top of the clicked block, and rail-on-rail yields broken shapes / instant slopes.
+        if (type.baseBlock() != null && RailPathWalker.isRail(type.baseBlock())) {
+            Block against = event.getBlockAgainst();
+            if (against != null && RailPathWalker.isRail(against.getType())) {
+                event.setCancelled(true);
+                event.getPlayer().sendActionBar(net.kyori.adventure.text.Component.text(
+                        "Can't place a rail on another rail",
+                        net.kyori.adventure.text.format.NamedTextColor.RED));
+                return;
+            }
+        }
+
         // Convert non-skull blocks to skulls (e.g., slab items with item_material)
         if (type.baseBlock() != null) {
             // Bare-first block (e.g. casing = OAK_STAIRS): replace the placed head with the base block.
