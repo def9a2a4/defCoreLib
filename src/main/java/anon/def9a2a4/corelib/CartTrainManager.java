@@ -316,9 +316,30 @@ final class CartTrainManager implements Listener {
         Location mid = a.getWorld() == b.getWorld()
             ? a.getLocation().add(b.getLocation()).multiply(0.5) : a.getLocation();
         dropChains(mid, 1);
-        mid.getWorld().playSound(mid, Sound.BLOCK_CHAIN_BREAK, 1f, 1f);
-        mid.getWorld().spawnParticle(Particle.WAX_OFF, mid.clone().add(0, 0.4, 0), 8, 0.15, 0.15, 0.15, 0);
+        chainBreakFx(mid);
         dirty = true;
+    }
+
+    /** A snapped chain's sound + particle at {@code loc}. */
+    private void chainBreakFx(Location loc) {
+        loc.getWorld().playSound(loc, Sound.BLOCK_CHAIN_BREAK, 1f, 1f);
+        loc.getWorld().spawnParticle(Particle.WAX_OFF, loc.clone().add(0, 0.4, 0), 8, 0.15, 0.15, 0.15, 0);
+    }
+
+    /** If a coupled cart has ended up off the rails (its block isn't a rail — e.g. someone broke the track
+     *  under a train), detach it entirely so the position-driven walker doesn't choke on the gap. Returns
+     *  true if one was detached. Only coupled carts count (a lone parked cart has nothing to break). */
+    private boolean breakOffRail(CartTrain train) {
+        for (Member m : train.order) {
+            Minecart cart = m.cart;
+            if (railUnder(cart) == null && !partners(cart).isEmpty()) {
+                Location at = cart.getLocation();
+                unlinkAll(cart);      // severs every link, drops a chain each, parks the cart + neighbours
+                chainBreakFx(at);
+                return true;
+            }
+        }
+        return false;
     }
 
     // ── Destruction ──────────────────────────────────────────────────────────
@@ -535,6 +556,8 @@ final class CartTrainManager implements Listener {
             // Snap any coupling stretched past the break distance (a parked/pushed/teleported train can
             // drift apart; a powered one is re-placed at spacing each tick so it never trips this).
             if (breakOverstretched(train)) { dirty = true; continue; }   // train changed — rebuild next tick
+            // Detach any coupled cart left off the rails (track broken under the train) before driving it.
+            if (breakOffRail(train)) { dirty = true; continue; }
             if (feed) feedTrain(train);
             drive(train);
             updateChainDisplays(train);   // after placing carts, so chains track their final positions

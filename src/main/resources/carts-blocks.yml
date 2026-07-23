@@ -45,21 +45,28 @@ blocks:
     name: "&cBlast Furnace Minecart"
     lore:
       - "&7Right-click a rail to spawn a fast locomotive."
-      - "&7A furnace cart with a fuel-only inventory,"
-      - "&7much higher top speed."
+      - "&7Three fuel slots, plus in-GUI - / + buttons that"
+      - "&7set its cruise speed. Much higher top speed."
     catalog_notes:
-      - "&fRight-click a rail to spawn a blast-furnace locomotive: like a furnace minecart, but with a 5-slot, fuel-only inventory and a far higher configurable top speed."
+      - "&fRight-click a rail to spawn a blast-furnace locomotive: a fuel cart with three fuel slots and in-GUI - / + speed buttons that set a cruise speed (like a controller rail, in redstone steps), plus a far higher configurable top speed."
       - "&fPowers a whole train from anywhere in the consist."
     texture: "@minecart-blast-furnace"
     item_glint: true
     placeable: false
-    storage: { layout: HOPPER }
+    storage: { layout: DROPPER }
     recipes:
       craft:
-        shapeless:
-          - ingredients:
-              - { material: BLAST_FURNACE }
-              - { material: MINECART }
+        shaped:
+          - pattern:
+              - " F "
+              - "CRC"
+              - "IMI"
+            key:
+              F: { material: BLAST_FURNACE }
+              C: { material: COPPER_INGOT }
+              R: { material: REDSTONE }
+              I: { material: IRON_INGOT }
+              M: { material: MINECART }
 
   dispenser_cart:
     name: "&bDispenser Minecart"

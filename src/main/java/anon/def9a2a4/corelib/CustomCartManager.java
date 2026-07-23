@@ -6,6 +6,7 @@ import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
+import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -29,9 +30,13 @@ import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitTask;
+
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -61,6 +66,17 @@ final class CustomCartManager implements Listener {
     static final String TAG_COAL = "corelib:coal_cart";
     static final String TAG_BLAST = "corelib:blast_furnace_cart";
     static final String TAG_DISPENSER = "corelib:dispenser_cart";
+
+    // Blast-furnace cart GUI: a 9-slot dropper — fuel in slots 0-2, inert filler in 3-6, and speed −/+ head
+    // buttons in 7/8 that step the cruise target in redstone-sized (1/15) increments. Only slots 0-2 persist.
+    private static final int BLAST_FUEL_SLOTS = 3;      // usable fuel slots (0..2)
+    private static final int BLAST_SLOT_MINUS = 7;
+    private static final int BLAST_SLOT_PLUS = 8;
+    private static final double MPS_PER_BT = 20.0;      // 1 block/tick = 20 blocks/s = 20 m/s
+    private static final String BLAST_PLUS_TEX =
+        "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMGEyMWViNGM1Nzc1MDcyOWE0OGI4OGU5YmJkYjk4N2ViNjI1MGE1YmMyMTU3YjU5MzE2ZjVmMTg4N2RiNSJ9fX0=";
+    private static final String BLAST_MINUS_TEX =
+        "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYThjNjdmZWQ3YTI0NzJiN2U5YWZkOGQ3NzJjMTNkYjdiODJjMzJjZWVmZjhkYjk3NzQ3NGMxMWU0NjExIn19fQ==";
 
     /** Faces from which an adjacent hopper (pointing at the cart) may push fuel in — sides + above. */
     private static final BlockFace[] PUSH_FACES = {
@@ -215,6 +231,7 @@ final class CustomCartManager implements Listener {
         String data = state.cart.getPersistentDataContainer().get(cartInvKey, PersistentDataType.STRING);
         InventoryUtil.decode(data, inv, plugin.getLogger());
         state.inv = inv;
+        if (state.type == CartType.BLAST) decorateBlastGui(state);   // repack fuel to 0-2 + stamp filler/buttons
     }
 
     private void persist(CartState state) {
@@ -223,9 +240,81 @@ final class CustomCartManager implements Listener {
         pdc.set(fuelTicksKey, PersistentDataType.INTEGER, state.burnTicks);
         pdc.set(cartTargetKey, PersistentDataType.DOUBLE, state.targetSpeed);
         if (state.inv != null) {
-            String data = InventoryUtil.encode(state.inv);
+            String data = encodeCartInv(state.type, state.inv);
             if (data != null) pdc.set(cartInvKey, PersistentDataType.STRING, data);
         }
+    }
+
+    /** Serialize a cart's inventory for the PDC. The blast cart only persists its three fuel slots — its
+     *  filler panes + speed buttons are re-stamped by {@link #decorateBlastGui} and must never be saved
+     *  (else they'd become extractable / duplicate on reload). */
+    private String encodeCartInv(CartType type, Inventory inv) {
+        if (type != CartType.BLAST) return InventoryUtil.encode(inv);
+        Inventory tmp = Bukkit.createInventory(null, 9);
+        for (int i = 0; i < BLAST_FUEL_SLOTS; i++) tmp.setItem(i, inv.getItem(i));
+        return InventoryUtil.encode(tmp);
+    }
+
+    /** Lay out the blast cart's 9-slot speed GUI: consolidate every fuel item into slots 0-2 (dropping any
+     *  overflow at the cart — this also migrates legacy 5-slot HOPPER carts and strips stale filler/buttons),
+     *  fill 3-6 with inert panes, and place the −/+ speed buttons in 7/8. */
+    private void decorateBlastGui(CartState state) {
+        Inventory inv = state.inv;
+        List<ItemStack> fuel = new ArrayList<>();
+        for (int i = 0; i < inv.getSize(); i++) {
+            ItemStack it = inv.getItem(i);
+            if (it != null && !it.getType().isAir() && config.isFuel(it.getType())) fuel.add(it);
+        }
+        inv.clear();
+        ItemStack[] slots = new ItemStack[BLAST_FUEL_SLOTS];
+        List<ItemStack> overflow = new ArrayList<>();
+        for (ItemStack it : fuel) {
+            int amt = it.getAmount(), max = it.getMaxStackSize();
+            for (int s = 0; s < BLAST_FUEL_SLOTS && amt > 0; s++) {
+                if (slots[s] == null) {
+                    slots[s] = it.clone(); slots[s].setAmount(Math.min(amt, max)); amt -= slots[s].getAmount();
+                } else if (slots[s].isSimilar(it) && slots[s].getAmount() < max) {
+                    int add = Math.min(amt, max - slots[s].getAmount());
+                    slots[s].setAmount(slots[s].getAmount() + add); amt -= add;
+                }
+            }
+            if (amt > 0) { ItemStack o = it.clone(); o.setAmount(amt); overflow.add(o); }
+        }
+        for (int s = 0; s < BLAST_FUEL_SLOTS; s++) inv.setItem(s, slots[s]);
+        ItemStack pane = fillerPane();
+        for (int i = BLAST_FUEL_SLOTS; i < BLAST_SLOT_MINUS; i++) inv.setItem(i, pane.clone());
+        inv.setItem(BLAST_SLOT_MINUS, blastSpeedButton(false));
+        inv.setItem(BLAST_SLOT_PLUS, blastSpeedButton(true));
+        for (ItemStack o : overflow) state.cart.getWorld().dropItemNaturally(state.cart.getLocation(), o);
+    }
+
+    private static ItemStack fillerPane() {
+        ItemStack pane = new ItemStack(Material.GRAY_STAINED_GLASS_PANE);
+        ItemMeta meta = pane.getItemMeta();
+        meta.displayName(Component.text(" "));
+        pane.setItemMeta(meta);
+        return pane;
+    }
+
+    private ItemStack blastSpeedButton(boolean plus) {
+        Component name = Component.text(plus ? "Speed +" : "Speed −",
+            plus ? NamedTextColor.GREEN : NamedTextColor.RED);
+        List<Component> lore = List.of(Component.text(
+            "Click to " + (plus ? "raise" : "lower") + " the cruise speed", NamedTextColor.GRAY));
+        return HeadUtil.createHead(plus ? BLAST_PLUS_TEX : BLAST_MINUS_TEX, 1, name, lore, Map.of());
+    }
+
+    /** Step the blast cart's cruise target by {@code delta} redstone levels (0..15 of controllerMaxSpeed),
+     *  writing the same {@code targetSpeed} field a controller rail sets, then refresh the GUI title. */
+    private void adjustBlastSpeed(CartState state, int delta, InventoryClickEvent event) {
+        double max = config.controllerMaxSpeed;
+        if (max <= 0) return;
+        double cur = state.targetSpeed < 0 ? max : state.targetSpeed;
+        int level = Math.max(0, Math.min(15, (int) Math.round(cur / max * 15.0) + delta));
+        state.targetSpeed = max * level / 15.0;
+        event.getView().setTitle(cartGuiTitle(state));
+        Location at = event.getWhoClicked().getLocation();
+        at.getWorld().playSound(at, Sound.UI_BUTTON_CLICK, 0.5f, 1f);
     }
 
     /** The cart type of an entity, from its PDC marker, or null if it isn't one of ours. */
@@ -341,8 +430,8 @@ final class CustomCartManager implements Listener {
             ? net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacySection().serialize(type.name())
             : state.type.itemId;
         if (state.type != CartType.BLAST) return base;
-        String speed = state.targetSpeed < 0 ? "full" : String.format("%.2f b/t", state.targetSpeed);
-        return base + " §7— " + speed;
+        double eff = state.targetSpeed < 0 ? config.controllerMaxSpeed : state.targetSpeed;
+        return base + " §7- " + String.format("%.1f m/s", eff * MPS_PER_BT);
     }
 
     /** Chain material, resilient to the 1.21.9 {@code CHAIN → IRON_CHAIN} rename. */
@@ -356,7 +445,9 @@ final class CustomCartManager implements Listener {
         if (!(event.getInventory().getHolder() instanceof CartStorageHolder holder)) return;
         Minecart cart = holder.cart();
         if (cart.isDead()) return;
-        String data = InventoryUtil.encode(event.getInventory());
+        CartState st = tracked.get(cart.getUniqueId());
+        CartType type = st != null ? st.type : null;   // blast → persist only its fuel slots
+        String data = encodeCartInv(type, event.getInventory());
         if (data != null) {
             cart.getPersistentDataContainer().set(cartInvKey, PersistentDataType.STRING, data);
         }
@@ -654,11 +745,28 @@ final class CustomCartManager implements Listener {
         return s == null || s.type.fuelOnly;
     }
 
+    /** The {@link CartState} if {@code holder} is a blast cart's inventory, else null. */
+    private CartState blastState(InventoryHolder holder) {
+        if (!(holder instanceof CartStorageHolder h)) return null;
+        CartState s = tracked.get(h.cart().getUniqueId());
+        return (s != null && s.type == CartType.BLAST) ? s : null;
+    }
+
     @EventHandler(ignoreCancelled = true)
     public void onCartClick(InventoryClickEvent event) {
         Inventory top = event.getView().getTopInventory();
         if (!isCartInventory(top.getHolder())) return;
         if (!isFuelOnly(top.getHolder())) return;   // dispenser cart: any item allowed
+
+        // Blast cart: the 9-slot speed GUI. Intercept the −/+ buttons and inert filler on top-inv clicks;
+        // fuel slots 0-2 fall through to the fuel-only rules below.
+        CartState blast = blastState(top.getHolder());
+        if (blast != null && event.getClickedInventory() == top) {
+            int slot = event.getSlot();
+            if (slot == BLAST_SLOT_MINUS) { event.setCancelled(true); adjustBlastSpeed(blast, -1, event); return; }
+            if (slot == BLAST_SLOT_PLUS)  { event.setCancelled(true); adjustBlastSpeed(blast, +1, event); return; }
+            if (slot >= BLAST_FUEL_SLOTS) { event.setCancelled(true); return; }   // filler (3-6)
+        }
 
         InventoryAction action = event.getAction();
         boolean clickedTop = event.getClickedInventory() == top;
@@ -694,6 +802,13 @@ final class CustomCartManager implements Listener {
         Inventory top = event.getView().getTopInventory();
         if (!isCartInventory(top.getHolder())) return;
         if (!isFuelOnly(top.getHolder())) return;   // dispenser cart: any item allowed
+        // Blast cart: never let a drag touch the filler / button slots (3-8).
+        CartState blast = blastState(top.getHolder());
+        if (blast != null) {
+            for (int raw : event.getRawSlots()) {
+                if (raw < top.getSize() && raw >= BLAST_FUEL_SLOTS) { event.setCancelled(true); return; }
+            }
+        }
         if (config.isFuel(event.getOldCursor().getType())) return;
         int topSize = top.getSize();
         for (int raw : event.getRawSlots()) {
