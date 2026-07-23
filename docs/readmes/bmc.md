@@ -22,8 +22,9 @@ cross lines, set cruise speeds, and recycle carts.
 ## Locomotives & carts
 
 - [**Blast-furnace cart**](https://def9a2a4.github.io/defCoreLib-docs/item.html?id=bmc%3Ablast_furnace_cart) —
-  the engine: a minecart with a 5-slot, fuel-only inventory and a high, configurable top speed. Powers a
-  whole train from anywhere in the consist. (A plain lit **furnace minecart** also works, as a weaker engine.)
+  the engine: three fuel slots plus in-GUI **−/+ speed buttons** that set a cruise speed (in redstone-sized
+  steps, like a controller rail), and a high, configurable top speed. Powers a whole train from anywhere in
+  the consist. (A plain lit **furnace minecart** also works, as a weaker engine.)
 - [**Coal tender**](https://def9a2a4.github.io/defCoreLib-docs/item.html?id=bmc%3Acoal_cart) — a rolling fuel
   store: a 9-slot (3×3), fuel-only inventory that automatically feeds any furnace or blast-furnace cart in the same
   train, so a long haul doesn't stall.
