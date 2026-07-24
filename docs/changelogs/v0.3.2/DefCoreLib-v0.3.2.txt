@@ -1,0 +1,14 @@
+DefCoreLib v0.3.2
+
+Hosts the new BetterMinecarts content and adds an optional
+dynamic-light hook. (https://modrinth.com/plugin/dynlight)
+
+- Ships the BetterMinecarts cart and rail blocks and drives the
+  train, fuel, coupling, and special-rail logic when the
+  BetterMinecarts companion is installed (recipes gated by it;
+  without it the blocks exist via /defcorelib give but aren't
+  craftable and trains don't drive).
+- Optional DynLight integration: a lit blast-furnace cart emits
+  dynamic light via the DynLight plugin (no hard dependency; inert
+  when absent). Moving mechanisms now emit their light at the block
+  rather than the pivot.

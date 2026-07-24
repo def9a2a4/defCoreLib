@@ -1,0 +1,41 @@
+bmc v0.3.2
+
+Initial release
+
+TRAINS
+- Couple minecarts into a train by right-clicking them with a chain
+  (shears to uncouple). Any fuelled locomotive anywhere in the train
+  drives the whole thing along the rails, and top speed doesn't drop
+  as the train gets longer. A cosmetic chain renders between coupled
+  carts (chain-visuals toggle).
+- Couplings snap if two carts are pulled too far apart or the rail is
+  mined out from under a moving train; the chain drops as an item.
+
+CARTS
+- Blast-furnace cart: the engine -- three fuel slots plus in-GUI -/+
+  buttons that set a cruise speed in redstone-sized steps, and a high,
+  configurable top speed. Emits dynamic light while lit (optional
+  DynLight plugin). A plain lit furnace minecart also works, weaker.
+- Coal tender: a 9-slot fuel-only inventory that auto-feeds any
+  furnace or blast-furnace cart in the same train.
+- Dispenser cart: fires one item straight up over a powered activator
+  rail; projectile items launch as their real projectiles.
+- Hoppers and containers load carts: a hopper pointing in, or a
+  container directly above, fills a cart -- fuel carts take only fuel,
+  the dispenser cart takes anything.
+
+RAILS
+- Special rails must sit on flat, straight track -- placed on a slope
+  or curve they pop back off as an item.
+- Junction: a 4-way crossing -- carts keep their heading instead of
+  curving, so lines can cross without turning.
+- Controller: sets a train's cruise speed from its redstone signal
+  (0 stop, 15 full) and holds it after the train leaves; a run of
+  unpowered controllers makes a stop-and-hold station.
+- Destructor: drops a passing cart and its whole contents into the
+  container below, or on the ground. Mechanism (glue) minecarts are
+  exempt; vanilla chest/furnace/TNT carts are recycled too.
+
+REQUIRES
+- DefCoreLib: the carts and rails live there; this plugin enables
+  their recipes and drives the logic. Tuning in carts-config.yml.

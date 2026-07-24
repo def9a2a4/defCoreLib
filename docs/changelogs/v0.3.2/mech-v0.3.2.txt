@@ -1,0 +1,41 @@
+mech v0.3.2
+
+NEW BLOCK: THROTTLE LEVER
+- A hand-set analog redstone source. Right-click to step the output
+  up by 1, sneak-right-click to step it down (0-15); it powers
+  adjacent redstone directly at that level (weighted-plate rules --
+  run dust or lamps against it).
+- Not a pressure plate: stepping on it never changes the signal, and
+  the vanilla step and click are suppressed. Floor placement only.
+- The spruce-fence handle tilts to show the current strength; the
+  setting survives breaks, reloads, and restarts.
+- Craft: a stick over a row of redstone dust, iron ingot, and
+  cobblestone, over three smooth stone slabs.
+
+NEW MACHINE: MECHANICAL DISPENSER
+- A vanilla dispenser that becomes a launcher (higher speed, increased accuracy/consistency) when fed rotation
+  power; unpowered it stays an ordinary dispenser (vanilla GUI,
+  hoppers, and item pipes all keep working). Glows with red eyes
+  while active.
+- Craft: a slime block above a piston flanked by two bearings, above
+  a dispenser flanked by redstone.
+
+RECIPES
+- Burner recipe reworked -- now shapeless: a blast furnace, a dropper,
+  and any copper grate. The old copper/blast-furnace/iron recipe is
+  retired.
+- Drill recipe no longer needs netherite -- now a diamond over an
+  iron-flanked piston over a full row of iron.
+
+RENAMED
+- The "Mechanism" family is now "Mechanical": the Mechanism Minecart
+  becomes the Mechanical Minecart (now a lodestone-headed item);
+  advancement text renames the Extendable Piston to Mechanical Piston.
+
+ADVANCEMENTS
+- New nodes: craft/use milestones for the throttle lever and
+  mechanical dispenser; craft milestones for the Copper Water Pump
+  and the burner -> boiler -> steam piston stack; and a steam-power
+  network milestone.
+- Tree tidy-up: the chain pulley now hangs under the gear, and the
+  chain hoist has its own icon.
