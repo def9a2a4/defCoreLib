@@ -14,7 +14,7 @@ public final class RsdPlugin extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        new Metrics(this, 0); // TODO: register a real bStats plugin id before publishing
+        new Metrics(this, 28853);
         CoreLibPlugin core = CoreLibPlugin.getInstance();
         if (core == null) {
             getLogger().severe("DefCoreLib not present; RedstoneDisplays recipes cannot be enabled.");

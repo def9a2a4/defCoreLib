@@ -14,7 +14,7 @@ public final class BetterMinecartsPlugin extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        new Metrics(this, 32321);
+        new Metrics(this, 32862);
         CoreLibPlugin core = CoreLibPlugin.getInstance();
         if (core == null) {
             getLogger().severe("DefCoreLib not present; BetterMinecarts recipes cannot be enabled.");
