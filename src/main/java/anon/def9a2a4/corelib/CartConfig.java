@@ -11,7 +11,7 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 /**
- * BetterMinecarts tuning, loaded from {@code carts-config.yml}. Holds the fuel whitelist + burn
+ * Railbound tuning, loaded from {@code carts-config.yml}. Holds the fuel whitelist + burn
  * durations shared by the coal tender and blast-furnace cart, and the cart speed knobs. Defaults are
  * baked in so a missing/partial file still yields a working config.
  */

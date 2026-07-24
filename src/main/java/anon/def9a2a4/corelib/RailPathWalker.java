@@ -9,7 +9,7 @@ import org.bukkit.block.data.Rail;
 import org.bukkit.util.Vector;
 
 /**
- * Arc-length rail walker — the heart of drive-model B (see the betterminecarts plan). Given a
+ * Arc-length rail walker — the heart of drive-model B (see the railbound plan). Given a
  * {@link RailState} (which rail block a cart is on, which face it entered from, and how far along that
  * rail's path it sits), {@link #advance} walks the connected rail network by arc length, block to
  * block, sampling each rail's centre path (straight line / ascending ramp / quarter-arc curve). Motion

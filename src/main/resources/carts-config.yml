@@ -1,4 +1,4 @@
-# BetterMinecarts tuning. Loaded by CartConfig; consumed by the cart / train / rail managers.
+# Railbound tuning. Loaded by CartConfig; consumed by the cart / train / rail managers.
 
 # Fuel accepted by the coal tender and blast-furnace cart inventories, and how long each item burns
 # (game ticks) when a blast-furnace cart consumes it. Any material NOT listed here is rejected from

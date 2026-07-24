@@ -1,10 +1,10 @@
-# BetterMinecarts
+# Railbound
 
 Minecart trains, better powered minecarts, dispenser carts, junction rails, and more.
 
-See [the catalog of carts & rails](https://def9a2a4.github.io/defCoreLib-docs/index.html?ns=bmc).
+See [the catalog of carts & rails](https://def9a2a4.github.io/defCoreLib-docs/index.html?ns=railbound).
 
-![Some custom rails and carts](https://def9a2a4.github.io/defCoreLib-docs/readmes/assets/bmc/betterminecarts.png)
+![Some custom rails and carts](https://def9a2a4.github.io/defCoreLib-docs/readmes/assets/railbound/railbound.png)
 
 ## Features
 
@@ -22,6 +22,6 @@ See [the catalog of carts & rails](https://def9a2a4.github.io/defCoreLib-docs/in
 
 ## Links
 
-- Full type list & recipes: https://def9a2a4.github.io/defCoreLib-docs/index.html?ns=bmc
+- Full type list & recipes: https://def9a2a4.github.io/defCoreLib-docs/index.html?ns=railbound
 - Repository: https://github.com/def9a2a4/defCoreLib/
 - Issues: https://github.com/def9a2a4/defCoreLib/issues

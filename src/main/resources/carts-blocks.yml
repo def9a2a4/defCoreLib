@@ -1,4 +1,4 @@
-# BetterMinecarts content — namespace "bmc". Recipes gated behind the BetterMinecarts companion.
+# Railbound content — namespace "railbound". Recipes gated behind the Railbound companion.
 #
 # The fuel carts (coal tender, blast-furnace cart) are item-only: right-clicking a rail with the item
 # spawns a plain RideableMinecart, tagged and re-skinned in code (CustomCartManager) — the block render
@@ -7,7 +7,7 @@
 # The special rails — junction, destructor, and controller (bare rails) — are defined below and wired
 # in CartRailsManager. The dispenser cart fires straight up when it crosses a powered activator rail.
 
-namespace: bmc
+namespace: railbound
 
 # Player-head skins (base64), produced from assets/minecarts/*.png via scripts/upload_skin.py.
 textures:

@@ -21,7 +21,7 @@ DefCoreLib is a dependency other plugins install alongside:
 - **[Mechanism](https://github.com/def9a2a4/defCoreLib/blob/main/docs/readmes/mech.md)** - rotation mechanisms, glue, mechanical minecarts
 - **[RedstoneDisplays](https://github.com/def9a2a4/defCoreLib/blob/main/docs/readmes/redstonedisplays.md)** - redstone power indicator heads
 - **[Pipes](https://github.com/def9a2a4/defCoreLib/blob/main/docs/readmes/pipes.md)** - item-transport pipes
-- **[BetterMinecarts](https://github.com/def9a2a4/defCoreLib/blob/main/docs/readmes/bmc.md)** - self-driving minecart trains, fuel carts, and junction/controller/destructor rails
+- **[Railbound](https://github.com/def9a2a4/defCoreLib/blob/main/docs/readmes/railbound.md)** - self-driving minecart trains, fuel carts, and junction/controller/destructor rails
 
 ## Gallery
 
@@ -32,7 +32,7 @@ DefCoreLib is a dependency other plugins install alongside:
 | [Mechanism](https://github.com/def9a2a4/defCoreLib/blob/main/docs/readmes/mech.md) | <img src="https://def9a2a4.github.io/defCoreLib-docs/readmes/assets/mech/mech.gif" width="220"> <img src="https://def9a2a4.github.io/defCoreLib-docs/readmes/assets/mech/mech-ingame.gif" width="220"> <img src="https://def9a2a4.github.io/defCoreLib-docs/readmes/assets/mech/catalog-1.png" width="220"> |
 | [RedstoneDisplays](https://github.com/def9a2a4/defCoreLib/blob/main/docs/readmes/redstonedisplays.md) | <img src="https://def9a2a4.github.io/defCoreLib-docs/readmes/assets/rsd/indicators-wall.png" width="220"> <img src="https://def9a2a4.github.io/defCoreLib-docs/readmes/assets/rsd/indicators-lectern.png" width="220"> |
 | [Pipes](https://github.com/def9a2a4/defCoreLib/blob/main/docs/readmes/pipes.md) | <img src="https://def9a2a4.github.io/defCoreLib-docs/readmes/assets/pipes/demo-1.png" width="220"> <img src="https://def9a2a4.github.io/defCoreLib-docs/readmes/assets/pipes/demo-2.png" width="220"> |
-| [BetterMinecarts](https://github.com/def9a2a4/defCoreLib/blob/main/docs/readmes/bmc.md) | _preview coming soon_ <!-- <img src="https://def9a2a4.github.io/defCoreLib-docs/readmes/assets/bmc/hero.gif" width="220"> <img src="https://def9a2a4.github.io/defCoreLib-docs/readmes/assets/bmc/catalog.png" width="220"> --> |
+| [Railbound](https://github.com/def9a2a4/defCoreLib/blob/main/docs/readmes/railbound.md) | _preview coming soon_ <!-- <img src="https://def9a2a4.github.io/defCoreLib-docs/readmes/assets/railbound/hero.gif" width="220"> <img src="https://def9a2a4.github.io/defCoreLib-docs/readmes/assets/railbound/catalog.png" width="220"> --> |
 
 ## Commands
 

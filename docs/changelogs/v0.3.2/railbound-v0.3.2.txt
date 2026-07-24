@@ -1,4 +1,4 @@
-bmc v0.3.2
+railbound v0.3.2
 
 Initial release
 

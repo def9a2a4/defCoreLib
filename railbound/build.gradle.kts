@@ -37,7 +37,7 @@ tasks {
     }
 
     jar {
-        archiveBaseName.set("BetterMinecarts")
+        archiveBaseName.set("Railbound")
         manifest {
             attributes["paperweight-mappings-namespace"] = "mojang"
         }
@@ -47,6 +47,6 @@ tasks {
         relocate("org.bstats", "anon.def9a2a4.bstats")
         mergeServiceFiles()
         archiveClassifier.set("")
-        archiveBaseName.set("BetterMinecarts")
+        archiveBaseName.set("Railbound")
     }
 }

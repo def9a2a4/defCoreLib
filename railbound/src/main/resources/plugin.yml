@@ -1,5 +1,5 @@
-name: BetterMinecarts
-main: anon.def9a2a4.betterminecarts.BetterMinecartsPlugin
+name: Railbound
+main: anon.def9a2a4.railbound.RailboundPlugin
 version: ${version}
 api-version: "1.21"
 author: def9a2a4

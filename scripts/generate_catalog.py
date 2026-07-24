@@ -75,7 +75,7 @@ BLOCK_FILES = [
     "redstone-displays.yml",  # RedstoneDisplays indicator blocks (redstonedisplays namespace)
     "custom-items.yml",   # inventory-only items (juices, oils) — non-placeable CustomHeadBlocks
     "corelib-items.yml",  # corelib-namespace inventory-only items (slime glue)
-    "carts-blocks.yml",   # BetterMinecarts carts + special rails (bmc namespace)
+    "carts-blocks.yml",   # Railbound carts + special rails (railbound namespace)
 ]
 
 # Block-definition files that live in a companion *module's* resource dir, not core's
@@ -297,10 +297,10 @@ def parse_block(namespace: str, block_id: str, sec: dict, aliases: dict) -> dict
     variant_of = sec.get("catalog_variant_of")
     if variant_of:
         out["variantOf"] = variant_of if ":" in str(variant_of) else f"{namespace}:{variant_of}"
-    # bmc special rails are real vanilla rails (base_block) wearing a display-entity shell; the head the
+    # railbound special rails are real vanilla rails (base_block) wearing a display-entity shell; the head the
     # export records as their "base" is an artifact — show only the shell in the placed thumbnail. Flag
     # here, stripped (and the flag removed) in the display-spec merge so it never reaches items.json.
-    if namespace == "bmc" and sec.get("base_block"):
+    if namespace == "railbound" and sec.get("base_block"):
         out["_shellOnly"] = True
     return out
 
@@ -780,7 +780,7 @@ def main() -> int:
         entry = spec.get(it["fullId"]) or {}
         variants = entry.get("variants", [])
         it["placedVariants"] = variants
-        # Display-shell blocks (bmc rails): drop the artifact base head so the thumbnail shows only the shell.
+        # Display-shell blocks (railbound rails): drop the artifact base head so the thumbnail shows only the shell.
         if it.pop("_shellOnly", False):
             for v in variants:
                 v.pop("baseHeadTextureUrl", None)

@@ -248,7 +248,7 @@ public class CustomBlockRegistry {
         // resolution + chunk restore. Skull-first bare types (the shaft) instead call registerBareBlock
         // explicitly with their revert handler, since their base_block isn't set (they place as a head).
         // Gate on the type's own fullId, not the material, so multiple bare types CAN share one base
-        // material (e.g. bmc:junction + bmc:controller_rail both on RAIL) — identity is per-location.
+        // material (e.g. railbound:junction + railbound:controller_rail both on RAIL) — identity is per-location.
         if (type.baseBlock() != null && !bareBaseById.containsKey(type.fullId())) {
             registerBareBlock(type, type.baseBlock(), null);
         }
@@ -1896,7 +1896,7 @@ public class CustomBlockRegistry {
     // Recipes for these namespaces are withheld by default and only registered once a companion
     // plugin (vslab / mech / rsd) calls enableRecipes(...). Every OTHER namespace (corelib, pipes, …)
     // registers exactly as before (default-allow), so third-party runtime registrars are unaffected.
-    private static final Set<String> GATED_NAMESPACES = Set.of("demo", "verticalslabs", "mech", "redstonedisplays", "bmc");
+    private static final Set<String> GATED_NAMESPACES = Set.of("demo", "verticalslabs", "mech", "redstonedisplays", "railbound");
     private final Set<String> enabledRecipeNamespaces = new HashSet<>();
     // Per-type guard so an enable can't double-register a type's recipes (idempotency).
     private final Set<String> recipeRegisteredTypes = new HashSet<>();

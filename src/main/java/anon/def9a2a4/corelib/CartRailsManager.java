@@ -36,8 +36,8 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * BetterMinecarts rail types: {@code bmc:junction} (a crossing that keeps a cart's heading straight
- * instead of curving) and {@code bmc:destructor_rail} (destroys a passing minecart, depositing its
+ * Railbound rail types: {@code railbound:junction} (a crossing that keeps a cart's heading straight
+ * instead of curving) and {@code railbound:destructor_rail} (destroys a passing minecart, depositing its
  * drops into the container below). Both are placed as real rails ({@code base_block: RAIL /
  * DETECTOR_RAIL}); identity + persistence come from CoreLib's bare-block chunk index, so we just resolve
  * the block's type on demand via {@link CustomBlockRegistry#getTypeFromBlock} — no location bookkeeping.
@@ -49,9 +49,9 @@ import java.util.UUID;
  */
 final class CartRailsManager implements Listener {
 
-    static final String JUNCTION_ID = "bmc:junction";
-    static final String DESTRUCTOR_ID = "bmc:destructor_rail";
-    static final String CONTROLLER_ID = "bmc:controller_rail";
+    static final String JUNCTION_ID = "railbound:junction";
+    static final String DESTRUCTOR_ID = "railbound:destructor_rail";
+    static final String CONTROLLER_ID = "railbound:controller_rail";
     private static final String TAG_MECHANISM = "corelib:mechanism_minecart";
 
     private final JavaPlugin plugin;
@@ -77,7 +77,7 @@ final class CartRailsManager implements Listener {
 
     /** Overlay the orientable rails (destructor + controller) so their display shell faces the direction
      *  the player placed them (task C). Also hooks removal so the facing entry is dropped with the block.
-     *  Called once after the bmc blocks load. */
+     *  Called once after the railbound blocks load. */
     void installOverlays() {
         for (String id : new String[]{DESTRUCTOR_ID, CONTROLLER_ID}) {
             CustomHeadBlock type = registry.getType(id);
@@ -185,7 +185,7 @@ final class CartRailsManager implements Listener {
 
         List<ItemStack> drops = new ArrayList<>();
         drops.addAll(trains.detachAndCollectChains(cart));      // severs couplings; returns chain items
-        List<ItemStack> cartDrops = carts.collectCartDrops(cart);   // bmc cart item + inv, or null
+        List<ItemStack> cartDrops = carts.collectCartDrops(cart);   // railbound cart item + inv, or null
         drops.addAll(cartDrops != null ? cartDrops : vanillaCartDrops(cart));
 
         cart.eject();

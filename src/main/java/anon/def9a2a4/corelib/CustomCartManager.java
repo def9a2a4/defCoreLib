@@ -45,8 +45,8 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * The BetterMinecarts fuel carts: the coal tender ({@code bmc:coal_cart}) and the blast-furnace cart
- * ({@code bmc:blast_furnace_cart}). Both are item-only (declared in carts-blocks.yml) and, when the
+ * The Railbound fuel carts: the coal tender ({@code railbound:coal_cart}) and the blast-furnace cart
+ * ({@code railbound:blast_furnace_cart}). Both are item-only (declared in carts-blocks.yml) and, when the
  * item is right-clicked on a rail, spawn a plain {@link RideableMinecart} — the same base entity the
  * mechanism carts use. We re-skin it via {@link Minecart#setDisplayBlockData}
  * and give it a plugin-managed, fuel-only inventory (a 9-slot dropper for the tender; a 9-slot dropper for
@@ -59,9 +59,9 @@ import java.util.UUID;
  */
 final class CustomCartManager implements Listener {
 
-    static final String COAL_CART_ID = "bmc:coal_cart";
-    static final String BLAST_CART_ID = "bmc:blast_furnace_cart";
-    static final String DISPENSER_CART_ID = "bmc:dispenser_cart";
+    static final String COAL_CART_ID = "railbound:coal_cart";
+    static final String BLAST_CART_ID = "railbound:blast_furnace_cart";
+    static final String DISPENSER_CART_ID = "railbound:dispenser_cart";
     static final String TAG_COAL = "corelib:coal_cart";
     static final String TAG_BLAST = "corelib:blast_furnace_cart";
     static final String TAG_DISPENSER = "corelib:dispenser_cart";
@@ -346,7 +346,7 @@ final class CustomCartManager implements Listener {
         return (s != null && s.inv != null) ? takeOneFuel(s.inv) : null;
     }
 
-    /** Stop tracking a bmc cart and return its drops (the custom cart item + every inventory item), or
+    /** Stop tracking a railbound cart and return its drops (the custom cart item + every inventory item), or
      *  null if it isn't one of ours. Used by the destructor rail — the caller removes the entity itself.
      *  Closes any open GUI and clears the inventory so nothing is dropped twice. */
     java.util.List<ItemStack> collectCartDrops(Minecart cart) {

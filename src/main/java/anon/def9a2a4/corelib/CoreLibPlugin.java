@@ -95,8 +95,8 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
             }
         } catch (IOException ignored) {}
 
-        // BetterMinecarts content: fuel carts, junctions, destructor rail (recipes gated behind the
-        // `bmc` companion plugin). Runtime behaviour is wired below via the cart/rail managers.
+        // Railbound content: fuel carts, junctions, destructor rail (recipes gated behind the
+        // `railbound` companion plugin). Runtime behaviour is wired below via the cart/rail managers.
         try (InputStream cartsStream = getResource("carts-blocks.yml")) {
             if (cartsStream != null) {
                 BlockLoader.load(cartsStream, registry, getLogger());
@@ -186,9 +186,9 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         mechanismMinecartManager.register();
         getServer().getPluginManager().registerEvents(mechanismMinecartManager, this);
 
-        // BetterMinecarts fuel carts + minecart trains: the entire runtime (listeners + tick tasks) is
-        // gated behind the BetterMinecarts companion, which calls enableCarts()/disableCarts() from its
-        // own enable/disable (mirroring enableRecipes("bmc")). Without the companion the carts' block/item
+        // Railbound fuel carts + minecart trains: the entire runtime (listeners + tick tasks) is
+        // gated behind the Railbound companion, which calls enableCarts()/disableCarts() from its
+        // own enable/disable (mirroring enableRecipes("railbound")). Without the companion the carts' block/item
         // types still load (above), but no cart/coupling behaviour is active — minecarts stay vanilla.
 
         // Banner systems
@@ -251,8 +251,8 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
     }
 
     /**
-     * Activate the BetterMinecarts runtime — the fuel-cart manager and the minecart-train manager
-     * (listeners + per-tick tasks). Called by the BetterMinecarts companion's onEnable (which runs
+     * Activate the Railbound runtime — the fuel-cart manager and the minecart-train manager
+     * (listeners + per-tick tasks). Called by the Railbound companion's onEnable (which runs
      * after ours, so worlds/chunks are loaded and register()'s scan adopts existing carts). Idempotent.
      */
     public void enableCarts() {
@@ -281,7 +281,7 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
     }
 
     /**
-     * Tear down the BetterMinecarts runtime: cancel tick tasks + persist/park (shutdown()), unregister
+     * Tear down the Railbound runtime: cancel tick tasks + persist/park (shutdown()), unregister
      * the listeners (shutdown() does not), and drop the managers so the null-guarded entity-load/unload
      * callbacks no-op. Called from onDisable and from the companion's onDisable. Null-safe / idempotent.
      */

@@ -1,11 +1,11 @@
 DefCoreLib v0.3.2
 
-Hosts the new BetterMinecarts content and adds an optional
+Hosts the new Railbound content and adds an optional
 dynamic-light hook. (https://modrinth.com/plugin/dynlight)
 
-- Ships the BetterMinecarts cart and rail blocks and drives the
+- Ships the Railbound cart and rail blocks and drives the
   train, fuel, coupling, and special-rail logic when the
-  BetterMinecarts companion is installed (recipes gated by it;
+  Railbound companion is installed (recipes gated by it;
   without it the blocks exist via /defcorelib give but aren't
   craftable and trains don't drive).
 - Optional DynLight integration: a lit blast-furnace cart emits
