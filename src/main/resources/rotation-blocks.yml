@@ -1970,11 +1970,11 @@ blocks:
     recipes:
       craft:
         shaped:
-          - pattern: [" D ", "INI", "IPI"]
+          - pattern: [" D ", "IPI", "III"]
             key:
               D: { material: DIAMOND }
               I: { material: IRON_INGOT }
-              N: { material: NETHERITE_INGOT }
+              # N: { material: NETHERITE_INGOT }
               P: { material: PISTON }
     default_state: idle_z
     placement:
