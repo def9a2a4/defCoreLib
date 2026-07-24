@@ -676,16 +676,16 @@ blocks:
               B: { block: "mech:bearing" }
 
   # ─── Engine ─────────────────────────────────────────────────────────────
-  # Source: 5 Power. Needs fuel (coal, charcoal, etc). Any orientation.
+  # Source: 10 Power. Needs fuel (coal, charcoal, etc). Any orientation.
   # Shaft display entity shows rotation direction. Smoke particles when running.
   engine:
     break_on_piston: true
     name: "&4Engine"
     lore:
-      - "&7Produces 5 Power when fueled"
+      - "&7Produces 10 Power when fueled"
       - "&7Right-click to open fuel storage"
     catalog_notes:
-      - "&fA strong 5-Power source, but it burns fuel — right-click to open its fuel slot."
+      - "&fA strong 10-Power source, but it burns fuel — right-click to open its fuel slot."
       - "&fEats the usual furnace fuels: coal, charcoal, blaze rods, lava buckets, logs, planks, sticks, and so on. Higher-value fuels last longer."
       - "&7Puffs smoke while it's running. Can face any direction."
     # Bronze Ship Engine (9172c1e7)
@@ -1963,7 +1963,7 @@ blocks:
       - "&fMounts on a wall and breaks the block directly in front of it while it has power."
       - "&fThe drill face is the wall face you click when placing — it mines away from that wall."
       - "&7Breaking runs in stages (like real mining), so harder blocks take longer to pop."
-      - "&cWon't break: obsidian, crying obsidian, spawners, reinforced deepslate, and moving pistons."
+      - "&cWon't break: bedrock, spawners, reinforced deepslate, and moving pistons."
     texture: "@drill_head"
     item_texture: "@screw_fwd"
     drops: self

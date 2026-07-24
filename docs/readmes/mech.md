@@ -34,7 +34,7 @@ shafts and gears, branch or turn corners with gears, and gate the flow with clut
 
 - [**Millstone**](https://def9a2a4.github.io/defCoreLib-docs/item.html?id=mech%3Amillstone) - grinds items (e.g. cobblestone -> gravel -> sand, bone -> bone meal).
 - [**Extractor press**](https://def9a2a4.github.io/defCoreLib-docs/item.html?id=mech%3Apress) - presses items into juices and oils (consumes glass bottles).
-- [**Fan**](https://def9a2a4.github.io/defCoreLib-docs/item.html?id=mech%3Afan) - pushes entities and items in front of it; range scales with surplus power.
+- [**Fan**](https://def9a2a4.github.io/defCoreLib-docs/item.html?id=mech%3Afan) - pushes entities and items away in a fixed ~5-block beam; surplus power pushes harder, not farther.
 - [**Drill**](https://def9a2a4.github.io/defCoreLib-docs/item.html?id=mech%3Adrill) - mines the blocks in front of it.
 - [**Placer**](https://def9a2a4.github.io/defCoreLib-docs/item.html?id=mech%3Aplacer) - places blocks from an attached inventory.
 

@@ -9,7 +9,7 @@
       "color": "white"
     },
     "description": {
-      "text": "Craft the Rotation Wrench \u2014 right-click a machine to rotate it in place.",
+      "text": "Craft the Rotation Wrench \u2014 right-click a machine to read its network info, or a power source to flip its spin.",
       "color": "gray"
     },
     "frame": "task",

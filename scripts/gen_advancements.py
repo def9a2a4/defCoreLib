@@ -52,7 +52,7 @@ NODES = [
     ("craft/bearing", "root", "task", "@windmill_hub_fwd", "First Bearing", "white",
      "Craft a Bearing — the copper core most rotation machines are built from."),
     ("craft/wrench", "craft/bearing", "task", "minecraft:golden_axe", "Right Tool for the Job", "white",
-     "Craft the Rotation Wrench — right-click a machine to rotate it in place."),
+     "Craft the Rotation Wrench — right-click a machine to read its network info, or a power source to flip its spin."),
     ("craft/glue_brush", "craft/wrench", "task", "minecraft:brush", "Stuck On You", "white",
      "Craft the Glue Brush — pick exactly which blocks a Rotator or Minecart carries."),
     ("craft/casing", "craft/glue_brush", "task", "@casing_oak", "Boxed In", "white",
