@@ -685,7 +685,7 @@ final class CartTrainManager implements Listener {
     // ── Chain visuals (one free BlockDisplay per coupling, teleported to the midpoint; transform SNAPPED) ──
 
     /** Keep one chain BlockDisplay per coupling. Each tick the display is teleported to the coupling midpoint
-     *  ({@code teleportDuration 1} → smooth position) and its transform matrix (orientation+scale) is SNAPPED
+     *  ({@code teleportDuration 3} → smooth position) and its transform matrix (orientation+scale) is SNAPPED
      *  ({@code interpolationDuration 0}). No carrier/passenger (MC-261202 jitters passengers of a teleported
      *  display → the vertical bob) and no transform interpolation (a per-tick teleport would restart it from
      *  the block's identity/vertical pose → the flash). Snapped orientation is invisible on straights and only
@@ -737,7 +737,7 @@ final class CartTrainManager implements Listener {
 
     /** Spawn a chain BlockDisplay at {@code mid}. Hand-rolled (not DisplayUtil.spawnBlock, which forces
      *  persistent) so it's non-persistent and carries the moving-display settings: smooth position via
-     *  {@code teleportDuration 1}, transform SNAPPED via {@code interpolationDuration 0}. */
+     *  {@code teleportDuration 3}, transform SNAPPED via {@code interpolationDuration 0}. */
     private BlockDisplay spawnChainDisplay(Location mid) {
         return mid.getWorld().spawn(mid, BlockDisplay.class, bd -> {
             bd.setBlock(chainBlockData());
@@ -882,7 +882,7 @@ final class CartTrainManager implements Listener {
         return carts.isBlastCart(cart) ? config.blastFurnaceCartSpeed : config.furnaceCartSpeed;
     }
 
-    /** Cap on an engine's stored fuel from tender feeding — a coal block (16000) shouldn't dump its
+    /** Cap on an engine's stored fuel from tender feeding — a coal block (8000) shouldn't dump its
      *  whole burn into a cart that only needed a top-up. */
     private static final int MAX_ENGINE_FUEL = 6000;
 

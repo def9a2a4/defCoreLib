@@ -49,8 +49,8 @@ import java.util.UUID;
  * ({@code bmc:blast_furnace_cart}). Both are item-only (declared in carts-blocks.yml) and, when the
  * item is right-clicked on a rail, spawn a plain {@link RideableMinecart} — the same base entity the
  * mechanism carts use. We re-skin it via {@link Minecart#setDisplayBlockData}
- * and give it a plugin-managed, fuel-only inventory (a 9-slot dropper for the tender, a 5-slot hopper
- * for the blast cart) serialized to the entity's PDC. The GUI opens with a custom title on right-click;
+ * and give it a plugin-managed, fuel-only inventory (a 9-slot dropper for the tender; a 9-slot dropper for
+ * the blast cart — 3 fuel slots plus −/+ cruise-speed buttons) serialized to the entity's PDC. The GUI opens with a custom title on right-click;
  * hoppers above/beside the track feed it (native hopper-minecart interop reimplemented here). The
  * blast-furnace cart additionally burns that fuel to self-propel (driven by {@link CartTrainManager}).
  *
@@ -202,8 +202,16 @@ final class CustomCartManager implements Listener {
     void onEntitiesUnload(List<Entity> entities) {
         for (Entity entity : entities) {
             if (!(entity instanceof Minecart)) continue;
-            CartState state = tracked.remove(entity.getUniqueId());
-            if (state != null) persist(state);
+            CartState state = tracked.get(entity.getUniqueId());
+            if (state != null) {
+                // Close any open GUI FIRST (while still tracked) — otherwise the untracked cart's inventory
+                // loses its blast slot-guards and its −/+ buttons + filler panes become extractable/cloneable.
+                if (state.inv != null) {
+                    for (var v : new ArrayList<>(state.inv.getViewers())) v.closeInventory();
+                }
+                persist(state);
+            }
+            tracked.remove(entity.getUniqueId());
             // Drop tracking of the marker too; it is non-persistent and despawns with the chunk.
             burnLight.remove(entity.getUniqueId());
         }
@@ -256,13 +264,19 @@ final class CustomCartManager implements Listener {
 
     /** Lay out the blast cart's 9-slot speed GUI: consolidate every fuel item into slots 0-2 (dropping any
      *  overflow at the cart — this also migrates legacy 5-slot HOPPER carts and strips stale filler/buttons),
-     *  fill 3-6 with inert panes, and place the −/+ speed buttons in 7/8. */
+     *  fill 3-6 with inert panes, and place the −/+ speed buttons in 7/8. Any NON-fuel player item (e.g. fuel a
+     *  config edit stopped recognizing) is dropped at the cart, not voided; only the UI panes/buttons are
+     *  silently discarded (they're regenerated below). */
     private void decorateBlastGui(CartState state) {
         Inventory inv = state.inv;
         List<ItemStack> fuel = new ArrayList<>();
+        List<ItemStack> rescue = new ArrayList<>();   // non-fuel, non-UI items → drop rather than delete
         for (int i = 0; i < inv.getSize(); i++) {
             ItemStack it = inv.getItem(i);
-            if (it != null && !it.getType().isAir() && config.isFuel(it.getType())) fuel.add(it);
+            if (it == null || it.getType().isAir()) continue;
+            if (config.isFuel(it.getType())) fuel.add(it);
+            else if (it.getType() != Material.GRAY_STAINED_GLASS_PANE && it.getType() != Material.PLAYER_HEAD) rescue.add(it);
+            // else: our filler pane / speed-button head → discard (re-stamped below)
         }
         inv.clear();
         ItemStack[] slots = new ItemStack[BLAST_FUEL_SLOTS];
@@ -284,7 +298,9 @@ final class CustomCartManager implements Listener {
         for (int i = BLAST_FUEL_SLOTS; i < BLAST_SLOT_MINUS; i++) inv.setItem(i, pane.clone());
         inv.setItem(BLAST_SLOT_MINUS, blastSpeedButton(false));
         inv.setItem(BLAST_SLOT_PLUS, blastSpeedButton(true));
-        for (ItemStack o : overflow) state.cart.getWorld().dropItemNaturally(state.cart.getLocation(), o);
+        Location where = state.cart.getLocation();
+        for (ItemStack o : overflow) state.cart.getWorld().dropItemNaturally(where, o);
+        for (ItemStack r : rescue) state.cart.getWorld().dropItemNaturally(where, r);
     }
 
     private static ItemStack fillerPane() {
@@ -440,6 +456,7 @@ final class CustomCartManager implements Listener {
             : state.type.itemId;
         if (state.type != CartType.BLAST) return base;
         double eff = state.targetSpeed < 0 ? config.controllerMaxSpeed * 0.5 : state.targetSpeed;   // unset → half
+        eff = Math.min(eff, config.blastFurnaceCartSpeed);   // drive clamps to the cart's top → don't over-read
         return base + " §7- " + String.format("%.1f m/s", eff * MPS_PER_BT);
     }
 
@@ -608,6 +625,8 @@ final class CustomCartManager implements Listener {
     private void pullInto(CartState state, Inventory source) {
         ItemStack one = takeOne(source, state.type.fuelOnly ? config::isFuel : m -> true);
         if (one == null) return;
+        // NB: on a blast cart, addItem can only land fuel in slots 0-2 because slots 3-8 are always occupied
+        // by the filler panes / speed buttons (decorateBlastGui) — that occupancy IS the slot guard here.
         Map<Integer, ItemStack> leftover = state.inv.addItem(one);
         for (ItemStack l : leftover.values()) source.addItem(l);
     }

@@ -2,7 +2,7 @@
 
 # Fuel accepted by the coal tender and blast-furnace cart inventories, and how long each item burns
 # (game ticks) when a blast-furnace cart consumes it. Any material NOT listed here is rejected from
-# a cart's fuel-only inventory. Values mirror vanilla furnace burn times.
+# a cart's fuel-only inventory. Values are ~half vanilla furnace burn times.
 fuel:
   COAL: 800
   CHARCOAL: 800

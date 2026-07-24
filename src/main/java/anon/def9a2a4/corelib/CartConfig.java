@@ -55,7 +55,7 @@ final class CartConfig {
     boolean chainVisuals = true;
 
     CartConfig() {
-        // Baked-in defaults (vanilla furnace burn times), overridden by the file if present.
+        // Baked-in defaults (~half vanilla furnace burn times), overridden by the file if present.
         fuelBurnTicks.put(Material.COAL, 800);
         fuelBurnTicks.put(Material.CHARCOAL, 800);
         fuelBurnTicks.put(Material.COAL_BLOCK, 8000);
