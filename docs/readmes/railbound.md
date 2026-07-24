@@ -15,6 +15,8 @@ See [the catalog of carts & rails](https://def9a2a4.github.io/defCoreLib-docs/in
 - **Controller rails:** set the target speed of a blast furnace minecart, adjustable via redstone signal strength.
 - **Destructor rails:** drop a passing cart and its contents into the container below. Easier than the regular cactus/hopper setup.
 
+![Item Catalog](https://def9a2a4.github.io/defCoreLib-docs/readmes/assets/railbound/catalog.png)
+
 ## Requires
 
 [DefCoreLib](https://github.com/def9a2a4/defCoreLib/blob/main/docs/readmes/defCoreLib.md).
