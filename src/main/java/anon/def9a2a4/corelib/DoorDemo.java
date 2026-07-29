@@ -61,10 +61,16 @@ final class DoorDemo {
             Anchor anchor = new BlockAnchor(head, () -> !activeDoors.containsKey(key));
             // The controller head itself is excluded: slime/honey beside it (or a stray authored
             // offset) would otherwise drag it into the swung set and air out its own controller.
-            List<Block> resolved = glueManager.resolveStructure(anchor,
-                Set.of(key), MoverExclusion::blockedParticle);
+            // Transitive capture: a nested anchor in the swung set brings its own glued region (the
+            // engine re-stamps each captured anchor's offsets at landing). A door hinges about Y, so a
+            // carried hoist stays upright — hoistAllowed = true.
+            GlueManager.Transitive captured = glueManager.resolveTransitive(anchor,
+                Set.of(key), MoverExclusion::blockedParticle, true);
+            if (captured.refused()) return;   // a nested hoist mid-stroke / over the cap — decline
+            List<Block> resolved = captured.blocks();
             boolean glued = resolved != null && !resolved.isEmpty();
-            // Pre-move snapshot: rebind stores ONLY authored glue (derived casings/leaves re-derive).
+            // Pre-move snapshot: rebind stores ONLY this controller's OWN authored glue (nested anchors
+            // are re-stamped by the engine; derived casings/leaves re-derive).
             final int[] authored = glued ? anchor.readOffsets() : null;
             List<Block> planks;
             if (glued) {
@@ -123,10 +129,16 @@ final class DoorDemo {
             Anchor anchor = new BlockAnchor(head, () -> !activeDoors.containsKey(key));
             // The controller head itself is excluded: slime/honey beside it (or a stray authored
             // offset) would otherwise drag it into the swung set and air out its own controller.
-            List<Block> resolved = glueManager.resolveStructure(anchor,
-                Set.of(key), MoverExclusion::blockedParticle);
+            // Transitive capture: a nested anchor in the swung set brings its own glued region (the
+            // engine re-stamps each captured anchor's offsets at landing). A door hinges about Y, so a
+            // carried hoist stays upright — hoistAllowed = true.
+            GlueManager.Transitive captured = glueManager.resolveTransitive(anchor,
+                Set.of(key), MoverExclusion::blockedParticle, true);
+            if (captured.refused()) return;   // a nested hoist mid-stroke / over the cap — decline
+            List<Block> resolved = captured.blocks();
             boolean glued = resolved != null && !resolved.isEmpty();
-            // Pre-move snapshot: rebind stores ONLY authored glue (derived casings/leaves re-derive).
+            // Pre-move snapshot: rebind stores ONLY this controller's OWN authored glue (nested anchors
+            // are re-stamped by the engine; derived casings/leaves re-derive).
             final int[] authored = glued ? anchor.readOffsets() : null;
             List<Block> planks;
             if (glued) {

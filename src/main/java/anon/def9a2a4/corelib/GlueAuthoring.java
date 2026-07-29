@@ -39,13 +39,6 @@ import java.util.UUID;
  */
 final class GlueAuthoring implements Listener {
 
-    /** Custom-block ids that can own a glued structure (skull anchors). The chain hoist is the odd one
-     *  out: its PDC is on the skull like the rest, but its offsets are relative to the platform seed
-     *  below the chain end ({@link HoistAnchor}), and its session also opens from that seed block
-     *  ({@link #owningHoist}). */
-    private static final Set<String> ANCHOR_IDS =
-        Set.of("demo:door_controller", "mech:rotator", "mech:piston_head", ChainHoistManager.HOIST_ID);
-
     /** A cuboid-fill box larger than this many cells is rejected (avoids enumerating huge volumes). */
     private static final int MAX_BOX_VOLUME = 32_768;
 
@@ -506,19 +499,14 @@ final class GlueAuthoring implements Listener {
     // ──────────────────────────────────────────────────────────────────────
 
     private boolean isAnchor(Block block) {
-        CustomHeadBlock type = registry.getTypeFromBlock(block);
-        return type != null && ANCHOR_IDS.contains(type.fullId());
+        return Anchors.isAnchorType(block, registry);
     }
 
     /** The right {@link Anchor} for an anchor block: hoists get the dynamic-origin {@link HoistAnchor}
      *  (PDC on the skull, offsets relative to the platform seed below the chain end) — including via
      *  {@link #startBlockSession}, whose hoist exports become seed-relative (intended). */
     private Anchor anchorFor(Block block) {
-        if (ChainHoistManager.isHoist(block, registry)) {
-            return new HoistAnchor(block, registry,
-                () -> hoistManager == null || !hoistManager.isMoving(block));
-        }
-        return new BlockAnchor(block, () -> true);
+        return Anchors.forBlock(block, registry, hoistManager);
     }
 
     /** The hoist owning {@code clicked} as its platform seed, or null: walk up the chain column and

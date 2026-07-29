@@ -16,10 +16,16 @@ import org.joml.Vector3f;
 import org.joml.Vector3i;
 import org.jspecify.annotations.Nullable;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.function.BiConsumer;
 
 /**
  * Anchor-owned block selection ("glue"). Stores a set of block offsets relative to an
@@ -38,10 +44,27 @@ final class GlueManager {
     // registry-less construction in tests; derived glue is skipped without it.
     private final @Nullable CustomBlockRegistry registry;
 
+    // Resolves a block to its owning Anchor when the block is a glueable anchor TYPE (else null).
+    // Injected post-construction because the canonical factory needs the ChainHoistManager, which is
+    // built after this manager (see CoreLibPlugin). Null → transitive capture degrades to a plain
+    // resolve (no nested-anchor expansion) — the safe default for registry-less test construction.
+    private @Nullable AnchorFactory anchorFactory;
+
+    /** Given a world block, its owning {@link Anchor} if the block is a glueable anchor type, else null. */
+    @FunctionalInterface
+    interface AnchorFactory { @Nullable Anchor of(Block block); }
+
+    /** Result of {@link #resolveTransitive}: the captured block union, or {@code refused} to abort the
+     *  move outright (a mid-stroke or non-upright hoist in the closure, or the cap exceeded). A null
+     *  {@code blocks} with {@code refused == false} means "root has no glue" — the caller falls back. */
+    record Transitive(java.util.@Nullable List<Block> blocks, boolean refused) {}
+
     GlueManager(int maxSize, @Nullable CustomBlockRegistry registry) {
         this.maxSize = maxSize;
         this.registry = registry;
     }
+
+    void setAnchorFactory(AnchorFactory anchorFactory) { this.anchorFactory = anchorFactory; }
 
     int maxSize() { return maxSize; }
 
@@ -153,6 +176,78 @@ final class GlueManager {
             out[i + 2] = Math.round(v.z);
         }
         a.writeOffsets(out);
+    }
+
+    /**
+     * Resolve a mover's structure like {@link #resolveStructure}, then <b>transitively expand it</b>:
+     * any captured block that is itself a glue anchor (e.g. a chain hoist glued onto a rotator)
+     * contributes its own glued region — a hoist additionally brings its platform seed and chain
+     * column so head + chain + platform ride as one rigid body. The blocks physically move; their
+     * stored offsets are preserved and reoriented at landing by the mechanism engine (see
+     * {@code MechanismRegistry.assembleCore} / {@code BasicMechanism.disassemble}).
+     *
+     * <p>{@code hoistAllowed} is false for a mover rotating about a horizontal axis (an X/Z drawbridge):
+     * a hoist's offsets are relative to a dynamic seed that only survives an upright landing, so a
+     * hoist in the closure of a tipping move is refused rather than corrupted.
+     *
+     * @return a {@link Transitive}: {@code blocks==null, refused==false} when the root has no glue (the
+     *   caller falls back to a single seed block); {@code refused==true} to abort the move (mid-stroke
+     *   or non-upright hoist, or the cap exceeded); else the deduped captured union.
+     */
+    Transitive resolveTransitive(Anchor root, Set<CustomBlockRegistry.LocationKey> excluded,
+                                 @Nullable BiConsumer<Block, Block> onBlocked, boolean hoistAllowed) {
+        List<Block> resolved = resolveStructure(root, excluded, onBlocked);
+        if (resolved == null) return new Transitive(null, false); // no glue → caller falls back
+        List<Block> expanded = expandNested(resolved, excluded, onBlocked, hoistAllowed);
+        return new Transitive(expanded, expanded == null);
+    }
+
+    /**
+     * Expand a resolved block set with the glued regions of any NESTED anchors it contains (fixpoint,
+     * deduped by cell). Returns {@code null} to refuse the whole move: a nested hoist mid-stroke or
+     * (when {@code !hoistAllowed}) about to be tipped off its vertical column, or the union exceeding
+     * {@link #maxSize} (refuse rather than land a sheared body). With no {@link AnchorFactory} injected
+     * this is a plain dedupe of the input — nested expansion is skipped (test/registry-less path).
+     */
+    @Nullable List<Block> expandNested(List<Block> resolved, Set<CustomBlockRegistry.LocationKey> excluded,
+                                       @Nullable BiConsumer<Block, Block> onBlocked, boolean hoistAllowed) {
+        Map<CustomBlockRegistry.LocationKey, Block> out = new LinkedHashMap<>();
+        for (Block b : resolved) out.putIfAbsent(CustomBlockRegistry.LocationKey.of(b), b);
+        if (anchorFactory == null || registry == null) return new ArrayList<>(out.values());
+
+        Set<CustomBlockRegistry.LocationKey> visitedAnchors = new HashSet<>();
+        Deque<Block> work = new ArrayDeque<>(out.values());
+        while (!work.isEmpty()) {
+            Block b = work.poll();
+            CustomBlockRegistry.LocationKey bk = CustomBlockRegistry.LocationKey.of(b);
+            if (!visitedAnchors.add(bk)) continue;
+            Anchor nested = anchorFactory.of(b);
+            if (nested == null || !hasGlue(nested)) continue;
+
+            // A hoist's seed-relative glue only survives an upright landing, and capturing one mid-stroke
+            // would tear its own in-flight mechanism — refuse the whole move in either case.
+            boolean isHoist = nested instanceof HoistAnchor;
+            if (isHoist && (!hoistAllowed || !nested.isAtRest())) return null;
+
+            List<Block> region = resolveStructure(nested, excluded, onBlocked);
+            List<Block> extra = new ArrayList<>();
+            if (region != null) extra.addAll(region);
+            if (nested instanceof HoistAnchor h) {
+                // resolveStructure never returns the anchor origin: for a hoist that origin is the platform
+                // seed (its top block), and the chain column between head and platform is not glue at all.
+                Block seed = h.originBlock();
+                if (MovableBlocks.isMovable(seed, registry)) extra.add(seed);
+                extra.addAll(ChainHoistManager.ropeColumnFor(h.hoist(), registry));
+            }
+            for (Block nb : extra) {
+                CustomBlockRegistry.LocationKey nk = CustomBlockRegistry.LocationKey.of(nb);
+                if (excluded.contains(nk) || out.containsKey(nk) || nb.getType().isAir()) continue;
+                out.put(nk, nb);
+                if (out.size() > maxSize) return null; // cap exceeded → refuse, don't shear
+                work.add(nb);
+            }
+        }
+        return new ArrayList<>(out.values());
     }
 
     /**

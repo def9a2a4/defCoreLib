@@ -38,6 +38,10 @@ final class HoistAnchor implements Anchor {
         this.pdc = new BlockAnchor(hoist, () -> true);
     }
 
+    /** The hoist head block this anchor hangs from (its glued region rides + reorients with it when a
+     *  mover carries the hoist — see {@link GlueManager#expandNested}). */
+    Block hoist() { return hoist; }
+
     @Override public World world() { return hoist.getWorld(); }
 
     @Override public Block originBlock() { return ChainHoistManager.platformSeed(hoist, registry); }

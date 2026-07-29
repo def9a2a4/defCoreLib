@@ -363,10 +363,16 @@ final class MechanismMinecartManager implements Listener {
         // current cell — glued blocks must be co-located with the cart: assemble in place). With no
         // authored glue, default to the single block directly above the cart.
         Anchor anchor = new EntityAnchor(state.minecart, () -> state.mechanism == null);
-        List<Block> resolved = glueManager.resolveStructure(anchor,
-            excluded, MoverExclusion::blockedParticle);
+        // Transitive capture: a nested anchor in the cargo brings its own glued region (the engine
+        // re-stamps each captured anchor's offsets at landing). A cart rides the rail level with no
+        // tipping, so a carried hoist stays upright — hoistAllowed = true.
+        GlueManager.Transitive captured = glueManager.resolveTransitive(anchor,
+            excluded, MoverExclusion::blockedParticle, true);
+        if (captured.refused()) return;   // a nested hoist mid-stroke / over the cap — decline
+        List<Block> resolved = captured.blocks();
         boolean glued = resolved != null && !resolved.isEmpty();
-        // Pre-move snapshot: rebind stores ONLY authored glue (derived sticky blocks/leaves re-derive).
+        // Pre-move snapshot: rebind stores ONLY the cart's OWN authored glue (nested anchors are
+        // re-stamped by the engine; derived sticky blocks/leaves re-derive).
         final int[] authored = glued ? anchor.readOffsets() : null;
         List<Block> blocks;
         if (glued) {

@@ -181,6 +181,10 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
             new ChainHoistManager(this, registry, rotationNetwork, mechanismRegistry, glueManager, rotConfig);
         chainHoistManager.register();
         glueAuthoring.setChainHoistManager(chainHoistManager);
+        // Transitive glue capture needs to recognise a nested anchor and build the right Anchor for it
+        // (hoists get the dynamic-origin HoistAnchor). Wired here, after the hoist manager exists.
+        glueManager.setAnchorFactory(b ->
+            Anchors.isAnchorType(b, registry) ? Anchors.forBlock(b, registry, chainHoistManager) : null);
         mechanismMinecartManager = new MechanismMinecartManager(this, registry, mechanismRegistry, glueManager);
         glueAuthoring.setMinecartManager(mechanismMinecartManager);
         mechanismMinecartManager.register();

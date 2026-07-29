@@ -297,6 +297,16 @@ final class ChainHoistManager {
         return out;
     }
 
+    /** Static form of {@link #chainColumn} for cross-class callers: the whole live chain column of a
+     *  hoist ({@code y0-1 … y0-D}). Used by {@link GlueManager}'s transitive capture so a hoist carried
+     *  by another mechanism brings head + chain + platform along as one rigid body. */
+    static List<Block> ropeColumnFor(Block hoist, CustomBlockRegistry registry) {
+        int d = scanDepth(hoist, registry);
+        List<Block> out = new ArrayList<>(d);
+        for (int i = 1; i <= d; i++) out.add(hoist.getRelative(0, -i, 0));
+        return out;
+    }
+
     /**
      * Platform = the hoist's authored glue (brushed via {@link HoistAnchor}, offsets relative to the
      * seed) or, without any, the seed skull's own glue (legacy) — plus the movable seed itself, expanded
@@ -339,7 +349,12 @@ final class ChainHoistManager {
         // resolveStructure, so leaving it to the fallback would strand an authored platform's top
         // block for a landing link to solid-win against.
         if (!seedIn && MovableBlocks.isMovable(seed, registry)) base.add(seed);
-        return StickySpread.withDerived(base, registry, glueManager.maxSize(),
+        // Transitive capture: a nested anchor on the platform (e.g. a rotator glued to the hanging load)
+        // brings its own glued region. The stroke is a whole-block Y translation, so a carried hoist stays
+        // upright — hoistAllowed = true. Null → a nested refusal (mid-stroke/cap): reject the stroke.
+        List<Block> expanded = glueManager.expandNested(base, excluded, null, true);
+        if (expanded == null) return null;
+        return StickySpread.withDerived(expanded, registry, glueManager.maxSize(),
             excluded, null);
     }
 
@@ -389,15 +404,10 @@ final class ChainHoistManager {
         // after authoring (resolveGroup still vets every glued cell individually).
         Block seed = hoist.getRelative(0, -1 - startDepth, 0);
         List<Block> load = List.of();
-        int[] seedGlue = null;
         if (MovableBlocks.isMovable(seed, registry)
                 || glueManager.hasGlue(new HoistAnchor(hoist, registry, () -> true))) {
             List<Block> platform = resolveGroup(hoist, seed, excluded);
             if (platform == null) return;   // glued to something immovable — refuse rather than shear
-            // Legacy skull-as-seed glue only. Hoist-held glue (HoistAnchor) never needs the landing
-            // rebind below: its PDC sits on the unmoved hoist, and a stroke is a whole-block Y
-            // translation of seed and platform together, so seed-relative offsets are invariant.
-            seedGlue = new BlockAnchor(seed, () -> !active.containsKey(hoistKey)).readOffsets();  // pre air-out
             load = platform;
             for (Block b : platform) cells.add(cellKey(b));
         }
@@ -475,8 +485,6 @@ final class ChainHoistManager {
         // excludes the landed links. Every bail is above this line; the hook below always runs after it.
         if (descend) consumeChains(registry.getOrCreateStorage(hoist), budget);
 
-        final int[] glueOffsets = seedGlue;
-        final int seedDy = -1 - startDepth;   // seed's offset from the pivot (= the hoist) at t=0
         // Rising: links layLinks actually AIRED (not merely passed) — the exact refund. A link a player
         // mined out mid-rise was never ours to bank; counting deletions instead of re-scanning the world
         // is what closes that dupe (and the wedged-intruder refund dupe on descend, below).
@@ -493,12 +501,10 @@ final class ChainHoistManager {
                         registry.resolveDisplayTransforms(b, t, registry.getState(b));
                     }
                 }
-                // Rebind authored glue onto the landed anchor (no-op when the platform had none).
-                if (glueOffsets != null) {
-                    Location p = mech.pivot();
-                    new BlockAnchor(p.getWorld().getBlockAt(p.getBlockX(),
-                        p.getBlockY() + seedDy, p.getBlockZ()), () -> true).writeOffsets(glueOffsets);
-                }
+                // Authored glue on the landed platform is re-stamped by the engine
+                // (BasicMechanism.rebindLandedGlue): a legacy seed skull rides in the captured group, so
+                // its region is preserved with an identity landing rotation. Hoist-held glue (HoistAnchor)
+                // sits on the unmoved, protected hoist skull and is never captured — invariant intact.
                 // Broken mid-stroke: forget() lands the body from inside onBlockRemoved, which runs its
                 // consumer FIRST — the skull and its PDC are still there, so getTypeFromBlock would say the
                 // hoist is alive and we would bill an inventory dropStorage has already emptied (free

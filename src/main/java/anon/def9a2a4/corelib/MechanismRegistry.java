@@ -301,6 +301,10 @@ public class MechanismRegistry {
                 }
             }
             mbd.banners = banners;
+            // Preserve authored glue offsets so a captured anchor (e.g. a hoist carried by a rotator)
+            // keeps and reorients its glued region on landing. Read from the live skull PDC BEFORE
+            // air-out; null for non-anchor blocks. Only custom head blocks carry a skull PDC.
+            if (chb != null) mbd.glueOffsets = new BlockAnchor(block, () -> true).readOffsets();
             blockData.add(mbd);
         }
 

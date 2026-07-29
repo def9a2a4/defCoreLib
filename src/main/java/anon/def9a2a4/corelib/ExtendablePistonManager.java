@@ -87,7 +87,7 @@ final class ExtendablePistonManager {
                 // co-resident consumers by their fair share, and its own speed scales with supply minus other
                 // consumers' demand (its own base is added back in advance()).
                 network.addNode(b, CORE_ID, RotationNetwork.Axis.Y,
-                    RotationNetwork.NodeRole.CONSUMER, config.getPower("piston_core", 1), false, true, null);
+                    RotationNetwork.NodeRole.CONSUMER, config.getPower("piston_core", 1), false, false, true, null);
                 cores.add(k);
             })
             .onChunkUnload(b -> forget(b))
@@ -499,8 +499,12 @@ final class ExtendablePistonManager {
      */
     private boolean addHeadPayload(List<Block> out, Block head, BlockFace outFace,
                                    Set<CustomBlockRegistry.LocationKey> excluded) {
-        List<Block> glued = glueManager.resolveStructure(new BlockAnchor(head, () -> true),
-            excluded, MoverExclusion::blockedParticle);
+        // Transitive capture: a nested anchor glued to this head brings its own region (the engine
+        // re-stamps offsets at landing). A piston translates along Y with no tipping — hoistAllowed = true.
+        GlueManager.Transitive captured = glueManager.resolveTransitive(new BlockAnchor(head, () -> true),
+            excluded, MoverExclusion::blockedParticle, true);
+        if (captured.refused()) return false;   // a nested hoist mid-stroke / over the cap — reject the move
+        List<Block> glued = captured.blocks();
         if (glued != null && !glued.isEmpty()) {
             for (Block b : glued) if (!MovableBlocks.isMovable(b, registry)) return false;
             out.addAll(glued);
@@ -517,16 +521,6 @@ final class ExtendablePistonManager {
 
     private void startMove(CustomBlockRegistry.LocationKey coreKey, PistonLine line, List<Block> payload,
                            BlockFace moveFace, int r, RotationNetwork.SpinDirection spinDir) {
-        // Capture BOTH heads' authored-glue offsets BEFORE assembly airs the heads out to AIR (else readOffsets
-        // reads a non-skull → null → glue is lost on land). The back head's landed cell is the front head's
-        // landing (= pivot) plus the rigid front→back offset (yaw 0 → the integer offset is preserved).
-        final int[] frontGlue = new BlockAnchor(line.frontHead(), () -> true).readOffsets();
-        final int[] backGlue = line.backHead() != null
-            ? new BlockAnchor(line.backHead(), () -> true).readOffsets() : null;
-        final int bdx = line.backHead() != null ? line.backHead().getX() - line.frontHead().getX() : 0;
-        final int bdy = line.backHead() != null ? line.backHead().getY() - line.frontHead().getY() : 0;
-        final int bdz = line.backHead() != null ? line.backHead().getZ() - line.frontHead().getZ() : 0;
-
         // The moving assembly: the rod (poles + head(s)) + the payload, deduped so a payload cell can't
         // double a rod cell (double air-out/placement).
         List<Block> assembleBlocks = new ArrayList<>(line.rodBlocks());
@@ -554,28 +548,18 @@ final class ExtendablePistonManager {
             ((BasicMechanism) mech).setProtectedCells(Set.of(coreKey));
             Vector3f dir = new Vector3f(moveFace.getModX(), moveFace.getModY(), moveFace.getModZ());
             // Runs on ANY disassembly (completion, power-cut/reverse stop, forget, engine teardown), AFTER the
-            // whole rod is placed. Two jobs:
-            //   1. Re-resolve the display of EVERY landed resolver-block — blocks land in list order with no
-            //      neighbour guarantee, so a head placed before its pole resolves against air and defaults to
-            //      +axis (a down head flips up). Covers the rod head AND any pushed payload head; by hook time
-            //      all cells are placed and PDC-stamped, so the resolver sees real neighbours.
-            //   2. Rebind authored glue onto BOTH landed heads: the front head at the final pivot, the back
-            //      head at pivot + the rigid front→back offset.
+            // whole rod is placed. Re-resolve the display of EVERY landed resolver-block — blocks land in list
+            // order with no neighbour guarantee, so a head placed before its pole resolves against air and
+            // defaults to +axis (a down head flips up). Covers the rod head AND any pushed payload head; by
+            // hook time all cells are placed and PDC-stamped, so the resolver sees real neighbours. Authored
+            // glue on the landed heads (and any nested anchor) is re-stamped by the engine
+            // (BasicMechanism.rebindLandedGlue) — both heads are captured, so no explicit rebind here.
             mech.setOnDisassembled(placed -> {
                 for (Block b : placed) {
                     CustomHeadBlock t = registry.getTypeFromBlock(b);
                     if (t != null && t.displayTransformResolver() != null) {
                         registry.resolveDisplayTransforms(b, t, registry.getState(b));
                     }
-                }
-                Location p = mech.pivot();
-                if (frontGlue != null) {
-                    new BlockAnchor(p.getWorld().getBlockAt(p.getBlockX(), p.getBlockY(), p.getBlockZ()),
-                        () -> true).writeOffsets(frontGlue);
-                }
-                if (backGlue != null) {
-                    new BlockAnchor(p.getWorld().getBlockAt(p.getBlockX() + bdx, p.getBlockY() + bdy,
-                        p.getBlockZ() + bdz), () -> true).writeOffsets(backGlue);
                 }
             });
             Location start = mech.pivot(); // block-centered after assembly

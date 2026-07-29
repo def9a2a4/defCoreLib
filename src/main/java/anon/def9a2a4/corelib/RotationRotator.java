@@ -98,6 +98,9 @@ final class RotationRotator implements Listener {
         registry.register(block.toBuilder()
             .drillable(false)
             .reactsToNeighbors(true)
+            // Vertical states render as a floating floor PLAYER_HEAD (mirrors the drill): a ceiling
+            // rotator hangs from the block above, a floor rotator sits on the block below.
+            .playerHeadStates("idle_y", "spinning_y", "idle_ceiling", "spinning_ceiling")
             .onNeighborChange((b, face) -> onNeighborChange(b))
             .onInteract(this::onInteract)
             .onChunkLoad((b, state) -> {
@@ -155,11 +158,23 @@ final class RotationRotator implements Listener {
         // the controller into its own swing). Power components are ordinary cargo.
         Set<CustomBlockRegistry.LocationKey> excluded = MoverExclusion.exclusionFor(List.of(head));
 
+        RotationNetwork.RotationNode node = network.getNode(key);
+        if (node == null) return;
+        Vector3f axis = axisVec(node.axis());
+        // A Y-axis turntable keeps a carried hoist upright (its seed-relative glue stays valid); an X/Z
+        // drawbridge would tip it off its vertical column, so resolveTransitive refuses a hoist then.
+        boolean hoistUpright = Math.abs(axis.y) > 0.5f;
+
         Anchor anchor = new BlockAnchor(head, () -> !activeRotators.containsKey(key));
-        List<Block> resolved = glueManager.resolveStructure(anchor,
-            excluded, MoverExclusion::blockedParticle);
+        // Transitive capture: a nested anchor in the swung set (e.g. a glued-on chain hoist) brings its
+        // own glued region — the engine re-stamps each captured anchor's offsets at landing.
+        GlueManager.Transitive captured = glueManager.resolveTransitive(anchor,
+            excluded, MoverExclusion::blockedParticle, hoistUpright);
+        if (captured.refused()) return;   // a nested hoist mid-stroke / tipped / over the cap — decline
+        List<Block> resolved = captured.blocks();
         boolean glued = resolved != null && !resolved.isEmpty();
-        // Pre-move snapshot: rebind stores ONLY authored glue (derived casings/leaves re-derive).
+        // Pre-move snapshot: rebind stores ONLY the rotator's OWN authored glue (nested anchors are
+        // re-stamped by the engine; derived casings/leaves re-derive).
         final int[] authored = glued ? anchor.readOffsets() : null;
         List<Block> planks;
         if (glued) {
@@ -173,9 +188,6 @@ final class RotationRotator implements Listener {
         planks = StickySpread.withDerived(planks, registry, glueManager.maxSize(),
             excluded, MoverExclusion::blockedParticle);
 
-        RotationNetwork.RotationNode node = network.getNode(key);
-        if (node == null) return;
-        Vector3f axis = axisVec(node.axis());
         Mechanism mech = mechRegistry.assembleMechanism(ROTATOR_ID, planks,
             head.getLocation().add(0.5, 0, 0.5), axis, null);
         if (glued) mech.setOnDisassembled(p ->
@@ -359,10 +371,17 @@ final class RotationRotator implements Listener {
     }
 
     /** The block a rotator head is placed on: behind for a wall head (drawbridge), below for a floor
-     *  head (door). Used as the default single-block structure when no glue is authored. */
-    private static Block attachmentBlock(Block head) {
+     *  head (door), above for a ceiling head (hanging door). Used as the default single-block
+     *  structure when no glue is authored. */
+    private Block attachmentBlock(Block head) {
         if (head.getBlockData() instanceof org.bukkit.block.data.Directional d) {
             return head.getRelative(d.getFacing().getOppositeFace());
+        }
+        // Floor and ceiling heads are both non-directional floating PLAYER_HEADs (no pitch in block
+        // data), so disambiguate from the stored custom state: a ceiling hinge swings the block above.
+        String state = registry.getState(head);
+        if (state != null && state.startsWith("idle_ceiling")) {
+            return head.getRelative(BlockFace.UP);
         }
         return head.getRelative(BlockFace.DOWN);
     }

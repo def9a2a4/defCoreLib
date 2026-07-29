@@ -518,11 +518,13 @@ final class BasicMechanism implements Mechanism {
                 placeBlock(target, mb, snappedYaw);
                 placed.add(target);
                 landBanners(target, mb, snappedYaw, upright);
+                rebindLandedGlue(target, mb, rotation);
             } else if (FragileBlocks.isFragile(target.getType())) {
                 target.breakNaturally();
                 placeBlock(target, mb, snappedYaw);
                 placed.add(target);
                 landBanners(target, mb, snappedYaw, upright);
+                rebindLandedGlue(target, mb, rotation);
             } else if (mb.ghost && target.getBlockData().equals(mb.blockData)) {
                 // A blocked GHOST whose cell already holds its identical block is discarded silently:
                 // ghosts are data-only (never captured from the world), so dropping one here mints an
@@ -559,6 +561,28 @@ final class BasicMechanism implements Mechanism {
         }
         if (serializer != null) serializer.onDisassemble(this);
         if (onDisassembled != null) onDisassembled.accept(placed);
+    }
+
+    /**
+     * Re-stamp a landed anchor's authored glue offsets, transformed by the mechanism's snapped landing
+     * rotation ({@code R × offset}). Capture aired the source block (and its PDC) out; this restores the
+     * glued region onto the landed skull so a carried anchor — e.g. a chain hoist swung by a rotator —
+     * keeps and reorients its region. No-op for non-anchor blocks ({@code glueOffsets == null}). The
+     * write matches {@link GlueManager#rebindTransformed}; {@code placeBlock} already created the skull.
+     */
+    private static void rebindLandedGlue(Block target, MechanismBlockData mb, Matrix4f rotation) {
+        int[] src = mb.glueOffsets;
+        if (src == null) return;
+        int[] out = new int[src.length];
+        Vector3f v = new Vector3f();
+        for (int i = 0; i + 2 < src.length; i += 3) {
+            v.set(src[i], src[i + 1], src[i + 2]);
+            rotation.transformPosition(v);
+            out[i] = Math.round(v.x);
+            out[i + 1] = Math.round(v.y);
+            out[i + 2] = Math.round(v.z);
+        }
+        new BlockAnchor(target, () -> true).writeOffsets(out);
     }
 
     @Override

@@ -183,6 +183,26 @@ showcases:
     expect:
       - { type: mechanism_swung, at: [0, 0, 0] }
 
+  - id: redstone_motor_ceiling_rotator
+    name: "Motor → Ceiling Rotator"
+    blurb: "A rotator hung from the block above swings it like a hatch when pulsed — the floor door, upside down."
+    description: >
+      A rotator doesn't only sit on the floor: mounted against the underside of a block it hangs as a
+      ceiling hinge, swinging the block above it (and anything glued to it) like a trapdoor. It's still
+      a Y-axis consumer, so power arrives up the vertical axle from the motor below, while the swung
+      block sits on the opposite (mounting) side above. A redstone pulse gives the rising edge that
+      fires one swing.
+    blocks:
+      # Vertical (Y) axle: motor BELOW feeds the ceiling hinge; the hinge hangs from the block above it.
+      - { id: "mech:redstone_motor", facing: down, at: [0, -1, 0] }
+      - { id: "mech:rotator",   facing: up,   at: [0, 0, 0] }    # ceiling hinge (idle_ceiling), Y axis
+    vanilla:
+      # The block the hinge swings: directly ABOVE it (its mounting block). A single movable plank.
+      - { block: "OAK_PLANKS", at: [0, 1, 0] }
+    activate: { pulse: [1, 0, 0] }   # redstone east of the hinge → rising edge → swing
+    expect:
+      - { type: mechanism_swung, at: [0, 0, 0] }
+
   # ── Gears: power turning a 90° corner ───────────────────────────────────
   - id: gear_corner
     name: "Gearbox Corner"

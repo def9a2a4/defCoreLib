@@ -42,6 +42,12 @@ public final class MechanismBlockData {
     // banner block's patterns. Order matches BasicMechanism.bannerDisplaysPerBlock for this index.
     @Nullable List<BannerAttachment> banners;
 
+    // Authored glue offsets captured from this block's skull PDC at assembly (set post-construction,
+    // like banners), so a captured anchor — e.g. a chain hoist carried by a rotator — keeps and
+    // reorients its glued region on landing (BasicMechanism.disassemble writes R × these back). Null
+    // unless the block is a glue anchor with a brushed region.
+    int @Nullable [] glueOffsets;
+
     // Mutable — updated by BasicMechanism.setBlockState()
     // Nullable but not annotated: @Nullable cannot be applied to qualified inner type names
     String customState;
