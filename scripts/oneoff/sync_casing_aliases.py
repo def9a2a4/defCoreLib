@@ -17,8 +17,12 @@ CACHE = Path("scripts/skin_cache.csv")
 with CACHE.open(newline="") as fh:
     cache = {row["name"]: row["base64"] for row in csv.DictReader(fh)}
 
-# Scoped to the casing art on purpose: the other ~44 aliases are not ours to touch.
-LINE = re.compile(r'^(?P<pre>\s*casing_\w+:\s*)"[^"]*"(?P<post>\s*#\s*(?P<key>casing/cased/\w+\.png)\s*)$')
+# Scoped to the casing + gearbox art on purpose: the other ~44 aliases are not ours to touch. Both
+# share the same "# casing/<subdir>/<wood>.png" trailing-comment cache key, so one pattern covers both
+# (casing_* → cased/, gearbox_* → gearbox/). Chassis aliases are hand-maintained and left alone.
+LINE = re.compile(
+    r'^(?P<pre>\s*(?:casing|gearbox)_\w+:\s*)"[^"]*"'
+    r'(?P<post>\s*#\s*(?P<key>casing/(?:cased|gearbox)/\w+\.png)\s*)$')
 
 out, changed, missing = [], 0, []
 for line in YML.read_text().splitlines(keepends=True):

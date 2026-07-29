@@ -87,8 +87,12 @@ def entry(wood: str) -> str:
 new_block = HEADER + "\n".join(entry(w) for w in WOODS)
 
 start = text.index("  # ─── Mechanical Casing")
-end = text.index("  # ─── Millstone")
-# keep exactly one blank line between the last casing entry and the millstone header
+# The chassis section (gen_chassis.py) sits between casings and the millstone; stop there so a
+# re-run of this generator does not clobber it. Falls back to the millstone header if chassis
+# has not been generated yet.
+end = (text.index("  # ─── Mechanical Chassis") if "  # ─── Mechanical Chassis" in text
+       else text.index("  # ─── Millstone"))
+# keep exactly one blank line between the last casing entry and the chassis/millstone header
 text = text[:start] + new_block + "\n" + text[end:]
 YML.write_text(text)
 print("replaced; casing entries now:", text.count("  casing_"))
