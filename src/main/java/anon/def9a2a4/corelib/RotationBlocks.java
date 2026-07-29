@@ -167,6 +167,7 @@ final class RotationBlocks {
         // per-player link selection state, so it outlives register() via the callback captures.
         new ChainPulley(registry, network, config.chainPulleyMaxDistance).register();
         overlayClutch(registry, network);
+        overlayRatchet(registry, network);
         overlayWaterWheel(registry, network, config);
         overlayEngine(registry, network, fuelManager, config);
         overlayMillstone(registry, network, millRecipes, config);
@@ -305,6 +306,132 @@ final class RotationBlocks {
             .onChunkUnload(b -> network.removeNode(CustomBlockRegistry.LocationKey.of(b)))
             .onBlockRemoved((b, state) -> network.removeNode(CustomBlockRegistry.LocationKey.of(b)))
             .build());
+    }
+
+    // ──────────────────────────────────────────────────────────────────────
+    // Ratchet: one-way check-valve. Transmits only while the shaft turns its allowed way (CW/CCW,
+    // stored in the STATE so it survives mechanism moves); otherwise it FREEWHEELS — fully severs so
+    // the input keeps spinning while the output goes dead. The allowed direction defaults to the live
+    // line's spin at placement and flips with the wrench. Freewheel gating lives in RotationNetwork
+    // (the two-pass solve); this overlay only owns the block's identity, wrench UI, and place default.
+    // ──────────────────────────────────────────────────────────────────────
+    private static void overlayRatchet(CustomBlockRegistry registry, RotationNetwork network) {
+        String blockId = "mech:ratchet";
+        CustomHeadBlock block = registry.getType(blockId);
+        if (block == null) {
+            registry.getPlugin().getLogger().warning("RotationBlocks: block '" + blockId + "' not found — skipping overlay");
+            return;
+        }
+        registry.register(block.toBuilder()
+            .drillable(false)
+            .reactsToNeighbors(true)
+            .onNeighborChange((b, face) -> recalcIfKnown(b, network))
+            .onBlockPlaced((b, state) -> {
+                // Place-time default: adopt the live line's spin as the allowed direction, so a ratchet
+                // dropped onto a running line engages by default and only freewheels once it's reversed.
+                // Fires BEFORE the node is added (onChunkLoadCallback), so the first recalc already sees it.
+                RotationNetwork.SpinDirection line = neighborLineDirection(network, b,
+                        RotationNetwork.axisFromState(state));
+                if (line == null) return;
+                int u = state.lastIndexOf('_');
+                if (u < 0) return;
+                String target = "idle_" + (line == RotationNetwork.SpinDirection.CW ? "cw" : "ccw")
+                        + "_" + state.substring(u + 1);
+                if (target.equals(state)) return;
+                registry.setState(b, target);
+                CustomHeadBlock type = registry.getTypeFromBlock(b);
+                if (type != null) registry.applyConfig(b, type, target, 0);
+            })
+            .onInteract((b, event) -> {
+                if (!isWrench(event.getPlayer().getInventory().getItemInMainHand())) return false;
+                if (event.getPlayer().isSneaking()) return ratchetInspect(b, event, network, registry);
+                toggleRatchetAllowed(b, event.getPlayer(), network, registry);
+                return true;
+            })
+            .onChunkLoad((b, state) -> network.addNode(b, blockId,
+                RotationNetwork.axisFromState(state), RotationNetwork.NodeRole.TRANSMITTER, 0, false))
+            .onChunkUnload(b -> network.removeNode(CustomBlockRegistry.LocationKey.of(b)))
+            .onBlockRemoved((b, state) -> network.removeNode(CustomBlockRegistry.LocationKey.of(b)))
+            .build());
+    }
+
+    /** Spin direction of the powered shaft line adjacent to {@code block} along {@code axis} (either
+     *  ±neighbour), or null if neither side is a powered rotation network. Reads the line's real
+     *  direction, unaffected by whether the ratchet itself is freewheeling — used by the place-time
+     *  default and the inspect readout. */
+    private static RotationNetwork.SpinDirection neighborLineDirection(
+            RotationNetwork network, Block block, RotationNetwork.Axis axis) {
+        BlockFace[] faces = switch (axis) {
+            case X -> new BlockFace[]{BlockFace.EAST, BlockFace.WEST};
+            case Y -> new BlockFace[]{BlockFace.UP, BlockFace.DOWN};
+            case Z -> new BlockFace[]{BlockFace.NORTH, BlockFace.SOUTH};
+        };
+        for (BlockFace f : faces) {
+            var nbKey = CustomBlockRegistry.LocationKey.of(block.getRelative(f));
+            if (network.isPowered(nbKey)) {
+                RotationNetwork.SpinDirection d = network.getDirection(nbKey);
+                if (d != null) return d;
+            }
+        }
+        return null;
+    }
+
+    /** Wrench (non-sneak) on a ratchet: flip its allowed direction (CW ↔ CCW), encoded in the state. */
+    private static void toggleRatchetAllowed(Block block, Player player,
+                                             RotationNetwork network, CustomBlockRegistry registry) {
+        String state = registry.getState(block);
+        if (state == null) return;
+        int u = state.lastIndexOf('_');
+        if (u < 0) return;
+        String axisSuffix = state.substring(u + 1);
+        RotationNetwork.SpinDirection allowed = network.readRatchetAllowed(
+                CustomBlockRegistry.LocationKey.of(block));
+        RotationNetwork.SpinDirection cur = allowed == null ? RotationNetwork.SpinDirection.CW : allowed;
+        RotationNetwork.SpinDirection next = cur.reversed();
+        // Preserve the idle/spinning prefix; the recalc's updateBlockState corrects it from live power.
+        String prefix = state.startsWith("spinning_") ? "spinning_" : "idle_";
+        String target = prefix + (next == RotationNetwork.SpinDirection.CW ? "cw" : "ccw") + "_" + axisSuffix;
+
+        registry.setState(block, target);
+        CustomHeadBlock type = registry.getTypeFromBlock(block);
+        if (type != null) registry.applyConfig(block, type, target, 0);
+        recalcIfKnown(block, network);
+
+        player.sendActionBar(Component.text("Allows: " + cur + " → " + next, NamedTextColor.GOLD));
+        block.getWorld().playSound(block.getLocation().add(0.5, 0.5, 0.5),
+                org.bukkit.Sound.BLOCK_COPPER_PLACE, 1f, 1.5f);
+        block.getWorld().spawnParticle(Particle.WAX_ON,
+                block.getLocation().add(0.5, 0.5, 0.5), 10, 0.3, 0.3, 0.3, 0);
+    }
+
+    /** Sneak+wrench on a ratchet: report its allowed direction and whether it is currently freewheeling. */
+    private static boolean ratchetInspect(Block block, org.bukkit.event.player.PlayerInteractEvent event,
+                                          RotationNetwork network, CustomBlockRegistry registry) {
+        var key = CustomBlockRegistry.LocationKey.of(block);
+        String state = registry.getState(block);
+        RotationNetwork.SpinDirection allowed = network.readRatchetAllowed(key);
+        RotationNetwork.SpinDirection line = neighborLineDirection(network, block,
+                RotationNetwork.axisFromState(state == null ? "idle_y" : state));
+
+        String msg;
+        NamedTextColor color;
+        if (allowed == null) {
+            msg = "Ratchet: direction unset (pass-through)";
+            color = NamedTextColor.GRAY;
+        } else if (line == null) {
+            msg = "Ratchet: allows " + allowed + " | line idle";
+            color = NamedTextColor.GOLD;
+        } else if (line == allowed) {
+            msg = "Ratchet: allows " + allowed + " | line " + line + " → ENGAGED";
+            color = NamedTextColor.GREEN;
+        } else {
+            msg = "Ratchet: allows " + allowed + " | line " + line + " → FREEWHEELING";
+            color = NamedTextColor.RED;
+        }
+        event.getPlayer().sendActionBar(Component.text(msg, color));
+        block.getWorld().spawnParticle(Particle.WAX_ON,
+                block.getLocation().add(0.5, 0.5, 0.5), 8, 0.3, 0.3, 0.3, 0);
+        return true;
     }
 
     // ──────────────────────────────────────────────────────────────────────
