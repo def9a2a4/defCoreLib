@@ -976,12 +976,14 @@ blocks:
     recipes:
       craft:
         shaped:
-          # All-mechanical (no redstone): bearing core, iron pawls top & bottom, copper frame.
-          - pattern: ["CIC", "CBC", "CIC"]
+          # Bearing over a reverser over a gear, iron pawls flanking the reverser, copper corners.
+          - pattern: ["CBC", "IRI", "CGC"]
             key:
               C: { material: COPPER_INGOT }
-              I: { material: IRON_INGOT }
               B: { block: "mech:bearing" }
+              I: { material: IRON_INGOT }
+              R: { block: "mech:reverser" }
+              G: { block: "mech:gear" }
 
   # ─── Rotator ────────────────────────────────────────────────────────────
   # Consumer hinge: floor = door (Y), wall = drawbridge (X/Z). Network spin direction

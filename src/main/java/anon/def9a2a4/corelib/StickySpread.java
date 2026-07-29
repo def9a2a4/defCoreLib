@@ -16,14 +16,16 @@ import java.util.Set;
 import java.util.function.BiConsumer;
 
 /**
- * Derived auto-glue for the sticky block families. Four families, each with its own reach:
+ * Derived auto-glue for the sticky block families. Five families, each with its own reach:
  *
  * <ul>
- *   <li><b>Casings</b> ({@code mech:casing_<wood>} and {@code mech:gearbox_<wood>}) — structural
- *       connectors: a casing-family block bonds ONLY to other casing-family blocks (casings,
- *       gearboxes, and chassis, all woods mixing freely). They frame a contraption but never grab
- *       machinery or world blocks — that is deliberate; attach anything else with slime, honey, or
- *       the glue brush.</li>
+ *   <li><b>Casings</b> ({@code mech:casing_<wood>}) — structural connectors: a casing bonds only to
+ *       other casings and to chassis (all woods mixing freely). It frames a contraption but never
+ *       grabs machinery, world blocks, or gearboxes — that is deliberate; attach anything else with
+ *       slime, honey, or the glue brush.</li>
+ *   <li><b>Gearboxes</b> ({@code mech:gearbox_<wood>}) — like a casing but selective: bonds ONLY to
+ *       other gearboxes and to chassis, NOT to plain casings. (Chassis/slime/honey still grab a
+ *       gearbox, since they grab every movable block — only the gearbox's own frame rule is narrow.)</li>
  *   <li><b>Chassis</b> ({@code mech:chassis_<wood>}) — a "super-casing": it joins any casing frame
  *       (casings and gearboxes bond to it, and it to them) AND additionally grabs every movable
  *       neighbour except honey, exactly like a slime block. Slime reach with casing-frame
@@ -48,9 +50,8 @@ import java.util.function.BiConsumer;
  */
 final class StickySpread {
 
-    // Any id starting "mech:casing_" or "mech:gearbox_" joins the casing family by design of this
-    // gate — these prefixes are reserved for frame-bonding blocks (gearboxes are casings that also
-    // transmit power, and glue to casings exactly like a casing).
+    // Frame-bonding block id prefixes. Casing and gearbox are separate families (see familyOf /
+    // sticksTo): a casing bonds casings+chassis; a gearbox bonds gearboxes+chassis, NOT plain casings.
     static final String CASING_ID_PREFIX = "mech:casing_";
     static final String GEARBOX_ID_PREFIX = "mech:gearbox_";
     // A chassis is a casing that also grabs everything (slime reach) — its own family so the
@@ -58,7 +59,7 @@ final class StickySpread {
     static final String CHASSIS_ID_PREFIX = "mech:chassis_";
 
     /** The sticky families. Order is meaningless; {@code null} family = not sticky. */
-    enum Family { CASING, CHASSIS, SLIME, HONEY }
+    enum Family { CASING, GEARBOX, CHASSIS, SLIME, HONEY }
 
     private StickySpread() {}
 
@@ -79,7 +80,8 @@ final class StickySpread {
         if (t != null) {
             String id = t.fullId();
             if (id.startsWith(CHASSIS_ID_PREFIX)) return Family.CHASSIS;
-            if (id.startsWith(CASING_ID_PREFIX) || id.startsWith(GEARBOX_ID_PREFIX)) return Family.CASING;
+            if (id.startsWith(GEARBOX_ID_PREFIX)) return Family.GEARBOX;
+            if (id.startsWith(CASING_ID_PREFIX)) return Family.CASING;
         }
         return null;
     }
@@ -90,11 +92,13 @@ final class StickySpread {
     }
 
     /** May a {@code grabber}-family block bond to a neighbour of family {@code target}?
-     *  Casings bond only to casing-family blocks (casings/gearboxes/chassis); chassis and slime grab
-     *  everything but honey; honey everything but slime. */
+     *  Casings bond to casings + chassis; gearboxes bond to gearboxes + chassis (NOT plain casings);
+     *  chassis and slime grab everything but honey; honey everything but slime. Chassis/slime/honey
+     *  therefore still grab gearboxes — only the gearbox's own frame rule is selective. */
     private static boolean sticksTo(Family grabber, @Nullable Family target) {
         return switch (grabber) {
             case CASING -> target == Family.CASING || target == Family.CHASSIS;
+            case GEARBOX -> target == Family.GEARBOX || target == Family.CHASSIS;
             case CHASSIS -> target != Family.HONEY;
             case SLIME -> target != Family.HONEY;
             case HONEY -> target != Family.SLIME;
