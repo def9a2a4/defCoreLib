@@ -917,6 +917,72 @@ blocks:
               L: { material: LIGHTNING_ROD }
               B: { block: "mech:bearing" }
 
+  # ─── Ratchet ────────────────────────────────────────────────────────────
+  # One-way check-valve: transmits rotation only while the shaft spins its allowed way (CW/CCW,
+  # encoded in the state so it survives being moved by a mechanism). Turned the wrong way it
+  # freewheels — fully disconnects, so the input keeps spinning and the output goes dead.
+  ratchet:
+    cancel_pistons: true
+    name: "&eRatchet"
+    lore:
+      - "&7One-way rotation valve"
+      - "&7Passes power one way; freewheels when reversed"
+    catalog_notes:
+      - "&fA one-way clutch: it transmits rotation only while the shaft turns its allowed way, and freewheels (disconnects) if the line reverses — the input keeps spinning, the output stops."
+      - "&7Wrench to flip the allowed direction (CW/CCW); sneak+wrench to inspect. It adopts the line's current spin when first placed."
+      - "&7Freewheel gating is disabled while it rides a moving mechanism (acts as a plain shaft)."
+    texture: "@ratchet_fwd"
+    item_texture: "@ratchet_fwd"
+    drops: self
+    default_state: idle_cw_y
+    placement_state_map:
+      DOWN: idle_cw_y
+      NORTH: idle_cw_z
+      SOUTH: idle_cw_z
+      EAST: idle_cw_x
+      WEST: idle_cw_x
+    states:
+      # Standard shaft display (same rod as mech:shaft). The cw/ccw token records the ALLOWED
+      # direction (persisted); the rod's actual spin comes from the network direction at runtime.
+      idle_cw_x:
+        texture: "@ratchet_fwd"
+        display_entities:
+          - texture: "@rod_up"
+            tag: rod
+            transform: { translation: [-0.5, 0, 0], scale: [0.66, 2.002, 0.66], left_rotation: [90, 0, 0, 1] }
+            wall_offset: 0.001
+      idle_cw_y:
+        texture: "@ratchet_up"
+        display_entities:
+          - texture: "@rod_up"
+            tag: rod
+            transform: { translation: [0, 0.5, 0], scale: [0.66, 2.002, 0.66] }
+      idle_cw_z:
+        texture: "@ratchet_fwd"
+        display_entities:
+          - texture: "@rod_up"
+            tag: rod
+            transform: { translation: [0, 0, -0.5], scale: [0.66, 2.002, 0.66], left_rotation: [-90, 1, 0, 0] }
+            wall_offset: 0.001
+      idle_ccw_x: { copy_from: idle_cw_x }
+      idle_ccw_y: { copy_from: idle_cw_y }
+      idle_ccw_z: { copy_from: idle_cw_z }
+      spinning_cw_x: { copy_from: idle_cw_x, animation: { type: rotate, axis: [1, 0, 0], speed: 3.0 } }
+      spinning_cw_y: { copy_from: idle_cw_y, animation: { type: rotate, axis: [0, 1, 0], speed: 3.0 } }
+      spinning_cw_z: { copy_from: idle_cw_z, animation: { type: rotate, axis: [0, 0, 1], speed: 3.0 } }
+      spinning_ccw_x: { copy_from: idle_cw_x, animation: { type: rotate, axis: [1, 0, 0], speed: 3.0 } }
+      spinning_ccw_y: { copy_from: idle_cw_y, animation: { type: rotate, axis: [0, 1, 0], speed: 3.0 } }
+      spinning_ccw_z: { copy_from: idle_cw_z, animation: { type: rotate, axis: [0, 0, 1], speed: 3.0 } }
+    recipes:
+      craft:
+        shaped:
+          # All-mechanical (no redstone): bearing core, iron pawls top & bottom, copper frame.
+          - pattern: ["CIC", "CBC", "CIC"]
+            key:
+              C: { material: COPPER_INGOT }
+              I: { material: IRON_INGOT }
+              B: { block: "mech:bearing" }
+
   # ─── Rotator ────────────────────────────────────────────────────────────
   # Consumer hinge: floor = door (Y), wall = drawbridge (X/Z). Network spin direction
   # CW opens, CCW closes. Swings its glued structure as a mechanism (the blocks authored
@@ -967,19 +1033,15 @@ blocks:
           - texture: "@rod_up"
             tag: rod
             transform: { translation: [0, 0.5, 0], scale: [0.66, 2.002, 0.66] }
-      # Ceiling mount (mirrors the bottom-facing drill): the placed head reads as a fake shaft, an
-      # overlay rod hangs DOWN through the cell, and a larger rotator bearing plate sits at the TOP,
-      # pressed against — and gripping — the block above (the block this hinge swings). Y-axis hinge.
+      # Ceiling mount: a static rotator bearing plate at the TOP, pressed against — and gripping — the
+      # block above (the block this hinge swings). Y-axis hinge; nothing spins.
       idle_ceiling:
         texture: "@shaft_ring_up"
         display_entities:
-          - texture: "@rod_up"
-            tag: rod
-            transform: { translation: [0, -0.5, 0], scale: [0.66, 2.002, 0.66] }
           - texture: "@rotator_up"
             tag: bearing
             transform: { translation: [0, 0.5, 0], scale: [1.333, 1.0, 1.333] }
-      spinning_ceiling: { copy_from: idle_ceiling, texture: "@shaft_ring_up", animation: { type: rotate, axis: [0, 1, 0], speed: 3.0 } }
+      spinning_ceiling: { copy_from: idle_ceiling }
       idle_z:
         texture: "@rotator_side"
         display_entities:

@@ -58,6 +58,7 @@ public final class MechAdvancements {
             Map.entry("mech:huge_windmill", "craft/windmill_item"),
             Map.entry("mech:clutch", "craft/clutch"),
             Map.entry("mech:reverser", "craft/reverser"),
+            Map.entry("mech:ratchet", "craft/ratchet"),
             Map.entry("mech:drill", "craft/drill"),
             Map.entry("mech:millstone", "craft/millstone"),
             Map.entry("mech:fan", "craft/fan"),
