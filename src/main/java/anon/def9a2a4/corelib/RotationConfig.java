@@ -340,6 +340,7 @@ final class RotationConfig {
         mechMetaValues.put("shaft", t);
         mechMetaValues.put("reverser", t);        // redstone inert while riding → plain shaft
         mechMetaValues.put("clutch", t);          // redstone inert → never locks
+        mechMetaValues.put("ratchet", t);         // freewheel gating inert while riding → plain shaft
         mechMetaValues.put("chain_pulley", t);    // chain edges deferred on mechanisms
         mechMetaValues.put("redstone_dynamo", t);
         mechMetaValues.put("water_wheel", t);     // no live water check while riding → never a source

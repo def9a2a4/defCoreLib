@@ -222,19 +222,27 @@ final class GlueManager {
             CustomBlockRegistry.LocationKey bk = CustomBlockRegistry.LocationKey.of(b);
             if (!visitedAnchors.add(bk)) continue;
             Anchor nested = anchorFactory.of(b);
-            if (nested == null || !hasGlue(nested)) continue;
+            if (nested == null) continue;
+            boolean isHoist = nested instanceof HoistAnchor;
+            // A non-hoist anchor with no authored glue has nothing to expand. A hoist is different: even
+            // with no brushed platform it still owns a chain column + seed that must ride (or force a
+            // refusal), so it falls through regardless of hasGlue.
+            if (!isHoist && !hasGlue(nested)) continue;
 
             // A hoist's seed-relative glue only survives an upright landing, and capturing one mid-stroke
-            // would tear its own in-flight mechanism — refuse the whole move in either case.
-            boolean isHoist = nested instanceof HoistAnchor;
+            // would tear its own in-flight mechanism — refuse the whole move in either case (even a
+            // platform-less hoist, whose chain would otherwise be sheared off).
             if (isHoist && (!hoistAllowed || !nested.isAtRest())) return null;
 
-            List<Block> region = resolveStructure(nested, excluded, onBlocked);
             List<Block> extra = new ArrayList<>();
-            if (region != null) extra.addAll(region);
+            if (hasGlue(nested)) {   // authored platform region (may be absent for a hoist)
+                List<Block> region = resolveStructure(nested, excluded, onBlocked);
+                if (region != null) extra.addAll(region);
+            }
             if (nested instanceof HoistAnchor h) {
                 // resolveStructure never returns the anchor origin: for a hoist that origin is the platform
                 // seed (its top block), and the chain column between head and platform is not glue at all.
+                // Both ride for ANY carried hoist, glued platform or not.
                 Block seed = h.originBlock();
                 if (MovableBlocks.isMovable(seed, registry)) extra.add(seed);
                 extra.addAll(ChainHoistManager.ropeColumnFor(h.hoist(), registry));
