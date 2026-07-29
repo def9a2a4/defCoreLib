@@ -1,0 +1,22 @@
+mech v0.3.3
+
+NEW BLOCK: RATCHET
+- A one-way rotation valve. It transmits rotation only while the
+  shaft spins its allowed direction (CW/CCW); turned the other way it
+  freewheels -- fully disconnects, so the input keeps spinning while
+  everything past it goes dead. No jam, no stall.
+- Wrench (right-click) to flip the allowed direction; sneak-right-click
+  to inspect (shows the allowed direction and whether it is currently
+  freewheeling).
+- Dropped onto a line that is already turning, it adopts that
+  direction automatically, so it engages on placement and only
+  freewheels once the line is later reversed.
+- The allowed direction is stored in the block itself, so it survives
+  being carried by a mechanism (minecart, drawbridge, glue). While
+  riding a moving mechanism it acts as a plain shaft (no gating), like
+  the clutch and reverser.
+- Craft: a bearing core with iron pawls above and below, in a copper
+  frame (all-mechanical, no redstone).
+
+ADVANCEMENTS
+- New node: craft milestone for the ratchet ("One-Way Street").
