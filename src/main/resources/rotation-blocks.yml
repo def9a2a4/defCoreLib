@@ -1041,7 +1041,7 @@ blocks:
           - texture: "@rotator_up"
             tag: bearing
             transform: { translation: [0, 0.5, 0], scale: [1.333, 1.0, 1.333] }
-      spinning_ceiling: { copy_from: idle_ceiling }
+      spinning_ceiling: { copy_from: idle_ceiling, texture: "@shaft_ring_up" }
       idle_z:
         texture: "@rotator_side"
         display_entities:
