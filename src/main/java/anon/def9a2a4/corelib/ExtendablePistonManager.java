@@ -40,7 +40,7 @@ final class ExtendablePistonManager {
     private static final String MECH_TYPE = "mech:piston";
 
     private static final int TRIGGER_PERIOD = 4;         // ticks between idle-core scans
-    private static final float MIN_STEP = 0.08f;         // blocks/tick (floor so it always progresses)
+    private static final float MIN_STEP = 0.025f;        // blocks/tick floor (0.5 b/s at 20 t/s) so it always progresses
     private static final float SPEED_K = 0.25f;
     private static final int SETTLE_TICKS = 3;           // hold at the target before disassembly (client lerp)
     private static final Vector3f AXIS_Y = new Vector3f(0f, 1f, 0f);

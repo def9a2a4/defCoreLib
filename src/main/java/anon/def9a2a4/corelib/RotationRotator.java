@@ -45,8 +45,8 @@ final class RotationRotator implements Listener {
 
     // Tuning (live-tunable): per-tick swing speed = clamp(K * surplus / blockCount, MIN, MAX).
     private static final float SPEED_K = 8f;
-    private static final float MIN_DEG = 1.5f;
-    private static final float MAX_DEG = 9f;
+    private static final float MIN_DEG = 0.25f;   // 5°/s at 20 t/s
+    private static final float MAX_DEG = 4.5f;    // 90°/s at 20 t/s
     // Demand the rotator places on the network while swinging (others see reduced surplus).
     private static final int SWING_DEMAND = 2;
 
