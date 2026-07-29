@@ -121,12 +121,26 @@ power:
 #              facing — spin axis follows the block's facing
 #              omni   — draws from the first aligned neighbor on any non-mounted face
 #   gear_like: meshes with adjacent gears (counter-rotation, bevels)
+#   gearbox:   omnidirectional hub — couples aligned shafts/gears on all six faces without reversing
 # Notes: world redstone can't reach a block riding a mechanism, so the reverser/clutch pass
 # through unlocked, and the (inverted) redstone motor runs as a constant source. The water
 # wheel can't check for water while moving, so it only transmits.
 mechanism:
   shaft:           { kind: transmitter }
   gear:            { kind: transmitter, gear_like: true }
+  # Gearbox — one per casing wood (all behave identically; see the `gearbox:` flag above).
+  gearbox_oak:      { kind: transmitter, gearbox: true }
+  gearbox_acacia:   { kind: transmitter, gearbox: true }
+  gearbox_bamboo:   { kind: transmitter, gearbox: true }
+  gearbox_birch:    { kind: transmitter, gearbox: true }
+  gearbox_cherry:   { kind: transmitter, gearbox: true }
+  gearbox_crimson:  { kind: transmitter, gearbox: true }
+  gearbox_dark_oak: { kind: transmitter, gearbox: true }
+  gearbox_jungle:   { kind: transmitter, gearbox: true }
+  gearbox_mangrove: { kind: transmitter, gearbox: true }
+  gearbox_pale_oak: { kind: transmitter, gearbox: true }
+  gearbox_spruce:   { kind: transmitter, gearbox: true }
+  gearbox_warped:   { kind: transmitter, gearbox: true }
   reverser:        { kind: transmitter }
   clutch:          { kind: transmitter }
   chain_pulley:    { kind: transmitter }

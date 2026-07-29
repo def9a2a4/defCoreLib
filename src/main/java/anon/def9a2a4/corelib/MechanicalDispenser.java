@@ -91,7 +91,7 @@ final class MechanicalDispenser implements Listener {
             .onBlockPlaced((b, state) -> nameDispenser(b))
             // Omni consumer: power arrives from the first aligned shaft on ANY face (null excluded face).
             .onChunkLoad((b, state) -> network.addNode(b, BLOCK_ID, RotationNetwork.Axis.Y,
-                RotationNetwork.NodeRole.CONSUMER, power, false, true, null))
+                RotationNetwork.NodeRole.CONSUMER, power, false, false, true, null))
             .onChunkUnload(b -> network.removeNode(CustomBlockRegistry.LocationKey.of(b)))
             .onBlockRemoved((b, state) -> { dropContents(b); network.removeNode(CustomBlockRegistry.LocationKey.of(b)); })
             .build());

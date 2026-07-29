@@ -95,7 +95,36 @@ public final class MechAdvancements {
             Map.entry("mech:casing_mangrove", "craft/casing"),
             Map.entry("mech:casing_pale_oak", "craft/casing"),
             Map.entry("mech:casing_spruce", "craft/casing"),
-            Map.entry("mech:casing_warped", "craft/casing"));
+            Map.entry("mech:casing_warped", "craft/casing"),
+            // Chassis (casing that also grabs everything, like slime) reuse the casing craft node —
+            // both are casing-family blocks; no separate advancement.
+            Map.entry("mech:chassis_oak", "craft/casing"),
+            Map.entry("mech:chassis_acacia", "craft/casing"),
+            Map.entry("mech:chassis_bamboo", "craft/casing"),
+            Map.entry("mech:chassis_birch", "craft/casing"),
+            Map.entry("mech:chassis_cherry", "craft/casing"),
+            Map.entry("mech:chassis_crimson", "craft/casing"),
+            Map.entry("mech:chassis_dark_oak", "craft/casing"),
+            Map.entry("mech:chassis_jungle", "craft/casing"),
+            Map.entry("mech:chassis_mangrove", "craft/casing"),
+            Map.entry("mech:chassis_pale_oak", "craft/casing"),
+            Map.entry("mech:chassis_spruce", "craft/casing"),
+            Map.entry("mech:chassis_warped", "craft/casing"),
+            // Gearbox (omnidirectional power hub) — its own craft node, all 12 woods sharing it.
+            // Deliberately NOT in MACHINE_CRAFT_NODES: adding a node would retroactively make
+            // master_machinist unobtainable for players who predate the gearbox.
+            Map.entry("mech:gearbox_oak", "craft/gearbox"),
+            Map.entry("mech:gearbox_acacia", "craft/gearbox"),
+            Map.entry("mech:gearbox_bamboo", "craft/gearbox"),
+            Map.entry("mech:gearbox_birch", "craft/gearbox"),
+            Map.entry("mech:gearbox_cherry", "craft/gearbox"),
+            Map.entry("mech:gearbox_crimson", "craft/gearbox"),
+            Map.entry("mech:gearbox_dark_oak", "craft/gearbox"),
+            Map.entry("mech:gearbox_jungle", "craft/gearbox"),
+            Map.entry("mech:gearbox_mangrove", "craft/gearbox"),
+            Map.entry("mech:gearbox_pale_oak", "craft/gearbox"),
+            Map.entry("mech:gearbox_spruce", "craft/gearbox"),
+            Map.entry("mech:gearbox_warped", "craft/gearbox"));
 
     // The machine craft nodes that together earn craft/master_machinist (tools/parts excluded).
     private static final Set<String> MACHINE_CRAFT_NODES = Set.of(

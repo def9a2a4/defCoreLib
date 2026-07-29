@@ -37,6 +37,12 @@ final class RotationBlocks {
 
     private RotationBlocks() {}
 
+    /** The 12 plank woods that mech:casing_<wood> / mech:gearbox_<wood> come in (matches
+     *  scripts/oneoff/gen_casings.py and gen_gearboxes.py). */
+    static final List<String> CASING_WOODS = List.of(
+            "oak", "acacia", "bamboo", "birch", "cherry", "crimson", "dark_oak",
+            "jungle", "mangrove", "pale_oak", "spruce", "warped");
+
     // The wrench is declared in custom-items.yml (mech:wrench); identity is the registry
     // block_type PDC, and its recipe auto-registers from YAML.
     static boolean isWrench(ItemStack item) {
@@ -150,6 +156,13 @@ final class RotationBlocks {
         // It sets cancel_pistons in rotation-blocks.yml so a shove can't relocate it out from under
         // that cached facing (its flip side is fixed at placement, not re-read live).
         overlayStandard(registry, network, "mech:reverser", RotationNetwork.NodeRole.TRANSMITTER, 0, false);
+        // Gearbox: omnidirectional transmitter — couples aligned shafts/gears on all six faces without
+        // reversing (gearbox=true; see RotationNetwork.getConnections). One per casing wood; each is a
+        // bare-first <wood>_STAIRS block sharing its casing's base material (identity is per-cell).
+        for (String wood : CASING_WOODS) {
+            overlayStandard(registry, network, "mech:gearbox_" + wood,
+                RotationNetwork.NodeRole.TRANSMITTER, 0, false, true);
+        }
         // Chain pulley: shaft-like transmitter + distance chain links (see ChainPulley). Instance holds
         // per-player link selection state, so it outlives register() via the callback captures.
         new ChainPulley(registry, network, config.chainPulleyMaxDistance).register();
@@ -195,6 +208,12 @@ final class RotationBlocks {
     private static void overlayStandard(CustomBlockRegistry registry, RotationNetwork network,
                                         String blockId, RotationNetwork.NodeRole role,
                                         int power, boolean gearLike) {
+        overlayStandard(registry, network, blockId, role, power, gearLike, false);
+    }
+
+    private static void overlayStandard(CustomBlockRegistry registry, RotationNetwork network,
+                                        String blockId, RotationNetwork.NodeRole role,
+                                        int power, boolean gearLike, boolean gearbox) {
         CustomHeadBlock block = registry.getType(blockId);
         if (block == null) {
             registry.getPlugin().getLogger().warning("RotationBlocks: block '" + blockId + "' not found — skipping overlay");
@@ -226,7 +245,7 @@ final class RotationBlocks {
                 return wrenchInteract(b, event, network, registry);
             })
             .onChunkLoad((b, state) -> network.addNode(b, blockId,
-                RotationNetwork.axisFromState(state), role, power, gearLike))
+                RotationNetwork.axisFromState(state), role, power, gearLike, gearbox))
             .onChunkUnload(b -> network.removeNode(CustomBlockRegistry.LocationKey.of(b)))
             .onBlockRemoved((b, state) -> network.removeNode(CustomBlockRegistry.LocationKey.of(b)))
             .build());
@@ -601,7 +620,7 @@ final class RotationBlocks {
                 BlockFace omniEx = spec.omniExcludedFace() != null ? spec.omniExcludedFace().apply(b) : null;
                 if (omniEx != null) {
                     network.addNode(b, spec.blockId(), spec.axis().apply(b),
-                        RotationNetwork.NodeRole.CONSUMER, spec.power(), false, true, omniEx);
+                        RotationNetwork.NodeRole.CONSUMER, spec.power(), false, false, true, omniEx);
                 } else {
                     network.addNode(b, spec.blockId(), spec.axis().apply(b),
                         RotationNetwork.NodeRole.CONSUMER, spec.power(), false);

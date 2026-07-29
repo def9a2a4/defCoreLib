@@ -101,6 +101,32 @@ textures:
   casing_pale_oak:   "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDdjM2ZiN2JmZTQwYmM3NzYyZDYxMTM3NGM1ZDZjYmEyMjNkNGIxODA5MWYxY2NlZjZiYmM4YWFmYmI2N2JhOSJ9fX0="  # casing/cased/pale_oak.png
   casing_spruce:     "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDk4MzhhZTBmZjI2ZmQ4YmE2YmJlMTBiZDY1Y2U0OWY3NDNlZWQxNTNhMDRiZGE5Y2I2MWIzNTY2YzQzY2ZjMCJ9fX0="  # casing/cased/spruce.png
   casing_warped:     "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTBlMzA2ZjM0OTY0ZGM3NmEwZGFmZjRiMTRmNDAzNTM0MzhlNWJmYTBmNWIzMzU4YTUxYWExY2FjYWIwMmQzYiJ9fX0="  # casing/cased/warped.png
+  chassis_oak:      "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjI4MThiYjBjZDgxMzNmN2Y3NzUxMmYxYmE4MDFhYzZkNDg2MTFmYzkwZmViY2QyM2VhZWQ5NDJkY2Q4NDUzOCJ9fX0="  # casing/chassis/oak.png
+  chassis_acacia:   "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWFjMmQwNmQ3OWNhYWEyYzI4NThmMWEwOGUzZjQyZTM0MmY4YmVhMjBiOTczNjRhNDgwNjkwMDE2NTQ1ZDJhNSJ9fX0="  # casing/chassis/acacia.png
+  chassis_bamboo:   "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjM2Mzk5MGIzYTM4MWMyMmIyN2M4OWM4Y2NhNTQwNGNhYWQxZWYwYjliZDhkOGY5NDZiYmU4MzIwYTc4NmE1ZiJ9fX0="  # casing/chassis/bamboo.png
+  chassis_birch:    "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZWQ4NjEwN2ViZTE2MmJjNzAyODkzNTEwYmI0YmY4YjJhNjkxNjE4YWNiNDZlNDYyZDlmOGM2ZTNkNDQ5ZjcxYSJ9fX0="  # casing/chassis/birch.png
+  chassis_cherry:   "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZWVjZmMzZjJmN2ExMjA5Nzc4YzU1MTc3NWMxNzlmZjQyNWZmMDAzY2RjMzk0MmM0Mjg5ZjAzODJjZThmMDBhOSJ9fX0="  # casing/chassis/cherry.png
+  chassis_crimson:  "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvN2I4ODg2YWVhZDU2MzlkNjY1OTNhYTYwZmUxODEwYTA5MTc2YWNiOGNkNjcwYmY4YjU4NmIzM2YzYTRmNmM5In19fQ=="  # casing/chassis/crimson.png
+  chassis_dark_oak: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvN2Y5MmY5N2NhNmRjYzE5YjQyMWQxNTliZDhmOTk3NDgxMTRjYzQ5MjMwNTkwYmY3NWQ1NzEzYzA2NmM3MzgxYyJ9fX0="  # casing/chassis/dark_oak.png
+  chassis_jungle:   "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjA2OGExMTg5MWFlZTRmNjQxOGQyOTE1YTc3NDcwNjUzM2VmMGFjYzgyZmY4YTMxMDllYjAzNGI2NzgzYzRjNiJ9fX0="  # casing/chassis/jungle.png
+  chassis_mangrove: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDYyMTIwZTRlZjQ4ZmJjZTgzYTk3OTMxOWEwNWY4ODM0MWQxODcxYzFkYjZjM2YwMTBhN2ViYWFmOGY4M2Q4NyJ9fX0="  # casing/chassis/mangrove.png
+  chassis_pale_oak: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjRkODEyMGMzNWRkYmE0MjkzNzljYmIwNzBkOWNlZTBkMGQzNzYwOWE4YjM2MzgzYzUyMjA2ZTYwZjlhNzBmMyJ9fX0="  # casing/chassis/pale_oak.png
+  chassis_spruce:   "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWU2YzVmODQyNjFmNTNiZDU4MDY3MGY1MGU0MGRlNTU2OTRkNzI2NjdhNTg5OGZjNDY4OTU1MDNlMDkwNjBjYyJ9fX0="  # casing/chassis/spruce.png
+  chassis_warped:   "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZWNiM2I4NDgyZWY3MTQ4M2QzNzNjNDU2NzM5ZjI5MzQ1NmYxM2M2YjdlNWMxODNlNGM2Mjc5NDAwZTRkOWJlIn19fQ=="  # casing/chassis/warped.png
+
+  # ── Gearbox art (assets/rotation/casing/gearbox/ = cased + gearbox-mask, via scripts/upload_skin.py) ──
+  gearbox_oak:      "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzJjMjFmOTkyZWQ0MGZmODc3MGY1NjA2MjFkMzVlMTk1MjhkMGEwMmU0YjI0ZDA2NDE0OTA5YmMwNjI3ZWIxNSJ9fX0="  # casing/gearbox/oak.png
+  gearbox_acacia:   "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOGYwNDhhYjgyODIzYWFkNmFlNTA5ZDE3MTkyNWIyODU2NDdjNzgxOGMzYjJmNmM1NmJkNzdlOTU1NjFlMGUxMiJ9fX0="  # casing/gearbox/acacia.png
+  gearbox_bamboo:   "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWZlMGYyMGZmMmE5NmM0YzVjNGFjZTE5NGFmY2M0MTc5MTRmNmE5YWM1MjhjMjhiMjFlMWVmMDhjMjc4N2EwMSJ9fX0="  # casing/gearbox/bamboo.png
+  gearbox_birch:    "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjdjYjQ0M2NhNmQxMjM2ZDNkOWI1YmNiNzY2ODc4YzUyMmJjMTBjOTk2MGU4YjBiMjUwMWMyYzA2ZjdmMTQ2OSJ9fX0="  # casing/gearbox/birch.png
+  gearbox_cherry:   "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZmYwZTczYzU2MTg1YzcyMjgyYTUwN2ZlOTNiZTVmZmM0NjFhZDMyN2JmOTg5MmY5M2E0Y2VmMWU3M2JlNjQ1MSJ9fX0="  # casing/gearbox/cherry.png
+  gearbox_crimson:  "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGZjOGIzYzUwNzkxMDgzZGFiNDllZjI4ZGIxM2E5ODk0NTg2MjZhODkxNmQ3MjMwODkxNmZlY2UxYjdlNzNlMSJ9fX0="  # casing/gearbox/crimson.png
+  gearbox_dark_oak: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzQyMDA4OTA1MzQwNmIyODBhZWQ5MGMwODg5ZTIxNzAzMmZiNGRjZDFjMzI1NTdiMzE3OTcyOWU3Y2VhNWMyNSJ9fX0="  # casing/gearbox/dark_oak.png
+  gearbox_jungle:   "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjAyMjUyYzFhMzFlYmZlZTgwMGM3ZWFlYzhlZTI2YmEyNmQwZTVmMDQwYmEzYmUyMDgxOGY5NzQzZmU5NTI4NCJ9fX0="  # casing/gearbox/jungle.png
+  gearbox_mangrove: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjFkNDVhN2Q5ZDUxMTVjZDRiNmJlNjE5Mzc5OGRmYjgzMjBlMzE4NjJmYTk2Yjk5NjYyNmU5OGNjOGY1NTVmOSJ9fX0="  # casing/gearbox/mangrove.png
+  gearbox_pale_oak: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTE4NTJjMmFiYWJhNWZiMDZhMGFlZjVjODQwZTYzMWZjYjc3MWM5NzU0MTQ4Yzk1ZDc4MGYyYzZlZjIwYjE0OSJ9fX0="  # casing/gearbox/pale_oak.png
+  gearbox_spruce:   "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzY4Yjc3MmFhZGIxZTc1NWEyMDJlNjhmNjY5ZjQwNzU0YjQ5MWU4MjE1MTQwNTY4NTExMzUzYmQ4YmU4OGY4ZiJ9fX0="  # casing/gearbox/spruce.png
+  gearbox_warped:   "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNmVlOTU3ZjJjMGUyYzRiYmQxYmI4MTc1MWFjOTFhNzVjODkwNmFlNTlhZGI1YzU3MzY0NTBkMjY0YWRlM2FjZiJ9fX0="  # casing/gearbox/warped.png
 
 blocks:
 
@@ -278,6 +304,358 @@ blocks:
               L: { material: LIGHTNING_ROD }
               C: { material: COPPER_INGOT }
               I: { material: IRON_INGOT }
+
+  # ─── Gearbox ──────────────────────────────────────────────────────────────
+  # A mechanical casing that also transmits rotation power in EVERY direction: on each of its six
+  # faces it couples (spin-preserving) to an aligned shaft/gear or another gearbox. Behaviour is a
+  # Java overlay (RotationBlocks.overlayStandard gearbox=true → RotationNetwork gearbox edge, mirrored
+  # in RotationSolver for moving contraptions). Like a casing it auto-glues to casings/gearboxes
+  # (StickySpread CASING family, keyed on the mech:gearbox_ prefix).
+  #
+  # Display = a single casing-style shell on the same upside-down <wood>_STAIRS bare block (two bare
+  # types share one base material; identity is per-cell). The @gearbox_<wood> skin is the casing skin
+  # plus a dark socket at each face centre (assets/rotation/casing/gearbox-mask.png composited over
+  # cased/<wood>.png — see make_gearbox.py). No rods, no spinning state — the "shafts" are the holes.
+  # Generated — edit the template, don't hand-edit here.
+  gearbox_oak:
+    name: "&fOak Gearbox"
+    lore:
+      - "&7Transmits power in every direction"
+      - "&7Auto-glues to casings"
+    catalog_notes:
+      - "&fA power hub: couples any aligned shafts or gears on all six faces, passing spin straight through without reversing."
+      - "&7Use it to split one input into several directions, or bridge shafts around a corner without a gear's counter-rotation."
+      - "&7Auto-glues to casings and other gearboxes like a casing — build it straight into a moving contraption."
+      - "&7Comes in every plank wood — the casing in the recipe picks the variant."
+    base_block: OAK_STAIRS
+    base_block_data: "[half=top,facing=north,shape=straight,waterlogged=false]"
+    texture: "@gearbox_oak"
+    drops: self
+    default_state: idle
+    states:
+      idle:
+        display_entities:
+          # Shell — the casing shell verbatim, but skinned @gearbox_oak (casing + hole per face).
+          - texture: "@gearbox_oak"
+            tag: shell
+            transform: { translation: [0, 0.501, 0], scale: [2.006, 2.006, 2.006] }
+    recipes:
+      craft:
+        shaped:
+          # Casing core, gears on three sides, shaft on top. The casing wood picks the variant.
+          - pattern: [" S ", "GCG", " G "]
+            key:
+              S: { block: "mech:shaft" }
+              G: { block: "mech:gear" }
+              C: { block: "mech:casing_oak" }
+
+  gearbox_acacia:
+    name: "&fAcacia Gearbox"
+    lore:
+      - "&7Transmits power in every direction"
+      - "&7Auto-glues to casings"
+    catalog_variant_of: gearbox_oak
+    base_block: ACACIA_STAIRS
+    base_block_data: "[half=top,facing=north,shape=straight,waterlogged=false]"
+    texture: "@gearbox_acacia"
+    drops: self
+    default_state: idle
+    states:
+      idle:
+        display_entities:
+          # Shell — the casing shell verbatim, but skinned @gearbox_acacia (casing + hole per face).
+          - texture: "@gearbox_acacia"
+            tag: shell
+            transform: { translation: [0, 0.501, 0], scale: [2.006, 2.006, 2.006] }
+    recipes:
+      craft:
+        shaped:
+          # Casing core, gears on three sides, shaft on top. The casing wood picks the variant.
+          - pattern: [" S ", "GCG", " G "]
+            key:
+              S: { block: "mech:shaft" }
+              G: { block: "mech:gear" }
+              C: { block: "mech:casing_acacia" }
+
+  gearbox_bamboo:
+    name: "&fBamboo Gearbox"
+    lore:
+      - "&7Transmits power in every direction"
+      - "&7Auto-glues to casings"
+    catalog_variant_of: gearbox_oak
+    base_block: BAMBOO_STAIRS
+    base_block_data: "[half=top,facing=north,shape=straight,waterlogged=false]"
+    texture: "@gearbox_bamboo"
+    drops: self
+    default_state: idle
+    states:
+      idle:
+        display_entities:
+          # Shell — the casing shell verbatim, but skinned @gearbox_bamboo (casing + hole per face).
+          - texture: "@gearbox_bamboo"
+            tag: shell
+            transform: { translation: [0, 0.501, 0], scale: [2.006, 2.006, 2.006] }
+    recipes:
+      craft:
+        shaped:
+          # Casing core, gears on three sides, shaft on top. The casing wood picks the variant.
+          - pattern: [" S ", "GCG", " G "]
+            key:
+              S: { block: "mech:shaft" }
+              G: { block: "mech:gear" }
+              C: { block: "mech:casing_bamboo" }
+
+  gearbox_birch:
+    name: "&fBirch Gearbox"
+    lore:
+      - "&7Transmits power in every direction"
+      - "&7Auto-glues to casings"
+    catalog_variant_of: gearbox_oak
+    base_block: BIRCH_STAIRS
+    base_block_data: "[half=top,facing=north,shape=straight,waterlogged=false]"
+    texture: "@gearbox_birch"
+    drops: self
+    default_state: idle
+    states:
+      idle:
+        display_entities:
+          # Shell — the casing shell verbatim, but skinned @gearbox_birch (casing + hole per face).
+          - texture: "@gearbox_birch"
+            tag: shell
+            transform: { translation: [0, 0.501, 0], scale: [2.006, 2.006, 2.006] }
+    recipes:
+      craft:
+        shaped:
+          # Casing core, gears on three sides, shaft on top. The casing wood picks the variant.
+          - pattern: [" S ", "GCG", " G "]
+            key:
+              S: { block: "mech:shaft" }
+              G: { block: "mech:gear" }
+              C: { block: "mech:casing_birch" }
+
+  gearbox_cherry:
+    name: "&fCherry Gearbox"
+    lore:
+      - "&7Transmits power in every direction"
+      - "&7Auto-glues to casings"
+    catalog_variant_of: gearbox_oak
+    base_block: CHERRY_STAIRS
+    base_block_data: "[half=top,facing=north,shape=straight,waterlogged=false]"
+    texture: "@gearbox_cherry"
+    drops: self
+    default_state: idle
+    states:
+      idle:
+        display_entities:
+          # Shell — the casing shell verbatim, but skinned @gearbox_cherry (casing + hole per face).
+          - texture: "@gearbox_cherry"
+            tag: shell
+            transform: { translation: [0, 0.501, 0], scale: [2.006, 2.006, 2.006] }
+    recipes:
+      craft:
+        shaped:
+          # Casing core, gears on three sides, shaft on top. The casing wood picks the variant.
+          - pattern: [" S ", "GCG", " G "]
+            key:
+              S: { block: "mech:shaft" }
+              G: { block: "mech:gear" }
+              C: { block: "mech:casing_cherry" }
+
+  gearbox_crimson:
+    name: "&fCrimson Gearbox"
+    lore:
+      - "&7Transmits power in every direction"
+      - "&7Auto-glues to casings"
+    catalog_variant_of: gearbox_oak
+    base_block: CRIMSON_STAIRS
+    base_block_data: "[half=top,facing=north,shape=straight,waterlogged=false]"
+    texture: "@gearbox_crimson"
+    drops: self
+    default_state: idle
+    states:
+      idle:
+        display_entities:
+          # Shell — the casing shell verbatim, but skinned @gearbox_crimson (casing + hole per face).
+          - texture: "@gearbox_crimson"
+            tag: shell
+            transform: { translation: [0, 0.501, 0], scale: [2.006, 2.006, 2.006] }
+    recipes:
+      craft:
+        shaped:
+          # Casing core, gears on three sides, shaft on top. The casing wood picks the variant.
+          - pattern: [" S ", "GCG", " G "]
+            key:
+              S: { block: "mech:shaft" }
+              G: { block: "mech:gear" }
+              C: { block: "mech:casing_crimson" }
+
+  gearbox_dark_oak:
+    name: "&fDark Oak Gearbox"
+    lore:
+      - "&7Transmits power in every direction"
+      - "&7Auto-glues to casings"
+    catalog_variant_of: gearbox_oak
+    base_block: DARK_OAK_STAIRS
+    base_block_data: "[half=top,facing=north,shape=straight,waterlogged=false]"
+    texture: "@gearbox_dark_oak"
+    drops: self
+    default_state: idle
+    states:
+      idle:
+        display_entities:
+          # Shell — the casing shell verbatim, but skinned @gearbox_dark_oak (casing + hole per face).
+          - texture: "@gearbox_dark_oak"
+            tag: shell
+            transform: { translation: [0, 0.501, 0], scale: [2.006, 2.006, 2.006] }
+    recipes:
+      craft:
+        shaped:
+          # Casing core, gears on three sides, shaft on top. The casing wood picks the variant.
+          - pattern: [" S ", "GCG", " G "]
+            key:
+              S: { block: "mech:shaft" }
+              G: { block: "mech:gear" }
+              C: { block: "mech:casing_dark_oak" }
+
+  gearbox_jungle:
+    name: "&fJungle Gearbox"
+    lore:
+      - "&7Transmits power in every direction"
+      - "&7Auto-glues to casings"
+    catalog_variant_of: gearbox_oak
+    base_block: JUNGLE_STAIRS
+    base_block_data: "[half=top,facing=north,shape=straight,waterlogged=false]"
+    texture: "@gearbox_jungle"
+    drops: self
+    default_state: idle
+    states:
+      idle:
+        display_entities:
+          # Shell — the casing shell verbatim, but skinned @gearbox_jungle (casing + hole per face).
+          - texture: "@gearbox_jungle"
+            tag: shell
+            transform: { translation: [0, 0.501, 0], scale: [2.006, 2.006, 2.006] }
+    recipes:
+      craft:
+        shaped:
+          # Casing core, gears on three sides, shaft on top. The casing wood picks the variant.
+          - pattern: [" S ", "GCG", " G "]
+            key:
+              S: { block: "mech:shaft" }
+              G: { block: "mech:gear" }
+              C: { block: "mech:casing_jungle" }
+
+  gearbox_mangrove:
+    name: "&fMangrove Gearbox"
+    lore:
+      - "&7Transmits power in every direction"
+      - "&7Auto-glues to casings"
+    catalog_variant_of: gearbox_oak
+    base_block: MANGROVE_STAIRS
+    base_block_data: "[half=top,facing=north,shape=straight,waterlogged=false]"
+    texture: "@gearbox_mangrove"
+    drops: self
+    default_state: idle
+    states:
+      idle:
+        display_entities:
+          # Shell — the casing shell verbatim, but skinned @gearbox_mangrove (casing + hole per face).
+          - texture: "@gearbox_mangrove"
+            tag: shell
+            transform: { translation: [0, 0.501, 0], scale: [2.006, 2.006, 2.006] }
+    recipes:
+      craft:
+        shaped:
+          # Casing core, gears on three sides, shaft on top. The casing wood picks the variant.
+          - pattern: [" S ", "GCG", " G "]
+            key:
+              S: { block: "mech:shaft" }
+              G: { block: "mech:gear" }
+              C: { block: "mech:casing_mangrove" }
+
+  gearbox_pale_oak:
+    name: "&fPale Oak Gearbox"
+    lore:
+      - "&7Transmits power in every direction"
+      - "&7Auto-glues to casings"
+    catalog_variant_of: gearbox_oak
+    base_block: PALE_OAK_STAIRS
+    base_block_data: "[half=top,facing=north,shape=straight,waterlogged=false]"
+    texture: "@gearbox_pale_oak"
+    drops: self
+    default_state: idle
+    states:
+      idle:
+        display_entities:
+          # Shell — the casing shell verbatim, but skinned @gearbox_pale_oak (casing + hole per face).
+          - texture: "@gearbox_pale_oak"
+            tag: shell
+            transform: { translation: [0, 0.501, 0], scale: [2.006, 2.006, 2.006] }
+    recipes:
+      craft:
+        shaped:
+          # Casing core, gears on three sides, shaft on top. The casing wood picks the variant.
+          - pattern: [" S ", "GCG", " G "]
+            key:
+              S: { block: "mech:shaft" }
+              G: { block: "mech:gear" }
+              C: { block: "mech:casing_pale_oak" }
+
+  gearbox_spruce:
+    name: "&fSpruce Gearbox"
+    lore:
+      - "&7Transmits power in every direction"
+      - "&7Auto-glues to casings"
+    catalog_variant_of: gearbox_oak
+    base_block: SPRUCE_STAIRS
+    base_block_data: "[half=top,facing=north,shape=straight,waterlogged=false]"
+    texture: "@gearbox_spruce"
+    drops: self
+    default_state: idle
+    states:
+      idle:
+        display_entities:
+          # Shell — the casing shell verbatim, but skinned @gearbox_spruce (casing + hole per face).
+          - texture: "@gearbox_spruce"
+            tag: shell
+            transform: { translation: [0, 0.501, 0], scale: [2.006, 2.006, 2.006] }
+    recipes:
+      craft:
+        shaped:
+          # Casing core, gears on three sides, shaft on top. The casing wood picks the variant.
+          - pattern: [" S ", "GCG", " G "]
+            key:
+              S: { block: "mech:shaft" }
+              G: { block: "mech:gear" }
+              C: { block: "mech:casing_spruce" }
+
+  gearbox_warped:
+    name: "&fWarped Gearbox"
+    lore:
+      - "&7Transmits power in every direction"
+      - "&7Auto-glues to casings"
+    catalog_variant_of: gearbox_oak
+    base_block: WARPED_STAIRS
+    base_block_data: "[half=top,facing=north,shape=straight,waterlogged=false]"
+    texture: "@gearbox_warped"
+    drops: self
+    default_state: idle
+    states:
+      idle:
+        display_entities:
+          # Shell — the casing shell verbatim, but skinned @gearbox_warped (casing + hole per face).
+          - texture: "@gearbox_warped"
+            tag: shell
+            transform: { translation: [0, 0.501, 0], scale: [2.006, 2.006, 2.006] }
+    recipes:
+      craft:
+        shaped:
+          # Casing core, gears on three sides, shaft on top. The casing wood picks the variant.
+          - pattern: [" S ", "GCG", " G "]
+            key:
+              S: { block: "mech:shaft" }
+              G: { block: "mech:gear" }
+              C: { block: "mech:casing_warped" }
 
   # ─── Chain Pulley ───────────────────────────────────────────────────────
   # Transmitter (powers along its axis like a shaft) that can also be linked to a second pulley by a
@@ -559,8 +937,15 @@ blocks:
     item_texture: "@rotator_side"
     drops: self
     default_state: idle_y
+    # Six-face list is load-bearing: with no placement section type.placement() is null and the
+    # coercion/restriction path is skipped entirely (rotator is unrestricted). Enumerating all six
+    # faces (+ no require_solid) keeps every existing wall/floor placement passing once the section
+    # is present. Trimming a face here would start refusing/coercing placements that used to work.
+    placement:
+      allowed_faces: [NORTH, SOUTH, EAST, WEST, UP, DOWN]
     placement_state_map:
       DOWN: idle_y
+      UP: idle_ceiling      # attached to the block above → hangs, swings the block above (floor case's mirror)
       NORTH: idle_z
       SOUTH: idle_z
       EAST: idle_x
@@ -580,6 +965,19 @@ blocks:
           - texture: "@rod_up"
             tag: rod
             transform: { translation: [0, 0.5, 0], scale: [0.66, 2.002, 0.66] }
+      # Ceiling mount (mirrors the bottom-facing drill): the placed head reads as a fake shaft, an
+      # overlay rod hangs DOWN through the cell, and a larger rotator bearing plate sits at the TOP,
+      # pressed against — and gripping — the block above (the block this hinge swings). Y-axis hinge.
+      idle_ceiling:
+        texture: "@shaft_ring_up"
+        display_entities:
+          - texture: "@rod_up"
+            tag: rod
+            transform: { translation: [0, -0.5, 0], scale: [0.66, 2.002, 0.66] }
+          - texture: "@rotator_up"
+            tag: bearing
+            transform: { translation: [0, 0.5, 0], scale: [1.333, 1.0, 1.333] }
+      spinning_ceiling: { copy_from: idle_ceiling, texture: "@shaft_ring_up", animation: { type: rotate, axis: [0, 1, 0], speed: 3.0 } }
       idle_z:
         texture: "@rotator_side"
         display_entities:
@@ -967,12 +1365,12 @@ blocks:
   casing_oak:
     name: "&fOak Mechanical Casing"
     lore:
-      - "&7Bonds to other casings, forming a"
-      - "&7frame any mechanism can move"
+      - "&7Sticks to adjacent blocks like slime —"
+      - "&7move it with any mechanism"
     catalog_notes:
-      - "&fBonds to adjacent casings (any wood mixes), forming a rigid frame — build a moving contraption without the glue brush."
-      - "&7Casings never grab other blocks. Attach machinery and decoration with slime or honey blocks (which grab everything except each other), or the glue brush."
-      - "&7A vanilla piston moves a lone casing as an ordinary block (no spread)."
+      - "&fAuto-glues to every adjacent block like a slime block — build a moving contraption without the glue brush."
+      - "&7Any casing carried by a piston, rotator, minecart, or chain hoist drags its neighbours along, spreading through other casings."
+      - "&7A vanilla piston moves a lone casing as an ordinary block (no slime spread)."
       - "&7Comes in every plank wood — the center plank of the recipe picks the variant."
     base_block: OAK_STAIRS
     base_block_data: "[half=top,facing=north,shape=straight,waterlogged=false]"
@@ -1005,8 +1403,8 @@ blocks:
   casing_acacia:
     name: "&fAcacia Mechanical Casing"
     lore:
-      - "&7Bonds to other casings, forming a"
-      - "&7frame any mechanism can move"
+      - "&7Sticks to adjacent blocks like slime —"
+      - "&7move it with any mechanism"
     catalog_variant_of: casing_oak
     base_block: ACACIA_STAIRS
     base_block_data: "[half=top,facing=north,shape=straight,waterlogged=false]"
@@ -1039,8 +1437,8 @@ blocks:
   casing_bamboo:
     name: "&fBamboo Mechanical Casing"
     lore:
-      - "&7Bonds to other casings, forming a"
-      - "&7frame any mechanism can move"
+      - "&7Sticks to adjacent blocks like slime —"
+      - "&7move it with any mechanism"
     catalog_variant_of: casing_oak
     base_block: BAMBOO_STAIRS
     base_block_data: "[half=top,facing=north,shape=straight,waterlogged=false]"
@@ -1073,8 +1471,8 @@ blocks:
   casing_birch:
     name: "&fBirch Mechanical Casing"
     lore:
-      - "&7Bonds to other casings, forming a"
-      - "&7frame any mechanism can move"
+      - "&7Sticks to adjacent blocks like slime —"
+      - "&7move it with any mechanism"
     catalog_variant_of: casing_oak
     base_block: BIRCH_STAIRS
     base_block_data: "[half=top,facing=north,shape=straight,waterlogged=false]"
@@ -1107,8 +1505,8 @@ blocks:
   casing_cherry:
     name: "&fCherry Mechanical Casing"
     lore:
-      - "&7Bonds to other casings, forming a"
-      - "&7frame any mechanism can move"
+      - "&7Sticks to adjacent blocks like slime —"
+      - "&7move it with any mechanism"
     catalog_variant_of: casing_oak
     base_block: CHERRY_STAIRS
     base_block_data: "[half=top,facing=north,shape=straight,waterlogged=false]"
@@ -1141,8 +1539,8 @@ blocks:
   casing_crimson:
     name: "&fCrimson Mechanical Casing"
     lore:
-      - "&7Bonds to other casings, forming a"
-      - "&7frame any mechanism can move"
+      - "&7Sticks to adjacent blocks like slime —"
+      - "&7move it with any mechanism"
     catalog_variant_of: casing_oak
     base_block: CRIMSON_STAIRS
     base_block_data: "[half=top,facing=north,shape=straight,waterlogged=false]"
@@ -1175,8 +1573,8 @@ blocks:
   casing_dark_oak:
     name: "&fDark Oak Mechanical Casing"
     lore:
-      - "&7Bonds to other casings, forming a"
-      - "&7frame any mechanism can move"
+      - "&7Sticks to adjacent blocks like slime —"
+      - "&7move it with any mechanism"
     catalog_variant_of: casing_oak
     base_block: DARK_OAK_STAIRS
     base_block_data: "[half=top,facing=north,shape=straight,waterlogged=false]"
@@ -1209,8 +1607,8 @@ blocks:
   casing_jungle:
     name: "&fJungle Mechanical Casing"
     lore:
-      - "&7Bonds to other casings, forming a"
-      - "&7frame any mechanism can move"
+      - "&7Sticks to adjacent blocks like slime —"
+      - "&7move it with any mechanism"
     catalog_variant_of: casing_oak
     base_block: JUNGLE_STAIRS
     base_block_data: "[half=top,facing=north,shape=straight,waterlogged=false]"
@@ -1243,8 +1641,8 @@ blocks:
   casing_mangrove:
     name: "&fMangrove Mechanical Casing"
     lore:
-      - "&7Bonds to other casings, forming a"
-      - "&7frame any mechanism can move"
+      - "&7Sticks to adjacent blocks like slime —"
+      - "&7move it with any mechanism"
     catalog_variant_of: casing_oak
     base_block: MANGROVE_STAIRS
     base_block_data: "[half=top,facing=north,shape=straight,waterlogged=false]"
@@ -1277,8 +1675,8 @@ blocks:
   casing_pale_oak:
     name: "&fPale Oak Mechanical Casing"
     lore:
-      - "&7Bonds to other casings, forming a"
-      - "&7frame any mechanism can move"
+      - "&7Sticks to adjacent blocks like slime —"
+      - "&7move it with any mechanism"
     catalog_variant_of: casing_oak
     base_block: PALE_OAK_STAIRS
     base_block_data: "[half=top,facing=north,shape=straight,waterlogged=false]"
@@ -1311,8 +1709,8 @@ blocks:
   casing_spruce:
     name: "&fSpruce Mechanical Casing"
     lore:
-      - "&7Bonds to other casings, forming a"
-      - "&7frame any mechanism can move"
+      - "&7Sticks to adjacent blocks like slime —"
+      - "&7move it with any mechanism"
     catalog_variant_of: casing_oak
     base_block: SPRUCE_STAIRS
     base_block_data: "[half=top,facing=north,shape=straight,waterlogged=false]"
@@ -1345,8 +1743,8 @@ blocks:
   casing_warped:
     name: "&fWarped Mechanical Casing"
     lore:
-      - "&7Bonds to other casings, forming a"
-      - "&7frame any mechanism can move"
+      - "&7Sticks to adjacent blocks like slime —"
+      - "&7move it with any mechanism"
     catalog_variant_of: casing_oak
     base_block: WARPED_STAIRS
     base_block_data: "[half=top,facing=north,shape=straight,waterlogged=false]"
@@ -1375,6 +1773,355 @@ blocks:
             key:
               N: { material: IRON_NUGGET }
               P: { material: WARPED_PLANKS }
+
+  # ─── Mechanical Chassis ───────────────────────────────────────────────────
+  # A casing that ALSO auto-glues to every adjacent block like a slime block: a chassis in a moving
+  # contraption drags all its cardinal neighbours (world blocks, machines, and other casings alike),
+  # while still counting as part of any casing frame (casings bond to it and it to them). Slime reach
+  # with casing-frame membership — see StickySpread.Family.CHASSIS, hooked into every mover (piston /
+  # rotator / door / minecart / chain hoist). Movable by mechanisms; ordinary to drill/break. No Java
+  # overlay — pure data. Same upside-down `<wood>_STAIRS` bare block and display transform as the
+  # casing (see the Mechanical Casing header for why a stair, not a plank); the texture bakes the
+  # casing frame plus spikes (assets/rotation/casing/make_chassis.py, chassis-mask.png).
+  chassis_oak:
+    name: "&fOak Mechanical Chassis"
+    lore:
+      - "&7Grabs every adjacent block like slime,"
+      - "&7and joins any casing frame"
+    catalog_notes:
+      - "&fAuto-glues to EVERY adjacent block like a slime block — a moving frame drags its whole payload, no glue brush."
+      - "&7Also joins any casing frame: plain casings bond to a chassis and it to them, spreading through casings and other chassis."
+      - "&7Grabs everything movable except honey (slime parity). A vanilla piston moves a lone chassis as an ordinary block."
+      - "&7Craft by ringing a Mechanical Casing with iron nuggets — the casing's wood picks the variant."
+    base_block: OAK_STAIRS
+    base_block_data: "[half=top,facing=north,shape=straight,waterlogged=false]"
+    texture: "@chassis_oak"
+    drops: self
+    default_state: idle
+    states:
+      idle:
+        display_entities:
+          - texture: "@chassis_oak"
+            tag: shell
+            # Identical to the casing shell — see the Mechanical Casing entry for the derivation of
+            # this transform (half-extent 0.5015 over the stair face, hat layer left empty by
+            # make_chassis.py so a wall does not double every seam).
+            transform: { translation: [0, 0.501, 0], scale: [2.006, 2.006, 2.006] }
+    recipes:
+      craft:
+        shaped:
+          - pattern: ["NNN", "NCN", "NNN"]   # iron-nugget "spikes" ringing a casing of the same wood
+            key:
+              N: { material: IRON_NUGGET }
+              C: { block: casing_oak }
+
+  chassis_acacia:
+    name: "&fAcacia Mechanical Chassis"
+    lore:
+      - "&7Grabs every adjacent block like slime,"
+      - "&7and joins any casing frame"
+    catalog_variant_of: chassis_oak
+    base_block: ACACIA_STAIRS
+    base_block_data: "[half=top,facing=north,shape=straight,waterlogged=false]"
+    texture: "@chassis_acacia"
+    drops: self
+    default_state: idle
+    states:
+      idle:
+        display_entities:
+          - texture: "@chassis_acacia"
+            tag: shell
+            # Identical to the casing shell — see the Mechanical Casing entry for the derivation of
+            # this transform (half-extent 0.5015 over the stair face, hat layer left empty by
+            # make_chassis.py so a wall does not double every seam).
+            transform: { translation: [0, 0.501, 0], scale: [2.006, 2.006, 2.006] }
+    recipes:
+      craft:
+        shaped:
+          - pattern: ["NNN", "NCN", "NNN"]   # iron-nugget "spikes" ringing a casing of the same wood
+            key:
+              N: { material: IRON_NUGGET }
+              C: { block: casing_acacia }
+
+  chassis_bamboo:
+    name: "&fBamboo Mechanical Chassis"
+    lore:
+      - "&7Grabs every adjacent block like slime,"
+      - "&7and joins any casing frame"
+    catalog_variant_of: chassis_oak
+    base_block: BAMBOO_STAIRS
+    base_block_data: "[half=top,facing=north,shape=straight,waterlogged=false]"
+    texture: "@chassis_bamboo"
+    drops: self
+    default_state: idle
+    states:
+      idle:
+        display_entities:
+          - texture: "@chassis_bamboo"
+            tag: shell
+            # Identical to the casing shell — see the Mechanical Casing entry for the derivation of
+            # this transform (half-extent 0.5015 over the stair face, hat layer left empty by
+            # make_chassis.py so a wall does not double every seam).
+            transform: { translation: [0, 0.501, 0], scale: [2.006, 2.006, 2.006] }
+    recipes:
+      craft:
+        shaped:
+          - pattern: ["NNN", "NCN", "NNN"]   # iron-nugget "spikes" ringing a casing of the same wood
+            key:
+              N: { material: IRON_NUGGET }
+              C: { block: casing_bamboo }
+
+  chassis_birch:
+    name: "&fBirch Mechanical Chassis"
+    lore:
+      - "&7Grabs every adjacent block like slime,"
+      - "&7and joins any casing frame"
+    catalog_variant_of: chassis_oak
+    base_block: BIRCH_STAIRS
+    base_block_data: "[half=top,facing=north,shape=straight,waterlogged=false]"
+    texture: "@chassis_birch"
+    drops: self
+    default_state: idle
+    states:
+      idle:
+        display_entities:
+          - texture: "@chassis_birch"
+            tag: shell
+            # Identical to the casing shell — see the Mechanical Casing entry for the derivation of
+            # this transform (half-extent 0.5015 over the stair face, hat layer left empty by
+            # make_chassis.py so a wall does not double every seam).
+            transform: { translation: [0, 0.501, 0], scale: [2.006, 2.006, 2.006] }
+    recipes:
+      craft:
+        shaped:
+          - pattern: ["NNN", "NCN", "NNN"]   # iron-nugget "spikes" ringing a casing of the same wood
+            key:
+              N: { material: IRON_NUGGET }
+              C: { block: casing_birch }
+
+  chassis_cherry:
+    name: "&fCherry Mechanical Chassis"
+    lore:
+      - "&7Grabs every adjacent block like slime,"
+      - "&7and joins any casing frame"
+    catalog_variant_of: chassis_oak
+    base_block: CHERRY_STAIRS
+    base_block_data: "[half=top,facing=north,shape=straight,waterlogged=false]"
+    texture: "@chassis_cherry"
+    drops: self
+    default_state: idle
+    states:
+      idle:
+        display_entities:
+          - texture: "@chassis_cherry"
+            tag: shell
+            # Identical to the casing shell — see the Mechanical Casing entry for the derivation of
+            # this transform (half-extent 0.5015 over the stair face, hat layer left empty by
+            # make_chassis.py so a wall does not double every seam).
+            transform: { translation: [0, 0.501, 0], scale: [2.006, 2.006, 2.006] }
+    recipes:
+      craft:
+        shaped:
+          - pattern: ["NNN", "NCN", "NNN"]   # iron-nugget "spikes" ringing a casing of the same wood
+            key:
+              N: { material: IRON_NUGGET }
+              C: { block: casing_cherry }
+
+  chassis_crimson:
+    name: "&fCrimson Mechanical Chassis"
+    lore:
+      - "&7Grabs every adjacent block like slime,"
+      - "&7and joins any casing frame"
+    catalog_variant_of: chassis_oak
+    base_block: CRIMSON_STAIRS
+    base_block_data: "[half=top,facing=north,shape=straight,waterlogged=false]"
+    texture: "@chassis_crimson"
+    drops: self
+    default_state: idle
+    states:
+      idle:
+        display_entities:
+          - texture: "@chassis_crimson"
+            tag: shell
+            # Identical to the casing shell — see the Mechanical Casing entry for the derivation of
+            # this transform (half-extent 0.5015 over the stair face, hat layer left empty by
+            # make_chassis.py so a wall does not double every seam).
+            transform: { translation: [0, 0.501, 0], scale: [2.006, 2.006, 2.006] }
+    recipes:
+      craft:
+        shaped:
+          - pattern: ["NNN", "NCN", "NNN"]   # iron-nugget "spikes" ringing a casing of the same wood
+            key:
+              N: { material: IRON_NUGGET }
+              C: { block: casing_crimson }
+
+  chassis_dark_oak:
+    name: "&fDark Oak Mechanical Chassis"
+    lore:
+      - "&7Grabs every adjacent block like slime,"
+      - "&7and joins any casing frame"
+    catalog_variant_of: chassis_oak
+    base_block: DARK_OAK_STAIRS
+    base_block_data: "[half=top,facing=north,shape=straight,waterlogged=false]"
+    texture: "@chassis_dark_oak"
+    drops: self
+    default_state: idle
+    states:
+      idle:
+        display_entities:
+          - texture: "@chassis_dark_oak"
+            tag: shell
+            # Identical to the casing shell — see the Mechanical Casing entry for the derivation of
+            # this transform (half-extent 0.5015 over the stair face, hat layer left empty by
+            # make_chassis.py so a wall does not double every seam).
+            transform: { translation: [0, 0.501, 0], scale: [2.006, 2.006, 2.006] }
+    recipes:
+      craft:
+        shaped:
+          - pattern: ["NNN", "NCN", "NNN"]   # iron-nugget "spikes" ringing a casing of the same wood
+            key:
+              N: { material: IRON_NUGGET }
+              C: { block: casing_dark_oak }
+
+  chassis_jungle:
+    name: "&fJungle Mechanical Chassis"
+    lore:
+      - "&7Grabs every adjacent block like slime,"
+      - "&7and joins any casing frame"
+    catalog_variant_of: chassis_oak
+    base_block: JUNGLE_STAIRS
+    base_block_data: "[half=top,facing=north,shape=straight,waterlogged=false]"
+    texture: "@chassis_jungle"
+    drops: self
+    default_state: idle
+    states:
+      idle:
+        display_entities:
+          - texture: "@chassis_jungle"
+            tag: shell
+            # Identical to the casing shell — see the Mechanical Casing entry for the derivation of
+            # this transform (half-extent 0.5015 over the stair face, hat layer left empty by
+            # make_chassis.py so a wall does not double every seam).
+            transform: { translation: [0, 0.501, 0], scale: [2.006, 2.006, 2.006] }
+    recipes:
+      craft:
+        shaped:
+          - pattern: ["NNN", "NCN", "NNN"]   # iron-nugget "spikes" ringing a casing of the same wood
+            key:
+              N: { material: IRON_NUGGET }
+              C: { block: casing_jungle }
+
+  chassis_mangrove:
+    name: "&fMangrove Mechanical Chassis"
+    lore:
+      - "&7Grabs every adjacent block like slime,"
+      - "&7and joins any casing frame"
+    catalog_variant_of: chassis_oak
+    base_block: MANGROVE_STAIRS
+    base_block_data: "[half=top,facing=north,shape=straight,waterlogged=false]"
+    texture: "@chassis_mangrove"
+    drops: self
+    default_state: idle
+    states:
+      idle:
+        display_entities:
+          - texture: "@chassis_mangrove"
+            tag: shell
+            # Identical to the casing shell — see the Mechanical Casing entry for the derivation of
+            # this transform (half-extent 0.5015 over the stair face, hat layer left empty by
+            # make_chassis.py so a wall does not double every seam).
+            transform: { translation: [0, 0.501, 0], scale: [2.006, 2.006, 2.006] }
+    recipes:
+      craft:
+        shaped:
+          - pattern: ["NNN", "NCN", "NNN"]   # iron-nugget "spikes" ringing a casing of the same wood
+            key:
+              N: { material: IRON_NUGGET }
+              C: { block: casing_mangrove }
+
+  chassis_pale_oak:
+    name: "&fPale Oak Mechanical Chassis"
+    lore:
+      - "&7Grabs every adjacent block like slime,"
+      - "&7and joins any casing frame"
+    catalog_variant_of: chassis_oak
+    base_block: PALE_OAK_STAIRS
+    base_block_data: "[half=top,facing=north,shape=straight,waterlogged=false]"
+    texture: "@chassis_pale_oak"
+    drops: self
+    default_state: idle
+    states:
+      idle:
+        display_entities:
+          - texture: "@chassis_pale_oak"
+            tag: shell
+            # Identical to the casing shell — see the Mechanical Casing entry for the derivation of
+            # this transform (half-extent 0.5015 over the stair face, hat layer left empty by
+            # make_chassis.py so a wall does not double every seam).
+            transform: { translation: [0, 0.501, 0], scale: [2.006, 2.006, 2.006] }
+    recipes:
+      craft:
+        shaped:
+          - pattern: ["NNN", "NCN", "NNN"]   # iron-nugget "spikes" ringing a casing of the same wood
+            key:
+              N: { material: IRON_NUGGET }
+              C: { block: casing_pale_oak }
+
+  chassis_spruce:
+    name: "&fSpruce Mechanical Chassis"
+    lore:
+      - "&7Grabs every adjacent block like slime,"
+      - "&7and joins any casing frame"
+    catalog_variant_of: chassis_oak
+    base_block: SPRUCE_STAIRS
+    base_block_data: "[half=top,facing=north,shape=straight,waterlogged=false]"
+    texture: "@chassis_spruce"
+    drops: self
+    default_state: idle
+    states:
+      idle:
+        display_entities:
+          - texture: "@chassis_spruce"
+            tag: shell
+            # Identical to the casing shell — see the Mechanical Casing entry for the derivation of
+            # this transform (half-extent 0.5015 over the stair face, hat layer left empty by
+            # make_chassis.py so a wall does not double every seam).
+            transform: { translation: [0, 0.501, 0], scale: [2.006, 2.006, 2.006] }
+    recipes:
+      craft:
+        shaped:
+          - pattern: ["NNN", "NCN", "NNN"]   # iron-nugget "spikes" ringing a casing of the same wood
+            key:
+              N: { material: IRON_NUGGET }
+              C: { block: casing_spruce }
+
+  chassis_warped:
+    name: "&fWarped Mechanical Chassis"
+    lore:
+      - "&7Grabs every adjacent block like slime,"
+      - "&7and joins any casing frame"
+    catalog_variant_of: chassis_oak
+    base_block: WARPED_STAIRS
+    base_block_data: "[half=top,facing=north,shape=straight,waterlogged=false]"
+    texture: "@chassis_warped"
+    drops: self
+    default_state: idle
+    states:
+      idle:
+        display_entities:
+          - texture: "@chassis_warped"
+            tag: shell
+            # Identical to the casing shell — see the Mechanical Casing entry for the derivation of
+            # this transform (half-extent 0.5015 over the stair face, hat layer left empty by
+            # make_chassis.py so a wall does not double every seam).
+            transform: { translation: [0, 0.501, 0], scale: [2.006, 2.006, 2.006] }
+    recipes:
+      craft:
+        shaped:
+          - pattern: ["NNN", "NCN", "NNN"]   # iron-nugget "spikes" ringing a casing of the same wood
+            key:
+              N: { material: IRON_NUGGET }
+              C: { block: casing_warped }
 
   # ─── Millstone ──────────────────────────────────────────────────────────
   # Consumer: 1 Power. WALL only — mounts on a block and pulls from it if it's a

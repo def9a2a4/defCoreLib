@@ -41,8 +41,8 @@ public class RotationNetwork {
     }
 
     record RotationNode(CustomBlockRegistry.LocationKey key, String blockTypeId, Axis axis,
-                        NodeRole role, int powerUnits, boolean gearLike, int reverserOutSign,
-                        boolean omni, @Nullable BlockFace omniExcludedFace) {}
+                        NodeRole role, int powerUnits, boolean gearLike, boolean gearbox,
+                        int reverserOutSign, boolean omni, @Nullable BlockFace omniExcludedFace) {}
 
     record Connection(CustomBlockRegistry.LocationKey neighbor, boolean reverses) {}
 
@@ -97,7 +97,15 @@ public class RotationNetwork {
 
     public void addNode(Block block, String blockTypeId, Axis axis,
                         NodeRole role, int powerUnits, boolean gearLike) {
-        addNode(block, blockTypeId, axis, role, powerUnits, gearLike, false, null);
+        addNode(block, blockTypeId, axis, role, powerUnits, gearLike, false, false, null);
+    }
+
+    /** As {@link #addNode(Block, String, Axis, NodeRole, int, boolean)} but flagged as a
+     *  <b>gearbox</b> — an omnidirectional transmitter that couples to any aligned shaft/gear (or
+     *  another gearbox) on all six faces without reversing spin (see {@link #getConnections}). */
+    public void addNode(Block block, String blockTypeId, Axis axis,
+                        NodeRole role, int powerUnits, boolean gearLike, boolean gearbox) {
+        addNode(block, blockTypeId, axis, role, powerUnits, gearLike, gearbox, false, null);
     }
 
     /**
@@ -107,11 +115,11 @@ public class RotationNetwork {
      * Omni nodes store a nominal {@code axis} — their connectivity comes from {@link #omniAttachKey}.
      */
     public void addNode(Block block, String blockTypeId, Axis axis,
-                        NodeRole role, int powerUnits, boolean gearLike,
+                        NodeRole role, int powerUnits, boolean gearLike, boolean gearbox,
                         boolean omni, @Nullable BlockFace omniExcludedFace) {
         CustomBlockRegistry.LocationKey key = CustomBlockRegistry.LocationKey.of(block);
         int reverserOutSign = reverserOutSign(block, blockTypeId, axis);
-        nodes.put(key, new RotationNode(key, blockTypeId, axis, role, powerUnits, gearLike,
+        nodes.put(key, new RotationNode(key, blockTypeId, axis, role, powerUnits, gearLike, gearbox,
                 reverserOutSign, omni, omniExcludedFace));
         recalculate(key);
     }
@@ -626,6 +634,31 @@ public class RotationNetwork {
             return attach == null ? List.of() : List.of(new Connection(attach, false));
         }
 
+        // Gearbox: an omnidirectional hub. On each face it couples (spin-preserving) to the neighbor
+        // there iff that neighbor is another gearbox OR a node whose axis runs along that face (a shaft
+        // or gear aligned with the face). Every edge is reverses=false, so the hub and its aligned
+        // shafts share one spin label (a tree — no false jams). Symmetric from the neighbor side: an
+        // aligned shaft's along-axis probe lands on the gearbox and checkAxisNeighbor connects back.
+        // Early-return before along-axis/gearLike/chain — the gearbox's nominal axis is meaningless.
+        if (node.gearbox()) {
+            List<Connection> res = new ArrayList<>(6);
+            CustomBlockRegistry.LocationKey gk = node.key();
+            for (BlockFace face : Faces.CARDINAL) {
+                CustomBlockRegistry.LocationKey nk = faceNeighbor(gk, face);
+                RotationNode other = nodes.get(nk);
+                if (other == null || isLocked(other)) continue;
+                if (other.omni()) {
+                    // Emit the back-edge only if this omni consumer actually chose us as its attach —
+                    // mirrors checkAxisNeighbor, so a non-chosen omni isn't pulled in (and one that DID
+                    // choose us isn't orphaned).
+                    if (gk.equals(omniAttachKey(other))) res.add(new Connection(nk, false));
+                } else if (other.gearbox() || other.axis() == axisFromFace(face)) {
+                    res.add(new Connection(nk, false));
+                }
+            }
+            return res;
+        }
+
         List<Connection> result = new ArrayList<>(6);
         CustomBlockRegistry.LocationKey k = node.key();
 
@@ -684,6 +717,14 @@ public class RotationNetwork {
             // non-chosen adjacent shaft never pulls it into that shaft's network. reverses=false — a
             // leaf sink imposes no spin direction, keeping both half-edges symmetric (no spurious jam).
             if (callerKey.equals(omniAttachKey(other))) result.add(new Connection(neighborKey, false));
+            return;
+        }
+        if (other.gearbox()) {
+            // A gearbox couples to any aligned neighbour on all six faces; since this probe runs along
+            // the caller's axis, the gearbox lies on the caller's ±axis and its face loop emits the
+            // matching reverses=false edge back — symmetric. (Intentionally drops a reverser flip into
+            // the hub: matching a true on only this side would create a false jam. See gearbox docs.)
+            result.add(new Connection(neighborKey, false));
             return;
         }
         if (other.axis() == requiredAxis) {

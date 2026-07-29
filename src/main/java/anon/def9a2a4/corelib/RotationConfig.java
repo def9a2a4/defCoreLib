@@ -82,7 +82,7 @@ final class RotationConfig {
         /** Omni consumer: draws from the first aligned neighbor on any non-mounted face (suction hopper). */ OMNI
     }
 
-    record MechRotationMeta(MechKind kind, boolean gearLike, MechAxisRule axisRule) {}
+    record MechRotationMeta(MechKind kind, boolean gearLike, boolean gearbox, MechAxisRule axisRule) {}
 
     /** Mechanism-mode metadata for a full block id ({@code mech:shaft}), or null when the block
      *  takes no part in a mechanism's rotation network. Keyed by short name, like {@code power:}. */
@@ -287,7 +287,8 @@ final class RotationConfig {
                     continue;
                 }
                 boolean gearLike = entry != null && entry.getBoolean("gear_like", false);
-                mechMetaValues.put(key, new MechRotationMeta(kind, gearLike, axis));
+                boolean gearbox = entry != null && entry.getBoolean("gearbox", false);
+                mechMetaValues.put(key, new MechRotationMeta(kind, gearLike, gearbox, axis));
             }
             loaded++;
         }
@@ -335,27 +336,33 @@ final class RotationConfig {
     }
 
     private void initDefaultMechMeta() {
-        var t = new MechRotationMeta(MechKind.TRANSMITTER, false, MechAxisRule.FROM_STATE);
+        var t = new MechRotationMeta(MechKind.TRANSMITTER, false, false, MechAxisRule.FROM_STATE);
         mechMetaValues.put("shaft", t);
         mechMetaValues.put("reverser", t);        // redstone inert while riding → plain shaft
         mechMetaValues.put("clutch", t);          // redstone inert → never locks
         mechMetaValues.put("chain_pulley", t);    // chain edges deferred on mechanisms
         mechMetaValues.put("redstone_dynamo", t);
         mechMetaValues.put("water_wheel", t);     // no live water check while riding → never a source
-        mechMetaValues.put("gear", new MechRotationMeta(MechKind.TRANSMITTER, true, MechAxisRule.FROM_STATE));
-        mechMetaValues.put("engine", new MechRotationMeta(MechKind.ENGINE, false, MechAxisRule.FROM_STATE));
-        var src = new MechRotationMeta(MechKind.CONSTANT_SOURCE, false, MechAxisRule.FROM_STATE);
+        mechMetaValues.put("gear", new MechRotationMeta(MechKind.TRANSMITTER, true, false, MechAxisRule.FROM_STATE));
+        // Gearbox: omnidirectional transmitter (couples aligned shafts/gears on all six faces without
+        // reversing) — one per casing wood. Axis nominal (FROM_STATE → Y); connectivity is gearbox-driven.
+        var gearboxMeta = new MechRotationMeta(MechKind.TRANSMITTER, false, true, MechAxisRule.FROM_STATE);
+        for (String wood : RotationBlocks.CASING_WOODS) {
+            mechMetaValues.put("gearbox_" + wood, gearboxMeta);
+        }
+        mechMetaValues.put("engine", new MechRotationMeta(MechKind.ENGINE, false, false, MechAxisRule.FROM_STATE));
+        var src = new MechRotationMeta(MechKind.CONSTANT_SOURCE, false, false, MechAxisRule.FROM_STATE);
         mechMetaValues.put("redstone_motor", src);
         mechMetaValues.put("windmill", src);
         mechMetaValues.put("large_windmill", src);
         mechMetaValues.put("huge_windmill", src);
-        var consumer = new MechRotationMeta(MechKind.CONSUMER, false, MechAxisRule.FROM_STATE);
-        var consumerY = new MechRotationMeta(MechKind.CONSUMER, false, MechAxisRule.FIXED_Y);
+        var consumer = new MechRotationMeta(MechKind.CONSUMER, false, false, MechAxisRule.FROM_STATE);
+        var consumerY = new MechRotationMeta(MechKind.CONSUMER, false, false, MechAxisRule.FIXED_Y);
         mechMetaValues.put("drill", consumer);
         mechMetaValues.put("millstone", consumerY);
         mechMetaValues.put("press", consumerY);
         mechMetaValues.put("placer", consumerY);
-        mechMetaValues.put("fan", new MechRotationMeta(MechKind.CONSUMER, false, MechAxisRule.FROM_FACING));
-        mechMetaValues.put("suction_hopper", new MechRotationMeta(MechKind.CONSUMER, false, MechAxisRule.OMNI));
+        mechMetaValues.put("fan", new MechRotationMeta(MechKind.CONSUMER, false, false, MechAxisRule.FROM_FACING));
+        mechMetaValues.put("suction_hopper", new MechRotationMeta(MechKind.CONSUMER, false, false, MechAxisRule.OMNI));
     }
 }

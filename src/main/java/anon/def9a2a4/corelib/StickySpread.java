@@ -16,13 +16,18 @@ import java.util.Set;
 import java.util.function.BiConsumer;
 
 /**
- * Derived auto-glue for the sticky block families. Three families, each with its own reach:
+ * Derived auto-glue for the sticky block families. Four families, each with its own reach:
  *
  * <ul>
- *   <li><b>Casings</b> ({@code mech:casing_<wood>}) — structural connectors: a casing bonds ONLY to
- *       other casings (wood variants mix freely). They frame a contraption but never grab
- *       machinery or world blocks — that is deliberate; attach anything else with slime, honey,
- *       or the glue brush.</li>
+ *   <li><b>Casings</b> ({@code mech:casing_<wood>} and {@code mech:gearbox_<wood>}) — structural
+ *       connectors: a casing-family block bonds ONLY to other casing-family blocks (casings,
+ *       gearboxes, and chassis, all woods mixing freely). They frame a contraption but never grab
+ *       machinery or world blocks — that is deliberate; attach anything else with slime, honey, or
+ *       the glue brush.</li>
+ *   <li><b>Chassis</b> ({@code mech:chassis_<wood>}) — a "super-casing": it joins any casing frame
+ *       (casings and gearboxes bond to it, and it to them) AND additionally grabs every movable
+ *       neighbour except honey, exactly like a slime block. Slime reach with casing-frame
+ *       membership.</li>
  *   <li><b>Vanilla slime</b> — grabs every movable neighbour (world blocks and custom blocks
  *       alike) EXCEPT honey, propagating slime-to-slime. Vanilla piston semantics.</li>
  *   <li><b>Vanilla honey</b> — the mirror: grabs everything movable except slime.</li>
@@ -43,26 +48,40 @@ import java.util.function.BiConsumer;
  */
 final class StickySpread {
 
-    // Any id starting "mech:casing_" joins the casing family by design of this gate — the
-    // casing_ prefix is reserved for frame-bonding blocks.
+    // Any id starting "mech:casing_" or "mech:gearbox_" joins the casing family by design of this
+    // gate — these prefixes are reserved for frame-bonding blocks (gearboxes are casings that also
+    // transmit power, and glue to casings exactly like a casing).
     static final String CASING_ID_PREFIX = "mech:casing_";
+    static final String GEARBOX_ID_PREFIX = "mech:gearbox_";
+    // A chassis is a casing that also grabs everything (slime reach) — its own family so the
+    // grab rule differs, but casings/gearboxes still bond to it as frame (see sticksTo).
+    static final String CHASSIS_ID_PREFIX = "mech:chassis_";
 
     /** The sticky families. Order is meaningless; {@code null} family = not sticky. */
-    enum Family { CASING, SLIME, HONEY }
+    enum Family { CASING, CHASSIS, SLIME, HONEY }
 
     private StickySpread() {}
 
+    /** True iff {@code b} is a casing (strictly — not a gearbox). Kept semantically pure; the family
+     *  gate lives in {@link #familyOf}. */
     static boolean isCasing(Block b, CustomBlockRegistry registry) {
         CustomHeadBlock t = registry.getTypeFromBlock(b);
         return t != null && t.fullId().startsWith(CASING_ID_PREFIX);
     }
 
-    /** {@code b}'s sticky family, or null for ordinary (non-sticky) blocks. */
+    /** {@code b}'s sticky family, or null for ordinary (non-sticky) blocks. Casings and gearboxes
+     *  share the {@link Family#CASING} family (both frame-bonding, both glue to each other). */
     static @Nullable Family familyOf(Block b, CustomBlockRegistry registry) {
         Material m = b.getType();
         if (m == Material.SLIME_BLOCK) return Family.SLIME;
         if (m == Material.HONEY_BLOCK) return Family.HONEY;
-        return isCasing(b, registry) ? Family.CASING : null;
+        CustomHeadBlock t = registry.getTypeFromBlock(b);
+        if (t != null) {
+            String id = t.fullId();
+            if (id.startsWith(CHASSIS_ID_PREFIX)) return Family.CHASSIS;
+            if (id.startsWith(CASING_ID_PREFIX) || id.startsWith(GEARBOX_ID_PREFIX)) return Family.CASING;
+        }
+        return null;
     }
 
     /** Sticky blocks are never brush-glued or stored — their bond derives fresh at every resolve. */
@@ -71,10 +90,12 @@ final class StickySpread {
     }
 
     /** May a {@code grabber}-family block bond to a neighbour of family {@code target}?
-     *  Casings bond only to casings; slime grabs everything but honey; honey everything but slime. */
+     *  Casings bond only to casing-family blocks (casings/gearboxes/chassis); chassis and slime grab
+     *  everything but honey; honey everything but slime. */
     private static boolean sticksTo(Family grabber, @Nullable Family target) {
         return switch (grabber) {
-            case CASING -> target == Family.CASING;
+            case CASING -> target == Family.CASING || target == Family.CHASSIS;
+            case CHASSIS -> target != Family.HONEY;
             case SLIME -> target != Family.HONEY;
             case HONEY -> target != Family.SLIME;
         };

@@ -45,7 +45,7 @@ final class RotationSolver {
     /** A node on the abstract grid. {@code dirPref} is non-null only for sources with a captured
      *  spin preference; {@code supply}/{@code demand} are the node's power contribution. */
     record Node(int x, int y, int z, RotationNetwork.Axis axis,
-                int supply, int demand, boolean gearLike,
+                int supply, int demand, boolean gearLike, boolean gearbox,
                 boolean omni, @Nullable BlockFace omniExcludedFace,
                 RotationNetwork.@Nullable SpinDirection dirPref) {
 
@@ -153,6 +153,24 @@ final class RotationSolver {
             return result;
         }
 
+        // Gearbox: omnidirectional hub — mirrors RotationNetwork.getConnections. Couples (reverses=false)
+        // on each face to another gearbox or a node aligned with that face; emits an omni back-edge only
+        // if that omni chose us. Early-return before along-axis/gearLike (nominal axis is meaningless).
+        if (node.gearbox()) {
+            for (BlockFace face : Faces.CARDINAL) {
+                Integer oi = neighborAt(byCell, node, face);
+                if (oi == null) continue;
+                Node other = nodes.get(oi);
+                if (other.omni()) {
+                    Integer chosen = omniAttach(nodes, byCell, other);
+                    if (chosen != null && chosen == idx) result.add(new Edge(oi, false));
+                } else if (other.gearbox() || other.axis() == RotationNetwork.axisFromFace(face)) {
+                    result.add(new Edge(oi, false));
+                }
+            }
+            return result;
+        }
+
         // Along-axis (checked first — load-bearing so same-axis gears along their shared axis
         // connect shaft-like, not as a reversing mesh). An omni neighbor can only ever choose a
         // node whose axis runs along their connecting face — i.e. it always sits on that node's
@@ -165,6 +183,9 @@ final class RotationSolver {
                 // Mutual single edge: connect back only if the omni node actually chose us.
                 Integer chosen = omniAttach(nodes, byCell, other);
                 if (chosen != null && chosen == idx) result.add(new Edge(oi, false));
+            } else if (other.gearbox()) {
+                // A gearbox on our axis couples back (its own face loop emits the matching edge).
+                result.add(new Edge(oi, false));
             } else if (other.axis() == node.axis()) {
                 result.add(new Edge(oi, false));
             }

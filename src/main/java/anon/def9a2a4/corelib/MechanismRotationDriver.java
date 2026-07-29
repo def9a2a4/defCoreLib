@@ -297,7 +297,7 @@ final class MechanismRotationDriver {
             };
             int demand = s.meta().kind() == RotationConfig.MechKind.CONSUMER ? s.power() : 0;
             nodes.add(new RotationSolver.Node(s.cellX(), s.cellY(), s.cellZ(), s.axis(),
-                supplies ? s.power() : 0, demand, s.meta().gearLike(),
+                supplies ? s.power() : 0, demand, s.meta().gearLike(), s.meta().gearbox(),
                 s.omni(), s.omniExcludedFace(),
                 supplies ? s.dirPref() : null));
         }
