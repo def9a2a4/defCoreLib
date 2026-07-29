@@ -107,7 +107,9 @@ public final class HeadUtil {
         PlayerProfile profile = Bukkit.createProfile(textureUuid, null);
         profile.setProperty(new ProfileProperty("textures", base64Texture));
         skull.setPlayerProfile(profile);
-        skull.update();
+        // physics-suppressed: this is a plugin-internal re-render; a neighbor notification here
+        // re-enters CoreLibPlugin.onBlockPhysics and feeds an infinite recalc loop.
+        skull.update(false, false);
     }
 
     /**

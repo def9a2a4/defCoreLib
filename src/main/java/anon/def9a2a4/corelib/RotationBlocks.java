@@ -402,7 +402,7 @@ final class RotationBlocks {
                 tile.getPersistentDataContainer().set(RotationNetwork.SPIN_DIR_KEY,
                         PersistentDataType.STRING,
                         desired == RotationNetwork.SpinDirection.CW ? "cw" : "ccw");
-                tile.update();
+                tile.update(false, false); // physics-suppressed: internal PDC write, see onBlockPhysics loop
                 dirChanged = true;
             }
         }

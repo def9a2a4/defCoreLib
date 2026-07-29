@@ -561,6 +561,11 @@ final class BasicMechanism implements Mechanism {
         }
         if (serializer != null) serializer.onDisassemble(this);
         if (onDisassembled != null) onDisassembled.accept(placed);
+        // Landed blocks were written physics-suppressed (placeBlock), so notify reactive neighbors
+        // explicitly — pipes reconnect, and a rotation node re-scans to pick up an adjacent landed
+        // passive windmill. Replaces the BlockPhysicsEvent we no longer emit. This is the single funnel
+        // for every mechanism mover (pistons, chain hoists, rotators, drawbridges, minecart-carried).
+        for (Block b : placed) registry.notifyBlockAppearedOrMoved(b);
     }
 
     /**

@@ -232,6 +232,23 @@ public class CustomBlockRegistry {
     // Reusable work matrix for animation tick (avoids allocation per frame)
     private final Matrix4f animationWorkMatrix = new Matrix4f();
 
+    // Re-entrancy guard for the plugin's OWN block writes. Those writes are physics-suppressed
+    // (see setState/applyConfig/ensureLightBlock), but as belt-and-suspenders: any BlockPhysicsEvent
+    // that fires synchronously while this is >0 is our own echo, so CoreLibPlugin.onBlockPhysics
+    // early-returns on it and can never feed the reactive→recalc→write→physics feedback loop that
+    // hung the server thread. An int, not a boolean, because these writes nest
+    // (transitionState → setState + applyConfig → ensureLightBlock). Main-thread only — no sync needed.
+    private int physicsSuppressionDepth;
+
+    /** True while the plugin is performing its own custom-block writes; see {@code physicsSuppressionDepth}. */
+    public boolean isSuppressingPhysics() { return physicsSuppressionDepth > 0; }
+
+    /** Run {@code body} with plugin-write physics-echo suppression active (see {@link #isSuppressingPhysics}). */
+    public void withPhysicsSuppressed(Runnable body) {
+        physicsSuppressionDepth++;
+        try { body.run(); } finally { physicsSuppressionDepth--; }
+    }
+
     CustomBlockRegistry(JavaPlugin plugin) {
         this.plugin = plugin;
     }
@@ -556,19 +573,24 @@ public class CustomBlockRegistry {
 
     /** Write block type and initial state to a placed skull's PDC. */
     public void markBlock(Block block, CustomHeadBlock type, @Nullable String initialState) {
-        // TileState covers both skulls and barrel-backed blocks (Skull extends TileState).
-        if (!(block.getState() instanceof TileState tile)) return;
-        PersistentDataContainer pdc = tile.getPersistentDataContainer();
-        pdc.set(BLOCK_TYPE_KEY, PersistentDataType.STRING, type.fullId());
-        String effectiveState = initialState != null ? initialState : type.defaultState();
-        if (effectiveState != null) {
-            pdc.set(STATE_KEY, PersistentDataType.STRING, effectiveState);
-        }
-        tile.update();
-        customBlockLocations.add(LocationKey.of(block));
-        markChunkDirty(block);
-        if (type.reactsToNeighbors()) {
-            neighborReactiveBlocks.add(LocationKey.of(block));
+        physicsSuppressionDepth++;
+        try {
+            // TileState covers both skulls and barrel-backed blocks (Skull extends TileState).
+            if (!(block.getState() instanceof TileState tile)) return;
+            PersistentDataContainer pdc = tile.getPersistentDataContainer();
+            pdc.set(BLOCK_TYPE_KEY, PersistentDataType.STRING, type.fullId());
+            String effectiveState = initialState != null ? initialState : type.defaultState();
+            if (effectiveState != null) {
+                pdc.set(STATE_KEY, PersistentDataType.STRING, effectiveState);
+            }
+            tile.update(false, false); // physics-suppressed; neighbors are notified via notifyBlockAppearedOrMoved
+            customBlockLocations.add(LocationKey.of(block));
+            markChunkDirty(block);
+            if (type.reactsToNeighbors()) {
+                neighborReactiveBlocks.add(LocationKey.of(block));
+            }
+        } finally {
+            physicsSuppressionDepth--;
         }
     }
 
@@ -593,9 +615,14 @@ public class CustomBlockRegistry {
 
     /** Write a new state to a skull's PDC. No-op for a bare (chain) shaft (state is synthesized). */
     public void setState(Block block, String state) {
-        if (!(block.getState() instanceof TileState tile)) return;
-        tile.getPersistentDataContainer().set(STATE_KEY, PersistentDataType.STRING, state);
-        tile.update();
+        physicsSuppressionDepth++;
+        try {
+            if (!(block.getState() instanceof TileState tile)) return;
+            tile.getPersistentDataContainer().set(STATE_KEY, PersistentDataType.STRING, state);
+            tile.update(false, false); // physics-suppressed: see isSuppressingPhysics / the onBlockPhysics loop
+        } finally {
+            physicsSuppressionDepth--;
+        }
     }
 
     // ── Bare-block support (display-backed, non-tile custom blocks) ───────────
@@ -676,6 +703,9 @@ public class CustomBlockRegistry {
             addBareBlock(e.getKey(), e.getValue());
             restoreBlock(e.getKey(), e.getValue(), getState(e.getKey()));
             applyConfig(e.getKey(), e.getValue(), getState(e.getKey()), 0);
+            // Physics-suppressed landing — notify reactive neighbors so pipes/networks pick up the moved
+            // casing/shaft (replaces the BlockPhysicsEvent the vanilla push would otherwise have carried).
+            notifyBlockAppearedOrMoved(e.getKey());
         }
     }
 
@@ -1209,6 +1239,15 @@ public class CustomBlockRegistry {
 
     /** Apply the resolved config for a block's current state + power. */
     public void applyConfig(Block block, CustomHeadBlock type, @Nullable String state, int power) {
+        physicsSuppressionDepth++;
+        try {
+            applyConfig0(block, type, state, power);
+        } finally {
+            physicsSuppressionDepth--;
+        }
+    }
+
+    private void applyConfig0(Block block, CustomHeadBlock type, @Nullable String state, int power) {
         // Texture (with directional support)
         BlockFace facing = getSkullFacing(block);
         String texture = type.resolveTexture(state, power, facing);
@@ -1315,6 +1354,15 @@ public class CustomBlockRegistry {
 
     /** Handle block removal: clean up displays, light, particles, redstone tracking. */
     public void onBlockRemoved(Block block, CustomHeadBlock type) {
+        physicsSuppressionDepth++;
+        try {
+            onBlockRemoved0(block, type);
+        } finally {
+            physicsSuppressionDepth--;
+        }
+    }
+
+    private void onBlockRemoved0(Block block, CustomHeadBlock type) {
         // Notify consumer before cleanup
         if (type.onBlockRemoved() != null) {
             String state = getState(block);
@@ -1359,6 +1407,17 @@ public class CustomBlockRegistry {
      * where a BlockPhysicsEvent is NOT emitted — i.e. when a custom block is placed/removed with
      * physics suppressed, so neighbors never hear about the change on their own.
      */
+    /**
+     * Notify already-settled reactive neighbors that a custom block just appeared or moved into
+     * {@code block}'s cell. This is the explicit replacement for the {@link BlockPhysicsEvent} we now
+     * suppress on the plugin's own writes: call it after a physics-suppressed placement / mechanism
+     * landing / piston move so pipes recompute their connection and rotation nodes re-scan and pick up
+     * an adjacent passive windmill. The block must already be present in the world when this is called.
+     */
+    public void notifyBlockAppearedOrMoved(Block block) {
+        refreshReactiveNeighbors(block);
+    }
+
     public void refreshReactiveNeighbors(Block changed) {
         for (BlockFace face : Faces.CARDINAL) {
             Block neighbor = changed.getRelative(face);
@@ -1399,6 +1458,16 @@ public class CustomBlockRegistry {
 
     /** Transition to a new state, applying all effects. */
     public void transitionState(Block block, CustomHeadBlock type,
+                                String fromState, CustomHeadBlock.StateTransition transition) {
+        physicsSuppressionDepth++;
+        try {
+            transitionState0(block, type, fromState, transition);
+        } finally {
+            physicsSuppressionDepth--;
+        }
+    }
+
+    private void transitionState0(Block block, CustomHeadBlock type,
                                 String fromState, CustomHeadBlock.StateTransition transition) {
         // Play sound
         if (transition.sound() != null) {
@@ -1729,10 +1798,12 @@ public class CustomBlockRegistry {
     private void ensureLightBlock(Block block, CustomHeadBlock.LightConfig lc) {
         Block target = block.getRelative(lc.offsetX(), lc.offsetY(), lc.offsetZ());
         if (target.getType().isAir() || target.getType() == Material.LIGHT) {
-            target.setType(Material.LIGHT);
+            // physics-suppressed: light blocks are plugin-managed; a neighbor update here re-enters
+            // onBlockPhysics and feeds the recalc feedback loop. Lighting itself updates regardless.
+            target.setType(Material.LIGHT, false);
             if (target.getBlockData() instanceof Levelled levelled) {
                 levelled.setLevel(lc.level());
-                target.setBlockData(levelled);
+                target.setBlockData(levelled, false);
             }
         }
     }
@@ -1754,7 +1825,7 @@ public class CustomBlockRegistry {
     private void removeLightAt(Block block, CustomHeadBlock.LightConfig lc) {
         Block target = block.getRelative(lc.offsetX(), lc.offsetY(), lc.offsetZ());
         if (target.getType() == Material.LIGHT) {
-            target.setType(Material.AIR);
+            target.setType(Material.AIR, false); // physics-suppressed, see ensureLightBlock
         }
     }
 

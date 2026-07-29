@@ -616,7 +616,7 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
                         skullMeta.getPersistentDataContainer(),
                         tile.getPersistentDataContainer());
             }
-            tile.update();
+            tile.update(false, false); // physics-suppressed; neighbors notified via notifyBlockAppearedOrMoved below
         }
 
         // Play place sound
@@ -632,6 +632,11 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
             if (registry.getTypeFromBlock(block) == null) return;
 
             registry.applyConfig(block, type, state, power);
+
+            // Placement writes are physics-suppressed, so notify reactive neighbors (pipes, and
+            // rotation nodes that pick up an adjacent passive windmill) explicitly. Replaces the
+            // BlockPhysicsEvent that markBlock's tile.update() used to emit.
+            registry.notifyBlockAppearedOrMoved(block);
 
             // Force nearby clients to re-render the freshly-placed head. applyConfig sets the correct
             // skull profile server-side, but the client's placement-predicted head (notably one placed
@@ -1582,6 +1587,11 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = false)
     public void onBlockPhysics(BlockPhysicsEvent event) {
+        // Ignore physics events that are the echo of our OWN block writes — otherwise reacting to
+        // them re-enters refreshReactiveNeighbors → recalc → write → physics and spins the server
+        // thread until the watchdog fires. Genuine external physics (player break, redstone/comparator,
+        // vanilla blocks) fires at depth 0 and is handled normally.
+        if (registry.isSuppressingPhysics()) return;
         registry.refreshReactiveNeighbors(event.getBlock());
     }
 

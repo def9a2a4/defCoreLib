@@ -84,6 +84,11 @@ public class RotationNetwork {
     static final NamespacedKey SPIN_DIR_KEY = new NamespacedKey("mech", "spin_dir");
 
     private static final String REVERSER_ID = "mech:reverser";
+    private static final String RATCHET_ID = "mech:ratchet";
+
+    // Ratchets that are freewheeling (fully severed) for the current solve. Non-empty ONLY during
+    // doRecalculate's apply pass; reset to an empty set in a finally. Consulted by isSevered.
+    private Set<CustomBlockRegistry.LocationKey> freewheelCut = Set.of();
 
     RotationNetwork(JavaPlugin plugin, CustomBlockRegistry registry) {
         this.plugin = plugin;
@@ -379,7 +384,60 @@ public class RotationNetwork {
 
         dirty.removeIf(k -> !nodes.containsKey(k));
 
-        // 2. BFS from each unassigned dirty node → new components with direction tracking
+        // 2. Decompose the dirty set into networks. A ratchet freewheels (fully severs) when the
+        //    shaft turns against its allowed direction — but that direction is only known AFTER a
+        //    component is flooded and anchored. So when any ratchet is dirty we solve TWICE: a
+        //    measure pass (fully engaged, no side effects) resolves each ratchet's direction and
+        //    picks the cut set, then an apply pass re-solves with those ratchets severed and commits.
+        //    Ratchet-free recalcs keep the original single pass (no cost regression).
+        boolean hasRatchet = false;
+        for (CustomBlockRegistry.LocationKey k : dirty) {
+            RotationNode n = nodes.get(k);
+            if (n != null && RATCHET_ID.equals(n.blockTypeId())) { hasRatchet = true; break; }
+        }
+        if (!hasRatchet) {
+            runDecomposition(dirty, previouslyJammed, previouslyPowered, true, null);
+            return;
+        }
+
+        // Measure pass: fully engaged, no commit — record each powered ratchet's resolved direction.
+        Map<CustomBlockRegistry.LocationKey, SpinDirection> ratchetDirs = new HashMap<>();
+        runDecomposition(dirty, previouslyJammed, previouslyPowered, false, ratchetDirs);
+        Set<CustomBlockRegistry.LocationKey> cut = new HashSet<>();
+        for (Map.Entry<CustomBlockRegistry.LocationKey, SpinDirection> e : ratchetDirs.entrySet()) {
+            SpinDirection allowed = readRatchetAllowed(e.getKey());
+            if (allowed != null && e.getValue() != allowed) cut.add(e.getKey());
+        }
+
+        // Rewind the measure pass: its ONLY instance-map write is nodeNetworkId (dirMap/supply/
+        // anchoring are component-local; every other map + all side effects are gated on commit).
+        // Every measure-assigned key is in `dirty` (BFS with an empty cut can't reach past the
+        // teardown frontier), so clearing dirty's nodeNetworkId fully restores the post-teardown state.
+        for (CustomBlockRegistry.LocationKey k : dirty) nodeNetworkId.remove(k);
+
+        // Apply pass: severed ratchets in force, committing side effects. Reset the cut in finally.
+        freewheelCut = cut;
+        try {
+            runDecomposition(dirty, previouslyJammed, previouslyPowered, true, null);
+        } finally {
+            freewheelCut = Set.of();
+        }
+    }
+
+    /**
+     * Flood {@code dirty} into connected components, resolving spin direction, supply/demand and jams.
+     * When {@code commit} is true, stores node directions/network state and fires the block-state,
+     * jam-smoke, and powered-edge side effects. When false (the ratchet measure pass) it stops right
+     * after anchoring and — if {@code ratchetDirsOut} is non-null — records each powered, non-jammed
+     * {@code mech:ratchet} member's resolved direction there. The only instance-map write shared by
+     * both modes is {@code nodeNetworkId} (see the rewind note in {@link #doRecalculate}).
+     */
+    private void runDecomposition(Set<CustomBlockRegistry.LocationKey> dirty,
+                                  Set<CustomBlockRegistry.LocationKey> previouslyJammed,
+                                  Set<CustomBlockRegistry.LocationKey> previouslyPowered,
+                                  boolean commit,
+                                  @Nullable Map<CustomBlockRegistry.LocationKey, SpinDirection> ratchetDirsOut) {
+        // BFS from each unassigned dirty node → new components with direction tracking
         for (CustomBlockRegistry.LocationKey start : dirty) {
             if (nodeNetworkId.containsKey(start)) continue;
 
@@ -518,6 +576,19 @@ public class RotationNetwork {
                 }
             }
 
+            // Measure pass: record each powered, non-jammed ratchet's resolved (post-anchor)
+            // direction, then stop before any side effect. A ratchet in a jammed/unpowered component
+            // has no well-defined direction, so it is left out of the cut set (never freewheels there).
+            if (ratchetDirsOut != null && supply > 0 && !jammed) {
+                for (CustomBlockRegistry.LocationKey loc : members) {
+                    RotationNode rn = nodes.get(loc);
+                    if (rn != null && RATCHET_ID.equals(rn.blockTypeId())) {
+                        ratchetDirsOut.put(loc, dirMap.getOrDefault(loc, SpinDirection.CW));
+                    }
+                }
+            }
+            if (!commit) continue;
+
             // Store node directions + set animation directions BEFORE state updates
             for (CustomBlockRegistry.LocationKey loc : members) {
                 SpinDirection dir = dirMap.getOrDefault(loc, SpinDirection.CW);
@@ -619,12 +690,28 @@ public class RotationNetwork {
         };
     }
 
+    /** A ratchet's allowed spin direction, parsed from its state string ({@code idle_cw_x} → CW,
+     *  {@code spinning_ccw_z} → CCW). Kept in the STATE (not PDC) so it survives mechanism assembly
+     *  and rotation. Null when the state carries no direction token (freshly placed, not yet
+     *  defaulted) — such a ratchet is treated as "pass-through" and never freewheels. */
+    @Nullable SpinDirection readRatchetAllowed(CustomBlockRegistry.LocationKey key) {
+        Block block = toBlock(key);
+        if (block == null) return null;
+        String state = registry.getState(block);
+        if (state == null) return null;
+        for (String tok : state.split("_")) {
+            if (tok.equals("ccw")) return SpinDirection.CCW;
+            if (tok.equals("cw")) return SpinDirection.CW;
+        }
+        return null;
+    }
+
     // ──────────────────────────────────────────────────────────────────────
     // Connection logic
     // ──────────────────────────────────────────────────────────────────────
 
     List<Connection> getConnections(RotationNode node) {
-        if (isLocked(node)) return List.of();
+        if (isSevered(node)) return List.of();
 
         // Omni consumer: a single leaf edge to the first aligned shaft (see omniAttachKey). No along-axis,
         // gear, or chain edges — a sink draws from one shaft and passes nothing on, so it never bridges
@@ -646,7 +733,7 @@ public class RotationNetwork {
             for (BlockFace face : Faces.CARDINAL) {
                 CustomBlockRegistry.LocationKey nk = faceNeighbor(gk, face);
                 RotationNode other = nodes.get(nk);
-                if (other == null || isLocked(other)) continue;
+                if (other == null || isSevered(other)) continue;
                 if (other.omni()) {
                     // Emit the back-edge only if this omni consumer actually chose us as its attach —
                     // mirrors checkAxisNeighbor, so a non-chosen omni isn't pulled in (and one that DID
@@ -685,7 +772,7 @@ public class RotationNetwork {
                 CustomBlockRegistry.LocationKey neighbor = faceNeighbor(k, face);
                 if (result.stream().anyMatch(c -> c.neighbor().equals(neighbor))) continue;
                 RotationNode other = nodes.get(neighbor);
-                if (other != null && other.gearLike() && !isLocked(other)) {
+                if (other != null && other.gearLike() && !isSevered(other)) {
                     boolean sameAxis = other.axis() == node.axis();
                     boolean reverses = sameAxis || bevelReverses(node.axis(), other.axis(), face);
                     result.add(new Connection(neighbor, reverses));
@@ -698,7 +785,7 @@ public class RotationNetwork {
         // Connection.neighbor() is unconstrained, so BFS in doRecalculate hops across the gap and every
         // ring member's out-edge merges the whole loop into one network.
         CustomBlockRegistry.LocationKey chainPartner = chainOut.get(k);
-        if (chainPartner != null && nodes.containsKey(chainPartner) && !isLocked(nodes.get(chainPartner))
+        if (chainPartner != null && nodes.containsKey(chainPartner) && !isSevered(nodes.get(chainPartner))
                 && onClosedLoop(k)
                 && result.stream().noneMatch(c -> c.neighbor().equals(chainPartner))) {
             result.add(new Connection(chainPartner, false));
@@ -711,7 +798,7 @@ public class RotationNetwork {
                                    CustomBlockRegistry.LocationKey neighborKey, Axis requiredAxis,
                                    boolean reverses, List<Connection> result) {
         RotationNode other = nodes.get(neighborKey);
-        if (other == null || isLocked(other)) return;
+        if (other == null || isSevered(other)) return;
         if (other.omni()) {
             // Mutual single edge: connect back only if this omni neighbour actually chose us, so a
             // non-chosen adjacent shaft never pulls it into that shaft's network. reverses=false — a
@@ -740,7 +827,7 @@ public class RotationNetwork {
             if (face == node.omniExcludedFace()) continue;
             CustomBlockRegistry.LocationKey nk = faceNeighbor(node.key(), face);
             RotationNode other = nodes.get(nk);
-            if (other != null && !other.omni() && !isLocked(other) && other.axis() == axisFromFace(face)) {
+            if (other != null && !other.omni() && !isSevered(other) && other.axis() == axisFromFace(face)) {
                 return nk;
             }
         }
@@ -781,6 +868,14 @@ public class RotationNetwork {
         if (b == null) return false;
         String state = registry.getState(b);
         return state != null && state.startsWith("locked_");
+    }
+
+    /** A node emits NO connections when it is locked (redstone clutch) OR freewheeling (a ratchet
+     *  cut this solve because the shaft is turning against its allowed direction). Must be consulted
+     *  on BOTH endpoints of every edge (all six edge sites in getConnections/checkAxisNeighbor/
+     *  omniAttachKey) — an asymmetric half-edge yields a non-deterministic partition. */
+    private boolean isSevered(RotationNode node) {
+        return isLocked(node) || freewheelCut.contains(node.key());
     }
 
     // ──────────────────────────────────────────────────────────────────────
