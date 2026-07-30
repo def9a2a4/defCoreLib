@@ -595,3 +595,273 @@ showcases:
     # No expects: like water_wheel_fan, flowing-water power is unreliable in the 80-tick capture
     # window, and the boiler tank only fills via the pump chain — don't gate CI on either.
     expect: []
+  # ── Vertical tower crane: motor → shaft column → rotator → boom → chain hoist ──
+  - id: crane
+    name: "Crane"
+    blurb: "A working tower crane: a redstone motor drives a shaft column up through a gearbox and a ceiling rotator to a chain hoist that raises and lowers its load."
+    description: >
+      A vertical crane assembled entirely from the mechanism set. At the base, stacked redstone
+      motors feed a reverser and a long vertical shaft column running up through the stone-brick-and-
+      spruce tower. Near the top the power turns a corner through a bank of gears and an acacia
+      gearbox, then a ceiling-mounted rotator hands it off to the horizontal boom. Out along the
+      copper-clad arm, gearboxes carry the drive to a chain hoist whose iron chain raises and lowers
+      the load. Levers, repeaters and redstone torches on the control wall gate the motors so the arm
+      can be started, stopped and reversed.
+    images:
+      - "readmes/assets/mech/crane.png"
+      - "readmes/assets/mech/crane-panel.png"
+    blocks:
+      - { id: "mech:shaft", facing: down, state: idle_y, at: [0, 0, 0] }
+      - { id: "mech:shaft", facing: north, state: idle_z, at: [0, 1, 2] }
+      - { id: "mech:shaft", facing: south, state: idle_z, at: [0, 1, 3] }
+      - { id: "mech:shaft", facing: south, state: idle_z, at: [0, 1, 4] }
+      - { id: "mech:shaft", facing: south, state: idle_z, at: [0, 1, 5] }
+      - { id: "mech:shaft", facing: south, state: idle_z, at: [0, 1, 6] }
+      - { id: "mech:shaft", facing: south, state: idle_z, at: [0, 1, 7] }
+      - { id: "mech:shaft", facing: south, state: idle_z, at: [0, 1, 8] }
+      - { id: "mech:chain_hoist", facing: down, state: idle_z, at: [0, 1, 10] }
+      - { id: "verticalslabs:cut_copper", facing: east, state: east, at: [-1, 1, 9] }
+      - { id: "verticalslabs:cut_copper", facing: west, state: west, at: [1, 1, 9] }
+      - { id: "verticalslabs:cut_copper", facing: south, state: south, at: [0, 1, -6] }
+      - { id: "verticalslabs:cut_copper", facing: east, state: east, at: [-1, 1, 0] }
+      - { id: "mech:gear", facing: down, state: idle_y, at: [0, -1, 0] }
+      - { id: "mech:gear", facing: down, state: idle_y, at: [1, -1, -1] }
+      - { id: "mech:gear", facing: down, state: idle_y, at: [1, -1, 0] }
+      - { id: "verticalslabs:cut_copper", facing: west, state: west, at: [1, 1, 0] }
+      - { id: "mech:gear", facing: down, state: idle_y, at: [-1, -1, -1] }
+      - { id: "mech:gear", facing: down, state: idle_y, at: [-1, -1, 0] }
+      - { id: "mech:rotator", facing: down, state: spinning_ceiling, at: [0, -2, -1] }
+      - { id: "mech:gear", facing: down, state: idle_y, at: [0, -1, -2] }
+      - { id: "mech:gear", facing: down, state: idle_y, at: [1, -1, -2] }
+      - { id: "mech:gear", facing: down, state: idle_y, at: [-1, -1, -2] }
+      - { id: "mech:shaft", facing: down, state: spinning_y, at: [0, -3, -1] }
+      - { id: "mech:shaft", facing: down, state: idle_y, at: [0, -2, -2] }
+      - { id: "mech:shaft", facing: down, state: spinning_y, at: [0, -4, -1] }
+      - { id: "mech:shaft", facing: down, state: idle_y, at: [0, -3, -2] }
+      - { id: "mech:shaft", facing: down, state: spinning_y, at: [0, -5, -1] }
+      - { id: "mech:shaft", facing: down, state: idle_y, at: [0, -4, -2] }
+      - { id: "mech:shaft", facing: down, state: spinning_y, at: [0, -6, -1] }
+      - { id: "mech:shaft", facing: down, state: idle_y, at: [0, -5, -2] }
+      - { id: "mech:shaft", facing: down, state: spinning_y, at: [0, -7, -1] }
+      - { id: "mech:shaft", facing: down, state: idle_y, at: [0, -6, -2] }
+      - { id: "mech:shaft", facing: down, state: spinning_y, at: [0, -8, -1] }
+      - { id: "mech:shaft", facing: down, state: idle_y, at: [0, -7, -2] }
+      - { id: "mech:shaft", facing: down, state: idle_y, at: [0, -8, -2] }
+      - { id: "verticalslabs:stone_brick", facing: north, state: north, at: [0, -8, 1] }
+      - { id: "verticalslabs:stone_brick", facing: east, state: east, at: [-2, -8, -1] }
+      - { id: "verticalslabs:stone_brick", facing: south, state: south, at: [0, -8, -3] }
+      - { id: "mech:shaft", facing: down, state: idle_y, at: [0, -9, -2] }
+      - { id: "mech:shaft", facing: down, state: spinning_y, at: [0, -9, -1] }
+      - { id: "mech:reverser", facing: down, state: idle_y, at: [0, -10, -2] }
+      - { id: "mech:shaft", facing: down, state: spinning_y, at: [0, -10, -1] }
+      - { id: "mech:shaft", facing: down, state: idle_y, at: [0, -11, -2] }
+      - { id: "mech:reverser", facing: down, state: spinning_y, at: [0, -11, -1] }
+      - { id: "mech:redstone_motor", facing: down, state: idle_y, at: [0, -12, -2] }
+      - { id: "mech:redstone_motor", facing: down, state: spinning_y, at: [0, -12, -1] }
+      - { id: "mech:redstone_motor", facing: down, state: spinning_y, at: [0, -13, -1] }
+      - { id: "verticalslabs:cut_copper", facing: east, state: east, at: [-1, 1, 1] }
+      - { id: "verticalslabs:cut_copper", facing: west, state: west, at: [1, 1, 1] }
+      - { id: "verticalslabs:stone_brick", facing: west, state: west, at: [2, -8, -1] }
+      - { id: "mech:gearbox_acacia", facing: down, state: idle, at: [0, 1, 0] }
+      - { id: "mech:gearbox_acacia", facing: down, state: idle, at: [0, 1, 1] }
+      - { id: "mech:gearbox_acacia", facing: down, state: idle, at: [0, 1, 9] }
+      - { id: "mech:casing_oak", facing: down, state: idle, at: [0, -7, 10] }
+      - { id: "mech:casing_oak", facing: down, state: idle, at: [0, -7, 9] }
+      - { id: "mech:casing_oak", facing: down, state: idle, at: [0, -7, 11] }
+      - { id: "mech:casing_oak", facing: down, state: idle, at: [1, -7, 10] }
+      - { id: "mech:casing_oak", facing: down, state: idle, at: [-1, -7, 10] }
+      - { id: "mech:casing_oak", facing: down, state: idle, at: [1, -7, 9] }
+      - { id: "mech:casing_oak", facing: down, state: idle, at: [-1, -7, 9] }
+      - { id: "mech:casing_oak", facing: down, state: idle, at: [1, -7, 11] }
+      - { id: "mech:casing_oak", facing: down, state: idle, at: [-1, -7, 11] }
+    vanilla:
+      - { block: "WAXED_CUT_COPPER_SLAB", at: [0, 0, 1], data: "[type=top,waterlogged=false]" }
+      - { block: "WAXED_CUT_COPPER_SLAB", at: [0, 0, 2], data: "[type=top,waterlogged=false]" }
+      - { block: "WAXED_CUT_COPPER_SLAB", at: [0, 0, 3], data: "[type=top,waterlogged=false]" }
+      - { block: "WAXED_CUT_COPPER_SLAB", at: [0, 0, 4], data: "[type=top,waterlogged=false]" }
+      - { block: "WAXED_CUT_COPPER_SLAB", at: [0, 0, 5], data: "[type=top,waterlogged=false]" }
+      - { block: "WAXED_CUT_COPPER_SLAB", at: [0, 0, 6], data: "[type=top,waterlogged=false]" }
+      - { block: "WAXED_CUT_COPPER_SLAB", at: [0, 0, 7], data: "[type=top,waterlogged=false]" }
+      - { block: "WAXED_CUT_COPPER_SLAB", at: [0, 0, 8], data: "[type=top,waterlogged=false]" }
+      - { block: "WAXED_CUT_COPPER_SLAB", at: [0, 0, 9], data: "[type=top,waterlogged=false]" }
+      - { block: "WAXED_CUT_COPPER_SLAB", at: [0, 2, 1], data: "[type=bottom,waterlogged=false]" }
+      - { block: "WAXED_CUT_COPPER_SLAB", at: [0, 2, 2], data: "[type=bottom,waterlogged=false]" }
+      - { block: "WAXED_CUT_COPPER_SLAB", at: [0, 2, 3], data: "[type=bottom,waterlogged=false]" }
+      - { block: "WAXED_CUT_COPPER_SLAB", at: [0, 2, 4], data: "[type=bottom,waterlogged=false]" }
+      - { block: "WAXED_CUT_COPPER_SLAB", at: [0, 2, 5], data: "[type=bottom,waterlogged=false]" }
+      - { block: "WAXED_CUT_COPPER_SLAB", at: [0, 2, 6], data: "[type=bottom,waterlogged=false]" }
+      - { block: "WAXED_CUT_COPPER_SLAB", at: [0, 2, 7], data: "[type=bottom,waterlogged=false]" }
+      - { block: "WAXED_CUT_COPPER_SLAB", at: [0, 2, 8], data: "[type=bottom,waterlogged=false]" }
+      - { block: "WAXED_CUT_COPPER_SLAB", at: [0, 2, 9], data: "[type=bottom,waterlogged=false]" }
+      - { block: "IRON_CHAIN", at: [0, 0, 10], data: "[axis=y,waterlogged=false]" }
+      - { block: "IRON_CHAIN", at: [0, -1, 10], data: "[axis=y,waterlogged=false]" }
+      - { block: "IRON_CHAIN", at: [0, -2, 10], data: "[axis=y,waterlogged=false]" }
+      - { block: "IRON_CHAIN", at: [0, -3, 10], data: "[axis=y,waterlogged=false]" }
+      - { block: "IRON_CHAIN", at: [0, -4, 10], data: "[axis=y,waterlogged=false]" }
+      - { block: "IRON_CHAIN", at: [0, -5, 10], data: "[axis=y,waterlogged=false]" }
+      - { block: "IRON_CHAIN", at: [0, -6, 10], data: "[axis=y,waterlogged=false]" }
+      - { block: "WAXED_CHISELED_COPPER", at: [0, 0, -1] }
+      - { block: "WAXED_CHISELED_COPPER", at: [0, 1, -1] }
+      - { block: "WAXED_CHISELED_COPPER", at: [0, 2, -1] }
+      - { block: "WAXED_CUT_COPPER_SLAB", at: [0, 2, 0], data: "[type=bottom,waterlogged=false]" }
+      - { block: "WAXED_COPPER_BLOCK", at: [0, 1, -2] }
+      - { block: "WAXED_CUT_COPPER_SLAB", at: [0, 2, -2], data: "[type=bottom,waterlogged=false]" }
+      - { block: "WAXED_COPPER_BLOCK", at: [0, 1, -3] }
+      - { block: "WAXED_CUT_COPPER_SLAB", at: [0, 2, -3], data: "[type=bottom,waterlogged=false]" }
+      - { block: "WAXED_CUT_COPPER_SLAB", at: [0, 0, -3], data: "[type=top,waterlogged=false]" }
+      - { block: "WAXED_COPPER_BLOCK", at: [0, 1, -4] }
+      - { block: "WAXED_CUT_COPPER_SLAB", at: [0, 2, -4], data: "[type=bottom,waterlogged=false]" }
+      - { block: "WAXED_CUT_COPPER_SLAB", at: [0, 0, -4], data: "[type=top,waterlogged=false]" }
+      - { block: "WAXED_COPPER_BLOCK", at: [0, 1, -5] }
+      - { block: "WAXED_CUT_COPPER_SLAB", at: [0, 2, -5], data: "[type=bottom,waterlogged=false]" }
+      - { block: "WAXED_CUT_COPPER_SLAB", at: [0, 0, -5], data: "[type=top,waterlogged=false]" }
+      - { block: "WAXED_CHISELED_COPPER", at: [0, -1, -1] }
+      - { block: "STONE_BRICKS", at: [0, -2, 0] }
+      - { block: "STONE_BRICKS", at: [1, -2, -1] }
+      - { block: "STONE_BRICKS", at: [1, -2, 0] }
+      - { block: "STONE_BRICKS", at: [-1, -2, -1] }
+      - { block: "STONE_BRICKS", at: [-1, -2, 0] }
+      - { block: "REDSTONE_TORCH", at: [0, -3, 0], data: "[lit=true]" }
+      - { block: "STONE_BRICKS", at: [1, -3, -1] }
+      - { block: "STRIPPED_SPRUCE_LOG", at: [1, -3, 0], data: "[axis=y]" }
+      - { block: "STONE_BRICKS", at: [1, -2, -2] }
+      - { block: "STONE_BRICKS", at: [-1, -3, -1] }
+      - { block: "STRIPPED_SPRUCE_LOG", at: [-1, -3, 0], data: "[axis=y]" }
+      - { block: "STONE_BRICKS", at: [-1, -2, -2] }
+      - { block: "STONE_BRICKS", at: [0, -4, 0] }
+      - { block: "STONE_BRICKS", at: [1, -4, -1] }
+      - { block: "STRIPPED_SPRUCE_LOG", at: [1, -4, 0], data: "[axis=y]" }
+      - { block: "STRIPPED_SPRUCE_LOG", at: [1, -3, -2], data: "[axis=y]" }
+      - { block: "STONE_BRICKS", at: [-1, -4, -1] }
+      - { block: "STRIPPED_SPRUCE_LOG", at: [-1, -4, 0], data: "[axis=y]" }
+      - { block: "STRIPPED_SPRUCE_LOG", at: [-1, -3, -2], data: "[axis=y]" }
+      - { block: "REDSTONE_TORCH", at: [0, -5, 0], data: "[lit=false]" }
+      - { block: "STONE_BRICKS", at: [1, -5, -1] }
+      - { block: "STRIPPED_SPRUCE_LOG", at: [1, -5, 0], data: "[axis=y]" }
+      - { block: "STRIPPED_SPRUCE_LOG", at: [1, -4, -2], data: "[axis=y]" }
+      - { block: "STONE_BRICKS", at: [-1, -5, -1] }
+      - { block: "STRIPPED_SPRUCE_LOG", at: [-1, -5, 0], data: "[axis=y]" }
+      - { block: "STRIPPED_SPRUCE_LOG", at: [-1, -4, -2], data: "[axis=y]" }
+      - { block: "STONE_BRICKS", at: [0, -6, 0] }
+      - { block: "STONE_BRICKS", at: [1, -6, -1] }
+      - { block: "STRIPPED_SPRUCE_LOG", at: [1, -6, 0], data: "[axis=y]" }
+      - { block: "STRIPPED_SPRUCE_LOG", at: [1, -5, -2], data: "[axis=y]" }
+      - { block: "STONE_BRICKS", at: [-1, -6, -1] }
+      - { block: "STRIPPED_SPRUCE_LOG", at: [-1, -6, 0], data: "[axis=y]" }
+      - { block: "STRIPPED_SPRUCE_LOG", at: [-1, -5, -2], data: "[axis=y]" }
+      - { block: "REDSTONE_TORCH", at: [0, -7, 0], data: "[lit=true]" }
+      - { block: "STONE_BRICKS", at: [1, -7, -1] }
+      - { block: "STRIPPED_SPRUCE_LOG", at: [1, -7, 0], data: "[axis=y]" }
+      - { block: "STRIPPED_SPRUCE_LOG", at: [1, -6, -2], data: "[axis=y]" }
+      - { block: "STONE_BRICKS", at: [-1, -7, -1] }
+      - { block: "STRIPPED_SPRUCE_LOG", at: [-1, -7, 0], data: "[axis=y]" }
+      - { block: "STRIPPED_SPRUCE_LOG", at: [-1, -6, -2], data: "[axis=y]" }
+      - { block: "STONE_BRICKS", at: [0, -8, 0] }
+      - { block: "STONE_BRICKS", at: [1, -8, -1] }
+      - { block: "STRIPPED_SPRUCE_LOG", at: [1, -8, 0], data: "[axis=y]" }
+      - { block: "STRIPPED_SPRUCE_LOG", at: [1, -7, -2], data: "[axis=y]" }
+      - { block: "STONE_BRICKS", at: [-1, -8, -1] }
+      - { block: "STRIPPED_SPRUCE_LOG", at: [-1, -8, 0], data: "[axis=y]" }
+      - { block: "STRIPPED_SPRUCE_LOG", at: [-1, -7, -2], data: "[axis=y]" }
+      - { block: "STRIPPED_SPRUCE_LOG", at: [1, -8, -2], data: "[axis=y]" }
+      - { block: "STRIPPED_SPRUCE_LOG", at: [-1, -8, -2], data: "[axis=y]" }
+      - { block: "STONE_BRICK_STAIRS", at: [-2, -9, -1], data: "[facing=east,half=bottom,shape=straight,waterlogged=false]" }
+      - { block: "SPRUCE_STAIRS", at: [-2, -9, 0], data: "[facing=east,half=bottom,shape=straight,waterlogged=false]" }
+      - { block: "STONE_BRICKS", at: [-1, -9, -2] }
+      - { block: "STONE_BRICKS", at: [-1, -9, -1] }
+      - { block: "STONE_BRICKS", at: [-1, -9, 0] }
+      - { block: "SPRUCE_STAIRS", at: [-1, -9, 1], data: "[facing=north,half=bottom,shape=straight,waterlogged=false]" }
+      - { block: "REDSTONE_WALL_TORCH", at: [0, -9, 0], data: "[facing=east,lit=false]" }
+      - { block: "STONE_BRICK_STAIRS", at: [0, -9, 1], data: "[facing=north,half=bottom,shape=straight,waterlogged=false]" }
+      - { block: "STONE_BRICKS", at: [1, -9, -2] }
+      - { block: "STONE_BRICKS", at: [1, -9, -1] }
+      - { block: "STONE_BRICKS", at: [1, -9, 0] }
+      - { block: "SPRUCE_STAIRS", at: [1, -9, 1], data: "[facing=north,half=bottom,shape=straight,waterlogged=false]" }
+      - { block: "SPRUCE_STAIRS", at: [2, -9, -2], data: "[facing=west,half=bottom,shape=straight,waterlogged=false]" }
+      - { block: "STONE_BRICK_STAIRS", at: [2, -9, -1], data: "[facing=west,half=bottom,shape=straight,waterlogged=false]" }
+      - { block: "SPRUCE_STAIRS", at: [2, -9, 0], data: "[facing=west,half=bottom,shape=straight,waterlogged=false]" }
+      - { block: "STONE_BRICKS", at: [-2, -10, -1] }
+      - { block: "SMOOTH_STONE", at: [-2, -10, 0] }
+      - { block: "SPRUCE_STAIRS", at: [-2, -9, -2], data: "[facing=east,half=bottom,shape=straight,waterlogged=false]" }
+      - { block: "REDSTONE_WIRE", at: [-1, -10, -2], data: "[east=side,north=side,power=0,south=side,west=side]" }
+      - { block: "REDSTONE_WALL_TORCH", at: [-1, -10, 0], data: "[facing=east,lit=true]" }
+      - { block: "STRIPPED_SPRUCE_LOG", at: [-1, -10, 1], data: "[axis=y]" }
+      - { block: "STONE_BRICKS", at: [0, -10, 1] }
+      - { block: "REDSTONE_WIRE", at: [1, -10, -1], data: "[east=side,north=side,power=0,south=side,west=side]" }
+      - { block: "SMOOTH_STONE", at: [1, -10, 0] }
+      - { block: "STRIPPED_SPRUCE_LOG", at: [1, -10, 1], data: "[axis=y]" }
+      - { block: "STRIPPED_SPRUCE_LOG", at: [2, -10, -2], data: "[axis=y]" }
+      - { block: "STONE_BRICKS", at: [2, -10, -1] }
+      - { block: "STRIPPED_SPRUCE_LOG", at: [2, -10, 0], data: "[axis=y]" }
+      - { block: "STONE_BRICKS", at: [-2, -11, -1] }
+      - { block: "STRIPPED_SPRUCE_LOG", at: [-2, -11, 0], data: "[axis=y]" }
+      - { block: "SMOOTH_STONE", at: [-2, -10, -2] }
+      - { block: "STONE_BRICKS", at: [-1, -11, -2] }
+      - { block: "STRIPPED_SPRUCE_LOG", at: [-1, -11, 1], data: "[axis=y]" }
+      - { block: "STONE_BRICKS", at: [0, -11, 1] }
+      - { block: "SMOOTH_STONE", at: [1, -11, -1] }
+      - { block: "REDSTONE_TORCH", at: [1, -11, 0], data: "[lit=false]" }
+      - { block: "STRIPPED_SPRUCE_LOG", at: [1, -11, 1], data: "[axis=y]" }
+      - { block: "STRIPPED_SPRUCE_LOG", at: [2, -11, -2], data: "[axis=y]" }
+      - { block: "STONE_BRICKS", at: [2, -11, -1] }
+      - { block: "STRIPPED_SPRUCE_LOG", at: [2, -11, 0], data: "[axis=y]" }
+      - { block: "STONE_BRICKS", at: [-2, -12, -1] }
+      - { block: "SMOOTH_STONE", at: [-2, -12, 0] }
+      - { block: "STRIPPED_SPRUCE_LOG", at: [-2, -11, -2], data: "[axis=y]" }
+      - { block: "REDSTONE_WIRE", at: [-1, -12, -2], data: "[east=side,north=side,power=15,south=side,west=side]" }
+      - { block: "REPEATER", at: [-1, -12, 0], data: "[delay=1,facing=west,locked=false,powered=true]" }
+      - { block: "STRIPPED_SPRUCE_LOG", at: [-1, -12, 1], data: "[axis=y]" }
+      - { block: "REPEATER", at: [0, -12, 0], data: "[delay=1,facing=west,locked=false,powered=true]" }
+      - { block: "STONE_BRICKS", at: [0, -12, 1] }
+      - { block: "SMOOTH_STONE", at: [1, -12, 0] }
+      - { block: "STRIPPED_SPRUCE_LOG", at: [1, -12, 1], data: "[axis=y]" }
+      - { block: "STRIPPED_SPRUCE_LOG", at: [2, -12, -2], data: "[axis=y]" }
+      - { block: "STONE_BRICKS", at: [2, -12, -1] }
+      - { block: "STRIPPED_SPRUCE_LOG", at: [2, -12, 0], data: "[axis=y]" }
+      - { block: "STONE_BRICKS", at: [-2, -13, -1] }
+      - { block: "STONE_BRICKS", at: [-2, -13, 0] }
+      - { block: "STONE_BRICKS", at: [-2, -13, 1] }
+      - { block: "SMOOTH_STONE", at: [-2, -12, -2] }
+      - { block: "STONE_BRICKS", at: [-1, -13, -2] }
+      - { block: "STONE_BRICKS", at: [-1, -13, -1] }
+      - { block: "STONE_BRICKS", at: [-1, -13, 0] }
+      - { block: "STONE_BRICKS", at: [-1, -13, 1] }
+      - { block: "STONE_BRICKS", at: [0, -13, -2] }
+      - { block: "STONE_BRICKS", at: [0, -13, 0] }
+      - { block: "STONE_BRICKS", at: [0, -13, 1] }
+      - { block: "STONE_BRICKS", at: [1, -13, -2] }
+      - { block: "STONE_BRICKS", at: [1, -13, -1] }
+      - { block: "STONE_BRICKS", at: [1, -13, 0] }
+      - { block: "STONE_BRICKS", at: [1, -13, 1] }
+      - { block: "STONE_BRICKS", at: [2, -13, -2] }
+      - { block: "STONE_BRICKS", at: [2, -13, -1] }
+      - { block: "STONE_BRICKS", at: [2, -13, 0] }
+      - { block: "STONE_BRICKS", at: [2, -13, 1] }
+      - { block: "STONE_BRICKS", at: [-2, -13, -2] }
+      - { block: "STONE_BRICKS", at: [-2, -13, -3] }
+      - { block: "STONE_BRICKS", at: [-1, -13, -3] }
+      - { block: "STRIPPED_SPRUCE_LOG", at: [-1, -12, -3], data: "[axis=y]" }
+      - { block: "STRIPPED_SPRUCE_LOG", at: [-1, -11, -3], data: "[axis=y]" }
+      - { block: "STRIPPED_SPRUCE_LOG", at: [-1, -10, -3], data: "[axis=y]" }
+      - { block: "SPRUCE_STAIRS", at: [-1, -9, -3], data: "[facing=south,half=bottom,shape=straight,waterlogged=false]" }
+      - { block: "STONE_BRICKS", at: [0, -13, -3] }
+      - { block: "STONE_BRICKS", at: [0, -12, -3] }
+      - { block: "STONE_BRICKS", at: [0, -11, -3] }
+      - { block: "STONE_BRICKS", at: [0, -10, -3] }
+      - { block: "STONE_BRICK_STAIRS", at: [0, -9, -3], data: "[facing=south,half=bottom,shape=straight,waterlogged=false]" }
+      - { block: "STONE_BRICKS", at: [1, -13, -3] }
+      - { block: "STRIPPED_SPRUCE_LOG", at: [1, -12, -3], data: "[axis=y]" }
+      - { block: "STRIPPED_SPRUCE_LOG", at: [1, -11, -3], data: "[axis=y]" }
+      - { block: "STRIPPED_SPRUCE_LOG", at: [1, -10, -3], data: "[axis=y]" }
+      - { block: "SPRUCE_STAIRS", at: [1, -9, -3], data: "[facing=south,half=bottom,shape=straight,waterlogged=false]" }
+      - { block: "LEVER", at: [-3, -12, -2], data: "[face=wall,facing=west,powered=true]" }
+      - { block: "PALE_OAK_WALL_SIGN", at: [-3, -12, -1], data: "[facing=west,waterlogged=false]" }
+      - { block: "LEVER", at: [-3, -12, 0], data: "[face=wall,facing=west,powered=true]" }
+      - { block: "PALE_OAK_WALL_SIGN", at: [-3, -11, -2], data: "[facing=west,waterlogged=false]" }
+      - { block: "PALE_OAK_WALL_SIGN", at: [-3, -11, 0], data: "[facing=west,waterlogged=false]" }
+      - { block: "LEVER", at: [-3, -10, -2], data: "[face=wall,facing=west,powered=false]" }
+      - { block: "PALE_OAK_WALL_SIGN", at: [-3, -10, -1], data: "[facing=west,waterlogged=false]" }
+      - { block: "DARK_OAK_BUTTON", at: [-3, -10, 0], data: "[face=wall,facing=west,powered=false]" }
+      - { block: "STONE_BRICKS", at: [2, -13, -3] }
+    activate: passive
+    expect: []
