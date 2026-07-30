@@ -6,6 +6,8 @@ import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.block.Sign;
+import org.bukkit.block.sign.Side;
 import org.bukkit.block.data.Directional;
 import org.bukkit.block.data.Rotatable;
 
@@ -38,16 +40,18 @@ final class ShowcaseBuilder {
         for (ShowcaseSpec.VanillaSpec v : spec.vanilla) {
             Block b = world.getBlockAt(ox + v.at()[0], oy + v.at()[1], oz + v.at()[2]);
             boolean physics = v.physics();   // e.g. a WATER source that must flow
+            boolean placed = false;
             if (v.data() != null) {
                 try {
                     b.setBlockData(Bukkit.createBlockData(v.material(), v.data()), physics);
-                    continue;
+                    placed = true;
                 } catch (IllegalArgumentException ex) {
                     plugin.getLogger().warning("showcase: bad block-data '" + v.data() + "' for "
                             + v.material() + " — placing plain (" + ex.getMessage() + ")");
                 }
             }
-            b.setType(v.material(), physics);
+            if (!placed) b.setType(v.material(), physics);
+            applySignText(b, v.text());
         }
 
         // Custom blocks: place + markBlock now; defer applyConfig + callbacks to next tick (batched),
@@ -144,6 +148,15 @@ final class ShowcaseBuilder {
             return;
         }
         ChainPulley.writeLinkPdc(source, new int[]{tx, ty, tz});
+    }
+
+    /** Write up-to-4 front-side lines onto a just-placed sign, so the machine's labels round-trip
+     *  into the capture (and look right in-game). No-op for non-signs or absent text. */
+    private void applySignText(Block b, List<String> text) {
+        if (text == null || text.isEmpty() || !(b.getState() instanceof Sign sign)) return;
+        var side = sign.getSide(Side.FRONT);
+        for (int i = 0; i < Math.min(4, text.size()); i++) side.setLine(i, text.get(i));
+        sign.update(true, false);
     }
 
     private void placeHead(Block block, boolean floor, BlockFace headFacing) {

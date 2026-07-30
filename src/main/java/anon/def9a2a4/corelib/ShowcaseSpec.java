@@ -31,8 +31,10 @@ final class ShowcaseSpec {
 
     /** One vanilla support block (redstone, planks, container, …) at an offset. {@code data} is an
      *  optional Bukkit block-data string (e.g. {@code "[face=floor,powered=true]"} for a lit lever).
-     *  {@code physics} places with block-updates on (e.g. so a {@code WATER} source actually flows). */
-    record VanillaSpec(Material material, int[] at, @Nullable String data, boolean physics) {}
+     *  {@code physics} places with block-updates on (e.g. so a {@code WATER} source actually flows).
+     *  {@code text} is the front-side lines for a sign (up to 4); null/empty for non-signs. */
+    record VanillaSpec(Material material, int[] at, @Nullable String data, boolean physics,
+                       @Nullable List<String> text) {}
 
     /** How the runner powers the machine: {@code passive} (no-op / recalc), {@code pulse} (redstone at
      *  {@code at}), or {@code fuel} (insert fuel into the block at {@code at}). */
@@ -121,8 +123,13 @@ final class ShowcaseSpec {
                         log.warning("showcases.yml [" + id + "]: vanilla entry needs valid block + at, skipped");
                         continue;
                     }
+                    List<String> text = null;
+                    if (m.get("text") != null) {
+                        text = new ArrayList<>();
+                        for (Object o2 : asList(m.get("text"))) text.add(str(o2) == null ? "" : str(o2));
+                    }
                     vanilla.add(new VanillaSpec(mat, at, str(m.get("data")),
-                            Boolean.TRUE.equals(m.get("physics"))));
+                            Boolean.TRUE.equals(m.get("physics")), text));
                 }
                 List<BannerSpec> banners = new ArrayList<>();
                 for (Object o : asList(entry.get("banners"))) {

@@ -204,14 +204,18 @@ final class ShowcaseRunner implements Listener {
                     }
                 }
             }
-            // Vanilla support blocks: emit a single static "block" display so the webpage renders them
-            // (bare material name — generate_catalog vendors the model; placed3d draws it corner-origin).
+            // Vanilla support blocks: emit a single static "block" display so the webpage renders them.
+            // The ref carries the LIVE blockstate (e.g. "oak_slab[type=top,waterlogged=false]") read
+            // back from the placed block — generate_catalog strips it to the model id for vendoring, and
+            // placed3d parses it to orient the block (slab half, lever/sign facing, stairs, …).
             // Fluids are skipped here: `physics: true` water/lava spreads after placement, so the spec
             // cells aren't the render truth — the world scan below captures the settled extent instead.
             for (ShowcaseSpec.VanillaSpec vs : spec.vanilla) {
                 if (isFluid(vs.material())) continue;
-                blocks.add(vanillaRecord(vs.material().getKey().getKey(),
-                        vs.at()[0], vs.at()[1], vs.at()[2]));
+                Block b = blockAt(origin, vs.at());
+                String ref = b.getBlockData().getAsString();
+                if (ref.startsWith("minecraft:")) ref = ref.substring("minecraft:".length());
+                blocks.add(vanillaRecord(ref, vs.at()[0], vs.at()[1], vs.at()[2], signLines(b)));
             }
             // World fluids: scan the build's bounding box (padded 3 out/down, 1 up — well inside the
             // 16-block z spacing between showcases) and emit every water/lava cell with its level so
@@ -245,17 +249,23 @@ final class ShowcaseRunner implements Listener {
         return m == org.bukkit.Material.WATER || m == org.bukkit.Material.LAVA;
     }
 
-    /** The static single-"block"-display record used for vanilla support blocks and world fluids. */
     private static Map<String, Object> vanillaRecord(String ref, int dx, int dy, int dz) {
+        return vanillaRecord(ref, dx, dy, dz, null);
+    }
+
+    /** The static single-"block"-display record used for vanilla support blocks and world fluids.
+     *  {@code signText}, when non-null, carries a sign's front-side lines for the viewer's overlay. */
+    private static Map<String, Object> vanillaRecord(String ref, int dx, int dy, int dz, List<String> signText) {
         Map<String, Object> display = new LinkedHashMap<>();
         display.put("kind", "block");
-        display.put("ref", ref);   // e.g. "oak_planks", "water[level=3]"
+        display.put("ref", ref);   // e.g. "oak_planks", "oak_slab[type=top]", "water[level=3]"
         // A "block" display is corner-origin ([0,1]³, center +0.5), but the capture frame's origin
         // is the cell CENTER (positions are entity − (corner+0.5)). Shift −0.5 so the cube centers
         // on the cell, matching the custom blocks — exactly what a real corner BlockDisplay records.
         display.put("position", new double[]{-0.5, -0.5, -0.5});
         display.put("matrix", new float[]{1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1});
         display.put("animation", null);
+        if (signText != null) display.put("sign", signText);
 
         Map<String, Object> rec = new LinkedHashMap<>();
         rec.put("id", null);
@@ -263,6 +273,21 @@ final class ShowcaseRunner implements Listener {
         rec.put("baseHeadTextureUrl", null);
         rec.put("displays", List.of(display));
         return rec;
+    }
+
+    /** The front-side lines of a placed sign (trailing blanks trimmed), or null if {@code b} is not a
+     *  sign / has no text — used to overlay labels in the docs viewer. */
+    private static List<String> signLines(Block b) {
+        if (!(b.getState() instanceof org.bukkit.block.Sign sign)) return null;
+        String[] raw = sign.getSide(org.bukkit.block.sign.Side.FRONT).getLines();
+        int last = -1;
+        List<String> lines = new ArrayList<>();
+        for (int i = 0; i < raw.length; i++) {
+            lines.add(raw[i]);
+            if (raw[i] != null && !raw[i].isEmpty()) last = i;
+        }
+        if (last < 0) return null;                 // all blank → no overlay
+        return new ArrayList<>(lines.subList(0, last + 1));
     }
 
     /** Every water/lava cell inside the spec's padded bounding box, as vanilla records with the fluid

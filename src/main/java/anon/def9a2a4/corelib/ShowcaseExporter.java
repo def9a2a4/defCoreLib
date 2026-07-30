@@ -77,6 +77,8 @@ final class ShowcaseExporter {
                 String data = bracketState(b);
                 if (data != null) rec.put("data", data);
                 if (b.getType() == Material.WATER || b.getType() == Material.LAVA) rec.put("physics", true);
+                List<String> text = signText(b);
+                if (text != null) rec.put("text", text);
                 vanilla.add(rec);
             }
         }
@@ -123,6 +125,19 @@ final class ShowcaseExporter {
             return d.getFacing().getOppositeFace().name().toLowerCase();
         }
         return "down";
+    }
+
+    /** A placed sign's front-side lines (trailing blanks trimmed) for the VanillaSpec {@code text}
+     *  field, or null for a non-sign / blank sign. */
+    private static List<String> signText(Block b) {
+        if (!(b.getState() instanceof org.bukkit.block.Sign sign)) return null;
+        String[] raw = sign.getSide(org.bukkit.block.sign.Side.FRONT).getLines();
+        int last = -1;
+        for (int i = 0; i < raw.length; i++) if (raw[i] != null && !raw[i].isEmpty()) last = i;
+        if (last < 0) return null;
+        List<String> lines = new ArrayList<>();
+        for (int i = 0; i <= last; i++) lines.add(raw[i] == null ? "" : raw[i]);
+        return lines;
     }
 
     /** The {@code [state=…]} slice of {@code getAsString()} for the VanillaSpec {@code data} field, or
