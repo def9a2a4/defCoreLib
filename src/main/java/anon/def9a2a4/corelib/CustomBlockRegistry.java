@@ -249,6 +249,16 @@ public class CustomBlockRegistry {
         try { body.run(); } finally { physicsSuppressionDepth--; }
     }
 
+    // Coalescing layer for reactive-neighbor dispatch. A comparator (or any DiodeBlock) re-pulses
+    // updateNeighborsInFront many times in one tick; running the full onNeighborChange (getBlockPower +
+    // skull getState + network recalc) per pulse hangs the server thread. Instead refreshReactiveNeighbors
+    // does a CHEAP dirty-mark per pulse and one flush at the head of the next tick dispatches each dirty
+    // reactive block exactly once, reading the tick's final settled state. Bounds all reactive work to
+    // O(distinct reactive blocks)/tick regardless of the vanilla pulse volume. Main-thread only.
+    private record ReactiveMark(Block block, EnumSet<BlockFace> faces) {}
+    private final Map<LocationKey, ReactiveMark> dirtyReactive = new HashMap<>();
+    private boolean reactiveFlushScheduled = false;
+
     CustomBlockRegistry(JavaPlugin plugin) {
         this.plugin = plugin;
     }
@@ -1419,16 +1429,52 @@ public class CustomBlockRegistry {
     }
 
     public void refreshReactiveNeighbors(Block changed) {
+        // Cheap per-pulse work only: record which reactive neighbors need re-evaluation (and from which
+        // faces, for handlers like pipes that care), then let the coalesced flush do the expensive
+        // getState/onNeighborChange/recalc once next tick. No getState/getTypeFromBlock here — those are
+        // what a DiodeBlock pulse-storm would otherwise call millions of times in one tick.
         for (BlockFace face : Faces.CARDINAL) {
             Block neighbor = changed.getRelative(face);
             if (!isNeighborReactive(neighbor)) continue;
-            CustomHeadBlock type = getTypeFromBlock(neighbor);
-            if (type == null) continue;
+            LocationKey key = LocationKey.of(neighbor);
+            BlockFace changedFace = face.getOppositeFace(); // direction from the neighbor toward `changed`
+            ReactiveMark mark = dirtyReactive.get(key);
+            if (mark == null) {
+                dirtyReactive.put(key, new ReactiveMark(neighbor, EnumSet.of(changedFace)));
+            } else {
+                mark.faces().add(changedFace);
+            }
+        }
+        if (!reactiveFlushScheduled && !dirtyReactive.isEmpty()) {
+            reactiveFlushScheduled = true;
+            Bukkit.getScheduler().runTask(plugin, this::flushReactiveNeighbors);
+        }
+    }
+
+    /**
+     * Head-of-next-tick flush of {@link #refreshReactiveNeighbors} marks: dispatch each dirty reactive
+     * block's {@code onNeighborChange} (once per accumulated face) + display-transform refresh exactly
+     * once, reading the tick's final settled world state. Snapshot-and-clear first so marks added during
+     * the dispatch (a reaction that touches another reactive block) schedule a fresh flush instead of
+     * being stranded or mutating the map mid-iteration.
+     */
+    private void flushReactiveNeighbors() {
+        reactiveFlushScheduled = false;
+        if (dirtyReactive.isEmpty()) return;
+        List<ReactiveMark> batch = new ArrayList<>(dirtyReactive.values());
+        dirtyReactive.clear();
+        for (ReactiveMark mark : batch) {
+            Block block = mark.block();
+            if (!isNeighborReactive(block)) continue;      // removed / no longer reactive since the mark
+            CustomHeadBlock type = getTypeFromBlock(block);
+            if (type == null) continue;                    // unloaded / not a custom block anymore
             if (type.onNeighborChange() != null) {
-                type.onNeighborChange().accept(neighbor, face.getOppositeFace());
+                for (BlockFace f : mark.faces()) {
+                    type.onNeighborChange().accept(block, f);
+                }
             }
             if (type.displayTransformResolver() != null) {
-                resolveDisplayTransforms(neighbor, type, getState(neighbor));
+                resolveDisplayTransforms(block, type, getState(block));
             }
         }
     }

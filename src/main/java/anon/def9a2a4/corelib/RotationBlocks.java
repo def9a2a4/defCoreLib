@@ -293,8 +293,10 @@ final class RotationBlocks {
                     if (gatedLive) {
                         org.bukkit.Bukkit.getPluginManager().callEvent(new MachineActedEvent(b, blockId));
                     }
+                    // Only recalc when the lock actually flipped — an unchanged neighbor pulse (e.g. a
+                    // comparator re-asserting the same output) leaves the network topology untouched.
+                    recalcIfKnown(b, network);
                 }
-                recalcIfKnown(b, network);
             })
             .onInteract((b, event) -> {
                 if (isWrench(event.getPlayer().getInventory().getItemInMainHand()))

@@ -238,15 +238,16 @@ final class GlueManager {
                 if (region != null) extra.addAll(region);
             }
             if (isHoist) {
-                // Only a hoist that actually carries something contributes its platform seed + chain
-                // column (resolveStructure never returns the anchor origin, and the chain isn't glue). A
-                // BARE hoist rides as the plain block it already is — don't drag the ground beneath it.
+                // A carried hoist behaves like its own stroke: its chain column + the movable block
+                // directly below it (its load/seed) always ride; authored platform glue is captured by
+                // the `if (glued)` block above. resolveStructure never returns the anchor origin (the
+                // seed), and the chain isn't glue, so both are added here. Matches
+                // ChainHoistManager.resolveGroup ("the seed rides whenever it is movable").
                 HoistAnchor h = (HoistAnchor) nested;
-                List<Block> ropeColumn = ChainHoistManager.ropeColumnFor(h.hoist(), registry);
-                if (!ropeColumn.isEmpty() || glued) {
-                    List<Block> raw = new ArrayList<>(ropeColumn);
-                    Block seed = h.originBlock();
-                    if (MovableBlocks.isMovable(seed, registry)) raw.add(seed);
+                List<Block> raw = new ArrayList<>(ChainHoistManager.ropeColumnFor(h.hoist(), registry));
+                Block seed = h.originBlock();
+                if (MovableBlocks.isMovable(seed, registry)) raw.add(seed);
+                if (!raw.isEmpty()) {
                     // Close the raw seed + chain's sticky family HERE with refuse-on-cap semantics, so
                     // the mover's trailing StickySpread.withDerived (which truncates) can't land a
                     // sheared casing frame. null → the closure would blow the cap → refuse the move.
