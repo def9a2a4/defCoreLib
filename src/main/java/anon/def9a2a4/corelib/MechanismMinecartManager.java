@@ -350,8 +350,6 @@ final class MechanismMinecartManager implements Listener {
     }
 
     private void assemble(MinecartState state) {
-        snapAndStop(state.minecart);
-
         // The cart's "self" cells — never captured: the rail it rides and the block below it. The cart
         // has no block hardware of its own, but slime/honey in the carried set could otherwise scoop
         // the track out from under it (casings can't — they bond only to casings).
@@ -386,6 +384,11 @@ final class MechanismMinecartManager implements Listener {
         blocks = StickySpread.withDerived(blocks, registry, glueManager.maxSize(),
             excluded, MoverExclusion::blockedParticle);
 
+        // Cart is committed to assembling — snap it to cell-center and kill its velocity so the
+        // mechanism's displays align to the grid. (Done here, not at the top, so a declined assembly
+        // — over-cap/mid-stroke hoist at the refused() check, or nothing movable above — leaves the
+        // cart rolling, side-effect-free like every other mover.)
+        snapAndStop(state.minecart);
         Mechanism mech = mechRegistry.assembleMechanism(MECH_MINECART_ID, blocks,
             state.minecart, MINECART_RIDE_OFFSET, null);
         state.mechanism = mech;
