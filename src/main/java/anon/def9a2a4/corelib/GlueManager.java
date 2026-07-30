@@ -224,28 +224,38 @@ final class GlueManager {
             Anchor nested = anchorFactory.of(b);
             if (nested == null) continue;
             boolean isHoist = nested instanceof HoistAnchor;
-            // A non-hoist anchor with no authored glue has nothing to expand. A hoist is different: even
-            // with no brushed platform it still owns a chain column + seed that must ride (or force a
-            // refusal), so it falls through regardless of hasGlue.
             if (!isHoist && !hasGlue(nested)) continue;
 
-            // A hoist's seed-relative glue only survives an upright landing, and capturing one mid-stroke
-            // would tear its own in-flight mechanism — refuse the whole move in either case (even a
-            // platform-less hoist, whose chain would otherwise be sheared off).
+            // Hoists have no valid tipped orientation (a floor winch can't land sideways), so they are
+            // never carried by a drawbridge (horizontal-axis rotator); and capturing one mid-stroke would
+            // tear its own in-flight mechanism. Refuse either way, for ANY hoist — bare or loaded.
             if (isHoist && (!hoistAllowed || !nested.isAtRest())) return null;
 
+            boolean glued = hasGlue(nested);
             List<Block> extra = new ArrayList<>();
-            if (hasGlue(nested)) {   // authored platform region (may be absent for a hoist)
+            if (glued) {   // authored platform region (may be absent for a hoist)
                 List<Block> region = resolveStructure(nested, excluded, onBlocked);
                 if (region != null) extra.addAll(region);
             }
-            if (nested instanceof HoistAnchor h) {
-                // resolveStructure never returns the anchor origin: for a hoist that origin is the platform
-                // seed (its top block), and the chain column between head and platform is not glue at all.
-                // Both ride for ANY carried hoist, glued platform or not.
-                Block seed = h.originBlock();
-                if (MovableBlocks.isMovable(seed, registry)) extra.add(seed);
-                extra.addAll(ChainHoistManager.ropeColumnFor(h.hoist(), registry));
+            if (isHoist) {
+                // Only a hoist that actually carries something contributes its platform seed + chain
+                // column (resolveStructure never returns the anchor origin, and the chain isn't glue). A
+                // BARE hoist rides as the plain block it already is — don't drag the ground beneath it.
+                HoistAnchor h = (HoistAnchor) nested;
+                List<Block> ropeColumn = ChainHoistManager.ropeColumnFor(h.hoist(), registry);
+                if (!ropeColumn.isEmpty() || glued) {
+                    List<Block> raw = new ArrayList<>(ropeColumn);
+                    Block seed = h.originBlock();
+                    if (MovableBlocks.isMovable(seed, registry)) raw.add(seed);
+                    // Close the raw seed + chain's sticky family HERE with refuse-on-cap semantics, so
+                    // the mover's trailing StickySpread.withDerived (which truncates) can't land a
+                    // sheared casing frame. null → the closure would blow the cap → refuse the move.
+                    List<Block> closure = StickySpread.closureOrNull(raw, out.size() + extra.size(),
+                        registry, maxSize, excluded, onBlocked);
+                    if (closure == null) return null;
+                    extra.addAll(raw);
+                    extra.addAll(closure);
+                }
             }
             for (Block nb : extra) {
                 CustomBlockRegistry.LocationKey nk = CustomBlockRegistry.LocationKey.of(nb);

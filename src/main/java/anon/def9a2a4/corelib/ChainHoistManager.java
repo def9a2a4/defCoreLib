@@ -127,6 +127,7 @@ final class ChainHoistManager {
                 // In-line consumer on its own horizontal axle: a shaft runs through it, so the network
                 // links it to both its ±axis neighbours and power crosses it (see getConnections).
                 String s = healAxisState(b, state);
+                s = reconcileAxleWithYaw(b, s);   // a mover may have swung the hoist to a new axle
                 network.addNode(b, HOIST_ID, RotationNetwork.axisFromState(s),
                     RotationNetwork.NodeRole.CONSUMER, config.getPower("chain_hoist", 1), false);
                 hoists.add(CustomBlockRegistry.LocationKey.of(b));
@@ -175,6 +176,34 @@ final class ChainHoistManager {
         registry.setState(b, "idle_x");
         registry.applyConfig(b, t, "idle_x", 0);
         return "idle_x";
+    }
+
+    /**
+     * A mover that swings the hoist rotates the floor skull's physical yaw ({@code rotateBlockData}),
+     * but the axle suffix ({@code idle_x}/{@code idle_z}) is left stale — {@code
+     * BlockRotation.rotateCustomState} skips it (the hoist has a {@code stateResolver} and a
+     * non-{@code Directional} floor head). So on landing (this hook runs via {@code restoreBlock}) the
+     * physical yaw is the truth and the suffix must be re-derived from it, else the node re-registers
+     * on the wrong axle and the head art disagrees with the rod. Inverse of {@link #snapFloorRotation}
+     * (EAST/WEST→X, NORTH/SOUTH→Z). Keyed on the LAST {@code '_'} token so any middle token survives;
+     * no-op when already consistent, non-cardinal, or vertical/ceiling.
+     */
+    private String reconcileAxleWithYaw(Block b, @Nullable String state) {
+        if (state == null || !(b.getBlockData() instanceof Rotatable r)) return state;
+        BlockFace f = r.getRotation();
+        RotationNetwork.Axis physical =
+            (f == BlockFace.EAST || f == BlockFace.WEST) ? RotationNetwork.Axis.X
+          : (f == BlockFace.NORTH || f == BlockFace.SOUTH) ? RotationNetwork.Axis.Z : null;
+        if (physical == null || RotationNetwork.axisFromState(state) == physical) return state;
+        int u = state.lastIndexOf('_');
+        if (u < 0) return state;
+        String corrected = state.substring(0, u + 1) + (physical == RotationNetwork.Axis.X ? "x" : "z");
+        CustomHeadBlock t = registry.getType(HOIST_ID);
+        if (t != null) {
+            registry.setState(b, corrected);
+            registry.applyConfig(b, t, corrected, 0);
+        }
+        return corrected;
     }
 
     /**

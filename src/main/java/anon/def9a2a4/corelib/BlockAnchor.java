@@ -41,13 +41,16 @@ final class BlockAnchor implements Anchor {
     @Override public void writeOffsets(int[] offsets) {
         if (!(block.getState() instanceof Skull skull)) return;
         skull.getPersistentDataContainer().set(GlueManager.GLUE_KEY, PersistentDataType.INTEGER_ARRAY, offsets);
-        skull.update();
+        // A glue-offset write mutates only a PDC key — no appearance/blockstate/redstone change — so it
+        // must not emit a BlockPhysicsEvent (rebindLandedGlue calls this mid-landing on a half-placed
+        // structure, which would otherwise fire a spurious reactive recalc). update(force, applyPhysics).
+        skull.update(false, false);
     }
 
     @Override public void clearOffsets() {
         if (!(block.getState() instanceof Skull skull)) return;
         skull.getPersistentDataContainer().remove(GlueManager.GLUE_KEY);
-        skull.update();
+        skull.update(false, false);   // PDC-only change — suppress physics (see writeOffsets)
     }
 
     @Override public Object identityKey() { return CustomBlockRegistry.LocationKey.of(block); }
