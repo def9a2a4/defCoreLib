@@ -65,6 +65,12 @@ final class CartRailsManager implements Listener {
     private final java.util.Map<CustomBlockRegistry.LocationKey, BlockFace> facings = new java.util.HashMap<>();
     private final org.bukkit.NamespacedKey railFacingKey;
 
+    // Coalesce onRailPhysics: a comparator/observer re-pulsing a rail fires the physics handler many times
+    // per tick; collect the poked rails and run ONE settle-check per rail next tick (shape is read
+    // post-settle either way, so collapsing is lossless — see flushDirtyRails).
+    private final java.util.Set<CustomBlockRegistry.LocationKey> dirtyRails = new java.util.HashSet<>();
+    private boolean railFlushScheduled = false;
+
     CartRailsManager(JavaPlugin plugin, CustomBlockRegistry registry,
                      CustomCartManager carts, CartTrainManager trains, CartConfig config) {
         this.plugin = plugin;
@@ -265,15 +271,31 @@ final class CartRailsManager implements Listener {
         Block b = event.getBlock();
         Material m = b.getType();
         if (m != Material.RAIL && m != Material.DETECTOR_RAIL && m != Material.POWERED_RAIL) return;
-        if (ourRailType(b) == null) return;
-        // The re-shape may not be applied at event time; act next tick once the shape has settled.
-        Location loc = b.getLocation();
-        Bukkit.getScheduler().runTask(plugin, () -> {
-            Block cur = loc.getBlock();
-            CustomHeadBlock type = ourRailType(cur);
-            if (type == null) return;
+        if (ourRailType(b) == null) return;   // cheap at mark time (rails resolve via in-memory bareLocations)
+        // The re-shape may not be applied at event time; act next tick once the shape has settled — and
+        // coalesce a re-pulse storm to ONE settle-check per rail per tick.
+        dirtyRails.add(CustomBlockRegistry.LocationKey.of(b));
+        if (!railFlushScheduled) {
+            railFlushScheduled = true;
+            Bukkit.getScheduler().runTask(plugin, this::flushDirtyRails);
+        }
+    }
+
+    /** One settle-check per dirtied rail. Snapshot+clear FIRST so a breakRail-induced neighbor physics
+     *  event that re-dirties another rail schedules a fresh flush instead of being stranded. */
+    private void flushDirtyRails() {
+        railFlushScheduled = false;
+        if (dirtyRails.isEmpty()) return;
+        List<CustomBlockRegistry.LocationKey> batch = new ArrayList<>(dirtyRails);
+        dirtyRails.clear();
+        for (CustomBlockRegistry.LocationKey key : batch) {
+            World w = Bukkit.getWorld(key.worldId());
+            if (w == null) continue;
+            Block cur = w.getBlockAt(key.x(), key.y(), key.z());
+            CustomHeadBlock type = ourRailType(cur);   // re-check: covers rails broken/unloaded since the poke
+            if (type == null) continue;
             Rail rail = RailPathWalker.railData(cur);
-            if (rail == null) return;
+            if (rail == null) continue;
             Rail.Shape shape = rail.getShape();
             // Slopes: break any custom rail. Curves: break only ORIENTABLE rails (destructor + controller —
             // their flat square shell can't depict a curve). A junction is a 4-way crossing whose vanilla
@@ -283,7 +305,7 @@ final class CartRailsManager implements Listener {
             } else if (isOrientableRail(cur)) {
                 reorientDisplays(cur, shapeFace(cur));   // settle-correction: follow the rail's new axis
             }
-        });
+        }
     }
 
     /** The custom-rail type at {@code b}, or null if it isn't one of ours. */
