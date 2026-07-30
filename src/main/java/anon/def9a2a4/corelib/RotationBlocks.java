@@ -2443,7 +2443,9 @@ final class RotationBlocks {
 
     private static void recalcIfKnown(Block block, RotationNetwork network) {
         var key = CustomBlockRegistry.LocationKey.of(block);
-        if (network.getNode(key) != null) network.recalculate(key);
+        // recalcReactive coalesces to one rebuild per network per tick when called from the reactive flush;
+        // outside the flush (wrench/tick) it rebuilds immediately, same as recalculate.
+        if (network.getNode(key) != null) network.recalcReactive(key);
     }
 
     static boolean debugInteract(Block block, org.bukkit.event.player.PlayerInteractEvent event,

@@ -259,6 +259,20 @@ public class CustomBlockRegistry {
     private final Map<LocationKey, ReactiveMark> dirtyReactive = new HashMap<>();
     private boolean reactiveFlushScheduled = false;
 
+    // Post-flush hooks run once at the END of flushReactiveNeighbors, after every reactive block has been
+    // dispatched (so all setState writes are applied). Lets a feature coalesce its own per-network work —
+    // e.g. RotationNetwork drains one recalc per network per tick instead of one per poked reactive block.
+    private final List<Runnable> reactiveFlushPostHooks = new ArrayList<>();
+    // True ONLY during the dispatch loop, NOT during the post-hooks. Consulted by reactive features to
+    // route work into their coalescing set (during dispatch) vs run it immediately (outside the flush).
+    private boolean flushingReactive = false;
+
+    /** Register a hook to run once after each reactive-flush dispatch loop (see {@link #flushReactiveNeighbors}). */
+    public void addReactiveFlushPostHook(Runnable hook) { reactiveFlushPostHooks.add(hook); }
+
+    /** True while the reactive-flush dispatch loop is running (false during its post-hooks). */
+    public boolean isFlushingReactive() { return flushingReactive; }
+
     CustomBlockRegistry(JavaPlugin plugin) {
         this.plugin = plugin;
     }
@@ -1460,23 +1474,36 @@ public class CustomBlockRegistry {
      */
     private void flushReactiveNeighbors() {
         reactiveFlushScheduled = false;
-        if (dirtyReactive.isEmpty()) return;
+        if (dirtyReactive.isEmpty() && reactiveFlushPostHooks.isEmpty()) return;
         List<ReactiveMark> batch = new ArrayList<>(dirtyReactive.values());
         dirtyReactive.clear();
-        for (ReactiveMark mark : batch) {
-            Block block = mark.block();
-            if (!isNeighborReactive(block)) continue;      // removed / no longer reactive since the mark
-            CustomHeadBlock type = getTypeFromBlock(block);
-            if (type == null) continue;                    // unloaded / not a custom block anymore
-            if (type.onNeighborChange() != null) {
-                for (BlockFace f : mark.faces()) {
-                    type.onNeighborChange().accept(block, f);
+        // Suppress physics echoes for the whole flush (belt-and-suspenders: every reaction already writes
+        // suppressed, but a future one that didn't would otherwise re-open the feedback loop).
+        withPhysicsSuppressed(() -> {
+            // flushingReactive is true ONLY for the dispatch loop. Post-hooks (e.g. the rotation recalc
+            // drain) run with it FALSE so a re-entrant coalesce request rebuilds immediately rather than
+            // being queued into an already-drained set and silently dropped.
+            flushingReactive = true;
+            try {
+                for (ReactiveMark mark : batch) {
+                    Block block = mark.block();
+                    if (!isNeighborReactive(block)) continue;   // removed / no longer reactive since the mark
+                    CustomHeadBlock type = getTypeFromBlock(block);
+                    if (type == null) continue;                 // unloaded / not a custom block anymore
+                    if (type.onNeighborChange() != null) {
+                        for (BlockFace f : mark.faces()) {
+                            type.onNeighborChange().accept(block, f);
+                        }
+                    }
+                    if (type.displayTransformResolver() != null) {
+                        resolveDisplayTransforms(block, type, getState(block));
+                    }
                 }
+            } finally {
+                flushingReactive = false;
             }
-            if (type.displayTransformResolver() != null) {
-                resolveDisplayTransforms(block, type, getState(block));
-            }
-        }
+            for (Runnable hook : reactiveFlushPostHooks) hook.run();
+        });
     }
 
     void resolveDisplayTransforms(Block block, CustomHeadBlock type, @Nullable String state) {

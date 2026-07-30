@@ -78,6 +78,11 @@ public class RotationNetwork {
     private boolean recalculating = false;
     private final Set<CustomBlockRegistry.LocationKey> pendingRecalcs = new HashSet<>();
 
+    // Reactive recalcs requested during the registry's reactive-flush dispatch loop are collected here and
+    // drained once per network at the end of that flush (via a post-hook). Collapses K reactive pokes on
+    // one connected network from K full O(component) rebuilds to a single rebuild that reads final state.
+    private final Set<CustomBlockRegistry.LocationKey> pendingReactiveRecalc = new HashSet<>();
+
     // Config
     private int maxNetworkSize = 256;
 
@@ -90,10 +95,32 @@ public class RotationNetwork {
     // doRecalculate's apply pass; reset to an empty set in a finally. Consulted by isSevered.
     private Set<CustomBlockRegistry.LocationKey> freewheelCut = Set.of();
 
+    // Per-doRecalculate memo of the STATE string (skull deserialize) for the READ-ONLY predicates
+    // isLocked/readRatchetAllowed, which today re-read every edge endpoint of every node (~6-7×/node).
+    // Non-null ONLY during one doRecalculate (set/restored in the wrapper). MUST NOT be used by the write
+    // path (updateBlockState), and MUST NOT span the pendingRecalcs drain — a fresh map per doRecalculate,
+    // because the values it caches (locked_ prefix, cw/ccw token) are invariant WITHIN one recalc but a
+    // re-entrant redstone change between drained recalcs can change them.
+    private @Nullable Map<CustomBlockRegistry.LocationKey, String> recalcStateCache = null;
+
+    /** {@code registry.getState}, memoized for the duration of one doRecalculate (read-only predicates
+     *  only). Falls through to a live read outside a recalc. Caches nulls too (containsKey guard). */
+    private @Nullable String cachedState(CustomBlockRegistry.LocationKey key, Block b) {
+        Map<CustomBlockRegistry.LocationKey, String> cache = recalcStateCache;
+        if (cache == null) return registry.getState(b);
+        String s = cache.get(key);
+        if (s == null && !cache.containsKey(key)) {
+            s = registry.getState(b);
+            cache.put(key, s);
+        }
+        return s;
+    }
+
     RotationNetwork(JavaPlugin plugin, CustomBlockRegistry registry) {
         this.plugin = plugin;
         this.registry = registry;
         this.logger = plugin.getLogger();
+        registry.addReactiveFlushPostHook(this::drainReactiveRecalcs);
     }
 
     // ──────────────────────────────────────────────────────────────────────
@@ -319,7 +346,47 @@ public class RotationNetwork {
         }
     }
 
+    /**
+     * Recalc entry point for REACTIVE (neighbor-change) triggers. During the registry's reactive-flush
+     * dispatch loop, collects the key and lets {@link #drainReactiveRecalcs} rebuild each affected network
+     * exactly once at flush end (after all sibling setStates are applied). Outside the flush (wrench,
+     * chunk load, tick), rebuilds immediately — identical to {@link #recalculate}.
+     */
+    public void recalcReactive(CustomBlockRegistry.LocationKey changed) {
+        if (registry.isFlushingReactive()) pendingReactiveRecalc.add(changed);
+        else recalculate(changed);
+    }
+
+    /** Post-flush hook: rebuild each collected network once, deduping keys already covered by a prior
+     *  rebuild's member set (a lock-split may leave a key uncovered → it rebuilds too; redundant but
+     *  idempotent). Runs with isFlushingReactive()==false, so recalculate here executes immediately. */
+    private void drainReactiveRecalcs() {
+        if (pendingReactiveRecalc.isEmpty()) return;
+        Set<CustomBlockRegistry.LocationKey> batch = new HashSet<>(pendingReactiveRecalc);
+        pendingReactiveRecalc.clear();
+        Set<CustomBlockRegistry.LocationKey> covered = new HashSet<>();
+        for (CustomBlockRegistry.LocationKey key : batch) {
+            if (covered.contains(key) || !nodes.containsKey(key)) continue;
+            recalculate(key);
+            Set<CustomBlockRegistry.LocationKey> members = getNetworkMembers(key);
+            if (members != null) covered.addAll(members); else covered.add(key);
+        }
+    }
+
     private void doRecalculate(CustomBlockRegistry.LocationKey changed) {
+        // Scope the read-only STATE cache to exactly this doRecalculate (a re-entrant drain call gets a
+        // fresh map; reads outside a recalc stay live). `prev` keeps it null-nesting-safe though today
+        // doRecalculate is never nested.
+        Map<CustomBlockRegistry.LocationKey, String> prev = recalcStateCache;
+        recalcStateCache = new HashMap<>();
+        try {
+            doRecalculate0(changed);
+        } finally {
+            recalcStateCache = prev;
+        }
+    }
+
+    private void doRecalculate0(CustomBlockRegistry.LocationKey changed) {
         // Snapshot which nodes are currently in jammed networks (for transition detection).
         // Scan ALL jammed networks, not just the changed one — neighbor networks also get torn down
         // and rebuilt below, and missing them replays the jam smoke/sound on a merge that stays jammed.
@@ -697,7 +764,7 @@ public class RotationNetwork {
     @Nullable SpinDirection readRatchetAllowed(CustomBlockRegistry.LocationKey key) {
         Block block = toBlock(key);
         if (block == null) return null;
-        String state = registry.getState(block);
+        String state = cachedState(key, block); // read-only predicate — safe to memoize per recalc
         if (state == null) return null;
         for (String tok : state.split("_")) {
             if (tok.equals("ccw")) return SpinDirection.CCW;
@@ -866,7 +933,7 @@ public class RotationNetwork {
     private boolean isLocked(RotationNode node) {
         Block b = toBlock(node.key());
         if (b == null) return false;
-        String state = registry.getState(b);
+        String state = cachedState(node.key(), b); // read-only predicate — safe to memoize per recalc
         return state != null && state.startsWith("locked_");
     }
 
