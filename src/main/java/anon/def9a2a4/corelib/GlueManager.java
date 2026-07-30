@@ -246,16 +246,26 @@ final class GlueManager {
                 HoistAnchor h = (HoistAnchor) nested;
                 List<Block> raw = new ArrayList<>(ChainHoistManager.ropeColumnFor(h.hoist(), registry));
                 Block seed = h.originBlock();
-                if (MovableBlocks.isMovable(seed, registry)) raw.add(seed);
+                // Skip a seed that is the mover's own excluded hardware: the add-loop skips excluded
+                // cells anyway, and counting one in `raw` would let a truncated family land un-refused
+                // (it shifts the cap check by one). This keeps every `raw` cell "clean" (present,
+                // non-air, not excluded) — the invariant the probe below relies on. (Chain links are
+                // never the mover's hardware, so they're clean already.)
+                if (MovableBlocks.isMovable(seed, registry)
+                        && !excluded.contains(CustomBlockRegistry.LocationKey.of(seed))) {
+                    raw.add(seed);
+                }
                 if (!raw.isEmpty()) {
-                    // Close the raw seed + chain's sticky family HERE with refuse-on-cap semantics, so
-                    // the mover's trailing StickySpread.withDerived (which truncates) can't land a
-                    // sheared casing frame. null → the closure would blow the cap → refuse the move.
-                    List<Block> closure = StickySpread.closureOrNull(raw, out.size() + extra.size(),
-                        registry, maxSize, excluded, onBlocked);
-                    if (closure == null) return null;
                     extra.addAll(raw);
-                    extra.addAll(closure);
+                    // Fully close the raw seed + chain's sticky family now, so the mover's trailing
+                    // StickySpread.withDerived (which truncates) can't land a sheared casing frame. Probe
+                    // ONE past the cap. Invariant: a family too big to fit comes back as EXACTLY
+                    // maxSize+1 distinct clean cells — which alone exceed the cap, so the dedupe loop
+                    // below trips `out.size() > maxSize` and refuses (regardless of overlap with `out`,
+                    // since out <= maxSize < maxSize+1). A family that fits comes back whole (never hits
+                    // the probe) → no truncation → no shear.
+                    int probe = maxSize < Integer.MAX_VALUE ? maxSize + 1 : maxSize;
+                    extra.addAll(StickySpread.derived(raw, null, registry, probe, excluded, onBlocked));
                 }
             }
             for (Block nb : extra) {

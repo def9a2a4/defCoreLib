@@ -206,26 +206,4 @@ final class StickySpread {
         out.addAll(derived(seed, null, registry, cap, excluded, onBlocked));
         return out;
     }
-
-    /**
-     * The sticky closure of {@code seedCells} (their family bond + leaves, NOT including the seed
-     * cells themselves), or {@code null} if that closure — on top of {@code alreadyUsed} cells
-     * already captured — would exceed {@code cap}. Unlike {@link #derived}, which silently
-     * <em>truncates</em> at the cap, this <em>refuses</em> on overflow, so a caller can abort the
-     * whole move rather than land a half-captured family. Used by {@code GlueManager.expandNested}
-     * to close a carried hoist's raw platform seed + chain column with the same refuse-rather-than-
-     * shear policy the rest of that method uses (the movers' trailing {@link #withDerived} still
-     * truncates, but by then the family is already fully in the union, so it re-derives nothing).
-     */
-    static @Nullable List<Block> closureOrNull(java.util.Collection<Block> seedCells, int alreadyUsed,
-                                               CustomBlockRegistry registry, int cap,
-                                               Set<CustomBlockRegistry.LocationKey> excluded,
-                                               @Nullable BiConsumer<Block, Block> onBlocked) {
-        int budget = cap - alreadyUsed;                    // cells still allowed beyond what's captured
-        List<Block> closure = derived(seedCells, null, registry, budget, excluded, onBlocked);
-        // derived stops at seedCells.size()+closure.size() >= budget → a hit means it truncated (or
-        // exactly filled the budget): refuse rather than hand back a sheared family.
-        if (seedCells.size() + closure.size() >= budget) return null;
-        return closure;
-    }
 }
