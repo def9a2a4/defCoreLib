@@ -468,6 +468,31 @@ a.slot { text-decoration: none; color: inherit; }
   margin: 16px 0 22px;
   max-width: 900px;
 }
+/* Screenshot gallery: static PNGs referenced by the showcase's `images` field. Thumbnails wrap and
+   scale down; each links to the full-size image in a new tab. */
+.showcase-gallery {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+.showcase-shot {
+  display: block;
+  flex: 0 1 auto;
+  max-width: 100%;
+  border-radius: 8px;
+  border: 1px solid #3a3a3a;
+  overflow: hidden;
+  line-height: 0;
+  transition: border-color 0.15s;
+}
+.showcase-shot:hover { border-color: #4ecca3; }
+.showcase-shot img {
+  display: block;
+  max-width: 100%;
+  max-height: 360px;
+  width: auto;
+  height: auto;
+}
 /* Grid (not fixed-width flex): the old 140px card clipped its 176px-wide thumbs. 184px min track
    fits placed-thumb (96) + hand (48) + gap (8) + padding (24). */
 .blocks-used {

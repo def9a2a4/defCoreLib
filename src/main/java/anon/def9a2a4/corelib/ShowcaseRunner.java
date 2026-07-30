@@ -222,6 +222,7 @@ final class ShowcaseRunner implements Listener {
             sc.put("name", spec.name);
             sc.put("blurb", spec.blurb);
             sc.put("description", spec.description);
+            sc.put("images", spec.images);
             sc.put("blocks", blocks);
             out.add(sc);
         }

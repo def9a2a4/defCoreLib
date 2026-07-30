@@ -61,18 +61,21 @@ final class ShowcaseSpec {
     final String name;
     final String blurb;        // short one-liner (catalog/list card)
     final String description;  // longer "deeper explanation" (detail page); defaults to blurb
+    final List<String> images; // optional screenshot paths for the detail page, relative to docs/
     final List<BlockSpec> blocks;
     final List<VanillaSpec> vanilla;
     final List<BannerSpec> banners;
     final Activate activate;
     final List<Expect> expect;
 
-    ShowcaseSpec(String id, String name, String blurb, String description, List<BlockSpec> blocks,
-                 List<VanillaSpec> vanilla, List<BannerSpec> banners, Activate activate, List<Expect> expect) {
+    ShowcaseSpec(String id, String name, String blurb, String description, List<String> images,
+                 List<BlockSpec> blocks, List<VanillaSpec> vanilla, List<BannerSpec> banners,
+                 Activate activate, List<Expect> expect) {
         this.id = id;
         this.name = name;
         this.blurb = blurb;
         this.description = description;
+        this.images = images;
         this.blocks = blocks;
         this.vanilla = vanilla;
         this.banners = banners;
@@ -92,6 +95,11 @@ final class ShowcaseSpec {
                 String name = str(entry.get("name"));
                 String blurb = str(entry.get("blurb"));
                 String description = str(entry.get("description"));
+                List<String> images = new ArrayList<>();
+                for (Object o : asList(entry.get("images"))) {
+                    String img = str(o);
+                    if (img != null) images.add(img);
+                }
                 List<BlockSpec> blocks = new ArrayList<>();
                 for (Object o : asList(entry.get("blocks"))) {
                     if (!(o instanceof Map<?, ?> m)) continue;
@@ -156,7 +164,7 @@ final class ShowcaseSpec {
                 }
                 String shortBlurb = blurb == null ? "" : blurb;
                 out.put(id, new ShowcaseSpec(id, name == null ? id : name, shortBlurb,
-                        description == null ? shortBlurb : description, blocks, vanilla, banners, activate, expect));
+                        description == null ? shortBlurb : description, images, blocks, vanilla, banners, activate, expect));
             } catch (Exception e) {
                 log.warning("showcases.yml: failed to parse an entry: " + e);
             }

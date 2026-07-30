@@ -58,6 +58,13 @@ function renderShowcase(sc, itemsById) {
     </div>
     <div class="showcase-canvas" id="machine"></div>
     ${sc.description ? `<p class="showcase-description">${mcText(sc.description)}</p>` : ''}
+    ${sc.images?.length ? `
+    <div class="detail-section">
+      <h2 class="section-title">Screenshots</h2>
+      <div class="showcase-gallery">
+        ${sc.images.map((src) => `<a class="showcase-shot" href="./${esc(src)}" target="_blank" rel="noopener"><img src="./${esc(src)}" alt="${esc(sc.name || sc.id)} screenshot" loading="lazy"></a>`).join('')}
+      </div>
+    </div>` : ''}
     <div class="detail-section">
       <h2 class="section-title">Blocks used</h2>
       <div class="blocks-used">
