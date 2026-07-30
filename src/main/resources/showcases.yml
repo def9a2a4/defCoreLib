@@ -855,12 +855,12 @@ showcases:
       - { block: "STRIPPED_SPRUCE_LOG", at: [1, -10, -3], data: "[axis=y]" }
       - { block: "SPRUCE_STAIRS", at: [1, -9, -3], data: "[facing=south,half=bottom,shape=straight,waterlogged=false]" }
       - { block: "LEVER", at: [-3, -12, -2], data: "[face=wall,facing=west,powered=true]" }
-      - { block: "PALE_OAK_WALL_SIGN", at: [-3, -12, -1], data: "[facing=west,waterlogged=false]", text: ["Motor", "Power"] }
+      - { block: "PALE_OAK_WALL_SIGN", at: [-3, -12, -1], data: "[facing=west,waterlogged=false]", text: ["<- chain on", "crane CW ->", "<- chain off", "crane CCW ->"] }
       - { block: "LEVER", at: [-3, -12, 0], data: "[face=wall,facing=west,powered=true]" }
-      - { block: "PALE_OAK_WALL_SIGN", at: [-3, -11, -2], data: "[facing=west,waterlogged=false]", text: ["Hoist", "Up / Down"] }
-      - { block: "PALE_OAK_WALL_SIGN", at: [-3, -11, 0], data: "[facing=west,waterlogged=false]", text: ["Boom", "Swing"] }
+      - { block: "PALE_OAK_WALL_SIGN", at: [-3, -11, -2], data: "[facing=west,waterlogged=false]", text: ["^", "chain control", "v"] }
+      - { block: "PALE_OAK_WALL_SIGN", at: [-3, -11, 0], data: "[facing=west,waterlogged=false]", text: ["crane control"] }
       - { block: "LEVER", at: [-3, -10, -2], data: "[face=wall,facing=west,powered=false]" }
-      - { block: "PALE_OAK_WALL_SIGN", at: [-3, -10, -1], data: "[facing=west,waterlogged=false]", text: ["Reverse"] }
+      - { block: "PALE_OAK_WALL_SIGN", at: [-3, -10, -1], data: "[facing=west,waterlogged=false]", text: ["<- extend", "rotate ->", "", "<- retract"] }
       - { block: "DARK_OAK_BUTTON", at: [-3, -10, 0], data: "[face=wall,facing=west,powered=false]" }
       - { block: "STONE_BRICKS", at: [2, -13, -3] }
     activate: passive

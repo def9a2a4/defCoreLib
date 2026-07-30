@@ -134,21 +134,27 @@ export function fallbackBox(color = 0xcccccc, { centered = true } = {}) {
 }
 
 // A wall sign's front-side text, drawn to a transparent canvas so it overlays the plank board. Dark
-// ink, up-to-4 lines centred; the board's plank texture shows through the gaps.
+// ink, up to 4 lines; the board's plank texture shows through the gaps. Alignment follows the arrows
+// so a label points at its control: a line starting "<-" hugs the left, one ending "->" hugs the
+// right, everything else (plain labels, "^"/"v") is centred — matching the in-game signs.
 function signTextTexture(lines) {
-  const W = 256, H = 144;
+  const W = 256, H = 144, PAD = 12;
   const canvas = document.createElement('canvas');
   canvas.width = W; canvas.height = H;
   const ctx = canvas.getContext('2d');
   ctx.clearRect(0, 0, W, H);
   ctx.fillStyle = '#161009';
-  ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
   const n = Math.max(1, Math.min(4, lines.length));
   const fs = Math.min(30, (H * 0.82) / n);
   ctx.font = `600 ${fs}px "Segoe UI", system-ui, sans-serif`;
   for (let i = 0; i < n; i++) {
-    ctx.fillText(String(lines[i] ?? ''), W / 2, H * ((i + 0.5) / n));
+    const line = String(lines[i] ?? '');
+    const y = H * ((i + 0.5) / n);
+    const t = line.trim();
+    if (t.startsWith('<-')) { ctx.textAlign = 'left'; ctx.fillText(line, PAD, y); }
+    else if (t.endsWith('->')) { ctx.textAlign = 'right'; ctx.fillText(line, W - PAD, y); }
+    else { ctx.textAlign = 'center'; ctx.fillText(line, W / 2, y); }
   }
   const tex = new THREE.CanvasTexture(canvas);
   tex.colorSpace = THREE.SRGBColorSpace;
