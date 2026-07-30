@@ -7,7 +7,7 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { loadSkin, skullMesh } from './head3d.js';
-import { buildBlockMesh, fallbackBox, fluidBox, texturesSettled } from './blockmodel.js';
+import { buildBlockMesh, buildSignBoard, fallbackBox, fluidBox, texturesSettled } from './blockmodel.js';
 
 let MANIFEST = null;
 async function manifest() {
@@ -39,6 +39,71 @@ function fluidHeight(ref) {
   const level = Number(m[1]);
   if (level === 0 || level >= 8) return 14 / 16;
   return Math.max(2, 14 - 2 * level) / 16;
+}
+
+// ── Vanilla blockstate orientation ──────────────────────────────────────────────────────────────
+// Vanilla support blocks are captured with their live blockstate baked into the ref
+// (e.g. "oak_slab[type=top]", "lever[face=wall,facing=west]"). canonical() strips it for the model
+// lookup; here we parse it back to orient the default model, mirroring Minecraft's blockstate variant
+// rotations. MC rotates a model x° about X then y° about Y, *clockwise* — three.js rotations are
+// counter-clockwise, so we negate both and nest (outer Y, inner X) to reproduce Ry·Rx.
+
+function parseState(ref) {
+  const out = {};
+  const m = /\[(.+)\]/.exec(String(ref));
+  if (!m) return out;
+  for (const kv of m[1].split(',')) {
+    const i = kv.indexOf('=');
+    if (i > 0) out[kv.slice(0, i).trim()] = kv.slice(i + 1).trim();
+  }
+  return out;
+}
+
+const isIdentityMatrix = (m) => !m || (m.length === 16 && m.every((v, i) => v === IDENTITY[i]));
+
+// MC y° (clockwise-from-above) for a horizontal `facing`, keyed by the model's default facing.
+const STAIR_Y = { east: 0, south: 90, west: 180, north: 270 };          // stairs model default faces east
+const TORCH_Y = { east: 0, south: 90, west: 180, north: 270 };          // wall-torch model default faces east
+const REDSTONE_Y = { north: 0, east: 90, south: 180, west: 270 };       // repeater/comparator default output north
+const SIGN_Y = { south: 0, west: 90, north: 180, east: 270 };           // plank board default faces south
+// lever/button: `face:facing` → MC [x°, y°] (verbatim from the vanilla lever/button blockstates).
+const SWITCH_ROT = {
+  'floor:north': [0, 0], 'floor:east': [0, 90], 'floor:south': [0, 180], 'floor:west': [0, 270],
+  'wall:north': [90, 0], 'wall:east': [90, 90], 'wall:south': [90, 180], 'wall:west': [90, 270],
+  'ceiling:north': [180, 180], 'ceiling:east': [180, 270], 'ceiling:south': [180, 0], 'ceiling:west': [180, 90],
+};
+
+// MC [x°, y°] for one vanilla block id + parsed state, or null when nothing to rotate.
+function blockRotation(id, st) {
+  if (id.endsWith('_stairs')) return [st.half === 'top' ? 180 : 0, STAIR_Y[st.facing] ?? 0];
+  if (id === 'lever' || id.endsWith('_button')) return SWITCH_ROT[`${st.face || 'wall'}:${st.facing || 'north'}`] || null;
+  if (id.endsWith('_wall_torch')) return [0, TORCH_Y[st.facing] ?? 0];
+  if (id.endsWith('_wall_sign')) return [0, SIGN_Y[st.facing] ?? 0];
+  if (id === 'repeater' || id === 'comparator') return [0, REDSTONE_Y[st.facing] ?? 0];
+  return null;
+}
+
+// Apply the blockstate orientation to a centred block display. `parent` holds the corner-origin mesh
+// shifted by de.position (-0.5) so the cube is centred on the cell; we rotate/translate about that
+// centre. Only synthetic vanilla records (identity matrix) are oriented — custom-block sub-displays
+// carry their own read-back matrix and must be left untouched. Returns the object to add to the group.
+function orientBlock(de, parent) {
+  if (de.kind !== 'block' || !isIdentityMatrix(de.matrix)) return parent;
+  const id = canonical(de.ref);
+  const st = parseState(de.ref);
+  if (id.endsWith('_slab') && id !== 'slab') {
+    if (st.type === 'top') parent.position.y += 0.5;          // default model is the bottom half
+    else if (st.type === 'double') parent.scale.y = 2;         // corner-origin: grows up to a full block
+    return parent;
+  }
+  const rot = blockRotation(id, st);
+  if (!rot) return parent;
+  const pivY = new THREE.Group();     // outer: Y (applied last)
+  const pivX = new THREE.Group();     // inner: X
+  pivY.add(pivX); pivX.add(parent);
+  pivY.rotation.y = -THREE.MathUtils.degToRad(rot[1]);
+  pivX.rotation.x = -THREE.MathUtils.degToRad(rot[0]);
+  return pivY;
 }
 
 function makeViewer(container, { dist = 3.4, target = [0, 0, 0] } = {}) {
@@ -76,6 +141,11 @@ async function buildDisplayObject(de, models) {
   const centered = de.kind !== 'block';
   const id = canonical(de.ref);
   if (id in FLUIDS) return fluidBox(FLUIDS[id], { centered, height: fluidHeight(de.ref) });
+  // Wall signs: bundled plank model + the captured front-side text as an overlay (orientBlock turns it).
+  if (id.endsWith('_wall_sign') && models[id]) {
+    try { return await buildSignBoard(id, de.sign, { centered }); }
+    catch { return fallbackBox(0xcccccc, { centered }); }
+  }
   if (models[id]) {
     try { return await buildBlockMesh(id, { centered }); }
     catch { return fallbackBox(0xcccccc, { centered }); }
@@ -147,7 +217,7 @@ async function buildBlockGroup(blk, models, animated) {
     const p = de.position || [0, 0, 0];
     parent.position.set(p[0], p[1], p[2]);
     parent.add(obj);
-    group.add(parent);
+    group.add(orientBlock(de, parent));   // vanilla blockstate orientation (slab half, facing, …)
 
     if (de.animation && de.animation.frames && de.animation.frames.length) {
       animated.push({ obj, track: prepareTrack(de.animation.frames), period: de.animation.period || de.animation.frames.length });

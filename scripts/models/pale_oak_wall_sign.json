@@ -1,0 +1,19 @@
+{
+    "_comment": "Vanilla wall signs are entity-rendered — there is no block/pale_oak_wall_sign.json, so flatten_block_model 404s and the docs viewer fell back to a gray cube. Hand-authored stand-in: a thin plank panel against the NORTH wall (z 0..2), so its front face (+Z) faces SOUTH by default; placed3d rotates it to the sign's `facing` and overlays the sign text. Textured with pale_oak_planks (fetchable from MC_ASSETS_BASE).",
+    "textures": {
+        "plank": "block/pale_oak_planks"
+    },
+    "elements": [
+        {   "from": [ 1, 4, 0.5 ],
+            "to": [ 15, 12, 2 ],
+            "faces": {
+                "north": { "uv": [ 1, 4, 15, 12 ], "texture": "#plank" },
+                "south": { "uv": [ 1, 4, 15, 12 ], "texture": "#plank" },
+                "east":  { "uv": [ 0.5, 4, 2, 12 ], "texture": "#plank" },
+                "west":  { "uv": [ 0.5, 4, 2, 12 ], "texture": "#plank" },
+                "up":    { "uv": [ 1, 0.5, 15, 2 ], "texture": "#plank" },
+                "down":  { "uv": [ 1, 0.5, 15, 2 ], "texture": "#plank" }
+            }
+        }
+    ]
+}

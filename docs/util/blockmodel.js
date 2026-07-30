@@ -133,6 +133,51 @@ export function fallbackBox(color = 0xcccccc, { centered = true } = {}) {
   return group;
 }
 
+// A wall sign's front-side text, drawn to a transparent canvas so it overlays the plank board. Dark
+// ink, up-to-4 lines centred; the board's plank texture shows through the gaps.
+function signTextTexture(lines) {
+  const W = 256, H = 144;
+  const canvas = document.createElement('canvas');
+  canvas.width = W; canvas.height = H;
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0, 0, W, H);
+  ctx.fillStyle = '#161009';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  const n = Math.max(1, Math.min(4, lines.length));
+  const fs = Math.min(30, (H * 0.82) / n);
+  ctx.font = `600 ${fs}px "Segoe UI", system-ui, sans-serif`;
+  for (let i = 0; i < n; i++) {
+    ctx.fillText(String(lines[i] ?? ''), W / 2, H * ((i + 0.5) / n));
+  }
+  const tex = new THREE.CanvasTexture(canvas);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  tex.magFilter = THREE.LinearFilter;
+  tex.minFilter = THREE.LinearFilter;
+  return tex;
+}
+
+/** Build a wall-sign board: the bundled plank-panel model (see scripts/models/<id>.json) plus, when
+ *  `lines` are present, a text overlay on the board's front (+Z, its default south-facing side).
+ *  placed3d rotates the whole thing to the sign's `facing`. Same origin convention as buildBlockMesh. */
+export async function buildSignBoard(id, lines, { centered = false } = {}) {
+  const group = new THREE.Group();
+  group.add(await buildBlockMesh(id, { centered }));
+  if (lines && lines.length) {
+    const off = centered ? 0.5 : 0;
+    const geo = new THREE.PlaneGeometry(13 / 16, 8 / 16);   // matches the board's face window
+    const mat = new THREE.MeshBasicMaterial({
+      map: signTextTexture(lines), transparent: true, alphaTest: 0.02,
+      side: THREE.FrontSide, depthWrite: false,
+    });
+    const plane = new THREE.Mesh(geo, mat);
+    // Board front is at z≈2/16; sit the text just proud of it, centred on the board window (y 4..12).
+    plane.position.set(0.5 - off, 8 / 16 - off, 2.05 / 16 - off);
+    group.add(plane);
+  }
+  return group;
+}
+
 /** Fluid blocks (water/lava) have no block model — the engine renders them specially — so build a
  *  tinted translucent cube instead. Default height 14/16 matches a vanilla still-source surface
  *  (flowing cells pass a lower height); seated on the block floor under the same origin convention

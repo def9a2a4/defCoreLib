@@ -1,5 +1,6 @@
 {
   "acacia_slab": true,
+  "air": false,
   "andesite_slab": true,
   "bamboo_mosaic_slab": true,
   "bamboo_slab": true,
@@ -48,7 +49,7 @@
   "oak_slab": true,
   "oxidized_cut_copper_slab": true,
   "pale_oak_slab": true,
-  "pale_oak_wall_sign": false,
+  "pale_oak_wall_sign": true,
   "piston": true,
   "polished_andesite_slab": true,
   "polished_blackstone_brick_slab": true,
