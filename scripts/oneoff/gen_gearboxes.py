@@ -3,8 +3,9 @@
 A gearbox looks like the matching casing but with a dark shaft socket ("hole") at the centre of each
 face — the @gearbox_<wood> skin is the casing skin (cased/<wood>.png) with gearbox-mask.png composited
 on top (see assets/rotation/casing/make_gearbox.py). It transmits rotation power in all directions
-(Java overlay in RotationBlocks + RotationNetwork gearbox edge) and auto-glues to casings (StickySpread
-CASING family via the mech:gearbox_ prefix).
+(Java overlay in RotationBlocks + RotationNetwork gearbox edge) and, as a frame block, auto-glues only
+to SAME-WOOD frame blocks — casings/gearboxes/chassis (StickySpread GEARBOX family + wood gate, keyed
+on the mech:gearbox_ prefix).
 
 Rewrites everything between the "Gearbox" and "Chain Pulley" section headers, so it is safe to re-run
 after editing the template below. If the "Gearbox" header is absent, inserts a fresh section directly
@@ -26,8 +27,9 @@ HEADER = """\
   # A mechanical casing that also transmits rotation power in EVERY direction: on each of its six
   # faces it couples (spin-preserving) to an aligned shaft/gear or another gearbox. Behaviour is a
   # Java overlay (RotationBlocks.overlayStandard gearbox=true → RotationNetwork gearbox edge, mirrored
-  # in RotationSolver for moving contraptions). Like a casing it auto-glues to casings/gearboxes
-  # (StickySpread CASING family, keyed on the mech:gearbox_ prefix).
+  # in RotationSolver for moving contraptions). A frame block like a casing: it auto-glues only to
+  # SAME-WOOD frame blocks — casings, gearboxes and chassis (StickySpread GEARBOX family + wood gate,
+  # keyed on the mech:gearbox_ prefix); the brush pins it to anything else.
   #
   # Display = a single casing-style shell on the same upside-down <wood>_STAIRS bare block (two bare
   # types share one base material; identity is per-cell). The @gearbox_<wood> skin is the casing skin

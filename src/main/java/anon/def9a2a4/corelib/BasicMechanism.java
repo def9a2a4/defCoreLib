@@ -173,6 +173,23 @@ final class BasicMechanism implements Mechanism {
     }
 
     /**
+     * Like {@link #liveFacing} but never null: rounds the block's rotated facing to its dominant
+     * cardinal axis (the largest |component|). Used by the mounted drill so it always has a target
+     * cell mid-sweep, when {@link #liveFacing} would return null for an off-axis (e.g. 45°) facing.
+     */
+    BlockFace liveFacingApprox(int index) {
+        MechanismBlockData mb = blocks.get(index);
+        BlockFace local = mb.blockData instanceof org.bukkit.block.data.Directional d
+            ? d.getFacing() : BlockFace.DOWN;
+        Vector3f v = currentTransform.transformDirection(
+            new Vector3f(local.getModX(), local.getModY(), local.getModZ()), new Vector3f());
+        float ax = Math.abs(v.x), ay = Math.abs(v.y), az = Math.abs(v.z);
+        if (ax >= ay && ax >= az) return v.x >= 0 ? BlockFace.EAST : BlockFace.WEST;
+        if (ay >= az) return v.y >= 0 ? BlockFace.UP : BlockFace.DOWN;
+        return v.z >= 0 ? BlockFace.SOUTH : BlockFace.NORTH;
+    }
+
+    /**
      * Whether the current rotation angle is within ~1° of a 90° multiple — the only orientations
      * where integer local offsets map to unambiguous world cells. The rotation driver skips
      * consumer actuation (not power/spin bookkeeping) while this is false.

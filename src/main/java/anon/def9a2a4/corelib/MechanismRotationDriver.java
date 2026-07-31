@@ -322,7 +322,15 @@ final class MechanismRotationDriver {
             String curPrefix = us >= 0 ? cur.substring(0, us) : cur;
             if (!SWAPPABLE_PREFIXES.contains(curPrefix)) continue;
             String desired = us >= 0 ? desiredPrefix + cur.substring(us) : desiredPrefix;
-            if (!desired.equals(cur)) mech.setBlockState(s.blockIndex(), desired);
+            if (!desired.equals(cur)) {
+                // Only swap to a state the type actually defines (parity with the static path).
+                // A gearbox is a TRANSMITTER with just an `idle` state, so `desired` would be the
+                // nonexistent "spinning" — applying it would blank its display and freeze the shell.
+                CustomHeadBlock type = registry.getType(s.typeId());
+                if (type != null && type.states().containsKey(desired)) {
+                    mech.setBlockState(s.blockIndex(), desired);
+                }
+            }
         }
     }
 
@@ -484,10 +492,11 @@ final class MechanismRotationDriver {
             track.state = null;
             return;
         }
-        if (!cardinal) return; // mid-turn: hold progress, resume on the next straight
-
+        // Unlike other consumers, the drill mines through the whole sweep at any angle: staged
+        // breaking is already timed and per-cell (progress accrues while liveCell stays put, resets
+        // on the next cell), so a slow rotator bores each arc cell and a fast one only grazes.
         BlockFace facing = mech.liveFacing(s.blockIndex());
-        if (facing == null) return;
+        if (facing == null) facing = mech.liveFacingApprox(s.blockIndex()); // mid-turn: dominant axis
         Vector3i cell = mech.liveCell(s.blockIndex());
         int tx = cell.x + facing.getModX(), ty = cell.y + facing.getModY(), tz = cell.z + facing.getModZ();
         if (!world.isChunkLoaded(tx >> 4, tz >> 4)) return;

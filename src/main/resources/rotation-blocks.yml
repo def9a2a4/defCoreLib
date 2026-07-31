@@ -311,8 +311,9 @@ blocks:
   # A mechanical casing that also transmits rotation power in EVERY direction: on each of its six
   # faces it couples (spin-preserving) to an aligned shaft/gear or another gearbox. Behaviour is a
   # Java overlay (RotationBlocks.overlayStandard gearbox=true → RotationNetwork gearbox edge, mirrored
-  # in RotationSolver for moving contraptions). Like a casing it auto-glues to casings/gearboxes
-  # (StickySpread CASING family, keyed on the mech:gearbox_ prefix).
+  # in RotationSolver for moving contraptions). A frame block like a casing: it auto-glues only to
+  # SAME-WOOD frame blocks — casings, gearboxes and chassis (StickySpread GEARBOX family + wood gate,
+  # keyed on the mech:gearbox_ prefix); the brush pins it to anything else.
   #
   # Display = a single casing-style shell on the same upside-down <wood>_STAIRS bare block (two bare
   # types share one base material; identity is per-cell). The @gearbox_<wood> skin is the casing skin
