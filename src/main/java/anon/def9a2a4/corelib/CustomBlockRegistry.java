@@ -273,6 +273,20 @@ public class CustomBlockRegistry {
     /** True while the reactive-flush dispatch loop is running (false during its post-hooks). */
     public boolean isFlushingReactive() { return flushingReactive; }
 
+    // A buggy reactive handler under a comparator/observer storm would re-throw every tick; log the full
+    // stack ONCE per site, then suppress, so we surface the error loudly without spamming ~20 traces/s.
+    private final Set<LocationKey> loggedReactiveFailures = new HashSet<>();
+    private boolean loggedPostHookFailure = false;
+
+    private void logReactiveFailureOnce(Block block, Throwable e) {
+        LocationKey key = LocationKey.of(block);
+        if (loggedReactiveFailures.size() > 1024) loggedReactiveFailures.clear(); // bound memory
+        if (loggedReactiveFailures.add(key)) {
+            plugin.getLogger().log(Level.SEVERE, "Reactive neighbor dispatch failed at "
+                    + block.getLocation() + " (further errors at this block are suppressed)", e);
+        }
+    }
+
     CustomBlockRegistry(JavaPlugin plugin) {
         this.plugin = plugin;
     }
@@ -1486,23 +1500,42 @@ public class CustomBlockRegistry {
             flushingReactive = true;
             try {
                 for (ReactiveMark mark : batch) {
-                    Block block = mark.block();
-                    if (!isNeighborReactive(block)) continue;   // removed / no longer reactive since the mark
-                    CustomHeadBlock type = getTypeFromBlock(block);
-                    if (type == null) continue;                 // unloaded / not a custom block anymore
-                    if (type.onNeighborChange() != null) {
-                        for (BlockFace f : mark.faces()) {
-                            type.onNeighborChange().accept(block, f);
+                    // Isolate each block: a throwing handler is logged (once/site) and skipped, so it can't
+                    // abort the rest of the batch or the drain below. Catch Exception (not Error) so a real
+                    // OOM/StackOverflow still propagates.
+                    try {
+                        Block block = mark.block();
+                        if (!isNeighborReactive(block)) continue; // removed / no longer reactive since the mark
+                        CustomHeadBlock type = getTypeFromBlock(block);
+                        if (type == null) continue;               // unloaded / not a custom block anymore
+                        if (type.onNeighborChange() != null) {
+                            for (BlockFace f : mark.faces()) {
+                                type.onNeighborChange().accept(block, f);
+                            }
                         }
-                    }
-                    if (type.displayTransformResolver() != null) {
-                        resolveDisplayTransforms(block, type, getState(block));
+                        if (type.displayTransformResolver() != null) {
+                            resolveDisplayTransforms(block, type, getState(block));
+                        }
+                    } catch (Exception e) {
+                        logReactiveFailureOnce(mark.block(), e);
                     }
                 }
             } finally {
-                flushingReactive = false;
+                flushingReactive = false; // load-bearing: must be false before the post-hooks (drain) run
             }
-            for (Runnable hook : reactiveFlushPostHooks) hook.run();
+            // Post-hooks (the rotation recalc drain) ALWAYS run, even if a handler above threw. Guard each so
+            // one bad hook can't skip the others; log once to avoid per-tick spam.
+            for (Runnable hook : reactiveFlushPostHooks) {
+                try {
+                    hook.run();
+                } catch (Exception e) {
+                    if (!loggedPostHookFailure) {
+                        loggedPostHookFailure = true;
+                        plugin.getLogger().log(Level.SEVERE,
+                                "Reactive flush post-hook threw (further post-hook errors are suppressed)", e);
+                    }
+                }
+            }
         });
     }
 

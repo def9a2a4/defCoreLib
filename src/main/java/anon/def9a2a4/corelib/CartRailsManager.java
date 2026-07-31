@@ -70,6 +70,8 @@ final class CartRailsManager implements Listener {
     // post-settle either way, so collapsing is lossless — see flushDirtyRails).
     private final java.util.Set<CustomBlockRegistry.LocationKey> dirtyRails = new java.util.HashSet<>();
     private boolean railFlushScheduled = false;
+    // Log a throwing rail settle once per site (bounded), so a persistent failure is surfaced, not spammed.
+    private final java.util.Set<CustomBlockRegistry.LocationKey> loggedRailFailures = new java.util.HashSet<>();
 
     CartRailsManager(JavaPlugin plugin, CustomBlockRegistry registry,
                      CustomCartManager carts, CartTrainManager trains, CartConfig config) {
@@ -289,21 +291,31 @@ final class CartRailsManager implements Listener {
         List<CustomBlockRegistry.LocationKey> batch = new ArrayList<>(dirtyRails);
         dirtyRails.clear();
         for (CustomBlockRegistry.LocationKey key : batch) {
-            World w = Bukkit.getWorld(key.worldId());
-            if (w == null) continue;
-            Block cur = w.getBlockAt(key.x(), key.y(), key.z());
-            CustomHeadBlock type = ourRailType(cur);   // re-check: covers rails broken/unloaded since the poke
-            if (type == null) continue;
-            Rail rail = RailPathWalker.railData(cur);
-            if (rail == null) continue;
-            Rail.Shape shape = rail.getShape();
-            // Slopes: break any custom rail. Curves: break only ORIENTABLE rails (destructor + controller —
-            // their flat square shell can't depict a curve). A junction is a 4-way crossing whose vanilla
-            // RAIL rests curved at a real intersection, so it must NOT be curve-broken.
-            if (RailPathWalker.isAscending(shape) || (isOrientableRail(cur) && RailPathWalker.isCurve(shape))) {
-                breakRail(cur, type);
-            } else if (isOrientableRail(cur)) {
-                reorientDisplays(cur, shapeFace(cur));   // settle-correction: follow the rail's new axis
+            // Isolate each rail: a throwing settle is logged (once/site) and skipped, not allowed to abort
+            // the rest of the batch. Catch Exception (not Error) so a real OOM/StackOverflow still propagates.
+            try {
+                World w = Bukkit.getWorld(key.worldId());
+                if (w == null) continue;
+                Block cur = w.getBlockAt(key.x(), key.y(), key.z());
+                CustomHeadBlock type = ourRailType(cur); // re-check: covers rails broken/unloaded since the poke
+                if (type == null) continue;
+                Rail rail = RailPathWalker.railData(cur);
+                if (rail == null) continue;
+                Rail.Shape shape = rail.getShape();
+                // Slopes: break any custom rail. Curves: break only ORIENTABLE rails (destructor + controller —
+                // their flat square shell can't depict a curve). A junction is a 4-way crossing whose vanilla
+                // RAIL rests curved at a real intersection, so it must NOT be curve-broken.
+                if (RailPathWalker.isAscending(shape) || (isOrientableRail(cur) && RailPathWalker.isCurve(shape))) {
+                    breakRail(cur, type);
+                } else if (isOrientableRail(cur)) {
+                    reorientDisplays(cur, shapeFace(cur));   // settle-correction: follow the rail's new axis
+                }
+            } catch (Exception e) {
+                if (loggedRailFailures.size() > 1024) loggedRailFailures.clear();
+                if (loggedRailFailures.add(key)) {
+                    plugin.getLogger().log(java.util.logging.Level.SEVERE,
+                            "Custom-rail settle failed at " + key + " (further errors here are suppressed)", e);
+                }
             }
         }
     }
