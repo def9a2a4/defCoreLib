@@ -16,47 +16,44 @@ import java.util.Set;
 import java.util.function.BiConsumer;
 
 /**
- * Derived auto-glue for the sticky block families. Five families, each with its own reach:
+ * Derived auto-glue for the sticky block families.
  *
  * <ul>
- *   <li><b>Casings</b> ({@code mech:casing_<wood>}) — structural connectors: a casing bonds only to
- *       other casings and to chassis (all woods mixing freely). It frames a contraption but never
- *       grabs machinery, world blocks, or gearboxes — that is deliberate; attach anything else with
- *       slime, honey, or the glue brush.</li>
- *   <li><b>Gearboxes</b> ({@code mech:gearbox_<wood>}) — like a casing but selective: bonds ONLY to
- *       other gearboxes and to chassis, NOT to plain casings. (Chassis/slime/honey still grab a
- *       gearbox, since they grab every movable block — only the gearbox's own frame rule is narrow.)</li>
- *   <li><b>Chassis</b> ({@code mech:chassis_<wood>}) — a "super-casing": it joins any casing frame
- *       (casings and gearboxes bond to it, and it to them) AND additionally grabs every movable
- *       neighbour except honey, exactly like a slime block. Slime reach with casing-frame
- *       membership.</li>
- *   <li><b>Vanilla slime</b> — grabs every movable neighbour (world blocks and custom blocks
- *       alike) EXCEPT honey, propagating slime-to-slime. Vanilla piston semantics.</li>
- *   <li><b>Vanilla honey</b> — the mirror: grabs everything movable except slime.</li>
+ *   <li><b>Frame blocks</b> — casing / gearbox / chassis ({@code mech:casing_<wood>} etc.). One
+ *       "frame" concept keyed by <b>wood</b>: a frame block AUTO-glues only to adjacent frame blocks
+ *       of the SAME wood (oak casing ↔ oak gearbox ↔ oak chassis; never oak ↔ birch). A frame is NOT
+ *       auto-grabbed by a plain block or the bare mover anchor — it rides only when it is the block
+ *       the machine carries, when it bonds a same-wood frame that rides, when a chassis/slime grabs
+ *       it, or when it is <b>manually brush-glued</b> (which is stored, and bypasses the wood gate —
+ *       so a player can pin two different woods, or a frame to a plain block, together).</li>
+ *   <li><b>Chassis</b> — a frame block that additionally has slime reach: it grabs every movable
+ *       neighbour except honey (plain blocks, slime), but for frame targets it still respects wood
+ *       (a {@code chassis_oak} ignores a {@code casing_birch}).</li>
+ *   <li><b>Vanilla slime / honey</b> — grab every movable neighbour (any wood) except the opposite
+ *       one; vanilla piston semantics. Unchanged.</li>
  * </ul>
  *
- * <p>A grabbed block that is itself sticky spreads onward by ITS OWN family rule — slime grabbing
- * a casing brings that casing's whole casing-frame along. Immovable neighbours are simply not
- * pulled ({@link MovableBlocks#isMovable}); the mover's own obstruction check stops travel if one
- * sits in the path.
+ * <p>A grabbed block that is itself sticky spreads onward by ITS OWN rule ({@link #bonds}). Immovable
+ * neighbours are not pulled ({@link MovableBlocks#isMovable}); the mover's own obstruction check stops
+ * travel if one sits in the path.
  *
- * <p>The closure is <b>derived at resolution time, never stored</b>: {@link GlueManager} appends it
- * in {@code resolveStructure} and unions it into the authoring outline, and the mover fallback
- * seeds run through {@link #withDerived}. Derived glue therefore costs nothing, cannot be
- * un-brushed, and self-heals — place or break a sticky block while unassembled and the structure
- * follows. Rebind-on-disassembly re-writes only the pre-move authored offsets
- * ({@link GlueManager#rebindTransformed}): a rigid move preserves adjacency, so every sticky block
- * and leaf that came along re-derives at its landed position on the next resolve.
+ * <p>The <b>derived</b> closure (auto-glue) is computed fresh at resolution time and never stored — it
+ * costs nothing, cannot be un-brushed, and self-heals. <b>Brush-glued</b> frame blocks, in contrast,
+ * ARE stored as authored offsets ({@link GlueManager}) and move rigidly like any authored block —
+ * two intentional models for one block type (auto = self-heal, pinned = rigid). Rebind-on-disassembly
+ * re-writes only the pre-move authored offsets ({@link GlueManager#rebindTransformed}); the derived
+ * closure re-derives at the landed cells on the next resolve, so casually-touching leaves are never
+ * baked.
  */
 final class StickySpread {
 
-    // Frame-bonding block id prefixes. Casing and gearbox are separate families (see familyOf /
-    // sticksTo): a casing bonds casings+chassis; a gearbox bonds gearboxes+chassis, NOT plain casings.
+    // Frame-block id prefixes. Casing, gearbox, and chassis are one "frame" concept keyed by wood
+    // (the id suffix): they AUTO-glue only to same-wood frame blocks (see bonds()). Chassis additionally
+    // has slime reach (grabs plain movables). The wood suffix follows each prefix (e.g. casing_dark_oak).
     static final String CASING_ID_PREFIX = "mech:casing_";
     static final String GEARBOX_ID_PREFIX = "mech:gearbox_";
-    // A chassis is a casing that also grabs everything (slime reach) — its own family so the
-    // grab rule differs, but casings/gearboxes still bond to it as frame (see sticksTo).
     static final String CHASSIS_ID_PREFIX = "mech:chassis_";
+    static final List<String> FRAME_PREFIXES = List.of(CASING_ID_PREFIX, GEARBOX_ID_PREFIX, CHASSIS_ID_PREFIX);
 
     /** The sticky families. Order is meaningless; {@code null} family = not sticky. */
     enum Family { CASING, GEARBOX, CHASSIS, SLIME, HONEY }
@@ -70,8 +67,9 @@ final class StickySpread {
         return t != null && t.fullId().startsWith(CASING_ID_PREFIX);
     }
 
-    /** {@code b}'s sticky family, or null for ordinary (non-sticky) blocks. Casings and gearboxes
-     *  share the {@link Family#CASING} family (both frame-bonding, both glue to each other). */
+    /** {@code b}'s sticky family, or null for ordinary (non-sticky) blocks. Casing / gearbox / chassis
+     *  are the three "frame" families; they auto-bond only same-wood (see {@link #bonds}). Chassis
+     *  additionally has slime reach (grabs plain movables). */
     static @Nullable Family familyOf(Block b, CustomBlockRegistry registry) {
         Material m = b.getType();
         if (m == Material.SLIME_BLOCK) return Family.SLIME;
@@ -86,23 +84,59 @@ final class StickySpread {
         return null;
     }
 
-    /** Sticky blocks are never brush-glued or stored — their bond derives fresh at every resolve. */
+    /** True iff sticky (any family). NB frame blocks (casing/gearbox/chassis) CAN now be brush-glued and
+     *  stored; slime/honey never are. Use {@link #isFrameBlock}/{@link #isSlimeOrHoney} to split them. */
     static boolean isSticky(Block b, CustomBlockRegistry registry) {
         return familyOf(b, registry) != null;
     }
 
-    /** May a {@code grabber}-family block bond to a neighbour of family {@code target}?
-     *  Casings bond to casings + chassis; gearboxes bond to gearboxes + chassis (NOT plain casings);
-     *  chassis and slime grab everything but honey; honey everything but slime. Chassis/slime/honey
-     *  therefore still grab gearboxes — only the gearbox's own frame rule is selective. */
+    static boolean isFrame(@Nullable Family f) {
+        return f == Family.CASING || f == Family.GEARBOX || f == Family.CHASSIS;
+    }
+
+    /** A frame block (casing/gearbox/chassis) — the wood-keyed, brush-gluable family. */
+    static boolean isFrameBlock(Block b, CustomBlockRegistry registry) {
+        return isFrame(familyOf(b, registry));
+    }
+
+    /** Vanilla slime/honey — auto-grab only, never brush-stored. */
+    static boolean isSlimeOrHoney(Block b) {
+        Material m = b.getType();
+        return m == Material.SLIME_BLOCK || m == Material.HONEY_BLOCK;
+    }
+
+    /** Wood key of a frame block (id suffix after its family prefix, e.g. {@code casing_dark_oak}
+     *  → {@code "dark_oak"}), or null for slime/honey/plain blocks. */
+    static @Nullable String woodOf(Block b, CustomBlockRegistry registry) {
+        CustomHeadBlock t = registry.getTypeFromBlock(b);
+        if (t == null) return null;
+        String id = t.fullId();
+        for (String p : FRAME_PREFIXES) if (id.startsWith(p)) return id.substring(p.length());
+        return null;
+    }
+
+    /** Family rule for the grabber. Frame families all bond ANY frame here — the same-wood restriction
+     *  is applied in {@link #bonds}. Chassis/slime grab everything but honey; honey everything but slime. */
     private static boolean sticksTo(Family grabber, @Nullable Family target) {
         return switch (grabber) {
-            case CASING -> target == Family.CASING || target == Family.CHASSIS;
-            case GEARBOX -> target == Family.GEARBOX || target == Family.CHASSIS;
+            case CASING, GEARBOX -> isFrame(target);
             case CHASSIS -> target != Family.HONEY;
             case SLIME -> target != Family.HONEY;
             case HONEY -> target != Family.SLIME;
         };
+    }
+
+    /** Whether block {@code a} (family {@code fa}) bonds neighbour {@code b} (family {@code fb}): the
+     *  {@link #sticksTo} family rule AND the wood gate — two FRAME blocks bond only when SAME WOOD; any
+     *  pair involving a wood-less block (plain/slime/honey) is unaffected. Manual brush glue bypasses this
+     *  entirely (it is stored, not derived), so a player can still glue two different woods together. */
+    private static boolean bonds(Block a, Family fa, Block b, @Nullable Family fb, CustomBlockRegistry reg) {
+        if (!sticksTo(fa, fb)) return false;
+        if (isFrame(fa) && isFrame(fb)) {
+            String wa = woodOf(a, reg), wb = woodOf(b, reg);
+            return wa != null && wa.equals(wb);
+        }
+        return true;
     }
 
     /**
@@ -144,14 +178,20 @@ final class StickySpread {
         if (anchorCell != null) frontier.add(anchorCell);
         frontier.addAll(structure);
         for (Block b : frontier) {
-            // A sticky frontier cell attracts only what it sticks to (a slime seed must not attract
-            // honey); non-sticky structure cells attract every family — the structure attracts sticky.
+            // A sticky frontier cell attracts what it bonds (same-wood frame, or its slime/chassis grab).
+            // A NON-sticky cell — a plain authored block or the bare mover anchor — attracts ONLY
+            // slime/honey, NOT frame blocks: a frame rides only as a stored member or via a
+            // frame/chassis/slime grab, never because a plain block happens to sit next to it.
             Family bf = familyOf(b, registry);
             for (BlockFace f : Faces.CARDINAL) {
                 Block n = b.getRelative(f);
                 Family nf = familyOf(n, registry);
                 if (nf == null) continue;
-                if (bf != null && !sticksTo(bf, nf)) continue;
+                if (bf == null) {
+                    if (nf != Family.SLIME && nf != Family.HONEY) continue;
+                } else if (!bonds(b, bf, n, nf, registry)) {
+                    continue;
+                }
                 CustomBlockRegistry.LocationKey nk = CustomBlockRegistry.LocationKey.of(n);
                 if (excluded.contains(nk)) {                       // mover self cell — bond refused
                     if (onBlocked != null && seen.add(nk)) onBlocked.accept(b, n);
@@ -175,7 +215,7 @@ final class StickySpread {
             for (BlockFace f : Faces.CARDINAL) {
                 Block n = b.getRelative(f);
                 Family nf = familyOf(n, registry);
-                if (!sticksTo(bf, nf)) continue;                                  // family rule
+                if (!bonds(b, bf, n, nf, registry)) continue;                     // family rule + wood gate
                 if (nf == null && !MovableBlocks.isMovable(n, registry)) continue; // leaf not pulled
                 CustomBlockRegistry.LocationKey nk = CustomBlockRegistry.LocationKey.of(n);
                 if (excluded.contains(nk)) {                       // mover self cell — bond refused

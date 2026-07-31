@@ -138,13 +138,19 @@ final class GlueAuthoring implements Listener {
                 if (closeIfDrifted(player, session)) return;
                 session.touch(now());
                 if (sneak) {
-                    if (StickySpread.isSticky(clicked, registry)) {
-                        actionBar(player, "Sticky-block glue is automatic — break the block to detach it",
+                    if (StickySpread.isSlimeOrHoney(clicked)) {
+                        actionBar(player, "Slime/honey glue is automatic — break the block to detach it",
                             NamedTextColor.YELLOW);
                         return;
                     }
+                    // Frame blocks (casing/gearbox/chassis) fall through: removing the stored pin. If the
+                    // block still auto-glues to a same-wood neighbour it keeps riding — say so.
                     if (glue.unglue(session.anchor, clicked)) {
                         feedback(player, clicked, false);
+                        if (StickySpread.isFrameBlock(clicked, registry)) {
+                            actionBar(player, "Unpinned — still auto-glues to same-wood frame neighbours",
+                                NamedTextColor.YELLOW);
+                        }
                     }
                 } else {
                     // The rope's right-of-way: chain links, the hoist head, and everything above it in
@@ -155,10 +161,13 @@ final class GlueAuthoring implements Listener {
                         reject(player, clicked, "That's the chain's path");
                         return;
                     }
-                    // Sticky blocks auto-glue (derived at resolve, free, unremovable) — nothing to store.
-                    if (StickySpread.isSticky(clicked, registry)) {
+                    // Slime/honey auto-glue (derived at resolve, free, unremovable) — nothing to store.
+                    // Frame blocks (casing/gearbox/chassis) fall through to glue() below: they auto-glue to
+                    // SAME-WOOD frame neighbours for free, but the brush explicitly PINS one (e.g. to a plain
+                    // block, or to a different wood) as a stored offset that rides rigidly.
+                    if (StickySpread.isSlimeOrHoney(clicked)) {
                         feedback(player, clicked, true);
-                        actionBar(player, "Casings, slime and honey glue automatically — no brush needed",
+                        actionBar(player, "Slime and honey glue automatically — no brush needed",
                             NamedTextColor.GREEN);
                         return;
                     }
@@ -342,13 +351,13 @@ final class GlueAuthoring implements Listener {
             return;
         }
         // Filter out immovable cells (like glueCuboid already filters air/anchor/already-glued) rather than
-        // rejecting the whole box for one bedrock. Sticky blocks are filtered too — they auto-glue (derived).
-        // Hoist sessions also drop the rope's right-of-way (the column above the seed) — origin snapshotted
-        // once, not per cell: inRopeColumn re-scans the chain on every call.
+        // rejecting the whole box for one bedrock. Slime/honey are filtered — they auto-glue (derived); frame
+        // blocks (casing/gearbox/chassis) are kept so a box-glue can PIN them. Hoist sessions also drop the
+        // rope's right-of-way (the column above the seed) — origin snapshotted once, not per cell.
         Block ropeOrigin = s.anchor instanceof HoistAnchor ? s.anchor.originBlock() : null;
         List<Block> movable = boxBlocks(a, clicked).stream()
             .filter(b -> MovableBlocks.isMovable(b, registry))
-            .filter(b -> !StickySpread.isSticky(b, registry))
+            .filter(b -> !StickySpread.isSlimeOrHoney(b))
             .filter(b -> ropeOrigin == null || b.getX() != ropeOrigin.getX()
                 || b.getZ() != ropeOrigin.getZ() || b.getY() <= ropeOrigin.getY())
             .toList();
@@ -514,12 +523,7 @@ final class GlueAuthoring implements Listener {
      *  at extension 0) — the same contiguity {@code scanDepth} uses, so it opens sessions precisely on
      *  what a stroke would move. Bounded by build height. */
     private @org.jspecify.annotations.Nullable Block owningHoist(Block clicked) {
-        int maxY = clicked.getWorld().getMaxHeight();
-        Block up = clicked.getRelative(0, 1, 0);
-        while (up.getY() <= maxY && ChainHoistManager.isOwnRope(up, registry)) {
-            up = up.getRelative(0, 1, 0);
-        }
-        return ChainHoistManager.isHoist(up, registry) ? up : null;
+        return ChainHoistManager.owningHoist(clicked, registry);
     }
 
     /** Dynamic-origin drift guard for edit paths (the outline tick inlines this — iterator). Returns

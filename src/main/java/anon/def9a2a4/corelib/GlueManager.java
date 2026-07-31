@@ -103,10 +103,11 @@ final class GlueManager {
         for (int i = 0; i + 2 < o.length; i += 3) {
             Block b = w.getBlockAt(ox + o[i], oy + o[i + 1], oz + o[i + 2]);
             if (b.getType().isAir()) continue; // block gone — skip
-            // Sticky cells are never authored (setStructure/the brush filter them) — but offsets stored
-            // before the sticky rework may contain them. Skip: they re-derive below while adjacent, and
-            // stop being baked (a stored casing island no longer moves without a live bond).
-            if (registry != null && StickySpread.isSticky(b, registry)) continue;
+            // Slime/honey are never authored (the brush auto-manages them) — skip any legacy stored one;
+            // they re-derive while adjacent. Frame blocks (casing/gearbox/chassis) ARE stored now: a
+            // brush-glued frame is authored and rides rigidly; its same-wood auto-glue still augments via
+            // the derived append below (deduped by present/seen).
+            if (registry != null && StickySpread.isSlimeOrHoney(b)) continue;
             if (excluded.contains(CustomBlockRegistry.LocationKey.of(b))) { // mover self cell — never captured
                 if (onBlocked != null) onBlocked.accept(null, b);
                 continue;
@@ -157,11 +158,13 @@ final class GlueManager {
     /**
      * Rebind an anchor's glue after a mechanism ride: write the PRE-MOVE authored offsets,
      * transformed by the mechanism's snapped landing rotation (landed offset = R × old offset —
-     * 90°-snapped rigid moves map integer offsets to integers). Derived sticky glue (casings/slime/
-     * honey and the leaves they bond, see {@link StickySpread}) never enters storage this way: a
-     * rigid move preserves adjacency, so it re-derives at the landed cells on the next resolve —
-     * storing it would bake casually-touching neighbours into authored glue. Blocks destroyed during
-     * landing linger in the stored offsets — harmless, {@link #resolveStructure} skips air.
+     * 90°-snapped rigid moves map integer offsets to integers). Only AUTHORED offsets are written —
+     * which now legitimately include brush-PINNED frame blocks (they ride rigidly like any authored
+     * block). The DERIVED closure (auto-glue: same-wood frame bonds, slime/honey grabs and their leaves,
+     * see {@link StickySpread}) still never enters storage: a rigid move preserves adjacency, so it
+     * re-derives at the landed cells on the next resolve — storing it would bake casually-touching
+     * neighbours. Blocks destroyed during landing linger in the stored offsets — harmless,
+     * {@link #resolveStructure} skips air.
      * No-op when {@code preMoveOffsets} is null (the anchor had no authored glue).
      */
     void rebindTransformed(Anchor a, int @Nullable [] preMoveOffsets, Matrix4f rotation) {
@@ -282,14 +285,14 @@ final class GlueManager {
     /**
      * Overwrite the glued set from an explicit block list — used by the authoring cuboid/single-edit
      * commit (and the gluetest command). No connectivity check (the caller is authoritative).
-     * Sticky blocks (casings/slime/honey) are never stored: their glue is derived fresh on every
-     * resolve (see {@link StickySpread}). Movers rebind via {@link #rebindTransformed}, never through
-     * here — the landed payload contains derived sticky blocks/leaves that must not be baked into
-     * authored glue.
+     * Only slime/honey are dropped (their glue is derived fresh every resolve, see {@link StickySpread});
+     * frame blocks (casing/gearbox/chassis) ARE stored — a brush-pinned frame rides rigidly. Movers rebind
+     * via {@link #rebindTransformed}, never through here — the landed payload still contains the DERIVED
+     * closure (slime/honey grabs + auto-glued same-wood extras) which must not be baked into authored glue.
      */
     void setStructure(Anchor a, List<Block> blocks) {
         List<Block> authored = registry == null ? blocks
-            : blocks.stream().filter(b -> !StickySpread.isSticky(b, registry)).toList();
+            : blocks.stream().filter(b -> !StickySpread.isSlimeOrHoney(b)).toList();
         a.writeOffsets(packBlocks(a, authored));
     }
 
@@ -305,18 +308,26 @@ final class GlueManager {
     }
 
     /**
-     * Authoring: add one block. Connectivity- and cap-checked; the derived sticky closure counts as
-     * connectivity (a casing frame bridges authored glue — it rides along at resolve, so brushing
-     * the block on its far side is legitimately connected). On a horizontal-axis (drawbridge)
-     * anchor, orientation-bearing blocks are rejected — {@code BlockRotation} can only rotate about
-     * Y, so stairs/slabs/etc. (and custom skulls) can't be validly represented after an X/Z rotation.
+     * Authoring: add one block. Connectivity- and cap-checked; the derived closure counts as
+     * connectivity (a same-wood frame bridges authored glue — it rides at resolve, so brushing a block
+     * on its far side is connected). NB since plain/anchor cells no longer auto-attract frames, a frame
+     * frame bridges connectivity only once ONE of its blocks is glued adjacent to the anchor (or is the
+     * mount seed). On a horizontal-axis (drawbridge) anchor, orientation-bearing blocks are rejected —
+     * {@code BlockRotation} only rotates about Y — EXCEPT frame blocks, which re-pin their fixed
+     * base_block_data on landing and so ride any axis.
      */
     Result glue(Anchor a, Block b, boolean horizontalAxis) {
         Block origin = a.originBlock();
         Vector3i off = new Vector3i(b.getX() - origin.getX(), b.getY() - origin.getY(),
             b.getZ() - origin.getZ());
         if (off.x == 0 && off.y == 0 && off.z == 0) return Result.IS_ANCHOR;
-        if (horizontalAxis && isOrientationBearing(b.getBlockData())) return Result.AXIS_INCOMPATIBLE;
+        // Frame blocks are orientation-bearing stairs, but they re-pin their fixed base_block_data on
+        // landing (BasicMechanism), so they ride a drawbridge fine — exempt by TYPE, not by loosening
+        // the shared BlockData predicate (which other stair/slab custom blocks depend on).
+        if (horizontalAxis && isOrientationBearing(b.getBlockData())
+                && !(registry != null && StickySpread.isFrameBlock(b, registry))) {
+            return Result.AXIS_INCOMPATIBLE;
+        }
         Set<Vector3i> set = offsets(a);
         if (set.contains(off)) return Result.ALREADY_GLUED;
         if (set.size() >= maxSize) return Result.CAP_HIT;
@@ -350,7 +361,8 @@ final class GlueManager {
             if (off.x == 0 && off.y == 0 && off.z == 0) continue;     // the anchor itself
             if (accepted.contains(off)) continue;                    // already glued
             if (b.getType().isAir()) continue;
-            if (horizontalAxis && isOrientationBearing(b.getBlockData())) continue; // can't rotate on X/Z
+            if (horizontalAxis && isOrientationBearing(b.getBlockData())
+                    && !(registry != null && StickySpread.isFrameBlock(b, registry))) continue; // can't rotate on X/Z
             pending.add(off);
         }
         boolean changed = true;
