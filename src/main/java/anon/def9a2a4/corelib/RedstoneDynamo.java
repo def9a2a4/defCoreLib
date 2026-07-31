@@ -155,7 +155,9 @@ final class RedstoneDynamo implements Listener {
 
     private void recalcIfKnown(Block b) {
         var key = CustomBlockRegistry.LocationKey.of(b);
-        if (network.getNode(key) != null) network.recalculate(key);
+        // recalcReactive coalesces to one rebuild per network per tick when called from the reactive flush
+        // (a comparator storm on a row of these), and rebuilds immediately outside it — see RotationNetwork.
+        if (network.getNode(key) != null) network.recalcReactive(key);
     }
 
     private static RotationNetwork.Axis axisOf(Block b) {

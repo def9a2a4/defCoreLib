@@ -882,7 +882,8 @@ final class ChainHoistManager implements Listener {
 
     private void recalcIfNode(Block b) {
         CustomBlockRegistry.LocationKey k = CustomBlockRegistry.LocationKey.of(b);
-        if (network.getNode(k) != null) network.recalculate(k);
+        // recalcReactive coalesces to one rebuild per network per tick under the reactive flush; immediate otherwise.
+        if (network.getNode(k) != null) network.recalcReactive(k);
     }
 
     private static @Nullable Block blockOf(CustomBlockRegistry.LocationKey k) {

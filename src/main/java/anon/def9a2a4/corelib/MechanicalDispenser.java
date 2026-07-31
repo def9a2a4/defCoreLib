@@ -102,7 +102,8 @@ final class MechanicalDispenser implements Listener {
 
     private void recalcIfKnown(Block b) {
         var key = CustomBlockRegistry.LocationKey.of(b);
-        if (network.getNode(key) != null) network.recalculate(key);
+        // recalcReactive coalesces to one rebuild per network per tick under the reactive flush; immediate otherwise.
+        if (network.getNode(key) != null) network.recalcReactive(key);
     }
 
     private boolean isOurs(Block b) {
