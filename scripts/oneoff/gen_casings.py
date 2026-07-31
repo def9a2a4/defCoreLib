@@ -35,9 +35,9 @@ HEADER = """\
 
 OAK_NOTES = """\
     catalog_notes:
-      - "&fAuto-glues to every adjacent block like a slime block — build a moving contraption without the glue brush."
-      - "&7Any casing carried by a piston, rotator, minecart, or chain hoist drags its neighbours along, spreading through other casings."
-      - "&7A vanilla piston moves a lone casing as an ordinary block (no slime spread)."
+      - "&fA frame block: auto-glues only to adjacent frame blocks of the SAME wood (casings, gearboxes, chassis) — build a rigid frame with no glue brush."
+      - "&7A plain block never drags it: it rides a mechanism when mounted on it, bonded to a same-wood frame, or pinned with the glue brush."
+      - "&7The glue brush pins it to anything — a different wood, or a plain block — overriding the same-wood auto-glue."
       - "&7Comes in every plank wood — the center plank of the recipe picks the variant."
 """
 
@@ -51,8 +51,8 @@ def entry(wood: str) -> str:
   casing_{wood}:
     name: "&f{title} Mechanical Casing"
     lore:
-      - "&7Sticks to adjacent blocks like slime —"
-      - "&7move it with any mechanism"
+      - "&7Frame block: auto-glues to same-wood"
+      - "&7casings, gearboxes and chassis"
 {extra}\
     base_block: {stairs}
     base_block_data: "{BASE_DATA}"

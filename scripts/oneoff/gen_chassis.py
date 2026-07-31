@@ -35,9 +35,9 @@ HEADER = """\
 
 OAK_NOTES = """\
     catalog_notes:
-      - "&fAuto-glues to EVERY adjacent block like a slime block — a moving frame drags its whole payload, no glue brush."
-      - "&7Also joins any casing frame: plain casings bond to a chassis and it to them, spreading through casings and other chassis."
-      - "&7Grabs everything movable except honey (slime parity). A vanilla piston moves a lone chassis as an ordinary block."
+      - "&fA super-casing: grabs every adjacent MOVABLE block except honey (slime parity) — a moving chassis drags its whole payload, no glue brush."
+      - "&7Wood-picky for frames: it joins casings, gearboxes and chassis of the SAME wood only, and ignores a different-wood frame."
+      - "&7A plain block never drags the chassis itself; a vanilla piston moves a lone chassis as an ordinary block."
       - "&7Craft by ringing a Mechanical Casing with iron nuggets — the casing's wood picks the variant."
 """
 
@@ -50,8 +50,8 @@ def entry(wood: str) -> str:
   chassis_{wood}:
     name: "&f{title} Mechanical Chassis"
     lore:
-      - "&7Grabs every adjacent block like slime,"
-      - "&7and joins any casing frame"
+      - "&7Grabs every movable block like slime,"
+      - "&7joins same-wood casing frames"
 {extra}\
     base_block: {stairs}
     base_block_data: "{BASE_DATA}"

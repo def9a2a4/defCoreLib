@@ -40,7 +40,7 @@ OAK_NOTES = """\
     catalog_notes:
       - "&fA power hub: couples any aligned shafts or gears on all six faces, passing spin straight through without reversing."
       - "&7Use it to split one input into several directions, or bridge shafts around a corner without a gear's counter-rotation."
-      - "&7Auto-glues to casings and other gearboxes like a casing — build it straight into a moving contraption."
+      - "&7A frame block like a casing: auto-glues only to SAME-WOOD frame blocks (casings, gearboxes, chassis); brush-glue to pin it to anything else."
       - "&7Comes in every plank wood — the casing in the recipe picks the variant."
 """
 
@@ -54,7 +54,7 @@ def entry(wood: str) -> str:
     name: "&f{title} Gearbox"
     lore:
       - "&7Transmits power in every direction"
-      - "&7Auto-glues to casings"
+      - "&7Frame block: same-wood auto-glue"
 {extra}\
     base_block: {stairs}
     base_block_data: "{BASE_DATA}"
