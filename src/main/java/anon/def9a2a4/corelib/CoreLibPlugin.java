@@ -180,6 +180,7 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         ChainHoistManager chainHoistManager =
             new ChainHoistManager(this, registry, rotationNetwork, mechanismRegistry, glueManager, rotConfig);
         chainHoistManager.register();
+        getServer().getPluginManager().registerEvents(chainHoistManager, this);
         glueAuthoring.setChainHoistManager(chainHoistManager);
         // Transitive glue capture needs to recognise a nested anchor and build the right Anchor for it
         // (hoists get the dynamic-origin HoistAnchor). Wired here, after the hoist manager exists.

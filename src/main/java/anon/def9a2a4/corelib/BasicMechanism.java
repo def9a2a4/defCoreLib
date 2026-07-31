@@ -477,6 +477,12 @@ final class BasicMechanism implements Mechanism {
         // offset set tracks the structure's new rest positions (dropped-as-item blocks are excluded).
         List<Block> placed = new ArrayList<>(blocks.size());
 
+        // Carried-hoist chain-break guard: the (x,z) columns where a captured CHAIN link failed to land
+        // (solid-win / off-world drop). A shorter landed chain shifts a carried hoist's platform seed, so
+        // after the loop any landed hoist head in one of these columns has its glue invalidated (matches
+        // the reactive break guard in ChainHoistManager). Lazily allocated — the common landing drops none.
+        Set<Long> droppedChainCols = null;
+
         // Two-pass landing, mirroring airOutSourceBlocks' two-pass removal in reverse: supports
         // first, attachables second — an attachable (banner/torch/sign/…) placed before its support
         // exists pops during setBlockData and drops WITHOUT its captured block-entity data.
@@ -501,6 +507,7 @@ final class BasicMechanism implements Mechanism {
             // world-max. Don't try to place there — drop it as an item instead.
             if (blockLoc.getBlockY() < blockLoc.getWorld().getMinHeight()
                     || blockLoc.getBlockY() >= blockLoc.getWorld().getMaxHeight()) {
+                droppedChainCols = noteIfChain(droppedChainCols, mb, blockLoc);
                 dropBlockAsItem(blockLoc, mb);
                 continue;
             }
@@ -535,7 +542,22 @@ final class BasicMechanism implements Mechanism {
                 // Solid block wins — explosion effect + drop mechanism block as item
                 target.getWorld().spawnParticle(Particle.EXPLOSION,
                     blockLoc.clone().add(0.5, 0.5, 0.5), 1);
+                droppedChainCols = noteIfChain(droppedChainCols, mb, blockLoc);
                 dropBlockAsItem(blockLoc, mb);
+            }
+        }
+
+        // A carried hoist that landed with a short chain (a link solid-won / went off-world above): its
+        // platform seed is derived from the live chain depth, so a shorter chain shifts the seed and the
+        // stored glue now mis-references. Wipe that hoist's glue — same "chain broke → invalidate" rule as
+        // ChainHoistManager's reactive guard. The chain hangs directly below the head at the same (x,z).
+        if (droppedChainCols != null) {
+            for (Block b : placed) {
+                if (ChainHoistManager.isHoist(b, registry)
+                        && droppedChainCols.contains(colKey(b.getX(), b.getZ()))) {
+                    HoistAnchor a = new HoistAnchor(b, registry, () -> true);
+                    if (a.readOffsets() != null) a.clearOffsets();
+                }
             }
         }
 
@@ -671,6 +693,17 @@ final class BasicMechanism implements Mechanism {
             c.update();
         }
     }
+
+    /** Record the (x,z) column of a dropped CHAIN link for the carried-hoist chain-break guard; lazily
+     *  creates the set and returns it (unchanged for a non-chain block). */
+    private static Set<Long> noteIfChain(@Nullable Set<Long> cols, MechanismBlockData mb, Location loc) {
+        if (!ChainHoistManager.isChainMaterial(mb.blockData.getMaterial())) return cols;
+        if (cols == null) cols = new HashSet<>();
+        cols.add(colKey(loc.getBlockX(), loc.getBlockZ()));
+        return cols;
+    }
+
+    private static long colKey(int x, int z) { return (((long) x) << 32) ^ (z & 0xffffffffL); }
 
     private void dropBlockAsItem(Location loc, MechanismBlockData mb) {
         ItemStack drop;

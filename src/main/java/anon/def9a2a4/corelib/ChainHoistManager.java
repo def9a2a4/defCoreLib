@@ -12,6 +12,12 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.Orientable;
 import org.bukkit.block.data.Rotatable;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockExplodeEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -56,7 +62,7 @@ import java.util.logging.Level;
  * mining the chain mid-span is simply what the next scan reads — the same reason the piston re-derives its
  * rod geometry per trigger instead of trusting stored state. At rest only real world blocks persist.
  */
-final class ChainHoistManager {
+final class ChainHoistManager implements Listener {
 
     static final String HOIST_ID = "mech:chain_hoist";
     private static final String MECH_TYPE = "mech:chain_hoist";
@@ -684,6 +690,67 @@ final class ChainHoistManager {
 
     static boolean isOwnRope(Block b, CustomBlockRegistry registry) {
         return b.getType() == CHAIN_MATERIAL && !registry.isBareBlock(b);
+    }
+
+    /** Whether {@code m} is the chain material — so a mechanism landing (BasicMechanism.disassemble) can
+     *  spot a carried hoist's chain link that failed to land without importing the version-resolved id. */
+    static boolean isChainMaterial(Material m) { return m == CHAIN_MATERIAL; }
+
+    /** The hoist owning {@code chainCell} as its platform column, or null: walk up contiguous own-rope
+     *  to a hoist head. The same contiguity {@code scanDepth} uses, so it matches exactly what a stroke
+     *  would move. Bounded by build height. Shared by {@link GlueAuthoring}'s session gate and the
+     *  chain-break glue guard below. */
+    static @Nullable Block owningHoist(Block chainCell, CustomBlockRegistry registry) {
+        int maxY = chainCell.getWorld().getMaxHeight();
+        Block up = chainCell.getRelative(0, 1, 0);
+        while (up.getY() <= maxY && isOwnRope(up, registry)) up = up.getRelative(0, 1, 0);
+        return isHoist(up, registry) ? up : null;
+    }
+
+    // ──────────────────────────────────────────────────────────────────────
+    // Chain-break glue guard: a hoist's platform glue is stored relative to a dynamic seed below the
+    // chain end (see HoistAnchor). An OUT-OF-BAND chain change — a link mined/placed by hand or blown
+    // up — shifts the seed while the platform stays put, so the stored offsets now mis-reference (worst
+    // case grabbing an unrelated block on the next stroke). Invalidate ALL of the owning hoist's glue
+    // when that happens. A hoist's own stroke moves chain via setType/setBlockData (no Bukkit events),
+    // so these handlers never fire for legitimate operation. The carried-hoist "chain lands short"
+    // case fires no Bukkit event and is caught in BasicMechanism.disassemble instead.
+    // ──────────────────────────────────────────────────────────────────────
+
+    /** Clear the glue of the hoist owning {@code chainCell}, if any. */
+    private void invalidateGlueForChain(Block chainCell) {
+        Block hoist = owningHoist(chainCell, registry);
+        if (hoist == null) return;
+        HoistAnchor a = new HoistAnchor(hoist, registry, () -> true);
+        if (glueManager.hasGlue(a)) a.clearOffsets();
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onChainBreak(BlockBreakEvent e) {
+        if (isOwnRope(e.getBlock(), registry)) invalidateGlueForChain(e.getBlock());
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onChainPlace(BlockPlaceEvent e) {
+        if (isOwnRope(e.getBlock(), registry)) invalidateGlueForChain(e.getBlock());
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onEntityExplode(EntityExplodeEvent e) { invalidateExplodedChains(e.blockList()); }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onBlockExplode(BlockExplodeEvent e) { invalidateExplodedChains(e.blockList()); }
+
+    /** Each own-rope block in the blast invalidates its owning hoist's glue, once per hoist. */
+    private void invalidateExplodedChains(List<Block> blocks) {
+        Set<CustomBlockRegistry.LocationKey> done = new HashSet<>();
+        for (Block b : blocks) {
+            if (!isOwnRope(b, registry)) continue;
+            Block hoist = owningHoist(b, registry);
+            if (hoist == null || !done.add(CustomBlockRegistry.LocationKey.of(hoist))) continue;
+            HoistAnchor a = new HoistAnchor(hoist, registry, () -> true);
+            if (glueManager.hasGlue(a)) a.clearOffsets();
+        }
     }
 
     // ──────────────────────────────────────────────────────────────────────
