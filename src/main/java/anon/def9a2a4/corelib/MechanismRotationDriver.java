@@ -33,10 +33,12 @@ import java.util.UUID;
  *       {@code MechanismBlockData.spinReversed}, which {@code updateAnimatedDisplays} reads every
  *       tick — so meshed gears visually counter-rotate and conflicting sources jam.</li>
  *   <li><b>Consumers</b> actuate at their LIVE world position ({@code BasicMechanism.liveCell}/
- *       {@code liveFacing}) at their own configured tick interval: the drill mines the block it
+ *       {@code liveTargetCell}) along their TRUE aim ({@code NodeSpec.actuationFacing} rotated by
+ *       {@code liveDirection}) at their own configured tick interval: the drill mines the block it
  *       faces (drops land world-side — an on-board suction hopper collects them), the placer
  *       places from its travelling storage, the suction hopper vacuums into it. World-mutating
- *       consumers are gated on near-cardinal orientation (mid-turn cells are ambiguous).</li>
+ *       consumers other than the drill are gated on near-cardinal orientation (mid-turn cells are
+ *       ambiguous); the drill mines through the sweep via {@code liveTargetCell}.</li>
  * </ul>
  *
  * Which blocks participate, and how, is data-driven via the {@code mechanism:} section of
@@ -504,9 +506,11 @@ final class MechanismRotationDriver {
         }
         // The drill mines through the whole sweep at any angle along its TRUE aim, rotated by the
         // mechanism: liveTargetCell floors the rotated (drill centre + aim) as one, so the target tracks
-        // the real aim arc and — for an outward aim — never lands on the pivot/anchor cell (so no guard
-        // is needed). Staged breaking is timed and per-cell: progress accrues while the target cell holds
-        // and resets on the next, so a slow rotator bores each arc cell and a fast one only grazes.
+        // the real aim arc. No anchor guard is needed: the rotator (and every controller) is
+        // drillable(false), so drillEffect no-ops on the pivot block even for a drill aimed straight into
+        // it (an outward aim can't reach the pivot cell anyway; an inward one just hits the undrillable
+        // anchor). Staged breaking is timed and per-cell: progress accrues while the target cell holds and
+        // resets on the next, so a slow rotator bores each arc cell and a fast one only grazes.
         Vector3i cell = mech.liveTargetCell(s.blockIndex(), s.actuationFacing());
         int tx = cell.x, ty = cell.y, tz = cell.z;
         if (!world.isChunkLoaded(tx >> 4, tz >> 4)) return;
