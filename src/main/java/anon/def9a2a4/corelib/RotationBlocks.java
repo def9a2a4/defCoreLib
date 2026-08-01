@@ -2201,22 +2201,24 @@ final class RotationBlocks {
         }
     }
 
+    /**
+     * The mount-derived facing a skull machine acts along, from its block data + custom state: a wall head
+     * → its {@link org.bukkit.block.data.Directional} facing; a floating floor/ceiling head (no pitch) → UP
+     * for an "up" state (idle_y/spinning_y, screw points up), else DOWN (incl. the ceiling state). This is
+     * the single source of truth shared by the static path ({@link #storeFacingIfAbsent}/{@link #readFacing})
+     * and the mechanism driver's live-aim capture, so the two can't drift.
+     */
+    static BlockFace storedFacing(org.bukkit.block.data.BlockData bd,
+                                  @org.jetbrains.annotations.Nullable String state) {
+        if (bd instanceof org.bukkit.block.data.Directional dir) return dir.getFacing();
+        return (state != null && (state.startsWith("idle_y") || state.startsWith("spinning_y")))
+            ? BlockFace.UP : BlockFace.DOWN;
+    }
+
     private static void storeFacingIfAbsent(Block block, @org.jetbrains.annotations.Nullable String state) {
         if (!(block.getState() instanceof Skull skull)) return;
         if (skull.getPersistentDataContainer().has(DRILL_FACING_KEY)) return;
-
-        BlockFace facing;
-        if (block.getType() == Material.PLAYER_WALL_HEAD
-                && block.getBlockData() instanceof org.bukkit.block.data.Directional dir) {
-            facing = dir.getFacing();
-        } else {
-            // Floating/floor PLAYER_HEAD: a floor head carries no pitch, so the vertical mining direction
-            // comes from the placed state — an "up" state (idle_y/spinning_y, screw points up) mines the
-            // block ABOVE (floor-mounted drill); anything else, incl. the ceiling state, mines the block
-            // BELOW. Default DOWN keeps legacy floor heads and the ceiling placer unchanged.
-            facing = (state != null && (state.startsWith("idle_y") || state.startsWith("spinning_y")))
-                ? BlockFace.UP : BlockFace.DOWN;
-        }
+        BlockFace facing = storedFacing(block.getBlockData(), state);
         skull.getPersistentDataContainer().set(DRILL_FACING_KEY, PersistentDataType.STRING, facing.name());
         skull.update();
     }

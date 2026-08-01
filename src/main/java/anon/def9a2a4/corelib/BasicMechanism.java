@@ -147,21 +147,10 @@ final class BasicMechanism implements Mechanism {
             (int) Math.floor(pivot.getZ() + off.z));
     }
 
-    /**
-     * A block's current world facing: its local facing (wall head → {@code Directional.getFacing()},
-     * floor head → DOWN, matching the drill's facing-PDC convention) rotated by the mechanism's
-     * current transform. Matrix-based, so it is correct for any rotation axis (drawbridges too).
-     * Null when the mechanism is mid-rotation and the rotated facing isn't axis-aligned.
-     */
-    @Nullable BlockFace liveFacing(int index) {
-        MechanismBlockData mb = blocks.get(index);
-        BlockFace local = mb.blockData instanceof org.bukkit.block.data.Directional d
-            ? d.getFacing() : BlockFace.DOWN;
-        return liveDirection(local);
-    }
-
-    /** Any mechanism-local face rotated by the current transform (fan blow direction, hopper
-     *  mount, pipe chains). Null when mid-rotation leaves it off-axis. */
+    /** Any mechanism-local face rotated by the current transform (consumer aim, fan blow direction,
+     *  hopper mount, pipe chains). Null when mid-rotation leaves it off-axis. A consumer's true local
+     *  aim comes from the driver's {@code NodeSpec.actuationFacing} (which resolves a floating head's
+     *  up/down from state), not from a block's raw data. */
     @Nullable BlockFace liveDirection(BlockFace local) {
         Vector3f v = currentTransform.transformDirection(
             new Vector3f(local.getModX(), local.getModY(), local.getModZ()), new Vector3f());
@@ -173,20 +162,35 @@ final class BasicMechanism implements Mechanism {
     }
 
     /**
-     * Like {@link #liveFacing} but never null: rounds the block's rotated facing to its dominant
-     * cardinal axis (the largest |component|). Used by the mounted drill so it always has a target
-     * cell mid-sweep, when {@link #liveFacing} would return null for an off-axis (e.g. 45°) facing.
+     * Like {@link #liveDirection} but never null: rounds a mechanism-local face, rotated by the current
+     * transform, to its dominant cardinal axis (largest |component|). Used for the mounted drill's
+     * crack/particle direction mid-sweep, when {@link #liveDirection} returns null for an off-axis facing.
      */
-    BlockFace liveFacingApprox(int index) {
-        MechanismBlockData mb = blocks.get(index);
-        BlockFace local = mb.blockData instanceof org.bukkit.block.data.Directional d
-            ? d.getFacing() : BlockFace.DOWN;
+    BlockFace liveDirectionApprox(BlockFace local) {
         Vector3f v = currentTransform.transformDirection(
             new Vector3f(local.getModX(), local.getModY(), local.getModZ()), new Vector3f());
         float ax = Math.abs(v.x), ay = Math.abs(v.y), az = Math.abs(v.z);
         if (ax >= ay && ax >= az) return v.x >= 0 ? BlockFace.EAST : BlockFace.WEST;
         if (ay >= az) return v.y >= 0 ? BlockFace.UP : BlockFace.DOWN;
         return v.z >= 0 ? BlockFace.SOUTH : BlockFace.NORTH;
+    }
+
+    /**
+     * The world cell one step along {@code localAim} from a block:
+     * {@code floor(pivot + currentTransform·(localTranslation + localAim))} — the true rotated block
+     * centre stepped one unit along the rotated aim, then floored. Transforming the whole local target
+     * cell (rather than flooring the block cell and adding a re-rounded cardinal step) keeps a consumer's
+     * target on its real aim arc at any sweep angle; for an outward aim it can never floor onto the pivot
+     * cell. Same convention as {@link #liveCell} ({@code currentTransform} is a pure rotation).
+     */
+    org.joml.Vector3i liveTargetCell(int index, BlockFace localAim) {
+        Vector3f local = blocks.get(index).localTransform.getTranslation(new Vector3f())
+            .add(localAim.getModX(), localAim.getModY(), localAim.getModZ());
+        Vector3f off = currentTransform.transformPosition(local, new Vector3f());
+        return new org.joml.Vector3i(
+            (int) Math.floor(pivot.getX() + off.x),
+            (int) Math.floor(pivot.getY() + off.y),
+            (int) Math.floor(pivot.getZ() + off.z));
     }
 
     /**

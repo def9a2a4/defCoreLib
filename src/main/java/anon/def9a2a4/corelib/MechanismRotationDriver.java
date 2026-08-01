@@ -77,11 +77,14 @@ final class MechanismRotationDriver {
 
     /** One rotation part of a mechanism — immutable while assembled. {@code localFacing} follows
      *  the drill-PDC convention (wall head → its facing, floor head → DOWN); machines derive their
-     *  input side (behind = opposite) and the hopper its mount from it, in the LOCAL frame. */
+     *  input side (behind = opposite) and the hopper its mount from it, in the LOCAL frame.
+     *  {@code actuationFacing} is the machine's TRUE local aim (drill mines / placer places / fan blows
+     *  along it), resolving a floating head's up/down from its state — see {@code storedFacing} — where
+     *  {@code localFacing} would flatten it to DOWN. Transformed live for the world effect. */
     private record NodeSpec(int blockIndex, String typeId, RotationConfig.MechRotationMeta meta,
                             int cellX, int cellY, int cellZ,
                             RotationNetwork.Axis axis, boolean omni, @Nullable BlockFace omniExcludedFace,
-                            BlockFace localFacing,
+                            BlockFace localFacing, BlockFace actuationFacing,
                             RotationNetwork.SpinDirection dirPref,
                             int power, int actuateInterval) {}
 
@@ -182,8 +185,16 @@ final class MechanismRotationDriver {
                     ? (localFacing == BlockFace.DOWN ? BlockFace.DOWN : localFacing.getOppositeFace())
                     : null;
 
+            // True local aim: the machine's actual mine/place/blow direction, resolving a floating head's
+            // up/down from its state (where localFacing above flattens it to DOWN). A fan blows OUTWARD
+            // from its mount, so a floor fan (storedFacing DOWN) blows UP — mirrors RotationBlocks
+            // .blowDirection. Drill/placer use the stored aim as-is; other kinds don't read this.
+            BlockFace storedAim = RotationBlocks.storedFacing(mb.blockData, mb.customState());
+            BlockFace actuationFacing = "mech:fan".equals(mb.customTypeId) && storedAim == BlockFace.DOWN
+                ? BlockFace.UP : storedAim;
+
             specs.add(new NodeSpec(i, mb.customTypeId, meta, cx, cy, cz, axis, omni, omniExcluded,
-                localFacing,
+                localFacing, actuationFacing,
                 mb.spinReversed ? RotationNetwork.SpinDirection.CCW : RotationNetwork.SpinDirection.CW,
                 power(mb.customTypeId), actuateInterval(mb.customTypeId)));
         }
@@ -386,7 +397,8 @@ final class MechanismRotationDriver {
                         s.cellX() + behind.getModX(), s.cellY() + behind.getModY(),
                         s.cellZ() + behind.getModZ());
                     if (feed != null) RotationBlocks.pullOne(feed, inv);
-                    BlockFace facing = mech.liveFacing(s.blockIndex());
+                    // Place along the placer's TRUE aim, rotated live (cardinal-gated → non-null).
+                    BlockFace facing = mech.liveDirection(s.actuationFacing());
                     if (facing == null) continue;
                     Vector3i cell = mech.liveCell(s.blockIndex());
                     int tx = cell.x + facing.getModX(), ty = cell.y + facing.getModY(),
@@ -402,11 +414,9 @@ final class MechanismRotationDriver {
                     sieveRecipes, org.bukkit.Sound.ITEM_BRUSH_BRUSHING_GRAVEL, config.sieveMaxBatch);
                 case "mech:fan" -> {
                     if (!powered || !cardinal) continue;
-                    // Blow direction mirrors the static blowDirection: floor fan blows UP, wall
-                    // fan blows its facing — rotated into the world by the live transform.
-                    BlockFace blowLocal = s.localFacing() == BlockFace.DOWN
-                        ? BlockFace.UP : s.localFacing();
-                    BlockFace blow = mech.liveDirection(blowLocal);
+                    // Blow along the fan's TRUE aim (floor→UP, wall→its facing; already resolved into
+                    // actuationFacing), rotated into the world by the live transform.
+                    BlockFace blow = mech.liveDirection(s.actuationFacing());
                     if (blow == null) continue;
                     Vector3i cell = mech.liveCell(s.blockIndex());
                     if (!world.isChunkLoaded(cell.x >> 4, cell.z >> 4)) continue;
@@ -492,21 +502,18 @@ final class MechanismRotationDriver {
             track.state = null;
             return;
         }
-        // Unlike other consumers, the drill mines through the whole sweep at any angle: staged
-        // breaking is already timed and per-cell (progress accrues while liveCell stays put, resets
-        // on the next cell), so a slow rotator bores each arc cell and a fast one only grazes.
-        BlockFace facing = mech.liveFacing(s.blockIndex());
-        if (facing == null) facing = mech.liveFacingApprox(s.blockIndex()); // mid-turn: dominant axis
-        Vector3i cell = mech.liveCell(s.blockIndex());
-        int tx = cell.x + facing.getModX(), ty = cell.y + facing.getModY(), tz = cell.z + facing.getModZ();
+        // The drill mines through the whole sweep at any angle along its TRUE aim, rotated by the
+        // mechanism: liveTargetCell floors the rotated (drill centre + aim) as one, so the target tracks
+        // the real aim arc and — for an outward aim — never lands on the pivot/anchor cell (so no guard
+        // is needed). Staged breaking is timed and per-cell: progress accrues while the target cell holds
+        // and resets on the next, so a slow rotator bores each arc cell and a fast one only grazes.
+        Vector3i cell = mech.liveTargetCell(s.blockIndex(), s.actuationFacing());
+        int tx = cell.x, ty = cell.y, tz = cell.z;
         if (!world.isChunkLoaded(tx >> 4, tz >> 4)) return;
-        // Never chew the mechanism's own anchor. The rotator head is excluded from the swung set, so it
-        // stays a solid world block at the pivot inside the swept arc; boring it mid-swing would delete
-        // the controller and strand the glue-rebind hook on a dead anchor. (Contraption cells are aired
-        // out at assembly, so they already no-op in drillEffect — the anchor is the one live exception.)
-        Location p = mech.pivot();
-        if (tx == (int) Math.floor(p.getX()) && ty == (int) Math.floor(p.getY())
-                && tz == (int) Math.floor(p.getZ())) return;
+        // Cosmetic only — the crack rides `target` (correct cell); this just orients the particle puff and
+        // is computed independently of the target cell, so mid-sweep it may not point exactly at the drill.
+        BlockFace facing = mech.liveDirection(s.actuationFacing());
+        if (facing == null) facing = mech.liveDirectionApprox(s.actuationFacing());
         Block target = world.getBlockAt(tx, ty, tz);
 
         // The mechanism moved off the previous target: reset staged progress there.
