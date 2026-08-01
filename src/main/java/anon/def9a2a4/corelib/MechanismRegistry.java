@@ -305,6 +305,15 @@ public class MechanismRegistry {
             // keeps and reorients its glued region on landing. Read from the live skull PDC BEFORE
             // air-out; null for non-anchor blocks. Only custom head blocks carry a skull PDC.
             if (chb != null) mbd.glueOffsets = new BlockAnchor(block, () -> true).readOffsets();
+            // Snapshot the whole tile PDC (BEFORE air-out) so per-block config — a rotator's angle, a
+            // throttle's levels, a dynamo's mode — survives the move; re-applied (filtered) on landing.
+            if (block.getState() instanceof org.bukkit.block.TileState tile) {
+                try {
+                    mbd.configPdc = tile.getPersistentDataContainer().serializeToBytes();
+                } catch (java.io.IOException ignored) {
+                    // Unserializable PDC: skip config carry-over (block still moves + restores normally).
+                }
+            }
             blockData.add(mbd);
         }
 

@@ -2071,7 +2071,7 @@ final class RotationBlocks {
         BlockFace facing = readFacing(drill);
         if (facing == null) return;
         DrillOutcome out = drillEffect(registry, drill.getRelative(facing), facing,
-            drillProgress.get(key), key.hashCode(), drillBreakStages, drillBlacklist);
+            drillProgress.get(key), key.hashCode(), drillBreakStages, drillBlacklist, false); // static: normal speed
         if (out.next() == null) drillProgress.remove(key);
         else drillProgress.put(key, out.next());
         if (out.broke() && MachineActedEvent.hasListeners()) {
@@ -2092,7 +2092,8 @@ final class RotationBlocks {
      */
     static DrillOutcome drillEffect(CustomBlockRegistry registry, Block target, BlockFace facing,
                                     @org.jetbrains.annotations.Nullable DrillState prev,
-                                    int sourceId, int breakStages, Set<Material> blacklist) {
+                                    int sourceId, int breakStages, Set<Material> blacklist,
+                                    boolean fastBore) {
         Material targetMat = target.getType();
 
         if (targetMat.isAir()) {
@@ -2119,6 +2120,7 @@ final class RotationBlocks {
         }
 
         int stages = drillStagesFor(target);
+        if (fastBore) stages = Math.max(1, (stages + 1) / 2);   // rotator-mounted drill bores at 2× speed
         int progress = (prev != null && prev.targetMaterial() == targetMat) ? prev.progress() + 1 : 1;
 
         if (progress >= stages) {

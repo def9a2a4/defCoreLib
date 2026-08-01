@@ -2547,6 +2547,42 @@ public class CustomBlockRegistry {
         saveInventoryToPDC(block.getLocation(), inv);                     // persist to PDC now
     }
 
+    // The one orientation-derived per-block config key: a drill's aim rotates with the block, and it
+    // self-heals from the landed block data (RotationBlocks.storeFacingIfAbsent, keyed "if absent"), so
+    // restoring the captured pre-rotation value would wrongly pin a stale facing. Kept in sync by name.
+    private static final NamespacedKey DRILL_FACING_KEY = new NamespacedKey("mech", "drill_facing");
+
+    /**
+     * Re-apply per-block CONFIG captured at assembly ({@link MechanismBlockData#configPdc}) onto a
+     * landed block, so a moved rotator keeps its angle, a throttle its levels, a dynamo its mode, etc.
+     * Call AFTER the landing path has re-asserted the authoritative keys ({@code markBlock}/
+     * {@code applyConfig}/{@code restoreBlock}/{@code restoreStorageSnapshot}): every engine-owned key is
+     * in the {@code corelib} namespace (identity, state, inventory, glue, blades, bare-marker) and is
+     * dropped here so the freshly-restored (rotated) values win; {@code mech:drill_facing} is also
+     * dropped (self-heals). Everything left — {@code mech:rotator_target}/{@code throttle_levels}/
+     * {@code chain_out}/{@code dynamo_mode}/{@code dynamo_scaling}/{@code spin_dir}/{@code pump_reverse}/
+     * {@code fuel_ticks} … — is orientation-independent and carried across verbatim. No-op for a null
+     * snapshot or a non-TileState block (e.g. bare-first casing/gearbox/chassis).
+     */
+    void restoreConfigPdc(Block block, byte @org.jspecify.annotations.Nullable [] configPdc) {
+        if (configPdc == null) return;
+        if (!(block.getState() instanceof org.bukkit.block.TileState tile)) return;
+        org.bukkit.persistence.PersistentDataContainer pdc = tile.getPersistentDataContainer();
+        try {
+            org.bukkit.persistence.PersistentDataContainer scratch =
+                pdc.getAdapterContext().newPersistentDataContainer();
+            scratch.readFromBytes(configPdc, true);
+            for (NamespacedKey k : new java.util.HashSet<>(scratch.getKeys())) {
+                if (k.getNamespace().equals("corelib") || k.equals(DRILL_FACING_KEY)) scratch.remove(k);
+            }
+            if (scratch.getKeys().isEmpty()) return;
+            scratch.copyTo(pdc, true);   // merge config keys; leaves the tile's restored keys untouched
+            tile.update();
+        } catch (java.io.IOException ignored) {
+            // Corrupt/unreadable snapshot: leave the freshly-restored block as-is.
+        }
+    }
+
     // ──────────────────────────────────────────────────────────────────────
     // Internal tracking records
     // ──────────────────────────────────────────────────────────────────────

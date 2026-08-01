@@ -41,7 +41,7 @@ import java.util.*;
  */
 final class RotationRotator implements Listener {
 
-    private static final String ROTATOR_ID = "mech:rotator";
+    static final String ROTATOR_ID = "mech:rotator";  // package-visible: the drill 2× boost keys on it
 
     // Tuning (live-tunable): per-tick swing speed = clamp(K * surplus / blockCount, MIN, MAX).
     private static final float SPEED_K = 8f;

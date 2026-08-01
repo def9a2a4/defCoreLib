@@ -13,9 +13,12 @@ import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.Orientable;
 import org.bukkit.block.data.Rotatable;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockExplodeEvent;
+import org.bukkit.event.block.BlockPistonExtendEvent;
+import org.bukkit.event.block.BlockPistonRetractEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -725,24 +728,40 @@ final class ChainHoistManager implements Listener {
         if (glueManager.hasGlue(a)) a.clearOffsets();
     }
 
-    @EventHandler(ignoreCancelled = true)
+    // All four run at MONITOR (not the default NORMAL): a protection plugin (WorldGuard, etc.) cancels
+    // the break / prunes the explosion blockList at HIGH/HIGHEST, and CoreLibPlugin.onBlockPlace registers
+    // a decorative chain shaft as a bare block at HIGH — both AFTER us at NORMAL, which would wipe glue for
+    // a break that never happened or a shaft that isn't rope. MONITOR runs last, so isOwnRope/blockList see
+    // the final verdict. We only touch our own PDC, never the event or world, so MONITOR is appropriate.
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onChainBreak(BlockBreakEvent e) {
         if (isOwnRope(e.getBlock(), registry)) invalidateGlueForChain(e.getBlock());
     }
 
-    @EventHandler(ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onChainPlace(BlockPlaceEvent e) {
         if (isOwnRope(e.getBlock(), registry)) invalidateGlueForChain(e.getBlock());
     }
 
-    @EventHandler(ignoreCancelled = true)
-    public void onEntityExplode(EntityExplodeEvent e) { invalidateExplodedChains(e.blockList()); }
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onEntityExplode(EntityExplodeEvent e) { invalidateMovedChains(e.blockList()); }
 
-    @EventHandler(ignoreCancelled = true)
-    public void onBlockExplode(BlockExplodeEvent e) { invalidateExplodedChains(e.blockList()); }
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onBlockExplode(BlockExplodeEvent e) { invalidateMovedChains(e.blockList()); }
 
-    /** Each own-rope block in the blast invalidates its owning hoist's glue, once per hoist. */
-    private void invalidateExplodedChains(List<Block> blocks) {
+    // Vanilla chain has PushReaction NORMAL, so a piston can shove a rope link out of (or a block into)
+    // the column, shifting the seed — and CoreLibPlugin.handlePiston only cancels for custom heads, letting
+    // rope through untouched. getBlocks() lists the moved blocks (a disturbed column always includes a rope
+    // link); ignoreCancelled means a push cancelled by handlePiston (HIGH) never reaches us, so the chain
+    // that didn't move keeps its glue.
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onPistonExtend(BlockPistonExtendEvent e) { invalidateMovedChains(e.getBlocks()); }
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onPistonRetract(BlockPistonRetractEvent e) { invalidateMovedChains(e.getBlocks()); }
+
+    /** Each own-rope block in the list invalidates its owning hoist's glue, once per hoist. */
+    private void invalidateMovedChains(List<Block> blocks) {
         Set<CustomBlockRegistry.LocationKey> done = new HashSet<>();
         for (Block b : blocks) {
             if (!isOwnRope(b, registry)) continue;

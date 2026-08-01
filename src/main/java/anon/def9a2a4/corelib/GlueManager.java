@@ -69,7 +69,13 @@ final class GlueManager {
     int maxSize() { return maxSize; }
 
     boolean hasGlue(Anchor a) {
-        int[] o = a.readOffsets();
+        return isValidOffsets(a.readOffsets());
+    }
+
+    /** Whether a raw offset array is well-formed glue (non-null, whole x,y,z triples). Static so callers
+     *  without a GlueManager instance — e.g. BasicMechanism's carried-hoist chain-break guard — apply the
+     *  exact same predicate as {@link #hasGlue}. */
+    static boolean isValidOffsets(int @org.jspecify.annotations.Nullable [] o) {
         return o != null && o.length >= 3 && o.length % 3 == 0;
     }
 

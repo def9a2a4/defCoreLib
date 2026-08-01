@@ -48,6 +48,14 @@ public final class MechanismBlockData {
     // unless the block is a glue anchor with a brushed region.
     int @Nullable [] glueOffsets;
 
+    // Full tile PDC captured at assembly (serialized bytes; set post-construction like glueOffsets),
+    // so per-block CONFIG survives a move — e.g. a rotator's selected angle (mech:rotator_target), a
+    // throttle's levels, a dynamo's mode. Re-applied on landing by CustomBlockRegistry.restoreConfigPdc,
+    // which keeps only the orientation-independent config keys (drops the engine-owned `corelib` keys
+    // the landing path re-asserts, and the self-healing mech:drill_facing). Null for bare-first blocks
+    // (casing/gearbox/chassis carry no tile PDC) and any block whose state isn't a TileState.
+    byte @Nullable [] configPdc;
+
     // Mutable — updated by BasicMechanism.setBlockState()
     // Nullable but not annotated: @Nullable cannot be applied to qualified inner type names
     String customState;

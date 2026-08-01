@@ -567,13 +567,17 @@ final class BasicMechanism implements Mechanism {
         // A carried hoist that landed with a short chain (a link solid-won / went off-world above): its
         // platform seed is derived from the live chain depth, so a shorter chain shifts the seed and the
         // stored glue now mis-references. Wipe that hoist's glue — same "chain broke → invalidate" rule as
-        // ChainHoistManager's reactive guard. The chain hangs directly below the head at the same (x,z).
-        if (droppedChainCols != null) {
+        // ChainHoistManager's reactive guard. The chain hangs directly below the head at the same (x,z) —
+        // true only for an upright landing (a horizontal-axis rotation would map the column sideways, so
+        // the (x,z) match would silently miss). GlueManager.expandNested only ever carries a hoist upright,
+        // so this can't be reached non-upright today; the guard co-locates that invariant with the code
+        // that depends on it, rather than trusting a rule enforced in another file.
+        if (droppedChainCols != null && upright) {
             for (Block b : placed) {
                 if (ChainHoistManager.isHoist(b, registry)
                         && droppedChainCols.contains(colKey(b.getX(), b.getZ()))) {
                     HoistAnchor a = new HoistAnchor(b, registry, () -> true);
-                    if (a.readOffsets() != null) a.clearOffsets();
+                    if (GlueManager.isValidOffsets(a.readOffsets())) a.clearOffsets();
                 }
             }
         }
@@ -692,6 +696,7 @@ final class BasicMechanism implements Mechanism {
                 registry.applyConfig(target, type, landedState, power);
                 registry.restoreBlock(target, type, landedState);
                 if (mb.storage != null) registry.restoreStorageSnapshot(target, mb.storage);
+                registry.restoreConfigPdc(target, mb.configPdc);   // usually null for a bare block
             } else if (type != null) {
                 // The vanilla data was rotated above; re-derive the custom state for the landed
                 // orientation so it doesn't snap to an impossible state (and rejoins the network on the
@@ -704,6 +709,9 @@ final class BasicMechanism implements Mechanism {
                 // Write captured storage back into the landed skull, keeping the shared cache + PDC
                 // consistent (custom-storage blocks don't hit the vanilla-Container branch below).
                 if (mb.storage != null) registry.restoreStorageSnapshot(target, mb.storage);
+                // Carry over per-block config (rotator angle, throttle levels, dynamo mode, …) — must
+                // run AFTER the steps above, which own the identity/state/storage keys it skips.
+                registry.restoreConfigPdc(target, mb.configPdc);
             }
         } else if (mb.storage != null && target.getState() instanceof Container c) {
             c.getSnapshotInventory().setContents(mb.storage.getContents());
@@ -714,6 +722,10 @@ final class BasicMechanism implements Mechanism {
     /** Record the (x,z) column of a dropped CHAIN link for the carried-hoist chain-break guard; lazily
      *  creates the set and returns it (unchanged for a non-chain block). */
     private static Set<Long> noteIfChain(@Nullable Set<Long> cols, MechanismBlockData mb, Location loc) {
+        // A ghost is a hoist's own emerging/reeling link — a stroke artifact, not a real chain that
+        // shortened. (Today the hoist's protected head is never in `placed` so it couldn't match anyway;
+        // this makes the exclusion explicit rather than incidental.)
+        if (mb.ghost) return cols;
         if (!ChainHoistManager.isChainMaterial(mb.blockData.getMaterial())) return cols;
         if (cols == null) cols = new HashSet<>();
         cols.add(colKey(loc.getBlockX(), loc.getBlockZ()));

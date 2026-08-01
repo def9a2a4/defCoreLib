@@ -352,7 +352,7 @@ final class MechanismRotationDriver {
             boolean powered = result.powered()[k];
 
             switch (s.typeId()) {
-                case "mech:drill" -> tickDrill(mech, st, s, world, powered, cardinal);
+                case "mech:drill" -> tickDrill(mech, st, s, world, powered);
                 case "mech:suction_hopper" -> {
                     // No cardinal gate: the pull is positional and harmless mid-turn.
                     if (!powered) continue;
@@ -481,7 +481,7 @@ final class MechanismRotationDriver {
     }
 
     private void tickDrill(BasicMechanism mech, MechState st, NodeSpec s, World world,
-                           boolean powered, boolean cardinal) {
+                           boolean powered) {
         DrillTrack track = st.drills.computeIfAbsent(s.blockIndex(), i -> new DrillTrack());
         int sourceId = sourceId(mech, s.blockIndex());
 
@@ -500,6 +500,13 @@ final class MechanismRotationDriver {
         Vector3i cell = mech.liveCell(s.blockIndex());
         int tx = cell.x + facing.getModX(), ty = cell.y + facing.getModY(), tz = cell.z + facing.getModZ();
         if (!world.isChunkLoaded(tx >> 4, tz >> 4)) return;
+        // Never chew the mechanism's own anchor. The rotator head is excluded from the swung set, so it
+        // stays a solid world block at the pivot inside the swept arc; boring it mid-swing would delete
+        // the controller and strand the glue-rebind hook on a dead anchor. (Contraption cells are aired
+        // out at assembly, so they already no-op in drillEffect — the anchor is the one live exception.)
+        Location p = mech.pivot();
+        if (tx == (int) Math.floor(p.getX()) && ty == (int) Math.floor(p.getY())
+                && tz == (int) Math.floor(p.getZ())) return;
         Block target = world.getBlockAt(tx, ty, tz);
 
         // The mechanism moved off the previous target: reset staged progress there.
@@ -510,8 +517,11 @@ final class MechanismRotationDriver {
         }
         track.lastTarget = targetLoc;
 
+        // A rotator only grazes each cell briefly as it sweeps; 2× break speed makes mounted drilling
+        // actually effective. Only the rotator is boosted — other movers carry drills at rest.
+        boolean fastBore = RotationRotator.ROTATOR_ID.equals(mech.type());
         RotationBlocks.DrillOutcome out = RotationBlocks.drillEffect(registry, target, facing,
-            track.state, sourceId, config.drillBreakStages, config.drillBlacklist);
+            track.state, sourceId, config.drillBreakStages, config.drillBlacklist, fastBore);
         track.state = out.next();
     }
 
