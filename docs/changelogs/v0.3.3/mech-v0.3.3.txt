@@ -1,22 +1,35 @@
-mech v0.3.3
+# mech v0.3.3
 
-NEW BLOCK: RATCHET
-- A one-way rotation valve. It transmits rotation only while the
-  shaft spins its allowed direction (CW/CCW); turned the other way it
-  freewheels -- fully disconnects, so the input keeps spinning while
-  everything past it goes dead. No jam, no stall.
-- Wrench (right-click) to flip the allowed direction; sneak-right-click
-  to inspect (shows the allowed direction and whether it is currently
-  freewheeling).
-- Dropped onto a line that is already turning, it adopts that
-  direction automatically, so it engages on placement and only
-  freewheels once the line is later reversed.
-- The allowed direction is stored in the block itself, so it survives
-  being carried by a mechanism (minecart, drawbridge, glue). While
-  riding a moving mechanism it acts as a plain shaft (no gating), like
-  the clutch and reverser.
-- Craft: a bearing core with iron pawls above and below, in a copper
-  frame (all-mechanical, no redstone).
+Two new frame blocks — the **Gearbox** and the **Chassis** — plus the biggest glue/contraption upgrade yet: mechanisms now carry glued machines as one rigid body, a rotator can hang from the ceiling, and a rotation-network server hang under redstone pulse storms is fixed.
 
-ADVANCEMENTS
-- New node: craft milestone for the ratchet ("One-Way Street").
+## New blocks
+
+- **Gearbox** (all 12 woods) — an omnidirectional power hub. On each of its six faces it couples to an aligned shaft, gear, or another gearbox and passes spin **straight through without reversing** — split one input into several directions at once, or bridge a shaft around a corner without the counter-rotation a gear introduces. It's a frame block (see below): auto-glues only to same-wood frame blocks, brush-pin it to anything else. **Craft:** a Mechanical Casing in the centre, gears on three sides, a shaft on top — the casing's wood picks the variant.
+- **Chassis** (all 12 woods) — a "super-casing" with slime reach: it grabs every adjacent **movable** block except honey, exactly like a slime block, so a moving contraption drags its whole payload with no glue brush — while still joining a same-wood casing frame. **Craft:** ring a Mechanical Casing with iron nuggets — the casing's wood picks the variant.
+- **Ratchet** — a one-way rotation valve. It transmits rotation only while the shaft spins its **allowed** direction (CW/CCW); turned the other way it **freewheels** — fully disconnects, so the input keeps spinning while everything past it goes dead (no jam, no stall). **Wrench** to flip the allowed direction, **sneak-wrench** to inspect it (allowed direction + whether it's currently freewheeling). Dropped onto a line that's already turning, it adopts that direction, so it engages on placement and only freewheels once the line is reversed. The direction is stored in the block, so it survives being carried by a mechanism, and it acts as a plain shaft while riding one. **Craft:** a bearing over a reverser over a gear, iron pawls flanking the reverser, copper in the corners (all-mechanical, no redstone).
+
+## Features
+
+- **Frame blocks are wood-keyed** — casing, gearbox, and chassis are now one "frame" family: a frame block auto-glues only to adjacent frame blocks of the **same wood** (oak casing ↔ oak gearbox ↔ oak chassis, never oak ↔ birch). A plain block no longer auto-drags an adjacent frame — a frame rides only when a machine carries it directly, when it's bonded to a same-wood frame that rides, when a chassis or slime grabs it, or when it's brush-pinned.
+- **Brush-pinning frames** — the glue brush now **pins** a frame block: the pin is stored and rides rigidly, and it *overrides* the wood gate, so you can pin two different woods together, or pin a frame to a plain block.
+- **Movers carry nested machines** — piston, rotator, drawbridge, minecart, and chain hoist now carry glued **anchors**. Glue a chain hoist onto a rotator (or piston, cart, …) and it comes along: head, chain column, and hanging platform swing as one rigid body and reorient correctly on landing.
+- **Ceiling rotator** — a rotator mounted under a block now hangs as a ceiling hinge, swinging the block above it like a hatch (Y axis) — the floor door, upside down.
+- **Mounted drill mines mid-swing** — a drill carried by a rotator now bores through the whole arc at any angle, not only at the 90° stops.
+- **Steadier mover speeds** — the chain hoist and piston floor at about 0.5 block/s, and the rotator runs 5–90°/s.
+
+## Fixes
+
+- **Server hang under pulse storms** — the plugin's own block writes no longer re-trigger their own physics/recalc feedback loop, and reactive-neighbor and custom-rail updates now coalesce to a single recompute per network/rail per tick under a comparator or observer pulse storm. A throwing reactive handler is isolated and logged once, never fatal to the tick.
+- **Carried-hoist glue integrity** — a carried hoist that would be tipped off its vertical column (a horizontal-axis drawbridge) or grabbed mid-stroke is now **refused** rather than corrupted, and a hoist's stored platform glue is cleared whenever its chain length changes out of band (a link mined, placed, or blown up, or the hoist landing with a shortened chain), so its offsets can never mis-reference.
+
+## Compatibility
+
+- **Mixed-wood casing frames** built before 0.3.3 no longer auto-glue on their own. Rebuild a frame in a single wood, or brush-pin the mixed joints.
+
+## Advancements
+
+- New craft nodes: the **Ratchet** ("One-Way Street") and the **Gearbox** ("Every Which Way"). The Chassis reuses the existing Mechanical Casing craft node.
+
+## Internal
+
+- Rotation-network reactive recalcs coalesce through a per-tick flush drain, and the read-only lock/ratchet-direction predicates are memoized per recalc — collapsing a comparator storm from many full O(component) rebuilds to one.
