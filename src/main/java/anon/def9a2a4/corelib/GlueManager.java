@@ -317,7 +317,7 @@ final class GlueManager {
      * Authoring: add one block. Connectivity- and cap-checked; the derived closure counts as
      * connectivity (a same-wood frame bridges authored glue — it rides at resolve, so brushing a block
      * on its far side is connected). NB since plain/anchor cells no longer auto-attract frames, a frame
-     * frame bridges connectivity only once ONE of its blocks is glued adjacent to the anchor (or is the
+     * bridges connectivity only once ONE of its blocks is glued adjacent to the anchor (or is the
      * mount seed). On a horizontal-axis (drawbridge) anchor, orientation-bearing blocks are rejected —
      * {@code BlockRotation} only rotates about Y — EXCEPT frame blocks, which re-pin their fixed
      * base_block_data on landing and so ride any axis.

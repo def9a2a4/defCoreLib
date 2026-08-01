@@ -514,11 +514,13 @@ public class RotationNetwork {
             boolean jammed = false;
             boolean chainLoop = false;  // set when a member pulley transmits on a closed loop
 
-            // BFS with direction propagation (tentative root = CW)
-            Map<CustomBlockRegistry.LocationKey, SpinDirection> dirMap = new HashMap<>();
+            // ── Pass A: membership flood across ALL edges (gearboxes included) so supply/demand pool
+            // across the whole component. Spin direction is resolved separately in pass B, because a
+            // gearbox is a DIRECTION FIREWALL — it carries power but couples no CW/CCW across itself.
             Queue<CustomBlockRegistry.LocationKey> queue = new ArrayDeque<>();
+            Set<CustomBlockRegistry.LocationKey> enqueued = new HashSet<>();
             queue.add(start);
-            dirMap.put(start, SpinDirection.CW);
+            enqueued.add(start);
 
             while (!queue.isEmpty() && members.size() < maxNetworkSize) {
                 CustomBlockRegistry.LocationKey loc = queue.poll();
@@ -542,25 +544,16 @@ public class RotationNetwork {
                     }
                 }
 
-                SpinDirection myDir = dirMap.get(loc);
                 for (Connection conn : getConnections(node)) {
-                    SpinDirection neighborDir = conn.reverses() ? myDir.reversed() : myDir;
                     CustomBlockRegistry.LocationKey nk = conn.neighbor();
-                    if (nodeNetworkId.containsKey(nk)) {
-                        // Cycle detection: direction contradiction → jammed
-                        SpinDirection existing = dirMap.get(nk);
-                        if (existing != null && existing != neighborDir) {
-                            jammed = true;
-                        }
-                    } else if (!dirMap.containsKey(nk)) {
-                        dirMap.put(nk, neighborDir);
-                        queue.add(nk);
-                    }
+                    if (!nodeNetworkId.containsKey(nk) && enqueued.add(nk)) queue.add(nk);
                 }
             }
 
-            // Scan boundary for passive sources + derive their directions
+            // Scan boundary for passive sources (windmills) + record each one's attach member. Their
+            // spin direction is assigned per direction-domain in pass B (a windmill rides its attach).
             Set<CustomBlockRegistry.LocationKey> passiveSources = new HashSet<>();
+            Map<CustomBlockRegistry.LocationKey, CustomBlockRegistry.LocationKey> passiveAttach = new HashMap<>();
             if (!passiveSourceTypes.isEmpty()) {
                 Set<CustomBlockRegistry.LocationKey> countedSources = new HashSet<>();
                 for (CustomBlockRegistry.LocationKey loc : members) {
@@ -584,12 +577,8 @@ public class RotationNetwork {
                                     // valid one. Counts each windmill's power exactly once.
                                     if (!countedSources.add(neighbor)) continue;
                                     supply += passivePower;
-                                    // Along-axis edge = preserves direction
-                                    SpinDirection adjDir = dirMap.get(loc);
-                                    if (adjDir != null) {
-                                        passiveSources.add(neighbor);
-                                        dirMap.put(neighbor, adjDir);
-                                    }
+                                    passiveSources.add(neighbor);
+                                    passiveAttach.put(neighbor, loc);
                                 }
                             }
                         }
@@ -597,50 +586,101 @@ public class RotationNetwork {
                 }
             }
 
-            // Post-pass: pin the absolute spin frame to a source so it's deterministic and stable
-            // across a reverser toggle / reload — otherwise the arbitrary CW-seeded BFS root decides
-            // which side "stays", and toggling a reverser can flip the source instead of the target.
-            // EVERY source anchors (desired = its stored PDC direction, else CW); a source with an
-            // explicit stored direction is preferred as the anchor. Conflict/jam detection stays over
-            // stored-direction sources only, so two flexible (unwrenched) sources on opposite sides of
-            // a reverser don't false-jam.
-            List<Map.Entry<CustomBlockRegistry.LocationKey, SpinDirection>> allSources = new ArrayList<>();
-            List<Map.Entry<CustomBlockRegistry.LocationKey, SpinDirection>> storedSources = new ArrayList<>();
-            for (CustomBlockRegistry.LocationKey loc : members) {
-                RotationNode node = nodes.get(loc);
-                if (node == null || node.role() != NodeRole.SOURCE) continue;
-                SpinDirection stored = readStoredDirection(loc);
-                allSources.add(Map.entry(loc, stored != null ? stored : SpinDirection.CW));
-                if (stored != null) storedSources.add(Map.entry(loc, stored));
-            }
-            for (CustomBlockRegistry.LocationKey ps : passiveSources) {
-                SpinDirection stored = readStoredDirection(ps);
-                allSources.add(Map.entry(ps, stored != null ? stored : SpinDirection.CW));
-                if (stored != null) storedSources.add(Map.entry(ps, stored));
-            }
+            // ── Pass B: resolve spin direction per gearbox-free DOMAIN. Membership (hence power) already
+            // spans gearboxes; here each maximal gearbox-free region floods on its own, gets its own
+            // source anchor, and its own jam verdict — so two sources on perpendicular axes feeding one
+            // gearbox never compare frame-less CW/CCW tokens across it (the false-jam this fixes). Each
+            // domain is seeded from its lowest LocationKey member, so a powered-but-sourceless domain
+            // (fed only through a gearbox) still resolves to a STABLE direction across recalcs.
+            Map<CustomBlockRegistry.LocationKey, SpinDirection> dirMap = new HashMap<>();
+            Comparator<Map.Entry<CustomBlockRegistry.LocationKey, SpinDirection>> byKey = Comparator
+                    .comparing((Map.Entry<CustomBlockRegistry.LocationKey, SpinDirection> e) -> e.getKey().worldId())
+                    .thenComparingInt(e -> e.getKey().x())
+                    .thenComparingInt(e -> e.getKey().y())
+                    .thenComparingInt(e -> e.getKey().z());
+            List<CustomBlockRegistry.LocationKey> sortedMembers = new ArrayList<>(members);
+            sortedMembers.sort(Comparator
+                    .comparing(CustomBlockRegistry.LocationKey::worldId)
+                    .thenComparingInt(CustomBlockRegistry.LocationKey::x)
+                    .thenComparingInt(CustomBlockRegistry.LocationKey::y)
+                    .thenComparingInt(CustomBlockRegistry.LocationKey::z));
 
-            if (!allSources.isEmpty()) {
-                // Deterministic anchor: lowest LocationKey, preferring a stored-direction source.
-                Comparator<Map.Entry<CustomBlockRegistry.LocationKey, SpinDirection>> byKey = Comparator
-                        .comparing((Map.Entry<CustomBlockRegistry.LocationKey, SpinDirection> e) -> e.getKey().worldId())
-                        .thenComparingInt(e -> e.getKey().x())
-                        .thenComparingInt(e -> e.getKey().y())
-                        .thenComparingInt(e -> e.getKey().z());
-                var anchor = (storedSources.isEmpty() ? allSources : storedSources)
-                        .stream().min(byKey).orElseThrow();
-                SpinDirection bfsDir = dirMap.getOrDefault(anchor.getKey(), SpinDirection.CW);
-                if (bfsDir != anchor.getValue()) {
-                    dirMap.replaceAll((k, v) -> v.reversed());
-                }
+            for (CustomBlockRegistry.LocationKey root : sortedMembers) {
+                if (dirMap.containsKey(root)) continue;
 
-                // Jam only when two EXPLICITLY-directed sources disagree after anchoring.
-                for (var entry : storedSources) {
-                    SpinDirection computed = dirMap.getOrDefault(entry.getKey(), SpinDirection.CW);
-                    if (computed != entry.getValue()) {
-                        jammed = true;
-                        break;
+                // Flood one domain over NON-gearbox edges only (the firewall boundary).
+                List<CustomBlockRegistry.LocationKey> domain = new ArrayList<>();
+                boolean domainJam = false;
+                Queue<CustomBlockRegistry.LocationKey> dq = new ArrayDeque<>();
+                dirMap.put(root, SpinDirection.CW);
+                dq.add(root);
+                domain.add(root);
+                while (!dq.isEmpty()) {
+                    CustomBlockRegistry.LocationKey loc = dq.poll();
+                    RotationNode node = nodes.get(loc);
+                    if (node == null) continue;
+                    SpinDirection myDir = dirMap.get(loc);
+                    for (Connection conn : getConnections(node)) {
+                        CustomBlockRegistry.LocationKey nk = conn.neighbor();
+                        if (!members.contains(nk)) continue;
+                        RotationNode other = nodes.get(nk);
+                        if (node.gearbox() || (other != null && other.gearbox())) continue;  // firewall
+                        SpinDirection neighborDir = conn.reverses() ? myDir.reversed() : myDir;
+                        SpinDirection existing = dirMap.get(nk);
+                        if (existing != null) {
+                            if (existing != neighborDir) domainJam = true;   // in-domain cycle contradiction
+                        } else {
+                            dirMap.put(nk, neighborDir);
+                            dq.add(nk);
+                            domain.add(nk);
+                        }
                     }
                 }
+
+                // Windmills ride their attach's direction (along-axis, same domain).
+                for (var e : passiveAttach.entrySet()) {
+                    if (domain.contains(e.getValue())) {
+                        dirMap.put(e.getKey(), dirMap.get(e.getValue()));
+                        domain.add(e.getKey());
+                    }
+                }
+
+                // Per-domain anchor: pin the frame to the lowest-key source (a stored PDC direction is
+                // preferred) so display/ratchet direction is deterministic and stable across a reverser
+                // toggle / reload; a SECOND stored-direction source in the SAME domain that still
+                // disagrees is a real jam. (Cross-gearbox source pairs are in different domains and are
+                // never compared — that is the point.)
+                List<Map.Entry<CustomBlockRegistry.LocationKey, SpinDirection>> allSources = new ArrayList<>();
+                List<Map.Entry<CustomBlockRegistry.LocationKey, SpinDirection>> storedSources = new ArrayList<>();
+                for (CustomBlockRegistry.LocationKey loc : domain) {
+                    if (!passiveAttach.containsKey(loc)) {
+                        RotationNode node = nodes.get(loc);
+                        if (node == null || node.role() != NodeRole.SOURCE) continue;
+                    }
+                    SpinDirection stored = readStoredDirection(loc);
+                    allSources.add(Map.entry(loc, stored != null ? stored : SpinDirection.CW));
+                    if (stored != null) storedSources.add(Map.entry(loc, stored));
+                }
+
+                if (!allSources.isEmpty()) {
+                    var anchor = (storedSources.isEmpty() ? allSources : storedSources)
+                            .stream().min(byKey).orElseThrow();
+                    SpinDirection bfsDir = dirMap.getOrDefault(anchor.getKey(), SpinDirection.CW);
+                    if (bfsDir != anchor.getValue()) {
+                        for (CustomBlockRegistry.LocationKey loc : domain) {
+                            dirMap.computeIfPresent(loc, (k, v) -> v.reversed());
+                        }
+                    }
+                    for (var entry : storedSources) {
+                        SpinDirection computed = dirMap.getOrDefault(entry.getKey(), SpinDirection.CW);
+                        if (computed != entry.getValue()) {
+                            domainJam = true;
+                            break;
+                        }
+                    }
+                }
+
+                jammed |= domainJam;
             }
 
             // Measure pass: record each powered, non-jammed ratchet's resolved (post-anchor)
@@ -894,7 +934,10 @@ public class RotationNetwork {
             if (face == node.omniExcludedFace()) continue;
             CustomBlockRegistry.LocationKey nk = faceNeighbor(node.key(), face);
             RotationNode other = nodes.get(nk);
-            if (other != null && !other.omni() && !isSevered(other) && other.axis() == axisFromFace(face)) {
+            // A gearbox is a valid attach on ANY face (its hub couples on all six); its nominal axis is
+            // always Y, so without the gearbox() term an omni consumer could only tap it through UP/DOWN.
+            if (other != null && !other.omni() && !isSevered(other)
+                    && (other.gearbox() || other.axis() == axisFromFace(face))) {
                 return nk;
             }
         }

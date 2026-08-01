@@ -81,47 +81,78 @@ final class RotationSolver {
             if (component[root] != -1) continue;
             int comp = nextComponent++;
 
-            // BFS with tentative CW seed; collect members.
+            // Pass A: membership across ALL edges (gearboxes included) — pools supply/demand.
             List<Integer> members = new ArrayList<>();
-            boolean compJammed = false;
             ArrayDeque<Integer> queue = new ArrayDeque<>();
             component[root] = comp;
-            direction[root] = RotationNetwork.SpinDirection.CW;
             queue.add(root);
             while (!queue.isEmpty()) {
                 int cur = queue.poll();
                 members.add(cur);
                 for (Edge e : edges(nodes, byCell, cur)) {
-                    RotationNetwork.SpinDirection want =
-                        e.reverses() ? direction[cur].reversed() : direction[cur];
-                    int other = e.to();
-                    if (component[other] == -1) {
-                        component[other] = comp;
-                        direction[other] = want;
-                        queue.add(other);
-                    } else if (direction[other] != want) {
-                        compJammed = true;   // contradiction (odd reversal cycle)
+                    if (component[e.to()] == -1) {
+                        component[e.to()] = comp;
+                        queue.add(e.to());
                     }
                 }
             }
 
-            // Anchor to source preferences: lowest-cell source with a preference wins; any other
-            // preferring source that still disagrees after the flip jams the component.
-            List<Integer> prefSources = members.stream()
-                .filter(i -> nodes.get(i).dirPref() != null)
-                .sorted(Comparator.comparingInt((Integer i) -> nodes.get(i).x())
-                    .thenComparingInt(i -> nodes.get(i).y())
-                    .thenComparingInt(i -> nodes.get(i).z()))
-                .toList();
-            if (!prefSources.isEmpty()) {
-                int anchor = prefSources.get(0);
-                if (direction[anchor] != nodes.get(anchor).dirPref()) {
-                    for (int i : members) direction[i] = direction[i].reversed();
+            // Pass B: spin direction per gearbox-free DOMAIN. A gearbox is a direction firewall — it
+            // carries power but couples no CW/CCW across itself, so two sources on perpendicular axes
+            // feeding one gearbox never false-jam. Each domain is seeded from its lowest-cell member so
+            // a powered-but-sourceless domain (fed only through a gearbox) resolves to a stable direction.
+            boolean compJammed = false;
+            List<Integer> sorted = new ArrayList<>(members);
+            sorted.sort(Comparator.comparingInt((Integer i) -> nodes.get(i).x())
+                .thenComparingInt(i -> nodes.get(i).y())
+                .thenComparingInt(i -> nodes.get(i).z()));
+            for (int domainRoot : sorted) {
+                if (direction[domainRoot] != null) continue;
+
+                List<Integer> domain = new ArrayList<>();
+                boolean domainJam = false;
+                ArrayDeque<Integer> dq = new ArrayDeque<>();
+                direction[domainRoot] = RotationNetwork.SpinDirection.CW;
+                dq.add(domainRoot);
+                domain.add(domainRoot);
+                while (!dq.isEmpty()) {
+                    int cur = dq.poll();
+                    boolean curGear = nodes.get(cur).gearbox();
+                    for (Edge e : edges(nodes, byCell, cur)) {
+                        int other = e.to();
+                        if (component[other] != comp) continue;
+                        if (curGear || nodes.get(other).gearbox()) continue;   // firewall
+                        RotationNetwork.SpinDirection want =
+                            e.reverses() ? direction[cur].reversed() : direction[cur];
+                        if (direction[other] == null) {
+                            direction[other] = want;
+                            dq.add(other);
+                            domain.add(other);
+                        } else if (direction[other] != want) {
+                            domainJam = true;   // in-domain contradiction (odd reversal cycle)
+                        }
+                    }
                 }
-                for (int j = 1; j < prefSources.size(); j++) {
-                    int s = prefSources.get(j);
-                    if (direction[s] != nodes.get(s).dirPref()) compJammed = true;
+
+                // Anchor this domain to its source preferences: lowest-cell preferring source wins; any
+                // other preferring source in the SAME domain that still disagrees jams the component.
+                List<Integer> prefSources = domain.stream()
+                    .filter(i -> nodes.get(i).dirPref() != null)
+                    .sorted(Comparator.comparingInt((Integer i) -> nodes.get(i).x())
+                        .thenComparingInt(i -> nodes.get(i).y())
+                        .thenComparingInt(i -> nodes.get(i).z()))
+                    .toList();
+                if (!prefSources.isEmpty()) {
+                    int anchor = prefSources.get(0);
+                    if (direction[anchor] != nodes.get(anchor).dirPref()) {
+                        for (int i : domain) direction[i] = direction[i].reversed();
+                    }
+                    for (int j = 1; j < prefSources.size(); j++) {
+                        int s = prefSources.get(j);
+                        if (direction[s] != nodes.get(s).dirPref()) domainJam = true;
+                    }
                 }
+                compJammed |= domainJam;
             }
 
             int supply = 0, demand = 0;
@@ -219,7 +250,8 @@ final class RotationSolver {
             Integer oi = neighborAt(byCell, node, face);
             if (oi == null) continue;
             Node other = nodes.get(oi);
-            if (!other.omni() && other.axis() == RotationNetwork.axisFromFace(face)) return oi;
+            // A gearbox attaches on any face (nominal axis is always Y); mirror RotationNetwork.omniAttachKey.
+            if (!other.omni() && (other.gearbox() || other.axis() == RotationNetwork.axisFromFace(face))) return oi;
         }
         return null;
     }

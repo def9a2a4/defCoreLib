@@ -60,13 +60,6 @@ final class StickySpread {
 
     private StickySpread() {}
 
-    /** True iff {@code b} is a casing (strictly — not a gearbox). Kept semantically pure; the family
-     *  gate lives in {@link #familyOf}. */
-    static boolean isCasing(Block b, CustomBlockRegistry registry) {
-        CustomHeadBlock t = registry.getTypeFromBlock(b);
-        return t != null && t.fullId().startsWith(CASING_ID_PREFIX);
-    }
-
     /** {@code b}'s sticky family, or null for ordinary (non-sticky) blocks. Casing / gearbox / chassis
      *  are the three "frame" families; they auto-bond only same-wood (see {@link #bonds}). Chassis
      *  additionally has slime reach (grabs plain movables). */
@@ -82,12 +75,6 @@ final class StickySpread {
             if (id.startsWith(CASING_ID_PREFIX)) return Family.CASING;
         }
         return null;
-    }
-
-    /** True iff sticky (any family). NB frame blocks (casing/gearbox/chassis) CAN now be brush-glued and
-     *  stored; slime/honey never are. Use {@link #isFrameBlock}/{@link #isSlimeOrHoney} to split them. */
-    static boolean isSticky(Block b, CustomBlockRegistry registry) {
-        return familyOf(b, registry) != null;
     }
 
     static boolean isFrame(@Nullable Family f) {
