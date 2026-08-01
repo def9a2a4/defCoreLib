@@ -31,7 +31,7 @@ import java.util.logging.Logger;
 final class ShowcaseRunner implements Listener {
 
     private static final int TEST_X = 1000;     // far from the docs grid → fresh, clean chunks
-    private static final int TEST_Y = -50;      // in air above the superflat surface
+    private static final int FLOOR_Y = -60;     // every showcase's lowest block lands here
     private static final int SPACING = 16;      // machines spaced along z
 
     private static final long ACTIVATE_AT = 20; // ticks after build
@@ -87,14 +87,16 @@ final class ShowcaseRunner implements Listener {
         World world = Bukkit.getWorlds().get(0);
         int i = 0;
         for (ShowcaseSpec spec : showcases) {
-            Location origin = new Location(world, TEST_X, TEST_Y, i * SPACING);
+            // Place the origin so the machine's lowest cell sits at FLOOR_Y (blocks extend up from there).
+            int originY = FLOOR_Y - lowestOffsetY(spec);
+            Location origin = new Location(world, TEST_X, originY, i * SPACING);
             origin.getChunk().load(true);
             origin.getChunk().setForceLoaded(true);   // must tick for the network to run
             try {
                 int placed = builder.build(spec, origin);
                 origins.put(spec, origin);
                 plugin.getLogger().info("  [showcase] built " + spec.id + " (" + placed + " blocks) @ "
-                        + TEST_X + " " + TEST_Y + " " + (i * SPACING));
+                        + TEST_X + " " + originY + " " + (i * SPACING));
             } catch (Throwable t) {
                 plugin.getLogger().warning("[showcase] build " + spec.id + " failed: " + t);
             }
@@ -335,5 +337,14 @@ final class ShowcaseRunner implements Listener {
     private static Block blockAt(Location origin, int[] at) {
         return origin.getWorld().getBlockAt(
                 origin.getBlockX() + at[0], origin.getBlockY() + at[1], origin.getBlockZ() + at[2]);
+    }
+
+    /** The most-negative Y offset across a spec's custom + vanilla blocks (0 if empty) — how far the
+     *  machine reaches below its origin, used to seat its lowest cell at {@link #FLOOR_Y}. */
+    private static int lowestOffsetY(ShowcaseSpec spec) {
+        int min = 0;
+        for (ShowcaseSpec.BlockSpec b : spec.blocks) min = Math.min(min, b.at()[1]);
+        for (ShowcaseSpec.VanillaSpec v : spec.vanilla) min = Math.min(min, v.at()[1]);
+        return min;
     }
 }
