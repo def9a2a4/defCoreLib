@@ -23,50 +23,52 @@ recipes:
   # ── Gravel: ore panning ──
   - input: GRAVEL
     outputs:
-      - { output: SAND,             chance: 0.25 }   # by-product, not guaranteed
-      - { output: FLINT,            chance: 0.18 }
-      - { output: IRON_NUGGET,      chance: 0.10 }
-      - { output: COPPER_NUGGET,    chance: 0.10 }
-      - { output: GOLD_NUGGET,      chance: 0.05 }
+      - { output: SAND,             chance: 0.1  }   # by-product, not guaranteed
+      - { output: FLINT,            chance: 0.1  }
+      - { output: IRON_NUGGET,      chance: 0.05 }
+      - { output: COPPER_NUGGET,    chance: 0.05 }
+      - { output: GOLD_NUGGET,      chance: 0.01 }
       - { output: COAL,             chance: 0.03 }
-      - { output: RAW_IRON,         chance: 0.01 }
-      - { output: RAW_COPPER,       chance: 0.01 }
-      - { output: AMETHYST_SHARD,   chance: 0.01 }
+      - { output: RAW_IRON,         chance: 0.005 }
+      - { output: RAW_COPPER,       chance: 0.005 }
+      - { output: AMETHYST_SHARD,   chance: 0.005 }
       - { output: LAPIS_LAZULI,     chance: 0.01 }
-      - { output: EMERALD,          chance: 0.003 }
+      - { output: EMERALD,          chance: 0.002 }
       - { output: DIAMOND,          chance: 0.001 }
+      - { output: REDSTONE,         chance: 0.01 }
 
   # ── Sand: fine panning (beach/river finds) ──
   - input: SAND
     outputs:
-      - { output: CLAY_BALL,        chance: 0.14 }
-      - { output: BONE_MEAL,        chance: 0.08 }
-      - { output: GOLD_NUGGET,      chance: 0.06 }
-      - { output: COPPER_NUGGET,    chance: 0.05 }
-      - { output: REDSTONE,         chance: 0.03 }
-      - { output: PRISMARINE_SHARD, chance: 0.02 }
+      - { output: CLAY_BALL,        chance: 0.01 }
+      - { output: BONE_MEAL,        chance: 0.02 }
+      - { output: GOLD_NUGGET,      chance: 0.01 }
+      - { output: COPPER_NUGGET,    chance: 0.01 }
+      - { output: PRISMARINE_SHARD, chance: 0.01 }
       - { output: KELP,             chance: 0.02 }
-      - { output: SEA_PICKLE,       chance: 0.01 }
+      - { output: SEA_PICKLE,       chance: 0.005 }
       - { output: QUARTZ,           chance: 0.005 }
 
   # ── Red sand: gold-heavy badlands panning ──
   - input: RED_SAND
     outputs:
-      - { output: GOLD_NUGGET,      chance: 0.12 }
-      - { output: COPPER_NUGGET,    chance: 0.06 }
-      - { output: REDSTONE,         chance: 0.05 }
-      - { output: QUARTZ,           chance: 0.03 }
-      - { output: RAW_GOLD,         chance: 0.01 }
+      - { output: GOLD_NUGGET,      chance: 0.02 }
+      - { output: IRON_NUGGET,      chance: 0.08 }
+      - { output: COPPER_NUGGET,    chance: 0.01 }
+      - { output: REDSTONE,         chance: 0.02 }
+      - { output: QUARTZ,           chance: 0.01 }
+      - { output: RAW_GOLD,         chance: 0.005 }
+      - { output: RAW_IRON,         chance: 0.005 }
 
   # ── Dirt: garden sifting ──
   - input: DIRT
     outputs:
-      - { output: WHEAT_SEEDS,      chance: 0.10 }
+      - { output: WHEAT_SEEDS,      chance: 0.03 }
       - { output: CLAY_BALL,        chance: 0.07 }
       - { output: BONE_MEAL,        chance: 0.07 }
       - { output: STICK,            chance: 0.07 }
-      - { output: POTATO,           chance: 0.02 }
-      - { output: CARROT,           chance: 0.02 }
+      - { output: POTATO,           chance: 0.01 }
+      - { output: CARROT,           chance: 0.01 }
 
   # ── Soul sand: nether panning ──
   - input: SOUL_SAND
