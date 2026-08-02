@@ -59,7 +59,7 @@ NODES = [
      "Craft a Mechanical Casing — casings bond to each other into a moving frame, no brush needed. "
      "Comes in every plank wood."),
     ("craft/gearbox", "craft/casing", "task", "@gearbox_oak", "Every Which Way", "white",
-     "Craft a Gearbox — a hub that passes rotation power straight through in every direction."),
+     "Craft a Gearbox — a hub that passes rotation power in every direction."),
     ("craft/shaft", "craft/bearing", "task", "@rod_fwd", "First Shaft", "white",
      "Craft a Shaft — carries rotational power in a straight line along its axis."),
     ("craft/gear", "craft/shaft", "task", "@copper_gear", "Turning the Corner", "white",

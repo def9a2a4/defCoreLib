@@ -25,7 +25,8 @@ BASE_DATA = "[half=top,facing=north,shape=straight,waterlogged=false]"
 HEADER = """\
   # ─── Gearbox ──────────────────────────────────────────────────────────────
   # A mechanical casing that also transmits rotation power in EVERY direction: on each of its six
-  # faces it couples (spin-preserving) to an aligned shaft/gear or another gearbox. Behaviour is a
+  # faces it couples to an aligned shaft/gear or another gearbox, passing power but NOT spin direction
+  # (a direction firewall — each side of a gearbox resolves its own rotation). Behaviour is a
   # Java overlay (RotationBlocks.overlayStandard gearbox=true → RotationNetwork gearbox edge, mirrored
   # in RotationSolver for moving contraptions). A frame block like a casing: it auto-glues only to
   # SAME-WOOD frame blocks — casings, gearboxes and chassis (StickySpread GEARBOX family + wood gate,
@@ -40,7 +41,7 @@ HEADER = """\
 
 OAK_NOTES = """\
     catalog_notes:
-      - "&fA power hub: couples any aligned shafts or gears on all six faces, passing spin straight through without reversing."
+      - "&fA power hub: couples any aligned shafts or gears on all six faces, passing power through but not spin direction — each side settles its own rotation."
       - "&7Use it to split one input into several directions, or bridge shafts around a corner without a gear's counter-rotation."
       - "&7A frame block like a casing: auto-glues only to SAME-WOOD frame blocks (casings, gearboxes, chassis); brush-glue to pin it to anything else."
       - "&7Comes in every plank wood — the casing in the recipe picks the variant."
@@ -56,6 +57,7 @@ def entry(wood: str) -> str:
     name: "&f{title} Gearbox"
     lore:
       - "&7Transmits power in every direction"
+      - "&7Doesn't carry spin direction across it"
       - "&7Frame block: same-wood auto-glue"
 {extra}\
     base_block: {stairs}
