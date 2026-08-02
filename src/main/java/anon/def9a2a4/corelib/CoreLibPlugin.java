@@ -991,7 +991,8 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         event.setCancelled(true);
     }
 
-    // Creative middle-click — return correct custom item
+    // Middle-click pick-block — creative mints the custom item; survival/adventure only
+    // selects it if already owned (never mints). See InventoryUtil.pickCustom.
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPickBlock(io.papermc.paper.event.player.PlayerPickBlockEvent event) {
         Block block = event.getBlock();
@@ -1001,7 +1002,7 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         event.setCancelled(true);
         Player player = event.getPlayer();
         ItemStack customItem = enrichDrop(block, type, type.createItem(1));
-        InventoryUtil.pickInto(player, customItem, event.getTargetSlot());
+        InventoryUtil.pickCustom(player, customItem, event.getTargetSlot());
     }
 
     // ──────────────────────────────────────────────────────────────────────

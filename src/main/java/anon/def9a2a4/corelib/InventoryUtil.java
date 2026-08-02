@@ -1,5 +1,6 @@
 package anon.def9a2a4.corelib;
 
+import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -50,6 +51,47 @@ final class InventoryUtil {
         } catch (Exception e) {
             if (log != null) log.warning("Failed to load inventory: " + e.getMessage());
         }
+    }
+
+    /**
+     * Pick-block entry point shared by all custom-block/cart handlers. Creative mints the item
+     * (delegates to {@link #pickInto}). Survival/adventure NEVER mints: it selects a matching item
+     * only if the player already owns one, via a lossless swap — it never overwrites or deletes an
+     * existing stack. Matching is by custom type id ({@code BLOCK_TYPE_KEY} PDC), so a plain or
+     * {@code enrichDrop}-enriched copy of the same block both count as "owned".
+     */
+    static void pickCustom(Player player, ItemStack item, int targetSlot) {
+        if (player.getGameMode() == GameMode.CREATIVE) {
+            pickInto(player, item, targetSlot);   // the only path that creates an item
+            return;
+        }
+        String typeId = CustomBlockRegistry.getItemTypeId(item);
+        if (typeId == null) return;
+        var inv = player.getInventory();
+
+        // Already in the hotbar (0-8) → just select it; no item ever moves.
+        for (int i = 0; i < 9; i++) {
+            if (typeId.equals(CustomBlockRegistry.getItemTypeId(inv.getItem(i)))) {
+                inv.setHeldItemSlot(i);
+                return;
+            }
+        }
+        // In main storage (9-35) → lossless swap into the held hotbar slot (vanilla behavior).
+        // Snapshot BOTH stacks (defensive clone) before any write, then write both, so the swap
+        // never re-reads a just-written slot and can never duplicate or delete an item. targetSlot
+        // is guaranteed 0-8 by PlayerPickItemEvent#getTargetSlot (@Range 0..8), so no bounds guard.
+        for (int i = 9; i < 36; i++) {
+            if (typeId.equals(CustomBlockRegistry.getItemTypeId(inv.getItem(i)))) {
+                ItemStack held  = inv.getItem(targetSlot); if (held  != null) held  = held.clone();
+                ItemStack found = inv.getItem(i);          if (found != null) found = found.clone();
+                inv.setItem(targetSlot, found);   // targetSlot := the owned custom item
+                inv.setItem(i, held);             // slot i := whatever was held (may be null)
+                inv.setHeldItemSlot(targetSlot);
+                return;
+            }
+        }
+        // Not owned → do nothing (caller already cancelled the event; matches vanilla's
+        // non-creative no-op, and stops vanilla grabbing a plain lookalike).
     }
 
     /**

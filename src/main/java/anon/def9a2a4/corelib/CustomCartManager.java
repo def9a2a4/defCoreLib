@@ -867,6 +867,8 @@ final class CustomCartManager implements Listener {
         cart.remove();
     }
 
+    // Middle-click pick-block on a custom cart: creative mints the custom item; survival/adventure
+    // only selects it if already owned (never mints). See InventoryUtil.pickCustom.
     @EventHandler(priority = EventPriority.HIGH)
     public void onPickCart(io.papermc.paper.event.player.PlayerPickEntityEvent event) {
         if (!(event.getEntity() instanceof Minecart cart)) return;
@@ -875,6 +877,6 @@ final class CustomCartManager implements Listener {
         CustomHeadBlock itemType = registry.getType(state.type.itemId);
         if (itemType == null) return;
         event.setCancelled(true);
-        InventoryUtil.pickInto(event.getPlayer(), itemType.createItem(1), event.getTargetSlot());
+        InventoryUtil.pickCustom(event.getPlayer(), itemType.createItem(1), event.getTargetSlot());
     }
 }

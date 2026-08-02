@@ -431,15 +431,16 @@ final class MechanismMinecartManager implements Listener {
         }
     }
 
-    // Creative middle-click (pick-block) on a mechanism minecart: give the custom item, not a
-    // vanilla minecart. The cart is an entity, so PlayerPickBlockEvent never sees it.
+    // Middle-click pick-block on a mechanism minecart: creative mints the custom item (not a
+    // vanilla minecart); survival/adventure only selects it if already owned. The cart is an
+    // entity, so PlayerPickBlockEvent never sees it. See InventoryUtil.pickCustom.
     @EventHandler(priority = EventPriority.HIGH)
     public void onPickMinecart(io.papermc.paper.event.player.PlayerPickEntityEvent event) {
         if (!(event.getEntity() instanceof Minecart minecart) || !isMechanismMinecart(minecart)) return;
         CustomHeadBlock itemType = registry.getType(MECH_MINECART_ID);
         if (itemType == null) return;
         event.setCancelled(true);
-        InventoryUtil.pickInto(event.getPlayer(), itemType.createItem(1), event.getTargetSlot());
+        InventoryUtil.pickCustom(event.getPlayer(), itemType.createItem(1), event.getTargetSlot());
     }
 
     @EventHandler(priority = EventPriority.HIGH)
