@@ -73,7 +73,7 @@ def entry(wood: str) -> str:
           - pattern: ["NNN", "NCN", "NNN"]   # iron-nugget "spikes" ringing a casing of the same wood
             key:
               N: {{ material: IRON_NUGGET }}
-              C: {{ block: casing_{wood} }}
+              C: {{ block: "mech:casing_{wood}" }}
 """
 
 

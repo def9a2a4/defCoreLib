@@ -157,12 +157,19 @@ def texture_to_url(value, aliases: dict[str, str]) -> str | None:
     return texture_url(resolved) if isinstance(resolved, str) else None
 
 
-def parse_ingredient(node) -> dict | None:
-    """Normalize an ingredient/slot into {kind, value}: material / tag / block."""
+def parse_ingredient(node, namespace: str | None = None) -> dict | None:
+    """Normalize an ingredient/slot into {kind, value}: material / tag / block.
+
+    A namespace-less `block` ref is prefixed with the owning file's namespace, mirroring
+    BlockLoader.parseIngredient in-game — otherwise the frontend can't resolve it against
+    fullId-keyed items and falls back to rendering the raw text (e.g. chassis's `casing_oak`)."""
     if not isinstance(node, dict):
         return None
     if "block" in node:
-        return {"kind": "block", "value": node["block"]}
+        value = str(node["block"])
+        if namespace and ":" not in value:
+            value = f"{namespace}:{value}"
+        return {"kind": "block", "value": value}
     if "material" in node:
         return {"kind": "material", "value": str(node["material"]).upper()}
     if "tag" in node:
@@ -174,7 +181,7 @@ def parse_ingredient(node) -> dict | None:
     return None
 
 
-def parse_recipes(recipes) -> list[dict]:
+def parse_recipes(recipes, namespace: str | None = None) -> list[dict]:
     out: list[dict] = []
     if not isinstance(recipes, dict):
         return out
@@ -183,14 +190,14 @@ def parse_recipes(recipes) -> list[dict]:
         out.append({
             "type": "shaped",
             "pattern": list(r.get("pattern") or []),
-            "key": {k: parse_ingredient(v) for k, v in (r.get("key") or {}).items()},
+            "key": {k: parse_ingredient(v, namespace) for k, v in (r.get("key") or {}).items()},
             "amount": r.get("amount", 1),
         })
     for r in craft.get("shapeless") or []:
-        ings = [parse_ingredient(i) for i in (r.get("ingredients") or [])]
+        ings = [parse_ingredient(i, namespace) for i in (r.get("ingredients") or [])]
         out.append({"type": "shapeless", "ingredients": [i for i in ings if i], "amount": r.get("amount", 1)})
     for r in recipes.get("stonecutter") or []:
-        out.append({"type": "stonecutter", "input": parse_ingredient(r.get("input")), "amount": r.get("amount", 1)})
+        out.append({"type": "stonecutter", "input": parse_ingredient(r.get("input"), namespace), "amount": r.get("amount", 1)})
     return out
 
 
@@ -286,7 +293,7 @@ def parse_block(namespace: str, block_id: str, sec: dict, aliases: dict) -> dict
         "notes": list(notes),
         "icon": icon,
         "glint": bool(sec.get("item_glint", False)),
-        "recipes": parse_recipes(sec.get("recipes")),
+        "recipes": parse_recipes(sec.get("recipes"), namespace),
         "variants": parse_variants(sec, aliases),
         "transitions": parse_transitions(sec),
         "inHand": in_hand,
