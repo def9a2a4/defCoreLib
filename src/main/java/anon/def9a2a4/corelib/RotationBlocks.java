@@ -74,12 +74,26 @@ final class RotationBlocks {
             if (it == null || it.getType().isAir()) continue;
             int fv = fuelTicksFor(it, fuelManager);
             if (fv > 0) {
+                // Seed Oil is a bottled fuel — burning one unit returns the empty glass bottle.
+                boolean leavesBottle = "mech:seed_oil".equals(CustomBlockRegistry.getItemTypeId(it));
                 it.setAmount(it.getAmount() - 1);
                 storage.setItem(i, it.getAmount() <= 0 ? null : it);
+                if (leavesBottle) returnEmptyBottle(storage);
                 return fv;
             }
         }
         return 0;
+    }
+
+    /** Put an empty glass bottle back into {@code storage} after a bottled fuel (seed oil) is
+     *  burned; if the storage is full, drop it at the storage block's location. */
+    private static void returnEmptyBottle(Inventory storage) {
+        Map<Integer, ItemStack> leftover = storage.addItem(new ItemStack(Material.GLASS_BOTTLE));
+        if (leftover.isEmpty()) return;
+        Location loc = storage.getLocation();
+        if (loc != null && loc.getWorld() != null) {
+            for (ItemStack extra : leftover.values()) loc.getWorld().dropItemNaturally(loc, extra);
+        }
     }
 
     /**
