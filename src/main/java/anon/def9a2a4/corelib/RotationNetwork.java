@@ -134,7 +134,8 @@ public class RotationNetwork {
 
     /** As {@link #addNode(Block, String, Axis, NodeRole, int, boolean)} but flagged as a
      *  <b>gearbox</b> — an omnidirectional transmitter that couples to any aligned shaft/gear (or
-     *  another gearbox) on all six faces without reversing spin (see {@link #getConnections}). */
+     *  another gearbox) on all six faces, passing power but not spin direction (a direction firewall
+     *  — each side resolves its own rotation; see {@link #getConnections}). */
     public void addNode(Block block, String blockTypeId, Axis axis,
                         NodeRole role, int powerUnits, boolean gearLike, boolean gearbox) {
         addNode(block, blockTypeId, axis, role, powerUnits, gearLike, gearbox, false, null);

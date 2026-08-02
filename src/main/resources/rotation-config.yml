@@ -121,7 +121,7 @@ power:
 #              facing — spin axis follows the block's facing
 #              omni   — draws from the first aligned neighbor on any non-mounted face
 #   gear_like: meshes with adjacent gears (counter-rotation, bevels)
-#   gearbox:   omnidirectional hub — couples aligned shafts/gears on all six faces without reversing
+#   gearbox:   omnidirectional hub — passes power on all six faces; spin-direction firewall (no CW/CCW across it)
 # Notes: world redstone can't reach a block riding a mechanism, so the reverser/clutch pass
 # through unlocked, and the (inverted) redstone motor runs as a constant source. The water
 # wheel can't check for water while moving, so it only transmits.

@@ -309,7 +309,8 @@ blocks:
 
   # ─── Gearbox ──────────────────────────────────────────────────────────────
   # A mechanical casing that also transmits rotation power in EVERY direction: on each of its six
-  # faces it couples (spin-preserving) to an aligned shaft/gear or another gearbox. Behaviour is a
+  # faces it couples to an aligned shaft/gear or another gearbox, passing power but NOT spin direction
+  # (a direction firewall — each side of a gearbox resolves its own rotation). Behaviour is a
   # Java overlay (RotationBlocks.overlayStandard gearbox=true → RotationNetwork gearbox edge, mirrored
   # in RotationSolver for moving contraptions). A frame block like a casing: it auto-glues only to
   # SAME-WOOD frame blocks — casings, gearboxes and chassis (StickySpread GEARBOX family + wood gate,
@@ -324,9 +325,10 @@ blocks:
     name: "&fOak Gearbox"
     lore:
       - "&7Transmits power in every direction"
+      - "&7Doesn't carry spin direction across it"
       - "&7Frame block: same-wood auto-glue"
     catalog_notes:
-      - "&fA power hub: couples any aligned shafts or gears on all six faces, passing spin straight through without reversing."
+      - "&fA power hub: couples any aligned shafts or gears on all six faces, passing power through but not spin direction — each side settles its own rotation."
       - "&7Use it to split one input into several directions, or bridge shafts around a corner without a gear's counter-rotation."
       - "&7A frame block like a casing: auto-glues only to SAME-WOOD frame blocks (casings, gearboxes, chassis); brush-glue to pin it to anything else."
       - "&7Comes in every plank wood — the casing in the recipe picks the variant."
@@ -356,6 +358,7 @@ blocks:
     name: "&fAcacia Gearbox"
     lore:
       - "&7Transmits power in every direction"
+      - "&7Doesn't carry spin direction across it"
       - "&7Frame block: same-wood auto-glue"
     catalog_variant_of: gearbox_oak
     base_block: ACACIA_STAIRS
@@ -384,6 +387,7 @@ blocks:
     name: "&fBamboo Gearbox"
     lore:
       - "&7Transmits power in every direction"
+      - "&7Doesn't carry spin direction across it"
       - "&7Frame block: same-wood auto-glue"
     catalog_variant_of: gearbox_oak
     base_block: BAMBOO_STAIRS
@@ -412,6 +416,7 @@ blocks:
     name: "&fBirch Gearbox"
     lore:
       - "&7Transmits power in every direction"
+      - "&7Doesn't carry spin direction across it"
       - "&7Frame block: same-wood auto-glue"
     catalog_variant_of: gearbox_oak
     base_block: BIRCH_STAIRS
@@ -440,6 +445,7 @@ blocks:
     name: "&fCherry Gearbox"
     lore:
       - "&7Transmits power in every direction"
+      - "&7Doesn't carry spin direction across it"
       - "&7Frame block: same-wood auto-glue"
     catalog_variant_of: gearbox_oak
     base_block: CHERRY_STAIRS
@@ -468,6 +474,7 @@ blocks:
     name: "&fCrimson Gearbox"
     lore:
       - "&7Transmits power in every direction"
+      - "&7Doesn't carry spin direction across it"
       - "&7Frame block: same-wood auto-glue"
     catalog_variant_of: gearbox_oak
     base_block: CRIMSON_STAIRS
@@ -496,6 +503,7 @@ blocks:
     name: "&fDark Oak Gearbox"
     lore:
       - "&7Transmits power in every direction"
+      - "&7Doesn't carry spin direction across it"
       - "&7Frame block: same-wood auto-glue"
     catalog_variant_of: gearbox_oak
     base_block: DARK_OAK_STAIRS
@@ -524,6 +532,7 @@ blocks:
     name: "&fJungle Gearbox"
     lore:
       - "&7Transmits power in every direction"
+      - "&7Doesn't carry spin direction across it"
       - "&7Frame block: same-wood auto-glue"
     catalog_variant_of: gearbox_oak
     base_block: JUNGLE_STAIRS
@@ -552,6 +561,7 @@ blocks:
     name: "&fMangrove Gearbox"
     lore:
       - "&7Transmits power in every direction"
+      - "&7Doesn't carry spin direction across it"
       - "&7Frame block: same-wood auto-glue"
     catalog_variant_of: gearbox_oak
     base_block: MANGROVE_STAIRS
@@ -580,6 +590,7 @@ blocks:
     name: "&fPale Oak Gearbox"
     lore:
       - "&7Transmits power in every direction"
+      - "&7Doesn't carry spin direction across it"
       - "&7Frame block: same-wood auto-glue"
     catalog_variant_of: gearbox_oak
     base_block: PALE_OAK_STAIRS
@@ -608,6 +619,7 @@ blocks:
     name: "&fSpruce Gearbox"
     lore:
       - "&7Transmits power in every direction"
+      - "&7Doesn't carry spin direction across it"
       - "&7Frame block: same-wood auto-glue"
     catalog_variant_of: gearbox_oak
     base_block: SPRUCE_STAIRS
@@ -636,6 +648,7 @@ blocks:
     name: "&fWarped Gearbox"
     lore:
       - "&7Transmits power in every direction"
+      - "&7Doesn't carry spin direction across it"
       - "&7Frame block: same-wood auto-glue"
     catalog_variant_of: gearbox_oak
     base_block: WARPED_STAIRS
@@ -670,7 +683,7 @@ blocks:
     name: "&eChain Pulley"
     lore:
       - "&7Links rotational power across a gap"
-      - "&7Chain two pulleys into a loop"
+      - "&7Chain pulleys together into a loop"
     catalog_notes:
       - "&fA transmitter you can link to other pulleys with a chain."
       - "&7Right-click one pulley with a chain, then another, to link them — uses chains equal to the distance."
@@ -996,10 +1009,11 @@ blocks:
     name: "&dRotator"
     lore:
       - "&7Swings blocks glued to it as a door/drawbridge"
-      - "&7Floor = door, wall = drawbridge"
+      - "&7Floor = door, wall = drawbridge, ceiling = hatch"
       - "&7Right-click: cycle open angle"
     catalog_notes:
-      - "&fA hinge that swings a structure: on the floor it acts like a door, on a wall like a drawbridge."
+      - "&fA hinge that swings a structure: on the floor it acts like a door, on a wall like a drawbridge, on a ceiling like a hatch."
+      - "&7Carried by another mechanism (e.g. a chain hoist) it keeps its chosen open angle, and any mounted drill/placer/fan keeps aiming the right way as it moves."
       - "&fGlue the blocks you want it to move with the [Glue Brush](mech:glue_item) — any blocks work. With nothing glued it just swings the single block it's attached to."
       - "&fThe network's spin direction decides which way it swings — one direction opens, the other closes."
       - "&7Right-click to cycle how far it opens (90°, 180°, or 270°)."
@@ -2603,9 +2617,10 @@ blocks:
     name: "&aBlock Placer"
     lore:
       - "&7Places blocks from its storage in front when powered"
-      - "&7Powered from the top by a shaft"
+      - "&7Powered by a shaft (from the top, or any side on a ceiling)"
     catalog_notes:
       - "&fMounts on a wall over a container and places its stored blocks into the space in front of it, one per cycle, while powered by a shaft on top."
+      - "&fCan also mount on a ceiling: it pulls from the container above and places into the cell below, powered from any side."
       - "&7Vanilla blocks only — it skips custom plugin blocks and anything that isn't a placeable block."
     # Placed head = stone machine head (shared with the millstone/press); item = placer skin.
     texture: "@machine_base"
@@ -2774,9 +2789,10 @@ blocks:
       - "&7Breaks blocks when powered"
       - "&7Mines in facing direction"
     catalog_notes:
-      - "&fMounts on a wall and breaks the block directly in front of it while it has power."
-      - "&fThe drill face is the wall face you click when placing — it mines away from that wall."
+      - "&fMounts on any face — wall, floor, or ceiling — and breaks the block directly in front of it while it has power."
+      - "&fThe drill face is the face you click when placing — it mines away from that face."
       - "&7Breaking runs in stages (like real mining), so harder blocks take longer to pop."
+      - "&7Mount it on a rotator to sweep-mine an arc: it bores at any angle through the swing, at 2× speed since it only grazes each block."
       - "&cWon't break: bedrock, spawners, reinforced deepslate, and moving pistons."
     texture: "@drill_head"
     item_texture: "@screw_fwd"

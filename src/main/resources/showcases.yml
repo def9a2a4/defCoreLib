@@ -20,7 +20,7 @@ showcases:
   # ── Full processing line: drill → mill → mill → place (cobblestone into sand) ──
   - id: sand_generator
     name: "Cobblestone → Sand Factory"
-    blurb: "A windmill-and-engine gearbox drills cobblestone, mills it down through gravel into sand, and a placer sets the sand back down."
+    blurb: "A windmill-and-engine gear train drills cobblestone, mills it down through gravel into sand, and a placer sets the sand back down."
     description: >
       A complete production line. A drill chews through the cobblestone in front of it
       (as if fed by a cobblestone generator), and the rubble drops into a hopper and barrel.
@@ -205,7 +205,7 @@ showcases:
 
   # ── Gears: power turning a 90° corner ───────────────────────────────────
   - id: gear_corner
-    name: "Gearbox Corner"
+    name: "Gear Corner"
     blurb: "A motor's vertical power meshes through gears to turn a 90° corner and drive a fan sideways."
     description: >
       A shaft only carries rotation straight along its axis; gears turn the corner. Here a pair of
@@ -297,7 +297,7 @@ showcases:
 
   # ── Sampler: two passive sources feeding a gear corner ──────────────────
   - id: icon_machine
-    name: "Water Wheel & Windmill Gearbox"
+    name: "Water Wheel & Windmill Gear Corner"
     blurb: "A water wheel and a windmill each drive a shaft into a pair of corner-meshed gears."
     description: >
       Two passive generators meeting at a gear corner. The water wheel spins by default and
