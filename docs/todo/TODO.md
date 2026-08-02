@@ -45,6 +45,7 @@
 - [blockships-integration.md](mechanism/blockships-integration.md) — BlockShips integration plan (4 phases, not started)
 - [display-system-refactor.md](display-system-refactor.md) — display elegance refactor; Phases 1/2 done, 2b blocked, 3 deferred
 - [minecarts.md](mechanism/minecarts.md) — minecart mechanism off-center pivot bug (open) + 7 deferred issues
+- [mixer.md](mechanism/mixer.md) — Mixer multiblock (mixer on a custom water cauldron) for automated flour + water → dough; extends the recipe engine for custom-item inputs (designed, not started)
 - [fluids.md](mechanism/fluids.md) — fluid subsystem design (liquid pipes + pump, lava-on-iron, water-gated sieve, steam engine stack); build waves + open decisions, not started
 - [pipes.md](pipes.md) — Pipes → CoreLib migration plan
 - [redstone-cables.md](redstone-cables.md) — redstone-cables demo plugin plan
@@ -61,6 +62,10 @@
 - [ ] **Off-center pivot rotation fix** — delta-tracked snapped pivot; 4 code changes to
   `MechanismRegistry` + `BasicMechanism` + cross-world guard. Fully designed in
   [minecarts.md](mechanism/minecarts.md) (Changes 1-4). Prerequisite for mechanism stabilization.
+- [ ] **Mixer multiblock** — automated flour + water → dough (a spinning mixer on a custom water
+  cauldron), so the flour→dough→bread chain automates end-to-end instead of routing through a bench.
+  Requires extending the machine recipe engine for custom-item inputs (currently vanilla-material
+  only). Bench dough craft stays. Fully designed → [mixer.md](mechanism/mixer.md).
 
 ## Consumer plugins (open)
 
