@@ -11,7 +11,7 @@ Two new frame blocks join the Casing, plus the biggest glue/contraption upgrade 
 
 ## Blocks
 
-- **Gearbox** — an omnidirectional power hub: it passes rotation straight through in every direction, on all six faces, without reversing. Split one input into several outputs, or turn a corner without a gear's counter-rotation.
+- **Gearbox** — an omnidirectional power hub: it passes power in every direction, on all six faces, but not spin direction — each side settles its own rotation. Split one input into several outputs, or turn a corner without a gear's counter-rotation.
 - **Chassis** — a slime-reach casing: it grabs every adjacent movable block except honey, so a moving contraption drags its whole payload with no glue brush, while still joining a same-wood casing frame.
 - **Ratchet** — a one-way valve for rotation: it drives one way and freewheels (disconnects) the other, instead of jamming. Wrench to set the direction, sneak-wrench to inspect.
 
