@@ -184,7 +184,8 @@ blocks:
     recipes:
       craft:
         shapeless:
-          - ingredients:
+          - amount: 2
+            ingredients:
               - { material: LIGHTNING_ROD }
               - { material: COPPER_INGOT }
 
@@ -300,10 +301,10 @@ blocks:
     recipes:
       craft:
         shaped:
-          # Iron core, copper in a +, lightning rod in the (canonical top-left) corner.
+          # Iron core, copper in a +, a shaft in the (canonical top-left) corner.
           - pattern: ["LC ", "CIC", " C "]
             key:
-              L: { material: LIGHTNING_ROD }
+              L: { block: "mech:shaft" }
               C: { material: COPPER_INGOT }
               I: { material: IRON_INGOT }
 
@@ -1228,13 +1229,15 @@ blocks:
     recipes:
       craft:
         shaped:
-          # Blast furnace core flanked by pistons, bearing on top, copper base & corners.
-          - pattern: ["CBC", "PFP", "CCC"]
+          # Blast furnace core flanked by pistons, bearing on top, copper corners,
+          # a gear in the base center.
+          - pattern: ["CBC", "PFP", "CGC"]
             key:
               C: { material: COPPER_INGOT }
               B: { block: "mech:bearing" }
               P: { material: PISTON }
               F: { material: BLAST_FURNACE }
+              G: { block: "mech:gear" }
 
   # ─── Redstone Motor ────────────────────────────────────────────────────
   # Source: 1 Power. Always on unless receiving redstone power. Expensive to craft.
@@ -1316,14 +1319,15 @@ blocks:
       craft:
         shaped:
           # Like the engine, but redstone blocks in the top corners in place of copper —
-          # always-on unless redstone-powered.
-          - pattern: ["EBE", "PFP", "CCC"]
+          # always-on unless redstone-powered. Gear in the base center.
+          - pattern: ["EBE", "PFP", "CGC"]
             key:
               E: { material: REDSTONE_BLOCK }
               B: { block: "mech:bearing" }
               P: { material: PISTON }
               F: { material: BLAST_FURNACE }
               C: { material: COPPER_INGOT }
+              G: { block: "mech:gear" }
 
   # ─── Redstone Dynamo ────────────────────────────────────────────────────
   # The inverse of the Redstone Motor: reads the rotation network's power and emits an
@@ -1894,7 +1898,7 @@ blocks:
           - pattern: ["NNN", "NCN", "NNN"]   # iron-nugget "spikes" ringing a casing of the same wood
             key:
               N: { material: IRON_NUGGET }
-              C: { block: casing_oak }
+              C: { block: "mech:casing_oak" }
 
   chassis_acacia:
     name: "&fAcacia Mechanical Chassis"
@@ -1922,7 +1926,7 @@ blocks:
           - pattern: ["NNN", "NCN", "NNN"]   # iron-nugget "spikes" ringing a casing of the same wood
             key:
               N: { material: IRON_NUGGET }
-              C: { block: casing_acacia }
+              C: { block: "mech:casing_acacia" }
 
   chassis_bamboo:
     name: "&fBamboo Mechanical Chassis"
@@ -1950,7 +1954,7 @@ blocks:
           - pattern: ["NNN", "NCN", "NNN"]   # iron-nugget "spikes" ringing a casing of the same wood
             key:
               N: { material: IRON_NUGGET }
-              C: { block: casing_bamboo }
+              C: { block: "mech:casing_bamboo" }
 
   chassis_birch:
     name: "&fBirch Mechanical Chassis"
@@ -1978,7 +1982,7 @@ blocks:
           - pattern: ["NNN", "NCN", "NNN"]   # iron-nugget "spikes" ringing a casing of the same wood
             key:
               N: { material: IRON_NUGGET }
-              C: { block: casing_birch }
+              C: { block: "mech:casing_birch" }
 
   chassis_cherry:
     name: "&fCherry Mechanical Chassis"
@@ -2006,7 +2010,7 @@ blocks:
           - pattern: ["NNN", "NCN", "NNN"]   # iron-nugget "spikes" ringing a casing of the same wood
             key:
               N: { material: IRON_NUGGET }
-              C: { block: casing_cherry }
+              C: { block: "mech:casing_cherry" }
 
   chassis_crimson:
     name: "&fCrimson Mechanical Chassis"
@@ -2034,7 +2038,7 @@ blocks:
           - pattern: ["NNN", "NCN", "NNN"]   # iron-nugget "spikes" ringing a casing of the same wood
             key:
               N: { material: IRON_NUGGET }
-              C: { block: casing_crimson }
+              C: { block: "mech:casing_crimson" }
 
   chassis_dark_oak:
     name: "&fDark Oak Mechanical Chassis"
@@ -2062,7 +2066,7 @@ blocks:
           - pattern: ["NNN", "NCN", "NNN"]   # iron-nugget "spikes" ringing a casing of the same wood
             key:
               N: { material: IRON_NUGGET }
-              C: { block: casing_dark_oak }
+              C: { block: "mech:casing_dark_oak" }
 
   chassis_jungle:
     name: "&fJungle Mechanical Chassis"
@@ -2090,7 +2094,7 @@ blocks:
           - pattern: ["NNN", "NCN", "NNN"]   # iron-nugget "spikes" ringing a casing of the same wood
             key:
               N: { material: IRON_NUGGET }
-              C: { block: casing_jungle }
+              C: { block: "mech:casing_jungle" }
 
   chassis_mangrove:
     name: "&fMangrove Mechanical Chassis"
@@ -2118,7 +2122,7 @@ blocks:
           - pattern: ["NNN", "NCN", "NNN"]   # iron-nugget "spikes" ringing a casing of the same wood
             key:
               N: { material: IRON_NUGGET }
-              C: { block: casing_mangrove }
+              C: { block: "mech:casing_mangrove" }
 
   chassis_pale_oak:
     name: "&fPale Oak Mechanical Chassis"
@@ -2146,7 +2150,7 @@ blocks:
           - pattern: ["NNN", "NCN", "NNN"]   # iron-nugget "spikes" ringing a casing of the same wood
             key:
               N: { material: IRON_NUGGET }
-              C: { block: casing_pale_oak }
+              C: { block: "mech:casing_pale_oak" }
 
   chassis_spruce:
     name: "&fSpruce Mechanical Chassis"
@@ -2174,7 +2178,7 @@ blocks:
           - pattern: ["NNN", "NCN", "NNN"]   # iron-nugget "spikes" ringing a casing of the same wood
             key:
               N: { material: IRON_NUGGET }
-              C: { block: casing_spruce }
+              C: { block: "mech:casing_spruce" }
 
   chassis_warped:
     name: "&fWarped Mechanical Chassis"
@@ -2202,7 +2206,7 @@ blocks:
           - pattern: ["NNN", "NCN", "NNN"]   # iron-nugget "spikes" ringing a casing of the same wood
             key:
               N: { material: IRON_NUGGET }
-              C: { block: casing_warped }
+              C: { block: "mech:casing_warped" }
 
   # ─── Millstone ──────────────────────────────────────────────────────────
   # Consumer: 1 Power. WALL only — mounts on a block and pulls from it if it's a
@@ -2238,10 +2242,10 @@ blocks:
       craft:
         shaped:
           # A stack of two smooth stone slabs + copper on the right, topped by a
-          # lightning rod (power intake) and a bearing.
+          # shaft (power intake) and a bearing.
           - pattern: [" LB", " MH", " MC"]
             key:
-              L: { material: LIGHTNING_ROD }
+              L: { block: "mech:shaft" }
               B: { block: "mech:bearing" }
               M: { material: SMOOTH_STONE_SLAB }
               C: { material: COPPER_INGOT }
@@ -2338,10 +2342,10 @@ blocks:
       craft:
         shaped:
           # A stack of two smooth stone slabs + copper on the right, topped by a
-          # lightning rod (power intake) and a bearing; a copper grate as the mesh.
+          # shaft (power intake) and a bearing; a copper grate as the mesh.
           - pattern: [" LB", " GH", " MC"]
             key:
-              L: { material: LIGHTNING_ROD }
+              L: { block: "mech:shaft" }
               B: { block: "mech:bearing" }
               G: { material: COPPER_GRATE }
               M: { material: SMOOTH_STONE_SLAB }
