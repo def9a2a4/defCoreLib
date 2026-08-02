@@ -14,7 +14,8 @@ See the [items and their recipes](https://def9a2a4.github.io/defCoreLib-docs/ind
 Rotation flows from a **power source**, through **transmission** blocks, into **machines** that
 consume it. Each source produces a fixed amount of power; a machine runs when the network reaching
 it supplies enough, and some machines work faster with surplus power. You wire it together with
-shafts and gears, branch or turn corners with gears, and gate the flow with clutches and reversers.
+shafts and gears, branch or turn corners with gears or gearboxes, and gate the flow with clutches,
+reversers, and ratchets.
 
 ## Power sources
 
@@ -22,21 +23,31 @@ shafts and gears, branch or turn corners with gears, and gate the flow with clut
 - [**Water wheel**](https://def9a2a4.github.io/defCoreLib-docs/item.html?id=mech%3Awater_wheel) - wall-mounted; spins when placed next to water.
 - [**Engine**](https://def9a2a4.github.io/defCoreLib-docs/item.html?id=mech%3Aengine) - burns fuel (coal, logs, planks, blaze rods, lava) for high power; right-click to refuel.
 - [**Redstone motor**](https://def9a2a4.github.io/defCoreLib-docs/item.html?id=mech%3Aredstone_motor) - steady power, toggled by a redstone signal. No fuel needed, but low power and expensive.
+- **Steam engine** ([**Burner**](https://def9a2a4.github.io/defCoreLib-docs/item.html?id=mech%3Aburner) → [**Boiler**](https://def9a2a4.github.io/defCoreLib-docs/item.html?id=mech%3Aboiler) → [**Steam piston**](https://def9a2a4.github.io/defCoreLib-docs/item.html?id=mech%3Asteam_piston)) - a three-block stack: the burner burns fuel to heat a boiler fed piped-in water, and the steam piston on top puts out high (20) power along its axle while both below are fed.
 
 ## Transmission
 
 - [**Shaft**](https://def9a2a4.github.io/defCoreLib-docs/item.html?id=mech%3Ashaft) - carries rotation along its axis.
 - [**Gear**](https://def9a2a4.github.io/defCoreLib-docs/item.html?id=mech%3Agear) - meshes with perpendicular or in-line gears to route power around corners and branch it.
+- [**Gearbox**](https://def9a2a4.github.io/defCoreLib-docs/item.html?id=mech%3Agearbox_oak) - an omnidirectional hub: it passes power on all six faces but **not** spin direction (each side settles its own rotation). Split one input several ways, or turn a corner without a gear's counter-rotation. A wood-keyed frame block.
 - [**Clutch**](https://def9a2a4.github.io/defCoreLib-docs/item.html?id=mech%3Aclutch) - disconnects the line while it receives a redstone signal.
 - [**Reverser**](https://def9a2a4.github.io/defCoreLib-docs/item.html?id=mech%3Areverser) - flips spin direction on a redstone signal. Mostly useful for Rotators.
+- [**Ratchet**](https://def9a2a4.github.io/defCoreLib-docs/item.html?id=mech%3Aratchet) - a one-way rotation valve: it drives one direction and freewheels (disconnects) the other instead of jamming. Wrench to set the allowed direction.
+- [**Chain pulley**](https://def9a2a4.github.io/defCoreLib-docs/item.html?id=mech%3Achain_pulley) - links rotational power across a gap: chain pulleys together into a closed loop (three or more) to carry power between them.
 
 ## Machines
 
 - [**Millstone**](https://def9a2a4.github.io/defCoreLib-docs/item.html?id=mech%3Amillstone) - grinds items (e.g. cobblestone -> gravel -> sand, bone -> bone meal).
 - [**Extractor press**](https://def9a2a4.github.io/defCoreLib-docs/item.html?id=mech%3Apress) - presses items into juices and oils (consumes glass bottles).
+- [**Sieve**](https://def9a2a4.github.io/defCoreLib-docs/item.html?id=mech%3Asieve) - pans items from its storage when powered (needs water below) - sifts gravel and sand for nuggets, flint, and other finds.
 - [**Fan**](https://def9a2a4.github.io/defCoreLib-docs/item.html?id=mech%3Afan) - pushes entities and items away in a fixed ~5-block beam; surplus power pushes harder, not farther.
-- [**Drill**](https://def9a2a4.github.io/defCoreLib-docs/item.html?id=mech%3Adrill) - mines the blocks in front of it.
-- [**Placer**](https://def9a2a4.github.io/defCoreLib-docs/item.html?id=mech%3Aplacer) - places blocks from an attached inventory.
+- [**Drill**](https://def9a2a4.github.io/defCoreLib-docs/item.html?id=mech%3Adrill) - breaks the block in front of it in timed stages while powered. Mounted on a rotator it sweep-mines an arc at any angle, at 2x speed.
+- [**Placer**](https://def9a2a4.github.io/defCoreLib-docs/item.html?id=mech%3Aplacer) - places blocks from an attached inventory into the space in front of it.
+- [**Mechanical dispenser**](https://def9a2a4.github.io/defCoreLib-docs/item.html?id=mech%3Amechanical_dispenser) - a dispenser whose contents fly out with a rotation-driven launch when powered.
+- [**Copper water pump**](https://def9a2a4.github.io/defCoreLib-docs/item.html?id=mech%3Apump) - pumps a bucket of water upward each cycle when powered; wrench flips the flow.
+- [**Suction hopper**](https://def9a2a4.github.io/defCoreLib-docs/item.html?id=mech%3Asuction_hopper) - pulls nearby dropped items inward while powered and feeds the container it's mounted on.
+
+The drill, placer, and fan reorient when carried by a mechanism, aiming along their own facing rotated by the mechanism's motion.
 
 ## Power output
 
@@ -45,9 +56,12 @@ shafts and gears, branch or turn corners with gears, and gate the flow with clut
 
 ## Structures & vehicles
 
-- [**Rotators**](https://def9a2a4.github.io/defCoreLib-docs/item.html?id=mech%3Arotator) - glue any block structure to a rotator to make swinging **doors** and **drawbridges**,
-  powered by the network.
+- [**Rotators**](https://def9a2a4.github.io/defCoreLib-docs/item.html?id=mech%3Arotator) - glue any block structure to a rotator to make swinging **doors**, **drawbridges**, and
+  ceiling **hatches**, powered by the network. It keeps its chosen open angle even when carried by another mechanism.
+- [**Chain hoist**](https://def9a2a4.github.io/defCoreLib-docs/item.html?id=mech%3Achain_hoist) - pays out chain to raise and lower whatever hangs beneath it; a shaft through it drives the lift (CW lowers, CCW raises).
+- [**Mechanical piston**](https://def9a2a4.github.io/defCoreLib-docs/item.html?id=mech%3Apiston_core) - a rotation-powered piston: spin it one way to extend, the other to retract, pushing a glued structure.
 - [**Mechanical minecarts**](https://def9a2a4.github.io/defCoreLib-docs/item.html?id=mech%3Amechanism_minecart) - carry a glued block structure along rails. Mostly decorative for now, more features coming soon!
+- **Frame blocks** ([Casing](https://def9a2a4.github.io/defCoreLib-docs/item.html?id=mech%3Acasing_oak), [Gearbox](https://def9a2a4.github.io/defCoreLib-docs/item.html?id=mech%3Agearbox_oak), [Chassis](https://def9a2a4.github.io/defCoreLib-docs/item.html?id=mech%3Achassis_oak)) - wood-keyed building blocks that auto-glue to same-wood frame neighbours; a **Chassis** also grabs every adjacent movable block like a slime block, dragging a whole payload with no brush.
 - [**Glue brush**](https://def9a2a4.github.io/defCoreLib-docs/item.html?id=mech%3Aglue_item) - the authoring tool that binds blocks into a movable structure.
 
 [![Mechanism catalog](https://def9a2a4.github.io/defCoreLib-docs/readmes/assets/mech/catalog-1.png)](https://def9a2a4.github.io/defCoreLib-docs/index.html?ns=mech)
