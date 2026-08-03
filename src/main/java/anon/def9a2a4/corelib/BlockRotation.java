@@ -119,7 +119,11 @@ public final class BlockRotation {
      * (same rule as {@link #rotateSpinDir} for a source's PDC spin_dir). No-op when either state carries no
      * cw/ccw token (i.e. every block but the ratchet), so it is safe to call for any landed custom state.
      */
-    static String preserveSpinToken(String capturedState, String landedState, float yawDegrees) {
+    static String preserveSpinToken(@Nullable String capturedState, @Nullable String landedState,
+                                    float yawDegrees) {
+        // A stateless custom head captures customState == null → rotateCustomState returns null → both
+        // states null here. Mirror rotateCustomState's null tolerance rather than throwing mid-landing.
+        if (capturedState == null || landedState == null) return landedState;
         String capDir = spinToken(capturedState);
         String landedDir = spinToken(landedState);
         if (capDir == null || landedDir == null) return landedState;
@@ -133,7 +137,8 @@ public final class BlockRotation {
     }
 
     /** The cw/ccw token in a custom state ({@code idle_cw_x} → "cw"), or null if it carries none. */
-    private static @Nullable String spinToken(String state) {
+    private static @Nullable String spinToken(@Nullable String state) {
+        if (state == null) return null;
         for (String tok : state.split("_")) {
             if (tok.equals("cw") || tok.equals("ccw")) return tok;
         }
