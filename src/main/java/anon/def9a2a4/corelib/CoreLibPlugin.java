@@ -1646,9 +1646,24 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         return false;
     }
 
+    /** Within the mech namespace, these id-prefixes sort to the END of the catalog list, in this order. */
+    private static final List<String> MECH_TRAILING_PREFIXES = List.of("casing_", "gearbox_", "chassis_");
+
+    /** Catalog sort rank within a namespace: mech casings/gearboxes/chassis trail everything else (in that
+     *  order); 0 for all other types. Keeps the wood-family bulk blocks after the interesting ones. */
+    private static int catalogSortRank(CustomHeadBlock t) {
+        if (t.namespace().equals("mech")) {
+            String id = t.typeId();
+            for (int i = 0; i < MECH_TRAILING_PREFIXES.size(); i++)
+                if (id.startsWith(MECH_TRAILING_PREFIXES.get(i))) return i + 1;
+        }
+        return 0;
+    }
+
     private List<CustomHeadBlock> catalogSortedTypes() {
         List<CustomHeadBlock> list = new ArrayList<>(registry.allTypes());
         list.sort(java.util.Comparator.comparing(CustomHeadBlock::namespace)
+                .thenComparingInt(CoreLibPlugin::catalogSortRank)
                 .thenComparing(t -> catalogPlainName(t).toLowerCase(java.util.Locale.ROOT)));
         return list;
     }
