@@ -762,6 +762,8 @@ public class PipeManager {
         if (filterPipes.isEmpty()) return null;
         List<PipeFilterStore.FilterData> filters = new ArrayList<>(filterPipes.size());
         for (Location loc : filterPipes) {
+            // A redstone-powered filter pipe is switched OFF: it blocks everything on its chain.
+            if (isPipePowered(loc.getBlock())) return item -> false;
             filters.add(getFilter(loc));
         }
         return item -> {
@@ -770,6 +772,22 @@ public class PipeManager {
             }
             return true;
         };
+    }
+
+    /**
+     * Whether a filter pipe is currently redstone-powered (→ switched off). A player head is a non-full
+     * block, so redstone wired to the block it is mounted on powers the MOUNT cell, which the head cell
+     * doesn't see — mirror CoreLib's EXTENDED head sensing and check both. Live query, no cached state.
+     */
+    private boolean isPipePowered(Block block) {
+        if (block.getBlockPower() > 0) return true;
+        Block mount = switch (block.getType()) {
+            case PLAYER_WALL_HEAD -> block.getBlockData() instanceof org.bukkit.block.data.Directional d
+                ? block.getRelative(d.getFacing().getOppositeFace()) : null;
+            case PLAYER_HEAD -> block.getRelative(BlockFace.DOWN);
+            default -> null;
+        };
+        return mount != null && mount.getBlockPower() > 0;
     }
 
     /**
