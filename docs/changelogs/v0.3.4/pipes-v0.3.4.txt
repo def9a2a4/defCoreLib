@@ -8,6 +8,8 @@ FILTER PIPES (NEW)
   flow past. Two filter pipes in series must both allow an item.
 - Place several filter pipes on one chest, each feeding a different
   destination, to sort items with no extra machinery.
+- Power a filter pipe with redstone to switch it OFF: it stops passing
+  items — and stops its whole line — until unpowered.
 - Right-click a filter pipe to open its filter: drop item stacks into the
   slots to set what passes. The items are consumed into the pipe and drop
   back when it is broken.
