@@ -581,7 +581,7 @@ final class BasicMechanism implements Mechanism {
         if (!landedAnchorTargets.isEmpty()) {
             Set<Block> placedSet = new HashSet<>(placed);
             for (int k = 0; k < landedAnchorTargets.size(); k++) {
-                GlueManager.rebindLanded(registry, new BlockAnchor(landedAnchorTargets.get(k), () -> true),
+                GlueManager.rebindLanded(registry, blocks.size(), new BlockAnchor(landedAnchorTargets.get(k), () -> true),
                     landedAnchorOffsets.get(k), rotation, placedSet);
             }
         }

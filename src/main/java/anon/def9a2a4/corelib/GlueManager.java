@@ -203,12 +203,13 @@ final class GlueManager {
      * to reality whenever anything fails to place. No-op when {@code preMoveOffsets} is null.
      */
     void rebindLanded(Anchor a, int @Nullable [] preMoveOffsets, Matrix4f rotation, Set<Block> placed) {
-        rebindLanded(registry, a, preMoveOffsets, rotation, placed);
+        rebindLanded(registry, maxSize, a, preMoveOffsets, rotation, placed);
     }
 
     /** Static form so callers without a {@link GlueManager} (the engine's per-block captured-anchor
-     *  rebind in {@link BasicMechanism#disassemble}) share the identical prune. */
-    static void rebindLanded(@Nullable CustomBlockRegistry registry, Anchor a,
+     *  rebind in {@link BasicMechanism#disassemble}) share the identical prune. {@code cap} bounds the
+     *  sticky-closure walk (Path A passes {@code maxSize}; Path B the mechanism's block count). */
+    static void rebindLanded(@Nullable CustomBlockRegistry registry, int cap, Anchor a,
                              int @Nullable [] preMoveOffsets, Matrix4f rotation, Set<Block> placed) {
         if (preMoveOffsets == null) return;
         Block origin = a.originBlock();
@@ -224,22 +225,26 @@ final class GlueManager {
             if (placed.contains(w.getBlockAt(ox + x, oy + y, oz + z))) landed.add(new Vector3i(x, y, z));
         }
         // (3) prune disconnection, then (4) write
-        a.writeOffsets(packOffsets(pruneConnected(registry, a, landed)));
+        a.writeOffsets(packOffsets(pruneConnected(registry, cap, a, landed)));
     }
 
     /** The subset of {@code landed} still connected to the anchor origin — cardinally, through other
-     *  landed cells OR the derived sticky closure of the landed set. Origin-seeded fixpoint, the inverse
-     *  of {@link #glueCuboid}'s growth. */
-    private static Set<Vector3i> pruneConnected(@Nullable CustomBlockRegistry registry, Anchor a,
+     *  landed cells OR sticky blocks that are THEMSELVES connected back to the origin. Origin-seeded
+     *  fixpoint, the inverse of {@link #glueCuboid}'s growth. */
+    private static Set<Vector3i> pruneConnected(@Nullable CustomBlockRegistry registry, int cap, Anchor a,
                                                 Set<Vector3i> landed) {
-        Set<Vector3i> derived = derivedFromStatic(registry, a, landed); // sticky bridges — count as connectors
         Set<Vector3i> reachable = new LinkedHashSet<>();
         List<Vector3i> pending = new ArrayList<>(landed);
         boolean changed = true;
         while (changed) {
             changed = false;
+            // Recompute the sticky closure from the GROWING reachable set each pass (mirrors glueCuboid,
+            // which recomputes derivedFrom(a, accepted) per pass). Computing it ONCE over all `landed`
+            // would let sticky blocks attracted to a DISCONNECTED clump act as connectors-to-origin — a
+            // clump would then be wrongly kept just for touching a loose/world sticky block. Seeding from
+            // origin + reachable means a clump's own sticky neighbours never bridge it back.
             Set<Vector3i> connectors = new LinkedHashSet<>(reachable);
-            connectors.addAll(derived);
+            connectors.addAll(derivedFromStatic(registry, cap, a, reachable));
             var it = pending.iterator();
             while (it.hasNext()) {
                 Vector3i off = it.next();
@@ -249,9 +254,10 @@ final class GlueManager {
         return reachable;
     }
 
-    /** {@link #derivedFrom} without a GlueManager instance and with no size cap (the landed set is
-     *  already bounded; we want the FULL sticky closure as connectors, never a truncated one). */
-    private static Set<Vector3i> derivedFromStatic(@Nullable CustomBlockRegistry registry, Anchor a,
+    /** {@link #derivedFrom} without a GlueManager instance, capped at {@code cap} (bounds the walk over
+     *  the world sticky network — an uncapped closure could scan thousands of frame blocks per
+     *  disassembly on the main thread). */
+    private static Set<Vector3i> derivedFromStatic(@Nullable CustomBlockRegistry registry, int cap, Anchor a,
                                                    Set<Vector3i> authoredOffsets) {
         Set<Vector3i> set = new LinkedHashSet<>();
         if (registry == null) return set;
@@ -263,7 +269,7 @@ final class GlueManager {
             Block b = w.getBlockAt(ox + off.x, oy + off.y, oz + off.z);
             if (!b.getType().isAir()) authored.add(b);
         }
-        for (Block d : StickySpread.derived(authored, origin, registry, Integer.MAX_VALUE)) {
+        for (Block d : StickySpread.derived(authored, origin, registry, Math.max(cap, 1))) {
             set.add(new Vector3i(d.getX() - ox, d.getY() - oy, d.getZ() - oz));
         }
         return set;
