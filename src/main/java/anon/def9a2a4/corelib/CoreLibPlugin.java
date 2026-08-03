@@ -1603,6 +1603,12 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onEntityDamage(org.bukkit.event.entity.EntityDamageEvent event) {
+        // A mechanism minecart must stay destroyable — while assembled it also carries a
+        // corelib:mech:{id}:vehicle tag, but breaking it should force-disassemble and drop the custom
+        // item (VehicleDestroyEvent → MechanismMinecartManager.onMinecartDestroyed), so never shield it.
+        // Only the cart bears this tag; the fragile display/collider/parent/non-cart-vehicle entities do
+        // not, so they keep their protection.
+        if (event.getEntity().getScoreboardTags().contains("corelib:mechanism_minecart")) return;
         for (String tag : event.getEntity().getScoreboardTags()) {
             if (tag.startsWith("corelib:mech:")) {
                 event.setCancelled(true);
