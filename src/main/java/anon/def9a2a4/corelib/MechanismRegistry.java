@@ -21,6 +21,7 @@ import org.joml.Vector3f;
 import org.jspecify.annotations.Nullable;
 
 import java.util.*;
+import java.util.function.Predicate;
 
 /**
  * Manages active mechanisms: assembly, ticking (particles + animations),
@@ -41,12 +42,43 @@ public class MechanismRegistry {
     private boolean dynamicLightsEnabled = true; // tag light-emitting blocks for the optional DynLight plugin
     private boolean scaleWarned = false; // one-time guard for the missing-scale-attribute warning
 
+    // Glue-structure size cap (config rotation.glueMaxSize). Bounds the sticky-closure walk in the
+    // landing-glue disconnection prune (GlueManager.rebindLanded) for captured nested anchors — must
+    // match the cap authoring used, else the prune can starve a legitimate sticky bridge and over-prune
+    // still-connected glue. Set by CoreLibPlugin once GlueManager exists; Integer.MAX_VALUE until then
+    // (uncapped = over-prune-safe, just unbounded — the setter always runs at enable).
+    private int glueMaxSize = Integer.MAX_VALUE;
+    void setGlueMaxSize(int n) { this.glueMaxSize = n; }
+    int glueMaxSize() { return glueMaxSize; }
+
     // Powers rotation parts riding assembled mechanisms (built on assemble, ticked per mech,
     // torn down on removal). Set by CoreLibPlugin once the rotation systems exist; null-safe
     // so bare MechanismRegistry construction (tests, other consumers) keeps working.
     private @Nullable MechanismRotationDriver rotationDriver;
 
     void setRotationDriver(@Nullable MechanismRotationDriver driver) { this.rotationDriver = driver; }
+
+    // Reports whether a captured block is the in-world anchor of a mechanism that is currently mid-motion
+    // (a rotator/door pivot head still in-world during a swing, a piston core mid-stroke, a moving hoist
+    // head). Moving such an anchor into an OUTER mechanism would air it out → force-disassemble the inner
+    // mechanism → orphan its platform. Set by CoreLibPlugin once the movers exist; null-safe so bare
+    // MechanismRegistry construction (tests, other consumers) keeps working. Gluing an idle anchor stays
+    // allowed — only a mid-motion anchor is refused, and only at capture time.
+    private @Nullable Predicate<Block> anchorInMotion;
+
+    void setAnchorInMotion(@Nullable Predicate<Block> predicate) {
+        this.anchorInMotion = predicate;
+    }
+
+    /** The first block in {@code blocks} that is a mid-motion mechanism anchor, or null if none — a mover
+     *  calls this on its FINAL captured list before any side effect and refuses the move if non-null. */
+    @Nullable Block firstMovingCapturedAnchor(List<Block> blocks) {
+        if (anchorInMotion == null) return null;
+        for (Block b : blocks) {
+            if (anchorInMotion.test(b)) return b;
+        }
+        return null;
+    }
 
     // Lets BetterBanners displays (flag/large/huge/bed — standalone ItemDisplays keyed to a host
     // block's coords) ride assembled mechanisms and re-attach on landing. Set by CoreLibPlugin;
@@ -176,9 +208,17 @@ public class MechanismRegistry {
                                        float rideOffset, @Nullable MechanismSerializer serializer) {
         UUID mechId = UUID.randomUUID();
         Location pivot = existingVehicle.getLocation();
-        existingVehicle.addScoreboardTag("corelib:mech:" + mechId + ":vehicle");
-        return assembleCore(mechId, type, blocks, List.of(), pivot, AXIS_Y, existingVehicle, rideOffset,
-            false, serializer);
+        String vehicleTag = "corelib:mech:" + mechId + ":vehicle";
+        existingVehicle.addScoreboardTag(vehicleTag);
+        // We don't own the vehicle (caller keeps it), but the tag is ours: strip it if assembly throws
+        // before the mechanism is registered, so a foreign entity isn't left carrying a stale vehicle tag.
+        try {
+            return assembleCore(mechId, type, blocks, List.of(), pivot, AXIS_Y, existingVehicle, rideOffset,
+                false, serializer);
+        } catch (RuntimeException e) {
+            existingVehicle.removeScoreboardTag(vehicleTag);
+            throw e;
+        }
     }
 
     /**

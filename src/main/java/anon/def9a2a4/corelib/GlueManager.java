@@ -248,7 +248,10 @@ final class GlueManager {
             var it = pending.iterator();
             while (it.hasNext()) {
                 Vector3i off = it.next();
-                if (connects(off, connectors)) { reachable.add(off); it.remove(); changed = true; }
+                // Add the accepted cell to connectors WITHIN this pass (mirrors glueCuboid) so a straight
+                // glued line reconnects in connectivity-diameter passes, not one cell per pass. Its derived
+                // closure still waits for the next pass's recompute.
+                if (connects(off, connectors)) { reachable.add(off); connectors.add(off); it.remove(); changed = true; }
             }
         }
         return reachable;

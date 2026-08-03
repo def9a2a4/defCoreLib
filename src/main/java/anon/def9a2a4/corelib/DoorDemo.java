@@ -82,6 +82,10 @@ final class DoorDemo {
             }
             planks = StickySpread.withDerived(planks, registry, glueManager.maxSize(),
                 Set.of(key), MoverExclusion::blockedParticle);
+            // Refuse to swing an in-motion anchor (mid-swing rotator/door head, mid-stroke piston core,
+            // moving hoist head) — carrying it would air it out and force-disassemble that mechanism.
+            Block busy = mechRegistry.firstMovingCapturedAnchor(planks);
+            if (busy != null) { MoverExclusion.blockedParticle(null, busy); return; }
             mech = mechRegistry.assembleMechanism("demo:door", planks,
                 head.getLocation().add(0.5, 0, 0.5), null);
             final Mechanism assembled = mech;
@@ -150,6 +154,10 @@ final class DoorDemo {
             }
             planks = StickySpread.withDerived(planks, registry, glueManager.maxSize(),
                 Set.of(key), MoverExclusion::blockedParticle);
+            // Refuse to swing an in-motion anchor (mid-swing rotator/door head, mid-stroke piston core,
+            // moving hoist head) — carrying it would air it out and force-disassemble that mechanism.
+            Block busy = mechRegistry.firstMovingCapturedAnchor(planks);
+            if (busy != null) { MoverExclusion.blockedParticle(null, busy); return; }
             mech = mechRegistry.assembleMechanism("demo:door", planks,
                 head.getLocation().add(0.5, 0, 0.5), null);
             final Mechanism assembled = mech;
@@ -191,6 +199,12 @@ final class DoorDemo {
     private void cancelExistingTask(CustomBlockRegistry.LocationKey key) {
         BukkitTask task = activeTasks.remove(key);
         if (task != null) task.cancel();
+    }
+
+    /** Whether this door's pivot head is mid-swing — its head stays in-world while swinging, so an outer
+     *  mover must refuse to CARRY it (moving it would force-disassemble this door). */
+    boolean isMoving(Block head) {
+        return activeDoors.containsKey(CustomBlockRegistry.LocationKey.of(head));
     }
 
     // ──────────────────────────────────────────────────────────────────────

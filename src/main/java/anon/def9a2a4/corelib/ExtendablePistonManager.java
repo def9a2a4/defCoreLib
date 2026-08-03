@@ -284,6 +284,13 @@ final class ExtendablePistonManager {
         if (network.getNode(k) != null) network.recalcReactive(k);
     }
 
+    /** Whether this piston's core is mid-stroke — the core stays in-world (protected, never aired out)
+     *  during a stroke, so an outer mover must refuse to CARRY it (moving it would force-disassemble this
+     *  piston via the core's onBlockRemoved handler). */
+    boolean isMoving(Block block) {
+        return active.containsKey(CustomBlockRegistry.LocationKey.of(block));
+    }
+
     private void forget(Block b) {
         CustomBlockRegistry.LocationKey k = CustomBlockRegistry.LocationKey.of(b);
         network.removeNode(k);

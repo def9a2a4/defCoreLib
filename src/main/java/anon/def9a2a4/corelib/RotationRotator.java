@@ -120,6 +120,12 @@ final class RotationRotator implements Listener {
         return swingCount.getOrDefault(CustomBlockRegistry.LocationKey.of(head), 0);
     }
 
+    /** Whether this rotator's pivot head is mid-swing — its head stays in-world during a swing, so an
+     *  outer mover must refuse to CARRY it (moving it would force-disassemble this rotator). */
+    boolean isMoving(Block head) {
+        return activeRotators.containsKey(CustomBlockRegistry.LocationKey.of(head));
+    }
+
     // ──────────────────────────────────────────────────────────────────────
     // Trigger: redstone rising edge → one rotation
     // ──────────────────────────────────────────────────────────────────────
@@ -187,6 +193,12 @@ final class RotationRotator implements Listener {
         // Sticky spread: a casing/slime/honey block in the swung set bonds its neighbours (transitively).
         planks = StickySpread.withDerived(planks, registry, glueManager.maxSize(),
             excluded, MoverExclusion::blockedParticle);
+
+        // Refuse to swing an in-motion anchor (a mid-swing rotator/door head, mid-stroke piston core, moving
+        // hoist head) — carrying it would air it out and force-disassemble that inner mechanism. Runs before
+        // any side effect; own head is excluded above so this never flags us.
+        Block busy = mechRegistry.firstMovingCapturedAnchor(planks);
+        if (busy != null) { MoverExclusion.blockedParticle(null, busy); return; }
 
         Mechanism mech = mechRegistry.assembleMechanism(ROTATOR_ID, planks,
             head.getLocation().add(0.5, 0, 0.5), axis, null);
