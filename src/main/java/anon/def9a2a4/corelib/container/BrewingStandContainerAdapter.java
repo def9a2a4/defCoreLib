@@ -55,6 +55,25 @@ public class BrewingStandContainerAdapter implements ContainerAdapter {
     }
 
     @Override
+    public ItemStack peekExtract(Block block, int maxAmount, java.util.function.Predicate<ItemStack> accept) {
+        if (!(block.getState() instanceof BrewingStand stand)) return null;
+        if (stand.getBrewingTime() > 0) return null;
+
+        // Scan all bottle slots for the first matching potion so a filter can see past a non-matching
+        // bottle in an earlier slot (the single-candidate default would stop at slot 0).
+        BrewerInventory inv = stand.getInventory();
+        for (int i = 0; i < BOTTLE_SLOTS; i++) {
+            ItemStack item = inv.getItem(i);
+            if (item != null && !item.getType().isAir() && accept.test(item)) {
+                ItemStack result = item.clone();
+                result.setAmount(Math.min(result.getAmount(), maxAmount));
+                return result;
+            }
+        }
+        return null;
+    }
+
+    @Override
     public void commitExtract(Block block, ItemStack extracted) {
         if (!(block.getState() instanceof BrewingStand stand)) return;
         ContainerAdapter.removeFromSlots(stand.getInventory(), extracted, 0, BOTTLE_SLOTS);
