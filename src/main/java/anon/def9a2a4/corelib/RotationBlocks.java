@@ -90,7 +90,9 @@ final class RotationBlocks {
     private static void returnEmptyBottle(Inventory storage) {
         Map<Integer, ItemStack> leftover = storage.addItem(new ItemStack(Material.GLASS_BOTTLE));
         if (leftover.isEmpty()) return;
-        Location loc = storage.getLocation();
+        // Engine/burner storage is a virtual inventory (Bukkit.createInventory), whose getLocation()
+        // is null — take the block location from the StorageHolder so the overflow actually drops.
+        Location loc = storage.getHolder() instanceof StorageHolder sh ? sh.location() : storage.getLocation();
         if (loc != null && loc.getWorld() != null) {
             for (ItemStack extra : leftover.values()) loc.getWorld().dropItemNaturally(loc, extra);
         }
