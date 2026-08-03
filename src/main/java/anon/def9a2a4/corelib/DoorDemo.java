@@ -109,8 +109,13 @@ final class DoorDemo {
                 if (tick >= duration) {
                     BukkitTask t = activeTasks.remove(key);
                     if (t != null) t.cancel();
-                    m.disassemble();
-                    activeDoors.remove(key);
+                    // finally: a throwing disassemble must still clear the map, else isMoving(head) stays
+                    // true forever and the in-motion-anchor guard refuses to ever carry this door head.
+                    try {
+                        m.disassemble();
+                    } finally {
+                        activeDoors.remove(key);
+                    }
                 }
             }
         }, timerDelay, 1);
@@ -181,8 +186,13 @@ final class DoorDemo {
                 if (tick >= duration) {
                     BukkitTask t = activeTasks.remove(key);
                     if (t != null) t.cancel();
-                    m.disassemble();
-                    activeDoors.remove(key);
+                    // finally: a throwing disassemble must still clear the map, else isMoving(head) stays
+                    // true forever and the in-motion-anchor guard refuses to ever carry this door head.
+                    try {
+                        m.disassemble();
+                    } finally {
+                        activeDoors.remove(key);
+                    }
                 }
             }
         }, timerDelay, 1);
