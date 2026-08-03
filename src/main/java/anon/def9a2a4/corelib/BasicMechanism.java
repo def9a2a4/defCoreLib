@@ -504,10 +504,14 @@ final class BasicMechanism implements Mechanism {
         // the reactive break guard in ChainHoistManager). Lazily allocated — the common landing drops none.
         Set<Long> droppedChainCols = null;
 
-        // Captured nested-anchor heads that landed (e.g. a hoist glued onto a rotator): their region is
-        // re-stamped AFTER the loop — once `placed` is known — so rebindLanded can prune the glue to the
-        // cells that actually placed and propagate disconnection. Parallel lists: target block + its
-        // pre-move offsets (mb.glueOffsets). Was an inline rebindLandedGlue call per landed anchor.
+        // Captured nested-anchor heads that landed (e.g. a piston head inside a rotator's swing): their
+        // region is re-stamped AFTER the loop — once `placed` is known — so rebindLanded can prune the
+        // glue to the cells that actually placed and propagate disconnection. Parallel lists: target
+        // block + its pre-move offsets (mb.glueOffsets). Was an inline rebindLandedGlue call per anchor.
+        // Hoist skulls are EXCLUDED (see the isHoist guard below): a hoist's offsets are stored
+        // seed-relative (HoistAnchor), not skull-relative, so the generic BlockAnchor rebind here would
+        // write garbage; configPdc restore strips corelib: keys, so the landed hoist simply re-derives
+        // its platform from its seed/chain instead — the correct HoistAnchor-domain behavior.
         List<Block> landedAnchorTargets = new ArrayList<>();
         List<int[]> landedAnchorOffsets = new ArrayList<>();
 
@@ -553,13 +557,13 @@ final class BasicMechanism implements Mechanism {
                 placeBlock(target, mb, snappedYaw);
                 placed.add(target);
                 landBanners(target, mb, snappedYaw, upright);
-                if (mb.glueOffsets != null) { landedAnchorTargets.add(target); landedAnchorOffsets.add(mb.glueOffsets); }
+                if (mb.glueOffsets != null && !ChainHoistManager.isHoist(target, registry)) { landedAnchorTargets.add(target); landedAnchorOffsets.add(mb.glueOffsets); }
             } else if (FragileBlocks.isFragile(target.getType())) {
                 target.breakNaturally();
                 placeBlock(target, mb, snappedYaw);
                 placed.add(target);
                 landBanners(target, mb, snappedYaw, upright);
-                if (mb.glueOffsets != null) { landedAnchorTargets.add(target); landedAnchorOffsets.add(mb.glueOffsets); }
+                if (mb.glueOffsets != null && !ChainHoistManager.isHoist(target, registry)) { landedAnchorTargets.add(target); landedAnchorOffsets.add(mb.glueOffsets); }
             } else if (mb.ghost && target.getBlockData().equals(mb.blockData)) {
                 // A blocked GHOST whose cell already holds its identical block is discarded silently:
                 // ghosts are data-only (never captured from the world), so dropping one here mints an
