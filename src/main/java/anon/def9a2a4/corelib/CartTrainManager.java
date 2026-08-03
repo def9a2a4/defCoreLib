@@ -349,6 +349,10 @@ final class CartTrainManager implements Listener {
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onDestroyed(VehicleDestroyEvent event) {
         if (!(event.getVehicle() instanceof Minecart cart)) return;
+        // A mechanism minecart never couples (frozen-cart contract), so it can never sever/drop train
+        // chains. Guard defensively — mirrors CartRailsManager.destroy — so a future contract slip can't
+        // make a destroyed mechanism cart spray chain items.
+        if (cart.getScoreboardTags().contains(TAG_MECHANISM)) return;
         severAndDrop(cart);
     }
 

@@ -1213,9 +1213,16 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         registry.loadHintsForWorld(event.getWorld().getUID());
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.MONITOR)
     public void onWorldUnload(org.bukkit.event.world.WorldUnloadEvent event) {
-        registry.saveHintsForWorld(event.getWorld().getUID());
+        registry.saveHintsForWorld(event.getWorld().getUID());   // idempotent — fine even if cancelled below
+        // WorldUnloadEvent is Cancellable — a later handler may keep the world loaded, so don't tear its
+        // mechanisms down. This path (Bukkit.unloadWorld / Multiverse /mvunload) may not fire per-chunk
+        // EntitiesUnloadEvent, so disassemble assembled carts + mid-stroke mechanisms here (blocks still
+        // writable) to avoid orphaning them. Idempotent with the EntitiesUnload path.
+        if (event.isCancelled()) return;
+        if (mechanismMinecartManager != null) mechanismMinecartManager.onWorldUnload(event.getWorld());
+        if (mechanismRegistry != null) mechanismRegistry.onWorldUnload(event.getWorld());
     }
 
     // ──────────────────────────────────────────────────────────────────────

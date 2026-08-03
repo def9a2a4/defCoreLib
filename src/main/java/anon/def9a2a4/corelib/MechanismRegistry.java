@@ -754,6 +754,30 @@ public class MechanismRegistry {
         colliderIndex.clear();
     }
 
+    /**
+     * A world is unloading at runtime (e.g. /mvunload) — a path that may not fire per-chunk
+     * EntitiesUnloadEvent. Disassemble every mechanism whose pivot is in that world while its blocks are
+     * still writable, so a mid-stroke piston/hoist/door isn't orphaned (captured blocks lost). Mirrors
+     * {@link #shutdown()}'s guarded restore, scoped to one world. Idempotent: {@code disassemble()}
+     * self-deregisters, so a later EntitiesUnload for the same chunks is a no-op.
+     */
+    public void onWorldUnload(org.bukkit.World world) {
+        for (BasicMechanism mech : new ArrayList<>(activeMechanisms.values())) {
+            if (!world.equals(mech.pivot().getWorld())) continue;
+            try {
+                mech.disassemble();
+            } catch (Exception e) {
+                plugin.getLogger().warning("Mechanism " + mech.id() + " failed to disassemble on world "
+                    + "unload (" + e.getMessage() + "); removing entities without block restore");
+                try {
+                    mech.removeAllEntities();
+                } catch (Exception ignored) {
+                    // best-effort cleanup
+                }
+            }
+        }
+    }
+
     /** Toggle collider debug glow on all active (and future) mechanism shulkers. */
     public void setColliderGlow(boolean enabled) {
         this.colliderGlowEnabled = enabled;
