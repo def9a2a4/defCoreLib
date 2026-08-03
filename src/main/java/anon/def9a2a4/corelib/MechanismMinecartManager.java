@@ -112,6 +112,12 @@ final class MechanismMinecartManager implements Listener {
             if (!(entity instanceof Minecart minecart)) continue;
             if (tracked.containsKey(minecart.getUniqueId())) continue;
             if (!minecart.getScoreboardTags().contains("corelib:mechanism_minecart")) continue;
+            // A freshly scanned cart is by definition unassembled — strip any stale corelib:mech:*:vehicle
+            // tags left by a hard crash (disassembly, which strips them, never ran). Otherwise they
+            // accumulate across crash/re-assemble cycles (assembly always adds a fresh one).
+            for (String tag : new ArrayList<>(minecart.getScoreboardTags())) {
+                if (tag.startsWith("corelib:mech:") && tag.endsWith(":vehicle")) minecart.removeScoreboardTag(tag);
+            }
             tracked.put(minecart.getUniqueId(), new MinecartState(minecart));
         }
     }

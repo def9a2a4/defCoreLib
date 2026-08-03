@@ -38,6 +38,21 @@ public class VanillaContainerAdapter implements ContainerAdapter {
     }
 
     @Override
+    public ItemStack peekExtract(Block block, int maxAmount, java.util.function.Predicate<ItemStack> accept) {
+        if (!(block.getState() instanceof Container container)) return null;
+        Inventory inv = container.getInventory();
+        for (int i = 0; i < inv.getSize(); i++) {
+            ItemStack item = inv.getItem(i);
+            if (item != null && !item.getType().isAir() && accept.test(item)) {
+                ItemStack result = item.clone();
+                result.setAmount(Math.min(result.getAmount(), maxAmount));
+                return result;
+            }
+        }
+        return null;
+    }
+
+    @Override
     public void commitExtract(Block block, ItemStack extracted) {
         if (!(block.getState() instanceof Container container)) return;
         Inventory inv = container.getInventory();
