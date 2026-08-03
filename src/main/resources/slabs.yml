@@ -13,8 +13,8 @@ blocks:
     item_material: OAK_SLAB
     item_glint: true
     drops: self
-    place_sound: { sound: BLOCK_WOOD_PLACE, volume: 1.0, pitch: 1.0 }
-    break_sound: { sound: BLOCK_WOOD_BREAK, volume: 1.0, pitch: 1.0 }
+    place_sound: { sound: block.wood.place, volume: 1.0, pitch: 1.0 }
+    break_sound: { sound: block.wood.break, volume: 1.0, pitch: 1.0 }
     placement:
       allowed_faces: [NORTH, SOUTH, EAST, WEST]
       require_solid: true
@@ -59,8 +59,8 @@ blocks:
     item_material: SPRUCE_SLAB
     item_glint: true
     drops: self
-    place_sound: { sound: BLOCK_WOOD_PLACE, volume: 1.0, pitch: 1.0 }
-    break_sound: { sound: BLOCK_WOOD_BREAK, volume: 1.0, pitch: 1.0 }
+    place_sound: { sound: block.wood.place, volume: 1.0, pitch: 1.0 }
+    break_sound: { sound: block.wood.break, volume: 1.0, pitch: 1.0 }
     placement:
       allowed_faces: [NORTH, SOUTH, EAST, WEST]
       require_solid: true
@@ -105,8 +105,8 @@ blocks:
     item_material: BIRCH_SLAB
     item_glint: true
     drops: self
-    place_sound: { sound: BLOCK_WOOD_PLACE, volume: 1.0, pitch: 1.0 }
-    break_sound: { sound: BLOCK_WOOD_BREAK, volume: 1.0, pitch: 1.0 }
+    place_sound: { sound: block.wood.place, volume: 1.0, pitch: 1.0 }
+    break_sound: { sound: block.wood.break, volume: 1.0, pitch: 1.0 }
     placement:
       allowed_faces: [NORTH, SOUTH, EAST, WEST]
       require_solid: true
@@ -151,8 +151,8 @@ blocks:
     item_material: JUNGLE_SLAB
     item_glint: true
     drops: self
-    place_sound: { sound: BLOCK_WOOD_PLACE, volume: 1.0, pitch: 1.0 }
-    break_sound: { sound: BLOCK_WOOD_BREAK, volume: 1.0, pitch: 1.0 }
+    place_sound: { sound: block.wood.place, volume: 1.0, pitch: 1.0 }
+    break_sound: { sound: block.wood.break, volume: 1.0, pitch: 1.0 }
     placement:
       allowed_faces: [NORTH, SOUTH, EAST, WEST]
       require_solid: true
@@ -197,8 +197,8 @@ blocks:
     item_material: ACACIA_SLAB
     item_glint: true
     drops: self
-    place_sound: { sound: BLOCK_WOOD_PLACE, volume: 1.0, pitch: 1.0 }
-    break_sound: { sound: BLOCK_WOOD_BREAK, volume: 1.0, pitch: 1.0 }
+    place_sound: { sound: block.wood.place, volume: 1.0, pitch: 1.0 }
+    break_sound: { sound: block.wood.break, volume: 1.0, pitch: 1.0 }
     placement:
       allowed_faces: [NORTH, SOUTH, EAST, WEST]
       require_solid: true
@@ -243,8 +243,8 @@ blocks:
     item_material: DARK_OAK_SLAB
     item_glint: true
     drops: self
-    place_sound: { sound: BLOCK_WOOD_PLACE, volume: 1.0, pitch: 1.0 }
-    break_sound: { sound: BLOCK_WOOD_BREAK, volume: 1.0, pitch: 1.0 }
+    place_sound: { sound: block.wood.place, volume: 1.0, pitch: 1.0 }
+    break_sound: { sound: block.wood.break, volume: 1.0, pitch: 1.0 }
     placement:
       allowed_faces: [NORTH, SOUTH, EAST, WEST]
       require_solid: true
@@ -289,8 +289,8 @@ blocks:
     item_material: MANGROVE_SLAB
     item_glint: true
     drops: self
-    place_sound: { sound: BLOCK_WOOD_PLACE, volume: 1.0, pitch: 1.0 }
-    break_sound: { sound: BLOCK_WOOD_BREAK, volume: 1.0, pitch: 1.0 }
+    place_sound: { sound: block.wood.place, volume: 1.0, pitch: 1.0 }
+    break_sound: { sound: block.wood.break, volume: 1.0, pitch: 1.0 }
     placement:
       allowed_faces: [NORTH, SOUTH, EAST, WEST]
       require_solid: true
@@ -335,8 +335,8 @@ blocks:
     item_material: CHERRY_SLAB
     item_glint: true
     drops: self
-    place_sound: { sound: BLOCK_WOOD_PLACE, volume: 1.0, pitch: 1.0 }
-    break_sound: { sound: BLOCK_WOOD_BREAK, volume: 1.0, pitch: 1.0 }
+    place_sound: { sound: block.wood.place, volume: 1.0, pitch: 1.0 }
+    break_sound: { sound: block.wood.break, volume: 1.0, pitch: 1.0 }
     placement:
       allowed_faces: [NORTH, SOUTH, EAST, WEST]
       require_solid: true
@@ -381,8 +381,8 @@ blocks:
     item_material: PALE_OAK_SLAB
     item_glint: true
     drops: self
-    place_sound: { sound: BLOCK_WOOD_PLACE, volume: 1.0, pitch: 1.0 }
-    break_sound: { sound: BLOCK_WOOD_BREAK, volume: 1.0, pitch: 1.0 }
+    place_sound: { sound: block.wood.place, volume: 1.0, pitch: 1.0 }
+    break_sound: { sound: block.wood.break, volume: 1.0, pitch: 1.0 }
     placement:
       allowed_faces: [NORTH, SOUTH, EAST, WEST]
       require_solid: true
@@ -427,8 +427,8 @@ blocks:
     item_material: BAMBOO_SLAB
     item_glint: true
     drops: self
-    place_sound: { sound: BLOCK_WOOD_PLACE, volume: 1.0, pitch: 1.0 }
-    break_sound: { sound: BLOCK_WOOD_BREAK, volume: 1.0, pitch: 1.0 }
+    place_sound: { sound: block.wood.place, volume: 1.0, pitch: 1.0 }
+    break_sound: { sound: block.wood.break, volume: 1.0, pitch: 1.0 }
     placement:
       allowed_faces: [NORTH, SOUTH, EAST, WEST]
       require_solid: true
@@ -473,8 +473,8 @@ blocks:
     item_material: BAMBOO_MOSAIC_SLAB
     item_glint: true
     drops: self
-    place_sound: { sound: BLOCK_WOOD_PLACE, volume: 1.0, pitch: 1.0 }
-    break_sound: { sound: BLOCK_WOOD_BREAK, volume: 1.0, pitch: 1.0 }
+    place_sound: { sound: block.wood.place, volume: 1.0, pitch: 1.0 }
+    break_sound: { sound: block.wood.break, volume: 1.0, pitch: 1.0 }
     placement:
       allowed_faces: [NORTH, SOUTH, EAST, WEST]
       require_solid: true
@@ -519,8 +519,8 @@ blocks:
     item_material: CRIMSON_SLAB
     item_glint: true
     drops: self
-    place_sound: { sound: BLOCK_NETHER_WOOD_PLACE, volume: 1.0, pitch: 1.0 }
-    break_sound: { sound: BLOCK_NETHER_WOOD_BREAK, volume: 1.0, pitch: 1.0 }
+    place_sound: { sound: block.nether_wood.place, volume: 1.0, pitch: 1.0 }
+    break_sound: { sound: block.nether_wood.break, volume: 1.0, pitch: 1.0 }
     placement:
       allowed_faces: [NORTH, SOUTH, EAST, WEST]
       require_solid: true
@@ -565,8 +565,8 @@ blocks:
     item_material: WARPED_SLAB
     item_glint: true
     drops: self
-    place_sound: { sound: BLOCK_NETHER_WOOD_PLACE, volume: 1.0, pitch: 1.0 }
-    break_sound: { sound: BLOCK_NETHER_WOOD_BREAK, volume: 1.0, pitch: 1.0 }
+    place_sound: { sound: block.nether_wood.place, volume: 1.0, pitch: 1.0 }
+    break_sound: { sound: block.nether_wood.break, volume: 1.0, pitch: 1.0 }
     placement:
       allowed_faces: [NORTH, SOUTH, EAST, WEST]
       require_solid: true
@@ -611,8 +611,8 @@ blocks:
     item_material: STONE_SLAB
     item_glint: true
     drops: self
-    place_sound: { sound: BLOCK_STONE_PLACE, volume: 1.0, pitch: 1.0 }
-    break_sound: { sound: BLOCK_STONE_BREAK, volume: 1.0, pitch: 1.0 }
+    place_sound: { sound: block.stone.place, volume: 1.0, pitch: 1.0 }
+    break_sound: { sound: block.stone.break, volume: 1.0, pitch: 1.0 }
     placement:
       allowed_faces: [NORTH, SOUTH, EAST, WEST]
       require_solid: true
@@ -657,8 +657,8 @@ blocks:
     item_material: COBBLESTONE_SLAB
     item_glint: true
     drops: self
-    place_sound: { sound: BLOCK_STONE_PLACE, volume: 1.0, pitch: 1.0 }
-    break_sound: { sound: BLOCK_STONE_BREAK, volume: 1.0, pitch: 1.0 }
+    place_sound: { sound: block.stone.place, volume: 1.0, pitch: 1.0 }
+    break_sound: { sound: block.stone.break, volume: 1.0, pitch: 1.0 }
     placement:
       allowed_faces: [NORTH, SOUTH, EAST, WEST]
       require_solid: true
@@ -703,8 +703,8 @@ blocks:
     item_material: MOSSY_COBBLESTONE_SLAB
     item_glint: true
     drops: self
-    place_sound: { sound: BLOCK_STONE_PLACE, volume: 1.0, pitch: 1.0 }
-    break_sound: { sound: BLOCK_STONE_BREAK, volume: 1.0, pitch: 1.0 }
+    place_sound: { sound: block.stone.place, volume: 1.0, pitch: 1.0 }
+    break_sound: { sound: block.stone.break, volume: 1.0, pitch: 1.0 }
     placement:
       allowed_faces: [NORTH, SOUTH, EAST, WEST]
       require_solid: true
@@ -749,8 +749,8 @@ blocks:
     item_material: SMOOTH_STONE_SLAB
     item_glint: true
     drops: self
-    place_sound: { sound: BLOCK_STONE_PLACE, volume: 1.0, pitch: 1.0 }
-    break_sound: { sound: BLOCK_STONE_BREAK, volume: 1.0, pitch: 1.0 }
+    place_sound: { sound: block.stone.place, volume: 1.0, pitch: 1.0 }
+    break_sound: { sound: block.stone.break, volume: 1.0, pitch: 1.0 }
     placement:
       allowed_faces: [NORTH, SOUTH, EAST, WEST]
       require_solid: true
@@ -795,8 +795,8 @@ blocks:
     item_material: STONE_BRICK_SLAB
     item_glint: true
     drops: self
-    place_sound: { sound: BLOCK_STONE_PLACE, volume: 1.0, pitch: 1.0 }
-    break_sound: { sound: BLOCK_STONE_BREAK, volume: 1.0, pitch: 1.0 }
+    place_sound: { sound: block.stone.place, volume: 1.0, pitch: 1.0 }
+    break_sound: { sound: block.stone.break, volume: 1.0, pitch: 1.0 }
     placement:
       allowed_faces: [NORTH, SOUTH, EAST, WEST]
       require_solid: true
@@ -841,8 +841,8 @@ blocks:
     item_material: MOSSY_STONE_BRICK_SLAB
     item_glint: true
     drops: self
-    place_sound: { sound: BLOCK_STONE_PLACE, volume: 1.0, pitch: 1.0 }
-    break_sound: { sound: BLOCK_STONE_BREAK, volume: 1.0, pitch: 1.0 }
+    place_sound: { sound: block.stone.place, volume: 1.0, pitch: 1.0 }
+    break_sound: { sound: block.stone.break, volume: 1.0, pitch: 1.0 }
     placement:
       allowed_faces: [NORTH, SOUTH, EAST, WEST]
       require_solid: true
@@ -887,8 +887,8 @@ blocks:
     item_material: GRANITE_SLAB
     item_glint: true
     drops: self
-    place_sound: { sound: BLOCK_STONE_PLACE, volume: 1.0, pitch: 1.0 }
-    break_sound: { sound: BLOCK_STONE_BREAK, volume: 1.0, pitch: 1.0 }
+    place_sound: { sound: block.stone.place, volume: 1.0, pitch: 1.0 }
+    break_sound: { sound: block.stone.break, volume: 1.0, pitch: 1.0 }
     placement:
       allowed_faces: [NORTH, SOUTH, EAST, WEST]
       require_solid: true
@@ -933,8 +933,8 @@ blocks:
     item_material: POLISHED_GRANITE_SLAB
     item_glint: true
     drops: self
-    place_sound: { sound: BLOCK_STONE_PLACE, volume: 1.0, pitch: 1.0 }
-    break_sound: { sound: BLOCK_STONE_BREAK, volume: 1.0, pitch: 1.0 }
+    place_sound: { sound: block.stone.place, volume: 1.0, pitch: 1.0 }
+    break_sound: { sound: block.stone.break, volume: 1.0, pitch: 1.0 }
     placement:
       allowed_faces: [NORTH, SOUTH, EAST, WEST]
       require_solid: true
@@ -979,8 +979,8 @@ blocks:
     item_material: DIORITE_SLAB
     item_glint: true
     drops: self
-    place_sound: { sound: BLOCK_STONE_PLACE, volume: 1.0, pitch: 1.0 }
-    break_sound: { sound: BLOCK_STONE_BREAK, volume: 1.0, pitch: 1.0 }
+    place_sound: { sound: block.stone.place, volume: 1.0, pitch: 1.0 }
+    break_sound: { sound: block.stone.break, volume: 1.0, pitch: 1.0 }
     placement:
       allowed_faces: [NORTH, SOUTH, EAST, WEST]
       require_solid: true
@@ -1025,8 +1025,8 @@ blocks:
     item_material: POLISHED_DIORITE_SLAB
     item_glint: true
     drops: self
-    place_sound: { sound: BLOCK_STONE_PLACE, volume: 1.0, pitch: 1.0 }
-    break_sound: { sound: BLOCK_STONE_BREAK, volume: 1.0, pitch: 1.0 }
+    place_sound: { sound: block.stone.place, volume: 1.0, pitch: 1.0 }
+    break_sound: { sound: block.stone.break, volume: 1.0, pitch: 1.0 }
     placement:
       allowed_faces: [NORTH, SOUTH, EAST, WEST]
       require_solid: true
@@ -1071,8 +1071,8 @@ blocks:
     item_material: ANDESITE_SLAB
     item_glint: true
     drops: self
-    place_sound: { sound: BLOCK_STONE_PLACE, volume: 1.0, pitch: 1.0 }
-    break_sound: { sound: BLOCK_STONE_BREAK, volume: 1.0, pitch: 1.0 }
+    place_sound: { sound: block.stone.place, volume: 1.0, pitch: 1.0 }
+    break_sound: { sound: block.stone.break, volume: 1.0, pitch: 1.0 }
     placement:
       allowed_faces: [NORTH, SOUTH, EAST, WEST]
       require_solid: true
@@ -1117,8 +1117,8 @@ blocks:
     item_material: POLISHED_ANDESITE_SLAB
     item_glint: true
     drops: self
-    place_sound: { sound: BLOCK_STONE_PLACE, volume: 1.0, pitch: 1.0 }
-    break_sound: { sound: BLOCK_STONE_BREAK, volume: 1.0, pitch: 1.0 }
+    place_sound: { sound: block.stone.place, volume: 1.0, pitch: 1.0 }
+    break_sound: { sound: block.stone.break, volume: 1.0, pitch: 1.0 }
     placement:
       allowed_faces: [NORTH, SOUTH, EAST, WEST]
       require_solid: true
@@ -1163,8 +1163,8 @@ blocks:
     item_material: SANDSTONE_SLAB
     item_glint: true
     drops: self
-    place_sound: { sound: BLOCK_STONE_PLACE, volume: 1.0, pitch: 1.0 }
-    break_sound: { sound: BLOCK_STONE_BREAK, volume: 1.0, pitch: 1.0 }
+    place_sound: { sound: block.stone.place, volume: 1.0, pitch: 1.0 }
+    break_sound: { sound: block.stone.break, volume: 1.0, pitch: 1.0 }
     placement:
       allowed_faces: [NORTH, SOUTH, EAST, WEST]
       require_solid: true
@@ -1209,8 +1209,8 @@ blocks:
     item_material: SMOOTH_SANDSTONE_SLAB
     item_glint: true
     drops: self
-    place_sound: { sound: BLOCK_STONE_PLACE, volume: 1.0, pitch: 1.0 }
-    break_sound: { sound: BLOCK_STONE_BREAK, volume: 1.0, pitch: 1.0 }
+    place_sound: { sound: block.stone.place, volume: 1.0, pitch: 1.0 }
+    break_sound: { sound: block.stone.break, volume: 1.0, pitch: 1.0 }
     placement:
       allowed_faces: [NORTH, SOUTH, EAST, WEST]
       require_solid: true
@@ -1255,8 +1255,8 @@ blocks:
     item_material: CUT_SANDSTONE_SLAB
     item_glint: true
     drops: self
-    place_sound: { sound: BLOCK_STONE_PLACE, volume: 1.0, pitch: 1.0 }
-    break_sound: { sound: BLOCK_STONE_BREAK, volume: 1.0, pitch: 1.0 }
+    place_sound: { sound: block.stone.place, volume: 1.0, pitch: 1.0 }
+    break_sound: { sound: block.stone.break, volume: 1.0, pitch: 1.0 }
     placement:
       allowed_faces: [NORTH, SOUTH, EAST, WEST]
       require_solid: true
@@ -1301,8 +1301,8 @@ blocks:
     item_material: RED_SANDSTONE_SLAB
     item_glint: true
     drops: self
-    place_sound: { sound: BLOCK_STONE_PLACE, volume: 1.0, pitch: 1.0 }
-    break_sound: { sound: BLOCK_STONE_BREAK, volume: 1.0, pitch: 1.0 }
+    place_sound: { sound: block.stone.place, volume: 1.0, pitch: 1.0 }
+    break_sound: { sound: block.stone.break, volume: 1.0, pitch: 1.0 }
     placement:
       allowed_faces: [NORTH, SOUTH, EAST, WEST]
       require_solid: true
@@ -1347,8 +1347,8 @@ blocks:
     item_material: SMOOTH_RED_SANDSTONE_SLAB
     item_glint: true
     drops: self
-    place_sound: { sound: BLOCK_STONE_PLACE, volume: 1.0, pitch: 1.0 }
-    break_sound: { sound: BLOCK_STONE_BREAK, volume: 1.0, pitch: 1.0 }
+    place_sound: { sound: block.stone.place, volume: 1.0, pitch: 1.0 }
+    break_sound: { sound: block.stone.break, volume: 1.0, pitch: 1.0 }
     placement:
       allowed_faces: [NORTH, SOUTH, EAST, WEST]
       require_solid: true
@@ -1393,8 +1393,8 @@ blocks:
     item_material: CUT_RED_SANDSTONE_SLAB
     item_glint: true
     drops: self
-    place_sound: { sound: BLOCK_STONE_PLACE, volume: 1.0, pitch: 1.0 }
-    break_sound: { sound: BLOCK_STONE_BREAK, volume: 1.0, pitch: 1.0 }
+    place_sound: { sound: block.stone.place, volume: 1.0, pitch: 1.0 }
+    break_sound: { sound: block.stone.break, volume: 1.0, pitch: 1.0 }
     placement:
       allowed_faces: [NORTH, SOUTH, EAST, WEST]
       require_solid: true
@@ -1439,8 +1439,8 @@ blocks:
     item_material: BRICK_SLAB
     item_glint: true
     drops: self
-    place_sound: { sound: BLOCK_STONE_PLACE, volume: 1.0, pitch: 1.0 }
-    break_sound: { sound: BLOCK_STONE_BREAK, volume: 1.0, pitch: 1.0 }
+    place_sound: { sound: block.stone.place, volume: 1.0, pitch: 1.0 }
+    break_sound: { sound: block.stone.break, volume: 1.0, pitch: 1.0 }
     placement:
       allowed_faces: [NORTH, SOUTH, EAST, WEST]
       require_solid: true
@@ -1485,8 +1485,8 @@ blocks:
     item_material: MUD_BRICK_SLAB
     item_glint: true
     drops: self
-    place_sound: { sound: BLOCK_STONE_PLACE, volume: 1.0, pitch: 1.0 }
-    break_sound: { sound: BLOCK_STONE_BREAK, volume: 1.0, pitch: 1.0 }
+    place_sound: { sound: block.stone.place, volume: 1.0, pitch: 1.0 }
+    break_sound: { sound: block.stone.break, volume: 1.0, pitch: 1.0 }
     placement:
       allowed_faces: [NORTH, SOUTH, EAST, WEST]
       require_solid: true
@@ -1531,8 +1531,8 @@ blocks:
     item_material: NETHER_BRICK_SLAB
     item_glint: true
     drops: self
-    place_sound: { sound: BLOCK_STONE_PLACE, volume: 1.0, pitch: 1.0 }
-    break_sound: { sound: BLOCK_STONE_BREAK, volume: 1.0, pitch: 1.0 }
+    place_sound: { sound: block.stone.place, volume: 1.0, pitch: 1.0 }
+    break_sound: { sound: block.stone.break, volume: 1.0, pitch: 1.0 }
     placement:
       allowed_faces: [NORTH, SOUTH, EAST, WEST]
       require_solid: true
@@ -1577,8 +1577,8 @@ blocks:
     item_material: RED_NETHER_BRICK_SLAB
     item_glint: true
     drops: self
-    place_sound: { sound: BLOCK_STONE_PLACE, volume: 1.0, pitch: 1.0 }
-    break_sound: { sound: BLOCK_STONE_BREAK, volume: 1.0, pitch: 1.0 }
+    place_sound: { sound: block.stone.place, volume: 1.0, pitch: 1.0 }
+    break_sound: { sound: block.stone.break, volume: 1.0, pitch: 1.0 }
     placement:
       allowed_faces: [NORTH, SOUTH, EAST, WEST]
       require_solid: true
@@ -1623,8 +1623,8 @@ blocks:
     item_material: QUARTZ_SLAB
     item_glint: true
     drops: self
-    place_sound: { sound: BLOCK_STONE_PLACE, volume: 1.0, pitch: 1.0 }
-    break_sound: { sound: BLOCK_STONE_BREAK, volume: 1.0, pitch: 1.0 }
+    place_sound: { sound: block.stone.place, volume: 1.0, pitch: 1.0 }
+    break_sound: { sound: block.stone.break, volume: 1.0, pitch: 1.0 }
     placement:
       allowed_faces: [NORTH, SOUTH, EAST, WEST]
       require_solid: true
@@ -1669,8 +1669,8 @@ blocks:
     item_material: SMOOTH_QUARTZ_SLAB
     item_glint: true
     drops: self
-    place_sound: { sound: BLOCK_STONE_PLACE, volume: 1.0, pitch: 1.0 }
-    break_sound: { sound: BLOCK_STONE_BREAK, volume: 1.0, pitch: 1.0 }
+    place_sound: { sound: block.stone.place, volume: 1.0, pitch: 1.0 }
+    break_sound: { sound: block.stone.break, volume: 1.0, pitch: 1.0 }
     placement:
       allowed_faces: [NORTH, SOUTH, EAST, WEST]
       require_solid: true
@@ -1715,8 +1715,8 @@ blocks:
     item_material: PRISMARINE_SLAB
     item_glint: true
     drops: self
-    place_sound: { sound: BLOCK_STONE_PLACE, volume: 1.0, pitch: 1.0 }
-    break_sound: { sound: BLOCK_STONE_BREAK, volume: 1.0, pitch: 1.0 }
+    place_sound: { sound: block.stone.place, volume: 1.0, pitch: 1.0 }
+    break_sound: { sound: block.stone.break, volume: 1.0, pitch: 1.0 }
     placement:
       allowed_faces: [NORTH, SOUTH, EAST, WEST]
       require_solid: true
@@ -1761,8 +1761,8 @@ blocks:
     item_material: PRISMARINE_BRICK_SLAB
     item_glint: true
     drops: self
-    place_sound: { sound: BLOCK_STONE_PLACE, volume: 1.0, pitch: 1.0 }
-    break_sound: { sound: BLOCK_STONE_BREAK, volume: 1.0, pitch: 1.0 }
+    place_sound: { sound: block.stone.place, volume: 1.0, pitch: 1.0 }
+    break_sound: { sound: block.stone.break, volume: 1.0, pitch: 1.0 }
     placement:
       allowed_faces: [NORTH, SOUTH, EAST, WEST]
       require_solid: true
@@ -1807,8 +1807,8 @@ blocks:
     item_material: DARK_PRISMARINE_SLAB
     item_glint: true
     drops: self
-    place_sound: { sound: BLOCK_STONE_PLACE, volume: 1.0, pitch: 1.0 }
-    break_sound: { sound: BLOCK_STONE_BREAK, volume: 1.0, pitch: 1.0 }
+    place_sound: { sound: block.stone.place, volume: 1.0, pitch: 1.0 }
+    break_sound: { sound: block.stone.break, volume: 1.0, pitch: 1.0 }
     placement:
       allowed_faces: [NORTH, SOUTH, EAST, WEST]
       require_solid: true
@@ -1853,8 +1853,8 @@ blocks:
     item_material: END_STONE_BRICK_SLAB
     item_glint: true
     drops: self
-    place_sound: { sound: BLOCK_STONE_PLACE, volume: 1.0, pitch: 1.0 }
-    break_sound: { sound: BLOCK_STONE_BREAK, volume: 1.0, pitch: 1.0 }
+    place_sound: { sound: block.stone.place, volume: 1.0, pitch: 1.0 }
+    break_sound: { sound: block.stone.break, volume: 1.0, pitch: 1.0 }
     placement:
       allowed_faces: [NORTH, SOUTH, EAST, WEST]
       require_solid: true
@@ -1899,8 +1899,8 @@ blocks:
     item_material: PURPUR_SLAB
     item_glint: true
     drops: self
-    place_sound: { sound: BLOCK_STONE_PLACE, volume: 1.0, pitch: 1.0 }
-    break_sound: { sound: BLOCK_STONE_BREAK, volume: 1.0, pitch: 1.0 }
+    place_sound: { sound: block.stone.place, volume: 1.0, pitch: 1.0 }
+    break_sound: { sound: block.stone.break, volume: 1.0, pitch: 1.0 }
     placement:
       allowed_faces: [NORTH, SOUTH, EAST, WEST]
       require_solid: true
@@ -1945,8 +1945,8 @@ blocks:
     item_material: BLACKSTONE_SLAB
     item_glint: true
     drops: self
-    place_sound: { sound: BLOCK_STONE_PLACE, volume: 1.0, pitch: 1.0 }
-    break_sound: { sound: BLOCK_STONE_BREAK, volume: 1.0, pitch: 1.0 }
+    place_sound: { sound: block.stone.place, volume: 1.0, pitch: 1.0 }
+    break_sound: { sound: block.stone.break, volume: 1.0, pitch: 1.0 }
     placement:
       allowed_faces: [NORTH, SOUTH, EAST, WEST]
       require_solid: true
@@ -1991,8 +1991,8 @@ blocks:
     item_material: POLISHED_BLACKSTONE_SLAB
     item_glint: true
     drops: self
-    place_sound: { sound: BLOCK_STONE_PLACE, volume: 1.0, pitch: 1.0 }
-    break_sound: { sound: BLOCK_STONE_BREAK, volume: 1.0, pitch: 1.0 }
+    place_sound: { sound: block.stone.place, volume: 1.0, pitch: 1.0 }
+    break_sound: { sound: block.stone.break, volume: 1.0, pitch: 1.0 }
     placement:
       allowed_faces: [NORTH, SOUTH, EAST, WEST]
       require_solid: true
@@ -2037,8 +2037,8 @@ blocks:
     item_material: POLISHED_BLACKSTONE_BRICK_SLAB
     item_glint: true
     drops: self
-    place_sound: { sound: BLOCK_STONE_PLACE, volume: 1.0, pitch: 1.0 }
-    break_sound: { sound: BLOCK_STONE_BREAK, volume: 1.0, pitch: 1.0 }
+    place_sound: { sound: block.stone.place, volume: 1.0, pitch: 1.0 }
+    break_sound: { sound: block.stone.break, volume: 1.0, pitch: 1.0 }
     placement:
       allowed_faces: [NORTH, SOUTH, EAST, WEST]
       require_solid: true
@@ -2083,8 +2083,8 @@ blocks:
     item_material: COBBLED_DEEPSLATE_SLAB
     item_glint: true
     drops: self
-    place_sound: { sound: BLOCK_STONE_PLACE, volume: 1.0, pitch: 1.0 }
-    break_sound: { sound: BLOCK_STONE_BREAK, volume: 1.0, pitch: 1.0 }
+    place_sound: { sound: block.stone.place, volume: 1.0, pitch: 1.0 }
+    break_sound: { sound: block.stone.break, volume: 1.0, pitch: 1.0 }
     placement:
       allowed_faces: [NORTH, SOUTH, EAST, WEST]
       require_solid: true
@@ -2129,8 +2129,8 @@ blocks:
     item_material: POLISHED_DEEPSLATE_SLAB
     item_glint: true
     drops: self
-    place_sound: { sound: BLOCK_STONE_PLACE, volume: 1.0, pitch: 1.0 }
-    break_sound: { sound: BLOCK_STONE_BREAK, volume: 1.0, pitch: 1.0 }
+    place_sound: { sound: block.stone.place, volume: 1.0, pitch: 1.0 }
+    break_sound: { sound: block.stone.break, volume: 1.0, pitch: 1.0 }
     placement:
       allowed_faces: [NORTH, SOUTH, EAST, WEST]
       require_solid: true
@@ -2175,8 +2175,8 @@ blocks:
     item_material: DEEPSLATE_BRICK_SLAB
     item_glint: true
     drops: self
-    place_sound: { sound: BLOCK_STONE_PLACE, volume: 1.0, pitch: 1.0 }
-    break_sound: { sound: BLOCK_STONE_BREAK, volume: 1.0, pitch: 1.0 }
+    place_sound: { sound: block.stone.place, volume: 1.0, pitch: 1.0 }
+    break_sound: { sound: block.stone.break, volume: 1.0, pitch: 1.0 }
     placement:
       allowed_faces: [NORTH, SOUTH, EAST, WEST]
       require_solid: true
@@ -2221,8 +2221,8 @@ blocks:
     item_material: DEEPSLATE_TILE_SLAB
     item_glint: true
     drops: self
-    place_sound: { sound: BLOCK_STONE_PLACE, volume: 1.0, pitch: 1.0 }
-    break_sound: { sound: BLOCK_STONE_BREAK, volume: 1.0, pitch: 1.0 }
+    place_sound: { sound: block.stone.place, volume: 1.0, pitch: 1.0 }
+    break_sound: { sound: block.stone.break, volume: 1.0, pitch: 1.0 }
     placement:
       allowed_faces: [NORTH, SOUTH, EAST, WEST]
       require_solid: true
@@ -2267,8 +2267,8 @@ blocks:
     item_material: TUFF_SLAB
     item_glint: true
     drops: self
-    place_sound: { sound: BLOCK_STONE_PLACE, volume: 1.0, pitch: 1.0 }
-    break_sound: { sound: BLOCK_STONE_BREAK, volume: 1.0, pitch: 1.0 }
+    place_sound: { sound: block.stone.place, volume: 1.0, pitch: 1.0 }
+    break_sound: { sound: block.stone.break, volume: 1.0, pitch: 1.0 }
     placement:
       allowed_faces: [NORTH, SOUTH, EAST, WEST]
       require_solid: true
@@ -2313,8 +2313,8 @@ blocks:
     item_material: POLISHED_TUFF_SLAB
     item_glint: true
     drops: self
-    place_sound: { sound: BLOCK_STONE_PLACE, volume: 1.0, pitch: 1.0 }
-    break_sound: { sound: BLOCK_STONE_BREAK, volume: 1.0, pitch: 1.0 }
+    place_sound: { sound: block.stone.place, volume: 1.0, pitch: 1.0 }
+    break_sound: { sound: block.stone.break, volume: 1.0, pitch: 1.0 }
     placement:
       allowed_faces: [NORTH, SOUTH, EAST, WEST]
       require_solid: true
@@ -2359,8 +2359,8 @@ blocks:
     item_material: TUFF_BRICK_SLAB
     item_glint: true
     drops: self
-    place_sound: { sound: BLOCK_STONE_PLACE, volume: 1.0, pitch: 1.0 }
-    break_sound: { sound: BLOCK_STONE_BREAK, volume: 1.0, pitch: 1.0 }
+    place_sound: { sound: block.stone.place, volume: 1.0, pitch: 1.0 }
+    break_sound: { sound: block.stone.break, volume: 1.0, pitch: 1.0 }
     placement:
       allowed_faces: [NORTH, SOUTH, EAST, WEST]
       require_solid: true
@@ -2405,8 +2405,8 @@ blocks:
     item_material: RESIN_BRICK_SLAB
     item_glint: true
     drops: self
-    place_sound: { sound: BLOCK_STONE_PLACE, volume: 1.0, pitch: 1.0 }
-    break_sound: { sound: BLOCK_STONE_BREAK, volume: 1.0, pitch: 1.0 }
+    place_sound: { sound: block.stone.place, volume: 1.0, pitch: 1.0 }
+    break_sound: { sound: block.stone.break, volume: 1.0, pitch: 1.0 }
     placement:
       allowed_faces: [NORTH, SOUTH, EAST, WEST]
       require_solid: true
@@ -2451,8 +2451,8 @@ blocks:
     item_material: CUT_COPPER_SLAB
     item_glint: true
     drops: self
-    place_sound: { sound: BLOCK_COPPER_PLACE, volume: 1.0, pitch: 1.0 }
-    break_sound: { sound: BLOCK_COPPER_BREAK, volume: 1.0, pitch: 1.0 }
+    place_sound: { sound: block.copper.place, volume: 1.0, pitch: 1.0 }
+    break_sound: { sound: block.copper.break, volume: 1.0, pitch: 1.0 }
     placement:
       allowed_faces: [NORTH, SOUTH, EAST, WEST]
       require_solid: true
@@ -2497,8 +2497,8 @@ blocks:
     item_material: EXPOSED_CUT_COPPER_SLAB
     item_glint: true
     drops: self
-    place_sound: { sound: BLOCK_COPPER_PLACE, volume: 1.0, pitch: 1.0 }
-    break_sound: { sound: BLOCK_COPPER_BREAK, volume: 1.0, pitch: 1.0 }
+    place_sound: { sound: block.copper.place, volume: 1.0, pitch: 1.0 }
+    break_sound: { sound: block.copper.break, volume: 1.0, pitch: 1.0 }
     placement:
       allowed_faces: [NORTH, SOUTH, EAST, WEST]
       require_solid: true
@@ -2543,8 +2543,8 @@ blocks:
     item_material: WEATHERED_CUT_COPPER_SLAB
     item_glint: true
     drops: self
-    place_sound: { sound: BLOCK_COPPER_PLACE, volume: 1.0, pitch: 1.0 }
-    break_sound: { sound: BLOCK_COPPER_BREAK, volume: 1.0, pitch: 1.0 }
+    place_sound: { sound: block.copper.place, volume: 1.0, pitch: 1.0 }
+    break_sound: { sound: block.copper.break, volume: 1.0, pitch: 1.0 }
     placement:
       allowed_faces: [NORTH, SOUTH, EAST, WEST]
       require_solid: true
@@ -2589,8 +2589,8 @@ blocks:
     item_material: OXIDIZED_CUT_COPPER_SLAB
     item_glint: true
     drops: self
-    place_sound: { sound: BLOCK_COPPER_PLACE, volume: 1.0, pitch: 1.0 }
-    break_sound: { sound: BLOCK_COPPER_BREAK, volume: 1.0, pitch: 1.0 }
+    place_sound: { sound: block.copper.place, volume: 1.0, pitch: 1.0 }
+    break_sound: { sound: block.copper.break, volume: 1.0, pitch: 1.0 }
     placement:
       allowed_faces: [NORTH, SOUTH, EAST, WEST]
       require_solid: true
@@ -2635,8 +2635,8 @@ blocks:
     item_material: WAXED_CUT_COPPER_SLAB
     item_glint: true
     drops: self
-    place_sound: { sound: BLOCK_COPPER_PLACE, volume: 1.0, pitch: 1.0 }
-    break_sound: { sound: BLOCK_COPPER_BREAK, volume: 1.0, pitch: 1.0 }
+    place_sound: { sound: block.copper.place, volume: 1.0, pitch: 1.0 }
+    break_sound: { sound: block.copper.break, volume: 1.0, pitch: 1.0 }
     placement:
       allowed_faces: [NORTH, SOUTH, EAST, WEST]
       require_solid: true
@@ -2681,8 +2681,8 @@ blocks:
     item_material: WAXED_EXPOSED_CUT_COPPER_SLAB
     item_glint: true
     drops: self
-    place_sound: { sound: BLOCK_COPPER_PLACE, volume: 1.0, pitch: 1.0 }
-    break_sound: { sound: BLOCK_COPPER_BREAK, volume: 1.0, pitch: 1.0 }
+    place_sound: { sound: block.copper.place, volume: 1.0, pitch: 1.0 }
+    break_sound: { sound: block.copper.break, volume: 1.0, pitch: 1.0 }
     placement:
       allowed_faces: [NORTH, SOUTH, EAST, WEST]
       require_solid: true
@@ -2727,8 +2727,8 @@ blocks:
     item_material: WAXED_WEATHERED_CUT_COPPER_SLAB
     item_glint: true
     drops: self
-    place_sound: { sound: BLOCK_COPPER_PLACE, volume: 1.0, pitch: 1.0 }
-    break_sound: { sound: BLOCK_COPPER_BREAK, volume: 1.0, pitch: 1.0 }
+    place_sound: { sound: block.copper.place, volume: 1.0, pitch: 1.0 }
+    break_sound: { sound: block.copper.break, volume: 1.0, pitch: 1.0 }
     placement:
       allowed_faces: [NORTH, SOUTH, EAST, WEST]
       require_solid: true
@@ -2773,8 +2773,8 @@ blocks:
     item_material: WAXED_OXIDIZED_CUT_COPPER_SLAB
     item_glint: true
     drops: self
-    place_sound: { sound: BLOCK_COPPER_PLACE, volume: 1.0, pitch: 1.0 }
-    break_sound: { sound: BLOCK_COPPER_BREAK, volume: 1.0, pitch: 1.0 }
+    place_sound: { sound: block.copper.place, volume: 1.0, pitch: 1.0 }
+    break_sound: { sound: block.copper.break, volume: 1.0, pitch: 1.0 }
     placement:
       allowed_faces: [NORTH, SOUTH, EAST, WEST]
       require_solid: true

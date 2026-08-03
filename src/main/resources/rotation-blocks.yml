@@ -2895,8 +2895,8 @@ blocks:
     texture: "@large_windmill"
     item_texture: "@windmill_item"
     drops: self
-    break_sound: { sound: BLOCK_WOOD_BREAK, volume: 0.8, pitch: 1.0 }
-    place_sound: { sound: BLOCK_WOOD_PLACE, volume: 0.8, pitch: 1.0 }
+    break_sound: { sound: block.wood.break, volume: 0.8, pitch: 1.0 }
+    place_sound: { sound: block.wood.place, volume: 0.8, pitch: 1.0 }
     default_state: floor
     placement_state_map:
       DOWN: floor
@@ -2974,8 +2974,8 @@ blocks:
     texture: "@large_windmill"
     item_texture: "@windmill_item"
     drops: self
-    break_sound: { sound: BLOCK_WOOD_BREAK, volume: 0.8, pitch: 0.8 }
-    place_sound: { sound: BLOCK_WOOD_PLACE, volume: 0.8, pitch: 0.8 }
+    break_sound: { sound: block.wood.break, volume: 0.8, pitch: 0.8 }
+    place_sound: { sound: block.wood.place, volume: 0.8, pitch: 0.8 }
     default_state: floor
     placement_state_map:
       DOWN: floor
@@ -3046,8 +3046,8 @@ blocks:
     texture: "@large_windmill"
     item_texture: "@windmill_item"
     drops: self
-    break_sound: { sound: BLOCK_WOOD_BREAK, volume: 0.8, pitch: 0.8 }
-    place_sound: { sound: BLOCK_WOOD_PLACE, volume: 0.8, pitch: 0.8 }
+    break_sound: { sound: block.wood.break, volume: 0.8, pitch: 0.8 }
+    place_sound: { sound: block.wood.place, volume: 0.8, pitch: 0.8 }
     default_state: floor
     placement_state_map:
       DOWN: floor
@@ -3121,8 +3121,8 @@ blocks:
     texture: "@fan_placed_fwd"
     item_texture: "@fan_item"
     drops: self
-    break_sound: { sound: BLOCK_WOOD_BREAK, volume: 0.8, pitch: 1.2 }
-    place_sound: { sound: BLOCK_WOOD_PLACE, volume: 0.8, pitch: 1.2 }
+    break_sound: { sound: block.wood.break, volume: 0.8, pitch: 1.2 }
+    place_sound: { sound: block.wood.place, volume: 0.8, pitch: 1.2 }
     default_state: idle_floor
     placement_state_map:
       DOWN: idle_floor
@@ -3208,8 +3208,8 @@ blocks:
     item_texture: "@suction_hopper_item"
     drops: self
     storage: { layout: HOPPER }
-    break_sound: { sound: BLOCK_WOOD_BREAK, volume: 0.8, pitch: 1.0 }
-    place_sound: { sound: BLOCK_METAL_PLACE, volume: 0.8, pitch: 1.0 }
+    break_sound: { sound: block.wood.break, volume: 0.8, pitch: 1.0 }
+    place_sound: { sound: block.metal.place, volume: 0.8, pitch: 1.0 }
     default_state: idle_floor
     placement_state_map:
       DOWN: idle_floor

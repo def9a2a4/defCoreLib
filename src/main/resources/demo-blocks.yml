@@ -15,8 +15,8 @@ blocks:
       - "&7Right-click again to extinguish"
     texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMmI3ZGJjZGE0NTRlYTdiMzhhYmM2NmNkZmVkOGU0ZTZjMDEyOTRmNmE5NjJlYzY2ZWYyMjY1MTBhZTM3MTcxYiJ9fX0="
     drops: self
-    break_sound: { sound: BLOCK_CANDLE_BREAK, volume: 1.0, pitch: 1.0 }
-    place_sound: { sound: BLOCK_CANDLE_PLACE, volume: 1.0, pitch: 1.0 }
+    break_sound: { sound: block.candle.break, volume: 1.0, pitch: 1.0 }
+    place_sound: { sound: block.candle.place, volume: 1.0, pitch: 1.0 }
     default_state: unlit
     states:
       unlit: {}
@@ -38,11 +38,11 @@ blocks:
       - trigger: { type: interact, item: FLINT_AND_STEEL }
         from: unlit
         to: lit
-        sound: ITEM_FLINTANDSTEEL_USE
+        sound: item.flintandsteel.use
       - trigger: { type: interact }
         from: lit
         to: unlit
-        sound: BLOCK_CANDLE_EXTINGUISH
+        sound: block.candle.extinguish
 
   # ─── 2. Jack O'Lantern ──────────────────────────────────────────────
   # Features: always-on light, no states.
@@ -52,7 +52,7 @@ blocks:
     texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjc1MmE5YTlhZWMwZjE2MTgwYjhjYjAwMDMwNTFiYjUyOWQ3YTMyMTIwMWZlZTc3NjdhZTBjMmJhNmFmOTE0OSJ9fX0="
     drops: self
     light: { level: 14, offset: [0, 1, 0] }
-    break_sound: { sound: BLOCK_WOOD_BREAK, volume: 0.7, pitch: 1.2 }
+    break_sound: { sound: block.wood.break, volume: 0.7, pitch: 1.2 }
 
   # ─── 3. Crafting Table ──────────────────────────────────────────────
   # Features: interactGUI, interact sound.
@@ -62,7 +62,7 @@ blocks:
     texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGMzNjA0NTIwOGY5YjVkZGNmOGM0NDMzZTQyNGIxY2ExN2I5NGY2Yjk2MjAyZmIxZTUyNzBlZThkNTM4ODFiMSJ9fX0="
     drops: self
     interact_gui: WORKBENCH
-    interact_sound: { sound: BLOCK_WOOD_PLACE, volume: 0.5, pitch: 1.2 }
+    interact_sound: { sound: block.wood.place, volume: 0.5, pitch: 1.2 }
 
   # ─── 4. Redstone Display ────────────────────────────────────────────
   # Features: Sensitivity.LEVEL, PowerReader.EXTENDED, per-power textures.
@@ -130,11 +130,11 @@ blocks:
       - trigger: { type: interact, item: FLINT_AND_STEEL }
         from: unlit
         to: lit
-        sound: ITEM_FLINTANDSTEEL_USE
+        sound: item.flintandsteel.use
       - trigger: { type: interact }
         from: lit
         to: unlit
-        sound: BLOCK_CANDLE_EXTINGUISH
+        sound: block.candle.extinguish
       - trigger: { type: redstone, range: "1-15" }
         from: unlit
         to: lit
@@ -184,8 +184,8 @@ blocks:
     texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzNmYjdjOTJmZTE2NDlkNzZjNGFkOTc5ZWZjZDJjNDYwYjJlOTBiMjMyMGEyMzNlZjg1MTMzZGQ1NmJlZDg2YSJ9fX0="
     drops: self
     cancel_pistons: true
-    break_sound: { sound: BLOCK_AMETHYST_BLOCK_BREAK, volume: 1.0, pitch: 1.0 }
-    place_sound: { sound: BLOCK_AMETHYST_BLOCK_PLACE, volume: 1.0, pitch: 1.0 }
+    break_sound: { sound: block.amethyst_block.break, volume: 1.0, pitch: 1.0 }
+    place_sound: { sound: block.amethyst_block.place, volume: 1.0, pitch: 1.0 }
     display_entities:
       - texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvM2Y0ODc2YjZhNWQ2ZGQ3ODVlMDkxZmQxMzRhMjFjOTFkMGE5Y2FjNWE2MjJlNDQ4YjVmZmNiNjVlZjQ1Mjc4In19fQ=="
         tag: top
@@ -226,19 +226,19 @@ blocks:
       - trigger: { type: interact }
         from: off
         to: alert
-        sound: BLOCK_NOTE_BLOCK_BELL
+        sound: block.note_block.bell
         volume: 0.8
         pitch: 1.5
       - trigger: { type: interact }
         from: alert
         to: panic
-        sound: ENTITY_WARDEN_ANGRY
+        sound: entity.warden.angry
         volume: 0.6
         pitch: 1.0
       - trigger: { type: interact }
         from: panic
         to: off
-        sound: BLOCK_BEACON_DEACTIVATE
+        sound: block.beacon.deactivate
         particle: { type: LARGE_SMOKE, count: 10, spread: 0.3 }
 
   # ─── 10. Enchanting Pedestal ─────────────────────────────────────────
@@ -264,8 +264,8 @@ blocks:
     texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjg4NGFkYTRjNzRjMGY5NjE0NjkyNjJkOTU2OTc3YmFmYjBiMmQ3ZmVkOWM3YmRmMzVmNDUxOTllOWY2ZGRiYiJ9fX0="
     drops: self
     storage: { layout: CHEST_3ROW }
-    interact_sound: { sound: BLOCK_BARREL_OPEN, volume: 1.0, pitch: 1.0 }
-    break_sound: { sound: BLOCK_WOOD_BREAK, volume: 0.7, pitch: 1.0 }
+    interact_sound: { sound: block.barrel.open, volume: 1.0, pitch: 1.0 }
+    break_sound: { sound: block.wood.break, volume: 0.7, pitch: 1.0 }
 
   # ─── 12. Hopper Crate ───────────────────────────────────────────────
   # Features: hopper-style inventory (5 slots), different layout.
@@ -275,7 +275,7 @@ blocks:
     texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODAxYjUwMzhiZDE3M2I4ZjE4MDYyZWQyMmJjOGNjOTdlODBiYmZmNWY4OTM3YjExMzJlYjg2NTU1ZWM2YjA3NCJ9fX0="
     drops: self
     storage: { layout: HOPPER }
-    interact_sound: { sound: BLOCK_IRON_TRAPDOOR_OPEN, volume: 0.5, pitch: 1.5 }
+    interact_sound: { sound: block.iron_trapdoor.open, volume: 0.5, pitch: 1.5 }
 
   # ─── 13. Altar ───────────────────────────────────────────────────────
   # Features: item consumption on interact, state-dependent light + particles.
@@ -302,11 +302,11 @@ blocks:
         to: active
         consume: true
         consume_amount: 1
-        sound: BLOCK_ENCHANTMENT_TABLE_USE
+        sound: block.enchantment_table.use
       - trigger: { type: interact }
         from: active
         to: inactive
-        sound: BLOCK_BEACON_DEACTIVATE
+        sound: block.beacon.deactivate
 
   # ─── 14. Wall Lamp ───────────────────────────────────────────────────
   # Features: placement restrictions (wall-only), directional textures, always-on light.
@@ -326,8 +326,8 @@ blocks:
       EAST: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjFlOGQ0ZDlmNWZiMWQ4OTM3ZjhjMzA1NmY1ZTllMDU4ZTAwZmMxY2VjMTgwNDVkNDAzYjRmZDIwN2I3ZTI4NCJ9fX0="
       WEST: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMmI3ZGJjZGE0NTRlYTdiMzhhYmM2NmNkZmVkOGU0ZTZjMDEyOTRmNmE5NjJlYzY2ZWYyMjY1MTBhZTM3MTcxYiJ9fX0="
     light: { level: 12, offset: [0, 0, 0] }
-    place_sound: { sound: BLOCK_CANDLE_PLACE, volume: 0.8, pitch: 1.1 }
-    break_sound: { sound: BLOCK_CANDLE_BREAK, volume: 0.8, pitch: 1.1 }
+    place_sound: { sound: block.candle.place, volume: 0.8, pitch: 1.1 }
+    break_sound: { sound: block.candle.break, volume: 0.8, pitch: 1.1 }
 
   # ─── 15. Dropper Box ────────────────────────────────────────────────
   # Features: DROPPER storage layout (3x3, 9 slots).
@@ -339,8 +339,8 @@ blocks:
     texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODAxYjUwMzhiZDE3M2I4ZjE4MDYyZWQyMmJjOGNjOTdlODBiYmZmNWY4OTM3YjExMzJlYjg2NTU1ZWM2YjA3NCJ9fX0="
     drops: self
     storage: { layout: DROPPER }
-    interact_sound: { sound: BLOCK_CHEST_OPEN, volume: 0.7, pitch: 1.4 }
-    break_sound: { sound: BLOCK_WOOD_BREAK, volume: 0.7, pitch: 1.0 }
+    interact_sound: { sound: block.chest.open, volume: 0.7, pitch: 1.4 }
+    break_sound: { sound: block.wood.break, volume: 0.7, pitch: 1.0 }
 
   # ─── 16. Loot Crate ─────────────────────────────────────────────────
   # Features: conditional drop rules — silk touch drops self, otherwise drops loot.
@@ -358,7 +358,7 @@ blocks:
           amount: 3
         - material: GOLD_INGOT
           amount: 1
-    break_sound: { sound: BLOCK_CHEST_OPEN, volume: 0.8, pitch: 0.8 }
+    break_sound: { sound: block.chest.open, volume: 0.8, pitch: 0.8 }
 
   # ─── 17. Locked Workbench ───────────────────────────────────────────
   # Features: advancement-locked recipe (requires "Acquire Hardware"), InteractGUI ANVIL.
@@ -370,7 +370,7 @@ blocks:
     texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGMzNjA0NTIwOGY5YjVkZGNmOGM0NDMzZTQyNGIxY2ExN2I5NGY2Yjk2MjAyZmIxZTUyNzBlZThkNTM4ODFiMSJ9fX0="
     drops: self
     interact_gui: ANVIL
-    interact_sound: { sound: BLOCK_ANVIL_LAND, volume: 0.3, pitch: 1.5 }
+    interact_sound: { sound: block.anvil.land, volume: 0.3, pitch: 1.5 }
 
   # ─── 18. Spinning Crystal ──────────────────────────────────────────
   # Features: animated display entity (rotate + bob compose).
@@ -418,11 +418,11 @@ blocks:
       - trigger: { type: interact }
         from: slow
         to: fast
-        sound: BLOCK_BEACON_ACTIVATE
+        sound: block.beacon.activate
       - trigger: { type: interact }
         from: fast
         to: slow
-        sound: BLOCK_BEACON_DEACTIVATE
+        sound: block.beacon.deactivate
 
   # ─── Block Display Test ──────────────────────────────────────────────
   # Features: block_data display entity (BlockDisplay).

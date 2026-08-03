@@ -797,9 +797,7 @@ public final class BlockLoader {
         Sound sound = null;
         Object soundObj = map.get("sound");
         if (soundObj != null) {
-            try {
-                sound = Sound.valueOf(String.valueOf(soundObj).toUpperCase());
-            } catch (IllegalArgumentException ignored) {}
+            sound = resolveSound(String.valueOf(soundObj));
         }
 
         CustomHeadBlock.TransitionParticle transParticle = null;
@@ -867,8 +865,28 @@ public final class BlockLoader {
         }
     }
 
+    /** Resolve a vanilla sound by namespaced key (e.g. {@code "block.stone.break"} or
+     *  {@code "minecraft:block.stone.break"}). Registry-backed lookup — the supported path on
+     *  modern Paper where {@code Sound.valueOf} is deprecated for removal. Total: returns
+     *  {@code null} on any malformed or unknown value, never throws. */
+    private static Sound resolveSound(String raw) {
+        if (raw == null) return null;
+        String s = raw.trim().toLowerCase(Locale.ROOT);
+        if (s.isEmpty()) return null;
+        try {
+            org.bukkit.NamespacedKey key = s.contains(":")
+                    ? org.bukkit.NamespacedKey.fromString(s)
+                    : org.bukkit.NamespacedKey.minecraft(s);
+            return key == null ? null : org.bukkit.Registry.SOUND_EVENT.get(key);
+        } catch (IllegalArgumentException ex) {   // invalid key chars (spaces, uppercase, ...)
+            return null;
+        }
+    }
+
     private static CustomHeadBlock.SoundConfig parseSoundConfig(ConfigurationSection sec) {
-        Sound sound = Sound.valueOf(sec.getString("sound", "BLOCK_STONE_BREAK").toUpperCase());
+        String raw = sec.getString("sound", "block.stone.break");
+        Sound sound = resolveSound(raw);
+        if (sound == null) throw new IllegalArgumentException("Unknown sound: " + raw);
         float volume = (float) sec.getDouble("volume", 1.0);
         float pitch = (float) sec.getDouble("pitch", 1.0);
         return new CustomHeadBlock.SoundConfig(sound, volume, pitch);
