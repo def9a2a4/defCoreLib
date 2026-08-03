@@ -9,7 +9,9 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Container;
+import org.bukkit.block.TileState;
 import org.bukkit.block.data.BlockData;
+import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.entity.Display;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.ItemDisplay;
@@ -704,11 +706,17 @@ final class BasicMechanism implements Mechanism {
                 registry.restoreBlock(target, type, landedState);
                 if (mb.storage != null) registry.restoreStorageSnapshot(target, mb.storage);
                 registry.restoreConfigPdc(target, mb.configPdc);   // usually null for a bare block
+                flipLandedSpinDir(target, mb, snappedYaw);
             } else if (type != null) {
                 // The vanilla data was rotated above; re-derive the custom state for the landed
                 // orientation so it doesn't snap to an impossible state (and rejoins the network on the
                 // correct axis).
                 String landedState = BlockRotation.rotateCustomState(type, mb.customState, target.getBlockData());
+                // A wall ratchet's allowed CW/CCW lives in its state token, but rotateCustomState rebuilds
+                // orientation from the placement map (which hard-codes cw) — losing a CCW setting and never
+                // axis-flipping it. Re-inject the captured direction, flipped iff the landing negated the
+                // spin axis. No-op for every non-ratchet state (none carry a cw/ccw token).
+                landedState = BlockRotation.preserveSpinToken(mb.customState, landedState, snappedYaw);
                 registry.markBlock(target, type, landedState);
                 int power = registry.readPower(target, type);
                 registry.applyConfig(target, type, landedState, power);
@@ -719,11 +727,33 @@ final class BasicMechanism implements Mechanism {
                 // Carry over per-block config (rotator angle, throttle levels, dynamo mode, …) — must
                 // run AFTER the steps above, which own the identity/state/storage keys it skips.
                 registry.restoreConfigPdc(target, mb.configPdc);
+                flipLandedSpinDir(target, mb, snappedYaw);
             }
         } else if (mb.storage != null && target.getState() instanceof Container c) {
             c.getSnapshotInventory().setContents(mb.storage.getContents());
             c.update();
         }
+    }
+
+    /** Keep a landed rotation-power source spinning the SAME physical way. A source stores its allowed spin
+     *  as a {@code mech:spin_dir} PDC token (cw/ccw = positive about its unsigned axle), written back verbatim
+     *  by restoreConfigPdc. If the landing yaw negated the source's spin axis (a horizontal axle turned 180°,
+     *  or a quarter-turn onto the opposite cardinal), that same token now names the opposite physical spin —
+     *  so flip it. A stale token would reverse the WHOLE downstream domain (RotationNetwork anchors each
+     *  domain to this stored token) and could spuriously jam. Reads a fresh TileState AFTER restoreConfigPdc's
+     *  own update() so it doesn't clobber the just-merged config keys. No-op when the block stores no
+     *  spin_dir (every non-source block) or its axle is Y (yaw never negates it). */
+    private void flipLandedSpinDir(Block target, MechanismBlockData mb, float snappedYaw) {
+        if (mb.customState == null) return;
+        if (!(target.getState() instanceof TileState tile)) return;
+        var pdc = tile.getPersistentDataContainer();
+        String token = pdc.get(RotationNetwork.SPIN_DIR_KEY, PersistentDataType.STRING);
+        if (token == null) return;
+        String flipped = BlockRotation.rotateSpinDir(
+            RotationNetwork.axisFromState(mb.customState), snappedYaw, token);
+        if (flipped.equals(token)) return;
+        pdc.set(RotationNetwork.SPIN_DIR_KEY, PersistentDataType.STRING, flipped);
+        tile.update();
     }
 
     /** Record the (x,z) column of a dropped CHAIN link for the carried-hoist chain-break guard; lazily
@@ -734,6 +764,10 @@ final class BasicMechanism implements Mechanism {
         // this makes the exclusion explicit rather than incidental.)
         if (mb.ghost) return cols;
         if (!ChainHoistManager.isChainMaterial(mb.blockData.getMaterial())) return cols;
+        // Real hoist rope is a plain vanilla chain (customTypeId == null). A decorative CUSTOM chain (or a
+        // bare-block chain shaft) carries a non-null id — it isn't rope, so its landing must not clear a
+        // hoist's glue. (The stacked-second-hoist-in-column case still needs per-hoist association; deferred.)
+        if (mb.customTypeId != null) return cols;
         if (cols == null) cols = new HashSet<>();
         cols.add(colKey(loc.getBlockX(), loc.getBlockZ()));
         return cols;

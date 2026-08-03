@@ -2,6 +2,7 @@ package anon.def9a2a4.corelib;
 
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.BlockData;
+import org.jspecify.annotations.Nullable;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -82,6 +83,61 @@ public final class BlockRotation {
         if (type.states().containsKey(newState)) return newState;
         if (type.states().containsKey(mapped)) return mapped;
         return state;
+    }
+
+    /**
+     * Rotate a rotation-power spin token ({@code "cw"}/{@code "ccw"}) so it names the SAME physical spin
+     * after the block's axle was yaw-rotated on landing. The token means "cw = positive rotation about the
+     * block's unsigned spin {@code axis}"; a landing yaw that maps that axis's positive cardinal onto a
+     * NEGATIVE cardinal (−X/−Z) inverts the sense, so the token must flip. A Y axle (its positive cardinal
+     * is UP, which yaw never moves) and a 0° yaw never flip. The axis image is derived from the SAME
+     * {@link #rotateBlockFace} convention {@link #rotateBlockData}/{@link #rotateCustomState} use — so a 90°
+     * vs 270° landing can't silently invert (a 180°-only check would miss it). Returns {@code token}
+     * unchanged when it is not cw/ccw.
+     */
+    static String rotateSpinDir(RotationNetwork.Axis axis, float yawDegrees, String token) {
+        BlockFace axisFace = switch (axis) {
+            case X -> BlockFace.EAST;   // +X
+            case Z -> BlockFace.SOUTH;  // +Z
+            case Y -> BlockFace.UP;     // +Y — rotateBlockFace passes UP through, so never negated
+        };
+        BlockFace rotated = rotateBlockFace(axisFace, yawDegrees);
+        boolean negated = rotated == BlockFace.WEST || rotated == BlockFace.NORTH; // −X or −Z
+        if (!negated) return token;
+        return switch (token) {
+            case "cw" -> "ccw";
+            case "ccw" -> "cw";
+            default -> token;
+        };
+    }
+
+    /**
+     * Preserve a direction-carrying custom state's cw/ccw token across landing. {@link #rotateCustomState}
+     * rebuilds the orientation from {@code placementStateMap}, whose values hard-code one direction — so a
+     * wall ratchet's cw/ccw setting is lost (a CCW ratchet lands CW) and is never axis-flipped. Re-inject the
+     * CAPTURED direction into {@code landedState}, flipped iff the landing yaw negated the captured spin axis
+     * (same rule as {@link #rotateSpinDir} for a source's PDC spin_dir). No-op when either state carries no
+     * cw/ccw token (i.e. every block but the ratchet), so it is safe to call for any landed custom state.
+     */
+    static String preserveSpinToken(String capturedState, String landedState, float yawDegrees) {
+        String capDir = spinToken(capturedState);
+        String landedDir = spinToken(landedState);
+        if (capDir == null || landedDir == null) return landedState;
+        String want = rotateSpinDir(RotationNetwork.axisFromState(capturedState), yawDegrees, capDir);
+        if (want.equals(landedDir)) return landedState;
+        String[] parts = landedState.split("_");
+        for (int i = 0; i < parts.length; i++) {
+            if (parts[i].equals(landedDir)) { parts[i] = want; break; }
+        }
+        return String.join("_", parts);
+    }
+
+    /** The cw/ccw token in a custom state ({@code idle_cw_x} → "cw"), or null if it carries none. */
+    private static @Nullable String spinToken(String state) {
+        for (String tok : state.split("_")) {
+            if (tok.equals("cw") || tok.equals("ccw")) return tok;
+        }
+        return null;
     }
 
     /** The face a placed head is mounted on — mirrors CoreLibPlugin.getAttachmentFace. */
