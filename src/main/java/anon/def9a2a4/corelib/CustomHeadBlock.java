@@ -339,6 +339,7 @@ public final class CustomHeadBlock {
     private final @Nullable BannerTier bannerTier;
     private final @Nullable IngredientCapture ingredientCapture;
     private final org.bukkit.inventory.recipe.@Nullable CraftingBookCategory recipeCategory;
+    private final List<String> categories; // catalog grouping labels (hierarchical "parent/child"); empty → group by namespace
 
     private CustomHeadBlock(Builder b) {
         this.namespace = b.namespace;
@@ -400,6 +401,7 @@ public final class CustomHeadBlock {
         this.bannerTier = b.bannerTier;
         this.ingredientCapture = b.ingredientCapture;
         this.recipeCategory = b.recipeCategory;
+        this.categories = List.copyOf(b.categories);
 
         // Cache capability checks (avoid streaming states on every call)
         this._hasDisplayEntities = !displayEntities.isEmpty() || !blockDisplayEntities.isEmpty()
@@ -489,6 +491,8 @@ public final class CustomHeadBlock {
     /** Ingredient-capture spec (crafted ingredients rendered on this block's display entities), or null. */
     public @Nullable IngredientCapture ingredientCapture() { return ingredientCapture; }
     public org.bukkit.inventory.recipe.@Nullable CraftingBookCategory recipeCategory() { return recipeCategory; }
+    /** Catalog grouping labels (hierarchical {@code "parent/child"} paths); empty means "group by namespace". */
+    public List<String> categories() { return categories; }
 
     public boolean hasDisplayEntities() { return _hasDisplayEntities; }
     public boolean hasLight() { return _hasLight; }
@@ -738,6 +742,7 @@ public final class CustomHeadBlock {
         b.bannerTier = bannerTier;
         b.ingredientCapture = ingredientCapture;
         b.recipeCategory = recipeCategory;
+        b.categories.addAll(categories);
         return b;
     }
 
@@ -768,6 +773,7 @@ public final class CustomHeadBlock {
         private final List<ShapedRecipeDef> shapedRecipes = new ArrayList<>();
         private final List<ShapelessRecipeDef> shapelessRecipes = new ArrayList<>();
         private final List<StonecutterRecipeDef> stonecutterRecipes = new ArrayList<>();
+        private final List<String> categories = new ArrayList<>();
         private @Nullable InteractGUI interactGUI;
         private @Nullable StorageConfig storage;
         private @Nullable PlacementConfig placement;
@@ -964,6 +970,7 @@ public final class CustomHeadBlock {
         public Builder bannerTier(BannerTier tier) { this.bannerTier = tier; return this; }
         public Builder ingredientCapture(IngredientCapture c) { this.ingredientCapture = c; return this; }
         public Builder recipeCategory(org.bukkit.inventory.recipe.CraftingBookCategory c) { this.recipeCategory = c; return this; }
+        public Builder categories(List<String> c) { this.categories.addAll(c); return this; }
 
         public CustomHeadBlock build() {
             if ((texture == null || texture.isBlank()) && itemMaterial == null) {

@@ -2,6 +2,7 @@ package anon.def9a2a4.corelib;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -1584,6 +1585,331 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
     }
 
     // ──────────────────────────────────────────────────────────────────────
+    // Item catalog GUI (/defcorelib catalog) — browse every registered type by
+    // category (falling back to namespace), search, drill into recipes, admin-give.
+    // ──────────────────────────────────────────────────────────────────────
+
+    private static final int CATALOG_PAGE = 45; // content slots per page (top 5 rows); bottom row = nav bar
+
+    /** Grouping labels for a type: its explicit {@code categories}, else a single {@code [namespace]}. */
+    private static List<String> catalogGroupsOf(CustomHeadBlock t) {
+        return t.categories().isEmpty() ? List.of(t.namespace()) : t.categories();
+    }
+
+    private static String catalogPlainName(CustomHeadBlock t) {
+        return t.name() == null ? t.typeId()
+                : net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer.plainText().serialize(t.name());
+    }
+
+    /** True if a type belongs at or below the category path (path "" matches everything). */
+    private static boolean catalogInSubtree(CustomHeadBlock t, String path) {
+        if (path.isEmpty()) return true;
+        for (String g : catalogGroupsOf(t)) {
+            if (g.equals(path) || g.startsWith(path + "/")) return true;
+        }
+        return false;
+    }
+
+    private List<CustomHeadBlock> catalogSortedTypes() {
+        List<CustomHeadBlock> list = new ArrayList<>(registry.allTypes());
+        list.sort(java.util.Comparator.comparing(CustomHeadBlock::namespace)
+                .thenComparing(t -> catalogPlainName(t).toLowerCase(java.util.Locale.ROOT)));
+        return list;
+    }
+
+    private static String catalogLastSegment(String path) {
+        int i = path.lastIndexOf('/');
+        return i < 0 ? path : path.substring(i + 1);
+    }
+
+    /** Category-tree view: the distinct child categories under {@code path}. */
+    void openCatalogTree(Player player, String path, int page, @org.jspecify.annotations.Nullable CatalogHolder parent) {
+        java.util.TreeSet<String> childPaths = new java.util.TreeSet<>();
+        for (CustomHeadBlock t : registry.allTypes()) {
+            for (String g : catalogGroupsOf(t)) {
+                if (path.isEmpty()) {
+                    int slash = g.indexOf('/');
+                    childPaths.add(slash < 0 ? g : g.substring(0, slash));
+                } else if (g.startsWith(path + "/")) {
+                    String rem = g.substring(path.length() + 1);
+                    int slash = rem.indexOf('/');
+                    childPaths.add(path + "/" + (slash < 0 ? rem : rem.substring(0, slash)));
+                }
+            }
+        }
+        List<String> children = new ArrayList<>(childPaths);
+        if (children.isEmpty()) { openCatalog(player, path, null, page, parent); return; }
+
+        int total = children.size();
+        int maxPage = Math.max(0, (total - 1) / CATALOG_PAGE);
+        page = Math.max(0, Math.min(page, maxPage));
+
+        CatalogHolder holder = new CatalogHolder(CatalogHolder.View.TREE, path, null, page, null, parent);
+        Component title = Component.text(path.isEmpty() ? "Catalog" : "Catalog: " + path, NamedTextColor.DARK_PURPLE);
+        org.bukkit.inventory.Inventory inv = getServer().createInventory(holder, 54, title);
+        holder.setInventory(inv);
+
+        List<CustomHeadBlock> sorted = catalogSortedTypes();
+        int start = page * CATALOG_PAGE, end = Math.min(start + CATALOG_PAGE, total), slot = 0;
+        for (int idx = start; idx < end; idx++, slot++) {
+            String childPath = children.get(idx);
+            boolean isBranch = false;
+            int count = 0;
+            CustomHeadBlock rep = null;
+            for (CustomHeadBlock t : sorted) {
+                if (!catalogInSubtree(t, childPath)) continue;
+                count++;
+                if (rep == null) rep = t;
+                if (!isBranch) {
+                    for (String g : catalogGroupsOf(t)) if (g.startsWith(childPath + "/")) { isBranch = true; break; }
+                }
+            }
+            if (rep == null) continue;
+            inv.setItem(slot, catalogCategoryIcon(rep, catalogLastSegment(childPath), count, isBranch));
+            if (isBranch) holder.branchSlots.put(slot, childPath);
+            else holder.leafSlots.put(slot, childPath);
+        }
+        catalogNavBar(inv, holder, page > 0, end < total, false);
+        player.openInventory(inv);
+    }
+
+    /** Item-list view: all types under a category path, or matching a search query. */
+    void openCatalog(Player player, String path, @org.jspecify.annotations.Nullable String search,
+                     int page, @org.jspecify.annotations.Nullable CatalogHolder parent) {
+        String q = search == null ? null : search.toLowerCase(java.util.Locale.ROOT);
+        List<CustomHeadBlock> matches = new ArrayList<>();
+        for (CustomHeadBlock t : catalogSortedTypes()) {
+            if (q != null) {
+                if (catalogPlainName(t).toLowerCase(java.util.Locale.ROOT).contains(q)
+                        || t.fullId().toLowerCase(java.util.Locale.ROOT).contains(q)) matches.add(t);
+            } else if (catalogInSubtree(t, path)) {
+                matches.add(t);
+            }
+        }
+        int total = matches.size();
+        int maxPage = Math.max(0, (total - 1) / CATALOG_PAGE);
+        page = Math.max(0, Math.min(page, maxPage));
+
+        CatalogHolder holder = new CatalogHolder(CatalogHolder.View.ITEMS, path, search, page, null, parent);
+        String titleStr = search != null ? "Search: " + search : (path.isEmpty() ? "Catalog: All" : "Catalog: " + path);
+        org.bukkit.inventory.Inventory inv = getServer().createInventory(holder, 54, Component.text(titleStr, NamedTextColor.DARK_PURPLE));
+        holder.setInventory(inv);
+
+        int start = page * CATALOG_PAGE, end = Math.min(start + CATALOG_PAGE, total), slot = 0;
+        for (int i = start; i < end; i++, slot++) {
+            CustomHeadBlock t = matches.get(i);
+            inv.setItem(slot, catalogItemCell(t));
+            holder.itemSlots.put(slot, t.fullId());
+        }
+        if (total == 0) inv.setItem(22, catalogNavItem(Material.BARRIER, search != null ? "No matches" : "Empty"));
+        catalogNavBar(inv, holder, page > 0, end < total, true);
+        player.openInventory(inv);
+    }
+
+    /** Detail view: one type, its crafting ingredients and stonecutter relations (drillable). */
+    void openCatalogDetail(Player player, @org.jspecify.annotations.Nullable String id,
+                           @org.jspecify.annotations.Nullable CatalogHolder parent) {
+        if (id == null) return;
+        CustomHeadBlock type = registry.getType(id);
+        if (type == null) return;
+        CatalogHolder holder = new CatalogHolder(CatalogHolder.View.DETAIL, "", null, 0, id, parent);
+        org.bukkit.inventory.Inventory inv = getServer().createInventory(holder, 54,
+                Component.text("Catalog: " + catalogPlainName(type), NamedTextColor.DARK_PURPLE));
+        holder.setInventory(inv);
+
+        inv.setItem(4, catalogDetailHeader(type));
+
+        List<CustomHeadBlock.IngredientSpec> from = catalogCraftedFrom(type);
+        if (!from.isEmpty()) {
+            inv.setItem(9, catalogNavItem(Material.CRAFTING_TABLE, "Crafted from"));
+            int slot = 10;
+            for (CustomHeadBlock.IngredientSpec spec : from) {
+                if (slot > 16) break;
+                ItemStack icon = catalogIngredientIcon(spec);
+                if (icon == null) continue;
+                inv.setItem(slot, icon);
+                if (spec.isBlock() && registry.getType(spec.blockId()) != null) holder.drillSlots.put(slot, spec.blockId());
+                slot++;
+            }
+        }
+        List<CustomHeadBlock.StonecutterRecipeDef> cutFrom = type.stonecutterRecipes();
+        if (!cutFrom.isEmpty()) {
+            inv.setItem(18, catalogNavItem(Material.STONECUTTER, "Cut from"));
+            int slot = 19;
+            for (CustomHeadBlock.StonecutterRecipeDef r : cutFrom) {
+                if (slot > 25) break;
+                ItemStack icon = catalogIngredientIcon(r.input());
+                if (icon == null) continue;
+                inv.setItem(slot, icon);
+                if (r.input().isBlock() && registry.getType(r.input().blockId()) != null) holder.drillSlots.put(slot, r.input().blockId());
+                slot++;
+            }
+        }
+        var cutsInto = registry.getStonecutterRecipesForInput(id);
+        if (!cutsInto.isEmpty()) {
+            inv.setItem(27, catalogNavItem(Material.STONECUTTER, "Cuts into"));
+            int slot = 28;
+            for (CustomBlockRegistry.HeadStonecutterRecipe r : cutsInto) {
+                if (slot > 34) break;
+                CustomHeadBlock out = registry.getType(r.outputBlockId());
+                if (out == null) continue;
+                inv.setItem(slot, out.createItem(r.amount()));
+                holder.drillSlots.put(slot, r.outputBlockId());
+                slot++;
+            }
+        }
+        catalogNavBar(inv, holder, false, false, false);
+        player.openInventory(inv);
+    }
+
+    private static List<CustomHeadBlock.IngredientSpec> catalogCraftedFrom(CustomHeadBlock type) {
+        if (!type.shapedRecipes().isEmpty()) return new ArrayList<>(type.shapedRecipes().get(0).key().values());
+        if (!type.shapelessRecipes().isEmpty()) return type.shapelessRecipes().get(0).ingredients();
+        return List.of();
+    }
+
+    private @org.jspecify.annotations.Nullable ItemStack catalogIngredientIcon(CustomHeadBlock.IngredientSpec spec) {
+        if (spec.isBlock()) {
+            CustomHeadBlock t = registry.getType(spec.blockId());
+            return t != null ? t.createItem(1) : catalogNavItem(Material.PLAYER_HEAD, spec.blockId());
+        }
+        if (spec.isMaterial() && spec.material() != null) return new ItemStack(spec.material());
+        if (spec.isMaterials() && spec.materials() != null && !spec.materials().isEmpty()) return new ItemStack(spec.materials().get(0));
+        if (spec.isTag() && spec.tag() != null) {
+            var vals = spec.tag().getValues();
+            return new ItemStack(vals.isEmpty() ? Material.NAME_TAG : vals.iterator().next());
+        }
+        return null;
+    }
+
+    private void catalogGive(Player player, String id) {
+        CustomHeadBlock type = registry.getType(id);
+        if (type == null) return;
+        var overflow = player.getInventory().addItem(type.createItem(1));
+        for (ItemStack lf : overflow.values()) player.getWorld().dropItemNaturally(player.getLocation(), lf);
+        player.playSound(player.getLocation(), org.bukkit.Sound.ENTITY_ITEM_PICKUP, 1f, 1f);
+    }
+
+    private void catalogNavBar(org.bukkit.inventory.Inventory inv, CatalogHolder h,
+                               boolean hasPrev, boolean hasNext, boolean hasSearch) {
+        int size = inv.getSize(), bottom = size - 9;
+        for (int i = bottom; i < size; i++) inv.setItem(i, catalogFiller());
+        if (hasPrev) { h.prevSlot = bottom; inv.setItem(bottom, catalogNavItem(Material.ARROW, "Previous page")); }
+        if (h.parent != null) { h.backSlot = bottom + 2; inv.setItem(bottom + 2, catalogNavItem(Material.OAK_DOOR, "Back")); }
+        h.closeSlot = bottom + 4; inv.setItem(bottom + 4, catalogNavItem(Material.BARRIER, "Close"));
+        if (hasSearch) { h.searchSlot = bottom + 6; inv.setItem(bottom + 6, catalogNavItem(Material.COMPASS, "Search: /defcorelib catalog search <query>")); }
+        if (hasNext) { h.nextSlot = bottom + 8; inv.setItem(bottom + 8, catalogNavItem(Material.ARROW, "Next page")); }
+    }
+
+    private static ItemStack catalogFiller() {
+        ItemStack it = new ItemStack(Material.GRAY_STAINED_GLASS_PANE);
+        var m = it.getItemMeta();
+        if (m != null) { m.displayName(Component.empty()); it.setItemMeta(m); }
+        return it;
+    }
+
+    private static ItemStack catalogNavItem(Material mat, String name) {
+        ItemStack it = new ItemStack(mat);
+        var m = it.getItemMeta();
+        if (m != null) {
+            m.displayName(Component.text(name, NamedTextColor.YELLOW).decoration(TextDecoration.ITALIC, false));
+            it.setItemMeta(m);
+        }
+        return it;
+    }
+
+    private static ItemStack catalogCategoryIcon(CustomHeadBlock rep, String label, int count, boolean isBranch) {
+        ItemStack icon = rep.createItem(1);
+        var m = icon.getItemMeta();
+        if (m != null) {
+            m.displayName(Component.text(label, NamedTextColor.AQUA).decoration(TextDecoration.ITALIC, false));
+            m.lore(List.of(
+                    Component.text(count + (count == 1 ? " item" : " items"), NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false),
+                    Component.text(isBranch ? "Click to browse" : "Click to view", NamedTextColor.YELLOW).decoration(TextDecoration.ITALIC, false)));
+            icon.setItemMeta(m);
+        }
+        return icon;
+    }
+
+    private static ItemStack catalogItemCell(CustomHeadBlock type) {
+        ItemStack it = type.createItem(1);
+        var m = it.getItemMeta();
+        if (m != null) {
+            List<Component> lore = m.lore() != null ? new ArrayList<>(m.lore()) : new ArrayList<>();
+            lore.add(Component.empty());
+            lore.add(Component.text("Left-click: details", NamedTextColor.YELLOW).decoration(TextDecoration.ITALIC, false));
+            lore.add(Component.text("Right-click: give (admin)", NamedTextColor.DARK_GRAY).decoration(TextDecoration.ITALIC, false));
+            m.lore(lore);
+            it.setItemMeta(m);
+        }
+        return it;
+    }
+
+    private static ItemStack catalogDetailHeader(CustomHeadBlock type) {
+        ItemStack it = type.createItem(1);
+        var m = it.getItemMeta();
+        if (m != null) {
+            List<Component> lore = m.lore() != null ? new ArrayList<>(m.lore()) : new ArrayList<>();
+            lore.add(Component.empty());
+            lore.add(Component.text(type.fullId(), NamedTextColor.DARK_GRAY).decoration(TextDecoration.ITALIC, false));
+            if (!type.categories().isEmpty()) {
+                lore.add(Component.text("Categories: " + String.join(", ", type.categories()), NamedTextColor.AQUA)
+                        .decoration(TextDecoration.ITALIC, false));
+            }
+            m.lore(lore);
+            it.setItemMeta(m);
+        }
+        return it;
+    }
+
+    private void catalogReopen(Player player, CatalogHolder h) {
+        switch (h.view) {
+            case TREE -> openCatalogTree(player, h.path, h.page, h.parent);
+            case ITEMS -> openCatalog(player, h.path, h.search, h.page, h.parent);
+            case DETAIL -> openCatalogDetail(player, h.detailId, h.parent);
+        }
+    }
+
+    private void catalogReopenPaged(Player player, CatalogHolder h, int newPage) {
+        int p = Math.max(0, newPage);
+        switch (h.view) {
+            case TREE -> openCatalogTree(player, h.path, p, h.parent);
+            case ITEMS -> openCatalog(player, h.path, h.search, p, h.parent);
+            default -> { }
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGH)
+    public void onCatalogClick(org.bukkit.event.inventory.InventoryClickEvent event) {
+        if (!(event.getInventory().getHolder() instanceof CatalogHolder h)) return;
+        event.setCancelled(true); // read-only browser; never let items move
+        if (!(event.getWhoClicked() instanceof Player player)) return;
+        int slot = event.getRawSlot();
+        if (slot < 0 || slot >= event.getInventory().getSize()) return; // clicked own inventory
+
+        if (slot == h.closeSlot) { player.closeInventory(); return; }
+        if (slot == h.backSlot && h.parent != null) { catalogReopen(player, h.parent); return; }
+        if (slot == h.prevSlot) { catalogReopenPaged(player, h, h.page - 1); return; }
+        if (slot == h.nextSlot) { catalogReopenPaged(player, h, h.page + 1); return; }
+        if (slot == h.searchSlot) {
+            player.closeInventory();
+            player.sendMessage(Component.text("Search the catalog with: /defcorelib catalog search <query>", NamedTextColor.YELLOW));
+            return;
+        }
+        String branch = h.branchSlots.get(slot);
+        if (branch != null) { openCatalogTree(player, branch, 0, h); return; }
+        String leaf = h.leafSlots.get(slot);
+        if (leaf != null) { openCatalog(player, leaf, null, 0, h); return; }
+        String drill = h.drillSlots.get(slot);
+        if (drill != null) { openCatalogDetail(player, drill, h); return; }
+        String itemId = h.itemSlots.get(slot);
+        if (itemId != null) {
+            if (event.isRightClick() && player.hasPermission("corelib.admin")) catalogGive(player, itemId);
+            else openCatalogDetail(player, itemId, h);
+        }
+    }
+
+    // ──────────────────────────────────────────────────────────────────────
     // Neighbor changes — only for blocks that declared reactsToNeighbors
     // ──────────────────────────────────────────────────────────────────────
 
@@ -1663,11 +1989,33 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!command.getName().equalsIgnoreCase("defcorelib")) return false;
         if (args.length == 0) {
-            sender.sendMessage(Component.text("Usage: /defcorelib <give|give_demo|give_demo_rotation|list|colliders|reloadbanners|cleanorphans|refreshdisplays>", NamedTextColor.YELLOW));
+            sender.sendMessage(Component.text(sender.hasPermission("corelib.admin")
+                    ? "Usage: /defcorelib <catalog|give|give_demo|give_demo_rotation|list|colliders|reloadbanners|cleanorphans|refreshdisplays>"
+                    : "Usage: /defcorelib catalog", NamedTextColor.YELLOW));
             return true;
         }
 
-        switch (args[0].toLowerCase()) {
+        // Per-subcommand permission: `catalog` is public browse (corelib.catalog, default true); every
+        // other subcommand is admin-only (corelib.admin). Replaces the former blanket command-level gate.
+        String sub = args[0].toLowerCase(java.util.Locale.ROOT);
+        String needed = sub.equals("catalog") ? "corelib.catalog" : "corelib.admin";
+        if (!sender.hasPermission(needed)) {
+            sender.sendMessage(Component.text("You don't have permission for /defcorelib " + sub + ".", NamedTextColor.RED));
+            return true;
+        }
+
+        switch (sub) {
+            case "catalog" -> {
+                if (!(sender instanceof Player player)) {
+                    sender.sendMessage(Component.text("Must be a player", NamedTextColor.RED));
+                    return true;
+                }
+                if (args.length >= 3 && args[1].equalsIgnoreCase("search")) {
+                    openCatalog(player, "", String.join(" ", java.util.Arrays.copyOfRange(args, 2, args.length)), 0, null);
+                } else {
+                    openCatalogTree(player, "", 0, null);
+                }
+            }
             case "list" -> {
                 sender.sendMessage(Component.text("Registered blocks:", NamedTextColor.GOLD));
                 for (CustomHeadBlock type : registry.allTypes()) {
@@ -1901,9 +2249,23 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         if (!command.getName().equalsIgnoreCase("defcorelib")) return List.of();
         if (args.length == 1) {
-            return List.of("give", "give_demo", "give_demo_rotation", "list", "colliders", "reloadbanners", "cleanorphans", "refreshdisplays", "gluetest", "showcase").stream()
-                    .filter(s -> s.startsWith(args[0].toLowerCase()))
-                    .toList();
+            List<String> subs = new ArrayList<>();
+            subs.add("catalog"); // public
+            if (sender.hasPermission("corelib.admin")) {
+                subs.addAll(List.of("give", "give_demo", "give_demo_rotation", "list", "colliders", "reloadbanners", "cleanorphans", "refreshdisplays", "gluetest", "showcase"));
+            }
+            return subs.stream().filter(s -> s.startsWith(args[0].toLowerCase())).toList();
+        }
+        if (args.length == 2 && args[0].equalsIgnoreCase("catalog")) {
+            java.util.TreeSet<String> opts = new java.util.TreeSet<>();
+            opts.add("search");
+            for (CustomHeadBlock t : registry.allTypes()) {
+                for (String g : catalogGroupsOf(t)) {
+                    int slash = g.indexOf('/');
+                    opts.add(slash < 0 ? g : g.substring(0, slash));
+                }
+            }
+            return opts.stream().filter(s -> s.toLowerCase().startsWith(args[1].toLowerCase())).toList();
         }
         if (args.length == 2 && (args[0].equalsIgnoreCase("cleanorphans") || args[0].equalsIgnoreCase("refreshdisplays"))) {
             return List.of("confirm").stream()

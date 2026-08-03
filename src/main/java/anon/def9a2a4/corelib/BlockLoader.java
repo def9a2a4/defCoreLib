@@ -120,6 +120,9 @@ public final class BlockLoader {
                         + "' — expected BUILDING/REDSTONE/EQUIPMENT/MISC");
             }
         }
+        // Catalog grouping labels (hierarchical "parent/child" paths); empty → catalog groups by namespace.
+        List<String> categories = sec.getStringList("categories");
+        if (!categories.isEmpty()) b.categories(categories);
 
         // Name and lore
         String nameStr = sec.getString("name");

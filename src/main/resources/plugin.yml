@@ -6,6 +6,16 @@ author: def9a2a4
 description: Shared core library for def plugins
 commands:
   defcorelib:
-    description: DefCoreLib admin commands
-    usage: /defcorelib <give|give_demo|list|colliders|reloadbanners|cleanorphans> [args...]
-    permission: corelib.admin
+    description: DefCoreLib commands
+    usage: /defcorelib <catalog|give|give_demo|list|colliders|reloadbanners|cleanorphans> [args...]
+    # No command-level permission: each subcommand is gated in code — `catalog` needs corelib.catalog
+    # (default true), every other subcommand needs corelib.admin (default op).
+permissions:
+  corelib.admin:
+    description: Administer DefCoreLib (give, list, reload, showcase, colliders, cleanup, etc.)
+    default: op
+    children:
+      corelib.catalog: true
+  corelib.catalog:
+    description: Browse the DefCoreLib item catalog
+    default: true
