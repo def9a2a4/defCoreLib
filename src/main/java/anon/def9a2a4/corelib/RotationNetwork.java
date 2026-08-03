@@ -606,6 +606,13 @@ public class RotationNetwork {
                     .thenComparingInt(CustomBlockRegistry.LocationKey::y)
                     .thenComparingInt(CustomBlockRegistry.LocationKey::z));
 
+            // Members whose gearbox-free DOMAIN has no source of its own (it is powered only THROUGH a
+            // gearbox firewall). Such a domain's CW/CCW is an arbitrary-but-stable geometry seed, so a
+            // ratchet there has no meaningful "against its allowed direction" and must NOT freewheel — it
+            // just passes power. Tracked per-domain here because `allSources` is local to the domain loop;
+            // the component-level `supply` pools across gearboxes and cannot see this.
+            Set<CustomBlockRegistry.LocationKey> sourcelessDomainMembers = new HashSet<>();
+
             for (CustomBlockRegistry.LocationKey root : sortedMembers) {
                 if (dirMap.containsKey(root)) continue;
 
@@ -679,6 +686,10 @@ public class RotationNetwork {
                             break;
                         }
                     }
+                } else {
+                    // Source-less domain (powered only through a gearbox): its direction is a seed, not a
+                    // physical spin, so any ratchet in it must pass rather than freewheel (see above).
+                    sourcelessDomainMembers.addAll(domain);
                 }
 
                 jammed |= domainJam;
@@ -687,8 +698,12 @@ public class RotationNetwork {
             // Measure pass: record each powered, non-jammed ratchet's resolved (post-anchor)
             // direction, then stop before any side effect. A ratchet in a jammed/unpowered component
             // has no well-defined direction, so it is left out of the cut set (never freewheels there).
+            // A ratchet in a SOURCE-LESS domain (fed only through a gearbox) is likewise left out — its
+            // direction is an arbitrary seed, so freewheeling it would sever downstream at random; Option A
+            // makes it pass power instead.
             if (ratchetDirsOut != null && supply > 0 && !jammed) {
                 for (CustomBlockRegistry.LocationKey loc : members) {
+                    if (sourcelessDomainMembers.contains(loc)) continue;
                     RotationNode rn = nodes.get(loc);
                     if (rn != null && RATCHET_ID.equals(rn.blockTypeId())) {
                         ratchetDirsOut.put(loc, dirMap.getOrDefault(loc, SpinDirection.CW));
