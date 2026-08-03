@@ -80,11 +80,15 @@ pipes/src/main/resources/
 - Have TWO display entities (main + directional indicator)
 
 ### Filter Pipes
-REGULAR pipes (a non-null `FilterSpec` on the variant) that pull **only the item types the player
-configures** out of the source container. Because each pipe attaches to one face of a chest, several
-filter pipes on one chest — each pulling a different subset toward a different destination — sort items
-with no new routing logic. Visually/placement-wise **identical to the plain pipe of that tier** (reuse
-the same textures/states in `pipes.yml`).
+REGULAR pipes (a non-null `FilterSpec` on the variant) that gate items to **only the types the player
+configures**. A filter pipe gates **anywhere on a chain, not only against the source** — the transport
+model is bufferless and atomic per tick, so an extractor applies the AND of every filter pipe on its
+resolved path (`CachedPath.filterPipes`, collected in `findDestination`); non-matching items are simply
+never pulled and stay in the source, which is observably identical to items being blocked mid-run.
+Filters in series therefore AND together. This is a **gate, not a router** — the single-facing model has
+no junctions, so a mid-chain filter can only stop items, never divert them; sorting stays the source-side
+pattern (several filter pipes on one chest, each feeding a different destination). Visually/placement-wise
+**identical to the plain pipe of that tier** (reuse the same textures/states in `pipes.yml`).
 
 - **Filter items are real and consumed** — dropping an item into a filter slot takes it from the
   player; `PipeFilterStore` persists it (+ the mode flags) to the head block's PDC, and
@@ -93,9 +97,16 @@ the same textures/states in `pipes.yml`).
   first `FilterSpec.slots` slots hold filter items, the rest of the top rows are locked filler, and the
   bottom row holds tier-gated toggle buttons (white/black dye for whitelist⇄blacklist; a similar/exact
   head pair for material⇄exact matching). Edits refresh `PipeManager`'s per-block filter cache.
-- **Extraction hook:** `PipeManager.transferItems` calls the predicate-aware
-  `ContainerAdapter.peekExtract(block, max, accept)` (CoreLib) so the pipe can scan past non-matching
-  slots. `FilterData.test` = (type/`isSimilar` match) XOR blacklist.
+- **Extraction hook:** `PipeManager.transferItems` builds a chain-wide predicate via `buildChainFilter`
+  (AND of `getFilter(loc)` for each pipe in `path.filterPipes`) and passes it to the predicate-aware
+  `ContainerAdapter.peekExtract(block, max, accept)` (CoreLib) so it scans past non-matching slots.
+  `FilterData.test` = (type/`isSimilar` match) XOR blacklist; an **empty whitelist blocks everything**
+  (an unconfigured mid-chain filter halts its line until configured).
+- **Machine push-down:** `deliverFromAbove` applies the same chain predicate and **STALLs** the whole
+  push if any pushed item is rejected (the eject is atomic/binary — no partial delivery), rather than
+  leaking past the filter. Route machine output through a chest to gate it.
+- **Filter edits:** `refreshFilter` only updates the filter cache (path geometry is unchanged); `FilterGui`
+  calls `PipeManager.wakeAll()` on GUI **close** to wake extractors that slept while fully blocked.
 - **Tiers** (config.yml `variants:` → `filter:` section):
 
   | Variant             | slots | allow-blacklist-toggle | allow-exact-toggle | items/transfer |

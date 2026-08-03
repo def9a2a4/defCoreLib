@@ -1,0 +1,34 @@
+pipes v0.3.4
+
+FILTER PIPES (NEW)
+- Three new pipes — Copper, Iron, and Gold Filter Pipe — that only let the
+  items you choose pass through. A filter gates items anywhere on a run,
+  not just against the source chest: put one at the start to pull only
+  matching items out of a container, or mid-line to block the rest as they
+  flow past. Two filter pipes in series must both allow an item.
+- Place several filter pipes on one chest, each feeding a different
+  destination, to sort items with no extra machinery.
+- Right-click a filter pipe to open its filter: drop item stacks into the
+  slots to set what passes. The items are consumed into the pipe and drop
+  back when it is broken.
+- Tiers unlock more as you go:
+    Copper — 5 filter slots, whitelist only, match by item type.
+    Iron   — 9 filter slots, plus a whitelist/blacklist toggle.
+    Gold   — 18 filter slots, plus an exact-vs-type matching toggle
+             (exact respects names, enchants, and components).
+- Throughput matches the plain pipe of the same metal (4 / 8 / 16 items
+  per transfer). Filter pipes look and place exactly like the normal pipe
+  of their tier.
+- Craft: the metal's pipe pattern with a hopper in the center
+  (ring of ingots, hopper in the middle) → 2 filter pipes.
+
+NOTES
+- An unconfigured filter pipe (empty whitelist) blocks EVERYTHING until you
+  set it up — so dropping a fresh filter pipe into a working line stops the
+  flow until you configure it.
+- A machine that pushes its output straight down into a filter pipe is
+  blocked (the machine backs up) when the output isn't allowed, rather than
+  leaking past the filter. To gate a machine's output, send it into a chest
+  and pull from that chest with a filter pipe.
+- Filtering is not yet applied while a filter pipe rides a moving
+  mechanism (cart / platform) — it transfers everything there for now.
