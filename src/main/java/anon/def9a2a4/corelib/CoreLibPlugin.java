@@ -160,6 +160,9 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         // The glue item itself is declared in corelib-items.yml (mech:glue_item). The registry
         // powers the derived sticky auto-glue (StickySpread) at resolve time.
         glueManager = new GlueManager(rotConfig.glueMaxSize, registry);
+        // The engine's landing-glue prune (GlueManager.rebindLanded for captured nested anchors) must
+        // bound its sticky-closure walk by the SAME cap authoring used, else it over-prunes.
+        mechanismRegistry.setGlueMaxSize(rotConfig.glueMaxSize);
         glueAuthoring = new GlueAuthoring(this, registry, glueManager,
             rotConfig.glueOutlineInterval, rotConfig.glueSessionTimeout);
         getServer().getPluginManager().registerEvents(glueAuthoring, this);
@@ -174,10 +177,13 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         } catch (IOException ignored) {}
 
         // Register mechanism demos
-        new DoorDemo(this, registry, mechanismRegistry, glueManager).register();
+        DoorDemo doorDemo = new DoorDemo(this, registry, mechanismRegistry, glueManager);
+        doorDemo.register();
         RotationRotator rotationRotator = new RotationRotator(this, registry, rotationNetwork, mechanismRegistry, glueManager);
         rotationRotator.register();
-        new ExtendablePistonManager(this, registry, rotationNetwork, mechanismRegistry, glueManager, rotConfig).register();
+        ExtendablePistonManager pistonManager =
+            new ExtendablePistonManager(this, registry, rotationNetwork, mechanismRegistry, glueManager, rotConfig);
+        pistonManager.register();
         ChainHoistManager chainHoistManager =
             new ChainHoistManager(this, registry, rotationNetwork, mechanismRegistry, glueManager, rotConfig);
         chainHoistManager.register();
@@ -187,6 +193,13 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         // (hoists get the dynamic-origin HoistAnchor). Wired here, after the hoist manager exists.
         glueManager.setAnchorFactory(b ->
             Anchors.isAnchorType(b, registry) ? Anchors.forBlock(b, registry, chainHoistManager) : null);
+        // Refuse to CARRY a mid-motion anchor into another mechanism (a swinging rotator/door head, a
+        // mid-stroke piston core, a moving hoist head all stay in-world and would be force-disassembled if
+        // an outer mover aired them out). Each mover checks its final captured list against this before any
+        // side effect. Minecart is absent by design — its cargo all airs out, leaving no in-world anchor.
+        mechanismRegistry.setAnchorInMotion(b ->
+            rotationRotator.isMoving(b) || doorDemo.isMoving(b)
+                || chainHoistManager.isMoving(b) || pistonManager.isMoving(b));
         mechanismMinecartManager = new MechanismMinecartManager(this, registry, mechanismRegistry, glueManager);
         glueAuthoring.setMinecartManager(mechanismMinecartManager);
         mechanismMinecartManager.register();
