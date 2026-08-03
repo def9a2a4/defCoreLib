@@ -42,7 +42,8 @@ import java.util.UUID;
 public class PipeManager {
 
     private record CachedPath(Location destination, Location lastPipeLocation,
-                               List<Location> pipeChain, int minItemsPerTransfer) {}
+                               List<Location> pipeChain, int minItemsPerTransfer,
+                               List<Location> filterPipes) {}
 
     private final PipesPlugin plugin;
     private final World world;
@@ -88,10 +89,23 @@ public class PipeManager {
         return fresh;
     }
 
-    /** Re-read a filter pipe's config from PDC into the cache (called after a GUI edit). */
+    /**
+     * Re-read a filter pipe's config from PDC into the cache (called after every GUI edit). Cheap: only
+     * the cache entry changes — path geometry is unaffected by a filter-content edit, so the path cache is
+     * left intact. Waking asleep extractors is deferred to {@link #wakeAll()} on GUI close.
+     */
     public void refreshFilter(Location location) {
         Location normalized = normalizeLocation(location);
         filterCache.put(normalized, PipeFilterStore.read(normalized.getBlock()));
+    }
+
+    /**
+     * Clear all source-empty/dest-full sleep timers so pipes re-check next tick. Called once when a filter
+     * GUI closes: an upstream extractor may have fallen asleep while a mid-chain filter blocked everything,
+     * and editing that filter must let flow resume promptly without a relog.
+     */
+    public void wakeAll() {
+        sleepUntil.clear();
     }
 
     public PipeData getPipeData(Location location) {
@@ -553,15 +567,13 @@ public class PipeManager {
 
         int maxToExtract = path.minItemsPerTransfer();
 
-        // Filter pipes pull only item types passing their per-block filter; the predicate-aware peek
-        // scans past non-matching slots. Ordinary pipes use the plain first-available peek.
-        ItemStack toTransfer;
-        if (data.variant().isFilter()) {
-            PipeFilterStore.FilterData filter = getFilter(normalizeLocation(pipeLocation));
-            toTransfer = sourceAdapter.peekExtract(sourceBlock, maxToExtract, filter::test);
-        } else {
-            toTransfer = sourceAdapter.peekExtract(sourceBlock, maxToExtract);
-        }
+        // Apply the filters of every filter pipe ALONG the path (not just this extractor): an item is
+        // pulled only if it can traverse the whole chain. The predicate-aware peek scans past
+        // non-matching slots. No filter pipes on the path → plain first-available peek.
+        java.util.function.Predicate<ItemStack> accept = buildChainFilter(path);
+        ItemStack toTransfer = (accept == null)
+            ? sourceAdapter.peekExtract(sourceBlock, maxToExtract)
+            : sourceAdapter.peekExtract(sourceBlock, maxToExtract, accept);
         if (toTransfer == null) {
             sleepPipe(normalizeLocation(pipeLocation), plugin.getPipeConfig().getSourceEmptySleepTicks());
             return false;
@@ -694,6 +706,10 @@ public class PipeManager {
                                         Set<Location> visited, List<Location> chain, int currentMinItems) {
         Location current = pipeLocation;
         BlockFace currentFacing = facing;
+        // Filter pipes encountered along the path (in walk order). Static for the path's lifetime — the
+        // path cache is cleared on any pipe add/remove, so this can't go stale. The extracting pipe is
+        // element 0 of the chain, so a filter pipe sitting on the source is captured here too.
+        List<Location> filterPipes = new ArrayList<>();
 
         while (true) {
             Location normalized = normalizeLocation(current);
@@ -703,34 +719,57 @@ public class PipeManager {
             PipeData selfData = getPipeData(normalized);
             if (selfData != null) {
                 currentMinItems = Math.min(currentMinItems, selfData.variant().itemsPerTransfer());
+                if (selfData.variant().isFilter()) {
+                    filterPipes.add(normalized);
+                }
             }
 
             Block nextBlock = normalized.getBlock().getRelative(currentFacing);
             Location nextLoc = normalizeLocation(nextBlock.getLocation());
 
             if (visited.contains(nextLoc)) {
-                return new CachedPath(null, normalized, chain, currentMinItems);
+                return new CachedPath(null, normalized, chain, currentMinItems, filterPipes);
             }
 
             Optional<ContainerAdapter> adapterOpt = ContainerAdapterRegistry.findAdapter(nextBlock);
             if (adapterOpt.isPresent()) {
                 if (adapterOpt.get().canReceiveFrom(nextBlock, currentFacing.getOppositeFace())) {
-                    return new CachedPath(nextLoc, normalized, chain, currentMinItems);
+                    return new CachedPath(nextLoc, normalized, chain, currentMinItems, filterPipes);
                 }
-                return new CachedPath(null, normalized, chain, currentMinItems);
+                return new CachedPath(null, normalized, chain, currentMinItems, filterPipes);
             }
 
             PipeData nextPipeData = getPipeData(nextLoc);
             if (nextPipeData == null) {
-                return new CachedPath(null, normalized, chain, currentMinItems);
+                return new CachedPath(null, normalized, chain, currentMinItems, filterPipes);
             }
             if (nextPipeData.facing() == currentFacing.getOppositeFace()) {
-                return new CachedPath(null, normalized, chain, currentMinItems);
+                return new CachedPath(null, normalized, chain, currentMinItems, filterPipes);
             }
 
             current = nextLoc;
             currentFacing = nextPipeData.facing();
         }
+    }
+
+    /**
+     * Combined accept-predicate for every filter pipe on {@code path} (logical AND — a series of gates),
+     * or {@code null} when the path has no filter pipes (caller uses the plain unfiltered peek). Filter
+     * contents are read live from the filter cache, so GUI edits take effect without rebuilding the path.
+     */
+    private java.util.function.@org.jspecify.annotations.Nullable Predicate<ItemStack> buildChainFilter(CachedPath path) {
+        List<Location> filterPipes = path.filterPipes();
+        if (filterPipes.isEmpty()) return null;
+        List<PipeFilterStore.FilterData> filters = new ArrayList<>(filterPipes.size());
+        for (Location loc : filterPipes) {
+            filters.add(getFilter(loc));
+        }
+        return item -> {
+            for (PipeFilterStore.FilterData f : filters) {
+                if (!f.test(item)) return false;
+            }
+            return true;
+        };
     }
 
     /**
@@ -745,6 +784,15 @@ public class PipeManager {
         CachedPath path = getOrBuildPath(pipeBlock.getLocation(), data.facing(),
             data.variant().itemsPerTransfer());
         if (path.destination() == null) return null;
+
+        // A machine push is atomic (all-or-nothing) and can't partially deliver, so if any output is
+        // rejected by a filter pipe on the path, STALL the whole push rather than leak it past the filter.
+        java.util.function.Predicate<ItemStack> accept = buildChainFilter(path);
+        if (accept != null) {
+            for (ItemStack item : items) {
+                if (item != null && !accept.test(item)) return false;
+            }
+        }
 
         Block destBlock = path.destination().getBlock();
         ContainerAdapter destAdapter = ContainerAdapterRegistry.findAdapter(destBlock).orElse(null);
