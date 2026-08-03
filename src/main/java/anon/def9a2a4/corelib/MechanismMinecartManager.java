@@ -135,9 +135,11 @@ final class MechanismMinecartManager implements Listener {
             if (!(entity instanceof Minecart)) continue;
             MinecartState state = tracked.remove(entity.getUniqueId());
             if (state != null && state.mechanism != null) {
-                // Go through the wrapper (snapAndStop first) so a cart caught mid-block by the unload
-                // lands its blocks on-grid, matching the glue — not offset by the cart's fractional pos.
-                disassemble(state);
+                // Disassemble directly — NOT via the snapAndStop wrapper. The cart already lands on-grid
+                // via its delta-accumulated pivot (snapAndStop is inert for the landing cell), and its
+                // teleport during EntitiesUnloadEvent can throw/be rejected and abort this loop, orphaning
+                // the remaining carts in the batch. disassemble() is the intended safe-window block-restore.
+                state.mechanism.disassemble();
             }
         }
     }
@@ -151,6 +153,23 @@ final class MechanismMinecartManager implements Listener {
             }
         }
         tracked.clear();
+    }
+
+    /**
+     * A world is unloading at runtime (e.g. /mvunload, Bukkit.unloadWorld) — a path that may not fire
+     * per-chunk EntitiesUnloadEvent. Disassemble every assembled cart in that world here, while its
+     * blocks are still writable, so the aired-out real blocks aren't lost. Iterates the tracked map (not
+     * loaded chunks — safer during an active unload). Idempotent with the EntitiesUnload path.
+     */
+    void onWorldUnload(World world) {
+        for (MinecartState state : new ArrayList<>(tracked.values())) {
+            if (!world.equals(state.minecart.getWorld())) continue;
+            if (state.mechanism != null) {
+                state.mechanism.disassemble();   // direct — no snapAndStop (see onEntitiesUnload)
+                state.mechanism = null;
+            }
+            tracked.remove(state.minecart.getUniqueId());
+        }
     }
 
     // ──────────────────────────────────────────────────────────────────────
