@@ -624,7 +624,10 @@ public class MechanismRegistry {
             airOutSourceBlocks(blocks);
             for (Display d : capturedWorldBanners) d.remove(); // see owned branch — after air-out
             Bukkit.getScheduler().runTaskLater(plugin, () -> {
-                if (!vehicle.isValid()) { mech.disassemble(); return; } // vehicle died during the delay tick
+                // Skip if the vehicle died OR the mechanism was disassembled during the delay tick — in the
+                // latter case removeAllEntities() already removed parentDisplay, so re-adding passengers would
+                // operate on dead displays. disassemble() is idempotent (no-op if already torn down).
+                if (!vehicle.isValid() || !parentDisplay.isValid()) { mech.disassemble(); return; }
                 for (var group : displaysPerBlock) {
                     for (Display d : group) parentDisplay.addPassenger(d);
                 }
@@ -806,6 +809,11 @@ public class MechanismRegistry {
             if (!world.equals(mech.pivot().getWorld())) continue;
             try {
                 mech.disassemble();
+                // Force SYNCHRONOUS entity removal: for an owned vehicle, disassemble() defers removal one
+                // tick (anti-landing-flicker), but CraftServer.unloadWorld saves + unloads THIS tick, so the
+                // deferred task never runs and the display/collider/vehicle entities would persist into the
+                // region file. removeAllEntities is idempotent, so the later deferred task simply no-ops.
+                mech.removeAllEntities();
             } catch (Exception e) {
                 plugin.getLogger().warning("Mechanism " + mech.id() + " failed to disassemble on world "
                     + "unload (" + e.getMessage() + "); removing entities without block restore");
