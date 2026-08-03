@@ -686,9 +686,10 @@ public class RotationNetwork {
                             break;
                         }
                     }
-                } else {
+                } else if (ratchetDirsOut != null) {
                     // Source-less domain (powered only through a gearbox): its direction is a seed, not a
-                    // physical spin, so any ratchet in it must pass rather than freewheel (see above).
+                    // physical spin, so any ratchet in it must pass rather than freewheel (see above). Only
+                    // the measure pass reads this set, so skip the copy on the fast/apply passes.
                     sourcelessDomainMembers.addAll(domain);
                 }
 
