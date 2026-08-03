@@ -510,6 +510,12 @@ final class ChainHoistManager implements Listener {
         int mass = 1;
         for (Block b : load) if (b.getType() != CHAIN_MATERIAL) mass++;
 
+        // Refuse to hoist an in-motion anchor (mid-swing rotator/door head, mid-stroke piston core, another
+        // moving hoist head) pulled into the load — moving it would air it out and force-disassemble that
+        // inner mechanism. Runs before assemble; our own protected hoist head is not in `group`.
+        Block busy = mechRegistry.firstMovingCapturedAnchor(group);
+        if (busy != null) { MoverExclusion.blockedParticle(null, busy); return; }
+
         // The emerging link. Descending it starts inside the hoist and layLinks appends one more per block;
         // rising it starts above the body's top link and lands back inside the hoist to be discarded.
         Block ghostCell = descend ? hoist : hoist.getRelative(0, -span, 0);

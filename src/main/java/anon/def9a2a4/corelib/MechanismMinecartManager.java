@@ -409,6 +409,12 @@ final class MechanismMinecartManager implements Listener {
         blocks = StickySpread.withDerived(blocks, registry, glueManager.maxSize(),
             excluded, MoverExclusion::blockedParticle);
 
+        // Refuse to carry an in-motion anchor (mid-swing rotator/door head, mid-stroke piston core, moving
+        // hoist head) — carrying it would air it out and force-disassemble that inner mechanism. Before
+        // snapAndStop so a refusal leaves the cart rolling, side-effect-free like the refused() check above.
+        Block busy = mechRegistry.firstMovingCapturedAnchor(blocks);
+        if (busy != null) { MoverExclusion.blockedParticle(null, busy); return; }
+
         // Cart is committed to assembling — snap it to cell-center and kill its velocity so the
         // mechanism's displays align to the grid. (Done here, not at the top, so a declined assembly
         // — over-cap/mid-stroke hoist at the refused() check, or nothing movable above — leaves the

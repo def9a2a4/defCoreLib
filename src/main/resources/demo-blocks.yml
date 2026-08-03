@@ -445,6 +445,9 @@ blocks:
     name: "Door Controller"
     texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYWNjNzg5ZjIzMDc5NGY5MGUzM2M0ZjlhZDAwNjk0YmMyYTJmZjVlOGI5YjM3NWRjMzUzMjQwMWIyODFmM2U1OCJ9fX0="
     drops: self
+    # A swinging door keeps its controller head in-world; a vanilla piston pushing it would air it out and
+    # force-disassemble the door. Every other mover head sets this too (rotator/piston/hoist).
+    cancel_pistons: true
     default_state: closed
     states:
       closed: {}

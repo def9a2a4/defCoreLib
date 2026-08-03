@@ -585,7 +585,10 @@ final class BasicMechanism implements Mechanism {
         if (!landedAnchorTargets.isEmpty()) {
             Set<Block> placedSet = new HashSet<>(placed);
             for (int k = 0; k < landedAnchorTargets.size(); k++) {
-                GlueManager.rebindLanded(registry, blocks.size(), new BlockAnchor(landedAnchorTargets.get(k), () -> true),
+                // Cap the sticky-closure walk by the SAME maxSize authoring used (via the registry) — a
+                // smaller cap (e.g. blocks.size()) can starve a legitimate derived bridge and over-prune.
+                int cap = mechanismRegistry != null ? mechanismRegistry.glueMaxSize() : Integer.MAX_VALUE;
+                GlueManager.rebindLanded(registry, cap, new BlockAnchor(landedAnchorTargets.get(k), () -> true),
                     landedAnchorOffsets.get(k), rotation, placedSet);
             }
         }

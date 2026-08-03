@@ -542,6 +542,12 @@ final class ExtendablePistonManager {
         List<MechanismRegistry.GhostBlock> ghosts = template == null ? List.of()
             : List.of(new MechanismRegistry.GhostBlock(line.core().getLocation(), template));
 
+        // Refuse to push an in-motion anchor (mid-swing rotator/door head, mid-stroke piston core, moving
+        // hoist head) pulled into the payload — moving it would air it out and force-disassemble that inner
+        // mechanism. Runs before assemble; our own rod poles/heads and protected core are never flagged.
+        Block busy = mechRegistry.firstMovingCapturedAnchor(assembleBlocks);
+        if (busy != null) { MoverExclusion.blockedParticle(null, busy); return; }
+
         // Centered pivot (mirror the rotator): the engine re-centers only Y of the vehicle spawn, so a corner
         // pivot makes the displays spawn 0.5 off in X/Z until the first move(). Everything downstream re-snaps
         // X/Z to floor+0.5, so this is a pure display fix (identical block math).
