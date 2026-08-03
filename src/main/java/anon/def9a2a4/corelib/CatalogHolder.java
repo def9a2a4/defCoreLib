@@ -19,7 +19,7 @@ import java.util.Map;
  * deeper category tree, {@link #leafSlots} open a filtered item list, {@link #itemSlots} open an item's
  * detail (or give it on an admin right-click), and {@link #drillSlots} open a recipe ingredient's detail.
  */
-final class CatalogHolder implements InventoryHolder {
+final class CatalogHolder implements InventoryHolder, ReadOnlyGuiHolder {
 
     enum View { TREE, ITEMS, DETAIL }
 

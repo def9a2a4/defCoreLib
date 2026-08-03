@@ -1466,6 +1466,17 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         }
     }
 
+    /** Read-only chest GUIs (catalog, stonecutter-select, dynamo/rotator mode menus) cancel clicks but
+     *  not drags; a drag into an empty GUI slot would deposit and lose the item on close. Cancel any drag
+     *  that touches the top inventory of a {@link ReadOnlyGuiHolder} (bottom-only drags stay allowed). */
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onReadonlyGuiDrag(org.bukkit.event.inventory.InventoryDragEvent event) {
+        if (event.getInventory().getHolder() instanceof ReadOnlyGuiHolder
+                && event.getRawSlots().stream().anyMatch(s -> s < event.getInventory().getSize())) {
+            event.setCancelled(true);
+        }
+    }
+
     private void updateStonecutterHint(org.bukkit.inventory.StonecutterInventory inv) {
         ItemStack input = inv.getInputItem();
         if (input == null || input.getType() != Material.PLAYER_HEAD || !input.hasItemMeta()) {
@@ -1598,6 +1609,11 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
 
     private static final int CATALOG_PAGE = 45; // content slots per page (top 5 rows); bottom row = nav bar
 
+    /** Category path → block id whose item texture represents that category node (else its first member).
+     *  Could later move to a resource; a handful of overrides doesn't warrant it yet. */
+    private static final Map<String, String> CATEGORY_ICON_IDS =
+            Map.of("mech", "mech:gear", "pipes", "pipes:copper_pipe");
+
     /** Grouping labels for a type: its explicit {@code categories}, else a single {@code [namespace]}. */
     private static List<String> catalogGroupsOf(CustomHeadBlock t) {
         return t.categories().isEmpty() ? List.of(t.namespace()) : t.categories();
@@ -1629,6 +1645,21 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         return i < 0 ? path : path.substring(i + 1);
     }
 
+    /** Normalize a category label: split on '/', trim + lowercase each segment, drop blank segments, then
+     *  rejoin. Package-visible (not private) so {@link BlockLoader} can normalize at load and the command
+     *  path arg is normalized identically. Returns "" when nothing survives. */
+    static String catalogNormalizeCategory(@org.jspecify.annotations.Nullable String raw) {
+        if (raw == null) return "";
+        StringBuilder sb = new StringBuilder();
+        for (String seg : raw.split("/")) {
+            String s = seg.trim().toLowerCase(java.util.Locale.ROOT);
+            if (s.isEmpty()) continue;
+            if (sb.length() > 0) sb.append('/');
+            sb.append(s);
+        }
+        return sb.toString();
+    }
+
     /** Category-tree view: the distinct child categories under {@code path}. */
     void openCatalogTree(Player player, String path, int page, @org.jspecify.annotations.Nullable CatalogHolder parent) {
         java.util.TreeSet<String> childPaths = new java.util.TreeSet<>();
@@ -1647,6 +1678,15 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         List<String> children = new ArrayList<>(childPaths);
         if (children.isEmpty()) { openCatalog(player, path, null, page, parent); return; }
 
+        // Reachability: a type whose group is EXACTLY this path sits *at* the node, not below it, so the
+        // child loop never surfaces it. Prepend a "Browse all here" entry (path itself; can't collide with
+        // real children, which all start with path+"/") that opens the subtree item list.
+        if (!path.isEmpty()) {
+            for (CustomHeadBlock t : registry.allTypes()) {
+                if (catalogGroupsOf(t).contains(path)) { children.add(0, path); break; }
+            }
+        }
+
         int total = children.size();
         int maxPage = Math.max(0, (total - 1) / CATALOG_PAGE);
         page = Math.max(0, Math.min(page, maxPage));
@@ -1660,6 +1700,7 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         int start = page * CATALOG_PAGE, end = Math.min(start + CATALOG_PAGE, total), slot = 0;
         for (int idx = start; idx < end; idx++, slot++) {
             String childPath = children.get(idx);
+            boolean browseAll = childPath.equals(path); // the injected "Browse all here" leaf
             boolean isBranch = false;
             int count = 0;
             CustomHeadBlock rep = null;
@@ -1667,14 +1708,19 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
                 if (!catalogInSubtree(t, childPath)) continue;
                 count++;
                 if (rep == null) rep = t;
-                if (!isBranch) {
+                if (!browseAll && !isBranch) {   // browse-all is always a leaf; skip branch detection (avoids a self-loop)
                     for (String g : catalogGroupsOf(t)) if (g.startsWith(childPath + "/")) { isBranch = true; break; }
                 }
             }
             if (rep == null) continue;
-            inv.setItem(slot, catalogCategoryIcon(rep, catalogLastSegment(childPath), count, isBranch));
-            if (isBranch) holder.branchSlots.put(slot, childPath);
-            else holder.leafSlots.put(slot, childPath);
+            // Designated category icon (e.g. mech→gear, pipes→copper pipe) overrides the first-member icon.
+            CustomHeadBlock iconType = rep;
+            String iconId = CATEGORY_ICON_IDS.get(childPath);
+            if (iconId != null) { CustomHeadBlock it = registry.getType(iconId); if (it != null) iconType = it; }
+            String label = browseAll ? "Browse all " + catalogLastSegment(childPath) : catalogLastSegment(childPath);
+            inv.setItem(slot, catalogCategoryIcon(iconType, label, count, !browseAll && isBranch));
+            if (!browseAll && isBranch) holder.branchSlots.put(slot, childPath);
+            else holder.leafSlots.put(slot, childPath);   // browse-all → leaf: opens openCatalog(path) subtree
         }
         catalogNavBar(inv, holder, page > 0, end < total, false);
         player.openInventory(inv);
@@ -1702,10 +1748,11 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         org.bukkit.inventory.Inventory inv = getServer().createInventory(holder, 54, Component.text(titleStr, NamedTextColor.DARK_PURPLE));
         holder.setInventory(inv);
 
+        boolean canGive = player.hasPermission("corelib.admin");
         int start = page * CATALOG_PAGE, end = Math.min(start + CATALOG_PAGE, total), slot = 0;
         for (int i = start; i < end; i++, slot++) {
             CustomHeadBlock t = matches.get(i);
-            inv.setItem(slot, catalogItemCell(t));
+            inv.setItem(slot, catalogItemCell(t, canGive));
             holder.itemSlots.put(slot, t.fullId());
         }
         if (total == 0) inv.setItem(22, catalogNavItem(Material.BARRIER, search != null ? "No matches" : "Empty"));
@@ -1713,7 +1760,8 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         player.openInventory(inv);
     }
 
-    /** Detail view: one type, its crafting ingredients and stonecutter relations (drillable). */
+    /** Detail view: one type — a real crafting grid (shaped) or ingredient row (shapeless), plus
+     *  stonecutter relations; every registered block ingredient is drillable. */
     void openCatalogDetail(Player player, @org.jspecify.annotations.Nullable String id,
                            @org.jspecify.annotations.Nullable CatalogHolder parent) {
         if (id == null) return;
@@ -1724,27 +1772,54 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
                 Component.text("Catalog: " + catalogPlainName(type), NamedTextColor.DARK_PURPLE));
         holder.setInventory(inv);
 
-        inv.setItem(4, catalogDetailHeader(type));
-
-        List<CustomHeadBlock.IngredientSpec> from = catalogCraftedFrom(type);
-        if (!from.isEmpty()) {
-            inv.setItem(9, catalogNavItem(Material.CRAFTING_TABLE, "Crafted from"));
-            int slot = 10;
-            for (CustomHeadBlock.IngredientSpec spec : from) {
-                if (slot > 16) break;
+        boolean rendered = false;
+        if (!type.shapedRecipes().isEmpty()) {
+            // Shaped → 3x3 grid at rows 0-2, cols 0-2 (slot = row*9+col); arrow @13; result/header @15.
+            CustomHeadBlock.ShapedRecipeDef r = type.shapedRecipes().get(0);
+            List<String> pattern = r.pattern();
+            for (int row = 0; row < pattern.size() && row < 3; row++) {
+                String line = pattern.get(row);
+                for (int col = 0; col < line.length() && col < 3; col++) {
+                    char c = line.charAt(col);
+                    if (c == ' ') continue;
+                    CustomHeadBlock.IngredientSpec spec = r.key().get(c);
+                    if (spec == null) continue;
+                    ItemStack icon = catalogIngredientIcon(spec);
+                    if (icon == null) continue;
+                    int gslot = row * 9 + col;
+                    inv.setItem(gslot, icon);
+                    if (spec.isBlock() && registry.getType(spec.blockId()) != null) holder.drillSlots.put(gslot, spec.blockId());
+                }
+            }
+            inv.setItem(13, catalogNavItem(Material.ARROW, "→"));
+            inv.setItem(15, catalogDetailHeader(type, r.amount()));
+            rendered = true;
+        } else if (!type.shapelessRecipes().isEmpty()) {
+            // Shapeless → fill the grid area left-to-right (no positions); same arrow + result.
+            CustomHeadBlock.ShapelessRecipeDef r = type.shapelessRecipes().get(0);
+            int[] gslots = {0, 1, 2, 9, 10, 11, 18, 19, 20};
+            int gi = 0;
+            for (CustomHeadBlock.IngredientSpec spec : r.ingredients()) {
+                if (gi >= gslots.length) break;
                 ItemStack icon = catalogIngredientIcon(spec);
                 if (icon == null) continue;
-                inv.setItem(slot, icon);
-                if (spec.isBlock() && registry.getType(spec.blockId()) != null) holder.drillSlots.put(slot, spec.blockId());
-                slot++;
+                int gslot = gslots[gi++];
+                inv.setItem(gslot, icon);
+                if (spec.isBlock() && registry.getType(spec.blockId()) != null) holder.drillSlots.put(gslot, spec.blockId());
             }
+            inv.setItem(13, catalogNavItem(Material.ARROW, "→ (shapeless)"));
+            inv.setItem(15, catalogDetailHeader(type, r.amount()));
+            rendered = true;
         }
+        if (!rendered) inv.setItem(4, catalogDetailHeader(type, 1)); // stonecutter-only / no craft recipe → header
+
+        // Stonecutter relations on lower rows (disjoint from the grid above).
         List<CustomHeadBlock.StonecutterRecipeDef> cutFrom = type.stonecutterRecipes();
         if (!cutFrom.isEmpty()) {
-            inv.setItem(18, catalogNavItem(Material.STONECUTTER, "Cut from"));
-            int slot = 19;
+            inv.setItem(27, catalogNavItem(Material.STONECUTTER, "Cut from"));
+            int slot = 28;
             for (CustomHeadBlock.StonecutterRecipeDef r : cutFrom) {
-                if (slot > 25) break;
+                if (slot > 34) break;
                 ItemStack icon = catalogIngredientIcon(r.input());
                 if (icon == null) continue;
                 inv.setItem(slot, icon);
@@ -1754,10 +1829,10 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         }
         var cutsInto = registry.getStonecutterRecipesForInput(id);
         if (!cutsInto.isEmpty()) {
-            inv.setItem(27, catalogNavItem(Material.STONECUTTER, "Cuts into"));
-            int slot = 28;
+            inv.setItem(36, catalogNavItem(Material.STONECUTTER, "Cuts into"));
+            int slot = 37;
             for (CustomBlockRegistry.HeadStonecutterRecipe r : cutsInto) {
-                if (slot > 34) break;
+                if (slot > 43) break;
                 CustomHeadBlock out = registry.getType(r.outputBlockId());
                 if (out == null) continue;
                 inv.setItem(slot, out.createItem(r.amount()));
@@ -1767,12 +1842,6 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         }
         catalogNavBar(inv, holder, false, false, false);
         player.openInventory(inv);
-    }
-
-    private static List<CustomHeadBlock.IngredientSpec> catalogCraftedFrom(CustomHeadBlock type) {
-        if (!type.shapedRecipes().isEmpty()) return new ArrayList<>(type.shapedRecipes().get(0).key().values());
-        if (!type.shapelessRecipes().isEmpty()) return type.shapelessRecipes().get(0).ingredients();
-        return List.of();
     }
 
     private @org.jspecify.annotations.Nullable ItemStack catalogIngredientIcon(CustomHeadBlock.IngredientSpec spec) {
@@ -1838,22 +1907,22 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         return icon;
     }
 
-    private static ItemStack catalogItemCell(CustomHeadBlock type) {
+    private static ItemStack catalogItemCell(CustomHeadBlock type, boolean canGive) {
         ItemStack it = type.createItem(1);
         var m = it.getItemMeta();
         if (m != null) {
             List<Component> lore = m.lore() != null ? new ArrayList<>(m.lore()) : new ArrayList<>();
             lore.add(Component.empty());
             lore.add(Component.text("Left-click: details", NamedTextColor.YELLOW).decoration(TextDecoration.ITALIC, false));
-            lore.add(Component.text("Right-click: give (admin)", NamedTextColor.DARK_GRAY).decoration(TextDecoration.ITALIC, false));
+            if (canGive) lore.add(Component.text("Right-click: give", NamedTextColor.DARK_GRAY).decoration(TextDecoration.ITALIC, false));
             m.lore(lore);
             it.setItemMeta(m);
         }
         return it;
     }
 
-    private static ItemStack catalogDetailHeader(CustomHeadBlock type) {
-        ItemStack it = type.createItem(1);
+    private static ItemStack catalogDetailHeader(CustomHeadBlock type, int amount) {
+        ItemStack it = type.createItem(Math.max(1, amount));
         var m = it.getItemMeta();
         if (m != null) {
             List<Component> lore = m.lore() != null ? new ArrayList<>(m.lore()) : new ArrayList<>();
@@ -2017,8 +2086,14 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
                     sender.sendMessage(Component.text("Must be a player", NamedTextColor.RED));
                     return true;
                 }
-                if (args.length >= 3 && args[1].equalsIgnoreCase("search")) {
-                    openCatalog(player, "", String.join(" ", java.util.Arrays.copyOfRange(args, 2, args.length)), 0, null);
+                if (args.length >= 2 && args[1].equalsIgnoreCase("search")) {
+                    if (args.length >= 3) {
+                        openCatalog(player, "", String.join(" ", java.util.Arrays.copyOfRange(args, 2, args.length)), 0, null);
+                    } else {
+                        player.sendMessage(Component.text("Search the catalog with: /defcorelib catalog search <query>", NamedTextColor.YELLOW));
+                    }
+                } else if (args.length >= 2) {
+                    openCatalogTree(player, catalogNormalizeCategory(args[1]), 0, null);
                 } else {
                     openCatalogTree(player, "", 0, null);
                 }

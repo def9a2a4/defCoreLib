@@ -121,8 +121,15 @@ public final class BlockLoader {
             }
         }
         // Catalog grouping labels (hierarchical "parent/child" paths); empty → catalog groups by namespace.
-        List<String> categories = sec.getStringList("categories");
-        if (!categories.isEmpty()) b.categories(categories);
+        List<String> rawCategories = sec.getStringList("categories");
+        if (!rawCategories.isEmpty()) {
+            List<String> categories = new ArrayList<>();
+            for (String c : rawCategories) {
+                String n = CoreLibPlugin.catalogNormalizeCategory(c);
+                if (!n.isEmpty()) categories.add(n);
+            }
+            if (!categories.isEmpty()) b.categories(categories);
+        }
 
         // Name and lore
         String nameStr = sec.getString("name");

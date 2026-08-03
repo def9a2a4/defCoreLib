@@ -10,7 +10,7 @@ import org.jspecify.annotations.Nullable;
  * can write the chosen target angle back to that block. Identifies our menu in click events via the
  * standard {@code getHolder() instanceof} pattern (see {@link RedstoneDynamoModeHolder}).
  */
-final class RotatorModeHolder implements InventoryHolder {
+final class RotatorModeHolder implements InventoryHolder, ReadOnlyGuiHolder {
 
     private final Location blockLocation;
     private @Nullable Inventory inventory;

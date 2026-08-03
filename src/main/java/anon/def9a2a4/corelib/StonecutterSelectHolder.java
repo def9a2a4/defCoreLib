@@ -10,7 +10,7 @@ import java.util.List;
  * Inventory holder for the custom stonecutter selection GUI.
  * Used to identify our custom menus in click events (the standard Bukkit pattern).
  */
-final class StonecutterSelectHolder implements InventoryHolder {
+final class StonecutterSelectHolder implements InventoryHolder, ReadOnlyGuiHolder {
 
     private final String inputBlockId;
     private final List<CustomBlockRegistry.HeadStonecutterRecipe> recipes;

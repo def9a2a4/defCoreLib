@@ -10,7 +10,7 @@ import org.jspecify.annotations.Nullable;
  * so clicks can write the chosen mode/scaling back to that block. Identifies our menu in click
  * events via the standard {@code getHolder() instanceof} pattern (see {@link StonecutterSelectHolder}).
  */
-final class RedstoneDynamoModeHolder implements InventoryHolder {
+final class RedstoneDynamoModeHolder implements InventoryHolder, ReadOnlyGuiHolder {
 
     private final Location blockLocation;
     private @Nullable Inventory inventory;
