@@ -554,7 +554,7 @@ final class ExtendablePistonManager {
             // defaults to +axis (a down head flips up). Covers the rod head AND any pushed payload head; by
             // hook time all cells are placed and PDC-stamped, so the resolver sees real neighbours. Authored
             // glue on the landed heads (and any nested anchor) is re-stamped by the engine
-            // (BasicMechanism.rebindLandedGlue) — both heads are captured, so no explicit rebind here.
+            // (GlueManager.rebindLanded, post-landing) — both heads are captured, so no explicit rebind here.
             mech.setOnDisassembled(placed -> {
                 for (Block b : placed) {
                     CustomHeadBlock t = registry.getTypeFromBlock(b);

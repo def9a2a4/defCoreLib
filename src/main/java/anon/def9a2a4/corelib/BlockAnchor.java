@@ -42,8 +42,9 @@ final class BlockAnchor implements Anchor {
         if (!(block.getState() instanceof Skull skull)) return;
         skull.getPersistentDataContainer().set(GlueManager.GLUE_KEY, PersistentDataType.INTEGER_ARRAY, offsets);
         // A glue-offset write mutates only a PDC key — no appearance/blockstate/redstone change — so it
-        // must not emit a BlockPhysicsEvent (rebindLandedGlue calls this mid-landing on a half-placed
-        // structure, which would otherwise fire a spurious reactive recalc). update(force, applyPhysics).
+        // must not emit a BlockPhysicsEvent (the engine's post-landing glue rebind, GlueManager.rebindLanded,
+        // calls this during disassembly on a just-placed structure, which would otherwise fire a spurious
+        // reactive recalc). update(force, applyPhysics).
         skull.update(false, false);
     }
 

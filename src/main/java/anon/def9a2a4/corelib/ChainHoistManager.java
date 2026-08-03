@@ -540,8 +540,9 @@ final class ChainHoistManager implements Listener {
                     }
                 }
                 // Authored glue on the landed platform is re-stamped by the engine
-                // (BasicMechanism.rebindLandedGlue): a legacy seed skull rides in the captured group, so
-                // its region is preserved with an identity landing rotation. Hoist-held glue (HoistAnchor)
+                // (GlueManager.rebindLanded, post-landing): a legacy seed skull rides in the captured group,
+                // so its region is preserved (pruned to landed cells) with an identity landing rotation.
+                // Hoist-held glue (HoistAnchor)
                 // sits on the unmoved, protected hoist skull and is never captured — invariant intact.
                 // Broken mid-stroke: forget() lands the body from inside onBlockRemoved, which runs its
                 // consumer FIRST — the skull and its PDC are still there, so getTypeFromBlock would say the
