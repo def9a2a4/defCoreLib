@@ -188,6 +188,88 @@ final class GlueManager {
     }
 
     /**
+     * Rebind an anchor's glue to EXACTLY the cells that actually landed — the disassembly-time
+     * counterpart to {@link #rebindTransformed}. Same transform (R × preMoveOffset, 90°-snapped), but:
+     * <ol>
+     *   <li>an offset is kept only if its landed block is in {@code placed} — a block that failed to
+     *       place (off-world / protected / ghost-collision / solid-block-wins) is dropped from the glue,
+     *       so glue never claims a cell that holds no block; and</li>
+     *   <li>disconnection is propagated: after removing the dropped cells, any surviving offset no longer
+     *       connected to the anchor (origin 0,0,0) — cardinally, through remaining glued cells OR the
+     *       derived sticky closure — is pruned too (it stays in the world as a plain un-glued block; glue
+     *       is metadata, so this never breaks or drops it).</li>
+     * </ol>
+     * Runs for EVERY disassembly (completion, chunk unload, block-break, destroy), so glue self-corrects
+     * to reality whenever anything fails to place. No-op when {@code preMoveOffsets} is null.
+     */
+    void rebindLanded(Anchor a, int @Nullable [] preMoveOffsets, Matrix4f rotation, Set<Block> placed) {
+        rebindLanded(registry, a, preMoveOffsets, rotation, placed);
+    }
+
+    /** Static form so callers without a {@link GlueManager} (the engine's per-block captured-anchor
+     *  rebind in {@link BasicMechanism#disassemble}) share the identical prune. */
+    static void rebindLanded(@Nullable CustomBlockRegistry registry, Anchor a,
+                             int @Nullable [] preMoveOffsets, Matrix4f rotation, Set<Block> placed) {
+        if (preMoveOffsets == null) return;
+        Block origin = a.originBlock();
+        World w = a.world();
+        int ox = origin.getX(), oy = origin.getY(), oz = origin.getZ();
+        // (1) transform + (2) keep only offsets whose landed block actually placed
+        Set<Vector3i> landed = new LinkedHashSet<>();
+        Vector3f v = new Vector3f();
+        for (int i = 0; i + 2 < preMoveOffsets.length; i += 3) {
+            v.set(preMoveOffsets[i], preMoveOffsets[i + 1], preMoveOffsets[i + 2]);
+            rotation.transformPosition(v);
+            int x = Math.round(v.x), y = Math.round(v.y), z = Math.round(v.z);
+            if (placed.contains(w.getBlockAt(ox + x, oy + y, oz + z))) landed.add(new Vector3i(x, y, z));
+        }
+        // (3) prune disconnection, then (4) write
+        a.writeOffsets(packOffsets(pruneConnected(registry, a, landed)));
+    }
+
+    /** The subset of {@code landed} still connected to the anchor origin — cardinally, through other
+     *  landed cells OR the derived sticky closure of the landed set. Origin-seeded fixpoint, the inverse
+     *  of {@link #glueCuboid}'s growth. */
+    private static Set<Vector3i> pruneConnected(@Nullable CustomBlockRegistry registry, Anchor a,
+                                                Set<Vector3i> landed) {
+        Set<Vector3i> derived = derivedFromStatic(registry, a, landed); // sticky bridges — count as connectors
+        Set<Vector3i> reachable = new LinkedHashSet<>();
+        List<Vector3i> pending = new ArrayList<>(landed);
+        boolean changed = true;
+        while (changed) {
+            changed = false;
+            Set<Vector3i> connectors = new LinkedHashSet<>(reachable);
+            connectors.addAll(derived);
+            var it = pending.iterator();
+            while (it.hasNext()) {
+                Vector3i off = it.next();
+                if (connects(off, connectors)) { reachable.add(off); it.remove(); changed = true; }
+            }
+        }
+        return reachable;
+    }
+
+    /** {@link #derivedFrom} without a GlueManager instance and with no size cap (the landed set is
+     *  already bounded; we want the FULL sticky closure as connectors, never a truncated one). */
+    private static Set<Vector3i> derivedFromStatic(@Nullable CustomBlockRegistry registry, Anchor a,
+                                                   Set<Vector3i> authoredOffsets) {
+        Set<Vector3i> set = new LinkedHashSet<>();
+        if (registry == null) return set;
+        Block origin = a.originBlock();
+        World w = a.world();
+        int ox = origin.getX(), oy = origin.getY(), oz = origin.getZ();
+        List<Block> authored = new ArrayList<>(authoredOffsets.size());
+        for (Vector3i off : authoredOffsets) {
+            Block b = w.getBlockAt(ox + off.x, oy + off.y, oz + off.z);
+            if (!b.getType().isAir()) authored.add(b);
+        }
+        for (Block d : StickySpread.derived(authored, origin, registry, Integer.MAX_VALUE)) {
+            set.add(new Vector3i(d.getX() - ox, d.getY() - oy, d.getZ() - oz));
+        }
+        return set;
+    }
+
+    /**
      * Resolve a mover's structure like {@link #resolveStructure}, then <b>transitively expand it</b>:
      * any captured block that is itself a glue anchor (e.g. a chain hoist glued onto a rotator)
      * contributes its own glued region — a hoist additionally brings its platform seed and chain

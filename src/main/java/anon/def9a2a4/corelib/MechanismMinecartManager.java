@@ -393,9 +393,10 @@ final class MechanismMinecartManager implements Listener {
             state.minecart, MINECART_RIDE_OFFSET, null);
         state.mechanism = mech;
         initHeading(state);
-        // Rebind only authored glue to where the blocks land so it tracks across rides.
+        // Rebind glue to the cells that actually landed (obstructed blocks drop + are un-glued; any
+        // resulting disconnection is propagated) so glue always matches the world across rides.
         if (glued) mech.setOnDisassembled(p ->
-            glueManager.rebindTransformed(anchor, authored, mech.landingRotation()));
+            glueManager.rebindLanded(anchor, authored, mech.landingRotation(), new HashSet<>(p)));
     }
 
     private void disassemble(MinecartState state) {

@@ -191,7 +191,7 @@ final class RotationRotator implements Listener {
         Mechanism mech = mechRegistry.assembleMechanism(ROTATOR_ID, planks,
             head.getLocation().add(0.5, 0, 0.5), axis, null);
         if (glued) mech.setOnDisassembled(p ->
-            glueManager.rebindTransformed(anchor, authored, mech.landingRotation()));
+            glueManager.rebindLanded(anchor, authored, mech.landingRotation(), new HashSet<>(p)));
         activeRotators.put(key, mech);
 
         int mass = Math.max(1, mech.blockCount());

@@ -504,6 +504,13 @@ final class BasicMechanism implements Mechanism {
         // the reactive break guard in ChainHoistManager). Lazily allocated — the common landing drops none.
         Set<Long> droppedChainCols = null;
 
+        // Captured nested-anchor heads that landed (e.g. a hoist glued onto a rotator): their region is
+        // re-stamped AFTER the loop — once `placed` is known — so rebindLanded can prune the glue to the
+        // cells that actually placed and propagate disconnection. Parallel lists: target block + its
+        // pre-move offsets (mb.glueOffsets). Was an inline rebindLandedGlue call per landed anchor.
+        List<Block> landedAnchorTargets = new ArrayList<>();
+        List<int[]> landedAnchorOffsets = new ArrayList<>();
+
         // Two-pass landing, mirroring airOutSourceBlocks' two-pass removal in reverse: supports
         // first, attachables second — an attachable (banner/torch/sign/…) placed before its support
         // exists pops during setBlockData and drops WITHOUT its captured block-entity data.
@@ -546,13 +553,13 @@ final class BasicMechanism implements Mechanism {
                 placeBlock(target, mb, snappedYaw);
                 placed.add(target);
                 landBanners(target, mb, snappedYaw, upright);
-                rebindLandedGlue(target, mb, rotation);
+                if (mb.glueOffsets != null) { landedAnchorTargets.add(target); landedAnchorOffsets.add(mb.glueOffsets); }
             } else if (FragileBlocks.isFragile(target.getType())) {
                 target.breakNaturally();
                 placeBlock(target, mb, snappedYaw);
                 placed.add(target);
                 landBanners(target, mb, snappedYaw, upright);
-                rebindLandedGlue(target, mb, rotation);
+                if (mb.glueOffsets != null) { landedAnchorTargets.add(target); landedAnchorOffsets.add(mb.glueOffsets); }
             } else if (mb.ghost && target.getBlockData().equals(mb.blockData)) {
                 // A blocked GHOST whose cell already holds its identical block is discarded silently:
                 // ghosts are data-only (never captured from the world), so dropping one here mints an
@@ -565,6 +572,17 @@ final class BasicMechanism implements Mechanism {
                     blockLoc.clone().add(0.5, 0.5, 0.5), 1);
                 droppedChainCols = noteIfChain(droppedChainCols, mb, blockLoc);
                 dropBlockAsItem(blockLoc, mb);
+            }
+        }
+
+        // Re-stamp captured nested-anchor glue onto each landed skull, pruned to the cells that actually
+        // placed (disconnection propagated). Deferred to here so `placed` is complete; runs BEFORE the
+        // chain-break guard below so that guard still wins (it fully invalidates a short-chained hoist).
+        if (!landedAnchorTargets.isEmpty()) {
+            Set<Block> placedSet = new HashSet<>(placed);
+            for (int k = 0; k < landedAnchorTargets.size(); k++) {
+                GlueManager.rebindLanded(registry, new BlockAnchor(landedAnchorTargets.get(k), () -> true),
+                    landedAnchorOffsets.get(k), rotation, placedSet);
             }
         }
 
@@ -613,28 +631,6 @@ final class BasicMechanism implements Mechanism {
         // passive windmill. Replaces the BlockPhysicsEvent we no longer emit. This is the single funnel
         // for every mechanism mover (pistons, chain hoists, rotators, drawbridges, minecart-carried).
         for (Block b : placed) registry.notifyBlockAppearedOrMoved(b);
-    }
-
-    /**
-     * Re-stamp a landed anchor's authored glue offsets, transformed by the mechanism's snapped landing
-     * rotation ({@code R × offset}). Capture aired the source block (and its PDC) out; this restores the
-     * glued region onto the landed skull so a carried anchor — e.g. a chain hoist swung by a rotator —
-     * keeps and reorients its region. No-op for non-anchor blocks ({@code glueOffsets == null}). The
-     * write matches {@link GlueManager#rebindTransformed}; {@code placeBlock} already created the skull.
-     */
-    private static void rebindLandedGlue(Block target, MechanismBlockData mb, Matrix4f rotation) {
-        int[] src = mb.glueOffsets;
-        if (src == null) return;
-        int[] out = new int[src.length];
-        Vector3f v = new Vector3f();
-        for (int i = 0; i + 2 < src.length; i += 3) {
-            v.set(src[i], src[i + 1], src[i + 2]);
-            rotation.transformPosition(v);
-            out[i] = Math.round(v.x);
-            out[i + 1] = Math.round(v.y);
-            out[i + 2] = Math.round(v.z);
-        }
-        new BlockAnchor(target, () -> true).writeOffsets(out);
     }
 
     @Override

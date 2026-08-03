@@ -86,7 +86,7 @@ final class DoorDemo {
                 head.getLocation().add(0.5, 0, 0.5), null);
             final Mechanism assembled = mech;
             if (glued) mech.setOnDisassembled(p ->
-                glueManager.rebindTransformed(anchor, authored, assembled.landingRotation()));
+                glueManager.rebindLanded(anchor, authored, assembled.landingRotation(), new HashSet<>(p)));
             activeDoors.put(key, mech);
         }
 
@@ -154,7 +154,7 @@ final class DoorDemo {
                 head.getLocation().add(0.5, 0, 0.5), null);
             final Mechanism assembled = mech;
             if (glued) mech.setOnDisassembled(p ->
-                glueManager.rebindTransformed(anchor, authored, assembled.landingRotation()));
+                glueManager.rebindLanded(anchor, authored, assembled.landingRotation(), new HashSet<>(p)));
             activeDoors.put(key, mech);
             targetYaw = -90f;
             timerDelay = 2; // wait for passenger mount
