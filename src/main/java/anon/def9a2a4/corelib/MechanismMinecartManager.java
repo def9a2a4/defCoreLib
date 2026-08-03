@@ -139,7 +139,25 @@ final class MechanismMinecartManager implements Listener {
                 // via its delta-accumulated pivot (snapAndStop is inert for the landing cell), and its
                 // teleport during EntitiesUnloadEvent can throw/be rejected and abort this loop, orphaning
                 // the remaining carts in the batch. disassemble() is the intended safe-window block-restore.
-                state.mechanism.disassemble();
+                safeDisassemble(state.mechanism);
+            }
+        }
+    }
+
+    /**
+     * Disassemble without letting a throw abort a teardown BATCH loop — one bad cart must not orphan the
+     * rest of the chunk/world's carts with their source cells still aired-out (the exact data-loss the
+     * unload paths exist to prevent). Falls back to {@code removeAllEntities} so a half-disassembled
+     * mechanism doesn't leak its display/collider entities. Mirrors {@link MechanismRegistry#shutdown()}.
+     */
+    private void safeDisassemble(Mechanism mech) {
+        try {
+            mech.disassemble();
+        } catch (Exception e) {
+            plugin.getLogger().warning("Mechanism cart failed to disassemble on teardown ("
+                + e.getMessage() + "); removing entities without block restore");
+            if (mech instanceof BasicMechanism bm) {
+                try { bm.removeAllEntities(); } catch (Exception ignored) { /* best-effort cleanup */ }
             }
         }
     }
@@ -149,7 +167,7 @@ final class MechanismMinecartManager implements Listener {
         // Disassemble all active mechanisms
         for (MinecartState state : new ArrayList<>(tracked.values())) {
             if (state.mechanism != null) {
-                state.mechanism.disassemble();
+                safeDisassemble(state.mechanism);
             }
         }
         tracked.clear();
@@ -165,7 +183,7 @@ final class MechanismMinecartManager implements Listener {
         for (MinecartState state : new ArrayList<>(tracked.values())) {
             if (!world.equals(state.minecart.getWorld())) continue;
             if (state.mechanism != null) {
-                state.mechanism.disassemble();   // direct — no snapAndStop (see onEntitiesUnload)
+                safeDisassemble(state.mechanism);   // direct — no snapAndStop (see onEntitiesUnload)
                 state.mechanism = null;
             }
             tracked.remove(state.minecart.getUniqueId());
@@ -222,7 +240,15 @@ final class MechanismMinecartManager implements Listener {
         while (it.hasNext()) {
             MinecartState state = it.next().getValue();
             if (state.minecart.isDead()) {                  // truly destroyed
-                if (state.mechanism != null) state.mechanism.disassemble();
+                if (state.mechanism != null) safeDisassemble(state.mechanism);
+                // A death that skipped VehicleDestroyEvent (/kill, void, plugin removal, some environmental
+                // sources) still returns the custom item. No double-drop: onMinecartDestroyed drops it and
+                // untracks the cart first, so this backstop only ever sees un-handled deaths.
+                CustomHeadBlock itemType = registry.getType(MECH_MINECART_ID);
+                if (itemType != null) {
+                    state.minecart.getWorld().dropItemNaturally(
+                        state.minecart.getLocation(), itemType.createItem(1));
+                }
                 it.remove();
                 continue;
             }
