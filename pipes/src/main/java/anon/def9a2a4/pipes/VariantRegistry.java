@@ -68,8 +68,22 @@ public class VariantRegistry {
             }
         }
 
+        // Filter capability (selective extraction): absent section = ordinary pipe.
+        PipeVariant.FilterSpec filter = null;
+        ConfigurationSection filterSection = section.getConfigurationSection("filter");
+        if (filterSection != null) {
+            if (behavior != BehaviorType.REGULAR) {
+                logger.warning("Variant '" + id + "': filter requires behavior REGULAR — filter ignored");
+            } else {
+                int slots = Math.max(1, filterSection.getInt("slots", 5));
+                boolean allowBlacklist = filterSection.getBoolean("allow-blacklist-toggle", false);
+                boolean allowExact = filterSection.getBoolean("allow-exact-toggle", false);
+                filter = new PipeVariant.FilterSpec(slots, allowBlacklist, allowExact);
+            }
+        }
+
         return new PipeVariant(id, behavior, intervalTicks, itemsPerTransfer,
-            Collections.unmodifiableSet(fluids));
+            Collections.unmodifiableSet(fluids), filter);
     }
 
     public PipeVariant getVariant(String id) {

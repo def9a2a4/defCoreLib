@@ -42,12 +42,15 @@ pipes/src/main/java/anon/def9a2a4/pipes/
 ├── PipeManager.java                - Core pipe logic: transfers, pathfinding, transforms
 ├── PipeBlockRegistrar.java         - CoreLib overlay: callbacks for all 8 variants
 ├── WorldManager.java               - Per-world PipeManager lifecycle
-├── PipeVariant.java                - Record: id, behaviorType, transferIntervalTicks, itemsPerTransfer
+├── PipeVariant.java                - Record: id, behaviorType, transfer settings, fluids, filter (FilterSpec)
 ├── BehaviorType.java               - Enum: REGULAR, CORNER
 ├── VariantRegistry.java            - Loads variant config from config.yml
 ├── RecipeManager.java              - Shapeless conversion recipe registration
 ├── ConversionRecipeCraftListener.java - Prevents catalyst consumption in conversion crafts
 ├── MachineEjectListener.java       - Handles machine block eject events
+├── PipeFilterStore.java            - Filter pipe per-block state (items + mode flags) in block PDC
+├── FilterHolder.java               - InventoryHolder for the filter config GUI
+├── FilterGui.java                  - Filter config GUI: slots + toggle buttons, click/close listener
 └── config/
     ├── PipeConfig.java             - Parses debug, world filter, performance settings
     └── DisplayConfig.java          - Parses display transform tuning values
@@ -75,6 +78,34 @@ pipes/src/main/resources/
 - Cannot face UP (placement returns null → cancelled)
 - `playerHeadStates`: "down" only
 - Have TWO display entities (main + directional indicator)
+
+### Filter Pipes
+REGULAR pipes (a non-null `FilterSpec` on the variant) that pull **only the item types the player
+configures** out of the source container. Because each pipe attaches to one face of a chest, several
+filter pipes on one chest — each pulling a different subset toward a different destination — sort items
+with no new routing logic. Visually/placement-wise **identical to the plain pipe of that tier** (reuse
+the same textures/states in `pipes.yml`).
+
+- **Filter items are real and consumed** — dropping an item into a filter slot takes it from the
+  player; `PipeFilterStore` persists it (+ the mode flags) to the head block's PDC, and
+  `PipeBlockRegistrar.onBlockRemoved` drops the stored items back when the pipe is broken.
+- **Config GUI** (`FilterGui`, opened via the variant's `onInteract`): a 54-slot double chest; the
+  first `FilterSpec.slots` slots hold filter items, the rest of the top rows are locked filler, and the
+  bottom row holds tier-gated toggle buttons (white/black dye for whitelist⇄blacklist; a similar/exact
+  head pair for material⇄exact matching). Edits refresh `PipeManager`'s per-block filter cache.
+- **Extraction hook:** `PipeManager.transferItems` calls the predicate-aware
+  `ContainerAdapter.peekExtract(block, max, accept)` (CoreLib) so the pipe can scan past non-matching
+  slots. `FilterData.test` = (type/`isSimilar` match) XOR blacklist.
+- **Tiers** (config.yml `variants:` → `filter:` section):
+
+  | Variant             | slots | allow-blacklist-toggle | allow-exact-toggle | items/transfer |
+  |---------------------|:-----:|:----------------------:|:------------------:|:--------------:|
+  | `copper_filter_pipe`| 5     | false                  | false              | 4              |
+  | `iron_filter_pipe`  | 9     | true                   | false              | 8              |
+  | `gold_filter_pipe`  | 18    | true                   | true               | 16             |
+
+- **Not yet:** filtering aboard moving mechanisms (registered as plain conduits); a planned extra
+  rotation-dependent display entity to visually distinguish filter pipes.
 
 ## Transfer System
 
@@ -110,5 +141,4 @@ CoreLib handles persistence via PDC tags on player head blocks (`corelib:block_t
 - Dispenser pipes
 - Warp pipes (teleport entities)
 - Dyed pipes
-- Filter pipes
 - Glass window pipes (show items inside)

@@ -42,6 +42,7 @@ public class PipesPlugin extends JavaPlugin {
     private WorldManager worldManager;
     private RecipeManager recipeManager;
     private LegacyPipeMigrator legacyMigrator;
+    private FilterGui filterGui;
 
     @Override
     public void onEnable() {
@@ -96,6 +97,8 @@ public class PipesPlugin extends JavaPlugin {
         anon.def9a2a4.corelib.fluid.FluidRouting.register(new FluidPipeWalker(pipeManagers));
         getServer().getPluginManager().registerEvents(worldManager, this);
         getServer().getPluginManager().registerEvents(conversionRecipeCraftListener, this);
+        filterGui = new FilterGui(this);
+        getServer().getPluginManager().registerEvents(filterGui, this);
 
         for (World world : Bukkit.getWorlds()) {
             worldManager.initWorld(world);
@@ -453,6 +456,8 @@ public class PipesPlugin extends JavaPlugin {
     public PipeManager getPipeManager(World world) {
         return pipeManagers.get(world);
     }
+
+    public FilterGui getFilterGui() { return filterGui; }
 
     public ItemStack getPipeItem(PipeVariant variant) {
         CustomBlockRegistry registry = CoreLibPlugin.getInstance().getRegistry();

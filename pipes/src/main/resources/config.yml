@@ -74,6 +74,45 @@ variants:
       interval-ticks: 10
       items-per-transfer: 16
 
+  # ── Filter pipes (REGULAR extraction, only pull whitelisted/blacklisted item types) ──
+  # Tiers escalate: more filter slots + more toggles. Configured per-block via right-click GUI.
+
+  # Copper Filter Pipe - 5 slots, whitelist only, material match
+  copper_filter_pipe:
+    behavior: REGULAR
+    fluids: []
+    transfer:
+      interval-ticks: 10
+      items-per-transfer: 4
+    filter:
+      slots: 5
+      allow-blacklist-toggle: false
+      allow-exact-toggle: false
+
+  # Iron Filter Pipe - 9 slots, whitelist/blacklist toggle, material match
+  iron_filter_pipe:
+    behavior: REGULAR
+    fluids: []
+    transfer:
+      interval-ticks: 10
+      items-per-transfer: 8
+    filter:
+      slots: 9
+      allow-blacklist-toggle: true
+      allow-exact-toggle: false
+
+  # Gold Filter Pipe - 18 slots, whitelist/blacklist toggle, exact/similar toggle
+  gold_filter_pipe:
+    behavior: REGULAR
+    fluids: []
+    transfer:
+      interval-ticks: 10
+      items-per-transfer: 16
+    filter:
+      slots: 18
+      allow-blacklist-toggle: true
+      allow-exact-toggle: true
+
   # Oxidized Copper Pipe - obtained via cauldron conversion
   oxidized_copper_pipe:
     behavior: REGULAR

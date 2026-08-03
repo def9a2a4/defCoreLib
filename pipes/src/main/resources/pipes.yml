@@ -250,6 +250,146 @@ blocks:
             transform: { translation: [0, 0, 0], scale: [1, 1, 1] }
 
   # ═══════════════════════════════════════════════════════════════════════
+  # FILTER PIPES (REGULAR extraction; visually identical to the plain pipe of
+  # that tier — same textures/states/placement. Per-block filter set via GUI.)
+  # ═══════════════════════════════════════════════════════════════════════
+
+  copper_filter_pipe:
+    name: "&6Copper Filter Pipe"
+    recipe_category: REDSTONE
+    lore:
+      - "&7Pulls only the items you allow out of the container behind it."
+      - "&7Right-click to set the filter."
+    texture: "@copper_head_h"
+    item_texture: "@copper_item"
+    drops: self
+    default_state: north
+    placement_state_map:
+      DOWN: up
+      NORTH: north
+    states:
+      north:
+        texture: "@copper_head_h"
+        display_entities:
+          - texture: "@copper_display_h"
+            tag: main
+            transform: { translation: [0, 0, 0], scale: [1, 1, 1] }
+      south: { copy_from: north }
+      east:  { copy_from: north }
+      west:  { copy_from: north }
+      up:
+        texture: "@copper_head_up"
+        display_entities:
+          - texture: "@copper_display_up"
+            tag: main
+            transform: { translation: [0, 0, 0], scale: [1, 1, 1] }
+      down:
+        texture: "@copper_head_down"
+        display_entities:
+          - texture: "@copper_display_down"
+            tag: main
+            transform: { translation: [0, 0, 0], scale: [1, 1, 1] }
+    recipes:
+      craft:
+        shaped:
+          - pattern: ["CCC", " H ", "CCC"]
+            key:
+              C: { material: COPPER_INGOT }
+              H: { material: HOPPER }
+            amount: 2
+      unlock_advancement: "minecraft:story/smelt_iron"
+
+  iron_filter_pipe:
+    name: "&7Iron Filter Pipe"
+    recipe_category: REDSTONE
+    lore:
+      - "&7Pulls only the items you allow out of the container behind it."
+      - "&7Right-click to set the filter and whitelist/blacklist mode."
+    texture: "@iron_head_h"
+    item_texture: "@iron_display_h"
+    drops: self
+    default_state: north
+    placement_state_map:
+      DOWN: up
+      NORTH: north
+    states:
+      north:
+        texture: "@iron_head_h"
+        display_entities:
+          - texture: "@iron_display_h"
+            tag: main
+            transform: { translation: [0, 0, 0], scale: [1, 1, 1] }
+      south: { copy_from: north }
+      east:  { copy_from: north }
+      west:  { copy_from: north }
+      up:
+        texture: "@iron_head_up"
+        display_entities:
+          - texture: "@iron_display_up"
+            tag: main
+            transform: { translation: [0, 0, 0], scale: [1, 1, 1] }
+      down:
+        texture: "@iron_head_down"
+        display_entities:
+          - texture: "@iron_display_down"
+            tag: main
+            transform: { translation: [0, 0, 0], scale: [1, 1, 1] }
+    recipes:
+      craft:
+        shaped:
+          - pattern: ["III", " H ", "III"]
+            key:
+              I: { material: IRON_INGOT }
+              H: { material: HOPPER }
+            amount: 2
+      unlock_advancement: "minecraft:story/smelt_iron"
+
+  gold_filter_pipe:
+    name: "&eGold Filter Pipe"
+    recipe_category: REDSTONE
+    lore:
+      - "&7Pulls only the items you allow out of the container behind it."
+      - "&7Right-click to set the filter, mode, and exact/material matching."
+    texture: "@gold_head_h"
+    item_texture: "@gold_item"
+    drops: self
+    default_state: north
+    placement_state_map:
+      DOWN: up
+      NORTH: north
+    states:
+      north:
+        texture: "@gold_head_h"
+        display_entities:
+          - texture: "@gold_display_h"
+            tag: main
+            transform: { translation: [0, 0, 0], scale: [1, 1, 1] }
+      south: { copy_from: north }
+      east:  { copy_from: north }
+      west:  { copy_from: north }
+      up:
+        texture: "@gold_head_up"
+        display_entities:
+          - texture: "@gold_display_up"
+            tag: main
+            transform: { translation: [0, 0, 0], scale: [1, 1, 1] }
+      down:
+        texture: "@gold_head_down"
+        display_entities:
+          - texture: "@gold_display_down"
+            tag: main
+            transform: { translation: [0, 0, 0], scale: [1, 1, 1] }
+    recipes:
+      craft:
+        shaped:
+          - pattern: ["GGG", " H ", "GGG"]
+            key:
+              G: { material: GOLD_INGOT }
+              H: { material: HOPPER }
+            amount: 2
+      unlock_advancement: "minecraft:story/smelt_iron"
+
+  # ═══════════════════════════════════════════════════════════════════════
   # CORNER PIPES (5 states: north, south, east, west, down — NO up)
   # ═══════════════════════════════════════════════════════════════════════
 

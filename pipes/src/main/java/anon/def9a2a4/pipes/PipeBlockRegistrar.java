@@ -57,6 +57,14 @@ public class PipeBlockRegistrar {
             return manager.resolveTransform(block, state, variant, idx);
         });
 
+        // Filter pipes open their config GUI on right-click (returning true cancels vanilla interaction).
+        if (variant.isFilter()) {
+            builder.onInteract((block, event) -> {
+                plugin.getFilterGui().open(event.getPlayer(), block, variant);
+                return true;
+            });
+        }
+
         builder.onBlockPlaced((block, state) -> {
             PipeManager manager = plugin.getPipeManager(block.getWorld());
             if (manager == null) return;
@@ -77,6 +85,13 @@ public class PipeBlockRegistrar {
         builder.onBlockRemoved((block, state) -> {
             PipeManager manager = plugin.getPipeManager(block.getWorld());
             if (manager == null) return;
+            if (variant.isFilter()) {
+                // Filter items were consumed from the player — return them. Read before removePipeData
+                // (which evicts the cache); the head/PDC is still intact at this pre-cleanup callback.
+                for (var item : PipeFilterStore.read(block).dropContents()) {
+                    block.getWorld().dropItemNaturally(block.getLocation().add(0.5, 0.5, 0.5), item);
+                }
+            }
             manager.removePipeData(block.getLocation());
             // Same physics-suppression gap on removal — refresh neighbors next tick, once this pipe's
             // block is actually gone, so they recompute against the now-empty cell.

@@ -48,6 +48,7 @@ public class PipeManager {
     private final World world;
     private final Map<Location, PipeData> pipes = new HashMap<>();
     private final Map<Location, CachedPath> pathCache = new HashMap<>();
+    private final Map<Location, PipeFilterStore.FilterData> filterCache = new HashMap<>();
     private final Map<Location, Long> sleepUntil = new HashMap<>();
     private final Map<Location, Long> deadEndRecheckAt = new HashMap<>();
     private final Random random = new Random();
@@ -76,6 +77,21 @@ public class PipeManager {
 
     public boolean isPipe(Location location) {
         return pipes.containsKey(normalizeLocation(location));
+    }
+
+    /** Cached filter for a filter pipe; lazily read from the block PDC on first access. */
+    private PipeFilterStore.FilterData getFilter(Location normalized) {
+        PipeFilterStore.FilterData cached = filterCache.get(normalized);
+        if (cached != null) return cached;
+        PipeFilterStore.FilterData fresh = PipeFilterStore.read(normalized.getBlock());
+        filterCache.put(normalized, fresh);
+        return fresh;
+    }
+
+    /** Re-read a filter pipe's config from PDC into the cache (called after a GUI edit). */
+    public void refreshFilter(Location location) {
+        Location normalized = normalizeLocation(location);
+        filterCache.put(normalized, PipeFilterStore.read(normalized.getBlock()));
     }
 
     public PipeData getPipeData(Location location) {
@@ -496,6 +512,7 @@ public class PipeManager {
         pipes.remove(normalized);
         sleepUntil.remove(normalized);
         deadEndRecheckAt.remove(normalized);
+        filterCache.remove(normalized);
         pathCache.clear();
     }
 
@@ -536,7 +553,15 @@ public class PipeManager {
 
         int maxToExtract = path.minItemsPerTransfer();
 
-        ItemStack toTransfer = sourceAdapter.peekExtract(sourceBlock, maxToExtract);
+        // Filter pipes pull only item types passing their per-block filter; the predicate-aware peek
+        // scans past non-matching slots. Ordinary pipes use the plain first-available peek.
+        ItemStack toTransfer;
+        if (data.variant().isFilter()) {
+            PipeFilterStore.FilterData filter = getFilter(normalizeLocation(pipeLocation));
+            toTransfer = sourceAdapter.peekExtract(sourceBlock, maxToExtract, filter::test);
+        } else {
+            toTransfer = sourceAdapter.peekExtract(sourceBlock, maxToExtract);
+        }
         if (toTransfer == null) {
             sleepPipe(normalizeLocation(pipeLocation), plugin.getPipeConfig().getSourceEmptySleepTicks());
             return false;
@@ -800,6 +825,7 @@ public class PipeManager {
         stopTasks();
         pipes.clear();
         pathCache.clear();
+        filterCache.clear();
         sleepUntil.clear();
         deadEndRecheckAt.clear();
     }
