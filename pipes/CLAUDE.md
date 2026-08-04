@@ -109,10 +109,12 @@ pattern (several filter pipes on one chest, each feeding a different destination
   calls `PipeManager.wakeAll()` on GUI **close** to wake extractors that slept while fully blocked.
 - **Redstone off-switch:** a redstone-powered filter pipe is switched OFF — `buildChainFilter` returns a
   block-everything predicate when `PipeManager.isPipePowered(block)` is true, so the whole chain through it
-  stops (and `deliverFromAbove` STALLs). Power is a live query (`getBlockPower()` on the head + its mount
-  cell — below for a floor head, behind for a wall head — mirroring CoreLib's EXTENDED sensing); no
-  `RedstoneConfig`, no cached state. `PipeBlockRegistrar.onNeighborChange` calls `wakeAll()` for filter
-  variants so a power change on any face wakes sleeping extractors.
+  stops (and `deliverFromAbove` STALLs). Power is a live query of the pipe's **own head cell**
+  (`getBlockPower() > 0`); put redstone next to the pipe. It deliberately does NOT read the mount cell, so a
+  powered/locked **source container** doesn't switch the filter off (a strongly-powered solid-block source
+  is the only residual case). No `RedstoneConfig`, no cached power state. `PipeBlockRegistrar.onNeighborChange`
+  calls `PipeManager.wakeOnFilterPowerDrop(block)` for filter variants, which edge-detects (via the
+  `filterPowered` map) and wakes sleeping extractors only on the powered→unpowered transition.
 - **Tiers** (config.yml `variants:` → `filter:` section):
 
   | Variant             | slots | allow-blacklist-toggle | allow-exact-toggle | items/transfer |

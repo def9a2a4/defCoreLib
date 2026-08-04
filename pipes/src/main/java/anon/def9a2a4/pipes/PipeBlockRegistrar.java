@@ -118,10 +118,10 @@ public class PipeBlockRegistrar {
             PipeManager manager = plugin.getPipeManager(block.getWorld());
             if (manager == null) return;
             manager.invalidatePathCache();
-            // A filter pipe can be switched on/off by redstone arriving on ANY face; the face-filtered
-            // self-wake below won't catch that, so wake sleeping upstream extractors to re-check power.
+            // A filter pipe's redstone off-switch can toggle from any face; wake sleeping upstream
+            // extractors only on the powered→unpowered edge (resume), not on power-on or unrelated churn.
             if (variant.isFilter()) {
-                manager.wakeAll();
+                manager.wakeOnFilterPowerDrop(block);
             }
             PipeManager.PipeData data = manager.getPipeData(block.getLocation());
             if (data != null) {

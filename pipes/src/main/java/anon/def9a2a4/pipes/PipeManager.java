@@ -50,6 +50,8 @@ public class PipeManager {
     private final Map<Location, PipeData> pipes = new HashMap<>();
     private final Map<Location, CachedPath> pathCache = new HashMap<>();
     private final Map<Location, PipeFilterStore.FilterData> filterCache = new HashMap<>();
+    // Last-seen redstone state of each filter pipe, for edge-detecting a power drop in onNeighborChange.
+    private final Map<Location, Boolean> filterPowered = new HashMap<>();
     private final Map<Location, Long> sleepUntil = new HashMap<>();
     private final Map<Location, Long> deadEndRecheckAt = new HashMap<>();
     private final Random random = new Random();
@@ -106,6 +108,22 @@ public class PipeManager {
      */
     public void wakeAll() {
         sleepUntil.clear();
+    }
+
+    /**
+     * On a filter pipe's neighbor change, wake sleeping extractors only when the pipe just transitioned
+     * powered→UNpowered (its off-switch released), so a redstone-blocked chain resumes promptly. Power-on
+     * and unrelated neighbor churn are ignored — an actively-transferring extractor already stops on its
+     * own by reading power live, and a missed wake self-heals within one sleep window. Edge detection
+     * mirrors RotationRotator; called from onNeighborChange for filter variants.
+     */
+    public void wakeOnFilterPowerDrop(Block block) {
+        Location key = normalizeLocation(block.getLocation());
+        boolean now = isPipePowered(block);
+        Boolean was = filterPowered.put(key, now);
+        if (Boolean.TRUE.equals(was) && !now) {
+            wakeAll();
+        }
     }
 
     public PipeData getPipeData(Location location) {
@@ -527,6 +545,7 @@ public class PipeManager {
         sleepUntil.remove(normalized);
         deadEndRecheckAt.remove(normalized);
         filterCache.remove(normalized);
+        filterPowered.remove(normalized);
         pathCache.clear();
     }
 
@@ -775,19 +794,14 @@ public class PipeManager {
     }
 
     /**
-     * Whether a filter pipe is currently redstone-powered (→ switched off). A player head is a non-full
-     * block, so redstone wired to the block it is mounted on powers the MOUNT cell, which the head cell
-     * doesn't see — mirror CoreLib's EXTENDED head sensing and check both. Live query, no cached state.
+     * Whether a filter pipe is currently redstone-powered (→ switched off). Senses only the pipe's own
+     * head cell: {@code getBlockPower() > 0} reflects redstone placed next to the pipe (lever/dust/redstone
+     * block/torch on a neighbor). We deliberately do NOT read the mount cell — a filter pipe is mounted on
+     * its source container, so reading the mount would let a powered/locked source (e.g. a redstone-locked
+     * hopper) switch the filter off. Live query, no cached state. Same primitive RotationRotator uses.
      */
     private boolean isPipePowered(Block block) {
-        if (block.getBlockPower() > 0) return true;
-        Block mount = switch (block.getType()) {
-            case PLAYER_WALL_HEAD -> block.getBlockData() instanceof org.bukkit.block.data.Directional d
-                ? block.getRelative(d.getFacing().getOppositeFace()) : null;
-            case PLAYER_HEAD -> block.getRelative(BlockFace.DOWN);
-            default -> null;
-        };
-        return mount != null && mount.getBlockPower() > 0;
+        return block.getBlockPower() > 0;
     }
 
     /**
@@ -892,6 +906,7 @@ public class PipeManager {
         pipes.clear();
         pathCache.clear();
         filterCache.clear();
+        filterPowered.clear();
         sleepUntil.clear();
         deadEndRecheckAt.clear();
     }
