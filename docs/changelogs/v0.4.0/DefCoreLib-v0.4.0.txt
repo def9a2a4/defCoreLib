@@ -1,6 +1,6 @@
 # DefCoreLib v0.4.0
 
-Two new frame blocks join the Casing, plus the biggest glue/contraption upgrade since glue itself: mechanisms now carry glued machines as one rigid body, a rotator can hang from the ceiling, and a rotation-network server hang under redstone pulse storms is fixed.
+Two new frame blocks join the Casing and a new Ratchet valve, plus the biggest glue/contraption upgrade since glue itself: mechanisms now carry glued machines as one rigid body and a rotator can hang from the ceiling. This release also adds an in-game item catalog (`/defcorelib catalog`), changes pick-block so it no longer mints custom items outside creative, and fixes a rotation-network server hang under redstone pulse storms.
 
 - **Gearbox** and **Chassis** — two new mechanical frame blocks, in all 12 woods
 - **Frame rework** — casings, gearboxes, and chassis auto-glue by matching wood, and can be brush-pinned rigidly to anything
@@ -27,7 +27,7 @@ Two new frame blocks join the Casing, plus the biggest glue/contraption upgrade 
 
 ## Items & commands
 
-- **In-game item catalog** — `/defcorelib catalog` opens a browsable menu of every registered block across all def plugins, grouped by category, with search and a detail view that drills into each recipe's ingredients. Open to everyone (no admin permission needed).
+- **In-game item catalog** — `/defcorelib catalog` opens a browsable menu of every registered block across all def plugins, grouped by category, with search (`/defcorelib catalog search <query>`, or `/defcorelib catalog <category>` to jump straight in) and a detail view that drills into each recipe's ingredients. Open to everyone via the new `corelib.catalog` permission (default on); an admin can right-click an entry to give the item.
 - **Pick-block** — middle-clicking a custom block or cart no longer mints a free copy in survival or adventure: it only selects a matching item you already carry. Creative still gives the item as before.
 
 ## Stability

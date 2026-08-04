@@ -25,8 +25,9 @@ FILTER PIPES (NEW)
   once placed, a ring around the pipe. The ring visibly switches off when
   the pipe is powered down with redstone, so you can see at a glance which
   filters are currently blocking their line.
-- Craft: the metal's pipe pattern with a hopper in the center
-  (ring of ingots, hopper in the middle) → 2 filter pipes.
+- Craft: the metal's plain-pipe pattern with a hopper in the center —
+  the tier's ingots across the top and bottom rows, a hopper in the
+  middle → 2 filter pipes.
 
 NOTES
 - An unconfigured filter pipe (empty whitelist) blocks EVERYTHING until you

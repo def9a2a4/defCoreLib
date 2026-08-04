@@ -1,10 +1,10 @@
 # mech v0.4.0
 
-Two new frame blocks — the **Gearbox** and the **Chassis** — plus the biggest glue/contraption upgrade yet: mechanisms now carry glued machines as one rigid body, a rotator can hang from the ceiling, and a rotation-network server hang under redstone pulse storms is fixed.
+Two new frame blocks — the **Gearbox** and the **Chassis** — and a new **Ratchet** valve, plus the biggest glue/contraption upgrade yet: mechanisms now carry glued machines as one rigid body and a rotator can hang from the ceiling. This release also rebalances several core recipes, adds an in-game item catalog (`/defcorelib catalog`), and fixes a rotation-network server hang under redstone pulse storms.
 
 ## New blocks
 
-- **Gearbox** (all 12 woods) — an omnidirectional power hub. On each of its six faces it couples to an aligned shaft, gear, or another gearbox and passes **power** through, but **not spin direction** — each side of a gearbox settles its own rotation. Split one input into several directions at once, or bridge a shaft around a corner without the counter-rotation a gear introduces. It's a frame block (see below): auto-glues only to same-wood frame blocks, brush-pin it to anything else. **Craft:** a Mechanical Casing in the centre, gears on three sides, a shaft on top — the casing's wood picks the variant.
+- **Gearbox** (all 12 woods) — an omnidirectional power hub. On each of its six faces it couples to an aligned shaft, gear, or another gearbox and passes **power** through, but **not spin direction** — each side of a gearbox settles its own rotation. Split one input into several directions at once, or bridge a shaft around a corner without the counter-rotation a gear introduces. An omni machine — a suction hopper, mechanical dispenser, or piston — can draw power from a gearbox on **any of its six faces**. It's a frame block (see below): auto-glues only to same-wood frame blocks, brush-pin it to anything else. **Craft:** a Mechanical Casing in the centre, gears on three sides, a shaft on top — the casing's wood picks the variant.
 - **Chassis** (all 12 woods) — a "super-casing" with slime reach: it grabs every adjacent **movable** block except honey, exactly like a slime block, so a moving contraption drags its whole payload with no glue brush — while still joining a same-wood casing frame. **Craft:** ring a Mechanical Casing with iron nuggets — the casing's wood picks the variant.
 - **Ratchet** — a one-way rotation valve. It transmits rotation only while the shaft spins its **allowed** direction (CW/CCW); turned the other way it **freewheels** — fully disconnects, so the input keeps spinning while everything past it goes dead (no jam, no stall). **Wrench** to flip the allowed direction, **sneak-wrench** to inspect it (allowed direction + whether it's currently freewheeling). Dropped onto a line that's already turning, it adopts that direction, so it engages on placement and only freewheels once the line is reversed. The direction is stored in the block, so it survives being carried by a mechanism, and it acts as a plain shaft while riding one. **Craft:** a bearing over a reverser over a gear, iron pawls flanking the reverser, copper in the corners (all-mechanical, no redstone).
 
@@ -33,6 +33,7 @@ Two new frame blocks — the **Gearbox** and the **Chassis** — plus the bigges
 ## Catalog
 
 - Browse every mech block — with recipes — in-game via `/defcorelib catalog` (casings, gearboxes, and chassis sort to the end so the machines come first).
+- **Pick-block** — middle-clicking a mech block or a mechanism minecart no longer mints a free copy in survival or adventure; it only selects one you already carry (creative still gives it).
 
 ## Compatibility
 
