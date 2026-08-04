@@ -1,4 +1,4 @@
-# DefCoreLib v0.3.3
+# DefCoreLib v0.4.0
 
 Two new frame blocks join the Casing, plus the biggest glue/contraption upgrade since glue itself: mechanisms now carry glued machines as one rigid body, a rotator can hang from the ceiling, and a rotation-network server hang under redstone pulse storms is fixed.
 
@@ -17,7 +17,7 @@ Two new frame blocks join the Casing, plus the biggest glue/contraption upgrade 
 
 ## Frame glue
 
-- Casing, gearbox, and chassis are one **frame** family keyed by wood — they auto-glue only to same-wood frame blocks. The glue brush pins one rigidly to anything (any wood, or a plain block). *Mixed-wood casing frames built before 0.3.3 no longer auto-glue on their own — see the mech notes.*
+- Casing, gearbox, and chassis are one **frame** family keyed by wood — they auto-glue only to same-wood frame blocks. The glue brush pins one rigidly to anything (any wood, or a plain block). *Mixed-wood casing frames built before 0.4.0 no longer auto-glue on their own — see the mech notes.*
 
 ## Contraptions
 

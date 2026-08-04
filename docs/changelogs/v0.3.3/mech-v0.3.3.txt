@@ -1,4 +1,4 @@
-# mech v0.3.3
+# mech v0.4.0
 
 Two new frame blocks — the **Gearbox** and the **Chassis** — plus the biggest glue/contraption upgrade yet: mechanisms now carry glued machines as one rigid body, a rotator can hang from the ceiling, and a rotation-network server hang under redstone pulse storms is fixed.
 
@@ -24,7 +24,7 @@ Two new frame blocks — the **Gearbox** and the **Chassis** — plus the bigges
 
 ## Compatibility
 
-- **Mixed-wood casing frames** built before 0.3.3 no longer auto-glue on their own. Rebuild a frame in a single wood, or brush-pin the mixed joints.
+- **Mixed-wood casing frames** built before 0.4.0 no longer auto-glue on their own. Rebuild a frame in a single wood, or brush-pin the mixed joints.
 
 ## Advancements
 
