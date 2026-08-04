@@ -2063,6 +2063,29 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         int blockIndex = ref.blockIndex();
         MechanismBlockData mb = mech.getBlock(blockIndex);
 
+        // Wrench: show the mechanism's rotation-network readout (the moving-mechanism analogue of the
+        // static debugInteract, whose world-block lookup can't see an assembled mechanism's AIR'd cells).
+        // The event fires once per hand and getItemInMainHand() returns the wrench on both passes, so gate
+        // the readout on the main hand — but return on BOTH so a wrench never opens storage / fires a
+        // transition. A wrench on a non-rotation on-board block does nothing (dbg == null).
+        if (RotationBlocks.isWrench(event.getPlayer().getInventory().getItemInMainHand())) {
+            if (event.getHand() == EquipmentSlot.HAND) {
+                var dbg = mechanismRegistry.rotationDebug(ref.mechanism(), blockIndex);
+                if (dbg != null) {
+                    event.getPlayer().sendActionBar(RotationBlocks.formatRotationDebug(
+                        dbg.state(), dbg.supply(), dbg.demand(), dbg.blockCount(),
+                        dbg.jammed(), dbg.powered(), dbg.dir(), dbg.cwSources(), dbg.ccwSources()));
+                    org.bukkit.World w = ref.mechanism().pivot().getWorld();
+                    for (org.joml.Vector3i c : dbg.memberCells()) {
+                        if (w == null || !w.isChunkLoaded(c.x >> 4, c.z >> 4)) continue;
+                        w.spawnParticle(org.bukkit.Particle.HAPPY_VILLAGER,
+                            new org.bukkit.Location(w, c.x + 0.5, c.y + 0.5, c.z + 0.5), 5, 0.25, 0.25, 0.25, 0);
+                    }
+                }
+            }
+            return;
+        }
+
         // Storage access
         if (mb.storage() != null) {
             event.getPlayer().openInventory(mb.storage());

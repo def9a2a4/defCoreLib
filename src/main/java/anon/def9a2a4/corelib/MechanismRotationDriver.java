@@ -111,6 +111,10 @@ final class MechanismRotationDriver {
         final List<ConduitSpec> conduits = new ArrayList<>();
         final Map<Long, ConduitSpec> conduitByCell = new HashMap<>();
         RotationSolver.@Nullable Result result;
+        // Per-component debug totals from the last solve (component id → {supply, demand, cwSources,
+        // ccwSources, blockCount}), for the wrench readout. Filled by solveAndApply from the SAME
+        // supply/demand it hands the solver, so the readout can never drift from the actual solve.
+        Map<Integer, int[]> debugByComponent = new HashMap<>();
         boolean dirty = true;
         final Map<Integer, Integer> engineFuel = new HashMap<>();     // blockIndex → engine-ticks left
         final Map<Integer, Boolean> engineRunning = new HashMap<>();  // blockIndex → supplying?
@@ -260,6 +264,40 @@ final class MechanismRotationDriver {
     }
 
     // ──────────────────────────────────────────────────────────────────────
+    // Wrench debug readout (mechanism analogue of RotationNetwork.getNetworkDebugInfo)
+    // ──────────────────────────────────────────────────────────────────────
+
+    /** One rotation node's debug snapshot for the wrench readout: its component totals plus this node's
+     *  own resolved power/direction, and the live world cells of every member of its component (for the
+     *  particle highlight). Formatted + emitted by the caller via {@link RotationBlocks#formatRotationDebug}. */
+    record RotationDebug(@Nullable String state, int supply, int demand, int blockCount, boolean jammed,
+                         boolean powered, RotationNetwork.@Nullable SpinDirection dir,
+                         int cwSources, int ccwSources, List<Vector3i> memberCells) {}
+
+    /** Debug snapshot for the block at {@code blockIndex} on an assembled mechanism, or null when the
+     *  mechanism isn't driven / the block isn't a rotation node. Reads the last solve — no re-solve. */
+    @Nullable RotationDebug rotationDebug(BasicMechanism mech, int blockIndex) {
+        MechState st = states.get(mech.id());
+        if (st == null || st.result == null) return null;
+        int k = -1;
+        for (int i = 0; i < st.specs.size(); i++) {
+            if (st.specs.get(i).blockIndex() == blockIndex) { k = i; break; }
+        }
+        if (k < 0) return null;   // clicked block isn't a rotation node
+
+        RotationSolver.Result result = st.result;
+        int component = result.component()[k];
+        int[] agg = st.debugByComponent.getOrDefault(component, new int[5]);
+        List<Vector3i> memberCells = new ArrayList<>();
+        for (int i = 0; i < st.specs.size(); i++) {
+            if (result.component()[i] == component) memberCells.add(mech.liveCell(st.specs.get(i).blockIndex()));
+        }
+        return new RotationDebug(mech.getBlock(blockIndex).customState(),
+            agg[0], agg[1], agg[4], result.jammed()[k], result.powered()[k], result.direction()[k],
+            agg[2], agg[3], memberCells);
+    }
+
+    // ──────────────────────────────────────────────────────────────────────
     // Engines
     // ──────────────────────────────────────────────────────────────────────
 
@@ -319,6 +357,28 @@ final class MechanismRotationDriver {
         RotationSolver.Result result = RotationSolver.solve(nodes);
         st.result = result;
         st.dirty = false;
+
+        // Per-component debug totals for the wrench readout, from the SAME supply/demand fed above.
+        // {supply, demand, cwSources, ccwSources, blockCount}. CW/CCW are counted from the POST-solve
+        // resolved direction (result.direction), not the pre-solve dirPref — in a jam they differ, and
+        // that difference is exactly what the readout reports.
+        st.debugByComponent.clear();
+        for (int k = 0; k < st.specs.size(); k++) {
+            NodeSpec s = st.specs.get(k);
+            boolean supplies = switch (s.meta().kind()) {
+                case ENGINE -> st.engineRunning.getOrDefault(s.blockIndex(), false);
+                case CONSTANT_SOURCE -> true;
+                default -> false;
+            };
+            int[] agg = st.debugByComponent.computeIfAbsent(result.component()[k], c -> new int[5]);
+            if (supplies) agg[0] += s.power();
+            if (s.meta().kind() == RotationConfig.MechKind.CONSUMER) agg[1] += s.power();
+            if (supplies) {
+                if (result.direction()[k] == RotationNetwork.SpinDirection.CCW) agg[3]++;
+                else agg[2]++;
+            }
+            agg[4]++;
+        }
 
         for (int k = 0; k < st.specs.size(); k++) {
             NodeSpec s = st.specs.get(k);

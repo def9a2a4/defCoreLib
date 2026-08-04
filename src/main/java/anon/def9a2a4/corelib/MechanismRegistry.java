@@ -294,7 +294,8 @@ public class MechanismRegistry {
             // A bare block WITH a revert handler (the shaft) can't carry its identity through a move as
             // bare, so revert it to an encased head first. A bare block WITHOUT one (the casing) is
             // captured natively — getTypeFromBlock still resolves it, and placeBlock re-lands it bare.
-            registry.revertBareBlockForCapture(block);
+            // Remember whether it was bare so disassembly can re-bare it on landing (rebareAfterLanding).
+            boolean wasBare = registry.revertBareBlockForCapture(block);
             BlockData bd = block.getBlockData();
             Matrix4f local = new Matrix4f().translation(
                 (float) ((block.getX() + 0.5) - snapX),
@@ -353,6 +354,7 @@ public class MechanismRegistry {
             collision = applyWallHeadShift(collision, bd);
             MechanismBlockData mbd = new MechanismBlockData(bd, local, collision,
                 customType, customState, decs, bdecs, particles, storage, spinReversed, wallFacing);
+            mbd.wasBare = wasBare;   // re-bared on landing (rebareAfterLanding) so a carried bare shaft stays bare
 
             // Banner attachments: BetterBanners displays hosted on this block, plus a synthesized
             // entry carrying a vanilla banner block's patterns (its block-entity NBT is otherwise
@@ -1021,6 +1023,13 @@ public class MechanismRegistry {
 
     @Nullable ColliderRef getColliderRef(Shulker shulker) {
         return colliderIndex.get(shulker.getUniqueId());
+    }
+
+    /** Wrench debug readout for a rotation block on an assembled mechanism (see
+     *  {@code MechanismRotationDriver.rotationDebug}); null when the mechanism isn't driven or the block
+     *  isn't a rotation node. */
+    MechanismRotationDriver.@Nullable RotationDebug rotationDebug(BasicMechanism mech, int blockIndex) {
+        return rotationDriver != null ? rotationDriver.rotationDebug(mech, blockIndex) : null;
     }
 
     // ──────────────────────────────────────────────────────────────────────

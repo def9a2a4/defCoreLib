@@ -90,7 +90,12 @@ final class FilterGui implements Listener {
             inv.setItem(i, items.get(i));
         }
 
-        player.openInventory(inv);
+        // Reserve the lock (above) before opening; release it only if the open was vetoed. A cancelled
+        // InventoryOpenEvent returns null and fires no close, so we must clear the reservation ourselves; a
+        // same-tick close returns non-null and its onClose already removed the key (remove is idempotent).
+        if (player.openInventory(inv) == null) {
+            openFilters.remove(key);
+        }
     }
 
     // ── Painting ─────────────────────────────────────────────────────────────────────────────────

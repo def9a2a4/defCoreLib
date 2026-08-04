@@ -31,6 +31,13 @@ public final class MechanismBlockData {
     boolean spinReversed;
     final @Nullable Vector3f wallFacing;
 
+    // True when this block was a BARE block reverted to an encased head for capture (a bare shaft; see
+    // MechanismRegistry.assembleCore / CustomBlockRegistry.revertBareBlockForCapture). Set post-construction
+    // like the fields below. On landing, BasicMechanism.disassemble re-bares it via rebareAfterLanding so a
+    // shaft carried bare stays bare. False for a shaft captured while encased (never reverted) and for every
+    // bare-first block (the casing rides natively and is never flagged).
+    boolean wasBare;
+
     // True for ghost blocks (assembly GhostBlocks and BasicMechanism.appendGhost): data-only members
     // that were never captured from the world. Landing rules differ — a blocked ghost whose cell
     // already holds its identical block is discarded, not dropped (dropping would mint an item from

@@ -210,6 +210,13 @@ public class CustomBlockRegistry {
     // Optional per-type "revert to encased head before a mechanism captures me" handler (shaft has one;
     // casing has none → it is captured natively). Keyed by type fullId.
     private final Map<String, Consumer<Block>> bareRevertHandlers = new HashMap<>();
+    // The inverse of bareRevertHandlers: "re-bare me after a mechanism lands me" (shaft has one). A
+    // skull-first bare NODE block (shaft) is reverted to an encased head for capture — because it has no
+    // baseBlock() to snapshot/re-land as bare — then this handler converts the landed head back to bare
+    // AND re-adds its RotationNetwork node (makeShaftBare). A bare-FIRST block (casing) needs neither: it
+    // rides natively and isn't a rotation node. Keyed by type fullId; run ONLY from the wasBare-gated
+    // landing path — it would happily re-bare a deliberately-encased shaft otherwise.
+    private final Map<String, Consumer<Block>> bareRelandHandlers = new HashMap<>();
     // Last idle/spinning state rendered per bare block — churn guard so the spin drive only re-applies
     // (respawns the display) on an actual idle↔spinning transition, not on every unrelated recalc.
     private final Map<LocationKey, String> bareRenderedState = new HashMap<>();
@@ -684,6 +691,13 @@ public class CustomBlockRegistry {
         }
     }
 
+    /** Register the inverse of a {@link #registerBareBlock} revert handler: convert a just-landed encased
+     *  head back to its bare form (and re-add its rotation node). Run only from the wasBare-gated landing
+     *  path — see {@link #bareRelandHandlers}. */
+    void registerBareRelandHandler(String typeId, Consumer<Block> handler) {
+        bareRelandHandlers.put(typeId, handler);
+    }
+
     /** True if {@code block} is a registered base material currently acting as a bare custom block. */
     boolean isBareBlock(Block block) {
         return !bareLocations.isEmpty()
@@ -748,11 +762,25 @@ public class CustomBlockRegistry {
     }
 
     /** Convert a bare block back to an encased head before a mechanism captures it; no-op if the type
-     *  has no revert handler (captured natively) or the block isn't a live bare block. */
-    void revertBareBlockForCapture(Block block) {
+     *  has no revert handler (captured natively) or the block isn't a live bare block. Returns true iff it
+     *  actually reverted — the caller uses this to remember the block was bare and re-bare it on landing
+     *  ({@link #rebareAfterLanding}). */
+    boolean revertBareBlockForCapture(Block block) {
         CustomHeadBlock type = bareLocations.get(LocationKey.of(block));
-        if (type == null) return;
+        if (type == null) return false;
         Consumer<Block> h = bareRevertHandlers.get(type.fullId());
+        if (h == null) return false;
+        h.accept(block);
+        return true;
+    }
+
+    /** Re-bare a mechanism block that was reverted-for-capture, once it has landed as an encased head:
+     *  runs the type's registered reland handler (shaft → bare CHAIN + rotation node re-added). Call ONLY
+     *  when the block was bare before capture (the {@code MechanismBlockData.wasBare} gate) — it does not
+     *  self-validate and would re-bare a deliberately-encased shaft. No-op if the type has no handler. */
+    void rebareAfterLanding(Block block, @Nullable CustomHeadBlock type) {
+        if (type == null) return;
+        Consumer<Block> h = bareRelandHandlers.get(type.fullId());
         if (h != null) h.accept(block);
     }
 

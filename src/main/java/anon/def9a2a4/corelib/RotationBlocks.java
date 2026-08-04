@@ -17,6 +17,7 @@ import org.bukkit.block.TileState;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
+import org.jspecify.annotations.Nullable;
 
 import org.bukkit.entity.Player;
 
@@ -275,6 +276,9 @@ final class RotationBlocks {
             CustomHeadBlock shaftType = registry.getType(blockId);
             if (shaftType != null) {
                 registry.registerBareBlock(shaftType, Material.CHAIN, b -> makeShaftEncased(b, network, registry));
+                // Inverse of the revert handler: a rotator/mechanism reverts a bare shaft to an encased
+                // head for capture, then re-bares it here on landing (converts CHAIN + re-adds the node).
+                registry.registerBareRelandHandler(blockId, b -> makeShaftBare(b, network, registry));
             }
         }
     }
@@ -2468,37 +2472,47 @@ final class RotationBlocks {
         if (network.getNode(key) != null) network.recalcReactive(key);
     }
 
+    /** Build the wrench action-bar readout shared by the static network ({@link #debugInteract}) and the
+     *  per-mechanism driver ({@code MechanismRotationDriver.rotationDebug}) — one definition of the format
+     *  so the two can't drift. Green powered, yellow jammed, red unpowered. */
+    static Component formatRotationDebug(@Nullable String state, int supply, int demand, int blockCount,
+                                         boolean jammed, boolean powered,
+                                         RotationNetwork.@Nullable SpinDirection dir,
+                                         int cwSources, int ccwSources) {
+        String dirStr = dir != null ? " " + dir : "";
+        String info = state + " | " + supply + "/" + demand + " Power, " + blockCount + " blocks" + dirStr;
+        if (jammed) {
+            info += " | JAMMED (" + cwSources + " CW, " + ccwSources + " CCW)";
+        } else {
+            info += " | " + (powered ? "POWERED" : "UNPOWERED");
+        }
+        NamedTextColor color = jammed ? NamedTextColor.YELLOW
+                : powered ? NamedTextColor.GREEN : NamedTextColor.RED;
+        return Component.text(info, color);
+    }
+
     static boolean debugInteract(Block block, org.bukkit.event.player.PlayerInteractEvent event,
                                          RotationNetwork network, CustomBlockRegistry registry) {
         var key = CustomBlockRegistry.LocationKey.of(block);
         var node = network.getNode(key);
         String state = registry.getState(block);
 
-        String info;
-        NamedTextColor color;
         if (node == null) {
-            info = "Not in rotation network (state: " + state + ")";
-            color = NamedTextColor.RED;
+            event.getPlayer().sendActionBar(Component.text(
+                "Not in rotation network (state: " + state + ")", NamedTextColor.RED));
         } else {
             var dbg = network.getNetworkDebugInfo(key);
             boolean powered = network.isPowered(key);
             RotationNetwork.SpinDirection dir = network.getDirection(key);
-            String dirStr = dir != null ? " " + dir : "";
             if (dbg != null) {
-                info = state + " | " + dbg.supply() + "/" + dbg.demand() + " Power, "
-                     + dbg.blockCount() + " blocks" + dirStr;
-                if (dbg.jammed()) {
-                    info += " | JAMMED (" + dbg.cwSources() + " CW, " + dbg.ccwSources() + " CCW)";
-                } else {
-                    info += " | " + (powered ? "POWERED" : "UNPOWERED");
-                }
+                event.getPlayer().sendActionBar(formatRotationDebug(state, dbg.supply(), dbg.demand(),
+                    dbg.blockCount(), dbg.jammed(), powered, dir, dbg.cwSources(), dbg.ccwSources()));
             } else {
-                info = state + " | ?" + dirStr;
+                String dirStr = dir != null ? " " + dir : "";
+                event.getPlayer().sendActionBar(Component.text(state + " | ?" + dirStr,
+                    powered ? NamedTextColor.GREEN : NamedTextColor.RED));
             }
-            color = dbg != null && dbg.jammed() ? NamedTextColor.YELLOW
-                    : powered ? NamedTextColor.GREEN : NamedTextColor.RED;
         }
-        event.getPlayer().sendActionBar(Component.text(info, color));
 
         // Highlight network members with particles (jammed: red on sources, green on rest)
         if (node != null) {

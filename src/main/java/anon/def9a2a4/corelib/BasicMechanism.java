@@ -628,6 +628,11 @@ final class BasicMechanism implements Mechanism {
         // offset set tracks the structure's new rest positions (dropped-as-item blocks are excluded).
         List<Block> placed = new ArrayList<>(blocks.size());
 
+        // Shaft cells that were captured BARE (reverted to an encased head for the move) and must be
+        // re-bared once landed. Drained AFTER the neighbor-notify funnel below — past the glue re-stamp and
+        // chain-break guard — so the shaft only becomes a CHAIN once those CHAIN-walking passes have run.
+        List<Block> rebareTargets = new ArrayList<>();
+
         // Carried-hoist chain-break guard: the cells where a captured CHAIN link failed to land (solid-win /
         // off-world drop). A shorter landed chain shifts a carried hoist's platform seed, so after the loop the
         // hoist OWNING each such cell has its glue invalidated (matches the reactive break guard in
@@ -687,12 +692,14 @@ final class BasicMechanism implements Mechanism {
                     || target.getType() == Material.LAVA) {
                 placeBlock(target, mb, snappedYaw);
                 placed.add(target);
+                if (mb.wasBare) rebareTargets.add(target);
                 landBanners(target, mb, snappedYaw, upright);
                 if (mb.glueOffsets != null && !ChainHoistManager.isHoist(target, registry)) { landedAnchorTargets.add(target); landedAnchorOffsets.add(mb.glueOffsets); }
             } else if (FragileBlocks.isFragile(target.getType())) {
                 target.breakNaturally();
                 placeBlock(target, mb, snappedYaw);
                 placed.add(target);
+                if (mb.wasBare) rebareTargets.add(target);
                 landBanners(target, mb, snappedYaw, upright);
                 if (mb.glueOffsets != null && !ChainHoistManager.isHoist(target, registry)) { landedAnchorTargets.add(target); landedAnchorOffsets.add(mb.glueOffsets); }
             } else if (mb.ghost && target.getBlockData().equals(mb.blockData)) {
@@ -777,6 +784,14 @@ final class BasicMechanism implements Mechanism {
         // passive windmill. Replaces the BlockPhysicsEvent we no longer emit. This is the single funnel
         // for every mechanism mover (pistons, chain hoists, rotators, drawbridges, minecart-carried).
         for (Block b : placed) registry.notifyBlockAppearedOrMoved(b);
+        // Re-bare any shaft that rode bare (reverted to an encased head for the move). Deferred to here —
+        // past the glue re-stamp and chain-break guard, which walk CHAIN columns — so the shaft becomes a
+        // CHAIN only now. makeShaftBare (the reland handler) re-adds/recalcs its rotation node; the node
+        // already exists from restoreBlock's onChunkLoad above, so it takes the recalculate branch.
+        if (!rebareTargets.isEmpty()) {
+            CustomHeadBlock shaftType = registry.getType("mech:shaft");
+            for (Block b : rebareTargets) registry.rebareAfterLanding(b, shaftType);
+        }
         completed = true;
         } finally {
             if (!completed) {

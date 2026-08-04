@@ -16,12 +16,14 @@ Two new frame blocks — the **Gearbox** and the **Chassis** — and a new **Rat
 - **Ceiling rotator** — a rotator mounted under a block now hangs as a ceiling hinge, swinging the block above it like a hatch (Y axis) — the floor door, upside down.
 - **Mounted drill mines mid-swing** — a drill carried by a rotator now bores through the whole arc at any angle, not only at the 90° stops, and breaks at 2× speed while swinging since it only grazes each block.
 - **Steadier mover speeds** — the chain hoist and piston floor at about 0.5 block/s, and the rotator runs 5–90°/s.
+- **Wrench-inspect a moving rotation network** — right-click a shaft, gear, or machine on an *assembled* mechanism (rotator, drawbridge, minecart, …) with the wrench to read its live power supply/demand, block count, spin direction, and jam state, with the network members highlighted — the same readout the wrench gives a rotation network in the world, now available while it rides a contraption.
 
 ## Fixes
 
 - **Server hang under pulse storms** — the plugin's own block writes no longer re-trigger their own physics/recalc feedback loop, and reactive-neighbor and custom-rail updates now coalesce to a single recompute per network/rail per tick under a comparator or observer pulse storm. A throwing reactive handler is isolated and logged once, never fatal to the tick.
 - **Carried-hoist glue integrity** — a carried hoist that would be tipped off its vertical column (a horizontal-axis drawbridge) or grabbed mid-stroke is now **refused** rather than corrupted, and a hoist's stored platform glue is cleared whenever its chain length changes out of band (a link mined, placed, or blown up, or the hoist landing with a shortened chain), so its offsets can never mis-reference.
 - **Seed oil returns its bottle** — burning a Seed Oil (a bottled fuel) in a fuel-fed machine now returns the empty glass bottle to the fuel storage (dropping it at the block if the storage is full) instead of consuming the container.
+- **Bare shafts stay bare when carried** — a shaft wrenched to its bare **chain** form now stays bare after a rotator (or any mechanism) swings it, instead of silently reverting to the encased shaft on landing. A shaft carried while encased still lands encased.
 
 ## Recipes
 
