@@ -2364,7 +2364,9 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
                     sender.sendMessage(Component.text("Driven demo unavailable", NamedTextColor.RED));
                     return true;
                 }
-                drivenDemo.toggle(player);
+                if (args.length >= 2 && args[1].equalsIgnoreCase("park")) drivenDemo.park(player);
+                else if (args.length >= 2 && args[1].equalsIgnoreCase("unpark")) drivenDemo.unpark(player);
+                else drivenDemo.toggle(player);
             }
             default -> sender.sendMessage(Component.text("Unknown subcommand: " + args[0], NamedTextColor.RED));
         }

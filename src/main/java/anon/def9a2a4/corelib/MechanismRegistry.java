@@ -35,6 +35,7 @@ public class MechanismRegistry {
 
     private final Map<UUID, BasicMechanism> activeMechanisms = new HashMap<>();
     private final Map<UUID, ColliderRef> colliderIndex = new HashMap<>(); // shulker UUID → ref
+    private final MechanismPersistence persistence; // crash-safe state for opted-in (persisted) mechanisms
     private final Set<UUID> tickWarned = new HashSet<>();  // mechs already warned about a tick throw (rate-limit)
 
     private @Nullable BukkitTask tickTask;
@@ -96,7 +97,21 @@ public class MechanismRegistry {
     public MechanismRegistry(JavaPlugin plugin, CustomBlockRegistry registry) {
         this.plugin = plugin;
         this.registry = registry;
+        this.persistence = new MechanismPersistence(plugin);
     }
+
+    /**
+     * Opt a mechanism into crash-safe persistence: writes its state to disk now (and future saves),
+     * so on shutdown/world-unload it is saved-and-left rather than disassembled, then recovered on
+     * chunk load. Call after assembly. No-op for a non-{@link BasicMechanism}.
+     */
+    public void persist(Mechanism mech) {
+        if (!(mech instanceof BasicMechanism bm)) return;
+        bm.setPersisted(true);
+        persistence.save(bm.snapshotState());
+    }
+
+    MechanismPersistence persistence() { return persistence; }
 
     /** Load vanilla-block collider shapes (colliders.yml) into the registry. */
     public void loadColliders(java.io.InputStream in) {
@@ -826,6 +841,7 @@ public class MechanismRegistry {
         }
         activeMechanisms.clear();
         colliderIndex.clear();
+        persistence.shutdown();
     }
 
     /**
@@ -1016,6 +1032,12 @@ public class MechanismRegistry {
         if (rotationDriver != null) rotationDriver.onRemoved(mech);
         for (ColliderPair cp : mech.colliders) {
             colliderIndex.remove(cp.shulker().getUniqueId());
+        }
+        // A persisted mechanism that is genuinely disassembled (blocks returned to the world) no longer
+        // needs its state file. (Shutdown/world-unload of a persisted mechanism must NOT disassemble —
+        // see the branched shutdown — so this only fires on a real teardown.)
+        if (mech.isPersisted() && mech.pivot().getWorld() != null) {
+            persistence.remove(mech.pivot().getWorld().getName(), mech.id());
         }
     }
 

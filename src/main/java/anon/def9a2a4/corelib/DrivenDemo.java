@@ -32,11 +32,67 @@ final class DrivenDemo {
     private final MechanismRegistry mechRegistry;
     private final CustomBlockRegistry registry;
     private final Map<UUID, Session> sessions = new HashMap<>();
+    private final Map<UUID, Mechanism> parked = new HashMap<>(); // persisted-mechanism smoke test
 
     DrivenDemo(JavaPlugin plugin, MechanismRegistry mechRegistry, CustomBlockRegistry registry) {
         this.plugin = plugin;
         this.mechRegistry = mechRegistry;
         this.registry = registry;
+    }
+
+    /** Capture the movable 3×3 platform under the player (the block layer at feet-1), or empty if none. */
+    private List<Block> capturePlatform(Player player) {
+        World w = player.getWorld();
+        Location feet = player.getLocation();
+        int baseY = feet.getBlockY() - 1;
+        List<Block> blocks = new ArrayList<>();
+        for (int dx = -1; dx <= 1; dx++) {
+            for (int dz = -1; dz <= 1; dz++) {
+                Block b = w.getBlockAt(feet.getBlockX() + dx, baseY, feet.getBlockZ() + dz);
+                if (MovableBlocks.isMovable(b, registry)) blocks.add(b);
+            }
+        }
+        return blocks;
+    }
+
+    /** Assemble the platform as an OWNED, PERSISTED mechanism and leave it parked — a smoke test for
+     *  crash-safe persistence (a state file appears under plugins/DefCoreLib/mechanisms/). */
+    boolean park(Player player) {
+        if (parked.containsKey(player.getUniqueId())) {
+            player.sendMessage("§eyou already have a parked mechanism (unpark first)");
+            return false;
+        }
+        List<Block> blocks = capturePlatform(player);
+        if (blocks.isEmpty()) {
+            player.sendMessage("§cpark: stand on a solid movable 3×3 platform first");
+            return false;
+        }
+        Location feet = player.getLocation();
+        Location pivot = new Location(player.getWorld(),
+            feet.getBlockX() + 0.5, feet.getBlockY() - 1 + 0.5, feet.getBlockZ() + 0.5);
+        Mechanism mech;
+        try {
+            mech = mechRegistry.assembleMechanism("demo:parked", blocks, pivot, null); // owned marker vehicle
+        } catch (RuntimeException e) {
+            player.sendMessage("§cpark: assembly failed: " + e.getMessage());
+            return false;
+        }
+        mechRegistry.persist(mech); // opt into crash-safe persistence
+        parked.put(player.getUniqueId(), mech);
+        player.sendMessage("§apark: assembled + persisted — state file written under "
+            + "plugins/DefCoreLib/mechanisms/. Run /defcorelib driventest unpark to remove.");
+        return true;
+    }
+
+    boolean unpark(Player player) {
+        Mechanism m = parked.remove(player.getUniqueId());
+        if (m == null) {
+            player.sendMessage("§enothing parked");
+            return false;
+        }
+        m.disassemble(); // returns blocks + removes the state file (onMechanismRemoved)
+        player.sendMessage("§eunparked (blocks restored, state file removed)");
+        return true;
     }
 
     private static final class Session {
@@ -62,13 +118,7 @@ final class DrivenDemo {
         World w = player.getWorld();
         Location feet = player.getLocation();
         int baseY = feet.getBlockY() - 1; // the platform the player stands on
-        List<Block> blocks = new ArrayList<>();
-        for (int dx = -1; dx <= 1; dx++) {
-            for (int dz = -1; dz <= 1; dz++) {
-                Block b = w.getBlockAt(feet.getBlockX() + dx, baseY, feet.getBlockZ() + dz);
-                if (MovableBlocks.isMovable(b, registry)) blocks.add(b);
-            }
-        }
+        List<Block> blocks = capturePlatform(player);
         if (blocks.isEmpty()) {
             player.sendMessage("§cdriventest: stand on a solid movable 3×3 platform first");
             return false;

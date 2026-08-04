@@ -64,6 +64,10 @@ final class BasicMechanism implements Mechanism {
     // Driven mode: a consumer positions the vehicle itself each tick and calls repositionDriven();
     // tickMechanisms then SKIPS updateFromVehicle for this mechanism so the two don't fight.
     boolean driven;
+    // Persistence opt-in (set via MechanismRegistry.persist): a persisted mechanism is written to disk
+    // and survives restart/crash; shutdown/onWorldUnload save-and-leave it rather than disassembling.
+    // Default false → today's behaviour (disassemble on stop, no state file).
+    boolean persisted;
 
     // Auto-follow: track vehicle movement for passive vehicles (minecarts on rails)
     private Location previousVehicleLoc;
@@ -413,6 +417,53 @@ final class BasicMechanism implements Mechanism {
     /** Enable/disable driven mode. In driven mode the CONSUMER teleports the vehicle each tick and
      *  calls {@link #repositionDriven}; {@code tickMechanisms} skips {@link #updateFromVehicle}. */
     void setDriven(boolean driven) { this.driven = driven; }
+
+    void setPersisted(boolean persisted) { this.persisted = persisted; }
+    boolean isPersisted() { return persisted; }
+
+    /** Build a serializable snapshot of this mechanism for persistence/recovery. Main thread only
+     *  (reads live entity/block state). Display/particle configs are re-derived on recovery. */
+    MechanismState snapshotState() {
+        MechanismState st = new MechanismState();
+        st.mechId = id;
+        st.type = type;
+        st.worldName = pivot.getWorld() != null ? pivot.getWorld().getName() : "world";
+        st.px = pivot.getX(); st.py = pivot.getY(); st.pz = pivot.getZ();
+        st.axisX = rotationAxis.x; st.axisY = rotationAxis.y; st.axisZ = rotationAxis.z;
+        st.currentYaw = currentYaw;
+        st.rideOffset = rideOffset;
+        st.ownsVehicle = ownsVehicle;
+        st.vehicleUuid = vehicle != null ? vehicle.getUniqueId() : null;
+        for (MechanismBlockData mb : blocks) {
+            MechanismState.BlockRec b = new MechanismState.BlockRec();
+            b.blockData = mb.blockData.getAsString();
+            mb.localTransform.get(b.localTransform); // column-major 16 floats
+            b.colEnabled = mb.collision.enabled;
+            b.colSize = mb.collision.size;
+            b.colOffX = mb.collision.offset.x;
+            b.colOffY = mb.collision.offset.y;
+            b.colOffZ = mb.collision.offset.z;
+            b.customType = mb.customTypeId;
+            b.customState = mb.customState;
+            b.spinReversed = mb.spinReversed;
+            if (mb.wallFacing != null) {
+                b.hasWallFacing = true;
+                b.wfX = mb.wallFacing.x; b.wfY = mb.wallFacing.y; b.wfZ = mb.wallFacing.z;
+            }
+            b.ghost = mb.ghost;
+            if (mb.storage != null) {
+                try {
+                    b.storage = ItemStack.serializeItemsAsBytes(mb.storage.getContents());
+                } catch (Throwable ignored) {
+                    // unserializable inventory — skip storage (block still restores, just empty)
+                }
+            }
+            b.glueOffsets = mb.glueOffsets;
+            b.configPdc = mb.configPdc;
+            st.blocks.add(b);
+        }
+        return st;
+    }
 
     @Override
     public void repositionDriven(float relYaw) {
