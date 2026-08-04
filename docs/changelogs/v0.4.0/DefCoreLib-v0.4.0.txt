@@ -7,6 +7,7 @@ Two new frame blocks join the Casing, plus the biggest glue/contraption upgrade 
 - **Carried contraptions** — mechanisms now move glued machines (a chain hoist rides a rotator, load and all)
 - **Ceiling rotator** — a rotator can mount under a block as a swinging hinge
 - **Ratchet** — a new one-way rotation valve
+- **Item catalog** — browse every registered block in-game with `/defcorelib catalog`
 - **Stability** — fixes a server-thread hang under comparator/observer pulse storms; steadier mover speeds
 
 ## Blocks
@@ -23,6 +24,11 @@ Two new frame blocks join the Casing, plus the biggest glue/contraption upgrade 
 
 - Movers (piston, rotator, drawbridge, minecart, chain hoist) now carry **nested glued machines** — a chain hoist glued onto a rotator swings as one body, head + chain + platform together.
 - Rotators can mount under a block as a **ceiling hinge**, swinging the block above like a hatch.
+
+## Items & commands
+
+- **In-game item catalog** — `/defcorelib catalog` opens a browsable menu of every registered block across all def plugins, grouped by category, with search and a detail view that drills into each recipe's ingredients. Open to everyone (no admin permission needed).
+- **Pick-block** — middle-clicking a custom block or cart no longer mints a free copy in survival or adventure: it only selects a matching item you already carry. Creative still gives the item as before.
 
 ## Stability
 
