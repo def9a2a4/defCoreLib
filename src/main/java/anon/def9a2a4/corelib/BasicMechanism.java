@@ -475,6 +475,14 @@ final class BasicMechanism implements Mechanism {
         checkMainThread();
         if (disassembled) return;   // idempotent: a second pass would dupe the structure as items
         disassembled = true;
+        // The idempotency latch above is set BEFORE any work, so a throw mid-teardown makes this mech
+        // permanently un-retryable (a later disassemble() short-circuits). Guarantee the two teardown
+        // invariants — deregister (else a ghost lingers in activeMechanisms, re-ticked forever, its
+        // rotationDriver still driving a drill) and entity removal (else displays/colliders/vehicle
+        // orphan) — via a finally, so every one of the ~16 disassemble() callers (many bare) is covered
+        // by this one guard rather than a per-caller catch. No-op on the success path (completed=true).
+        boolean completed = false;
+        try {
         // Snap to 90° about the rotation axis. For Y this is yaw; for X/Z it tips a drawbridge
         // back to a cardinal orientation. 90° rotations about a cardinal axis map integer
         // offsets to integers, so block positions stay exact.
@@ -643,6 +651,19 @@ final class BasicMechanism implements Mechanism {
         // passive windmill. Replaces the BlockPhysicsEvent we no longer emit. This is the single funnel
         // for every mechanism mover (pistons, chain hoists, rotators, drawbridges, minecart-carried).
         for (Block b : placed) registry.notifyBlockAppearedOrMoved(b);
+        completed = true;
+        } finally {
+            if (!completed) {
+                // Body threw mid-teardown. Both calls are idempotent (activeMechanisms.remove /
+                // colliderIndex.remove / rotationDriver.onRemoved are map-removes; removeAllEntities is
+                // idempotent), so a late throw after the normal onMechanismRemoved at line 633 re-runs
+                // harmlessly. Remove entities synchronously — this is an error path where a 1-frame
+                // owned-vehicle flicker is irrelevant, and we may have thrown before the deferral was
+                // ever scheduled, so the deferred removal can't be relied on.
+                if (mechanismRegistry != null) mechanismRegistry.onMechanismRemoved(this);
+                removeAllEntities();
+            }
+        }
     }
 
     @Override
@@ -660,8 +681,11 @@ final class BasicMechanism implements Mechanism {
                 dropBannerItems(new Location(w, cell.x, cell.y, cell.z), mb);
             }
         }
-        removeAllEntities();
+        // Deregister BEFORE removing entities: if removeAllEntities threw first, the mech would linger
+        // in activeMechanisms as a ghost. Order between the two is independent (onMechanismRemoved reads
+        // mech.colliders, which removeAllEntities doesn't clear).
         if (mechanismRegistry != null) mechanismRegistry.onMechanismRemoved(this);
+        removeAllEntities();
     }
 
     // ──────────────────────────────────────────────────────────────────────
