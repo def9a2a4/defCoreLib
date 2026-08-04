@@ -500,11 +500,12 @@ final class BasicMechanism implements Mechanism {
         // offset set tracks the structure's new rest positions (dropped-as-item blocks are excluded).
         List<Block> placed = new ArrayList<>(blocks.size());
 
-        // Carried-hoist chain-break guard: the (x,z) columns where a captured CHAIN link failed to land
-        // (solid-win / off-world drop). A shorter landed chain shifts a carried hoist's platform seed, so
-        // after the loop any landed hoist head in one of these columns has its glue invalidated (matches
-        // the reactive break guard in ChainHoistManager). Lazily allocated — the common landing drops none.
-        Set<Long> droppedChainCols = null;
+        // Carried-hoist chain-break guard: the cells where a captured CHAIN link failed to land (solid-win /
+        // off-world drop). A shorter landed chain shifts a carried hoist's platform seed, so after the loop the
+        // hoist OWNING each such cell has its glue invalidated (matches the reactive break guard in
+        // ChainHoistManager). Full 3D cells, not (x,z) columns, so the owner is resolved by walking up the
+        // rope — two hoists stacked in one column stay distinguishable. Lazily allocated — common case drops none.
+        Set<Block> droppedChainCells = null;
 
         // Captured nested-anchor heads that landed (e.g. a piston head inside a rotator's swing): their
         // region is re-stamped AFTER the loop — once `placed` is known — so rebindLanded can prune the
@@ -541,7 +542,7 @@ final class BasicMechanism implements Mechanism {
             // world-max. Don't try to place there — drop it as an item instead.
             if (blockLoc.getBlockY() < blockLoc.getWorld().getMinHeight()
                     || blockLoc.getBlockY() >= blockLoc.getWorld().getMaxHeight()) {
-                droppedChainCols = noteIfChain(droppedChainCols, mb, blockLoc);
+                droppedChainCells = noteIfChain(droppedChainCells, mb, blockLoc);
                 dropBlockAsItem(blockLoc, mb);
                 continue;
             }
@@ -576,7 +577,7 @@ final class BasicMechanism implements Mechanism {
                 // Solid block wins — explosion effect + drop mechanism block as item
                 target.getWorld().spawnParticle(Particle.EXPLOSION,
                     blockLoc.clone().add(0.5, 0.5, 0.5), 1);
-                droppedChainCols = noteIfChain(droppedChainCols, mb, blockLoc);
+                droppedChainCells = noteIfChain(droppedChainCells, mb, blockLoc);
                 dropBlockAsItem(blockLoc, mb);
             }
         }
@@ -597,19 +598,21 @@ final class BasicMechanism implements Mechanism {
 
         // A carried hoist that landed with a short chain (a link solid-won / went off-world above): its
         // platform seed is derived from the live chain depth, so a shorter chain shifts the seed and the
-        // stored glue now mis-references. Wipe that hoist's glue — same "chain broke → invalidate" rule as
-        // ChainHoistManager's reactive guard. The chain hangs directly below the head at the same (x,z) —
-        // true only for an upright landing (a horizontal-axis rotation would map the column sideways, so
-        // the (x,z) match would silently miss). GlueManager.expandNested only ever carries a hoist upright,
-        // so this can't be reached non-upright today; the guard co-locates that invariant with the code
-        // that depends on it, rather than trusting a rule enforced in another file.
-        if (droppedChainCols != null && upright) {
-            for (Block b : placed) {
-                if (ChainHoistManager.isHoist(b, registry)
-                        && droppedChainCols.contains(colKey(b.getX(), b.getZ()))) {
-                    HoistAnchor a = new HoistAnchor(b, registry, () -> true);
-                    if (GlueManager.isValidOffsets(a.readOffsets())) a.clearOffsets();
-                }
+        // stored glue now mis-references. Wipe the OWNING hoist's glue — same "chain broke → invalidate" rule
+        // as ChainHoistManager's reactive guard. Attribute each dropped link to its hoist by walking UP the
+        // (now fully landed) rope, exactly like the reactive path (owningHoist); this keeps two hoists stacked
+        // in one column distinct. Walk-up only holds for an upright landing (a horizontal rotation maps the
+        // column sideways), which GlueManager.expandNested guarantees — the guard co-locates that invariant.
+        // Resolve from EVERY dropped cell, not one: walking up from a lower cell in a multi-link drop hits the
+        // gap above it and yields null; only the topmost dropped cell reaches the head. Dedupe (clearOffsets
+        // is idempotent) to avoid redundant PDC writes.
+        if (droppedChainCells != null && upright) {
+            Set<CustomBlockRegistry.LocationKey> cleared = new HashSet<>();
+            for (Block cell : droppedChainCells) {
+                Block hoist = ChainHoistManager.owningHoist(cell, registry);
+                if (hoist == null || !cleared.add(CustomBlockRegistry.LocationKey.of(hoist))) continue;
+                HoistAnchor a = new HoistAnchor(hoist, registry, () -> true);
+                if (GlueManager.isValidOffsets(a.readOffsets())) a.clearOffsets();
             }
         }
 
@@ -756,24 +759,23 @@ final class BasicMechanism implements Mechanism {
         tile.update();
     }
 
-    /** Record the (x,z) column of a dropped CHAIN link for the carried-hoist chain-break guard; lazily
-     *  creates the set and returns it (unchanged for a non-chain block). */
-    private static Set<Long> noteIfChain(@Nullable Set<Long> cols, MechanismBlockData mb, Location loc) {
+    /** Record the cell of a dropped CHAIN link for the carried-hoist chain-break guard; lazily creates the set
+     *  and returns it (unchanged for a non-chain block). The full 3D cell (not an (x,z) column) is stored so
+     *  the consumer can attribute the link to its owning hoist by walking up the rope. */
+    private static Set<Block> noteIfChain(@Nullable Set<Block> cells, MechanismBlockData mb, Location loc) {
         // A ghost is a hoist's own emerging/reeling link — a stroke artifact, not a real chain that
         // shortened. (Today the hoist's protected head is never in `placed` so it couldn't match anyway;
         // this makes the exclusion explicit rather than incidental.)
-        if (mb.ghost) return cols;
-        if (!ChainHoistManager.isChainMaterial(mb.blockData.getMaterial())) return cols;
+        if (mb.ghost) return cells;
+        if (!ChainHoistManager.isChainMaterial(mb.blockData.getMaterial())) return cells;
         // Real hoist rope is a plain vanilla chain (customTypeId == null). A decorative CUSTOM chain (or a
         // bare-block chain shaft) carries a non-null id — it isn't rope, so its landing must not clear a
-        // hoist's glue. (The stacked-second-hoist-in-column case still needs per-hoist association; deferred.)
-        if (mb.customTypeId != null) return cols;
-        if (cols == null) cols = new HashSet<>();
-        cols.add(colKey(loc.getBlockX(), loc.getBlockZ()));
-        return cols;
+        // hoist's glue.
+        if (mb.customTypeId != null) return cells;
+        if (cells == null) cells = new HashSet<>();
+        cells.add(loc.getBlock());
+        return cells;
     }
-
-    private static long colKey(int x, int z) { return (((long) x) << 32) ^ (z & 0xffffffffL); }
 
     private void dropBlockAsItem(Location loc, MechanismBlockData mb) {
         ItemStack drop;
