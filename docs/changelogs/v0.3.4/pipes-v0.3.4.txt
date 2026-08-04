@@ -20,8 +20,11 @@ FILTER PIPES (NEW)
     Gold   — 18 filter slots, plus an exact-vs-type matching toggle
              (exact respects names, enchants, and components).
 - Throughput matches the plain pipe of the same metal (4 / 8 / 16 items
-  per transfer). Filter pipes look and place exactly like the normal pipe
-  of their tier.
+  per transfer).
+- Filter pipes are easy to spot: a distinct banded item in your hand, and
+  once placed, a ring around the pipe. The ring visibly switches off when
+  the pipe is powered down with redstone, so you can see at a glance which
+  filters are currently blocking their line.
 - Craft: the metal's pipe pattern with a hopper in the center
   (ring of ingots, hopper in the middle) → 2 filter pipes.
 
