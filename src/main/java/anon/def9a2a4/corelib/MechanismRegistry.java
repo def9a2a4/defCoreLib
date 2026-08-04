@@ -645,19 +645,31 @@ public class MechanismRegistry {
             }, 1L);
         }
 
+        // Register + drive + announce as one guarded step. The source blocks are ALREADY aired out above, so
+        // an unguarded throw in onAssembled (malformed rotation network) would strand a registered, ticking
+        // mech whose persistent displays/colliders the orphan sweep can't reap (still registered) — and lose
+        // the aired-out blocks. On any throw here, disassemble() is the complete, idempotent rollback: it
+        // re-places the source blocks, unregisters (onMechanismRemoved → drains colliderIndex + driver state),
+        // and removes the mech's entities. The mech stays registered during callEvent so listeners that scan
+        // the registry see it, exactly as before. (disassemble's `disassembled` guard makes the external
+        // deferred-mount task's own disassemble() call a no-op.)
         activeMechanisms.put(mechId, mech);
+        try {
+            // Rotation parts keep functioning while riding: build the mechanism's own rotation
+            // network. Only the first blocks.size() entries are real — the ghost snapshots appended
+            // after them are appearance-only and may overlap real cells.
+            if (rotationDriver != null) rotationDriver.onAssembled(mech, blocks.size());
 
-        // Rotation parts keep functioning while riding: build the mechanism's own rotation
-        // network. Only the first blocks.size() entries are real — the ghost snapshots appended
-        // after them are appearance-only and may overlap real cells.
-        if (rotationDriver != null) rotationDriver.onAssembled(mech, blocks.size());
-
-        // Surface assembly to companion plugins (e.g. the mech advancement system). Single choke
-        // point for every assembleMechanism overload; fired on the main thread, informational only.
-        boolean verticalAxis = Math.abs(rotationAxis.y) > 0.5f
-            && rotationAxis.x == 0f && rotationAxis.z == 0f;
-        Bukkit.getPluginManager().callEvent(
-            new MechanismAssembleEvent(mech, type, pivot.clone(), mech.blockCount(), verticalAxis));
+            // Surface assembly to companion plugins (e.g. the mech advancement system). Single choke
+            // point for every assembleMechanism overload; fired on the main thread, informational only.
+            boolean verticalAxis = Math.abs(rotationAxis.y) > 0.5f
+                && rotationAxis.x == 0f && rotationAxis.z == 0f;
+            Bukkit.getPluginManager().callEvent(
+                new MechanismAssembleEvent(mech, type, pivot.clone(), mech.blockCount(), verticalAxis));
+        } catch (RuntimeException e) {
+            mech.disassemble();   // restore blocks + unregister + drain colliderIndex + remove entities
+            throw e;              // the owning overload's catch then removes/untags the vehicle
+        }
 
         return mech;
     }

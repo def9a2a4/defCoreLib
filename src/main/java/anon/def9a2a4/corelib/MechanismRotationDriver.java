@@ -231,8 +231,10 @@ final class MechanismRotationDriver {
                 st.engineFuel.put(s.blockIndex(), 0); // world counter died at assembly; refuel from storage
             }
         }
-        states.put(mech.id(), st);
+        // Solve BEFORE registering: solveAndApply reads only the passed `st`, never the map, so if it throws
+        // (malformed assembly) no half-built state entry is left behind for tick()/onRemoved() to find.
         solveAndApply(mech, st);
+        states.put(mech.id(), st);
     }
 
     /** Per-tick drive; {@code tickAge} = ticks since assembly (same clock as display animation). */
