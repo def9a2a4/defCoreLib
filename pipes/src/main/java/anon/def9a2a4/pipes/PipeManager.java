@@ -553,8 +553,19 @@ public class PipeManager {
             case EAST, WEST -> new AxisAngle4f((float) Math.PI / 2, 0, 0, 1);
             default -> new AxisAngle4f(0, 0, 1, 0); // UP/DOWN: horizontal disc, no tilt
         };
+        // The main pipe display sits ~0.125 off the cell center, so shift the ring to line up with the body.
+        // The correction is a fixed world direction per axis (not "along facing"): Z-axis pipes → +Z,
+        // X-axis pipes → −X, up → −Y, down → +Y. World space: the Transformation translation is applied
+        // outside the leftRotation, so it is not rotated.
+        Vector3f translation = switch (facing) {
+            case NORTH, SOUTH -> new Vector3f(0, 0, 0.125f);
+            case EAST, WEST -> new Vector3f(-0.125f, 0, 0);
+            case UP -> new Vector3f(0, -0.125f, 0);
+            case DOWN -> new Vector3f(0, 0.125f, 0);
+            default -> new Vector3f(0, 0, 0);
+        };
         return new Transformation(
-                new Vector3f(0, 0, 0),
+                translation,
                 rotation,
                 new Vector3f(1.25f, 0.5f, 1.25f),
                 new AxisAngle4f(0, 0, 0, 1)
