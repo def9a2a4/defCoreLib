@@ -36,6 +36,10 @@ public class MechanismRegistry {
     private final Map<UUID, BasicMechanism> activeMechanisms = new HashMap<>();
     private final Map<UUID, ColliderRef> colliderIndex = new HashMap<>(); // shulker UUID → ref
     private final MechanismPersistence persistence; // crash-safe state for opted-in (persisted) mechanisms
+    // Mechanisms whose recovery is in flight (adopting their still-loading persistent entities). Guards
+    // cleanupOrphanedEntities from reaping those entities before recovery claims them, and bridges the
+    // 1-tick deferEntityRemoval window on a restore-to-blocks landing.
+    private final Set<UUID> mechIdsBeingRecovered = new HashSet<>();
     private final Set<UUID> tickWarned = new HashSet<>();  // mechs already warned about a tick throw (rate-limit)
 
     private @Nullable BukkitTask tickTask;
@@ -829,6 +833,19 @@ public class MechanismRegistry {
         // isn't lost on /stop. Per-mechanism guarded: a failure falls back to removeAllEntities so we
         // never leak persistent entities. (Full restart recovery is the deferred persistence work.)
         for (BasicMechanism mech : new ArrayList<>(activeMechanisms.values())) {
+            // Persisted mechanism: save-and-LEAVE its entities (they're setPersistent(true), so the region
+            // file keeps them) rather than disassembling — recovery re-adopts them on next chunk load. Do
+            // NOT route through onMechanismRemoved (that would delete the state file).
+            if (mech.isPersisted()) {
+                try {
+                    persistence.save(mech.snapshotState());
+                    continue;
+                } catch (Exception e) {
+                    plugin.getLogger().warning("Mechanism " + mech.id() + " failed to persist on shutdown ("
+                        + e.getMessage() + "); disassembling as fallback");
+                    // fall through to the disassemble path below
+                }
+            }
             try {
                 mech.disassemble();
             } catch (Exception e) {
@@ -856,6 +873,20 @@ public class MechanismRegistry {
     public void onWorldUnload(org.bukkit.World world) {
         for (BasicMechanism mech : new ArrayList<>(activeMechanisms.values())) {
             if (!world.equals(mech.pivot().getWorld())) continue;
+            // Persisted mechanism: save-and-leave (the unloading world's region file keeps the persistent
+            // entities); recovery re-adopts them when the world reloads. Mirrors the branched shutdown().
+            if (mech.isPersisted()) {
+                try {
+                    persistence.save(mech.snapshotState());
+                    activeMechanisms.remove(mech.id());
+                    for (ColliderPair cp : mech.colliders) colliderIndex.remove(cp.shulker().getUniqueId());
+                    continue;
+                } catch (Exception e) {
+                    plugin.getLogger().warning("Mechanism " + mech.id() + " failed to persist on world "
+                        + "unload (" + e.getMessage() + "); disassembling as fallback");
+                    // fall through to the disassemble path below
+                }
+            }
             try {
                 mech.disassemble();
                 // Force SYNCHRONOUS entity removal: for an owned vehicle, disassemble() defers removal one
@@ -915,7 +946,14 @@ public class MechanismRegistry {
                 if (parts.length < 3) continue;
                 try {
                     UUID mechId = UUID.fromString(parts[2]);
-                    if (!activeMechanisms.containsKey(mechId)) {
+                    // Never reap an entity whose mechanism is active, currently being recovered, or still
+                    // has an on-disk state file (a persisted mechanism whose pivot chunk hasn't loaded yet —
+                    // its entities must survive until recovery adopts them). Persistence writes are
+                    // synchronous today, so recovery in this same EntitiesLoad completes before this sweep;
+                    // the guard also covers a not-yet-loaded pivot chunk and the deferred-removal window.
+                    if (!activeMechanisms.containsKey(mechId)
+                            && !mechIdsBeingRecovered.contains(mechId)
+                            && !persistence.hasMetadata(chunk.getWorld().getName(), mechId)) {
                         entity.remove();
                     }
                 } catch (IllegalArgumentException ignored) {
@@ -924,6 +962,229 @@ public class MechanismRegistry {
                 break; // only check first matching tag per entity
             }
         }
+    }
+
+    // ──────────────────────────────────────────────────────────────────────
+    // Crash recovery (persisted mechanisms)
+    // ──────────────────────────────────────────────────────────────────────
+
+    /**
+     * Recover any persisted mechanisms whose pivot chunk is the one that just finished loading its entities.
+     * A persisted mechanism was saved-and-left on shutdown/world-unload (its display/collider/vehicle
+     * entities are {@code setPersistent(true)}, so they survive in the region file); this rebinds a
+     * {@link BasicMechanism} from the saved {@link MechanismState} + those surviving tagged entities and then
+     * either lands it (restore-to-blocks) or resumes it live (restore-to-entities), per {@link #recoverOne}.
+     *
+     * <p>Must run in {@code EntitiesLoad} BEFORE {@link #cleanupOrphanedEntities} so the in-flight guard
+     * ({@link #mechIdsBeingRecovered} + {@link MechanismPersistence#hasMetadata}) protects the entities this
+     * adopts from being reaped as orphans.
+     */
+    public void recoverMechanismsInChunk(org.bukkit.Chunk chunk) {
+        org.bukkit.World world = chunk.getWorld();
+        Set<UUID> ids = persistence.mechanismsInChunk(world.getName(), chunk.getX(), chunk.getZ());
+        if (ids.isEmpty()) return;
+        for (UUID id : ids) {
+            if (activeMechanisms.containsKey(id) || mechIdsBeingRecovered.contains(id)) continue;
+            MechanismState st = persistence.load(world.getName(), id);
+            if (st == null) {
+                // Corrupt/unreadable state file (already logged by load) — drop the dangling index entry so
+                // we don't retry it every chunk load.
+                persistence.remove(world.getName(), id);
+                continue;
+            }
+            mechIdsBeingRecovered.add(id);
+            try {
+                recoverOne(chunk, st);
+            } catch (Exception e) {
+                plugin.getLogger().warning("Mechanism recovery failed for " + id + " ("
+                    + e.getMessage() + "); leaving its state file for a later retry");
+                mechIdsBeingRecovered.remove(id);
+            }
+        }
+    }
+
+    /** Rebind one persisted mechanism from its state + surviving tagged entities, then land or resume it. */
+    private void recoverOne(org.bukkit.Chunk pivotChunk, MechanismState st) {
+        org.bukkit.World world = pivotChunk.getWorld();
+
+        // Gather candidate entities: the pivot chunk (parent/vehicle/displays live here) plus its loaded
+        // neighbours (a large structure's FREE collider carriers can sit in an adjacent chunk). Neighbours
+        // not yet loaded contribute nothing now; their strays are adopted on a later load or reaped by the
+        // orphan sweep once this mechanism is no longer persisted.
+        List<Entity> candidates = new ArrayList<>();
+        for (int dx = -1; dx <= 1; dx++) {
+            for (int dz = -1; dz <= 1; dz++) {
+                if (!world.isChunkLoaded(pivotChunk.getX() + dx, pivotChunk.getZ() + dz)) continue;
+                for (Entity e : world.getChunkAt(pivotChunk.getX() + dx, pivotChunk.getZ() + dz).getEntities()) {
+                    candidates.add(e);
+                }
+            }
+        }
+
+        // Bucket the tagged entities by role. Substring off the exact "corelib:mech:{id}:" prefix rather
+        // than split(":") — a UUID contains hyphens but no colons, so the prefix is unambiguous, and the
+        // remainder is "vehicle" | "parent" | "{i}:{role}".
+        String prefix = "corelib:mech:" + st.mechId + ":";
+        Entity vehicle = null;
+        org.bukkit.entity.BlockDisplay parent = null;
+        List<Entity> tagged = new ArrayList<>();
+        Map<Integer, Display> primaries = new HashMap<>();
+        Map<Integer, TreeMap<Integer, Display>> itemExtras = new HashMap<>();
+        Map<Integer, TreeMap<Integer, Display>> blockExtras = new HashMap<>();
+        Map<Integer, TreeMap<Integer, Display>> banners = new HashMap<>();
+        Map<Integer, Entity> carriers = new HashMap<>();
+        Map<Integer, Shulker> shulkers = new HashMap<>();
+        for (Entity e : candidates) {
+            boolean matched = false;
+            for (String tag : e.getScoreboardTags()) {
+                if (!tag.startsWith(prefix)) continue;
+                matched = true;
+                String rest = tag.substring(prefix.length());
+                if (rest.equals("vehicle")) { vehicle = e; break; }
+                if (rest.equals("parent")) { if (e instanceof org.bukkit.entity.BlockDisplay bd) parent = bd; break; }
+                int c = rest.indexOf(':');
+                if (c < 0) break;
+                int i;
+                try { i = Integer.parseInt(rest.substring(0, c)); } catch (NumberFormatException nf) { break; }
+                String role = rest.substring(c + 1);
+                if (role.equals("display") && e instanceof Display d) primaries.put(i, d);
+                else if (role.startsWith("extra_") && e instanceof Display d) putIndexed(itemExtras, i, role, "extra_", d);
+                else if (role.startsWith("block_") && e instanceof Display d) putIndexed(blockExtras, i, role, "block_", d);
+                else if (role.startsWith("banner_") && e instanceof Display d) putIndexed(banners, i, role, "banner_", d);
+                else if (role.equals("carrier")) carriers.put(i, e);
+                else if (role.equals("collider") && e instanceof Shulker s) shulkers.put(i, s);
+                break; // one mech tag per entity
+            }
+            if (matched) tagged.add(e);
+        }
+
+        // The vehicle + parent are the load-bearing frame (the ctor needs both, and disassembly removes
+        // them). If either is gone (despawned, or never persisted), the mechanism is unrecoverable —
+        // remove any strays we did find and drop the state file so it isn't retried forever.
+        if (vehicle == null || parent == null) {
+            plugin.getLogger().warning("Mechanism recovery for " + st.mechId + " found no "
+                + (vehicle == null ? "vehicle" : "parent") + " entity; discarding its state (blocks lost)");
+            for (Entity e : tagged) e.remove();
+            persistence.remove(world.getName(), st.mechId);
+            mechIdsBeingRecovered.remove(st.mechId);
+            return;
+        }
+
+        // Rebuild the block snapshots (inverse of BasicMechanism.snapshotState).
+        List<MechanismBlockData> blocks = rebuildBlocks(st);
+        int n = blocks.size();
+
+        // Assemble the parallel entity structures sized to the block count. Missing entities leave an empty
+        // group — safe: rotate() guards every group access, and restore-to-blocks pre-snaps the yaw so
+        // rotate() is never even called (see below).
+        List<List<Display>> displaysPerBlock = new ArrayList<>(n);
+        List<List<Display>> bannerDisplaysPerBlock = new ArrayList<>(n);
+        for (int i = 0; i < n; i++) {
+            List<Display> group = new ArrayList<>();
+            Display primary = primaries.get(i);
+            if (primary != null) group.add(primary);            // index 0 = primary (rotate() reads group.get(0))
+            TreeMap<Integer, Display> ie = itemExtras.get(i);
+            if (ie != null) group.addAll(ie.values());
+            TreeMap<Integer, Display> be = blockExtras.get(i);
+            if (be != null) group.addAll(be.values());
+            displaysPerBlock.add(group);
+            TreeMap<Integer, Display> bn = banners.get(i);
+            bannerDisplaysPerBlock.add(bn == null ? new ArrayList<>() : new ArrayList<>(bn.values()));
+        }
+        List<ColliderPair> colliders = new ArrayList<>();
+        for (Map.Entry<Integer, Entity> e : carriers.entrySet()) {
+            Shulker sh = shulkers.get(e.getKey());
+            if (sh != null && e.getKey() >= 0 && e.getKey() < n) {
+                colliders.add(new ColliderPair(e.getValue(), sh, e.getKey()));
+            }
+        }
+
+        Location pivot = new Location(world, st.px, st.py, st.pz);
+        Vector3f axis = new Vector3f(st.axisX, st.axisY, st.axisZ);
+        BasicMechanism mech = new BasicMechanism(st.mechId, st.type, pivot, axis, vehicle, parent,
+            st.rideOffset, st.ownsVehicle, displaysPerBlock, bannerDisplaysPerBlock, colliders, blocks,
+            registry, null);
+        mech.mechanismRegistry = this;
+        mech.setPersisted(true); // so a restore-to-blocks disassemble() removes the state file (onMechanismRemoved)
+        mech.setDriven(st.driven);
+
+        if (st.driven) {
+            // Restore-to-entities: a driven mechanism has no static block form (dumping its blocks would
+            // block a rail / sink a ship), so resume it live at its exact orientation. The consumer
+            // re-adopts it (calls repositionDriven each tick) once it re-enables.
+            mech.restoreYaw(st.currentYaw);
+            activeMechanisms.put(st.mechId, mech);
+            for (ColliderPair cp : colliders) {
+                colliderIndex.put(cp.shulker().getUniqueId(), new ColliderRef(mech, cp.blockIndex()));
+            }
+            // NOTE (follow-up): the internal rotation network is NOT rebuilt here — rotationDriver.onAssembled
+            // scans in-world neighbours, but a live-recovered mechanism's blocks are entities, not world
+            // blocks. A recovered driven mechanism renders/collides/drives, but its rotation network stays
+            // dormant until re-solved. No current defCoreLib consumer exercises this path (minecarts recover
+            // via their own PDC-glue scan; ships are deferred BlockShips work).
+            mechIdsBeingRecovered.remove(st.mechId);
+        } else {
+            // Restore-to-blocks: land the structure at its nearest 90°, exactly as disassemble() does today.
+            // Pre-snap currentYaw so disassemble()'s own `if (currentYaw != snappedYaw) rotate(...)` is a
+            // no-op — recovery must never call rotate() on possibly-incomplete display groups. disassemble()
+            // then places the blocks, removes the entities, and deletes the state file (onMechanismRemoved →
+            // persistence.remove, since the mech is marked persisted).
+            float snapped = Math.round(st.currentYaw / 90f) * 90f;
+            mech.restoreYaw(snapped);
+            mech.disassemble();
+            // For an owned vehicle, disassemble() defers entity removal one tick (anti-flicker). Hold the
+            // guard past that so the same-tick orphan sweep doesn't reap the lingering entities first.
+            if (st.ownsVehicle && plugin.isEnabled()) {
+                UUID id = st.mechId;
+                Bukkit.getScheduler().runTaskLater(plugin, () -> mechIdsBeingRecovered.remove(id), 2L);
+            } else {
+                mechIdsBeingRecovered.remove(st.mechId);
+            }
+        }
+    }
+
+    /** Add {@code d} to {@code map[blockIndex]} keyed by the integer suffix of {@code role} (e.g. "extra_3" → 3),
+     *  so a block's extras/banners land back in their authored order regardless of entity iteration order. */
+    private static void putIndexed(Map<Integer, TreeMap<Integer, Display>> map, int blockIndex,
+                                   String role, String rolePrefix, Display d) {
+        int ord;
+        try { ord = Integer.parseInt(role.substring(rolePrefix.length())); }
+        catch (NumberFormatException nf) { ord = map.getOrDefault(blockIndex, new TreeMap<>()).size(); }
+        map.computeIfAbsent(blockIndex, k -> new TreeMap<>()).put(ord, d);
+    }
+
+    /** Reconstruct the {@link MechanismBlockData} list from a saved {@link MechanismState} — the inverse of
+     *  {@link BasicMechanism#snapshotState}. Display/particle configs are left null (re-derived lazily / not
+     *  needed for a restore-to-blocks landing); banners and {@code wasBare} are not yet captured. */
+    private List<MechanismBlockData> rebuildBlocks(MechanismState st) {
+        List<MechanismBlockData> out = new ArrayList<>(st.blocks.size());
+        for (MechanismState.BlockRec b : st.blocks) {
+            BlockData bd = Bukkit.createBlockData(b.blockData);
+            Matrix4f local = new Matrix4f().set(b.localTransform); // column-major (matches snapshotState's get())
+            CollisionConfig col = new CollisionConfig(b.colEnabled, b.colSize,
+                new Vector3f(b.colOffX, b.colOffY, b.colOffZ));
+            Inventory storage = null;
+            if (b.storage != null) {
+                try {
+                    ItemStack[] items = ItemStack.deserializeItemsFromBytes(b.storage);
+                    if (items.length > 0) {
+                        storage = Bukkit.createInventory(null, items.length); // mirrors assembleCore's sizing
+                        storage.setContents(items);
+                    }
+                } catch (Throwable t) {
+                    plugin.getLogger().warning("Mechanism recovery: unreadable storage for a block in "
+                        + st.mechId + " (" + t.getMessage() + "); it will restore empty");
+                }
+            }
+            Vector3f wall = b.hasWallFacing ? new Vector3f(b.wfX, b.wfY, b.wfZ) : null;
+            MechanismBlockData mbd = new MechanismBlockData(bd, local, col, b.customType, b.customState,
+                null, null, null, storage, b.spinReversed, wall);
+            mbd.ghost = b.ghost;
+            mbd.glueOffsets = b.glueOffsets;
+            mbd.configPdc = b.configPdc;
+            out.add(mbd);
+        }
+        return out;
     }
 
     private void tickMechanisms() {

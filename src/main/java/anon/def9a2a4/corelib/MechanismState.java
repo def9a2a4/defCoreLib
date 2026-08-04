@@ -30,6 +30,8 @@ final class MechanismState {
     float currentYaw;               // live rotation at save time — recovery snaps this to 90° to land
     float rideOffset;
     boolean ownsVehicle;
+    boolean driven;                 // recovery mode discriminator: driven → restore-to-entities (resume live),
+                                    // non-driven → restore-to-blocks (land the structure). See MechanismRegistry.recoverOne.
     @Nullable UUID vehicleUuid;     // recovery hint (owned marker ArmorStand, or external cart/ship vehicle)
     final List<BlockRec> blocks = new ArrayList<>();
 
@@ -58,6 +60,7 @@ final class MechanismState {
         s.set("yaw", (double) currentYaw);
         s.set("ride_offset", (double) rideOffset);
         s.set("owns_vehicle", ownsVehicle);
+        s.set("driven", driven);
         if (vehicleUuid != null) s.set("vehicle_uuid", vehicleUuid.toString());
         List<Object> blockList = new ArrayList<>(blocks.size());
         for (BlockRec b : blocks) {
@@ -98,6 +101,7 @@ final class MechanismState {
             st.currentYaw = (float) s.getDouble("yaw");
             st.rideOffset = (float) s.getDouble("ride_offset");
             st.ownsVehicle = s.getBoolean("owns_vehicle");
+            st.driven = s.getBoolean("driven");
             String vu = s.getString("vehicle_uuid");
             if (vu != null) st.vehicleUuid = UUID.fromString(vu);
             for (Map<?, ?> raw : s.getMapList("blocks")) {

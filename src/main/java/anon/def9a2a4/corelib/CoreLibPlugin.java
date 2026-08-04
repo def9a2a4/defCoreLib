@@ -386,6 +386,12 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         if (cartTrainManager != null) {
             cartTrainManager.scanChunk(event.getChunk());
         }
+        // Recover persisted mechanisms whose pivot chunk just loaded its entities — BEFORE the orphan
+        // sweep below, so recovery's in-flight guard (mechIdsBeingRecovered + hasMetadata) protects the
+        // still-loading entities it adopts from being reaped.
+        if (mechanismRegistry != null) {
+            mechanismRegistry.recoverMechanismsInChunk(event.getChunk());
+        }
         // Clean up orphaned mechanism entities from previous sessions
         if (mechanismRegistry != null) {
             mechanismRegistry.cleanupOrphanedEntities(event.getChunk());

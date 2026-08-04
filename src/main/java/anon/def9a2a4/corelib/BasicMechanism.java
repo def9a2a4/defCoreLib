@@ -433,6 +433,7 @@ final class BasicMechanism implements Mechanism {
         st.currentYaw = currentYaw;
         st.rideOffset = rideOffset;
         st.ownsVehicle = ownsVehicle;
+        st.driven = driven;
         st.vehicleUuid = vehicle != null ? vehicle.getUniqueId() : null;
         for (MechanismBlockData mb : blocks) {
             MechanismState.BlockRec b = new MechanismState.BlockRec();
@@ -463,6 +464,19 @@ final class BasicMechanism implements Mechanism {
             st.blocks.add(b);
         }
         return st;
+    }
+
+    /**
+     * Restore the rotation angle on a RECOVERED mechanism without repositioning any entities — the display
+     * groups may not be well-formed yet (some persistent entities can still be loading), so this must not
+     * touch them. Sets {@code currentTransform} to match {@code currentYaw} so a subsequent
+     * {@link #landingRotation()} (restore-to-blocks) or {@link #rotate} (restore-to-entities) is consistent.
+     * Package-private; only {@link MechanismRegistry#recoverOne} calls it.
+     */
+    void restoreYaw(float yaw) {
+        this.currentYaw = yaw;
+        this.currentTransform = new Matrix4f().rotate((float) Math.toRadians(-yaw),
+            rotationAxis.x, rotationAxis.y, rotationAxis.z);
     }
 
     @Override
