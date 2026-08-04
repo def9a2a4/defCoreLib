@@ -104,6 +104,9 @@ public class PipeBlockRegistrar {
             PipeManager manager = plugin.getPipeManager(block.getWorld());
             if (manager == null) return;
             if (variant.isFilter()) {
+                // Close any open config menu FIRST so its (real) items can't be dragged out of a stale menu
+                // after we drop them (a dupe); the close saves current contents to the still-intact PDC.
+                plugin.getFilterGui().closeFor(block);
                 // Filter items were consumed from the player — return them. Read before removePipeData
                 // (which evicts the cache); the head/PDC is still intact at this pre-cleanup callback.
                 for (var item : PipeFilterStore.read(block).dropContents()) {

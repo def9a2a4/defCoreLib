@@ -74,7 +74,13 @@ public class PipeManager {
     }
 
     public void registerPipe(Location location, BlockFace facing, List<UUID> displayEntityIds, PipeVariant variant) {
-        pipes.put(normalizeLocation(location), new PipeData(facing, displayEntityIds, variant));
+        Location normalized = normalizeLocation(location);
+        pipes.put(normalized, new PipeData(facing, displayEntityIds, variant));
+        // Seed the ring's power baseline so onFilterPowerEdge's first observation matches the ring the
+        // resolver just drew at spawn — otherwise a pipe placed powered then unpowered never redraws.
+        if (variant.isFilter()) {
+            filterPowered.put(normalized, isPipePowered(normalized.getBlock()));
+        }
         pathCache.clear();
     }
 

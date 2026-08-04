@@ -20,6 +20,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -48,13 +49,32 @@ final class FilterGui implements Listener {
 
     private final PipesPlugin plugin;
 
+    // Filter items are real, draggable copies while the master copy lives in the block PDC. Two live copies
+    // = a dupe. Enforce a single live menu per block: key → the one viewing player. Added on open, removed on
+    // close (quitting fires the close event, so this also covers disconnects); the whole map is gone on a
+    // server restart, so a stale lock can never persist.
+    private final Map<String, Player> openFilters = new HashMap<>();
+
     FilterGui(PipesPlugin plugin) {
         this.plugin = plugin;
+    }
+
+    private static String key(Location loc) {
+        return loc.getWorld().getUID() + ":" + loc.getBlockX() + ":" + loc.getBlockY() + ":" + loc.getBlockZ();
     }
 
     void open(Player player, Block block, PipeVariant variant) {
         PipeVariant.FilterSpec spec = variant.filter();
         if (spec == null) return;
+
+        // One live menu per block (the menu holds real items — a second copy would dupe).
+        String key = key(block.getLocation());
+        if (openFilters.containsKey(key)) {
+            player.sendMessage(Component.text("This filter is being configured by someone else.",
+                NamedTextColor.RED));
+            return;
+        }
+        openFilters.put(key, player);
 
         PipeFilterStore.FilterData data = PipeFilterStore.read(block);
         FilterHolder holder = new FilterHolder(block.getLocation(), spec, data.blacklist(), data.exactMatch());
@@ -224,10 +244,21 @@ final class FilterGui implements Listener {
     public void onClose(InventoryCloseEvent event) {
         if (!(event.getInventory().getHolder() instanceof FilterHolder holder)) return;
         save(holder);
+        openFilters.remove(key(holder.location()));
         // A mid-chain filter edit may need to wake an upstream extractor that slept while everything was
         // blocked; do it once on close rather than on every toggle-click save.
         PipeManager manager = plugin.getPipeManager(holder.location().getWorld());
         if (manager != null) manager.wakeAll();
+    }
+
+    /**
+     * Force-close this block's filter menu if one is open (called when the pipe is broken). Closing fires
+     * {@link #onClose}, which saves the current contents to the still-intact PDC and clears the lock — so the
+     * caller's subsequent drop reflects the latest edits and no draggable copy is left behind to dupe.
+     */
+    void closeFor(Block block) {
+        Player viewer = openFilters.get(key(block.getLocation()));
+        if (viewer != null) viewer.closeInventory();
     }
 
     /** Persist the current filter items + toggle flags to the block PDC and refresh the cache. */
