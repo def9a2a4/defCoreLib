@@ -30,8 +30,11 @@ final class MechanismState {
     float currentYaw;               // live rotation at save time — recovery snaps this to 90° to land
     float rideOffset;
     boolean ownsVehicle;
-    boolean driven;                 // recovery mode discriminator: driven → restore-to-entities (resume live),
-                                    // non-driven → restore-to-blocks (land the structure). See MechanismRegistry.recoverOne.
+    boolean driven;                 // restored onto the mechanism so a driven (consumer-positioned) body keeps
+                                    // skipping updateFromVehicle after recovery. NOT a recovery-mode switch —
+                                    // recovery is always a live entity rebind (see MechanismRegistry.recoverOne).
+    int entityCount;                // total persistent entities at save time (vehicle+parent+displays+banners+
+                                    // colliders×2) — a recovery-completeness check (BlockShips' entity_count).
     @Nullable UUID vehicleUuid;     // recovery hint (owned marker ArmorStand, or external cart/ship vehicle)
     final List<BlockRec> blocks = new ArrayList<>();
 
@@ -61,6 +64,7 @@ final class MechanismState {
         s.set("ride_offset", (double) rideOffset);
         s.set("owns_vehicle", ownsVehicle);
         s.set("driven", driven);
+        s.set("entity_count", entityCount);
         if (vehicleUuid != null) s.set("vehicle_uuid", vehicleUuid.toString());
         List<Object> blockList = new ArrayList<>(blocks.size());
         for (BlockRec b : blocks) {
@@ -102,6 +106,7 @@ final class MechanismState {
             st.rideOffset = (float) s.getDouble("ride_offset");
             st.ownsVehicle = s.getBoolean("owns_vehicle");
             st.driven = s.getBoolean("driven");
+            st.entityCount = s.getInt("entity_count");
             String vu = s.getString("vehicle_uuid");
             if (vu != null) st.vehicleUuid = UUID.fromString(vu);
             for (Map<?, ?> raw : s.getMapList("blocks")) {

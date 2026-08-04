@@ -250,6 +250,11 @@ final class BasicMechanism implements Mechanism {
             // localTransform, the cube then orbits its center about ANY cardinal axis (drawbridges).
             // ItemDisplay renders centered — no shift needed.
             List<Display> group = displaysPerBlock.get(i);
+            // Partial-recovery safety: a rebound mechanism whose primary display for this block is still
+            // loading (an adjacent chunk not yet in) has an empty group. Skip it rather than throw — the
+            // block's other entities (collider) still reposition below, and rotate() is re-run on the next
+            // tick's rebind pass once the display arrives. Never empty on a freshly assembled mechanism.
+            if (group.isEmpty()) continue;
             Display primary = group.get(0);
             if (primary instanceof org.bukkit.entity.BlockDisplay) {
                 Matrix4f bdm = new Matrix4f(dm).translate(-0.5f, -0.5f, -0.5f);
@@ -435,6 +440,13 @@ final class BasicMechanism implements Mechanism {
         st.ownsVehicle = ownsVehicle;
         st.driven = driven;
         st.vehicleUuid = vehicle != null ? vehicle.getUniqueId() : null;
+        // Recovery-completeness count: vehicle + parent + every display/banner + each collider's carrier &
+        // shulker. recoverOne warns if the entities it finds fall short (a chunk still settling / drifted).
+        int ec = 2; // vehicle + parent
+        for (List<Display> g : displaysPerBlock) ec += g.size();
+        for (List<Display> g : bannerDisplaysPerBlock) ec += g.size();
+        ec += colliders.size() * 2;
+        st.entityCount = ec;
         for (MechanismBlockData mb : blocks) {
             MechanismState.BlockRec b = new MechanismState.BlockRec();
             b.blockData = mb.blockData.getAsString();
@@ -464,19 +476,6 @@ final class BasicMechanism implements Mechanism {
             st.blocks.add(b);
         }
         return st;
-    }
-
-    /**
-     * Restore the rotation angle on a RECOVERED mechanism without repositioning any entities — the display
-     * groups may not be well-formed yet (some persistent entities can still be loading), so this must not
-     * touch them. Sets {@code currentTransform} to match {@code currentYaw} so a subsequent
-     * {@link #landingRotation()} (restore-to-blocks) or {@link #rotate} (restore-to-entities) is consistent.
-     * Package-private; only {@link MechanismRegistry#recoverOne} calls it.
-     */
-    void restoreYaw(float yaw) {
-        this.currentYaw = yaw;
-        this.currentTransform = new Matrix4f().rotate((float) Math.toRadians(-yaw),
-            rotationAxis.x, rotationAxis.y, rotationAxis.z);
     }
 
     @Override

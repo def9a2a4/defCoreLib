@@ -24,14 +24,24 @@ public class MechanismAssembleEvent extends Event {
     private final Location pivot;
     private final int blockCount;
     private final boolean verticalAxis;
+    private final boolean recovered;
 
     public MechanismAssembleEvent(Mechanism mechanism, String type, Location pivot,
                                   int blockCount, boolean verticalAxis) {
+        this(mechanism, type, pivot, blockCount, verticalAxis, false);
+    }
+
+    /** {@code recovered} = true when the mechanism was rebound from persisted state on chunk load
+     *  (crash/restart recovery), not freshly assembled from world blocks — so a companion system can
+     *  re-adopt it (re-mirror health, re-link fuel) rather than treat it as a brand-new build. */
+    public MechanismAssembleEvent(Mechanism mechanism, String type, Location pivot,
+                                  int blockCount, boolean verticalAxis, boolean recovered) {
         this.mechanism = mechanism;
         this.type = type;
         this.pivot = pivot;
         this.blockCount = blockCount;
         this.verticalAxis = verticalAxis;
+        this.recovered = recovered;
     }
 
     public Mechanism getMechanism() { return mechanism; }
@@ -46,6 +56,9 @@ public class MechanismAssembleEvent extends Event {
 
     /** True if the mechanism rotates about the vertical (Y) axis — a rotator door vs. a wall drawbridge. */
     public boolean isVerticalAxis() { return verticalAxis; }
+
+    /** True if this mechanism was rebound from persisted state (crash/restart recovery), not freshly built. */
+    public boolean isRecovered() { return recovered; }
 
     @Override public @NotNull HandlerList getHandlers() { return HANDLERS; }
 

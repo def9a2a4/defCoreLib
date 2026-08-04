@@ -87,12 +87,31 @@ final class DrivenDemo {
     boolean unpark(Player player) {
         Mechanism m = parked.remove(player.getUniqueId());
         if (m == null) {
-            player.sendMessage("§enothing parked");
+            // After a /stop+restart the in-memory handle is gone but the mechanism was rebound from disk as
+            // a live entity structure — find the nearest recovered demo:parked mechanism and land it.
+            m = nearestParked(player);
+        }
+        if (m == null) {
+            player.sendMessage("§enothing parked nearby");
             return false;
         }
         m.disassemble(); // returns blocks + removes the state file (onMechanismRemoved)
         player.sendMessage("§eunparked (blocks restored, state file removed)");
         return true;
+    }
+
+    /** Nearest recovered demo:parked mechanism within 8 blocks of the player (post-restart lookup). */
+    private Mechanism nearestParked(Player player) {
+        Mechanism best = null;
+        double bestSq = 64.0; // 8 blocks
+        for (Mechanism mech : mechRegistry.activeMechanisms()) {
+            if (!"demo:parked".equals(mech.type())) continue;
+            Location p = mech.pivot();
+            if (p.getWorld() == null || !p.getWorld().equals(player.getWorld())) continue;
+            double d = p.distanceSquared(player.getLocation());
+            if (d < bestSq) { bestSq = d; best = mech; }
+        }
+        return best;
     }
 
     private static final class Session {

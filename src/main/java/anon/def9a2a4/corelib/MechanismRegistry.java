@@ -117,6 +117,12 @@ public class MechanismRegistry {
 
     MechanismPersistence persistence() { return persistence; }
 
+    /** Live snapshot of the currently-assembled mechanisms (a copy — safe to iterate). Lets a consumer/demo
+     *  look one up after crash recovery repopulated the registry from disk (the in-memory handles are gone). */
+    public java.util.List<Mechanism> activeMechanisms() {
+        return new java.util.ArrayList<>(activeMechanisms.values());
+    }
+
     /** Load vanilla-block collider shapes (colliders.yml) into the registry. */
     public void loadColliders(java.io.InputStream in) {
         colliderRegistry.load(in, plugin.getLogger());
@@ -1058,14 +1064,13 @@ public class MechanismRegistry {
             if (matched) tagged.add(e);
         }
 
-        // The vehicle + parent are the load-bearing frame (the ctor needs both, and disassembly removes
-        // them). If either is gone (despawned, or never persisted), the mechanism is unrecoverable —
-        // remove any strays we did find and drop the state file so it isn't retried forever.
+        // The vehicle + parent are the load-bearing frame (the ctor needs both; the vehicle carries the
+        // authoritative position). If either isn't present yet, recovery FAILS SOFTLY and retries on a
+        // later chunk load — the region file may still be settling, or the frame entity is in an
+        // adjacent chunk not yet loaded. Do NOT remove entities or the state file (that would destroy a
+        // still-recoverable mechanism); the hasMetadata guard keeps any strays we did find alive until
+        // the frame appears. Mirrors ShipInstance.recoverEntities returning false on a missing vehicle.
         if (vehicle == null || parent == null) {
-            plugin.getLogger().warning("Mechanism recovery for " + st.mechId + " found no "
-                + (vehicle == null ? "vehicle" : "parent") + " entity; discarding its state (blocks lost)");
-            for (Entity e : tagged) e.remove();
-            persistence.remove(world.getName(), st.mechId);
             mechIdsBeingRecovered.remove(st.mechId);
             return;
         }
@@ -1074,9 +1079,9 @@ public class MechanismRegistry {
         List<MechanismBlockData> blocks = rebuildBlocks(st);
         int n = blocks.size();
 
-        // Assemble the parallel entity structures sized to the block count. Missing entities leave an empty
-        // group — safe: rotate() guards every group access, and restore-to-blocks pre-snaps the yaw so
-        // rotate() is never even called (see below).
+        // Assemble the parallel entity structures sized to the block count, in the same [primary, extra_*,
+        // block_*] order rotate()/updateAnimatedDisplays index positionally. A missing entity leaves an empty
+        // group — safe: rotate() and updateAnimatedDisplays both guard empty/short groups.
         List<List<Display>> displaysPerBlock = new ArrayList<>(n);
         List<List<Display>> bannerDisplaysPerBlock = new ArrayList<>(n);
         for (int i = 0; i < n; i++) {
@@ -1099,48 +1104,90 @@ public class MechanismRegistry {
             }
         }
 
-        Location pivot = new Location(world, st.px, st.py, st.pz);
+        // Position comes from the recovered vehicle's own NBT (BlockShips reads it from the vehicle, never
+        // from the sidecar — ShipInstance.recoverEntities), so a ship that drifted before the crash lands
+        // where it actually is. For a static owned mechanism the vehicle is exactly at its saved pivot.
+        Location pivot = vehicle.getLocation().clone();
         Vector3f axis = new Vector3f(st.axisX, st.axisY, st.axisZ);
         BasicMechanism mech = new BasicMechanism(st.mechId, st.type, pivot, axis, vehicle, parent,
             st.rideOffset, st.ownsVehicle, displaysPerBlock, bannerDisplaysPerBlock, colliders, blocks,
             registry, null);
         mech.mechanismRegistry = this;
-        mech.setPersisted(true); // so a restore-to-blocks disassemble() removes the state file (onMechanismRemoved)
-        mech.setDriven(st.driven);
+        mech.setPersisted(true); // stays persisted; a later explicit disassemble() removes the state file
+        mech.setDriven(st.driven); // a driven (consumer-positioned) body keeps skipping updateFromVehicle
 
-        if (st.driven) {
-            // Restore-to-entities: a driven mechanism has no static block form (dumping its blocks would
-            // block a rail / sink a ship), so resume it live at its exact orientation. The consumer
-            // re-adopts it (calls repositionDriven each tick) once it re-enables.
-            mech.restoreYaw(st.currentYaw);
-            activeMechanisms.put(st.mechId, mech);
-            for (ColliderPair cp : colliders) {
-                colliderIndex.put(cp.shulker().getUniqueId(), new ColliderRef(mech, cp.blockIndex()));
+        // Defensively re-establish the passenger chain. Vanilla NBT normally restores display→parent→vehicle
+        // and shulker→carrier, but a chunk reload can drop it (BlockShips re-adds carrier→shulker every ~20
+        // ticks for exactly this — ShipInstance:1148-1150). Do it once here so the first rotate() lays out a
+        // fully-mounted chain. addPassenger is a no-op when the link already exists.
+        try {
+            if (!vehicle.getPassengers().contains(parent)) vehicle.addPassenger(parent);
+            for (List<Display> group : displaysPerBlock) {
+                for (Display d : group) if (!parent.getPassengers().contains(d)) parent.addPassenger(d);
             }
-            // NOTE (follow-up): the internal rotation network is NOT rebuilt here — rotationDriver.onAssembled
-            // scans in-world neighbours, but a live-recovered mechanism's blocks are entities, not world
-            // blocks. A recovered driven mechanism renders/collides/drives, but its rotation network stays
-            // dormant until re-solved. No current defCoreLib consumer exercises this path (minecarts recover
-            // via their own PDC-glue scan; ships are deferred BlockShips work).
-            mechIdsBeingRecovered.remove(st.mechId);
-        } else {
-            // Restore-to-blocks: land the structure at its nearest 90°, exactly as disassemble() does today.
-            // Pre-snap currentYaw so disassemble()'s own `if (currentYaw != snappedYaw) rotate(...)` is a
-            // no-op — recovery must never call rotate() on possibly-incomplete display groups. disassemble()
-            // then places the blocks, removes the entities, and deletes the state file (onMechanismRemoved →
-            // persistence.remove, since the mech is marked persisted).
-            float snapped = Math.round(st.currentYaw / 90f) * 90f;
-            mech.restoreYaw(snapped);
-            mech.disassemble();
-            // For an owned vehicle, disassemble() defers entity removal one tick (anti-flicker). Hold the
-            // guard past that so the same-tick orphan sweep doesn't reap the lingering entities first.
-            if (st.ownsVehicle && plugin.isEnabled()) {
-                UUID id = st.mechId;
-                Bukkit.getScheduler().runTaskLater(plugin, () -> mechIdsBeingRecovered.remove(id), 2L);
-            } else {
-                mechIdsBeingRecovered.remove(st.mechId);
+            for (List<Display> group : bannerDisplaysPerBlock) {
+                for (Display d : group) if (!parent.getPassengers().contains(d)) parent.addPassenger(d);
+            }
+            for (ColliderPair cp : colliders) {
+                if (!cp.carrier().getPassengers().contains(cp.shulker())) cp.carrier().addPassenger(cp.shulker());
+            }
+        } catch (RuntimeException e) {
+            plugin.getLogger().warning("Mechanism recovery: passenger re-mount failed for " + st.mechId
+                + " (" + e.getMessage() + "); continuing (the block/collider entities are still bound)");
+        }
+
+        // Register BEFORE positioning so tickMechanisms + the collider read-API see it immediately.
+        activeMechanisms.put(st.mechId, mech);
+        for (ColliderPair cp : colliders) {
+            colliderIndex.put(cp.shulker().getUniqueId(), new ColliderRef(mech, cp.blockIndex()));
+        }
+
+        // Position the body at its saved orientation: sets currentYaw + currentTransform, lays out every
+        // display on the parent, and repositions the free collider carriers. rotate() guards empty display
+        // groups, so a still-loading block is skipped rather than fatal.
+        mech.rotate(st.currentYaw);
+        updateAnimatedDisplays(mech, 0L);
+
+        // Rebuild the mechanism-LOCAL rotation network. onAssembled + RotationSolver read ONLY the in-memory
+        // block list (customTypeId/customState/local offset/spinReversed) — no world block access — so this
+        // works even though the source blocks aren't in the world (the moving-ship path already relies on
+        // it). Only the first blocks.size() entries are real (recovery reconstructs no ghosts).
+        if (rotationDriver != null) {
+            try {
+                rotationDriver.onAssembled(mech, blocks.size());
+            } catch (RuntimeException e) {
+                plugin.getLogger().warning("Mechanism recovery: rotation-network rebuild failed for "
+                    + st.mechId + " (" + e.getMessage() + "); it renders/collides but won't spin until re-solved");
             }
         }
+
+        // Recovery-completeness diagnostic (BlockShips' entity_count). We rebind single-shot; a shortfall
+        // means some persistent entities are still loading in an adjacent chunk — logged, not fatal.
+        // (Incremental cross-chunk accumulation is deferred to the ship phase.)
+        int found = 2 + countDisplays(displaysPerBlock) + countDisplays(bannerDisplaysPerBlock) + colliders.size() * 2;
+        if (st.entityCount > 0 && found < st.entityCount) {
+            plugin.getLogger().info("Mechanism " + st.mechId + " recovered with " + found + "/" + st.entityCount
+                + " entities (rest may be in unloaded neighbour chunks).");
+        }
+
+        // Announce as a RECOVERY (recovered=true) so companion systems re-adopt it (re-mirror health, re-link
+        // fuel) rather than treat it as a fresh build. Guarded: a listener throw must not abort recovery.
+        boolean verticalAxis = Math.abs(axis.y) > 0.5f && axis.x == 0f && axis.z == 0f;
+        try {
+            Bukkit.getPluginManager().callEvent(
+                new MechanismAssembleEvent(mech, st.type, pivot.clone(), mech.blockCount(), verticalAxis, true));
+        } catch (RuntimeException e) {
+            plugin.getLogger().warning("Mechanism recovery: a MechanismAssembleEvent listener threw for "
+                + st.mechId + " (" + e.getMessage() + ")");
+        }
+
+        mechIdsBeingRecovered.remove(st.mechId);
+    }
+
+    private static int countDisplays(List<List<Display>> groups) {
+        int c = 0;
+        for (List<Display> g : groups) c += g.size();
+        return c;
     }
 
     /** Add {@code d} to {@code map[blockIndex]} keyed by the integer suffix of {@code role} (e.g. "extra_3" → 3),
@@ -1154,8 +1201,9 @@ public class MechanismRegistry {
     }
 
     /** Reconstruct the {@link MechanismBlockData} list from a saved {@link MechanismState} — the inverse of
-     *  {@link BasicMechanism#snapshotState}. Display/particle configs are left null (re-derived lazily / not
-     *  needed for a restore-to-blocks landing); banners and {@code wasBare} are not yet captured. */
+     *  {@link BasicMechanism#snapshotState}. Display/particle configs are RE-RESOLVED from the type registry
+     *  via {@code customState} (in-memory, no world access) so a recovered custom block still animates; banners
+     *  and {@code wasBare} are not yet captured (documented follow-ups). */
     private List<MechanismBlockData> rebuildBlocks(MechanismState st) {
         List<MechanismBlockData> out = new ArrayList<>(st.blocks.size());
         for (MechanismState.BlockRec b : st.blocks) {
@@ -1176,9 +1224,23 @@ public class MechanismRegistry {
                         + st.mechId + " (" + t.getMessage() + "); it will restore empty");
                 }
             }
+            // Re-derive the display/particle configs from the (static) state — the neighbour-aware
+            // resolveMovingDisplays needs a live block, which recovery hasn't got, but the static configs
+            // are enough to resume animation; rotate()/updateAnimatedDisplays position the existing extras.
+            List<CustomHeadBlock.DisplayEntityConfig> decs = null;
+            List<CustomHeadBlock.BlockDisplayEntityConfig> bdecs = null;
+            CustomHeadBlock.ParticleConfig particles = null;
+            if (b.customType != null) {
+                CustomHeadBlock chb = registry.getType(b.customType);
+                if (chb != null) {
+                    decs = chb.resolveDisplayEntities(b.customState);
+                    bdecs = chb.resolveBlockDisplayEntities(b.customState);
+                    particles = chb.resolveParticles(b.customState);
+                }
+            }
             Vector3f wall = b.hasWallFacing ? new Vector3f(b.wfX, b.wfY, b.wfZ) : null;
             MechanismBlockData mbd = new MechanismBlockData(bd, local, col, b.customType, b.customState,
-                null, null, null, storage, b.spinReversed, wall);
+                decs, bdecs, particles, storage, b.spinReversed, wall);
             mbd.ghost = b.ghost;
             mbd.glueOffsets = b.glueOffsets;
             mbd.configPdc = b.configPdc;
