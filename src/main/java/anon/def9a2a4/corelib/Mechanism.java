@@ -29,6 +29,20 @@ public interface Mechanism {
     /** Rotate in place (pivot stays, only transforms update). */
     void rotate(float yaw);
 
+    /**
+     * Driven mode: the consumer has ALREADY positioned the vehicle this tick (e.g. its own physics
+     * teleport). Sync the rigid body + collider carriers to the vehicle's current location, apply a
+     * client dead-reckoning velocity hint to the vehicle, and rotate by {@code relYaw} degrees
+     * <b>relative to the as-built orientation</b>. Does NOT teleport the vehicle (so it never
+     * double-moves a consumer that already placed it, nor rewrites the vehicle's frozen yaw).
+     *
+     * <p>Requires the mechanism to be in driven mode so {@code tickMechanisms} skips the
+     * vehicle auto-follow ({@code updateFromVehicle}); otherwise the two fight. Prefer this over
+     * {@link #move} for a per-tick consumer-driven body (a ship). The default falls back to a bare
+     * rotate for any implementation that doesn't support driven mode.
+     */
+    default void repositionDriven(float relYaw) { rotate(relYaw); }
+
     /** Lift entities standing on this mechanism's collision surface up by {@code dy} blocks, preserving
      *  their horizontal/fall velocity, so a rising mechanism carries its riders instead of clipping
      *  through them. No-op if dy <= 0. Call BEFORE the matching upward move(). */

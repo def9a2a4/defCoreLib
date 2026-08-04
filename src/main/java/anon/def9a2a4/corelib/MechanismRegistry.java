@@ -898,7 +898,9 @@ public class MechanismRegistry {
             // mechanisms (doors/rotators/minecarts/pistons) until a restart. Warn once per mech.
             try {
                 // Auto-follow: update transforms if vehicle moved (e.g., minecart on rails)
-                mech.updateFromVehicle();
+                // Driven mechanisms are positioned by their consumer each tick (repositionDriven);
+                // skip the vehicle auto-follow so the two don't fight (double-track / yaw clobber).
+                if (!mech.driven) mech.updateFromVehicle();
                 updateAnimatedDisplays(mech, currentTick - mech.startTick);
                 if (rotationDriver != null) rotationDriver.tick(mech, currentTick - mech.startTick);
                 // TODO: particle ticking for mechanism blocks

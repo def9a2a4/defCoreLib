@@ -61,6 +61,9 @@ final class BasicMechanism implements Mechanism {
     final long startTick;
     final boolean ownsVehicle; // true if we spawned it (should remove on destroy)
     final float assemblyYaw; // vehicle yaw at assembly — delta base for updateFromVehicle
+    // Driven mode: a consumer positions the vehicle itself each tick and calls repositionDriven();
+    // tickMechanisms then SKIPS updateFromVehicle for this mechanism so the two don't fight.
+    boolean driven;
 
     // Auto-follow: track vehicle movement for passive vehicles (minecarts on rails)
     private Location previousVehicleLoc;
@@ -320,11 +323,34 @@ final class BasicMechanism implements Mechanism {
      */
     private void repositionColliders() {
         for (ColliderPair cp : colliders) {
-            MechanismBlockData mb = blocks.get(cp.blockIndex());
+            int bi = cp.blockIndex();
+            // Bounds guard: a recovered/mismatched collider index (blocks list rebuilt out of step with
+            // the tags) must not throw mid-tick and freeze the whole mechanism.
+            if (bi < 0 || bi >= blocks.size()) continue;
+            MechanismBlockData mb = blocks.get(bi);
             Vector3f local = mb.localTransform.getTranslation(new Vector3f()).add(mb.collision.offset());
             Vector3f worldOff = currentTransform.transformPosition(local, new Vector3f());
-            TeleportCompat.teleport(cp.carrier(),
-                pivot.clone().add(worldOff.x, worldOff.y - 0.5, worldOff.z));
+            Location target = pivot.clone().add(worldOff.x, worldOff.y - 0.5, worldOff.z);
+            Entity carrier = cp.carrier();
+            // Movement threshold: skip a no-op teleport. Teleporting a carrier every tick (even at rest)
+            // is needless churn — and on pre-1.21.9 each teleport ejects/re-adds passengers, which
+            // jitters or dismounts a seated rider. Only move a carrier that actually moved.
+            Location cur = carrier.getLocation();
+            if (cur.getWorld() != null && cur.getWorld().equals(target.getWorld())
+                    && cur.distanceSquared(target) < 1.0e-6) {
+                continue;
+            }
+            // Nested-passenger safety: TeleportCompat re-mounts only the carrier's DIRECT passenger (the
+            // shulker), not a rider seated ON the shulker (player → shulker → carrier). Capture seated
+            // riders and re-mount any the teleport dropped. (No-op when nothing is seated / on 1.21.9+
+            // where the native teleport retains the whole passenger subtree.)
+            Shulker shulker = cp.shulker();
+            List<Entity> nested = shulker.getPassengers().isEmpty()
+                ? java.util.List.of() : new ArrayList<>(shulker.getPassengers());
+            TeleportCompat.teleport(carrier, target);
+            for (Entity p : nested) {
+                if (p.isValid() && !shulker.getPassengers().contains(p)) shulker.addPassenger(p);
+            }
         }
     }
 
@@ -369,6 +395,36 @@ final class BasicMechanism implements Mechanism {
         // (run every tick for all mechanisms) doesn't re-apply this teleport as drift next tick.
         this.previousVehicleLoc = vehicle.getLocation();
         this.previousVehicleYaw = this.previousVehicleLoc.getYaw();
+    }
+
+    /** Enable/disable driven mode. In driven mode the CONSUMER teleports the vehicle each tick and
+     *  calls {@link #repositionDriven}; {@code tickMechanisms} skips {@link #updateFromVehicle}. */
+    void setDriven(boolean driven) { this.driven = driven; }
+
+    @Override
+    public void repositionDriven(float relYaw) {
+        checkMainThread();
+        Location loc = vehicle.getLocation();
+        // Cross-world guard (a consumer teleport across worlds): re-baseline, skip the velocity hint —
+        // distanceSquared/subtract across worlds is meaningless and setVelocity would fling the body.
+        if (loc.getWorld() == null || previousVehicleLoc.getWorld() == null
+                || !loc.getWorld().equals(previousVehicleLoc.getWorld())) {
+            this.pivot = loc.clone();
+            rotate(relYaw);
+            this.previousVehicleLoc = loc.clone();
+            this.previousVehicleYaw = loc.getYaw();
+            return;
+        }
+        // Displacement since the last reposition — a client dead-reckoning hint so trackers extrapolate
+        // the vehicle (and the passenger display chain riding it) between the ~3-tick position updates,
+        // matching the per-tick collider teleports. Vehicle ONLY — never the carriers (that jitters
+        // standing/seated riders). The consumer's own per-tick teleport stays authoritative for position.
+        org.bukkit.util.Vector disp = loc.toVector().subtract(previousVehicleLoc.toVector());
+        this.pivot = loc.clone();
+        rotate(relYaw);   // absolute about the axis; relYaw is "degrees from as-built" (rotate(0) == as-built)
+        vehicle.setVelocity(disp);
+        this.previousVehicleLoc = loc.clone();
+        this.previousVehicleYaw = loc.getYaw();
     }
 
     // Velocity-preserving teleport flags (the position part is always absolute; these keep the rider's

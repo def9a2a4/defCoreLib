@@ -38,6 +38,7 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
     private static CoreLibPlugin instance;
     private CustomBlockRegistry registry;
     private MechanismRegistry mechanismRegistry;
+    private DrivenDemo drivenDemo; // throwaway Phase-0 smoothness spike (/defcorelib driventest)
     private MechanismMinecartManager mechanismMinecartManager;
     private CustomCartManager customCartManager;
     private CartTrainManager cartTrainManager;
@@ -179,6 +180,7 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         // Register mechanism demos
         DoorDemo doorDemo = new DoorDemo(this, registry, mechanismRegistry, glueManager);
         doorDemo.register();
+        drivenDemo = new DrivenDemo(this, mechanismRegistry, registry); // Phase-0 driven-smoothness spike
         RotationRotator rotationRotator = new RotationRotator(this, registry, rotationNetwork, mechanismRegistry, glueManager);
         rotationRotator.register();
         ExtendablePistonManager pistonManager =
@@ -260,6 +262,9 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
             mechanismMinecartManager.shutdown();
         }
         disableCarts();
+        if (drivenDemo != null) {
+            drivenDemo.shutdown();
+        }
         if (mechanismRegistry != null) {
             mechanismRegistry.shutdown();
         }
@@ -2350,6 +2355,17 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
                         + " connected oak planks as glue", NamedTextColor.GREEN));
                 }
             }
+            case "driventest" -> {
+                if (!(sender instanceof Player player)) {
+                    sender.sendMessage(Component.text("Must be a player", NamedTextColor.RED));
+                    return true;
+                }
+                if (drivenDemo == null) {
+                    sender.sendMessage(Component.text("Driven demo unavailable", NamedTextColor.RED));
+                    return true;
+                }
+                drivenDemo.toggle(player);
+            }
             default -> sender.sendMessage(Component.text("Unknown subcommand: " + args[0], NamedTextColor.RED));
         }
         return true;
@@ -2362,7 +2378,7 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
             List<String> subs = new ArrayList<>();
             subs.add("catalog"); // public
             if (sender.hasPermission("corelib.admin")) {
-                subs.addAll(List.of("give", "give_demo", "give_demo_rotation", "list", "colliders", "reloadbanners", "cleanorphans", "refreshdisplays", "gluetest", "showcase"));
+                subs.addAll(List.of("give", "give_demo", "give_demo_rotation", "list", "colliders", "reloadbanners", "cleanorphans", "refreshdisplays", "gluetest", "showcase", "driventest"));
             }
             return subs.stream().filter(s -> s.startsWith(args[0].toLowerCase())).toList();
         }
