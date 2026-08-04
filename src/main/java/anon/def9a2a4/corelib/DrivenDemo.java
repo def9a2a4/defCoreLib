@@ -74,19 +74,29 @@ final class DrivenDemo {
             return false;
         }
         Location pivot = new Location(w, feet.getBlockX() + 0.5, baseY + 0.5, feet.getBlockZ() + 0.5);
+        // Spawn our OWN vehicle (exactly as BlockShips will): an invisible ArmorStand the consumer keeps
+        // and positions itself each tick — exercising the new external-vehicle DRIVEN assembly path.
+        org.bukkit.entity.ArmorStand vehicle = w.spawn(pivot, org.bukkit.entity.ArmorStand.class, as -> {
+            as.setInvisible(true);
+            as.setGravity(false);
+            as.setSilent(true);
+            as.setMarker(false);       // full-size, so ARMORSTAND_RIDE_OFFSET applies (matches BlockShips)
+            as.setPersistent(false);   // throwaway demo entity
+        });
         Mechanism mech;
         try {
-            mech = mechRegistry.assembleMechanism("demo:driven", blocks, pivot, null);
+            mech = mechRegistry.assembleMechanism("demo:driven", blocks, vehicle,
+                MechanismRegistry.ARMORSTAND_RIDE_OFFSET, true, null); // driven = true
         } catch (RuntimeException e) {
+            vehicle.remove();
             player.sendMessage("§cdriventest: assembly failed: " + e.getMessage());
             return false;
         }
         BasicMechanism bm = (BasicMechanism) mech;
-        bm.setDriven(true);
 
         Session s = new Session();
         s.mech = mech;
-        s.vehicle = bm.vehicle;
+        s.vehicle = vehicle;
         s.center = pivot.clone();
         s.tick = 0;
         sessions.put(player.getUniqueId(), s);
@@ -133,6 +143,8 @@ final class DrivenDemo {
         } catch (Exception ignored) {
             // best-effort; restore whatever we can
         }
+        // We own the vehicle (ownsVehicle=false), so disassemble() left it — remove it ourselves.
+        if (s.vehicle != null && s.vehicle.isValid()) s.vehicle.remove();
     }
 
     void shutdown() {

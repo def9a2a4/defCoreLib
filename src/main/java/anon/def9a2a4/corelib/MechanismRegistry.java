@@ -193,7 +193,7 @@ public class MechanismRegistry {
             // rotate()/updateAnimatedDisplays have no passenger offset to compensate. If a marker's true
             // passenger offset turns out non-zero on this platform, set it to that measured residual.
             return assembleCore(mechId, type, blocks, ghosts, pivot, rotationAxis, vehicle,
-                0f, true, serializer);
+                0f, true, false, serializer);
         } catch (RuntimeException e) {
             vehicle.remove();
             throw e;
@@ -203,9 +203,25 @@ public class MechanismRegistry {
     /**
      * Assemble a mechanism from world blocks, using an existing entity as the vehicle.
      * The caller retains ownership of the vehicle entity (it won't be removed on disassemble).
+     * Classic vehicle-driven mode (the vehicle follows its own physics, e.g. a minecart on rails).
      */
     public Mechanism assembleMechanism(String type, List<Block> blocks, Entity existingVehicle,
                                        float rideOffset, @Nullable MechanismSerializer serializer) {
+        return assembleMechanism(type, blocks, existingVehicle, rideOffset, false, serializer);
+    }
+
+    /**
+     * Assemble a mechanism on an existing caller-owned vehicle, optionally in DRIVEN mode.
+     *
+     * <p>When {@code driven} is true the consumer positions the vehicle itself each tick (via
+     * {@link Mechanism#repositionDriven}); the mechanism uses the SYNCHRONOUS (owned-style)
+     * parent→vehicle passenger mount — safe for an ArmorStand — and the per-tick vehicle auto-follow
+     * ({@code updateFromVehicle}) is skipped. When false this is the classic vehicle-driven path
+     * (minecart on rails: deferred mount + auto-follow). The caller keeps the vehicle either way.
+     */
+    public Mechanism assembleMechanism(String type, List<Block> blocks, Entity existingVehicle,
+                                       float rideOffset, boolean driven,
+                                       @Nullable MechanismSerializer serializer) {
         UUID mechId = UUID.randomUUID();
         Location pivot = existingVehicle.getLocation();
         String vehicleTag = "corelib:mech:" + mechId + ":vehicle";
@@ -214,7 +230,7 @@ public class MechanismRegistry {
         // before the mechanism is registered, so a foreign entity isn't left carrying a stale vehicle tag.
         try {
             return assembleCore(mechId, type, blocks, List.of(), pivot, AXIS_Y, existingVehicle, rideOffset,
-                false, serializer);
+                false, driven, serializer);
         } catch (RuntimeException e) {
             existingVehicle.removeScoreboardTag(vehicleTag);
             throw e;
@@ -238,7 +254,8 @@ public class MechanismRegistry {
 
     private Mechanism assembleCore(UUID mechId, String type, List<Block> blocks, List<GhostBlock> ghosts,
                                     Location pivot, Vector3f rotationAxis, Entity vehicle, float rideOffset,
-                                    boolean ownsVehicle, @Nullable MechanismSerializer serializer) {
+                                    boolean ownsVehicle, boolean driven,
+                                    @Nullable MechanismSerializer serializer) {
         List<MechanismBlockData> blockData = new ArrayList<>();
 
         // 1. Snapshot each block
@@ -588,14 +605,16 @@ public class MechanismRegistry {
             rideOffset, ownsVehicle, displaysPerBlock, bannerDisplaysPerBlock, colliders, blockData,
             registry, serializer);
         mech.mechanismRegistry = this;
+        mech.setDriven(driven); // driven mechanisms are positioned each tick by their consumer (repositionDriven)
 
         for (ColliderPair cp : colliders) {
             colliderIndex.put(cp.shulker().getUniqueId(), new ColliderRef(mech, cp.blockIndex()));
         }
 
         // 6. Mount displays on parent + set initial transforms, then air out the source blocks.
-        if (ownsVehicle) {
-            // Owned ArmorStand vehicle: mount + position the displays SYNCHRONOUSLY (this tick), THEN remove
+        if (ownsVehicle || driven) {
+            // Owned ArmorStand vehicle, OR a driven consumer-owned ArmorStand (same synchronous path — an
+            // ArmorStand accepts addPassenger this tick): mount + position the displays SYNCHRONOUSLY, THEN remove
             // the real blocks — so the mech displays already cover the cells before the originals vanish, with
             // no empty frame (the per-move flicker). No delay tick ⇒ no vehicle-death window. Owned ArmorStands
             // accept addPassenger synchronously (the 1-tick defer only ever existed for minecarts, below).

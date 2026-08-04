@@ -123,6 +123,19 @@ final class BasicMechanism implements Mechanism {
     @Override public MechanismBlockData getBlock(int index) { return blocks.get(index); }
     @Override public boolean hasCollision(int blockIndex) { return blocks.get(blockIndex).collision.enabled(); }
 
+    @Override public int colliderCount() { return colliders.size(); }
+
+    @Override
+    public @Nullable BoundingBox getColliderBoxByBlock(int blockIndex) {
+        for (ColliderPair cp : colliders) {
+            if (cp.blockIndex() == blockIndex) {
+                Shulker s = cp.shulker();
+                return s.isValid() ? s.getBoundingBox() : null;
+            }
+        }
+        return null;
+    }
+
     @Override
     public Display primaryDisplay(int blockIndex) {
         return displaysPerBlock.get(blockIndex).get(0);

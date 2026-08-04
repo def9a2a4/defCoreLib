@@ -3,6 +3,7 @@ package anon.def9a2a4.corelib;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Display;
+import org.bukkit.util.BoundingBox;
 import org.bukkit.inventory.Inventory;
 import org.joml.Matrix4f;
 import org.jspecify.annotations.Nullable;
@@ -79,6 +80,17 @@ public interface Mechanism {
 
     /** Whether a specific block index has collision enabled. */
     boolean hasCollision(int blockIndex);
+
+    /** Number of collision colliders (carrier+shulker pairs) this mechanism currently has. */
+    int colliderCount();
+
+    /**
+     * World-space bounding box of the live collider shulker for the given block index, or {@code null}
+     * if that block has no collider (or its shulker is gone). Keyed on BLOCK INDEX (stable across
+     * recovery — unlike collider list position), pairing with {@link #hasCollision(int)} so a consumer
+     * can iterate {@link #blockCount()} and read live AABBs (e.g. for its own collision math).
+     */
+    @Nullable BoundingBox getColliderBoxByBlock(int blockIndex);
 
     /** Get the primary display entity for a block index. */
     Display primaryDisplay(int blockIndex);
