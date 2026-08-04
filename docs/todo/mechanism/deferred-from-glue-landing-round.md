@@ -94,13 +94,22 @@ the world, just un-glued. Proper HoistAnchor-aware (seed-relative) reorientation
 
 ---
 
-## Pending code fix (approved, deferred by "no code for now")
+## Ghost-mechanism leak on a teardown throw — FIXED (in-method `finally`)
 
-- **Ghost-mechanism leak on a teardown throw.** When `disassemble()` throws mid-teardown, the catch
-  fallbacks (`MechanismMinecartManager.safeDisassemble`, `MechanismRegistry.onWorldUnload` + `shutdown`)
-  remove entities but skip `onMechanismRemoved`, leaving a dead entry in `activeMechanisms` (re-ticked
-  forever, no-op) + stale `colliderIndex` shulker refs. Fix = add `onMechanismRemoved(mech)` to each
-  catch (idempotent). ~3 lines. Slow leak, not data loss.
+When `disassemble()` throws mid-teardown, the mechanism was left registered forever in
+`activeMechanisms` (re-ticked every tick) with stale `colliderIndex` refs, orphaned display/collider/
+vehicle entities, and — because `disassembled=true` latches first — permanently un-retryable. For a
+rotation mechanism the ghost was not benign: `rotationDriver.states` is cleared only by the skipped
+`onMechanismRemoved`, so a ghost drill kept doing live world block edits.
+
+Fixed at the source rather than per-caller: `BasicMechanism.disassemble()` now wraps its body in
+`try { … completed = true; } finally { if (!completed) { onMechanismRemoved(this); removeAllEntities(); } }`.
+This covers all ~16 callers (most were bare — `MechanismMinecartManager.disassemble(state)`, the
+piston/hoist `advance()` loops, `RotationRotator`, `DoorDemo`, the deferred-mount lambda) with one
+idempotent guard; the success path is unchanged (owned-vehicle 1-tick deferral preserved).
+`destroy()` was reordered to deregister-before-remove for the symmetric case. The earlier
+3-catch-site plan was superseded (those catches are left as-is; their `removeAllEntities` is now
+harmlessly redundant).
 
 ## Verified NON-ISSUE / INFO (no action)
 
