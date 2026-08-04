@@ -113,8 +113,9 @@ pattern (several filter pipes on one chest, each feeding a different destination
   (`getBlockPower() > 0`); put redstone next to the pipe. It deliberately does NOT read the mount cell, so a
   powered/locked **source container** doesn't switch the filter off (a strongly-powered solid-block source
   is the only residual case). No `RedstoneConfig`, no cached power state. `PipeBlockRegistrar.onNeighborChange`
-  calls `PipeManager.wakeOnFilterPowerDrop(block)` for filter variants, which edge-detects (via the
-  `filterPowered` map) and wakes sleeping extractors only on the powered→unpowered transition.
+  calls `PipeManager.onFilterPowerEdge(block)` for filter variants, which edge-detects (via the
+  `filterPowered` map), wakes sleeping extractors on the powered→unpowered transition, and returns true on
+  either transition so the registrar respawns the block's displays to flip the ring on/off texture.
 - **Tiers** (config.yml `variants:` → `filter:` section):
 
   | Variant             | slots | allow-blacklist-toggle | allow-exact-toggle | items/transfer |
@@ -123,8 +124,18 @@ pattern (several filter pipes on one chest, each feeding a different destination
   | `iron_filter_pipe`  | 9     | true                   | false              | 8              |
   | `gold_filter_pipe`  | 18    | true                   | true               | 16             |
 
-- **Not yet:** filtering aboard moving mechanisms (registered as plain conduits); a planned extra
-  rotation-dependent display entity to visually distinguish filter pipes.
+- **Visuals:** the pipe body reuses the plain tier head/display, but filter pipes are distinguished by (a) a
+  banded **item-in-hand** skin per tier (`@{tier}_filter_item`, from `assets/pipes/filterpipe-{tier}-fwd.png`)
+  and (b) a **ring display entity** (display index 1, `tag: ring`) wrapped around the placed pipe. The ring
+  doubles as the redstone-off indicator: `@filter_ring_on` (passing) vs an off ring when powered.
+  `PipeManager.calculateFilterRingTransformation` gives it a fixed flat-disc scale (y=0.5 thin, x/z=1.25)
+  centered on the block, tilted so the thin axis lies along the pipe (identity for UP/DOWN, 90° about X for
+  N/S, about Z for E/W). The on/off swap uses CoreLib's `displayItemResolver(block, tagSuffix)` hook: the
+  registrar returns the off-ring `ItemStack` when `isPipePowered(block)` (else null → YAML on-ring). Because
+  the resolver reads live power at spawn, the ring is correct across chunk reloads (applyConfig re-invokes
+  it). On a redstone edge, `PipeBlockRegistrar.onNeighborChange` calls `PipeManager.onFilterPowerEdge` and,
+  on either transition, `registry.applyConfig(...)` to respawn displays and re-resolve the ring texture.
+- **Not yet:** filtering aboard moving mechanisms (registered as plain conduits).
 
 ## Transfer System
 

@@ -72,6 +72,16 @@ textures:
   oxidized_corner_dir_h:     "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTMwYjY0NDViYjQ1M2ExM2I4ZTBjMjViNjJlYjdmYTIwYWZjYjU4MjI1MDJhYWVlM2RmYWQ2YTcxNjBiYzMxNyJ9fX0="
   oxidized_corner_dir_down:  "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTA4OTdjOWY0ZTNhYmFhZDliMzY0MmYwMGMzYWI5MTJkMmQ5N2Y4YjI0MjY1ZjJmZDFlNGIyOTcwOTQwZWEyZiJ9fX0="
 
+  # ── Filter pipes: banded item skins + shared power-aware ring display entity ──
+  # Item-in-hand only differs from the plain tier (the placed body reuses the plain textures; the ring
+  # display entity is the in-world differentiator). ring_on = passing (unpowered); ring_off = redstone OFF.
+  # The ring's on/off item is chosen live per block by PipeBlockRegistrar's displayItemResolver.
+  copper_filter_item: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjhhMGI2YjZmMTc4MGFiMDNmY2EzYWI5NTk4ODMyNzMwYTBhN2U3NTExNWQ2NmNmZTBlZDc2Y2ViYjZkN2IzNSJ9fX0="
+  iron_filter_item:   "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTY1ZjU0YzEzMzg1YjkwM2Y2ZTJmYjRiMmQxZWI2ZmZmYmVmNjg4MzEzMzBjZWEwODZjMzM1MGU4YjRlOTYyMiJ9fX0="
+  gold_filter_item:   "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvY2Q0ZjBiNjEyNjNlZDVjZTViYTUyZjc2MGM4ZjJkZTVlMGFmYzMzNDFiNTU1MzdjMmVhMDUzZTIzOTBkMzY4MCJ9fX0="
+  filter_ring_on:     "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjY4ZGQ5YTdiYjliNmYxNjI4OWE1NzBiZjBmNDc2N2ZjNTMwZjJlMDNjYmEyZmEzMGI0MGNiOWRkZTVmNDE4YSJ9fX0="
+  filter_ring_off:    "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZmM5YzUyNTFhN2NmMmJiNjU3YTAyNDcyY2QyNGYyYTRhMjY4ZGNjNGZhNjljYjJiNDdkYTQyNDM1NWU4ZmY5NyJ9fX0="
+
 blocks:
 
   # ═══════════════════════════════════════════════════════════════════════
@@ -261,7 +271,7 @@ blocks:
       - "&7Pulls only the items you allow out of the container behind it."
       - "&7Right-click to set the filter."
     texture: "@copper_head_h"
-    item_texture: "@copper_item"
+    item_texture: "@copper_filter_item"
     drops: self
     default_state: north
     placement_state_map:
@@ -274,6 +284,9 @@ blocks:
           - texture: "@copper_display_h"
             tag: main
             transform: { translation: [0, 0, 0], scale: [1, 1, 1] }
+          - texture: "@filter_ring_on"
+            tag: ring
+            transform: { translation: [0, 0, 0], scale: [1, 1, 1] }
       south: { copy_from: north }
       east:  { copy_from: north }
       west:  { copy_from: north }
@@ -283,11 +296,17 @@ blocks:
           - texture: "@copper_display_up"
             tag: main
             transform: { translation: [0, 0, 0], scale: [1, 1, 1] }
+          - texture: "@filter_ring_on"
+            tag: ring
+            transform: { translation: [0, 0, 0], scale: [1, 1, 1] }
       down:
         texture: "@copper_head_down"
         display_entities:
           - texture: "@copper_display_down"
             tag: main
+            transform: { translation: [0, 0, 0], scale: [1, 1, 1] }
+          - texture: "@filter_ring_on"
+            tag: ring
             transform: { translation: [0, 0, 0], scale: [1, 1, 1] }
     recipes:
       craft:
@@ -306,7 +325,7 @@ blocks:
       - "&7Pulls only the items you allow out of the container behind it."
       - "&7Right-click to set the filter and whitelist/blacklist mode."
     texture: "@iron_head_h"
-    item_texture: "@iron_display_h"
+    item_texture: "@iron_filter_item"
     drops: self
     default_state: north
     placement_state_map:
@@ -319,6 +338,9 @@ blocks:
           - texture: "@iron_display_h"
             tag: main
             transform: { translation: [0, 0, 0], scale: [1, 1, 1] }
+          - texture: "@filter_ring_on"
+            tag: ring
+            transform: { translation: [0, 0, 0], scale: [1, 1, 1] }
       south: { copy_from: north }
       east:  { copy_from: north }
       west:  { copy_from: north }
@@ -328,11 +350,17 @@ blocks:
           - texture: "@iron_display_up"
             tag: main
             transform: { translation: [0, 0, 0], scale: [1, 1, 1] }
+          - texture: "@filter_ring_on"
+            tag: ring
+            transform: { translation: [0, 0, 0], scale: [1, 1, 1] }
       down:
         texture: "@iron_head_down"
         display_entities:
           - texture: "@iron_display_down"
             tag: main
+            transform: { translation: [0, 0, 0], scale: [1, 1, 1] }
+          - texture: "@filter_ring_on"
+            tag: ring
             transform: { translation: [0, 0, 0], scale: [1, 1, 1] }
     recipes:
       craft:
@@ -351,7 +379,7 @@ blocks:
       - "&7Pulls only the items you allow out of the container behind it."
       - "&7Right-click to set the filter, mode, and exact/material matching."
     texture: "@gold_head_h"
-    item_texture: "@gold_item"
+    item_texture: "@gold_filter_item"
     drops: self
     default_state: north
     placement_state_map:
@@ -364,6 +392,9 @@ blocks:
           - texture: "@gold_display_h"
             tag: main
             transform: { translation: [0, 0, 0], scale: [1, 1, 1] }
+          - texture: "@filter_ring_on"
+            tag: ring
+            transform: { translation: [0, 0, 0], scale: [1, 1, 1] }
       south: { copy_from: north }
       east:  { copy_from: north }
       west:  { copy_from: north }
@@ -373,11 +404,17 @@ blocks:
           - texture: "@gold_display_up"
             tag: main
             transform: { translation: [0, 0, 0], scale: [1, 1, 1] }
+          - texture: "@filter_ring_on"
+            tag: ring
+            transform: { translation: [0, 0, 0], scale: [1, 1, 1] }
       down:
         texture: "@gold_head_down"
         display_entities:
           - texture: "@gold_display_down"
             tag: main
+            transform: { translation: [0, 0, 0], scale: [1, 1, 1] }
+          - texture: "@filter_ring_on"
+            tag: ring
             transform: { translation: [0, 0, 0], scale: [1, 1, 1] }
     recipes:
       craft:

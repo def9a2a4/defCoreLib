@@ -2,16 +2,25 @@ package anon.def9a2a4.pipes;
 
 import anon.def9a2a4.corelib.CustomBlockRegistry;
 import anon.def9a2a4.corelib.CustomHeadBlock;
+import anon.def9a2a4.corelib.HeadUtil;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.Rotatable;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.inventory.ItemStack;
 import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 
 public class PipeBlockRegistrar {
+
+    // The filter pipe's ring display entity shows "on" (passing) by default (@filter_ring_on in pipes.yml);
+    // when the pipe is redstone-powered (switched OFF) the displayItemResolver swaps in this "off" ring.
+    // Built once from the same base64 the pipes.yml @filter_ring_off alias uses (cf. FilterGui's skulls).
+    private static final String FILTER_RING_OFF_BASE64 =
+            "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZmM5YzUyNTFhN2NmMmJiNjU3YTAyNDcyY2QyNGYyYTRhMjY4ZGNjNGZhNjljYjJiNDdkYTQyNDM1NWU4ZmY5NyJ9fX0=";
+    private static final ItemStack FILTER_RING_OFF = HeadUtil.createHead(FILTER_RING_OFF_BASE64, 1);
 
     public static void register(CustomBlockRegistry registry, PipesPlugin plugin) {
         for (PipeVariant variant : plugin.getVariantRegistry().getAllVariants()) {
@@ -62,6 +71,15 @@ public class PipeBlockRegistrar {
             builder.onInteract((block, event) -> {
                 plugin.getFilterGui().open(event.getPlayer(), block, variant);
                 return true;
+            });
+            // The ring display entity (tag "ring") shows on/off by live redstone power: return the "off"
+            // ring when the pipe is powered (switched off), else null → the YAML @filter_ring_on stands.
+            // The "main" pipe body entity is left untouched. Re-invoked whenever applyConfig respawns the
+            // block's displays (placement, chunk load, and the power-edge redraw in onNeighborChange).
+            builder.displayItemResolver((block, tag) -> {
+                if (!"ring".equals(tag)) return null;
+                PipeManager manager = plugin.getPipeManager(block.getWorld());
+                return manager != null && manager.isPipePowered(block) ? FILTER_RING_OFF : null;
             });
         }
 
@@ -118,10 +136,15 @@ public class PipeBlockRegistrar {
             PipeManager manager = plugin.getPipeManager(block.getWorld());
             if (manager == null) return;
             manager.invalidatePathCache();
-            // A filter pipe's redstone off-switch can toggle from any face; wake sleeping upstream
-            // extractors only on the powered→unpowered edge (resume), not on power-on or unrelated churn.
-            if (variant.isFilter()) {
-                manager.wakeOnFilterPowerDrop(block);
+            // A filter pipe's redstone off-switch can toggle from any face. Edge-detect it: on the
+            // powered→unpowered edge this wakes sleeping upstream extractors (resume); on EITHER edge it
+            // returns true, so we respawn the block's displays via applyConfig — re-invoking the ring's
+            // displayItemResolver to flip its on/off texture. Gated to real transitions to avoid churn.
+            if (variant.isFilter() && manager.onFilterPowerEdge(block)) {
+                CustomHeadBlock type = registry.getType(fullId);
+                if (type != null) {
+                    registry.applyConfig(block, type, registry.getState(block), 0);
+                }
             }
             PipeManager.PipeData data = manager.getPipeData(block.getLocation());
             if (data != null) {

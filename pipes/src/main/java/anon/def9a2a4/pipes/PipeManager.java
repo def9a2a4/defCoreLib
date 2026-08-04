@@ -111,19 +111,22 @@ public class PipeManager {
     }
 
     /**
-     * On a filter pipe's neighbor change, wake sleeping extractors only when the pipe just transitioned
-     * powered→UNpowered (its off-switch released), so a redstone-blocked chain resumes promptly. Power-on
-     * and unrelated neighbor churn are ignored — an actively-transferring extractor already stops on its
-     * own by reading power live, and a missed wake self-heals within one sleep window. Edge detection
-     * mirrors RotationRotator; called from onNeighborChange for filter variants.
+     * On a filter pipe's neighbor change, edge-detect its redstone power against the last-seen value.
+     * On the powered→UNpowered transition (its off-switch released) wake sleeping extractors so a
+     * redstone-blocked chain resumes promptly — power-on and unrelated churn don't wake, since an
+     * actively-transferring extractor already stops by reading power live and a missed wake self-heals
+     * within one sleep window. Returns {@code true} on <em>either</em> transition so the caller can redraw
+     * the ring display entity (which shows on/off by live power). Edge detection mirrors RotationRotator.
      */
-    public void wakeOnFilterPowerDrop(Block block) {
+    public boolean onFilterPowerEdge(Block block) {
         Location key = normalizeLocation(block.getLocation());
         boolean now = isPipePowered(block);
         Boolean was = filterPowered.put(key, now);
+        boolean changed = was == null ? now : was != now;
         if (Boolean.TRUE.equals(was) && !now) {
             wakeAll();
         }
+        return changed;
     }
 
     public PipeData getPipeData(Location location) {
@@ -529,10 +532,33 @@ public class PipeManager {
             return null;
         }
 
+        if (displayIndex == 1 && variant.isFilter()) {
+            return calculateFilterRingTransformation(facing);
+        }
         if (displayIndex == 1 && variant.behaviorType() == BehaviorType.CORNER) {
             return calculateCornerDirectionalTransformation(location, facing);
         }
         return calculateTransformation(location, facing, variant);
+    }
+
+    /**
+     * Transform for a filter pipe's ring display entity (display index 1). A flat disc — fixed scale
+     * y=0.5 (thin), x/z=1.25 (ring) — centered on the block, tilted so the thin axis lies along the pipe:
+     * identity for vertical (UP/DOWN) pipes, 90° about X for NORTH/SOUTH, 90° about Z for EAST/WEST. The
+     * ring is symmetric, so ±90° and north-vs-south are interchangeable.
+     */
+    private Transformation calculateFilterRingTransformation(BlockFace facing) {
+        AxisAngle4f rotation = switch (facing) {
+            case NORTH, SOUTH -> new AxisAngle4f((float) Math.PI / 2, 1, 0, 0);
+            case EAST, WEST -> new AxisAngle4f((float) Math.PI / 2, 0, 0, 1);
+            default -> new AxisAngle4f(0, 0, 1, 0); // UP/DOWN: horizontal disc, no tilt
+        };
+        return new Transformation(
+                new Vector3f(0, 0, 0),
+                rotation,
+                new Vector3f(1.25f, 0.5f, 1.25f),
+                new AxisAngle4f(0, 0, 0, 1)
+        );
     }
 
     /**
@@ -800,7 +826,7 @@ public class PipeManager {
      * its source container, so reading the mount would let a powered/locked source (e.g. a redstone-locked
      * hopper) switch the filter off. Live query, no cached state. Same primitive RotationRotator uses.
      */
-    private boolean isPipePowered(Block block) {
+    public boolean isPipePowered(Block block) {
         return block.getBlockPower() > 0;
     }
 
