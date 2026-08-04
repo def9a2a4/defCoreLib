@@ -615,10 +615,16 @@ final class BasicMechanism implements Mechanism {
         // gap above it and yields null; only the topmost dropped cell reaches the head. Dedupe (clearOffsets
         // is idempotent) to avoid redundant PDC writes.
         if (droppedChainCells != null && upright) {
+            Set<Block> landed = new HashSet<>(placed);
             Set<CustomBlockRegistry.LocationKey> cleared = new HashSet<>();
             for (Block cell : droppedChainCells) {
                 Block hoist = ChainHoistManager.owningHoist(cell, registry);
-                if (hoist == null || !cleared.add(CustomBlockRegistry.LocationKey.of(hoist))) continue;
+                // Only invalidate a hoist that was part of THIS landing. The walk-up reads the live world, so
+                // a carried rope overlapping a PRE-EXISTING stationary hoist's column would otherwise resolve
+                // to that bystander (whose chain never changed) and wrongly wipe its glue. Stacked carried
+                // hoists both land → both in `placed`, so this keeps the stacked-hoist fix intact.
+                if (hoist == null || !landed.contains(hoist)
+                        || !cleared.add(CustomBlockRegistry.LocationKey.of(hoist))) continue;
                 HoistAnchor a = new HoistAnchor(hoist, registry, () -> true);
                 if (GlueManager.isValidOffsets(a.readOffsets())) a.clearOffsets();
             }
