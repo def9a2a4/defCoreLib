@@ -100,6 +100,31 @@ def candle_states() -> dict:
     }
 
 
+def chimney_states() -> dict:
+    """chimney -> candle-like states machine, but NO light and rising campfire smoke when lit."""
+    return {
+        "default_state": "unlit",
+        "states": {
+            "unlit": {},
+            "lit": {
+                "particles": {
+                    "type": "CAMPFIRE_COSY_SMOKE", "count": 1, "speed": 0, "interval": 5,
+                    "floor_offset": [0, 1.1, 0],   # smoke rises from the chimney top; no light block
+                },
+            },
+        },
+        "transitions": [
+            {"trigger": {"type": "interact", "item": "FLINT_AND_STEEL"},
+             "from": "unlit", "to": "lit",
+             "sound": "item.flintandsteel.use", "consume": True},
+            {"trigger": {"type": "interact"},
+             "from": "lit", "to": "unlit",
+             "sound": "block.fire.extinguish",
+             "particle": {"type": "SMOKE", "count": 5, "spread": 0.1, "floor_offset": [0, 0.6, 0]}},
+        ],
+    }
+
+
 # ── T3 categories (multi-axis: family + cross-cutting color) ───────────────────
 _CHAR_FAMILY_PREFIX = {
     "letter_": "letters", "number_": "numbers", "cyrillic_": "cyrillic", "greek_": "greek",
@@ -287,14 +312,14 @@ def convert_head(head_id: str, src: dict, file_stem: str, is_alphabet: bool) -> 
 
     # T4 properties
     props = src.get("properties") or []
-    lightable = "lightable" in props
-    glowing = "glowing" in props
     for p in props:
         if p in STATION_GUI:
             out["interact_gui"] = STATION_GUI[p]
-    if lightable:
+    if "lightable" in props:
         out.update(candle_states())          # candle states own the light cell
-    elif glowing:
+    elif "chimney" in props:
+        out.update(chimney_states())         # candle-like, no light, campfire smoke
+    elif "glowing" in props:
         out["light"] = {"level": 14, "offset": [0, 1, 0]}
 
     # T6 break sound
