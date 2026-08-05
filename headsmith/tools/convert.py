@@ -100,6 +100,67 @@ def candle_states() -> dict:
     }
 
 
+# ── T3 categories (multi-axis: family + cross-cutting color) ───────────────────
+_CHAR_FAMILY_PREFIX = {
+    "letter_": "letters", "number_": "numbers", "cyrillic_": "cyrillic", "greek_": "greek",
+    "galactic_": "galactic", "rune_": "runes", "zodiac_": "zodiac",
+}
+_ARROW_GLYPHS = {"forward", "forward_ii", "backward", "backward_ii", "refresh", "pause", "note", "arrows"}
+
+
+def char_family(glyph: str) -> str:
+    """Bucket an alphabet `character/<glyph>` token into a browsable family."""
+    for pre, fam in _CHAR_FAMILY_PREFIX.items():
+        if glyph.startswith(pre):
+            return fam
+    if glyph.startswith("arrow") or glyph in _ARROW_GLYPHS:
+        return "arrows"
+    return "symbols"
+
+
+def categories_for(src: dict, file_stem: str, is_alphabet: bool) -> list[str]:
+    """Two orthogonal axes; a head appears under EACH category it carries.
+    Axis A (family, one): file-family, sub-grouped only where a flat node would be huge.
+    Axis B (color, cross-cutting): any `color/<c>` tag also yields `headsmith/color/<c>`
+    so a black candle/pumpkin/wool all gather under `color/black`. Only color is cross-cutting
+    (wood/stone/natural would merge the 2,626 alphabet letters into block nodes)."""
+    tags = src.get("tags") or []
+    props = src.get("properties") or []
+    cats: list[str] = []
+
+    def add(c: str) -> None:
+        if c not in cats:
+            cats.append(c)
+
+    # Axis A — family
+    if is_alphabet:
+        glyph = next((t.split("/", 1)[1] for t in tags if t.startswith("character/")), "symbols")
+        add(f"{NAMESPACE}/alphabet/{file_stem}/{char_family(glyph)}")
+    elif file_stem == "misc":
+        add(f"{NAMESPACE}/candles" if "candles" in tags else f"{NAMESPACE}/decorative")
+    elif file_stem == "mini_blocks":
+        if not tags:
+            if any(p in STATION_GUI for p in props):
+                add(f"{NAMESPACE}/mini_blocks/stations")
+            elif "glowing" in props:
+                add(f"{NAMESPACE}/mini_blocks/lights")
+            else:
+                add(f"{NAMESPACE}/mini_blocks/functional")
+        else:
+            cls = next((t for t in tags if not t.startswith("color/")), None)
+            add(f"{NAMESPACE}/mini_blocks/{cls.split('/')[0] if cls else 'other'}")
+    elif file_stem == "barrels":
+        add(f"{NAMESPACE}/barrels/food" if "food" in tags else f"{NAMESPACE}/barrels")
+    else:  # candles, books, pumpkins, chalices, bottles, buckets, bundles — flat family
+        add(f"{NAMESPACE}/{file_stem}")
+
+    # Axis B — color (cross-cutting)
+    for t in tags:
+        if t.startswith("color/"):
+            add(f"{NAMESPACE}/color/{t.split('/', 1)[1]}")
+    return cats
+
+
 # ── transforms ───────────────────────────────────────────────────────────────
 def convert_ingredient(spec: dict, head_id: str) -> dict:
     """T8: {head:X} -> {block: headsmith:X}; everything else passes through."""
@@ -207,7 +268,7 @@ def convert_drops(head_id: str, drops_node) -> object:
     return rules
 
 
-def convert_head(head_id: str, src: dict, file_stem: str) -> tuple[dict, list[str]]:
+def convert_head(head_id: str, src: dict, file_stem: str, is_alphabet: bool) -> tuple[dict, list[str]]:
     """Full T1-T9 for one head. Returns (core_block, block_refs)."""
     if not ID_RE.match(head_id):
         raise ConvertError(f"invalid id '{head_id}' (must match {ID_RE.pattern})")
@@ -223,16 +284,8 @@ def convert_head(head_id: str, src: dict, file_stem: str) -> tuple[dict, list[st
     if "lore" in src:
         out["lore"] = list(src["lore"])
 
-    # T3 tags -> categories
-    tags = src.get("tags") or []
-    cats: list[str] = []
-    for t in tags:
-        c = f"{NAMESPACE}/{t}"
-        if c not in cats:
-            cats.append(c)
-    if not cats:
-        cats = [f"{NAMESPACE}/{file_stem}"]  # the 131 tagless heads get a file-based category
-    out["categories"] = cats
+    # T3 categories (multi-axis family + color; see categories_for)
+    out["categories"] = categories_for(src, file_stem, is_alphabet)
 
     # T4 properties
     props = src.get("properties") or []
@@ -338,12 +391,13 @@ def main() -> int:
 
     for f in src_files:
         stem = f.stem
+        is_alphabet = f.parent.name == "alphabet"
         data = yaml.safe_load(f.read_text()) or {}
         heads = data.get("heads") or {}
         for head_id, sr in heads.items():
             if head_id in blocks:
                 raise ConvertError(f"duplicate head id '{head_id}' (in {f})")
-            blk, refs = convert_head(head_id, sr or {}, stem)
+            blk, refs = convert_head(head_id, sr or {}, stem, is_alphabet)
             blocks[head_id] = blk
             all_refs.extend((head_id, r) for r in refs)
             per_file[stem] = per_file.get(stem, 0) + 1
