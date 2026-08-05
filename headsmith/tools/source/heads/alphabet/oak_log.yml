@@ -1,0 +1,1466 @@
+# Generated Oak Log Alphabet Blocks
+
+heads:
+  oak_log_letter_a:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzNlYTYwZWE2MGMwNWQ3MDIwNTMxNzk0MzM3Nzc2MmI4ZGM1MmRjNjIzZmI3N2ZkY2Y2YjNkYWMyNWYyZTMyIn19fQ=="
+    name: "&7Oak Log A"
+    tags:
+      - alphabet/oak_log
+      - character/letter_a
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_log_letter_a"
+          input: { head: "mini_oak_log" }
+  oak_log_letter_b:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGE3MTU5OGE5ODRiZDJmY2JiZDRjMTMxMjRmYzJiYzZiZTRhZTQ0MmI4NWQ1N2I2ZGYzOTQxNDMxOTVhMTZiMSJ9fX0="
+    name: "&7Oak Log B"
+    tags:
+      - alphabet/oak_log
+      - character/letter_b
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_log_letter_b"
+          input: { head: "mini_oak_log" }
+  oak_log_letter_c:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZmUyZTUwNWU0MmVjZDNhOWYwMjExZDVlZmE2ZTU4NmM0MmY4MmJiNjM4OWNhMDNiYWQ1NjMzZTY2NjcifX19"
+    name: "&7Oak Log C"
+    tags:
+      - alphabet/oak_log
+      - character/letter_c
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_log_letter_c"
+          input: { head: "mini_oak_log" }
+  oak_log_letter_d:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODQxMWE3ZTFiYzdiOWI5NzYyM2UwNDc4MjE5YjFhMzIzODNlZTA3ZWIwZTZhNjZmNWVmOWY4NTU1OTNkZjAifX19"
+    name: "&7Oak Log D"
+    tags:
+      - alphabet/oak_log
+      - character/letter_d
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_log_letter_d"
+          input: { head: "mini_oak_log" }
+  oak_log_letter_e:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjE0YTRjM2I0MTYzYzc1YzM4Njc3YzU4ZGZkNmFmMTVjNjM5ZDY5MTM3YTJjMWNjZDg4NmEzNjRmOGVhY2Y3In19fQ=="
+    name: "&7Oak Log E"
+    tags:
+      - alphabet/oak_log
+      - character/letter_e
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_log_letter_e"
+          input: { head: "mini_oak_log" }
+  oak_log_letter_f:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzE1ZGVlNWY4ZmQ0MDY5OTU1MTU3ZjJkODUxMzE1ZmM0M2I4MTNkNjI0OGI0OWM5ODYzMmRlM2JlNjc3Y2IifX19"
+    name: "&7Oak Log F"
+    tags:
+      - alphabet/oak_log
+      - character/letter_f
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_log_letter_f"
+          input: { head: "mini_oak_log" }
+  oak_log_letter_g:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvM2Q1NzRkNjJjMjNiNDYxMTk3OTkxNWJkM2U3ZmFkZTkxMmU5NzA4M2FjYWQ1ZjM1ZmFhMzk2N2UyY2JjOGMifX19"
+    name: "&7Oak Log G"
+    tags:
+      - alphabet/oak_log
+      - character/letter_g
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_log_letter_g"
+          input: { head: "mini_oak_log" }
+  oak_log_letter_h:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjA5ODQ5MWExZGFiMzBjZmY3NGNkOWM3NThjNzUyNDJmYTk5N2JmNGYyMTRjMDUyNWMyZWE0NDE3Njc4ZjczMyJ9fX0="
+    name: "&7Oak Log H"
+    tags:
+      - alphabet/oak_log
+      - character/letter_h
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_log_letter_h"
+          input: { head: "mini_oak_log" }
+  oak_log_letter_i:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWE2OGY3ZjczN2RkODZhNWU3Njk3ZTUyNDVhYzhlYmZkY2Y5MTI1ZGI2ZmEyODRjMTY1MjE0MmZkZjJkYjZlIn19fQ=="
+    name: "&7Oak Log I"
+    tags:
+      - alphabet/oak_log
+      - character/letter_i
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_log_letter_i"
+          input: { head: "mini_oak_log" }
+  oak_log_letter_j:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvN2RiMTUwMzZjYzYyN2Q5ODViZWQyYTE0MjI2YmFlMWEyOWZlYzJiMmU5ZWM2ODVkNzdmNWY5NWUzOTkifX19"
+    name: "&7Oak Log J"
+    tags:
+      - alphabet/oak_log
+      - character/letter_j
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_log_letter_j"
+          input: { head: "mini_oak_log" }
+  oak_log_letter_k:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODJmZjQ5ZDJjNjIwYzEzNjY4NDVjOTMwYWQzMDVkOTU2ZGQwMmQ4NTQ4ZTcyNzNlMTg0ZmMxYmI5ODQ1NjQifX19"
+    name: "&7Oak Log K"
+    tags:
+      - alphabet/oak_log
+      - character/letter_k
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_log_letter_k"
+          input: { head: "mini_oak_log" }
+  oak_log_letter_l:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDBmNDM3M2Y5YTg3NzI3YjM0NTM1YmM3MzNiOWVlZTMwNWNmMWQzY2VkMTk4NTUxNTU3ODgzYTYxNmVjYzQwIn19fQ=="
+    name: "&7Oak Log L"
+    tags:
+      - alphabet/oak_log
+      - character/letter_l
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_log_letter_l"
+          input: { head: "mini_oak_log" }
+  oak_log_letter_m:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODI5MjYzYTI5NDFhY2ExMjYyMmRlMTg3YWY5YmY4NDBkMzkzYTA4YTQ1YjNiNDVhODU1ZTg4YjNjNWJhIn19fQ=="
+    name: "&7Oak Log M"
+    tags:
+      - alphabet/oak_log
+      - character/letter_m
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_log_letter_m"
+          input: { head: "mini_oak_log" }
+  oak_log_letter_n:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZmNkMWMzMjI0YjZmMzVmZGI3MjMxYjVhNTI0YjhkNGZmYmRjNTQyZGJlOGQ3YWQ3MGQ3OGU4ZGI2OGQ2YmMifX19"
+    name: "&7Oak Log N"
+    tags:
+      - alphabet/oak_log
+      - character/letter_n
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_log_letter_n"
+          input: { head: "mini_oak_log" }
+  oak_log_letter_o:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTU5MjAxZDhmNjZmMWVjMTNjMTgyMjNmMzYzNjgzMjRjZTY4ZjIwNmEyODE0NGZkM2RiMTVhMzQzNTE2YSJ9fX0="
+    name: "&7Oak Log O"
+    tags:
+      - alphabet/oak_log
+      - character/letter_o
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_log_letter_o"
+          input: { head: "mini_oak_log" }
+  oak_log_letter_p:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjU5M2E2ZjIzZjViMTEwZWMxYzdhYjY2YzQwZmJjOWI4MmY0ZjVjOTg3MjY1YWE2N2M5NWEyZDNmNGM5NyJ9fX0="
+    name: "&7Oak Log P"
+    tags:
+      - alphabet/oak_log
+      - character/letter_p
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_log_letter_p"
+          input: { head: "mini_oak_log" }
+  oak_log_letter_q:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOWM1ODg2NmQ2ODdkZTZhODE3ODMyZjE0M2VmZDEzMTRjZjQ0Zjg3ODc3NjY1MTdlOTg2NmNjNzk5NjE1In19fQ=="
+    name: "&7Oak Log Q"
+    tags:
+      - alphabet/oak_log
+      - character/letter_q
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_log_letter_q"
+          input: { head: "mini_oak_log" }
+  oak_log_letter_r:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvM2E1NzkyYmU4NmY4NzMyZWI0ZTNjNjJlNTk0OTZiYTI1ZDA0MDI5ZjY0NWRlM2RiMTVmZjFkM2M2NWUwNjgifX19"
+    name: "&7Oak Log R"
+    tags:
+      - alphabet/oak_log
+      - character/letter_r
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_log_letter_r"
+          input: { head: "mini_oak_log" }
+  oak_log_letter_s:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjY1N2JkMTg2OGRhNjczNmNjNGM0MzUzOTg5ZTZhNDU3NDM3YmRkZDM5MmM4MmMyNDhkMTQyMDcwYThkZDgzIn19fQ=="
+    name: "&7Oak Log S"
+    tags:
+      - alphabet/oak_log
+      - character/letter_s
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_log_letter_s"
+          input: { head: "mini_oak_log" }
+  oak_log_letter_t:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzg5N2FlNTRjMWQzZGUyY2U0YTVmMGY0OTQzOTgyNTM4YThhN2M2OWYxNzRiZTU3ZDc0YTMzZWU5YmM1ZjY3In19fQ=="
+    name: "&7Oak Log T"
+    tags:
+      - alphabet/oak_log
+      - character/letter_t
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_log_letter_t"
+          input: { head: "mini_oak_log" }
+  oak_log_letter_u:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTJjM2YyNzY2NWUxNDUyNDY5OWE5MmJjYTIxZmEyMjQyMWRhMWIyNjk2YWI0OTZiNDU4MGM0NTFjN2ExIn19fQ=="
+    name: "&7Oak Log U"
+    tags:
+      - alphabet/oak_log
+      - character/letter_u
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_log_letter_u"
+          input: { head: "mini_oak_log" }
+  oak_log_letter_v:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNWE3NzY1NjE1YWMxNDEyNmQ2ZWFlOWQ0ZWRiMjc3OGQwODI4ZmMxNDA4MDRhNWNmMmJmYWQxNGRkYzlmZTUifX19"
+    name: "&7Oak Log V"
+    tags:
+      - alphabet/oak_log
+      - character/letter_v
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_log_letter_v"
+          input: { head: "mini_oak_log" }
+  oak_log_letter_w:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjc1NGEzZDNmNzgxMzEyZDJhZmU5MTI5ZmMzZWYxOTJmNjQ3NTk4YjZjYmQ5ZDJmOTgyZWU4NGI0NjExMmYwIn19fQ=="
+    name: "&7Oak Log W"
+    tags:
+      - alphabet/oak_log
+      - character/letter_w
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_log_letter_w"
+          input: { head: "mini_oak_log" }
+  oak_log_letter_x:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTdhODE3ZDlhOGI1ZTJlZTI1ZWZiNDZiNGQ3YmI0NTEwOGVjY2FlMmRiMWQwOWEzYWY1Zjg5ZmI1MWU1In19fQ=="
+    name: "&7Oak Log X"
+    tags:
+      - alphabet/oak_log
+      - character/letter_x
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_log_letter_x"
+          input: { head: "mini_oak_log" }
+  oak_log_letter_y:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTZhNzQ2ZWQwNzZiZjgwMTE2NmMwMjg2NmRkMjY1MDMzNDkxZGQ0ZGU3Yjk2ZWY3YTZlNGZmOTZmMzNiNiJ9fX0="
+    name: "&7Oak Log Y"
+    tags:
+      - alphabet/oak_log
+      - character/letter_y
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_log_letter_y"
+          input: { head: "mini_oak_log" }
+  oak_log_letter_z:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzA0YWQxNDM1MmFkZDFhNjczOTVlMDEyZjY2Nzg0NmRmMTRkNTUxNWQ4MTYzZGFmZGQ4MDZlZTU3NDhkNjY2In19fQ=="
+    name: "&7Oak Log Z"
+    tags:
+      - alphabet/oak_log
+      - character/letter_z
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_log_letter_z"
+          input: { head: "mini_oak_log" }
+  oak_log_number_0:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTk4ZmI5MWM5MjVhNmQ0Y2MyMjdjYWIyNTQ3ODJjYzNlZDQzNmRjZjM3ZTZiNjdjODhhOWMyNjg4NDg3In19fQ=="
+    name: "&7Oak Log 0"
+    tags:
+      - alphabet/oak_log
+      - character/number_0
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_log_number_0"
+          input: { head: "mini_oak_log" }
+  oak_log_number_1:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTU1ZGM3NzA0ZTZkYjA0ZGU2NjUxOTg1ZDY0YWY1MDQ4YWVmMzgzN2NhOGQ3OTg0ZjhhZjY4ZjA1OGNhZTUifX19"
+    name: "&7Oak Log 1"
+    tags:
+      - alphabet/oak_log
+      - character/number_1
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_log_number_1"
+          input: { head: "mini_oak_log" }
+  oak_log_number_2:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjg5Nzc2OWQxNjcyZjA0ZjFhMzZlZDdkMGFmZDYzNWZiNTY0NWYzOTUzNDI5ZGMzMGZiN2YzZTgxOGRjZGQ1In19fQ=="
+    name: "&7Oak Log 2"
+    tags:
+      - alphabet/oak_log
+      - character/number_2
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_log_number_2"
+          input: { head: "mini_oak_log" }
+  oak_log_number_3:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODJlNTEwYjBmOTk2OTA4OWRhMTQ0MjJiZDhiMjkxYjJkMmU0NjU0ZGU2OTE4YmI5ZmE2ZDc3MWM4YjY0NWYzMyJ9fX0="
+    name: "&7Oak Log 3"
+    tags:
+      - alphabet/oak_log
+      - character/number_3
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_log_number_3"
+          input: { head: "mini_oak_log" }
+  oak_log_number_4:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjFkZDg0MGQ5ODVkNjg3NWExYzEwZmI2MzYzN2VjMzJlNGVjYTlkYmQ2ODVkMTM0OWMyNjRkNmFjM2E4ZDI2In19fQ=="
+    name: "&7Oak Log 4"
+    tags:
+      - alphabet/oak_log
+      - character/number_4
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_log_number_4"
+          input: { head: "mini_oak_log" }
+  oak_log_number_5:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMmI3Y2M2Y2FiNTNjZDYzMGVhYjMwNzdiOTFjNTJhZmUyMTZmYmY3NWZmN2Q0N2YzYWU5YzQ5Y2NjOGZmZDMwIn19fQ=="
+    name: "&7Oak Log 5"
+    tags:
+      - alphabet/oak_log
+      - character/number_5
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_log_number_5"
+          input: { head: "mini_oak_log" }
+  oak_log_number_6:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGY4N2JhODI2M2Q2NTc1NGZkNzU1MzE5YWFjOGY5MGUwYThiZTEwMjFmZTQyMWFjMTZhZmVmOTExMTI4ZmI3In19fQ=="
+    name: "&7Oak Log 6"
+    tags:
+      - alphabet/oak_log
+      - character/number_6
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_log_number_6"
+          input: { head: "mini_oak_log" }
+  oak_log_number_7:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTdjYWExMWYyODE4NzlmZmMzNTMzMjg0MDc1ZGIwMTJkOTcwMjYzMzZhMzkzOGViNWZjNzZkNTc4ZjVkIn19fQ=="
+    name: "&7Oak Log 7"
+    tags:
+      - alphabet/oak_log
+      - character/number_7
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_log_number_7"
+          input: { head: "mini_oak_log" }
+  oak_log_number_8:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOGQxMWM1Y2EyZmQ4Y2EwZDFkOTIxZjhmMmI5YzNkMzcwOTFmZmYzYjQ4OTU0ZTAyNGUzYmNhMTJlZDE3OWI0In19fQ=="
+    name: "&7Oak Log 8"
+    tags:
+      - alphabet/oak_log
+      - character/number_8
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_log_number_8"
+          input: { head: "mini_oak_log" }
+  oak_log_number_9:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzFkOGYyZjZlZTRkNjdkODJlMWZkNGY5NzZjZWYzNjZiYWI2MmRhOTFkZTkxNzFjNDdlYTA4MWIxN2RjYzRiIn19fQ=="
+    name: "&7Oak Log 9"
+    tags:
+      - alphabet/oak_log
+      - character/number_9
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_log_number_9"
+          input: { head: "mini_oak_log" }
+  oak_log_number_10:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMThmNTNlNTM2NmQwM2JkY2Y4NzM4Zjk0OGU3YWVmOWUyZmQyNzY4MjU2Mzk1YTg2M2Y2YTA2MjI4Y2QxN2JhIn19fQ=="
+    name: "&7Oak Log 10"
+    tags:
+      - alphabet/oak_log
+      - character/number_10
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_log_number_10"
+          input: { head: "mini_oak_log" }
+  oak_log_number_11:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTM1MWZlNjAzNjQ4ZjIyZTU3NmZlMTQzNTlhNmVkZmFhYjM0YjI5ODBmZjE3MjQ3MjMxM2U4NTc2NmRiIn19fQ=="
+    name: "&7Oak Log 11"
+    tags:
+      - alphabet/oak_log
+      - character/number_11
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_log_number_11"
+          input: { head: "mini_oak_log" }
+  oak_log_number_12:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzk2ZGE5NTFlNDIyOTgyMDgwZjQxYzhiOGFjMGQxYTE4NzQ2NDYyN2Q5NjY2YzFlZGVkMTM0OWE0NDgxMyJ9fX0="
+    name: "&7Oak Log 12"
+    tags:
+      - alphabet/oak_log
+      - character/number_12
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_log_number_12"
+          input: { head: "mini_oak_log" }
+  oak_log_number_13:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZWU2MjE1MzU0YWJmYmM1MjU3YWQ2Y2FkN2JhY2MyYmEzOTYwMTZhZjIzNjc1NTE3YzJjYjJlYzc0OGNjMjc3In19fQ=="
+    name: "&7Oak Log 13"
+    tags:
+      - alphabet/oak_log
+      - character/number_13
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_log_number_13"
+          input: { head: "mini_oak_log" }
+  oak_log_number_14:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZmI4NTcxM2Y4ZGFmZDQ4NmJiN2I5ZTZjMDJjOGJmYjliMWVjOTUxMmM2NDI1MjNmOGQzZjBhZTcyYTMxY2RjIn19fQ=="
+    name: "&7Oak Log 14"
+    tags:
+      - alphabet/oak_log
+      - character/number_14
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_log_number_14"
+          input: { head: "mini_oak_log" }
+  oak_log_number_15:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNWM1MTliMjMyYjhiMTBkMmQzNjk4NzlkNGRmY2JiYmIyZjIxNjY2ZWRmYzVkNDE5MzE4ZTNjZGMxOTRkY2QifX19"
+    name: "&7Oak Log 15"
+    tags:
+      - alphabet/oak_log
+      - character/number_15
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_log_number_15"
+          input: { head: "mini_oak_log" }
+  oak_log_number_16:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYWI0M2MzMmI1NjAzZDgwYmU2NDMzNWM5NGEzODI4YjJkOTg1YTI3ZDVhOWM2NzBkZGY1Mjg5ZDViZjc4NTQifX19"
+    name: "&7Oak Log 16"
+    tags:
+      - alphabet/oak_log
+      - character/number_16
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_log_number_16"
+          input: { head: "mini_oak_log" }
+  oak_log_number_17:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOGJjYmY4YjE1ZTZmMTk1OWNkMmFlNDU1NDJjMjMxOTY4MTY1NmE3NTE4ZTQzZGVhYTc4YTQyNjkzMiJ9fX0="
+    name: "&7Oak Log 17"
+    tags:
+      - alphabet/oak_log
+      - character/number_17
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_log_number_17"
+          input: { head: "mini_oak_log" }
+  oak_log_number_18:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvY2JiOGI2MjVmZGNhNTg3MGY2OGExNDIxODFhZWIwNGUxZWI3ZDk3ZmNmMWY0MWFjNTJlNTcyMWVjYmMxNDEifX19"
+    name: "&7Oak Log 18"
+    tags:
+      - alphabet/oak_log
+      - character/number_18
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_log_number_18"
+          input: { head: "mini_oak_log" }
+  oak_log_number_19:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzNkNWE1YjkxYmY3MWMyYWU1MTFmMDQ0NjU3OTBlY2RlMjVhNTJhODRhOGE3YzRhMWQ0YzM4OTE0Yjg5NjkifX19"
+    name: "&7Oak Log 19"
+    tags:
+      - alphabet/oak_log
+      - character/number_19
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_log_number_19"
+          input: { head: "mini_oak_log" }
+  oak_log_number_20:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTZmZTc5YmM1NWFhZGMyN2MxYzY0MjNiY2U1N2M3ZTQ1ZDQyYmUxODllYjZlZGUwZmNlMjgxZDZkY2Y0NzFkIn19fQ=="
+    name: "&7Oak Log 20"
+    tags:
+      - alphabet/oak_log
+      - character/number_20
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_log_number_20"
+          input: { head: "mini_oak_log" }
+  oak_log_number_21:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTY2YzE3Yjg1NjQ0OGI1MjJlNmI2MmM4Mjc0M2FjZmViZDRhMmQ3ZDA5ZWQyMWVjODdlYzk2OTExMjc4In19fQ=="
+    name: "&7Oak Log 21"
+    tags:
+      - alphabet/oak_log
+      - character/number_21
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_log_number_21"
+          input: { head: "mini_oak_log" }
+  oak_log_number_22:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzJjNmUxOWNiNDM5ZGMyZjM0YTE1ODZhZWZhOWNjZWQwNjczM2Q2OGFjNzFkNjFkOTBkNjUwNGM1YTI2MjUifX19"
+    name: "&7Oak Log 22"
+    tags:
+      - alphabet/oak_log
+      - character/number_22
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_log_number_22"
+          input: { head: "mini_oak_log" }
+  oak_log_number_23:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTU0MzE0MTQ0NGVjYTgxN2NkODVjOTk0OWJkZGNhNDI1NGI0ODI1ZjljNTU5NDNlZjQyMTRkYjk2MmQ5In19fQ=="
+    name: "&7Oak Log 23"
+    tags:
+      - alphabet/oak_log
+      - character/number_23
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_log_number_23"
+          input: { head: "mini_oak_log" }
+  oak_log_number_24:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjNiNGUxYTQ1YTM5ZDNlNjhmYTcxZWU1MmU3NDJjODIyM2M2NzFjMzc5YmQwYTI4OTdjY2JiODQ4OWUyNiJ9fX0="
+    name: "&7Oak Log 24"
+    tags:
+      - alphabet/oak_log
+      - character/number_24
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_log_number_24"
+          input: { head: "mini_oak_log" }
+  oak_log_number_25:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzhjZjViYjI1M2VhYWI2YjdkMjJkYmY5Mjg3ZGY4OWIzMzQ5N2VhNGMxNGU4NzgzZGQxNDk5OWViYjNlNDhkNiJ9fX0="
+    name: "&7Oak Log 25"
+    tags:
+      - alphabet/oak_log
+      - character/number_25
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_log_number_25"
+          input: { head: "mini_oak_log" }
+  oak_log_exclamation:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNmQ1Y2MzNTc3NWE5Yzk3ZDEzNDk0NWNkOGM2MTg0YjQ4N2ViMTJlMGVjN2ZiYmYwNDIxOTM1YmZmMzZlYzQzOCJ9fX0="
+    name: "&7Oak Log !"
+    tags:
+      - alphabet/oak_log
+      - character/exclamation
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_log_exclamation"
+          input: { head: "mini_oak_log" }
+  oak_log_reverse_exclamation:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvM2MwZGVjYWQ4MmVlMDkzZDFhNjhmOTM2NTA1MjY2NGYxYzY3Mzk5OWYyNzI1N2VjNWI3MWU2MTE1MTU2NDUzNSJ9fX0="
+    name: "&7Oak Log ¡"
+    tags:
+      - alphabet/oak_log
+      - character/reverse_exclamation
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_log_reverse_exclamation"
+          input: { head: "mini_oak_log" }
+  oak_log_question:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGU0MzU2NTI4MzU1OTJiNDZhMjQxNDhiNGNhNzQyYTRiZGY4ZjY3OGQ3ZDcwYTM4NzkyNzM4Yjg1Y2QzMyJ9fX0="
+    name: "&7Oak Log ?"
+    tags:
+      - alphabet/oak_log
+      - character/question
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_log_question"
+          input: { head: "mini_oak_log" }
+  oak_log_reverse_question:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzNiZTg0YTE2Mzg5YWZlOTE3YmI2YzI1YWE1M2EyZDc4N2RmNWFhYmVkMzZlZjc2NmUyNTMzOWNjMGFjMGVmYSJ9fX0="
+    name: "&7Oak Log ¿"
+    tags:
+      - alphabet/oak_log
+      - character/reverse_question
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_log_reverse_question"
+          input: { head: "mini_oak_log" }
+  oak_log_period:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDdhN2Y0MjY1MTRlOWU0YzZhOTFkNTY3OTY3ZjBlMGY1ZmFkOWQ3MmQ4NDNkZmU5MTI1MTUyZjNjYTJkY2MifX19"
+    name: "&7Oak Log ."
+    tags:
+      - alphabet/oak_log
+      - character/period
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_log_period"
+          input: { head: "mini_oak_log" }
+  oak_log_comma:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMmU1YmMzN2E5OGMxNGZlNzYxMjIyY2VhMzgyNzExMmY2ZmY3Mzc4MGI0YWUyNzYyN2Y5M2VjZThiNTg5OWQ2YSJ9fX0="
+    name: "&7Oak Log ,"
+    tags:
+      - alphabet/oak_log
+      - character/comma
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_log_comma"
+          input: { head: "mini_oak_log" }
+  oak_log_colon:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNmU3NWQ4NDE5OWVlNDUzNjY4MjYzYTE5NWJhZThkNWRhMzI1NDQ2ZWE2YjVkODk3MjdhMDY4MTc3OGY3In19fQ=="
+    name: "&7Oak Log :"
+    tags:
+      - alphabet/oak_log
+      - character/colon
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_log_colon"
+          input: { head: "mini_oak_log" }
+  oak_log_semicolon:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTY2YjlkYzFhYTMzYTM0ZTQ3NTY2NWNmYTJhMTIwNjE3NTUzYTM5NWNjM2ZmYTk2MmYwNTdhY2Q5ZTcifX19"
+    name: "&7Oak Log ;"
+    tags:
+      - alphabet/oak_log
+      - character/semicolon
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_log_semicolon"
+          input: { head: "mini_oak_log" }
+  oak_log_apostrophe:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNWViODhlZDQxN2E0ZTJhZTlhOWY1NmY2MTdkZmVlZGI0ZGJjYzc3ZjY5MTk4NzkzM2VmZDA3ZmRmODRhNSJ9fX0="
+    name: "&7Oak Log '"
+    tags:
+      - alphabet/oak_log
+      - character/apostrophe
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_log_apostrophe"
+          input: { head: "mini_oak_log" }
+  oak_log_quote:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvM2VmYTMwNGJkNWRlOTJlYjMyYTQzMmIyYjJmMjQxYWM5NWJlNTVmZmYxYjk1YjcxZDEzZTE1ZGI4NTgxYTA2YiJ9fX0="
+    name: "&7Oak Log \""
+    tags:
+      - alphabet/oak_log
+      - character/quote
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_log_quote"
+          input: { head: "mini_oak_log" }
+  oak_log_ampersand:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYWQ5OWIyZjI1OGU3MzYyYmEzYWM2ZmY3OTc3YmViNDA5Y2M3YWU4YWVkMmI3OTYwYjI1MzgyNDQ5ZTY1ZDk1In19fQ=="
+    name: "&7Oak Log &"
+    tags:
+      - alphabet/oak_log
+      - character/ampersand
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_log_ampersand"
+          input: { head: "mini_oak_log" }
+  oak_log_hash:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjE0NDU3YTFjMDVlMTkzNDZmNGIzYmY2NDlkZjdiODRjNTZjMzE0MzU3ZjQ3YWYyYzljNTU5ZGQxNjEzNWU4In19fQ=="
+    name: "&7Oak Log #"
+    tags:
+      - alphabet/oak_log
+      - character/hash
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_log_hash"
+          input: { head: "mini_oak_log" }
+  oak_log_dollar:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjc0MGFiYTQzZjBjOTY0NjFmMzI4NmQ4ZmM1NGU3NWJiZTIxMzk0ODQwZjg2Y2Y5MzFjNjI0YjViMWQ0MWJkZSJ9fX0="
+    name: "&7Oak Log $"
+    tags:
+      - alphabet/oak_log
+      - character/dollar
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_log_dollar"
+          input: { head: "mini_oak_log" }
+  oak_log_plus:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTkxMjNhMDY4ZGFjZmM0Mzk2NGVjODg2OTc2YzRiMDg4NzU2ODczMTZmYzFlZWQyNzExYTExZDY1ZmE3MTIifX19"
+    name: "&7Oak Log +"
+    tags:
+      - alphabet/oak_log
+      - character/plus
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_log_plus"
+          input: { head: "mini_oak_log" }
+  oak_log_minus:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvN2Y4NWJmZjNhMmMxNTI3Zjg1Mjc0Mzc0Yzg3MGM3M2QyZWZlZjZiZTc3MTNlZWE1NjlkM2ExYmM0YTVlZmM0OSJ9fX0="
+    name: "&7Oak Log -"
+    tags:
+      - alphabet/oak_log
+      - character/minus
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_log_minus"
+          input: { head: "mini_oak_log" }
+  oak_log_equals:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTVmZmE1YTU1OTE2NGFlNjVjOGQ0MjBiZjM3NzI3MTg2MTczOTQ4NGFlOWUzN2UyNWMyOTJlYmRiMmIzN2ZlIn19fQ=="
+    name: "&7Oak Log ="
+    tags:
+      - alphabet/oak_log
+      - character/equals
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_log_equals"
+          input: { head: "mini_oak_log" }
+  oak_log_slash:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTcyZTYxNWYyMTEzZjQxNmM0NjIxNzJmMDM0YWVhNjU2YWViZGRjZTk3NjM1MmJjYWRkZjQ2ZWRlMjM0In19fQ=="
+    name: "&7Oak Log /"
+    tags:
+      - alphabet/oak_log
+      - character/slash
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_log_slash"
+          input: { head: "mini_oak_log" }
+  oak_log_backslash:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDFmOTgyNGZkNmY5ZTA4MDNmOWMzYWJkYWE0NmNhMmY3MzY4ODc0YzdmYjYzN2IxYmViNTI1YWQzYzIzNiJ9fX0="
+    name: "&7Oak Log \\"
+    tags:
+      - alphabet/oak_log
+      - character/backslash
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_log_backslash"
+          input: { head: "mini_oak_log" }
+  oak_log_underscore:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjE1YzU3NGVjZDViZjk1NjFhZGVkNTFmZmFlMmJiNWY5MjhkMzliZjFjYTg5NDkyYmYyZWZjNTdjOTRhZDMifX19"
+    name: "&7Oak Log _"
+    tags:
+      - alphabet/oak_log
+      - character/underscore
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_log_underscore"
+          input: { head: "mini_oak_log" }
+  oak_log_heart:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjExYWIzNjZkMWMwYjlmZTNjNDY4NWQzYzZhYzEyYjU2NjUwMTExMWYyYTcwNGQ4Mzc4NTE3ZTM3ZWUyNmJmIn19fQ=="
+    name: "&7Oak Log ♥"
+    tags:
+      - alphabet/oak_log
+      - character/heart
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_log_heart"
+          input: { head: "mini_oak_log" }
+  oak_log_blank:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTQzMDFhYThhODdlMjE4OGNlODY3MDQwMjUzZjc2NjYzYjNlNDdmNmM4NmZkZDZjZGI2NzBjOTk4NDY1MyJ9fX0="
+    name: "&7Oak Log  "
+    tags:
+      - alphabet/oak_log
+      - character/blank
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_log_blank"
+          input: { head: "mini_oak_log" }
+  oak_log_checkmark:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTllMWY2NTdhZjhmZWY5MTJmMjUzYTE2N2JkYzY4MWRjNTYwZTZjZWFjNzM1NTdkZTY4ZjY5MDE3ZWQxNWEyYSJ9fX0="
+    name: "&7Oak Log ✓"
+    tags:
+      - alphabet/oak_log
+      - character/checkmark
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_log_checkmark"
+          input: { head: "mini_oak_log" }
+  oak_log_note:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTAzODRjMDc0YTQxNmEwZGMyMmExOGJhMjM0NTc1YmExMzFhNGVhMjhmYzU5MDVlYTNkNGFiODRmODQxZmMzMyJ9fX0="
+    name: "&7Oak Log ♪"
+    tags:
+      - alphabet/oak_log
+      - character/note
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_log_note"
+          input: { head: "mini_oak_log" }
+  oak_log_paren_open:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTgyMmY3Nzg3M2IwZDA1MzdjODA0NzI1NWNjZGIwNTE0ZWZmZDU1MDZlOWQ0MWIxZmNhMjE1MmI2YWEyODgifX19"
+    name: "&7Oak Log ("
+    tags:
+      - alphabet/oak_log
+      - character/paren_open
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_log_paren_open"
+          input: { head: "mini_oak_log" }
+  oak_log_paren_close:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTBmMzNlZDEyZjcyMzFhNTU0ZGZjOTYyYjUwYTU3OTVmNjkyMWM1ZTFlMTQzOWNkOWY2ZDcxYjA0ZSJ9fX0="
+    name: "&7Oak Log )"
+    tags:
+      - alphabet/oak_log
+      - character/paren_close
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_log_paren_close"
+          input: { head: "mini_oak_log" }
+  oak_log_bracket_open:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZmJkM2NmYzgyMzdmM2NjZDhhOTA1NzRlMzViMzQ4ZWY4MmJmMzYzNDY3ZTNlZDhiZDY1YjU4NjM0NzRlY2ZkIn19fQ=="
+    name: "&7Oak Log ["
+    tags:
+      - alphabet/oak_log
+      - character/bracket_open
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_log_bracket_open"
+          input: { head: "mini_oak_log" }
+  oak_log_bracket_close:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZmI5ZmMxZmQxMWMwNzk5MmMzNDk5NWM0OTVjNjZmN2JjYmYwODVjZGM3NGFlODZlNGM5YzhkZjc4NDNhN2UifX19"
+    name: "&7Oak Log ]"
+    tags:
+      - alphabet/oak_log
+      - character/bracket_close
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_log_bracket_close"
+          input: { head: "mini_oak_log" }
+  oak_log_brace_open:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZWQ0NmQ1NzVlYTU0MjQ2MTA4ZTRkZmI5Y2E2ZGM5NzczNjI3OTA1ZTY0OWQxMGUwOWRhOWFmNSJ9fX0="
+    name: "&7Oak Log {"
+    tags:
+      - alphabet/oak_log
+      - character/brace_open
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_log_brace_open"
+          input: { head: "mini_oak_log" }
+  oak_log_brace_close:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzgyZjlmZmU2NGQ2ZDI1ZmYzMjBiNTEzZGFhMjZkMWQ5OTVkYjU1NDFjMmI2MTkzYzg4NDYwZDY4NTYyYTdlZiJ9fX0="
+    name: "&7Oak Log }"
+    tags:
+      - alphabet/oak_log
+      - character/brace_close
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_log_brace_close"
+          input: { head: "mini_oak_log" }
+  oak_log_arrow_up:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOGE4MDFlMmFkYzU5YWFjNjZkOGY1OWRiYzM1ZmFiYWMyY2Y1YjYxMWJlN2IyMTc1OTQxODU1NTEzN2ZmNDJhMiJ9fX0="
+    name: "&7Oak Log ↑"
+    tags:
+      - alphabet/oak_log
+      - character/arrow_up
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_log_arrow_up"
+          input: { head: "mini_oak_log" }
+  oak_log_arrow_down:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzE5Mzg2YWY2MmU3Njk3NDkzZGQ0YjQyYWYwM2M1ZGU2ZTQ4ZGJkMjZiNzI4NDg4OGQ5NDM1ZjI3ODQwYjkifX19"
+    name: "&7Oak Log ↓"
+    tags:
+      - alphabet/oak_log
+      - character/arrow_down
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_log_arrow_down"
+          input: { head: "mini_oak_log" }
+  oak_log_arrow_left:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZWVkNzg4MjI1NzYzMTdiMDQ4ZWVhOTIyMjdjZDg1ZjdhZmNjNDQxNDhkY2I4MzI3MzNiYWNjYjhlYjU2ZmExIn19fQ=="
+    name: "&7Oak Log ←"
+    tags:
+      - alphabet/oak_log
+      - character/arrow_left
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_log_arrow_left"
+          input: { head: "mini_oak_log" }
+  oak_log_arrow_right:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzE1NDQ1ZGExNmZhYjY3ZmNkODI3ZjcxYmFlOWMxZDJmOTBjNzNlYjJjMWJkMWVmOGQ4Mzk2Y2Q4ZTgifX19"
+    name: "&7Oak Log →"
+    tags:
+      - alphabet/oak_log
+      - character/arrow_right
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_log_arrow_right"
+          input: { head: "mini_oak_log" }
+  oak_log_arrow_left_up:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZmVjNjExMzA1ZmRkOGEyZWJhZjQ5MmI2ZmVkMmFiOTJjMjVhNTg1NTdhYTc2NDViOTQ5YTVhOTViMTkxOWUyMyJ9fX0="
+    name: "&7Oak Log ↖"
+    tags:
+      - alphabet/oak_log
+      - character/arrow_left_up
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_log_arrow_left_up"
+          input: { head: "mini_oak_log" }
+  oak_log_arrow_right_up:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvN2ZlZDc3ODg5NzQ3MmRjNDk2M2Q5OTRhZjY1YWIzZWM0MjEyYTFmYzcyZmRhNGIxZDZhN2RlMDYxNDcyNGQ2In19fQ=="
+    name: "&7Oak Log ↗"
+    tags:
+      - alphabet/oak_log
+      - character/arrow_right_up
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_log_arrow_right_up"
+          input: { head: "mini_oak_log" }
+  oak_log_arrow_left_down:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzYzZWM3ZTg0N2IwODMyNWQ3OTVhN2NiNzM4YjEwZmNjNzE5ZmEyMWM5ZWE5YWNlZWQxODU5NzY3ODhkMmEifX19"
+    name: "&7Oak Log ↙"
+    tags:
+      - alphabet/oak_log
+      - character/arrow_left_down
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_log_arrow_left_down"
+          input: { head: "mini_oak_log" }
+  oak_log_arrow_right_down:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTU5OTUyMmEzOGNhMjQ4NzM1NDYwY2FhNTRiOTU0YTI1MTAyYTlmNzhiNjI2ZmYzZDNiYmU4MTFkNzgifX19"
+    name: "&7Oak Log ↘"
+    tags:
+      - alphabet/oak_log
+      - character/arrow_right_down
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_log_arrow_right_down"
+          input: { head: "mini_oak_log" }
+  oak_log_forward:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOWJjYTkwZWJhZmRmNTdkZjRjMzgwY2YyNjU1YWE3YjRlYzZhNGJkYmQxNTUxNmViZmRlNDMyN2ExZTI3In19fQ=="
+    name: "&7Oak Log ⏩"
+    tags:
+      - alphabet/oak_log
+      - character/forward
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_log_forward"
+          input: { head: "mini_oak_log" }
+  oak_log_forward_ii:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTFjMWY1ZGNmNTZiMTlkOWY2ZDE4MGU5MjA1ZGE5ZDc2MGMxNGNhNTU4MTdmYjdjZjljZDFkYjE3NzI4NTUxIn19fQ=="
+    name: "&7Oak Log ⏭"
+    tags:
+      - alphabet/oak_log
+      - character/forward_ii
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_log_forward_ii"
+          input: { head: "mini_oak_log" }
+  oak_log_backward:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzM5MjYyM2NhZmRmNzQ1YmZjYjMxZDA1ZGJjZDI0N2Q1NzFkODk3ZjIyYWNlMzhlZTU0ZWVkM2ZiOTYzNiJ9fX0="
+    name: "&7Oak Log ⏪"
+    tags:
+      - alphabet/oak_log
+      - character/backward
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_log_backward"
+          input: { head: "mini_oak_log" }
+  oak_log_backward_ii:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTNiNGRjZjljNjI1MjBjOWQxOTY2ZDg3NmQ3MzRhZTcyZDc4MWNmNDdiNjQ3MGM3Yzc4ZGQzZDdjNTIifX19"
+    name: "&7Oak Log ⏮"
+    tags:
+      - alphabet/oak_log
+      - character/backward_ii
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_log_backward_ii"
+          input: { head: "mini_oak_log" }
+  oak_log_letter_a_umlaut:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZGFkYjg2ZjAyYTdjYzM2YzU2ZWQ3YjA4ZjM1NDU4NzlkZThkOWNmM2YyMWMxOGYxNmJjMTI2ZjcwYjliY2YifX19"
+    name: "&7Oak Log Ä"
+    tags:
+      - alphabet/oak_log
+      - character/letter_a_umlaut
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_log_letter_a_umlaut"
+          input: { head: "mini_oak_log" }
+  oak_log_letter_n_tilde:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzc5NTE0OWFhY2JhYzQ1MTllNDI1MDk3MDY5NjFjNTQ5MzljZmE1OGZlN2M3MzEwY2I5MDE3OTY0MGUyMDhjZSJ9fX0="
+    name: "&7Oak Log Ñ"
+    tags:
+      - alphabet/oak_log
+      - character/letter_n_tilde
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_log_letter_n_tilde"
+          input: { head: "mini_oak_log" }
+  oak_log_letter_o_umlaut:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjYxODk5ZGM4YzU4ODI3YjJhNTk2ZjY2NGM4ZWNlOGYzZTcyZjYxZmZjMjNhNzUxZWRlNDQ2NWM0YTI1ZjM5In19fQ=="
+    name: "&7Oak Log Ö"
+    tags:
+      - alphabet/oak_log
+      - character/letter_o_umlaut
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_log_letter_o_umlaut"
+          input: { head: "mini_oak_log" }
+  oak_log_letter_u_umlaut:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZWNkNTU5YmEzODI0Mjc2MTdmMzY2Mjk4M2VkNmIxMGEzNWZlOGE4NWViZGI2MWVjNTM4YzI1NDE4Nzg2In19fQ=="
+    name: "&7Oak Log Ü"
+    tags:
+      - alphabet/oak_log
+      - character/letter_u_umlaut
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_log_letter_u_umlaut"
+          input: { head: "mini_oak_log" }
+  oak_log_cyrillic_yo:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzZhNTllZjc5YTViODBmMzNkNzc3ZGY5NTM3NmUzNDM4MjkzZGI2MTNjNzVmNWYzNGVlODU0ZjYyNTY0NSJ9fX0="
+    name: "&7Oak Log Ё"
+    tags:
+      - alphabet/oak_log
+      - character/cyrillic_yo
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_log_cyrillic_yo"
+          input: { head: "mini_oak_log" }
+  oak_log_cyrillic_be:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvY2MzODIxZWRmNWIzNTdmNDJhYWJjNWQyNThlNmRlNWEzYTlkZmY3ZDRkZTYzNzNmZmM2MmJlYjQ3NTIyMWIifX19"
+    name: "&7Oak Log Б"
+    tags:
+      - alphabet/oak_log
+      - character/cyrillic_be
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_log_cyrillic_be"
+          input: { head: "mini_oak_log" }
+  oak_log_cyrillic_ge:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZWExYzVhYjdjOGI3NmVjNDcyNWEyMDQwMTIxNzlhYmM5MGMzMzljYWM3MzRhYjNiZGQ3YzExMjg3NzNhNTIifX19"
+    name: "&7Oak Log Г"
+    tags:
+      - alphabet/oak_log
+      - character/cyrillic_ge
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_log_cyrillic_ge"
+          input: { head: "mini_oak_log" }
+  oak_log_cyrillic_de:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTlmMDk4ZDQ4ODdhNDVkYjhjYTVjMDY2NDEzY2ZkMWQ3MzI3YjU1MDNlZGZkOTlhMWYxZjQwYzViZjlhNGQifX19"
+    name: "&7Oak Log Д"
+    tags:
+      - alphabet/oak_log
+      - character/cyrillic_de
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_log_cyrillic_de"
+          input: { head: "mini_oak_log" }
+  oak_log_cyrillic_zhe:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMmYxZDllYTkzODY5YWRjOTE3NzVkNWMxNGEyYmJiODlkZjExZDU3NDk0ZDRlNDljOGQ4NTU0NTc0MDg4MjEyYSJ9fX0="
+    name: "&7Oak Log Ж"
+    tags:
+      - alphabet/oak_log
+      - character/cyrillic_zhe
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_log_cyrillic_zhe"
+          input: { head: "mini_oak_log" }
+  oak_log_cyrillic_ze:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvM2U5OWU3ODAzMTIyZGVkMDI1OGFkYWQzMTU0Mjc5NGQ5NDlhMjNlZWZlM2RhODFmNGNlYzA5ZDdiMjMzMiJ9fX0="
+    name: "&7Oak Log З"
+    tags:
+      - alphabet/oak_log
+      - character/cyrillic_ze
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_log_cyrillic_ze"
+          input: { head: "mini_oak_log" }
+  oak_log_cyrillic_i:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTFkZWZmYWY4YzU4MWI0ZjcyMWQ4ZTIzYjE5NTE5ZDRjMWMzNDUzZWNkZDQ3MGVmZTMzYjJkN2E4MzE3YzQifX19"
+    name: "&7Oak Log И"
+    tags:
+      - alphabet/oak_log
+      - character/cyrillic_i
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_log_cyrillic_i"
+          input: { head: "mini_oak_log" }
+  oak_log_cyrillic_short_i:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDM0ZDVjNzRiZjllYTk2MjQ0Nzg2ZWRmNDhiNGYyZGVmYzEzYTRlMjRhMjQyZmE1ZTZiODllYjUzM2RhZjVkYyJ9fX0="
+    name: "&7Oak Log Й"
+    tags:
+      - alphabet/oak_log
+      - character/cyrillic_short_i
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_log_cyrillic_short_i"
+          input: { head: "mini_oak_log" }
+  oak_log_cyrillic_el:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjk3NjgxYWI1ODczOTc2NjU4YjQ3MzNiY2M0MTRhOTI1ZDRiMTk5MTgwOGM3Mjk0ZDJhMmRiYTM2ZGRkNCJ9fX0="
+    name: "&7Oak Log Л"
+    tags:
+      - alphabet/oak_log
+      - character/cyrillic_el
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_log_cyrillic_el"
+          input: { head: "mini_oak_log" }
+  oak_log_cyrillic_pe:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTFiYmZiNjk5NzhjYzUzYWZjODRlN2Q1NDM5MTM5ZWVkZDRmYmEyNmU5NDkyNmUyYzVkNWIyYTNkM2QzNCJ9fX0="
+    name: "&7Oak Log П"
+    tags:
+      - alphabet/oak_log
+      - character/cyrillic_pe
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_log_cyrillic_pe"
+          input: { head: "mini_oak_log" }
+  oak_log_cyrillic_u:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNWM2YmVlMmYzNzU1ZTRiNDQ2MTkwZGQ0ZmE3MTk3NWRjYzY0MTgxNWZlNmQ2NTgxZWI2ODE3YTNmYWViZDgifX19"
+    name: "&7Oak Log У"
+    tags:
+      - alphabet/oak_log
+      - character/cyrillic_u
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_log_cyrillic_u"
+          input: { head: "mini_oak_log" }
+  oak_log_cyrillic_ef:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjU3NGJiZmNmZjQxYmQzNWY2YmYyNmFjNGY2OGJlMjM3NzNiNmEyYjhhMGY3NTczNGQ3MTc2Y2M3OTI1MjFhIn19fQ=="
+    name: "&7Oak Log Ф"
+    tags:
+      - alphabet/oak_log
+      - character/cyrillic_ef
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_log_cyrillic_ef"
+          input: { head: "mini_oak_log" }
+  oak_log_cyrillic_tse:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzY2YTNmNzQ1OWNmZWU5ZGNkNDRjYTFhYmVlNjQzNDViYWVlNDhiNDlkNTFlMjRmOTNhMTY4ZWJkMWNjNDQzZCJ9fX0="
+    name: "&7Oak Log Ц"
+    tags:
+      - alphabet/oak_log
+      - character/cyrillic_tse
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_log_cyrillic_tse"
+          input: { head: "mini_oak_log" }
+  oak_log_cyrillic_che:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDlkZmNlNTc2OGU0NGRmODM4ZDRjY2IxOWQ5YzVkMDk3ZTg3OWM0NzIzZTYxMzQ5ZTVkNGEzOGNjMGZjYTIifX19"
+    name: "&7Oak Log Ч"
+    tags:
+      - alphabet/oak_log
+      - character/cyrillic_che
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_log_cyrillic_che"
+          input: { head: "mini_oak_log" }
+  oak_log_cyrillic_sha:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzA4YWVmMzBiZGYxYzU3ODM4YTJjYjY2MDVhZjRjNzFmYjgzMDZiYjg1MjEzMGRiMjBkYjliOTJlOGE1ZjIifX19"
+    name: "&7Oak Log Ш"
+    tags:
+      - alphabet/oak_log
+      - character/cyrillic_sha
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_log_cyrillic_sha"
+          input: { head: "mini_oak_log" }
+  oak_log_cyrillic_shcha:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTkyMWNjYzAzZTU4Njc5YmVmNWRmZTgxOWE3MmZhOTYzMjYxNzRlYzY5YTg4ZDI2NjU1YzVjNWViNTQyOTBjYyJ9fX0="
+    name: "&7Oak Log Щ"
+    tags:
+      - alphabet/oak_log
+      - character/cyrillic_shcha
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_log_cyrillic_shcha"
+          input: { head: "mini_oak_log" }
+  oak_log_cyrillic_hard:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDRmYjJkYmNmNGRkZjkwNjBhOGM4NTk1ZGE0Yzc3ODRkOTAzOTJiOGMyNGU3NjQ3YzU1Njg1YWM4ZWViOGJlIn19fQ=="
+    name: "&7Oak Log Ъ"
+    tags:
+      - alphabet/oak_log
+      - character/cyrillic_hard
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_log_cyrillic_hard"
+          input: { head: "mini_oak_log" }
+  oak_log_cyrillic_yeru:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzc0MDVlZmZhN2YyZmNmYTJlNzBhYWU3NTExMTczYTcyMTUxYjczYjg3ZmJjZWU2ODViYzE0ZTM5NjlmOTEifX19"
+    name: "&7Oak Log Ы"
+    tags:
+      - alphabet/oak_log
+      - character/cyrillic_yeru
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_log_cyrillic_yeru"
+          input: { head: "mini_oak_log" }
+  oak_log_cyrillic_soft:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDM0OWMzYWRhMDk5MTAyZWJiYWJhNDNhMWE3ZDkxOTI3YmRiMDViMmZhN2NjOGI2MDM4NTQ0Y2I0ZmMyNCJ9fX0="
+    name: "&7Oak Log Ь"
+    tags:
+      - alphabet/oak_log
+      - character/cyrillic_soft
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_log_cyrillic_soft"
+          input: { head: "mini_oak_log" }
+  oak_log_cyrillic_e:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNWI1YWFjZjNhZGU5M2YyZjE5NzRjMWI2NDU1MmM1Njc0NWFkNjJkNDdiOTJkZjkwNjc3OWVjNDc2YTNlZTMifX19"
+    name: "&7Oak Log Э"
+    tags:
+      - alphabet/oak_log
+      - character/cyrillic_e
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_log_cyrillic_e"
+          input: { head: "mini_oak_log" }
+  oak_log_cyrillic_yu:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGQ1MWExOGFkMWY0MmE3N2JjODhkNWQ1YTk4YWM4ZjNiNTk2MWJiZDcxYmJjZTVhM2RjODE1OTI1ZGQ5YjEifX19"
+    name: "&7Oak Log Ю"
+    tags:
+      - alphabet/oak_log
+      - character/cyrillic_yu
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_log_cyrillic_yu"
+          input: { head: "mini_oak_log" }
+  oak_log_cyrillic_ya:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvY2QxZjQ0YTQ3ODc0NGY5NWQzZTk4YzM1NDQ3Yjg5MWY3NDIzYzNkOTVjOTQ1MDI2OGU1ODkxNzdhNzZjMjdiIn19fQ=="
+    name: "&7Oak Log Я"
+    tags:
+      - alphabet/oak_log
+      - character/cyrillic_ya
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_log_cyrillic_ya"
+          input: { head: "mini_oak_log" }
+  oak_log_zodiac_aquarius:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjUzZDJhYjE3YWI4MjUwMTk0YTc1NjRmNzc1YzIyODVkZWU0ZDIzMjk1ZWY2OTJjM2MzYWZjM2ExYzFkYmU4OCJ9fX0="
+    name: "&7Oak Log ♒"
+    tags:
+      - alphabet/oak_log
+      - character/zodiac_aquarius
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_log_zodiac_aquarius"
+          input: { head: "mini_oak_log" }
+  oak_log_zodiac_aries:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGViMWJlOWY2ODI1ZmE4NTc5YzQ1N2VjNWViOTJjYzU3ZTQ2OTNhOGM5MmFlN2NiN2Y0MmMxYzYyMzFmYjNjZiJ9fX0="
+    name: "&7Oak Log ♈"
+    tags:
+      - alphabet/oak_log
+      - character/zodiac_aries
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_log_zodiac_aries"
+          input: { head: "mini_oak_log" }
+  oak_log_zodiac_cancer:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNmQyMjQ1Y2NkNzEyYTY3NjhjODcyMDVkMDAwODk3YzRlN2ZkZjVhYTA2NDlkMjM5ZDE3ZjkzZDg4ZmRkZmE4MiJ9fX0="
+    name: "&7Oak Log ♋"
+    tags:
+      - alphabet/oak_log
+      - character/zodiac_cancer
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_log_zodiac_cancer"
+          input: { head: "mini_oak_log" }
+  oak_log_zodiac_capricorn:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTc0ZWIwZTNiOTQ1NjIyNzhhYjFhMTc2MDc3MDNkNzc3MjI3NGViYzI2OTUzZWZiOTdmNzUwYTVhZTcxN2JlYSJ9fX0="
+    name: "&7Oak Log ♑"
+    tags:
+      - alphabet/oak_log
+      - character/zodiac_capricorn
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_log_zodiac_capricorn"
+          input: { head: "mini_oak_log" }
+  oak_log_zodiac_gemini:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvN2Y2MDQzZmJhZmRmOTY4YzkwYzYxYWQ4MDgzM2IzZjY3YmRiZDk5ZjBiZTllYmMxYjllYjQ1MTZiYjMyNjkxYSJ9fX0="
+    name: "&7Oak Log ♊"
+    tags:
+      - alphabet/oak_log
+      - character/zodiac_gemini
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_log_zodiac_gemini"
+          input: { head: "mini_oak_log" }
+  oak_log_zodiac_leo:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzVjYjFiNGUyZmUxMjBmMWNjN2FlZmFkNGEzMGIzMzBmOTY0NGViMzgzYzlhOWU4M2QyMDIxZGM2ZDc3ZGQwYyJ9fX0="
+    name: "&7Oak Log ♌"
+    tags:
+      - alphabet/oak_log
+      - character/zodiac_leo
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_log_zodiac_leo"
+          input: { head: "mini_oak_log" }
+  oak_log_zodiac_libra:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTM3YmJiZDAwMzAwZjFmMDQ5MGFlOTlkYmM3MzFiMGVkZjA1MjcxOGNkOGYzODYyNjQzZjFhNTdlMzI0YjVlMSJ9fX0="
+    name: "&7Oak Log ♎"
+    tags:
+      - alphabet/oak_log
+      - character/zodiac_libra
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_log_zodiac_libra"
+          input: { head: "mini_oak_log" }
+  oak_log_zodiac_pisces:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvY2RkYTIyYWVhMDZiNjFiYTJiYTIxYjE1NjMzMDEyZTYyMWVjMGJmZTRkMTQ2MjAxYzIxMDc2NzU1M2IyNTc2OCJ9fX0="
+    name: "&7Oak Log ♓"
+    tags:
+      - alphabet/oak_log
+      - character/zodiac_pisces
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_log_zodiac_pisces"
+          input: { head: "mini_oak_log" }
+  oak_log_zodiac_sagittarius:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzg2ZTU3YWYzZmY5ZTRkZmViN2Q4MzhjNTNhYjcwZjU4MTJhNGY0NWUwMTU1ODMxZDg0ZjNjZjJiMzI4NWU5MSJ9fX0="
+    name: "&7Oak Log ♐"
+    tags:
+      - alphabet/oak_log
+      - character/zodiac_sagittarius
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_log_zodiac_sagittarius"
+          input: { head: "mini_oak_log" }
+  oak_log_zodiac_scorpio:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjhhZGJkZWRiNDUwMGE4ZGVlYmQ5MWNhYThkOTlkN2IxNzZlM2MzYjUzNDUwMzgwMDhmZTE5MzFhMGM1MjRlNyJ9fX0="
+    name: "&7Oak Log ♏"
+    tags:
+      - alphabet/oak_log
+      - character/zodiac_scorpio
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_log_zodiac_scorpio"
+          input: { head: "mini_oak_log" }
+  oak_log_zodiac_taurus:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzc0NjJlNjAxZGQxODgzOTgwY2NkNDZjYjFiOWIzMjg5ZTkyYzdjYTY1NzhhOTAyNTIwODlmNThhOWJmNjViOCJ9fX0="
+    name: "&7Oak Log ♉"
+    tags:
+      - alphabet/oak_log
+      - character/zodiac_taurus
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_log_zodiac_taurus"
+          input: { head: "mini_oak_log" }
+  oak_log_zodiac_virgo:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTNmYjBiNGM0MTljMmY5YzJkMzU2MTljZDU2OTBjMjcwMWRhNmYzYTZlNTdmNGJkNzU0NzU1YjVkZjkzYjgyZSJ9fX0="
+    name: "&7Oak Log ♍"
+    tags:
+      - alphabet/oak_log
+      - character/zodiac_virgo
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_log_zodiac_virgo"
+          input: { head: "mini_oak_log" }
+  oak_log_female:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzcxYjBjMTRiZWQzZjRlZjdiNWVkMDQ4ZmUwMmJkZGMzZGY0YjhiYjMyNWUyZjA0YjYxOTQ5MDMyNmM1ZTA0NiJ9fX0="
+    name: "&7Oak Log ♀"
+    tags:
+      - alphabet/oak_log
+      - character/female
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_log_female"
+          input: { head: "mini_oak_log" }
+  oak_log_male:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNmUyNDhjNDViMDY4Y2IxNzFjMDQ5NjMxNjZjOTQzMTIwZmI5N2FlMzVmMDA5MDFmZmM5Nzk2NzFkZmE2OTllMCJ9fX0="
+    name: "&7Oak Log ♂"
+    tags:
+      - alphabet/oak_log
+      - character/male
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_log_male"
+          input: { head: "mini_oak_log" }

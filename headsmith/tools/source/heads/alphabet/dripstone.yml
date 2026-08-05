@@ -1,0 +1,333 @@
+# Generated Dripstone Alphabet Blocks
+
+heads:
+  dripstone_letter_a:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDcxZjkzNTM3MDEyYjc0NmU0NjA5ZDQwZTZmZWRkMDVkMzQxM2FlZmE5ZGQ5OGViNDE2ODVmNDc2NDFhYTFiMCJ9fX0="
+    name: "&7Dripstone A"
+    tags:
+      - alphabet/dripstone
+      - character/letter_a
+      - stone
+    recipes:
+      stonecutter:
+        - id: "dripstone_letter_a"
+          input: { head: "mini_dripstone_block" }
+  dripstone_letter_b:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMmQ0NDBiZDYwNGRlMTg5YTYxYmMzNzBlMjcyMDMzYjNlMmRjMzQxZDc3ZmQ4OWRhYTRkNGM5MmFhZGRlMTU2NiJ9fX0="
+    name: "&7Dripstone B"
+    tags:
+      - alphabet/dripstone
+      - character/letter_b
+      - stone
+    recipes:
+      stonecutter:
+        - id: "dripstone_letter_b"
+          input: { head: "mini_dripstone_block" }
+  dripstone_letter_c:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZGFkYmI5N2U5MjE1NTFlMzJhZTQ1ODNjNWM5M2RmMmI3YTJhOTIyOWE0NzI1YmI4Nzc1NDUxZmY1Mzc2ZWU4ZiJ9fX0="
+    name: "&7Dripstone C"
+    tags:
+      - alphabet/dripstone
+      - character/letter_c
+      - stone
+    recipes:
+      stonecutter:
+        - id: "dripstone_letter_c"
+          input: { head: "mini_dripstone_block" }
+  dripstone_letter_d:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTRiNzQyYTJkMGI3NmQ1MjdjMTUxYzdiYmQ1ZjdkNDkwZTgxZWVlYTc3YmQ3Y2FiZmUxMzE0MzBjYmI4NjI3OSJ9fX0="
+    name: "&7Dripstone D"
+    tags:
+      - alphabet/dripstone
+      - character/letter_d
+      - stone
+    recipes:
+      stonecutter:
+        - id: "dripstone_letter_d"
+          input: { head: "mini_dripstone_block" }
+  dripstone_letter_e:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODRhMGUzNTA2ZDMxZmUyMTExNThkNWIxNDk2YTM1MTlkNzg1NGZmMTFhMjYyMmQ1ZTQ4MDMzNDUwMGQ5ZDc2MCJ9fX0="
+    name: "&7Dripstone E"
+    tags:
+      - alphabet/dripstone
+      - character/letter_e
+      - stone
+    recipes:
+      stonecutter:
+        - id: "dripstone_letter_e"
+          input: { head: "mini_dripstone_block" }
+  dripstone_letter_f:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjgyYTEwZjAzNmIwMjcwM2U4NWYzOTA1NWRhMzUzYmRkZDk1ZWVhMzEyODZjYTI1ZThjZGY3ZGM4ZTI5OWM3MyJ9fX0="
+    name: "&7Dripstone F"
+    tags:
+      - alphabet/dripstone
+      - character/letter_f
+      - stone
+    recipes:
+      stonecutter:
+        - id: "dripstone_letter_f"
+          input: { head: "mini_dripstone_block" }
+  dripstone_letter_g:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzNkMzhiMzA4MThkOWExNzdhNTc0NmI3YzJmNGVmZjRiMWQyMjVjYjQ4ZDc1MzU4ZjUyOTY5ZWQxNDY3MDEwZSJ9fX0="
+    name: "&7Dripstone G"
+    tags:
+      - alphabet/dripstone
+      - character/letter_g
+      - stone
+    recipes:
+      stonecutter:
+        - id: "dripstone_letter_g"
+          input: { head: "mini_dripstone_block" }
+  dripstone_letter_h:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOGZiOWNiOWM5YjIzYTgyYzQ0ZDJiZmZhYTVjNDE2MWIyM2EyYzk4OWFlNjgzYjRiYzJkMDRjYTFhNjJhZWJlZSJ9fX0="
+    name: "&7Dripstone H"
+    tags:
+      - alphabet/dripstone
+      - character/letter_h
+      - stone
+    recipes:
+      stonecutter:
+        - id: "dripstone_letter_h"
+          input: { head: "mini_dripstone_block" }
+  dripstone_letter_i:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmI2Y2Y2MTFhODE2ODEzMTEyNWIxZjc4ZDE4NmZjNWE2MWNjNTA0ZTkxZjAxMDZmNjYwODQ3OTFjZjUwYzk5YyJ9fX0="
+    name: "&7Dripstone I"
+    tags:
+      - alphabet/dripstone
+      - character/letter_i
+      - stone
+    recipes:
+      stonecutter:
+        - id: "dripstone_letter_i"
+          input: { head: "mini_dripstone_block" }
+  dripstone_letter_j:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjdmZTlkMjMxOWU0MmZkNGM1MzYxMmYyMGI3NzM5NzlhZjI0ZDQ2ZGNjZWYxNjJmNDk5ZDk4NzI1OGY4ODFiNCJ9fX0="
+    name: "&7Dripstone J"
+    tags:
+      - alphabet/dripstone
+      - character/letter_j
+      - stone
+    recipes:
+      stonecutter:
+        - id: "dripstone_letter_j"
+          input: { head: "mini_dripstone_block" }
+  dripstone_letter_k:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjA4ZjQyYmExNzM5ZTkyYTAwNGVkZjdiZmRjYzlhMjc5MTI4MTgzOTU4YWZjMzMxZDJhZmYwNmZiZGUwODdhYyJ9fX0="
+    name: "&7Dripstone K"
+    tags:
+      - alphabet/dripstone
+      - character/letter_k
+      - stone
+    recipes:
+      stonecutter:
+        - id: "dripstone_letter_k"
+          input: { head: "mini_dripstone_block" }
+  dripstone_letter_l:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDQwNmU0ZjEyYTQ4ZGVjZjZlMzhjMzVlMmRiZDdhODAyMzNmZDc3OGIxYzM2Y2IxNjQ1ZGY3NzQxOWZhZTQ5OCJ9fX0="
+    name: "&7Dripstone L"
+    tags:
+      - alphabet/dripstone
+      - character/letter_l
+      - stone
+    recipes:
+      stonecutter:
+        - id: "dripstone_letter_l"
+          input: { head: "mini_dripstone_block" }
+  dripstone_letter_m:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNWNmNjcwZmIyNzk3NDhiMDVjZmM1MzE1MzA4M2ZlMjI2ODRlYWYyZjRjODZiNjM1NGUzZWMyMzI3N2UzNzJiMiJ9fX0="
+    name: "&7Dripstone M"
+    tags:
+      - alphabet/dripstone
+      - character/letter_m
+      - stone
+    recipes:
+      stonecutter:
+        - id: "dripstone_letter_m"
+          input: { head: "mini_dripstone_block" }
+  dripstone_letter_n:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvY2FjMjY4MTcwOTBmOGRiZTUwNzVjYzQ3M2I2YjI2ZThjZjQ1MDEzMjEwMTFjY2QzZGY2ZDNjYzgzNGYxNGM0NiJ9fX0="
+    name: "&7Dripstone N"
+    tags:
+      - alphabet/dripstone
+      - character/letter_n
+      - stone
+    recipes:
+      stonecutter:
+        - id: "dripstone_letter_n"
+          input: { head: "mini_dripstone_block" }
+  dripstone_letter_o:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzA5YzRiN2Q4YTVlNjE3OWEyMDMwMGEyYzA4Y2QyMzQ4ZmYyZmE0ZDJiNjVkOWRmNDU3YjRkODc3NDg2MTIxOSJ9fX0="
+    name: "&7Dripstone O"
+    tags:
+      - alphabet/dripstone
+      - character/letter_o
+      - stone
+    recipes:
+      stonecutter:
+        - id: "dripstone_letter_o"
+          input: { head: "mini_dripstone_block" }
+  dripstone_letter_p:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODM2ZjU0MGNkNjBiYmNhMWNmMGIzMjRlZjY3MGM2YjZhMDg3YzMwNjk1NTM0NmUwOTJhOTUxNDFkY2RlODA3YiJ9fX0="
+    name: "&7Dripstone P"
+    tags:
+      - alphabet/dripstone
+      - character/letter_p
+      - stone
+    recipes:
+      stonecutter:
+        - id: "dripstone_letter_p"
+          input: { head: "mini_dripstone_block" }
+  dripstone_letter_q:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTU2ZjAwZmViYTBhOWZlYjVjMTQ4M2QyY2FiODk3NWYzOTZiZDU0NDhjOGQxYzgxMTlkMjJlZTA0YzZmYmU1NSJ9fX0="
+    name: "&7Dripstone Q"
+    tags:
+      - alphabet/dripstone
+      - character/letter_q
+      - stone
+    recipes:
+      stonecutter:
+        - id: "dripstone_letter_q"
+          input: { head: "mini_dripstone_block" }
+  dripstone_letter_r:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmQ1MjhhNDZkNzI2MWRiY2M4NDczMzk4NmJhYTA4MmU0NmRiZDhjODA3YzQ4Y2E5OWM3MzEyMjZlYjRkNWVjYiJ9fX0="
+    name: "&7Dripstone R"
+    tags:
+      - alphabet/dripstone
+      - character/letter_r
+      - stone
+    recipes:
+      stonecutter:
+        - id: "dripstone_letter_r"
+          input: { head: "mini_dripstone_block" }
+  dripstone_letter_s:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMmMwNzdhMjdlMDk0M2EyYzYyZThiMjIyMjhlNjMwYjBiNDNmZjk4ZjdlYjUzZGZjZTEyNDk3MDdiMTc2MzZkMiJ9fX0="
+    name: "&7Dripstone S"
+    tags:
+      - alphabet/dripstone
+      - character/letter_s
+      - stone
+    recipes:
+      stonecutter:
+        - id: "dripstone_letter_s"
+          input: { head: "mini_dripstone_block" }
+  dripstone_letter_t:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZWZmZjg3MTRlYWIyZGRmZGFkYzg0ZThhMWQ4N2YxYWJmMjJlZGZjZjZlNDUzNzRjM2Y0NzY0NTI4MWNhODFjZSJ9fX0="
+    name: "&7Dripstone T"
+    tags:
+      - alphabet/dripstone
+      - character/letter_t
+      - stone
+    recipes:
+      stonecutter:
+        - id: "dripstone_letter_t"
+          input: { head: "mini_dripstone_block" }
+  dripstone_letter_u:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODgyYjMzYmFjNTI1ZDMzMTI2ODc3OTU4YjQ1YjM0Yjc0OTExYmZmMTQ0MTkxMjBmYjUyMTFiMjBjZGYwMmU3ZSJ9fX0="
+    name: "&7Dripstone U"
+    tags:
+      - alphabet/dripstone
+      - character/letter_u
+      - stone
+    recipes:
+      stonecutter:
+        - id: "dripstone_letter_u"
+          input: { head: "mini_dripstone_block" }
+  dripstone_letter_v:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjRmYmNkYjEyYzU4MzIwMTg1NWE0ZDI3ZmFjMTc4ZWVhMjA1MDY0MTU0MGM0ZjJkMjJkZDdjZWQyYTUzYTMwIn19fQ=="
+    name: "&7Dripstone V"
+    tags:
+      - alphabet/dripstone
+      - character/letter_v
+      - stone
+    recipes:
+      stonecutter:
+        - id: "dripstone_letter_v"
+          input: { head: "mini_dripstone_block" }
+  dripstone_letter_w:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTE0ZDgxZmFlZjkzMTNhODI1MzM0NjcxOTkxMTBlYzk5NGRmZTVkMmNjN2U5MmU1ZDVhNDY0OTk4MmQ3Y2E5NCJ9fX0="
+    name: "&7Dripstone W"
+    tags:
+      - alphabet/dripstone
+      - character/letter_w
+      - stone
+    recipes:
+      stonecutter:
+        - id: "dripstone_letter_w"
+          input: { head: "mini_dripstone_block" }
+  dripstone_letter_x:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNWM1ZDU3MzljYzkzZmNhNGJmOTQ5NmM1ZmE4MjE1ZmU4ODI1NGI1ZTNkNGYxMzFhNmFmMDhmNzZmYzU1MWNjMCJ9fX0="
+    name: "&7Dripstone X"
+    tags:
+      - alphabet/dripstone
+      - character/letter_x
+      - stone
+    recipes:
+      stonecutter:
+        - id: "dripstone_letter_x"
+          input: { head: "mini_dripstone_block" }
+  dripstone_letter_y:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzdkZGY1NmI1ODY2OWY4Y2U4ZTk1OGI4NzQwNmJhOTQ5MjQyM2FkNzNmZjEwODg1NTczNjg1NmM1M2ZlNWQ2ZCJ9fX0="
+    name: "&7Dripstone Y"
+    tags:
+      - alphabet/dripstone
+      - character/letter_y
+      - stone
+    recipes:
+      stonecutter:
+        - id: "dripstone_letter_y"
+          input: { head: "mini_dripstone_block" }
+  dripstone_letter_z:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDZiYjVlZjBhMmM5OWNjNTNmMDM2MTA2ZDk4MDIyM2M2MDBlZDg0YTU0MjhmNTU4NWZlNDhlNTdjMzJjZmE2MiJ9fX0="
+    name: "&7Dripstone Z"
+    tags:
+      - alphabet/dripstone
+      - character/letter_z
+      - stone
+    recipes:
+      stonecutter:
+        - id: "dripstone_letter_z"
+          input: { head: "mini_dripstone_block" }
+  dripstone_exclamation:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOGJmMzYxMWUxYTMwZDdhYjRjNjRiZDk5ZWYyZDE3OTBlZWEzMmQ2ZTgwMmMwOTQzNDY4OGYwYjVjNmZmOTI0ZSJ9fX0="
+    name: "&7Dripstone !"
+    tags:
+      - alphabet/dripstone
+      - character/exclamation
+      - stone
+    recipes:
+      stonecutter:
+        - id: "dripstone_exclamation"
+          input: { head: "mini_dripstone_block" }
+  dripstone_question:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZWU5MzY0OWYzMTU2NGIyZGM2ZTUzYjA1ZTIyYTFjNDM4NjVmNDc3MTUyMmQ0YWFkZjI3ODAyOTg4ZGUyMDJkIn19fQ=="
+    name: "&7Dripstone ?"
+    tags:
+      - alphabet/dripstone
+      - character/question
+      - stone
+    recipes:
+      stonecutter:
+        - id: "dripstone_question"
+          input: { head: "mini_dripstone_block" }
+  dripstone_period:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTI3YzhlMGJlYjQwZjM3ZTQ2YzJmMTJlNjA3YTA1Yzg4NTU3YThhYjRmN2E2ZTZlMTY3MDcwYmJhYTBjYTFiOSJ9fX0="
+    name: "&7Dripstone ."
+    tags:
+      - alphabet/dripstone
+      - character/period
+      - stone
+    recipes:
+      stonecutter:
+        - id: "dripstone_period"
+          input: { head: "mini_dripstone_block" }
+  dripstone_comma:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjIwMThmMmY1ZDMxNmI2ZDcxNWEyYjE3MDJjNTkwZmU3ODdmYmJjYTFiNTMzOTkyM2ExMmMwOGEyMjBkYzRmYiJ9fX0="
+    name: "&7Dripstone ,"
+    tags:
+      - alphabet/dripstone
+      - character/comma
+      - stone
+    recipes:
+      stonecutter:
+        - id: "dripstone_comma"
+          input: { head: "mini_dripstone_block" }

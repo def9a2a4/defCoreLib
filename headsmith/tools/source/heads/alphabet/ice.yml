@@ -1,0 +1,1433 @@
+# Generated Ice Alphabet Blocks
+
+heads:
+  ice_letter_a:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTRiN2YzZjUwMTRlZmZlNDY2NmE4ZGM2MWMyYTNlYWRhYzNlMzlkYjhmYTIzZTRmMzI1NWM5ZjIxNmFhOTU3YyJ9fX0="
+    name: "&7Ice A"
+    tags:
+      - alphabet/ice
+      - character/letter_a
+      - natural/ice
+    recipes:
+      stonecutter:
+        - id: "ice_letter_a"
+          input: { head: "mini_ice" }
+  ice_letter_b:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzNlYjMwMzdjOWJkNmEzMGI2ZTkyZWRjNWI0YWMwNTU3ZmY0OGEyMGYxNzAwNTRjY2U0ZTBlMzg0MTk2MzZjYiJ9fX0="
+    name: "&7Ice B"
+    tags:
+      - alphabet/ice
+      - character/letter_b
+      - natural/ice
+    recipes:
+      stonecutter:
+        - id: "ice_letter_b"
+          input: { head: "mini_ice" }
+  ice_letter_c:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYWQ2YjYzMWNlY2FiOGVlZDBjNjAxYTIyNGY4MjUwNWE2OTJmODM1Y2NiNDg0MWVlZmZiMTg3YjkxZTYyMjkyOCJ9fX0="
+    name: "&7Ice C"
+    tags:
+      - alphabet/ice
+      - character/letter_c
+      - natural/ice
+    recipes:
+      stonecutter:
+        - id: "ice_letter_c"
+          input: { head: "mini_ice" }
+  ice_letter_d:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDgyMTYyYTgyNTBlM2ZiYjNmYWE2YmI4NTk3ZGMxMjQyN2M5ZWU3ZDM3OTc2YjMwY2ZhZTExNzJiYzYyOWE1OCJ9fX0="
+    name: "&7Ice D"
+    tags:
+      - alphabet/ice
+      - character/letter_d
+      - natural/ice
+    recipes:
+      stonecutter:
+        - id: "ice_letter_d"
+          input: { head: "mini_ice" }
+  ice_letter_e:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTE4Y2RjZTAzMDc0NDUxYWRkMGY2ZTBjODE5ZWQzY2ZhMDBjZDU1MGRiMzEwMjU0NjhhZDBlZGUxZjE4NGY1MiJ9fX0="
+    name: "&7Ice E"
+    tags:
+      - alphabet/ice
+      - character/letter_e
+      - natural/ice
+    recipes:
+      stonecutter:
+        - id: "ice_letter_e"
+          input: { head: "mini_ice" }
+  ice_letter_f:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzBlYmFkY2EzNjg4ZGE3ZjZmMjZmNmRiYWVhMzQ2ZDdhNDlmZmRmNDg5N2RkMTljNTUxODkwY2UwZWFhYTVkNSJ9fX0="
+    name: "&7Ice F"
+    tags:
+      - alphabet/ice
+      - character/letter_f
+      - natural/ice
+    recipes:
+      stonecutter:
+        - id: "ice_letter_f"
+          input: { head: "mini_ice" }
+  ice_letter_g:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzhhNjRhMGUzNWIzZjE0ZDQwOGI0ZWJlNTlhZTRjMjk5Mjc2YzliNDYzOGFkZGIwOTY5Yjg2YzMxYjE5NDUxYiJ9fX0="
+    name: "&7Ice G"
+    tags:
+      - alphabet/ice
+      - character/letter_g
+      - natural/ice
+    recipes:
+      stonecutter:
+        - id: "ice_letter_g"
+          input: { head: "mini_ice" }
+  ice_letter_h:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjY1YmEwYWVhMzQ3OGJlYzA3MWRiOTNiNDI0MzM0MmMwMmM1ZTVlOTg3MmZhOGRmZGNkMjA0NTY0ZWNlZTE4MyJ9fX0="
+    name: "&7Ice H"
+    tags:
+      - alphabet/ice
+      - character/letter_h
+      - natural/ice
+    recipes:
+      stonecutter:
+        - id: "ice_letter_h"
+          input: { head: "mini_ice" }
+  ice_letter_i:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTIzMGVlYmE4NjVkNDY5MzVlZmUzYTFjN2JlMWZjYTk2ODcyYmE1OWNhYmQ0YmE2YTFjMTM5OWZlMDg3NjA3YyJ9fX0="
+    name: "&7Ice I"
+    tags:
+      - alphabet/ice
+      - character/letter_i
+      - natural/ice
+    recipes:
+      stonecutter:
+        - id: "ice_letter_i"
+          input: { head: "mini_ice" }
+  ice_letter_j:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTQ5YTNjYjA2ZWIzOGE0YmJhNWE5N2M0YTkwZjc2ZDc3Y2NmMjkxODg4N2JmMDRhMTJiNzIyMzg3NjA0N2RkNiJ9fX0="
+    name: "&7Ice J"
+    tags:
+      - alphabet/ice
+      - character/letter_j
+      - natural/ice
+    recipes:
+      stonecutter:
+        - id: "ice_letter_j"
+          input: { head: "mini_ice" }
+  ice_letter_k:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjBmNDJiNWZhNmIyYWU4ZTMwZDdjMjc2Y2UwNmYwOTFjMzYxMmI1MTViYTZmMDQ2ZGE0NjJjZmRkMjhmYzc3ZCJ9fX0="
+    name: "&7Ice K"
+    tags:
+      - alphabet/ice
+      - character/letter_k
+      - natural/ice
+    recipes:
+      stonecutter:
+        - id: "ice_letter_k"
+          input: { head: "mini_ice" }
+  ice_letter_l:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvM2VhODgxOWJlYjM1MGViZDYwOWQyYTZiNTVjOTAxYTNlNGI4NzgyZDdiZTVhNDRmMWFmZDk3YTQ3YTAwYjdhNiJ9fX0="
+    name: "&7Ice L"
+    tags:
+      - alphabet/ice
+      - character/letter_l
+      - natural/ice
+    recipes:
+      stonecutter:
+        - id: "ice_letter_l"
+          input: { head: "mini_ice" }
+  ice_letter_m:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDJlMTZkNTA5MTg2OTNmMzI2ZjVkOGQ0N2UyYzcwNWUwYjkzMDMxNWYzYzhjYzQwNWZlYmYyMDdjNTQzOTljYSJ9fX0="
+    name: "&7Ice M"
+    tags:
+      - alphabet/ice
+      - character/letter_m
+      - natural/ice
+    recipes:
+      stonecutter:
+        - id: "ice_letter_m"
+          input: { head: "mini_ice" }
+  ice_letter_n:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTFkNDc4NmQzZGU4YjBkMzkyZmZjNDViN2I0MWE2ODUwMDM1MGVhZWE3NzRkYTYzMTU3MGI5M2M0ODg2ODM4In19fQ=="
+    name: "&7Ice N"
+    tags:
+      - alphabet/ice
+      - character/letter_n
+      - natural/ice
+    recipes:
+      stonecutter:
+        - id: "ice_letter_n"
+          input: { head: "mini_ice" }
+  ice_letter_o:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTRlNTg5ZGEzN2M0YzUzZTE1ODM2ZWQ4OTZlYjBjOGU1NjE4ZjU5YTVhM2FlMWY5MzEwMjE5NmRhMDBmZTk0YyJ9fX0="
+    name: "&7Ice O"
+    tags:
+      - alphabet/ice
+      - character/letter_o
+      - natural/ice
+    recipes:
+      stonecutter:
+        - id: "ice_letter_o"
+          input: { head: "mini_ice" }
+  ice_letter_p:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTg2NzU0ZDNkYWQwN2YwMmEzZmYzMTRjZmE4MGU5ZTRkODA0YjBlMWFiMTA1MWM5MDhlODU4YzE2Zjk0NThkNCJ9fX0="
+    name: "&7Ice P"
+    tags:
+      - alphabet/ice
+      - character/letter_p
+      - natural/ice
+    recipes:
+      stonecutter:
+        - id: "ice_letter_p"
+          input: { head: "mini_ice" }
+  ice_letter_q:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTVlNjBlZTdiN2Y3MWY2Yjg2MDY1NWY3NGUzYzdlN2M4OTk5OWU0OTNhZTZjZGMxMTk1NGRhYzhjNDRhZTg3ZCJ9fX0="
+    name: "&7Ice Q"
+    tags:
+      - alphabet/ice
+      - character/letter_q
+      - natural/ice
+    recipes:
+      stonecutter:
+        - id: "ice_letter_q"
+          input: { head: "mini_ice" }
+  ice_letter_r:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjY2M2U0OTkwODA5N2ZjYTkzY2UyYjU0Y2JmNWM4ZmVhNDc1NjA1N2FjZmZkM2Y0NjU5NTlmMjIyNDM0MWIzMiJ9fX0="
+    name: "&7Ice R"
+    tags:
+      - alphabet/ice
+      - character/letter_r
+      - natural/ice
+    recipes:
+      stonecutter:
+        - id: "ice_letter_r"
+          input: { head: "mini_ice" }
+  ice_letter_s:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjA2ODlmOTljNmNmZDg0YzdmMjU1MzgzMDNkZTkyZTRhMjgwODcxMTc4OTQ4YTQxNWQ5ZmY2MWY1Njk1YzBjYSJ9fX0="
+    name: "&7Ice S"
+    tags:
+      - alphabet/ice
+      - character/letter_s
+      - natural/ice
+    recipes:
+      stonecutter:
+        - id: "ice_letter_s"
+          input: { head: "mini_ice" }
+  ice_letter_t:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTUzNDIyODY5ZjljOGNkNDRkMTcwYzIyMDk0ZDUzNmJmZmRiNzc4MzE2MzFhNGQ5NDAyN2IzNDAxMTUwNThkNyJ9fX0="
+    name: "&7Ice T"
+    tags:
+      - alphabet/ice
+      - character/letter_t
+      - natural/ice
+    recipes:
+      stonecutter:
+        - id: "ice_letter_t"
+          input: { head: "mini_ice" }
+  ice_letter_u:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTdjMzdkODQ3MTAwZjI2OWRmMTE4Yjk2ZDVhM2E0NWQxNzA5ZGIyZjkwYmYxMzY3Y2JjOTliYzgyNjdjMiJ9fX0="
+    name: "&7Ice U"
+    tags:
+      - alphabet/ice
+      - character/letter_u
+      - natural/ice
+    recipes:
+      stonecutter:
+        - id: "ice_letter_u"
+          input: { head: "mini_ice" }
+  ice_letter_v:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWZlMGQ2Y2RiMmUwYjIwOWVhOGExMjBlMzlkYTYxNGRiMDQ0YjcyZWJkZmEwZjkxNWY5MmI2N2JkM2NmNTNhNyJ9fX0="
+    name: "&7Ice V"
+    tags:
+      - alphabet/ice
+      - character/letter_v
+      - natural/ice
+    recipes:
+      stonecutter:
+        - id: "ice_letter_v"
+          input: { head: "mini_ice" }
+  ice_letter_w:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDJlOWNhOGQzODFhODVmZDUzNzUwNzZiMjA3ZmE4NDVmODQ2NTFiOWIzODRlMjNjZmJmYmVjY2RiNDVjZjQyOSJ9fX0="
+    name: "&7Ice W"
+    tags:
+      - alphabet/ice
+      - character/letter_w
+      - natural/ice
+    recipes:
+      stonecutter:
+        - id: "ice_letter_w"
+          input: { head: "mini_ice" }
+  ice_letter_x:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZWZlNWNmMjZkZGJiZTc4NTI2MGY3ZTFjOWRmN2JjMmY1NTFiYWRjNGFlNGEyMTE4YjFjZTFkYjljYWZiMjYzMyJ9fX0="
+    name: "&7Ice X"
+    tags:
+      - alphabet/ice
+      - character/letter_x
+      - natural/ice
+    recipes:
+      stonecutter:
+        - id: "ice_letter_x"
+          input: { head: "mini_ice" }
+  ice_letter_y:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjFkYmY0MDU3NTVlMjM0YjY5ZjBlMTA3ZTI2ZTBlYThkMjA0Njc1YjhkNjczN2YyNzk2NzRhODczMzlmYTJmNCJ9fX0="
+    name: "&7Ice Y"
+    tags:
+      - alphabet/ice
+      - character/letter_y
+      - natural/ice
+    recipes:
+      stonecutter:
+        - id: "ice_letter_y"
+          input: { head: "mini_ice" }
+  ice_letter_z:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjM0ZTljMWQyMThkYmEyYWU0NjJkNDk3MmIzNWFmYTg0NzIyM2Y4NTJmZmE1MWM3NTIwNGNhM2ZhZjAyODJlIn19fQ=="
+    name: "&7Ice Z"
+    tags:
+      - alphabet/ice
+      - character/letter_z
+      - natural/ice
+    recipes:
+      stonecutter:
+        - id: "ice_letter_z"
+          input: { head: "mini_ice" }
+  ice_number_0:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDA4NmM5ODAyZTJlMWE4MzUxOTZjOGYyOGQyZjgxN2Y0YWVlYzdiNDI2OWE0YTNjMTFiNWIyYzE2ZDdjZTJkMyJ9fX0="
+    name: "&7Ice 0"
+    tags:
+      - alphabet/ice
+      - character/number_0
+      - natural/ice
+    recipes:
+      stonecutter:
+        - id: "ice_number_0"
+          input: { head: "mini_ice" }
+  ice_number_1:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzQ2YWNmZWFjZjkwYjNhZmYyOGNhNjAzY2U2ZDdlZDczNDMzZDQ0NGE0ODRhOTgxZTU4ZGNmMzM5ZGEzMzdlMSJ9fX0="
+    name: "&7Ice 1"
+    tags:
+      - alphabet/ice
+      - character/number_1
+      - natural/ice
+    recipes:
+      stonecutter:
+        - id: "ice_number_1"
+          input: { head: "mini_ice" }
+  ice_number_2:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMmU3MTUxMjA5MDU1M2NiYWExZDRjNGFhMzcwN2ZmYzYzNWYwNGYyMWZlYTAzNTIzZTY1NTlmMTU2YTEyY2M0YSJ9fX0="
+    name: "&7Ice 2"
+    tags:
+      - alphabet/ice
+      - character/number_2
+      - natural/ice
+    recipes:
+      stonecutter:
+        - id: "ice_number_2"
+          input: { head: "mini_ice" }
+  ice_number_3:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZWQ0MWVjYWQ5OTc4NTIwZDY0ZDkzODdiNWE1M2Y1YmMxNGE4YjIwM2E0NjQ5MTAwY2VjZWM0YWNkODJmY2YzNiJ9fX0="
+    name: "&7Ice 3"
+    tags:
+      - alphabet/ice
+      - character/number_3
+      - natural/ice
+    recipes:
+      stonecutter:
+        - id: "ice_number_3"
+          input: { head: "mini_ice" }
+  ice_number_4:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTNmNTY1NWJhZjUzZDU1MzM3OTVjOWJjZWE3ZTQyYWExYzk5OWRmNzE1NzFkNDNmMDM3YzhiNDg3MzdiNWQ5YyJ9fX0="
+    name: "&7Ice 4"
+    tags:
+      - alphabet/ice
+      - character/number_4
+      - natural/ice
+    recipes:
+      stonecutter:
+        - id: "ice_number_4"
+          input: { head: "mini_ice" }
+  ice_number_5:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNmE0MDM3OTM2MjkxZTU1MmIwOTIzNDA0MGNmNmNjOGUwMjFlMTkxNDlhODQyNjc1YTE1NTM0ZGZmNDFkNzY5YyJ9fX0="
+    name: "&7Ice 5"
+    tags:
+      - alphabet/ice
+      - character/number_5
+      - natural/ice
+    recipes:
+      stonecutter:
+        - id: "ice_number_5"
+          input: { head: "mini_ice" }
+  ice_number_6:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvY2FhYTc1ZDM1NjBjMWMwMjc2MWQ3ZGVhZDY1NmNlY2ZlZTAzMjkwZDc0NzRjMTVmODRhZmI0ZjE0ZTRlYjI4YiJ9fX0="
+    name: "&7Ice 6"
+    tags:
+      - alphabet/ice
+      - character/number_6
+      - natural/ice
+    recipes:
+      stonecutter:
+        - id: "ice_number_6"
+          input: { head: "mini_ice" }
+  ice_number_7:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvY2UzNTI3YTkxNjAxNzI3NmNjY2Y0NGZhMmUxNGYyMDBiYjkwYjA1NTU4M2VmMTU3ZDkxZmJmMGJkYTlkNGM1YiJ9fX0="
+    name: "&7Ice 7"
+    tags:
+      - alphabet/ice
+      - character/number_7
+      - natural/ice
+    recipes:
+      stonecutter:
+        - id: "ice_number_7"
+          input: { head: "mini_ice" }
+  ice_number_8:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZGQ2NWFiYTMzZDdmNmRjYTA3N2IyNWFmY2U3YzZlNmIzNWRlYjA5MTNiN2IzNWI4ZDU2NjZjMjU4NTBlNzY2ZSJ9fX0="
+    name: "&7Ice 8"
+    tags:
+      - alphabet/ice
+      - character/number_8
+      - natural/ice
+    recipes:
+      stonecutter:
+        - id: "ice_number_8"
+          input: { head: "mini_ice" }
+  ice_number_9:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzBjZjU2OWI5ZTAzMjQyZjZkNGY5YmM5NTc5ZGViNmFlMzM2MjI3NjYzM2NlMjM4ZmMxNzA5NmJhZDNkODQxZiJ9fX0="
+    name: "&7Ice 9"
+    tags:
+      - alphabet/ice
+      - character/number_9
+      - natural/ice
+    recipes:
+      stonecutter:
+        - id: "ice_number_9"
+          input: { head: "mini_ice" }
+  ice_number_10:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzhlYTcxMDMyYzMwMTFmYzQ5Y2U0NjEyNDY5ZjFmMDNjYTk3MGFhNmJhMmY4ODBiOGYwY2YwNTQ3NDcyMzdmMiJ9fX0="
+    name: "&7Ice 10"
+    tags:
+      - alphabet/ice
+      - character/number_10
+      - natural/ice
+    recipes:
+      stonecutter:
+        - id: "ice_number_10"
+          input: { head: "mini_ice" }
+  ice_number_11:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzhmMDRiZWRiZmRhOGY2YWNmNmFjYzQzNzEyMDI5NThhNDk1NzUzOGFjNmVjMzg1N2NlN2FlNTg2ZmZmZTY5NyJ9fX0="
+    name: "&7Ice 11"
+    tags:
+      - alphabet/ice
+      - character/number_11
+      - natural/ice
+    recipes:
+      stonecutter:
+        - id: "ice_number_11"
+          input: { head: "mini_ice" }
+  ice_number_12:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZGM4OTM4MDczZmE4MjNjOTIwMjE3ODU5YjZlNmE5ZThlZWRiYjgxM2QyYmJlMzFhZjk2NjEwZTllODFhOGRjMyJ9fX0="
+    name: "&7Ice 12"
+    tags:
+      - alphabet/ice
+      - character/number_12
+      - natural/ice
+    recipes:
+      stonecutter:
+        - id: "ice_number_12"
+          input: { head: "mini_ice" }
+  ice_number_13:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZWJmNzYzY2U3NzA5ODg5ZDRhZDk3ODY4MzQ1MzBlOTAyNzIxYmY4YjY4M2UyNGU2NDE3MmY5Njc2NWI5MjcwZiJ9fX0="
+    name: "&7Ice 13"
+    tags:
+      - alphabet/ice
+      - character/number_13
+      - natural/ice
+    recipes:
+      stonecutter:
+        - id: "ice_number_13"
+          input: { head: "mini_ice" }
+  ice_number_14:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGE3N2U1ZjUwZDczODc0YTg3YjdiNzc3MjdlNGU5MGI5NDMzMjEwZDkzNTFlMjA0OGJhZTIzZmUyMzZjZTdjYSJ9fX0="
+    name: "&7Ice 14"
+    tags:
+      - alphabet/ice
+      - character/number_14
+      - natural/ice
+    recipes:
+      stonecutter:
+        - id: "ice_number_14"
+          input: { head: "mini_ice" }
+  ice_number_15:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTkwOTUxZGZiOTljMzhlNDE1MjcxZjE3OGY4MWI1YzRiOGNjYWUyNjE0MDY1OTA2MzZiZjFkZTNiMWFjZGVjIn19fQ=="
+    name: "&7Ice 15"
+    tags:
+      - alphabet/ice
+      - character/number_15
+      - natural/ice
+    recipes:
+      stonecutter:
+        - id: "ice_number_15"
+          input: { head: "mini_ice" }
+  ice_number_16:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTFjYWRjZjBkMjk1Zjg5Y2IyNjFlZTM2YjQ1MDU5NTQwOTVlZTdjYjkwNzFjNDE4N2Q5ZmMyOTJkNzFmZmNkMCJ9fX0="
+    name: "&7Ice 16"
+    tags:
+      - alphabet/ice
+      - character/number_16
+      - natural/ice
+    recipes:
+      stonecutter:
+        - id: "ice_number_16"
+          input: { head: "mini_ice" }
+  ice_number_17:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTJiMTA2YTliOWY3NTU0ZTcwZTRjNDU4ZDRkODU3OWVlOGRjOTJiZTMyMmNlYjlmY2YzYWU5MWM0ZWUzYzJjZCJ9fX0="
+    name: "&7Ice 17"
+    tags:
+      - alphabet/ice
+      - character/number_17
+      - natural/ice
+    recipes:
+      stonecutter:
+        - id: "ice_number_17"
+          input: { head: "mini_ice" }
+  ice_number_18:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTIwNTdiZTk1OGYxMDZjNzdiMmQyMDU0N2MzNDY1MjQzYjJiODUwZTIwNmM5MTYzYmQ0Yzc3NmU4MDc2OTI5NCJ9fX0="
+    name: "&7Ice 18"
+    tags:
+      - alphabet/ice
+      - character/number_18
+      - natural/ice
+    recipes:
+      stonecutter:
+        - id: "ice_number_18"
+          input: { head: "mini_ice" }
+  ice_number_19:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmE3NTA4MzU2NjIxYWQ3YjFlMTg4MmQyMTVjNGQxM2U4Zjk2YWE5YjgyZWVhN2VlOGY2YTBiNTg1ODk2MWVhMSJ9fX0="
+    name: "&7Ice 19"
+    tags:
+      - alphabet/ice
+      - character/number_19
+      - natural/ice
+    recipes:
+      stonecutter:
+        - id: "ice_number_19"
+          input: { head: "mini_ice" }
+  ice_number_20:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDUxYTMyMWQxY2I5NTMwYTI0NWIzMDg1MWIwNmRmNDYyMmFhNjBjNzM2YTE2NTU0Zjk5OGNjNzJjNDZjYTY0YSJ9fX0="
+    name: "&7Ice 20"
+    tags:
+      - alphabet/ice
+      - character/number_20
+      - natural/ice
+    recipes:
+      stonecutter:
+        - id: "ice_number_20"
+          input: { head: "mini_ice" }
+  ice_number_21:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOGJlNTA3ZDBjODNiNDQ2OTAwM2NmOTYxODM1YTk5NjM2Njk4NGY5YzQxNmY1ZTYxN2MzODU5OTZhNjI2Yzg1YyJ9fX0="
+    name: "&7Ice 21"
+    tags:
+      - alphabet/ice
+      - character/number_21
+      - natural/ice
+    recipes:
+      stonecutter:
+        - id: "ice_number_21"
+          input: { head: "mini_ice" }
+  ice_number_22:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDEwNGZiZTI1M2VkNDJlNTJmZDYwMWNhYzlkNWVhZDBmOGE2MjAxZDU5MjhkOTNjODBiZTAyZmQxNTVlM2VlOSJ9fX0="
+    name: "&7Ice 22"
+    tags:
+      - alphabet/ice
+      - character/number_22
+      - natural/ice
+    recipes:
+      stonecutter:
+        - id: "ice_number_22"
+          input: { head: "mini_ice" }
+  ice_number_23:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOGNlMWQyNjBkODhkOWY3Y2Q3NDQyODM2NWI1ZjAwZjhkNjBlOTJhYjMxM2E4Mjc3OThmOWI0ZmVhN2QxNDZhNiJ9fX0="
+    name: "&7Ice 23"
+    tags:
+      - alphabet/ice
+      - character/number_23
+      - natural/ice
+    recipes:
+      stonecutter:
+        - id: "ice_number_23"
+          input: { head: "mini_ice" }
+  ice_number_24:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDRiNWQzZWVjNDk0ZjExMmQyOGE3YTQ0ZWMyMzQ3ZDRlMzg1YjAzMGNjMWY4MzdhMjVhM2JkODgzNDVmNDlmOCJ9fX0="
+    name: "&7Ice 24"
+    tags:
+      - alphabet/ice
+      - character/number_24
+      - natural/ice
+    recipes:
+      stonecutter:
+        - id: "ice_number_24"
+          input: { head: "mini_ice" }
+  ice_number_25:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZGJkODU5ZGI2NjQwMzQ5YmZlYzFjZjRhMmVhN2U1YjM1NGE3NzVjNmVlM2Y5N2M1MmQyYmM0MzFmNTQzZDJlIn19fQ=="
+    name: "&7Ice 25"
+    tags:
+      - alphabet/ice
+      - character/number_25
+      - natural/ice
+    recipes:
+      stonecutter:
+        - id: "ice_number_25"
+          input: { head: "mini_ice" }
+  ice_exclamation:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMmM5MjBmOGJiOGViYmQ0MzUxNWZjZjFhOWU0OGNjMmE1NmJjNDFhYTViNTYwZmJkNzY4NzI3ZjRhZjE1NWZlZCJ9fX0="
+    name: "&7Ice !"
+    tags:
+      - alphabet/ice
+      - character/exclamation
+      - natural/ice
+    recipes:
+      stonecutter:
+        - id: "ice_exclamation"
+          input: { head: "mini_ice" }
+  ice_reverse_exclamation:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjU3MGExZmZjMzZhMmMyYjYyNzdiZDIxNDFjYTk2ZjU5NDM4NDVlMTg5ZjViZmNlNmY1YmYwNjhhY2VkNmU0NSJ9fX0="
+    name: "&7Ice ¡"
+    tags:
+      - alphabet/ice
+      - character/reverse_exclamation
+      - natural/ice
+    recipes:
+      stonecutter:
+        - id: "ice_reverse_exclamation"
+          input: { head: "mini_ice" }
+  ice_question:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWUxYzA1ZmViNDQwYjU0NGJjMzVlZTkzOWY3Njg5ZTk4OThmZjNjY2YzYmRmNjZmZmU4N2M1NWIyMmVjNTNjMCJ9fX0="
+    name: "&7Ice ?"
+    tags:
+      - alphabet/ice
+      - character/question
+      - natural/ice
+    recipes:
+      stonecutter:
+        - id: "ice_question"
+          input: { head: "mini_ice" }
+  ice_reverse_question:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzJhZTFmYmJmMTVkYTY0MTliZDY0NmIxMDc1ZDZhNTg5MjQ2YTUyYTdjZGM5YWFmNmU0MmUxNmY2YjExMzZlOSJ9fX0="
+    name: "&7Ice ¿"
+    tags:
+      - alphabet/ice
+      - character/reverse_question
+      - natural/ice
+    recipes:
+      stonecutter:
+        - id: "ice_reverse_question"
+          input: { head: "mini_ice" }
+  ice_period:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOGI5ZTI1ZTExNWQ3MTA4NTcyZTYyOGIxODZjNjg3OTdhNzkzMjZhYjI5MzM0NTkzMjY2ODYyYzY4MWIxZTgxMSJ9fX0="
+    name: "&7Ice ."
+    tags:
+      - alphabet/ice
+      - character/period
+      - natural/ice
+    recipes:
+      stonecutter:
+        - id: "ice_period"
+          input: { head: "mini_ice" }
+  ice_comma:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTM5MjQ4ZGJiZDc1MzY0ZWVkM2YzMWJmZTYzZjdiMjNhZmNkZWUxYWJlZWUyMWIzOWE2OTQ5YmExOGY2MTYzMCJ9fX0="
+    name: "&7Ice ,"
+    tags:
+      - alphabet/ice
+      - character/comma
+      - natural/ice
+    recipes:
+      stonecutter:
+        - id: "ice_comma"
+          input: { head: "mini_ice" }
+  ice_colon:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDVmNjFiZTg5YWJiYzE3MjBjMDliOTM5ZGMwM2FlYzk0NmUwZTgwZWM3ODU0OGQ3MDkxNGY0Y2IyMjRiYjc4OCJ9fX0="
+    name: "&7Ice :"
+    tags:
+      - alphabet/ice
+      - character/colon
+      - natural/ice
+    recipes:
+      stonecutter:
+        - id: "ice_colon"
+          input: { head: "mini_ice" }
+  ice_semicolon:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTkyMjYxZGVlOTFjMmMyMmMxNDQwYzRjMGMyZTFhYmI1YTk3YTM0N2NlNGYwYTQzNDljMDg1Y2Q4ZmZkYTk3ZiJ9fX0="
+    name: "&7Ice ;"
+    tags:
+      - alphabet/ice
+      - character/semicolon
+      - natural/ice
+    recipes:
+      stonecutter:
+        - id: "ice_semicolon"
+          input: { head: "mini_ice" }
+  ice_apostrophe:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmMwMDM0ZjUwYmFkYmM0ZWE0NGE1ZDFjZGY0ZTNhYTA5NTUxZDdiOWI1Yjc0N2I2YThlMWM3ZGZjZjMzM2JhZCJ9fX0="
+    name: "&7Ice '"
+    tags:
+      - alphabet/ice
+      - character/apostrophe
+      - natural/ice
+    recipes:
+      stonecutter:
+        - id: "ice_apostrophe"
+          input: { head: "mini_ice" }
+  ice_quote:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTMzMjljOGI1ZmQyZGU2NjljMDU3YzE5MzkwODdjZTIzZWZlMDc4NGQ2YWYyZmYyNjExMzQwYzZhMTRkNWQ3MSJ9fX0="
+    name: "&7Ice \""
+    tags:
+      - alphabet/ice
+      - character/quote
+      - natural/ice
+    recipes:
+      stonecutter:
+        - id: "ice_quote"
+          input: { head: "mini_ice" }
+  ice_ampersand:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjRlYWMzODMyOWMwYzc5N2M2MWZiYWUwZDhjNGYwMTFjNTk5ZTQwY2FiZjllZDc0ODI5ZTIyNmZkZjRmZDgzNSJ9fX0="
+    name: "&7Ice &"
+    tags:
+      - alphabet/ice
+      - character/ampersand
+      - natural/ice
+    recipes:
+      stonecutter:
+        - id: "ice_ampersand"
+          input: { head: "mini_ice" }
+  ice_hash:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZmYxOWVjNmI3MTc1MDYyZTc4ZDUwODEyMjZmNDYwYzdiM2JiNjFmMjM0ODU5YTQ0NjRlZmE4NzU4OWU3MDkyNiJ9fX0="
+    name: "&7Ice #"
+    tags:
+      - alphabet/ice
+      - character/hash
+      - natural/ice
+    recipes:
+      stonecutter:
+        - id: "ice_hash"
+          input: { head: "mini_ice" }
+  ice_dollar:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDUyZTBhYWVmODcxZGMzZjQyM2VhNmI4N2YxNjQ4ZWJlYWI0ZTNkNmYwOGQ4YmE4OTVlMjVkNWUwNjQ2MTU2ZCJ9fX0="
+    name: "&7Ice $"
+    tags:
+      - alphabet/ice
+      - character/dollar
+      - natural/ice
+    recipes:
+      stonecutter:
+        - id: "ice_dollar"
+          input: { head: "mini_ice" }
+  ice_percent:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjk5YTkwNTc0NmY1ZTkwZTZjZDc5MjY2ZjlhYTU0M2Y0ZTNmYzBhNjBkMDE1YTJiYmFiZjhhODI3NjJhZjIyMCJ9fX0="
+    name: "&7Ice %"
+    tags:
+      - alphabet/ice
+      - character/percent
+      - natural/ice
+    recipes:
+      stonecutter:
+        - id: "ice_percent"
+          input: { head: "mini_ice" }
+  ice_plus:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMmRkY2ZlN2Q5MWNkODBiMzY0Y2MwNjAxNjBhMDY5OTM4NmQwOTZlMGU1YWRmOThlOGU0NWUwYTE5ODYzMWQ4ZiJ9fX0="
+    name: "&7Ice +"
+    tags:
+      - alphabet/ice
+      - character/plus
+      - natural/ice
+    recipes:
+      stonecutter:
+        - id: "ice_plus"
+          input: { head: "mini_ice" }
+  ice_minus:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZWYxZmU1YzllZmE1ODVmOWIwMTdkZGQ3MTcwODZmMzc3MmUwYWFhNzgzOWFiZTQ4ZTFiNDllNjE0MjRkOWUzNSJ9fX0="
+    name: "&7Ice -"
+    tags:
+      - alphabet/ice
+      - character/minus
+      - natural/ice
+    recipes:
+      stonecutter:
+        - id: "ice_minus"
+          input: { head: "mini_ice" }
+  ice_equals:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOGE2ZmNkNTI0OWQ5YTkwMzdlODgzNGQyODIzYTA2ZDA3MDFkMzZkMDUxMmRhZWRmMjMyZWY1ZDM5OTYxN2Q1MiJ9fX0="
+    name: "&7Ice ="
+    tags:
+      - alphabet/ice
+      - character/equals
+      - natural/ice
+    recipes:
+      stonecutter:
+        - id: "ice_equals"
+          input: { head: "mini_ice" }
+  ice_slash:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTYxZDQ0NDAzMWVkN2ZmZWNlMDY2OTY1ZTNjOTZiMGQzYjg3ZmQ1YzMwZDUzNmZlNzkyZjY3OTcyNGY0MWI1YSJ9fX0="
+    name: "&7Ice /"
+    tags:
+      - alphabet/ice
+      - character/slash
+      - natural/ice
+    recipes:
+      stonecutter:
+        - id: "ice_slash"
+          input: { head: "mini_ice" }
+  ice_backslash:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzA1ZGFiNWNmM2Y3OTY5YTQ5Nzg1NDY1ZjMwOTczMjM1NTU2YWFkM2MyMTYzY2M0MTBkNzMxYTNiNTEyZjNjMCJ9fX0="
+    name: "&7Ice \\"
+    tags:
+      - alphabet/ice
+      - character/backslash
+      - natural/ice
+    recipes:
+      stonecutter:
+        - id: "ice_backslash"
+          input: { head: "mini_ice" }
+  ice_underscore:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjM2OGQ0YTJlMDg4YjliYmNjMzJkZjBiODNkZWU1NjFjYzA4MjhhZjk5OTZhYzUyZDdjNTZiZTU0MjZiMzQ3NiJ9fX0="
+    name: "&7Ice _"
+    tags:
+      - alphabet/ice
+      - character/underscore
+      - natural/ice
+    recipes:
+      stonecutter:
+        - id: "ice_underscore"
+          input: { head: "mini_ice" }
+  ice_heart:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjAyMWZiMDQ2YzZjMzU5MGZkYTM0NDM4ODAwYWViMWYxMmNmZWJjN2Q2NzM2ZTZkM2M4YTVlMjc1NTg0ZTBhNyJ9fX0="
+    name: "&7Ice ♥"
+    tags:
+      - alphabet/ice
+      - character/heart
+      - natural/ice
+    recipes:
+      stonecutter:
+        - id: "ice_heart"
+          input: { head: "mini_ice" }
+  ice_blank:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDFiYzVkMjFlNTQ0YWEzMjY3NDE3NmM3NGViYjJlNzAwZjNkYzIwYmZlZDc3YzcyNWJhODMwNTMxYzU2MWMxYyJ9fX0="
+    name: "&7Ice  "
+    tags:
+      - alphabet/ice
+      - character/blank
+      - natural/ice
+    recipes:
+      stonecutter:
+        - id: "ice_blank"
+          input: { head: "mini_ice" }
+  ice_checkmark:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYWZkNWJiNzU0NWQ0ZTI3NTgwZWU0ODI0ZDE1MTA4NGU5YjIzYmQwZGE4ODJiNzZlNTI1MjIxY2M3NmFhODJiMSJ9fX0="
+    name: "&7Ice ✓"
+    tags:
+      - alphabet/ice
+      - character/checkmark
+      - natural/ice
+    recipes:
+      stonecutter:
+        - id: "ice_checkmark"
+          input: { head: "mini_ice" }
+  ice_note:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTM4ZTBhNmEyNDZmNTUzZTdlOWM5OWI5N2IwMGJmZDk5Zjc0NzMyNTUxNjY3ZDgxMmNjMzAzMGQ5OGVlMDI3MyJ9fX0="
+    name: "&7Ice ♪"
+    tags:
+      - alphabet/ice
+      - character/note
+      - natural/ice
+    recipes:
+      stonecutter:
+        - id: "ice_note"
+          input: { head: "mini_ice" }
+  ice_paren_open:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvM2M3NjRlNTMyYWRkODM4MjEwMDE1NzJmMTQwNGM5ODRiOTY5NjIyY2NlZGRhY2RhZGZkNDljNmRhZTFlOTI2ZCJ9fX0="
+    name: "&7Ice ("
+    tags:
+      - alphabet/ice
+      - character/paren_open
+      - natural/ice
+    recipes:
+      stonecutter:
+        - id: "ice_paren_open"
+          input: { head: "mini_ice" }
+  ice_paren_close:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDA2MDIwODk5ODhhNDFjZmJlODI1YWQ4NTQ0OWVhNWI5MDgzMTI1NjJjNWYwYzcwNjZkMWJkOThmNjYzYTliOCJ9fX0="
+    name: "&7Ice )"
+    tags:
+      - alphabet/ice
+      - character/paren_close
+      - natural/ice
+    recipes:
+      stonecutter:
+        - id: "ice_paren_close"
+          input: { head: "mini_ice" }
+  ice_bracket_open:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmJjMWNjNDFhNTA2YjFiYWJkMTk1ZjkyMDU5OTU5MmZkZDJiOWU5ZTgyZWFiYTFmODI3OTVlMmVkNmEwMTVhOCJ9fX0="
+    name: "&7Ice ["
+    tags:
+      - alphabet/ice
+      - character/bracket_open
+      - natural/ice
+    recipes:
+      stonecutter:
+        - id: "ice_bracket_open"
+          input: { head: "mini_ice" }
+  ice_bracket_close:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTk1YzZjYjI4ODQyYjQ0NGU2YjFlOTkyMTQzOWU1ZjIyMDA1NjExZDA2MmEzYjA2MGY1NGRkYjNiN2JlODA1NCJ9fX0="
+    name: "&7Ice ]"
+    tags:
+      - alphabet/ice
+      - character/bracket_close
+      - natural/ice
+    recipes:
+      stonecutter:
+        - id: "ice_bracket_close"
+          input: { head: "mini_ice" }
+  ice_brace_open:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjMyNzk4Mzc0NGYwMmNjMGExODI4NDA1ZjQzMmZkM2QxMTdjZjkxY2Y0MjY0Yjg1OTIzZDgzOTNmZmFlZDkzNyJ9fX0="
+    name: "&7Ice {"
+    tags:
+      - alphabet/ice
+      - character/brace_open
+      - natural/ice
+    recipes:
+      stonecutter:
+        - id: "ice_brace_open"
+          input: { head: "mini_ice" }
+  ice_brace_close:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTE4OGZmMDZlN2YxMjhhZDlkMDMxODNiZGU5ODNhMTg2ZjQ4ODNlNTQ5ZWQ1Y2E4MTI5MWQ4ZmJhNzU3MjI5ZCJ9fX0="
+    name: "&7Ice }"
+    tags:
+      - alphabet/ice
+      - character/brace_close
+      - natural/ice
+    recipes:
+      stonecutter:
+        - id: "ice_brace_close"
+          input: { head: "mini_ice" }
+  ice_arrow_up:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjhkZGQyNjM3MDA1YjRiOTA4OGM1MGJmMjM4YzA3Yzk5MjEwYTQ5OTk3NTI3OTc1YzcwNWIxNmMyMzJhNTc0MyJ9fX0="
+    name: "&7Ice ↑"
+    tags:
+      - alphabet/ice
+      - character/arrow_up
+      - natural/ice
+    recipes:
+      stonecutter:
+        - id: "ice_arrow_up"
+          input: { head: "mini_ice" }
+  ice_arrow_down:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZWExZGFiMTU5NGZjOTQ2ZGZlNWM5YWEyM2FkNDcwMzE0ZmMxNDBkNWU5MGYzY2JlZjE0YTEzMzM3ZTAyMDgzYSJ9fX0="
+    name: "&7Ice ↓"
+    tags:
+      - alphabet/ice
+      - character/arrow_down
+      - natural/ice
+    recipes:
+      stonecutter:
+        - id: "ice_arrow_down"
+          input: { head: "mini_ice" }
+  ice_arrow_left:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDYzNTE4NjdiMTI1ODE2Y2ZmYWQ5NjYxZDRkZTIxOTU3NDYzMjA3ZjNjNTUyYWJhNzg3NjQ1ZmI4NmI4ZTQwZSJ9fX0="
+    name: "&7Ice ←"
+    tags:
+      - alphabet/ice
+      - character/arrow_left
+      - natural/ice
+    recipes:
+      stonecutter:
+        - id: "ice_arrow_left"
+          input: { head: "mini_ice" }
+  ice_arrow_right:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzY4YTYwMmE1YTBlMjU2MjFjOWE3MTRkZGQ1ZTNkYjQ1ZmIyNzU0M2U3ZDcwMGU1MDAxZjEwNTUwNzU2YjEyNiJ9fX0="
+    name: "&7Ice →"
+    tags:
+      - alphabet/ice
+      - character/arrow_right
+      - natural/ice
+    recipes:
+      stonecutter:
+        - id: "ice_arrow_right"
+          input: { head: "mini_ice" }
+  ice_arrow_left_up:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmUyZmE2ODE0MmUxMTNhMzBmZmZhZTgxYjkyMTFmOWJhN2ZlNGM2Y2NkZGVlM2QzODg1MTljZGI2MmI3M2FhMiJ9fX0="
+    name: "&7Ice ↖"
+    tags:
+      - alphabet/ice
+      - character/arrow_left_up
+      - natural/ice
+    recipes:
+      stonecutter:
+        - id: "ice_arrow_left_up"
+          input: { head: "mini_ice" }
+  ice_arrow_right_up:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzVhMWIxNGQxNjBhZGI1OGU3ZDE0MzJlNGU0ZDJmNjUzYTA3YTQ2OWY3OTU4YTUwOWZjODMyN2RlNGRmMmNmNiJ9fX0="
+    name: "&7Ice ↗"
+    tags:
+      - alphabet/ice
+      - character/arrow_right_up
+      - natural/ice
+    recipes:
+      stonecutter:
+        - id: "ice_arrow_right_up"
+          input: { head: "mini_ice" }
+  ice_arrow_left_down:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvN2U0YjRmZjRlNmE4NmM0YjFkZmRmNGMyM2QzNjE2YWU4OWZmNzM5ODJmODZmYTgzMjM0ZTUwZmViYzE2ZDEwOCJ9fX0="
+    name: "&7Ice ↙"
+    tags:
+      - alphabet/ice
+      - character/arrow_left_down
+      - natural/ice
+    recipes:
+      stonecutter:
+        - id: "ice_arrow_left_down"
+          input: { head: "mini_ice" }
+  ice_arrow_right_down:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTgzODJiZTQ1NzViNGU0MWRmODFhMGNmZmUzYzhmYzc2ODQ5NjYwODQ5NGM1ZGY4ZTMxMTkxM2YwMzg0Njk3MCJ9fX0="
+    name: "&7Ice ↘"
+    tags:
+      - alphabet/ice
+      - character/arrow_right_down
+      - natural/ice
+    recipes:
+      stonecutter:
+        - id: "ice_arrow_right_down"
+          input: { head: "mini_ice" }
+  ice_letter_a_umlaut:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODU0Nzc1YzBiYjQxYmE2ZjFlMWVlNWJjMjg0NjczMDgzNmVjMGY0YmNlOWVjM2ZkZjdiYTBjNjkwNDNlNzU5OSJ9fX0="
+    name: "&7Ice Ä"
+    tags:
+      - alphabet/ice
+      - character/letter_a_umlaut
+      - natural/ice
+    recipes:
+      stonecutter:
+        - id: "ice_letter_a_umlaut"
+          input: { head: "mini_ice" }
+  ice_letter_n_tilde:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzAzMzFiMDA0N2Y0YWU4NTUxMjZmOTY2MTE1OTRhN2ZiODlmNjI3MGM1ODhlMjQ4YmZmMTlkYjU1NTVmMTI2OCJ9fX0="
+    name: "&7Ice Ñ"
+    tags:
+      - alphabet/ice
+      - character/letter_n_tilde
+      - natural/ice
+    recipes:
+      stonecutter:
+        - id: "ice_letter_n_tilde"
+          input: { head: "mini_ice" }
+  ice_letter_o_umlaut:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjNkNzNhYTJiYjg0NGI1YzUwNDkxYjVhMTZmYTJiYTcwNmY3MGIyZjNlYTRlN2U2NDczMDVkYTY5ODRlMjVkNyJ9fX0="
+    name: "&7Ice Ö"
+    tags:
+      - alphabet/ice
+      - character/letter_o_umlaut
+      - natural/ice
+    recipes:
+      stonecutter:
+        - id: "ice_letter_o_umlaut"
+          input: { head: "mini_ice" }
+  ice_letter_u_umlaut:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOGI0N2ExNjhkMzA4NTJjNGJhNDMxMTI2OTJjMWZlZGZlYjQyZTYyMDc2NzkzMjc4Mzk5OTYyOWI2YmZhYjcwMyJ9fX0="
+    name: "&7Ice Ü"
+    tags:
+      - alphabet/ice
+      - character/letter_u_umlaut
+      - natural/ice
+    recipes:
+      stonecutter:
+        - id: "ice_letter_u_umlaut"
+          input: { head: "mini_ice" }
+  ice_cyrillic_yo:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTAwZWRhYzJlY2NhYTIyZWJmYjdhZjQyMDA0YjczYTk3MDhkZmNmOTE3ZGZkZjQ4ZDhhNjdlMGU5NDc2NjJhNyJ9fX0="
+    name: "&7Ice Ё"
+    tags:
+      - alphabet/ice
+      - character/cyrillic_yo
+      - natural/ice
+    recipes:
+      stonecutter:
+        - id: "ice_cyrillic_yo"
+          input: { head: "mini_ice" }
+  ice_cyrillic_be:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODhmYmVkNmQzYjM1OGU0MjlkMmUxNGFmZTk0ZDA2NDUwMmY3ZDA1Yzc0ZDJmNzdhNDk4MjQ3NmYzOWIzMGEwNiJ9fX0="
+    name: "&7Ice Б"
+    tags:
+      - alphabet/ice
+      - character/cyrillic_be
+      - natural/ice
+    recipes:
+      stonecutter:
+        - id: "ice_cyrillic_be"
+          input: { head: "mini_ice" }
+  ice_cyrillic_ge:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTgxNTVlNmM3NmVlYTdhMDAyZjFhMjgzMWFiY2I3OTA5MmVjOGYwNjhmZDI5MjliYWFmZjBkYTBmZTcwYzI2MiJ9fX0="
+    name: "&7Ice Г"
+    tags:
+      - alphabet/ice
+      - character/cyrillic_ge
+      - natural/ice
+    recipes:
+      stonecutter:
+        - id: "ice_cyrillic_ge"
+          input: { head: "mini_ice" }
+  ice_cyrillic_de:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODU0ZGI5NDdhNDZmOTkzN2I1ZjNkYTlkOWE1ZmRhNjY1N2UzZGY2Y2EwODRhY2Q3N2MyY2YwMzE1ZTA3NDE3In19fQ=="
+    name: "&7Ice Д"
+    tags:
+      - alphabet/ice
+      - character/cyrillic_de
+      - natural/ice
+    recipes:
+      stonecutter:
+        - id: "ice_cyrillic_de"
+          input: { head: "mini_ice" }
+  ice_cyrillic_zhe:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzM3OWNkZWY4YWQ1YzdlNmRiMzg4YjMwOTlmNjNkMjdkMGNkNzcwNDZiMjJlNDU5ZjYzYTY2NDE4YmI5NTVlNSJ9fX0="
+    name: "&7Ice Ж"
+    tags:
+      - alphabet/ice
+      - character/cyrillic_zhe
+      - natural/ice
+    recipes:
+      stonecutter:
+        - id: "ice_cyrillic_zhe"
+          input: { head: "mini_ice" }
+  ice_cyrillic_ze:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMmFmMTkxYTIyYjM2ZGVjZjk1Yjg4MmU3MTE4YzMwZmQ5NzMwMWEyOTllYzZmYmJhMGJlM2U5YzcwNDY1YWM3NiJ9fX0="
+    name: "&7Ice З"
+    tags:
+      - alphabet/ice
+      - character/cyrillic_ze
+      - natural/ice
+    recipes:
+      stonecutter:
+        - id: "ice_cyrillic_ze"
+          input: { head: "mini_ice" }
+  ice_cyrillic_i:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGI3NzNlNGVjYTQyYzI1ZGE3NjJhZGY3NDA0MDhhYWM4NjBmYTFmMzg1OWM3OTJlOGZmYzE0MTk3OWE5OTA4NiJ9fX0="
+    name: "&7Ice И"
+    tags:
+      - alphabet/ice
+      - character/cyrillic_i
+      - natural/ice
+    recipes:
+      stonecutter:
+        - id: "ice_cyrillic_i"
+          input: { head: "mini_ice" }
+  ice_cyrillic_short_i:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvM2UxNjY0MjY4NTkyZGIwMTZiNTBmMmZiYmJlZDQ3MTNmNGRhMzhlZDlmMzdjNmQ3MzQ1MTFiZGY4ZTU1OWJmOCJ9fX0="
+    name: "&7Ice Й"
+    tags:
+      - alphabet/ice
+      - character/cyrillic_short_i
+      - natural/ice
+    recipes:
+      stonecutter:
+        - id: "ice_cyrillic_short_i"
+          input: { head: "mini_ice" }
+  ice_cyrillic_el:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTkxNDdkYWFiNTI2MTViYWFjZTJiYmI2NGJiOWNlNzI2NWI4ODQ0YTBhMTZmNjVmZmExOTRmMmQ1YmUwYjNmYiJ9fX0="
+    name: "&7Ice Л"
+    tags:
+      - alphabet/ice
+      - character/cyrillic_el
+      - natural/ice
+    recipes:
+      stonecutter:
+        - id: "ice_cyrillic_el"
+          input: { head: "mini_ice" }
+  ice_cyrillic_pe:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzM3NDkyYzYyYjI0MGNjZDRkZGZhYzc3MzVjNjA4MTRkMDcyNGE4ZWRjMzU4ZWU2MTg3ZDVmODcyNjJhZWJmMiJ9fX0="
+    name: "&7Ice П"
+    tags:
+      - alphabet/ice
+      - character/cyrillic_pe
+      - natural/ice
+    recipes:
+      stonecutter:
+        - id: "ice_cyrillic_pe"
+          input: { head: "mini_ice" }
+  ice_cyrillic_u:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTM0MjdjYTg2NGQ2OTM5ZmQ3OWI5MWRkZjUyNDYyMzNiMGE3ZGE3ZmJjMWMzOTg2YmMzNGQ4OGI2NWM4YTZjNiJ9fX0="
+    name: "&7Ice У"
+    tags:
+      - alphabet/ice
+      - character/cyrillic_u
+      - natural/ice
+    recipes:
+      stonecutter:
+        - id: "ice_cyrillic_u"
+          input: { head: "mini_ice" }
+  ice_cyrillic_ef:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOWM4YjU3MjBiYTFmZjFlYjUxMTNmZjI2YmIzNzExNWRjZWExMDM5YTVjNDYyMzIxYTY3MjhhNWI5ZjEzZjU1ZiJ9fX0="
+    name: "&7Ice Ф"
+    tags:
+      - alphabet/ice
+      - character/cyrillic_ef
+      - natural/ice
+    recipes:
+      stonecutter:
+        - id: "ice_cyrillic_ef"
+          input: { head: "mini_ice" }
+  ice_cyrillic_tse:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDkwMTM0YzQwZDcxYjI3OWM3MjBiNjYyZTFkYjFjZWQ1YTAyOWFmZWE1Yjk4ZmVkZjAwNTlkNGRmZTZkNmQ4In19fQ=="
+    name: "&7Ice Ц"
+    tags:
+      - alphabet/ice
+      - character/cyrillic_tse
+      - natural/ice
+    recipes:
+      stonecutter:
+        - id: "ice_cyrillic_tse"
+          input: { head: "mini_ice" }
+  ice_cyrillic_che:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmU0ZTk1MzExMzJmNDFhMDYwMDdhZjkyNjQxMWJlMjcwZWQ5ZmQ2N2MzNWY0MjY0NjVhZDQ4OGVhOTQzMDUyIn19fQ=="
+    name: "&7Ice Ч"
+    tags:
+      - alphabet/ice
+      - character/cyrillic_che
+      - natural/ice
+    recipes:
+      stonecutter:
+        - id: "ice_cyrillic_che"
+          input: { head: "mini_ice" }
+  ice_cyrillic_sha:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjdkMTc1YWUyM2ZiODNlNzU4Y2JhMWEzNmEzNmQxZTM5MzNhZmRhZGY0YTExYWVlNTI2MWQwMWU5MDY0NzRhYyJ9fX0="
+    name: "&7Ice Ш"
+    tags:
+      - alphabet/ice
+      - character/cyrillic_sha
+      - natural/ice
+    recipes:
+      stonecutter:
+        - id: "ice_cyrillic_sha"
+          input: { head: "mini_ice" }
+  ice_cyrillic_shcha:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDU4NzVhZDU5NmRhYjk4YWRiMDgzYWFiYWNiNzE5YjJjYmVmMDIyY2FmMDNlNTE4Y2E2MzM0Mjg2ZTAzODAyMCJ9fX0="
+    name: "&7Ice Щ"
+    tags:
+      - alphabet/ice
+      - character/cyrillic_shcha
+      - natural/ice
+    recipes:
+      stonecutter:
+        - id: "ice_cyrillic_shcha"
+          input: { head: "mini_ice" }
+  ice_cyrillic_hard:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTMwNWJkZjllN2I0MTg3NjVhNWUwNDFiMjUxMzFhODJkMWEyMmZkZmM1ZmU4MTAyMjk5ODViMWI4ZTM0OWI5MSJ9fX0="
+    name: "&7Ice Ъ"
+    tags:
+      - alphabet/ice
+      - character/cyrillic_hard
+      - natural/ice
+    recipes:
+      stonecutter:
+        - id: "ice_cyrillic_hard"
+          input: { head: "mini_ice" }
+  ice_cyrillic_yeru:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjA1NjU0NGEzZDdmYjVlNDY2OThmY2VjMmEzYjczMDc5NWYzNDVkY2QyY2E4MzU5OTk3YTM4NGQ0OTUwNTI5MiJ9fX0="
+    name: "&7Ice Ы"
+    tags:
+      - alphabet/ice
+      - character/cyrillic_yeru
+      - natural/ice
+    recipes:
+      stonecutter:
+        - id: "ice_cyrillic_yeru"
+          input: { head: "mini_ice" }
+  ice_cyrillic_soft:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDljOGY0YzExNjc3YjNmMDNlY2Q5MGViZGNhMWQzZmZiMjkxMzdkZjkzZDc2ODVkMjQyYWJkYjUxZmNmNjAwNyJ9fX0="
+    name: "&7Ice Ь"
+    tags:
+      - alphabet/ice
+      - character/cyrillic_soft
+      - natural/ice
+    recipes:
+      stonecutter:
+        - id: "ice_cyrillic_soft"
+          input: { head: "mini_ice" }
+  ice_cyrillic_e:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOWRlZmU4NDNlZTliMTc5ZDRmZGVlNTMwODBjNDU1MjgwOTU1MDY5YjRkNzhiOTQxNjcyZjYxNDg2MWNiYTY5In19fQ=="
+    name: "&7Ice Э"
+    tags:
+      - alphabet/ice
+      - character/cyrillic_e
+      - natural/ice
+    recipes:
+      stonecutter:
+        - id: "ice_cyrillic_e"
+          input: { head: "mini_ice" }
+  ice_cyrillic_yu:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTQ5MjMxYjE3OTRlOWZhOTJmYWMzYWZjMDJiMzFjNDliYmY1ZjdkOTVlOTMzYzI0ZDA3MGRiMWQwZWUwYTFiOCJ9fX0="
+    name: "&7Ice Ю"
+    tags:
+      - alphabet/ice
+      - character/cyrillic_yu
+      - natural/ice
+    recipes:
+      stonecutter:
+        - id: "ice_cyrillic_yu"
+          input: { head: "mini_ice" }
+  ice_cyrillic_ya:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTAxNzA0ZDcxNGJmMDFiNmVjNWI2ZDZlZDFhZmY0YWM5ZGY3YTJkN2VkYmEzMGY1OTlkMGE1ZTQ5OTE1ZWYzNCJ9fX0="
+    name: "&7Ice Я"
+    tags:
+      - alphabet/ice
+      - character/cyrillic_ya
+      - natural/ice
+    recipes:
+      stonecutter:
+        - id: "ice_cyrillic_ya"
+          input: { head: "mini_ice" }
+  ice_zodiac_aquarius:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTU0YWQxMjMwNDM0N2M3OWE4NjVjZDBhN2UwNjEwOTZlMTI5OWRhMDM2ODZkNjVhMjExMzg0YzY2ZTVkN2QzNSJ9fX0="
+    name: "&7Ice ♒"
+    tags:
+      - alphabet/ice
+      - character/zodiac_aquarius
+      - natural/ice
+    recipes:
+      stonecutter:
+        - id: "ice_zodiac_aquarius"
+          input: { head: "mini_ice" }
+  ice_zodiac_aries:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzc1NzBiNjJmNTI2Mjc5YThhNjBhMzFkMGMwYjA0YjE5Mjc1NjFhMGJlYTFiNjBjMDQ0OTI1MjNiNDhmMmI1In19fQ=="
+    name: "&7Ice ♈"
+    tags:
+      - alphabet/ice
+      - character/zodiac_aries
+      - natural/ice
+    recipes:
+      stonecutter:
+        - id: "ice_zodiac_aries"
+          input: { head: "mini_ice" }
+  ice_zodiac_cancer:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvM2Y3Y2Q3MTI1N2IyMGY4MzE1ZTYxMTM2ZWU0M2VhYWNjNjAxYTYxN2QyZDU0YTZhNDNmYjIyNzhiNjkzNWZhNCJ9fX0="
+    name: "&7Ice ♋"
+    tags:
+      - alphabet/ice
+      - character/zodiac_cancer
+      - natural/ice
+    recipes:
+      stonecutter:
+        - id: "ice_zodiac_cancer"
+          input: { head: "mini_ice" }
+  ice_zodiac_capricorn:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODM0MDA5ZjU2ZDMwZWQ5NGJmMmM4ZmFlNjY5NjZiNzVhN2ExY2JjY2ZmNDdjZDkzYzk5OGI1NmUzMTFkZjRmMiJ9fX0="
+    name: "&7Ice ♑"
+    tags:
+      - alphabet/ice
+      - character/zodiac_capricorn
+      - natural/ice
+    recipes:
+      stonecutter:
+        - id: "ice_zodiac_capricorn"
+          input: { head: "mini_ice" }
+  ice_zodiac_gemini:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTM2NmNlM2E3YzVkODY3YTg3MzJhYjM5MTg0MmNhMmE5ZGFjYWM1NTk4Yzg1YmU4MDNkZDZiMzhiMTcwOWM2ZCJ9fX0="
+    name: "&7Ice ♊"
+    tags:
+      - alphabet/ice
+      - character/zodiac_gemini
+      - natural/ice
+    recipes:
+      stonecutter:
+        - id: "ice_zodiac_gemini"
+          input: { head: "mini_ice" }
+  ice_zodiac_leo:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTE2NzU0YjRkOWY4ODEzM2Q0YWQ1MjZkZDJiZmJhOWE5OWRmNjdjZDEwOWIzZGRmMDcyY2EyZmZmM2RjMzczZiJ9fX0="
+    name: "&7Ice ♌"
+    tags:
+      - alphabet/ice
+      - character/zodiac_leo
+      - natural/ice
+    recipes:
+      stonecutter:
+        - id: "ice_zodiac_leo"
+          input: { head: "mini_ice" }
+  ice_zodiac_libra:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTAwMzljOGRiNjc0ZTllYTRhNzZmZmEzYjg3NjIwMTM1ZmUwODQwZDgwMTZjNzgwOWNiOTFhZjU5NjMyMDY4MSJ9fX0="
+    name: "&7Ice ♎"
+    tags:
+      - alphabet/ice
+      - character/zodiac_libra
+      - natural/ice
+    recipes:
+      stonecutter:
+        - id: "ice_zodiac_libra"
+          input: { head: "mini_ice" }
+  ice_zodiac_pisces:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDk3MGU3OTM1ZTkzMzMzNjVmNjJjYTlkYWIxZWNlY2NmOTQzYzdkYjI3OTNlMzYyOGNhOGI0NWI4YWUwYzEyYyJ9fX0="
+    name: "&7Ice ♓"
+    tags:
+      - alphabet/ice
+      - character/zodiac_pisces
+      - natural/ice
+    recipes:
+      stonecutter:
+        - id: "ice_zodiac_pisces"
+          input: { head: "mini_ice" }
+  ice_zodiac_sagittarius:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzZkYWIxNTljYTUzMzdmNTViN2EzOWVjZWYwZWI3ZjE0MzViMWRhOGY4MGNlYzUyNDBlNzMxZTcyZjdkNjU3MiJ9fX0="
+    name: "&7Ice ♐"
+    tags:
+      - alphabet/ice
+      - character/zodiac_sagittarius
+      - natural/ice
+    recipes:
+      stonecutter:
+        - id: "ice_zodiac_sagittarius"
+          input: { head: "mini_ice" }
+  ice_zodiac_scorpio:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvM2YyN2RlODQxNTQ0NGJkZjIxNTkyMGQ1ZWYxZjMzMDQ2MzgyOTVjNTUzZTY0ZDAwN2I2OGM2YjY2YmEzYzgxMyJ9fX0="
+    name: "&7Ice ♏"
+    tags:
+      - alphabet/ice
+      - character/zodiac_scorpio
+      - natural/ice
+    recipes:
+      stonecutter:
+        - id: "ice_zodiac_scorpio"
+          input: { head: "mini_ice" }
+  ice_zodiac_taurus:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmM5NzU4NTM0MzRlNjRjNDNkYzA3NTY2MjgyMWVhMjdhMTdiMjc3Y2RlODI3NzhiNGY1NzA1ZmJmOWRkNGQ4ZSJ9fX0="
+    name: "&7Ice ♉"
+    tags:
+      - alphabet/ice
+      - character/zodiac_taurus
+      - natural/ice
+    recipes:
+      stonecutter:
+        - id: "ice_zodiac_taurus"
+          input: { head: "mini_ice" }
+  ice_zodiac_virgo:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvN2RmYTIzZWI2ZjYxOWFmMTc3MGJlOTZjZWUyY2I2YzQxOTY5NzBhM2I1NTdhNjk1NTRlYzg0ZWI5OWY0NWM0ZCJ9fX0="
+    name: "&7Ice ♍"
+    tags:
+      - alphabet/ice
+      - character/zodiac_virgo
+      - natural/ice
+    recipes:
+      stonecutter:
+        - id: "ice_zodiac_virgo"
+          input: { head: "mini_ice" }
+  ice_female:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYWIxOWJlYmQ0ZTQzNTJjMjRhYjRkYjFmOTk4NGI2NzkyZmJiNjMyNDZmODk1ZjlkNzA5NGIzM2IwNjMxZmJlOCJ9fX0="
+    name: "&7Ice ♀"
+    tags:
+      - alphabet/ice
+      - character/female
+      - natural/ice
+    recipes:
+      stonecutter:
+        - id: "ice_female"
+          input: { head: "mini_ice" }
+  ice_male:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjZiNWE4NDY2N2YxYjlmZDgyMGI4YWZhOThmM2MzM2I3NDFlNzBmMTdhYTIyYmJkNDA5ZjdkMDJiNjU5ZmM0OCJ9fX0="
+    name: "&7Ice ♂"
+    tags:
+      - alphabet/ice
+      - character/male
+      - natural/ice
+    recipes:
+      stonecutter:
+        - id: "ice_male"
+          input: { head: "mini_ice" }

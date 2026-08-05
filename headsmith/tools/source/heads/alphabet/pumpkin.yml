@@ -1,0 +1,1833 @@
+# Generated Pumpkin Alphabet Blocks
+
+heads:
+  pumpkin_letter_a:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjYyYWUwMmRkNjg4MjNkMTEwOTkzY2IwMzgwNzMzY2U2YjNjNjQ2ZjI0YzI3ZGQ3ZjkwMTUzMTRkNDY4NzRjIn19fQ=="
+    name: "&7Pumpkin A"
+    tags:
+      - alphabet/pumpkin
+      - character/letter_a
+    recipes:
+      stonecutter:
+        - id: "pumpkin_letter_a"
+          input: { head: "mini_pumpkin" }
+  pumpkin_letter_b:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDg0MTdlN2FkOTM5OWE2YTMzMzEyMGE3NzZiMjhmN2JmN2JkY2E0MWFlYzZkMDk1ZTNhZjYzNzhiMTEzMmU0MiJ9fX0="
+    name: "&7Pumpkin B"
+    tags:
+      - alphabet/pumpkin
+      - character/letter_b
+    recipes:
+      stonecutter:
+        - id: "pumpkin_letter_b"
+          input: { head: "mini_pumpkin" }
+  pumpkin_letter_c:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZmY3ZjRlYzYxM2Y4MzRkMzE2YjViYzRmZmZlMjQ1ZTFlY2E1NWM0MmVlZGM1YWU5NzE5ZmZiZDg5MWE2YiJ9fX0="
+    name: "&7Pumpkin C"
+    tags:
+      - alphabet/pumpkin
+      - character/letter_c
+    recipes:
+      stonecutter:
+        - id: "pumpkin_letter_c"
+          input: { head: "mini_pumpkin" }
+  pumpkin_letter_d:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNmViYjkyYWY5MzI3YjRjZThkOWEzMWMyN2ZiYWVmZDk1ZTRlZDkzZjM4NGYyYWRiOTUzZDg2NDdiNmQ1YTE3In19fQ=="
+    name: "&7Pumpkin D"
+    tags:
+      - alphabet/pumpkin
+      - character/letter_d
+    recipes:
+      stonecutter:
+        - id: "pumpkin_letter_d"
+          input: { head: "mini_pumpkin" }
+  pumpkin_letter_e:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTYzNWFjNjllZDJiYjlhMzU0ZTUxODlhNTViOGJiM2EyYjUzNDM4NzMxYzczYjkyMGUwOTM0MmY1OTJmMjEifX19"
+    name: "&7Pumpkin E"
+    tags:
+      - alphabet/pumpkin
+      - character/letter_e
+    recipes:
+      stonecutter:
+        - id: "pumpkin_letter_e"
+          input: { head: "mini_pumpkin" }
+  pumpkin_letter_f:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTJjOTM4MWUxNjYzZGQ4NGE1ZTU5YTU4Yzc4NTY2Mjg4MDVlZWNhMzNjYzkyZTY3NzJkN2IzM2UzZGI5ZmEifX19"
+    name: "&7Pumpkin F"
+    tags:
+      - alphabet/pumpkin
+      - character/letter_f
+    recipes:
+      stonecutter:
+        - id: "pumpkin_letter_f"
+          input: { head: "mini_pumpkin" }
+  pumpkin_letter_g:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOWMyZjRkYjA4MjQ3NDBiOTZlNmIyZDM2NjQ3MjY5NDE3NTI5ZGM5ZDk5Y2Q3MzNmMDdjNTk4Yzg2ODU5In19fQ=="
+    name: "&7Pumpkin G"
+    tags:
+      - alphabet/pumpkin
+      - character/letter_g
+    recipes:
+      stonecutter:
+        - id: "pumpkin_letter_g"
+          input: { head: "mini_pumpkin" }
+  pumpkin_letter_h:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmRlYWRiOWNjM2ViYTc0OTI5M2I3OWExNDUzNmJiOGU3NTFjNDk2MmFmYzdiMDc1M2U5NjlkYmM5MmFiNTliIn19fQ=="
+    name: "&7Pumpkin H"
+    tags:
+      - alphabet/pumpkin
+      - character/letter_h
+    recipes:
+      stonecutter:
+        - id: "pumpkin_letter_h"
+          input: { head: "mini_pumpkin" }
+  pumpkin_letter_i:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmM5MTg2NWZiMDM2Nzg0NGIyOTcyZTljNzI2ZWFjZmM3OWE0ZTM4MzVlNWFjZmZkNGYxNmRiN2EzNzQ3YzYifX19"
+    name: "&7Pumpkin I"
+    tags:
+      - alphabet/pumpkin
+      - character/letter_i
+    recipes:
+      stonecutter:
+        - id: "pumpkin_letter_i"
+          input: { head: "mini_pumpkin" }
+  pumpkin_letter_j:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZmYzYmFhNjRjYWIwNjU0NDA3OTQ1NzM5MmU4YjQxMjZlZmM3Mzg3OWJhYmFiMWI2YWRlMGNmOGQ2YTFkOSJ9fX0="
+    name: "&7Pumpkin J"
+    tags:
+      - alphabet/pumpkin
+      - character/letter_j
+    recipes:
+      stonecutter:
+        - id: "pumpkin_letter_j"
+          input: { head: "mini_pumpkin" }
+  pumpkin_letter_k:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjQxNWYwNDA0OTNlZmIzNmYwYzY5Mjg0ZTk3NTFjNWIzMWZlMzlhMTNhOGVkMmE1ZGNlNjJkYzM0MTM3M2UifX19"
+    name: "&7Pumpkin K"
+    tags:
+      - alphabet/pumpkin
+      - character/letter_k
+    recipes:
+      stonecutter:
+        - id: "pumpkin_letter_k"
+          input: { head: "mini_pumpkin" }
+  pumpkin_letter_l:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmY1YTZkYjkzYjRmMzgxY2U5ZjdhZjlmZGUwNWNlZjQ0Nzg1NjJjZTgyZjYwNzhjOTFhM2JhYzE1MWMzNTE3In19fQ=="
+    name: "&7Pumpkin L"
+    tags:
+      - alphabet/pumpkin
+      - character/letter_l
+    recipes:
+      stonecutter:
+        - id: "pumpkin_letter_l"
+          input: { head: "mini_pumpkin" }
+  pumpkin_letter_m:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZGYxY2EyNTQ1ZmRjMTBiY2Q2ODAyZjBiYjIzYmUzYTgyYjM1ZDJhZmIxZWMxMzM2N2I3NGNkMGY5NjQ5NzFiIn19fQ=="
+    name: "&7Pumpkin M"
+    tags:
+      - alphabet/pumpkin
+      - character/letter_m
+    recipes:
+      stonecutter:
+        - id: "pumpkin_letter_m"
+          input: { head: "mini_pumpkin" }
+  pumpkin_letter_n:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzlmNmY5ZDJiM2JlNTBhOTQxY2MyZDFiZDY5YWU2YTZhMmU2ZDc0ODcwYTAxZmRhOWNkMzYxY2U5ZWI2OSJ9fX0="
+    name: "&7Pumpkin N"
+    tags:
+      - alphabet/pumpkin
+      - character/letter_n
+    recipes:
+      stonecutter:
+        - id: "pumpkin_letter_n"
+          input: { head: "mini_pumpkin" }
+  pumpkin_letter_o:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTkxMjg0MmU5ZDM0Mjk1MmM5NzE1ZGVhYzQwYzNhZmZhNmY0MWU0OGU3Y2M2ZTliMjU1OTc1ODIzODU0ODkifX19"
+    name: "&7Pumpkin O"
+    tags:
+      - alphabet/pumpkin
+      - character/letter_o
+    recipes:
+      stonecutter:
+        - id: "pumpkin_letter_o"
+          input: { head: "mini_pumpkin" }
+  pumpkin_letter_p:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDY3MGI0MTQ4YjIyOWU1NzM4OGVhMDJlYjkzZGNjMTdhOWE4OWMzOGRhMTI2ZWM1NzQ5NjllNDNiMzc1M2YxYSJ9fX0="
+    name: "&7Pumpkin P"
+    tags:
+      - alphabet/pumpkin
+      - character/letter_p
+    recipes:
+      stonecutter:
+        - id: "pumpkin_letter_p"
+          input: { head: "mini_pumpkin" }
+  pumpkin_letter_q:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvM2Y4ODA4NjNhZDgyNzUwZWM5ZWFmZDgzNjFjMWU1MjMyYjM4NTUwZTJmNzc3OWZkNWMxYmViNzc0MzllIn19fQ=="
+    name: "&7Pumpkin Q"
+    tags:
+      - alphabet/pumpkin
+      - character/letter_q
+    recipes:
+      stonecutter:
+        - id: "pumpkin_letter_q"
+          input: { head: "mini_pumpkin" }
+  pumpkin_letter_r:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvY2FlNjNmMGY0YTAxY2E1MmYzMTM0N2I0OGRhODY1Y2I1YzczZjk3ZTEwYWYxYzQ1MzJlZWZmMzkwZGQifX19"
+    name: "&7Pumpkin R"
+    tags:
+      - alphabet/pumpkin
+      - character/letter_r
+    recipes:
+      stonecutter:
+        - id: "pumpkin_letter_r"
+          input: { head: "mini_pumpkin" }
+  pumpkin_letter_s:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzJmMDM0MWFiMWMxZmRmMDJlZmJlNTMzMzNkN2MzOWU0M2NmODQ4NTkzMzdiZjJiYzJmZjFmYjRjMWExZWQ4In19fQ=="
+    name: "&7Pumpkin S"
+    tags:
+      - alphabet/pumpkin
+      - character/letter_s
+    recipes:
+      stonecutter:
+        - id: "pumpkin_letter_s"
+          input: { head: "mini_pumpkin" }
+  pumpkin_letter_t:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTg5N2NiNThhNzYxNWYyNzg0MjU3NzU4NTExNjViYjk2ZmYwMjgzYzI0ZjIxYzlkOTkwZGZjZmM0ZWFmNCJ9fX0="
+    name: "&7Pumpkin T"
+    tags:
+      - alphabet/pumpkin
+      - character/letter_t
+    recipes:
+      stonecutter:
+        - id: "pumpkin_letter_t"
+          input: { head: "mini_pumpkin" }
+  pumpkin_letter_u:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjhkMWFkMzcxMGJiN2I3YWY2MWFmZGI2YjE4YjNhM2MyNmE1N2U4YTU0ZmM1ZWMyY2JkZTJhODc0MTRhODkyZiJ9fX0="
+    name: "&7Pumpkin U"
+    tags:
+      - alphabet/pumpkin
+      - character/letter_u
+    recipes:
+      stonecutter:
+        - id: "pumpkin_letter_u"
+          input: { head: "mini_pumpkin" }
+  pumpkin_letter_v:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDRhYmI4NDA3NGFlYmNjNmM2ODlmNTg0MTM5MzM5MjkyOTFiNjE4OTMyNzk5Y2NjYzlkOGUyZTE3MmQxZjkifX19"
+    name: "&7Pumpkin V"
+    tags:
+      - alphabet/pumpkin
+      - character/letter_v
+    recipes:
+      stonecutter:
+        - id: "pumpkin_letter_v"
+          input: { head: "mini_pumpkin" }
+  pumpkin_letter_w:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOWI5MGNmZDU2ZmIxZDc2NTg1NGMzZTFhOWQyODVkZjkxZjA5YjIzMWZiYWYwYjA1MGNhN2FhODc5NGFkNmEzIn19fQ=="
+    name: "&7Pumpkin W"
+    tags:
+      - alphabet/pumpkin
+      - character/letter_w
+    recipes:
+      stonecutter:
+        - id: "pumpkin_letter_w"
+          input: { head: "mini_pumpkin" }
+  pumpkin_letter_x:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTZmOTFkNTZhY2FjZGRmZTdiNjQ1NjZhZDNkM2JhMWQxOGZmOWZiOTQxYjRkZGQ4M2NiNTY3MjYyMTA4OSJ9fX0="
+    name: "&7Pumpkin X"
+    tags:
+      - alphabet/pumpkin
+      - character/letter_x
+    recipes:
+      stonecutter:
+        - id: "pumpkin_letter_x"
+          input: { head: "mini_pumpkin" }
+  pumpkin_letter_y:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOGRhY2ZmZGZkM2YyOGMyYzZlYjg2MjQyZTkzNTQ5MTc2OGY0YTMxNjMzNmQ0ZGE2MTdiMzFiMWYzMzcyMTRkIn19fQ=="
+    name: "&7Pumpkin Y"
+    tags:
+      - alphabet/pumpkin
+      - character/letter_y
+    recipes:
+      stonecutter:
+        - id: "pumpkin_letter_y"
+          input: { head: "mini_pumpkin" }
+  pumpkin_letter_z:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZmM2YmQ3ZjI1YWMxMzI4YzNmNjViMWVlMDIzZmE2YWUyMzExODg0YjU1MzE3N2Y5ZjI0ZTIxNDY0ZWQzZmYyIn19fQ=="
+    name: "&7Pumpkin Z"
+    tags:
+      - alphabet/pumpkin
+      - character/letter_z
+    recipes:
+      stonecutter:
+        - id: "pumpkin_letter_z"
+          input: { head: "mini_pumpkin" }
+  pumpkin_number_0:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNWIyMmI3OWI3MmFjZWY4NTkxMGRiOWU5YWU4YTdiYWU4ZWJjZTgzNDJjMThlMzQ3MjUyNzNlNzdjMWFhNCJ9fX0="
+    name: "&7Pumpkin 0"
+    tags:
+      - alphabet/pumpkin
+      - character/number_0
+    recipes:
+      stonecutter:
+        - id: "pumpkin_number_0"
+          input: { head: "mini_pumpkin" }
+  pumpkin_number_1:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzBjNDg3M2U0YTIxOTE0NWViNGUzZjY2YzA5ZTJjZThiMjdkZTJmZDgxZGViNDhlM2M3ZTA0ZTk3NGU1ZWFhIn19fQ=="
+    name: "&7Pumpkin 1"
+    tags:
+      - alphabet/pumpkin
+      - character/number_1
+    recipes:
+      stonecutter:
+        - id: "pumpkin_number_1"
+          input: { head: "mini_pumpkin" }
+  pumpkin_number_2:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTM1ZjhmNTZlMWEyMzNmY2Q5Nzc3Mjg1ZTRiNWFiMTNmYWEwYzZkODJmYTYzNTQyNWMxNzQ1ZDQxMWU4NTcxZCJ9fX0="
+    name: "&7Pumpkin 2"
+    tags:
+      - alphabet/pumpkin
+      - character/number_2
+    recipes:
+      stonecutter:
+        - id: "pumpkin_number_2"
+          input: { head: "mini_pumpkin" }
+  pumpkin_number_3:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTQ0NjM1ZDZiYjhmOWFhNDZkYjYwODc1YmI1ZGIzOTQwYWIwYzRmMGViNjg0YzZiODg4NjQ3YmIzMzkyN2UifX19"
+    name: "&7Pumpkin 3"
+    tags:
+      - alphabet/pumpkin
+      - character/number_3
+    recipes:
+      stonecutter:
+        - id: "pumpkin_number_3"
+          input: { head: "mini_pumpkin" }
+  pumpkin_number_4:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjlhOWYzZDc5YTJkOGRiOGQ2NmI1OTc1MjU0MmFkNmUxMzQ5ODUzMjU4ZmFkOTg0ODc4OTI3NzM2YmQ1YjkxIn19fQ=="
+    name: "&7Pumpkin 4"
+    tags:
+      - alphabet/pumpkin
+      - character/number_4
+    recipes:
+      stonecutter:
+        - id: "pumpkin_number_4"
+          input: { head: "mini_pumpkin" }
+  pumpkin_number_5:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjllOGQyMjhlNTMwNzlkMDBiMmRmYzU3OTkzZDUyZmY3OGU2YTdlYTI3NDJiYmRmYjNjNGY0ZTkzY2QxOWI2In19fQ=="
+    name: "&7Pumpkin 5"
+    tags:
+      - alphabet/pumpkin
+      - character/number_5
+    recipes:
+      stonecutter:
+        - id: "pumpkin_number_5"
+          input: { head: "mini_pumpkin" }
+  pumpkin_number_6:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMmM1ZjU3N2ZiNWM0YjQ4OGQ5ODBlZjczM2I1ZWQ1ZDU0NWE4ZTA3MDFhYjI4NDFkODE3ZTgzODgzYTU2MWYifX19"
+    name: "&7Pumpkin 6"
+    tags:
+      - alphabet/pumpkin
+      - character/number_6
+    recipes:
+      stonecutter:
+        - id: "pumpkin_number_6"
+          input: { head: "mini_pumpkin" }
+  pumpkin_number_7:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzRiYmI3ZWJkNWQ5ZGViZjcyYTQyY2FiZjMwZDI1NTc0MzI0Y2VkYWM4ZjdmOGE1NTAxY2Q4MWU3MTZmOSJ9fX0="
+    name: "&7Pumpkin 7"
+    tags:
+      - alphabet/pumpkin
+      - character/number_7
+    recipes:
+      stonecutter:
+        - id: "pumpkin_number_7"
+          input: { head: "mini_pumpkin" }
+  pumpkin_number_8:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDhlZmI2Y2QxZjhlNTkxZWU1M2MxOTJmNjQ3NmU4M2UyNWI5NWJiZDI3ZWVjMWM2NDRjMTE1MjVmMDc2MjIifX19"
+    name: "&7Pumpkin 8"
+    tags:
+      - alphabet/pumpkin
+      - character/number_8
+    recipes:
+      stonecutter:
+        - id: "pumpkin_number_8"
+          input: { head: "mini_pumpkin" }
+  pumpkin_number_9:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzAyZjYwMjNiNWI5MGY2ZTJiMGIyZTNhNzIyOTc2MzQ3MTlkNTc0YmQ5ZmY2NDc2N2Y1NGQxOWJlZDNmYSJ9fX0="
+    name: "&7Pumpkin 9"
+    tags:
+      - alphabet/pumpkin
+      - character/number_9
+    recipes:
+      stonecutter:
+        - id: "pumpkin_number_9"
+          input: { head: "mini_pumpkin" }
+  pumpkin_number_10:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDMxZjRhNzZmMjBhOTcxNzM0ZDZmMWIyZGRmYzBhZWI1YTcyY2UzOWY1MTg4NWE4MjEzMzI3ZDg3MWZiZiJ9fX0="
+    name: "&7Pumpkin 10"
+    tags:
+      - alphabet/pumpkin
+      - character/number_10
+    recipes:
+      stonecutter:
+        - id: "pumpkin_number_10"
+          input: { head: "mini_pumpkin" }
+  pumpkin_number_11:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTc1ZjhiYmVjYWI1ZDI4MjcxOWYyZThhYmQ1MTQ3ZmJhOTc0NzZlZDNlMjEwYTJkNzZjZDRjODcwZjc1MSJ9fX0="
+    name: "&7Pumpkin 11"
+    tags:
+      - alphabet/pumpkin
+      - character/number_11
+    recipes:
+      stonecutter:
+        - id: "pumpkin_number_11"
+          input: { head: "mini_pumpkin" }
+  pumpkin_number_12:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjBjMDM2NTU3MmNjMjAzYTY1Yzk4Y2U1ZmIyMTQxODllOGQ1ZjM2MDI2Y2VlYTQxODM4NzZjOTBmMDUxM2YxZSJ9fX0="
+    name: "&7Pumpkin 12"
+    tags:
+      - alphabet/pumpkin
+      - character/number_12
+    recipes:
+      stonecutter:
+        - id: "pumpkin_number_12"
+          input: { head: "mini_pumpkin" }
+  pumpkin_number_13:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmI3Y2ZjMWZlYzYxZDNjZmNhNmIxNWJkNjMzMzEzOTg0M2MyZTk2ZjgxMTZkYWE3NWRmMjFjMDVlMjFlNzc2In19fQ=="
+    name: "&7Pumpkin 13"
+    tags:
+      - alphabet/pumpkin
+      - character/number_13
+    recipes:
+      stonecutter:
+        - id: "pumpkin_number_13"
+          input: { head: "mini_pumpkin" }
+  pumpkin_number_14:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMmJhYTE0MmE3Y2I1ZmJmNDFlZmI2NWE5OGFhNDFmYTZmNWRiYTIyNjM4ZjM0MDJhMWQ2ODlkZDRhZiJ9fX0="
+    name: "&7Pumpkin 14"
+    tags:
+      - alphabet/pumpkin
+      - character/number_14
+    recipes:
+      stonecutter:
+        - id: "pumpkin_number_14"
+          input: { head: "mini_pumpkin" }
+  pumpkin_number_15:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzk3NGI4ZjRkZWIyNTk5NzIzNDFkNTQ0YWUxNjYxMDNlNTFiMjNmZmUzMDcxOTRmYTlkOTk1Yzk5MWI2ZjEifX19"
+    name: "&7Pumpkin 15"
+    tags:
+      - alphabet/pumpkin
+      - character/number_15
+    recipes:
+      stonecutter:
+        - id: "pumpkin_number_15"
+          input: { head: "mini_pumpkin" }
+  pumpkin_number_16:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYWJjOWRhZDI2NmRkZmExNWMzZWUxN2Q0ZjgyYzkwMTg4MGJiYjdiZmRlMmYwMjc2ZDJlODJlODljMjQwIn19fQ=="
+    name: "&7Pumpkin 16"
+    tags:
+      - alphabet/pumpkin
+      - character/number_16
+    recipes:
+      stonecutter:
+        - id: "pumpkin_number_16"
+          input: { head: "mini_pumpkin" }
+  pumpkin_number_17:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzM1OGIzMTE4NDkxZTdlNzFjZDc2ZTVhOTdkNDRkYzhkY2U4YmI3N2YyZjZhZTM4NTliZDhhN2UzYWRlIn19fQ=="
+    name: "&7Pumpkin 17"
+    tags:
+      - alphabet/pumpkin
+      - character/number_17
+    recipes:
+      stonecutter:
+        - id: "pumpkin_number_17"
+          input: { head: "mini_pumpkin" }
+  pumpkin_number_18:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOGY3N2NkY2FjZjIwNTg5NDRlODFkYjFhYzEzOGFkMzk1ODIyYWZmMDg1NjY4MTEyMjZmYWFkYjcyOWMyZGEifX19"
+    name: "&7Pumpkin 18"
+    tags:
+      - alphabet/pumpkin
+      - character/number_18
+    recipes:
+      stonecutter:
+        - id: "pumpkin_number_18"
+          input: { head: "mini_pumpkin" }
+  pumpkin_number_19:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTg2Y2E1ZWIxOWFkNzk3ZTkwMWJhMDIxOTk5YWIwYzI1OTYzOTQ1YjdiMmEyYTE5M2VkM2VkZTUzZmE0MzdmIn19fQ=="
+    name: "&7Pumpkin 19"
+    tags:
+      - alphabet/pumpkin
+      - character/number_19
+    recipes:
+      stonecutter:
+        - id: "pumpkin_number_19"
+          input: { head: "mini_pumpkin" }
+  pumpkin_number_20:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNWZhOWRkZjM2NTg3ZGRmYTczNWFjNGJjNGM5ZWVlYzI0ZTQ2YWJjM2ZkOTZlYzIxYzE4OTM1NmZkNTJkMmY0In19fQ=="
+    name: "&7Pumpkin 20"
+    tags:
+      - alphabet/pumpkin
+      - character/number_20
+    recipes:
+      stonecutter:
+        - id: "pumpkin_number_20"
+          input: { head: "mini_pumpkin" }
+  pumpkin_number_21:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjI4ZDM0YjRkYTQ3OWZiMWNhNGIyMTRlODVkOGUzNDMwZDJiNjNjMjNjYTQwNjg2MDY3ZmQxOGUzNzQ2MTcifX19"
+    name: "&7Pumpkin 21"
+    tags:
+      - alphabet/pumpkin
+      - character/number_21
+    recipes:
+      stonecutter:
+        - id: "pumpkin_number_21"
+          input: { head: "mini_pumpkin" }
+  pumpkin_number_22:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzg4YTRkMjcyNGEyYjE5MDMxZjdkM2JkZGM1YWJiMjZiOGQ0NGMxNTNjOGFjOTgyNGU1MmFlNWFlMjNhZCJ9fX0="
+    name: "&7Pumpkin 22"
+    tags:
+      - alphabet/pumpkin
+      - character/number_22
+    recipes:
+      stonecutter:
+        - id: "pumpkin_number_22"
+          input: { head: "mini_pumpkin" }
+  pumpkin_number_23:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZThmZGYzYmZiNTIyNzMwZWMzNTY4YzIyOWZhZmU2MWY1Yjk0MmU3YWU5NjZhM2VhMTgzZDQ5NWYxNmZlOSJ9fX0="
+    name: "&7Pumpkin 23"
+    tags:
+      - alphabet/pumpkin
+      - character/number_23
+    recipes:
+      stonecutter:
+        - id: "pumpkin_number_23"
+          input: { head: "mini_pumpkin" }
+  pumpkin_number_24:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTIzNDViOTgyZTIxMWQzNDk2NTlmODczZDZhN2RkOTU0NWFmNGYyMDJhOWFmMDgxY2QzYTk5OWIxZDIwYmUyMyJ9fX0="
+    name: "&7Pumpkin 24"
+    tags:
+      - alphabet/pumpkin
+      - character/number_24
+    recipes:
+      stonecutter:
+        - id: "pumpkin_number_24"
+          input: { head: "mini_pumpkin" }
+  pumpkin_number_25:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMmYyZWFjNGY2Nzg1YmIxMWVlN2VjYThjZTJjNmI5Y2I4MThlODY3YjBlZDljYjk4NWU5Yjg3ZmEzNTgwMDk0NyJ9fX0="
+    name: "&7Pumpkin 25"
+    tags:
+      - alphabet/pumpkin
+      - character/number_25
+    recipes:
+      stonecutter:
+        - id: "pumpkin_number_25"
+          input: { head: "mini_pumpkin" }
+  pumpkin_number_26:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTI5MDk0YTRlMmEzZDlkNTBkYmE4YjIwZjlmZTI0ODYxOGY5ODMzMTU2ZTMxZWRhZTkxODRkYzZmOTFkMTE5NyJ9fX0="
+    name: "&7Pumpkin 26"
+    tags:
+      - alphabet/pumpkin
+      - character/number_26
+    recipes:
+      stonecutter:
+        - id: "pumpkin_number_26"
+          input: { head: "mini_pumpkin" }
+  pumpkin_number_27:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmNkZTM0ZTdlZjlmMTkzM2FjZTgxMTUxMDdkM2RjYWYzYmMwODNkZDlmNzBhNDVkOWUwZTIwZGQwMTJmZGM1OCJ9fX0="
+    name: "&7Pumpkin 27"
+    tags:
+      - alphabet/pumpkin
+      - character/number_27
+    recipes:
+      stonecutter:
+        - id: "pumpkin_number_27"
+          input: { head: "mini_pumpkin" }
+  pumpkin_number_28:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjZkZDA3NjAzNmM3NGExNzY3ZjI4N2M0NDlkN2ZiNTNiYTZlZjdhZGQ5NjIyODk5MjcwNTEzMTM0MzgwYWM4ZSJ9fX0="
+    name: "&7Pumpkin 28"
+    tags:
+      - alphabet/pumpkin
+      - character/number_28
+    recipes:
+      stonecutter:
+        - id: "pumpkin_number_28"
+          input: { head: "mini_pumpkin" }
+  pumpkin_number_29:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWRhMzc4NDQ1MjUzMjE4NDhkMzQ3ZmE1ZGMxZWFkMzcyNTAzNTg4NTJlNTJlYmFkZTk3NWQ5NDZlYjkzZjU4NCJ9fX0="
+    name: "&7Pumpkin 29"
+    tags:
+      - alphabet/pumpkin
+      - character/number_29
+    recipes:
+      stonecutter:
+        - id: "pumpkin_number_29"
+          input: { head: "mini_pumpkin" }
+  pumpkin_number_30:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTkwZTczZjc5YTNjNzY3YmJjNDUwNzI3MDM3MzFkM2NlN2JlYTkxMmMzMjQ5YzIyYWMxNTFkNjgyZDBiOTRmZSJ9fX0="
+    name: "&7Pumpkin 30"
+    tags:
+      - alphabet/pumpkin
+      - character/number_30
+    recipes:
+      stonecutter:
+        - id: "pumpkin_number_30"
+          input: { head: "mini_pumpkin" }
+  pumpkin_number_31:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjE3MTEwM2RjODU5N2U4OTM0MTJlYWY1M2JkNzZkY2QyMzUxZTg4NTllZDc1ODUwM2E0ODgzOThhYTRiZWZiNyJ9fX0="
+    name: "&7Pumpkin 31"
+    tags:
+      - alphabet/pumpkin
+      - character/number_31
+    recipes:
+      stonecutter:
+        - id: "pumpkin_number_31"
+          input: { head: "mini_pumpkin" }
+  pumpkin_number_100:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvN2NjYWNkMGQ3MDU4ZDJhMDU1MmRhYTFiNzJmZTQ1M2ZiZjExMDYzYWQ3NjI5YjI0YzIxMTZmZTRhMzkyZTBiYyJ9fX0="
+    name: "&7Pumpkin 100"
+    tags:
+      - alphabet/pumpkin
+      - character/number_100
+    recipes:
+      stonecutter:
+        - id: "pumpkin_number_100"
+          input: { head: "mini_pumpkin" }
+  pumpkin_exclamation:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzRmYjU4YzFiOGM4ZjMyN2FlYmI0ZGVmZWJjN2Q1M2I0NDU5YzRhN2QzYjQ2MWViMmFlYzAyMjkxNjA1YyJ9fX0="
+    name: "&7Pumpkin !"
+    tags:
+      - alphabet/pumpkin
+      - character/exclamation
+    recipes:
+      stonecutter:
+        - id: "pumpkin_exclamation"
+          input: { head: "mini_pumpkin" }
+  pumpkin_reverse_exclamation:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjA0OGYzZWVlZjk1NDg0NWU5OTM5YzA4MThiYmZkNjgzYzY0OTVmMjgzNWQ4NDFhYjVlZDhmZDBhMjUwM2Y0ZCJ9fX0="
+    name: "&7Pumpkin ¡"
+    tags:
+      - alphabet/pumpkin
+      - character/reverse_exclamation
+    recipes:
+      stonecutter:
+        - id: "pumpkin_reverse_exclamation"
+          input: { head: "mini_pumpkin" }
+  pumpkin_question:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYThiNGIzMzUxYWE4YTI2MDc2MWU1MDQ0NWM4NzdmNzUyODk3ODk2NzRlMjU0Njg4NjdkODgxM2MzMzk4NCJ9fX0="
+    name: "&7Pumpkin ?"
+    tags:
+      - alphabet/pumpkin
+      - character/question
+    recipes:
+      stonecutter:
+        - id: "pumpkin_question"
+          input: { head: "mini_pumpkin" }
+  pumpkin_reverse_question:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvY2MxNWZlNjBmYjQzOWJjNWY3Zjc3MzNmNDVhY2MwMGM5Y2IwYTk0MmY0OTNhZWU3NDgzODkwODgzYjE4MzdmZCJ9fX0="
+    name: "&7Pumpkin ¿"
+    tags:
+      - alphabet/pumpkin
+      - character/reverse_question
+    recipes:
+      stonecutter:
+        - id: "pumpkin_reverse_question"
+          input: { head: "mini_pumpkin" }
+  pumpkin_period:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjk1ZDhlMzJjOTMyOWQ1ODQxYjNhNGM5NzM2YjU1NjZjZWU0MTI4MmY0ZWE5NjZlMWQ1MjJjYmE0YTU1YTkifX19"
+    name: "&7Pumpkin ."
+    tags:
+      - alphabet/pumpkin
+      - character/period
+    recipes:
+      stonecutter:
+        - id: "pumpkin_period"
+          input: { head: "mini_pumpkin" }
+  pumpkin_comma:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvM2RjMWVmYWY5YzhjNzFkNjQ3YzI1ZjdkOTlmZTk0ZGJiZmI3MjViYWQ5YjA0MTVkNDVmZjAxODY1ZmJkYiJ9fX0="
+    name: "&7Pumpkin ,"
+    tags:
+      - alphabet/pumpkin
+      - character/comma
+    recipes:
+      stonecutter:
+        - id: "pumpkin_comma"
+          input: { head: "mini_pumpkin" }
+  pumpkin_colon:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmU2ZGY0NWE0Y2FlNWY2MjAzMmNlN2MyYzk2OTQyY2NlYjgzNzdlOWY3ZGI3YTliOWExNTUxNmQxMzc2In19fQ=="
+    name: "&7Pumpkin :"
+    tags:
+      - alphabet/pumpkin
+      - character/colon
+    recipes:
+      stonecutter:
+        - id: "pumpkin_colon"
+          input: { head: "mini_pumpkin" }
+  pumpkin_semicolon:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTFjMjQ0YjZhODgxZTM5Yjg2NjQ5M2ZiNzY4NTEyZTFjYTEyMzllZTVlMGE5NWFiODg5MTMxMzg5Njk0MzQifX19"
+    name: "&7Pumpkin ;"
+    tags:
+      - alphabet/pumpkin
+      - character/semicolon
+    recipes:
+      stonecutter:
+        - id: "pumpkin_semicolon"
+          input: { head: "mini_pumpkin" }
+  pumpkin_apostrophe:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzY5N2FiMDAyNmU5N2UzMjJjMzViOTZiNTI4NjZkZDkwNDgzMGNmYTk2NTg2OGU5N2JiMTQ5MzA4ZmMwZGVlYyJ9fX0="
+    name: "&7Pumpkin '"
+    tags:
+      - alphabet/pumpkin
+      - character/apostrophe
+    recipes:
+      stonecutter:
+        - id: "pumpkin_apostrophe"
+          input: { head: "mini_pumpkin" }
+  pumpkin_quote:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZmZhOGQwMmY2MDNjNmJjNDM2N2ZmNzJiMjUxZTdkOTI4MmRhMTg3ZWJjNDE4MmUxMTViMjI1NGE0ZjE3NDkifX19"
+    name: "&7Pumpkin \""
+    tags:
+      - alphabet/pumpkin
+      - character/quote
+    recipes:
+      stonecutter:
+        - id: "pumpkin_quote"
+          input: { head: "mini_pumpkin" }
+  pumpkin_ellipses:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODA0ZThhMTM4ODBiMTA1NTM1NDAzMWFjMWVlNDQ3NTEzNTFhNzkwNzViMzZlNWEzYTZiMjk4YmUzOGZmOWQxYiJ9fX0="
+    name: "&7Pumpkin ..."
+    tags:
+      - alphabet/pumpkin
+      - character/ellipses
+    recipes:
+      stonecutter:
+        - id: "pumpkin_ellipses"
+          input: { head: "mini_pumpkin" }
+  pumpkin_ampersand:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvM2RlMWQ3NjdkZDFlMThiYTk0NmJjMzYxZDU1ODRkNDQ5Y2E1ZGYyYTA5Y2Y1OGVmZGFlZTZiOGI5ZmNkIn19fQ=="
+    name: "&7Pumpkin &"
+    tags:
+      - alphabet/pumpkin
+      - character/ampersand
+    recipes:
+      stonecutter:
+        - id: "pumpkin_ampersand"
+          input: { head: "mini_pumpkin" }
+  pumpkin_at:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjA0ZjVjNmIyYmVmMzk0NDA0NzA0MjY5ZTQ3OTc3NDY2NjRkMjhjMzQyMDUwY2JiMjI5MDYzODQ5NWMzZjhlYiJ9fX0="
+    name: "&7Pumpkin @"
+    tags:
+      - alphabet/pumpkin
+      - character/at
+    recipes:
+      stonecutter:
+        - id: "pumpkin_at"
+          input: { head: "mini_pumpkin" }
+  pumpkin_hash:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTkzOGVhMmZjMTk1NDkzM2Q2YzNiOTEyNGI0NzNhZmFiNTYxZjlkYmQ1MjVkZjJiY2ViNjZmNzZiYThiOTY1NCJ9fX0="
+    name: "&7Pumpkin #"
+    tags:
+      - alphabet/pumpkin
+      - character/hash
+    recipes:
+      stonecutter:
+        - id: "pumpkin_hash"
+          input: { head: "mini_pumpkin" }
+  pumpkin_dollar:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOGJjMjdkNjMzMDY3NzFiZDUzOTM0YzMxMDUxOWM0MGVkYmNkOTE3NDczODcxN2UwMWVhYmQ1MWRhMGMwZDczZiJ9fX0="
+    name: "&7Pumpkin $"
+    tags:
+      - alphabet/pumpkin
+      - character/dollar
+    recipes:
+      stonecutter:
+        - id: "pumpkin_dollar"
+          input: { head: "mini_pumpkin" }
+  pumpkin_euro:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzljNDQ1NWNiMjg3OWE2OTdiZThhOTIzNWJiNTNiZTQwOWM3MDM5MGQxOWNkMzM4NDY5NDgyMThlMDVkNjQ4In19fQ=="
+    name: "&7Pumpkin €"
+    tags:
+      - alphabet/pumpkin
+      - character/euro
+    recipes:
+      stonecutter:
+        - id: "pumpkin_euro"
+          input: { head: "mini_pumpkin" }
+  pumpkin_pound:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzRlMjEyZDYyOTZkOTk0ZGFmMmI4ZWYyODZlNDQ4YmQyOGZlZmFiMGYxMzg5MjMyOWI3NDNkODA0ZGRjYjhlZiJ9fX0="
+    name: "&7Pumpkin £"
+    tags:
+      - alphabet/pumpkin
+      - character/pound
+    recipes:
+      stonecutter:
+        - id: "pumpkin_pound"
+          input: { head: "mini_pumpkin" }
+  pumpkin_yen:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzA5NWQwYjg5NWJkOGI2ZjI1MjUzNDIxNGQzZjgxOWIzNTFlMTk4N2I1MmNiZmMwYWZhNDI0ZGYxZjAwZmE3YSJ9fX0="
+    name: "&7Pumpkin ¥"
+    tags:
+      - alphabet/pumpkin
+      - character/yen
+    recipes:
+      stonecutter:
+        - id: "pumpkin_yen"
+          input: { head: "mini_pumpkin" }
+  pumpkin_percent:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjBiMzRlYTMwMTQ3ZTY5NGU4YjA2ODU3YTE3MjFlZTFjZWU1Mjk3ZDY3NWRjZTMzMjQ1NzNmM2Y0YmEzOTUifX19"
+    name: "&7Pumpkin %"
+    tags:
+      - alphabet/pumpkin
+      - character/percent
+    recipes:
+      stonecutter:
+        - id: "pumpkin_percent"
+          input: { head: "mini_pumpkin" }
+  pumpkin_plus:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmQ2OWE3MGE3MzVjYTZiNGI0ODY1MmUzZTIzYTVkMTlkMTBiODcyNzZhNWEyNWVmNzNkYTNmNTY4YjIxZDJjIn19fQ=="
+    name: "&7Pumpkin +"
+    tags:
+      - alphabet/pumpkin
+      - character/plus
+    recipes:
+      stonecutter:
+        - id: "pumpkin_plus"
+          input: { head: "mini_pumpkin" }
+  pumpkin_minus:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjU3OWU2ZDVmNGQ5ZTJhZGE2OTIxMDhkZTAzYTVlNzE0NjExYjUyMDg0OWUxOTEyNTU2MTVkNzg5MGY3NTgifX19"
+    name: "&7Pumpkin -"
+    tags:
+      - alphabet/pumpkin
+      - character/minus
+    recipes:
+      stonecutter:
+        - id: "pumpkin_minus"
+          input: { head: "mini_pumpkin" }
+  pumpkin_equals:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzI5MWFjNmMzZDViNjA5Zjc3ODc1ZWVhODcwNjIzNzc3NmVhMDE0MzQ4NjFhNmFkNmU0MzRiZWI3MTMyNmIifX19"
+    name: "&7Pumpkin ="
+    tags:
+      - alphabet/pumpkin
+      - character/equals
+    recipes:
+      stonecutter:
+        - id: "pumpkin_equals"
+          input: { head: "mini_pumpkin" }
+  pumpkin_slash:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMmNmNjQ2M2NlMmZkZmRjMjg1YThmNGVlYWU1Yjg2ZmI4YTk1NDYyZjA4MDJhODBjN2I2MTA4Mzg2ZWUzIn19fQ=="
+    name: "&7Pumpkin /"
+    tags:
+      - alphabet/pumpkin
+      - character/slash
+    recipes:
+      stonecutter:
+        - id: "pumpkin_slash"
+          input: { head: "mini_pumpkin" }
+  pumpkin_backslash:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOGU3MmI5OTRlMDc0ZTE4ZDY5ZGNiYzhhYmM0MzU3ZjJmN2M4NDZiYzk1NDhkYjYyYzQ3ZjJiYWQwODUxYmE0In19fQ=="
+    name: "&7Pumpkin \\"
+    tags:
+      - alphabet/pumpkin
+      - character/backslash
+    recipes:
+      stonecutter:
+        - id: "pumpkin_backslash"
+          input: { head: "mini_pumpkin" }
+  pumpkin_underscore:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNmMwYTNkOTNlNDNiMzIzZDI3NzMyMzA5YzExYjNkZTkyYTZlMDVjMTZkNzJhYTk1MWFhMTE2ZWUwYTVjZmRhIn19fQ=="
+    name: "&7Pumpkin _"
+    tags:
+      - alphabet/pumpkin
+      - character/underscore
+    recipes:
+      stonecutter:
+        - id: "pumpkin_underscore"
+          input: { head: "mini_pumpkin" }
+  pumpkin_heart:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMThhNzZmZmEyYTJmMmMwY2Q2NjlkNGY4OTI1OTQ2MDRkY2Q5ZGFkNGM4NWFlYjJlNWFhYmYyNTcyZDZjYjEifX19"
+    name: "&7Pumpkin ♥"
+    tags:
+      - alphabet/pumpkin
+      - character/heart
+    recipes:
+      stonecutter:
+        - id: "pumpkin_heart"
+          input: { head: "mini_pumpkin" }
+  pumpkin_degree:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjVhODJiZDY2YWUzOGQ3MDdiNzFmNjBkZDBmYTU3NTVlODk0ZjQ3OGY0NTIxMDhjMDE1ZTY2NDcwZDdkN2ZkYyJ9fX0="
+    name: "&7Pumpkin °"
+    tags:
+      - alphabet/pumpkin
+      - character/degree
+    recipes:
+      stonecutter:
+        - id: "pumpkin_degree"
+          input: { head: "mini_pumpkin" }
+  pumpkin_checkmark:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjg5ZjE1OGFkYjQzMTZiMTM2NTJmNDNkYWYzNzViZTgzYjQ1YWQ0YzlmMjZiZWE1YWFkYjhlYmI3NzlmZGVlMSJ9fX0="
+    name: "&7Pumpkin ✓"
+    tags:
+      - alphabet/pumpkin
+      - character/checkmark
+    recipes:
+      stonecutter:
+        - id: "pumpkin_checkmark"
+          input: { head: "mini_pumpkin" }
+  pumpkin_pause:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvN2RkMWViM2E1M2I1MjkxNzZiMWE1ZmQwMTk3OWRjMjYwZmY1YWFhODcwOTQwYWYzMDYwMTc2NGZhNGFmMTA0MSJ9fX0="
+    name: "&7Pumpkin ⏸"
+    tags:
+      - alphabet/pumpkin
+      - character/pause
+    recipes:
+      stonecutter:
+        - id: "pumpkin_pause"
+          input: { head: "mini_pumpkin" }
+  pumpkin_note:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTdlZTQyMTE2MDA0NWI5NWY3ODk5NTY4Y2E5OWIyMDA5YjQxMzdhZTFkZjMyYTc2OTU3Mjk3Y2FjNDA3YmI4MyJ9fX0="
+    name: "&7Pumpkin ♪"
+    tags:
+      - alphabet/pumpkin
+      - character/note
+    recipes:
+      stonecutter:
+        - id: "pumpkin_note"
+          input: { head: "mini_pumpkin" }
+  pumpkin_paren_open:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTMzNmU4NDBhZTk2ZTU4NDE0MWFlZjg0MTU3ZWUxM2I1ZGQzNGJhMTQ4ZThlY2I3MWJkNTU0YjhhYzJmMjU3In19fQ=="
+    name: "&7Pumpkin ("
+    tags:
+      - alphabet/pumpkin
+      - character/paren_open
+    recipes:
+      stonecutter:
+        - id: "pumpkin_paren_open"
+          input: { head: "mini_pumpkin" }
+  pumpkin_paren_close:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmViNGYxYzY1MWI1ZTQ5ZDkxMTc0M2RlODQ2MmJhZTJmMzdlNmY0ZDYzZGVhYmViMDJhM2Q4YzE1OTk5OCJ9fX0="
+    name: "&7Pumpkin )"
+    tags:
+      - alphabet/pumpkin
+      - character/paren_close
+    recipes:
+      stonecutter:
+        - id: "pumpkin_paren_close"
+          input: { head: "mini_pumpkin" }
+  pumpkin_bracket_open:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDgxMDI1ZmI4YjYwYTdmMTdmYTZhNWEwODRiZTkzZTY5NTlmYzIyOTQ1YTQ4MDhmOGE2NjQ3NzA5ZWVjZjljZiJ9fX0="
+    name: "&7Pumpkin ["
+    tags:
+      - alphabet/pumpkin
+      - character/bracket_open
+    recipes:
+      stonecutter:
+        - id: "pumpkin_bracket_open"
+          input: { head: "mini_pumpkin" }
+  pumpkin_bracket_close:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTA0MGI3Y2UzOGFjNDczNTliNWE5NTEyNzYyMjQ4NmI2MTU3ZGVkNzE5ZWE4OGQ5NTUwZjg5MzdlNTVkNDIwIn19fQ=="
+    name: "&7Pumpkin ]"
+    tags:
+      - alphabet/pumpkin
+      - character/bracket_close
+    recipes:
+      stonecutter:
+        - id: "pumpkin_bracket_close"
+          input: { head: "mini_pumpkin" }
+  pumpkin_brace_open:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTM3OTljODE1NGNiMzg0MWZlNWRmMzNiMmY3MjhiMjQzODQxZmExZTFiNzVhMzJhZTdkYjZhM2JiMmY3NyJ9fX0="
+    name: "&7Pumpkin {"
+    tags:
+      - alphabet/pumpkin
+      - character/brace_open
+    recipes:
+      stonecutter:
+        - id: "pumpkin_brace_open"
+          input: { head: "mini_pumpkin" }
+  pumpkin_brace_close:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvM2QyNTZhMjczYzYzOTI0ZjE4ZTk2N2JlNTlhMTEyMWQzNmIxOTlkMjRjNTcwMzM4ZGMzNDdmNjliNTU2MDlkIn19fQ=="
+    name: "&7Pumpkin }"
+    tags:
+      - alphabet/pumpkin
+      - character/brace_close
+    recipes:
+      stonecutter:
+        - id: "pumpkin_brace_close"
+          input: { head: "mini_pumpkin" }
+  pumpkin_arrow_up:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDVhZGI2ZmZhMmM1YzBlMzUwYzI4NDk5MTM4YTU1NjY0NDFkN2JjNTczZGUxOTg5ZmRlMjEyZmNiMTk2NjgyNiJ9fX0="
+    name: "&7Pumpkin ↑"
+    tags:
+      - alphabet/pumpkin
+      - character/arrow_up
+    recipes:
+      stonecutter:
+        - id: "pumpkin_arrow_up"
+          input: { head: "mini_pumpkin" }
+  pumpkin_arrow_down:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTcyMjIwZjU0M2E2OTJhM2YyZjk0OWViMmE1MzQzNDk1NjEwMjY0ZTkxNmIxOWI3NzNjN2U0ZDIxYjg1ZDRjNyJ9fX0="
+    name: "&7Pumpkin ↓"
+    tags:
+      - alphabet/pumpkin
+      - character/arrow_down
+    recipes:
+      stonecutter:
+        - id: "pumpkin_arrow_down"
+          input: { head: "mini_pumpkin" }
+  pumpkin_arrow_left:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjhhODZiYjRmY2FjMzg2MmFhZDNkNTEzOTNmYWE3YTFjZjM1NTNlNDkzNDEwM2VkNDVhYzJhOWE4ODhlYjlhIn19fQ=="
+    name: "&7Pumpkin ←"
+    tags:
+      - alphabet/pumpkin
+      - character/arrow_left
+    recipes:
+      stonecutter:
+        - id: "pumpkin_arrow_left"
+          input: { head: "mini_pumpkin" }
+  pumpkin_arrow_right:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzk4OTVkNThhMDQ2MjZkNWNjZTE4NzY5ZDU0MTk4ZDAzNTVmZDc3MDY4M2JkZmI3MTc2ZDA4Yzc1NDdkZSJ9fX0="
+    name: "&7Pumpkin →"
+    tags:
+      - alphabet/pumpkin
+      - character/arrow_right
+    recipes:
+      stonecutter:
+        - id: "pumpkin_arrow_right"
+          input: { head: "mini_pumpkin" }
+  pumpkin_arrow_left_up:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjZjZTkxYTQzOTk5YjZhYWFkMzJhNGNiNmY4ZDg0NjMxOTM3ZjFjZTY0ZWM3NWFlYzY1MzQ0OTlmYzFmNGQ0NCJ9fX0="
+    name: "&7Pumpkin ↖"
+    tags:
+      - alphabet/pumpkin
+      - character/arrow_left_up
+    recipes:
+      stonecutter:
+        - id: "pumpkin_arrow_left_up"
+          input: { head: "mini_pumpkin" }
+  pumpkin_arrow_right_up:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzdhZTRjY2M4NWVhZGM2Y2ZkZmViM2JjMTVkNjUzYTZmOTc4ZTUyNTljYzUzN2Q3ZTIzZmQxZGVhMjIzMmEifX19"
+    name: "&7Pumpkin ↗"
+    tags:
+      - alphabet/pumpkin
+      - character/arrow_right_up
+    recipes:
+      stonecutter:
+        - id: "pumpkin_arrow_right_up"
+          input: { head: "mini_pumpkin" }
+  pumpkin_arrow_left_down:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOGQ1ZWZiN2M2MzhkODAyNGZhODJmZTQyMzJkZTM5OTk3NjgyMTQzZDYyYjc0NzU1NWE5MTdmYTM3NDM3ZmMifX19"
+    name: "&7Pumpkin ↙"
+    tags:
+      - alphabet/pumpkin
+      - character/arrow_left_down
+    recipes:
+      stonecutter:
+        - id: "pumpkin_arrow_left_down"
+          input: { head: "mini_pumpkin" }
+  pumpkin_arrow_right_down:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvY2EyM2Q0ODllOTQzMmYwODY1MjE0YmNlMWMwZTY5MzEyYTFiZGEyNjVkNjkwMGRhZDQ5MDc1MjVlMTZkM2UifX19"
+    name: "&7Pumpkin ↘"
+    tags:
+      - alphabet/pumpkin
+      - character/arrow_right_down
+    recipes:
+      stonecutter:
+        - id: "pumpkin_arrow_right_down"
+          input: { head: "mini_pumpkin" }
+  pumpkin_forward:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTNjNGI5MGUwMzQ4YmFmOWI4YzYxZmUxN2VhMTRiYjNjYTJhZDlhZDUxYjMzYTk4NzUxZjRjZDYzNDVmZCJ9fX0="
+    name: "&7Pumpkin ⏩"
+    tags:
+      - alphabet/pumpkin
+      - character/forward
+    recipes:
+      stonecutter:
+        - id: "pumpkin_forward"
+          input: { head: "mini_pumpkin" }
+  pumpkin_forward_ii:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzRkNzcxYmU5YTQyMjYyYzczODI1NDNiYzE2YjZiMzllN2FlZTA0NjQ0MWQzNWI3ZDgzNTdkODZhYjQ1NTAifX19"
+    name: "&7Pumpkin ⏭"
+    tags:
+      - alphabet/pumpkin
+      - character/forward_ii
+    recipes:
+      stonecutter:
+        - id: "pumpkin_forward_ii"
+          input: { head: "mini_pumpkin" }
+  pumpkin_backward:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzE1OTdhMzY5NmIxOWY1Y2ZiYTlmOGJlNzU3OTA4NDgxYzg2YmU1YmIzZTc2YTg5M2I0MmZlNTYxNzJlYyJ9fX0="
+    name: "&7Pumpkin ⏪"
+    tags:
+      - alphabet/pumpkin
+      - character/backward
+    recipes:
+      stonecutter:
+        - id: "pumpkin_backward"
+          input: { head: "mini_pumpkin" }
+  pumpkin_backward_ii:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvN2VhYmY2ZGY2NTgxODQzOGVhMGM1Zjg4NmRlY2IzOTMzOTNmMTVhYmYyNzg3YTVlYzRlODM2ODIxOTJiYSJ9fX0="
+    name: "&7Pumpkin ⏮"
+    tags:
+      - alphabet/pumpkin
+      - character/backward_ii
+    recipes:
+      stonecutter:
+        - id: "pumpkin_backward_ii"
+          input: { head: "mini_pumpkin" }
+  pumpkin_refresh:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvN2ZmMzU5OGI0MDQ3NGM2MWZkNTZjN2I0MzQzOTg0OWMzMDRkNzA0NjdlODMzZWQ0ZmE4MDZiNGU2NWYyYmM3MCJ9fX0="
+    name: "&7Pumpkin ↻"
+    tags:
+      - alphabet/pumpkin
+      - character/refresh
+    recipes:
+      stonecutter:
+        - id: "pumpkin_refresh"
+          input: { head: "mini_pumpkin" }
+  pumpkin_letter_a_acute:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTZmMzY0YTRhMjQ3ZGQ2ZTc1OGE2OTIyNjM0YmMwZjc5NGQwMTU2YjM5MTRmMDJjNmZmNjAxZGYxYTNmYmVjYiJ9fX0="
+    name: "&7Pumpkin Á"
+    tags:
+      - alphabet/pumpkin
+      - character/letter_a_acute
+    recipes:
+      stonecutter:
+        - id: "pumpkin_letter_a_acute"
+          input: { head: "mini_pumpkin" }
+  pumpkin_letter_a_umlaut:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDk5MDc3ZGNkMWNkNTQ4NzM5MjY0NThhMDlhYjNmZTdmMTA3ZDMxZDc5ZDMwNjM2M2FhZWIyZjMwZjE2YmQ0In19fQ=="
+    name: "&7Pumpkin Ä"
+    tags:
+      - alphabet/pumpkin
+      - character/letter_a_umlaut
+    recipes:
+      stonecutter:
+        - id: "pumpkin_letter_a_umlaut"
+          input: { head: "mini_pumpkin" }
+  pumpkin_letter_c_cedilla:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWE4MTM2NTM1NDBmOTYzNDBiOTQ2Yjg4NGI0MmViMWFhMDE3ZDEyYjUyNTMyYzBjMGM5OWMyZTg2MjgyZDFhOCJ9fX0="
+    name: "&7Pumpkin Ç"
+    tags:
+      - alphabet/pumpkin
+      - character/letter_c_cedilla
+    recipes:
+      stonecutter:
+        - id: "pumpkin_letter_c_cedilla"
+          input: { head: "mini_pumpkin" }
+  pumpkin_letter_e_acute:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjM4MjgxNmM5YjliNjMzYmM5YWZlNjk5M2Y2M2Y2OTI5NDU0ZTUxNzI5OGVkNDdiN2U5YmUyMjAyNjZkYzlmMyJ9fX0="
+    name: "&7Pumpkin É"
+    tags:
+      - alphabet/pumpkin
+      - character/letter_e_acute
+    recipes:
+      stonecutter:
+        - id: "pumpkin_letter_e_acute"
+          input: { head: "mini_pumpkin" }
+  pumpkin_letter_i_acute:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMmNkNjFlZDhiYTUwZTI5MDY4MjI1MDk2NmJiMDg5MmNiMmZkYWJlOTJjYjEwZDJjODlmMWRlOWYxMWY1MzVhYyJ9fX0="
+    name: "&7Pumpkin Í"
+    tags:
+      - alphabet/pumpkin
+      - character/letter_i_acute
+    recipes:
+      stonecutter:
+        - id: "pumpkin_letter_i_acute"
+          input: { head: "mini_pumpkin" }
+  pumpkin_letter_n_tilde:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTI1MGNlNDFhYTU0Mzc1MTBjYWQxOGZmMmVlY2NjNTMwYTQzNGY1OWIwOWE2ZDE4MGY0Y2U5Yjc1MzQwMTNkNyJ9fX0="
+    name: "&7Pumpkin Ñ"
+    tags:
+      - alphabet/pumpkin
+      - character/letter_n_tilde
+    recipes:
+      stonecutter:
+        - id: "pumpkin_letter_n_tilde"
+          input: { head: "mini_pumpkin" }
+  pumpkin_letter_o_acute:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDg2NDM1OTg2ZDM1ZWJiZDNiM2I3MzhhODJjNDZiZmE4MjM0ZGUwNzZmOTJkOWQ4YTBkZDlhYWJhMzdiMjc3OCJ9fX0="
+    name: "&7Pumpkin Ó"
+    tags:
+      - alphabet/pumpkin
+      - character/letter_o_acute
+    recipes:
+      stonecutter:
+        - id: "pumpkin_letter_o_acute"
+          input: { head: "mini_pumpkin" }
+  pumpkin_letter_o_umlaut:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvN2NhNjQ0YmJiNWMyYTBlN2UxOGY3Y2RlMDNiNjdiODdkYjcxNDZjYWY5MmRjN2EyNWRlZjEwYWY0NjFmYjYifX19"
+    name: "&7Pumpkin Ö"
+    tags:
+      - alphabet/pumpkin
+      - character/letter_o_umlaut
+    recipes:
+      stonecutter:
+        - id: "pumpkin_letter_o_umlaut"
+          input: { head: "mini_pumpkin" }
+  pumpkin_letter_u_acute:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGJmMWNiMGE5NDZhNDY1YzNhNWNhNjRkMTZiODViZmIyZjA1M2IxOGZmY2FhZmVlN2NlOWViYTEzZDVlOWEyNyJ9fX0="
+    name: "&7Pumpkin Ú"
+    tags:
+      - alphabet/pumpkin
+      - character/letter_u_acute
+    recipes:
+      stonecutter:
+        - id: "pumpkin_letter_u_acute"
+          input: { head: "mini_pumpkin" }
+  pumpkin_letter_u_umlaut:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzJlMmFiMTU1MjI1YzJhYmY4NDM0YTEzM2JlMWZhOTY4OTIxOTY4MGYwMzhmYTgzNGU1NDQyMjE0OTMxIn19fQ=="
+    name: "&7Pumpkin Ü"
+    tags:
+      - alphabet/pumpkin
+      - character/letter_u_umlaut
+    recipes:
+      stonecutter:
+        - id: "pumpkin_letter_u_umlaut"
+          input: { head: "mini_pumpkin" }
+  pumpkin_greek_alpha:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNmIyOTIzNjVlMjQ4MGU5YzgzNGY4MWE2NzgwNzJkODZkZmY4OWQzZTFkNzAzMTJlZjZlODA3MTIyNDg2ODEyNSJ9fX0="
+    name: "&7Pumpkin α"
+    tags:
+      - alphabet/pumpkin
+      - character/greek_alpha
+    recipes:
+      stonecutter:
+        - id: "pumpkin_greek_alpha"
+          input: { head: "mini_pumpkin" }
+  pumpkin_greek_lambda:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjVhMTE4YjdiNzg4YmNiNjE2YWNmZjM1NjZmOWNmNmYzMWJjNjMwOTE1M2U3ZDI4Y2FlMDZmMDk1ZDRhYTM1OSJ9fX0="
+    name: "&7Pumpkin λ"
+    tags:
+      - alphabet/pumpkin
+      - character/greek_lambda
+    recipes:
+      stonecutter:
+        - id: "pumpkin_greek_lambda"
+          input: { head: "mini_pumpkin" }
+  pumpkin_greek_pi:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTZhZTg4MjYxODRkZGQ1NjAzYjAyNmZiYmU5MzA3ZWViZDU4MDM4YzVkODRjNzcwOTQ3MGFjYWMyMGQ5MWU1NyJ9fX0="
+    name: "&7Pumpkin π"
+    tags:
+      - alphabet/pumpkin
+      - character/greek_pi
+    recipes:
+      stonecutter:
+        - id: "pumpkin_greek_pi"
+          input: { head: "mini_pumpkin" }
+  pumpkin_greek_omega:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNmI0YjdlNmYzMGU0ZWJlZTg1NzA1MWY4NWIzYzFiZDRkMjZmYzc4YTQ4ZGU1ZWNlMzM5MTNkYmFjZDI2N2M3ZiJ9fX0="
+    name: "&7Pumpkin Ω"
+    tags:
+      - alphabet/pumpkin
+      - character/greek_omega
+    recipes:
+      stonecutter:
+        - id: "pumpkin_greek_omega"
+          input: { head: "mini_pumpkin" }
+  pumpkin_greek_sigma:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzc5NjcxOGY5ZTQ2ZGI3MWIzYjk5Y2EzODNkNzI4MGJkNTI2NjY4MDE4NDk4ZmMxMDdlMmQ0NzE3NDA5NjFiMiJ9fX0="
+    name: "&7Pumpkin ∑"
+    tags:
+      - alphabet/pumpkin
+      - character/greek_sigma
+    recipes:
+      stonecutter:
+        - id: "pumpkin_greek_sigma"
+          input: { head: "mini_pumpkin" }
+  pumpkin_cyrillic_yo:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzZkMGFiZGFkODQ0MTI2YzU1NTdlZjVhMjk0MDVjNTM5MDMzNzZiMjZmNTE5N2Y5ZGRlYTcxOTJiZDFlNCJ9fX0="
+    name: "&7Pumpkin Ё"
+    tags:
+      - alphabet/pumpkin
+      - character/cyrillic_yo
+    recipes:
+      stonecutter:
+        - id: "pumpkin_cyrillic_yo"
+          input: { head: "mini_pumpkin" }
+  pumpkin_cyrillic_be:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzIyOGM2NWM0MzY3NTdmNDMxYzE1ZDkzNWZhZTllZDk1MmY1OTVjMGI0MzNiMTBiZjJlODY3ZWQ2ZmIifX19"
+    name: "&7Pumpkin Б"
+    tags:
+      - alphabet/pumpkin
+      - character/cyrillic_be
+    recipes:
+      stonecutter:
+        - id: "pumpkin_cyrillic_be"
+          input: { head: "mini_pumpkin" }
+  pumpkin_cyrillic_ge:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzM5YjExYTM1MGNlMTJhNTM2YjE2ODlkMDExOTlmYmY4NDIyM2JlNjIyZTkxM2I0MmI3YjY1YTc5MDdkNWMxMCJ9fX0="
+    name: "&7Pumpkin Г"
+    tags:
+      - alphabet/pumpkin
+      - character/cyrillic_ge
+    recipes:
+      stonecutter:
+        - id: "pumpkin_cyrillic_ge"
+          input: { head: "mini_pumpkin" }
+  pumpkin_cyrillic_de:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzM5YWQ5YTA2M2FiOTBiN2FjNzJhNWQ0YzE3YWNiNGZiMDNkOGE4YzU4MmZiZTI4NTQyNDUzMzJiZDNkYjlhNyJ9fX0="
+    name: "&7Pumpkin Д"
+    tags:
+      - alphabet/pumpkin
+      - character/cyrillic_de
+    recipes:
+      stonecutter:
+        - id: "pumpkin_cyrillic_de"
+          input: { head: "mini_pumpkin" }
+  pumpkin_cyrillic_zhe:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZGNmZGYyYjc2NzIyYjQ2MGQ2ZjBkNzk0YWMxMWUxYzg5YWI2N2ZlNGRiOGIyYTY3MzM0NDY1ZjFlYzU5ZjVkNSJ9fX0="
+    name: "&7Pumpkin Ж"
+    tags:
+      - alphabet/pumpkin
+      - character/cyrillic_zhe
+    recipes:
+      stonecutter:
+        - id: "pumpkin_cyrillic_zhe"
+          input: { head: "mini_pumpkin" }
+  pumpkin_cyrillic_ze:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNmU4ZTcxYmI5ZWZjZjViOTVjYmM5NDIwN2Q1ZTNmZWY5NzYyYWQ1MjU3OTExNTg3MTYxOGJiNmI4ZDg0ZGEifX19"
+    name: "&7Pumpkin З"
+    tags:
+      - alphabet/pumpkin
+      - character/cyrillic_ze
+    recipes:
+      stonecutter:
+        - id: "pumpkin_cyrillic_ze"
+          input: { head: "mini_pumpkin" }
+  pumpkin_cyrillic_i:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDUzOGI5YTZjZTc3MzBlNTU4NTk0MTIwNTViZDMxMzczYTdhNzU3MTU2YjdhNDg4MTQ2YmI1NjQ0NDE0YWExZSJ9fX0="
+    name: "&7Pumpkin И"
+    tags:
+      - alphabet/pumpkin
+      - character/cyrillic_i
+    recipes:
+      stonecutter:
+        - id: "pumpkin_cyrillic_i"
+          input: { head: "mini_pumpkin" }
+  pumpkin_cyrillic_short_i:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjA2OGNkMWM2MTIxOWQ3M2VlYjY0MWRhMTE2ODA2ZWZkOGFmMmFmODczNWU1OTJhZGIxNjIzZTkzNzFiIn19fQ=="
+    name: "&7Pumpkin Й"
+    tags:
+      - alphabet/pumpkin
+      - character/cyrillic_short_i
+    recipes:
+      stonecutter:
+        - id: "pumpkin_cyrillic_short_i"
+          input: { head: "mini_pumpkin" }
+  pumpkin_cyrillic_el:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvM2ZjM2FhYzIyMGRhOWZkYzYwODViNmNmN2M4OTMxNmFlMWFlNzRlNDVhNDYxNjNmOGFmOGRiZTE3ZDdlZTA4In19fQ=="
+    name: "&7Pumpkin Л"
+    tags:
+      - alphabet/pumpkin
+      - character/cyrillic_el
+    recipes:
+      stonecutter:
+        - id: "pumpkin_cyrillic_el"
+          input: { head: "mini_pumpkin" }
+  pumpkin_cyrillic_pe:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzRmZjk4OTU1NzIyMDM2NTg5YjM5NGI5YWRiNWU3OGU2YTljNjgxNjgyYjc0YmM0YzgyMzNhMWFhOTNkM2MzIn19fQ=="
+    name: "&7Pumpkin П"
+    tags:
+      - alphabet/pumpkin
+      - character/cyrillic_pe
+    recipes:
+      stonecutter:
+        - id: "pumpkin_cyrillic_pe"
+          input: { head: "mini_pumpkin" }
+  pumpkin_cyrillic_u:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvM2E1NDljNmRlZjhlYTFkZTVmMjQ1ODJkNDJlOWQ0OTU4OTViZWNiOWYxNzgzMzliODYzMzYyYjJmZjU2ZCJ9fX0="
+    name: "&7Pumpkin У"
+    tags:
+      - alphabet/pumpkin
+      - character/cyrillic_u
+    recipes:
+      stonecutter:
+        - id: "pumpkin_cyrillic_u"
+          input: { head: "mini_pumpkin" }
+  pumpkin_cyrillic_ef:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmE1MTU3MDJkNmY5Nzk4YjQ1MjMzZjlhMzI3N2FjNjNjYTM5N2VkOTJmMmY4Nzg3ZDdhMjM3YTNlNTE0YjUifX19"
+    name: "&7Pumpkin Ф"
+    tags:
+      - alphabet/pumpkin
+      - character/cyrillic_ef
+    recipes:
+      stonecutter:
+        - id: "pumpkin_cyrillic_ef"
+          input: { head: "mini_pumpkin" }
+  pumpkin_cyrillic_tse:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOWI0MDQ2ZDFkZWU1MmY4NDZmNjIxNDAxOTVhNzBhYjcxZTA5MjQ4ZWM2OWYwZTM0MGRlNTZjNTUxYTA1MzZlIn19fQ=="
+    name: "&7Pumpkin Ц"
+    tags:
+      - alphabet/pumpkin
+      - character/cyrillic_tse
+    recipes:
+      stonecutter:
+        - id: "pumpkin_cyrillic_tse"
+          input: { head: "mini_pumpkin" }
+  pumpkin_cyrillic_che:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTdkMjYxZTJjNzc0ZmE0MGVlYTVkOTdiNTM4MGE2NTJhOGJlNTY4MTcxNzI1ODI0MWU4Njc4YzQ2NjMzNjllYyJ9fX0="
+    name: "&7Pumpkin Ч"
+    tags:
+      - alphabet/pumpkin
+      - character/cyrillic_che
+    recipes:
+      stonecutter:
+        - id: "pumpkin_cyrillic_che"
+          input: { head: "mini_pumpkin" }
+  pumpkin_cyrillic_sha:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTZhZTc0YTQ3ZjE2NTZmMWM3MzU5M2M3NTUyMmI1MGJkNTc5MThlYTgzYzU3YjkxZmU1NzI2ZWMyZTJkMyJ9fX0="
+    name: "&7Pumpkin Ш"
+    tags:
+      - alphabet/pumpkin
+      - character/cyrillic_sha
+    recipes:
+      stonecutter:
+        - id: "pumpkin_cyrillic_sha"
+          input: { head: "mini_pumpkin" }
+  pumpkin_cyrillic_shcha:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTk2YzY3MjQyOWI5NWQwMWFkMDYxMjVhMWY1ZGUxODNiNWZhYTI3ZDI3ZTM5ZTFjOTcxNjVmN2Q3NTFkOGYyIn19fQ=="
+    name: "&7Pumpkin Щ"
+    tags:
+      - alphabet/pumpkin
+      - character/cyrillic_shcha
+    recipes:
+      stonecutter:
+        - id: "pumpkin_cyrillic_shcha"
+          input: { head: "mini_pumpkin" }
+  pumpkin_cyrillic_hard:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNmNiNWM1MTZkYTk1NjY0NTY1NjkwODg2MWI4NGUxYjRlZjFmNmQ3Mzk4YmExOTVlNzM4NThjY2YxODk1OWM1In19fQ=="
+    name: "&7Pumpkin Ъ"
+    tags:
+      - alphabet/pumpkin
+      - character/cyrillic_hard
+    recipes:
+      stonecutter:
+        - id: "pumpkin_cyrillic_hard"
+          input: { head: "mini_pumpkin" }
+  pumpkin_cyrillic_yeru:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzQxOTI3ODczYWY3MTA5MmQzMTQ3ZDRlYzNlYzgxNzEyY2JiOTQ4NjI3MTlmOWFkODUxZTI3Y2UyNmZkZTZiIn19fQ=="
+    name: "&7Pumpkin Ы"
+    tags:
+      - alphabet/pumpkin
+      - character/cyrillic_yeru
+    recipes:
+      stonecutter:
+        - id: "pumpkin_cyrillic_yeru"
+          input: { head: "mini_pumpkin" }
+  pumpkin_cyrillic_soft:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjZiYmZlZTRlMjRmOWQ3NGU2YmRhNDFmYmM1N2VmOTU5OGIxMzk3MDJmMTY0NzFmODMyMmQ4YTgzOGZlNjI4YyJ9fX0="
+    name: "&7Pumpkin Ь"
+    tags:
+      - alphabet/pumpkin
+      - character/cyrillic_soft
+    recipes:
+      stonecutter:
+        - id: "pumpkin_cyrillic_soft"
+          input: { head: "mini_pumpkin" }
+  pumpkin_cyrillic_e:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmU4NDQ3MmE4YTFhYTM1MWFmZDQ4NzJhN2ViNTRjOGJlNWE5MDVlODQ3NGRmYzZmZTNkNDVkZTY2YThlNiJ9fX0="
+    name: "&7Pumpkin Э"
+    tags:
+      - alphabet/pumpkin
+      - character/cyrillic_e
+    recipes:
+      stonecutter:
+        - id: "pumpkin_cyrillic_e"
+          input: { head: "mini_pumpkin" }
+  pumpkin_cyrillic_yu:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWZkZDdhZDBjNjlhOTViOTBiNGRhMmFhOTU3MTE2MWI4NDNlMWMxYTc5MmFlYTE4ZmQ1ODdkMTBjYjIzNzcifX19"
+    name: "&7Pumpkin Ю"
+    tags:
+      - alphabet/pumpkin
+      - character/cyrillic_yu
+    recipes:
+      stonecutter:
+        - id: "pumpkin_cyrillic_yu"
+          input: { head: "mini_pumpkin" }
+  pumpkin_cyrillic_ya:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzg3M2I0NDIxN2IyY2IxMGEyZjZiMjM1Nzk3Y2MwNTY1ODY4ZDJmZTRlN2JlZjdhYjA4ZjJlZGRmOGE4NDczOSJ9fX0="
+    name: "&7Pumpkin Я"
+    tags:
+      - alphabet/pumpkin
+      - character/cyrillic_ya
+    recipes:
+      stonecutter:
+        - id: "pumpkin_cyrillic_ya"
+          input: { head: "mini_pumpkin" }
+  pumpkin_zodiac_aquarius:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjRmMGE1MTMxMjFiYzY1MDkwNmE0NzhmYWFmNDExMTZiN2FjZjAxYTJlZjNmNDRiMmYyMzc5OTQzYTRmYzBlIn19fQ=="
+    name: "&7Pumpkin ♒"
+    tags:
+      - alphabet/pumpkin
+      - character/zodiac_aquarius
+    recipes:
+      stonecutter:
+        - id: "pumpkin_zodiac_aquarius"
+          input: { head: "mini_pumpkin" }
+  pumpkin_zodiac_aries:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzUyNjVhNmViZTcyOTVlY2JlYjJhM2Y0NWQxMmVkNWQyYTUxOWI0ZGE3YjY5ZWM4MGVhY2IwODQzMDEwODk1NSJ9fX0="
+    name: "&7Pumpkin ♈"
+    tags:
+      - alphabet/pumpkin
+      - character/zodiac_aries
+    recipes:
+      stonecutter:
+        - id: "pumpkin_zodiac_aries"
+          input: { head: "mini_pumpkin" }
+  pumpkin_zodiac_cancer:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZmJkMmZkOTcxNzQ1OGNlMWMxYWQzMWJjZDY0ODM1OWM3NjNiYWRkNzhkOTg3NTAyMDFlMWExYzUwYjhiNjQ2MiJ9fX0="
+    name: "&7Pumpkin ♋"
+    tags:
+      - alphabet/pumpkin
+      - character/zodiac_cancer
+    recipes:
+      stonecutter:
+        - id: "pumpkin_zodiac_cancer"
+          input: { head: "mini_pumpkin" }
+  pumpkin_zodiac_gemini:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGZjMmVhMzNmMzlmOGE0N2MwZmY5ODEwMjBiMDhmZmRmNDIzZTBjOTIxZDYzZTdiMGM0M2U4N2U1MzhkNDYwMSJ9fX0="
+    name: "&7Pumpkin ♊"
+    tags:
+      - alphabet/pumpkin
+      - character/zodiac_gemini
+    recipes:
+      stonecutter:
+        - id: "pumpkin_zodiac_gemini"
+          input: { head: "mini_pumpkin" }
+  pumpkin_zodiac_leo:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjhjMjcyNjI3MjQwZmZmMTg4MjkwYTM1MmNkYWJiNmNkZjQ0MWEwY2YzMWNlNGViNzFlZGNlMTIzYWVkYmQyZSJ9fX0="
+    name: "&7Pumpkin ♌"
+    tags:
+      - alphabet/pumpkin
+      - character/zodiac_leo
+    recipes:
+      stonecutter:
+        - id: "pumpkin_zodiac_leo"
+          input: { head: "mini_pumpkin" }
+  pumpkin_zodiac_libra:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDI4NWYwMGIzZDA5NDAxNTA0OGYyZTI1ZmY2ODhiZTBlNDgyYTNlZTZlOGNhM2U3ZWMwNmJkYjM4NTVlYmE2OSJ9fX0="
+    name: "&7Pumpkin ♎"
+    tags:
+      - alphabet/pumpkin
+      - character/zodiac_libra
+    recipes:
+      stonecutter:
+        - id: "pumpkin_zodiac_libra"
+          input: { head: "mini_pumpkin" }
+  pumpkin_zodiac_pisces:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzgwZDc0NmVkZjgzOWU1ODg5MDAzZWM1YjRjYjM4Y2ZlYWFjYmM5ZTRiMWIwM2I5NmQ1NmM5NzIwNWI0YjA3MyJ9fX0="
+    name: "&7Pumpkin ♓"
+    tags:
+      - alphabet/pumpkin
+      - character/zodiac_pisces
+    recipes:
+      stonecutter:
+        - id: "pumpkin_zodiac_pisces"
+          input: { head: "mini_pumpkin" }
+  pumpkin_zodiac_scorpio:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYWM1NzU2YWFkNzIyNTg3ZjhhOGY3N2EyMTgzNTdlMGUyMDA1NDI4MjRjMDRkZWMxZTg0YjYyMmM3MDIxNWQ0YyJ9fX0="
+    name: "&7Pumpkin ♏"
+    tags:
+      - alphabet/pumpkin
+      - character/zodiac_scorpio
+    recipes:
+      stonecutter:
+        - id: "pumpkin_zodiac_scorpio"
+          input: { head: "mini_pumpkin" }
+  pumpkin_zodiac_taurus:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTZiYmJlNWEyMzM1NWNiMjMwNzY1YjFkMWUwZDhjMmU3OTVmYmQyMTQ4YjRiNjU3MDM4ODVjNThiMmU3NmU3ZiJ9fX0="
+    name: "&7Pumpkin ♉"
+    tags:
+      - alphabet/pumpkin
+      - character/zodiac_taurus
+    recipes:
+      stonecutter:
+        - id: "pumpkin_zodiac_taurus"
+          input: { head: "mini_pumpkin" }
+  pumpkin_zodiac_virgo:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzc1M2FiYTcwNDkyNjU2YzA5YzA5MDllOTk1OThjNjgwYTBkOTM0NjBjZjFkN2FmNmIxMDA5MGVjYjc2MmRjYiJ9fX0="
+    name: "&7Pumpkin ♍"
+    tags:
+      - alphabet/pumpkin
+      - character/zodiac_virgo
+    recipes:
+      stonecutter:
+        - id: "pumpkin_zodiac_virgo"
+          input: { head: "mini_pumpkin" }
+  pumpkin_female:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvM2U4ZjU1N2ZiZDU1ZGRhZDZhZWE3ZTkwZjQzNDkxM2U3YzAzOWY2NzlhMTMzZTUzZGU1NDM3MjZlMGM0Njg5NCJ9fX0="
+    name: "&7Pumpkin ♀"
+    tags:
+      - alphabet/pumpkin
+      - character/female
+    recipes:
+      stonecutter:
+        - id: "pumpkin_female"
+          input: { head: "mini_pumpkin" }
+  pumpkin_male:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNmE5YjQxZjU4MTM3MmMwMGU2MzQyNWQ0ZDJhYzhkODVkMDU3YzQ2ZTBhOGZhMTZkZDliYzU1MmE0OGI2Y2EyOCJ9fX0="
+    name: "&7Pumpkin ♂"
+    tags:
+      - alphabet/pumpkin
+      - character/male
+    recipes:
+      stonecutter:
+        - id: "pumpkin_male"
+          input: { head: "mini_pumpkin" }
+  pumpkin_galactic_a:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjE2NDdiMDRiZjQ0NDM2NzEyNzg2MjgxNmRhZjEwNGRiZGNkNWY1M2ZhZmMzMmNjYjZhMDZmODA2MGEzYmQwMiJ9fX0="
+    name: "&7Pumpkin Galactic A"
+    tags:
+      - alphabet/pumpkin
+      - character/galactic_a
+    recipes:
+      stonecutter:
+        - id: "pumpkin_galactic_a"
+          input: { head: "mini_pumpkin" }
+  pumpkin_galactic_b:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNWQ2MmRkYjdhOGY4MGJiNTg0ZTA1MGUyYzJhNGM5NTIwMjg3Y2ViODM4ODhhNWQxNjA3M2UyOTVhZmQ4NWNkYyJ9fX0="
+    name: "&7Pumpkin Galactic B"
+    tags:
+      - alphabet/pumpkin
+      - character/galactic_b
+    recipes:
+      stonecutter:
+        - id: "pumpkin_galactic_b"
+          input: { head: "mini_pumpkin" }
+  pumpkin_galactic_c:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTQwMzIzODdjZGM2YzUyODIyOWNlMzdmY2RhZmRjYzlkNmExNWUwNDBjNzYzMDUzNWIzOTJkNWIzZTUwYmEwMSJ9fX0="
+    name: "&7Pumpkin Galactic C"
+    tags:
+      - alphabet/pumpkin
+      - character/galactic_c
+    recipes:
+      stonecutter:
+        - id: "pumpkin_galactic_c"
+          input: { head: "mini_pumpkin" }
+  pumpkin_galactic_d:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzM2N2IwNGFhZGUzOWI5NDI3YmUwMzk2OGI4Yzc1ZDA2ZDUyYmI3YzE4MDZiMmM0M2FmYzY1YzNlZmUxZTk4YyJ9fX0="
+    name: "&7Pumpkin Galactic D"
+    tags:
+      - alphabet/pumpkin
+      - character/galactic_d
+    recipes:
+      stonecutter:
+        - id: "pumpkin_galactic_d"
+          input: { head: "mini_pumpkin" }
+  pumpkin_galactic_e:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDU5NzJmMmUwM2VkYjIzZTdlZDkwYTY2ZGYwYTczYzJlZWMwZGFkN2FhNWI4Zjg3M2RhOWViN2VkMTcyOWJlIn19fQ=="
+    name: "&7Pumpkin Galactic E"
+    tags:
+      - alphabet/pumpkin
+      - character/galactic_e
+    recipes:
+      stonecutter:
+        - id: "pumpkin_galactic_e"
+          input: { head: "mini_pumpkin" }
+  pumpkin_galactic_f:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTI0YzQyMGVmNTZhMGQ1NGJkOGZlNWQwNTdjZmQxYzUxYzA5OTQwN2RhM2EyMGViZjkwMThiNzQyYWU2ZWNlNSJ9fX0="
+    name: "&7Pumpkin Galactic F"
+    tags:
+      - alphabet/pumpkin
+      - character/galactic_f
+    recipes:
+      stonecutter:
+        - id: "pumpkin_galactic_f"
+          input: { head: "mini_pumpkin" }
+  pumpkin_galactic_g:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTliMjNjMjc0NzRlMGI4NjRhOWFmY2U0NDY4YjcyOWQ2NzliZjIwMjdmZmRiMjAxMjIwMzhjMjNjMzZjZWI1ZSJ9fX0="
+    name: "&7Pumpkin Galactic G"
+    tags:
+      - alphabet/pumpkin
+      - character/galactic_g
+    recipes:
+      stonecutter:
+        - id: "pumpkin_galactic_g"
+          input: { head: "mini_pumpkin" }
+  pumpkin_galactic_h:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvY2MyYmViODMwN2UyYzQ1YzE0Y2ViYTliYTM5NmU2ZDkzNTI1YzQxY2JlNmRkODk1MGY4YmZkNDYwNWY5NWQwMCJ9fX0="
+    name: "&7Pumpkin Galactic H"
+    tags:
+      - alphabet/pumpkin
+      - character/galactic_h
+    recipes:
+      stonecutter:
+        - id: "pumpkin_galactic_h"
+          input: { head: "mini_pumpkin" }
+  pumpkin_galactic_i:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZmMwNjFhYWRiYWFhYWFmZGFkNDBlN2VhYmEwYjNhNGMxMTc0YjRlMzU4YzQ1MGQ4ZjRhNGJkZGE5Y2VjYjNhYiJ9fX0="
+    name: "&7Pumpkin Galactic I"
+    tags:
+      - alphabet/pumpkin
+      - character/galactic_i
+    recipes:
+      stonecutter:
+        - id: "pumpkin_galactic_i"
+          input: { head: "mini_pumpkin" }
+  pumpkin_galactic_j:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWNhNDk1YmRjZTJhNGIyZmM0ZmIyMjk4YjI5YTI1M2VkOTdkNDVmYzI3M2I1MjBmZTZjMmZmNWM4MTY5MmU1OSJ9fX0="
+    name: "&7Pumpkin Galactic J"
+    tags:
+      - alphabet/pumpkin
+      - character/galactic_j
+    recipes:
+      stonecutter:
+        - id: "pumpkin_galactic_j"
+          input: { head: "mini_pumpkin" }
+  pumpkin_galactic_k:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNWEwN2EyNDUyZDE4YzViYzUyNjVmOTFkM2NlZDA0ZGNhOWU1M2MxZTVkMGU5MDM4MTZiNTlmYmU4MWZlZGYzMSJ9fX0="
+    name: "&7Pumpkin Galactic K"
+    tags:
+      - alphabet/pumpkin
+      - character/galactic_k
+    recipes:
+      stonecutter:
+        - id: "pumpkin_galactic_k"
+          input: { head: "mini_pumpkin" }
+  pumpkin_galactic_l:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTNmNjdiOGQ0NTk1N2VlNDVmNDIzYzJjNWFkNGZjM2Y5MGM3ZmY0NmExZTRlN2QxODhmMjk5NjQyMWM5Njk5NyJ9fX0="
+    name: "&7Pumpkin Galactic L"
+    tags:
+      - alphabet/pumpkin
+      - character/galactic_l
+    recipes:
+      stonecutter:
+        - id: "pumpkin_galactic_l"
+          input: { head: "mini_pumpkin" }
+  pumpkin_galactic_m:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjEyODc2ZGI5OGMyMWUwMDliZDVlODk1MzY2ODdlYWM5Y2Y4YmU3MDg5MTA0ZDA0NWVhOWViMDBiODMyODg1ZSJ9fX0="
+    name: "&7Pumpkin Galactic M"
+    tags:
+      - alphabet/pumpkin
+      - character/galactic_m
+    recipes:
+      stonecutter:
+        - id: "pumpkin_galactic_m"
+          input: { head: "mini_pumpkin" }
+  pumpkin_galactic_n:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTg2NDVhYTliM2M0ZmJmNmY5YTFhNWRiY2VjYTI5N2Y2MjMwOTEyN2FkYmRlMTAzMTFjY2Y2MjMwZDZlYjk1YiJ9fX0="
+    name: "&7Pumpkin Galactic N"
+    tags:
+      - alphabet/pumpkin
+      - character/galactic_n
+    recipes:
+      stonecutter:
+        - id: "pumpkin_galactic_n"
+          input: { head: "mini_pumpkin" }
+  pumpkin_galactic_o:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZWE5MzU5MWIxYzMyYzEwY2ZjZWMxZDFhYTU2NWY1ZDg4YTlhMGI0MzgyNjkxNzk2NGFhNjk4MDcxM2Y3MzFiZCJ9fX0="
+    name: "&7Pumpkin Galactic O"
+    tags:
+      - alphabet/pumpkin
+      - character/galactic_o
+    recipes:
+      stonecutter:
+        - id: "pumpkin_galactic_o"
+          input: { head: "mini_pumpkin" }
+  pumpkin_galactic_p:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzNlM2QzY2RhYjhmOWQ0NGYwY2QzNWY0MGFlOTczOTNhN2RjMmI3NTNjYjRmNjNiMTA1ZWJmY2M3NmI5YTUwOSJ9fX0="
+    name: "&7Pumpkin Galactic P"
+    tags:
+      - alphabet/pumpkin
+      - character/galactic_p
+    recipes:
+      stonecutter:
+        - id: "pumpkin_galactic_p"
+          input: { head: "mini_pumpkin" }
+  pumpkin_galactic_q:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTdkYTkyNzhiOGY4MzRmYTMzMTQ2Y2EwZjE2YWMwZjE4NDYyMjRlNDA0ZGE1Y2U4YmQyMjM2ZDNmOWZmNzkxYyJ9fX0="
+    name: "&7Pumpkin Galactic Q"
+    tags:
+      - alphabet/pumpkin
+      - character/galactic_q
+    recipes:
+      stonecutter:
+        - id: "pumpkin_galactic_q"
+          input: { head: "mini_pumpkin" }
+  pumpkin_galactic_r:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTBkYmJhN2RiODkwNDYyZTMwZWZhNjA0YzE0OWI3YjEyZjMwZWJiMjQ3YjVhZTNmYWE4NWE3ZTNiNTI2NWZmNSJ9fX0="
+    name: "&7Pumpkin Galactic R"
+    tags:
+      - alphabet/pumpkin
+      - character/galactic_r
+    recipes:
+      stonecutter:
+        - id: "pumpkin_galactic_r"
+          input: { head: "mini_pumpkin" }
+  pumpkin_galactic_s:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDViMDY3YWIxNmM1NTRlNTk0NjU3NDA4YjBiNTI5YWU0ZGY0ZGY3M2M1M2U2MTM0M2I1YWU1YWExZDZhNWE3ZSJ9fX0="
+    name: "&7Pumpkin Galactic S"
+    tags:
+      - alphabet/pumpkin
+      - character/galactic_s
+    recipes:
+      stonecutter:
+        - id: "pumpkin_galactic_s"
+          input: { head: "mini_pumpkin" }
+  pumpkin_galactic_t:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvN2M5ZDU4MmFjODk4MWU4ZTJmY2YzOTMxNGZlNzEzNjUxNjA3ZTZkYTc3ZjRhYjRjMjM4NGYzZTA1N2UzYTFhNCJ9fX0="
+    name: "&7Pumpkin Galactic T"
+    tags:
+      - alphabet/pumpkin
+      - character/galactic_t
+    recipes:
+      stonecutter:
+        - id: "pumpkin_galactic_t"
+          input: { head: "mini_pumpkin" }
+  pumpkin_galactic_u:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTRlOWMzMzQ2NGYzNzgxNDZlNTk1YTQ1MjYwY2I3MzI1ZGU1OGIyMDMyZjRlYWNhN2JhZjdhNTA0MmYxYmE5OCJ9fX0="
+    name: "&7Pumpkin Galactic U"
+    tags:
+      - alphabet/pumpkin
+      - character/galactic_u
+    recipes:
+      stonecutter:
+        - id: "pumpkin_galactic_u"
+          input: { head: "mini_pumpkin" }
+  pumpkin_galactic_v:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvY2VmNDk2MmYxODQyZmJlNmNjMGY1MmM5Nzk3ZGViMTc5OTlkOWVkYWI5ZGZjNGNhMTM3OTIxMDUyYjZjMjQ1ZCJ9fX0="
+    name: "&7Pumpkin Galactic V"
+    tags:
+      - alphabet/pumpkin
+      - character/galactic_v
+    recipes:
+      stonecutter:
+        - id: "pumpkin_galactic_v"
+          input: { head: "mini_pumpkin" }
+  pumpkin_galactic_w:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMmMzMWVjZmFkYmYwNTMzNzY5MjdjYzc5OGZhOTRhZWI4NWE0OTM2YTUwOTUwNzVkMjhmNjgxMjJkNzgyN2VhMiJ9fX0="
+    name: "&7Pumpkin Galactic W"
+    tags:
+      - alphabet/pumpkin
+      - character/galactic_w
+    recipes:
+      stonecutter:
+        - id: "pumpkin_galactic_w"
+          input: { head: "mini_pumpkin" }
+  pumpkin_galactic_x:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYWUyOGZkYjJkY2E3NDkyZmZjMWNkYTQ1MmU4MDcyNzg2MzExODRjOWFkM2E4NGQ3YjFlYmEwNTE4NDkzZWRkNiJ9fX0="
+    name: "&7Pumpkin Galactic X"
+    tags:
+      - alphabet/pumpkin
+      - character/galactic_x
+    recipes:
+      stonecutter:
+        - id: "pumpkin_galactic_x"
+          input: { head: "mini_pumpkin" }
+  pumpkin_galactic_y:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOGU0YjU3YWI4OWRhYjYyY2MzMmNmYWQxMjBhN2M1MzczNzYxNzBkOTk5OTM5NGE4OTAyZTcxMWUzZjY2Mjc4NCJ9fX0="
+    name: "&7Pumpkin Galactic Y"
+    tags:
+      - alphabet/pumpkin
+      - character/galactic_y
+    recipes:
+      stonecutter:
+        - id: "pumpkin_galactic_y"
+          input: { head: "mini_pumpkin" }
+  pumpkin_galactic_z:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTA5Y2FkZGY3MjVmMDZkZWY4ODVmMGE0MjZmODY3NTMxZjJkOTg3ZDliYTExMmMwMjVhZThjMTQ0NDAzMDgxZCJ9fX0="
+    name: "&7Pumpkin Galactic Z"
+    tags:
+      - alphabet/pumpkin
+      - character/galactic_z
+    recipes:
+      stonecutter:
+        - id: "pumpkin_galactic_z"
+          input: { head: "mini_pumpkin" }

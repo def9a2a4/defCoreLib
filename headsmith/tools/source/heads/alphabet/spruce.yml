@@ -1,0 +1,1466 @@
+# Generated Spruce Alphabet Blocks
+
+heads:
+  spruce_letter_a:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZWQ4NDQ4MDIyMDMzMzQ4OTg1OTlmYjgyYjhiZjkyNGFhYTY5NThhM2RkMzA0MWQ3YWNmYzk3OTk1Mzk2OSJ9fX0="
+    name: "&7Spruce A"
+    tags:
+      - alphabet/spruce
+      - character/letter_a
+      - wood
+    recipes:
+      stonecutter:
+        - id: "spruce_letter_a"
+          input: { head: "mini_spruce_planks" }
+  spruce_letter_b:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZWM3YjhjOTNjNWFmZjMzYzNkODZkYTE2MTI4YzlkOTJkNmMwZDYyN2JhOWRmODA3NWE0MTFmNWEwNTI2M2I5In19fQ=="
+    name: "&7Spruce B"
+    tags:
+      - alphabet/spruce
+      - character/letter_b
+      - wood
+    recipes:
+      stonecutter:
+        - id: "spruce_letter_b"
+          input: { head: "mini_spruce_planks" }
+  spruce_letter_c:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOThiNzYwZDU3MWM1Yzc2ZjJiNDIxMTI2ZmU1ZjNiNzYzMjM4NjNmY2Y1ZjEwNmM4ZmFkMzU5YzQxMWNhZjhiIn19fQ=="
+    name: "&7Spruce C"
+    tags:
+      - alphabet/spruce
+      - character/letter_c
+      - wood
+    recipes:
+      stonecutter:
+        - id: "spruce_letter_c"
+          input: { head: "mini_spruce_planks" }
+  spruce_letter_d:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDlhZTY4YThkMjFjZjllNDY1MzU0NDMxYjg1YTJiZWMwN2Y1MTM0YzI2MDQwNTQxY2FjNzQ3NDk4YTU4YSJ9fX0="
+    name: "&7Spruce D"
+    tags:
+      - alphabet/spruce
+      - character/letter_d
+      - wood
+    recipes:
+      stonecutter:
+        - id: "spruce_letter_d"
+          input: { head: "mini_spruce_planks" }
+  spruce_letter_e:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZGNlZDNlZThhYzcyNDFlMDQ2ZTEzM2E3NDI2Y2VlMWExZjY0NWFkNjQ1MTc4MjQzZjFhOTI5OTUxODMxMjBkZCJ9fX0="
+    name: "&7Spruce E"
+    tags:
+      - alphabet/spruce
+      - character/letter_e
+      - wood
+    recipes:
+      stonecutter:
+        - id: "spruce_letter_e"
+          input: { head: "mini_spruce_planks" }
+  spruce_letter_f:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGIyNzdlNWY5MmE0NDRiYTM4NjQ1MGJmY2Y0MjVmOGMyOWQyOWUzYzUwNzY0ODIyNzhlMjc2ZTQxYTgxNjRjMSJ9fX0="
+    name: "&7Spruce F"
+    tags:
+      - alphabet/spruce
+      - character/letter_f
+      - wood
+    recipes:
+      stonecutter:
+        - id: "spruce_letter_f"
+          input: { head: "mini_spruce_planks" }
+  spruce_letter_g:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDRkZjcwZDZhNjBkOGVmZjhjNDFmNjA0ZWI1NDYyZWQ2NmRjYmE3ZmEyYTQ3M2U5ZGQ5OTM5ZDhmZDQ0ZGRkIn19fQ=="
+    name: "&7Spruce G"
+    tags:
+      - alphabet/spruce
+      - character/letter_g
+      - wood
+    recipes:
+      stonecutter:
+        - id: "spruce_letter_g"
+          input: { head: "mini_spruce_planks" }
+  spruce_letter_h:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjE1NDc4YWVlMmFjM2ZkYzQzYjZiNmQyNzVlY2VmNzkxMzc4MmQ1MTNmOTQ0YjQwY2Q2MjUyOTgzYjUzOWMifX19"
+    name: "&7Spruce H"
+    tags:
+      - alphabet/spruce
+      - character/letter_h
+      - wood
+    recipes:
+      stonecutter:
+        - id: "spruce_letter_h"
+          input: { head: "mini_spruce_planks" }
+  spruce_letter_i:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNmJkMjMxMzM1M2RjY2MwOGRhZWEyNGIxYTk0YTg5ZjFiYjE5YzY5MmFjMWNhZmVlMWJiNjk4ZmM1ZjAifX19"
+    name: "&7Spruce I"
+    tags:
+      - alphabet/spruce
+      - character/letter_i
+      - wood
+    recipes:
+      stonecutter:
+        - id: "spruce_letter_i"
+          input: { head: "mini_spruce_planks" }
+  spruce_letter_j:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZmVlNDhmMjUyNGIwMmNjOGY1OGNhZjk0ODU0ODBmYzcwNGM2OTg1NjhjZmQ4NzBmYTJkOWViMjc1YzEyYTg1In19fQ=="
+    name: "&7Spruce J"
+    tags:
+      - alphabet/spruce
+      - character/letter_j
+      - wood
+    recipes:
+      stonecutter:
+        - id: "spruce_letter_j"
+          input: { head: "mini_spruce_planks" }
+  spruce_letter_k:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvY2E5NWE3NDE3OWNmYjkzODc2MmZhZjQxODEyZmQ4ZDhjNjBjOGNjZTViYWIxOTg3YWFjZTVmYWVmZWViYjIifX19"
+    name: "&7Spruce K"
+    tags:
+      - alphabet/spruce
+      - character/letter_k
+      - wood
+    recipes:
+      stonecutter:
+        - id: "spruce_letter_k"
+          input: { head: "mini_spruce_planks" }
+  spruce_letter_l:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjA1ZTQ2ZTA2ZTVhNjM5ODc1OTRhYzVkNjYxN2MxOGRhNTMxZjYzOGVkM2U2MGMyNTI4OWU2OTE4Mjc2In19fQ=="
+    name: "&7Spruce L"
+    tags:
+      - alphabet/spruce
+      - character/letter_l
+      - wood
+    recipes:
+      stonecutter:
+        - id: "spruce_letter_l"
+          input: { head: "mini_spruce_planks" }
+  spruce_letter_m:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjk0ZGQ5Y2M5MDZkNzdjNTUzNDc3OWI2OTQ4M2I2NTBiNjgzZGI2NzI1N2I5ZjNlNGVlZjU2ZjQ4OGFlZDU0In19fQ=="
+    name: "&7Spruce M"
+    tags:
+      - alphabet/spruce
+      - character/letter_m
+      - wood
+    recipes:
+      stonecutter:
+        - id: "spruce_letter_m"
+          input: { head: "mini_spruce_planks" }
+  spruce_letter_n:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjlhY2I4YTY0NTdmODE4M2IxNTNmNmIzYzUyNDU0Yjk1ZjY2NGVkYTEzYzY1NzJhMDliNDc3ODU5MWE2MzFmIn19fQ=="
+    name: "&7Spruce N"
+    tags:
+      - alphabet/spruce
+      - character/letter_n
+      - wood
+    recipes:
+      stonecutter:
+        - id: "spruce_letter_n"
+          input: { head: "mini_spruce_planks" }
+  spruce_letter_o:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZmVlZjNkMWNiZGQ1NjlkNDYyMzc4NTkwYWY5NTI2OWRjNzgzNTM1OGZiNDFmYTA3ZTY2YTY4N2RhYmY4MmYifX19"
+    name: "&7Spruce O"
+    tags:
+      - alphabet/spruce
+      - character/letter_o
+      - wood
+    recipes:
+      stonecutter:
+        - id: "spruce_letter_o"
+          input: { head: "mini_spruce_planks" }
+  spruce_letter_p:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZWZlYTcyNWQyYzg0YTNjZDUyZjA2YTI2ZTFiNmU0Njc0MTJkYTljYjdiOWJhMjM4ZjUxZGU4MWQ5YTBjOGEwIn19fQ=="
+    name: "&7Spruce P"
+    tags:
+      - alphabet/spruce
+      - character/letter_p
+      - wood
+    recipes:
+      stonecutter:
+        - id: "spruce_letter_p"
+          input: { head: "mini_spruce_planks" }
+  spruce_letter_q:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjMzNTIyZmY3ZjQ0YzI3Mzg4Y2VkMDkyMzMyMDNhYjQ1NTEyMjQ0YzE2ZjUzZTQxZDQ4NWU1YmQ4Y2YwZjNjYiJ9fX0="
+    name: "&7Spruce Q"
+    tags:
+      - alphabet/spruce
+      - character/letter_q
+      - wood
+    recipes:
+      stonecutter:
+        - id: "spruce_letter_q"
+          input: { head: "mini_spruce_planks" }
+  spruce_letter_r:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZThkYmFiOWJmNWVlNTMyYTdjYzIyMzIzMzAzNTQ4ZDVmYTM0NGEwYmNkMDJhMmRhNjQ1MWZiOTljODE3NCJ9fX0="
+    name: "&7Spruce R"
+    tags:
+      - alphabet/spruce
+      - character/letter_r
+      - wood
+    recipes:
+      stonecutter:
+        - id: "spruce_letter_r"
+          input: { head: "mini_spruce_planks" }
+  spruce_letter_s:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZWIxYWRhNTg3ZDVkOGI0MDM1ZWRkMDMxZmQ1ZGJhZjQ0ZTJlZmQ0NjJjZDljN2Y3ZTU4ZjBiMWQ4MTdiYyJ9fX0="
+    name: "&7Spruce S"
+    tags:
+      - alphabet/spruce
+      - character/letter_s
+      - wood
+    recipes:
+      stonecutter:
+        - id: "spruce_letter_s"
+          input: { head: "mini_spruce_planks" }
+  spruce_letter_t:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOGFjNzRjMTdhYzRlNTM4NDI4ZTJhYmI4ZTFkMjM4ZDAyMzMxYTk1NmNhNGJiNTgyN2VkNmQ0YmMzZDE5MTQ5YSJ9fX0="
+    name: "&7Spruce T"
+    tags:
+      - alphabet/spruce
+      - character/letter_t
+      - wood
+    recipes:
+      stonecutter:
+        - id: "spruce_letter_t"
+          input: { head: "mini_spruce_planks" }
+  spruce_letter_u:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzI2OWZlY2NjMmIyOGE3ZjNlMGY5OTBlOTJlZjM1YjcyOTMzZDIxODkzYzEzZTdjOWE3N2YyYTc4NDIzZSJ9fX0="
+    name: "&7Spruce U"
+    tags:
+      - alphabet/spruce
+      - character/letter_u
+      - wood
+    recipes:
+      stonecutter:
+        - id: "spruce_letter_u"
+          input: { head: "mini_spruce_planks" }
+  spruce_letter_v:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzIzNmE5NjNkOWJkNjBhMmEyNGE1NjI1ZmZiZTMwOWFiNmViY2U2OTMwYzMyMjdkYTA0MmU0M2ZmN2QzY2MifX19"
+    name: "&7Spruce V"
+    tags:
+      - alphabet/spruce
+      - character/letter_v
+      - wood
+    recipes:
+      stonecutter:
+        - id: "spruce_letter_v"
+          input: { head: "mini_spruce_planks" }
+  spruce_letter_w:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTcxZDkzY2MzNWVhY2JjNzQzNzhhOWExOTNmZmZhN2E1ODIwYjg3YWFmMjhmNzlkMzkyMTQzNzA4ZmY1Y2MifX19"
+    name: "&7Spruce W"
+    tags:
+      - alphabet/spruce
+      - character/letter_w
+      - wood
+    recipes:
+      stonecutter:
+        - id: "spruce_letter_w"
+          input: { head: "mini_spruce_planks" }
+  spruce_letter_x:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNWIzMDUwNzc4M2MzN2RiM2EzMDkyY2FkMDQzZTU3OTUxYWE4YjRjNmVhOWFjYzQ3ZDYwNGI3ZWI1YWVhMDI4In19fQ=="
+    name: "&7Spruce X"
+    tags:
+      - alphabet/spruce
+      - character/letter_x
+      - wood
+    recipes:
+      stonecutter:
+        - id: "spruce_letter_x"
+          input: { head: "mini_spruce_planks" }
+  spruce_letter_y:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTBiOGE3OGRjYjg1Y2EzNTllMmRkMjZkZDg1MDRhNThkZjVhNDdhOWJlYTEyMzM4ZWNmNmEwMzEyMGEwIn19fQ=="
+    name: "&7Spruce Y"
+    tags:
+      - alphabet/spruce
+      - character/letter_y
+      - wood
+    recipes:
+      stonecutter:
+        - id: "spruce_letter_y"
+          input: { head: "mini_spruce_planks" }
+  spruce_letter_z:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNWRkYWUxMTQyYTExN2U1YzEyOGY1ZjQ2ZjAzZTY1ZjBmZjM0ZjJiYjQzZDdmYTU2NTkzNjA0MjZmNWFiNWEyIn19fQ=="
+    name: "&7Spruce Z"
+    tags:
+      - alphabet/spruce
+      - character/letter_z
+      - wood
+    recipes:
+      stonecutter:
+        - id: "spruce_letter_z"
+          input: { head: "mini_spruce_planks" }
+  spruce_number_0:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWViZmEyZjk2OTI5NzVhZTRhZDNhM2ZlOTg4NTlmNGFjZjk5OTNhMjM5NzE3MWVhZDM0YTg1MzA3NDYwMzAifX19"
+    name: "&7Spruce 0"
+    tags:
+      - alphabet/spruce
+      - character/number_0
+      - wood
+    recipes:
+      stonecutter:
+        - id: "spruce_number_0"
+          input: { head: "mini_spruce_planks" }
+  spruce_number_1:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTUwNmVlMGUzODJhMjg5MWViMWEzMzIyYTFjODg2YzlkOTdjMzQ4NWZiYzEyN2IzMzY4OWZjMTI4M2U3MWMifX19"
+    name: "&7Spruce 1"
+    tags:
+      - alphabet/spruce
+      - character/number_1
+      - wood
+    recipes:
+      stonecutter:
+        - id: "spruce_number_1"
+          input: { head: "mini_spruce_planks" }
+  spruce_number_2:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzNjZjJjMTUyM2Y1ZTkxYzNiZGFiMDc2YjM5NWExYjM4MTEyMWNhMWMwYjQyYWU2NzgzZmI3Y2U1MThhIn19fQ=="
+    name: "&7Spruce 2"
+    tags:
+      - alphabet/spruce
+      - character/number_2
+      - wood
+    recipes:
+      stonecutter:
+        - id: "spruce_number_2"
+          input: { head: "mini_spruce_planks" }
+  spruce_number_3:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDJjZDJiZmYyMWY2OTE4ZWE3ZGE0MTgzM2Q5OWEwYmRiMDE5YWNhMmE2N2U1ZGMyMGYxYTE3YTYxYjNkNjJhIn19fQ=="
+    name: "&7Spruce 3"
+    tags:
+      - alphabet/spruce
+      - character/number_3
+      - wood
+    recipes:
+      stonecutter:
+        - id: "spruce_number_3"
+          input: { head: "mini_spruce_planks" }
+  spruce_number_4:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZGFjYzU5OTQ4ODQ1NzNkYmM2Y2Q3YjUwM2NjNTViNzMzYjE4Yjg1YTFhZWE1ZjQwMWMwNjUzMjZjYzNjM2YifX19"
+    name: "&7Spruce 4"
+    tags:
+      - alphabet/spruce
+      - character/number_4
+      - wood
+    recipes:
+      stonecutter:
+        - id: "spruce_number_4"
+          input: { head: "mini_spruce_planks" }
+  spruce_number_5:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjQxNWE1YjlmNDcxYmU2ZTI2MWY2YmI1YTA4MGQ2NjYxYWNjMzRkNDkzYWZhMzdkNzgxNWY2NjA3ODE5NDAyZSJ9fX0="
+    name: "&7Spruce 5"
+    tags:
+      - alphabet/spruce
+      - character/number_5
+      - wood
+    recipes:
+      stonecutter:
+        - id: "spruce_number_5"
+          input: { head: "mini_spruce_planks" }
+  spruce_number_6:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDk2ZTJhM2ZlMWVkNjQ0MzZlOGQ2MGI5Zjk5OWZmMzg3MDFhYzEzYjE0NTEwZGFjYmYwNzA0MDYwZmIyYSJ9fX0="
+    name: "&7Spruce 6"
+    tags:
+      - alphabet/spruce
+      - character/number_6
+      - wood
+    recipes:
+      stonecutter:
+        - id: "spruce_number_6"
+          input: { head: "mini_spruce_planks" }
+  spruce_number_7:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODZhNTFiOTM3NGU2ZGJjZWFhMTczMzdkM2JkODMzZjdkYmE2MTFmYzM2OTY1ZDk4YzFkZDJiNTg3Y2FjZWMifX19"
+    name: "&7Spruce 7"
+    tags:
+      - alphabet/spruce
+      - character/number_7
+      - wood
+    recipes:
+      stonecutter:
+        - id: "spruce_number_7"
+          input: { head: "mini_spruce_planks" }
+  spruce_number_8:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzZjNzZmNjJjYjZiNTU3NDk3ZjMyMmZmOTUzNzJlNDUxOGNhN2Q5ODc5Yjc2ZDQ2ZGE5ZWUwMWEzY2FiZTk0ZiJ9fX0="
+    name: "&7Spruce 8"
+    tags:
+      - alphabet/spruce
+      - character/number_8
+      - wood
+    recipes:
+      stonecutter:
+        - id: "spruce_number_8"
+          input: { head: "mini_spruce_planks" }
+  spruce_number_9:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvY2U5YWY1NTY2ZGEwMmFjNDYwYTgzNDlmOWE1NThiYTE2MDQ3ODE4M2YxY2Y1Y2ZhOWJlNjM5YmI2MDU4MiJ9fX0="
+    name: "&7Spruce 9"
+    tags:
+      - alphabet/spruce
+      - character/number_9
+      - wood
+    recipes:
+      stonecutter:
+        - id: "spruce_number_9"
+          input: { head: "mini_spruce_planks" }
+  spruce_number_10:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTdmZTMzNjJkNWQ3MGE3ODczZDU4MjI2MTNlZjdiZDgxMjk3MmM3MmEzZmFkZDUwNWNiYmE2NDY2YjViYiJ9fX0="
+    name: "&7Spruce 10"
+    tags:
+      - alphabet/spruce
+      - character/number_10
+      - wood
+    recipes:
+      stonecutter:
+        - id: "spruce_number_10"
+          input: { head: "mini_spruce_planks" }
+  spruce_number_11:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTRmOTdkNmNhY2JkMDMyY2VmODJiOGQ1YmM2NjlmNjU4ZDRmZGIzYzE1ZjRkMTUzOTJmZTEzY2Y3YzNhZCJ9fX0="
+    name: "&7Spruce 11"
+    tags:
+      - alphabet/spruce
+      - character/number_11
+      - wood
+    recipes:
+      stonecutter:
+        - id: "spruce_number_11"
+          input: { head: "mini_spruce_planks" }
+  spruce_number_12:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzdjMWJhNDk2MWQxMTlkMDZmOGFmOTkxNzlkNmU2MWFjOWQ2ZWM2ZmFkYjMyZmE1NTY1NzkxYWZiMTY1OWMifX19"
+    name: "&7Spruce 12"
+    tags:
+      - alphabet/spruce
+      - character/number_12
+      - wood
+    recipes:
+      stonecutter:
+        - id: "spruce_number_12"
+          input: { head: "mini_spruce_planks" }
+  spruce_number_13:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWVmYmRjMWI0MmQzYjk4MTBjYWU5OGE0YTY0ZWZlZWMxNWI2YTcxMzEzNDQzMTM2ZGFiYjk0NmZhZTM3MzU5In19fQ=="
+    name: "&7Spruce 13"
+    tags:
+      - alphabet/spruce
+      - character/number_13
+      - wood
+    recipes:
+      stonecutter:
+        - id: "spruce_number_13"
+          input: { head: "mini_spruce_planks" }
+  spruce_number_14:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmZiZTZhMjQyMjQ5YWEzNmRkNGQ2MDc4NTIyMWQ3OGEzZjA1NzljOTBlNWY4NWZiOGNjNGNjZjlhIn19fQ=="
+    name: "&7Spruce 14"
+    tags:
+      - alphabet/spruce
+      - character/number_14
+      - wood
+    recipes:
+      stonecutter:
+        - id: "spruce_number_14"
+          input: { head: "mini_spruce_planks" }
+  spruce_number_15:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzY1Mjk5NDEyYmJjZTk4MzVkMzcyZjI1YjFjNjVhOTVjYjY3ZWNjYmU1YzhjNWVjYzdhMjcwZTcxM2E1YzQ3MiJ9fX0="
+    name: "&7Spruce 15"
+    tags:
+      - alphabet/spruce
+      - character/number_15
+      - wood
+    recipes:
+      stonecutter:
+        - id: "spruce_number_15"
+          input: { head: "mini_spruce_planks" }
+  spruce_number_16:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjQ0NThmNmJiNWUzN2UxNGQ3ZTg5NDViMTc4MjdiZTY2Mjk5Y2E4MDE0NTk0NTQwODVmYzk3OTdhYWMyOGMifX19"
+    name: "&7Spruce 16"
+    tags:
+      - alphabet/spruce
+      - character/number_16
+      - wood
+    recipes:
+      stonecutter:
+        - id: "spruce_number_16"
+          input: { head: "mini_spruce_planks" }
+  spruce_number_17:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTM0MjdiZTJhZTExNmNiMzU5MmJhNDdlMGUwNWFlZjY3OWY1N2JhZjRjZjhlYjY1MjRlZDU5YmFjNzIzIn19fQ=="
+    name: "&7Spruce 17"
+    tags:
+      - alphabet/spruce
+      - character/number_17
+      - wood
+    recipes:
+      stonecutter:
+        - id: "spruce_number_17"
+          input: { head: "mini_spruce_planks" }
+  spruce_number_18:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzczOGI1M2UyODU2ODc5YmEzNDc0MTM1OGMzNDc1NTIxNjY1YzZkM2UxNDMxOGU2NmFiYTNmMjExYmRhMiJ9fX0="
+    name: "&7Spruce 18"
+    tags:
+      - alphabet/spruce
+      - character/number_18
+      - wood
+    recipes:
+      stonecutter:
+        - id: "spruce_number_18"
+          input: { head: "mini_spruce_planks" }
+  spruce_number_19:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNmJkMWU4MjhmMDg2OTI1NjNhYTE4M2M0ZDczYjc1MjQ5ZTQxYmRkYzcxMjVmZDgzNTdiZTlkZDlhNmZkZDY2MyJ9fX0="
+    name: "&7Spruce 19"
+    tags:
+      - alphabet/spruce
+      - character/number_19
+      - wood
+    recipes:
+      stonecutter:
+        - id: "spruce_number_19"
+          input: { head: "mini_spruce_planks" }
+  spruce_number_20:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvN2I2MDdiOTI5MDdlMjExMzI5NTc1OWFjNjNlMTc5MjU5ZTVjNGMyZDdmMmM4ZTkzOGM2ZWY3YTI3MzNlZmZjIn19fQ=="
+    name: "&7Spruce 20"
+    tags:
+      - alphabet/spruce
+      - character/number_20
+      - wood
+    recipes:
+      stonecutter:
+        - id: "spruce_number_20"
+          input: { head: "mini_spruce_planks" }
+  spruce_number_21:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNmFlZjViMmQxODkyOGMyNjBhNDkwZjU1ZGJmYjg1ZThlOWNiZDc1M2FkNDNjNTJkOGQzMjZlNzY2Y2NkIn19fQ=="
+    name: "&7Spruce 21"
+    tags:
+      - alphabet/spruce
+      - character/number_21
+      - wood
+    recipes:
+      stonecutter:
+        - id: "spruce_number_21"
+          input: { head: "mini_spruce_planks" }
+  spruce_number_22:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTBlYzllZWE1NmI0YmU5Y2NhNmU2NjdkMTZlNWQ2OGQ5ZjEwOGM1MTI5OWNhZmZiMjIyZTYzMjhmYTRmZWExYSJ9fX0="
+    name: "&7Spruce 22"
+    tags:
+      - alphabet/spruce
+      - character/number_22
+      - wood
+    recipes:
+      stonecutter:
+        - id: "spruce_number_22"
+          input: { head: "mini_spruce_planks" }
+  spruce_number_23:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvM2I2ZTgwM2M3MTQ0MTM5NTEzNTQyNmEzNDFmZGI4M2FmYzEyOTU3MGQ1N2FhMTVhMjg0MWEzOWU4MDVkYWYifX19"
+    name: "&7Spruce 23"
+    tags:
+      - alphabet/spruce
+      - character/number_23
+      - wood
+    recipes:
+      stonecutter:
+        - id: "spruce_number_23"
+          input: { head: "mini_spruce_planks" }
+  spruce_number_24:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYWQzZmYxNGMyMDMzMDZkZGE4OGMzMzM0ZGFiMmVmMzg2NTljZjhjNjI3YTdkODE4NDliZTM4YTJlN2RlIn19fQ=="
+    name: "&7Spruce 24"
+    tags:
+      - alphabet/spruce
+      - character/number_24
+      - wood
+    recipes:
+      stonecutter:
+        - id: "spruce_number_24"
+          input: { head: "mini_spruce_planks" }
+  spruce_number_25:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNmQ1ODQ2ZmMxNWNhZjE5MTk5M2NlOWQ2OWMxOWRjNGZkNzk5ZWY2ZWRmZGU1NTU0NjFjNGUyNTA3YmUzMmIifX19"
+    name: "&7Spruce 25"
+    tags:
+      - alphabet/spruce
+      - character/number_25
+      - wood
+    recipes:
+      stonecutter:
+        - id: "spruce_number_25"
+          input: { head: "mini_spruce_planks" }
+  spruce_exclamation:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjMxOWZjZTQ3NWNkODRlMmU1ODlkNzJkNDE5NmMwMzM0MmE0MjE5OThkNGRkZGQ3NDU5YzYxNGY0YWQ2In19fQ=="
+    name: "&7Spruce !"
+    tags:
+      - alphabet/spruce
+      - character/exclamation
+      - wood
+    recipes:
+      stonecutter:
+        - id: "spruce_exclamation"
+          input: { head: "mini_spruce_planks" }
+  spruce_reverse_exclamation:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODJiNmQxOWJkMDRhMTMxNDdhMjM0MzAzMmY5NjcwYjRmMzc1ZWUwYTJjNzBmNzU4MWMwMmVjYmM4NDI2NzMxMSJ9fX0="
+    name: "&7Spruce ¡"
+    tags:
+      - alphabet/spruce
+      - character/reverse_exclamation
+      - wood
+    recipes:
+      stonecutter:
+        - id: "spruce_reverse_exclamation"
+          input: { head: "mini_spruce_planks" }
+  spruce_question:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZGJhZGRhZDljYWNlYjA1ZjM0YmRjZjMyOTM3Yjk1ZDJjNDRkZDc0NDRhMTVmNzZhOTM4NWMzMjhmY2FiIn19fQ=="
+    name: "&7Spruce ?"
+    tags:
+      - alphabet/spruce
+      - character/question
+      - wood
+    recipes:
+      stonecutter:
+        - id: "spruce_question"
+          input: { head: "mini_spruce_planks" }
+  spruce_reverse_question:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTNhNjdhODgyMWM4YTliZjdmZjU0YjA4ZjllYTZlOTg4ZTVmN2U3Yjc3YTBmMzZmMGJkZTNkMTQ3YjdkMDUwNSJ9fX0="
+    name: "&7Spruce ¿"
+    tags:
+      - alphabet/spruce
+      - character/reverse_question
+      - wood
+    recipes:
+      stonecutter:
+        - id: "spruce_reverse_question"
+          input: { head: "mini_spruce_planks" }
+  spruce_period:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZWRkZDk3NmEzN2EzMGI2NjUxZWY2Y2EzY2RlYTI4MzQ5ZDZmNTM5ZTQ5MDdjZDk3ZTYyNWEyNTRiY2ZmNCJ9fX0="
+    name: "&7Spruce ."
+    tags:
+      - alphabet/spruce
+      - character/period
+      - wood
+    recipes:
+      stonecutter:
+        - id: "spruce_period"
+          input: { head: "mini_spruce_planks" }
+  spruce_comma:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYWVjYzRlZDA0YTY0YmI2NTM5NWY2ZTg5NjM3NDZiYTUwNjU4ZTUyY2ZjYzNlYzY1YmUwNWZlMDUzNjE0ZCJ9fX0="
+    name: "&7Spruce ,"
+    tags:
+      - alphabet/spruce
+      - character/comma
+      - wood
+    recipes:
+      stonecutter:
+        - id: "spruce_comma"
+          input: { head: "mini_spruce_planks" }
+  spruce_colon:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTk4YWE1YzVlMWM0MTY4MWZmYTY3NDJiNWM3ZDhkOTE2ZTUyNzIyZjY4ZmQ3Mjc5ZTNlYmI2MmQyMzUzNzM1NCJ9fX0="
+    name: "&7Spruce :"
+    tags:
+      - alphabet/spruce
+      - character/colon
+      - wood
+    recipes:
+      stonecutter:
+        - id: "spruce_colon"
+          input: { head: "mini_spruce_planks" }
+  spruce_semicolon:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDBkNWRlODFjNzc4YzA0ZDU5NjIxNjUwZWEzMWRjOWE4YjkzZjNhODI0MjcyNTUzYzUxNzZiNDIyNDkzMWYifX19"
+    name: "&7Spruce ;"
+    tags:
+      - alphabet/spruce
+      - character/semicolon
+      - wood
+    recipes:
+      stonecutter:
+        - id: "spruce_semicolon"
+          input: { head: "mini_spruce_planks" }
+  spruce_apostrophe:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDE5NzllYWYzYzc3YjNlYWQ2YWIzMWQ4ZTJkMjIyYmJlNDJhNzU0MmE5NTU1YTg1NWRmYzg4MmU2MzExYjg0NyJ9fX0="
+    name: "&7Spruce '"
+    tags:
+      - alphabet/spruce
+      - character/apostrophe
+      - wood
+    recipes:
+      stonecutter:
+        - id: "spruce_apostrophe"
+          input: { head: "mini_spruce_planks" }
+  spruce_quote:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTVhMzcwZjk5ZmVjOWY3YTJiMmU4NjM1ZGE2ZmY2NTBjZWE3ODUzYjFhZDUxODNiNjZkN2EzMzU0NDZiMmMifX19"
+    name: "&7Spruce \""
+    tags:
+      - alphabet/spruce
+      - character/quote
+      - wood
+    recipes:
+      stonecutter:
+        - id: "spruce_quote"
+          input: { head: "mini_spruce_planks" }
+  spruce_ampersand:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzY5NWJhMWE0MmZjZjkzMDRmMzAzZGZjNjc3MTdmNmM3YjY4YmFjZTcwZjNiNzk0ODcyNDU0ZWM1NjM3NjZjNiJ9fX0="
+    name: "&7Spruce &"
+    tags:
+      - alphabet/spruce
+      - character/ampersand
+      - wood
+    recipes:
+      stonecutter:
+        - id: "spruce_ampersand"
+          input: { head: "mini_spruce_planks" }
+  spruce_hash:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzcyZTllMjY0MmJkYzdkNWNhYWQ4OTk0YTg3MWJlZGE1YmMzZmRhMDdjOGFhZDY5NjZkY2YyN2ZhODI1Nzk4MCJ9fX0="
+    name: "&7Spruce #"
+    tags:
+      - alphabet/spruce
+      - character/hash
+      - wood
+    recipes:
+      stonecutter:
+        - id: "spruce_hash"
+          input: { head: "mini_spruce_planks" }
+  spruce_dollar:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTNiMDI1NWZhYzFiZmJjOTlkNGZhZWY1ZjhiNWFhMTQ1NzdmZDAwM2IyYTM0YzdlNTBmZWVmZWVjODlkOGU1MCJ9fX0="
+    name: "&7Spruce $"
+    tags:
+      - alphabet/spruce
+      - character/dollar
+      - wood
+    recipes:
+      stonecutter:
+        - id: "spruce_dollar"
+          input: { head: "mini_spruce_planks" }
+  spruce_plus:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMmY0ODEyZTkxZGE2MTBjMGQxN2ExOWRlOGQ2YzdkZWVmYjEwNGQ0ZjQzOWU2YWMxNzhkYjRlNGZjMjNmYjdjYiJ9fX0="
+    name: "&7Spruce +"
+    tags:
+      - alphabet/spruce
+      - character/plus
+      - wood
+    recipes:
+      stonecutter:
+        - id: "spruce_plus"
+          input: { head: "mini_spruce_planks" }
+  spruce_minus:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTg4YWU3NjVhNWY0YzE5MGZmMmM2NWJjZTQzZjUyYWNjZGVlOTBlMmVkNWUxNWJkMzc2ODg5NzVhNTY0MSJ9fX0="
+    name: "&7Spruce -"
+    tags:
+      - alphabet/spruce
+      - character/minus
+      - wood
+    recipes:
+      stonecutter:
+        - id: "spruce_minus"
+          input: { head: "mini_spruce_planks" }
+  spruce_equals:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODMzMDMzZWJmNzgxY2EzNzVhNzQ5NTU3NTMwZjRhOWIyOTlhMzgyZDY5OTljMzRiYzNlYmM1NWYwODgxNTEifX19"
+    name: "&7Spruce ="
+    tags:
+      - alphabet/spruce
+      - character/equals
+      - wood
+    recipes:
+      stonecutter:
+        - id: "spruce_equals"
+          input: { head: "mini_spruce_planks" }
+  spruce_slash:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDNhMzE1M2E0N2M5OWU1OTM1Y2RmMjk4ZTEzZGM5ZDgyMDQyZGU0NmI1NmQzNDVkNWE1ODNhNjE3NGI0NyJ9fX0="
+    name: "&7Spruce /"
+    tags:
+      - alphabet/spruce
+      - character/slash
+      - wood
+    recipes:
+      stonecutter:
+        - id: "spruce_slash"
+          input: { head: "mini_spruce_planks" }
+  spruce_backslash:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDRlOTI2ZWRiNjVlOWE5MDhiYWQ1NDEwNjBkYzMyMTk1ZmY2OTdiODc5MzIyN2MxZDNiMzU0ZDg5YTFmZDliNSJ9fX0="
+    name: "&7Spruce \\"
+    tags:
+      - alphabet/spruce
+      - character/backslash
+      - wood
+    recipes:
+      stonecutter:
+        - id: "spruce_backslash"
+          input: { head: "mini_spruce_planks" }
+  spruce_underscore:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjg4NzQ5Y2U2ZTdmY2QxOTMwYmM0YzUwZWE3Y2NkYjMzMDlkYzkzODQ1ODVkYjhiYjQyYWVjMWY1OWE2ZDIifX19"
+    name: "&7Spruce _"
+    tags:
+      - alphabet/spruce
+      - character/underscore
+      - wood
+    recipes:
+      stonecutter:
+        - id: "spruce_underscore"
+          input: { head: "mini_spruce_planks" }
+  spruce_heart:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOGVhNjg0OGM1OTMxZDM5NjdmNThjM2VkYTI1NTVjNzJjNzE2ZGY5YTFkYTNkMmRkNmJjNjNjMTZjZDE3YjVlYiJ9fX0="
+    name: "&7Spruce ♥"
+    tags:
+      - alphabet/spruce
+      - character/heart
+      - wood
+    recipes:
+      stonecutter:
+        - id: "spruce_heart"
+          input: { head: "mini_spruce_planks" }
+  spruce_blank:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjYxNDc0Y2E1ZDQ2MWUwZjE5ZGEyYzVhOGNlYTNmMTg0NDI1OTBiOTM5ZDFkOTk1Nzg1NTczYzg0YWExNiJ9fX0="
+    name: "&7Spruce  "
+    tags:
+      - alphabet/spruce
+      - character/blank
+      - wood
+    recipes:
+      stonecutter:
+        - id: "spruce_blank"
+          input: { head: "mini_spruce_planks" }
+  spruce_checkmark:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTk0OTY1ZDg0ZjIxYzAyYTBiNjJkYzk0OTE0MWFmNDMwN2FhZTBiNThiYWQ1MzIzMWMzZGI3ZTUxYzk0NzAxMSJ9fX0="
+    name: "&7Spruce ✓"
+    tags:
+      - alphabet/spruce
+      - character/checkmark
+      - wood
+    recipes:
+      stonecutter:
+        - id: "spruce_checkmark"
+          input: { head: "mini_spruce_planks" }
+  spruce_note:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDYwNjkyMmU5MDdkNGE0ZmRlNDFhNmU5OTQ5NDFkNDFkNDFjNDI3ODRlZTYyNDRjM2U0NTc2MWZhMjUxNmVkNyJ9fX0="
+    name: "&7Spruce ♪"
+    tags:
+      - alphabet/spruce
+      - character/note
+      - wood
+    recipes:
+      stonecutter:
+        - id: "spruce_note"
+          input: { head: "mini_spruce_planks" }
+  spruce_paren_open:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWFlZWE3YTc4OTgwODU4MDY3ZWRjZTNiMDY1MWI2YjlhN2EyZjQzOTAzMTgyZDI3NDVmYTBlOGZkZmM1ZSJ9fX0="
+    name: "&7Spruce ("
+    tags:
+      - alphabet/spruce
+      - character/paren_open
+      - wood
+    recipes:
+      stonecutter:
+        - id: "spruce_paren_open"
+          input: { head: "mini_spruce_planks" }
+  spruce_paren_close:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNmE5YmMzMWFjOWY0YWJiOGM5MTc4NmQyNDViMzg3MzdkMDI5NWE1NzcxMjhlNzJkNjA2NjY1NDgyYTNlMzBkMyJ9fX0="
+    name: "&7Spruce )"
+    tags:
+      - alphabet/spruce
+      - character/paren_close
+      - wood
+    recipes:
+      stonecutter:
+        - id: "spruce_paren_close"
+          input: { head: "mini_spruce_planks" }
+  spruce_bracket_open:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvY2E0YjIyOWFjODRlYjg5MWExMzg4ZGYzMmFjZWE4ODdkZGJjNTUyYjYzMDM2MTllY2VkN2MyZmUxZjJkYiJ9fX0="
+    name: "&7Spruce ["
+    tags:
+      - alphabet/spruce
+      - character/bracket_open
+      - wood
+    recipes:
+      stonecutter:
+        - id: "spruce_bracket_open"
+          input: { head: "mini_spruce_planks" }
+  spruce_bracket_close:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzdlOWI0NmI2MWRmMjUxNmQ2N2JjNTU0NmRlYzIxNzY2YWNhZTVkMjJjYjBmMjhmMjlhNDlhNDJhODQ1YyJ9fX0="
+    name: "&7Spruce ]"
+    tags:
+      - alphabet/spruce
+      - character/bracket_close
+      - wood
+    recipes:
+      stonecutter:
+        - id: "spruce_bracket_close"
+          input: { head: "mini_spruce_planks" }
+  spruce_brace_open:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzNmODRmNDJjZmVlNjc1NTc4MzRlNDI2MTU3NGRiNGYyMTUxNDM2NzJlMjZlNzA5YTgwMTMyYTJkZmZkYyJ9fX0="
+    name: "&7Spruce {"
+    tags:
+      - alphabet/spruce
+      - character/brace_open
+      - wood
+    recipes:
+      stonecutter:
+        - id: "spruce_brace_open"
+          input: { head: "mini_spruce_planks" }
+  spruce_brace_close:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOWM0ODI3ZjEzOGVjZDZiNTk2ZmU0MDY1ZDY4NTI3OTU0ZGY2ZWM2NWY1NWU2MTg5YjFiMmUxNTFkNmY5ZDU4YiJ9fX0="
+    name: "&7Spruce }"
+    tags:
+      - alphabet/spruce
+      - character/brace_close
+      - wood
+    recipes:
+      stonecutter:
+        - id: "spruce_brace_close"
+          input: { head: "mini_spruce_planks" }
+  spruce_arrow_up:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzY1ZmMwNDI2MjMwYTJlODhkZjI5ZDJkOGVjNDUxMmU2ZGJkYmMwNzc3YjRiODNjZGRhMmVkZTgxODY0ZDYifX19"
+    name: "&7Spruce ↑"
+    tags:
+      - alphabet/spruce
+      - character/arrow_up
+      - wood
+    recipes:
+      stonecutter:
+        - id: "spruce_arrow_up"
+          input: { head: "mini_spruce_planks" }
+  spruce_arrow_down:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGU4YmE3ODYzYjE1YTVlNDBmYTdkYTk2MjliYjg2NmFhMjI2OTk1NTNlOTMxZGYxZjY5M2NiYjFjOWYzYjYifX19"
+    name: "&7Spruce ↓"
+    tags:
+      - alphabet/spruce
+      - character/arrow_down
+      - wood
+    recipes:
+      stonecutter:
+        - id: "spruce_arrow_down"
+          input: { head: "mini_spruce_planks" }
+  spruce_arrow_left:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDU5YmUxNTU3MjAxYzdmZjFhMGIzNjk2ZDE5ZWFiNDEwNDg4MGQ2YTljZGI0ZDVmYTIxYjZkYWE5ZGIyZDEifX19"
+    name: "&7Spruce ←"
+    tags:
+      - alphabet/spruce
+      - character/arrow_left
+      - wood
+    recipes:
+      stonecutter:
+        - id: "spruce_arrow_left"
+          input: { head: "mini_spruce_planks" }
+  spruce_arrow_right:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvN2M2OWQ0MTA3NmE4ZGVhNGYwNmQzZjFhOWFjNDdjYzk5Njk4OGI3NGEwOTEzYWIyYWMxYTc0Y2FmNzA4MTkxOCJ9fX0="
+    name: "&7Spruce →"
+    tags:
+      - alphabet/spruce
+      - character/arrow_right
+      - wood
+    recipes:
+      stonecutter:
+        - id: "spruce_arrow_right"
+          input: { head: "mini_spruce_planks" }
+  spruce_arrow_left_up:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjZlMTRmMmI3ZDFmNWNiNmY1NmFiM2U2ODgxZmM4NDkwZWRhNmZmMmQxZDQ4YTMyNDFkMTQ3MjIzY2IzIn19fQ=="
+    name: "&7Spruce ↖"
+    tags:
+      - alphabet/spruce
+      - character/arrow_left_up
+      - wood
+    recipes:
+      stonecutter:
+        - id: "spruce_arrow_left_up"
+          input: { head: "mini_spruce_planks" }
+  spruce_arrow_right_up:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzcwYTkwYTE1OWQ3OTg1NGNkZWNhNWNkNGIxYjYzMzk4NGEwYmMxYzlmMTg3ZDgzOTdmNTg0ZjYxNGEifX19"
+    name: "&7Spruce ↗"
+    tags:
+      - alphabet/spruce
+      - character/arrow_right_up
+      - wood
+    recipes:
+      stonecutter:
+        - id: "spruce_arrow_right_up"
+          input: { head: "mini_spruce_planks" }
+  spruce_arrow_left_down:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmMxOTJiZGFhMWE5YTQ1Mjg1NzczMmFkM2YwZDEyZjU0OGMwMmJlZThlNGJkY2YzM2JlODg0Y2Y1MGY5ZjYifX19"
+    name: "&7Spruce ↙"
+    tags:
+      - alphabet/spruce
+      - character/arrow_left_down
+      - wood
+    recipes:
+      stonecutter:
+        - id: "spruce_arrow_left_down"
+          input: { head: "mini_spruce_planks" }
+  spruce_arrow_right_down:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDhiYmYxZWNhY2ZhYzVmYThlZDc0MTI5YjhlZGYxZjRlODhmYzlhODZmODJhMDI4YWE5NGFlYjlmMTc5MzcifX19"
+    name: "&7Spruce ↘"
+    tags:
+      - alphabet/spruce
+      - character/arrow_right_down
+      - wood
+    recipes:
+      stonecutter:
+        - id: "spruce_arrow_right_down"
+          input: { head: "mini_spruce_planks" }
+  spruce_forward:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNmJiMGM2M2Q1YWZjMzI1ODU2NjI1Yjg1NWZmMjQ2MWYxNTYwYjNkMWE3NGExZTQ2MTllNjI0MDY5YzViOTYyIn19fQ=="
+    name: "&7Spruce ⏩"
+    tags:
+      - alphabet/spruce
+      - character/forward
+      - wood
+    recipes:
+      stonecutter:
+        - id: "spruce_forward"
+          input: { head: "mini_spruce_planks" }
+  spruce_forward_ii:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjc5MjY0MTg1ZWNlMjI1YzQwNzM1OTZiNjY3ZjZkYTMzMjZhMzg4MWEwOTM5OWU3OWY1Yzk5NjIzNzhlNjQifX19"
+    name: "&7Spruce ⏭"
+    tags:
+      - alphabet/spruce
+      - character/forward_ii
+      - wood
+    recipes:
+      stonecutter:
+        - id: "spruce_forward_ii"
+          input: { head: "mini_spruce_planks" }
+  spruce_backward:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjMyOTVhOWYxMTQ3OGU2Yjc4OWJmNmViMDYyOTZlMDE2YzEyN2QwYTYyN2YzNTRmZWMyNmMyN2Y0NmQ0MTcifX19"
+    name: "&7Spruce ⏪"
+    tags:
+      - alphabet/spruce
+      - character/backward
+      - wood
+    recipes:
+      stonecutter:
+        - id: "spruce_backward"
+          input: { head: "mini_spruce_planks" }
+  spruce_backward_ii:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjBiMjQyNTkxM2QyYzRiYWZiYmJmZGI1NTZjNjVmZmY2MjM4Yzk1NDg2YTQxNDMyZTlmZDVhMjdkZmJmYTY3YyJ9fX0="
+    name: "&7Spruce ⏮"
+    tags:
+      - alphabet/spruce
+      - character/backward_ii
+      - wood
+    recipes:
+      stonecutter:
+        - id: "spruce_backward_ii"
+          input: { head: "mini_spruce_planks" }
+  spruce_letter_a_umlaut:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNWI4YTU0NzE1OTYyZDI2NGU1MzU4YzY5OTk4OWI1MGZmMjk4Y2I1NGMwNmViYjE0ZTViMmI2ZTIzYWViMWUifX19"
+    name: "&7Spruce Ä"
+    tags:
+      - alphabet/spruce
+      - character/letter_a_umlaut
+      - wood
+    recipes:
+      stonecutter:
+        - id: "spruce_letter_a_umlaut"
+          input: { head: "mini_spruce_planks" }
+  spruce_letter_n_tilde:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNWViY2E1MTA4YjY2ODM3ZjU3NTUyNjAyOGQ5Zjg0ZmViZTYzZjZkYmY4Yjc1MGU3NjhhZDYxYmU0MWExYTFhMCJ9fX0="
+    name: "&7Spruce Ñ"
+    tags:
+      - alphabet/spruce
+      - character/letter_n_tilde
+      - wood
+    recipes:
+      stonecutter:
+        - id: "spruce_letter_n_tilde"
+          input: { head: "mini_spruce_planks" }
+  spruce_letter_o_umlaut:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTM2MDI0M2JkMmJkOTk2Y2JiMzE2YTg1Zjk5Yjk4ZGJjOGYyY2NkOWMxYThlNTNiNGI0MmM2MzBlZTk2ZTNkNCJ9fX0="
+    name: "&7Spruce Ö"
+    tags:
+      - alphabet/spruce
+      - character/letter_o_umlaut
+      - wood
+    recipes:
+      stonecutter:
+        - id: "spruce_letter_o_umlaut"
+          input: { head: "mini_spruce_planks" }
+  spruce_letter_u_umlaut:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWU2OWFkZGMyZDg2OGU2NjMzOGU2MmM5ODEyYWFiOWY5NzdiYTUxZDdkMWZhYzIxZmY1ODJiZjM3ZTcifX19"
+    name: "&7Spruce Ü"
+    tags:
+      - alphabet/spruce
+      - character/letter_u_umlaut
+      - wood
+    recipes:
+      stonecutter:
+        - id: "spruce_letter_u_umlaut"
+          input: { head: "mini_spruce_planks" }
+  spruce_cyrillic_yo:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOGExMWUxZDQ3OTkzNjVhMTY5ZDgxZDFiOTkyMDgyYWI5MTY5YjI4YTY3MzJmMzU2NmE2ZjlkNDc2Nzg5ODY4In19fQ=="
+    name: "&7Spruce Ё"
+    tags:
+      - alphabet/spruce
+      - character/cyrillic_yo
+      - wood
+    recipes:
+      stonecutter:
+        - id: "spruce_cyrillic_yo"
+          input: { head: "mini_spruce_planks" }
+  spruce_cyrillic_be:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzBlYjc2ODM3MzU5YTY1YjlmNDIzYWQ4MTdkNjUyZTdhMjk4ZDUyODdjOWJiNGU2YjQ5ODhhNjBiZGYzZDAifX19"
+    name: "&7Spruce Б"
+    tags:
+      - alphabet/spruce
+      - character/cyrillic_be
+      - wood
+    recipes:
+      stonecutter:
+        - id: "spruce_cyrillic_be"
+          input: { head: "mini_spruce_planks" }
+  spruce_cyrillic_ge:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOGVkZGViYzMzMjM1ZGU2MzliMmZhNGZlZjc2YmM1MzJlMWVlOTQxYzU5M2M3ZTNjMWE4MDE0ODA2ZWVmMTEifX19"
+    name: "&7Spruce Г"
+    tags:
+      - alphabet/spruce
+      - character/cyrillic_ge
+      - wood
+    recipes:
+      stonecutter:
+        - id: "spruce_cyrillic_ge"
+          input: { head: "mini_spruce_planks" }
+  spruce_cyrillic_de:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOWQzMDI5ZTk5M2MxNzBiMzQwNTMxYTVlNjI4YTkyY2NmNTE5MTI1N2MzNjljM2Y1YTZlYTRjYmRiYjMwYTMifX19"
+    name: "&7Spruce Д"
+    tags:
+      - alphabet/spruce
+      - character/cyrillic_de
+      - wood
+    recipes:
+      stonecutter:
+        - id: "spruce_cyrillic_de"
+          input: { head: "mini_spruce_planks" }
+  spruce_cyrillic_zhe:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjI1YzIxNjdmNzRiMjhmMmI5YzY1MmRiMDIxZDQ5YWNkOTI1YzNiOWIzZDQ0NGFjZDZkNTM0ODVmZWI0NWMifX19"
+    name: "&7Spruce Ж"
+    tags:
+      - alphabet/spruce
+      - character/cyrillic_zhe
+      - wood
+    recipes:
+      stonecutter:
+        - id: "spruce_cyrillic_zhe"
+          input: { head: "mini_spruce_planks" }
+  spruce_cyrillic_ze:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTc0YWNkNmEzOGVkYTU4ZDA5OTBiMGE4ODk1M2EzZGM4ZGM3OTdkMTE4M2Q2NDFkMTBiMTUzODRjYmI2YzUifX19"
+    name: "&7Spruce З"
+    tags:
+      - alphabet/spruce
+      - character/cyrillic_ze
+      - wood
+    recipes:
+      stonecutter:
+        - id: "spruce_cyrillic_ze"
+          input: { head: "mini_spruce_planks" }
+  spruce_cyrillic_i:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDI0Zjc5MmYxY2UyMzBkMzgwMTdlZGUwM2U1MzA4ZjE1NzVhZDNhNTM3ZGIxOWQ5NTJkNDJhYWEzZmJhYyJ9fX0="
+    name: "&7Spruce И"
+    tags:
+      - alphabet/spruce
+      - character/cyrillic_i
+      - wood
+    recipes:
+      stonecutter:
+        - id: "spruce_cyrillic_i"
+          input: { head: "mini_spruce_planks" }
+  spruce_cyrillic_short_i:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjNkMzE5Zjc5NTBjNjg0ZTQzNTI1ZmJmOTU3NTY2YzQ2MTlmNTk3Njc1NjcyNzQ0ZjRlNWYzNGQ4OTcxOSJ9fX0="
+    name: "&7Spruce Й"
+    tags:
+      - alphabet/spruce
+      - character/cyrillic_short_i
+      - wood
+    recipes:
+      stonecutter:
+        - id: "spruce_cyrillic_short_i"
+          input: { head: "mini_spruce_planks" }
+  spruce_cyrillic_el:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTg3NGMyMjMxZjlhMjdlNjdkY2VlMmJlNDI1NDQ1OGVjODRhZmI5ODViNTQ3MTVlYzRhNDRiZTFjMjFlOSJ9fX0="
+    name: "&7Spruce Л"
+    tags:
+      - alphabet/spruce
+      - character/cyrillic_el
+      - wood
+    recipes:
+      stonecutter:
+        - id: "spruce_cyrillic_el"
+          input: { head: "mini_spruce_planks" }
+  spruce_cyrillic_pe:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTdhNjkxMjkyY2FjZjVlNDUzMTQ2Yzk1ZDU2YWI0OWFkZWVjYzJmODI5MzgxNzFhMjRjMzc1MmI3OWZmNGUifX19"
+    name: "&7Spruce П"
+    tags:
+      - alphabet/spruce
+      - character/cyrillic_pe
+      - wood
+    recipes:
+      stonecutter:
+        - id: "spruce_cyrillic_pe"
+          input: { head: "mini_spruce_planks" }
+  spruce_cyrillic_u:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTQ0OTY2Y2VmNWFmYmY2NGJlNzRjNDYzYmU0MjUzMmVjNzFkMGQyZTc4NmU5MmU5Mzk0ZjYwZmM3ODc5ZSJ9fX0="
+    name: "&7Spruce У"
+    tags:
+      - alphabet/spruce
+      - character/cyrillic_u
+      - wood
+    recipes:
+      stonecutter:
+        - id: "spruce_cyrillic_u"
+          input: { head: "mini_spruce_planks" }
+  spruce_cyrillic_ef:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjRjYjhkNWY5MGZjODIzYTJkNzQ4YWY5MjZjNmUwN2QzODRhMmRiZTliODYyOTc3YTBiNTM1YTU1ZGJjMmViNiJ9fX0="
+    name: "&7Spruce Ф"
+    tags:
+      - alphabet/spruce
+      - character/cyrillic_ef
+      - wood
+    recipes:
+      stonecutter:
+        - id: "spruce_cyrillic_ef"
+          input: { head: "mini_spruce_planks" }
+  spruce_cyrillic_tse:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNWQ1NTZjNTYyZDQ3OTNkN2NjZDg3YmExNThhNTAzMzg2MWY3OTkyY2VlOGJjYTcyN2Y5OTQxZTgyMDk1NzcifX19"
+    name: "&7Spruce Ц"
+    tags:
+      - alphabet/spruce
+      - character/cyrillic_tse
+      - wood
+    recipes:
+      stonecutter:
+        - id: "spruce_cyrillic_tse"
+          input: { head: "mini_spruce_planks" }
+  spruce_cyrillic_che:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNWEyMmRjMWVjMGZhZDU4NmVkYjhmZjUzZDQxNGJhNGMzZjEzMDE0MmQxMTQ0NGVmYzZkZTAyNWFmMjFjMCJ9fX0="
+    name: "&7Spruce Ч"
+    tags:
+      - alphabet/spruce
+      - character/cyrillic_che
+      - wood
+    recipes:
+      stonecutter:
+        - id: "spruce_cyrillic_che"
+          input: { head: "mini_spruce_planks" }
+  spruce_cyrillic_sha:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTMxYjdlNTRjODQzYzNlOGQ3MWVhMmRiNjA0ZTdmZDVmZjZkNWU4ZjM4NTUxZjlmYmEyNjg5ODZkY2QxNDYifX19"
+    name: "&7Spruce Ш"
+    tags:
+      - alphabet/spruce
+      - character/cyrillic_sha
+      - wood
+    recipes:
+      stonecutter:
+        - id: "spruce_cyrillic_sha"
+          input: { head: "mini_spruce_planks" }
+  spruce_cyrillic_shcha:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjlkZjVhZmU2MGJhY2I4NWE1YjdkNGNiN2JjODUzOTk5MTgxYTMzNjEyZDFmODUxOGJlYTg3YjI0ODFhOTEifX19"
+    name: "&7Spruce Щ"
+    tags:
+      - alphabet/spruce
+      - character/cyrillic_shcha
+      - wood
+    recipes:
+      stonecutter:
+        - id: "spruce_cyrillic_shcha"
+          input: { head: "mini_spruce_planks" }
+  spruce_cyrillic_hard:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjU5ZDUxYWY0ZjI3NTViNjUwYTA5ODA2NDNhY2NmZTQ3NThiNGY0YmExMjhmZTliYWIyM2M2OGMyOTUyODkifX19"
+    name: "&7Spruce Ъ"
+    tags:
+      - alphabet/spruce
+      - character/cyrillic_hard
+      - wood
+    recipes:
+      stonecutter:
+        - id: "spruce_cyrillic_hard"
+          input: { head: "mini_spruce_planks" }
+  spruce_cyrillic_yeru:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzY3NDc5YTFmYmZiZmE2ZDMyZWVlNWRlZTJhODlkOTIxNDkyNzEzN2UxMWM0NmVkMWY1OGM2NjQ1YTkyM2IifX19"
+    name: "&7Spruce Ы"
+    tags:
+      - alphabet/spruce
+      - character/cyrillic_yeru
+      - wood
+    recipes:
+      stonecutter:
+        - id: "spruce_cyrillic_yeru"
+          input: { head: "mini_spruce_planks" }
+  spruce_cyrillic_soft:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTBlYTMzMWMyNTI3ODU5YjgzMjYzMzFiNTQ4NzQ0MzE0MGNiNDI2MDgwZDEzY2M5MTUxYTY0YWE1NjE5ZSJ9fX0="
+    name: "&7Spruce Ь"
+    tags:
+      - alphabet/spruce
+      - character/cyrillic_soft
+      - wood
+    recipes:
+      stonecutter:
+        - id: "spruce_cyrillic_soft"
+          input: { head: "mini_spruce_planks" }
+  spruce_cyrillic_e:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjFlODNiMTk0MDdjOTY5YjJiMTk0NTRkMjY1M2ZkYTUxOTMwMWQ4YzhiN2NhYTY3YWE3N2MyNTRlZDY3NDhhIn19fQ=="
+    name: "&7Spruce Э"
+    tags:
+      - alphabet/spruce
+      - character/cyrillic_e
+      - wood
+    recipes:
+      stonecutter:
+        - id: "spruce_cyrillic_e"
+          input: { head: "mini_spruce_planks" }
+  spruce_cyrillic_yu:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTZjNzliZmYyMWI5ZWNmNjI2MzIwOTJjMzNjNjA3M2M4NDcyYjc2ZGFhNzY0ODI0NjM3ZDc2MWZjM2Y1In19fQ=="
+    name: "&7Spruce Ю"
+    tags:
+      - alphabet/spruce
+      - character/cyrillic_yu
+      - wood
+    recipes:
+      stonecutter:
+        - id: "spruce_cyrillic_yu"
+          input: { head: "mini_spruce_planks" }
+  spruce_cyrillic_ya:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOWU5ZmEzOGViZGJlM2Q0YjhlZWI0ZmM4MjMzNGM5ODI0MjZmMTM4ZTg1OGY3MjhiMGIwNjk4YWI3ODVkMGM0In19fQ=="
+    name: "&7Spruce Я"
+    tags:
+      - alphabet/spruce
+      - character/cyrillic_ya
+      - wood
+    recipes:
+      stonecutter:
+        - id: "spruce_cyrillic_ya"
+          input: { head: "mini_spruce_planks" }
+  spruce_zodiac_aquarius:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjk1M2ZjMzY1NWRlMjhiZWUxY2QzYmMxM2ZlMTNkNjA2MzI1NTkwYjExYjRhZTBhYzg0NjEyYjIyNTQ2NDEyOCJ9fX0="
+    name: "&7Spruce ♒"
+    tags:
+      - alphabet/spruce
+      - character/zodiac_aquarius
+      - wood
+    recipes:
+      stonecutter:
+        - id: "spruce_zodiac_aquarius"
+          input: { head: "mini_spruce_planks" }
+  spruce_zodiac_aries:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYWU5ZjNkZTY3YzBmZGQ4Njc3MzZkZTIzYjI2YmI3OTEyY2U1ZmE1YzRiODkxYjc5ZmJlOTk4ZjA0OGVjNTJmYSJ9fX0="
+    name: "&7Spruce ♈"
+    tags:
+      - alphabet/spruce
+      - character/zodiac_aries
+      - wood
+    recipes:
+      stonecutter:
+        - id: "spruce_zodiac_aries"
+          input: { head: "mini_spruce_planks" }
+  spruce_zodiac_cancer:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzgzY2IzYWEzZDZiMWU5ZmUyNDQ4NTJlODk0NDlkZGQ0NjQzMmQxM2NlYWUyYzZjMGE3N2NiOTg0NjgwNjYxMiJ9fX0="
+    name: "&7Spruce ♋"
+    tags:
+      - alphabet/spruce
+      - character/zodiac_cancer
+      - wood
+    recipes:
+      stonecutter:
+        - id: "spruce_zodiac_cancer"
+          input: { head: "mini_spruce_planks" }
+  spruce_zodiac_capricorn:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWMyZmI3Zjg2YWNmZGM1NjJiYjUwYTUzMmE4MmJhZTI1NmVjYjViZGIxZjNjYmZiYTU0OGFlYTFmNmM4N2NhNSJ9fX0="
+    name: "&7Spruce ♑"
+    tags:
+      - alphabet/spruce
+      - character/zodiac_capricorn
+      - wood
+    recipes:
+      stonecutter:
+        - id: "spruce_zodiac_capricorn"
+          input: { head: "mini_spruce_planks" }
+  spruce_zodiac_gemini:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTY0Y2I1NTFlN2FmYWU0ZGMxNGMyZTgzZTNkZmE1YWVkZGUyZGQ0ZmFhMjYyZDI0YTYyYjUyNjE1OGVjYzMxOSJ9fX0="
+    name: "&7Spruce ♊"
+    tags:
+      - alphabet/spruce
+      - character/zodiac_gemini
+      - wood
+    recipes:
+      stonecutter:
+        - id: "spruce_zodiac_gemini"
+          input: { head: "mini_spruce_planks" }
+  spruce_zodiac_leo:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDU3NTI2YjcwM2IxMjY1YzViNzg4NGRlOGVlMGUwOTlhYWMyY2Q5NTg1N2MxMTc0MGY3YjA5OTVjMmVhNDJhOSJ9fX0="
+    name: "&7Spruce ♌"
+    tags:
+      - alphabet/spruce
+      - character/zodiac_leo
+      - wood
+    recipes:
+      stonecutter:
+        - id: "spruce_zodiac_leo"
+          input: { head: "mini_spruce_planks" }
+  spruce_zodiac_libra:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTU2NjRjNzgwNWZiZGYwY2FiNzgwMzlkODA5MjBiOWM1OGYwZDgxZjE4MjQ0OTFmMjNlMDdiYzY5NzY1MmFlZiJ9fX0="
+    name: "&7Spruce ♎"
+    tags:
+      - alphabet/spruce
+      - character/zodiac_libra
+      - wood
+    recipes:
+      stonecutter:
+        - id: "spruce_zodiac_libra"
+          input: { head: "mini_spruce_planks" }
+  spruce_zodiac_pisces:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzUzMjM3ZTZlYWEyYmMwYjcyOWRjYTE4MDg0MDc2YzAzYTgxYmYxOTliMDc1OGY3NmU2ODA2NDQyNzAxNTQzZCJ9fX0="
+    name: "&7Spruce ♓"
+    tags:
+      - alphabet/spruce
+      - character/zodiac_pisces
+      - wood
+    recipes:
+      stonecutter:
+        - id: "spruce_zodiac_pisces"
+          input: { head: "mini_spruce_planks" }
+  spruce_zodiac_sagittarius:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzNkY2NjYjZiYTczNmEzZWJmNzFjYTAwZTA1NzI2N2VmYmE3NDhjNmI5YmNlZjJhNmM5ZTViZGI1ZGI3NmVlOCJ9fX0="
+    name: "&7Spruce ♐"
+    tags:
+      - alphabet/spruce
+      - character/zodiac_sagittarius
+      - wood
+    recipes:
+      stonecutter:
+        - id: "spruce_zodiac_sagittarius"
+          input: { head: "mini_spruce_planks" }
+  spruce_zodiac_scorpio:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvN2M2ZjYwNzk3MGYwMzk1ODg1ZDRlZWE3YjUwNGE5OTAzMDYzYzMzMTEyMWFkNGQ4NjA1YWJiODAwOTIyYWZkZCJ9fX0="
+    name: "&7Spruce ♏"
+    tags:
+      - alphabet/spruce
+      - character/zodiac_scorpio
+      - wood
+    recipes:
+      stonecutter:
+        - id: "spruce_zodiac_scorpio"
+          input: { head: "mini_spruce_planks" }
+  spruce_zodiac_taurus:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTlhNGM3MzFjM2Q2NTIxN2JjZTNkMzZiMjFmOGQ0ZTY1ZjkyNjI1MjY3MTZmZjE1OTY5M2NjMTBiYzcxMzEzYSJ9fX0="
+    name: "&7Spruce ♉"
+    tags:
+      - alphabet/spruce
+      - character/zodiac_taurus
+      - wood
+    recipes:
+      stonecutter:
+        - id: "spruce_zodiac_taurus"
+          input: { head: "mini_spruce_planks" }
+  spruce_zodiac_virgo:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZGI0ZmNiNjUzMTQwYTJkY2U3NmY0M2Q3YmRjNDVjOWI5MTA3NjJiYWRmMDk2MDNiOTJlNDliMGQzMzQwYThiZiJ9fX0="
+    name: "&7Spruce ♍"
+    tags:
+      - alphabet/spruce
+      - character/zodiac_virgo
+      - wood
+    recipes:
+      stonecutter:
+        - id: "spruce_zodiac_virgo"
+          input: { head: "mini_spruce_planks" }
+  spruce_female:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODRiN2NkNTZjZWQ2YTliZTY3Y2M4NjNjNTNhODE3MjEwMWM0MTkwYTkwZjhkZDZiZjQwMTgwZjc3ZjFiMjM3NyJ9fX0="
+    name: "&7Spruce ♀"
+    tags:
+      - alphabet/spruce
+      - character/female
+      - wood
+    recipes:
+      stonecutter:
+        - id: "spruce_female"
+          input: { head: "mini_spruce_planks" }
+  spruce_male:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGIxM2QzMWI4MjE5N2FlYWY4MjliZjQ1NTA2YjcxNzVhOWFhOWFmMjkxZTdiN2IzNWFjN2JjNzViNGEyNDljMSJ9fX0="
+    name: "&7Spruce ♂"
+    tags:
+      - alphabet/spruce
+      - character/male
+      - wood
+    recipes:
+      stonecutter:
+        - id: "spruce_male"
+          input: { head: "mini_spruce_planks" }

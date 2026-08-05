@@ -1,0 +1,1455 @@
+# Generated Cobblestone Alphabet Blocks
+
+heads:
+  cobblestone_letter_a:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvY2VkMGVkYjBhNjQxZDIyOWM4MTdiMzNmYTY2MTcxMmJiMjZjYTUyNmEyM2ZkMzJiZGFiZmNjOTkwOWVlNGIxIn19fQ=="
+    name: "&7Cobblestone A"
+    tags:
+      - alphabet/cobblestone
+      - character/letter_a
+      - stone
+    recipes:
+      stonecutter:
+        - id: "cobblestone_letter_a"
+          input: { head: "mini_cobblestone" }
+  cobblestone_letter_b:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzcyYzIxYmYyM2MyN2ZjOTRkNzg4OGYwYTU1N2EzYTI2NWYwZDk1NGE5OTFhY2ZmOTkwOGZmZDU2OGYzYTY0In19fQ=="
+    name: "&7Cobblestone B"
+    tags:
+      - alphabet/cobblestone
+      - character/letter_b
+      - stone
+    recipes:
+      stonecutter:
+        - id: "cobblestone_letter_b"
+          input: { head: "mini_cobblestone" }
+  cobblestone_letter_c:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYWY4ZTYxNTFhNTQwMzk0YTczMjdjOTVkMmEyNjZiZGRjNzU2NGNmZTJmOGVlNjBmMzQ0Yzk1ODEwNDJkZDI3In19fQ=="
+    name: "&7Cobblestone C"
+    tags:
+      - alphabet/cobblestone
+      - character/letter_c
+      - stone
+    recipes:
+      stonecutter:
+        - id: "cobblestone_letter_c"
+          input: { head: "mini_cobblestone" }
+  cobblestone_letter_d:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzE3M2NiYWNlODg3YTMxMjc5ZjQ3YjJjNGI1MjM2N2Y0YjJlNmRjOTg3MmFhNjczM2IzYjI0MjcyZjU2YyJ9fX0="
+    name: "&7Cobblestone D"
+    tags:
+      - alphabet/cobblestone
+      - character/letter_d
+      - stone
+    recipes:
+      stonecutter:
+        - id: "cobblestone_letter_d"
+          input: { head: "mini_cobblestone" }
+  cobblestone_letter_e:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzZmMDgxODU3YTdjNzZkZDFjMzUyODY0NjhhNjNjYTgxNGE1OTMzNWM3ZDkyMzU1OWVhN2Q3ZTljMDFmMTU4MSJ9fX0="
+    name: "&7Cobblestone E"
+    tags:
+      - alphabet/cobblestone
+      - character/letter_e
+      - stone
+    recipes:
+      stonecutter:
+        - id: "cobblestone_letter_e"
+          input: { head: "mini_cobblestone" }
+  cobblestone_letter_f:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTNhZWVkZTA3NGVmOWMyZTRmZDBlZGQwNzVhYjZjZWQ1YjYxMmM4OWY3M2QzN2IwYjZjZmIyN2ZjMzFhZCJ9fX0="
+    name: "&7Cobblestone F"
+    tags:
+      - alphabet/cobblestone
+      - character/letter_f
+      - stone
+    recipes:
+      stonecutter:
+        - id: "cobblestone_letter_f"
+          input: { head: "mini_cobblestone" }
+  cobblestone_letter_g:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDNhOGY3ZDU0MDJlNWJlY2ZhMGI4N2FjYmExNWViM2Q0YmM4YzEyNWQ5Y2QzYTJhYTg5YWMwYmZhY2E3In19fQ=="
+    name: "&7Cobblestone G"
+    tags:
+      - alphabet/cobblestone
+      - character/letter_g
+      - stone
+    recipes:
+      stonecutter:
+        - id: "cobblestone_letter_g"
+          input: { head: "mini_cobblestone" }
+  cobblestone_letter_h:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvM2RjYjc2OTQ1ZWE0MzIxZmJkNTg2M2U1ZDc1YTU1NjE5ZGZkNmQ2OTQ1YWI3OTg0NzBiMTg5OTA1NGUwZTE4ZiJ9fX0="
+    name: "&7Cobblestone H"
+    tags:
+      - alphabet/cobblestone
+      - character/letter_h
+      - stone
+    recipes:
+      stonecutter:
+        - id: "cobblestone_letter_h"
+          input: { head: "mini_cobblestone" }
+  cobblestone_letter_i:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzViY2E1ZmM5MjViOTE0YWQ5YzhjYzFiMTc2NzY2YjEzYTdmZjJkZDdjZGVkOGRjNWU2YTljNjUxODYifX19"
+    name: "&7Cobblestone I"
+    tags:
+      - alphabet/cobblestone
+      - character/letter_i
+      - stone
+    recipes:
+      stonecutter:
+        - id: "cobblestone_letter_i"
+          input: { head: "mini_cobblestone" }
+  cobblestone_letter_j:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTZkZmEwZjc1YjM0MTEzNDlkNWRiNGNhYjdmYzNkMmMzMTRmNWY3NGQ0NzM2Nzg1NTMwOGU2MThkNGU0MmUifX19"
+    name: "&7Cobblestone J"
+    tags:
+      - alphabet/cobblestone
+      - character/letter_j
+      - stone
+    recipes:
+      stonecutter:
+        - id: "cobblestone_letter_j"
+          input: { head: "mini_cobblestone" }
+  cobblestone_letter_k:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTc0Y2Y2NTFjZjg5NmM2MWIyNzlhZDk5YjAyMmZkNGM3OGRhOWUzYjJlOTRiNjJhNmMxOTZhMTg4MmI0OTEifX19"
+    name: "&7Cobblestone K"
+    tags:
+      - alphabet/cobblestone
+      - character/letter_k
+      - stone
+    recipes:
+      stonecutter:
+        - id: "cobblestone_letter_k"
+          input: { head: "mini_cobblestone" }
+  cobblestone_letter_l:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNWYxYThmNTc2NTMwYTQ2ZmI4Y2E0YmY2OTkxMzQ2N2Q4MGZmZDRiMjlmMWE0MWFlNDMxNDExYzUyOGIwN2I5NSJ9fX0="
+    name: "&7Cobblestone L"
+    tags:
+      - alphabet/cobblestone
+      - character/letter_l
+      - stone
+    recipes:
+      stonecutter:
+        - id: "cobblestone_letter_l"
+          input: { head: "mini_cobblestone" }
+  cobblestone_letter_m:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTM2NWRhOTA0OWZiOWQyNmE3YjBlY2EwOTA1NzhiNGI1Nzc1ZjE2NDc3YjM5YjQ5MTk4MjcxZDViYWVhOWY4NCJ9fX0="
+    name: "&7Cobblestone M"
+    tags:
+      - alphabet/cobblestone
+      - character/letter_m
+      - stone
+    recipes:
+      stonecutter:
+        - id: "cobblestone_letter_m"
+          input: { head: "mini_cobblestone" }
+  cobblestone_letter_n:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzhjNDcxYTc0MzNhMTEwODk3MzgzMjkxNWQ4ZTczOGU2NTUyMjA4ZTUzOGEzMzRmNzk1MTdhZGE4M2RmNyJ9fX0="
+    name: "&7Cobblestone N"
+    tags:
+      - alphabet/cobblestone
+      - character/letter_n
+      - stone
+    recipes:
+      stonecutter:
+        - id: "cobblestone_letter_n"
+          input: { head: "mini_cobblestone" }
+  cobblestone_letter_o:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNWZlNDkzZDU1ZDcxMjUyOGQ5ZGI3NDMwNDJlODk5YjBjODMwNDk4ZTkzNDI1ZWQ5ZjY3OWZlODFkZTM3ZTAifX19"
+    name: "&7Cobblestone O"
+    tags:
+      - alphabet/cobblestone
+      - character/letter_o
+      - stone
+    recipes:
+      stonecutter:
+        - id: "cobblestone_letter_o"
+          input: { head: "mini_cobblestone" }
+  cobblestone_letter_p:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDFhNmU3NTMxNmI1NGVmYmYzZWM0NmVlYWE1YjI2YjkyNGVhZWYyYjM1MjMxNjgyYTNlOWNhZTRlOTNjMjE0MiJ9fX0="
+    name: "&7Cobblestone P"
+    tags:
+      - alphabet/cobblestone
+      - character/letter_p
+      - stone
+    recipes:
+      stonecutter:
+        - id: "cobblestone_letter_p"
+          input: { head: "mini_cobblestone" }
+  cobblestone_letter_q:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTFiMDRkMzVhMjgxMzA1NWRiMTk1Y2JmMzA5MzZlNDdhMmY3NmIzNzE5ZWY0ZjUzMGI5OTEyZTZlOWJkY2Q1In19fQ=="
+    name: "&7Cobblestone Q"
+    tags:
+      - alphabet/cobblestone
+      - character/letter_q
+      - stone
+    recipes:
+      stonecutter:
+        - id: "cobblestone_letter_q"
+          input: { head: "mini_cobblestone" }
+  cobblestone_letter_r:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODU2ZDY5MmM2MWEwMjVlOTQ1M2FhMTZiMTNlNDllNDJmNGNiZTE0ZDE2MDdkMWE5YjRmNTUzNzc0OGJlNzIifX19"
+    name: "&7Cobblestone R"
+    tags:
+      - alphabet/cobblestone
+      - character/letter_r
+      - stone
+    recipes:
+      stonecutter:
+        - id: "cobblestone_letter_r"
+          input: { head: "mini_cobblestone" }
+  cobblestone_letter_s:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzc2YWIzZmM0YjE2N2YzYzk4NTc5NTdjZmFjZjM0NDk0M2ZhMGE4N2I4ODMwZGM1NDE2NWQ4NmRmYzcifX19"
+    name: "&7Cobblestone S"
+    tags:
+      - alphabet/cobblestone
+      - character/letter_s
+      - stone
+    recipes:
+      stonecutter:
+        - id: "cobblestone_letter_s"
+          input: { head: "mini_cobblestone" }
+  cobblestone_letter_t:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTEzYWI2NGQwNTJmMjQ2YjNmZDY3ZTc4ZTU5NTZmNzE2ZGEyNDFkOTEyODc4ZWJlYzQxMTFlMzUxNzRmYmQifX19"
+    name: "&7Cobblestone T"
+    tags:
+      - alphabet/cobblestone
+      - character/letter_t
+      - stone
+    recipes:
+      stonecutter:
+        - id: "cobblestone_letter_t"
+          input: { head: "mini_cobblestone" }
+  cobblestone_letter_u:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMmJhZmYzZWIyMDAyNjQ2Y2Q4ZWFiNmYyY2E1Mjg2MjcyMmFkZDY0MmJlZWY5ZWM4MTg0Y2JlZDc0ZjE0MmMifX19"
+    name: "&7Cobblestone U"
+    tags:
+      - alphabet/cobblestone
+      - character/letter_u
+      - stone
+    recipes:
+      stonecutter:
+        - id: "cobblestone_letter_u"
+          input: { head: "mini_cobblestone" }
+  cobblestone_letter_v:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTY0Mjc4YzU4ZDc1M2MxODgzN2M5OGI5ZDM3N2RjNGU0MjhiMzQ0YTZjODlkMzc1YWYwODAxMzdjNjViNDM3In19fQ=="
+    name: "&7Cobblestone V"
+    tags:
+      - alphabet/cobblestone
+      - character/letter_v
+      - stone
+    recipes:
+      stonecutter:
+        - id: "cobblestone_letter_v"
+          input: { head: "mini_cobblestone" }
+  cobblestone_letter_w:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDRhZWVlOWU2M2ZmNGFlYTY3NjhjMzVjOWUxOTY3Yjc5NDI4ZDNmNjQ0NzgyODJkYzU0Njk3YjMzMTlkZiJ9fX0="
+    name: "&7Cobblestone W"
+    tags:
+      - alphabet/cobblestone
+      - character/letter_w
+      - stone
+    recipes:
+      stonecutter:
+        - id: "cobblestone_letter_w"
+          input: { head: "mini_cobblestone" }
+  cobblestone_letter_x:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTEyYmE1ZTBlM2M5YjU0YjVjMjlkN2NjNjNjODk5MDg2YzI3MTI2ZDczNjIzZWQ3M2JlOTQ5MjIzOGRjNyJ9fX0="
+    name: "&7Cobblestone X"
+    tags:
+      - alphabet/cobblestone
+      - character/letter_x
+      - stone
+    recipes:
+      stonecutter:
+        - id: "cobblestone_letter_x"
+          input: { head: "mini_cobblestone" }
+  cobblestone_letter_y:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTI3N2ExOWM5Y2RjNThjYjk3OTkzMDQyNTdkYmQ0YzgyODk2NGY1YjcwZjg1NDI0NGY3NTE2ODI0YmFiMDJjIn19fQ=="
+    name: "&7Cobblestone Y"
+    tags:
+      - alphabet/cobblestone
+      - character/letter_y
+      - stone
+    recipes:
+      stonecutter:
+        - id: "cobblestone_letter_y"
+          input: { head: "mini_cobblestone" }
+  cobblestone_letter_z:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvN2FkNGRhMjE2Y2M3ZmYzNTgyMjNkMTExYTMzYzE5YzNmMzY5YjliNDY4MmNkMmI5ZDc1OWMzMWZmZTQ1NDkifX19"
+    name: "&7Cobblestone Z"
+    tags:
+      - alphabet/cobblestone
+      - character/letter_z
+      - stone
+    recipes:
+      stonecutter:
+        - id: "cobblestone_letter_z"
+          input: { head: "mini_cobblestone" }
+  cobblestone_number_0:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTI5ZmYxY2U0YjMwNDk0MmUxNTE5NTYxMWQzYThhZjE2YzQxM2M2YjhlZThhZWNiOGQ4Y2M3OWE2NDRlYiJ9fX0="
+    name: "&7Cobblestone 0"
+    tags:
+      - alphabet/cobblestone
+      - character/number_0
+      - stone
+    recipes:
+      stonecutter:
+        - id: "cobblestone_number_0"
+          input: { head: "mini_cobblestone" }
+  cobblestone_number_1:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvY2NkNjQ2OTQxMGY1ZjE2MjlkYzBkZTI4NGZjZWJmZmY1M2M2NDRmMGNiNWE0ZTJiYmE5NWE3ZjE2ZjVkIn19fQ=="
+    name: "&7Cobblestone 1"
+    tags:
+      - alphabet/cobblestone
+      - character/number_1
+      - stone
+    recipes:
+      stonecutter:
+        - id: "cobblestone_number_1"
+          input: { head: "mini_cobblestone" }
+  cobblestone_number_2:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNmY5MTE0ODc2N2MzOGI1Njc1ZDRiMzY4N2FiOGZiZjhhN2FjODBiNTQ4N2JlZDg4MTM4M2QxMTRmNTRkZjcwIn19fQ=="
+    name: "&7Cobblestone 2"
+    tags:
+      - alphabet/cobblestone
+      - character/number_2
+      - stone
+    recipes:
+      stonecutter:
+        - id: "cobblestone_number_2"
+          input: { head: "mini_cobblestone" }
+  cobblestone_number_3:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGM0MmFkYjEzMmQ4MWM3YmNjMzMzNjk4ZDJmN2M3MDMzZmQ4ZjM4MTU3Yjg0YTVhOWU3MzA3ZGZlZjkxMSJ9fX0="
+    name: "&7Cobblestone 3"
+    tags:
+      - alphabet/cobblestone
+      - character/number_3
+      - stone
+    recipes:
+      stonecutter:
+        - id: "cobblestone_number_3"
+          input: { head: "mini_cobblestone" }
+  cobblestone_number_4:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTkxMmYyNTk4MjhmM2Q0MDEzOThlYjFjNTRhMDNlYzIwOTM2NGUyMWIzODUxODg4M2JiNTRiNjdlNzVlMSJ9fX0="
+    name: "&7Cobblestone 4"
+    tags:
+      - alphabet/cobblestone
+      - character/number_4
+      - stone
+    recipes:
+      stonecutter:
+        - id: "cobblestone_number_4"
+          input: { head: "mini_cobblestone" }
+  cobblestone_number_5:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTI3MzFmYjMzOGExNDQ4MjJkZDUzNzNlNmFkMjQ1NWM5OWZhZmEyMWE5ODkyYWM4ZGQ4NTM5NmI4NzJiODk1MSJ9fX0="
+    name: "&7Cobblestone 5"
+    tags:
+      - alphabet/cobblestone
+      - character/number_5
+      - stone
+    recipes:
+      stonecutter:
+        - id: "cobblestone_number_5"
+          input: { head: "mini_cobblestone" }
+  cobblestone_number_6:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTE4MGRiOGVmZmMwNzNjNjc5YzVkNGNmYWNlZDQ4M2ZlNWViNGQ3MWVkYWNkNjQ2MTFjZGY3MzVmMTI5NDcifX19"
+    name: "&7Cobblestone 6"
+    tags:
+      - alphabet/cobblestone
+      - character/number_6
+      - stone
+    recipes:
+      stonecutter:
+        - id: "cobblestone_number_6"
+          input: { head: "mini_cobblestone" }
+  cobblestone_number_7:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMDg3MmRlNWU1MmEyZTJiMzVmZTkyYzkzYTVkZjZhZjZkM2E5NmQ3N2IxZWQ2N2Q0ZDM1ZDg3NTM5YjQ1NiJ9fX0="
+    name: "&7Cobblestone 7"
+    tags:
+      - alphabet/cobblestone
+      - character/number_7
+      - stone
+    recipes:
+      stonecutter:
+        - id: "cobblestone_number_7"
+          input: { head: "mini_cobblestone" }
+  cobblestone_number_8:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWJlZDhjNTAzZTZhNzQyMTljZjYzYmE4MTI0OTU3NDk0ZWRjNWZkYTFkNGMxM2UzMTA5MTlkN2NlZjg3NWUifX19"
+    name: "&7Cobblestone 8"
+    tags:
+      - alphabet/cobblestone
+      - character/number_8
+      - stone
+    recipes:
+      stonecutter:
+        - id: "cobblestone_number_8"
+          input: { head: "mini_cobblestone" }
+  cobblestone_number_9:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDdkMGI2ZTZkZmFmNmJlMjdhMzdhZjE0ODNlOWRlNjBmZmZmNWU0OGY1ZmM3YzI1YmQ0ODg0NjMzYWEzZCJ9fX0="
+    name: "&7Cobblestone 9"
+    tags:
+      - alphabet/cobblestone
+      - character/number_9
+      - stone
+    recipes:
+      stonecutter:
+        - id: "cobblestone_number_9"
+          input: { head: "mini_cobblestone" }
+  cobblestone_number_10:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWE5NjdkNzEzNWU0Y2IxODg0MmM3OTRjMzc4YjJhYjgyN2E4YjcyNzlmYTA3YzZjMTM5OTM2MTgzYjc5NTZiNiJ9fX0="
+    name: "&7Cobblestone 10"
+    tags:
+      - alphabet/cobblestone
+      - character/number_10
+      - stone
+    recipes:
+      stonecutter:
+        - id: "cobblestone_number_10"
+          input: { head: "mini_cobblestone" }
+  cobblestone_number_11:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmMzODYzYjA5ZjM0YWM1MDU1NjhiZDU1YWM2OGMzZTkyN2RhYTM5ZjcxMTQ5NzAzYjcwYTU0NjM3ZGQ3OWQifX19"
+    name: "&7Cobblestone 11"
+    tags:
+      - alphabet/cobblestone
+      - character/number_11
+      - stone
+    recipes:
+      stonecutter:
+        - id: "cobblestone_number_11"
+          input: { head: "mini_cobblestone" }
+  cobblestone_number_12:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzc0ZTE3ZGJhNTMzYTk1Mjc1OTVjYjk2ZDNhNTZiNTIzYTZhOThhMzU1ZjEyOGI5ZjU2ODRmODRmOTMifX19"
+    name: "&7Cobblestone 12"
+    tags:
+      - alphabet/cobblestone
+      - character/number_12
+      - stone
+    recipes:
+      stonecutter:
+        - id: "cobblestone_number_12"
+          input: { head: "mini_cobblestone" }
+  cobblestone_number_13:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTE3Mjg5MWU2ODVmZTc1ZGRmOWQyY2U4ZDIyMjczNDYxY2ZmOWY2Y2I4YTI4Y2FlMmQ0ZDVmZjIwMjk2YiJ9fX0="
+    name: "&7Cobblestone 13"
+    tags:
+      - alphabet/cobblestone
+      - character/number_13
+      - stone
+    recipes:
+      stonecutter:
+        - id: "cobblestone_number_13"
+          input: { head: "mini_cobblestone" }
+  cobblestone_number_14:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmVkODY0ZmVkZmI2NGJiM2Q2Y2MzZjc3ZTVhNTI3YTIwMmY1MzVjYzI0ZDViMWI3ZmM5YWIwM2U1NjQ0NDgifX19"
+    name: "&7Cobblestone 14"
+    tags:
+      - alphabet/cobblestone
+      - character/number_14
+      - stone
+    recipes:
+      stonecutter:
+        - id: "cobblestone_number_14"
+          input: { head: "mini_cobblestone" }
+  cobblestone_number_15:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDBjYjU0ZjNhZWJkNDMwZGZmYTIyY2EyN2U4MWY0ZDRmYzkxYjNhZWVkMzlkOTBiZjViYTY4YzRhZjMyMiJ9fX0="
+    name: "&7Cobblestone 15"
+    tags:
+      - alphabet/cobblestone
+      - character/number_15
+      - stone
+    recipes:
+      stonecutter:
+        - id: "cobblestone_number_15"
+          input: { head: "mini_cobblestone" }
+  cobblestone_number_16:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTZlMmVkOWE3ODQ2MWMyMmVkZTNmNWYxOTYzYWZjYTBkMGE4ZDE5MDY3OWE3OGZiYmZmYWVhOTFlMWM1OTIifX19"
+    name: "&7Cobblestone 16"
+    tags:
+      - alphabet/cobblestone
+      - character/number_16
+      - stone
+    recipes:
+      stonecutter:
+        - id: "cobblestone_number_16"
+          input: { head: "mini_cobblestone" }
+  cobblestone_number_17:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDk2MGQ2M2I3NWJhMTEzYjE5ZGI2YWE3MTkxMGYxMzE3OWFmNjRkZTdiMWVlYjc5ODg5ZjEzMDkyMTNkMSJ9fX0="
+    name: "&7Cobblestone 17"
+    tags:
+      - alphabet/cobblestone
+      - character/number_17
+      - stone
+    recipes:
+      stonecutter:
+        - id: "cobblestone_number_17"
+          input: { head: "mini_cobblestone" }
+  cobblestone_number_18:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTQ5ZWRjOTkxZGRhZjY4MmJjYWFmZDNjNjNiYjNiMjM5MzczMzVjYzA2OWExOTI3NzFmMzllZmZmNjdmOCJ9fX0="
+    name: "&7Cobblestone 18"
+    tags:
+      - alphabet/cobblestone
+      - character/number_18
+      - stone
+    recipes:
+      stonecutter:
+        - id: "cobblestone_number_18"
+          input: { head: "mini_cobblestone" }
+  cobblestone_number_19:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzM0MzUxNDUxYTljYTFjZTMxYmUxZTVjM2Q3MzYwMTIzZmI5ZjBiNDYxOTNjYThjZTA2NGJkN2VlYzI2ZjcifX19"
+    name: "&7Cobblestone 19"
+    tags:
+      - alphabet/cobblestone
+      - character/number_19
+      - stone
+    recipes:
+      stonecutter:
+        - id: "cobblestone_number_19"
+          input: { head: "mini_cobblestone" }
+  cobblestone_number_20:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTBiOTMzNjg2ZTk2OTAxY2I4NzQ4NTM3Y2U0MDUyMWFlYzMxNmI3ZmRiNDg4NmMyZmY1ZTk5NDhhN2MxNzhhIn19fQ=="
+    name: "&7Cobblestone 20"
+    tags:
+      - alphabet/cobblestone
+      - character/number_20
+      - stone
+    recipes:
+      stonecutter:
+        - id: "cobblestone_number_20"
+          input: { head: "mini_cobblestone" }
+  cobblestone_number_21:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjc1YjYwYzI2N2JlMjlmZDNjMWI3NjlkZjEzMzFlZGU1NDljMTE0YjZhNjE0ODYyM2Q2M2U5MjRlMTQ3ZGIzYSJ9fX0="
+    name: "&7Cobblestone 21"
+    tags:
+      - alphabet/cobblestone
+      - character/number_21
+      - stone
+    recipes:
+      stonecutter:
+        - id: "cobblestone_number_21"
+          input: { head: "mini_cobblestone" }
+  cobblestone_number_22:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzhkMTZhNThkYzAxYjFhZDZjYTQ4NWZhY2EzOWU2Y2ZiMmI4ZmViZjdjYjk2NGZjYjE0Y2Y5NWUwOWI1NmYifX19"
+    name: "&7Cobblestone 22"
+    tags:
+      - alphabet/cobblestone
+      - character/number_22
+      - stone
+    recipes:
+      stonecutter:
+        - id: "cobblestone_number_22"
+          input: { head: "mini_cobblestone" }
+  cobblestone_number_23:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzlmOWJkYmJjZjkwYmUxZmRlOTM2NzA2ZmY5YmM5MTE4OWNhNTRjYjU5ZjM1OGFjOWUwZDJiMDQ1Y2E1In19fQ=="
+    name: "&7Cobblestone 23"
+    tags:
+      - alphabet/cobblestone
+      - character/number_23
+      - stone
+    recipes:
+      stonecutter:
+        - id: "cobblestone_number_23"
+          input: { head: "mini_cobblestone" }
+  cobblestone_number_24:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTJjMjFmZWQxMWRiMTFmM2M2ZjE5MWRiNTM2OGVhOGYyOTdhOTEzOTNhZTJkNTdjZGM4NmYyYjE0NDZlMWIwIn19fQ=="
+    name: "&7Cobblestone 24"
+    tags:
+      - alphabet/cobblestone
+      - character/number_24
+      - stone
+    recipes:
+      stonecutter:
+        - id: "cobblestone_number_24"
+          input: { head: "mini_cobblestone" }
+  cobblestone_number_25:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTNhNzU0Mzc1MmQ5Nzk3YTNlMDMyN2FjOGM4NzJkZjMyNzk5MTdmOWYwN2Q3YTUzN2U2NzU0ZGFhZGY0ZWEifX19"
+    name: "&7Cobblestone 25"
+    tags:
+      - alphabet/cobblestone
+      - character/number_25
+      - stone
+    recipes:
+      stonecutter:
+        - id: "cobblestone_number_25"
+          input: { head: "mini_cobblestone" }
+  cobblestone_exclamation:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjdiMGM2OWYxODU3MzNiZGVkMjZmZjU3Zjk4M2VlMzhmYTFmY2YzZTYyOGJlMTVkMGFmOGM0ZGFlNjI2NjI2In19fQ=="
+    name: "&7Cobblestone !"
+    tags:
+      - alphabet/cobblestone
+      - character/exclamation
+      - stone
+    recipes:
+      stonecutter:
+        - id: "cobblestone_exclamation"
+          input: { head: "mini_cobblestone" }
+  cobblestone_reverse_exclamation:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDdjODMzZWY5ZDdjYTg0NDY2MzBlMDY1ZDUxNzUyNWIzZGNhNzY1OWI5MzM5YzA0MDk2ZTRhNmM4ZGMzNDIxMCJ9fX0="
+    name: "&7Cobblestone ¡"
+    tags:
+      - alphabet/cobblestone
+      - character/reverse_exclamation
+      - stone
+    recipes:
+      stonecutter:
+        - id: "cobblestone_reverse_exclamation"
+          input: { head: "mini_cobblestone" }
+  cobblestone_question:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjY0MGUxZDExZjkyMjQ2NzI2ZDY4NTY0ZjhjZmUwNjk5YzJjZDQ0Y2ZkOTFjMTY4NzEyYmE2MzU2ZDgzNzkifX19"
+    name: "&7Cobblestone ?"
+    tags:
+      - alphabet/cobblestone
+      - character/question
+      - stone
+    recipes:
+      stonecutter:
+        - id: "cobblestone_question"
+          input: { head: "mini_cobblestone" }
+  cobblestone_reverse_question:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMThkZTcwNmM3ZjcxMzUyOTY3MGFiZWVkMzJjYWM1OTJlZWYzM2MyMGQ2M2RkYzlmODFhM2VlMTlhZWI5Nzg3NyJ9fX0="
+    name: "&7Cobblestone ¿"
+    tags:
+      - alphabet/cobblestone
+      - character/reverse_question
+      - stone
+    recipes:
+      stonecutter:
+        - id: "cobblestone_reverse_question"
+          input: { head: "mini_cobblestone" }
+  cobblestone_period:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzZmNjdjMjIzYjQ0ZWJlM2VjMDhkZTMyYzljNDJhMTUxOTMxYjUwMmJkZTliZGMyNDMyM2QzMzI5ZDI5YSJ9fX0="
+    name: "&7Cobblestone ."
+    tags:
+      - alphabet/cobblestone
+      - character/period
+      - stone
+    recipes:
+      stonecutter:
+        - id: "cobblestone_period"
+          input: { head: "mini_cobblestone" }
+  cobblestone_comma:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjYzN2I3NGZmMmFkNDgzNzk1NTQ1Y2JkNDliZTAxZDYwMTFjYjQ4MzI3NjRmZmI5NmE1MjQ3YjYxNDFkOSJ9fX0="
+    name: "&7Cobblestone ,"
+    tags:
+      - alphabet/cobblestone
+      - character/comma
+      - stone
+    recipes:
+      stonecutter:
+        - id: "cobblestone_comma"
+          input: { head: "mini_cobblestone" }
+  cobblestone_colon:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzc5MTUwM2M4ZmU0YmJkNjU1OWZiYzY4ZjhlNzI4YWNjZTQ2OTliMDFiN2Q2YjQ0OTU1OWM1YzNkMzNmNDkzIn19fQ=="
+    name: "&7Cobblestone :"
+    tags:
+      - alphabet/cobblestone
+      - character/colon
+      - stone
+    recipes:
+      stonecutter:
+        - id: "cobblestone_colon"
+          input: { head: "mini_cobblestone" }
+  cobblestone_semicolon:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmNmYjg5YmI3ZDFhNzVmMjViOWQ5MDMxNjJkZjgzZjZmMzVhOWQyY2NiNDZlYjFjNWIxYzNhNmZjMTg5YzkxIn19fQ=="
+    name: "&7Cobblestone ;"
+    tags:
+      - alphabet/cobblestone
+      - character/semicolon
+      - stone
+    recipes:
+      stonecutter:
+        - id: "cobblestone_semicolon"
+          input: { head: "mini_cobblestone" }
+  cobblestone_apostrophe:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvM2ZiZWU1MmUxYTEyMzVjZjdhZDdiZTg1YjFmZTU1MzJhZmM4Y2NmNmQ4Y2NiZTJlZTA1ZGM2NzExYzVhZWQifX19"
+    name: "&7Cobblestone '"
+    tags:
+      - alphabet/cobblestone
+      - character/apostrophe
+      - stone
+    recipes:
+      stonecutter:
+        - id: "cobblestone_apostrophe"
+          input: { head: "mini_cobblestone" }
+  cobblestone_quote:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTg0ZmRkZDA2ZDk3YmU3YzYyNGZkY2Y1YzJmZGVjMDJiZWYzM2MyNjZiZGNhN2EzZTRlNmFmNGU0YmRkZmQ3In19fQ=="
+    name: "&7Cobblestone \""
+    tags:
+      - alphabet/cobblestone
+      - character/quote
+      - stone
+    recipes:
+      stonecutter:
+        - id: "cobblestone_quote"
+          input: { head: "mini_cobblestone" }
+  cobblestone_ampersand:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzhiY2VlODQyYzliZjQzYmE2OGFjMDJlOTc5MTE5ZTAyYWFhYjZiNTgxZWFkMTllZmI1ODIzM2E2OTI0N2Y2In19fQ=="
+    name: "&7Cobblestone &"
+    tags:
+      - alphabet/cobblestone
+      - character/ampersand
+      - stone
+    recipes:
+      stonecutter:
+        - id: "cobblestone_ampersand"
+          input: { head: "mini_cobblestone" }
+  cobblestone_hash:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTQ1NzE5N2RjZTZlYjQxYTQ5ZjJjYTk1NmNlOGJlNDZjY2Y1NzI1MzMyYjAwN2FiZDk4NmJiMmZiZDNiMiJ9fX0="
+    name: "&7Cobblestone #"
+    tags:
+      - alphabet/cobblestone
+      - character/hash
+      - stone
+    recipes:
+      stonecutter:
+        - id: "cobblestone_hash"
+          input: { head: "mini_cobblestone" }
+  cobblestone_dollar:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvY2E5YTc1OWU2ZGJiODc2ZmU0Yjc3ODYxMTY4NmM1MjQ1MTZjMTdiYWQ0N2NkODdlMTA2N2RkYWFmNmI2ZmVmMSJ9fX0="
+    name: "&7Cobblestone $"
+    tags:
+      - alphabet/cobblestone
+      - character/dollar
+      - stone
+    recipes:
+      stonecutter:
+        - id: "cobblestone_dollar"
+          input: { head: "mini_cobblestone" }
+  cobblestone_plus:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTVkNThkZThlYjI4M2VlZDBlNDEyMmYxYzUxMTNkMGMzYTIyOWVlYzViNmQ3YzE0ODFkZDIzNTIwYmM0NWRiIn19fQ=="
+    name: "&7Cobblestone +"
+    tags:
+      - alphabet/cobblestone
+      - character/plus
+      - stone
+    recipes:
+      stonecutter:
+        - id: "cobblestone_plus"
+          input: { head: "mini_cobblestone" }
+  cobblestone_minus:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvN2I3NWVhNGQzN2ZjYTRiZmE4ZjZhM2NlNTZkMTQ3MzYwNzA3M2E0NTZkMzNiMTIyNzQzNWI5OWFkNzFkMTQ3In19fQ=="
+    name: "&7Cobblestone -"
+    tags:
+      - alphabet/cobblestone
+      - character/minus
+      - stone
+    recipes:
+      stonecutter:
+        - id: "cobblestone_minus"
+          input: { head: "mini_cobblestone" }
+  cobblestone_equals:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOGUxZTRmMGUzYjUxM2Q4ODZiYWNlYWZjNDJmMWI2NjA1YThhOWQ1MTBhMmNkYjQ5YWY2ZjZmMmYyYTJjIn19fQ=="
+    name: "&7Cobblestone ="
+    tags:
+      - alphabet/cobblestone
+      - character/equals
+      - stone
+    recipes:
+      stonecutter:
+        - id: "cobblestone_equals"
+          input: { head: "mini_cobblestone" }
+  cobblestone_slash:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvN2YyNjhkMjE0MWY5YTgyY2YyNGRhZjg1ZjkxZWM4YTJjZGZkYjJhOWJlYzk1NDJjOTE2ODhkMzAyNWNkMTcifX19"
+    name: "&7Cobblestone /"
+    tags:
+      - alphabet/cobblestone
+      - character/slash
+      - stone
+    recipes:
+      stonecutter:
+        - id: "cobblestone_slash"
+          input: { head: "mini_cobblestone" }
+  cobblestone_backslash:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjg4ODU5NGNmZGZjMjIxMWVkOTQ1Mzg5ZGI5YmIxZDdkNjdiOGRmOThjOWY1NWU0OThkZTMyZmQzZCJ9fX0="
+    name: "&7Cobblestone \\"
+    tags:
+      - alphabet/cobblestone
+      - character/backslash
+      - stone
+    recipes:
+      stonecutter:
+        - id: "cobblestone_backslash"
+          input: { head: "mini_cobblestone" }
+  cobblestone_underscore:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTNjZmY4M2RiNjc5YWNkZTU0NjdjMTJlZDU1YzU4ZjkzMmMwZTBkZTkwNTI4NWJmYWI5ODAyZDQ2NTEwIn19fQ=="
+    name: "&7Cobblestone _"
+    tags:
+      - alphabet/cobblestone
+      - character/underscore
+      - stone
+    recipes:
+      stonecutter:
+        - id: "cobblestone_underscore"
+          input: { head: "mini_cobblestone" }
+  cobblestone_heart:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTU0N2QxOGVmNmEyYzJlYmEyODFhOTRlZWJiOGU5NzljNDc5MzhkOWQ1NDc3Yjk3M2E1MmExZGU4NzM0ZTIifX19"
+    name: "&7Cobblestone ♥"
+    tags:
+      - alphabet/cobblestone
+      - character/heart
+      - stone
+    recipes:
+      stonecutter:
+        - id: "cobblestone_heart"
+          input: { head: "mini_cobblestone" }
+  cobblestone_checkmark:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzM5Y2JjYjI0Y2EzYTkzNzVjYTM4ZjQ4MzllMjJkNjE3NGVkY2U2NDliMTRlNzRiYmJlZjZlMjUzMjI2YmQ5NiJ9fX0="
+    name: "&7Cobblestone ✓"
+    tags:
+      - alphabet/cobblestone
+      - character/checkmark
+      - stone
+    recipes:
+      stonecutter:
+        - id: "cobblestone_checkmark"
+          input: { head: "mini_cobblestone" }
+  cobblestone_note:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjA1NTEyNjc0YjFjMDdlODgwZWE3YzRhMjc0YjJlZDdhMWQ0ZjUxODlmYjFiODE3MWQwODU1MzcxYTJjZTcyMiJ9fX0="
+    name: "&7Cobblestone ♪"
+    tags:
+      - alphabet/cobblestone
+      - character/note
+      - stone
+    recipes:
+      stonecutter:
+        - id: "cobblestone_note"
+          input: { head: "mini_cobblestone" }
+  cobblestone_paren_open:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjk3M2UyNjIzZDUwMTRhODI1OGFjOTRmZWIzOWQ5ZWQ5NmE2MjlhY2U0YzNmM2UzYTQ2NjJlNTg2ZWJmMzhmNiJ9fX0="
+    name: "&7Cobblestone ("
+    tags:
+      - alphabet/cobblestone
+      - character/paren_open
+      - stone
+    recipes:
+      stonecutter:
+        - id: "cobblestone_paren_open"
+          input: { head: "mini_cobblestone" }
+  cobblestone_paren_close:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWVjN2UxYzkzNTY3MTI4MmQzNWRjYTlkOGQ2MmJjOWQ5NjUxOWI0M2FmMjZiNWVmYTgxOGZmOWRmODQwIn19fQ=="
+    name: "&7Cobblestone )"
+    tags:
+      - alphabet/cobblestone
+      - character/paren_close
+      - stone
+    recipes:
+      stonecutter:
+        - id: "cobblestone_paren_close"
+          input: { head: "mini_cobblestone" }
+  cobblestone_bracket_open:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzFmMzViNzE1NzkwMjczZmM5NjAzMTlhOGNhNjRmYjk4OGNkODE0OGFkM2RiMWQ4N2FlMjU4YjdlYzU4NTJiIn19fQ=="
+    name: "&7Cobblestone ["
+    tags:
+      - alphabet/cobblestone
+      - character/bracket_open
+      - stone
+    recipes:
+      stonecutter:
+        - id: "cobblestone_bracket_open"
+          input: { head: "mini_cobblestone" }
+  cobblestone_bracket_close:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTc1OGQxNWRkMTZjYzkzN2FkZmM4NzYzNjVhZmE2ZWY4NTRlNjRlMDg1ODkzYWE3MzMyYjUzZDRlOWFkOTMifX19"
+    name: "&7Cobblestone ]"
+    tags:
+      - alphabet/cobblestone
+      - character/bracket_close
+      - stone
+    recipes:
+      stonecutter:
+        - id: "cobblestone_bracket_close"
+          input: { head: "mini_cobblestone" }
+  cobblestone_brace_open:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZGRhZmMzZTE1MWIyNmJlOThlNzZjNjI1YzdmNTNkNTA1NjczZTgzODBjMWFmZmE0ZTk0MDFhNDE3ODZjNzUifX19"
+    name: "&7Cobblestone {"
+    tags:
+      - alphabet/cobblestone
+      - character/brace_open
+      - stone
+    recipes:
+      stonecutter:
+        - id: "cobblestone_brace_open"
+          input: { head: "mini_cobblestone" }
+  cobblestone_brace_close:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDgyYWQ2YjQzNGU2M2U0MWE2NGIyNzcyNDNlNDFiMjlmY2JiYTI5ZjJhZDE2Zjg2ZmIwNGNkNDdjNGRiMDIzIn19fQ=="
+    name: "&7Cobblestone }"
+    tags:
+      - alphabet/cobblestone
+      - character/brace_close
+      - stone
+    recipes:
+      stonecutter:
+        - id: "cobblestone_brace_close"
+          input: { head: "mini_cobblestone" }
+  cobblestone_arrow_up:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOWMyNjg3NmE0NTQ4ODQ0ZTI4YTZmN2JhMWYzNzdjODBlNTk0OTVmN2QzMjIxNGJjYzQ5MjgwNGIxNjYxOTMzOSJ9fX0="
+    name: "&7Cobblestone ↑"
+    tags:
+      - alphabet/cobblestone
+      - character/arrow_up
+      - stone
+    recipes:
+      stonecutter:
+        - id: "cobblestone_arrow_up"
+          input: { head: "mini_cobblestone" }
+  cobblestone_arrow_down:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvN2U4OTE0ZGZjYThjMjA5NDMxNzVjMDUzMzMxYWUzNzNhNDhhZjQ1ZWQ1YmQxNTdjODk0OTVjYWU0NmVjOTgifX19"
+    name: "&7Cobblestone ↓"
+    tags:
+      - alphabet/cobblestone
+      - character/arrow_down
+      - stone
+    recipes:
+      stonecutter:
+        - id: "cobblestone_arrow_down"
+          input: { head: "mini_cobblestone" }
+  cobblestone_arrow_left:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDI4NTVhOGZmYTE3ZTdjYmNhMTNkYWJhZDhjY2Y5MGU0ZGU5NzQ4YTJkMmMzMTE0NjQ2OGVmODY2MDhmZWIifX19"
+    name: "&7Cobblestone ←"
+    tags:
+      - alphabet/cobblestone
+      - character/arrow_left
+      - stone
+    recipes:
+      stonecutter:
+        - id: "cobblestone_arrow_left"
+          input: { head: "mini_cobblestone" }
+  cobblestone_arrow_right:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvM2NiMzhmZGY1ZWQwNGE0OWYyMTQ5NWY0ZDk0ODM1YzhlNjI5MGFiYWNkNjVjOTY2YzFjNmNiZWZhNjZkODRiIn19fQ=="
+    name: "&7Cobblestone →"
+    tags:
+      - alphabet/cobblestone
+      - character/arrow_right
+      - stone
+    recipes:
+      stonecutter:
+        - id: "cobblestone_arrow_right"
+          input: { head: "mini_cobblestone" }
+  cobblestone_arrow_left_up:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOWQ3OTg4Njk3NGIxYWJjNWM3MjU5NzVmOGVjN2U5MTliMjhhZDI0MWRkNmY5NGY3Njc1ZDY4YTdkOGE1Y2JmMiJ9fX0="
+    name: "&7Cobblestone ↖"
+    tags:
+      - alphabet/cobblestone
+      - character/arrow_left_up
+      - stone
+    recipes:
+      stonecutter:
+        - id: "cobblestone_arrow_left_up"
+          input: { head: "mini_cobblestone" }
+  cobblestone_arrow_right_up:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjdkMTk2ZjVmYmMzMWFmZWUzMzcyZGE0Zjk2NjlkYzk1MzZlZTNlYjYwYzkxNjFiMTE2MzJhMjY4YmZkZjQ2NyJ9fX0="
+    name: "&7Cobblestone ↗"
+    tags:
+      - alphabet/cobblestone
+      - character/arrow_right_up
+      - stone
+    recipes:
+      stonecutter:
+        - id: "cobblestone_arrow_right_up"
+          input: { head: "mini_cobblestone" }
+  cobblestone_arrow_left_down:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmZhNzJmOWI2NWIwMzJjOGMyMWNlMmQ2ZjhlZThlMWFhYzc2NjdmOWQ1NzZhMjM5ZmRiYjQ3NzIxZjEzOTBmYSJ9fX0="
+    name: "&7Cobblestone ↙"
+    tags:
+      - alphabet/cobblestone
+      - character/arrow_left_down
+      - stone
+    recipes:
+      stonecutter:
+        - id: "cobblestone_arrow_left_down"
+          input: { head: "mini_cobblestone" }
+  cobblestone_arrow_right_down:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjUzNmIwZWI3NTMxNWI1YTdlMDhjYTEzMjRkNzQzNjM0ODlhYmZlMjdlMDUxZDM5Nzk2NTUyM2RlNGVlOGYifX19"
+    name: "&7Cobblestone ↘"
+    tags:
+      - alphabet/cobblestone
+      - character/arrow_right_down
+      - stone
+    recipes:
+      stonecutter:
+        - id: "cobblestone_arrow_right_down"
+          input: { head: "mini_cobblestone" }
+  cobblestone_forward:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTNmNTM0NmQ0MDljZTNlMDZiYTI4ZDViMmMwMTYxYTIxM2M4NzU5Yjk0YjYzYjQ1NmU4MjFjMzM4MDk1ZjMifX19"
+    name: "&7Cobblestone ⏩"
+    tags:
+      - alphabet/cobblestone
+      - character/forward
+      - stone
+    recipes:
+      stonecutter:
+        - id: "cobblestone_forward"
+          input: { head: "mini_cobblestone" }
+  cobblestone_forward_ii:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDlkMzM0YmYzM2YyZTU2NzdmYjE3NGQ0NzJiYjc2MWQ4NzhkMWE2NTc5ZWMxZTdiMjdkOWRkNTQ1Yzk3M2MifX19"
+    name: "&7Cobblestone ⏭"
+    tags:
+      - alphabet/cobblestone
+      - character/forward_ii
+      - stone
+    recipes:
+      stonecutter:
+        - id: "cobblestone_forward_ii"
+          input: { head: "mini_cobblestone" }
+  cobblestone_backward:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZGMxY2E5ZGM1YzdjOTQxYTY3N2I0MDgzMjc1N2E5MDk4NzFhMjk1ZTI0YzkyYzBjMWU2MzJjMjFkNGY5MDVjIn19fQ=="
+    name: "&7Cobblestone ⏪"
+    tags:
+      - alphabet/cobblestone
+      - character/backward
+      - stone
+    recipes:
+      stonecutter:
+        - id: "cobblestone_backward"
+          input: { head: "mini_cobblestone" }
+  cobblestone_backward_ii:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTA2NTM2Y2I2ZGUwZDA4YzJkNzAxMjg1NGVmYTI4MTYyMjUxZWU2ZTlmODFmZTZjY2MyOTk4M2M4NDVkNmI1In19fQ=="
+    name: "&7Cobblestone ⏮"
+    tags:
+      - alphabet/cobblestone
+      - character/backward_ii
+      - stone
+    recipes:
+      stonecutter:
+        - id: "cobblestone_backward_ii"
+          input: { head: "mini_cobblestone" }
+  cobblestone_letter_a_umlaut:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNWFiMjdhNTgxNzQzMWRkMjIzODNlNzQyM2IxMmIzZWEzMjUzYmM5NGZmNjI2ZTE1ZmU4OGRmNDcxOWViNCJ9fX0="
+    name: "&7Cobblestone Ä"
+    tags:
+      - alphabet/cobblestone
+      - character/letter_a_umlaut
+      - stone
+    recipes:
+      stonecutter:
+        - id: "cobblestone_letter_a_umlaut"
+          input: { head: "mini_cobblestone" }
+  cobblestone_letter_n_tilde:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTUwZTI4ZWQ4YzlhYjgxZTQyMjgwMDQwNjczYTgxNGM2MDE5MTVjOTk3NTlmNWUxYWRmZmU4YmFjNmVhMzk5OSJ9fX0="
+    name: "&7Cobblestone Ñ"
+    tags:
+      - alphabet/cobblestone
+      - character/letter_n_tilde
+      - stone
+    recipes:
+      stonecutter:
+        - id: "cobblestone_letter_n_tilde"
+          input: { head: "mini_cobblestone" }
+  cobblestone_letter_o_umlaut:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTIzMzEzZjA4NzIxYzk3ZWNmYTQ4YTZkMTBiM2FkODZiNDk5NmZiZGU4NjBjMTZkYjllOGQ3YTA0YWFmYjBjOCJ9fX0="
+    name: "&7Cobblestone Ö"
+    tags:
+      - alphabet/cobblestone
+      - character/letter_o_umlaut
+      - stone
+    recipes:
+      stonecutter:
+        - id: "cobblestone_letter_o_umlaut"
+          input: { head: "mini_cobblestone" }
+  cobblestone_letter_u_umlaut:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzIzMWM0MzIxMTZlZDRmYjhjNzIyNjg5N2M4MWUxOWE5MDNiNDhjODRiNzdkN2RhNzkzZjMxODU2NmNlNjQ5In19fQ=="
+    name: "&7Cobblestone Ü"
+    tags:
+      - alphabet/cobblestone
+      - character/letter_u_umlaut
+      - stone
+    recipes:
+      stonecutter:
+        - id: "cobblestone_letter_u_umlaut"
+          input: { head: "mini_cobblestone" }
+  cobblestone_cyrillic_yo:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZWM5M2M0NmU1MjQ0NzRjZDgwZmE0YzE1ODVmZTE4NDIzY2UyMWRkNDZjNzA4NGZjOWY0ODBkZTI4YTdjMyJ9fX0="
+    name: "&7Cobblestone Ё"
+    tags:
+      - alphabet/cobblestone
+      - character/cyrillic_yo
+      - stone
+    recipes:
+      stonecutter:
+        - id: "cobblestone_cyrillic_yo"
+          input: { head: "mini_cobblestone" }
+  cobblestone_cyrillic_be:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWEzNDFmZmJjNjVlMjhkMjJhYmQxNmE4YjY3ODZmNDdjMTRmZDVjZDE4ZjQ2NWUyNjcyMzYwNjdjYzAifX19"
+    name: "&7Cobblestone Б"
+    tags:
+      - alphabet/cobblestone
+      - character/cyrillic_be
+      - stone
+    recipes:
+      stonecutter:
+        - id: "cobblestone_cyrillic_be"
+          input: { head: "mini_cobblestone" }
+  cobblestone_cyrillic_ge:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYWViMmYzYTMyM2U5MjI2NjU0MzcxYTI0MWU1NWI2ZjFkMzNiZjVlZDRhMjY4ZjYxZjJkZGE3M2QzYTQ1OTYifX19"
+    name: "&7Cobblestone Г"
+    tags:
+      - alphabet/cobblestone
+      - character/cyrillic_ge
+      - stone
+    recipes:
+      stonecutter:
+        - id: "cobblestone_cyrillic_ge"
+          input: { head: "mini_cobblestone" }
+  cobblestone_cyrillic_de:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmY1YWI2YmU3NTRiZmY0NGRhMzlkODY2ZmFjNTdkOTAxYjY0NjE4ODVjNDlhZmExY2NlMDVhM2E5MzZkNjgifX19"
+    name: "&7Cobblestone Д"
+    tags:
+      - alphabet/cobblestone
+      - character/cyrillic_de
+      - stone
+    recipes:
+      stonecutter:
+        - id: "cobblestone_cyrillic_de"
+          input: { head: "mini_cobblestone" }
+  cobblestone_cyrillic_zhe:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODcyMGNkYTQ5NWI2ZDRlYTE4M2U2MzI4ZDYxYjZjNWI1MjJmNTZkNGI3YTA0ZTIwYTE2MTE2N2Y0NjdlNjkifX19"
+    name: "&7Cobblestone Ж"
+    tags:
+      - alphabet/cobblestone
+      - character/cyrillic_zhe
+      - stone
+    recipes:
+      stonecutter:
+        - id: "cobblestone_cyrillic_zhe"
+          input: { head: "mini_cobblestone" }
+  cobblestone_cyrillic_ze:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYWM5YWNmZGMxOTFmNjQxZjFmYmZjMmYyMzQwOThiNWVhMmE4YWRhY2YyNjk1ZDJlMTY5MDRkMWE1MjVmNCJ9fX0="
+    name: "&7Cobblestone З"
+    tags:
+      - alphabet/cobblestone
+      - character/cyrillic_ze
+      - stone
+    recipes:
+      stonecutter:
+        - id: "cobblestone_cyrillic_ze"
+          input: { head: "mini_cobblestone" }
+  cobblestone_cyrillic_i:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTZmMTY2MTYyMmMxNDU4ZmQyODNjYWZhZjQyY2JkMTg0MmNlNzRhZjJiNDMxZTQ0YzU0Mzg2MzY5MDY5In19fQ=="
+    name: "&7Cobblestone И"
+    tags:
+      - alphabet/cobblestone
+      - character/cyrillic_i
+      - stone
+    recipes:
+      stonecutter:
+        - id: "cobblestone_cyrillic_i"
+          input: { head: "mini_cobblestone" }
+  cobblestone_cyrillic_short_i:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzM2YTIyNGFjYzdmMTEyYTliMjA2NjgyYTM1ZmUwOWI3ODkwNzhjYjI0NjEzMjM4NDFlZDIzMmQ0YmI0ZmFjIn19fQ=="
+    name: "&7Cobblestone Й"
+    tags:
+      - alphabet/cobblestone
+      - character/cyrillic_short_i
+      - stone
+    recipes:
+      stonecutter:
+        - id: "cobblestone_cyrillic_short_i"
+          input: { head: "mini_cobblestone" }
+  cobblestone_cyrillic_el:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjE0MTVkYjNlMjE2ODI3Njk5M2ZlZWJhMDJkY2IxMWZmYTYxNTE5YjIyMTI4YmUzMTI2YjE0ZWJhZmQwIn19fQ=="
+    name: "&7Cobblestone Л"
+    tags:
+      - alphabet/cobblestone
+      - character/cyrillic_el
+      - stone
+    recipes:
+      stonecutter:
+        - id: "cobblestone_cyrillic_el"
+          input: { head: "mini_cobblestone" }
+  cobblestone_cyrillic_pe:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvN2ZlNTRiNzdjODc5YjViNjAzM2JhN2M1NWE5YzA4ZWFiNzVlMWFiNTcxMTc5Y2ZmNjFiM2MyNDVkZDU2M2IifX19"
+    name: "&7Cobblestone П"
+    tags:
+      - alphabet/cobblestone
+      - character/cyrillic_pe
+      - stone
+    recipes:
+      stonecutter:
+        - id: "cobblestone_cyrillic_pe"
+          input: { head: "mini_cobblestone" }
+  cobblestone_cyrillic_u:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzQxNTgyODlkYWQ1YjkxYTcyYjlhMGE4OTRhYjgxMjRhMzA2MDM5NDY5ZDUzZWI5YWI2ZDRiNzkxOTdiZDIzIn19fQ=="
+    name: "&7Cobblestone У"
+    tags:
+      - alphabet/cobblestone
+      - character/cyrillic_u
+      - stone
+    recipes:
+      stonecutter:
+        - id: "cobblestone_cyrillic_u"
+          input: { head: "mini_cobblestone" }
+  cobblestone_cyrillic_ef:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTJjYTY0OTk1MDY3OGZiYTA1OTVhMmJiMTQ1YTg1N2QyYTdlODY3Y2FiZjljZmUzYmM0YzBlNzEwOTA3YyJ9fX0="
+    name: "&7Cobblestone Ф"
+    tags:
+      - alphabet/cobblestone
+      - character/cyrillic_ef
+      - stone
+    recipes:
+      stonecutter:
+        - id: "cobblestone_cyrillic_ef"
+          input: { head: "mini_cobblestone" }
+  cobblestone_cyrillic_tse:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzllYzJkMjU3Njc0MzI2NjUyM2M2YTk0OTFlNjU5ZjcxOGE3NmFkMjMxOWNhZmIwMmIzYzkwNGY0NDI0YSJ9fX0="
+    name: "&7Cobblestone Ц"
+    tags:
+      - alphabet/cobblestone
+      - character/cyrillic_tse
+      - stone
+    recipes:
+      stonecutter:
+        - id: "cobblestone_cyrillic_tse"
+          input: { head: "mini_cobblestone" }
+  cobblestone_cyrillic_che:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWQ3ZGIzNzk2MzZkYWI3ZTNjODNiZWM1NWJhMGNlOGQ2ZWVlMjk1OGRiNzNlYTE0ZjMxYzdhYWU2YTYyOGM1ZiJ9fX0="
+    name: "&7Cobblestone Ч"
+    tags:
+      - alphabet/cobblestone
+      - character/cyrillic_che
+      - stone
+    recipes:
+      stonecutter:
+        - id: "cobblestone_cyrillic_che"
+          input: { head: "mini_cobblestone" }
+  cobblestone_cyrillic_sha:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTIxZGM3Mjk3NWQ0NWJlZmEzOTg2NzNhMDdiOTBiOTdmMzFkMDZkZmRlYWMwOWU2NDNjYzUzZjc3NWU5YWYyIn19fQ=="
+    name: "&7Cobblestone Ш"
+    tags:
+      - alphabet/cobblestone
+      - character/cyrillic_sha
+      - stone
+    recipes:
+      stonecutter:
+        - id: "cobblestone_cyrillic_sha"
+          input: { head: "mini_cobblestone" }
+  cobblestone_cyrillic_shcha:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvN2JiZTM1ZDhmMGY1MzY3YjVlNGVlNDhmN2FhODczNmZmMTZhZTVkMjgwNTI1YjhmODY4ZDNjYmQ4MTk0NWYifX19"
+    name: "&7Cobblestone Щ"
+    tags:
+      - alphabet/cobblestone
+      - character/cyrillic_shcha
+      - stone
+    recipes:
+      stonecutter:
+        - id: "cobblestone_cyrillic_shcha"
+          input: { head: "mini_cobblestone" }
+  cobblestone_cyrillic_hard:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOWQzY2UwMTE4MTcxZmMxY2IxOGJmMjQ5NTA1MmM5NGExMzI0YzdhNDI1YWQ4MDVlZmI2ZDQyNzM1YzJlNzE1OCJ9fX0="
+    name: "&7Cobblestone Ъ"
+    tags:
+      - alphabet/cobblestone
+      - character/cyrillic_hard
+      - stone
+    recipes:
+      stonecutter:
+        - id: "cobblestone_cyrillic_hard"
+          input: { head: "mini_cobblestone" }
+  cobblestone_cyrillic_yeru:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZGY0Mjg5YzBiMWRkM2I0MGNhNDBlMmM1MmQxNTUzNTk2NGUxNjg5Yjc3OWE1ZTRjNDQ3YTkxNmMyNjJiZDE2In19fQ=="
+    name: "&7Cobblestone Ы"
+    tags:
+      - alphabet/cobblestone
+      - character/cyrillic_yeru
+      - stone
+    recipes:
+      stonecutter:
+        - id: "cobblestone_cyrillic_yeru"
+          input: { head: "mini_cobblestone" }
+  cobblestone_cyrillic_soft:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTg4MjE1ZjZlMjgxMmI2NjQ2OWQ3NmEyODRhYmVmYTA2Yjk2NDZhZTg2ZjY5MTk1ZWRiNjkxOTk3YjI1NTRiMSJ9fX0="
+    name: "&7Cobblestone Ь"
+    tags:
+      - alphabet/cobblestone
+      - character/cyrillic_soft
+      - stone
+    recipes:
+      stonecutter:
+        - id: "cobblestone_cyrillic_soft"
+          input: { head: "mini_cobblestone" }
+  cobblestone_cyrillic_e:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTAyY2FkYWQ5Zjk2NTI1YjdiZTc1NDU1ZDlmOTllOTQ2ODNhOGE1ZWRlNjVkYjljNGJlMDY5N2Y2MWZhYmFiZSJ9fX0="
+    name: "&7Cobblestone Э"
+    tags:
+      - alphabet/cobblestone
+      - character/cyrillic_e
+      - stone
+    recipes:
+      stonecutter:
+        - id: "cobblestone_cyrillic_e"
+          input: { head: "mini_cobblestone" }
+  cobblestone_cyrillic_yu:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvM2FmMDI0NzQzOTc1NGRlNzFjZGY3N2NiNGUzYmViZDcxNGI4NDcxY2NiMzU1ZjE0Y2E4MjUxY2E5N2M2NiJ9fX0="
+    name: "&7Cobblestone Ю"
+    tags:
+      - alphabet/cobblestone
+      - character/cyrillic_yu
+      - stone
+    recipes:
+      stonecutter:
+        - id: "cobblestone_cyrillic_yu"
+          input: { head: "mini_cobblestone" }
+  cobblestone_cyrillic_ya:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzk3ZTIwNjIzODQ3N2IxOTU4NzQ4NzFmMTdiM2RmNWIxNjEzNTYyZWY0YWFlZWNlYTMxMjc5NGE0ZTcyZWY5In19fQ=="
+    name: "&7Cobblestone Я"
+    tags:
+      - alphabet/cobblestone
+      - character/cyrillic_ya
+      - stone
+    recipes:
+      stonecutter:
+        - id: "cobblestone_cyrillic_ya"
+          input: { head: "mini_cobblestone" }
+  cobblestone_zodiac_aquarius:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjBhODA1ZmI4M2ZmZjJhYjQ4ZGEwMTllNzMxNWIxMGZlNTQxOGNjNDhlNzA5MzVhZDA4ZmMzZTg1Njc4NmQwYSJ9fX0="
+    name: "&7Cobblestone ♒"
+    tags:
+      - alphabet/cobblestone
+      - character/zodiac_aquarius
+      - stone
+    recipes:
+      stonecutter:
+        - id: "cobblestone_zodiac_aquarius"
+          input: { head: "mini_cobblestone" }
+  cobblestone_zodiac_aries:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjg3OGQ5NWQ1MDRlZTFiNTEyODQ2MTUzYmVmZTE5NDA2NTNlOGY5OWFlN2QxNjg0ZGFkZWE2NzM3NjA3ZWJkIn19fQ=="
+    name: "&7Cobblestone ♈"
+    tags:
+      - alphabet/cobblestone
+      - character/zodiac_aries
+      - stone
+    recipes:
+      stonecutter:
+        - id: "cobblestone_zodiac_aries"
+          input: { head: "mini_cobblestone" }
+  cobblestone_zodiac_cancer:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTZiNzExMjM0YmYxYTJmOWQ0ZGU1YWVkNDJkYmRhMzVkN2Y2NDE4ZTFjMjZkY2RkOTI0OGMyMGJmMzljNzA3MSJ9fX0="
+    name: "&7Cobblestone ♋"
+    tags:
+      - alphabet/cobblestone
+      - character/zodiac_cancer
+      - stone
+    recipes:
+      stonecutter:
+        - id: "cobblestone_zodiac_cancer"
+          input: { head: "mini_cobblestone" }
+  cobblestone_zodiac_capricorn:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOGM1MzBlODU1ZjA4NDg4MzBkOGVjM2VhYjE2ZTU3ZTUwYTQxZjM2N2I2YTI1YTZlYjRmZTJjOTQ2M2ExYjkwNCJ9fX0="
+    name: "&7Cobblestone ♑"
+    tags:
+      - alphabet/cobblestone
+      - character/zodiac_capricorn
+      - stone
+    recipes:
+      stonecutter:
+        - id: "cobblestone_zodiac_capricorn"
+          input: { head: "mini_cobblestone" }
+  cobblestone_zodiac_gemini:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWYzMzE0ZGQ2YmU5OWRjMWUwMWE3OTc0ZTZjYTkzNjgwODJiODEzYTNjOWJiYjJmMWVlODU5MTI3ZWRlMjk3MSJ9fX0="
+    name: "&7Cobblestone ♊"
+    tags:
+      - alphabet/cobblestone
+      - character/zodiac_gemini
+      - stone
+    recipes:
+      stonecutter:
+        - id: "cobblestone_zodiac_gemini"
+          input: { head: "mini_cobblestone" }
+  cobblestone_zodiac_leo:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDg3MGZiMTk0MTljODFlNDdlNWI4OWQ3NDlmODcxZjU1MjA0Y2IwOWE2ZjgxYTgyNDQ5NGUzYTFlMWViYzIyYSJ9fX0="
+    name: "&7Cobblestone ♌"
+    tags:
+      - alphabet/cobblestone
+      - character/zodiac_leo
+      - stone
+    recipes:
+      stonecutter:
+        - id: "cobblestone_zodiac_leo"
+          input: { head: "mini_cobblestone" }
+  cobblestone_zodiac_libra:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmY2ZTk2NDE4YWRhNWM4OWU5M2FlYTM1Yjc4MjRmMDE0OTMzMDMzZDk5ZWE2ZmZjZTlmNmIwNDgwOWVjMjk3YiJ9fX0="
+    name: "&7Cobblestone ♎"
+    tags:
+      - alphabet/cobblestone
+      - character/zodiac_libra
+      - stone
+    recipes:
+      stonecutter:
+        - id: "cobblestone_zodiac_libra"
+          input: { head: "mini_cobblestone" }
+  cobblestone_zodiac_pisces:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmIyM2IzZjU3ZTMxNGRjMTQyMzI0NTFlMjk1ZWJhNTIyMjk5NmMzZDA0NmQzMmE5MjUwZDJjODkwODkwNDgzNyJ9fX0="
+    name: "&7Cobblestone ♓"
+    tags:
+      - alphabet/cobblestone
+      - character/zodiac_pisces
+      - stone
+    recipes:
+      stonecutter:
+        - id: "cobblestone_zodiac_pisces"
+          input: { head: "mini_cobblestone" }
+  cobblestone_zodiac_sagittarius:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODg4YjNiYjZmNTQ0MmU2NTEzM2YwMjlhYzlmMDEzYjcwMWU0ZGRhMDkxYWMxODk4MzA4OWU0ODQ1M2UyNTZiZCJ9fX0="
+    name: "&7Cobblestone ♐"
+    tags:
+      - alphabet/cobblestone
+      - character/zodiac_sagittarius
+      - stone
+    recipes:
+      stonecutter:
+        - id: "cobblestone_zodiac_sagittarius"
+          input: { head: "mini_cobblestone" }
+  cobblestone_zodiac_scorpio:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTZhY2Y0NWJmNDY4M2VjNTkwMjU0ZTkxZmUyY2ExNTA5MTkxNDE4NTYzNzZjY2YxNjNmZDYxMWVlYThiOWI4ZiJ9fX0="
+    name: "&7Cobblestone ♏"
+    tags:
+      - alphabet/cobblestone
+      - character/zodiac_scorpio
+      - stone
+    recipes:
+      stonecutter:
+        - id: "cobblestone_zodiac_scorpio"
+          input: { head: "mini_cobblestone" }
+  cobblestone_zodiac_taurus:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjdmMTg0Y2UxYzk5NTZjMTU4NTZjMzcwMjhmNTMxNmY4NmQ3YWM0Njc4MjNiNGNmZjlkZWZkYzc1YTljMzRjZSJ9fX0="
+    name: "&7Cobblestone ♉"
+    tags:
+      - alphabet/cobblestone
+      - character/zodiac_taurus
+      - stone
+    recipes:
+      stonecutter:
+        - id: "cobblestone_zodiac_taurus"
+          input: { head: "mini_cobblestone" }
+  cobblestone_zodiac_virgo:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZmEyNzdlNTUyNzNjNGRmNDQwNjEwYzllOTM2NTVhNmZjZTYyZmNkYTQ2MTA3YTAxMDQzNGIxNjBkN2YxNjRlMyJ9fX0="
+    name: "&7Cobblestone ♍"
+    tags:
+      - alphabet/cobblestone
+      - character/zodiac_virgo
+      - stone
+    recipes:
+      stonecutter:
+        - id: "cobblestone_zodiac_virgo"
+          input: { head: "mini_cobblestone" }
+  cobblestone_female:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzgyZmJjM2JhODEzODA1OTEyMzU5NDUxNWRkMmFlYzBiOWZkZGJkZWRjZWRhMTQ4OTI1NzM2ZDFkZTEwOTAwMCJ9fX0="
+    name: "&7Cobblestone ♀"
+    tags:
+      - alphabet/cobblestone
+      - character/female
+      - stone
+    recipes:
+      stonecutter:
+        - id: "cobblestone_female"
+          input: { head: "mini_cobblestone" }
+  cobblestone_male:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjM4ZWM3MmNmYWZhNWI1YTc5M2M4ZjJjZjNkYWRjZmE0ZmQyNmIzODMwMDEzOGE4YmI5NzRjNzJkODQ4OTRiMCJ9fX0="
+    name: "&7Cobblestone ♂"
+    tags:
+      - alphabet/cobblestone
+      - character/male
+      - stone
+    recipes:
+      stonecutter:
+        - id: "cobblestone_male"
+          input: { head: "mini_cobblestone" }

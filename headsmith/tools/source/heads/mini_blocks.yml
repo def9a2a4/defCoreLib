@@ -1,0 +1,3303 @@
+# Generated Mini Blocks
+
+heads:
+  mini_quartz_block:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDNiNTAwMWE2NzAwN2E5M2FkZTY2NTkxNzVlOTA1NGE5Mjk3NmIwODdmYzYyOWYwNDJiY2Q1N2U3NzU3NjQ2YSJ9fX0="
+    name: "&7Mini Quartz Block"
+    tags:
+      - stone
+    recipes:
+      stonecutter:
+        - id: "mini_quartz_block"
+          input: { material: "QUARTZ_BLOCK" }
+  mini_lapis_block:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvY2FkMmM5MmZjMmRiMzRjYmVkZDUzNmYxZTFlMTI2YWQ4YzdlOTI3ZDE5ODlhYzAzOWU1ZTc2ZmE5YTQ4MzRiYyJ9fX0="
+    name: "&7Mini Lapis Block"
+    tags:
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "mini_lapis_block"
+          input: { material: "LAPIS_BLOCK" }
+  mini_redstone_block:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzk5MzY2YTNmMjMzNTZkNDRjYjNhNzIyZjgxODdjN2QwN2JhOTc1MDFmNzZkMTVmMmIzMTFlN2ZmZTVhNGRhYyJ9fX0="
+    name: "&7Mini Redstone Block"
+    tags:
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "mini_redstone_block"
+          input: { material: "REDSTONE_BLOCK" }
+  mini_diamond_block:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjM0NjMwOWRiYjRhYWI2ZjlkMTRhNjI3ZmI3M2Y0ODE0MTY1ODM3YjQyMzg1ZjA2NDMyZDY4MDIzYTg0NDVkIn19fQ=="
+    name: "&7Mini Diamond Block"
+    tags:
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "mini_diamond_block"
+          input: { material: "DIAMOND_BLOCK" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "DIAMOND_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "mini_diamond_block" }
+  mini_emerald_block:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmMwZTZkOWUyNDI3MzU0ODE5MThjNWZkMTQ0OThiZDc2MGJiOWY0ZmY2NDMwYWQ0Njk2YjM4ZThhODgzZGE5NyJ9fX0="
+    name: "&7Mini Emerald Block"
+    tags:
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "mini_emerald_block"
+          input: { material: "EMERALD_BLOCK" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "EMERALD_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "mini_emerald_block" }
+  mini_gold_block:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTdmNTdlN2FhOGRlODY1OTFiYjBiYzUyY2JhMzBhNDlkOTMxYmZhYmJkNDdiYmM4MGJkZDY2MjI1MTM5MjE2MSJ9fX0="
+    name: "&7Mini Gold Block"
+    tags:
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "mini_gold_block"
+          input: { material: "GOLD_BLOCK" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "GOLD_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "mini_gold_block" }
+  mini_raw_gold_block:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvY2JkNDE4OTZkNWQ4YTI5OTRhMGZjNmU4NTFmMjA3ZDgxZGRlZmI3ZTExMDRlNDcwZTRiNmU5Mjc2NWIzOWRiZiJ9fX0="
+    name: "&7Mini Raw Gold Block"
+    tags:
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "mini_raw_gold_block"
+          input: { material: "RAW_GOLD_BLOCK" }
+  mini_iron_block:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDZhNWRhNWE0ZDJiODIxM2IyZTk4ZTJjNWJlNWJkODlhNWM3OTE0OTJjYTdjNDZjMTc0ZDlhMTM3NmYwNTAzZCJ9fX0="
+    name: "&7Mini Iron Block"
+    tags:
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "mini_iron_block"
+          input: { material: "IRON_BLOCK" }
+  mini_raw_iron_block:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDQ3ZjJlMzlkOTZlNWQwNDM4NjQ3M2RhZjBlYjBhZTAwYjE3ZmEwMTU1NTZjOWNhMzlmOGUyZGU4YTIzNjlmMiJ9fX0="
+    name: "&7Mini Raw Iron Block"
+    tags:
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "mini_raw_iron_block"
+          input: { material: "RAW_IRON_BLOCK" }
+  mini_coal_block:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDdmNTc2NmQyOTI4ZGMwZGYxYjM0MDRjM2JkMDczYzk0NzZkMjZjODA1NzNiMDMzMmU3Y2NlNzNkZjE1NDgyYSJ9fX0="
+    name: "&7Mini Coal Block"
+    tags:
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "mini_coal_block"
+          input: { material: "COAL_BLOCK" }
+  mini_raw_copper_block:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZWU4YTRmMzVjMWEwYzhiM2JkODIxYTc2ZTM4NDczNDI3Yzk4OGZkZjVhMmRlMDI1NjQ2ZTA3MzUxZTM5M2M3ZSJ9fX0="
+    name: "&7Mini Raw Copper Block"
+    tags:
+      - copper
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "mini_raw_copper_block"
+          input: { material: "RAW_COPPER_BLOCK" }
+  mini_copper_block:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDBhNmU2YWE3Y2U5OWM4MWRhZjgxNmQ2OTYzOGQ1MmIyODgyYTI1NTg4ODAyMjJlOWE0NjZkY2VkYzg4MDE1YSJ9fX0="
+    name: "&7Mini Copper Block"
+    tags:
+      - copper
+    recipes:
+      stonecutter:
+        - id: "mini_copper_block"
+          input: { material: "COPPER_BLOCK" }
+  mini_cut_copper:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTI4YmMyZGYzZGZmNWVjM2QxNDNhMmNlZWNiOTM4MjE4MzUxNmU5ZmFkZDdlNDA5YTVlYjQxNTUxNTc0YTI1ZiJ9fX0="
+    name: "&7Mini Cut Copper"
+    tags:
+      - copper
+    recipes:
+      stonecutter:
+        - id: "mini_cut_copper"
+          input: { material: "CUT_COPPER" }
+  mini_exposed_copper:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjExMjRjMTZkNjJlMjVlNDQ5ZjVkYmMzMWI5NWY4Yjk4NDZmZTVmMzZkNWRhOWRjMTE1N2JmNjk0MWExMWU4MiJ9fX0="
+    name: "&7Mini Exposed Copper"
+    tags:
+      - copper
+    recipes:
+      stonecutter:
+        - id: "mini_exposed_copper"
+          input: { material: "EXPOSED_COPPER" }
+  mini_exposed_cut_copper:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTI1YzJmMzc0YzllMTRhOTUzMThkMTk0MzYxYzRkNGE5MzdjY2EzNjFiYzliNzVjZWNjYTJkMjAzZWY3ZTk4MCJ9fX0="
+    name: "&7Mini Exposed Cut Copper"
+    tags:
+      - copper
+    recipes:
+      stonecutter:
+        - id: "mini_exposed_cut_copper"
+          input: { material: "EXPOSED_CUT_COPPER" }
+  mini_weathered_cut_copper:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzIyNjU1OGI1ZDRiODJhMTliMTEzNTQ5MzljYmY2NDFmNDNiOTAyZGM0ZTRkMDk4ZDYxOTI3ZWE3Y2UxOTJkMiJ9fX0="
+    name: "&7Mini Weathered Cut Copper"
+    tags:
+      - copper
+    recipes:
+      stonecutter:
+        - id: "mini_weathered_cut_copper"
+          input: { material: "WEATHERED_CUT_COPPER" }
+  mini_oxidized_cut_copper:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTU0MGIzYTAxZTYyOTRkNmM3NjJhM2JlZjVkZGU1OGY4ZDk2MTYwYmM2ZGY1ZGY1ZjI1NzJkMjVhMjBmZmViZCJ9fX0="
+    name: "&7Mini Oxidized Cut Copper"
+    tags:
+      - copper
+    recipes:
+      stonecutter:
+        - id: "mini_oxidized_cut_copper"
+          input: { material: "OXIDIZED_CUT_COPPER" }
+  mini_copper_grate:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTFkYjhhZGQwZDBkOTNiNjJjZWM0ZTE2YmNmM2M5MmU5ZWZmODRhNjVlZTI1YzEzYTAwZjlhZmI0NWFkZTU3MyJ9fX0="
+    name: "&7Mini Copper Grate"
+    tags:
+      - copper
+    recipes:
+      stonecutter:
+        - id: "mini_copper_grate"
+          input: { material: "COPPER_GRATE" }
+  mini_exposed_copper_grate:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzE0YzliYzU2Mzg4NjViZWMzMTY5MmZjMmZkMjY4ZWU3N2QzNzM3MDFiNDIwODdjZDQ5ZGQ3ZTJjYjBiNjE0MiJ9fX0="
+    name: "&7Mini Exposed Copper Grate"
+    tags:
+      - copper
+    recipes:
+      stonecutter:
+        - id: "mini_exposed_copper_grate"
+          input: { material: "EXPOSED_COPPER_GRATE" }
+  mini_weathered_copper_grate:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTg5ZTYyYWQxZWE3ZjM3YWYwOGZkOTAwNDNiMGU3MTY5NjA2YjlhZDI2YzhiOWU3ZWVlZWUzZTZkNzE3ZTA3ZCJ9fX0="
+    name: "&7Mini Weathered Copper Grate"
+    tags:
+      - copper
+    recipes:
+      stonecutter:
+        - id: "mini_weathered_copper_grate"
+          input: { material: "WEATHERED_COPPER_GRATE" }
+  mini_oxidized_copper_grate:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjFhNjVlZDRmYmNlY2RlZDZhZTNmMGQ5ZjQwZTYwYTczZWFjYmMxNzNhODY3NzA0Mzg3ZWFlMTdiZGVlNTdkMyJ9fX0="
+    name: "&7Mini Oxidized Copper Grate"
+    tags:
+      - copper
+    recipes:
+      stonecutter:
+        - id: "mini_oxidized_copper_grate"
+          input: { material: "OXIDIZED_COPPER_GRATE" }
+  mini_copper_bulb:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjcyNjcxNjVlNDJiZjMxMGFmZDFmMTIzMDRmNDE0ZDU2MjYyNGQ2NDg2Mjg3M2ZiNGFhZGVlMDQ2YTIyYTU4YSJ9fX0="
+    name: "&7Mini Copper Bulb"
+    tags:
+      - copper
+    recipes:
+      stonecutter:
+        - id: "mini_copper_bulb"
+          input: { material: "COPPER_BULB" }
+  mini_exposed_copper_bulb:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTc0M2Y4ZjRiNDhkYjc3NzAxZDNjNGU5ZWYxNjEyZGFmYzljMDdmOGMzZWU5NWNkNmI1ZmQwYzJiNTJjYjU5MiJ9fX0="
+    name: "&7Mini Exposed Copper Bulb"
+    tags:
+      - copper
+    recipes:
+      stonecutter:
+        - id: "mini_exposed_copper_bulb"
+          input: { material: "EXPOSED_COPPER_BULB" }
+  mini_weathered_copper_bulb:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTIxNmY4MTBjNzNmMTMxZjAyNzQ3ZjU1NmYwZDRjMGE2ZDc4YTY2N2Q4NzdhNWQ3YzE2NzBmMjQxODNlOWZlOCJ9fX0="
+    name: "&7Mini Weathered Copper Bulb"
+    tags:
+      - copper
+    recipes:
+      stonecutter:
+        - id: "mini_weathered_copper_bulb"
+          input: { material: "WEATHERED_COPPER_BULB" }
+  mini_netherite_block:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmIyN2IyZjE4MTcwNTFiNTM2YTZiOGQ2ODZjMTVhZDc2ZjkzMDlhY2E0YjFmMTAxZDQyYzNhZDJkNWRhZTM1NCJ9fX0="
+    name: "&7Mini Netherite Block"
+    tags:
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "mini_netherite_block"
+          input: { material: "NETHERITE_BLOCK" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "NETHERITE_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "mini_netherite_block" }
+  mini_amethyst_block:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvM2Y0ODc2YjZhNWQ2ZGQ3ODVlMDkxZmQxMzRhMjFjOTFkMGE5Y2FjNWE2MjJlNDQ4YjVmZmNiNjVlZjQ1Mjc4In19fQ=="
+    name: "&7Mini Amethyst Block"
+    tags:
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "mini_amethyst_block"
+          input: { material: "AMETHYST_BLOCK" }
+  mini_budding_amethyst:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzNmYjdjOTJmZTE2NDlkNzZjNGFkOTc5ZWZjZDJjNDYwYjJlOTBiMjMyMGEyMzNlZjg1MTMzZGQ1NmJlZDg2YSJ9fX0="
+    name: "&7Mini Budding Amethyst"
+    tags:
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "mini_budding_amethyst"
+          input: { material: "BUDDING_AMETHYST" }
+  mini_stone:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGUwOTViNmUwOWY2MWZkNGJiNWM0ZmYyYzRhMGE3Zjk2NGYxY2U5NWZjMzljMGNmOTQyMjU2ZmI3YWJjMzY1MCJ9fX0="
+    name: "&7Mini Stone"
+    tags:
+      - stone
+    recipes:
+      stonecutter:
+        - id: "mini_stone"
+          input: { material: "STONE" }
+  mini_smooth_stone:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzRhZmE4ZDlmYWZkZjE2NjNmOTdmZDAzY2M5OWY4YWI3YzEyNGU2MzA4MjkxNjE2MTQ2ZmFlYTk3MzBjZTVlMCJ9fX0="
+    name: "&7Mini Smooth Stone"
+    tags:
+      - stone
+    recipes:
+      stonecutter:
+        - id: "mini_smooth_stone"
+          input: { material: "SMOOTH_STONE" }
+  mini_stone_bricks:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzI2NGY0NWEyYTZhNTE4NWVkMGUwZWVkNjZjMjRiMjk4OWJiZDU3Yjg0MDBiYzUyOWQwODdkNWVkODgwNmZlMiJ9fX0="
+    name: "&7Mini Stone Bricks"
+    tags:
+      - bricks
+    recipes:
+      stonecutter:
+        - id: "mini_stone_bricks"
+          input: { material: "STONE_BRICKS" }
+  mini_cracked_stone_bricks:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZmE5NGExODI5ZmM2YjczMjZmOGNmM2E1YWVkNWViOTJmMDk4MGE5NDkwNTRhZjgyYTFkZTcxZjA1MWNhNDliZCJ9fX0="
+    name: "&7Mini Cracked Stone Bricks"
+    tags:
+      - bricks
+    recipes:
+      stonecutter:
+        - id: "mini_cracked_stone_bricks"
+          input: { material: "CRACKED_STONE_BRICKS" }
+  mini_mossy_stone_bricks:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDI1MWNiY2U3MDYxZTdkNTBlOGUwMzg1N2QzMDg5Mzc3MmMzY2E5MzFiYzg1OGJiOTI4ZTEwYWRjZGI4MGQyYSJ9fX0="
+    name: "&7Mini Mossy Stone Bricks"
+    tags:
+      - bricks
+    recipes:
+      stonecutter:
+        - id: "mini_mossy_stone_bricks"
+          input: { material: "MOSSY_STONE_BRICKS" }
+  mini_chiseled_stone_bricks:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODhhZWE0MDk3ZDQ1YTY5MTZhZmRjYzc2N2M1MDhiZDk0ZGJmYTJhOTQzYmI2MWE2NDA2MDliMTdkNWRjZmRkNyJ9fX0="
+    name: "&7Mini Chiseled Stone Bricks"
+    tags:
+      - bricks
+    recipes:
+      stonecutter:
+        - id: "mini_chiseled_stone_bricks"
+          input: { material: "CHISELED_STONE_BRICKS" }
+  mini_cobblestone:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTc0Mjg4NWRiNjgwM2FiMzY4MGNhNTBhYzJiOTdiMDhiZGRjMjRlMWFkMzA5NWRhOTE0Njc3ZjUyNGE2YjFhNiJ9fX0="
+    name: "&7Mini Cobblestone"
+    tags:
+      - stone
+    recipes:
+      stonecutter:
+        - id: "mini_cobblestone"
+          input: { material: "COBBLESTONE" }
+  mini_mossy_cobblestone:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvY2RlNjIwZTE4MDBiM2JlZDViNzcyODYwZDdmNWU0YzNmOGE3MTJhZTQ2MmJmOWE3OTdkNTA0YmUxMzBkYTNiOCJ9fX0="
+    name: "&7Mini Mossy Cobblestone"
+    tags:
+      - stone
+    recipes:
+      stonecutter:
+        - id: "mini_mossy_cobblestone"
+          input: { material: "MOSSY_COBBLESTONE" }
+  mini_granite:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZGU4YmJmYjcyOWZmOTE3Zjk1MGVjYTdkNzUzMzE3YzFjNzA0ZDAyNmVhMTAyNWVmMzFhZWFlNWE0MGIzYzg4In19fQ=="
+    name: "&7Mini Granite"
+    tags:
+      - stone
+    recipes:
+      stonecutter:
+        - id: "mini_granite"
+          input: { material: "GRANITE" }
+  mini_polished_granite:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZmRkMzQ0NzgwMGNiMjhkNjFjMzNlOThjNWY1ZjAyMGE5YWE2NmQ5OTkzNTk0NGI2MDI3OTg3M2RkNTY2ZWRkMCJ9fX0="
+    name: "&7Mini Polished Granite"
+    tags:
+      - stone
+    recipes:
+      stonecutter:
+        - id: "mini_polished_granite"
+          input: { material: "POLISHED_GRANITE" }
+  mini_diorite:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODAzY2ZkMTI4YWM4OGViZDEyZjQ2NWY0MWViYTdkNDhlZmRkN2RiMDBhNzEyYjNiMjkxN2EwY2RjNzM1OTJmMSJ9fX0="
+    name: "&7Mini Diorite"
+    tags:
+      - stone
+    recipes:
+      stonecutter:
+        - id: "mini_diorite"
+          input: { material: "DIORITE" }
+  mini_polished_diorite:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTA5NjViMmU5Mjk3ZjFhZDUzNGQyZjBlMjJlZDkxOGNhMzIwN2M0ZjBiOWM0NDM3MmU1MDkzNTMyMThkNmI4ZSJ9fX0="
+    name: "&7Mini Polished Diorite"
+    tags:
+      - stone
+    recipes:
+      stonecutter:
+        - id: "mini_polished_diorite"
+          input: { material: "POLISHED_DIORITE" }
+  mini_andesite:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMmYwOTEyYTFkM2E3MDVkZmQwYTNkZTVjYTAwM2VlMmJiZDRiNzQxY2U2MmNhNzI4YTY2MDA5MTg5ZTU3MDM5NCJ9fX0="
+    name: "&7Mini Andesite"
+    tags:
+      - stone
+    recipes:
+      stonecutter:
+        - id: "mini_andesite"
+          input: { material: "ANDESITE" }
+  mini_polished_andesite:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODI5ZTkzMmYxMmJhYmRkMmZlMGUzNTUzZGNmYWM0MTJiYTdmNDI0MmU4ZDBlMmY3MTk1ZGQ5NDVlNTExZGZjYSJ9fX0="
+    name: "&7Mini Polished Andesite"
+    tags:
+      - stone
+    recipes:
+      stonecutter:
+        - id: "mini_polished_andesite"
+          input: { material: "POLISHED_ANDESITE" }
+  mini_calcite:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjBjNDcxM2MyMjU1OTE3MzY2NjI0NTkwNjI2NDI3ZTQ5MjU3MWQwNWQ4ZTJjNWVlODk5YmY2MWVmYWYyZDZhMCJ9fX0="
+    name: "&7Mini Calcite"
+    tags:
+      - stone
+    recipes:
+      stonecutter:
+        - id: "mini_calcite"
+          input: { material: "CALCITE" }
+  mini_tuff:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDY4YjljNjEzMTMxN2NhZTc5ODk4MmJiMDAwZDliNDRiYTk4MWE0YmIwY2YxMjE2NGVjN2Q0ZDA5Yjk0MGM1MCJ9fX0="
+    name: "&7Mini Tuff"
+    tags:
+      - stone
+    recipes:
+      stonecutter:
+        - id: "mini_tuff"
+          input: { material: "TUFF" }
+  mini_polished_tuff:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjIzM2ExNzQ4OTllYjRjNDVjZDcyNjdmMGE5NWM0Yzk2MDI0N2QyODM0MzI1ODY3MzJhMzkzNGRmZDNjYjVjYyJ9fX0="
+    name: "&7Mini Polished Tuff"
+    tags:
+      - stone
+    recipes:
+      stonecutter:
+        - id: "mini_polished_tuff"
+          input: { material: "POLISHED_TUFF" }
+  mini_tuff_bricks:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODkzYzBiZjM4N2Q5MjAxNDgyMThjNzlhMGI4M2I0NmEwZjU4MjZmMzE3OWQ5ZWQ2ZDEwM2E4NzNjZTgwNDlmYyJ9fX0="
+    name: "&7Mini Tuff Bricks"
+    tags:
+      - bricks
+      - stone
+    recipes:
+      stonecutter:
+        - id: "mini_tuff_bricks"
+          input: { material: "TUFF_BRICKS" }
+  mini_chiseled_tuff:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzM2MGJlMGNlMjUzYjljODQxNDU3NThlMWI2MWRlODZkYzQ3ZjQ4NmIzYjc3OTNjNGFlNDU0ZWZlM2NkYWMyMiJ9fX0="
+    name: "&7Mini Chiseled Tuff"
+    tags:
+      - stone
+    recipes:
+      stonecutter:
+        - id: "mini_chiseled_tuff"
+          input: { material: "CHISELED_TUFF" }
+  mini_chiseled_tuff_bricks:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTVjNTY4YjYxOWE5ZTIxODQ2MGZmYjQzY2UzNmNkMzE4ZjY4Y2E2OGNiMzU4NjVjMzA5ZjYwZTM4ODAxNDA4OSJ9fX0="
+    name: "&7Mini Chiseled Tuff Bricks"
+    tags:
+      - bricks
+      - stone
+    recipes:
+      stonecutter:
+        - id: "mini_chiseled_tuff_bricks"
+          input: { material: "CHISELED_TUFF_BRICKS" }
+  mini_dripstone_block:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDUwYWQ3MzFjZTZkYzIxZWI1ZWVmNjk0OGJkMjE4MGE3YTMyZmExZmUzODUxZTQ3ZTNjMDBjNmUyNDYyNDlhMiJ9fX0="
+    name: "&7Mini Dripstone Block"
+    tags:
+      - stone
+    recipes:
+      stonecutter:
+        - id: "mini_dripstone_block"
+          input: { material: "DRIPSTONE_BLOCK" }
+  mini_deepslate:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOThlNjg0ODA3N2I1YmVmNzliZGFlMjBlMWJhNzdjMzVjZDVjN2QyOWRiNTkxZTg0N2JmMzBiODBhYzMwNGE0NyJ9fX0="
+    name: "&7Mini Deepslate"
+    tags:
+      - stone
+    recipes:
+      stonecutter:
+        - id: "mini_deepslate"
+          input: { material: "DEEPSLATE" }
+  mini_cobbled_deepslate:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODVmM2U0ZTNkODQ4NDJkN2Y0YmEwMGE5ZWRlYzM5ZDhhZTY1NzM4ZTc1NTAyNGQ2ZWJmYTFlMmRmNjk4ZGVhMyJ9fX0="
+    name: "&7Mini Cobbled Deepslate"
+    tags:
+      - stone
+    recipes:
+      stonecutter:
+        - id: "mini_cobbled_deepslate"
+          input: { material: "COBBLED_DEEPSLATE" }
+  mini_polished_deepslate:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjI0OGEzZjJjYjYxYjdkNWJiNDkxMmQ5NTk1MmIxZGEzNjBlYTk3YzQ3ZjAxMDVhYzM5ZmQ2MDMxMzY3ZDg1MSJ9fX0="
+    name: "&7Mini Polished Deepslate"
+    tags:
+      - stone
+    recipes:
+      stonecutter:
+        - id: "mini_polished_deepslate"
+          input: { material: "POLISHED_DEEPSLATE" }
+  mini_deepslate_bricks:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjRjMmMzMTYzZjFjYTZlN2Y0MTVlNTgzNzYzYTZkMjE5OGEyZjg2NDdiYzFmNWE3YzNiMmY5YzkyYjRkMjNiNyJ9fX0="
+    name: "&7Mini Deepslate Bricks"
+    tags:
+      - bricks
+      - stone
+    recipes:
+      stonecutter:
+        - id: "mini_deepslate_bricks"
+          input: { material: "DEEPSLATE_BRICKS" }
+  mini_cracked_deepslate_bricks:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjIwMjVjMjdiZDFlNTdmMzI1ZGQwNDFmMDM3OGFkYWZiNDIzNGIzZWI4OTlkZWNiYWFkM2MyOTYzOWE1NzllOCJ9fX0="
+    name: "&7Mini Cracked Deepslate Bricks"
+    tags:
+      - bricks
+      - stone
+    recipes:
+      stonecutter:
+        - id: "mini_cracked_deepslate_bricks"
+          input: { material: "CRACKED_DEEPSLATE_BRICKS" }
+  mini_deepslate_tiles:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzUwODY0MGNkZmFlZjZmMTRhYWQ0OGFmZjQ3YWZiODZjMTUxZDIyMjdjNmI0MzBkMGQ1MTg0MDBkN2M0YTg5MSJ9fX0="
+    name: "&7Mini Deepslate Tiles"
+    tags:
+      - stone
+    recipes:
+      stonecutter:
+        - id: "mini_deepslate_tiles"
+          input: { material: "DEEPSLATE_TILES" }
+  mini_cracked_deepslate_tiles:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTIwYTllZDQ5ZGYxZGE4NTFlYzg3NzBhM2Y0NmY3MjQwOTFiNTUwZmY5ZDIyMmNkMjNkYzQzNGEzOTNmZjYyMiJ9fX0="
+    name: "&7Mini Cracked Deepslate Tiles"
+    tags:
+      - stone
+    recipes:
+      stonecutter:
+        - id: "mini_cracked_deepslate_tiles"
+          input: { material: "CRACKED_DEEPSLATE_TILES" }
+  mini_chiseled_deepslate:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZmFmNTk0YjU0YTAwMTM4M2I5ZWNhNjM4Njc1NzYzODc2NzM4N2UwMGExY2QwYzdjOWVlYzkwYmQ1M2ZiZWUwYyJ9fX0="
+    name: "&7Mini Chiseled Deepslate"
+    tags:
+      - stone
+    recipes:
+      stonecutter:
+        - id: "mini_chiseled_deepslate"
+          input: { material: "CHISELED_DEEPSLATE" }
+  mini_reinforced_deepslate:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOWNiOWI0Yjg4NTgzNDQ0NzY2ZWFmOTc1OTYyNjVhMWUzMmZkNTFjOGViYTIzMDlkOTNmMmFkMzdiMjJhNzY5In19fQ=="
+    name: "&7Mini Reinforced Deepslate"
+    tags:
+      - stone
+    recipes:
+      stonecutter:
+        - id: "mini_reinforced_deepslate"
+          input: { material: "REINFORCED_DEEPSLATE" }
+  mini_blackstone:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMThmODJjNTRjOTdlNzFlZGFkZTY5MmQ0NzUzZGY1NjAxMzI5Nzk0ZWM1MGFmMWRmNWZmYmMxMDM0ZWM5YmIyNyJ9fX0="
+    name: "&7Mini Blackstone"
+    tags:
+      - stone
+    recipes:
+      stonecutter:
+        - id: "mini_blackstone"
+          input: { material: "BLACKSTONE" }
+  mini_gilded_blackstone:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzQ4MmQxYmE0YmRhYzk5MGY2ZWE5ODc3MDM1ODdmZDc5ZmU1NTU1NTM2MzI1MTk4NDY3OWQ0ZjI3OWNjMGMyYSJ9fX0="
+    name: "&7Mini Gilded Blackstone"
+    tags:
+      - stone
+    recipes:
+      stonecutter:
+        - id: "mini_gilded_blackstone"
+          input: { material: "GILDED_BLACKSTONE" }
+  mini_polished_blackstone:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNWM5ZWUxZDU1OGE4OWYxMWNkNTc3YTkwYjdiMWI5NmZkYTM0YzIxYzQwMDk2MDM5MDgxNWMyM2RiNTRiNjQ3MSJ9fX0="
+    name: "&7Mini Polished Blackstone"
+    tags:
+      - stone
+    recipes:
+      stonecutter:
+        - id: "mini_polished_blackstone"
+          input: { material: "POLISHED_BLACKSTONE" }
+  mini_polished_blackstone_bricks:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzZiYjNjNGFmNGI1ZDNhZThlNDJhNGU5NmE0ZjljNGM4NDBjNzU3NjhiZjliZmQ3YmZlYTZkZWU0OTJiYmQzYiJ9fX0="
+    name: "&7Mini Polished Blackstone Bricks"
+    tags:
+      - bricks
+      - stone
+    recipes:
+      stonecutter:
+        - id: "mini_polished_blackstone_bricks"
+          input: { material: "POLISHED_BLACKSTONE_BRICKS" }
+  mini_cracked_polished_blackstone_bricks:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTlkZWVjM2NlODcwZWI5OGE4MDkzN2VhOTcxMzRjMGUzMzdjZDU0NWQ1MWM0ZWI4MDkyOWVmNGJiYTU0MzhmZSJ9fX0="
+    name: "&7Mini Cracked Polished Blackstone Bricks"
+    tags:
+      - bricks
+      - stone
+    recipes:
+      stonecutter:
+        - id: "mini_cracked_polished_blackstone_bricks"
+          input: { material: "CRACKED_POLISHED_BLACKSTONE_BRICKS" }
+  mini_chiseled_polished_blackstone:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjU1MjQxOTNhMDFmZjlmNmVmMjEyZjYxOGU5NDYyMWRmZjBmNzM2OTcwNmZkMWViMThjNzkwMTIxNzE3MTYwYyJ9fX0="
+    name: "&7Mini Chiseled Polished Blackstone"
+    tags:
+      - stone
+    recipes:
+      stonecutter:
+        - id: "mini_chiseled_polished_blackstone"
+          input: { material: "CHISELED_POLISHED_BLACKSTONE" }
+  mini_sandstone:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZGVkOTBhM2M4MjMwMGVhMWI2YmMzZDBjYTBlMWQyNzRiMjJlYjUyMDgyYTdjYzA5Njk3NTFjZDgyYTViZmNkNyJ9fX0="
+    name: "&7Mini Sandstone"
+    tags:
+      - stone
+    recipes:
+      stonecutter:
+        - id: "mini_sandstone"
+          input: { material: "SANDSTONE" }
+  mini_chiseled_sandstone:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNmUyMTIzOTFkODgwMDcwMjFiZTIwODNmZDEwMWIyZDc0YTMwNjUxMTU2NjkzOWIzY2M3ZjY2YTA0Y2Q4OGRhMyJ9fX0="
+    name: "&7Mini Chiseled Sandstone"
+    tags:
+      - stone
+    recipes:
+      stonecutter:
+        - id: "mini_chiseled_sandstone"
+          input: { material: "CHISELED_SANDSTONE" }
+  mini_cut_sandstone:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOGM0MGYzZDliNjg0YmZkYTFkODdjNTAwYmQzZjE0ZDc5ZWY4M2EwZWU3MGUzY2I1MzM5MGRlZGU3Mzc5OWU4NiJ9fX0="
+    name: "&7Mini Cut Sandstone"
+    tags:
+      - stone
+    recipes:
+      stonecutter:
+        - id: "mini_cut_sandstone"
+          input: { material: "CUT_SANDSTONE" }
+  mini_smooth_sandstone:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMmVkOGYyOGFmMzEyN2UzZDhlMGU1OThiYmMxOTkzMDE1ZDdiZDRlMjllOWY2NTg0ZGRiNTVhMzdkYTE5N2ZhYyJ9fX0="
+    name: "&7Mini Smooth Sandstone"
+    tags:
+      - stone
+    recipes:
+      stonecutter:
+        - id: "mini_smooth_sandstone"
+          input: { material: "SMOOTH_SANDSTONE" }
+  mini_red_sandstone:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDFjMjM3OTJjYjZlYjM1MzkzZWNmM2ZiYjQzMzMxMjU3YTIwMzM4ZmZhOThlMTBmMGFkM2M2ODBkNjA1OTY1NyJ9fX0="
+    name: "&7Mini Red Sandstone"
+    tags:
+      - color/red
+      - stone
+    recipes:
+      stonecutter:
+        - id: "mini_red_sandstone"
+          input: { material: "RED_SANDSTONE" }
+  mini_chiseled_red_sandstone:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjA4NjczZDdjMjNkMjVkNGFlNzc2MWE5ZjczZjk3YzIxNDU1MTgxMmZjYjkyMmIzN2E0ZjM4MWY2NTU4NDAwOSJ9fX0="
+    name: "&7Mini Chiseled Red Sandstone"
+    tags:
+      - stone
+    recipes:
+      stonecutter:
+        - id: "mini_chiseled_red_sandstone"
+          input: { material: "CHISELED_RED_SANDSTONE" }
+  mini_cut_red_sandstone:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTMzNWE0NTEyOTE2YzI2YzM5NDBlMTI4OTk1M2E3YTUzMTJhY2JkYTE0YjRmMzcwZjQ5Y2I2OWEwMjUwYzVmNiJ9fX0="
+    name: "&7Mini Cut Red Sandstone"
+    tags:
+      - stone
+    recipes:
+      stonecutter:
+        - id: "mini_cut_red_sandstone"
+          input: { material: "CUT_RED_SANDSTONE" }
+  mini_smooth_red_sandstone:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDIzYjczMDcxNDBmOWZkNzU3YmNlY2JlYjg1NzM0ZjFlYWZkMDU3NGFlZWQ5ZTkzNWJiMWRiMzQ5NDlkMzM4OSJ9fX0="
+    name: "&7Mini Smooth Red Sandstone"
+    tags:
+      - stone
+    recipes:
+      stonecutter:
+        - id: "mini_smooth_red_sandstone"
+          input: { material: "SMOOTH_RED_SANDSTONE" }
+  mini_netherrack:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjBkNjI2MTZkOTI5ZDNjZjIwOGQ1M2IxMzBjZGRiNjIwN2UzZGIwMDE3YjBhYzZlY2UyNWU2ZmE4NzlkMDZmMyJ9fX0="
+    name: "&7Mini Netherrack"
+    recipes:
+      stonecutter:
+        - id: "mini_netherrack"
+          input: { material: "NETHERRACK" }
+  mini_nether_bricks:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzI3YmY4NzY0MzVlMDRkZGU5ZGExOTkyNDMxNWFlNTlhOGVmYzI3YWYxZGRiZWY4MTNkODljZmFmZmU5MTY0NyJ9fX0="
+    name: "&7Mini Nether Bricks"
+    tags:
+      - bricks
+    recipes:
+      stonecutter:
+        - id: "mini_nether_bricks"
+          input: { material: "NETHER_BRICKS" }
+  mini_red_nether_bricks:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjk1OWFjMjg0ZGZhY2NhNWE4ZTZjMTc5NjA5ODI1ODc1YTc2OGFmMzI5MWM3N2U4YTY4YmQ5MDM0ZGEzZWM2NCJ9fX0="
+    name: "&7Mini Red Nether Bricks"
+    tags:
+      - bricks
+      - color/red
+    recipes:
+      stonecutter:
+        - id: "mini_red_nether_bricks"
+          input: { material: "RED_NETHER_BRICKS" }
+  mini_cracked_nether_bricks:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTgzYjc3MDgyNWY3MTdmNzUxN2U3ZmI2ZjgwYjBjNGJkMWE4MGExMmFkZmQ0NDZkMjBlZjlmZTgyZDY2ZjUxMCJ9fX0="
+    name: "&7Mini Cracked Nether Bricks"
+    tags:
+      - bricks
+    recipes:
+      stonecutter:
+        - id: "mini_cracked_nether_bricks"
+          input: { material: "CRACKED_NETHER_BRICKS" }
+  mini_chiseled_nether_bricks:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOWViNDcwMTdkMmIzOGY0ZjVkMDVmNzE0NWU5NzIwYTMwMDJlZjdhMjliYjVlNzgyMDZlODFjODkyN2FjMDk2MSJ9fX0="
+    name: "&7Mini Chiseled Nether Bricks"
+    tags:
+      - bricks
+    recipes:
+      stonecutter:
+        - id: "mini_chiseled_nether_bricks"
+          input: { material: "CHISELED_NETHER_BRICKS" }
+  mini_nether_wart_block:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjg5MTJiYzFhZDNkZGJlMzlhMTliNzM0YTQyZDg1NDg5NjRiYjBhOWNlNThhNTJmMWE2YWUzNzEyMTUyNCJ9fX0="
+    name: "&7Mini Nether Wart Block"
+    recipes:
+      stonecutter:
+        - id: "mini_nether_wart_block"
+          input: { material: "NETHER_WART_BLOCK" }
+  mini_warped_wart_block:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzIwNTIxMDQ2NTQxNTk4M2MzMmExMjc4Mzc5YWIwMGNkYzY0MDBhZmEzY2RiYzUxOGQ2MmY2NTU3MTUwNGEyMCJ9fX0="
+    name: "&7Mini Warped Wart Block"
+    recipes:
+      stonecutter:
+        - id: "mini_warped_wart_block"
+          input: { material: "WARPED_WART_BLOCK" }
+  mini_soul_sand:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjA4ZDU5Mzc2NmM1NWU0MmI0OTUzYTY4YmY2ZjM0ODI1NTMxODg0MDgxYzE1MGMxNjZjODExMDI3OWM5ZjJhNSJ9fX0="
+    name: "&7Mini Soul Sand"
+    recipes:
+      stonecutter:
+        - id: "mini_soul_sand"
+          input: { material: "SOUL_SAND" }
+  mini_soul_soil:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODA2YWU1NWY4NDY3NDRjNzA4NDFhMDA4MWQ0M2U0MzI1ZDg5MDEwYTkxN2ZjMWIyZmYwNTQyZGQ0ZDNjYWMzNCJ9fX0="
+    name: "&7Mini Soul Soil"
+    recipes:
+      stonecutter:
+        - id: "mini_soul_soil"
+          input: { material: "SOUL_SOIL" }
+  mini_glowstone:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvY2Q5ZDE5NWYwOTJlNDM1MDViNTQ5OWU3MzJkY2RiOWU4NTIwNjlkNWFkMzVjMTE0MzJjOTkwYWZjZmU2NDAzNyJ9fX0="
+    name: "&7Mini Glowstone"
+    properties:
+      - glowing
+    recipes:
+      stonecutter:
+        - id: "mini_glowstone"
+          input: { material: "GLOWSTONE" }
+  mini_shroomlight:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjEzMTkyOTU1YWU0MTllMmM4NDMyMWQyODAzMjY5ZjUzMzg0Y2IwMjI4Yzc5MTY1Y2Q5NDBhNGNhY2VhNGIwZCJ9fX0="
+    name: "&7Mini Shroomlight"
+    properties:
+      - glowing
+    recipes:
+      stonecutter:
+        - id: "mini_shroomlight"
+          input: { material: "SHROOMLIGHT" }
+  mini_magma_block:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzIxZDA5MzBiZDYxZmVhNGNiOTAyN2IwMGU5NGUxM2Q2MjAyOWM1MjRlYTBiMzI2MGM3NDc0NTdiYTFiY2ZhMSJ9fX0="
+    name: "&7Mini Magma Block"
+    recipes:
+      stonecutter:
+        - id: "mini_magma_block"
+          input: { material: "MAGMA_BLOCK" }
+  mini_crying_obsidian:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZGE1Yzg2ODY0MTFkNDQ2YzkwYzE5MWM5M2Y4MGI5ZmZiMWNkMjQ3YWExMmEyMjZmODk3OTk4MWFkNDM4OGJlZSJ9fX0="
+    name: "&7Mini Crying Obsidian"
+    recipes:
+      stonecutter:
+        - id: "mini_crying_obsidian"
+          input: { material: "CRYING_OBSIDIAN" }
+  mini_basalt:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODA4MjJjNjEzOWFiNDhkNjg1MjMzMjNhOTNjYzJkMjA0M2U2MzRmM2E0MGY2NjRhNGE1MzQ5ZjNjYjdjMmIxOSJ9fX0="
+    name: "&7Mini Basalt"
+    tags:
+      - stone
+    recipes:
+      stonecutter:
+        - id: "mini_basalt"
+          input: { material: "BASALT" }
+  mini_polished_basalt:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjEyMzUxNmVjMDY5YWUxMjUwMTM1NTQ3ZjU1MDM1ZDM4NDdmNTgxNzhhNWY0NzM5NDMzOTUzNzFhN2ZjM2QyNyJ9fX0="
+    name: "&7Mini Polished Basalt"
+    tags:
+      - stone
+    recipes:
+      stonecutter:
+        - id: "mini_polished_basalt"
+          input: { material: "POLISHED_BASALT" }
+  mini_smooth_basalt:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTJlZjQxNjg2NmY0MjRjZDkwZjhhODkwYWJiMjA1NTYyOWU2YzMxYWU3YTc4NDZkYjViMjMxZmQ3YWYwNGI3In19fQ=="
+    name: "&7Mini Smooth Basalt"
+    tags:
+      - stone
+    recipes:
+      stonecutter:
+        - id: "mini_smooth_basalt"
+          input: { material: "SMOOTH_BASALT" }
+  mini_crimson_nylium:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzZiNGYxNTlhMTE1MTRiZTAzYmJkZjYzNGEzMmJkZDcwODM2NDIyZmJhYWNlMmYzMGE0NjZmYWYxNDRiYzMzZCJ9fX0="
+    name: "&7Mini Crimson Nylium"
+    tags:
+      - natural/greenery
+    recipes:
+      stonecutter:
+        - id: "mini_crimson_nylium"
+          input: { material: "CRIMSON_NYLIUM" }
+  mini_warped_nylium:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOWVjNjkyNzhmMzNiOGZjZTJhYmIzNjJkOTA4ZDYwYWNhNWQ1N2M2NWY5NGUwZDY2YWFmMDYwODhiZDcyMDdiYyJ9fX0="
+    name: "&7Mini Warped Nylium"
+    tags:
+      - natural/greenery
+    recipes:
+      stonecutter:
+        - id: "mini_warped_nylium"
+          input: { material: "WARPED_NYLIUM" }
+  mini_end_stone:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmJhOTZhYTAwNWFjZjgwNWExNWIzYmE0OWU1MDA0ZGNmZjBjYzEyN2M1N2JlMDI2NmI4YjdhNTJkZDhkZjc1MyJ9fX0="
+    name: "&7Mini End Stone"
+    tags:
+      - stone
+    recipes:
+      stonecutter:
+        - id: "mini_end_stone"
+          input: { material: "END_STONE" }
+  mini_end_stone_bricks:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZmJiZWMzNzJkZGI0ZjcwMzI2YzQwMWI5Y2U3NmMxNjY4NTQxYmU2MzgxOTBjZDEzZjMyYjE1MWVjMTgyNjUzZiJ9fX0="
+    name: "&7Mini End Stone Bricks"
+    tags:
+      - bricks
+      - stone
+    recipes:
+      stonecutter:
+        - id: "mini_end_stone_bricks"
+          input: { material: "END_STONE_BRICKS" }
+  mini_purpur_block:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTE2YmQ1NzEwMjJkZWVkMmQyNjcxZDgzZTJmZTA0YWU4NmE0MTkwODI1ZWE4YzY5MmRhYzcyYTY0M2FjNjdkIn19fQ=="
+    name: "&7Mini Purpur Block"
+    tags:
+      - stone
+    recipes:
+      stonecutter:
+        - id: "mini_purpur_block"
+          input: { material: "PURPUR_BLOCK" }
+  mini_purpur_pillar:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTQ1MjQ5OGJkOWJhNTFhMTQyNGQ5NmJmOTZiZTBjYjEwM2M5MzM4ZGVmZGYxNzJjYTEzZjVlMjRmNWY5ZDhmIn19fQ=="
+    name: "&7Mini Purpur Pillar"
+    tags:
+      - stone
+    recipes:
+      stonecutter:
+        - id: "mini_purpur_pillar"
+          input: { material: "PURPUR_PILLAR" }
+  mini_prismarine:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDgwMDU4NTRlOWZhZjQ1YmI4NzA2N2Q0MWI0Zjk2NjMwYzM4ZmE3MGVjZTBiOGY3ZTQ5OTNiMzBkYTI5ODExMyJ9fX0="
+    name: "&7Mini Prismarine"
+    tags:
+      - stone
+    recipes:
+      stonecutter:
+        - id: "mini_prismarine"
+          input: { material: "PRISMARINE" }
+  mini_prismarine_bricks:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOWRmZWYwM2E5ZDlmYTdhYTljMTM4NjdhZTdmODhhMDBhNzA4YTA2ZGYyNGVjMWQ1YjY5NmQwZjc3YTFiOTZiMSJ9fX0="
+    name: "&7Mini Prismarine Bricks"
+    tags:
+      - bricks
+      - stone
+    recipes:
+      stonecutter:
+        - id: "mini_prismarine_bricks"
+          input: { material: "PRISMARINE_BRICKS" }
+  mini_dark_prismarine:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjM3NTk0ODU3MjM0OGZjNjc4ZDFmZGJiYTFhNzcwZjY0NGEwNDk3N2ExZmM3MTk0MzcwMDY2YTE4MzIzZmM2OSJ9fX0="
+    name: "&7Mini Dark Prismarine"
+    tags:
+      - stone
+    recipes:
+      stonecutter:
+        - id: "mini_dark_prismarine"
+          input: { material: "DARK_PRISMARINE" }
+  mini_sea_lantern:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTYyZGRiZWM4ZmE5ZDMyMjhjOTBjZjg3ZTRlN2JjMGE4ZWUyYmNmOGIxYzc3ODk2ZWI5N2YzODMwYTVkNmUifX19"
+    name: "&7Mini Sea Lantern"
+    properties:
+      - glowing
+    recipes:
+      stonecutter:
+        - id: "mini_sea_lantern"
+          input: { material: "SEA_LANTERN" }
+  mini_quartz_bricks:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMmVmN2Y0NmY5ZGEyNzAyN2RjZmI0NjVjZDc5OTE4ZTU3ODg3YTU4ZmNiYTdmMWZhZGUzOGUzM2IxYmQ2Y2ZkZiJ9fX0="
+    name: "&7Mini Quartz Bricks"
+    tags:
+      - bricks
+      - stone
+    recipes:
+      stonecutter:
+        - id: "mini_quartz_bricks"
+          input: { material: "QUARTZ_BRICKS" }
+  mini_quartz_pillar:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmFlYmYxNzhhNjdmMmVhM2M5ZDg5NmQzODcwZjFmOGNlMzhmYWUwNjBlMDEwYzY5Nzk4YWQzNTFlMzFlNjE5NyJ9fX0="
+    name: "&7Mini Quartz Pillar"
+    tags:
+      - stone
+    recipes:
+      stonecutter:
+        - id: "mini_quartz_pillar"
+          input: { material: "QUARTZ_PILLAR" }
+  mini_smooth_quartz:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzkyYjJiMDQxNGNlZTM2YjI0ZDgzZjVjZmEwNzFkODYzODUyNzI0OWMyZGNkZGZhNTgwYmUzN2UwN2M2MGUwOCJ9fX0="
+    name: "&7Mini Smooth Quartz"
+    tags:
+      - stone
+    recipes:
+      stonecutter:
+        - id: "mini_smooth_quartz"
+          input: { material: "SMOOTH_QUARTZ" }
+  mini_oak_planks:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjRhY2MwMDc4MjAxMzM1MzY2MDg1YTNhMGYzYzhkNGZjZjExN2NhODJmMWUyMWNlYjk0MmNhMjk1NDExYTVhYiJ9fX0="
+    name: "&7Mini Oak Planks"
+    tags:
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mini_oak_planks"
+          input: { material: "OAK_PLANKS" }
+  mini_spruce_planks:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvM2FjYmFlODU1MDE4OWRjMjJiMjhiNDE4NTg2Y2YyZTE3NWVjM2MyZWIyMzY2YmVkZmNjMzg0ZjFmMjIzZjExOSJ9fX0="
+    name: "&7Mini Spruce Planks"
+    tags:
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mini_spruce_planks"
+          input: { material: "SPRUCE_PLANKS" }
+  mini_birch_planks:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWMzMmYxMGUwOTY1MGI2Zjk4NWFjZTk5MDYzNjA5N2JhOWE4NzZmNDljNWQ2MjZmMjkyYzNiMDhlYmY4MmMyMyJ9fX0="
+    name: "&7Mini Birch Planks"
+    tags:
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mini_birch_planks"
+          input: { material: "BIRCH_PLANKS" }
+  mini_jungle_planks:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDA3ZjU0OTNmODlhMDA4YmY5Mjk3YzQ0M2Q1NDE2ZjM1YzEzNTI1MDRmNDE0OTBkZGQzZGFkMTJiNmVhOGFmZSJ9fX0="
+    name: "&7Mini Jungle Planks"
+    tags:
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mini_jungle_planks"
+          input: { material: "JUNGLE_PLANKS" }
+  mini_acacia_planks:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjhhYzM5OWUwYzY0Y2FmNTk5YjBkMmYyYWE0ZDcxMWNiZDBkNjU2NTNhYWY5NmFlYmQxN2JhNjI2NjhmNmQyOCJ9fX0="
+    name: "&7Mini Acacia Planks"
+    tags:
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mini_acacia_planks"
+          input: { material: "ACACIA_PLANKS" }
+  mini_dark_oak_planks:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOWQ2Y2NjNjQ0YmI1MmRiNDM0ZDY3M2M0ODgwYmVkZWFmNDVjNDdkMWMzODFiMjE0MDY4YTQwZWJmOWU3OTZjZiJ9fX0="
+    name: "&7Mini Dark Oak Planks"
+    tags:
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mini_dark_oak_planks"
+          input: { material: "DARK_OAK_PLANKS" }
+  mini_mangrove_planks:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTBkOWY3MTQzNThiMTU0ZWNlZTliZWQ0ZWNhYzkwN2M2ZGYyMmYyZDAwOTYxMzI0NmRiNzkyMmY3ZTFjYjhlZSJ9fX0="
+    name: "&7Mini Mangrove Planks"
+    tags:
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mini_mangrove_planks"
+          input: { material: "MANGROVE_PLANKS" }
+  mini_cherry_planks:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZWVhNzIwNTk2ZDhjODJlMDM0YzFkMjVmNDBmNjhjZTE4MTFiYWVlNjcxN2IyMWQ2MDA5NzY1ZmIyYmE1ZTlmZCJ9fX0="
+    name: "&7Mini Cherry Planks"
+    tags:
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mini_cherry_planks"
+          input: { material: "CHERRY_PLANKS" }
+  mini_bamboo_planks:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTYxNWViZWE3ODUwZTlkN2I1MGI5NjhlMDA5OWVmOTMyNTY2MjU3ODEyMTBmMDJhZTlkNTA4MWY4NmI3MDQ2MyJ9fX0="
+    name: "&7Mini Bamboo Planks"
+    tags:
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mini_bamboo_planks"
+          input: { material: "BAMBOO_PLANKS" }
+  mini_bamboo_mosaic:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWE3YTZlNzg0NWQ2NjdmODI5Mjk5Yzc5MTc1N2QxMTA2NTUxNzg3ZGNiZDhjYmE3ZWJmMDgzZTVjYTk4MGRmNSJ9fX0="
+    name: "&7Mini Bamboo Mosaic"
+    tags:
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mini_bamboo_mosaic"
+          input: { material: "BAMBOO_MOSAIC" }
+  mini_crimson_planks:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTJjZDY5YTNlNDI1NjRjMGRhNGMyMjk3OTQzYmUyM2FhOWNlMWM3NTZkOGJhOWU2ZWVkZDhmNTIzMjE4ZmRlNCJ9fX0="
+    name: "&7Mini Crimson Planks"
+    tags:
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mini_crimson_planks"
+          input: { material: "CRIMSON_PLANKS" }
+  mini_warped_planks:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWJmYzc5MTgyNDdkNGU1YjU2YjA1ZGJhMDk1OGRkZjQ2MmM1ZTM1ZDJmZGNiMDgzNjQ4NmZkYzZlODEwNDEyMiJ9fX0="
+    name: "&7Mini Warped Planks"
+    tags:
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mini_warped_planks"
+          input: { material: "WARPED_PLANKS" }
+  mini_pale_oak_planks:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODc0NjgzMTcxMTc4ZTNjNDNhNGUxYTExYjFiNWQ0OGQwMTVmM2Q0ZDZjNWY0MDUxZWIxNjk0MjAyYzVmNmYxNiJ9fX0="
+    name: "&7Mini Pale Oak Planks"
+    tags:
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mini_pale_oak_planks"
+          input: { material: "PALE_OAK_PLANKS" }
+  mini_oak_log:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODcyOTYxMzY2NGUzOGQ5MTRkZTQwZjhlNGFlYzNmMzRmNDc2ZDg4ODFmZTc4OWZjM2I4Mzk5MDNhODY1ZTg1ZiJ9fX0="
+    name: "&7Mini Oak Log"
+    tags:
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mini_oak_log"
+          input: { material: "OAK_LOG" }
+  mini_spruce_log:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGFjYzU4ODhmMDc2MDQyY2QyMDM0MmM4MzVmOWQ2Y2I4YjgzN2UzNTAyYjRiZWUzYzhkMDI2MDQ4OTFjNzE1NSJ9fX0="
+    name: "&7Mini Spruce Log"
+    tags:
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mini_spruce_log"
+          input: { material: "SPRUCE_LOG" }
+  mini_birch_log:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTZjOTY5NDg1NTZkNGI1M2QyZjExYjMyYTVlNTM1MjNjNjM4OGM4ZjEyMWIxMGNjOTQ1MmYzZTNlZDQ3ZjkwMiJ9fX0="
+    name: "&7Mini Birch Log"
+    tags:
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mini_birch_log"
+          input: { material: "BIRCH_LOG" }
+  mini_jungle_log:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMmIyYWU2ZDA3ODlmNGY1OTM2Y2RlMjljYWI5OWE4MWUwNjYxOGE5MDFlMjM4MzBlZDNjMjM4ZmVjODFhMzM4NyJ9fX0="
+    name: "&7Mini Jungle Log"
+    tags:
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mini_jungle_log"
+          input: { material: "JUNGLE_LOG" }
+  mini_acacia_log:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMmY4MDJhMjc4NGYxOWQ5MTFjMzczZDM3Y2Q5ZWYzOTlkYzIyM2UxNmQxODg2NGE2YTdiZmUwNzZhY2YwM2NjYiJ9fX0="
+    name: "&7Mini Acacia Log"
+    tags:
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mini_acacia_log"
+          input: { material: "ACACIA_LOG" }
+  mini_dark_oak_log:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZGI2YWZjNTA0ZGYxMmY2YzhjZWE0M2JmYWUwZWYxODVmOGRhZDgzYTdkOGE3Yzc0YTgxY2VmMjA3ZjdhMmUwIn19fQ=="
+    name: "&7Mini Dark Oak Log"
+    tags:
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mini_dark_oak_log"
+          input: { material: "DARK_OAK_LOG" }
+  mini_mangrove_log:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzc0ODFmODdiOGJlYTQwMGM5YjA2Nzc4M2E4YWViOThkYjgzZGY0MmE0ZDYwNjQ1ODk0N2UwMjQ1OWY4YmNmOCJ9fX0="
+    name: "&7Mini Mangrove Log"
+    tags:
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mini_mangrove_log"
+          input: { material: "MANGROVE_LOG" }
+  mini_cherry_log:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZGZhODI4NTU1MWQxNmExOGQ2NzI2MGE4OWRiNjBkNTU0NGNjZDFkYzljOGVjZGQyOTdjMzFiNGY5NTQ2YmM0MyJ9fX0="
+    name: "&7Mini Cherry Log"
+    tags:
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mini_cherry_log"
+          input: { material: "CHERRY_LOG" }
+  mini_bamboo_block:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODlhOWI2MWIwNmQ2NjZlNDViNDg2ODZjNjRiMDUxYzNkYmMwNTM2MzM3ZGVjM2Q5NjhiMzI3Yjc0NGY2Y2NhYiJ9fX0="
+    name: "&7Mini Bamboo Block"
+    tags:
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mini_bamboo_block"
+          input: { material: "BAMBOO_BLOCK" }
+  mini_crimson_stem:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjE5NjQzNmQyYjZkOWM2OWMwNTVmMzBiODVhYzNlYjVjNjcyMGIxMGViNGUzYWQ3NzU1N2MyMjQyYTcwYWQ5ZiJ9fX0="
+    name: "&7Mini Crimson Stem"
+    tags:
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mini_crimson_stem"
+          input: { material: "CRIMSON_STEM" }
+  mini_warped_stem:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvN2NkNTVhYzBlNGExODljMTVhNDE2ZjM1ZmQ0NzMzODRmN2E5ODZkNGNiMWViMjkyZmJhNTIyMTIzN2FiZDg4OCJ9fX0="
+    name: "&7Mini Warped Stem"
+    tags:
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mini_warped_stem"
+          input: { material: "WARPED_STEM" }
+  mini_pale_oak_log:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjM3YzM3NzJkNTcxNWQwYjRkMGFhMzAwNjgzNjM2MTJhYWYxMDIwOTU5MmM3OWE1ZDYzY2Y1YWQzN2Y1MjgwOCJ9fX0="
+    name: "&7Mini Pale Oak Log"
+    tags:
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mini_pale_oak_log"
+          input: { material: "PALE_OAK_LOG" }
+  mini_stripped_oak_log:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWY0ZWE4YTkyNDhlOWQ4M2FlZDdlNjJmNTFlMTZjOWQxMGMxOTczYjMxY2Y0OTM1NjFiNmFkODI4YWUyZGNiMSJ9fX0="
+    name: "&7Mini Stripped Oak Log"
+    tags:
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mini_stripped_oak_log"
+          input: { material: "STRIPPED_OAK_LOG" }
+  mini_stripped_spruce_log:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTJhODlhMzI2NGQxYjBhYTk5ZGY2N2I0ZGQxNDdjY2FiOGY3ZTAwYWQ4ZGNjYzBiNDYwNjMwNzdkMzFlOWY4NyJ9fX0="
+    name: "&7Mini Stripped Spruce Log"
+    tags:
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mini_stripped_spruce_log"
+          input: { material: "STRIPPED_SPRUCE_LOG" }
+  mini_stripped_birch_log:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGUyZjk0ZjlmYTUzMmQ4YTJjYTIwNTRhZDkwNDQ0Mzg5OTgxZTZiOGQxMzE5ODNjZTEyOWUyM2JkZDA2ZmZiNSJ9fX0="
+    name: "&7Mini Stripped Birch Log"
+    tags:
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mini_stripped_birch_log"
+          input: { material: "STRIPPED_BIRCH_LOG" }
+  mini_stripped_jungle_log:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjAxZTU0MGRjOTQwOWEwMTRhZDA0MjIwOTUxZDY1ZDgxOGE1NmJmYWU2OGE1ZDU4NGU0ZGY0ODQ0ODYxYTI0NiJ9fX0="
+    name: "&7Mini Stripped Jungle Log"
+    tags:
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mini_stripped_jungle_log"
+          input: { material: "STRIPPED_JUNGLE_LOG" }
+  mini_stripped_acacia_log:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMmI0OGQ5MjM3NTcyNzdhMTIzY2M0OTI3NWI4ODVhNTI4YmQzN2Q2ZjczNGFlZGM5YWViMDYzNzlkNGIwODZjZiJ9fX0="
+    name: "&7Mini Stripped Acacia Log"
+    tags:
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mini_stripped_acacia_log"
+          input: { material: "STRIPPED_ACACIA_LOG" }
+  mini_stripped_dark_oak_log:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjAxYjA3NGYyMDMwMTliZmU0ZGUzYjNmMTQ5YjhhMGQ5ZmY5ZGZjNjMzNTY0OGY5YzY3ZTU5YTZlZjA3YjA3MyJ9fX0="
+    name: "&7Mini Stripped Dark Oak Log"
+    tags:
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mini_stripped_dark_oak_log"
+          input: { material: "STRIPPED_DARK_OAK_LOG" }
+  mini_stripped_mangrove_log:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjRlOGJkNWVlYzU2ODI3ODhiMzk1ZWYzMDljZDAyYzVjODQxNDJkMGY4NTI0OTQ2MzQ2YzEyM2I1NjI2MjBjMSJ9fX0="
+    name: "&7Mini Stripped Mangrove Log"
+    tags:
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mini_stripped_mangrove_log"
+          input: { material: "STRIPPED_MANGROVE_LOG" }
+  mini_stripped_cherry_log:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzJmOWZhODRhYTNmZDQ1MzUyODdhYmEzYjcyZTVkNmMxNDVmYmNhZGJlZGQ5YjVlOTUzMTY1YzBkOWY3ZWVhNyJ9fX0="
+    name: "&7Mini Stripped Cherry Log"
+    tags:
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mini_stripped_cherry_log"
+          input: { material: "STRIPPED_CHERRY_LOG" }
+  mini_stripped_bamboo_block:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDAzNGYxYzVjNGM0ZTFmYzJiMTE0MmQ5YTBmOWIxY2YyNGVkZTYxOThlODFhYzM3NzJkMjZkZDMxOTRlZjA3MCJ9fX0="
+    name: "&7Mini Stripped Bamboo Block"
+    tags:
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mini_stripped_bamboo_block"
+          input: { material: "STRIPPED_BAMBOO_BLOCK" }
+  mini_stripped_crimson_stem:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDJmZTJiZDVmZTNiNjA2YTE1NjczMGNmNzgxMDg1ZTg5OGJkODZmOGJjZjlkNWY5MGEyYjQyNDkzMTExYzg3NyJ9fX0="
+    name: "&7Mini Stripped Crimson Stem"
+    tags:
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mini_stripped_crimson_stem"
+          input: { material: "STRIPPED_CRIMSON_STEM" }
+  mini_stripped_warped_stem:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjVjYjVkYTFjMmVlZDQzYmY2ODUxODllMDgwMjlmYzJhZWVlZGZhZTFjNmEyMTRlNzBmNzRiOGEzMjExYjBhIn19fQ=="
+    name: "&7Mini Stripped Warped Stem"
+    tags:
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mini_stripped_warped_stem"
+          input: { material: "STRIPPED_WARPED_STEM" }
+  mini_stripped_pale_oak_log:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzZmZmYzMmU2MjExNjhjYWYyNDQ0ZGUwZGE1NzdlN2Y5MmY3OTM3Y2Y0MmM1NTk5ZWZlMTE3ZDZjZDExNDUwOCJ9fX0="
+    name: "&7Mini Stripped Pale Oak Log"
+    tags:
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mini_stripped_pale_oak_log"
+          input: { material: "STRIPPED_PALE_OAK_LOG" }
+  mini_azalea_leaves:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTMzYjQzZTM3ZDRhZGYzY2U0YjNjMjExNmU3NjViYjY4NTZhNWE2M2Y2ZTgxM2UxZTgwZDNjMTQ4NDY2MDU3ZSJ9fX0="
+    name: "&7Mini Azalea Leaves"
+    tags:
+      - natural/greenery
+    recipes:
+      stonecutter:
+        - id: "mini_azalea_leaves"
+          input: { material: "AZALEA_LEAVES" }
+  mini_pale_oak_leaves:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzYzOTJkMDQxNmZiNGE2YTk0N2JkMzYyMzkwOGMyMjU4MTI3NWZjY2YyYzczNmYwNjkyZjFiMGQ2MGU2ODY4In19fQ=="
+    name: "&7Mini Pale Oak Leaves"
+    tags:
+      - natural/greenery
+    recipes:
+      stonecutter:
+        - id: "mini_pale_oak_leaves"
+          input: { material: "PALE_OAK_LEAVES" }
+  mini_bricks:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvN2Y5NGVmYWI5OTIxN2IwZTFlMDY0NTYzOWE2ZmFmMTE3ZWI5NmQ4NDRlMDIyNGVlZDU0ZWJmODY5MGRjNzJlZCJ9fX0="
+    name: "&7Mini Bricks"
+    tags:
+      - bricks
+    recipes:
+      stonecutter:
+        - id: "mini_bricks"
+          input: { material: "BRICKS" }
+  mini_mud_bricks:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTM4OTgzMzFlYjM3YmRkZGI0ZDEwOTAwZWE2NmFjN2EwOWFiM2YxYzQ2ZmY1NjA0NTllMWZmZGU3N2I0YTc1YiJ9fX0="
+    name: "&7Mini Mud Bricks"
+    tags:
+      - bricks
+      - bricks
+    recipes:
+      stonecutter:
+        - id: "mini_mud_bricks"
+          input: { material: "MUD_BRICKS" }
+  mini_packed_mud:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOGRjYzlmZTgxODhkMjkyMGVkYjQxZjMxNmE1YzhlZDRiZDExZDc4NjA5OTJjNjNlYzIwNGE1NmE4NDBjODMzOSJ9fX0="
+    name: "&7Mini Packed Mud"
+    recipes:
+      stonecutter:
+        - id: "mini_packed_mud"
+          input: { material: "PACKED_MUD" }
+  mini_mud:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZWY4MjgzYjdiMDIwMjZjNWQ2NGQxODFjODNmYzZmNTcyZTQ5NGFhNjM2Y2VmNzkyOGIyYjZkZGRhNTk5ZTgzZSJ9fX0="
+    name: "&7Mini Mud"
+    tags:
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "mini_mud"
+          input: { material: "MUD" }
+  mini_clay:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODE4ZTA1NDJiZDFjMzI3ZTNlMmQ2OTQwM2E5ZjQ3OTdjMTU5MzFlNTg1ZmM1YWMzNDg4ZmQ2MTY5ZThmYTdlYyJ9fX0="
+    name: "&7Mini Clay"
+    recipes:
+      stonecutter:
+        - id: "mini_clay"
+          input: { material: "CLAY" }
+  mini_terracotta:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYWYyMDFkZDc1MzkxODM3NzY2NzE1ZjFkMWY0MDFhZjFkMzU3MDAwMjJlNjk4OGE2MDFiMGVlZWIzNGY0ZjFmYiJ9fX0="
+    name: "&7Mini Terracotta"
+    tags:
+      - terracotta
+    recipes:
+      stonecutter:
+        - id: "mini_terracotta"
+          input: { material: "TERRACOTTA" }
+  mini_white_terracotta:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDc1NTI4OTU5ZjY1OTE3NzE4MDU2NzcwNzg1MzVhODcxMmJmZmYzODNlZWNlNGYyNTAzNzZmYjc4MjZlMjRhZiJ9fX0="
+    name: "&7Mini White Terracotta"
+    tags:
+      - terracotta
+      - color/white
+    recipes:
+      stonecutter:
+        - id: "mini_white_terracotta"
+          input: { material: "WHITE_TERRACOTTA" }
+  mini_orange_terracotta:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTc3MzJkZjgxZmRmNmM1OWZjMzI2ZjhkNzM0YWU1YThmZmY2OTgzZmQyYjVhZDlhYmYzMTlhNTAyZmZhNmFhOSJ9fX0="
+    name: "&7Mini Orange Terracotta"
+    tags:
+      - terracotta
+      - color/orange
+    recipes:
+      stonecutter:
+        - id: "mini_orange_terracotta"
+          input: { material: "ORANGE_TERRACOTTA" }
+  mini_magenta_terracotta:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYWYzMmRhYmUxMzBlMDFkNGY3Zjg2YWQ5ZjY4NTZhODc1ZmU5MzJiNjg2OTgwNDNmYWMxOTNmY2Q1ZDgxNWU0ZiJ9fX0="
+    name: "&7Mini Magenta Terracotta"
+    tags:
+      - terracotta
+      - color/magenta
+    recipes:
+      stonecutter:
+        - id: "mini_magenta_terracotta"
+          input: { material: "MAGENTA_TERRACOTTA" }
+  mini_light_blue_terracotta:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzdkOTNhOGM4ZGIxMGQzZDc0ZDUzNTY3MmQwNGZhY2M5Njk2NmVmNDFhM2Y4MDFlYzgxNDc3MDEwNmFhNzgzNiJ9fX0="
+    name: "&7Mini Light Blue Terracotta"
+    tags:
+      - terracotta
+      - color/light_blue
+    recipes:
+      stonecutter:
+        - id: "mini_light_blue_terracotta"
+          input: { material: "LIGHT_BLUE_TERRACOTTA" }
+  mini_yellow_terracotta:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjFkZTM5MGVmODZjYjNlYmZmYjgwZjBlOTY0NTU4NmJmZTA1MWYxMzY5YTMwN2NmYmE0ZjlmYWFiNzMwYjkwZiJ9fX0="
+    name: "&7Mini Yellow Terracotta"
+    tags:
+      - terracotta
+      - color/yellow
+    recipes:
+      stonecutter:
+        - id: "mini_yellow_terracotta"
+          input: { material: "YELLOW_TERRACOTTA" }
+  mini_lime_terracotta:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjYxZjA3NDY5NThiMTQyMjQyNGFjZWIxYTY1ZTExMTkwYmZjY2VhYmFlMTM2NDlmNzQ4ZDBiZDBhNmQ1ODVjIn19fQ=="
+    name: "&7Mini Lime Terracotta"
+    tags:
+      - terracotta
+      - color/lime
+    recipes:
+      stonecutter:
+        - id: "mini_lime_terracotta"
+          input: { material: "LIME_TERRACOTTA" }
+  mini_pink_terracotta:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTY4NzVkMGQ0ZDkyYjE2OWM4NTczNjMyNjlkMDNkZTZkNzMxZWFiZGE5ZjJmOGY2MDk4MjUyZjA5MTU4ZWFmMSJ9fX0="
+    name: "&7Mini Pink Terracotta"
+    tags:
+      - terracotta
+      - color/pink
+    recipes:
+      stonecutter:
+        - id: "mini_pink_terracotta"
+          input: { material: "PINK_TERRACOTTA" }
+  mini_gray_terracotta:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDFkYzIxOTZlY2M3NDA3NWMyOGQ4ZjM5MzEyYzNjZWVkYzVlNjE3YjM1ZjA4MmQ3NjU2ODJjYzM1NWY2ZmE2OCJ9fX0="
+    name: "&7Mini Gray Terracotta"
+    tags:
+      - terracotta
+      - color/gray
+    recipes:
+      stonecutter:
+        - id: "mini_gray_terracotta"
+          input: { material: "GRAY_TERRACOTTA" }
+  mini_light_gray_terracotta:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNmM2YjQxNzU4YjZlMWM4NjhkNzE3YWZlMjQzYjQ4YTE0MGExNzMxYjczZDA0ODVlODM1ZjdmMDBmNmE0NDc1YSJ9fX0="
+    name: "&7Mini Light Gray Terracotta"
+    tags:
+      - terracotta
+      - color/light_gray
+    recipes:
+      stonecutter:
+        - id: "mini_light_gray_terracotta"
+          input: { material: "LIGHT_GRAY_TERRACOTTA" }
+  mini_cyan_terracotta:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTM1MzBjMTE3ODVhODE5ODJkNGQyZjI0M2M0MzFkOGMzNWFlNjRiYzJmN2ZhNTY3OTY0YjA3ZDEzZDNiODJmZiJ9fX0="
+    name: "&7Mini Cyan Terracotta"
+    tags:
+      - terracotta
+      - color/cyan
+    recipes:
+      stonecutter:
+        - id: "mini_cyan_terracotta"
+          input: { material: "CYAN_TERRACOTTA" }
+  mini_purple_terracotta:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTA3YzA0OTE4MTYzMmUzYTYwM2VlZWU5MjI2Yzg3MWE5Nzk3NWEwZDgzMzBlNjEzYTJiZDU4Y2E1NzMzYWRmNSJ9fX0="
+    name: "&7Mini Purple Terracotta"
+    tags:
+      - terracotta
+      - color/purple
+    recipes:
+      stonecutter:
+        - id: "mini_purple_terracotta"
+          input: { material: "PURPLE_TERRACOTTA" }
+  mini_blue_terracotta:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZmYyYTlmMWUzMWJiZmJkYmViODM1NWIwNzA5NjVhYjFmZmI1MTRmYTdkYTY2YjE4MmFjMzc5NWEzNTdhY2U5MyJ9fX0="
+    name: "&7Mini Blue Terracotta"
+    tags:
+      - terracotta
+      - color/blue
+    recipes:
+      stonecutter:
+        - id: "mini_blue_terracotta"
+          input: { material: "BLUE_TERRACOTTA" }
+  mini_brown_terracotta:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzY1OTFjOTJhYzY2ODFiMGM2NWQyMjQ2YzE4OTJlZTkwNTEwMzNkYWVhOTAwZjIwZWJmMDQ0N2YzZTVmODBjYyJ9fX0="
+    name: "&7Mini Brown Terracotta"
+    tags:
+      - terracotta
+      - color/brown
+    recipes:
+      stonecutter:
+        - id: "mini_brown_terracotta"
+          input: { material: "BROWN_TERRACOTTA" }
+  mini_green_terracotta:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmU1YTAxZmIyNmExMGFmZDQ3NDJiZGY2YTFlMzYwZGEwMTAwNDBhYzQzMzgzNzExNjUzMDlkNGNlYTZkZGJkZiJ9fX0="
+    name: "&7Mini Green Terracotta"
+    tags:
+      - terracotta
+      - color/green
+    recipes:
+      stonecutter:
+        - id: "mini_green_terracotta"
+          input: { material: "GREEN_TERRACOTTA" }
+  mini_red_terracotta:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZmRiZTE1Y2EyNTkzYmZmYTU4ODAzM2QzNDBmYjg2NjYzMTM1ODBiZGY1ODM2MmI1Y2I3MGI4M2JkMTkxYzEyYiJ9fX0="
+    name: "&7Mini Red Terracotta"
+    tags:
+      - terracotta
+      - color/red
+    recipes:
+      stonecutter:
+        - id: "mini_red_terracotta"
+          input: { material: "RED_TERRACOTTA" }
+  mini_black_terracotta:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvY2JkYTkyYmQ4NDliMTRiYmM1ZDIwNDg4ODM0MDg2NWRiYTM3MmY5YzYzZTAyMzY1YjE0MzcxMDMxZTlmNjE4YyJ9fX0="
+    name: "&7Mini Black Terracotta"
+    tags:
+      - terracotta
+      - color/black
+    recipes:
+      stonecutter:
+        - id: "mini_black_terracotta"
+          input: { material: "BLACK_TERRACOTTA" }
+  mini_white_glazed_terracotta:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDJkODk1Nzg5ZjM4OTQ3ODhhYWRmNjMxZDg4MDRiODRmOWUzZDdkMmI4N2YwNDhlOTM4ODhiNDhlNmVhMGM4YiJ9fX0="
+    name: "&7Mini White Glazed Terracotta"
+    tags:
+      - terracotta
+      - color/white
+    recipes:
+      stonecutter:
+        - id: "mini_white_glazed_terracotta"
+          input: { material: "WHITE_GLAZED_TERRACOTTA" }
+  mini_orange_glazed_terracotta:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGFlYjA0ZGU4MTljMTc3NjY4YzUxMzkyNjQzN2QwZWNjMTY4NGUwMjRkMWQ4NjdhZjQ1OTAxY2I0NjFiYjQ3NSJ9fX0="
+    name: "&7Mini Orange Glazed Terracotta"
+    tags:
+      - terracotta
+      - color/orange
+    recipes:
+      stonecutter:
+        - id: "mini_orange_glazed_terracotta"
+          input: { material: "ORANGE_GLAZED_TERRACOTTA" }
+  mini_magenta_glazed_terracotta:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvM2U2MTdiZWQ4ZTk3ZDQwODc5OTNlYzBjODk4Zjg3NzJjNDUyYjk5ZDhiNGI5YTQ1ZTNlYzQzNDkzMDQwOWVlOSJ9fX0="
+    name: "&7Mini Magenta Glazed Terracotta"
+    tags:
+      - terracotta
+      - color/magenta
+    recipes:
+      stonecutter:
+        - id: "mini_magenta_glazed_terracotta"
+          input: { material: "MAGENTA_GLAZED_TERRACOTTA" }
+  mini_light_blue_glazed_terracotta:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzFjODk1OTM1MTc0YWM1ZjY0ZWRhZDIxNWNlMGI2YjM4MDEzN2NjNGQxZjM5OWEzZGYxN2RjM2IyZGU0MGJkZSJ9fX0="
+    name: "&7Mini Light Blue Glazed Terracotta"
+    tags:
+      - terracotta
+      - color/light_blue
+    recipes:
+      stonecutter:
+        - id: "mini_light_blue_glazed_terracotta"
+          input: { material: "LIGHT_BLUE_GLAZED_TERRACOTTA" }
+  mini_yellow_glazed_terracotta:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODc4NzI4OTEyNDE0ODUzYTU2M2M5NWNkZjExOWFjNmIyZDQ4NmUzNzg0ZWNlNmJiMTc0NWZhNGI3ZDZjNDAwMiJ9fX0="
+    name: "&7Mini Yellow Glazed Terracotta"
+    tags:
+      - terracotta
+      - color/yellow
+    recipes:
+      stonecutter:
+        - id: "mini_yellow_glazed_terracotta"
+          input: { material: "YELLOW_GLAZED_TERRACOTTA" }
+  mini_lime_glazed_terracotta:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvM2UwYjk3Yzc4NWUzOTc2ZWZhNzhhY2M4MjhkYjY3ZTcxZGVhZDliNjY5NGZkZTYxM2QyZTJlN2NhZmJlMWQ1YiJ9fX0="
+    name: "&7Mini Lime Glazed Terracotta"
+    tags:
+      - terracotta
+      - color/lime
+    recipes:
+      stonecutter:
+        - id: "mini_lime_glazed_terracotta"
+          input: { material: "LIME_GLAZED_TERRACOTTA" }
+  mini_pink_glazed_terracotta:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWMxMjBhYzJmZTJiZDdjZGMyZTg2YTUzNDA4NDQ5ZTM4OTkxNTk5NWQ0OTE3MDEzMWE5YzkyMGRlYjA1OTkyZSJ9fX0="
+    name: "&7Mini Pink Glazed Terracotta"
+    tags:
+      - terracotta
+      - color/pink
+    recipes:
+      stonecutter:
+        - id: "mini_pink_glazed_terracotta"
+          input: { material: "PINK_GLAZED_TERRACOTTA" }
+  mini_gray_glazed_terracotta:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzc3Mjk1NjJjNzQxZTliNzFhZWViZGIzNjQ1NzJmMDk5YzczYzAyNTZkN2Q4Yzg2MzMxZDc0MTdhODAzYzczNCJ9fX0="
+    name: "&7Mini Gray Glazed Terracotta"
+    tags:
+      - terracotta
+      - color/gray
+    recipes:
+      stonecutter:
+        - id: "mini_gray_glazed_terracotta"
+          input: { material: "GRAY_GLAZED_TERRACOTTA" }
+  mini_light_gray_glazed_terracotta:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjRjMDRkNmViNWI2ODUyODQzNzBkMDMyY2RiNjljZjJkNGZkMWFlMDA0NTc0ZmI0NDIyZjJiNTU3N2RkMTkzMiJ9fX0="
+    name: "&7Mini Light Gray Glazed Terracotta"
+    tags:
+      - terracotta
+      - color/light_gray
+    recipes:
+      stonecutter:
+        - id: "mini_light_gray_glazed_terracotta"
+          input: { material: "LIGHT_GRAY_GLAZED_TERRACOTTA" }
+  mini_cyan_glazed_terracotta:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTdjNjdhZjgxMzdmZmRjZjg3MzU4ZjdhYjZkYTZkMGVhOThhMDk2MDk5NWMwMmU0ZTk4MTgwMTYzNDhlMWY4MSJ9fX0="
+    name: "&7Mini Cyan Glazed Terracotta"
+    tags:
+      - terracotta
+      - color/cyan
+    recipes:
+      stonecutter:
+        - id: "mini_cyan_glazed_terracotta"
+          input: { material: "CYAN_GLAZED_TERRACOTTA" }
+  mini_purple_glazed_terracotta:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNmI3NWU4N2Q1MGNiODk2NmEzYTU2ZjczZDBhMTY2NDI5NDhmZjdkMTQ3OWI3ZDU5MDU0MTU0YmY2YmUwM2NkNCJ9fX0="
+    name: "&7Mini Purple Glazed Terracotta"
+    tags:
+      - terracotta
+      - color/purple
+    recipes:
+      stonecutter:
+        - id: "mini_purple_glazed_terracotta"
+          input: { material: "PURPLE_GLAZED_TERRACOTTA" }
+  mini_blue_glazed_terracotta:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjgxZTM3NjMyMjE4OGIxZTk4ODMwOWY5OWEwMTVkOTQ5YjY4ZmZlOWM5ZDczY2I5NzgxMzUzOGQwODY0ODk3ZSJ9fX0="
+    name: "&7Mini Blue Glazed Terracotta"
+    tags:
+      - terracotta
+      - color/blue
+    recipes:
+      stonecutter:
+        - id: "mini_blue_glazed_terracotta"
+          input: { material: "BLUE_GLAZED_TERRACOTTA" }
+  mini_brown_glazed_terracotta:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYWQ0ZWFhNTQzMDI3MmM0OGUwODFkMDEwYjRmNDRhYjZmNGFlODQxZTM4OTY3YmE2MDY2MDFkYmMzNTAyNmVjYSJ9fX0="
+    name: "&7Mini Brown Glazed Terracotta"
+    tags:
+      - terracotta
+      - color/brown
+    recipes:
+      stonecutter:
+        - id: "mini_brown_glazed_terracotta"
+          input: { material: "BROWN_GLAZED_TERRACOTTA" }
+  mini_green_glazed_terracotta:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNmNlODA3ZjBhNmY0OTljZTljY2M2NTAxMGZhYTU0ZWQ0ZTBmZmE2N2NmYjg0OGNkYTE1OWQzZGNhMGEyZGNhNSJ9fX0="
+    name: "&7Mini Green Glazed Terracotta"
+    tags:
+      - terracotta
+      - color/green
+    recipes:
+      stonecutter:
+        - id: "mini_green_glazed_terracotta"
+          input: { material: "GREEN_GLAZED_TERRACOTTA" }
+  mini_red_glazed_terracotta:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMmQyMjI1YmZkNjRlN2Y3YmVjOTZiZDgzMGU1YzgxYmMzMGZkZTk2YmJkYTE2YTBjNWJjZTViNWVjMThiNmUxMiJ9fX0="
+    name: "&7Mini Red Glazed Terracotta"
+    tags:
+      - terracotta
+      - color/red
+    recipes:
+      stonecutter:
+        - id: "mini_red_glazed_terracotta"
+          input: { material: "RED_GLAZED_TERRACOTTA" }
+  mini_black_glazed_terracotta:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZWQ0YTMyMWM0YzNiYzdjYzM5MWQ0NWMyZDMwNGE0ZjUyNmJjYWU1YjIzNTY1YTA0MTM1Y2VmODFjZTUxMThjYyJ9fX0="
+    name: "&7Mini Black Glazed Terracotta"
+    tags:
+      - terracotta
+      - color/black
+    recipes:
+      stonecutter:
+        - id: "mini_black_glazed_terracotta"
+          input: { material: "BLACK_GLAZED_TERRACOTTA" }
+  mini_white_concrete:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMmRjYTYwZTRlMjNjNjI3OTc5YWJiMjZmMjhiYjkxODNhZThjMmM2ZmViZTU0YjNjODliOGZjNDYzZjNhNDAwNSJ9fX0="
+    name: "&7Mini White Concrete"
+    tags:
+      - concrete
+      - color/white
+    recipes:
+      stonecutter:
+        - id: "mini_white_concrete"
+          input: { material: "WHITE_CONCRETE" }
+  mini_orange_concrete:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjNmMTNlMjNlYzIzNDY3YWM1ZTZmNjVhODNmMjY4NmViZWNkOTk4NmRmNWY4Y2JjZDZmYWZjNDJlNjYyYjM4In19fQ=="
+    name: "&7Mini Orange Concrete"
+    tags:
+      - concrete
+      - color/orange
+    recipes:
+      stonecutter:
+        - id: "mini_orange_concrete"
+          input: { material: "ORANGE_CONCRETE" }
+  mini_magenta_concrete:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjVlZjJkODdmN2MxZGVmNzk1MjNlOTU2NzY3YjgyODRjYTM4OWIyNDI5OWY1ZTQ2NWQ0NTc5ODlkNjJkZjgifX19"
+    name: "&7Mini Magenta Concrete"
+    tags:
+      - concrete
+      - color/magenta
+    recipes:
+      stonecutter:
+        - id: "mini_magenta_concrete"
+          input: { material: "MAGENTA_CONCRETE" }
+  mini_light_blue_concrete:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjQ3N2Y0NDM4OTM2MmM0Yzc2NGM4NDdhOTczOWJjNzhjMzI0NjdlYWI0ZTM4MzBhZTRjOGJlYWMzNDQyZWY5In19fQ=="
+    name: "&7Mini Light Blue Concrete"
+    tags:
+      - concrete
+      - color/light_blue
+    recipes:
+      stonecutter:
+        - id: "mini_light_blue_concrete"
+          input: { material: "LIGHT_BLUE_CONCRETE" }
+  mini_yellow_concrete:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZmNhNWJmZjMyNWVkNzFkOTdhMmRkZmM4M2FjZjA1ZmU3ZmQ5Y2I3Y2JkYjE1ZWJiNGYwNTYyMTkwN2U5ZjJiIn19fQ=="
+    name: "&7Mini Yellow Concrete"
+    tags:
+      - concrete
+      - color/yellow
+    recipes:
+      stonecutter:
+        - id: "mini_yellow_concrete"
+          input: { material: "YELLOW_CONCRETE" }
+  mini_lime_concrete:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGI1OTljNjE4ZTkxNGMyNWEzN2Q2OWY1NDFhMjJiZWJiZjc1MTYxNTI2Mzc1NmYyNTYxZmFiNGNmYTM5ZSJ9fX0="
+    name: "&7Mini Lime Concrete"
+    tags:
+      - concrete
+      - color/lime
+    recipes:
+      stonecutter:
+        - id: "mini_lime_concrete"
+          input: { material: "LIME_CONCRETE" }
+  mini_pink_concrete:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjI3NDlkMzdjM2Y5OGQ0NTdiZjU0MDIyYThiNjEzYTQzNTNlZDhkZDJlMTQ5NDI2ZmM0MmRiM2I3ZCJ9fX0="
+    name: "&7Mini Pink Concrete"
+    tags:
+      - concrete
+      - color/pink
+    recipes:
+      stonecutter:
+        - id: "mini_pink_concrete"
+          input: { material: "PINK_CONCRETE" }
+  mini_gray_concrete:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzA2ZDdiZWZjODJmMjAxZjgzZTE5Mzc2N2U2M2Y4MTAzNzIxNWFmZDQ4M2EzOGQzNjk2NTk4MmNhNmQwIn19fQ=="
+    name: "&7Mini Gray Concrete"
+    tags:
+      - concrete
+      - color/gray
+    recipes:
+      stonecutter:
+        - id: "mini_gray_concrete"
+          input: { material: "GRAY_CONCRETE" }
+  mini_light_gray_concrete:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNmJhMGM0YTBmZGNlOTIzYTkwNDgzMjhkNjY0MTQ3YzViOTI0NDkxZjRlZTVmZWE3MWYzZTllYzMxNCJ9fX0="
+    name: "&7Mini Light Gray Concrete"
+    tags:
+      - concrete
+      - color/light_gray
+    recipes:
+      stonecutter:
+        - id: "mini_light_gray_concrete"
+          input: { material: "LIGHT_GRAY_CONCRETE" }
+  mini_cyan_concrete:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjMzYjUxZmVmMWQ3ZmRmMTkyNzRiYjc2ZmNlZGVjZWM3YTc3ZDAxMGNiMzRmZTAyOWZiNzk0Y2M1OWFiYSJ9fX0="
+    name: "&7Mini Cyan Concrete"
+    tags:
+      - concrete
+      - color/cyan
+    recipes:
+      stonecutter:
+        - id: "mini_cyan_concrete"
+          input: { material: "CYAN_CONCRETE" }
+  mini_purple_concrete:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjBjMDVkNTYwZDhlMTNmMGNiMjVjMTVjODMxYmM1OTU0NTBjNWU1NGNlMzVmYTU0ZTE3ZTA0OTUyNjdjIn19fQ=="
+    name: "&7Mini Purple Concrete"
+    tags:
+      - concrete
+      - color/purple
+    recipes:
+      stonecutter:
+        - id: "mini_purple_concrete"
+          input: { material: "PURPLE_CONCRETE" }
+  mini_blue_concrete:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTdjN2EyOTcxMDNkYjA4NGFmNjI3M2I4Nzk4MDVhZmM4NTc3Y2M4MmM3NTJhYzI2NmNmOGQ3YTZlZWE2MCJ9fX0="
+    name: "&7Mini Blue Concrete"
+    tags:
+      - concrete
+      - color/blue
+    recipes:
+      stonecutter:
+        - id: "mini_blue_concrete"
+          input: { material: "BLUE_CONCRETE" }
+  mini_brown_concrete:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjUzODEyMGY2MThmMmNjZDNiYmRjMThjZDU3ODJlNjM4MmFlOWVlNzJkMDVmNWY4NjI3NmFkYTU0ZWY3ZWQifX19"
+    name: "&7Mini Brown Concrete"
+    tags:
+      - concrete
+      - color/brown
+    recipes:
+      stonecutter:
+        - id: "mini_brown_concrete"
+          input: { material: "BROWN_CONCRETE" }
+  mini_green_concrete:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZGZhYjdkYWViOGYzMzNjNzg4NmE3MGVmMzBjYWY0ZGVjNGE4Y2QxMDQ5M2YyMzgwMmYxNTE2YmRkMjNmY2QifX19"
+    name: "&7Mini Green Concrete"
+    tags:
+      - concrete
+      - color/green
+    recipes:
+      stonecutter:
+        - id: "mini_green_concrete"
+          input: { material: "GREEN_CONCRETE" }
+  mini_red_concrete:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjE4NTZjN2IzNzhkMzUwMjYyMTQzODQzZDFmOWZiYjIxOTExYTcxOTgzYmE3YjM5YTRkNGJhNWI2NmJlZGM2In19fQ=="
+    name: "&7Mini Red Concrete"
+    tags:
+      - concrete
+      - color/red
+    recipes:
+      stonecutter:
+        - id: "mini_red_concrete"
+          input: { material: "RED_CONCRETE" }
+  mini_black_concrete:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGZjMjM3MmI0NTc1NDJjNjU0ODNhZmExNDQyZTFjMzNhNWZmNzU4ZDM2MmVjZWM0MzQ4Nzk1MTcyODI0ZDg2OSJ9fX0="
+    name: "&7Mini Black Concrete"
+    tags:
+      - concrete
+      - color/black
+    recipes:
+      stonecutter:
+        - id: "mini_black_concrete"
+          input: { material: "BLACK_CONCRETE" }
+  mini_white_concrete_powder:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYWYzZWFmNGMxNWFkNjdjNTFkZmY5MDk3YmQ3YWJkNGE4MmJhYjdiZWQ4M2FiNzdhNjE3N2YyZTU3YiJ9fX0="
+    name: "&7Mini White Concrete Powder"
+    tags:
+      - concrete
+      - color/white
+    recipes:
+      stonecutter:
+        - id: "mini_white_concrete_powder"
+          input: { material: "WHITE_CONCRETE_POWDER" }
+  mini_orange_concrete_powder:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODViZWMxNTc0ZGUzNzNkZmI3NzVhYjU4YjJjMWU0NjIxZDkyYzZkYWFjN2M2YTc0ZDc4ZmI3MGZmZjRkMCJ9fX0="
+    name: "&7Mini Orange Concrete Powder"
+    tags:
+      - concrete
+      - color/orange
+    recipes:
+      stonecutter:
+        - id: "mini_orange_concrete_powder"
+          input: { material: "ORANGE_CONCRETE_POWDER" }
+  mini_magenta_concrete_powder:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTgzNGU3ZWZhNDg0MmFlMGUzMTk0MjE3ZGU2MmZkYzBiZjljNzJkMTkzYTE2MDIwN2QxYzM3NDFkN2RhIn19fQ=="
+    name: "&7Mini Magenta Concrete Powder"
+    tags:
+      - concrete
+      - color/magenta
+    recipes:
+      stonecutter:
+        - id: "mini_magenta_concrete_powder"
+          input: { material: "MAGENTA_CONCRETE_POWDER" }
+  mini_light_blue_concrete_powder:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjllNGEzOTliZWZkOTY3ZWMyODJjNzE5ZmJmZDY0NDg2MzI4MTM3NGRjYjgxMzdhNzJmN2M0ZDAxM2E3M2YifX19"
+    name: "&7Mini Light Blue Concrete Powder"
+    tags:
+      - concrete
+      - color/light_blue
+    recipes:
+      stonecutter:
+        - id: "mini_light_blue_concrete_powder"
+          input: { material: "LIGHT_BLUE_CONCRETE_POWDER" }
+  mini_yellow_concrete_powder:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjdhOTk2NGY1NzJmZDAzYzMyZGZhMjU4NjE1NWZhM2QxMGU2MjdkZjc3OWE0MWYyNjJmZGU4MmJmYjQxYmEwIn19fQ=="
+    name: "&7Mini Yellow Concrete Powder"
+    tags:
+      - concrete
+      - color/yellow
+    recipes:
+      stonecutter:
+        - id: "mini_yellow_concrete_powder"
+          input: { material: "YELLOW_CONCRETE_POWDER" }
+  mini_lime_concrete_powder:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOWNiODFhMzVkMmI0OGQ1ZmQ4MTI0OTM2OTQzM2MwNzhiN2M4YmY0MmRmNWFhOWMzNzVjMWFjODVmNDUxNCJ9fX0="
+    name: "&7Mini Lime Concrete Powder"
+    tags:
+      - concrete
+      - color/lime
+    recipes:
+      stonecutter:
+        - id: "mini_lime_concrete_powder"
+          input: { material: "LIME_CONCRETE_POWDER" }
+  mini_pink_concrete_powder:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZGYzODdiNjlmOTRmZWVhMjU2NzFmYzM5OWViNzVkYmVhYzYwZjUxMmE0YmZlNzhlNDU0MTcxZWUzZmMwIn19fQ=="
+    name: "&7Mini Pink Concrete Powder"
+    tags:
+      - concrete
+      - color/pink
+    recipes:
+      stonecutter:
+        - id: "mini_pink_concrete_powder"
+          input: { material: "PINK_CONCRETE_POWDER" }
+  mini_gray_concrete_powder:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzZkYzZkNDI0OTU4MTdiOGQ0ZGIxMzExMTE1ZDFmNWNmYmVkZTY4MzIxOTJiNTJmMzJkNDhlZjdkOGI1ZCJ9fX0="
+    name: "&7Mini Gray Concrete Powder"
+    tags:
+      - concrete
+      - color/gray
+    recipes:
+      stonecutter:
+        - id: "mini_gray_concrete_powder"
+          input: { material: "GRAY_CONCRETE_POWDER" }
+  mini_light_gray_concrete_powder:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjAzNjM0M2EwNmFkMmViMGY1YzU4NzM5MWUxZjgyZDNhZmIyZTg3YjQ0OTIyMWZmNzdjYTE4MDBmZmFjMGFkZCJ9fX0="
+    name: "&7Mini Light Gray Concrete Powder"
+    tags:
+      - concrete
+      - color/light_gray
+    recipes:
+      stonecutter:
+        - id: "mini_light_gray_concrete_powder"
+          input: { material: "LIGHT_GRAY_CONCRETE_POWDER" }
+  mini_cyan_concrete_powder:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDgxODk5ZDA3ZWQ4YTU0NDFiYjNmYWYxZTE5ZGNjOTc1MzdjYmRmOTFjNzAzZWJmODVhYzMxYzg4MTk4ZmMifX19"
+    name: "&7Mini Cyan Concrete Powder"
+    tags:
+      - concrete
+      - color/cyan
+    recipes:
+      stonecutter:
+        - id: "mini_cyan_concrete_powder"
+          input: { material: "CYAN_CONCRETE_POWDER" }
+  mini_purple_concrete_powder:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNmM0ZGM4MzM4NDE1YjJiOTg5YWI3OTQ5NTk4NmVjNzg5NWFhMDM2NzlkMmJjZGQ2ZDllYmI2MzNiODdmYzQifX19"
+    name: "&7Mini Purple Concrete Powder"
+    tags:
+      - concrete
+      - color/purple
+    recipes:
+      stonecutter:
+        - id: "mini_purple_concrete_powder"
+          input: { material: "PURPLE_CONCRETE_POWDER" }
+  mini_blue_concrete_powder:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWRhNzZkNmRkY2RiYjQ5NzMzMzIxNTU3OTZjMDMwY2ZhMmZlODU1Y2U1MzllODEzZTU4OGM2MWQ0ZDZiY2E1YyJ9fX0="
+    name: "&7Mini Blue Concrete Powder"
+    tags:
+      - concrete
+      - color/blue
+    recipes:
+      stonecutter:
+        - id: "mini_blue_concrete_powder"
+          input: { material: "BLUE_CONCRETE_POWDER" }
+  mini_brown_concrete_powder:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjc5NWY5NmRlMzYzNDFhMmU5YzNmYWI5NWFjZjhlOTJmZGUzZGJjOTlmMjE2NjUxOGE5MzdjY2NkZDZlZDEzYiJ9fX0="
+    name: "&7Mini Brown Concrete Powder"
+    tags:
+      - concrete
+      - color/brown
+    recipes:
+      stonecutter:
+        - id: "mini_brown_concrete_powder"
+          input: { material: "BROWN_CONCRETE_POWDER" }
+  mini_green_concrete_powder:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjZkNTNhNTc2ODVmMjVmMjkzYzdlOWM3YjQ0MThkNDUyZjY5MzFjNTNhOTg0OWEwYjNjYTEwOTM4NTU3NyJ9fX0="
+    name: "&7Mini Green Concrete Powder"
+    tags:
+      - concrete
+      - color/green
+    recipes:
+      stonecutter:
+        - id: "mini_green_concrete_powder"
+          input: { material: "GREEN_CONCRETE_POWDER" }
+  mini_red_concrete_powder:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjlhNTFmMjdkMmQ5Mzg4OTdiYzQyYTNmZTJjMzEzNWRhMjY3MTY4NmY1NzgyNDExNWY4ZjhkYTc4YSJ9fX0="
+    name: "&7Mini Red Concrete Powder"
+    tags:
+      - concrete
+      - color/red
+    recipes:
+      stonecutter:
+        - id: "mini_red_concrete_powder"
+          input: { material: "RED_CONCRETE_POWDER" }
+  mini_black_concrete_powder:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjM0MmI5YmY5ZjFmNjI5NTg0MmIwZWZiNTkxNjk3YjE0NDUxZjgwM2ExNjVhZTU4ZDBkY2ViZDk4ZWFjYyJ9fX0="
+    name: "&7Mini Black Concrete Powder"
+    tags:
+      - concrete
+      - color/black
+    recipes:
+      stonecutter:
+        - id: "mini_black_concrete_powder"
+          input: { material: "BLACK_CONCRETE_POWDER" }
+  mini_white_wool:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDA4ZGY2MGM1MTA3NGVlZjI1NDRmZjM4Y2VhZDllMTY2NzVhZTQyNTE5MTYxMDUxODBlMWY4Y2UxOTdhYjNiYyJ9fX0="
+    name: "&7Mini White Wool"
+    tags:
+      - wool
+      - color/white
+    recipes:
+      stonecutter:
+        - id: "mini_white_wool"
+          input: { material: "WHITE_WOOL" }
+  mini_orange_wool:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZWUzMDQ4MGVkMjgzNGY1YjdjYzgxZGNiMWRjN2U0NzY2NzkyNDMwYzQ5ZGFkNGRiY2QxMGE5M2M1ZTE0NTdiYyJ9fX0="
+    name: "&7Mini Orange Wool"
+    tags:
+      - wool
+      - color/orange
+    recipes:
+      stonecutter:
+        - id: "mini_orange_wool"
+          input: { material: "ORANGE_WOOL" }
+  mini_magenta_wool:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDA5NTA4NmE4NThmZmJkOGZiNmY1MGE1ZmUzYWQ2MzY4ZjNiYmI1NzJlYTc1N2Y3NjMzM2NiMzM1MDJmOGRjOCJ9fX0="
+    name: "&7Mini Magenta Wool"
+    tags:
+      - wool
+      - color/magenta
+    recipes:
+      stonecutter:
+        - id: "mini_magenta_wool"
+          input: { material: "MAGENTA_WOOL" }
+  mini_light_blue_wool:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzE4Njk5YmFlOWYxZTAyYTdhNjUxODNiZDAwNzk0ODllNGU2MTVkYWRkY2UzYzkyNjQ5Y2RlZDMxMmIyMjZkYyJ9fX0="
+    name: "&7Mini Light Blue Wool"
+    tags:
+      - wool
+      - color/light_blue
+    recipes:
+      stonecutter:
+        - id: "mini_light_blue_wool"
+          input: { material: "LIGHT_BLUE_WOOL" }
+  mini_yellow_wool:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvM2RhMjlmZTIzYjY5Zjc2YmM0OTQ3NDEwMjIyNmIwNjk5Y2EyYTVhZDExZjdhNDg1NDJiMTNhZDljYWJhZjg5ZCJ9fX0="
+    name: "&7Mini Yellow Wool"
+    tags:
+      - wool
+      - color/yellow
+    recipes:
+      stonecutter:
+        - id: "mini_yellow_wool"
+          input: { material: "YELLOW_WOOL" }
+  mini_lime_wool:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjliNDNmODEzZGMxZjhjODUzNDU0YzQ1ZjFlZGU5NGY0Mzg3M2RmNDc0MmNkOTBkMThlYzg0MmZhZmI4ODc4ZCJ9fX0="
+    name: "&7Mini Lime Wool"
+    tags:
+      - wool
+      - color/lime
+    recipes:
+      stonecutter:
+        - id: "mini_lime_wool"
+          input: { material: "LIME_WOOL" }
+  mini_pink_wool:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzQ1Mjk2YTc4ZTFlNjlmMzA1MjNkY2NiODAzYTg0NjMyMmNhODM0NjM3ZDI3Nzk2M2UxOWIyMjliN2I4MTQyZSJ9fX0="
+    name: "&7Mini Pink Wool"
+    tags:
+      - wool
+      - color/pink
+    recipes:
+      stonecutter:
+        - id: "mini_pink_wool"
+          input: { material: "PINK_WOOL" }
+  mini_gray_wool:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNmY1NWE1NzYzOWM5ZjdkYmIyNDZiMjhhMjkyY2ZmMjk4MzQ0Yzk2OWNmZDQyNTI3MDlkNGE1ZmE2NjMxMjhiOSJ9fX0="
+    name: "&7Mini Gray Wool"
+    tags:
+      - wool
+      - color/gray
+    recipes:
+      stonecutter:
+        - id: "mini_gray_wool"
+          input: { material: "GRAY_WOOL" }
+  mini_light_gray_wool:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWNkZTQ0ZThmODBlNTY2MTBjMGZmYzY0YzA4ZTE5NDM1MTdmZGFmODAwZjVlZTc1ZWY2OTg2YzVhODk2NmU5YyJ9fX0="
+    name: "&7Mini Light Gray Wool"
+    tags:
+      - wool
+      - color/light_gray
+    recipes:
+      stonecutter:
+        - id: "mini_light_gray_wool"
+          input: { material: "LIGHT_GRAY_WOOL" }
+  mini_cyan_wool:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZmQ5ZmVlNDA1MzIzMmFmZmU0YzdiZWMxMTc3MmFlM2JkYTQ0Y2JjZmFiZGJjMzFlM2QwYzA1MGY1MzNlZTA2YiJ9fX0="
+    name: "&7Mini Cyan Wool"
+    tags:
+      - wool
+      - color/cyan
+    recipes:
+      stonecutter:
+        - id: "mini_cyan_wool"
+          input: { material: "CYAN_WOOL" }
+  mini_purple_wool:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTg2NWE0MmRhODcxOGYyMzViYTM5NzVhZDNjYjg1ZDlmYjJjNTZiMjc1NjFhNGI0ZDkwYTgxNjZlODA1ODY1YyJ9fX0="
+    name: "&7Mini Purple Wool"
+    tags:
+      - wool
+      - color/purple
+    recipes:
+      stonecutter:
+        - id: "mini_purple_wool"
+          input: { material: "PURPLE_WOOL" }
+  mini_blue_wool:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTIyNTdlYjU4MDM4MDMxNDI4ZTk3MjkzOWUzMWM3ODBjYjhjMWY3Yjk1MWM1YmQxZjkzODZmZjNlMTdjNTY4NiJ9fX0="
+    name: "&7Mini Blue Wool"
+    tags:
+      - wool
+      - color/blue
+    recipes:
+      stonecutter:
+        - id: "mini_blue_wool"
+          input: { material: "BLUE_WOOL" }
+  mini_brown_wool:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZWYxMjU5NjU2YjFjZDFhNzBkZmFkOTI4MjlhZmMwOTgyODhlOGU1YmZjNzI0YjlmMmJiNGJiZWIyOGZkYzUxNyJ9fX0="
+    name: "&7Mini Brown Wool"
+    tags:
+      - wool
+      - color/brown
+    recipes:
+      stonecutter:
+        - id: "mini_brown_wool"
+          input: { material: "BROWN_WOOL" }
+  mini_green_wool:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzI0NTAzNjc4MmM2YTdlMjVmZjg0YzUwODdhNjU5NjZkNjUwYzAzM2JhMzdlMDA5NjVlOGI5OTAyMWIzZWNhZSJ9fX0="
+    name: "&7Mini Green Wool"
+    tags:
+      - wool
+      - color/green
+    recipes:
+      stonecutter:
+        - id: "mini_green_wool"
+          input: { material: "GREEN_WOOL" }
+  mini_red_wool:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzNhMDNjMDZmZmUyMzU2Y2UwMGFlZjViNzA4ODc4ZDJmZTQzNjVhOTdiYzRkYWUxZTE1NDJjMjdiMmViMzBkZCJ9fX0="
+    name: "&7Mini Red Wool"
+    tags:
+      - wool
+      - color/red
+    recipes:
+      stonecutter:
+        - id: "mini_red_wool"
+          input: { material: "RED_WOOL" }
+  mini_black_wool:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTQ3MTlmMjFjNWRmYzFjZDgyYWExM2M4N2NjZjhkNDY1MmVjOWUzMjliYjY5ZjM0MDllYmE2NTExYzlkZmMwMyJ9fX0="
+    name: "&7Mini Black Wool"
+    tags:
+      - wool
+      - color/black
+    recipes:
+      stonecutter:
+        - id: "mini_black_wool"
+          input: { material: "BLACK_WOOL" }
+  mini_glass:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmUxYzE4MzViNWM1ODFjZTEyYjBmZmNiNzE3MGEwNmNlODliMjRkYzdjNTk3NGI1YzVmNGUzZTM2ZGNmNjFiNCJ9fX0="
+    name: "&7Mini Glass"
+    recipes:
+      stonecutter:
+        - id: "mini_glass"
+          input: { material: "GLASS" }
+  mini_white_stained_glass:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZWU4Y2M5YWQ3YTg4NmFjZTRiZjQ5MTA1MmQwODQyMzYwMmU1N2NkNDA5MmY1ZjM1ZWMwY2FhODVkOWQyNGJkIn19fQ=="
+    name: "&7Mini White Stained Glass"
+    tags:
+      - glass
+      - color/white
+    recipes:
+      stonecutter:
+        - id: "mini_white_stained_glass"
+          input: { material: "WHITE_STAINED_GLASS" }
+  mini_orange_stained_glass:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjVkOTc3NTk2ZWU3NWMyZGRhYWY0NjU2MjBiNjMyYjAwOGFjYzMxYWQzMTA1ZDY0MmViNmVjYWEzMmNkYmE5MSJ9fX0="
+    name: "&7Mini Orange Stained Glass"
+    tags:
+      - glass
+      - color/orange
+    recipes:
+      stonecutter:
+        - id: "mini_orange_stained_glass"
+          input: { material: "ORANGE_STAINED_GLASS" }
+  mini_magenta_stained_glass:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjg3NTY5ZmIzMTI4ZjVlNmE5MWE5ODE2YWE4MDdlNWRkYzJkY2U0OGFhMmUxNTE3MTAxOTViN2RlODc3NGRkNCJ9fX0="
+    name: "&7Mini Magenta Stained Glass"
+    tags:
+      - glass
+      - color/magenta
+    recipes:
+      stonecutter:
+        - id: "mini_magenta_stained_glass"
+          input: { material: "MAGENTA_STAINED_GLASS" }
+  mini_light_blue_stained_glass:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDgzOWU0OTA5NjIxZGJkNjA2MTdjMWU1Y2YwZWYzZGIyMWEwMWZmODNkM2Q1MGRhNzFiYjJkYWViNmZmMDg3MCJ9fX0="
+    name: "&7Mini Light Blue Stained Glass"
+    tags:
+      - glass
+      - color/light_blue
+    recipes:
+      stonecutter:
+        - id: "mini_light_blue_stained_glass"
+          input: { material: "LIGHT_BLUE_STAINED_GLASS" }
+  mini_yellow_stained_glass:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvN2I3ZDk5NmE5MDMwYzNhMDUxNjllNWRlYmY5YWJlZmRjMmNhOTEzYmZlMGU5ODhjZmI3ZjM1YjFkNjAwNWUyYyJ9fX0="
+    name: "&7Mini Yellow Stained Glass"
+    tags:
+      - glass
+      - color/yellow
+    recipes:
+      stonecutter:
+        - id: "mini_yellow_stained_glass"
+          input: { material: "YELLOW_STAINED_GLASS" }
+  mini_lime_stained_glass:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTNiMjI4ZjcwYTM1ZDBhYTMyMzUwNDY3ZDllOGMwOWFhZTlhZTBhZTA4NzVmZGM4YzMxMWE4NzZiZTE5MDcxNyJ9fX0="
+    name: "&7Mini Lime Stained Glass"
+    tags:
+      - glass
+      - color/lime
+    recipes:
+      stonecutter:
+        - id: "mini_lime_stained_glass"
+          input: { material: "LIME_STAINED_GLASS" }
+  mini_pink_stained_glass:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjA5MTEyZTYzNGZlYTA1MjNiYWZlZjM1YzYyNjVhNzE1NmY5YzgwYjY2ZTFmNmY2YzJiYzFkNjY0MzRjMTAxMCJ9fX0="
+    name: "&7Mini Pink Stained Glass"
+    tags:
+      - glass
+      - color/pink
+    recipes:
+      stonecutter:
+        - id: "mini_pink_stained_glass"
+          input: { material: "PINK_STAINED_GLASS" }
+  mini_gray_stained_glass:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTAwMmY4MGE1NjQ5YzlkYmY4Y2I5NTRiZDY5NjlkYTJhNjM2Y2Q3MjgzNTkzYWNiYWFkODc0MDcwOWNjZDY2In19fQ=="
+    name: "&7Mini Gray Stained Glass"
+    tags:
+      - glass
+      - color/gray
+    recipes:
+      stonecutter:
+        - id: "mini_gray_stained_glass"
+          input: { material: "GRAY_STAINED_GLASS" }
+  mini_light_gray_stained_glass:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDk4NDhkZGU4ZTUzMGRjNzA1ZmI2NzdkYWQ4MTQ5MmNjMjIyYmY5NmZkNjMyYjg1MTRhZWZiODA5MzFmZTBkIn19fQ=="
+    name: "&7Mini Light Gray Stained Glass"
+    tags:
+      - glass
+      - color/light_gray
+    recipes:
+      stonecutter:
+        - id: "mini_light_gray_stained_glass"
+          input: { material: "LIGHT_GRAY_STAINED_GLASS" }
+  mini_cyan_stained_glass:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjAyOTBlYWQ3YmIzY2MzZjhlMTkyNThlMDNjMDFiYWJhZmY1NTU0MGZiOTE0OWZkMGI1NTliMTZmYjJlMjJmIn19fQ=="
+    name: "&7Mini Cyan Stained Glass"
+    tags:
+      - glass
+      - color/cyan
+    recipes:
+      stonecutter:
+        - id: "mini_cyan_stained_glass"
+          input: { material: "CYAN_STAINED_GLASS" }
+  mini_purple_stained_glass:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjY3MTAzMjVhNzRkOTFmN2Y5MTUwZGQwY2VlNDlkMTE1ZTVmOGJhOWIzNjg4MzU2MTA4MDJmNGMyOTY2MTVlYyJ9fX0="
+    name: "&7Mini Purple Stained Glass"
+    tags:
+      - glass
+      - color/purple
+    recipes:
+      stonecutter:
+        - id: "mini_purple_stained_glass"
+          input: { material: "PURPLE_STAINED_GLASS" }
+  mini_blue_stained_glass:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZGNiMGVjMmJkMmIwMGI4MmEyN2FlYmNkMDE1Y2JkNGNlMTA5YWQ2YTM3NmMyNjI0NTYxMjY5MWJmMjAyNzZiIn19fQ=="
+    name: "&7Mini Blue Stained Glass"
+    tags:
+      - glass
+      - color/blue
+    recipes:
+      stonecutter:
+        - id: "mini_blue_stained_glass"
+          input: { material: "BLUE_STAINED_GLASS" }
+  mini_brown_stained_glass:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzcyZDM3YWM0MDhlMDdkNzc0MTM5ZmQxN2FlY2FhZDU3MzJlMzA2NTdkMTIwYjQ2ZmUxMWQ2NGI2OGVkZWI3YiJ9fX0="
+    name: "&7Mini Brown Stained Glass"
+    tags:
+      - glass
+      - color/brown
+    recipes:
+      stonecutter:
+        - id: "mini_brown_stained_glass"
+          input: { material: "BROWN_STAINED_GLASS" }
+  mini_green_stained_glass:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTFmMjczMzdkMWUxYTk3YjY3YmYzM2Q0NTE3Y2UwYzIxZGU4MmI3MGUzYmZkNDVhMjIyMDFhNGQwNTZiNjAwYyJ9fX0="
+    name: "&7Mini Green Stained Glass"
+    tags:
+      - glass
+      - color/green
+    recipes:
+      stonecutter:
+        - id: "mini_green_stained_glass"
+          input: { material: "GREEN_STAINED_GLASS" }
+  mini_red_stained_glass:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNmJkMmY5MzQ3NmFiNjlmYWY1YTUxOWViNTgzMmRiODQxYzg1MjY2ZTAwMWRlNWIyNmU0MjdmNDFkOThlNWM3ZSJ9fX0="
+    name: "&7Mini Red Stained Glass"
+    tags:
+      - glass
+      - color/red
+    recipes:
+      stonecutter:
+        - id: "mini_red_stained_glass"
+          input: { material: "RED_STAINED_GLASS" }
+  mini_black_stained_glass:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjZkZDg5MTlmZThmNzUwN2I0NjQxYmYzYWE3MmIwNTZlMDg1N2NjMjAyYThlNWViNjZjOWMyMWFhNzNjMzg3NiJ9fX0="
+    name: "&7Mini Black Stained Glass"
+    tags:
+      - glass
+      - color/black
+    recipes:
+      stonecutter:
+        - id: "mini_black_stained_glass"
+          input: { material: "BLACK_STAINED_GLASS" }
+  mini_dirt:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjA0ZDI5NTk4MDY4YjFlMWYyMWY4YWQxMDVkMjMyZTM0NzI3NWE1YTVmZWU3NjBhMTEzOTI5MjJkYjM1NzdjMyJ9fX0="
+    name: "&7Mini Dirt"
+    tags:
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "mini_dirt"
+          input: { material: "DIRT" }
+  mini_coarse_dirt:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMDIyNTM5NDdhZmE4Y2I3ZjdlOTE2NTJkM2EzZDE4OTg4ZmFkOTY4YjVlZWIzY2U4NThlZjA3NzhiZDJmIn19fQ=="
+    name: "&7Mini Coarse Dirt"
+    tags:
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "mini_coarse_dirt"
+          input: { material: "COARSE_DIRT" }
+  mini_rooted_dirt:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWNkNDZiMzU4N2IyMGQ4ZDdkYzk4YTdjNzdhMDhkNjE4NzA2NDcyMGU5YzEzOGUxYWM3YzFkOTYwMTgxODg3NCJ9fX0="
+    name: "&7Mini Rooted Dirt"
+    tags:
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "mini_rooted_dirt"
+          input: { material: "ROOTED_DIRT" }
+  mini_grass_block:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTZiYjlmYjk3YmE4N2NiNzI3Y2QwZmY0NzdmNzY5MzcwYmVhMTljY2JmYWZiNTgxNjI5Y2Q1NjM5ZjJmZWMyYiJ9fX0="
+    name: "&7Mini Grass Block"
+    tags:
+      - natural/greenery
+    recipes:
+      stonecutter:
+        - id: "mini_grass_block"
+          input: { material: "GRASS_BLOCK" }
+  mini_podzol:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWU5ZjJhNGY2MzI5OGNkMGUxZmI5ZGY3MzczNWMyMWM3YTc2MDAyMzg3ZTljNjNiYTdjZmYxZmE3MWQ5ZTA4MSJ9fX0="
+    name: "&7Mini Podzol"
+    tags:
+      - natural/greenery
+    recipes:
+      stonecutter:
+        - id: "mini_podzol"
+          input: { material: "PODZOL" }
+  mini_mycelium:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvN2ViNGM0MWY0ODFlODE2Y2Y0YjUwN2IwYTE3NTk1ZjJiYTFmMjQ2NjRkYzQzMmJlMzQ3ZDRlN2E0ZWIzIn19fQ=="
+    name: "&7Mini Mycelium"
+    tags:
+      - natural/greenery
+    recipes:
+      stonecutter:
+        - id: "mini_mycelium"
+          input: { material: "MYCELIUM" }
+  mini_dirt_path:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzVhOWNmZGI3OGFjMWJlYjc4MjNiY2M4N2I3ZTNhZjgyZGFlZTEwYTU3ODM1ZGM0Y2I2MzJiZjFjZWUyMTU4MCJ9fX0="
+    name: "&7Mini Dirt Path"
+    recipes:
+      stonecutter:
+        - id: "mini_dirt_path"
+          input: { material: "DIRT_PATH" }
+  mini_farmland:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOWRjNDU2ZGM2YzA1OGI0ZTc3ZDIyOTU0YmVhODI4ODdhMDAwMzg0NmExODU3YmVhMDIxMTNiMzM0MWVjZDFlZCJ9fX0="
+    name: "&7Mini Farmland"
+    recipes:
+      stonecutter:
+        - id: "mini_farmland"
+          input: { material: "FARMLAND" }
+  mini_gravel:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzc4OGI2MWZjZDQ2Y2FkOTIzNWNjMzJhYzU3YTU0ZjcwODExMDMyOTQ0N2JiMjRjMDg3Nzg4NmUzZjQ5MDdmMSJ9fX0="
+    name: "&7Mini Gravel"
+    tags:
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "mini_gravel"
+          input: { material: "GRAVEL" }
+  mini_sand:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGY0OTNkZDgwNjUzM2Q5ZDIwZTg0OTUzOTU0MzY1ZjRkMzY5NzA5Y2ViYzlkZGVmMDIyZDFmZDQwZDg2YTY4ZiJ9fX0="
+    name: "&7Mini Sand"
+    tags:
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "mini_sand"
+          input: { material: "SAND" }
+  mini_red_sand:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDMxYmU3ZmY5OGVlYmJkZmQ5ZWQ4MDcyZWY4ODMyMGQ2ODE1ODc2OWYzYWExOGQ2YzRhNjRkMDQ3NDYxOGU1MiJ9fX0="
+    name: "&7Mini Red Sand"
+    tags:
+      - color/red
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "mini_red_sand"
+          input: { material: "RED_SAND" }
+  mini_snow_block:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDgyZWQ1M2Q5N2U2MjhjYjMwYzlhNDIyZDU3ODU4NTdiNWZjZmJlNjg5NjFlMDdmY2I1MGY0ZTZjMTA1MjAxYiJ9fX0="
+    name: "&7Mini Snow Block"
+    recipes:
+      stonecutter:
+        - id: "mini_snow_block"
+          input: { material: "SNOW_BLOCK" }
+  mini_ice:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNmE4M2QxYWFjMDY2ZGZkN2Q2NjhhZjFmNmIyZTUyMDE1MmFlYmI2MjQ1MjRhMGY5OWQ1MDkzNWJhM2Q0ZTIyYSJ9fX0="
+    name: "&7Mini Ice"
+    tags:
+      - natural/ice
+    recipes:
+      stonecutter:
+        - id: "mini_ice"
+          input: { material: "ICE" }
+  mini_packed_ice:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjZlNDI5YzYwOTMyZWJjMzY2ZTc5MWE0MmUxODZhZjg4OGRlMDhlNWQ4ZWI4YWM2ZjViNmY0ZDQ0MGRiNDg2YyJ9fX0="
+    name: "&7Mini Packed Ice"
+    tags:
+      - natural/ice
+    recipes:
+      stonecutter:
+        - id: "mini_packed_ice"
+          input: { material: "PACKED_ICE" }
+  mini_blue_ice:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTgxYjRmNWYzZDk5NjcyYWIxYTM5ZjVmNDEwYmQ0ZDRmZDkyNTQ4ZTA3ZDE3YmRmMGQ0ZjFmNTdkY2ViYjVjZiJ9fX0="
+    name: "&7Mini Blue Ice"
+    tags:
+      - color/blue
+      - natural/ice
+    recipes:
+      stonecutter:
+        - id: "mini_blue_ice"
+          input: { material: "BLUE_ICE" }
+  mini_obsidian:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGU3NjBiYmMxMTNjMjczZmFjNDA4OTZmYTIwODlhNTZjYzc0NmE3OWE3YTgyNzVmNjM4NTdlNjllNmY3NzAzYSJ9fX0="
+    name: "&7Mini Obsidian"
+    recipes:
+      stonecutter:
+        - id: "mini_obsidian"
+          input: { material: "OBSIDIAN" }
+  mini_bedrock:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmY3YTQyMmRiMzVkMjhjZmI2N2U2YzE2MTVjZGFjNGQ3MzAwNzI0NzE4Nzc0MGJhODY1Mzg5OWE0NGI3YjUyMCJ9fX0="
+    name: "&7Mini Bedrock"
+    recipes:
+      stonecutter:
+        - id: "mini_bedrock"
+          input: { material: "BEDROCK" }
+  mini_moss_block:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZWIwOTZlMDFkZTJlYjFlODQ5OWZkMjg0YjhiMmNkOWMyZGI1NmU2MzJjMzAyYTJmOWEwODg0ZjIzODFkODA2NyJ9fX0="
+    name: "&7Mini Moss Block"
+    tags:
+      - natural/greenery
+    recipes:
+      stonecutter:
+        - id: "mini_moss_block"
+          input: { material: "MOSS_BLOCK" }
+  mini_coal_ore:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzExMTA3ZjcwZjhjYTA0NzRmMDIzMjQzYmQzODJiYmQ2YjQxNDlhZWY0ZjQyYjI1ZGRiYmNmZWM4Nzk4YjRkYyJ9fX0="
+    name: "&7Mini Coal Ore"
+    tags:
+      - ore
+    recipes:
+      stonecutter:
+        - id: "mini_coal_ore"
+          input: { material: "COAL_ORE" }
+  mini_deepslate_coal_ore:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYWNmOTQ3ODRkN2MxZGM2YTkzYjQxM2JlNTJiNTRmYTc3YjdhNzI1ODY3NWU4NzAyMWIzNGVkMmJmNzUxZGIyMSJ9fX0="
+    name: "&7Mini Deepslate Coal Ore"
+    tags:
+      - ore
+    recipes:
+      stonecutter:
+        - id: "mini_deepslate_coal_ore"
+          input: { material: "DEEPSLATE_COAL_ORE" }
+  mini_iron_ore:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjIyNjhjYzJmYjBhZjY3NWZmZjE3ZjE1YWY0YTZhYzI0MGJkYmY0MGE4Mzk2ZTAzNWJkMWE1YWViNGJjYzI3YyJ9fX0="
+    name: "&7Mini Iron Ore"
+    tags:
+      - ore
+    recipes:
+      stonecutter:
+        - id: "mini_iron_ore"
+          input: { material: "IRON_ORE" }
+  mini_deepslate_iron_ore:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvY2FlY2Y4ZDVhMjFiM2M5ZmM4Y2U1YTU2NjAyMWYzYTJiMGQ5ODY1MmRiYzVkYWVlNDVmN2M2MzY0N2VkMTQxYSJ9fX0="
+    name: "&7Mini Deepslate Iron Ore"
+    tags:
+      - ore
+    recipes:
+      stonecutter:
+        - id: "mini_deepslate_iron_ore"
+          input: { material: "DEEPSLATE_IRON_ORE" }
+  mini_copper_ore:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTE4NGY0ZDVlZWVhOWJmZDE2NTdiNzY2OWI2ZWE4YTI0MzI5ZmY2ZDk3M2I3YmRmMzg4ZmNhNTYyYTg4MTNmNSJ9fX0="
+    name: "&7Mini Copper Ore"
+    tags:
+      - copper
+      - ore
+    recipes:
+      stonecutter:
+        - id: "mini_copper_ore"
+          input: { material: "COPPER_ORE" }
+  mini_deepslate_copper_ore:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOWQ2YzFkYjI5YTdmNzQ1YmQ3ODlhMmMyOTQ3NmJkMTNlNzUxNjM3NmNiN2Y2ODBiZjY2ZTE3YjJhNTRhMDgxNiJ9fX0="
+    name: "&7Mini Deepslate Copper Ore"
+    tags:
+      - copper
+      - ore
+    recipes:
+      stonecutter:
+        - id: "mini_deepslate_copper_ore"
+          input: { material: "DEEPSLATE_COPPER_ORE" }
+  mini_gold_ore:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzhlOTlkZGY5NTExZDM1YjU3OTA2N2Y2ZmI3OWEwYTJhNWI3N2ZjNGMyODk4YmJlZjU3MTJmOTg1M2NmYmQwNCJ9fX0="
+    name: "&7Mini Gold Ore"
+    tags:
+      - ore
+    recipes:
+      stonecutter:
+        - id: "mini_gold_ore"
+          input: { material: "GOLD_ORE" }
+  mini_deepslate_gold_ore:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODBjOWM1ZWIxYmZjZjk5YTBkOGM2ZTgyMmM1MDBjOTk3MTAzNjU3NWY0MDExNzVkNGEwNDAwZWMzMmEzYTFhYyJ9fX0="
+    name: "&7Mini Deepslate Gold Ore"
+    tags:
+      - ore
+    recipes:
+      stonecutter:
+        - id: "mini_deepslate_gold_ore"
+          input: { material: "DEEPSLATE_GOLD_ORE" }
+  mini_redstone_ore:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTRkOTQzYTZlOWM3NTU2ODViOThiNGYxMmEyMjg3NjdlMGM2Zjk4MGRmYzFlYTI2NTBhOGEwNjcyNmM3ZDIyZiJ9fX0="
+    name: "&7Mini Redstone Ore"
+    tags:
+      - ore
+    recipes:
+      stonecutter:
+        - id: "mini_redstone_ore"
+          input: { material: "REDSTONE_ORE" }
+  mini_deepslate_redstone_ore:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOWUxYTQyMjdkNmFiNTA0M2Q2YmI4MGUxYmZkNDI2NTg4ODUzZjMzMjU2ZWU0NTYxOGEwMmY2ZWUxZWRlNTgzMCJ9fX0="
+    name: "&7Mini Deepslate Redstone Ore"
+    tags:
+      - ore
+    recipes:
+      stonecutter:
+        - id: "mini_deepslate_redstone_ore"
+          input: { material: "DEEPSLATE_REDSTONE_ORE" }
+  mini_emerald_ore:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmE0MGJhZWI5NmZlYTFiZDZlZTA2NDY5NmNkYjc0ZmZkMDhhNmY3YzQwNjE3ZDQ2MmU0ZTJkYThmYWFmNzNlNSJ9fX0="
+    name: "&7Mini Emerald Ore"
+    tags:
+      - ore
+    recipes:
+      stonecutter:
+        - id: "mini_emerald_ore"
+          input: { material: "EMERALD_ORE" }
+  mini_deepslate_emerald_ore:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTE4ZGZjYTY2ZTQ5N2Y2MjQxZGI2YjFmMmRmZTEzNTMwOWE1NjZjZDZjMDc3NWE5Y2E1NWU1ZmFlZTBjNjA1YSJ9fX0="
+    name: "&7Mini Deepslate Emerald Ore"
+    tags:
+      - ore
+    recipes:
+      stonecutter:
+        - id: "mini_deepslate_emerald_ore"
+          input: { material: "DEEPSLATE_EMERALD_ORE" }
+  mini_lapis_ore:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTEwMDFiNDI1MTExYmZlMGFjZmY3MTBhOGI0MWVhOTVlM2I5MzZhODVlNWJiNjUxNzE2MGJhYjU4N2U4ODcwZiJ9fX0="
+    name: "&7Mini Lapis Ore"
+    tags:
+      - ore
+    recipes:
+      stonecutter:
+        - id: "mini_lapis_ore"
+          input: { material: "LAPIS_ORE" }
+  mini_deepslate_lapis_ore:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmM1YmY0OWZlYmVjOTU1ZWIzYjMyOGNlMTcwOWY3YmI5ZjQ2OWMyN2E3ZmY0MGQxMzA2OTQyYzA4Zjk2MjUwZSJ9fX0="
+    name: "&7Mini Deepslate Lapis Ore"
+    tags:
+      - ore
+    recipes:
+      stonecutter:
+        - id: "mini_deepslate_lapis_ore"
+          input: { material: "DEEPSLATE_LAPIS_ORE" }
+  mini_diamond_ore:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOGRmMjE4NTI1YzE5YTkyMmRmMmQwMDAxNzc4YTFkOTQ1Yzc1ZDJhOTI0YzBlYWEyMGU0YjI3MTlmODQ4NTQyZSJ9fX0="
+    name: "&7Mini Diamond Ore"
+    tags:
+      - ore
+    recipes:
+      stonecutter:
+        - id: "mini_diamond_ore"
+          input: { material: "DIAMOND_ORE" }
+  mini_deepslate_diamond_ore:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTgyODUyMmU4NjgwYzU1YjJmZTViOWJjZmM4YWQwNmUzMzIzZjk3ODNkODM1MWNhNTBlZGViNDMxZTYzMTkwZiJ9fX0="
+    name: "&7Mini Deepslate Diamond Ore"
+    tags:
+      - ore
+    recipes:
+      stonecutter:
+        - id: "mini_deepslate_diamond_ore"
+          input: { material: "DEEPSLATE_DIAMOND_ORE" }
+  mini_nether_gold_ore:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYWNhOGMwZmNhOTc4MDg5OWM3MzQ5MmE1ZDJkZTQ0ZmRkZjhkMGZjOWI3NjJmZmU0NTE2NTk0N2RkYjc2MzJiYiJ9fX0="
+    name: "&7Mini Nether Gold Ore"
+    tags:
+      - ore
+    recipes:
+      stonecutter:
+        - id: "mini_nether_gold_ore"
+          input: { material: "NETHER_GOLD_ORE" }
+  mini_nether_quartz_ore:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjJmODAzNjMyNDRhZjFiNGJjZjdkMWMyYjUwNjc3NzJjMGMyNzI3NzI2NjQ0N2VjY2Q0YWY2NmNjNDM0NzM5OCJ9fX0="
+    name: "&7Mini Nether Quartz Ore"
+    tags:
+      - ore
+    recipes:
+      stonecutter:
+        - id: "mini_nether_quartz_ore"
+          input: { material: "NETHER_QUARTZ_ORE" }
+  mini_ancient_debris:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZmI0NzMxMDE3ZThjYTI0ODBlM2RmYTA0ZjE4OTIzYzM4NWQ1ZTNjYWZiYzA3ZDdkOWU0OTczYzgyNjQ2OTA3OCJ9fX0="
+    name: "&7Mini Ancient Debris"
+    tags:
+      - ore
+    recipes:
+      stonecutter:
+        - id: "mini_ancient_debris"
+          input: { material: "ANCIENT_DEBRIS" }
+  mini_crafting_table:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGMzNjA0NTIwOGY5YjVkZGNmOGM0NDMzZTQyNGIxY2ExN2I5NGY2Yjk2MjAyZmIxZTUyNzBlZThkNTM4ODFiMSJ9fX0="
+    name: "&7Mini Crafting Table"
+    properties:
+      - workbench
+    recipes:
+      stonecutter:
+        - id: "mini_crafting_table"
+          input: { material: "CRAFTING_TABLE" }
+  mini_furnace:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNWQzYzUzMTVlZWM3NGVjOGU1NmUxM2JkMTI5ZDY2YWY5ZWQ5N2NjNDdjNzQ3YjQ2NWFlNjUxNjA3MDFhZjUwYyJ9fX0="
+    name: "&7Mini Furnace"
+    recipes:
+      stonecutter:
+        - id: "mini_furnace"
+          input: { material: "FURNACE" }
+  mini_blast_furnace:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOGFjYjk5ZTk3OWRjYWI3M2E0NDg4YjVmYjE3OWIyZWIxOWMxNGJmNDUwZWNjMDc4NWQwYTE3NTFlYjI3ZDk0MiJ9fX0="
+    name: "&7Mini Blast Furnace"
+    recipes:
+      stonecutter:
+        - id: "mini_blast_furnace"
+          input: { material: "BLAST_FURNACE" }
+  mini_smoker:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTUzZDM5ZjRmYWU5OGRhYjE0MDYzYTdmZmQ0MDY3ODkyYjdkN2U5MWYwOTg1YjljZjYxZTg3YTgxMDU3MWFkNSJ9fX0="
+    name: "&7Mini Smoker"
+    recipes:
+      stonecutter:
+        - id: "mini_smoker"
+          input: { material: "SMOKER" }
+  mini_smithing_table:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjQyODA2ZjUzOTBkNTBhOTVhMmY1OTJmMWNiMmU0YmY1Zjc3ZjNjNGViOTgxODYwOTYzMDYzZDRlNGQxZjUzZSJ9fX0="
+    name: "&7Mini Smithing Table"
+    properties:
+      - smithing
+    recipes:
+      stonecutter:
+        - id: "mini_smithing_table"
+          input: { material: "SMITHING_TABLE" }
+  mini_fletching_table:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMmQ2NGQyMGI2Yzk4ZmJhZjNjNjllNTY5N2JlOTMyNTE5YWMxZjBhNzQyMGJiOGFiYTQ4ZTEwZWNmNjYxMGM5NCJ9fX0="
+    name: "&7Mini Fletching Table"
+    recipes:
+      stonecutter:
+        - id: "mini_fletching_table"
+          input: { material: "FLETCHING_TABLE" }
+  mini_cartography_table:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOGI2MzVlOGNkMDQwNWJjYTVjM2ZkMzRiYWQ5M2EwMGNhNWEyY2EyYWQxMjE0Y2RhMTIwNDViYThhYmI4MzA1YiJ9fX0="
+    name: "&7Mini Cartography Table"
+    properties:
+      - cartography
+    recipes:
+      stonecutter:
+        - id: "mini_cartography_table"
+          input: { material: "CARTOGRAPHY_TABLE" }
+  mini_cauldron:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzU3OGFhMmZmNjVhYmRmMGE5NGIxOTc5NWZjMjRlNWQwZjRjNjE2NTMwNDk2YTAwNzA5YTRhYzA0MGUyNDQ5MiJ9fX0="
+    name: "&7Mini Cauldron"
+    recipes:
+      stonecutter:
+        - id: "mini_cauldron"
+          input: { material: "CAULDRON" }
+  mini_composter:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMmNiZWE4N2MzZmMxMmU5NTk5MTgxYjk3ZWE1Zjc5NmY4MDIwMjQ1YmFiM2IwZjVmZjMyNDljMzA3YjM3ZWZjOCJ9fX0="
+    name: "&7Mini Composter"
+    recipes:
+      stonecutter:
+        - id: "mini_composter"
+          input: { material: "COMPOSTER" }
+  mini_barrel:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjg4NGFkYTRjNzRjMGY5NjE0NjkyNjJkOTU2OTc3YmFmYjBiMmQ3ZmVkOWM3YmRmMzVmNDUxOTllOWY2ZGRiYiJ9fX0="
+    name: "&7Mini Barrel"
+    recipes:
+      stonecutter:
+        - id: "mini_barrel"
+          input: { material: "BARREL" }
+  mini_loom:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTgyZWM3MTU0YmQzMGIzMTkwNDNlODE2NGVmZmRiMDkzNGQ4OTlhM2I0OTgwMjIwZjQ3OGQzNzU4ZGM2NDU1ZiJ9fX0="
+    name: "&7Mini Loom"
+    properties:
+      - loom
+    recipes:
+      stonecutter:
+        - id: "mini_loom"
+          input: { material: "LOOM" }
+  mini_stonecutter:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTcwN2UyOTY0ZTgxYzZjOTljYTdmOTkxN2EyZTNmNmI0NTllOTgxMTY5ODIzOWY0M2JkMTYyMzgxMTkxZDc1ZSJ9fX0="
+    name: "&7Mini Stonecutter"
+    properties:
+      - stonecutter
+    recipes:
+      stonecutter:
+        - id: "mini_stonecutter"
+          input: { material: "STONECUTTER" }
+  mini_grindstone:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOGU5OWJmYTYxZmU1NTJmMWU2NjM2YjAzZmJlNDBmNGU0NzBjM2IzY2IxNGY3MGU5MDEyODEzNzkwZWFkNTY4ZiJ9fX0="
+    name: "&7Mini Grindstone"
+    properties:
+      - grindstone
+    recipes:
+      stonecutter:
+        - id: "mini_grindstone"
+          input: { material: "GRINDSTONE" }
+  mini_anvil:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTg1NWIzZTFkOWE3YjlmZDc2YTc3NmZhNGVlYzg3MWQ1MmVkMjY5MzI1Mzg2MjhjNDNkZTMyZDFkMmQ3NDMifX19"
+    name: "&7Mini Anvil"
+    properties:
+      - anvil
+    recipes:
+      stonecutter:
+        - id: "mini_anvil"
+          input: { material: "ANVIL" }
+  mini_chipped_anvil:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTkwMDcyNWU2OWY2YWQ0NDdhMzFmYjM0ZmY2ZmE1YWE4NWNlNjNiYWVhZTQzNzliN2U4MmU3MjVhNmIxMjUxNSJ9fX0="
+    name: "&7Mini Chipped Anvil"
+    properties:
+      - anvil
+    recipes:
+      stonecutter:
+        - id: "mini_chipped_anvil"
+          input: { material: "CHIPPED_ANVIL" }
+  mini_damaged_anvil:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNWNkMjBiZDhjNDhlYTJhMjcwNTVlYWY5MGIxYTkyMGY0ZWFmOWE4MWVjOGMzMzI4YTRjOTc0YzllMTNjZTNjMiJ9fX0="
+    name: "&7Mini Damaged Anvil"
+    properties:
+      - anvil
+    recipes:
+      stonecutter:
+        - id: "mini_damaged_anvil"
+          input: { material: "DAMAGED_ANVIL" }
+  mini_enchanting_table:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjg5NTEzOTlkMGViZDBkZmU4N2U1MGYwZDZkZWUyNTI3NGQ5M2YxZmJiMzg1MDVlYzk3MWI2MDFkMWMyY2I5In19fQ=="
+    name: "&7Mini Enchanting Table"
+    properties:
+      - enchanting
+    recipes:
+      stonecutter:
+        - id: "mini_enchanting_table"
+          input: { material: "ENCHANTING_TABLE" }
+  mini_bookshelf:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGZkYzRiYjAzNGQ4ZjQzMTdhYzRmZTNhNDBjNDNkNjIzNGE4ZjUxODkyZGVjNjYzNDBhMTJkYTg3Y2NmNTkxNyJ9fX0="
+    name: "&7Mini Bookshelf"
+    recipes:
+      stonecutter:
+        - id: "mini_bookshelf"
+          input: { material: "BOOKSHELF" }
+  mini_chiseled_bookshelf:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjUzYWI4MzYxZTllMDJjZTk1OGNhODM3ZWU3MGRhNmJjOGZmYzIyZTdkNTc2MDcyN2NjMTNkODVhMjYwYmJjZCJ9fX0="
+    name: "&7Mini Chiseled Bookshelf"
+    recipes:
+      stonecutter:
+        - id: "mini_chiseled_bookshelf"
+          input: { material: "CHISELED_BOOKSHELF" }
+  mini_lectern:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYWUzZjlhZDk0NzA1NGE3NGZiNWE4NjlmNzE0ZWU3MGUxZWFiNzgwZGE4OGViYTFkODM1ZTFlODJmN2NhNzg0In19fQ=="
+    name: "&7Mini Lectern"
+    recipes:
+      stonecutter:
+        - id: "mini_lectern"
+          input: { material: "LECTERN" }
+  mini_note_block:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTQ5YjM5MzM1MTUyNTVhNDM3NTY5OTcwZjM1YThjNzU3YWZjYWYzMzVmNTI3ODA2ZDM3MjA0MjJiZGZjZjI0NiJ9fX0="
+    name: "&7Mini Note Block"
+    recipes:
+      stonecutter:
+        - id: "mini_note_block"
+          input: { material: "NOTE_BLOCK" }
+  mini_jukebox:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZGNiYWVhZDkzMWJlNTdkODU4NDE2ZWVlNGU1ZWY5ZjU5Mjg2MDg5NTM1OGU3ZTZkNTJhMmVkZTc3YzEzMmU5MyJ9fX0="
+    name: "&7Mini Jukebox"
+    recipes:
+      stonecutter:
+        - id: "mini_jukebox"
+          input: { material: "JUKEBOX" }
+  mini_beacon:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGEyNjQ4YTllNTM2MTNmMGFiMTI2NmI3MjkxOGY0MDc4OGY4NGUxNjBhNTIzNDhjZDY3MTM4NDEwMjYyZjM5ZiJ9fX0="
+    name: "&7Mini Beacon"
+    recipes:
+      stonecutter:
+        - id: "mini_beacon"
+          input: { material: "BEACON" }
+  mini_conduit:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDgzNmZiODNmMzBmMjc3YTRlZmNhNmYxYWIzYWM2ZDBiM2E2N2IyZDBjODNkY2VkMDVmNmMwZmU3ODg2NWY2ZiJ9fX0="
+    name: "&7Mini Conduit"
+    recipes:
+      stonecutter:
+        - id: "mini_conduit"
+          input: { material: "CONDUIT" }
+  mini_lodestone:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjJjNjE3ODM1OTBiNmU2ODQ3MzAwNWIzMmVjMGEwOGJjM2I5NWQ2NDkwMzZiMzU4YWZlNzdhZDhhZjg4NDgwMCJ9fX0="
+    name: "&7Mini Lodestone"
+    recipes:
+      stonecutter:
+        - id: "mini_lodestone"
+          input: { material: "LODESTONE" }
+  mini_respawn_anchor:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzk1YTM0M2NhMDI5ZjBkOTVkMGVhYzdjNGNjZWI5NzNhN2RhNTQwNWNkZTY5NmYxNTExNjBlNGM2OWUxMTVjMCJ9fX0="
+    name: "&7Mini Respawn Anchor"
+    recipes:
+      stonecutter:
+        - id: "mini_respawn_anchor"
+          input: { material: "RESPAWN_ANCHOR" }
+  mini_end_portal_frame:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjVkZjU1NTkyNjQzMGQ1ZDc1YWRlZDIxZGQ5NjE5Yjc2YzViN2NhMmM3ZjU0MDE0NDA1MjNkNTNhOGJjZmFhYiJ9fX0="
+    name: "&7Mini End Portal Frame"
+    recipes:
+      stonecutter:
+        - id: "mini_end_portal_frame"
+          input: { material: "END_PORTAL_FRAME" }
+  mini_decorated_pot:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDRhNDdkNTcwZWYxY2Y5MGJjOGFkOTI5NjVkZDY3YmM5ODE1NDkwNjNhMTk2MjIzNmIwYmFhZWQxNWY2Yjc0MiJ9fX0="
+    name: "&7Mini Decorated Pot"
+    recipes:
+      stonecutter:
+        - id: "mini_decorated_pot"
+          input: { material: "DECORATED_POT" }
+  mini_redstone_lamp:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYWFjMTNhMzE2YWFjOGE3MWU4NzMxMGNmYWRiY2JmMzdhNmRjNDcyZTAyNjM2NGViOWI0NTMyYjdjZmYyNjgzNiJ9fX0="
+    name: "&7Mini Redstone Lamp"
+    recipes:
+      stonecutter:
+        - id: "mini_redstone_lamp"
+          input: { material: "REDSTONE_LAMP" }
+  mini_observer:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYWNjNzg5ZjIzMDc5NGY5MGUzM2M0ZjlhZDAwNjk0YmMyYTJmZjVlOGI5YjM3NWRjMzUzMjQwMWIyODFmM2U1OCJ9fX0="
+    name: "&7Mini Observer"
+    recipes:
+      stonecutter:
+        - id: "mini_observer"
+          input: { material: "OBSERVER" }
+  mini_dropper:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjAxMDFlYjFkNmRiODViNjBjNDk4MTI0NGUzODc2N2I3OTJjOWU2ZDUzOWViMWNkMmRiNmUwZWE1ODNhZGZmOCJ9fX0="
+    name: "&7Mini Dropper"
+    recipes:
+      stonecutter:
+        - id: "mini_dropper"
+          input: { material: "DROPPER" }
+  mini_dispenser:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvM2M1ZjNjM2Q1ZDdiMWNlMGYzMjA0MGMxNDU0ZGFmODg3OGUxY2MyOTllMDI1YmFkMmU2OTE5ZWJhZTIxZmJiOCJ9fX0="
+    name: "&7Mini Dispenser"
+    recipes:
+      stonecutter:
+        - id: "mini_dispenser"
+          input: { material: "DISPENSER" }
+  mini_piston:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTk1ZWFhOTJkMmViOTY5NDI4NGI0ZTk4Y2FkZWNmZDdhODIzMjU2YmFkNWEzOTQ1OThmNjMyNGNmZTdmNzM3YiJ9fX0="
+    name: "&7Mini Piston"
+    recipes:
+      stonecutter:
+        - id: "mini_piston"
+          input: { material: "PISTON" }
+  mini_sticky_piston:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZGFlMjg4YjhhNWIyOWMzOTIwZjcyYzE5OTZjZWZiN2U0Y2YwMTgzYmQwMWY0ZGQzZmQzZWJkZmYxMmE4MmJmMCJ9fX0="
+    name: "&7Mini Sticky Piston"
+    recipes:
+      stonecutter:
+        - id: "mini_sticky_piston"
+          input: { material: "STICKY_PISTON" }
+  mini_slime_block:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNmIxZTc5NTdmZWI4NTUxMjQxZmExZTkxODEzNTZiYzBkZjU2YTIzMzIzNjE0YTg4Y2E1ZmVkNGRjYmY2YzJlIn19fQ=="
+    name: "&7Mini Slime Block"
+    recipes:
+      stonecutter:
+        - id: "mini_slime_block"
+          input: { material: "SLIME_BLOCK" }
+  mini_honey_block:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNWI3YjE0ZjNjNzg3ODVjMWZkMjQ0MjU1ZTA1ZDUzN2Q2YzU1MTIwNzI2MmE2MGMzODEyNWMwMWY2NjNhMDc1ZSJ9fX0="
+    name: "&7Mini Honey Block"
+    recipes:
+      stonecutter:
+        - id: "mini_honey_block"
+          input: { material: "HONEY_BLOCK" }
+  mini_honeycomb_block:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMmM2ODAxNDlhZDE3ZTQ2ZmJiZjc2MDZiMjg0Y2M4M2EwM2IxYTY3Y2Q4YTUyNzE3YjQ0YmZhM2FkNTkxNGYxNCJ9fX0="
+    name: "&7Mini Honeycomb Block"
+    recipes:
+      stonecutter:
+        - id: "mini_honeycomb_block"
+          input: { material: "HONEYCOMB_BLOCK" }
+  mini_target:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjhkNzNiYTI1NzVjMmFmM2U3M2UwNTdjYTBlMTUxZGU2NjMwZWY0Y2U0OTQ5ODg1ZWFjNTU1NWYzZWMyMmZhYyJ9fX0="
+    name: "&7Mini Target"
+    recipes:
+      stonecutter:
+        - id: "mini_target"
+          input: { material: "TARGET" }
+  mini_tnt:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzFiMGVjZWZlYzJhZDY4MTg5MTc4MjA4ZWEzYzkxZTVhNDdhZTk2NTY4ZWUzNzIwMjM3MTQwZGJlYzc2NTA1MCJ9fX0="
+    name: "&7Mini Tnt"
+    recipes:
+      stonecutter:
+        - id: "mini_tnt"
+          input: { material: "TNT" }
+  mini_chest:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWY1NzViYjU0YTJlOTEzM2FhYTEzMTBhMTQ2NDJmNzhhMDE0ZmNjOTM2MDc3NDE3MTY2M2QzNGRiMjM2Y2NjNCJ9fX0="
+    name: "&7Mini Chest"
+    recipes:
+      stonecutter:
+        - id: "mini_chest"
+          input: { material: "CHEST" }
+  mini_ender_chest:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjU0NGE3NzBlODk0YTFmYWIxMWUyYTJiYWMxNWZlM2Q5Njk0NmZhNTIzOTZiNTMxOTc4ZWIzN2FjNjRiOGE5MCJ9fX0="
+    name: "&7Mini Ender Chest"
+    properties:
+      - enderchest
+    recipes:
+      stonecutter:
+        - id: "mini_ender_chest"
+          input: { material: "ENDER_CHEST" }
+  mini_trapped_chest:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjc1YmNmZjJlNzRkZWVkMzdhMzE5YTFmNDA0ZTcwZDA2YTVmMzYwY2FjZWU5OWM3MTM0NmYzODU2MGNiZDcyYSJ9fX0="
+    name: "&7Mini Trapped Chest"
+    recipes:
+      stonecutter:
+        - id: "mini_trapped_chest"
+          input: { material: "TRAPPED_CHEST" }
+  mini_shulker_box:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTVhMmZiYTUyNjg0ZDFmNzJkODMwZjc0ZDA4N2RmNzJmMjZiNWE2NmEwMzI1ZmZiODA3ZWY0OTQwOTMzM2VhMCJ9fX0="
+    name: "&7Mini Shulker Box"
+    tags:
+      - shulker
+      - shulker
+    recipes:
+      stonecutter:
+        - id: "mini_shulker_box"
+          input: { material: "SHULKER_BOX" }
+  mini_white_shulker_box:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjI1YjQ2YjVmYzU5M2IwODZlYmVjNTMyYzY2ZmMwMzFhOTQxNjEyZmM2ZGVmNTc1NjFkODNhOWNlYTIwZjcifX19"
+    name: "&7Mini White Shulker Box"
+    tags:
+      - shulker
+      - color/white
+    recipes:
+      stonecutter:
+        - id: "mini_white_shulker_box"
+          input: { material: "WHITE_SHULKER_BOX" }
+  mini_orange_shulker_box:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTQzYjhkYmQ1OTY3ZDgzYTliZjk5NzcxYzI2OGVkZjNjOWVmNmZiNmU2OWM5YWY2ZjNkN2JkNGNiZDlhOSJ9fX0="
+    name: "&7Mini Orange Shulker Box"
+    tags:
+      - shulker
+      - color/orange
+    recipes:
+      stonecutter:
+        - id: "mini_orange_shulker_box"
+          input: { material: "ORANGE_SHULKER_BOX" }
+  mini_magenta_shulker_box:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZGQwMmIyZWU4OWIwMmFiOWIyYWEzNjIwYTgwMzU2ZWFkMGZkNDE4MzllM2FlNDdlYzZhOGVhODc3NGJlYzliZSJ9fX0="
+    name: "&7Mini Magenta Shulker Box"
+    tags:
+      - shulker
+      - color/magenta
+    recipes:
+      stonecutter:
+        - id: "mini_magenta_shulker_box"
+          input: { material: "MAGENTA_SHULKER_BOX" }
+  mini_light_blue_shulker_box:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTMzMzZkNzQxNjI1ZGMwYWY0NjAyNGE4YzY1NDMwN2U1Njk1ZWZkMzc5YjE1OTY3OGFlNjVjZmEwNGEyMzkxNCJ9fX0="
+    name: "&7Mini Light Blue Shulker Box"
+    tags:
+      - shulker
+      - color/light_blue
+    recipes:
+      stonecutter:
+        - id: "mini_light_blue_shulker_box"
+          input: { material: "LIGHT_BLUE_SHULKER_BOX" }
+  mini_yellow_shulker_box:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDcyNzc2M2RmMWQxYmE1OTc1MDdlNjE0YjZjNzEzMmEwODY5Yzc0NzJjNGZkYmJlY2Q5OTEzNGNkNTUifX19"
+    name: "&7Mini Yellow Shulker Box"
+    tags:
+      - shulker
+      - color/yellow
+    recipes:
+      stonecutter:
+        - id: "mini_yellow_shulker_box"
+          input: { material: "YELLOW_SHULKER_BOX" }
+  mini_lime_shulker_box:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWIwODRlODlhNzBkNzA5OGI2OTQ4MzRlNTM0OTY3NDE1NjcwYjgwODM3YWZiOWJiOWY0YTI2ZmZiNzk3Zjg5MSJ9fX0="
+    name: "&7Mini Lime Shulker Box"
+    tags:
+      - shulker
+      - color/lime
+    recipes:
+      stonecutter:
+        - id: "mini_lime_shulker_box"
+          input: { material: "LIME_SHULKER_BOX" }
+  mini_pink_shulker_box:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNmYyZGM1OTRhYWMzNjlmZmQ4YTkzZDQzM2IxNTNhMzE3N2U2NGFmYzBiNjA0NzYzNTk2NzMzYTE5NGM3MGU4NyJ9fX0="
+    name: "&7Mini Pink Shulker Box"
+    tags:
+      - shulker
+      - color/pink
+    recipes:
+      stonecutter:
+        - id: "mini_pink_shulker_box"
+          input: { material: "PINK_SHULKER_BOX" }
+  mini_gray_shulker_box:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTk1YmRlMTNjNDU3NTQ0NjhjZmM4YzNhMDAxMzNkOTk3MzYyZmE3ZTMwMmIwYjBmYmM0YmQwZmNhNjg5MDA1OSJ9fX0="
+    name: "&7Mini Gray Shulker Box"
+    tags:
+      - shulker
+      - color/gray
+    recipes:
+      stonecutter:
+        - id: "mini_gray_shulker_box"
+          input: { material: "GRAY_SHULKER_BOX" }
+  mini_light_gray_shulker_box:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDg2ZGI0ODExNjJlZjE0NDE5MjUzNGU1MjkyYjRlNDgxZDlhNWM1OGJkOTRhYzc3YjE4ZDMzYmIzNDAyMSJ9fX0="
+    name: "&7Mini Light Gray Shulker Box"
+    tags:
+      - shulker
+      - color/light_gray
+    recipes:
+      stonecutter:
+        - id: "mini_light_gray_shulker_box"
+          input: { material: "LIGHT_GRAY_SHULKER_BOX" }
+  mini_cyan_shulker_box:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTVhZWJhNzBjM2VjYTQ5ODMzNmY2NDkzNDQ1MWExOWJlYzA5YjRiZWZmNzRmOTlkYTRjNzY1MWUzNDBiMDMifX19"
+    name: "&7Mini Cyan Shulker Box"
+    tags:
+      - shulker
+      - color/cyan
+    recipes:
+      stonecutter:
+        - id: "mini_cyan_shulker_box"
+          input: { material: "CYAN_SHULKER_BOX" }
+  mini_purple_shulker_box:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjY4NTE2MDAwM2VhYTkxMzVlMDJiMGMyODhiYzZmYzAyMzU2YmViYjAxYmE3MzE3ZmUxMTQzNWU5NjdmMGVjNSJ9fX0="
+    name: "&7Mini Purple Shulker Box"
+    tags:
+      - shulker
+      - color/purple
+    recipes:
+      stonecutter:
+        - id: "mini_purple_shulker_box"
+          input: { material: "PURPLE_SHULKER_BOX" }
+  mini_blue_shulker_box:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjI1ZGM2OThjNTMzMmI1Njc2NzQyNWMwNWE5NDVlODczZTYxMGI0NjFlMjYyOWVmNDk3MmJhMTBmNjE0Y2FiYyJ9fX0="
+    name: "&7Mini Blue Shulker Box"
+    tags:
+      - shulker
+      - color/blue
+    recipes:
+      stonecutter:
+        - id: "mini_blue_shulker_box"
+          input: { material: "BLUE_SHULKER_BOX" }
+  mini_brown_shulker_box:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGE1OWQ4YmQ4OGRlOTRmYjhjYmYyMzUzNDA1NTgyYzg2M2JiYmYxNjVkNDI0ZmQzM2ZlYTFkYTQ2ZjZiYTFhIn19fQ=="
+    name: "&7Mini Brown Shulker Box"
+    tags:
+      - shulker
+      - color/brown
+    recipes:
+      stonecutter:
+        - id: "mini_brown_shulker_box"
+          input: { material: "BROWN_SHULKER_BOX" }
+  mini_green_shulker_box:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzhlM2Q2YWE5ODgwYjViYTYzMmUzYzJmNDc2NmMzMDcxOTM2MDczYTc1ZGNlZGQ0NDVhZTdhYTU3MmE1MDk4ZSJ9fX0="
+    name: "&7Mini Green Shulker Box"
+    tags:
+      - shulker
+      - color/green
+    recipes:
+      stonecutter:
+        - id: "mini_green_shulker_box"
+          input: { material: "GREEN_SHULKER_BOX" }
+  mini_red_shulker_box:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzI0YWE3YmYwNTZjY2QzZDRlNjMxOTdiMDRkODlmMGU5YmE3OWZhNjA0OWM1MDMwMjk1MjE3MjRlMjM0MDU0YSJ9fX0="
+    name: "&7Mini Red Shulker Box"
+    tags:
+      - shulker
+      - color/red
+    recipes:
+      stonecutter:
+        - id: "mini_red_shulker_box"
+          input: { material: "RED_SHULKER_BOX" }
+  mini_black_shulker_box:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNmJiMzE5Nzk0NWQzZDE3ZDk3ZTZhM2Y0ZTJmM2RhMjBiYmJhYzg0YzgyOGM4OWY0YmVhMWEzODY2Yjc4NSJ9fX0="
+    name: "&7Mini Black Shulker Box"
+    tags:
+      - shulker
+      - color/black
+    recipes:
+      stonecutter:
+        - id: "mini_black_shulker_box"
+          input: { material: "BLACK_SHULKER_BOX" }
+  mini_sculk:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMmZlYWI2NWU2NTU1N2NjY2QzNTFlNjIxYWQ0N2NhNDE4ZjM0MzZiMzZlZjI3ODBiMzJmZjgxY2JjMjhhZWJmMiJ9fX0="
+    name: "&7Mini Sculk"
+    recipes:
+      stonecutter:
+        - id: "mini_sculk"
+          input: { material: "SCULK" }
+  mini_sculk_catalyst:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzhhYzRmZGY5ZThhOGVhMjFjMzViMjQ4Nzk5MDhkNGNhMGQ1ZDNiNmYyOTQyM2RhZWNlYTNhYzE0OGUyMjJhYiJ9fX0="
+    name: "&7Mini Sculk Catalyst"
+    recipes:
+      stonecutter:
+        - id: "mini_sculk_catalyst"
+          input: { material: "SCULK_CATALYST" }
+  mini_sculk_shrieker:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmIyZDkxYmJmM2NlNWY5MTQ4ZTczOWVlYjA5NjFmMmJhODRiYTQwNmFkMmNhNjcyNDlhNTUzYjhiODE0MzdhNSJ9fX0="
+    name: "&7Mini Sculk Shrieker"
+    recipes:
+      stonecutter:
+        - id: "mini_sculk_shrieker"
+          input: { material: "SCULK_SHRIEKER" }
+  mini_calibrated_sculk_sensor:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjc1Y2M1NDhkNzVmYzVjOGU3NzhkZjFlMDQ3MDNjMGFlMGUwNWNkZTQ2MjZkYWE4OWVjZmIzYmI5NTc0ZGQ5YSJ9fX0="
+    name: "&7Mini Calibrated Sculk Sensor"
+    recipes:
+      stonecutter:
+        - id: "mini_calibrated_sculk_sensor"
+          input: { material: "CALIBRATED_SCULK_SENSOR" }
+  mini_bone_block:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzMwMTM5MmJmMDUyZjkxZDNhYTU2YjVhNWMxN2Q1ZWEyNjFlMTJjNWRiZmViOGYwNGZlMmEwMjhkMzBmYTU5NCJ9fX0="
+    name: "&7Mini Bone Block"
+    recipes:
+      stonecutter:
+        - id: "mini_bone_block"
+          input: { material: "BONE_BLOCK" }
+  mini_hay_block:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNmVkMWRiYzQ0ZGZlNmQ2NTY4ZmRkNTdjZWMwYjhjZjBkMWRkZWJlMjNiZWI5YWI0NDhhZTY1NjlmZGQ0YjdjNiJ9fX0="
+    name: "&7Mini Hay Block"
+    recipes:
+      stonecutter:
+        - id: "mini_hay_block"
+          input: { material: "HAY_BLOCK" }
+  mini_dried_kelp_block:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjgwNWNhZjNkMDJlMzVlNGFhZGMxOWFmMTVlODI3OTAxNzdmMWNkN2I3OWY0ZjViODhkOTQzYWM2YmUyMDNhMSJ9fX0="
+    name: "&7Mini Dried Kelp Block"
+    recipes:
+      stonecutter:
+        - id: "mini_dried_kelp_block"
+          input: { material: "DRIED_KELP_BLOCK" }
+  mini_sponge:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTJmMDk2ZWVmODdkOWYyMGNjYWFiYTJhMDJlZWQ2ZjQzZTY0MzJhNjkyOGZlMTY0NjdjYjRkZWI1ZTc0MTE4YyJ9fX0="
+    name: "&7Mini Sponge"
+    recipes:
+      stonecutter:
+        - id: "mini_sponge"
+          input: { material: "SPONGE" }
+  mini_wet_sponge:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjExYWIzZjBmNmMzYzg0OGMxNjk2YWJiOTU1YTdiZmRmOTRhOWM5MDIzMDM1ZDc5ZmQxM2Y0YmQxZTFiZDcyMCJ9fX0="
+    name: "&7Mini Wet Sponge"
+    recipes:
+      stonecutter:
+        - id: "mini_wet_sponge"
+          input: { material: "WET_SPONGE" }
+  mini_pumpkin:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvM2JiMDg1YTAyMGMwNjVmZTQyOTUyNjBlNTVjZWJmNzVlYmE3MTZmOWNjYTI0ODk3Njg0ZThmM2IzNjkxYmNhYiJ9fX0="
+    name: "&7Mini Pumpkin"
+    recipes:
+      stonecutter:
+        - id: "mini_pumpkin"
+          input: { material: "PUMPKIN" }
+  mini_carved_pumpkin:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTNhZDc5MjA3YzNmOGJiZjRiMWQ1MzJjZmU4NmRjY2I1N2QyYzk3YWVlYjUxZWYwMGE2NjBhZmRjZWFiNWZhOSJ9fX0="
+    name: "&7Mini Carved Pumpkin"
+    recipes:
+      stonecutter:
+        - id: "mini_carved_pumpkin"
+          input: { material: "CARVED_PUMPKIN" }
+  mini_bee_nest:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvM2Y5MDQwNmU4OGJlNGVhMzcwYzhkMGQ4OTFjNDg3NjBiOGEwZTU5OTM3ZGQxNTk1NmYxNDYyNzFlZjA3NDIzZSJ9fX0="
+    name: "&7Mini Bee Nest"
+    recipes:
+      stonecutter:
+        - id: "mini_bee_nest"
+          input: { material: "BEE_NEST" }
+  mini_beehive:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjlkY2U1OWJhNzJmODQ3MzZlMWVhOWMzYjQzZWIxYWFkYzQ5N2IyOTA0YTFjZGEwODk3MjY5MmRjMWI0Y2E3NSJ9fX0="
+    name: "&7Mini Beehive"
+    recipes:
+      stonecutter:
+        - id: "mini_beehive"
+          input: { material: "BEEHIVE" }
+  mini_command_block:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDBkNWE0ZWJhMTQwY2JiMzRkNDVlNDBkNjJkZDNmN2U2NTg0YjJhYjBiNDE1NWEwYmNjNjAzZDVkNzUwZjc5MyJ9fX0="
+    name: "&7Mini Command Block"
+    recipes:
+      stonecutter:
+        - id: "mini_command_block"
+          input: { material: "COMMAND_BLOCK" }
+  mini_structure_block:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZmI2NDI2YzI1YzY0NmYyMjVkNWYzZjZkNDljZmMyMjM1NmFhNmNlYTdkMjVmZTM0MmFjYmE3NmNjOTJjOWMifX19"
+    name: "&7Mini Structure Block"
+    recipes:
+      stonecutter:
+        - id: "mini_structure_block"
+          input: { material: "STRUCTURE_BLOCK" }
+  mini_resin_block:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGZlY2MzMWUxNmE2ZTY5NjE5YWY0ODM0MmI1Njg2Y2JjN2ExMDE5NTU0Yzg5MGI2MmViZTlhYjA3MmFiNjFiOSJ9fX0="
+    name: "&7Mini Resin Block"
+    recipes:
+      stonecutter:
+        - id: "mini_resin_block"
+          input: { material: "RESIN_BLOCK" }
+  mini_resin_bricks:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjc2ZGZmOWM3ZDA2ZDBhMzkwNzljNDNlYmQ0NjAzZjEyNWFmZjZmNzMyODYyNzIyOWQyMTk5N2MyOGU5MTgxNyJ9fX0="
+    name: "&7Mini Resin Bricks"
+    tags:
+      - bricks
+    recipes:
+      stonecutter:
+        - id: "mini_resin_bricks"
+          input: { material: "RESIN_BRICKS" }
+  mini_chiseled_resin_bricks:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjE3ZjkyMTkzYWI0Zjg1NGYyYjUxMTRkZGE3ZGE4YWI3M2JkNmU5NzcxOGZhMzk2ZjM4ZGI3YzI0ZDYxMzllZSJ9fX0="
+    name: "&7Mini Chiseled Resin Bricks"
+    tags:
+      - bricks
+    recipes:
+      stonecutter:
+        - id: "mini_chiseled_resin_bricks"
+          input: { material: "CHISELED_RESIN_BRICKS" }
+
+# ==========================================================
+# MISSING BLOCKS - Could not find textures in CSV:
+# ==========================================================
+# WEATHERED_COPPER
+# OXIDIZED_COPPER
+# WAXED_COPPER_BLOCK
+# WAXED_CUT_COPPER
+# WAXED_EXPOSED_COPPER
+# WAXED_EXPOSED_CUT_COPPER
+# WAXED_WEATHERED_COPPER
+# WAXED_WEATHERED_CUT_COPPER
+# WAXED_OXIDIZED_COPPER
+# WAXED_OXIDIZED_CUT_COPPER
+# CHISELED_COPPER
+# EXPOSED_CHISELED_COPPER
+# WEATHERED_CHISELED_COPPER
+# OXIDIZED_CHISELED_COPPER
+# WAXED_CHISELED_COPPER
+# WAXED_EXPOSED_CHISELED_COPPER
+# WAXED_WEATHERED_CHISELED_COPPER
+# WAXED_OXIDIZED_CHISELED_COPPER
+# WAXED_COPPER_GRATE
+# WAXED_EXPOSED_COPPER_GRATE
+# WAXED_WEATHERED_COPPER_GRATE
+# WAXED_OXIDIZED_COPPER_GRATE
+# OXIDIZED_COPPER_BULB
+# WAXED_COPPER_BULB
+# WAXED_EXPOSED_COPPER_BULB
+# WAXED_WEATHERED_COPPER_BULB
+# WAXED_OXIDIZED_COPPER_BULB
+# CHISELED_QUARTZ_BLOCK
+# OAK_LEAVES
+# SPRUCE_LEAVES
+# BIRCH_LEAVES
+# JUNGLE_LEAVES
+# ACACIA_LEAVES
+# DARK_OAK_LEAVES
+# MANGROVE_LEAVES
+# CHERRY_LEAVES
+# FLOWERING_AZALEA_LEAVES
+# TINTED_GLASS
+# BREWING_STAND
+# DAYLIGHT_DETECTOR
+# SCULK_SENSOR
+# MELON
+# JACK_O_LANTERN
+# INFESTED_STONE
+# INFESTED_COBBLESTONE
+# INFESTED_STONE_BRICKS
+# INFESTED_MOSSY_STONE_BRICKS
+# INFESTED_CRACKED_STONE_BRICKS
+# INFESTED_CHISELED_STONE_BRICKS
+# INFESTED_DEEPSLATE
+# CHAIN_COMMAND_BLOCK
+# REPEATING_COMMAND_BLOCK
+# JIGSAW
+# CREAKING_HEART

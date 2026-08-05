@@ -1,0 +1,687 @@
+# Generated Netherite Alphabet Blocks
+
+heads:
+  netherite_letter_a:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzZkZTMzMTQzODJiMjEwYjM0ZThjMWI1ZDI1YWU0Yjc1Yjg0OTA0NmU4ZWEwZWYwZTgwMGEzMjhiYWFiNWY3ZSJ9fX0="
+    name: "&7Netherite A"
+    tags:
+      - alphabet/netherite
+      - character/letter_a
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "netherite_letter_a"
+          input: { head: "mini_netherite_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "NETHERITE_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "netherite_letter_a" }
+  netherite_letter_b:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOWE3YjI0NmFkYWExYjQwODc1YzIzMTc4OWM0M2U1YzdiZTczNmU2NGMwMjY1NzkyYTg4ZWQ2ZDExMWI3ZWIxNiJ9fX0="
+    name: "&7Netherite B"
+    tags:
+      - alphabet/netherite
+      - character/letter_b
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "netherite_letter_b"
+          input: { head: "mini_netherite_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "NETHERITE_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "netherite_letter_b" }
+  netherite_letter_c:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjcxYzIxNWFmMmUxMzMxODU4OGI4ZDVhYzdiZTc1MDBjYWNmNGNlMjY3Y2FmYzMzMDgyMWZhZTE5YzBkNDVkMyJ9fX0="
+    name: "&7Netherite C"
+    tags:
+      - alphabet/netherite
+      - character/letter_c
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "netherite_letter_c"
+          input: { head: "mini_netherite_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "NETHERITE_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "netherite_letter_c" }
+  netherite_letter_d:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDIzZWNhNDA4OWVhYmY4MGMwMzJhMDNkNGYwNGQ1ZTAzZTZmMTZhNTM2ODAzY2FiMjNiNDM2ZGZmMzIyYTBjYyJ9fX0="
+    name: "&7Netherite D"
+    tags:
+      - alphabet/netherite
+      - character/letter_d
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "netherite_letter_d"
+          input: { head: "mini_netherite_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "NETHERITE_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "netherite_letter_d" }
+  netherite_letter_e:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDFjMjE0NDBkZDkyMGJmMjYzNzc0NTFlYTczMWM3YTBiODc1ZDdhNjU2NzJlZTU0M2I5YWM5MGU4ZDFhMjkxNiJ9fX0="
+    name: "&7Netherite E"
+    tags:
+      - alphabet/netherite
+      - character/letter_e
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "netherite_letter_e"
+          input: { head: "mini_netherite_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "NETHERITE_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "netherite_letter_e" }
+  netherite_letter_f:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzA2ODc5YWI0N2Y2OTI2NWE0Nzk4YTg3MTZhYTVhYzQ5NzYyYTQ0MWI2N2UwOTIzOWJiOTU5MTJkYTc0NzdhZiJ9fX0="
+    name: "&7Netherite F"
+    tags:
+      - alphabet/netherite
+      - character/letter_f
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "netherite_letter_f"
+          input: { head: "mini_netherite_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "NETHERITE_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "netherite_letter_f" }
+  netherite_letter_g:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzM3MTZiZTUwNGFkMzdmNjc3YTNiOWQ4ZWYzZjRiNmFjOTU0Mjg5ZDM0YzNhMTQ3YmI1ZGVlM2NjZmY4MWY3YSJ9fX0="
+    name: "&7Netherite G"
+    tags:
+      - alphabet/netherite
+      - character/letter_g
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "netherite_letter_g"
+          input: { head: "mini_netherite_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "NETHERITE_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "netherite_letter_g" }
+  netherite_letter_h:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjdiODczY2ZjOTM0YTQxZTExZGVkYWU0ZTc1NmY4ZjhhZGY1NTI5YTM3YzBhY2EyZDMxZDEzMWE5ZGRmZjNkZiJ9fX0="
+    name: "&7Netherite H"
+    tags:
+      - alphabet/netherite
+      - character/letter_h
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "netherite_letter_h"
+          input: { head: "mini_netherite_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "NETHERITE_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "netherite_letter_h" }
+  netherite_letter_i:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjFiYjQ2ZTBjZDQ5OTA1NGQ3NjMwMzg5NzNjNzk4Y2ExODJmMzVmMDllZjE4N2RhNDNmNzA0YzdkY2RjYzVhMyJ9fX0="
+    name: "&7Netherite I"
+    tags:
+      - alphabet/netherite
+      - character/letter_i
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "netherite_letter_i"
+          input: { head: "mini_netherite_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "NETHERITE_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "netherite_letter_i" }
+  netherite_letter_j:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTk0OTJkZGQ3NjNmNTVkYjhmYzk1MTQ1OGM1Yjc5ZDE5ODYyZTA2OTc0NjU0YzE2N2M0YzAzZjA4OTVjNGU0In19fQ=="
+    name: "&7Netherite J"
+    tags:
+      - alphabet/netherite
+      - character/letter_j
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "netherite_letter_j"
+          input: { head: "mini_netherite_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "NETHERITE_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "netherite_letter_j" }
+  netherite_letter_k:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvY2IzMmMzZGQyZGY2NjhiZGFiYzQ3OWY0MzU1MmRmNDAzMmNhM2M3Y2JiMDUzYjlkMWIzZTNmM2MzZjBkYTdhZSJ9fX0="
+    name: "&7Netherite K"
+    tags:
+      - alphabet/netherite
+      - character/letter_k
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "netherite_letter_k"
+          input: { head: "mini_netherite_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "NETHERITE_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "netherite_letter_k" }
+  netherite_letter_l:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzUyNjFhNGZiMzBlMTQwNDIxZTZlZDc4OTM2ZTJhNTAwOTFlYmUyNGUzZjgwYWM0ZGE3OGEyMDAzOWVmOTNjMiJ9fX0="
+    name: "&7Netherite L"
+    tags:
+      - alphabet/netherite
+      - character/letter_l
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "netherite_letter_l"
+          input: { head: "mini_netherite_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "NETHERITE_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "netherite_letter_l" }
+  netherite_letter_m:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTk4ZGRlNmYzNjY5M2Q0OGZhZjM1ODk0MzEzYWViMzg5N2I5ZWZkMjEwMGZmNWFiMzBiNzVjZjBjODYzNmIxYiJ9fX0="
+    name: "&7Netherite M"
+    tags:
+      - alphabet/netherite
+      - character/letter_m
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "netherite_letter_m"
+          input: { head: "mini_netherite_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "NETHERITE_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "netherite_letter_m" }
+  netherite_letter_n:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWM5MWI2ZGM4ZmU4YzdhNzJmZjkyYWY4MTI2NWQ2Y2NmY2I1OGI1ZTg4NTc3MmRjZjA1MjUwYTEwZTMyOTk1NCJ9fX0="
+    name: "&7Netherite N"
+    tags:
+      - alphabet/netherite
+      - character/letter_n
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "netherite_letter_n"
+          input: { head: "mini_netherite_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "NETHERITE_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "netherite_letter_n" }
+  netherite_letter_o:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOWExZTU5YzFjZDNiMjBiMjAwNDEwYzM1NjcwYjI1NmI4MDc0MjJiODRlMTM0ZTJiZmNmODZiYjdjM2RmZTc2MCJ9fX0="
+    name: "&7Netherite O"
+    tags:
+      - alphabet/netherite
+      - character/letter_o
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "netherite_letter_o"
+          input: { head: "mini_netherite_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "NETHERITE_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "netherite_letter_o" }
+  netherite_letter_p:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNmZlN2E4YTBkYjZjMWYzNzU2N2FkMjdhM2Q1MTAxNjFjZmNhOTMzODQ4MzJmZjdiNTdjNDllNjA1MzE1MjVkZCJ9fX0="
+    name: "&7Netherite P"
+    tags:
+      - alphabet/netherite
+      - character/letter_p
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "netherite_letter_p"
+          input: { head: "mini_netherite_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "NETHERITE_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "netherite_letter_p" }
+  netherite_letter_q:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTViMWQzZjg0OThlZjY1ZTg2ZjFiMDcyZjZkNjJhYzQ4MTRhYWNlMzQ4YWY4ZjczOGFkNWJkNmNkYWQzZTdhOSJ9fX0="
+    name: "&7Netherite Q"
+    tags:
+      - alphabet/netherite
+      - character/letter_q
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "netherite_letter_q"
+          input: { head: "mini_netherite_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "NETHERITE_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "netherite_letter_q" }
+  netherite_letter_r:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTk3M2RjYmNiYmRlNGFlNDg3YTU4NGI1MGYxNzY2OTczMGJhYTMzMWJiNjg4YzIzMzNjYTc4YTIyYTVkNzE5NiJ9fX0="
+    name: "&7Netherite R"
+    tags:
+      - alphabet/netherite
+      - character/letter_r
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "netherite_letter_r"
+          input: { head: "mini_netherite_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "NETHERITE_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "netherite_letter_r" }
+  netherite_letter_s:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzgwNTk0ZWE5YTg5ZjFhYmFlNzQ3NzRhZmU2MDhiZmVlZmIwMTNkZWU1YTM3OTYzM2ViM2QyZTBmMDgwMTUxNiJ9fX0="
+    name: "&7Netherite S"
+    tags:
+      - alphabet/netherite
+      - character/letter_s
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "netherite_letter_s"
+          input: { head: "mini_netherite_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "NETHERITE_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "netherite_letter_s" }
+  netherite_letter_t:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvM2NkYmRiNzkwZTdiZTgwNTU5NDZhMzI0NmE5NmQ4NGUzM2FjYTgwMTY1OGVlZTc5ZGQ0OWViZDg4M2U3YmU2ZSJ9fX0="
+    name: "&7Netherite T"
+    tags:
+      - alphabet/netherite
+      - character/letter_t
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "netherite_letter_t"
+          input: { head: "mini_netherite_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "NETHERITE_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "netherite_letter_t" }
+  netherite_letter_u:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjFhZDE4YTczOWEyZjg0NDM0MmExNTYwZGFjMmUyZmFjNjUyOWVhODYyYjA5ZDViMzcxMTE0YjA4NzdmMGUyMCJ9fX0="
+    name: "&7Netherite U"
+    tags:
+      - alphabet/netherite
+      - character/letter_u
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "netherite_letter_u"
+          input: { head: "mini_netherite_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "NETHERITE_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "netherite_letter_u" }
+  netherite_letter_v:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZGViOGI2OWFiNWI0YTVkYjYwNmM3NmZlM2I1M2U3OGI2ZjA0YzA0ZWU4MjFmMGQyYzYyYzg2Y2Y2OTBkNWRmNyJ9fX0="
+    name: "&7Netherite V"
+    tags:
+      - alphabet/netherite
+      - character/letter_v
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "netherite_letter_v"
+          input: { head: "mini_netherite_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "NETHERITE_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "netherite_letter_v" }
+  netherite_letter_w:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMmY4ZjYxZGExY2U2MGFiZTlkOWU1M2UyODE5ZDg2OTc2YzAwNjg4YzE5YmY4MWFkMmMxZTRiNTE2OWE2MmE0ZSJ9fX0="
+    name: "&7Netherite W"
+    tags:
+      - alphabet/netherite
+      - character/letter_w
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "netherite_letter_w"
+          input: { head: "mini_netherite_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "NETHERITE_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "netherite_letter_w" }
+  netherite_letter_x:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjhjYmRiOTk4ZmI0ZDVlMjg5NjllMjNmNGJiODdjOWRlNWMzMDNmYmViOTBhOTRkOTFkNzQ0NWE2NzNlYTU5ZCJ9fX0="
+    name: "&7Netherite X"
+    tags:
+      - alphabet/netherite
+      - character/letter_x
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "netherite_letter_x"
+          input: { head: "mini_netherite_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "NETHERITE_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "netherite_letter_x" }
+  netherite_letter_y:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODM5MTFjZTY3ZDE1NWVmYTZiZTEyMzNlNDZkMjUxOWJlYTJmYThkNDU1MDIyMzMyYTUwNzM4MDA1NGQwYTI2OSJ9fX0="
+    name: "&7Netherite Y"
+    tags:
+      - alphabet/netherite
+      - character/letter_y
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "netherite_letter_y"
+          input: { head: "mini_netherite_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "NETHERITE_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "netherite_letter_y" }
+  netherite_letter_z:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTQ1YTI0YjU0YjdjY2EzYjlmOTliMzM3ZWEwZDExMjliYzYxZmY2YWE4ZGYxNzc4MDY4NmQ4Y2M0OGY1NWYyNCJ9fX0="
+    name: "&7Netherite Z"
+    tags:
+      - alphabet/netherite
+      - character/letter_z
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "netherite_letter_z"
+          input: { head: "mini_netherite_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "NETHERITE_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "netherite_letter_z" }
+  netherite_number_0:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTBjZjRlNGMzNDVmZTYxNmIwYTljMDRjZGQyZmVlZjYxZGI0YjFjYjE0YjAwMzVhMjgwMjBkZmU3M2MyZDVkMSJ9fX0="
+    name: "&7Netherite 0"
+    tags:
+      - alphabet/netherite
+      - character/number_0
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "netherite_number_0"
+          input: { head: "mini_netherite_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "NETHERITE_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "netherite_number_0" }
+  netherite_number_1:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTg0MzJhNTc1NmEwNGViZjA2MmQ3MmE2ZjMxYmQ2MmU4ZjRkODJhOTIxMjAzMzZhZTE5NzJmZTE4ZDM4NzBiYSJ9fX0="
+    name: "&7Netherite 1"
+    tags:
+      - alphabet/netherite
+      - character/number_1
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "netherite_number_1"
+          input: { head: "mini_netherite_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "NETHERITE_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "netherite_number_1" }
+  netherite_number_2:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvN2U1MGM3MDk3OTk0MzEzZDk0MzIxNDJkYTc2NTFkYzZkZDYzMzU4N2UyZTFkZDlhNTYyYWJiYzc4NzhlZmI2NSJ9fX0="
+    name: "&7Netherite 2"
+    tags:
+      - alphabet/netherite
+      - character/number_2
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "netherite_number_2"
+          input: { head: "mini_netherite_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "NETHERITE_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "netherite_number_2" }
+  netherite_number_3:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNWRkMjJkYjhjNmUyMzhmYjhjYzA4MTlkMDJhNjU0MDMyOTdkNjNiNjdjNmM3Y2U2YjQzYmM4MjkxODk4MzdmNCJ9fX0="
+    name: "&7Netherite 3"
+    tags:
+      - alphabet/netherite
+      - character/number_3
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "netherite_number_3"
+          input: { head: "mini_netherite_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "NETHERITE_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "netherite_number_3" }
+  netherite_number_4:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODU0YzFkZWQ5MjMxOWJkODM1NzNmMGYwMDQxZTczMDMzOGViN2JiNzk5N2ViNzFmZjU4M2MyOTA4MzIzODg4ZSJ9fX0="
+    name: "&7Netherite 4"
+    tags:
+      - alphabet/netherite
+      - character/number_4
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "netherite_number_4"
+          input: { head: "mini_netherite_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "NETHERITE_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "netherite_number_4" }
+  netherite_number_5:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTRkYWM3Y2YyMDE3YTJhZWZjZGYyOWRjMzgzMmQ0MDdjYmQ5YzhiNmJhMGU1MWEwYTMxNjlmNmZmYjYyYzAxNSJ9fX0="
+    name: "&7Netherite 5"
+    tags:
+      - alphabet/netherite
+      - character/number_5
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "netherite_number_5"
+          input: { head: "mini_netherite_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "NETHERITE_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "netherite_number_5" }
+  netherite_number_6:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZGVkOWJlZGNjMWQxYzQ4Y2FlZTU3MjhlMWVmOWIwMDhkNWE1ZDMwZDJlMTRjMWM3Yjg0OWU4ZDg1NTNiNTI1NyJ9fX0="
+    name: "&7Netherite 6"
+    tags:
+      - alphabet/netherite
+      - character/number_6
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "netherite_number_6"
+          input: { head: "mini_netherite_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "NETHERITE_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "netherite_number_6" }
+  netherite_number_7:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTBiYmE4ZDU2YmI2YjkwNjY4M2IxOGZiYTQ4MWQ1OGZhMGJiN2QzYjNiMThjNjQ1MmU5MjU3ZGY1NDJmNTNhYSJ9fX0="
+    name: "&7Netherite 7"
+    tags:
+      - alphabet/netherite
+      - character/number_7
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "netherite_number_7"
+          input: { head: "mini_netherite_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "NETHERITE_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "netherite_number_7" }
+  netherite_number_8:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODY5Y2Q3NGMwYThhMmYwMTA1NTg4NmY4MTVmOGUxZWQ2ZDdkZTZlNzg4YWFlOWY4NmJkMzdlMmQ0ZTQ2MjFjNiJ9fX0="
+    name: "&7Netherite 8"
+    tags:
+      - alphabet/netherite
+      - character/number_8
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "netherite_number_8"
+          input: { head: "mini_netherite_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "NETHERITE_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "netherite_number_8" }
+  netherite_number_9:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTljZDcyNjlhMzE0MDQ4YmM3Zjc5Mjk0NDhhYWJmNGJiYzlkNjk4MTdhOTJmZjUwNTZiMDY1YWRkOTQwODU4OSJ9fX0="
+    name: "&7Netherite 9"
+    tags:
+      - alphabet/netherite
+      - character/number_9
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "netherite_number_9"
+          input: { head: "mini_netherite_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "NETHERITE_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "netherite_number_9" }

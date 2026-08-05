@@ -1,0 +1,2016 @@
+# Generated Mangrove Planks Alphabet Blocks
+
+heads:
+  mangrove_planks_letter_a:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjQxNTY3M2NhYmUwN2I2ODQzN2Y2OTM1NWY0NTBkYTgwNDI0MzU0MzQzNDg2MmYwYTFmNmVhZGU3NzdjZjIwNSJ9fX0="
+    name: "&7Mangrove Planks A"
+    tags:
+      - alphabet/mangrove_planks
+      - character/letter_a
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_letter_a"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_letter_b:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzE0NzhkN2E4NWIxY2FlZTEzZDc3Y2Q2MGY2ZDNiMzM4NThmNDM0ZWEwOTk1MmY4ZTFkZjI2NDI2N2QyNDZjMSJ9fX0="
+    name: "&7Mangrove Planks B"
+    tags:
+      - alphabet/mangrove_planks
+      - character/letter_b
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_letter_b"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_letter_c:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTZiYzc2YWMxZTliMjE1MmIzMGQ1ZWU0MDJjY2JjODVjZWE1YTE3MDQ2NTcxZTUwYThhNDllMmYyYTJiY2ZmIn19fQ=="
+    name: "&7Mangrove Planks C"
+    tags:
+      - alphabet/mangrove_planks
+      - character/letter_c
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_letter_c"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_letter_d:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZmNhNzU4ZmQ5NWEyYTM3ODU2MWQyOWJjODA2NTVjM2QxYjYyZTRhNTExYmUyYTdiOGRlNjAyY2M0ZjE4NTE1MCJ9fX0="
+    name: "&7Mangrove Planks D"
+    tags:
+      - alphabet/mangrove_planks
+      - character/letter_d
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_letter_d"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_letter_e:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzNmYTI0OGYwMDU1YWJmMzFkZWViYzYxNGQ2OGZlMDlkZDFhMmE2MjFjMzQzZGNkYmVkYWQ2YTcyYWRiZjViIn19fQ=="
+    name: "&7Mangrove Planks E"
+    tags:
+      - alphabet/mangrove_planks
+      - character/letter_e
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_letter_e"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_letter_f:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjRjNDk4NWI2MGIyMWNiYzhhZDU3OTc4NWJhNTBlNjZjYmZlOWUyODM3Yzc0ZjcyOTE4ZjkwMzJkOWQzMGNiZSJ9fX0="
+    name: "&7Mangrove Planks F"
+    tags:
+      - alphabet/mangrove_planks
+      - character/letter_f
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_letter_f"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_letter_g:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjZjMzMyYzFjNzVhODZmMGY3NzE3NmYzMDExNDQ5MDUxZDA3ZTdjZjVhN2Q5M2VkMzBkNGM0NWZlMDVjZTYzOCJ9fX0="
+    name: "&7Mangrove Planks G"
+    tags:
+      - alphabet/mangrove_planks
+      - character/letter_g
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_letter_g"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_letter_h:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOWJhMmYyNmNhMzM2YzlhOWNjN2JkMjJiNWQzZmMxMGZkN2VmOWNjZmYyMjRlNTZkYjczZjAzNDZiOTU0MzQxMyJ9fX0="
+    name: "&7Mangrove Planks H"
+    tags:
+      - alphabet/mangrove_planks
+      - character/letter_h
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_letter_h"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_letter_i:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzIwMDAyNGYyYjAwODU2MjI4MTFkYjc2ZmZlMjFlNWMxZTJlNDY1MzQ3Y2Q3Mjc3MjZmNTc2YWViMTMwY2QifX19"
+    name: "&7Mangrove Planks I"
+    tags:
+      - alphabet/mangrove_planks
+      - character/letter_i
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_letter_i"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_letter_j:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZmMyY2U2MTgwNDc5NDYyMmMwNmY1MDAxYWU2Yzc1NWU2NWUxNTQ2N2UwYWU4ZjRhNjZjYmExM2QyOTJhZTRlYiJ9fX0="
+    name: "&7Mangrove Planks J"
+    tags:
+      - alphabet/mangrove_planks
+      - character/letter_j
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_letter_j"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_letter_k:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTdkNTJiYmQwOGRmN2E3NzY0NjI0Yzk5MDAzMWJjYzIwYzA4MmIzMWJkMWM5YmYxYmZiYzViYTdiZGY3ZGZmNSJ9fX0="
+    name: "&7Mangrove Planks K"
+    tags:
+      - alphabet/mangrove_planks
+      - character/letter_k
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_letter_k"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_letter_l:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvY2RmMTYxYzU2MGNkYmQ0NzQ0MGMwYzhmZTc3YzJmODkxNTI4NGZkY2ZhYzAyMjFjZTJhZWJmNDZmM2NkMjE4ZCJ9fX0="
+    name: "&7Mangrove Planks L"
+    tags:
+      - alphabet/mangrove_planks
+      - character/letter_l
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_letter_l"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_letter_m:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMmYxOTU2MTRmYzBmNTcyNDEyOTE4MGFiNDdjY2RiNTJkNDQwMjFiYmIwNDFlOWU1ZmMxYTliMWE1MjdmMjYyYSJ9fX0="
+    name: "&7Mangrove Planks M"
+    tags:
+      - alphabet/mangrove_planks
+      - character/letter_m
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_letter_m"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_letter_n:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjQ2MzUyNjY3ZjRhYjFiYzAyODQwYjc0NjI3ODBkMzdhMDQ0ZDk1MjRhNWQ2NDUwOGI1NTcyMmYyNTg5Yzc1MSJ9fX0="
+    name: "&7Mangrove Planks N"
+    tags:
+      - alphabet/mangrove_planks
+      - character/letter_n
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_letter_n"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_letter_o:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNmRkYWJmYzBlNmQ3ZDk3NGRjYWExMDlhZDYzOWJhZmRlZWQwMDcwZTJkNTRhZmI4MzE4MTE5MWU5OTY3NGM3MSJ9fX0="
+    name: "&7Mangrove Planks O"
+    tags:
+      - alphabet/mangrove_planks
+      - character/letter_o
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_letter_o"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_letter_p:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjFhOWM4ZDkyYTZjMmJlNmNkMWJmMmFhZjAzYmY0NWY0OTEyNjg5ZTQyZmM3ZmFkZTliZmJiMmI0M2YxYTFiNyJ9fX0="
+    name: "&7Mangrove Planks P"
+    tags:
+      - alphabet/mangrove_planks
+      - character/letter_p
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_letter_p"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_letter_q:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzQ1YzljMzVlZmZkOGMxYmQ5MmQwNDFhZjU2NjRmOTE1ZjFkN2U4MzRkMWRjMmI3ZjEzZGY4Mzg3NDg3NTMxOSJ9fX0="
+    name: "&7Mangrove Planks Q"
+    tags:
+      - alphabet/mangrove_planks
+      - character/letter_q
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_letter_q"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_letter_r:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODMwYWMyODQ4MDNmNjAzYTczZmQ2NTc0NmNmYTgzYWU2MDgwNzAxNzNiNGZiMmRkNWM5NTUyYWNhM2ZjZmJkMiJ9fX0="
+    name: "&7Mangrove Planks R"
+    tags:
+      - alphabet/mangrove_planks
+      - character/letter_r
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_letter_r"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_letter_s:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODVjZTY2YWZlNTdmOGU2NmI1ZTkxMTEyNjRmMDQ5NmNlNDliN2E1ZGMwY2NjZDdiNzAzOTEwMDlkYjU2YWRkZCJ9fX0="
+    name: "&7Mangrove Planks S"
+    tags:
+      - alphabet/mangrove_planks
+      - character/letter_s
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_letter_s"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_letter_t:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTMzZDdjZmQ0OTA3NjQ5MjY0MzQ0MzI5ZDVhOTNiNjU0NzUyNTNiNTY5MmQ2NzBkZDc1YjYwNThkNDgyNzExOCJ9fX0="
+    name: "&7Mangrove Planks T"
+    tags:
+      - alphabet/mangrove_planks
+      - character/letter_t
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_letter_t"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_letter_u:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZWZjNGJiM2FjZjA0NzNjN2ZiNThjZDFlYmE5YWJlM2ViNjcwY2JmYmMxYTEyMjg3Mjk4ZjdmZjUyYzhlYmQ1MiJ9fX0="
+    name: "&7Mangrove Planks U"
+    tags:
+      - alphabet/mangrove_planks
+      - character/letter_u
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_letter_u"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_letter_v:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGY0ZmRlM2EwZDZjZGY3ZmE4MmNiZDdmMjY0ODMzZDA0MWI2ZjljYWIyZjM1YTU2OWFhNzNkZDM0YzlkMDU3YyJ9fX0="
+    name: "&7Mangrove Planks V"
+    tags:
+      - alphabet/mangrove_planks
+      - character/letter_v
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_letter_v"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_letter_w:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGQ0ZjhiYjE4MjIxN2ViMTg4MWMxNWY5YjczOGZlNTA4MTliYmM2ODVmODA5N2EwMzU1NmFjYTMxY2NhNmFiOSJ9fX0="
+    name: "&7Mangrove Planks W"
+    tags:
+      - alphabet/mangrove_planks
+      - character/letter_w
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_letter_w"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_letter_x:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjE5OGViNTRhZTA5ODAyZmU3NzUzOTllYzgwN2RhZDJkYjU1MWRiNThkZWE2YTQ2ZDA2MDhjZGQ5ZjZiOTAyZCJ9fX0="
+    name: "&7Mangrove Planks X"
+    tags:
+      - alphabet/mangrove_planks
+      - character/letter_x
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_letter_x"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_letter_y:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODdhOTQ0OGU5MDFiNzQwMTgyZTFkOWM5YTFmZGI2NTc3Mjg4NWVkMTg3NjRhY2NhYTlkNzgyYThjNDg1NjJmYyJ9fX0="
+    name: "&7Mangrove Planks Y"
+    tags:
+      - alphabet/mangrove_planks
+      - character/letter_y
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_letter_y"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_letter_z:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODJiYjg0NWNhZGE1ZDU3ZTA1MmIwOTVhZTVlOWU3YzZhZWY3MjYzYmI1NjI5MDczNWEyNWM0Y2E1MzRjOTE2MiJ9fX0="
+    name: "&7Mangrove Planks Z"
+    tags:
+      - alphabet/mangrove_planks
+      - character/letter_z
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_letter_z"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_number_0:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMmE4OGUwOGQ3Zjc0OTYxYjgwYzcxMmJjZjNhYWU4ZGNmNDExMDMzOGY0MzU4OTg4Mjk0MDIyYWQ2M2Y2ZjlhMSJ9fX0="
+    name: "&7Mangrove Planks 0"
+    tags:
+      - alphabet/mangrove_planks
+      - character/number_0
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_number_0"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_number_1:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzI0ZGViYmVmMWQxNzkxYjJhMDRhY2Q1OWIzNzQ5NDQ2ZjYzZDI4YTEzNmZhNmI4YWJlNWMwZWQ2NTEyMDVjYiJ9fX0="
+    name: "&7Mangrove Planks 1"
+    tags:
+      - alphabet/mangrove_planks
+      - character/number_1
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_number_1"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_number_2:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjAxZDBjZTEwZWM5MGYyNDFjOWYyOTU0ZGNlMTgxODBiYzdjYTk5YjgzMDFmMWZmNmJkYjA0ZDNkYzA3OTg4YiJ9fX0="
+    name: "&7Mangrove Planks 2"
+    tags:
+      - alphabet/mangrove_planks
+      - character/number_2
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_number_2"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_number_3:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTRkZjYxY2IzOTUwMTNhNTFjMjE1NTQ2NGRmZTI1NDJiNTM0NWY2NmYyZmJjNWE2YjU0NjI2NWY0MTA2ODYxMyJ9fX0="
+    name: "&7Mangrove Planks 3"
+    tags:
+      - alphabet/mangrove_planks
+      - character/number_3
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_number_3"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_number_4:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvY2U0MjIwNGQ4ODgwZDdkZDc1YjJlYTI2NjA2ZDE4NzliOGMzMDZlZGQyODU4ZDIxNDYxMzZlMzVjMGFiNmU4NCJ9fX0="
+    name: "&7Mangrove Planks 4"
+    tags:
+      - alphabet/mangrove_planks
+      - character/number_4
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_number_4"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_number_5:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzQzZDU2NGIxNTY1MWU1NGIyOWRmZWI4YmQxN2NjOWRkYTU5ZmFiMGY3NDIyNDAzZjg0MDczNTQxMGYyODNkNCJ9fX0="
+    name: "&7Mangrove Planks 5"
+    tags:
+      - alphabet/mangrove_planks
+      - character/number_5
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_number_5"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_number_6:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGI4ODc4NWVlMzM4MGVhODExYzgwOTk1MWUyYzRkODNmNWMyNDNhZTg1MmYzNTE0MDc1ZWQ4Y2I1ZTEyZGZlYyJ9fX0="
+    name: "&7Mangrove Planks 6"
+    tags:
+      - alphabet/mangrove_planks
+      - character/number_6
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_number_6"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_number_7:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvY2JmODk2ZTgxNmM5YjM2YTQ2ZjU0N2Q1MzYwZmFiYzZkNzM0YTE0YzRiODdhMmZlY2FiOGNiM2NjOGEwODA3YyJ9fX0="
+    name: "&7Mangrove Planks 7"
+    tags:
+      - alphabet/mangrove_planks
+      - character/number_7
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_number_7"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_number_8:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjY5ZDExNWQxYWQxODc0YjUxMGMzNTg3MDY5MTY2NzcyNTY4MzI1YWM0ZWUzMWVkZTdmMzZmMjk5MTQ1YzdmZSJ9fX0="
+    name: "&7Mangrove Planks 8"
+    tags:
+      - alphabet/mangrove_planks
+      - character/number_8
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_number_8"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_number_9:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTE1Y2EwYTA0NzRmMDk5OWU3MDAyYjBiNzc0MWZkYThlZjg1NDhiZmM2YmUxMmE3MGMxYjhiNWNmODRjZjExMCJ9fX0="
+    name: "&7Mangrove Planks 9"
+    tags:
+      - alphabet/mangrove_planks
+      - character/number_9
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_number_9"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_number_10:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjE5MTFmZmU0ZTI1YTk5NWE4ZWRlYzBmOGE4OTQyYzFiODI5NDNlOGNiNDhlN2VlMDA0YTBhYTMxYTk1YmFiNyJ9fX0="
+    name: "&7Mangrove Planks 10"
+    tags:
+      - alphabet/mangrove_planks
+      - character/number_10
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_number_10"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_number_11:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTViNDRiOWI3ZWZlNjIwMzUzZDY5ZjhlZmYzNzdjNWY0M2RiYmRlZTQ3YjIyMWY1YTM3Y2Y2NTNkM2Y3ZjZmNyJ9fX0="
+    name: "&7Mangrove Planks 11"
+    tags:
+      - alphabet/mangrove_planks
+      - character/number_11
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_number_11"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_number_12:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTI1OTc5MjM2NDA3ZTcxZWI3YmM3Y2NlNTk3YTJlNGUzOWMzNzI2Zjg1MTE0ZjY0ZGJlMmJhNGI1ZTdhYzY1OCJ9fX0="
+    name: "&7Mangrove Planks 12"
+    tags:
+      - alphabet/mangrove_planks
+      - character/number_12
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_number_12"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_number_13:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvY2YzODUzZjE3MmIwZTkwNjY1YzRkZDM0Njc0NDU0NzY2MTM5ZjRmYWU3OGJiMTk5Y2NlOTM3NjExZjJkZDJlMyJ9fX0="
+    name: "&7Mangrove Planks 13"
+    tags:
+      - alphabet/mangrove_planks
+      - character/number_13
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_number_13"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_number_14:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvY2NjZTA3NGQzMDZkM2JjZGE0MmM1ODA2NTQxMDZjYzg0ZTU3NTI5Njc0ZTc3MDNlZWI5MGY0MTFhYTNmZTg3MiJ9fX0="
+    name: "&7Mangrove Planks 14"
+    tags:
+      - alphabet/mangrove_planks
+      - character/number_14
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_number_14"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_number_15:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvM2JlMzdiY2YwN2RiMjRiMTc0YjI2NzBmZmQ5MGI1NTc2ZmM5YWMzYjY0M2RhMzczMmFhMTdmNjFiYzUyMDI4MiJ9fX0="
+    name: "&7Mangrove Planks 15"
+    tags:
+      - alphabet/mangrove_planks
+      - character/number_15
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_number_15"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_number_16:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZWZkNWZmZDg4YjNkNGI2MmYyYWRhYTc0N2I3MTdkMTliOTViN2Q3NjJmMWUwNDU0YjlhZGNmYjQ1NWM1ZjM1MyJ9fX0="
+    name: "&7Mangrove Planks 16"
+    tags:
+      - alphabet/mangrove_planks
+      - character/number_16
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_number_16"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_number_17:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDUyMzcxZTU1NzlhNzVjYWQ0OGZhM2RiMTVjYThjMTkxMjRiODcyNGY3ZDIxNjhiMzdkYTc1M2JkMjc1ODRiZCJ9fX0="
+    name: "&7Mangrove Planks 17"
+    tags:
+      - alphabet/mangrove_planks
+      - character/number_17
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_number_17"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_number_18:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODIxZTUzN2Y1MGNkMzI5YWJkZTM2NmJkNWZmNmViYTExYjU2ODBjY2Y4NjdmOWVkMTZhNmZiNDdjMWEwMGJlMiJ9fX0="
+    name: "&7Mangrove Planks 18"
+    tags:
+      - alphabet/mangrove_planks
+      - character/number_18
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_number_18"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_number_19:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDk0ZmIyNzlkYWJkYWEwNTQxMTY0ZDc3ZDYzODNhZTNiNGMzMDk5YzMxMjc3MzU2MGZlNGMyYmY4ZmYzMjJiYyJ9fX0="
+    name: "&7Mangrove Planks 19"
+    tags:
+      - alphabet/mangrove_planks
+      - character/number_19
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_number_19"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_number_20:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGNjM2JiYWIzNjA4ZTE5ODgyOGJjM2I4ZDlhN2Q0MDQzNmMyMGZjZWNkNjNlZGU0ODlmMzU5Y2JiMDk0ZTIwZCJ9fX0="
+    name: "&7Mangrove Planks 20"
+    tags:
+      - alphabet/mangrove_planks
+      - character/number_20
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_number_20"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_number_21:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvM2NlZDE3OTcyZDJkYTc4ZTRkMTc4NTI2Y2YxYTUyYjUzN2FmMzRjY2IxN2FjYjQwMDcwOWUzYzY2MjkxMGY4YiJ9fX0="
+    name: "&7Mangrove Planks 21"
+    tags:
+      - alphabet/mangrove_planks
+      - character/number_21
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_number_21"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_number_22:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTE5YzRlOWIyZDc2ZmI0OWVlMzY3OTE1N2MyMDEzNjJjY2EwZDZkNjAyNmUxMzk0MDA0NmZkNjAwOThlNzc5NiJ9fX0="
+    name: "&7Mangrove Planks 22"
+    tags:
+      - alphabet/mangrove_planks
+      - character/number_22
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_number_22"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_number_23:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWM3ZTA4NmRlMWQ1NTk5NTg5NTkzMjU5MjgzMzE0NDkyNGEzMmFjZmVlYzZkYmQxNzY5OTViY2E0YTg3MjJhZSJ9fX0="
+    name: "&7Mangrove Planks 23"
+    tags:
+      - alphabet/mangrove_planks
+      - character/number_23
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_number_23"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_number_24:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTIwMWNhM2IzOWU4YThlYzk1YWY0NzdjMTE2NDY4NTVkNzYwZjdjMTJjMmQ3ODkyNzAxM2M4YzBkMGJlZTcxMiJ9fX0="
+    name: "&7Mangrove Planks 24"
+    tags:
+      - alphabet/mangrove_planks
+      - character/number_24
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_number_24"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_number_25:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTYxNzgxMDdiMDZmNzM5YzE0ZmQ0ODc4M2VhZjc2MDAzY2U5YmFhMmQwMWFjYzI1ZDQ3NTdjNjVlOTFkZjNmNSJ9fX0="
+    name: "&7Mangrove Planks 25"
+    tags:
+      - alphabet/mangrove_planks
+      - character/number_25
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_number_25"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_number_26:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjExODgyNzc4MjNkNDNjNTgyODQ0Yjc5NDRkMzg3NzNmNTY4NmNiZDM2MmU1YzBiY2FmN2M3OGU2NTRjMTFkMiJ9fX0="
+    name: "&7Mangrove Planks 26"
+    tags:
+      - alphabet/mangrove_planks
+      - character/number_26
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_number_26"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_number_27:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjdkODA2NjVkNjJkNDM5MTMzMGJlNDQ3ODExYWVlZjYyOTJkM2YyMWI2ZjhhMTc3YmJmNDVlYzY1OTRhMjQ0YSJ9fX0="
+    name: "&7Mangrove Planks 27"
+    tags:
+      - alphabet/mangrove_planks
+      - character/number_27
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_number_27"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_number_28:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzg5N2U3YmJmNjc2YzQ2MGMzMjQ1Zjk1NDVjOWNiMTRmYjAyMGMwOWZmMTY3ZjZjMGMzZTQ4MjFmODA1Mzc4NiJ9fX0="
+    name: "&7Mangrove Planks 28"
+    tags:
+      - alphabet/mangrove_planks
+      - character/number_28
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_number_28"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_number_29:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYWRkZjMyOTE1MjMyMGY1NmM4YjY0ZGZiZDUxZDVkOGY1NzQwNDRmY2M1YmFmZTBmNjRmMjc4YWM4Yzc2OTQyOCJ9fX0="
+    name: "&7Mangrove Planks 29"
+    tags:
+      - alphabet/mangrove_planks
+      - character/number_29
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_number_29"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_number_30:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmEzMWVjNzkwZjc0ZTM1MGMzNjk0MTM0NGIyM2YwNzI2YjgyNTczNTcwNjFjYTI4MGViY2VjNzg5M2QwYTVkMCJ9fX0="
+    name: "&7Mangrove Planks 30"
+    tags:
+      - alphabet/mangrove_planks
+      - character/number_30
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_number_30"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_number_31:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDRmNzY3ZjA5NmI0ZmVjMDMwMjNiN2FlZTAzOTI3NTg4YzZhNDQ3NDZiOWNlOWQyZTJjNjc2N2I4ZDExNWY5In19fQ=="
+    name: "&7Mangrove Planks 31"
+    tags:
+      - alphabet/mangrove_planks
+      - character/number_31
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_number_31"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_number_100:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjQ3MTc4ZDM2NDBlYWEzOWYzNzFkZGFlZmE0MzFjNjM3NmVjNGM3MzE0MDg1NjZlMGQ3YjNmNDVkYmFhNjJmNSJ9fX0="
+    name: "&7Mangrove Planks 100"
+    tags:
+      - alphabet/mangrove_planks
+      - character/number_100
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_number_100"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_exclamation:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTFiODI2OTE3ZDJkYTZkOGQ3NTE2ZjMwMTgxYTk1OGMyNzUwM2Y5NDlhMGU1Mzk0OTc1YzEzMjg0ZTEyZmQifX19"
+    name: "&7Mangrove Planks !"
+    tags:
+      - alphabet/mangrove_planks
+      - character/exclamation
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_exclamation"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_reverse_exclamation:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjNiNDc4YjJkZGQ4N2IwZDhkN2JkOWQ5Nzc0MTYwNWFlODA2MTRjMmIyZWI2MGUwYWExZjNlMzg3Y2Q1OGQ2ZCJ9fX0="
+    name: "&7Mangrove Planks ¡"
+    tags:
+      - alphabet/mangrove_planks
+      - character/reverse_exclamation
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_reverse_exclamation"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_question:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjA0MWU0NjVkNWYwYWM4NDFiMWQyNmIwNDY3NGViNDJlMmE2NTkwYWFjZDQzMTc0NjE4NDliMjUyMjQ3NmJhYiJ9fX0="
+    name: "&7Mangrove Planks ?"
+    tags:
+      - alphabet/mangrove_planks
+      - character/question
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_question"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_reverse_question:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDkzZTA3ODM3NzY0YzY2Y2I2MmRiMzM2NTE4N2Y3ZTM1YzYwYmJhYjZkZjI2NzJiNTQ3YTc5NDZiZmY5MjUyZCJ9fX0="
+    name: "&7Mangrove Planks ¿"
+    tags:
+      - alphabet/mangrove_planks
+      - character/reverse_question
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_reverse_question"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_period:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvY2YzOTVlNjNkNDM3MDY5OGMxMTIyNWFjMDk5MWFjODNlOTQzMDZlYmY2NjAzZGZjNWU2MTQzYmE3ZTZkM2I5MSJ9fX0="
+    name: "&7Mangrove Planks ."
+    tags:
+      - alphabet/mangrove_planks
+      - character/period
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_period"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_comma:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOGEzNTFjODYxZmIwY2U3NDJkZDgxMmY5NDdkZjU4OTU0OGIwZTBiZmMyNDU0ODNhMzNkMjUwNDI2MDY1NGQxYSJ9fX0="
+    name: "&7Mangrove Planks ,"
+    tags:
+      - alphabet/mangrove_planks
+      - character/comma
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_comma"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_colon:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTM5OGQ3OTc4NmE4Y2U0YzQ5ZjU3ZDQ5ODg0ZGEyNzYxYzkzODU0MjNmMDQ3MTZlYjI2MzA5NjcyZTE3YWQ0OCJ9fX0="
+    name: "&7Mangrove Planks :"
+    tags:
+      - alphabet/mangrove_planks
+      - character/colon
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_colon"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_semicolon:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMmYyNjZjODViMTA1NzM4ZDU1YThiYTkxM2U4Nzg4MTU5MDFmYzNlNjhmNDgwYjVhY2QxMDM5NGU0YWRhZGQ5MyJ9fX0="
+    name: "&7Mangrove Planks ;"
+    tags:
+      - alphabet/mangrove_planks
+      - character/semicolon
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_semicolon"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_apostrophe:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTU4MzlkMjJiN2RjMTZmNDk0MjQ0YTVjYTkzODhiZWI0NmNjYTAzZGNhNzFjYTFlNDVkYmUwMjgyNWMzOWE5OCJ9fX0="
+    name: "&7Mangrove Planks '"
+    tags:
+      - alphabet/mangrove_planks
+      - character/apostrophe
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_apostrophe"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_quote:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjRlOGJjZGY4NTFiZTNjOTgyMTk2YTUxMTE4OTIxNDViMDA3NWYwYzU2ZjNlNzhkMjBjMDI0ZjA4NTNiZjZhZSJ9fX0="
+    name: "&7Mangrove Planks \""
+    tags:
+      - alphabet/mangrove_planks
+      - character/quote
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_quote"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_ellipses:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDQ2NTI0OTI5ZGZjN2Y4ZTJkYTM0N2RjZmM1YjNkYWExZTU4NjZlODk1OGZlN2I5ODg1NTA2MGIyNDE1ZTAzOCJ9fX0="
+    name: "&7Mangrove Planks ..."
+    tags:
+      - alphabet/mangrove_planks
+      - character/ellipses
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_ellipses"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_ampersand:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTNiMzMyYzE4NjE3MWRiOWE1NTY5NTI5ODkzZjdhODk2MDBmNGI3YTQ3NjEyZWZiNzYxYTllYjljNjNlZDQyOCJ9fX0="
+    name: "&7Mangrove Planks &"
+    tags:
+      - alphabet/mangrove_planks
+      - character/ampersand
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_ampersand"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_at:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzA5ZTVkYTk0YjQ3ZjhkY2Y4OGRmZjJhNWM5YjM4MWUzZDU1ZDk4M2Q0NjhiMGMwZWIxYjMxZjAzYWZjZmRiOCJ9fX0="
+    name: "&7Mangrove Planks @"
+    tags:
+      - alphabet/mangrove_planks
+      - character/at
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_at"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_hash:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjA4NTA1MGZlZTkzOTU2OWYyZWUxZTg4NjNmYzg0ODhkM2JhYTdkMTkzMWYwYjY3ZWNiYzMxMDkwMDJlYjg1YiJ9fX0="
+    name: "&7Mangrove Planks #"
+    tags:
+      - alphabet/mangrove_planks
+      - character/hash
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_hash"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_dollar:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMmU5YWE3YWRkNGM5MzQ5MWI0ZWY2OGY4NGI2YjU4OTM0NGIwMGUxMmQ0MTUzOWVjYTBmODc1MGZlYzc3MDA0NyJ9fX0="
+    name: "&7Mangrove Planks $"
+    tags:
+      - alphabet/mangrove_planks
+      - character/dollar
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_dollar"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_euro:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzM0ODUxYTk3NjQ2MGExOWU2ZjEyNDk0NDdjZjIwZGY3MTNlMTkzYWIxZmM2MDcxZDQ1ZjhkNWIwN2U3MWZmNCJ9fX0="
+    name: "&7Mangrove Planks €"
+    tags:
+      - alphabet/mangrove_planks
+      - character/euro
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_euro"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_pound:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZWJkZTYxMzAwZmQzNWQ2ZjEzZTVlNDVlOTY4YmI5OTk0NTU5NWUxOTFiYmQ2NmU5ZmUzMDI1MmQwMjA0YzU4ZSJ9fX0="
+    name: "&7Mangrove Planks £"
+    tags:
+      - alphabet/mangrove_planks
+      - character/pound
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_pound"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_yen:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTJkOGZhY2Q5NzE2YmFhOWE3MzdjYTk1YzBhYzExMWIwMDI4YzQ2MGQzYmVlZjdkODkxZTdjNmYwNTgwYWU2ZiJ9fX0="
+    name: "&7Mangrove Planks ¥"
+    tags:
+      - alphabet/mangrove_planks
+      - character/yen
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_yen"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_percent:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjM1MDMyZjQyZDJlOGNlNWM3MjAyZjJmNjc2Y2ZiNzhhNTgyOWZlY2UyNzYyZDRhZGY4MGNlYWE5ODkwMjE5MyJ9fX0="
+    name: "&7Mangrove Planks %"
+    tags:
+      - alphabet/mangrove_planks
+      - character/percent
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_percent"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_plus:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDE3ZTRhYWYyYmIyNGM1ODc1NGQxOTM1MzRlZmVhMzYwZTJmZTBlYjRhYjUyYTc3ZDM2NThhNGY0OWVhOGM0YSJ9fX0="
+    name: "&7Mangrove Planks +"
+    tags:
+      - alphabet/mangrove_planks
+      - character/plus
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_plus"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_minus:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTIxN2YzNmFkZTc0MDRlNGYxMzljMmQyNjVlYzkyMWUxNzllYjJmMWRmNDBiNGVjZDMwOGZiYmZmMzNkYTJjMiJ9fX0="
+    name: "&7Mangrove Planks -"
+    tags:
+      - alphabet/mangrove_planks
+      - character/minus
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_minus"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_equals:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWIzODY5ZmZmYTdmMzBkYmJhMjNmMGViMWE1ZTY2ZDY3YjlmMDZmMTVlNjdjODBlZWQzMzdkOTM5MTVjYzBlMiJ9fX0="
+    name: "&7Mangrove Planks ="
+    tags:
+      - alphabet/mangrove_planks
+      - character/equals
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_equals"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_slash:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMmY4ZDQwNDI5MGMxNTI1Y2ZmN2M0ZGM1Y2Y4MGU4Mjk2Mjk4MjdkZmFiNzk3YmE5OWJhMWNlYjZhMDdhODNjZCJ9fX0="
+    name: "&7Mangrove Planks /"
+    tags:
+      - alphabet/mangrove_planks
+      - character/slash
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_slash"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_backslash:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDdhNzZmZmRlZTU1MzUzNTkwNDc2MTc5MGY0YWM0YWRkNDliZGYyYWVkMWZiZjFlYjQ3YTU4ODY2ZmUzNGNmNiJ9fX0="
+    name: "&7Mangrove Planks \\"
+    tags:
+      - alphabet/mangrove_planks
+      - character/backslash
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_backslash"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_underscore:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODlhMjg0MDE1ZDcxOGI5ODk3MmZiYjU0OTY0ZjgwYjQxZjc4ZDA3OWYxYTM3NTM0NDczOWYwM2RhYzU0ZTM5NCJ9fX0="
+    name: "&7Mangrove Planks _"
+    tags:
+      - alphabet/mangrove_planks
+      - character/underscore
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_underscore"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_heart:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTE1ZTQ2ODQxZGUwMTAwY2E5OGY5ZGRlM2MyYmYxNWY5MTIxZTkzYTE3YTliZjk3NjA2MDUxNjYwOWY2NjY3MCJ9fX0="
+    name: "&7Mangrove Planks ♥"
+    tags:
+      - alphabet/mangrove_planks
+      - character/heart
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_heart"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_degree:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvM2RlOTVmYzQwNDcxOTcwOTYxYTBiZDU3ZWYxYzVhNDZkNGE5YzIwMzAxNGQxODhiM2YyODNiZGQ3Yzk0ZGNkOCJ9fX0="
+    name: "&7Mangrove Planks °"
+    tags:
+      - alphabet/mangrove_planks
+      - character/degree
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_degree"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_checkmark:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNWJmYWE1NzJmNzBmMzMzMWM3NmJiMjkxMjhiNGMzOWI1ODE1NDhlNjc0MzgzMWQ1NjhmNDQ0YzU2NzI3YjRjYSJ9fX0="
+    name: "&7Mangrove Planks ✓"
+    tags:
+      - alphabet/mangrove_planks
+      - character/checkmark
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_checkmark"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_note:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjJhYTNiNDc4MGI0M2M2ZmRhYThjMDc0ZDI4NzE4N2I2ZjJlNDk3NjJhMDJhNjA3MTdmYTE5NmI4MThkNjYyYyJ9fX0="
+    name: "&7Mangrove Planks ♪"
+    tags:
+      - alphabet/mangrove_planks
+      - character/note
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_note"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_paren_open:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOWI4OWM3Mjk2MDE5YjYwMmMzODY0MWViYzBiM2M3NmI1ODY5OWQwZDVhNTZhMjUwNmJiYzMzZDZiYmI2NDViNyJ9fX0="
+    name: "&7Mangrove Planks ("
+    tags:
+      - alphabet/mangrove_planks
+      - character/paren_open
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_paren_open"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_paren_close:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWI0N2JmZTAxZWI0OTI3NzkxYTkzOTk1YmE3MTM2ZTY2ZDZkMWFjZmRhNDc3YjgzNDg1ZjAxNTU4NGE5NmFmNyJ9fX0="
+    name: "&7Mangrove Planks )"
+    tags:
+      - alphabet/mangrove_planks
+      - character/paren_close
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_paren_close"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_bracket_open:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTY2MDU3YTcyZDA0ODY4NDRiNTdlMjdkN2VmNzIwMzAyZGMwOTk2ZTZlZmQxODMxMTY1N2Q0YTY4MTA0MDViMCJ9fX0="
+    name: "&7Mangrove Planks ["
+    tags:
+      - alphabet/mangrove_planks
+      - character/bracket_open
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_bracket_open"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_bracket_close:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjM2N2NkNDk3NDliNTdjMzdkMjE1YWM1ODc2Mjg2YjIyZTVkOWQyM2YwZTgyOWUyMzdiNTAzNDk0NzdhYTFkNCJ9fX0="
+    name: "&7Mangrove Planks ]"
+    tags:
+      - alphabet/mangrove_planks
+      - character/bracket_close
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_bracket_close"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_brace_open:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzFmNTE3ZTY2ODRiYmFhMzY0YmE5NzY0NzEyOTcxYjAwNDRhNDllZGFkMjQ4ZTlmZWQzNzc3NGYzZjgzOWJhOCJ9fX0="
+    name: "&7Mangrove Planks {"
+    tags:
+      - alphabet/mangrove_planks
+      - character/brace_open
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_brace_open"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_brace_close:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTRmMTQ5MjM4NWM5NWExNDMxOThmYTI2YzJkOTk5NzkzMTc5MGIyMjc3NzI2NGVlNmUwMzc4ZmM4NzYzNTM1MyJ9fX0="
+    name: "&7Mangrove Planks }"
+    tags:
+      - alphabet/mangrove_planks
+      - character/brace_close
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_brace_close"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_arrow_up:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDY1ZDVmMmViMGFkYTYyNDNlNDZjZDEwYmY2MDE2YTg1YmMxYjFmYzBhMzRlZTdhOWY4YjViMTc0YTQ0OWQifX19"
+    name: "&7Mangrove Planks ↑"
+    tags:
+      - alphabet/mangrove_planks
+      - character/arrow_up
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_arrow_up"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_arrow_down:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMmNhOWRjNjZhNTQ5NjJmNGVkMDRiMjQ1NWFhOTk0YjQ4NDg4OTZlYTZjZTlkYzVlNDUwY2NkY2Y5NWY2YjUyYyJ9fX0="
+    name: "&7Mangrove Planks ↓"
+    tags:
+      - alphabet/mangrove_planks
+      - character/arrow_down
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_arrow_down"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_arrow_left:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDAyY2YwZGVhNGQwNmVmMWRlMjU1YmI4MTVmNjQyNjhkNjhiYjNiOTAzZDYwNjIxYWU5MmUwMDdlMjg4MTk4YyJ9fX0="
+    name: "&7Mangrove Planks ←"
+    tags:
+      - alphabet/mangrove_planks
+      - character/arrow_left
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_arrow_left"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_arrow_right:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjVkYTE4NDU0NmEwNWRlOTZhNGQxZmI4MjBmNzJjMDlmMTU5N2RmNTZkODhhNGFiMzVlOWI0YTJjNzgwYWI4NCJ9fX0="
+    name: "&7Mangrove Planks →"
+    tags:
+      - alphabet/mangrove_planks
+      - character/arrow_right
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_arrow_right"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_arrow_left_up:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDZiNTNkZDk2NmY0NThmYmQ2OTU2NWU0ZDI0ZWM3M2M5YTFiZDU2NzMwNDE3MmE2ZDg1OTg3NmMzNTA5MGQzNyJ9fX0="
+    name: "&7Mangrove Planks ↖"
+    tags:
+      - alphabet/mangrove_planks
+      - character/arrow_left_up
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_arrow_left_up"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_arrow_right_up:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzNlMGY5ZGViZjM1MDhmZWViZmUxODFmN2E3MWZmZGFjYmUzMTczZWJjNWZlNWNhMzQ0MjU0ZmQ1YTJiNWQwZCJ9fX0="
+    name: "&7Mangrove Planks ↗"
+    tags:
+      - alphabet/mangrove_planks
+      - character/arrow_right_up
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_arrow_right_up"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_arrow_left_down:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmJhY2Q2ZGYyNTk1YWFiYzgyZWFiZmY2MTljMDYzYTVlNDY4MjA5M2QzYTJiMzg3NWFlYjkzY2VlMGNkODhhZSJ9fX0="
+    name: "&7Mangrove Planks ↙"
+    tags:
+      - alphabet/mangrove_planks
+      - character/arrow_left_down
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_arrow_left_down"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_arrow_right_down:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTIxYWVlNjRkNmJmYWIzMDA3MGM2ZGZlYWQ3YjNmYTJkZmNmNTNkMWE3MDg3NzJhNWQyNmRjODI0MTBiYzg1MSJ9fX0="
+    name: "&7Mangrove Planks ↘"
+    tags:
+      - alphabet/mangrove_planks
+      - character/arrow_right_down
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_arrow_right_down"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_forward:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODAwM2YyYzlmMDFkMmVkNThiOTAwMzE0ZDcyZmIyNTE1NmNhOWJmMTNiN2ZhZTMwOTMxMDRjZThmZTk2NGU5ZiJ9fX0="
+    name: "&7Mangrove Planks ⏩"
+    tags:
+      - alphabet/mangrove_planks
+      - character/forward
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_forward"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_forward_ii:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOGNhOTYxYWViZjJjYTg3Yjk4MWY2MGFjODNkZjllMTYwMTIwZGI3ZTI3MWI5NjI3OGUxMTNhOGM3YjI3Y2JmYSJ9fX0="
+    name: "&7Mangrove Planks ⏭"
+    tags:
+      - alphabet/mangrove_planks
+      - character/forward_ii
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_forward_ii"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_backward:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjcyZDEwZTQxMGRmOGQ1MTVhYmYzNWI3NjY2NmYxMWI3NDYzOTUwMGNmMGVlYjZlNzBkNDVmMzhiZDRiYmEzYSJ9fX0="
+    name: "&7Mangrove Planks ⏪"
+    tags:
+      - alphabet/mangrove_planks
+      - character/backward
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_backward"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_backward_ii:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjQ5YmExYTVhZTBhYzg5OTcwZGEyNGNkZmUzOGNiM2ZkZDY5MzA5ZDA4MTE0ZTJkZTc3M2VmOGRmM2ZjNGFhNSJ9fX0="
+    name: "&7Mangrove Planks ⏮"
+    tags:
+      - alphabet/mangrove_planks
+      - character/backward_ii
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_backward_ii"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_refresh:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTk5ZTVlZDNlNWYyM2Y3M2ZhMjY5ZGQ5ZGNjMTFkZjcxMTE5MzcyNzEyMmI5ZTA2NjllMzM5NGU1Nzk3MGY5YyJ9fX0="
+    name: "&7Mangrove Planks ↻"
+    tags:
+      - alphabet/mangrove_planks
+      - character/refresh
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_refresh"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_letter_a_acute:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjM2ZGM5YjgxMGJkMjdhOGNkYzdmMzE5NDliNjU0ZmVkMWU4YjVmNjJjNTc3MzMwNmIzMzMwMzE5NTY4MWY1YiJ9fX0="
+    name: "&7Mangrove Planks Á"
+    tags:
+      - alphabet/mangrove_planks
+      - character/letter_a_acute
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_letter_a_acute"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_letter_a_umlaut:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODE1MDVmYTJjY2Y1YTliMGJkZGFhZDE3OWYxMmI3OGIwZDgyODkyMTc2ZDAxOWY3YTc1MmMxMTAyZTkxMzgwOCJ9fX0="
+    name: "&7Mangrove Planks Ä"
+    tags:
+      - alphabet/mangrove_planks
+      - character/letter_a_umlaut
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_letter_a_umlaut"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_letter_c_cedilla:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzM3NGMyYTBjOTRmMzNkYjBlMzhiM2YxYTAzZWUzZjYwMDE2MGQ5YjA1NmVlMWNhMjM0ZTU1NWEyNTZkNTcyYiJ9fX0="
+    name: "&7Mangrove Planks Ç"
+    tags:
+      - alphabet/mangrove_planks
+      - character/letter_c_cedilla
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_letter_c_cedilla"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_letter_e_acute:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODYwM2Q3MWFiZTMwOGJlNDQ3ZmRmMGNiYmYxNWY3MTA5ZDUxYjkzN2Q3NjkxNGQyYzYzYjZlMGQ1NmE5ZDQ0NCJ9fX0="
+    name: "&7Mangrove Planks É"
+    tags:
+      - alphabet/mangrove_planks
+      - character/letter_e_acute
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_letter_e_acute"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_letter_i_acute:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvN2FhMGQ4Njk1ZDMzOTMwM2Q4NTljNTkwNTI3NTJlYzliYTY1YTk3ZTk0MjU5OWZjYzAwMDU4NTBlZGNhMGQ5ZiJ9fX0="
+    name: "&7Mangrove Planks Í"
+    tags:
+      - alphabet/mangrove_planks
+      - character/letter_i_acute
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_letter_i_acute"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_letter_n_tilde:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTllYjRmZThmYmMwMDczZDI2OTA0MTM4MjEwZTE5NDVjMGU4Yjc2YmUyMjllOTM0MjMwYWQ2MDIyZWNiNGU2OSJ9fX0="
+    name: "&7Mangrove Planks Ñ"
+    tags:
+      - alphabet/mangrove_planks
+      - character/letter_n_tilde
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_letter_n_tilde"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_letter_o_acute:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjI5MmY4ZDRlYzdjOTE4YmI5ZmE4MzI1ZWU0ZjM1MWQ2YzIyZTlkZGI3NTRmM2U2N2I1MmE0YzEwNDA4MDI5NSJ9fX0="
+    name: "&7Mangrove Planks Ó"
+    tags:
+      - alphabet/mangrove_planks
+      - character/letter_o_acute
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_letter_o_acute"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_letter_o_umlaut:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODc0ZjllYWQ4MjNhMmRjNWFiZjk2OTUyMWI3NGI0MWE2YjFiZTEwOGJmYzRkZGI5MzBkNWVmZmJhMDAyYzM1ZSJ9fX0="
+    name: "&7Mangrove Planks Ö"
+    tags:
+      - alphabet/mangrove_planks
+      - character/letter_o_umlaut
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_letter_o_umlaut"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_letter_u_acute:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjk1NjIyMjYzOWZlMDFhNjdhMDVmYzAwMmY3ZTk1MWM4ZGEzNjJjZDNkNGQzZGMyNWNmNjgxZmNhNDgzNDYyZiJ9fX0="
+    name: "&7Mangrove Planks Ú"
+    tags:
+      - alphabet/mangrove_planks
+      - character/letter_u_acute
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_letter_u_acute"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_letter_u_umlaut:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTI4NDU4YjlkOWIyMzVhMGIwZGMzNTg1NDFjZTQwNGM2ODYyZjQ5MWM1NTI4NWFlMjNiMGYzYTBjYWMxODU5YyJ9fX0="
+    name: "&7Mangrove Planks Ü"
+    tags:
+      - alphabet/mangrove_planks
+      - character/letter_u_umlaut
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_letter_u_umlaut"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_greek_alpha:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzdjZWU1OGU5ZWRiNjU3MzcxZGQ1ZWQ4OTI2ODgxZGVhNzMyZWQ1NTJlZmIzYjQ1MjhlNTE4ZTQ1N2FmYjlkMiJ9fX0="
+    name: "&7Mangrove Planks α"
+    tags:
+      - alphabet/mangrove_planks
+      - character/greek_alpha
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_greek_alpha"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_greek_lambda:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjk1ZTc1YTA3MWFmNGM4ZjdmYWZmOGUyNGI4NDljNGNiMTU0OTc1YmZkODAxNzdjNGQwM2YyZGRjZDU2NmM3ZiJ9fX0="
+    name: "&7Mangrove Planks λ"
+    tags:
+      - alphabet/mangrove_planks
+      - character/greek_lambda
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_greek_lambda"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_greek_pi:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjFjY2E4ZjJmMjVhNTUwZTliNGM0MjczNzhiNDJiNzNkNGI1ZjQ2MDBjZjg5NzQwMGYxNThiZGMwNmRmYzg0NSJ9fX0="
+    name: "&7Mangrove Planks π"
+    tags:
+      - alphabet/mangrove_planks
+      - character/greek_pi
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_greek_pi"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_greek_omega:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTQ3ZmFmOGVhYTNkODhlMTI2YzA3M2E5ZmI1ZGM2NjVlMWNiMTk0NzgwNzNjNTIyZjgwNWNmMWI4ODhjOGFjOCJ9fX0="
+    name: "&7Mangrove Planks Ω"
+    tags:
+      - alphabet/mangrove_planks
+      - character/greek_omega
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_greek_omega"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_greek_sigma:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTFkMTIwMjkyODIxNTk4OTJkNzJhM2VlNDJmZGQ5OGNiZWNjM2JjNTUwMTFiNDQ2Mjc1MGU0NzM3MzAzMDlhYyJ9fX0="
+    name: "&7Mangrove Planks ∑"
+    tags:
+      - alphabet/mangrove_planks
+      - character/greek_sigma
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_greek_sigma"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_cyrillic_yo:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzY5OTU3OTQ5MGY5NTA1NDQzODc3MjU3NDZiYWYzODZlNmUzMDUxM2E2YTAzMzczMDgxZmZlZjE4NzdhZTdlMSJ9fX0="
+    name: "&7Mangrove Planks Ё"
+    tags:
+      - alphabet/mangrove_planks
+      - character/cyrillic_yo
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_cyrillic_yo"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_cyrillic_be:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjgxYWM2OGM2YTE5ZjQ3M2IxZTk2NmQzNmEyOWFjNmYxNjk0ZmRkYzJhNTdkYzQ0ZWFmZGU1ZjVjNWNmYmUxZCJ9fX0="
+    name: "&7Mangrove Planks Б"
+    tags:
+      - alphabet/mangrove_planks
+      - character/cyrillic_be
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_cyrillic_be"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_cyrillic_ge:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDFmNTRlZDFhZTU3ZjE3YjlkMjQ3NTQzOTA4ZjQwOTIwMzEwODcwN2JmZjMxNGIzZDZiOWI0MmIyODg5OTg5YyJ9fX0="
+    name: "&7Mangrove Planks Г"
+    tags:
+      - alphabet/mangrove_planks
+      - character/cyrillic_ge
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_cyrillic_ge"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_cyrillic_de:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTExZThlNDJkZmE1NDdiZTlmNWQ2ZGEzMjE0YTBhMTEyNzY4MDdiODVkODE3MmRiODg1MzM0MDU1NmEzYzIxNCJ9fX0="
+    name: "&7Mangrove Planks Д"
+    tags:
+      - alphabet/mangrove_planks
+      - character/cyrillic_de
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_cyrillic_de"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_cyrillic_zhe:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvM2U1ZmU2MjA5OWNhYjdkMGNhZWU1NzZkNWE2OGEzNjQ2YTNiZDU1MDM0MDJhOTQ2N2JlZDA4N2E5MGM4MWQ0NSJ9fX0="
+    name: "&7Mangrove Planks Ж"
+    tags:
+      - alphabet/mangrove_planks
+      - character/cyrillic_zhe
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_cyrillic_zhe"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_cyrillic_ze:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTA4ZmRlMDRmYzUzNThlMWYwZmM3ODdkMzAwYmRlMmEwM2RjYTE2YTdiNDhlZWYwMDI1ZmYzYzVmYmNlOTc2ZiJ9fX0="
+    name: "&7Mangrove Planks З"
+    tags:
+      - alphabet/mangrove_planks
+      - character/cyrillic_ze
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_cyrillic_ze"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_cyrillic_i:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDQzOGQ1NmVmYjY0ZjdiNWVkMWVjODFmMDcyMWZkMTExYWZmMGY0NTlkNjkwZmY4Y2U3ZDgzMmEyZjU0YjE0YyJ9fX0="
+    name: "&7Mangrove Planks И"
+    tags:
+      - alphabet/mangrove_planks
+      - character/cyrillic_i
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_cyrillic_i"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_cyrillic_short_i:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTU1NDkwMzg5NDIwZmFmODRjNjYxNTAyMzdmNzNlZmE0YTE0Y2FmODY4ZDcxZGYyMjcyZDExYTkwN2YwMjQ3YyJ9fX0="
+    name: "&7Mangrove Planks Й"
+    tags:
+      - alphabet/mangrove_planks
+      - character/cyrillic_short_i
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_cyrillic_short_i"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_cyrillic_el:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDc4MGZlOTZlYTc1N2Q5ZjZlYTlhMGQ3NTM1ZWRiNmEyOTE1MjUzMDFjMzZhYTUzZmI3Y2FlNTRkYWNhZWEzMSJ9fX0="
+    name: "&7Mangrove Planks Л"
+    tags:
+      - alphabet/mangrove_planks
+      - character/cyrillic_el
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_cyrillic_el"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_cyrillic_pe:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNmU5ZDdiMDk3YTFkN2RjODE1OGJkMjRiMDhmYzIwY2NlZWEzNjBhMDQxMTk2NjUzNjNmZWEzMTdlYThjODBjOCJ9fX0="
+    name: "&7Mangrove Planks П"
+    tags:
+      - alphabet/mangrove_planks
+      - character/cyrillic_pe
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_cyrillic_pe"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_cyrillic_u:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTQ3ZmMwNWY5NjQ3NTQyNmJmNTdjNzdhNGM2Y2QyMjIzNzI0NjFmZGUzNTI4MWU2N2E1MjU3NDZmOTRkMDVhNCJ9fX0="
+    name: "&7Mangrove Planks У"
+    tags:
+      - alphabet/mangrove_planks
+      - character/cyrillic_u
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_cyrillic_u"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_cyrillic_ef:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOWI0NDUzNmFkZDE3MDgzNzg4MDNmNmJiNmZmY2Y0N2NjZDE5YTFmZDI2NjFmMmY3N2FkNjAyZTMzYWVmYTgyNSJ9fX0="
+    name: "&7Mangrove Planks Ф"
+    tags:
+      - alphabet/mangrove_planks
+      - character/cyrillic_ef
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_cyrillic_ef"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_cyrillic_tse:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDQ4MTI3OTk0YjdkYjUzZWQ0OGY4N2FhNGYzYzZkNDNkMWY4Y2JjMDNkODVmNDgwZWMwNDcxZTUzMzNhNDExMiJ9fX0="
+    name: "&7Mangrove Planks Ц"
+    tags:
+      - alphabet/mangrove_planks
+      - character/cyrillic_tse
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_cyrillic_tse"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_cyrillic_che:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODgzOTU3MjU2ZWU2MzM0Zjc0NzU4MDAzY2RlZGMyYzc2ZTA1ODJjYTQ5Nzk3NjQxMDc1NTFkZWFlMDRiYzIwMSJ9fX0="
+    name: "&7Mangrove Planks Ч"
+    tags:
+      - alphabet/mangrove_planks
+      - character/cyrillic_che
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_cyrillic_che"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_cyrillic_sha:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDJmOWQ3YWYxMDUzYjg3MmE0YWIzZDBmOWYwNjJiZjBmMjI3MTc5ZmJlNTE2MjZkZWVkYjM1MTVkNTEyOTc0In19fQ=="
+    name: "&7Mangrove Planks Ш"
+    tags:
+      - alphabet/mangrove_planks
+      - character/cyrillic_sha
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_cyrillic_sha"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_cyrillic_shcha:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDRiM2MyNDA0ZTQ2YTM3YTkwNjI3ZTU2OGUyYzA4ZmQ4NDQ0MTg3ZTBlMTMxNjRlMGU4MmE4N2QyNmQwZTJkMiJ9fX0="
+    name: "&7Mangrove Planks Щ"
+    tags:
+      - alphabet/mangrove_planks
+      - character/cyrillic_shcha
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_cyrillic_shcha"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_cyrillic_hard:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzE1NTQ2ZTNkNzI5MzZlYTNiYzc5Yzg1MjJjY2M1MzM4OGE4OWYzMzcwMDBjMDYzZjYyMmVkZjYyNDIzMzc0In19fQ=="
+    name: "&7Mangrove Planks Ъ"
+    tags:
+      - alphabet/mangrove_planks
+      - character/cyrillic_hard
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_cyrillic_hard"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_cyrillic_yeru:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODFiZTA5ODZmYjg2YjA4ZTAzMGE2Yjg0Y2Q4YjQxZWUzNGY2ODc0ZDAzZjM1MTM3OWQ4YmJjOWFhMjMyZTU1MiJ9fX0="
+    name: "&7Mangrove Planks Ы"
+    tags:
+      - alphabet/mangrove_planks
+      - character/cyrillic_yeru
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_cyrillic_yeru"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_cyrillic_soft:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmE1MmQ0YjE0MjdiZGZjNmY0MzUyYzEyMjBhNDVjNmM1ZGQyZmQ4ZWZlMGVkOWMxY2NhZTBlZmI4NzFmODE4YSJ9fX0="
+    name: "&7Mangrove Planks Ь"
+    tags:
+      - alphabet/mangrove_planks
+      - character/cyrillic_soft
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_cyrillic_soft"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_cyrillic_e:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvY2YyYWRiYjhkMDZhOGI2OTA4NDg0MzhiZmExYWEyZmU0MmJiNWQwOTlhNzk3Y2M0MGY3MDFlNWM3NTc1MTA4YyJ9fX0="
+    name: "&7Mangrove Planks Э"
+    tags:
+      - alphabet/mangrove_planks
+      - character/cyrillic_e
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_cyrillic_e"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_cyrillic_yu:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzllOTc0YzNlM2M3NTU5M2Q2MDYwMmNmMmQwODI1OWY2OGI1NGM5NGE0YzVjOWU3MzM3MWI0ZTJlZWE1OTgwYyJ9fX0="
+    name: "&7Mangrove Planks Ю"
+    tags:
+      - alphabet/mangrove_planks
+      - character/cyrillic_yu
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_cyrillic_yu"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_cyrillic_ya:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTYwMmJhNTE5NDQ4ZmIwMTFjMGY1NDI1YjBkYmMwY2U5YzBkMzI2YzEzMzlhMGQ1YjQxNzJjNTRkZTQ2ZjcyZCJ9fX0="
+    name: "&7Mangrove Planks Я"
+    tags:
+      - alphabet/mangrove_planks
+      - character/cyrillic_ya
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_cyrillic_ya"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_zodiac_aquarius:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjQ3N2JiNDlhMWFhOGNiYjA3MzJjMDE5YjJjNzVkOTYyOWEyNDk1NWI1OTIwNTI0YmM2OTQ3NjgyYzRkMjRiNyJ9fX0="
+    name: "&7Mangrove Planks ♒"
+    tags:
+      - alphabet/mangrove_planks
+      - character/zodiac_aquarius
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_zodiac_aquarius"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_zodiac_aries:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvY2I2YTkyNTFhYTE4ZDU3NDVmOTNjMzE3MTQ4NDUyZTExODI1ZThjZGNlMDY0OTQ1NDIzYzU0ZWE1M2Y0NTBiMCJ9fX0="
+    name: "&7Mangrove Planks ♈"
+    tags:
+      - alphabet/mangrove_planks
+      - character/zodiac_aries
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_zodiac_aries"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_zodiac_cancer:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDA2MTc2YWI4MWI1NDM5ZmMxYWM2YWQ1OWI5MTEwNGY2M2I2ZTI1YmRhMzRmMmFjNmYyMTU3NWQ5Mjg2OTkyNSJ9fX0="
+    name: "&7Mangrove Planks ♋"
+    tags:
+      - alphabet/mangrove_planks
+      - character/zodiac_cancer
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_zodiac_cancer"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_zodiac_gemini:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYWYyMTE0NjE3MjZmNWQ3OTNiMzYyOTdmYzYyZmMzZWRlY2NkY2NhYWVjODAwNDQyZGZjOWRkM2IzNGFiYjFlZSJ9fX0="
+    name: "&7Mangrove Planks ♊"
+    tags:
+      - alphabet/mangrove_planks
+      - character/zodiac_gemini
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_zodiac_gemini"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_zodiac_leo:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMmNkMmZkNTUxMGQ2OTliNzNhOWRhYTgwYWI5MzQxNDc5MjMwOTc4MjZkNGFhMWY0NWE3ZjllNTIzYWNjYzMzZCJ9fX0="
+    name: "&7Mangrove Planks ♌"
+    tags:
+      - alphabet/mangrove_planks
+      - character/zodiac_leo
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_zodiac_leo"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_zodiac_libra:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTVhZDhkZDJmNDlhNjdjZThjODk3YmVlYWExODYyOTBlZDU5MTFiYTAwMmY1ZTVjY2ZlYTUzNzEzZWJiYTM0ZCJ9fX0="
+    name: "&7Mangrove Planks ♎"
+    tags:
+      - alphabet/mangrove_planks
+      - character/zodiac_libra
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_zodiac_libra"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_zodiac_pisces:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTQ5MWZiZTQxYmIyYWUxOTA5MjhhZTVlNDY3YWZmMjE5ZGNmM2M3Y2RjMzZjNzgyYTAyNTAzZTcyMTkxN2JjZSJ9fX0="
+    name: "&7Mangrove Planks ♓"
+    tags:
+      - alphabet/mangrove_planks
+      - character/zodiac_pisces
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_zodiac_pisces"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_zodiac_sagittarius:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjFkMjU5MDM5ZjZhYzY4NjAzZGY1ZDFmMWVkYmM3NWZjMjk5OGVhZjgzMzYwYzA3YTA1OGQ2NTUyMTQzMTI0OSJ9fX0="
+    name: "&7Mangrove Planks ♐"
+    tags:
+      - alphabet/mangrove_planks
+      - character/zodiac_sagittarius
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_zodiac_sagittarius"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_zodiac_scorpio:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTJiMDA3ZDM1NTBlZThlMTJhYWU3OWI2MTU0YTJhOGI1ODAyNGUyYmE3NGVmYTk2NzMyNTg3MWQ0NjRhNjc3YyJ9fX0="
+    name: "&7Mangrove Planks ♏"
+    tags:
+      - alphabet/mangrove_planks
+      - character/zodiac_scorpio
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_zodiac_scorpio"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_zodiac_taurus:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmMxYmRjNWMyNDA2MjYxMjIyMTU4OTkzYmYwYzg2MGExZGYwMTc1MWE1NzAyN2IwOWVhNDNhYzZjN2UxNzI0MSJ9fX0="
+    name: "&7Mangrove Planks ♉"
+    tags:
+      - alphabet/mangrove_planks
+      - character/zodiac_taurus
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_zodiac_taurus"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_zodiac_virgo:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvN2QzMzMwOWFkY2RlZTBlZjc4MzgyYTU0MmNiNmQwMzhkNjQ0MzgxOGZjYmExODU4NzVjMGNlYmQ2NzBkYWYxYyJ9fX0="
+    name: "&7Mangrove Planks ♍"
+    tags:
+      - alphabet/mangrove_planks
+      - character/zodiac_virgo
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_zodiac_virgo"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_female:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDZmZDNjODI2MmU1MDY3NmMyYzQyMjMwNWQ3OWMxYjVjNzU3ZDEyNmUwNTFiNjhjODdlZGExZTRhM2JiNDUwMyJ9fX0="
+    name: "&7Mangrove Planks ♀"
+    tags:
+      - alphabet/mangrove_planks
+      - character/female
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_female"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_male:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODkyMTVkNTE3Y2U0ODQ4N2NiMWEwMDFmNzNmMDg2YzYwODM1ZjZjYjFlYzJmYjc0NzNhYmY2OTE1N2QzYWE4YSJ9fX0="
+    name: "&7Mangrove Planks ♂"
+    tags:
+      - alphabet/mangrove_planks
+      - character/male
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_male"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_galactic_a:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTA2MjBjMDc2NzcwMmI0MDcwMTIwNTQ2ZTZhZjIyOWFhZjY5OGRhOTNjM2YzNWMyMjRhMWNiNmVkZmVmMmViMCJ9fX0="
+    name: "&7Mangrove Planks Galactic A"
+    tags:
+      - alphabet/mangrove_planks
+      - character/galactic_a
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_galactic_a"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_galactic_b:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjBiZWNiZTQ4Yzg1MDFjZmVkNGM2NzA2NzEwMTVhODRkZGFiNGMwNTU2NmY5ODU5OTdkOTA1NWRiOGJlNGU2NiJ9fX0="
+    name: "&7Mangrove Planks Galactic B"
+    tags:
+      - alphabet/mangrove_planks
+      - character/galactic_b
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_galactic_b"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_galactic_c:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNmFmYzZiZWI2YjhmY2RhOGI2Yzk0NWI1NDdhMTkzNzE4ZTMzM2M0MzRkYTI5Mzk0NGM1ZTRjZDA5NzgwMzVhMiJ9fX0="
+    name: "&7Mangrove Planks Galactic C"
+    tags:
+      - alphabet/mangrove_planks
+      - character/galactic_c
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_galactic_c"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_galactic_d:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzBlMjY5OWM5MmUwY2NiOTlkYTI4OTAxM2NlNzcwZjdlMjEwZGVjM2NjZjNiZGMwNTU0ZjQzNGVlYmRhY2EzZSJ9fX0="
+    name: "&7Mangrove Planks Galactic D"
+    tags:
+      - alphabet/mangrove_planks
+      - character/galactic_d
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_galactic_d"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_galactic_e:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvY2JkNjRiNDRhMDE4NjRlMGRiN2Q4MWQ4ZDc0YjE5MWZjNjMyMGU5YTI5YmI1ZmZlMmMxM2VlNmE0MDgyNWQyZSJ9fX0="
+    name: "&7Mangrove Planks Galactic E"
+    tags:
+      - alphabet/mangrove_planks
+      - character/galactic_e
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_galactic_e"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_galactic_f:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOGY5MDU1MTVhMWUzNjFjMTEwZmE4ZWExYWIyODdkNTE0YmIwYjA1YzJjN2FlZjI0NDkyOGQ1MDg5NTYxYmY4NCJ9fX0="
+    name: "&7Mangrove Planks Galactic F"
+    tags:
+      - alphabet/mangrove_planks
+      - character/galactic_f
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_galactic_f"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_galactic_g:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOGM1Y2YwNmU3MTA1YTc3YmU5Yjg3Zjc1YmQ0ZjE3NmFlN2Q4YTQyYjkxN2Y5ZjI4ZmJiMDBiMGViNDRlYWExZSJ9fX0="
+    name: "&7Mangrove Planks Galactic G"
+    tags:
+      - alphabet/mangrove_planks
+      - character/galactic_g
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_galactic_g"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_galactic_h:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvN2U1ZjlhNDAxNTlhMTBmODI3Mjk0OWQyOTQ0N2EzODMzMjhmYzcyZmM3YjhmNGE0MTRhNjMzODY1YmJjMmMwMyJ9fX0="
+    name: "&7Mangrove Planks Galactic H"
+    tags:
+      - alphabet/mangrove_planks
+      - character/galactic_h
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_galactic_h"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_galactic_i:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzJhMjVhMmM0MWEwNjA4YzU3ZjIwNGJmMTcyMTc1OTU3YWQwNWMwNGY5NDcwNjJjYjY0Y2M3ZmY1ZTA5ZmMzYiJ9fX0="
+    name: "&7Mangrove Planks Galactic I"
+    tags:
+      - alphabet/mangrove_planks
+      - character/galactic_i
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_galactic_i"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_galactic_j:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvN2ViOWJiYjkzM2FhMzVkOWQwNjg3NjZhMzQxMmFiMGFiNzUwOTIwMTJjNWRmYmMxMTgzMWUwZTk2MmYxOGRkOSJ9fX0="
+    name: "&7Mangrove Planks Galactic J"
+    tags:
+      - alphabet/mangrove_planks
+      - character/galactic_j
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_galactic_j"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_galactic_k:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvN2VkYmI1ODRjNGEwNjNlYWQyZWE5MzlhNzMxZGM3MDRhMjEwYjI3MDFkNmMwYzU4MGYxNmI4NDA1ZmE5MTA4YyJ9fX0="
+    name: "&7Mangrove Planks Galactic K"
+    tags:
+      - alphabet/mangrove_planks
+      - character/galactic_k
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_galactic_k"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_galactic_l:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDVmMjlkYzZhYTMwZGQxMWMzYTA0ZDdlNjhkNGViMjVlZDUwNzZmZWQxYjgxYWVmMmRiNmRiMmZlNzBkODg0YSJ9fX0="
+    name: "&7Mangrove Planks Galactic L"
+    tags:
+      - alphabet/mangrove_planks
+      - character/galactic_l
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_galactic_l"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_galactic_m:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjA5NWJhZTFiNjQzMmJkZWZiZWUxMzg0M2ZhYTk2NmM3YzMwZmMxYmYyNmU4YjZiMWQ1ZTQwZjc3N2YxYTg1In19fQ=="
+    name: "&7Mangrove Planks Galactic M"
+    tags:
+      - alphabet/mangrove_planks
+      - character/galactic_m
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_galactic_m"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_galactic_n:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzhlNDdhN2I2NzYxNDlhNTg2MzNjYmI0MzNkOWQxMTljODhhNzBkOWI2OGNhNjE5OGNhOGIwYTJmOTI1MjZkMCJ9fX0="
+    name: "&7Mangrove Planks Galactic N"
+    tags:
+      - alphabet/mangrove_planks
+      - character/galactic_n
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_galactic_n"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_galactic_o:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTVjZjI4OWUxZWYyNDZmYmI4ZTAyZmJjODQ2ZjBhNDQyZTZmNGJjM2JkZjcxNmU2NDg4OTgyOTFmMGQ3YTViMyJ9fX0="
+    name: "&7Mangrove Planks Galactic O"
+    tags:
+      - alphabet/mangrove_planks
+      - character/galactic_o
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_galactic_o"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_galactic_p:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTBiMjZmNTU0MWNjZGY5ZDYxY2I1ZmY5YWVlNzY5YWIwYjc0YWIwZTNlNWVhMGZlZWJlOGMxN2JmMGUwZTZmYiJ9fX0="
+    name: "&7Mangrove Planks Galactic P"
+    tags:
+      - alphabet/mangrove_planks
+      - character/galactic_p
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_galactic_p"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_galactic_q:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTQzNmYxMTJkMzg3MjFiYzNkYjZhODc0YmJhNWFkNGE5MmM1OTcyNWM0MDk3NDE5MjY4ZGIwOWMwN2NmMzk0NSJ9fX0="
+    name: "&7Mangrove Planks Galactic Q"
+    tags:
+      - alphabet/mangrove_planks
+      - character/galactic_q
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_galactic_q"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_galactic_r:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjI4NGI1NGVmNmJkMTBiNmJlYTk5OTE2MzhiMDJlYzg5ZjZiZTlkNThhMzRiNjBhYjNiZjc0MjY1NzcyNmQ4MCJ9fX0="
+    name: "&7Mangrove Planks Galactic R"
+    tags:
+      - alphabet/mangrove_planks
+      - character/galactic_r
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_galactic_r"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_galactic_s:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjc4NzhlZTU5YjVhN2I1NTZhNTc3MDRkNzEyMTU0MDJlNDM1Y2M1YmJiMzFiZmFiODlmOWQxYTc0ZmU2ZDcwNyJ9fX0="
+    name: "&7Mangrove Planks Galactic S"
+    tags:
+      - alphabet/mangrove_planks
+      - character/galactic_s
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_galactic_s"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_galactic_t:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNmRkNTBiNDY1NmMwODkyMWQ5ZDk0ZTI5YjY2NDgzMzJhNTFlZmQ1MzE4NjZhNzFkM2JlOTA3ZTljODY4MmRhMCJ9fX0="
+    name: "&7Mangrove Planks Galactic T"
+    tags:
+      - alphabet/mangrove_planks
+      - character/galactic_t
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_galactic_t"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_galactic_u:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzRmMzJiNjk2NzZkNWZhY2E4NTQ2MzYxODI1ZjdmMzIyMWU1NmQ2ZjIxMTZhOGIwYjM1NzI3MzFjNGQ2ZDBhYyJ9fX0="
+    name: "&7Mangrove Planks Galactic U"
+    tags:
+      - alphabet/mangrove_planks
+      - character/galactic_u
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_galactic_u"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_galactic_v:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZWY1MjFkOWM4ZjViYTIxNmUyZGY4NTI5N2RlMjdlYjI3MTU3MjY2YWFiMDQzYmJiYTJlNDUyMjI5Zjg3YmE3ZCJ9fX0="
+    name: "&7Mangrove Planks Galactic V"
+    tags:
+      - alphabet/mangrove_planks
+      - character/galactic_v
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_galactic_v"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_galactic_w:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjAxZjI3OTQyM2FlZTdhNWM1MDNkMzE5NzQ4MTcxODU2YjM0M2M1MGM5NzYxY2M5ZjRlNjk2N2Q2MmU5MWJlIn19fQ=="
+    name: "&7Mangrove Planks Galactic W"
+    tags:
+      - alphabet/mangrove_planks
+      - character/galactic_w
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_galactic_w"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_galactic_x:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOGRiZDg4ODZkYzExNjUwNTk1N2M2MGYzMWQyNmNmN2FhY2EzZmY1YTNjMDI2NDhmNWQzZDQxMTU5NDYzNmNmYSJ9fX0="
+    name: "&7Mangrove Planks Galactic X"
+    tags:
+      - alphabet/mangrove_planks
+      - character/galactic_x
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_galactic_x"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_galactic_y:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODNlOGFiYWIxYjEyMzA1MjU3M2Y1OWJhN2JjZWNhYzlkYThkMDgyMzBlYmFkZDNjN2QyMGUyYTY1ZDYxYzRlMSJ9fX0="
+    name: "&7Mangrove Planks Galactic Y"
+    tags:
+      - alphabet/mangrove_planks
+      - character/galactic_y
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_galactic_y"
+          input: { head: "mini_mangrove_planks" }
+  mangrove_planks_galactic_z:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjRjZDBlMGE3MjdlMTJjMzdhZjFlY2RkMGIwNTQ3ZGVlMmJlYmFlYTU0ZTE2ZWUyYzI0MDIwZmY4NTdkOWQzYyJ9fX0="
+    name: "&7Mangrove Planks Galactic Z"
+    tags:
+      - alphabet/mangrove_planks
+      - character/galactic_z
+      - wood
+    recipes:
+      stonecutter:
+        - id: "mangrove_planks_galactic_z"
+          input: { head: "mini_mangrove_planks" }

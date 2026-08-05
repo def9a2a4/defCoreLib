@@ -1,0 +1,642 @@
+# Buckets - Liquid buckets, fish buckets, and dye buckets
+
+heads:
+  # ============================================
+  # EMPTY BUCKET (Stonecutter recipe)
+  # ============================================
+
+  empty_bucket:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTE3ZDg2ZTNmODFjYzE4MzdjNzBmMTBiZTQ4ODk4MzRjMDRmNTdhN2U5OGUwZGQwYjRiMjIzYjUwYzdhOGY5MCJ9fX0="
+    name: "&7Empty Bucket"
+    tags: [storage]
+    lore:
+      - "&7An empty bucket."
+      - "&7Silk touch to keep the bucket."
+    recipes:
+      stonecutter:
+        - id: "empty_bucket"
+          input: { material: "BUCKET" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "BUCKET" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "empty_bucket" }
+
+  # ============================================
+  # LIQUID BUCKETS (Stonecutter recipes)
+  # ============================================
+
+  water_bucket:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTQ0MjE3ODJmYTllMDQxY2E4Y2NlNmFhYzNhMGIzMzdlY2MxYjk3MWIxNjhlY2JlZWY2OGI4ODEzZWUzOTZkYiJ9fX0="
+    name: "&9Bucket of Water"
+    tags: [storage]
+    lore:
+      - "&7A bucket of fresh water."
+      - "&7Silk touch to keep the bucket."
+    recipes:
+      stonecutter:
+        - id: "water_bucket"
+          input: { material: "WATER_BUCKET" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "WATER_BUCKET" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "water_bucket" }
+
+  lava_bucket:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODkxMTgzZWZiOTQxYzU3YzZhMzdmNjFjOTRlMjViNDRiNjdhODA0NDUyZTAyYTBkMjk5NmRlZGE2ZDIwZDdjNiJ9fX0="
+    name: "&6Lava Bucket"
+    tags: [storage]
+    lore:
+      - "&7A bucket of molten lava."
+      - "&7Silk touch to keep the bucket."
+    recipes:
+      stonecutter:
+        - id: "lava_bucket"
+          input: { material: "LAVA_BUCKET" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "LAVA_BUCKET" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "lava_bucket" }
+
+  milk_bucket:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjUxYzAzYjVlNjU5Mjc1ZWQ4NWNhMmM4YWQ5ODhjNzU1Y2NmYmE0NWFmZjNmNmQ4ZDZmMjczOGIwOTY3Y2NjZCJ9fX0="
+    name: "&fMilk Bucket"
+    tags: [storage]
+    lore:
+      - "&7A bucket of fresh milk."
+      - "&7Silk touch to keep the bucket."
+    recipes:
+      stonecutter:
+        - id: "milk_bucket"
+          input: { material: "MILK_BUCKET" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "MILK_BUCKET" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "milk_bucket" }
+
+  powder_snow_bucket:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTE5MjAzYmJmZjFiNjVjZTk2MDkwYTY5YzEyYzQwZjRmOWUxZTNmZTIwZWRjY2YyZmNiZWY2MTIwN2I1MmQ2ZCJ9fX0="
+    name: "&bBucket of Powdered Snow"
+    tags: [storage]
+    lore:
+      - "&7A bucket of powdered snow."
+      - "&7Silk touch to keep the bucket."
+    recipes:
+      stonecutter:
+        - id: "powder_snow_bucket"
+          input: { material: "POWDER_SNOW_BUCKET" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "POWDER_SNOW_BUCKET" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "powder_snow_bucket" }
+
+  # ============================================
+  # FISH/CREATURE BUCKETS (Stonecutter recipes)
+  # ============================================
+
+  axolotl_bucket:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjJhZTBkZWQxN2NhYzI1MDNjMGRhODc5ZjJkYmYwMzhlMDdhZjdhYWIyZDljNzkyNmVlMzA3NGI3NjEyOTA1NyJ9fX0="
+    name: "&dAxolotl Bucket"
+    tags: [storage]
+    lore:
+      - "&7A bucket with an axolotl."
+      - "&7Silk touch to keep the bucket."
+    recipes:
+      stonecutter:
+        - id: "axolotl_bucket"
+          input: { material: "AXOLOTL_BUCKET" }
+
+  cod_bucket:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTJlM2MzNWZhZDRkZWY3NjMxYWZhNzRkODhhMDM2MWE5YzRlNWRkNzlmYWQyN2NjMGVkMjk1YzM4NTA4MzljMyJ9fX0="
+    name: "&7Cod in a Bucket"
+    tags: [storage]
+    lore:
+      - "&7A bucket with a cod fish."
+      - "&7Silk touch to keep the bucket."
+    recipes:
+      stonecutter:
+        - id: "cod_bucket"
+          input: { material: "COD_BUCKET" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "COD_BUCKET" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "cod_bucket" }
+
+  salmon_bucket:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMmIxNmFlZmIyZjAzYTcwNGYwMDdmMjJhZjU1OTUwM2QzNjgxY2I4MjdhM2Q1ZTFlY2IzMGI0MmRlZTAwNDJiYSJ9fX0="
+    name: "&cSalmon in a Bucket"
+    tags: [storage]
+    lore:
+      - "&7A bucket with a salmon."
+      - "&7Silk touch to keep the bucket."
+    recipes:
+      stonecutter:
+        - id: "salmon_bucket"
+          input: { material: "SALMON_BUCKET" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "SALMON_BUCKET" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "salmon_bucket" }
+
+  tropical_fish_bucket:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTU1NDMxZTliMDBlYzMzYjcwM2UxNjRkMTI1YzU1YmRhYjMwYTBiODc5YzBmMjBkZDAwYmYwYmUwMTI0OWUyNiJ9fX0="
+    name: "&eBucket of Tropical Fish"
+    tags: [storage]
+    lore:
+      - "&7A bucket with tropical fish."
+      - "&7Silk touch to keep the bucket."
+    recipes:
+      stonecutter:
+        - id: "tropical_fish_bucket"
+          input: { material: "TROPICAL_FISH_BUCKET" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "TROPICAL_FISH_BUCKET" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "tropical_fish_bucket" }
+
+  pufferfish_bucket:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMmEzOGY2NzM4MDhjZTNjZTc5NTdlYzUxOTlmNTAyZDFmZTFkYWJkMDNlODExZDY4NzZmZjI5NTFlZGUxNGU2NiJ9fX0="
+    name: "&ePufferfish in a Bucket"
+    tags: [storage]
+    lore:
+      - "&7A bucket with a pufferfish."
+      - "&7Silk touch to keep the bucket."
+    recipes:
+      stonecutter:
+        - id: "pufferfish_bucket"
+          input: { material: "PUFFERFISH_BUCKET" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "PUFFERFISH_BUCKET" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "pufferfish_bucket" }
+
+  tadpole_bucket:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTlkOTc0MzViMzZlYTE1ZWE5ODlmNjE2NmIyYmYzZmM4MzdhZDllNDY1ZjJiMjMyNDRiNzJkNDcxMjViODY1NSJ9fX0="
+    name: "&2Tadpole Bucket"
+    tags: [storage]
+    lore:
+      - "&7A bucket with a tadpole."
+      - "&7Silk touch to keep the bucket."
+    recipes:
+      stonecutter:
+        - id: "tadpole_bucket"
+          input: { material: "TADPOLE_BUCKET" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "TADPOLE_BUCKET" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "tadpole_bucket" }
+
+  # ============================================
+  # DYE BUCKETS (Shapeless recipes: BUCKET + DYE)
+  # ============================================
+
+  dye_bucket_white:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvN2Y0ZmM4YjRkMTY2NTk1NDgxOGY1MzAwZDFhZWQ5OGM0NzRkZDQ1ZGNkYWQ1MWU0MGYyZTQzZDRmMGZkZWVjNCJ9fX0="
+    name: "&fBucket of Dye (white)"
+    tags: [storage]
+    lore:
+      - "&7A bucket of white dye."
+      - "&7Silk touch to keep the bucket."
+    recipes:
+      craft:
+        shapeless:
+          - id: "dye_bucket_white"
+            ingredients:
+              - { material: "BUCKET" }
+              - { material: "WHITE_DYE" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "BUCKET" }
+            - { material: "WHITE_DYE" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "dye_bucket_white" }
+
+  dye_bucket_light_gray:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDJhOGRjOWRjZDlkMmJkMjBmZDQyNzM0ODgyODMxNWFkNzk4OGM0NzNlYzUwM2VmMzIyYjdhNzIxMDEzM2Y5NyJ9fX0="
+    name: "&7Bucket of Dye (light gray)"
+    tags: [storage]
+    lore:
+      - "&7A bucket of light gray dye."
+      - "&7Silk touch to keep the bucket."
+    recipes:
+      craft:
+        shapeless:
+          - id: "dye_bucket_light_gray"
+            ingredients:
+              - { material: "BUCKET" }
+              - { material: "LIGHT_GRAY_DYE" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "BUCKET" }
+            - { material: "LIGHT_GRAY_DYE" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "dye_bucket_light_gray" }
+
+  dye_bucket_gray:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNWFmZTgzNjkyZjcxZjA1ZDExM2Q4OTFmOGI4MzhlMDdkN2NiODE0MTliMjBkYzFiMjA5ZWI4NGY3NzFmMGM5ZiJ9fX0="
+    name: "&8Bucket of Dye (gray)"
+    tags: [storage]
+    lore:
+      - "&7A bucket of gray dye."
+      - "&7Silk touch to keep the bucket."
+    recipes:
+      craft:
+        shapeless:
+          - id: "dye_bucket_gray"
+            ingredients:
+              - { material: "BUCKET" }
+              - { material: "GRAY_DYE" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "BUCKET" }
+            - { material: "GRAY_DYE" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "dye_bucket_gray" }
+
+  dye_bucket_black:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjA4NjJkYmIxNGI2OWIwNzY1MTg5ZTE0ZGQ0MjQ3NzgxZTRhNjJiN2NhZGI4MGUxOTVkOTQ0YmQyYWI3ZmVlOSJ9fX0="
+    name: "&0Bucket of Dye (black)"
+    tags: [storage]
+    lore:
+      - "&7A bucket of black dye."
+      - "&7Silk touch to keep the bucket."
+    recipes:
+      craft:
+        shapeless:
+          - id: "dye_bucket_black"
+            ingredients:
+              - { material: "BUCKET" }
+              - { material: "BLACK_DYE" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "BUCKET" }
+            - { material: "BLACK_DYE" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "dye_bucket_black" }
+
+  dye_bucket_brown:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTk1ZThmZTg4NzE2OTdjNjJiYjE3MTRjNmYwODI4YjNmNDc0ZjBlYTJlNTkyMDE3YmNjMDA4NmQxNjQ2Nzc3YiJ9fX0="
+    name: "&6Bucket of Dye (brown)"
+    tags: [storage]
+    lore:
+      - "&7A bucket of brown dye."
+      - "&7Silk touch to keep the bucket."
+    recipes:
+      craft:
+        shapeless:
+          - id: "dye_bucket_brown"
+            ingredients:
+              - { material: "BUCKET" }
+              - { material: "BROWN_DYE" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "BUCKET" }
+            - { material: "BROWN_DYE" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "dye_bucket_brown" }
+
+  dye_bucket_red:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTZlNDM1YjcyOWIyZmQ3MGNkZTdjMjNjNTc5ZGI5M2E3NWZkNWM1MGE5ZmE2ZmFjMTc2MTU1ZDQyZWE5YjM1OSJ9fX0="
+    name: "&cBucket of Dye (red)"
+    tags: [storage]
+    lore:
+      - "&7A bucket of red dye."
+      - "&7Silk touch to keep the bucket."
+    recipes:
+      craft:
+        shapeless:
+          - id: "dye_bucket_red"
+            ingredients:
+              - { material: "BUCKET" }
+              - { material: "RED_DYE" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "BUCKET" }
+            - { material: "RED_DYE" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "dye_bucket_red" }
+
+  dye_bucket_orange:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGI4Y2MzNDNmMDJjOWU3MjZiNWQxMGFkYTQ3ZTJhNTZmMzhiNjc1MWYyYWM2YmNiN2U3ZmJkZWM2YTE5NDljIn19fQ=="
+    name: "&6Bucket of Dye (orange)"
+    tags: [storage]
+    lore:
+      - "&7A bucket of orange dye."
+      - "&7Silk touch to keep the bucket."
+    recipes:
+      craft:
+        shapeless:
+          - id: "dye_bucket_orange"
+            ingredients:
+              - { material: "BUCKET" }
+              - { material: "ORANGE_DYE" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "BUCKET" }
+            - { material: "ORANGE_DYE" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "dye_bucket_orange" }
+
+  dye_bucket_yellow:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZWMyYjIzYjAwODI0YTJmNjk4ZWUxZjZhY2JkZWQ2YjBkZDUwNmNiNTY5NjFlOTIyMDNjNzdjNTY2ODZkOWY4OSJ9fX0="
+    name: "&eBucket of Dye (yellow)"
+    tags: [storage]
+    lore:
+      - "&7A bucket of yellow dye."
+      - "&7Silk touch to keep the bucket."
+    recipes:
+      craft:
+        shapeless:
+          - id: "dye_bucket_yellow"
+            ingredients:
+              - { material: "BUCKET" }
+              - { material: "YELLOW_DYE" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "BUCKET" }
+            - { material: "YELLOW_DYE" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "dye_bucket_yellow" }
+
+  dye_bucket_lime:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzJiMTQ1MDZlNWJjOTkyOGY1YTUxMDZjYjIwNDlhNzlmOGNkNDhjNDA1MTZmOTJhYTUzNjJiNTdkZDhkZDFiMCJ9fX0="
+    name: "&aBucket of Dye (lime)"
+    tags: [storage]
+    lore:
+      - "&7A bucket of lime dye."
+      - "&7Silk touch to keep the bucket."
+    recipes:
+      craft:
+        shapeless:
+          - id: "dye_bucket_lime"
+            ingredients:
+              - { material: "BUCKET" }
+              - { material: "LIME_DYE" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "BUCKET" }
+            - { material: "LIME_DYE" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "dye_bucket_lime" }
+
+  dye_bucket_green:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTI0NDAxYWFiNWUzZmY3Mjk0YmM5YjE5Y2I0MTQxN2M1NGY2NmQyYTZmZDEwMTg5YjY1NmNmMzI5ODhlN2Y3In19fQ=="
+    name: "&2Bucket of Dye (green)"
+    tags: [storage]
+    lore:
+      - "&7A bucket of green dye."
+      - "&7Silk touch to keep the bucket."
+    recipes:
+      craft:
+        shapeless:
+          - id: "dye_bucket_green"
+            ingredients:
+              - { material: "BUCKET" }
+              - { material: "GREEN_DYE" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "BUCKET" }
+            - { material: "GREEN_DYE" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "dye_bucket_green" }
+
+  dye_bucket_cyan:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjNhODRjMTE3ZWU4M2IzNTJjYjIzNjI3MThjOGQ0MWUzNWQ2YmI0ZTZmZWU1MzUzZDJjOWM3OTc5MzE2Njg2In19fQ=="
+    name: "&3Bucket of Dye (cyan)"
+    tags: [storage]
+    lore:
+      - "&7A bucket of cyan dye."
+      - "&7Silk touch to keep the bucket."
+    recipes:
+      craft:
+        shapeless:
+          - id: "dye_bucket_cyan"
+            ingredients:
+              - { material: "BUCKET" }
+              - { material: "CYAN_DYE" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "BUCKET" }
+            - { material: "CYAN_DYE" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "dye_bucket_cyan" }
+
+  dye_bucket_light_blue:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjkzOTFjNzdjYWM3N2E2YWUwZjZkNjcyYjNmODgyZmVhZDM4ZTM1NmU2NGMyMjRkYzgxYjQ3NWRmMjY4OTQ0YyJ9fX0="
+    name: "&bBucket of Dye (light blue)"
+    tags: [storage]
+    lore:
+      - "&7A bucket of light blue dye."
+      - "&7Silk touch to keep the bucket."
+    recipes:
+      craft:
+        shapeless:
+          - id: "dye_bucket_light_blue"
+            ingredients:
+              - { material: "BUCKET" }
+              - { material: "LIGHT_BLUE_DYE" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "BUCKET" }
+            - { material: "LIGHT_BLUE_DYE" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "dye_bucket_light_blue" }
+
+  dye_bucket_blue:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjNmZjgyOGU5YWQzMjVjNTdhMmNkOGM4Y2Y3YjQwZGU3YWZkMGY4ODI3MzEwOGI3YjkyYTY2YmU1MjE2ZDdlNyJ9fX0="
+    name: "&9Bucket of Dye (blue)"
+    tags: [storage]
+    lore:
+      - "&7A bucket of blue dye."
+      - "&7Silk touch to keep the bucket."
+    recipes:
+      craft:
+        shapeless:
+          - id: "dye_bucket_blue"
+            ingredients:
+              - { material: "BUCKET" }
+              - { material: "BLUE_DYE" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "BUCKET" }
+            - { material: "BLUE_DYE" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "dye_bucket_blue" }
+
+  dye_bucket_purple:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjY3YWYwZjRjMDk5ZDliYjkzNGI2NzlkOWY2NGZjMTkyMmNlOWEyNGY5MjkxN2RjYTJhMzBjMGZhM2Q3YmNiMyJ9fX0="
+    name: "&5Bucket of Dye (purple)"
+    tags: [storage]
+    lore:
+      - "&7A bucket of purple dye."
+      - "&7Silk touch to keep the bucket."
+    recipes:
+      craft:
+        shapeless:
+          - id: "dye_bucket_purple"
+            ingredients:
+              - { material: "BUCKET" }
+              - { material: "PURPLE_DYE" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "BUCKET" }
+            - { material: "PURPLE_DYE" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "dye_bucket_purple" }
+
+  dye_bucket_magenta:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODI5NDBjMjcwYjFjNDZjYjg0YzYwYjVhZWZkYTlkYzE5MDY0ZjFmNTBiMzllYmE4ZDk3NzM3YmE0NzJmMDM3ZiJ9fX0="
+    name: "&dBucket of Dye (magenta)"
+    tags: [storage]
+    lore:
+      - "&7A bucket of magenta dye."
+      - "&7Silk touch to keep the bucket."
+    recipes:
+      craft:
+        shapeless:
+          - id: "dye_bucket_magenta"
+            ingredients:
+              - { material: "BUCKET" }
+              - { material: "MAGENTA_DYE" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "BUCKET" }
+            - { material: "MAGENTA_DYE" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "dye_bucket_magenta" }
+
+  dye_bucket_pink:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOGYzM2E4N2Q5MTQ1Y2FhNmZkZTViMjAzYTdlMTM2MDI0ZjFkOWE4N2UwM2YyNTZlYmMzNTZmYTRjZTYwZTllYyJ9fX0="
+    name: "&dBucket of Dye (pink)"
+    tags: [storage]
+    lore:
+      - "&7A bucket of pink dye."
+      - "&7Silk touch to keep the bucket."
+    recipes:
+      craft:
+        shapeless:
+          - id: "dye_bucket_pink"
+            ingredients:
+              - { material: "BUCKET" }
+              - { material: "PINK_DYE" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "BUCKET" }
+            - { material: "PINK_DYE" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "dye_bucket_pink" }
+
+  # ============================================
+  # FOOD BUCKETS (Shapeless recipes)
+  # ============================================
+
+  bucket_of_beans:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHBzOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlL2VkM2I3N2I4ZGFhNzY3YzMxMzQ4MWRiYWM0Y2Q4NWUzYjhlM2QzNDdhODdmMzNhOTFlN2ExNGJlNTc3Yjc2OTEifX19"
+    name: "&6Bucket of Beans"
+    tags: [storage]
+    lore:
+      - "&7A bucket of beans."
+      - "&7Silk touch to keep the bucket."
+    recipes:
+      craft:
+        shapeless:
+          - id: "bucket_of_beans"
+            ingredients:
+              - { material: "BUCKET" }
+              - { material: "COCOA_BEANS" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "BUCKET" }
+            - { material: "COCOA_BEANS" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "bucket_of_beans" }

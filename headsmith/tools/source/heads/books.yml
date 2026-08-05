@@ -1,0 +1,765 @@
+# Books - Book-related decorative heads
+
+heads:
+  # ============================================
+  # BASE STACK OF BOOKS (Shaped recipe: 3 books)
+  # ============================================
+
+  stack_of_books:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTViZTIyYjVkNGE4NzVkNzdkZjNmNzcxMGZmNDU3OGVmMjc5MzlhOTY4NGNiZGIzZDMxZDk3M2YxNjY4NDkifX19"
+    name: "&fStack of Books"
+    recipes:
+      craft:
+        shaped:
+          - id: "stack_of_books"
+            pattern:
+              - " B "
+              - " B "
+              - " B "
+            key:
+              B: { material: "BOOK" }
+
+  # ============================================
+  # ENCHANTED BOOKS (ENCHANTED_BOOK + DYE)
+  # ============================================
+
+  enchanted_book_blue:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvY2NmNDM0MTYwMDlkMWE4MTMwYWE4NzA4Y2E3NGVlNmVlYWU3NzVhNzY5ZTdkMDI5M2U1NjhhZjY2Njk0OTY2OSJ9fX0="
+    name: "&fStack of Enchanted Blue Books"
+    tags: [color/blue]
+    recipes:
+      craft:
+        shapeless:
+          - id: "enchanted_book_blue"
+            ingredients:
+              - { material: "ENCHANTED_BOOK" }
+              - { material: "BLUE_DYE" }
+
+  enchanted_book_green:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWMwMzBjYzM1ZmRlMDIxOGRlZDViYTVkNTU3Y2NhOWUwM2RjYmM4NGY5ZTY3MjkxMWRhNTRmZTA3YzVmZGJiYiJ9fX0="
+    name: "&fStack of Enchanted Green Books"
+    tags: [color/green]
+    recipes:
+      craft:
+        shapeless:
+          - id: "enchanted_book_green"
+            ingredients:
+              - { material: "ENCHANTED_BOOK" }
+              - { material: "GREEN_DYE" }
+
+  enchanted_book_light_blue:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOGJlMmJhZjQwZmQ4NWViNTczZmU1YjJlNWI2Yzg4MTdjZjUwZjg4M2Q5NTc2OTQxNTgwN2FiMDcyODhhNDdjZCJ9fX0="
+    name: "&fStack of Enchanted Light Blue Books"
+    tags: [color/light_blue]
+    recipes:
+      craft:
+        shapeless:
+          - id: "enchanted_book_light_blue"
+            ingredients:
+              - { material: "ENCHANTED_BOOK" }
+              - { material: "LIGHT_BLUE_DYE" }
+
+  enchanted_book_magenta:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzJlYTg1Yzg1ZmUwNDg0YWY2YzgxNWVmYjY1NWQyYjIxZTEwOTg2M2M5NjMzM2I5MjgwYjU5YjgwZDZhYzk4ZiJ9fX0="
+    name: "&fStack of Enchanted Magenta Books"
+    tags: [color/magenta]
+    recipes:
+      craft:
+        shapeless:
+          - id: "enchanted_book_magenta"
+            ingredients:
+              - { material: "ENCHANTED_BOOK" }
+              - { material: "MAGENTA_DYE" }
+
+  enchanted_book_orange:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzY1MDViMWJlZmJhMjQyMTcwYTQ2ZTg5NDdiNTJhZWE1NGE1OTA2MGYzZTFjMzZmMjFjZWJiNDQ2OTBmOGIwYyJ9fX0="
+    name: "&fStack of Enchanted Orange Books"
+    tags: [color/orange]
+    recipes:
+      craft:
+        shapeless:
+          - id: "enchanted_book_orange"
+            ingredients:
+              - { material: "ENCHANTED_BOOK" }
+              - { material: "ORANGE_DYE" }
+
+  enchanted_book_purple:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYWM5MmU1MTExZWE3ZDdlYjNmMDU1ODMzZTFmMzVkNjUxYzBkYTU1NjQzYzkzODNlMGJjZTZjMjM2OTZkNThiOSJ9fX0="
+    name: "&fStack of Enchanted Purple Books"
+    tags: [color/purple]
+    recipes:
+      craft:
+        shapeless:
+          - id: "enchanted_book_purple"
+            ingredients:
+              - { material: "ENCHANTED_BOOK" }
+              - { material: "PURPLE_DYE" }
+
+  enchanted_book_red:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTNhNjljM2NhYTMxMzA0ZTk5NTIzMjhjNzJjZWUwYjU3YjJhMmJkNDZjZTljNWNiODhjMDdkMTI2NjI3N2Q2YSJ9fX0="
+    name: "&fStack of Enchanted Red Books"
+    tags: [color/red]
+    recipes:
+      craft:
+        shapeless:
+          - id: "enchanted_book_red"
+            ingredients:
+              - { material: "ENCHANTED_BOOK" }
+              - { material: "RED_DYE" }
+
+  enchanted_book_yellow:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDUzZmExYjU3ZTRmNzg0ZDE2ZTVhMmRhYTJmNzQ2YjJlY2ZlNjI0Y2NkNzRhNGQ0YWNjNmEyZTZhMDgzZjU0ZSJ9fX0="
+    name: "&fStack of Enchanted Yellow Books"
+    tags: [color/yellow]
+    recipes:
+      craft:
+        shapeless:
+          - id: "enchanted_book_yellow"
+            ingredients:
+              - { material: "ENCHANTED_BOOK" }
+              - { material: "YELLOW_DYE" }
+
+  # ============================================
+  # COLORED BOOKS - SERIES A (stack_of_books + DYE)
+  # ============================================
+
+  books_white:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjViNWE5OTU5Y2MyZGU0MzIwMzA0ZThlMGEyNmFhZWRkMTFmYjc5YjZhNjliMmRlOGI4OWRjZWMyZDgwZWIxZCJ9fX0="
+    name: "&fStack of White Books"
+    tags: [color/white]
+    recipes:
+      craft:
+        shapeless:
+          - id: "books_white"
+            ingredients:
+              - { head: "stack_of_books" }
+              - { material: "WHITE_DYE" }
+
+  books_light_gray:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTY3Y2M1MzBjYzg1YjE2MDNlNzk5MzY3NDE0NmU4MjEyMGJjNWE0MTIzZWZlYjE0NTI0OWE3YmZlYjE3M2QyZCJ9fX0="
+    name: "&fStack of Light Gray Books"
+    tags: [color/light_gray]
+    recipes:
+      craft:
+        shapeless:
+          - id: "books_light_gray"
+            ingredients:
+              - { head: "stack_of_books" }
+              - { material: "LIGHT_GRAY_DYE" }
+
+  books_gray:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvM2RkZmQ4ZmUxOTRjMWUwMWFiNmI1YzdlN2VhYjg2NWNlZGJhOWRmNjVhN2FhMDU2NTVhZDlhOTJhZmZiYjhlYiJ9fX0="
+    name: "&fStack of Gray Books"
+    tags: [color/gray]
+    recipes:
+      craft:
+        shapeless:
+          - id: "books_gray"
+            ingredients:
+              - { head: "stack_of_books" }
+              - { material: "GRAY_DYE" }
+
+  books_black:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDUxN2JlZWQ0Yjg0MDA4ZmY1MjYwMmE3NzQzZjY0MTE0NTU3YzBiOGNhODUwM2JkMzExNzc5M2RiOTBmNWQ1NCJ9fX0="
+    name: "&fStack of Black Books"
+    tags: [color/black]
+    recipes:
+      craft:
+        shapeless:
+          - id: "books_black"
+            ingredients:
+              - { head: "stack_of_books" }
+              - { material: "BLACK_DYE" }
+
+  books_brown:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjQyNzQ1ZWU5YTM0YzYwODY4ZmNkMWJiOWNmNjU0ZTgxZGQ3Njc2N2RjMTQ5ZGUyNTc3MWU0ZGU3YjVjNDdiNSJ9fX0="
+    name: "&fStack of Brown Books"
+    tags: [color/brown]
+    recipes:
+      craft:
+        shapeless:
+          - id: "books_brown"
+            ingredients:
+              - { head: "stack_of_books" }
+              - { material: "BROWN_DYE" }
+
+  books_red:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzJkZjk0NGI0NzQyMGEzN2RmYTgyMzJmNzRhNmU1N2JjMzViZWIyN2VkYjYwOGQ2MGYwNDcxMGU0ZjIzNzhkZCJ9fX0="
+    name: "&fStack of Red Books"
+    tags: [color/red]
+    recipes:
+      craft:
+        shapeless:
+          - id: "books_red"
+            ingredients:
+              - { head: "stack_of_books" }
+              - { material: "RED_DYE" }
+
+  books_orange:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZmYzYWQ1MDZiYTRkMGVhMzI2YTYzNTVmZjFkMWY5YjMxZjM0MDQwY2VlMGU4Y2RlYTZiZjE4ZDliZGY1ZDViOCJ9fX0="
+    name: "&fStack of Orange Books"
+    tags: [color/orange]
+    recipes:
+      craft:
+        shapeless:
+          - id: "books_orange"
+            ingredients:
+              - { head: "stack_of_books" }
+              - { material: "ORANGE_DYE" }
+
+  books_yellow:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODRmZmEwZmRlMmVmM2I3Y2RmZjY0MjFkYmJkZGJlMzI5NjVjYmJlMWY3YjhkYTE5MjE4MmQ0MGI4NmQyZDk1YyJ9fX0="
+    name: "&fStack of Yellow Books"
+    tags: [color/yellow]
+    recipes:
+      craft:
+        shapeless:
+          - id: "books_yellow"
+            ingredients:
+              - { head: "stack_of_books" }
+              - { material: "YELLOW_DYE" }
+
+  books_lime:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjYzZmJiMjI0YWY1NjBmNjJjYmYxZjliZmNjZDhjMmI5MGM1MzQxNTNiNjVhMGJkNDE5NjY0MDhhYzRjMjhiOCJ9fX0="
+    name: "&fStack of Lime Books"
+    tags: [color/lime]
+    recipes:
+      craft:
+        shapeless:
+          - id: "books_lime"
+            ingredients:
+              - { head: "stack_of_books" }
+              - { material: "LIME_DYE" }
+
+  books_green:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWViYzk4MTg3NGUzMmMwNGQ1ODMwMjk1NTQxMTMxNmUwMzUwNDU1YTQ3MmE3ZmE5MDA1NTc4YTJlNDkyZWRjMiJ9fX0="
+    name: "&fStack of Green Books"
+    tags: [color/green]
+    recipes:
+      craft:
+        shapeless:
+          - id: "books_green"
+            ingredients:
+              - { head: "stack_of_books" }
+              - { material: "GREEN_DYE" }
+
+  books_cyan:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTUzNTNlMWU2NjM3OWI2NWRjOTg1MDBkMTgxZDAxODY3ZGQ3NWMzYjk5ODI5YzAwY2FjMmVkYzQ5NDU3NTlmIn19fQ=="
+    name: "&fStack of Cyan Books"
+    tags: [color/cyan]
+    recipes:
+      craft:
+        shapeless:
+          - id: "books_cyan"
+            ingredients:
+              - { head: "stack_of_books" }
+              - { material: "CYAN_DYE" }
+
+  books_light_blue:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTkwYzVjNDY1YmMzYjhlNWViZjYwMzQyZmExZTllY2NiMTI1NjNjNWZmMDVhYmI3YTY0MzE1OTQ3ODE1MDAwMiJ9fX0="
+    name: "&fStack of Light Blue Books"
+    tags: [color/light_blue]
+    recipes:
+      craft:
+        shapeless:
+          - id: "books_light_blue"
+            ingredients:
+              - { head: "stack_of_books" }
+              - { material: "LIGHT_BLUE_DYE" }
+
+  books_blue:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTI2MGJjNWJmYzExNWNjY2MxMzIzYzc0NzM2Yzc5NGRlODg0YWQwMTFjOTEzMjJlZGJlNWMwMWY2YTk0MzA1ZCJ9fX0="
+    name: "&fStack of Blue Books"
+    tags: [color/blue]
+    recipes:
+      craft:
+        shapeless:
+          - id: "books_blue"
+            ingredients:
+              - { head: "stack_of_books" }
+              - { material: "BLUE_DYE" }
+
+  books_purple:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzcwY2FjZDU5NzM5ODBjMWVjNGUyMTY0MTAyYjUwZDY0ZDcwYjNmZWRmYmM0YTBmNzMxMjdiODAwNmNiYmY5YiJ9fX0="
+    name: "&fStack of Purple Books"
+    tags: [color/purple]
+    recipes:
+      craft:
+        shapeless:
+          - id: "books_purple"
+            ingredients:
+              - { head: "stack_of_books" }
+              - { material: "PURPLE_DYE" }
+
+  books_magenta:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzI1ZjI0YmUyYzAwNWM2OGE1YzVjNTRlYWNlNzAwOWQzMDg0NjZjNGM2NDFkMmY5YTg2ZjAwZjc3NDBiYmIwMSJ9fX0="
+    name: "&fStack of Magenta Books"
+    tags: [color/magenta]
+    recipes:
+      craft:
+        shapeless:
+          - id: "books_magenta"
+            ingredients:
+              - { head: "stack_of_books" }
+              - { material: "MAGENTA_DYE" }
+
+  books_pink:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTFiMDU4MTM0NGYwMjM3MjFmYWZiYzNlZDgwYzRmMTBiY2MyNGFjNmU3ZjA0NmJmYWFiOGJmNGI3YjgwYzg0NSJ9fX0="
+    name: "&fStack of Pink Books"
+    tags: [color/pink]
+    recipes:
+      craft:
+        shapeless:
+          - id: "books_pink"
+            ingredients:
+              - { head: "stack_of_books" }
+              - { material: "PINK_DYE" }
+
+  # ============================================
+  # COLORED BOOKS - SERIES B (Stonecutter from Series A)
+  # ============================================
+
+  books_white_2:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZWEzZTNkNzBjOWQ1N2VlMzFlMDJmMzg5MjRkMDgzODM4MWZiMzZmNTQ4NzQ0YTg1ZjcxMjI5ZmIyYTU1Zjc3MiJ9fX0="
+    name: "&fStack of White Books #2"
+    tags: [color/white]
+    recipes:
+      stonecutter:
+        - id: "books_white_2"
+          input: { head: "books_white" }
+
+  books_light_gray_2:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZmVmZThiNmM3ODI3ZDdiMGE2ZGU0OWZhNzE4YmRmYWE1M2RkOGRlMTA0MTdkMjcwNjYwN2ZkYmUyNmU5MDU5NSJ9fX0="
+    name: "&fStack of Light Gray Books #2"
+    tags: [color/light_gray]
+    recipes:
+      stonecutter:
+        - id: "books_light_gray_2"
+          input: { head: "books_light_gray" }
+
+  books_gray_2:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTcwMzQ2MjY2ZTllMDcxZWE5MDAzYmY1MjQ0YjQyMjBlN2U0ZWZiOWYwNjM2NGU3ZmE0NDlhZGU3ODAzNjA4ZSJ9fX0="
+    name: "&fStack of Gray Books #2"
+    tags: [color/gray]
+    recipes:
+      stonecutter:
+        - id: "books_gray_2"
+          input: { head: "books_gray" }
+
+  books_black_2:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZGYxMzY1ZWNmMTFiZGZhZjE1ZGFiMmVhODBmMTM1OWQyNzRlYzZkNDI1MjU3YmUyOTA5NWRkMmMzMDBlOTkyZSJ9fX0="
+    name: "&fStack of Black Books #2"
+    tags: [color/black]
+    recipes:
+      stonecutter:
+        - id: "books_black_2"
+          input: { head: "books_black" }
+
+  books_brown_2:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDExZTk5N2QwZjE4YjZhMjk1YTRiZjBiZDdhYWZjZjE2ZWRhZDgzMjEwN2QyZmYyNzFjNzgxZDU2ZGQ5MWE3MyJ9fX0="
+    name: "&fStack of Brown Books #2"
+    tags: [color/brown]
+    recipes:
+      stonecutter:
+        - id: "books_brown_2"
+          input: { head: "books_brown" }
+
+  books_red_2:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODk4N2MwMDNlNTEyMDRhNmE4ZDZkYTcxMzUzZTBjOWM1MTY2YWVjMDNlZWQ5MzU3ZjcyZjM0ZmFhYThlOTNlYiJ9fX0="
+    name: "&fStack of Red Books #2"
+    tags: [color/red]
+    recipes:
+      stonecutter:
+        - id: "books_red_2"
+          input: { head: "books_red" }
+
+  books_orange_2:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOWNiYTgxZGE2YzNhYjRlMGIzYWM3NzFlZmM1MmMyM2E1ZTAxZjI2MGU0OWZlYWY0YjQ3NzljMjY0YmFjOTFhNCJ9fX0="
+    name: "&fStack of Orange Books #2"
+    tags: [color/orange]
+    recipes:
+      stonecutter:
+        - id: "books_orange_2"
+          input: { head: "books_orange" }
+
+  books_yellow_2:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvY2QxNjAwMDU5NDIzMjhlNzljZmNkZGI1M2NmMDE4MDMwMWFiOTEyYTIzODg4ZmViZTNiOTljZDBhMjI1MzdiZjcifX19"
+    name: "&fStack of Yellow Books #2"
+    tags: [color/yellow]
+    recipes:
+      stonecutter:
+        - id: "books_yellow_2"
+          input: { head: "books_yellow" }
+
+  books_lime_2:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWViYjcxZjA5MmViM2MwOTgxMjYyMDU5YjI4ZGM4N2U5YmFjODViMDUwMjhmMmYxMWRhZjIzNWQ0ZDI3NDY2In19fQ=="
+    name: "&fStack of Lime Books #2"
+    tags: [color/lime]
+    recipes:
+      stonecutter:
+        - id: "books_lime_2"
+          input: { head: "books_lime" }
+
+  books_green_2:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOWNhOWNmZWVjMGM2ZjJkMGMxYjI5NWJhZjJkZmZlMDAwZDRiOWYzNzI1ODI3ZjFkZDY3ZWI0NmFjMmFhZDY1NiJ9fX0="
+    name: "&fStack of Green Books #2"
+    tags: [color/green]
+    recipes:
+      stonecutter:
+        - id: "books_green_2"
+          input: { head: "books_green" }
+
+  books_cyan_2:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvN2E5NTY2MDU2ZGE0OGE4Yjg0NWU4NzRmMDEwZjM4YTIxMDg5YjkxNGJmOGVlYjdmNGU2ZDVlN2YwMWMwNTJmZiJ9fX0="
+    name: "&fStack of Cyan Books #2"
+    tags: [color/cyan]
+    recipes:
+      stonecutter:
+        - id: "books_cyan_2"
+          input: { head: "books_cyan" }
+
+  books_light_blue_2:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNmU0MmIxODYyYWU5YTQ0YmJiMDg2YTlhZmI3N2Y3ZjNlYmIwMjk4NTliNjU5MjA1MzljNjI0MGYyN2UyMDc5MSJ9fX0="
+    name: "&fStack of Light Blue Books #2"
+    tags: [color/light_blue]
+    recipes:
+      stonecutter:
+        - id: "books_light_blue_2"
+          input: { head: "books_light_blue" }
+
+  books_blue_2:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjdmYWFlMWQxOTgzNmJkMDc4NTQyNmU0ZmQyOGFhNjNhMzgxZTllNzE0OTU1OWVlNmIyYTUwOTk5NWJiY2ZkMiJ9fX0="
+    name: "&fStack of Blue Books #2"
+    tags: [color/blue]
+    recipes:
+      stonecutter:
+        - id: "books_blue_2"
+          input: { head: "books_blue" }
+
+  books_purple_2:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOGU1Y2IyYzg4NDA1MTlhYjFmZmFkYjcxYjhlOGYyODgzMDgyYWI4M2E1ZTNjZmUwMGQ0YzM2ZGQ5NGRiM3I3MiJ9fX0="
+    name: "&fStack of Purple Books #2"
+    tags: [color/purple]
+    recipes:
+      stonecutter:
+        - id: "books_purple_2"
+          input: { head: "books_purple" }
+
+  books_magenta_2:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjk3ODU2ZjZkZTRjYmI3NWE2MzRlMWMxODk2N2MxZjY4OWQ2ZWYxNDgyNjY1ZGRkMzZjOWYxYjI3NDMyYThiYyJ9fX0="
+    name: "&fStack of Magenta Books #2"
+    tags: [color/magenta]
+    recipes:
+      stonecutter:
+        - id: "books_magenta_2"
+          input: { head: "books_magenta" }
+
+  books_pink_2:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTdmMGRkZGNjMjAxOTc0MDU0M2VmMmVhMWMwNjI3MTg5MWY1YzQxOGZiZjZlMzViNzY5NDY0MGIzOTBmMTcyMiJ9fX0="
+    name: "&fStack of Pink Books #2"
+    tags: [color/pink]
+    recipes:
+      stonecutter:
+        - id: "books_pink_2"
+          input: { head: "books_pink" }
+
+  # ============================================
+  # SPECIAL BLOCK/ITEM BOOKS (stack_of_books + item)
+  # ============================================
+
+  netherrack_book:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTZkMTMyM2IyMjA1NTc3MTAxZjZkOTE0ZDM0OGQ2YTU1OGYyNTUxODliODk4Mjk4NWRiMDdiYmNlMDNkMjAxMSJ9fX0="
+    name: "&fStack of Netherrack Books"
+    recipes:
+      craft:
+        shapeless:
+          - id: "netherrack_book"
+            ingredients:
+              - { head: "stack_of_books" }
+              - { material: "NETHERRACK" }
+
+  slime_book:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGViODEwYjBlMzU3MTAxYTY3MzEzMmZhNDBiNzQ4YTQ1Mzc2ZDRmMTNmMGJjYTY2YTYyMTc5MDIxNzkyYjJhYyJ9fX0="
+    name: "&fStack of Slime Books"
+    recipes:
+      craft:
+        shapeless:
+          - id: "slime_book"
+            ingredients:
+              - { head: "stack_of_books" }
+              - { material: "SLIME_BALL" }
+
+  monster_book:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzMxNmE4Yjk2Y2I5YWVlYTUxNDBkZDkzNmM2ZWJiOTY0ZWZjYmZkNzFhZTIxN2Q5ZjcwODg4ZWZiMTRlN2MwIn19fQ=="
+    name: "&fStack of Monster Books"
+    recipes:
+      craft:
+        shapeless:
+          - id: "monster_book"
+            ingredients:
+              - { head: "stack_of_books" }
+              - { material: "SOUL_SAND" }
+
+  # ============================================
+  # BEIGE BOOKS (Stonecutter from stack_of_books)
+  # ============================================
+
+  books_beige:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZmFiM2IyNzMxYmNhNDg4NGM0ZGE3M2FhYzRmMDA4NDA5ZmFhMmQ3ZGYyZDAzMTY2MmNiN2I5Yzk1MGRkYWY2MiJ9fX0="
+    name: "&fStack of Beige Books"
+    recipes:
+      stonecutter:
+        - id: "books_beige"
+          input: { head: "stack_of_books" }
+
+  books_beige_2:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDI3ZWIzOWY0NmQ2NzE2ZTI5ZmM5YTc1NTA3N2QxZTRlODY3Y2EyMTIwMzUyMjA1M2NkZGFjZTE0MTQ5YzQ5ZiJ9fX0="
+    name: "&fStack of Beige Books #2"
+    recipes:
+      stonecutter:
+        - id: "books_beige_2"
+          input: { head: "books_beige" }
+
+  # ============================================
+  # GENERIC BOOKS (Stonecutter from stack_of_books)
+  # ============================================
+
+  books_1:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjhmYmVlMmNkZjQ0MDYxNzZlZGE5Y2Y5MjBiOWNlNjk1OTBhMDQ5MGM3MjRhZTZjYzJlMmYzMTZlNWU3ZGQxZCJ9fX0="
+    name: "&fStack of Books"
+    recipes:
+      stonecutter:
+        - id: "books_1"
+          input: { head: "stack_of_books" }
+
+  books_3:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmJjNjE2OGJjODlmNjIzYjIwNDg4MjgxMzU1MWIwODY3MDVkODRkMjgyMjUxZWVlY2Q4OWIzODQ3NGZlYzAifX19"
+    name: "&fStack of Books"
+    recipes:
+      stonecutter:
+        - id: "books_3"
+          input: { head: "stack_of_books" }
+
+  books_4:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOGFhMGQ3YmNhNThlM2YyZGY0MjA2YjE5ZDg0NWVhYmY4MWIxMWZhZDIxYzAwN2U5ZWE3YzJjNjM5Yzc1MjAxZCJ9fX0="
+    name: "&fStack of Books"
+    recipes:
+      stonecutter:
+        - id: "books_4"
+          input: { head: "stack_of_books" }
+
+  books_8:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjMzNTk4NDM3ZTMxMzMyOWViMTQxYTEzZTkyZDliMDM0OWFhYmU1YzY0ODJhNWRkZTdiNzM3NTM2MzRhYmEifX19"
+    name: "&fStack of Books"
+    recipes:
+      stonecutter:
+        - id: "books_8"
+          input: { head: "stack_of_books" }
+
+  books_10:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvN2I1ZWQ3NmVjY2Q3NWZiZjRiMGIwZWMxYmQ3ODllN2ZiMzRiNzgwMjAxNzQ3NjM4OGFiZmYwZmE0ZGJmNGI0YyJ9fX0="
+    name: "&fStack of Books"
+    recipes:
+      stonecutter:
+        - id: "books_10"
+          input: { head: "stack_of_books" }
+
+  books_12:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZWVlOGQ2ZjVjYjdhMzVhNGRkYmRhNDZmMDQ3ODkxNWRkOWViYmNlZjkyNGViOGNhMjg4ZTkxZDE5YzhjYiJ9fX0="
+    name: "&fStack of Books"
+    recipes:
+      stonecutter:
+        - id: "books_12"
+          input: { head: "stack_of_books" }
+
+  books_13:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTZjN2RkYzYyNzJhZTQ5YTRjZTI3NzVhNjgyM2NmNWJjZmFkYzFlZjQ3NDIwMDA3MzFkNDBkZTRiMjZmNmEzYyJ9fX0="
+    name: "&fStack of Books"
+    recipes:
+      stonecutter:
+        - id: "books_13"
+          input: { head: "stack_of_books" }
+
+  books_14:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYThiMTQ2YzQwMmQ0NTdhNjE2Y2E0ZjkyYzJkMWJlNDA5MWJjOGYwN2FhYjdiMjM4OTFiYTI4MGU1ZTI5NjMyNiJ9fX0="
+    name: "&fStack of Books"
+    recipes:
+      stonecutter:
+        - id: "books_14"
+          input: { head: "stack_of_books" }
+
+  books_15:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzAxZDgyOWEwM2Q0NDYwMjJmZDhjNDkyMDVhZDBiYzM3ODk0NjYyMTY4Yjk3YTQ5NTM5MTM5MTIwMDg5Yjk1OSJ9fX0="
+    name: "&fStack of Books"
+    recipes:
+      stonecutter:
+        - id: "books_15"
+          input: { head: "stack_of_books" }
+
+  books_16:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZWM2ZDkwMjRmYzU0MTJlOGUyNjY0MTIzNzMyZDIyOTFkZmM2YmIxNzVmNzJjZjg5NDA5NmY3ZjMxMzY0MWZkNCJ9fX0="
+    name: "&fStack of Books"
+    recipes:
+      stonecutter:
+        - id: "books_16"
+          input: { head: "stack_of_books" }
+
+  books_18:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDNhZmY1NzcyNGY1ZWQwNGRiNDUwZGI4NzRjNmMwYzZlZjRhMTBlMTQwNmI3N2ZiYWZmZGNiOTgxOTFiZjIwNCJ9fX0="
+    name: "&fStack of Books"
+    recipes:
+      stonecutter:
+        - id: "books_18"
+          input: { head: "stack_of_books" }
+
+  books_21:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmVhZjljN2JkM2YxNWNjNTdjYjM0YTRkNmNhM2M2OGJhNjdhZmY0NzFmNDliYjQ5OTYzMzIyODA4ZmJkNmQxOSJ9fX0="
+    name: "&fStack of Books"
+    recipes:
+      stonecutter:
+        - id: "books_21"
+          input: { head: "stack_of_books" }
+
+  books_22:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzYxYmFmOGZiOTY3ZDAzZmY5ZjY5ZDZiMjBjMDAzYTMwYWY5NTY5ZWIwZmUyZTYwMjNmNmY0MzYxOGM1MDJhYyJ9fX0="
+    name: "&fStack of Books"
+    recipes:
+      stonecutter:
+        - id: "books_22"
+          input: { head: "stack_of_books" }
+
+  books_23:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTgxZmQ5MjkxYTBjY2ZhZjIyYTEyZmIzNzhjNDg1N2RkZjRmZTZlNzIyODdjNTIzYjU4ZTA0YzM0MTI4YzliNCJ9fX0="
+    name: "&fStack of Books"
+    recipes:
+      stonecutter:
+        - id: "books_23"
+          input: { head: "stack_of_books" }
+
+  books_24:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzI2MWJmNWM3ZmZhMjU0YzE4Mjg0NDgwMzIxMTVlNWNjMTU0NDM2ZGVjMDk5OGM0ZDdhYmQ5OTZhZTFkOTI3In19fQ=="
+    name: "&fStack of Books"
+    recipes:
+      stonecutter:
+        - id: "books_24"
+          input: { head: "stack_of_books" }
+
+  books_25:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTViZTIyYjVkNGE4NzVkNzdkZjNmNzcxMGZmNDU3OGVmMjc5MzlhOTY4NGNiZGIzZDMxZDk3M2YxNjY4NDkifX19"
+    name: "&fStack of Books"
+    recipes:
+      stonecutter:
+        - id: "books_25"
+          input: { head: "stack_of_books" }
+
+  books_26:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNmVmZTY1MDViYzg0MGFiZmQ4NjY2MjYxMDE3ZWMyMGE2ODQ2ODU2MWJjM2NmMmZhZDYzOWE0ZWM5NDc4OWZhMCJ9fX0="
+    name: "&fStack of Books"
+    recipes:
+      stonecutter:
+        - id: "books_26"
+          input: { head: "stack_of_books" }
+
+  books_27:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzA1YzZjZmU2Yzc2Y2RhN2YxM2FmNDc3YWVhNDc5NjNjN2ZkMzVlNjk3MzY5ZWI5MTFjNDEyMWQ4ZmNjNCJ9fX0="
+    name: "&fStack of Books"
+    recipes:
+      stonecutter:
+        - id: "books_27"
+          input: { head: "stack_of_books" }
+
+  books_28:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTFmMTEyZjU3YjExMjY1ZjA2NmUxYjQ3MWQ3NzIxOGRlNzJjMWMzNTUwNTBjYmFmMDRiY2NkYzRlODM0MzUwZSJ9fX0="
+    name: "&fStack of Books"
+    recipes:
+      stonecutter:
+        - id: "books_28"
+          input: { head: "stack_of_books" }
+
+  books_29:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZWNmMmFiZDYxNzlmNDE2YzI2YjRkMTI5NzE4ODFmMTI0Mzc2NDM5OWE2N2Y5Yzk0ZmQ4NTlmMTNlNzdjIn19fQ=="
+    name: "&fStack of Books"
+    recipes:
+      stonecutter:
+        - id: "books_29"
+          input: { head: "stack_of_books" }
+
+  books_30:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZGZjM2MyNDNmYzA4OTRhYTQwMjhkMzJiMTlhODMwYTJmY2FkYzI5MzI3MGI0Y2IzMmMxYmFlNDJjNzhjMDhiZSJ9fX0="
+    name: "&fStack of Books"
+    recipes:
+      stonecutter:
+        - id: "books_30"
+          input: { head: "stack_of_books" }
+
+  books_31:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDdhMzc0ZTIxYjgxYzBiMjFhYmViOGU5N2UxM2UwNzdkM2VkMWVkNDRmMmU5NTZjNjhmNjNhM2UxOWU4OTlmNiJ9fX0="
+    name: "&fStack of Books"
+    recipes:
+      stonecutter:
+        - id: "books_31"
+          input: { head: "stack_of_books" }
+
+  books_32:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOWYzN2U3MWZkYzBmYmUzODA4ZDhkZTAwNTllM2Y5YjAzMDUzNDNlNjQ4YjgxZWM4NTY2ZTBjZDE3YTE0N2IxNiJ9fX0="
+    name: "&fStack of Books"
+    recipes:
+      stonecutter:
+        - id: "books_32"
+          input: { head: "stack_of_books" }
+
+  books_33:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjQ5MzkzNjU0NGNhMjkxYjlmYzc5Mjg2NjNhZTI3NjNlMTgzNTc1NmFhMWIzOTUyZjk2NWQ1MjVjMzkzN2I1ZCJ9fX0="
+    name: "&fStack of Books"
+    recipes:
+      stonecutter:
+        - id: "books_33"
+          input: { head: "stack_of_books" }
+
+  books_34:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODJhZTE5MTA3MDg2ZGQzMTRkYWYzMWQ4NjYxOGU1MTk0OGE2ZTNlMjBkOTZkY2ExN2QyMWIyNWQ0MmQyYjI0In19fQ=="
+    name: "&fStack of Books"
+    recipes:
+      stonecutter:
+        - id: "books_34"
+          input: { head: "stack_of_books" }
+
+  books_35:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDQxMWZjM2YyZGU1YjFlYjliODdlOTk3OTA5MTk5M2MzNDkwNTAyZWJhNzI2NWJlZDkzZDhiMWVkZjJjZmEzNyJ9fX0="
+    name: "&fStack of Books"
+    recipes:
+      stonecutter:
+        - id: "books_35"
+          input: { head: "stack_of_books" }
+
+  books_36:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTJmZWJhMWYzMDVmOTU4NDc2ZGYxOWNjZDg5Mzc3OGM2ZTM0YWExN2U4ZmZlZGU0MTMzYjNhNWYzNDRmZDhlIn19fQ=="
+    name: "&fStack of Books"
+    recipes:
+      stonecutter:
+        - id: "books_36"
+          input: { head: "stack_of_books" }
+
+  books_37:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvM2U4NTJjMzljMjUyZTczMzM5OGJjOTAzYWViNTE0OTU0ZWRlYTIzMzFlYTVkMTRlOTQyZjY1ZDI1MGZkZWY4YyJ9fX0="
+    name: "&fStack of Books"
+    recipes:
+      stonecutter:
+        - id: "books_37"
+          input: { head: "stack_of_books" }
+
+  books_38:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGQ5Y2FhYzExNzNkMTBlZDM4NWE5MjJiMGQyZjZmMzVhM2ViNmNiZjQ2MDdlZTRmZmZkZDE3Njc3MTc5ZGM0ZCJ9fX0="
+    name: "&fStack of Books"
+    recipes:
+      stonecutter:
+        - id: "books_38"
+          input: { head: "stack_of_books" }
+
+  books_39:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNmUzYzYwODlkMmIwNWQ5MGRlYmIxYTI1YWMyMTExMzMyY2VhNWE2YmQzNTM3MGI5YWEyMzdlZmI2YzFlYzJmYyJ9fX0="
+    name: "&fStack of Books"
+    recipes:
+      stonecutter:
+        - id: "books_39"
+          input: { head: "stack_of_books" }

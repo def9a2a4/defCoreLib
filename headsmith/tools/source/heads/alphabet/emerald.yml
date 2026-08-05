@@ -1,0 +1,1333 @@
+# Generated Emerald Alphabet Blocks
+
+heads:
+  emerald_letter_a:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvY2JlY2ZmNTM3YzY1ZGFjZWU4MGRlMDAyMGExOGI1ZmRjMWU4NWQ4YTM5OTMyMWYzZDZkY2QzNGMzMDZkMjIzZiJ9fX0="
+    name: "&7Emerald A"
+    tags:
+      - alphabet/emerald
+      - character/letter_a
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "emerald_letter_a"
+          input: { head: "mini_emerald_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "EMERALD_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "emerald_letter_a" }
+  emerald_letter_b:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDE3ZGJjOTg2ZjdjYzEyZTBlMmEyY2E5OWQ5YjZhMGY5ZjdlNjAwYjk4MDllZTZkMjMzNjE0ODA5YzdhMmVmNiJ9fX0="
+    name: "&7Emerald B"
+    tags:
+      - alphabet/emerald
+      - character/letter_b
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "emerald_letter_b"
+          input: { head: "mini_emerald_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "EMERALD_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "emerald_letter_b" }
+  emerald_letter_c:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDczMDczNDI1NjBkNDZhOWRkMzAxY2Y1MzhiNDEyMmFhZDRjYzQyODM4ZjYwMjI2ZDk3ZWQ4OTE1MmMyMWJmMiJ9fX0="
+    name: "&7Emerald C"
+    tags:
+      - alphabet/emerald
+      - character/letter_c
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "emerald_letter_c"
+          input: { head: "mini_emerald_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "EMERALD_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "emerald_letter_c" }
+  emerald_letter_d:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvY2JmOTUzZDc3MWFlZDNkYTU3OGYyZDUxODk5YjJkZDBkNzJlYzQwZDI5NjA0ZmZiYjVlNWI1NGRiNzk1ZDUwZCJ9fX0="
+    name: "&7Emerald D"
+    tags:
+      - alphabet/emerald
+      - character/letter_d
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "emerald_letter_d"
+          input: { head: "mini_emerald_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "EMERALD_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "emerald_letter_d" }
+  emerald_letter_e:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjhmMTY1YTM5M2VmNWIxZTU2YmU2ZTEwNmU5NDljNzRkYTRjNjc5MzgxOWU4YmI1NzQ0YTQxMjZiMjVkYzBmOCJ9fX0="
+    name: "&7Emerald E"
+    tags:
+      - alphabet/emerald
+      - character/letter_e
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "emerald_letter_e"
+          input: { head: "mini_emerald_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "EMERALD_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "emerald_letter_e" }
+  emerald_letter_f:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTBhYmJiY2IzZGViZDQyYWEyYTY4MjEyYjBhNjFjYTQ4YzIwODI1MGZmMDI1NzdkOGM0NDVkN2VmZmUwN2FiZCJ9fX0="
+    name: "&7Emerald F"
+    tags:
+      - alphabet/emerald
+      - character/letter_f
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "emerald_letter_f"
+          input: { head: "mini_emerald_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "EMERALD_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "emerald_letter_f" }
+  emerald_letter_g:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjVhMWIyMDZhN2MzNzBhNDA4NTU4ZWQ4NzJjYjc4MjQ1ODI4OWZlMTdmN2MxNTg3N2UyYzNkNWE1MmMyNWM2NCJ9fX0="
+    name: "&7Emerald G"
+    tags:
+      - alphabet/emerald
+      - character/letter_g
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "emerald_letter_g"
+          input: { head: "mini_emerald_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "EMERALD_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "emerald_letter_g" }
+  emerald_letter_h:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvY2UwNWQ0MjlkZWQyNWQzMzA3NDBhYTM5YWI3NjIyMDJlZGZhYzEyNDM0NGEwNTFhYmQyYTdiYjIwNzMzNzQ2ZCJ9fX0="
+    name: "&7Emerald H"
+    tags:
+      - alphabet/emerald
+      - character/letter_h
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "emerald_letter_h"
+          input: { head: "mini_emerald_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "EMERALD_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "emerald_letter_h" }
+  emerald_letter_i:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjdiMjhlMjE3NTQ3ZmY5MmRiYzk2ODNlZmI0OWNjMTIyN2U2N2NlZmIxMDE2NmE3NDhjMGM1MTQzNDljM2MzNCJ9fX0="
+    name: "&7Emerald I"
+    tags:
+      - alphabet/emerald
+      - character/letter_i
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "emerald_letter_i"
+          input: { head: "mini_emerald_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "EMERALD_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "emerald_letter_i" }
+  emerald_letter_j:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDBkNzU5MDUyYzA1MTJkOWNjN2Q1YTgxZDZlMzhjZmQzOGQzY2ExYzk4M2IzZGUyMjVkZGQ2ZDRiOGVjN2Y3NSJ9fX0="
+    name: "&7Emerald J"
+    tags:
+      - alphabet/emerald
+      - character/letter_j
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "emerald_letter_j"
+          input: { head: "mini_emerald_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "EMERALD_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "emerald_letter_j" }
+  emerald_letter_k:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzBmZmVhZDE1NGU2NDE4ODkzOTA5ZjdjMmQwZGY3NmI3YzAxZDE5YWQ3NGQ1M2Q0ZDY3ZTRlZTNkZDBhOTUwOCJ9fX0="
+    name: "&7Emerald K"
+    tags:
+      - alphabet/emerald
+      - character/letter_k
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "emerald_letter_k"
+          input: { head: "mini_emerald_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "EMERALD_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "emerald_letter_k" }
+  emerald_letter_l:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNmRlNTRjYjA1MzZmYTlmMTNlY2Q1ZmFmM2VmMzdiMGUzNTJlOWUxMTkyMWY2M2Y4YTU5YTc4NTQ0YzNhMDY2MSJ9fX0="
+    name: "&7Emerald L"
+    tags:
+      - alphabet/emerald
+      - character/letter_l
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "emerald_letter_l"
+          input: { head: "mini_emerald_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "EMERALD_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "emerald_letter_l" }
+  emerald_letter_m:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZmE3NTc0NTg3YWQ3NjliNDhjZTlmMGI4NjIzNDEzNmQyYWUxYTQzNDZiNGRhMmRjNmM1Y2FhNzhkODE5NDU1NiJ9fX0="
+    name: "&7Emerald M"
+    tags:
+      - alphabet/emerald
+      - character/letter_m
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "emerald_letter_m"
+          input: { head: "mini_emerald_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "EMERALD_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "emerald_letter_m" }
+  emerald_letter_n:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZWZlYjcxZjMwMzlkMGE2MDc3YmE1ZDJjNDQxNWFjZmZhYWEwNDExYjdiY2RiODZiZWM4YWU0ZDU5Mzc1NjMzOCJ9fX0="
+    name: "&7Emerald N"
+    tags:
+      - alphabet/emerald
+      - character/letter_n
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "emerald_letter_n"
+          input: { head: "mini_emerald_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "EMERALD_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "emerald_letter_n" }
+  emerald_letter_o:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMmZiYzZkYzAzN2JkYTc1N2I4Mzg3YjFmYTAzZTY2MzJmNmI0MTYxY2Q3NjdhOTY1ZDQ0YjI5YTE0YWJlYWQ5NyJ9fX0="
+    name: "&7Emerald O"
+    tags:
+      - alphabet/emerald
+      - character/letter_o
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "emerald_letter_o"
+          input: { head: "mini_emerald_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "EMERALD_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "emerald_letter_o" }
+  emerald_letter_p:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTFhNmQ2MzE1MTNlYmRjYzRjMzViODAzZGVjMWFhZjQzMDFhMjQ4ZDNlM2VlM2ZlZmRmZjYzMzI2Y2MyZjdlYyJ9fX0="
+    name: "&7Emerald P"
+    tags:
+      - alphabet/emerald
+      - character/letter_p
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "emerald_letter_p"
+          input: { head: "mini_emerald_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "EMERALD_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "emerald_letter_p" }
+  emerald_letter_q:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTY2MWVjNmE0ODU3OTMwMmQ1NjIyOWNkNjg1ZjMwZDFlYTY4NTc2OTA0ZjdlZjQzY2E1M2NmZmE1NzIwYmE0In19fQ=="
+    name: "&7Emerald Q"
+    tags:
+      - alphabet/emerald
+      - character/letter_q
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "emerald_letter_q"
+          input: { head: "mini_emerald_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "EMERALD_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "emerald_letter_q" }
+  emerald_letter_r:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjI1NDVmYmNhMTQ1OWQ4OWQ1ZDYxNDkxY2ZjYzBhOWJlZTVmYmNjM2M2Yjk5MDNhNTFlMzRhYTg4ZWFlODg1MCJ9fX0="
+    name: "&7Emerald R"
+    tags:
+      - alphabet/emerald
+      - character/letter_r
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "emerald_letter_r"
+          input: { head: "mini_emerald_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "EMERALD_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "emerald_letter_r" }
+  emerald_letter_s:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZmUyY2RkNGJmMWY1NTE1YjQ4YWY5MTQyN2U3NDE5MWQ0MDQ1MmUxN2M0YjJkNDViNzgwMzUyOGUwMDExOTZmZSJ9fX0="
+    name: "&7Emerald S"
+    tags:
+      - alphabet/emerald
+      - character/letter_s
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "emerald_letter_s"
+          input: { head: "mini_emerald_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "EMERALD_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "emerald_letter_s" }
+  emerald_letter_t:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYWFkOWQ0NmQ5ZmUyODhkNDI3YjcwNGUwMTQzMzdlYWY2ODU3MWMxYzA0OGFlOGY1Nzg1OGQ4MGRjMjlhOTNlNyJ9fX0="
+    name: "&7Emerald T"
+    tags:
+      - alphabet/emerald
+      - character/letter_t
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "emerald_letter_t"
+          input: { head: "mini_emerald_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "EMERALD_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "emerald_letter_t" }
+  emerald_letter_u:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWU5OGFmYjU4NDg3MGIwYzhjMWUwMjczZWNjMzZhZjAyZWVlYTM3YWFlMmM2ZDZmZjUxNzllNWUyZGRjZjcyYSJ9fX0="
+    name: "&7Emerald U"
+    tags:
+      - alphabet/emerald
+      - character/letter_u
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "emerald_letter_u"
+          input: { head: "mini_emerald_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "EMERALD_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "emerald_letter_u" }
+  emerald_letter_v:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzEzNTdhYjU4N2Y0NDVlNDYxMjJiMzRiZTA2OGU5ODViNWVmMjFlNTZlZjBmMzUzYzkxZjU3ZjNjOTc3ZDhiNiJ9fX0="
+    name: "&7Emerald V"
+    tags:
+      - alphabet/emerald
+      - character/letter_v
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "emerald_letter_v"
+          input: { head: "mini_emerald_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "EMERALD_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "emerald_letter_v" }
+  emerald_letter_w:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjBjMTM5MWIzZDliYjVlNjU0OTQ0MGYxOTZiOGUxM2U5NmE4ODZjNTI4MjQyYzY5MmI0MDI0ZWUxYzE1MzQ1NSJ9fX0="
+    name: "&7Emerald W"
+    tags:
+      - alphabet/emerald
+      - character/letter_w
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "emerald_letter_w"
+          input: { head: "mini_emerald_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "EMERALD_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "emerald_letter_w" }
+  emerald_letter_x:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTkwM2EyMzVkYTMxYjcwZWU4ZTFiMjk3MjQ4OThiM2ExODg2NjMzMGFkOWEyMzkyNTdlNzY4ZjA4YzRjN2VmNyJ9fX0="
+    name: "&7Emerald X"
+    tags:
+      - alphabet/emerald
+      - character/letter_x
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "emerald_letter_x"
+          input: { head: "mini_emerald_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "EMERALD_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "emerald_letter_x" }
+  emerald_letter_y:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzgzYWMxYmNiNDk1NWNhYmMwMjE5NTcyMzgzOTRkODcyOGNiMDU0NjVhNzBjMTg1MWNmMDllNzQ5MjBmZjMyNiJ9fX0="
+    name: "&7Emerald Y"
+    tags:
+      - alphabet/emerald
+      - character/letter_y
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "emerald_letter_y"
+          input: { head: "mini_emerald_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "EMERALD_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "emerald_letter_y" }
+  emerald_letter_z:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODRiOGQxOWMyNjhhZGJmODkzNTViODAwZWFkNjNhNTFkMTdhZDcyN2ZiMmZjYzY5MzM5ZWU1MTgzNmJjNDhmMyJ9fX0="
+    name: "&7Emerald Z"
+    tags:
+      - alphabet/emerald
+      - character/letter_z
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "emerald_letter_z"
+          input: { head: "mini_emerald_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "EMERALD_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "emerald_letter_z" }
+  emerald_number_0:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzU5OTM1NDlmMzMyM2E2NGY3NjIyZThkNmExZjU0MDgwNzBhNzlmMGZhNDAzMGE2YzRjNTE5Yjk1MWJkOTlhOSJ9fX0="
+    name: "&7Emerald 0"
+    tags:
+      - alphabet/emerald
+      - character/number_0
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "emerald_number_0"
+          input: { head: "mini_emerald_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "EMERALD_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "emerald_number_0" }
+  emerald_number_1:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTg2YjIxMTRmZDhlNDFkZDcwZmVjM2U4YzJmN2U2NzVhYzM0Y2I5ZjFhNDdkOTAzNTcyYzBkYzNlMmIwODc0ZCJ9fX0="
+    name: "&7Emerald 1"
+    tags:
+      - alphabet/emerald
+      - character/number_1
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "emerald_number_1"
+          input: { head: "mini_emerald_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "EMERALD_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "emerald_number_1" }
+  emerald_number_2:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvY2E1M2Y0NjE5OWIzNTI5MDg1N2RkMzk5NDI5NDFlYjFmZGVlNGZlMzMyNDFkMDMxMDZjNzYzM2M5MTU4N2FhMiJ9fX0="
+    name: "&7Emerald 2"
+    tags:
+      - alphabet/emerald
+      - character/number_2
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "emerald_number_2"
+          input: { head: "mini_emerald_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "EMERALD_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "emerald_number_2" }
+  emerald_number_3:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjE1ZTE4ZTU5OTRjNWIzODgxNmFkNmYxNjA5MDk0OWY2NDE4NzQ1OGJjY2JiMjU4Nzk4YWQwYTkwNGM5NTMwMyJ9fX0="
+    name: "&7Emerald 3"
+    tags:
+      - alphabet/emerald
+      - character/number_3
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "emerald_number_3"
+          input: { head: "mini_emerald_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "EMERALD_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "emerald_number_3" }
+  emerald_number_4:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvM2Q3YjE2ZjVkMWVmNTE5ODg4ZDkzMmQ5MjlkYTllY2Y5ZjA5NTk5MGRiMjY2MDIyY2QzYTM3YWY3Y2YwMjVlYiJ9fX0="
+    name: "&7Emerald 4"
+    tags:
+      - alphabet/emerald
+      - character/number_4
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "emerald_number_4"
+          input: { head: "mini_emerald_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "EMERALD_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "emerald_number_4" }
+  emerald_number_5:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjk5M2U3ODhhZmJmMWQxNGNhOGVkZGI2ZWZhMDU0NzQ0NWI0MWIxNzU3NzY0MDhjZmQ3ODZkZDcyNTQ5YWI5MyJ9fX0="
+    name: "&7Emerald 5"
+    tags:
+      - alphabet/emerald
+      - character/number_5
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "emerald_number_5"
+          input: { head: "mini_emerald_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "EMERALD_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "emerald_number_5" }
+  emerald_number_6:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvN2VjNmZkNzRmOWRjMDUzYmU2ZTVlMjRmZjAxYjJjY2M0NjlkNzUxOTY3NzUyMDQzYWYxNzVmNmQwZDdiNjc4MyJ9fX0="
+    name: "&7Emerald 6"
+    tags:
+      - alphabet/emerald
+      - character/number_6
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "emerald_number_6"
+          input: { head: "mini_emerald_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "EMERALD_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "emerald_number_6" }
+  emerald_number_7:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNWI5ZTIyNGRiMGU0NTM2NzRjZTUwNWZkNjM0MjVlNjMwY2QxMjU2ZjgxMzNkZjJlZDVkMjY5YzRjZTZjODE3NSJ9fX0="
+    name: "&7Emerald 7"
+    tags:
+      - alphabet/emerald
+      - character/number_7
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "emerald_number_7"
+          input: { head: "mini_emerald_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "EMERALD_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "emerald_number_7" }
+  emerald_number_8:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYWNlMjg1YjBlOWE5ZGE1MGMxOWFhYTZjZTUxODMzZTI2Y2U0ZDNmZTIxMzk4NGVkOTI0YmUzODJlOTU5MjZjYyJ9fX0="
+    name: "&7Emerald 8"
+    tags:
+      - alphabet/emerald
+      - character/number_8
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "emerald_number_8"
+          input: { head: "mini_emerald_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "EMERALD_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "emerald_number_8" }
+  emerald_number_9:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTA3NDNiMWI0YjA1MTY2Y2I5NGIyMGRjNDQwNmE1ODkzYWE4M2I2NWMwMzYyNzcxOGE4YWJhOGJlYWVmZGU0YiJ9fX0="
+    name: "&7Emerald 9"
+    tags:
+      - alphabet/emerald
+      - character/number_9
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "emerald_number_9"
+          input: { head: "mini_emerald_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "EMERALD_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "emerald_number_9" }
+  emerald_comma:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjRmMTEyN2M1MTg4ODYxZmNjOTg3MjhhODcyYjJmYTBmZDE1MzdlN2JiNjE4YzNmOTAyMDFlNWQwMjA4ZmJjZiJ9fX0="
+    name: "&7Emerald ,"
+    tags:
+      - alphabet/emerald
+      - character/comma
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "emerald_comma"
+          input: { head: "mini_emerald_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "EMERALD_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "emerald_comma" }
+  emerald_colon:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTkxODMwYjNkZDFkMDViNmIzMjIyYThmMmRhODkyNmRlMjRhNDczYmE0ZGNhMjAyMTk2YTBmZWJhNDE0NTg2OCJ9fX0="
+    name: "&7Emerald :"
+    tags:
+      - alphabet/emerald
+      - character/colon
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "emerald_colon"
+          input: { head: "mini_emerald_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "EMERALD_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "emerald_colon" }
+  emerald_quote:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZmJhMjY1MTVjYzY5Y2Q4MWYzMzlhMzA3NmFlOGUwNDZhMmQ5NjRkODgyOWMxNjFkMTE5YjRkNmI5YTA0ZDY5ZSJ9fX0="
+    name: "&7Emerald \""
+    tags:
+      - alphabet/emerald
+      - character/quote
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "emerald_quote"
+          input: { head: "mini_emerald_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "EMERALD_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "emerald_quote" }
+  emerald_hash:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZGYzYmFhMTY3NjY1ZGVkY2ZiZDViMzU3Nzc4ODhmMTIzZjAzMDViY2EzZWE4OWRhOTQyMTI2MmNiZWFiNTQ3NyJ9fX0="
+    name: "&7Emerald #"
+    tags:
+      - alphabet/emerald
+      - character/hash
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "emerald_hash"
+          input: { head: "mini_emerald_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "EMERALD_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "emerald_hash" }
+  emerald_percent:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvY2EyYzIxNGZlYTY4MzEzODE3MjQyMTU5ZmIxYWU3MDgzMjk1MTQ2YmJiNjczMzNjOWI1YjVlYTJiMTRlNDU0MyJ9fX0="
+    name: "&7Emerald %"
+    tags:
+      - alphabet/emerald
+      - character/percent
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "emerald_percent"
+          input: { head: "mini_emerald_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "EMERALD_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "emerald_percent" }
+  emerald_minus:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODBlYWE5Y2VhYzExYWE1MmQyZjU2YmUwNDA0NzZhYTVkNWVmZmRhZWMzNGU5MTcxYzI2Yzk4ZjRkMGJlNDAxZiJ9fX0="
+    name: "&7Emerald -"
+    tags:
+      - alphabet/emerald
+      - character/minus
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "emerald_minus"
+          input: { head: "mini_emerald_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "EMERALD_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "emerald_minus" }
+  emerald_slash:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTYwMzJjMDBiMmU5ZTM4NzRlODIyYmFkMjcwOGNkMWUwM2Q3MTFlZTgzM2Y1NDA1NTE4YzEzOTFmOTViODE2MiJ9fX0="
+    name: "&7Emerald /"
+    tags:
+      - alphabet/emerald
+      - character/slash
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "emerald_slash"
+          input: { head: "mini_emerald_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "EMERALD_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "emerald_slash" }
+  emerald_underscore:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDNiYTVhOGE3NGFiYTA4OWU4YjVmN2IwOWNlOWZjNGIyNzZlZDEwZWVlMGE1YWE5YzVjNjAyODVhYWE2ZDRhZCJ9fX0="
+    name: "&7Emerald _"
+    tags:
+      - alphabet/emerald
+      - character/underscore
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "emerald_underscore"
+          input: { head: "mini_emerald_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "EMERALD_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "emerald_underscore" }
+  emerald_heart:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzI5MmNhMTY2ZDhlZjE1YjRmNWRlZmI0MzM4ZWQyMjM5YTk3NzQ1MjdkYjAxZDcyMjZjYjBjYmYxYzE1MjhkMCJ9fX0="
+    name: "&7Emerald ♥"
+    tags:
+      - alphabet/emerald
+      - character/heart
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "emerald_heart"
+          input: { head: "mini_emerald_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "EMERALD_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "emerald_heart" }
+  emerald_blank:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzMxZWQyZGZhYTBmMzkzOGQ3MjRkZGIwYjNhMzlhNzI4MjdhYTY5OTZkNTBlMjljNzFiZDQ5YjYyYTk2OTI1OSJ9fX0="
+    name: "&7Emerald  "
+    tags:
+      - alphabet/emerald
+      - character/blank
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "emerald_blank"
+          input: { head: "mini_emerald_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "EMERALD_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "emerald_blank" }
+  emerald_bracket_open:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZWRmOTRhMmI4MjU4ODk3MWI5YmZhMjU5M2U5N2I0OTQwMmEyYmU5ODlkYTE2ODJmYjQ4NWZhM2NhMzU4ODI1ZCJ9fX0="
+    name: "&7Emerald ["
+    tags:
+      - alphabet/emerald
+      - character/bracket_open
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "emerald_bracket_open"
+          input: { head: "mini_emerald_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "EMERALD_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "emerald_bracket_open" }
+  emerald_bracket_close:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGY5MDJhYTQyMDU4NGYwMGFjZjcwMTY2ZWQyNmZlOTYyZDZkYTk4NDYwMDljNDE0ZjE0ZjUwNGMzMWUzNzhmZCJ9fX0="
+    name: "&7Emerald ]"
+    tags:
+      - alphabet/emerald
+      - character/bracket_close
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "emerald_bracket_close"
+          input: { head: "mini_emerald_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "EMERALD_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "emerald_bracket_close" }
+  emerald_cyrillic_yo:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjViMmU5ZWI5N2EyYWIxYzM3NDIyOGY2ZmYyNTEwM2E4ZTY0MjZiNmM3NWEwZWJiNmY2OTBjMGM3YjU1NTRmZSJ9fX0="
+    name: "&7Emerald Ё"
+    tags:
+      - alphabet/emerald
+      - character/cyrillic_yo
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "emerald_cyrillic_yo"
+          input: { head: "mini_emerald_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "EMERALD_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "emerald_cyrillic_yo" }
+  emerald_cyrillic_be:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTcyNjJkNzM0MTNkMzBlZTg0ODNkMWVhNWFlMzU4MjM4ZWE4NTI3Njg4MTJiYTc3MjIxYmY5MjNkN2UxYjc0YiJ9fX0="
+    name: "&7Emerald Б"
+    tags:
+      - alphabet/emerald
+      - character/cyrillic_be
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "emerald_cyrillic_be"
+          input: { head: "mini_emerald_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "EMERALD_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "emerald_cyrillic_be" }
+  emerald_cyrillic_ge:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODlkMzJlNWFkMTYzNzQxYzAxYTk0NGE3MWJjYTAzOTQ0NDhiZDU0MmE4YmI4MGZkY2UwMmRhODRlY2RlNWE1MSJ9fX0="
+    name: "&7Emerald Г"
+    tags:
+      - alphabet/emerald
+      - character/cyrillic_ge
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "emerald_cyrillic_ge"
+          input: { head: "mini_emerald_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "EMERALD_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "emerald_cyrillic_ge" }
+  emerald_cyrillic_de:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjZhNjE1OTBhMjgyYzM4ZTgyYWVjNGFmM2MyMjI1NjA2OWVkZWFiMzA3NjNiZmUyOGJmYjEyMWU2ZmRlMWQ2NCJ9fX0="
+    name: "&7Emerald Д"
+    tags:
+      - alphabet/emerald
+      - character/cyrillic_de
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "emerald_cyrillic_de"
+          input: { head: "mini_emerald_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "EMERALD_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "emerald_cyrillic_de" }
+  emerald_cyrillic_zhe:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvM2FlNTc1NGVlMDg0YTlkMjA1YTQxY2M0NGZlMmY0NjQ2NmVlZjUzODc1ZTkxOGZhZjY4MmQxZTkwZDRmNzRiYiJ9fX0="
+    name: "&7Emerald Ж"
+    tags:
+      - alphabet/emerald
+      - character/cyrillic_zhe
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "emerald_cyrillic_zhe"
+          input: { head: "mini_emerald_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "EMERALD_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "emerald_cyrillic_zhe" }
+  emerald_cyrillic_ze:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDU5ZTViMmE1NDFjYmVlNjdhYjM3ZmIzNzRhNzBlMmMyMzUwOTI2MTI5ZWFkNjQwN2I0ZTMxN2MyMGE1YTdkIn19fQ=="
+    name: "&7Emerald З"
+    tags:
+      - alphabet/emerald
+      - character/cyrillic_ze
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "emerald_cyrillic_ze"
+          input: { head: "mini_emerald_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "EMERALD_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "emerald_cyrillic_ze" }
+  emerald_cyrillic_i:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTI2YTkwMmRmYmVmZDllYzgyYTM5OTVlYjRjZjIzZGJjNDQ2YjBiODRmNWE0MGM0OWEwNGNkMDQ1YTYxNTU2MCJ9fX0="
+    name: "&7Emerald И"
+    tags:
+      - alphabet/emerald
+      - character/cyrillic_i
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "emerald_cyrillic_i"
+          input: { head: "mini_emerald_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "EMERALD_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "emerald_cyrillic_i" }
+  emerald_cyrillic_short_i:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzkzMjRmMmE1NmE2MjExMDIyMTc5YWQxMjgwYjA5ZjM1MzY1MTE0MTkwZTc2NjI4YzZiZWJhMjIxZDcxMDg5NiJ9fX0="
+    name: "&7Emerald Й"
+    tags:
+      - alphabet/emerald
+      - character/cyrillic_short_i
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "emerald_cyrillic_short_i"
+          input: { head: "mini_emerald_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "EMERALD_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "emerald_cyrillic_short_i" }
+  emerald_cyrillic_el:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjU1ZmJjMWRiN2QyYmYxOTM0Y2Q1M2NhOTY1NDc5MjA4MTc0NzNhMGM4YWJkODhkMWRjMmQ4NWM0MDYxN2YwNSJ9fX0="
+    name: "&7Emerald Л"
+    tags:
+      - alphabet/emerald
+      - character/cyrillic_el
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "emerald_cyrillic_el"
+          input: { head: "mini_emerald_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "EMERALD_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "emerald_cyrillic_el" }
+  emerald_cyrillic_pe:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjgzMWFmZDNlMWZjMDcwNmViN2YwODU2MjkwNzM4NDcwMzgxN2RiYjEyZDg2ZTRhNWM0YTg0YjkyNzJjMDEwZSJ9fX0="
+    name: "&7Emerald П"
+    tags:
+      - alphabet/emerald
+      - character/cyrillic_pe
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "emerald_cyrillic_pe"
+          input: { head: "mini_emerald_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "EMERALD_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "emerald_cyrillic_pe" }
+  emerald_cyrillic_u:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzAyYmIzZDQyZTc5YjY3NjM1ZjZjNWE2ODBiYzAxZjIyODYwZjM2YjBhYTE0ZTA5OTc5OGEyMGEyOGQ0YzcwOCJ9fX0="
+    name: "&7Emerald У"
+    tags:
+      - alphabet/emerald
+      - character/cyrillic_u
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "emerald_cyrillic_u"
+          input: { head: "mini_emerald_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "EMERALD_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "emerald_cyrillic_u" }
+  emerald_cyrillic_ef:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTdjN2Q5YWFmZTIyYzM0NGJhZWJmNTM4ZTM2MGJmOGQ3NzYyY2EzODVlZTE0YzZkY2VkY2U4YzAzOTY3ZDA5MiJ9fX0="
+    name: "&7Emerald Ф"
+    tags:
+      - alphabet/emerald
+      - character/cyrillic_ef
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "emerald_cyrillic_ef"
+          input: { head: "mini_emerald_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "EMERALD_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "emerald_cyrillic_ef" }
+  emerald_cyrillic_tse:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZGVhNTkxZDc3ODRiMWEwZjQ0MGVmMWY3OGZmNjNiOTA4MTRlZTY3OWJjZWJhMWVmZGE5OWUyMGVmODNjYTVmNCJ9fX0="
+    name: "&7Emerald Ц"
+    tags:
+      - alphabet/emerald
+      - character/cyrillic_tse
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "emerald_cyrillic_tse"
+          input: { head: "mini_emerald_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "EMERALD_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "emerald_cyrillic_tse" }
+  emerald_cyrillic_che:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjVmZGRjOTZkNjQyYmJlOGMyN2NlMzljYjVhNWQ5NzE5MmFmZWE0N2UzN2QyN2IwY2FiZThiYjYzNjMzOTFkOSJ9fX0="
+    name: "&7Emerald Ч"
+    tags:
+      - alphabet/emerald
+      - character/cyrillic_che
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "emerald_cyrillic_che"
+          input: { head: "mini_emerald_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "EMERALD_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "emerald_cyrillic_che" }
+  emerald_cyrillic_sha:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODNmN2QzMTYzZTE2ZmE4YWZlNDhlZDUyN2IwNGY3N2RmNDdmNDljNjRiNTRmZTY3Y2U2ZjBhZTcxNTZkZjdiNSJ9fX0="
+    name: "&7Emerald Ш"
+    tags:
+      - alphabet/emerald
+      - character/cyrillic_sha
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "emerald_cyrillic_sha"
+          input: { head: "mini_emerald_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "EMERALD_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "emerald_cyrillic_sha" }
+  emerald_cyrillic_shcha:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzhmMzlkNDVlMDE5YmQ2M2U2MjhjYzUwMDNjOTg2M2E4OWNmOTBkOGNmMWZiOGNmMDczZDQwZWUyZGM1NjAyYiJ9fX0="
+    name: "&7Emerald Щ"
+    tags:
+      - alphabet/emerald
+      - character/cyrillic_shcha
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "emerald_cyrillic_shcha"
+          input: { head: "mini_emerald_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "EMERALD_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "emerald_cyrillic_shcha" }
+  emerald_cyrillic_hard:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMmMxODVmZjI4OWJiOWU5NjcxNTk2MmY0NThjZjA2ODQ1YzI5MzRkYzYyZWI4NGQ1N2NlMzMzMjZjOGY2ODNiNiJ9fX0="
+    name: "&7Emerald Ъ"
+    tags:
+      - alphabet/emerald
+      - character/cyrillic_hard
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "emerald_cyrillic_hard"
+          input: { head: "mini_emerald_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "EMERALD_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "emerald_cyrillic_hard" }
+  emerald_cyrillic_yeru:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGUxYmVmNzllZTAxY2I5NmZmY2EzYTAxYjkwZGIxNGJmYzU2ZTJjMWRiZjVlMGI0N2NhOTg5Y2U3Zjg4NWExNSJ9fX0="
+    name: "&7Emerald Ы"
+    tags:
+      - alphabet/emerald
+      - character/cyrillic_yeru
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "emerald_cyrillic_yeru"
+          input: { head: "mini_emerald_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "EMERALD_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "emerald_cyrillic_yeru" }
+  emerald_cyrillic_soft:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvN2VlZGUxNjQ5MTFhNDc4N2ZiMjYxYzA4MDU3NjdmZDUzZWM4NTM1MWRkYmJjNmU1YjRlODZmOWJkNDFkMTFhMSJ9fX0="
+    name: "&7Emerald Ь"
+    tags:
+      - alphabet/emerald
+      - character/cyrillic_soft
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "emerald_cyrillic_soft"
+          input: { head: "mini_emerald_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "EMERALD_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "emerald_cyrillic_soft" }
+  emerald_cyrillic_e:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOThiMzFhNzVkMjI3MDZjZTdiOGUzNWI3M2E2MDEyNDVmOGNiMTE0NTVlMTBjNTM0MmE5YzVhODgwN2M5MzhlIn19fQ=="
+    name: "&7Emerald Э"
+    tags:
+      - alphabet/emerald
+      - character/cyrillic_e
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "emerald_cyrillic_e"
+          input: { head: "mini_emerald_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "EMERALD_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "emerald_cyrillic_e" }
+  emerald_cyrillic_yu:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvY2QwOWUxNGNmOTFiOTA4MmI5NjNlNDYyN2UwMGQ1OWQ5ZTQ5NWE0MjU2NzRiM2JlODU4ODZhMjAxYzliZmM1MCJ9fX0="
+    name: "&7Emerald Ю"
+    tags:
+      - alphabet/emerald
+      - character/cyrillic_yu
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "emerald_cyrillic_yu"
+          input: { head: "mini_emerald_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "EMERALD_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "emerald_cyrillic_yu" }
+  emerald_cyrillic_ya:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZWU4NzNkYTRmOGRjZGVlYThkOTExMzQwNzAxYzRjMWUzZDhkOGY3NDQ4OGNjZWYwYjJkMTAxYTkwZjk5YWZiZCJ9fX0="
+    name: "&7Emerald Я"
+    tags:
+      - alphabet/emerald
+      - character/cyrillic_ya
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "emerald_cyrillic_ya"
+          input: { head: "mini_emerald_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "EMERALD_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "emerald_cyrillic_ya" }

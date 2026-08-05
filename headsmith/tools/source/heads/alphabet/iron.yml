@@ -1,0 +1,267 @@
+# Generated Iron Alphabet Blocks
+
+heads:
+  iron_number_1:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTg3NDQ0ZWQ2ZDg0NTY5MDExNWIzODU4OGNmMWEyNjQ0ZGE5YzcxZTZmMzFhZTI0NjUxMDM4Y2IxZDQ3NmVhIn19fQ=="
+    name: "&7Iron 1"
+    tags:
+      - alphabet/iron
+      - character/number_1
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "iron_number_1"
+          input: { head: "mini_iron_block" }
+  iron_number_2:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOWU0NGI3MDdiMjA1YjdkMjNlNDBhM2MwZGYxOWIwOWI2MmQwMjc4MDcyNzhlZjMwMWIzYzJhYjk4YjRmMGQ2In19fQ=="
+    name: "&7Iron 2"
+    tags:
+      - alphabet/iron
+      - character/number_2
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "iron_number_2"
+          input: { head: "mini_iron_block" }
+  iron_number_3:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTNmZDZjMjI1OTk4YzJkYjRhNGFmZGRkMjRhOTNjNmYxY2YzNDk5MTRhYTNjNWExNTI1Y2M1NTg3M2IzMGQ3MiJ9fX0="
+    name: "&7Iron 3"
+    tags:
+      - alphabet/iron
+      - character/number_3
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "iron_number_3"
+          input: { head: "mini_iron_block" }
+  iron_number_4:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvN2YzMTg3YTVhMGFhN2FiNDg5MzdjN2NmOTE5ODgxZDYxNzg5OTVhNTYxNWQyZWEyNDRlMmRhY2VjNjZlOGQ1NiJ9fX0="
+    name: "&7Iron 4"
+    tags:
+      - alphabet/iron
+      - character/number_4
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "iron_number_4"
+          input: { head: "mini_iron_block" }
+  iron_number_5:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTg2YzEyOGJhZmY5YWRkMzVkY2M3MTgzNWRlY2M1NTNiNThjOWIyMTE2ZjU0ZWY0MjM5NjBjZDI2Yzk0NjljOSJ9fX0="
+    name: "&7Iron 5"
+    tags:
+      - alphabet/iron
+      - character/number_5
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "iron_number_5"
+          input: { head: "mini_iron_block" }
+  iron_number_6:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjMxODFmYThjZjZiZjA4OTg3N2FkOTIxZTNmODQwMTQzMDQ0NWEzZTZiMTg1MGVhNGQ2NzUwMWRhYjZiMjAyNCJ9fX0="
+    name: "&7Iron 6"
+    tags:
+      - alphabet/iron
+      - character/number_6
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "iron_number_6"
+          input: { head: "mini_iron_block" }
+  iron_number_8:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvN2FjODRiYWZjNDNlNGQzZGU2NjFkN2Y4NWRlNDhkNWU5YTYyZjRlNDg4Mjc4ODM0Yzc5ZTMwOTUxNjMxNTQ5NiJ9fX0="
+    name: "&7Iron 8"
+    tags:
+      - alphabet/iron
+      - character/number_8
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "iron_number_8"
+          input: { head: "mini_iron_block" }
+  iron_number_9:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGE1MGU5YTExMmZlYjc5NWE2NDViZTI0NDBlYWQ1YTcxMmM4ODllYjE5MDI4MDVmMWMwN2YyZjU2ZmY0OTA2NyJ9fX0="
+    name: "&7Iron 9"
+    tags:
+      - alphabet/iron
+      - character/number_9
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "iron_number_9"
+          input: { head: "mini_iron_block" }
+  iron_number_10:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDliMzk5NzYwMTc3YjI3NzVlMTc0ZDQ5NTEyZjdiNmZhOWFhMDgwNzEzZWY0MzRkNDQwN2IxMWUzZDk5N2E4NCJ9fX0="
+    name: "&7Iron 10"
+    tags:
+      - alphabet/iron
+      - character/number_10
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "iron_number_10"
+          input: { head: "mini_iron_block" }
+  iron_number_11:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvM2ZhZGViZjRmMDllMDdmNTMzMTBhZGQxMmI3ZjQ3ZDQ4ZGFlNmM3N2FhM2U2MjcwMDFiNTMwOTJlNjlmODcxOSJ9fX0="
+    name: "&7Iron 11"
+    tags:
+      - alphabet/iron
+      - character/number_11
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "iron_number_11"
+          input: { head: "mini_iron_block" }
+  iron_number_12:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZmRhOWNiYmYzM2Y4Yjc5ZTcwNjEzOGQ0ZmFlODQzZGNkNDlkNDQxOTAwMTMzZDE1ODhlZDQ4NmM0NWU4ODIxMSJ9fX0="
+    name: "&7Iron 12"
+    tags:
+      - alphabet/iron
+      - character/number_12
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "iron_number_12"
+          input: { head: "mini_iron_block" }
+  iron_number_13:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYWZiODU0ZTE3OGI1Njc4MTY4OTZlMjNlY2U1ZTg1NmM4OGI5MmUzYmQ4OTcwMjc2NDBhZjM0MjU3YjljYzZlOSJ9fX0="
+    name: "&7Iron 13"
+    tags:
+      - alphabet/iron
+      - character/number_13
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "iron_number_13"
+          input: { head: "mini_iron_block" }
+  iron_number_14:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvN2UzYzU5ZDdjNDQ1YjJlOTllMGFlMzQ5NmUyNDI3YTMyYjg4ZDc2MGU5NDhjY2Y3MjZlMTJkMDNjMWMyMWJmOSJ9fX0="
+    name: "&7Iron 14"
+    tags:
+      - alphabet/iron
+      - character/number_14
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "iron_number_14"
+          input: { head: "mini_iron_block" }
+  iron_number_15:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTZhMjY3Y2VhYjE3ZmJiODkxMTYwYTU4Y2Y0YTE2YTFmMDNkNmU1ZTY4MmI4MWM3ODBmMDIwOWNhNTkxZDY0YSJ9fX0="
+    name: "&7Iron 15"
+    tags:
+      - alphabet/iron
+      - character/number_15
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "iron_number_15"
+          input: { head: "mini_iron_block" }
+  iron_number_16:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODk2Nzg0MmY3NjlkNTkwYTViNGQ3MGViYjQ3OTI5NmNlNmFkMDNiODlhMGVkNTJjOGUzZmFlZmM1MWY1MTdlOSJ9fX0="
+    name: "&7Iron 16"
+    tags:
+      - alphabet/iron
+      - character/number_16
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "iron_number_16"
+          input: { head: "mini_iron_block" }
+  iron_number_17:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTBmNzFlZGJjYTUyOGYyMTRmYWFiODYyN2YyNTgwZGU2MGIwZThjMTZmNDQ3OWMwMzEyMmI4MzYwNzI1ZmUwYyJ9fX0="
+    name: "&7Iron 17"
+    tags:
+      - alphabet/iron
+      - character/number_17
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "iron_number_17"
+          input: { head: "mini_iron_block" }
+  iron_number_18:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODRhYzk4Zjg5MjAxYWM1YjIyNzMyZGY0ODVmYzQ0ZGNhYmQxY2FjNmY4MzZlNjM2ZTU0ZDZlZmYxY2QwMzAwNCJ9fX0="
+    name: "&7Iron 18"
+    tags:
+      - alphabet/iron
+      - character/number_18
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "iron_number_18"
+          input: { head: "mini_iron_block" }
+  iron_number_19:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjk5N2JmZGM5ODkxNmFhODhlYzVkN2E3Yjg5ZjgwOTgwNGUzZTc0NWFiZjc5Nzc3ZWQ1NWZkYWJjNTRmYjg3In19fQ=="
+    name: "&7Iron 19"
+    tags:
+      - alphabet/iron
+      - character/number_19
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "iron_number_19"
+          input: { head: "mini_iron_block" }
+  iron_number_20:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTc3Y2E4YTI0ZDg4NmQyMWFjNTA3YWZmMTUzMWQ2YTY3MjA5NDM1ZTZlYmU3ZWMyNTc0ZDljOTQyMGM1MGNjZiJ9fX0="
+    name: "&7Iron 20"
+    tags:
+      - alphabet/iron
+      - character/number_20
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "iron_number_20"
+          input: { head: "mini_iron_block" }
+  iron_number_21:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOGM5ZmNiZGUxNzEzOWUxMDZmM2I3YjNjNDliN2E3OTAxMTY1MjhlYTc0OTMxYjg0NGM2MTdjNTQyZWJmZjJjYiJ9fX0="
+    name: "&7Iron 21"
+    tags:
+      - alphabet/iron
+      - character/number_21
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "iron_number_21"
+          input: { head: "mini_iron_block" }
+  iron_number_22:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzBkZTVhODc2NzNjZThjZTAxNTk4YWQ5ODIzMmI2ODA0Y2M4NDFlOTc5MjUyZjk5MmZhOTg5OWI3MDRlNGUzNyJ9fX0="
+    name: "&7Iron 22"
+    tags:
+      - alphabet/iron
+      - character/number_22
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "iron_number_22"
+          input: { head: "mini_iron_block" }
+  iron_number_23:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjc4NzNjZDliZTBlNTU3NTlkOWFjOWYwMTFkOTFjMzUzMTJmZGExZTI0YjA2NjljNTMxMjdhYjM1NTk4NmNjIn19fQ=="
+    name: "&7Iron 23"
+    tags:
+      - alphabet/iron
+      - character/number_23
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "iron_number_23"
+          input: { head: "mini_iron_block" }
+  iron_number_24:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZGI0OWM4Y2ExYzQxMjc2YjYzYTA3ZDcxYjRkNDQyYTEzZmY4NzcxNzVhNGU0ODQwNjNkNTdkODYyYWZlMmUxMSJ9fX0="
+    name: "&7Iron 24"
+    tags:
+      - alphabet/iron
+      - character/number_24
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "iron_number_24"
+          input: { head: "mini_iron_block" }
+  iron_number_25:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTBjMzRmYWIwZDQ3NWMyZWMzMmI3NzQ4MzFlOThjYmM0NTlmN2JkY2UyZDA4YzYyOTFiNDgzMTIzY2VkOGY3ZiJ9fX0="
+    name: "&7Iron 25"
+    tags:
+      - alphabet/iron
+      - character/number_25
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "iron_number_25"
+          input: { head: "mini_iron_block" }

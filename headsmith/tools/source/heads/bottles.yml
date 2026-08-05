@@ -1,0 +1,277 @@
+# Bottles and Jars - Items stored in glass bottles
+
+heads:
+  redstone_bottle:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTFkNjE4ZjMyYTIwZWMzZmIzOTE2MDEyMGEzZjg3ZDUwNmU2OTA5MGViZGJmNTA4OTZjNjVhNmFjNDQwZDhhYyJ9fX0="
+    name: "&cRedstone in a Bottle"
+    tags: [storage]
+    lore:
+      - "&7Break it to get redstone."
+    recipes:
+      craft:
+        shapeless:
+          - id: "redstone_bottle"
+            ingredients:
+              - { material: "GLASS_BOTTLE" }
+              - { material: "REDSTONE" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "REDSTONE" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "redstone_bottle" }
+
+  bottle_o_enchanting:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzA1NGMyOWM3ODA5MDQ3MWMxZWEwNThiZDY0MTg5NzM5MWM5ZTQ2OTRhYTlkMTQwYWZiYmE4ZDBjYzQzNjM3In19fQ=="
+    name: "&aBottle O' Enchanting"
+    tags: [storage]
+    lore:
+      - "&7A bottle of experience."
+    recipes:
+      stonecutter:
+        - id: "bottle_o_enchanting"
+          input: { material: "EXPERIENCE_BOTTLE" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "EXPERIENCE_BOTTLE" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "bottle_o_enchanting" }
+
+  dragons_breath:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjJmNDcxYmM5NTE1NzdiYzI4MDhlZWE1NWU0N2NjN2M2Nzk2Yzg5MGNjNzA1ZmFjM2I5ODM0OTcxMjZlNDhjNiJ9fX0="
+    name: "&5Dragon's Breath"
+    tags: [storage]
+    lore:
+      - "&7Bottled dragon fire."
+    recipes:
+      stonecutter:
+        - id: "dragons_breath"
+          input: { material: "DRAGON_BREATH" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "DRAGON_BREATH" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "dragons_breath" }
+
+  honey_bottle:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjk0MTFiNTAzODgyYTIyZThjMjMzNjdjYjQzYTZlNWVhNGY0NTQwMjA4ZDUzMWQ3M2RjMjUwNzc4YTI3ZDA4YyJ9fX0="
+    name: "&6Honey Bottle"
+    tags: [storage]
+    lore:
+      - "&7Sweet golden honey."
+    recipes:
+      stonecutter:
+        - id: "honey_bottle"
+          input: { material: "HONEY_BOTTLE" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "HONEY_BOTTLE" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "honey_bottle" }
+
+  axolotl_bottle:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGYxOTE0MGMyZTk4MDE0MTAzMmU4NDhjNTczYTc2ZWM4YTQ0NmRlMmNmMGJmZjg4YjdkNDc2MzI5ZDljZTViMCJ9fX0="
+    name: "&dAxolotl in a Bottle"
+    tags: [storage]
+    lore:
+      - "&7A tiny axolotl friend."
+    recipes:
+      craft:
+        shapeless:
+          - id: "axolotl_bottle"
+            ingredients:
+              - { material: "AXOLOTL_BUCKET" }
+              - { material: "GLASS_BOTTLE" }
+
+  fish_bottle:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTc3ZjhmZDAyNjI1YjdiYjIwNTc2NGExNjM1MzgxNzY3ZjY2MzFkYTYxNDhmYTk0MjBmYmQ0ZmJmZjIzMzhlNyJ9fX0="
+    name: "&bFish in a Bottle"
+    tags: [storage]
+    lore:
+      - "&7A little fish swimming around."
+    recipes:
+      craft:
+        shapeless:
+          - id: "fish_bottle"
+            ingredients:
+              - { material: "COD_BUCKET" }
+              - { material: "GLASS_BOTTLE" }
+          - id: "fish_bottle"
+            ingredients:
+              - { material: "COD" }
+              - { material: "GLASS_BOTTLE" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "COD" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "fish_bottle" }
+
+  pufferfish_bottle:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODNiMzBlMTZlMTU2NjZlZTgyZmU2OGFmN2YxYjE3M2QwN2UwYzZkMTM4YmJlMzRjZjEwYjUxOTE5NDFkNjFiNSJ9fX0="
+    name: "&ePufferfish in a Bottle"
+    tags: [storage]
+    lore:
+      - "&7A prickly pufferfish."
+    recipes:
+      craft:
+        shapeless:
+          - id: "pufferfish_bottle"
+            ingredients:
+              - { material: "GLASS_BOTTLE" }
+              - { material: "PUFFERFISH" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "PUFFERFISH" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "pufferfish_bottle" }
+
+  cookie_jar:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTQ3NjY5NWRmY2MxNzBiZDc0ZWFkNGNiYWYxNzVlMTM3ODdjYmRmN2YzMmYwOGZmY2FhZmY2Mzg1OGUzYzEyMCJ9fX0="
+    name: "&6Cookie Jar"
+    tags: [storage]
+    lore:
+      - "&7A jar full of cookies."
+    recipes:
+      craft:
+        shapeless:
+          - id: "cookie_jar"
+            ingredients:
+              - { material: "GLASS_BOTTLE" }
+              - { material: "COOKIE" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "COOKIE" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "cookie_jar" }
+
+  zombie_head_bottle:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTYxMjhlM2VjNDQwZDBjZmU1MjQxYTQyZjI3NjFmM2U1Yjg0NjZiOGY5MTM4YzRiZGQyYmQzN2E2Njg4MzY0NiJ9fX0="
+    name: "&2Zombie Head in a Bottle"
+    tags: [storage]
+    lore:
+      - "&7A preserved zombie head."
+    recipes:
+      craft:
+        shapeless:
+          - id: "zombie_head_bottle"
+            ingredients:
+              - { material: "GLASS_BOTTLE" }
+              - { material: "ZOMBIE_HEAD" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "ZOMBIE_HEAD" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "zombie_head_bottle" }
+
+  slime_bottle:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWI0YTE3ZjNkNmU5MmY2Yzc0NzlhZDBiODExZDEzODAwNTE2OTgyNTM0Y2JjZjU4NmM2MjRkNDM3OTBhM2ZjOCJ9fX0="
+    name: "&aSlime in a Bottle"
+    tags: [storage]
+    lore:
+      - "&7Gooey slime contained."
+    recipes:
+      craft:
+        shapeless:
+          - id: "slime_bottle"
+            ingredients:
+              - { material: "GLASS_BOTTLE" }
+              - { material: "SLIME_BALL" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "SLIME_BALL" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "slime_bottle" }
+
+  glowstone_bottle:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzhiYzZiMzNmYWViYWJhMGE1YzNjZjI5MmRiZDI5OGY0ZDg2MTU0OTY0OTg0NDFmZjNkYWNhZjk2ZTQzMzU3NSJ9fX0="
+    name: "&eGlowstone in a Bottle"
+    tags: [storage]
+    lore:
+      - "&7Glittering glowstone dust."
+    properties:
+      - glowing
+    recipes:
+      craft:
+        shapeless:
+          - id: "glowstone_bottle"
+            ingredients:
+              - { material: "GLASS_BOTTLE" }
+              - { material: "GLOWSTONE_DUST" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "GLOWSTONE_DUST" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "glowstone_bottle" }
+
+  jar_of_dirt:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjAzMjM5ZjcwYTNjMjUzNThiMjJhMjliZTFiZmQxYjk4NWVlOTVmMjg2MzQ4YjRlMGYyMmYzNDc0MDk4MjViOCJ9fX0="
+    name: "&6Jar of Dirt"
+    tags: [storage]
+    lore:
+      - "&7I've got a jar of dirt!"
+    recipes:
+      craft:
+        shapeless:
+          - id: "jar_of_dirt"
+            ingredients:
+              - { material: "GLASS_BOTTLE" }
+              - { material: "DIRT" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "DIRT" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "jar_of_dirt" }
+
+  fermented_spider_eye_bottle:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTI5YmRkNGMwM2FmOWMwY2YyYjFmOTQ4OTNiYTNjNTNlNzFlNDY4Mzg5ZmViMTQ3YzFiZjg2ODMyYjhmZWQyNiJ9fX0="
+    name: "&5Fermented Spider Eye in a Bottle"
+    tags: [storage]
+    lore:
+      - "&7A pungent fermented eye."
+    recipes:
+      craft:
+        shapeless:
+          - id: "fermented_spider_eye_bottle"
+            ingredients:
+              - { material: "GLASS_BOTTLE" }
+              - { material: "FERMENTED_SPIDER_EYE" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "FERMENTED_SPIDER_EYE" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "fermented_spider_eye_bottle" }

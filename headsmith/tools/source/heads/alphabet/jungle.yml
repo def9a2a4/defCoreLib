@@ -1,0 +1,1488 @@
+# Generated Jungle Alphabet Blocks
+
+heads:
+  jungle_letter_a:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYWI4ZTY2MmIzN2RmN2M0OGFlMmE0ZDRhZmNjY2U0MWZiNjIyODUyNTU5Njk1ZGJmMTE5MzNhOTBjMWUwIn19fQ=="
+    name: "&7Jungle A"
+    tags:
+      - alphabet/jungle
+      - character/letter_a
+      - wood
+    recipes:
+      stonecutter:
+        - id: "jungle_letter_a"
+          input: { head: "mini_jungle_planks" }
+  jungle_letter_b:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmNlOGMzZGI3NjFmYzliOTc5MTJiODEwMmYyODM5MTE1N2EzODBmZmUwMTcxNmU0NzVlNmU4NmE1NTliNmNiYSJ9fX0="
+    name: "&7Jungle B"
+    tags:
+      - alphabet/jungle
+      - character/letter_b
+      - wood
+    recipes:
+      stonecutter:
+        - id: "jungle_letter_b"
+          input: { head: "mini_jungle_planks" }
+  jungle_letter_c:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzExZjNhNmIxOWExMmU1NmE5ZmNkYmJkNzA4ZTg0ZTJhZjNiNGQ2ZWIxOGRiZDJiNTcwNTkxNDRiNmQxNiJ9fX0="
+    name: "&7Jungle C"
+    tags:
+      - alphabet/jungle
+      - character/letter_c
+      - wood
+    recipes:
+      stonecutter:
+        - id: "jungle_letter_c"
+          input: { head: "mini_jungle_planks" }
+  jungle_letter_d:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjcxZWNiODY5NTJhYzYxOTgxMWIzODdkNzg4M2Y4NDQ1ZGY0NWI5ZmQzZjI1ZGVhNTRhZGUzZjZjZjdlMTA3YiJ9fX0="
+    name: "&7Jungle D"
+    tags:
+      - alphabet/jungle
+      - character/letter_d
+      - wood
+    recipes:
+      stonecutter:
+        - id: "jungle_letter_d"
+          input: { head: "mini_jungle_planks" }
+  jungle_letter_e:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDdlNDMwOTQ3N2Q3MjhiMjYwMjM5MWE3YzQ3MzZhZDM5MWNjNDlhODEwN2IzY2JlZGY4ODIzNGQ3MzI4MjMifX19"
+    name: "&7Jungle E"
+    tags:
+      - alphabet/jungle
+      - character/letter_e
+      - wood
+    recipes:
+      stonecutter:
+        - id: "jungle_letter_e"
+          input: { head: "mini_jungle_planks" }
+  jungle_letter_f:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjljZDc4MjAyYTFkOWQ0OGFlMTA4NmE0NmIzZWFiYzI4NmUzMjNiYzc2ZjRiMjIxZWQ4YTYyOTMxOWUyZiJ9fX0="
+    name: "&7Jungle F"
+    tags:
+      - alphabet/jungle
+      - character/letter_f
+      - wood
+    recipes:
+      stonecutter:
+        - id: "jungle_letter_f"
+          input: { head: "mini_jungle_planks" }
+  jungle_letter_g:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTA3MzY0NWU4NDIxN2U2NjZmMTQ4MmVlMTE0NTNlMDk5NThlN2VjNGQyZTg2MzVmNDUwYzJhZWM4ZGM4Y2FkIn19fQ=="
+    name: "&7Jungle G"
+    tags:
+      - alphabet/jungle
+      - character/letter_g
+      - wood
+    recipes:
+      stonecutter:
+        - id: "jungle_letter_g"
+          input: { head: "mini_jungle_planks" }
+  jungle_letter_h:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzM4N2NmYjQ1YzNjYjFmMDVjOWMyZjVlNGZmODcyOTgwYTE3NDQzMjQxNzlmZmIzZDc2MmNjMWMwNGY3MSJ9fX0="
+    name: "&7Jungle H"
+    tags:
+      - alphabet/jungle
+      - character/letter_h
+      - wood
+    recipes:
+      stonecutter:
+        - id: "jungle_letter_h"
+          input: { head: "mini_jungle_planks" }
+  jungle_letter_i:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZWNjNTgxZTZiN2I2YWRlOTRhN2MyYmY1MTgxODJhZTEzMTVmNWE1OWVkZDZhNWNkMmUwNjYyNTNhYmExZDI3In19fQ=="
+    name: "&7Jungle I"
+    tags:
+      - alphabet/jungle
+      - character/letter_i
+      - wood
+    recipes:
+      stonecutter:
+        - id: "jungle_letter_i"
+          input: { head: "mini_jungle_planks" }
+  jungle_letter_j:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDRkMzZiODY2NjdjZDY3MWE5YTY2NDc5ZDM5ZjMyNDJlNzkzN2RlMTJkZWIzODFjYzI5ZTIxODdlODk4ZiJ9fX0="
+    name: "&7Jungle J"
+    tags:
+      - alphabet/jungle
+      - character/letter_j
+      - wood
+    recipes:
+      stonecutter:
+        - id: "jungle_letter_j"
+          input: { head: "mini_jungle_planks" }
+  jungle_letter_k:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGVkZmZlM2ZiZDU4M2YxYTczYmM1YjUxZjJjNjdjMTliZTliNDlmMmU3YWE2Y2NlOTQ0Mzc2ZjI4MzI5YmIifX19"
+    name: "&7Jungle K"
+    tags:
+      - alphabet/jungle
+      - character/letter_k
+      - wood
+    recipes:
+      stonecutter:
+        - id: "jungle_letter_k"
+          input: { head: "mini_jungle_planks" }
+  jungle_letter_l:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzljMDI5YThkMmU3YjI3YTJhNmE4ZGM4N2JlZDA4NDBjZTUxYjBlOGE0N2Y4MGUyZmI1NjNkMDE0YmQ1NyJ9fX0="
+    name: "&7Jungle L"
+    tags:
+      - alphabet/jungle
+      - character/letter_l
+      - wood
+    recipes:
+      stonecutter:
+        - id: "jungle_letter_l"
+          input: { head: "mini_jungle_planks" }
+  jungle_letter_m:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTVjYzc5MmEyMGQyODU3ZDgwMTdiODEyNGE1OTJlNzgyZTlhMmE4ZDdkMWZlYzUxZjQ3NjIzMTlhZDg5NDE4ZSJ9fX0="
+    name: "&7Jungle M"
+    tags:
+      - alphabet/jungle
+      - character/letter_m
+      - wood
+    recipes:
+      stonecutter:
+        - id: "jungle_letter_m"
+          input: { head: "mini_jungle_planks" }
+  jungle_letter_n:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjkzYWU5MTk4ZjU2MTk0MDc5NmUzOWNmYzUyNmUxY2Y5ZWM2N2Y0OGVjMmNiYzE5NmMzZjEzZTM4MTMzZjk0In19fQ=="
+    name: "&7Jungle N"
+    tags:
+      - alphabet/jungle
+      - character/letter_n
+      - wood
+    recipes:
+      stonecutter:
+        - id: "jungle_letter_n"
+          input: { head: "mini_jungle_planks" }
+  jungle_letter_o:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzdjMTUwNTY3ZWIxNzc1ZDc5MWQ3YmI2NGQyN2M3NzY0YmJiNzJkNjYxMWM3YjY2ZjY4NzkyMjVhMGUxMmMifX19"
+    name: "&7Jungle O"
+    tags:
+      - alphabet/jungle
+      - character/letter_o
+      - wood
+    recipes:
+      stonecutter:
+        - id: "jungle_letter_o"
+          input: { head: "mini_jungle_planks" }
+  jungle_letter_p:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzkyZDExNmU2YjZlYTNhNGExNDI4MmFiYmZiYzk5MmYyYTYzNTQ0ZmQ3NDQyNTRiMzAyYjg2YjJmZDZlIn19fQ=="
+    name: "&7Jungle P"
+    tags:
+      - alphabet/jungle
+      - character/letter_p
+      - wood
+    recipes:
+      stonecutter:
+        - id: "jungle_letter_p"
+          input: { head: "mini_jungle_planks" }
+  jungle_letter_q:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZmM1MThlZGUyYTIwMjQ5MzQyNThmM2I4NzNmNDc3NjhjNWIxMjE0Nzg1OGRmNjEyZjY2MTQ3ZDAzZDk2ZDQyIn19fQ=="
+    name: "&7Jungle Q"
+    tags:
+      - alphabet/jungle
+      - character/letter_q
+      - wood
+    recipes:
+      stonecutter:
+        - id: "jungle_letter_q"
+          input: { head: "mini_jungle_planks" }
+  jungle_letter_r:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWI4ZjU4ZTYxNTM2ODU3Yzk5YTI3MGZiNDVkYzdjZDI3NzVmNTc1NDRkNWNiMTRhMmIzOWJkNGE0YTc2NyJ9fX0="
+    name: "&7Jungle R"
+    tags:
+      - alphabet/jungle
+      - character/letter_r
+      - wood
+    recipes:
+      stonecutter:
+        - id: "jungle_letter_r"
+          input: { head: "mini_jungle_planks" }
+  jungle_letter_s:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjdmMDg4YzkyZmIyMWU5ODMyMTIyYmYyMjU1OWMzNDk5MWI3NGNjNTBkODQ3OTg2NWI3M2FmNWUxODc2NzhiIn19fQ=="
+    name: "&7Jungle S"
+    tags:
+      - alphabet/jungle
+      - character/letter_s
+      - wood
+    recipes:
+      stonecutter:
+        - id: "jungle_letter_s"
+          input: { head: "mini_jungle_planks" }
+  jungle_letter_t:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDcyNWZmYTJlOTg0ODZkNjEyMTRiZjlkNzE2OWZhMzNlNTBiMmY1Nzg2ZGVjYmYzZTIzNTg1MmVkNzc5MzgxIn19fQ=="
+    name: "&7Jungle T"
+    tags:
+      - alphabet/jungle
+      - character/letter_t
+      - wood
+    recipes:
+      stonecutter:
+        - id: "jungle_letter_t"
+          input: { head: "mini_jungle_planks" }
+  jungle_letter_u:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOGRmNzI3ODZhZjQ5Y2JkZGRkNGY1MzZiYmNjMTZkZjYyNjFkNzg4ODRmYzUzZDE2YzI3N2UyZjczNjFlMiJ9fX0="
+    name: "&7Jungle U"
+    tags:
+      - alphabet/jungle
+      - character/letter_u
+      - wood
+    recipes:
+      stonecutter:
+        - id: "jungle_letter_u"
+          input: { head: "mini_jungle_planks" }
+  jungle_letter_v:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOWQ0NTgyOWM3MGMxZGQ3ZjNkOWRjZmFjNDA1MGY2YTY5NDgwNjE4MDE1M2UxNDYwOWRhODUwMmE1Njc1OWVkNSJ9fX0="
+    name: "&7Jungle V"
+    tags:
+      - alphabet/jungle
+      - character/letter_v
+      - wood
+    recipes:
+      stonecutter:
+        - id: "jungle_letter_v"
+          input: { head: "mini_jungle_planks" }
+  jungle_letter_w:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzM3OWViZDY3YjdhOWNiMjZkMTVhMTFmZTliODY1MjEzNmU0MTNlODZiODkyNThjY2M1OWFmY2VkMTFkMTc3ZiJ9fX0="
+    name: "&7Jungle W"
+    tags:
+      - alphabet/jungle
+      - character/letter_w
+      - wood
+    recipes:
+      stonecutter:
+        - id: "jungle_letter_w"
+          input: { head: "mini_jungle_planks" }
+  jungle_letter_x:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNmYzZThiOGYzZDk4ZTkzMjJhNWE1OTgyZWZlMDIyNjM1ZGIxNjBhNjY2OTdiMWExMWE2ZDI4NDhhN2UwNmUifX19"
+    name: "&7Jungle X"
+    tags:
+      - alphabet/jungle
+      - character/letter_x
+      - wood
+    recipes:
+      stonecutter:
+        - id: "jungle_letter_x"
+          input: { head: "mini_jungle_planks" }
+  jungle_letter_y:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzQxOWQwNTUxZmRmYzdiZTdiODgxOTExMzExNjU2OTNjMDI2MzBjNTFmNjFmNTgxZWNmNzZjMTc2ODQzMWNiIn19fQ=="
+    name: "&7Jungle Y"
+    tags:
+      - alphabet/jungle
+      - character/letter_y
+      - wood
+    recipes:
+      stonecutter:
+        - id: "jungle_letter_y"
+          input: { head: "mini_jungle_planks" }
+  jungle_letter_z:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTU1YmRjZDZiNGFmZjY2ZjIyMTUxMmJiMjJlYjYxNzY2NDkyNTllNmJjMzBlYTVlNDMxZWI5OGFhNmFmMjYifX19"
+    name: "&7Jungle Z"
+    tags:
+      - alphabet/jungle
+      - character/letter_z
+      - wood
+    recipes:
+      stonecutter:
+        - id: "jungle_letter_z"
+          input: { head: "mini_jungle_planks" }
+  jungle_number_0:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOWMyM2FhNDM4OTU3MTlhNjZmMTYxYTc1ZGZkMjM5NDA2MmEzMDc3M2ZjYjVhZDliNjkxZmU0ZmI1ZmY4Y2MifX19"
+    name: "&7Jungle 0"
+    tags:
+      - alphabet/jungle
+      - character/number_0
+      - wood
+    recipes:
+      stonecutter:
+        - id: "jungle_number_0"
+          input: { head: "mini_jungle_planks" }
+  jungle_number_1:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNmE1OTJhOWZjM2Q5OWZkMDkzYThjMTUzODM4YWZkOTdjNWI0YWM2ZDZiNWI1MTliZDViZDk5ZTZhYjU1YWEifX19"
+    name: "&7Jungle 1"
+    tags:
+      - alphabet/jungle
+      - character/number_1
+      - wood
+    recipes:
+      stonecutter:
+        - id: "jungle_number_1"
+          input: { head: "mini_jungle_planks" }
+  jungle_number_2:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGFkOTlmN2RmNmRkMzE1OTdkYzc0MTg5MzU2NmJmN2NhYzdlZGUzODM0Nzk2NWQ2MGFlYWE0ZGRjZjJlZSJ9fX0="
+    name: "&7Jungle 2"
+    tags:
+      - alphabet/jungle
+      - character/number_2
+      - wood
+    recipes:
+      stonecutter:
+        - id: "jungle_number_2"
+          input: { head: "mini_jungle_planks" }
+  jungle_number_3:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvY2JlNTVkMjg0MmQ2ZDkyNDkwMWZkN2I0ODM1YjY0ODczNzJlN2FkNjY5NDdjNmExZDQ0OGFiMmRiOGM2NzBlYyJ9fX0="
+    name: "&7Jungle 3"
+    tags:
+      - alphabet/jungle
+      - character/number_3
+      - wood
+    recipes:
+      stonecutter:
+        - id: "jungle_number_3"
+          input: { head: "mini_jungle_planks" }
+  jungle_number_4:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjQyNDkwZjU4NTc2MWU0NzY2YWIzMDEyYmE4NTRhZjU3Y2Y1YjVhMmJhODA0MWEyM2JmZmUyNjE2YTk1ZWU1ZSJ9fX0="
+    name: "&7Jungle 4"
+    tags:
+      - alphabet/jungle
+      - character/number_4
+      - wood
+    recipes:
+      stonecutter:
+        - id: "jungle_number_4"
+          input: { head: "mini_jungle_planks" }
+  jungle_number_5:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjk1ZjU1NDg3N2QwYzQ5NmUxOGJjYTg5MTEyYjZiYTBjYmJlOTgzNTkwZTA4MDUyOTI4MmJhY2IxY2UxNTZkOCJ9fX0="
+    name: "&7Jungle 5"
+    tags:
+      - alphabet/jungle
+      - character/number_5
+      - wood
+    recipes:
+      stonecutter:
+        - id: "jungle_number_5"
+          input: { head: "mini_jungle_planks" }
+  jungle_number_6:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjU0MjI2ODY2Yzg5MDNmNmE0MjU5MjAyYWI1ZjViNTkxMzRkYzNlZjdiMjg0NTYzYTRiYWFiZmNhMjhhODRlIn19fQ=="
+    name: "&7Jungle 6"
+    tags:
+      - alphabet/jungle
+      - character/number_6
+      - wood
+    recipes:
+      stonecutter:
+        - id: "jungle_number_6"
+          input: { head: "mini_jungle_planks" }
+  jungle_number_7:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTU2ZjE4MzVkY2NjNWFmMDIxNzlhMDJiODQxNDUwMTQ1NGJjZDJkZWRhOGI3MzMxNTcyNDQzYzVjZGNiNWViIn19fQ=="
+    name: "&7Jungle 7"
+    tags:
+      - alphabet/jungle
+      - character/number_7
+      - wood
+    recipes:
+      stonecutter:
+        - id: "jungle_number_7"
+          input: { head: "mini_jungle_planks" }
+  jungle_number_8:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNWVmODYwYTY1MjU3MTc3ZWU3NDMyZDczNjUwNDVmMzYzODE1Y2E4NDY2YjRjNWRkMzdiYThkMWE4MjdiNGMifX19"
+    name: "&7Jungle 8"
+    tags:
+      - alphabet/jungle
+      - character/number_8
+      - wood
+    recipes:
+      stonecutter:
+        - id: "jungle_number_8"
+          input: { head: "mini_jungle_planks" }
+  jungle_number_9:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjMxMWZiOTVjMGE4NWVlMGYzZTE2YjQyN2M1MTNmMzdiN2Q3OGNkMTNmOGFmZTBkNWRkNGY0ZjE0MTVlZDM4In19fQ=="
+    name: "&7Jungle 9"
+    tags:
+      - alphabet/jungle
+      - character/number_9
+      - wood
+    recipes:
+      stonecutter:
+        - id: "jungle_number_9"
+          input: { head: "mini_jungle_planks" }
+  jungle_number_10:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDFlMjVkOGY2NTU4ZGYzMmU1NjE5NTg0NDg3ZTEzZThhY2Q1OGI1MjJjYzNhNWVlMTQxNzliN2RmYThjYzQ4In19fQ=="
+    name: "&7Jungle 10"
+    tags:
+      - alphabet/jungle
+      - character/number_10
+      - wood
+    recipes:
+      stonecutter:
+        - id: "jungle_number_10"
+          input: { head: "mini_jungle_planks" }
+  jungle_number_11:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzQxMTQ1MDk5MTZkNTkxMjNmMmE5YmYzNTRkY2JkNjkyN2I5MzgxN2NjOTQ3ODg0OWI0MzhiM2VjMzQ1ZTEwIn19fQ=="
+    name: "&7Jungle 11"
+    tags:
+      - alphabet/jungle
+      - character/number_11
+      - wood
+    recipes:
+      stonecutter:
+        - id: "jungle_number_11"
+          input: { head: "mini_jungle_planks" }
+  jungle_number_12:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzllMTI2YmJlOWMxMTI1MGFjM2E1NDFjZDY5ZGE0ZjllZjc3YzYyNmNmMmRhZmRlOGQ2MWU0ZjVlYTcxZGJiIn19fQ=="
+    name: "&7Jungle 12"
+    tags:
+      - alphabet/jungle
+      - character/number_12
+      - wood
+    recipes:
+      stonecutter:
+        - id: "jungle_number_12"
+          input: { head: "mini_jungle_planks" }
+  jungle_number_13:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjlkNDZhNDYzZTIzNTcxNmJkOGE4OTM1ZTEwNTU2MGE4NTE3NjRlZDVhNjVlNDQ5OGJmNzM5ZDYyYTIxNmQifX19"
+    name: "&7Jungle 13"
+    tags:
+      - alphabet/jungle
+      - character/number_13
+      - wood
+    recipes:
+      stonecutter:
+        - id: "jungle_number_13"
+          input: { head: "mini_jungle_planks" }
+  jungle_number_14:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzE0YTlhYmY1MjFiYTNhZWRkZGUxOWY1Yzk4OTI5ZGMyY2RhMzRlMTUwZDQ1NDEzZmJjZjM0YTE5Mzg2OTYifX19"
+    name: "&7Jungle 14"
+    tags:
+      - alphabet/jungle
+      - character/number_14
+      - wood
+    recipes:
+      stonecutter:
+        - id: "jungle_number_14"
+          input: { head: "mini_jungle_planks" }
+  jungle_number_15:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzgxZmMwOTEwMzU4OThmZWMxOTRjNTBlMTQ2OTY0YWE2ZTRmOTdiOGRjYzU5MjZjOGZiNjZmODU1NGNjYSJ9fX0="
+    name: "&7Jungle 15"
+    tags:
+      - alphabet/jungle
+      - character/number_15
+      - wood
+    recipes:
+      stonecutter:
+        - id: "jungle_number_15"
+          input: { head: "mini_jungle_planks" }
+  jungle_number_16:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZmY2Y2FlZDg3M2JhNjY5NTNjODlkMGY3YjYxN2NhZmUyZjkwOWE2ZTlkYjljMjllMDczNGFlYzFiZmY4YmUifX19"
+    name: "&7Jungle 16"
+    tags:
+      - alphabet/jungle
+      - character/number_16
+      - wood
+    recipes:
+      stonecutter:
+        - id: "jungle_number_16"
+          input: { head: "mini_jungle_planks" }
+  jungle_number_17:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDU1MDQ4ZDRiM2RlZTY0OTQzOGY0MzlkN2QzNmY1NzY5Zjg4ZjE4NDNlNWY5Y2FjMWU4ZjIwZDUyOWNkYWI4MSJ9fX0="
+    name: "&7Jungle 17"
+    tags:
+      - alphabet/jungle
+      - character/number_17
+      - wood
+    recipes:
+      stonecutter:
+        - id: "jungle_number_17"
+          input: { head: "mini_jungle_planks" }
+  jungle_number_18:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmRjMjYzODk1Y2I0YzYzYTI3ZTAxYzUzYTVhMWE1ZDYxNWIxM2RlNGQ3OTBiMWYyM2ZmZjUwYWI3ODIxMGM3In19fQ=="
+    name: "&7Jungle 18"
+    tags:
+      - alphabet/jungle
+      - character/number_18
+      - wood
+    recipes:
+      stonecutter:
+        - id: "jungle_number_18"
+          input: { head: "mini_jungle_planks" }
+  jungle_number_19:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzE1OWY4NjhlN2QzNTQ5N2MzZWU3ZGMzMzA3YWEwMzQyY2ViYTg2NWJhMzIzZDZiZGE0NzZiNDYyMzhhYTMzIn19fQ=="
+    name: "&7Jungle 19"
+    tags:
+      - alphabet/jungle
+      - character/number_19
+      - wood
+    recipes:
+      stonecutter:
+        - id: "jungle_number_19"
+          input: { head: "mini_jungle_planks" }
+  jungle_number_20:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNWJiNzg1Y2I0ZjE5NTNmOTNiY2Q1YWNhMmE3OWY0MzFiMWQyZTg2ZmJlZmIzZDFmNzJkNjdhMjRlYTQxOTg0In19fQ=="
+    name: "&7Jungle 20"
+    tags:
+      - alphabet/jungle
+      - character/number_20
+      - wood
+    recipes:
+      stonecutter:
+        - id: "jungle_number_20"
+          input: { head: "mini_jungle_planks" }
+  jungle_number_21:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTIyYjQyZjhiY2FiZGU3YmY4NmE4ZDJmYzI5MTliNzg1NjU1ZDlhNGJiNzNjM2Q3ZTRlYWJlNmJkNjI1ZTIifX19"
+    name: "&7Jungle 21"
+    tags:
+      - alphabet/jungle
+      - character/number_21
+      - wood
+    recipes:
+      stonecutter:
+        - id: "jungle_number_21"
+          input: { head: "mini_jungle_planks" }
+  jungle_number_22:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjY5YTc0ZmM5MjU0YTE2MTJjZmM0ODUzZjVlNDYwYjNhNjVjZDJhNWJjNWU3ZDdiYWU5MzdiZjVhMzJmNmZlIn19fQ=="
+    name: "&7Jungle 22"
+    tags:
+      - alphabet/jungle
+      - character/number_22
+      - wood
+    recipes:
+      stonecutter:
+        - id: "jungle_number_22"
+          input: { head: "mini_jungle_planks" }
+  jungle_number_23:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjM3NTVjYmIyNzU3NTgxNmI3ZWE1NTc3NGMzYTdjNmEwYzc5NDVlZDIyYzI0M2NlMTlkNzdmOGNjOWEifX19"
+    name: "&7Jungle 23"
+    tags:
+      - alphabet/jungle
+      - character/number_23
+      - wood
+    recipes:
+      stonecutter:
+        - id: "jungle_number_23"
+          input: { head: "mini_jungle_planks" }
+  jungle_number_24:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODlhMzRjZjZkOGYwNWM4YTgyMjY2YTk1NTg5OWExNzgyNjYxNjgyNDc1YTllYWI5MjU5NTY3MzhmZTc2NjMyIn19fQ=="
+    name: "&7Jungle 24"
+    tags:
+      - alphabet/jungle
+      - character/number_24
+      - wood
+    recipes:
+      stonecutter:
+        - id: "jungle_number_24"
+          input: { head: "mini_jungle_planks" }
+  jungle_number_25:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjQyNmY5YjM3NTUyMjcxMjFmNjZkYTJkYWVkZjU4NGU1OTU2YzM5NTQyYTQ4MGJmZjczZjFhNDFjZGI4Yzk4MCJ9fX0="
+    name: "&7Jungle 25"
+    tags:
+      - alphabet/jungle
+      - character/number_25
+      - wood
+    recipes:
+      stonecutter:
+        - id: "jungle_number_25"
+          input: { head: "mini_jungle_planks" }
+  jungle_number_30:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjM5NGZhMjI2YjlkN2I0MDRlZDZkMzZmNzM5MzA2MmFkOTg5OTRjMjk2YmJlNWMxYzNiYmNiMjE3ZGMyOTgzYiJ9fX0="
+    name: "&7Jungle 30"
+    tags:
+      - alphabet/jungle
+      - character/number_30
+      - wood
+    recipes:
+      stonecutter:
+        - id: "jungle_number_30"
+          input: { head: "mini_jungle_planks" }
+  jungle_number_35:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTg5YTM0OTMyNTdjNjZhNjFjNDkzMzliMTgwODVjZWFmNWJiZDY0MmYxMmRlMDg2NTY3N2RkNDdlMzc3MzZlYiJ9fX0="
+    name: "&7Jungle 35"
+    tags:
+      - alphabet/jungle
+      - character/number_35
+      - wood
+    recipes:
+      stonecutter:
+        - id: "jungle_number_35"
+          input: { head: "mini_jungle_planks" }
+  jungle_exclamation:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTg2OWRjNDA1YTMxNTVmMjgxYzE2YTNlOGQ5ZmY1NGFmYzE1OTkxNTNiNGQ5Mzg1YzliN2JhYjg4NjgwZjAifX19"
+    name: "&7Jungle !"
+    tags:
+      - alphabet/jungle
+      - character/exclamation
+      - wood
+    recipes:
+      stonecutter:
+        - id: "jungle_exclamation"
+          input: { head: "mini_jungle_planks" }
+  jungle_reverse_exclamation:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMmY2ODEwMDZlYjE1YTExYjAyMjAzODg4NDk1OWE0MmY5NzYwMjI0NjY2OWQ2MTJiYjgzM2JjODhhZDNlYmU1ZSJ9fX0="
+    name: "&7Jungle ¡"
+    tags:
+      - alphabet/jungle
+      - character/reverse_exclamation
+      - wood
+    recipes:
+      stonecutter:
+        - id: "jungle_reverse_exclamation"
+          input: { head: "mini_jungle_planks" }
+  jungle_question:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjRkN2NjNGRjYTk4NmE1M2YxZDZiNTJhYWYzNzZkYzZhY2M3M2I4YjI4N2Y0MmRjOGZlZjU4MDhiYjVkNzYifX19"
+    name: "&7Jungle ?"
+    tags:
+      - alphabet/jungle
+      - character/question
+      - wood
+    recipes:
+      stonecutter:
+        - id: "jungle_question"
+          input: { head: "mini_jungle_planks" }
+  jungle_reverse_question:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTg2ZmY1OTVlY2Y0Y2E3OGY1MjM0ZDQxZjM4NTIwODFiYTQ4N2Y1Y2NjMjI0MDk5MGJiNTMwZDY1MmQ2NTAwYyJ9fX0="
+    name: "&7Jungle ¿"
+    tags:
+      - alphabet/jungle
+      - character/reverse_question
+      - wood
+    recipes:
+      stonecutter:
+        - id: "jungle_reverse_question"
+          input: { head: "mini_jungle_planks" }
+  jungle_period:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDhmMmNhNWMzNDU4Y2JlYzU4NmU0N2JmMDk5ZDk5ZTllYjdmNGJkNzc3MzRiOWQ1NGE2MTY3ZjIyZGVmZCJ9fX0="
+    name: "&7Jungle ."
+    tags:
+      - alphabet/jungle
+      - character/period
+      - wood
+    recipes:
+      stonecutter:
+        - id: "jungle_period"
+          input: { head: "mini_jungle_planks" }
+  jungle_comma:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzZhYTk4OThjYjk1ZTY1NTc2YzM4ZGQ0YTg2NzcwOTFjNDQ3NDBkMzhmOWM1NzQ3ODY3MDRjZTRiMGE4MmQ4NSJ9fX0="
+    name: "&7Jungle ,"
+    tags:
+      - alphabet/jungle
+      - character/comma
+      - wood
+    recipes:
+      stonecutter:
+        - id: "jungle_comma"
+          input: { head: "mini_jungle_planks" }
+  jungle_colon:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDQ2NGUxYWNiMjNlZTc5MzU4MjNkYTg4Y2VmYTVhOTdhZTcyMDQ1ZmVjMGI3MWNjYzFlZWJmNWNjNzZiOTgifX19"
+    name: "&7Jungle :"
+    tags:
+      - alphabet/jungle
+      - character/colon
+      - wood
+    recipes:
+      stonecutter:
+        - id: "jungle_colon"
+          input: { head: "mini_jungle_planks" }
+  jungle_semicolon:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTVkZWVjMTljMWY5MTcyN2IxMzBhNGFmY2NlMzQ1ZTRkMzc2YWZmM2ZkNjc4NmYyNmRjYTllODYzM2Q3MSJ9fX0="
+    name: "&7Jungle ;"
+    tags:
+      - alphabet/jungle
+      - character/semicolon
+      - wood
+    recipes:
+      stonecutter:
+        - id: "jungle_semicolon"
+          input: { head: "mini_jungle_planks" }
+  jungle_apostrophe:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvN2VlNmNhZmViN2ZlZDEwNjg0Njg4ZGQ5Y2I5NGRmNDZiZGU1MWZjZDQ2YzNlNTJiZDc0ZGVjOGMzZjczOCJ9fX0="
+    name: "&7Jungle '"
+    tags:
+      - alphabet/jungle
+      - character/apostrophe
+      - wood
+    recipes:
+      stonecutter:
+        - id: "jungle_apostrophe"
+          input: { head: "mini_jungle_planks" }
+  jungle_quote:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmM4ZjRkNjY0NzljZThhMDhjOWMwNzRlYzQ5MzM1MmVlZTRiNTlkNmM1N2E2NDRhZmVkMTYyMWE2ZDAxZWMifX19"
+    name: "&7Jungle \""
+    tags:
+      - alphabet/jungle
+      - character/quote
+      - wood
+    recipes:
+      stonecutter:
+        - id: "jungle_quote"
+          input: { head: "mini_jungle_planks" }
+  jungle_ampersand:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzg0MGRkNTIyMzA0ZDI2ZGEzOWU2NWI4ZTE0NjlmZWM0ZDE2NGMzYWE0YWFhNTYyYTYxZTNjNzg3MzIyOGRkIn19fQ=="
+    name: "&7Jungle &"
+    tags:
+      - alphabet/jungle
+      - character/ampersand
+      - wood
+    recipes:
+      stonecutter:
+        - id: "jungle_ampersand"
+          input: { head: "mini_jungle_planks" }
+  jungle_hash:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzM3ZWIyOTlkMzMyYWMzY2IxNjBhY2ZjZjg4OWQ3ODYzOWQ1ODA2MjRkZDAzYWY0ZDM1MzU5NThlYjhmYTFkNSJ9fX0="
+    name: "&7Jungle #"
+    tags:
+      - alphabet/jungle
+      - character/hash
+      - wood
+    recipes:
+      stonecutter:
+        - id: "jungle_hash"
+          input: { head: "mini_jungle_planks" }
+  jungle_dollar:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvM2ZhNzczZjIxNjNiNjM0OTBiMDNlMTc3OTg0ODAxNTRkZmQxZjljZjc2NjJkM2VmOTg0NGY2ZGU2YjlmNTIzOCJ9fX0="
+    name: "&7Jungle $"
+    tags:
+      - alphabet/jungle
+      - character/dollar
+      - wood
+    recipes:
+      stonecutter:
+        - id: "jungle_dollar"
+          input: { head: "mini_jungle_planks" }
+  jungle_plus:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMmI5ZjJkNGU4N2EyNWRiNGI1ZWUyZjJmMTA3N2Q3ZWRiZWM4NjRkOTkxZDFmZDJmZWViMDhiNzg0MWUifX19"
+    name: "&7Jungle +"
+    tags:
+      - alphabet/jungle
+      - character/plus
+      - wood
+    recipes:
+      stonecutter:
+        - id: "jungle_plus"
+          input: { head: "mini_jungle_planks" }
+  jungle_minus:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGRmYWU0MzIyNWE2ODcyMzdmOGI1ODM5MzBkOWVjNjgxOTkyN2FiOWUyYWFmZjVkMWIyYTYzYWRkMTk0NjhiIn19fQ=="
+    name: "&7Jungle -"
+    tags:
+      - alphabet/jungle
+      - character/minus
+      - wood
+    recipes:
+      stonecutter:
+        - id: "jungle_minus"
+          input: { head: "mini_jungle_planks" }
+  jungle_equals:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZGRiZjhkODBhZTlkODdiYzI0OGI4OGRhNmFkNDdkZjQ2YmVmMjRiNmVmNzBkOTI2YmY4MDdiNGYwNDM3In19fQ=="
+    name: "&7Jungle ="
+    tags:
+      - alphabet/jungle
+      - character/equals
+      - wood
+    recipes:
+      stonecutter:
+        - id: "jungle_equals"
+          input: { head: "mini_jungle_planks" }
+  jungle_slash:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTJhYjBkNGI4NDI5NzY4M2EzZTdjNDNiYTYyNTM4YmIwM2I2NzJkY2I0NGIyZmE3MTIyYTQ1OTI2NTk0OWMxIn19fQ=="
+    name: "&7Jungle /"
+    tags:
+      - alphabet/jungle
+      - character/slash
+      - wood
+    recipes:
+      stonecutter:
+        - id: "jungle_slash"
+          input: { head: "mini_jungle_planks" }
+  jungle_backslash:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvM2EyZmM2NTdlN2RhYmUxM2M4OTdlN2JjZTA1OTZhODE5Zjk3YTdkYTI1OTJjNGNhNDJiZjA3YjE0NDdhZjAifX19"
+    name: "&7Jungle \\"
+    tags:
+      - alphabet/jungle
+      - character/backslash
+      - wood
+    recipes:
+      stonecutter:
+        - id: "jungle_backslash"
+          input: { head: "mini_jungle_planks" }
+  jungle_underscore:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTg0Mzg3N2ZmNGI1M2U2N2QyZTMxNWI1M2M4M2ZjYWFiNzJiMWViNDQ5MjVlNjgyMWM5NjczODQ0OTE1NGExIn19fQ=="
+    name: "&7Jungle _"
+    tags:
+      - alphabet/jungle
+      - character/underscore
+      - wood
+    recipes:
+      stonecutter:
+        - id: "jungle_underscore"
+          input: { head: "mini_jungle_planks" }
+  jungle_heart:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjA3NDEzMWI0N2VjYzUxYTY5ODRhYzhkNjg3ZTdmNzNmOWQyYzQ3MjA0YjhjNWZiNTNjMWRjY2JmNiJ9fX0="
+    name: "&7Jungle ♥"
+    tags:
+      - alphabet/jungle
+      - character/heart
+      - wood
+    recipes:
+      stonecutter:
+        - id: "jungle_heart"
+          input: { head: "mini_jungle_planks" }
+  jungle_blank:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzAyZWE0MWRhZjQyZDViYTEzMzU3MGNiZmI1YjQyYTI2OGQzNmYwNWM0ODU1Zjk5YTgwZTg0MWFkOGNiMCJ9fX0="
+    name: "&7Jungle  "
+    tags:
+      - alphabet/jungle
+      - character/blank
+      - wood
+    recipes:
+      stonecutter:
+        - id: "jungle_blank"
+          input: { head: "mini_jungle_planks" }
+  jungle_checkmark:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODlhOGU4ZTgwMDU5YzJiMTBiODBkOTE5NjE1MWFlMzkyMzYyYjc2N2UwMTkyZjVmY2I3YWU4Yjg4ZTFkOGVmZSJ9fX0="
+    name: "&7Jungle ✓"
+    tags:
+      - alphabet/jungle
+      - character/checkmark
+      - wood
+    recipes:
+      stonecutter:
+        - id: "jungle_checkmark"
+          input: { head: "mini_jungle_planks" }
+  jungle_note:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTdmYTY2NDFkM2FmNmM1YzJhNGEzNjIxMjY2YzNjZDFhODY0NTcxOTNhNzQxNjk1ZDc4NjVjZDI2MDNlNDdiOCJ9fX0="
+    name: "&7Jungle ♪"
+    tags:
+      - alphabet/jungle
+      - character/note
+      - wood
+    recipes:
+      stonecutter:
+        - id: "jungle_note"
+          input: { head: "mini_jungle_planks" }
+  jungle_paren_open:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjQ5ZGI0MWNiODczZTY5ZGVlNzNhOTk2NmRlN2IyYjU0YjczNTliMTUwMzU3NjEzNjAxNjFhOGVmZTcifX19"
+    name: "&7Jungle ("
+    tags:
+      - alphabet/jungle
+      - character/paren_open
+      - wood
+    recipes:
+      stonecutter:
+        - id: "jungle_paren_open"
+          input: { head: "mini_jungle_planks" }
+  jungle_paren_close:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTE0OWI3Y2Q5ZDU2M2RkOWRkZTgzY2VhNGM3Njg2Y2VmMWI4N2M5ZjhhY2MzOWZmZWM2ZjJkMTBhZjk0MTEifX19"
+    name: "&7Jungle )"
+    tags:
+      - alphabet/jungle
+      - character/paren_close
+      - wood
+    recipes:
+      stonecutter:
+        - id: "jungle_paren_close"
+          input: { head: "mini_jungle_planks" }
+  jungle_bracket_open:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzJkNGYxODU3NDg3ZDRkZWVmZGFiM2E3MmMzMWJlNzRiYTc2MjMzZmEzZDkwYWRkM2Q0OTVlZTQ4NTM0NTExIn19fQ=="
+    name: "&7Jungle ["
+    tags:
+      - alphabet/jungle
+      - character/bracket_open
+      - wood
+    recipes:
+      stonecutter:
+        - id: "jungle_bracket_open"
+          input: { head: "mini_jungle_planks" }
+  jungle_bracket_close:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDdhNWY0NDQ5MjkyNzJmNzk5MmM5NmRkNTEzYTY3ODY2NGMxN2YxODIzNDk0ZWMwZThhY2FhZDgxN2I4ZmEifX19"
+    name: "&7Jungle ]"
+    tags:
+      - alphabet/jungle
+      - character/bracket_close
+      - wood
+    recipes:
+      stonecutter:
+        - id: "jungle_bracket_close"
+          input: { head: "mini_jungle_planks" }
+  jungle_brace_open:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTI0NDIxNDg2ODRiOTk2ZGUzOWIzZjk2YjdmNmNmYWI0OTI3ODVkZGI5NDI5NGQ3ZDg2YjAyMzA2Y2U1YWQifX19"
+    name: "&7Jungle {"
+    tags:
+      - alphabet/jungle
+      - character/brace_open
+      - wood
+    recipes:
+      stonecutter:
+        - id: "jungle_brace_open"
+          input: { head: "mini_jungle_planks" }
+  jungle_brace_close:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTljMGM3Mzk5OTViYWZmODRkNjlkNWI1Mzc0ZjQ1ZDY3YTNiOWQ4MTk4YWMxNjZkNjRhZTc2YjM2ZmE1OTYifX19"
+    name: "&7Jungle }"
+    tags:
+      - alphabet/jungle
+      - character/brace_close
+      - wood
+    recipes:
+      stonecutter:
+        - id: "jungle_brace_close"
+          input: { head: "mini_jungle_planks" }
+  jungle_arrow_up:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODhjMGYzN2RlYzc2NGQ2ZTI2YjU3YWE4MjEyNTcyZmJhY2U1ZWU4ZjI3ZjdiNjFjMWZkYWE0N2RkNGM4OTMifX19"
+    name: "&7Jungle ↑"
+    tags:
+      - alphabet/jungle
+      - character/arrow_up
+      - wood
+    recipes:
+      stonecutter:
+        - id: "jungle_arrow_up"
+          input: { head: "mini_jungle_planks" }
+  jungle_arrow_down:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzUxY2VkMmU2NDczNjZmOGYzYWQyZGZlNDE1Y2NhODU2NTFiZmFmOTczOWE5NWNkNTdiNmYyMWNiYTA1MyJ9fX0="
+    name: "&7Jungle ↓"
+    tags:
+      - alphabet/jungle
+      - character/arrow_down
+      - wood
+    recipes:
+      stonecutter:
+        - id: "jungle_arrow_down"
+          input: { head: "mini_jungle_planks" }
+  jungle_arrow_left:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzYyNTkwMmIzODllZDZjMTQ3NTc0ZTQyMmRhOGY4ZjM2MWM4ZWI1N2U3NjMxNjc2YTcyNzc3ZTdiMWQifX19"
+    name: "&7Jungle ←"
+    tags:
+      - alphabet/jungle
+      - character/arrow_left
+      - wood
+    recipes:
+      stonecutter:
+        - id: "jungle_arrow_left"
+          input: { head: "mini_jungle_planks" }
+  jungle_arrow_right:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDRiZThhZWVjMTE4NDk2OTdhZGM2ZmQxZjE4OWIxNjY0MmRmZjE5ZjI5NTVjMDVkZWFiYTY4YzlkZmYxYmUifX19"
+    name: "&7Jungle →"
+    tags:
+      - alphabet/jungle
+      - character/arrow_right
+      - wood
+    recipes:
+      stonecutter:
+        - id: "jungle_arrow_right"
+          input: { head: "mini_jungle_planks" }
+  jungle_arrow_left_up:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGJlMjlmZmQyM2RlMTEyNjQxYzgxYTYzM2IzYTRlYTZhNmY3MzhlZTY4MmYzZWM1ZTRjZmY2YzhkOWMifX19"
+    name: "&7Jungle ↖"
+    tags:
+      - alphabet/jungle
+      - character/arrow_left_up
+      - wood
+    recipes:
+      stonecutter:
+        - id: "jungle_arrow_left_up"
+          input: { head: "mini_jungle_planks" }
+  jungle_arrow_right_up:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODRlODZiNjIxOTQ3YjUwYjg3MjMyYzE0ZDUzOTk1NDBkMzVkYzc0MDk3Mjk0ODkwY2U2Njk0Mjg1MzliMTUifX19"
+    name: "&7Jungle ↗"
+    tags:
+      - alphabet/jungle
+      - character/arrow_right_up
+      - wood
+    recipes:
+      stonecutter:
+        - id: "jungle_arrow_right_up"
+          input: { head: "mini_jungle_planks" }
+  jungle_arrow_left_down:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmI1ZGU5OTJmMGQzMmE5MWVmNmQyY2YyNWJiMDgzMjQ5ZDc2ZGNjNTc3YWViN2FiZjlmNWVhY2ZjMDVjODc2MCJ9fX0="
+    name: "&7Jungle ↙"
+    tags:
+      - alphabet/jungle
+      - character/arrow_left_down
+      - wood
+    recipes:
+      stonecutter:
+        - id: "jungle_arrow_left_down"
+          input: { head: "mini_jungle_planks" }
+  jungle_arrow_right_down:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGM5NjdmOTM0OGYyZjYxZmUxZDI3OGQ2ZGVmN2U0ZWZjNWM3OWM4ZjViYjI3ODc0YzZiZjdiZWZjYzM0ZjY0In19fQ=="
+    name: "&7Jungle ↘"
+    tags:
+      - alphabet/jungle
+      - character/arrow_right_down
+      - wood
+    recipes:
+      stonecutter:
+        - id: "jungle_arrow_right_down"
+          input: { head: "mini_jungle_planks" }
+  jungle_forward:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZmY2MTg2OGViM2M2ZDBhMTM0OGY4MmQ5ODIyNzY4NjM4NTlmYjQ1OWRhZWZhZWI5YmRjZDY0MWUyMmI1YTEifX19"
+    name: "&7Jungle ⏩"
+    tags:
+      - alphabet/jungle
+      - character/forward
+      - wood
+    recipes:
+      stonecutter:
+        - id: "jungle_forward"
+          input: { head: "mini_jungle_planks" }
+  jungle_forward_ii:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZWUxN2FhOGU2Y2NlNGIzNjExYWFiODRjNDdmZGFhMTE5OGU2YmU1NWM4NGMzOTNhMmY1ZjU4OWM0MmMyNGIifX19"
+    name: "&7Jungle ⏭"
+    tags:
+      - alphabet/jungle
+      - character/forward_ii
+      - wood
+    recipes:
+      stonecutter:
+        - id: "jungle_forward_ii"
+          input: { head: "mini_jungle_planks" }
+  jungle_backward:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTYzZWZhYjY3ZWNkOWE2OWVlZTdjMDJlMTE5NDg5NWVmMmMyZmRjM2NhZWIzMTlhZmVhOTFhYjk5OWU3YTBlMCJ9fX0="
+    name: "&7Jungle ⏪"
+    tags:
+      - alphabet/jungle
+      - character/backward
+      - wood
+    recipes:
+      stonecutter:
+        - id: "jungle_backward"
+          input: { head: "mini_jungle_planks" }
+  jungle_backward_ii:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTEyMjc2ZjM3OWNlZjgzYzFiNGFkNWQwYTk4NzAxNDNjN2QyOGIyZDhiNzkzMjRhNTMxOWQ1MTUzMzk3MCJ9fX0="
+    name: "&7Jungle ⏮"
+    tags:
+      - alphabet/jungle
+      - character/backward_ii
+      - wood
+    recipes:
+      stonecutter:
+        - id: "jungle_backward_ii"
+          input: { head: "mini_jungle_planks" }
+  jungle_letter_a_umlaut:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTQ5YmQ2OTQwOTkxMWY3YzJhZjA1MzA5MDVlM2JjZTJkNGY5MDE2YjBhMGQxYmM4YWM2N2E2MzYyZmM2NyJ9fX0="
+    name: "&7Jungle Ä"
+    tags:
+      - alphabet/jungle
+      - character/letter_a_umlaut
+      - wood
+    recipes:
+      stonecutter:
+        - id: "jungle_letter_a_umlaut"
+          input: { head: "mini_jungle_planks" }
+  jungle_letter_n_tilde:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGM3ZWJlZmViNTBiZmE2MWE5ZTk0ZGI2ZThjY2U5YmNhYTNlOTRkMDdkMTIyOWEyYTI3MWFiYmRhMTg5ZWRlZiJ9fX0="
+    name: "&7Jungle Ñ"
+    tags:
+      - alphabet/jungle
+      - character/letter_n_tilde
+      - wood
+    recipes:
+      stonecutter:
+        - id: "jungle_letter_n_tilde"
+          input: { head: "mini_jungle_planks" }
+  jungle_letter_o_umlaut:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNWRjNzkxZjAxMzE0MzdlYmFmZDhlNWYzMmJmYzUzNDFiOWRjMWZmNGUxYTZlZmQ1MmIyMmM3OTQ4ZDhhNCJ9fX0="
+    name: "&7Jungle Ö"
+    tags:
+      - alphabet/jungle
+      - character/letter_o_umlaut
+      - wood
+    recipes:
+      stonecutter:
+        - id: "jungle_letter_o_umlaut"
+          input: { head: "mini_jungle_planks" }
+  jungle_letter_u_umlaut:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDg0YmI1YmE3YWYwZDkyOTMxYjljNDM0N2JmNTYzZTcxOWE5MzA3MTUyZGY5MDk1YzJkNDJmNzAyZGViNWM1MyJ9fX0="
+    name: "&7Jungle Ü"
+    tags:
+      - alphabet/jungle
+      - character/letter_u_umlaut
+      - wood
+    recipes:
+      stonecutter:
+        - id: "jungle_letter_u_umlaut"
+          input: { head: "mini_jungle_planks" }
+  jungle_cyrillic_yo:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOGE5M2I4MzgwZTdjZTEyYTNhMTE1NzM2NzkzZGI4NDQxMWMzYzcyMmNkYjJiNGMyNjk0Y2ViY2E1ZGEifX19"
+    name: "&7Jungle Ё"
+    tags:
+      - alphabet/jungle
+      - character/cyrillic_yo
+      - wood
+    recipes:
+      stonecutter:
+        - id: "jungle_cyrillic_yo"
+          input: { head: "mini_jungle_planks" }
+  jungle_cyrillic_be:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDU0ZjVmMjk5OTUxZTZmYTZhMTZkMjM5ZWY0OWRhMjRkYWFhODhhOTVlMzkxMThmZDU0ZDhkNzU3MTU2NTUifX19"
+    name: "&7Jungle Б"
+    tags:
+      - alphabet/jungle
+      - character/cyrillic_be
+      - wood
+    recipes:
+      stonecutter:
+        - id: "jungle_cyrillic_be"
+          input: { head: "mini_jungle_planks" }
+  jungle_cyrillic_ge:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTBkNjZmZGQ3MGE3MWY2MzRhM2Q2Yjg0YjJiZjM0OWUxMzlhNGFkNmNhMzNjY2E4OTU0YThlOTU5ZjI4NjIifX19"
+    name: "&7Jungle Г"
+    tags:
+      - alphabet/jungle
+      - character/cyrillic_ge
+      - wood
+    recipes:
+      stonecutter:
+        - id: "jungle_cyrillic_ge"
+          input: { head: "mini_jungle_planks" }
+  jungle_cyrillic_de:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjg3M2ZmMjBkMTllNWM3MmI0NDFlODZlOWQ0NDk3ZGI0Nzk1M2U1ODFjYzY1N2U1ZDYyZTUyN2RhMDEyYTM0ZiJ9fX0="
+    name: "&7Jungle Д"
+    tags:
+      - alphabet/jungle
+      - character/cyrillic_de
+      - wood
+    recipes:
+      stonecutter:
+        - id: "jungle_cyrillic_de"
+          input: { head: "mini_jungle_planks" }
+  jungle_cyrillic_zhe:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOGI5MjUyMmQ4ZmE0MmI1NGZjMTVlOGU2ZmYyNjA1ZTdhM2I1MzJiODQxZGE2Y2Y4NjhkMmNkNWE1NTI4NSJ9fX0="
+    name: "&7Jungle Ж"
+    tags:
+      - alphabet/jungle
+      - character/cyrillic_zhe
+      - wood
+    recipes:
+      stonecutter:
+        - id: "jungle_cyrillic_zhe"
+          input: { head: "mini_jungle_planks" }
+  jungle_cyrillic_ze:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTBlMjc5ZDBiODVhYjRhM2NhMTJkNWFkMDUzNmVkZmJlNGViMzk3YjU5YzRhN2M2OThjNjIyYjlhZTQwIn19fQ=="
+    name: "&7Jungle З"
+    tags:
+      - alphabet/jungle
+      - character/cyrillic_ze
+      - wood
+    recipes:
+      stonecutter:
+        - id: "jungle_cyrillic_ze"
+          input: { head: "mini_jungle_planks" }
+  jungle_cyrillic_i:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGNjOTdlN2RhYzkxY2M5YWNkN2VmZDE4ODY5M2ZlZTkyNGI2N2M3ZDI0ZWQzYzMyMTBlYzliOGRmY2FiYTQxMyJ9fX0="
+    name: "&7Jungle И"
+    tags:
+      - alphabet/jungle
+      - character/cyrillic_i
+      - wood
+    recipes:
+      stonecutter:
+        - id: "jungle_cyrillic_i"
+          input: { head: "mini_jungle_planks" }
+  jungle_cyrillic_short_i:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZWI3MDE2NTgzMDlhOTJhMjcxOTNkZGJmMTRmMjhlMmJiOTM1NWI2YWYxNmFhZTc5NWVkNzU0YjllZjZiMmJkIn19fQ=="
+    name: "&7Jungle Й"
+    tags:
+      - alphabet/jungle
+      - character/cyrillic_short_i
+      - wood
+    recipes:
+      stonecutter:
+        - id: "jungle_cyrillic_short_i"
+          input: { head: "mini_jungle_planks" }
+  jungle_cyrillic_el:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOWViZjNjMTA0NzdiMTUyY2E4NTJmN2JlYTBhMGZmZTA3NzNiNGU5YWM3M2Q4OTcyNzYxMTUxNjJlN2M1Mjc3In19fQ=="
+    name: "&7Jungle Л"
+    tags:
+      - alphabet/jungle
+      - character/cyrillic_el
+      - wood
+    recipes:
+      stonecutter:
+        - id: "jungle_cyrillic_el"
+          input: { head: "mini_jungle_planks" }
+  jungle_cyrillic_pe:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjhkMjY5MzUxMmE2MjczMjJlMjJmNjk2N2MwOGZhZjg2ZTA1YWQ0MjRjZTk1NDg2ODNlMzNjZGU3NzgyMSJ9fX0="
+    name: "&7Jungle П"
+    tags:
+      - alphabet/jungle
+      - character/cyrillic_pe
+      - wood
+    recipes:
+      stonecutter:
+        - id: "jungle_cyrillic_pe"
+          input: { head: "mini_jungle_planks" }
+  jungle_cyrillic_u:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGExYTgxYzI5Y2RiYTNhZWEyODc1MTNiYTI2NmUxMjVmNDc2NThkZTJkNmI5ODNiZjEwODRhMTg2N2Y3NmQifX19"
+    name: "&7Jungle У"
+    tags:
+      - alphabet/jungle
+      - character/cyrillic_u
+      - wood
+    recipes:
+      stonecutter:
+        - id: "jungle_cyrillic_u"
+          input: { head: "mini_jungle_planks" }
+  jungle_cyrillic_ef:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMThlYzU0Y2RiYmYzMWY3MWEyNjQ2ZmIxMzg3MzY4MjRhNTk3YmExYzk1MmI1YWMzODgwY2RhYzkyMWU5YiJ9fX0="
+    name: "&7Jungle Ф"
+    tags:
+      - alphabet/jungle
+      - character/cyrillic_ef
+      - wood
+    recipes:
+      stonecutter:
+        - id: "jungle_cyrillic_ef"
+          input: { head: "mini_jungle_planks" }
+  jungle_cyrillic_tse:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGY0MmQ0ODAzM2M2YmU1ODVhZjNiOWJlYzdiODE3ZWRlMjY3YmY5NDg5Y2E3YzRkNmM3YzZkNWNlZGI3M2JkIn19fQ=="
+    name: "&7Jungle Ц"
+    tags:
+      - alphabet/jungle
+      - character/cyrillic_tse
+      - wood
+    recipes:
+      stonecutter:
+        - id: "jungle_cyrillic_tse"
+          input: { head: "mini_jungle_planks" }
+  jungle_cyrillic_che:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGQxNGY3YTRhZjk0N2M1OGJlYWVkNzU0MDE5NjZhYmMzZDM3Y2I3NmUxZjVmZGI4YzhiYjVkNjc4MmYzOWYifX19"
+    name: "&7Jungle Ч"
+    tags:
+      - alphabet/jungle
+      - character/cyrillic_che
+      - wood
+    recipes:
+      stonecutter:
+        - id: "jungle_cyrillic_che"
+          input: { head: "mini_jungle_planks" }
+  jungle_cyrillic_sha:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjkxMTQ4NGQ0ODIxMTNkODA5NWJlYmVkNmEzYTAzOGQ0ODgyMmYyN2YxZTU2NzNlNTcyNjc0ZTg3NTcyMmQ3In19fQ=="
+    name: "&7Jungle Ш"
+    tags:
+      - alphabet/jungle
+      - character/cyrillic_sha
+      - wood
+    recipes:
+      stonecutter:
+        - id: "jungle_cyrillic_sha"
+          input: { head: "mini_jungle_planks" }
+  jungle_cyrillic_shcha:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOWI0ZmFlZWU0NmVlNmVjMGFjZTM0N2Y5ODllZDQ3ZWZkMmQ5OGZhNDZhNDY3MzZlMWI4MmIzMjkxMjcxZGEzNyJ9fX0="
+    name: "&7Jungle Щ"
+    tags:
+      - alphabet/jungle
+      - character/cyrillic_shcha
+      - wood
+    recipes:
+      stonecutter:
+        - id: "jungle_cyrillic_shcha"
+          input: { head: "mini_jungle_planks" }
+  jungle_cyrillic_hard:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmNhOGUzY2FmNzY3NzQ3MjRlNWU1ODRkY2E0NzM1YWYxMWE5ZjkxZDQ2NTVjM2JhNDcyOTJlNjc1YjBkZjRjIn19fQ=="
+    name: "&7Jungle Ъ"
+    tags:
+      - alphabet/jungle
+      - character/cyrillic_hard
+      - wood
+    recipes:
+      stonecutter:
+        - id: "jungle_cyrillic_hard"
+          input: { head: "mini_jungle_planks" }
+  jungle_cyrillic_yeru:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZWIxODI1Njc1YzE5ODY5NGYzOWU0ZWNmY2FhYzcyMzk4NWMyMTE3NzgxNTc5YTQyYWY4ZmI4ZjRkNDNjYjEifX19"
+    name: "&7Jungle Ы"
+    tags:
+      - alphabet/jungle
+      - character/cyrillic_yeru
+      - wood
+    recipes:
+      stonecutter:
+        - id: "jungle_cyrillic_yeru"
+          input: { head: "mini_jungle_planks" }
+  jungle_cyrillic_soft:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzkzMzFkYWM5MjRjNmM4Zjc4OGFhOGNhNGMyZTQyMzEwMzhmMGVhNmZkOWFiYjg1MGY0ZThiOTI3Y2NhYmUyIn19fQ=="
+    name: "&7Jungle Ь"
+    tags:
+      - alphabet/jungle
+      - character/cyrillic_soft
+      - wood
+    recipes:
+      stonecutter:
+        - id: "jungle_cyrillic_soft"
+          input: { head: "mini_jungle_planks" }
+  jungle_cyrillic_e:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZWVkMWM0NjUyNjhjMjM4NmY2ZTA2NzVkZTdlOWFjZTYxOGU5MjJhNThmZTliNzAzN2YxZmRiMjMzYTFiIn19fQ=="
+    name: "&7Jungle Э"
+    tags:
+      - alphabet/jungle
+      - character/cyrillic_e
+      - wood
+    recipes:
+      stonecutter:
+        - id: "jungle_cyrillic_e"
+          input: { head: "mini_jungle_planks" }
+  jungle_cyrillic_yu:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTNjMTE4ZDFiNDkxMTdiMTkwYWZhMzMwNjQ4YzVhYTllOWNmOGE3MTg2ZDAzNmQ1NTUzMjUxMThmNGMzIn19fQ=="
+    name: "&7Jungle Ю"
+    tags:
+      - alphabet/jungle
+      - character/cyrillic_yu
+      - wood
+    recipes:
+      stonecutter:
+        - id: "jungle_cyrillic_yu"
+          input: { head: "mini_jungle_planks" }
+  jungle_cyrillic_ya:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODQxY2M1NjNmOGI2MjUzNDFhNjU0ZDQ5ZGRmMmUxNTM2Zjg1ZjlmYTc3NGY3Zjg3NzFhNjVkNTMxZWQ4ZjE3In19fQ=="
+    name: "&7Jungle Я"
+    tags:
+      - alphabet/jungle
+      - character/cyrillic_ya
+      - wood
+    recipes:
+      stonecutter:
+        - id: "jungle_cyrillic_ya"
+          input: { head: "mini_jungle_planks" }
+  jungle_zodiac_aquarius:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOGQ1MjkyNGM4ZDEyNDQ2ZTA3OWE0MWIwZDQxYTU0MTI5MzNjMzhmZjJhOTc0ZTM3OWY5N2M0MWU2MDdhY2YzNyJ9fX0="
+    name: "&7Jungle ♒"
+    tags:
+      - alphabet/jungle
+      - character/zodiac_aquarius
+      - wood
+    recipes:
+      stonecutter:
+        - id: "jungle_zodiac_aquarius"
+          input: { head: "mini_jungle_planks" }
+  jungle_zodiac_aries:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGVjMDU3MGVkZWFlMjlmMzVjYTcxMGI0Mjc3YWIwYTAxOThjYWNiYWI4NzFiNjcxZjNmZTJiOGUxZmRkOTNmMiJ9fX0="
+    name: "&7Jungle ♈"
+    tags:
+      - alphabet/jungle
+      - character/zodiac_aries
+      - wood
+    recipes:
+      stonecutter:
+        - id: "jungle_zodiac_aries"
+          input: { head: "mini_jungle_planks" }
+  jungle_zodiac_cancer:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTk5N2Q4YjMxZTQzZWRkMTNlMWI2OTc0ZDlkMTNmY2U4N2U4MWU1MTFiNGIwYmI4M2IxZmU5NTNhZTAzMDZjZCJ9fX0="
+    name: "&7Jungle ♋"
+    tags:
+      - alphabet/jungle
+      - character/zodiac_cancer
+      - wood
+    recipes:
+      stonecutter:
+        - id: "jungle_zodiac_cancer"
+          input: { head: "mini_jungle_planks" }
+  jungle_zodiac_capricorn:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzQyMzY4NTBmNzFiYWI3NGZmNTVjNmI1NmJkMWExMDRmNjYwN2ZiYmVkODg1OTBhNDkyNDk3ZTAzNTg1MmUwNyJ9fX0="
+    name: "&7Jungle ♑"
+    tags:
+      - alphabet/jungle
+      - character/zodiac_capricorn
+      - wood
+    recipes:
+      stonecutter:
+        - id: "jungle_zodiac_capricorn"
+          input: { head: "mini_jungle_planks" }
+  jungle_zodiac_gemini:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWFkZDhlMmQzMDFjZGNiZGU1ZGI4MjA4NjU0NjMzZmRjZTA3YTE0MjE3ZjVjNGJlMDM3NjUyYTExOTMzYTM3NCJ9fX0="
+    name: "&7Jungle ♊"
+    tags:
+      - alphabet/jungle
+      - character/zodiac_gemini
+      - wood
+    recipes:
+      stonecutter:
+        - id: "jungle_zodiac_gemini"
+          input: { head: "mini_jungle_planks" }
+  jungle_zodiac_leo:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjlmMDE2NmNlZTFiODIyYjBhZjYxZTYzOTE0ZTg0ZGMxNDY0ZWNjMGMwYzA5NmZkYjY5ZmI3NWFiM2Q0NGFmMiJ9fX0="
+    name: "&7Jungle ♌"
+    tags:
+      - alphabet/jungle
+      - character/zodiac_leo
+      - wood
+    recipes:
+      stonecutter:
+        - id: "jungle_zodiac_leo"
+          input: { head: "mini_jungle_planks" }
+  jungle_zodiac_libra:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzRhM2Q1ZGJmYmE5ZWU3MGQzYzA3YmE4Y2U1NTc3YmRiMmMyNTMxYzhhNTQzMTU5NzA3ZDJjODg1ZGUxN2E4NyJ9fX0="
+    name: "&7Jungle ♎"
+    tags:
+      - alphabet/jungle
+      - character/zodiac_libra
+      - wood
+    recipes:
+      stonecutter:
+        - id: "jungle_zodiac_libra"
+          input: { head: "mini_jungle_planks" }
+  jungle_zodiac_pisces:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmU3MTYyYTJjMjJjZDcwNzNjNTY4NWRkMzU5Mjg0NjYxZDg4ODU5OTk3ZmRiZTQ5NjIwZTY4Y2M5ZmEzYmVlMyJ9fX0="
+    name: "&7Jungle ♓"
+    tags:
+      - alphabet/jungle
+      - character/zodiac_pisces
+      - wood
+    recipes:
+      stonecutter:
+        - id: "jungle_zodiac_pisces"
+          input: { head: "mini_jungle_planks" }
+  jungle_zodiac_sagittarius:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOWMzMDU4ZDcxY2JlMzk1Y2RjM2JjYTc0ZjI5NWMyODgyMTU2OTRkM2RhNTRlY2FjMjIyMWNmYzIwNjBlMzQ3MSJ9fX0="
+    name: "&7Jungle ♐"
+    tags:
+      - alphabet/jungle
+      - character/zodiac_sagittarius
+      - wood
+    recipes:
+      stonecutter:
+        - id: "jungle_zodiac_sagittarius"
+          input: { head: "mini_jungle_planks" }
+  jungle_zodiac_scorpio:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzFlYTQ1NjAxOTQxMGZmODBhOWFmMTIxYWJkNTJiOTVhMTM0Y2M5N2Q3OWEyMWM5MmQ5ZThlNjY3MjdmMTZkMyJ9fX0="
+    name: "&7Jungle ♏"
+    tags:
+      - alphabet/jungle
+      - character/zodiac_scorpio
+      - wood
+    recipes:
+      stonecutter:
+        - id: "jungle_zodiac_scorpio"
+          input: { head: "mini_jungle_planks" }
+  jungle_zodiac_taurus:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvY2FmMzljY2Q1NmQ3MWYzNGM0MTYwMjViNjYyMzFjMDk2NTNkZjZjNjExN2ZkNDQyYzcyZTg2OTE2NmU1YmE5ZiJ9fX0="
+    name: "&7Jungle ♉"
+    tags:
+      - alphabet/jungle
+      - character/zodiac_taurus
+      - wood
+    recipes:
+      stonecutter:
+        - id: "jungle_zodiac_taurus"
+          input: { head: "mini_jungle_planks" }
+  jungle_zodiac_virgo:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDcxNGEzNDliZTg0Y2Q5MDhhYWFhNzY2NGM5ZTFhNThhNGU0YzExYTUwZGU4NzNiZmMwNzc3ZDdkOTRhZGQ1YyJ9fX0="
+    name: "&7Jungle ♍"
+    tags:
+      - alphabet/jungle
+      - character/zodiac_virgo
+      - wood
+    recipes:
+      stonecutter:
+        - id: "jungle_zodiac_virgo"
+          input: { head: "mini_jungle_planks" }
+  jungle_female:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTM5MzVjMDIwY2Y5ZTA0MDEzOWExZDU0MjI0ZDU2N2I1NDA0ZTBjYWNlNTY2NGE3YzExMTVmM2NmOWE3NjRjZCJ9fX0="
+    name: "&7Jungle ♀"
+    tags:
+      - alphabet/jungle
+      - character/female
+      - wood
+    recipes:
+      stonecutter:
+        - id: "jungle_female"
+          input: { head: "mini_jungle_planks" }
+  jungle_male:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZWFkYjMzYTg1NDY3ZmZiM2I1NDc0ZThjZDZjM2Q0MjFmODU2OWZiOWNiMTdmMmFiNGZjZGRiODk0OWZiYjc4MiJ9fX0="
+    name: "&7Jungle ♂"
+    tags:
+      - alphabet/jungle
+      - character/male
+      - wood
+    recipes:
+      stonecutter:
+        - id: "jungle_male"
+          input: { head: "mini_jungle_planks" }

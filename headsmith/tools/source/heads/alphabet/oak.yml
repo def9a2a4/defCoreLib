@@ -1,0 +1,2401 @@
+# Generated Oak Alphabet Blocks
+
+heads:
+  oak_letter_a:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTY3ZDgxM2FlN2ZmZTViZTk1MWE0ZjQxZjJhYTYxOWE1ZTM4OTRlODVlYTVkNDk4NmY4NDk0OWM2M2Q3NjcyZSJ9fX0="
+    name: "&7Oak A"
+    tags:
+      - alphabet/oak
+      - character/letter_a
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_letter_a"
+          input: { head: "mini_oak_planks" }
+  oak_letter_b:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTBjMWI1ODRmMTM5ODdiNDY2MTM5Mjg1YjJmM2YyOGRmNjc4NzEyM2QwYjMyMjgzZDg3OTRlMzM3NGUyMyJ9fX0="
+    name: "&7Oak B"
+    tags:
+      - alphabet/oak
+      - character/letter_b
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_letter_b"
+          input: { head: "mini_oak_planks" }
+  oak_letter_c:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYWJlOTgzZWM0NzgwMjRlYzZmZDA0NmZjZGZhNDg0MjY3NjkzOTU1MWI0NzM1MDQ0N2M3N2MxM2FmMThlNmYifX19"
+    name: "&7Oak C"
+    tags:
+      - alphabet/oak
+      - character/letter_c
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_letter_c"
+          input: { head: "mini_oak_planks" }
+  oak_letter_d:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzE5M2RjMGQ0YzVlODBmZjlhOGEwNWQyZmNmZTI2OTUzOWNiMzkyNzE5MGJhYzE5ZGEyZmNlNjFkNzEifX19"
+    name: "&7Oak D"
+    tags:
+      - alphabet/oak
+      - character/letter_d
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_letter_d"
+          input: { head: "mini_oak_planks" }
+  oak_letter_e:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZGJiMjczN2VjYmY5MTBlZmUzYjI2N2RiN2Q0YjMyN2YzNjBhYmM3MzJjNzdiZDBlNGVmZjFkNTEwY2RlZiJ9fX0="
+    name: "&7Oak E"
+    tags:
+      - alphabet/oak
+      - character/letter_e
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_letter_e"
+          input: { head: "mini_oak_planks" }
+  oak_letter_f:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjE4M2JhYjUwYTMyMjQwMjQ4ODZmMjUyNTFkMjRiNmRiOTNkNzNjMjQzMjU1OWZmNDllNDU5YjRjZDZhIn19fQ=="
+    name: "&7Oak F"
+    tags:
+      - alphabet/oak
+      - character/letter_f
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_letter_f"
+          input: { head: "mini_oak_planks" }
+  oak_letter_g:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWNhM2YzMjRiZWVlZmI2YTBlMmM1YjNjNDZhYmM5MWNhOTFjMTRlYmE0MTlmYTQ3NjhhYzMwMjNkYmI0YjIifX19"
+    name: "&7Oak G"
+    tags:
+      - alphabet/oak
+      - character/letter_g
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_letter_g"
+          input: { head: "mini_oak_planks" }
+  oak_letter_h:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzFmMzQ2MmE0NzM1NDlmMTQ2OWY4OTdmODRhOGQ0MTE5YmM3MWQ0YTVkODUyZTg1YzI2YjU4OGE1YzBjNzJmIn19fQ=="
+    name: "&7Oak H"
+    tags:
+      - alphabet/oak
+      - character/letter_h
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_letter_h"
+          input: { head: "mini_oak_planks" }
+  oak_letter_i:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDYxNzhhZDUxZmQ1MmIxOWQwYTM4ODg3MTBiZDkyMDY4ZTkzMzI1MmFhYzZiMTNjNzZlN2U2ZWE1ZDMyMjYifX19"
+    name: "&7Oak I"
+    tags:
+      - alphabet/oak
+      - character/letter_i
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_letter_i"
+          input: { head: "mini_oak_planks" }
+  oak_letter_j:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvM2E3OWRiOTkyMzg2N2U2OWMxZGJmMTcxNTFlNmY0YWQ5MmNlNjgxYmNlZGQzOTc3ZWViYmM0NGMyMDZmNDkifX19"
+    name: "&7Oak J"
+    tags:
+      - alphabet/oak
+      - character/letter_j
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_letter_j"
+          input: { head: "mini_oak_planks" }
+  oak_letter_k:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTQ2MWIzOGM4ZTQ1NzgyYWRhNTlkMTYxMzJhNDIyMmMxOTM3NzhlN2Q3MGM0NTQyYzk1MzYzNzZmMzdiZTQyIn19fQ=="
+    name: "&7Oak K"
+    tags:
+      - alphabet/oak
+      - character/letter_k
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_letter_k"
+          input: { head: "mini_oak_planks" }
+  oak_letter_l:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzE5ZjUwYjQzMmQ4NjhhZTM1OGUxNmY2MmVjMjZmMzU0MzdhZWI5NDkyYmNlMTM1NmM5YWE2YmIxOWEzODYifX19"
+    name: "&7Oak L"
+    tags:
+      - alphabet/oak
+      - character/letter_l
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_letter_l"
+          input: { head: "mini_oak_planks" }
+  oak_letter_m:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDljNDVhMjRhYWFiZjQ5ZTIxN2MxNTQ4MzIwNDg0OGE3MzU4MmFiYTdmYWUxMGVlMmM1N2JkYjc2NDgyZiJ9fX0="
+    name: "&7Oak M"
+    tags:
+      - alphabet/oak
+      - character/letter_m
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_letter_m"
+          input: { head: "mini_oak_planks" }
+  oak_letter_n:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzViOGIzZDhjNzdkZmI4ZmJkMjQ5NWM4NDJlYWM5NGZmZmE2ZjU5M2JmMTVhMjU3NGQ4NTRkZmYzOTI4In19fQ=="
+    name: "&7Oak N"
+    tags:
+      - alphabet/oak
+      - character/letter_n
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_letter_n"
+          input: { head: "mini_oak_planks" }
+  oak_letter_o:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDExZGUxY2FkYjJhZGU2MTE0OWU1ZGVkMWJkODg1ZWRmMGRmNjI1OTI1NWIzM2I1ODdhOTZmOTgzYjJhMSJ9fX0="
+    name: "&7Oak O"
+    tags:
+      - alphabet/oak
+      - character/letter_o
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_letter_o"
+          input: { head: "mini_oak_planks" }
+  oak_letter_p:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTBhNzk4OWI1ZDZlNjIxYTEyMWVlZGFlNmY0NzZkMzUxOTNjOTdjMWE3Y2I4ZWNkNDM2MjJhNDg1ZGMyZTkxMiJ9fX0="
+    name: "&7Oak P"
+    tags:
+      - alphabet/oak
+      - character/letter_p
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_letter_p"
+          input: { head: "mini_oak_planks" }
+  oak_letter_q:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDM2MDlmMWZhZjgxZWQ0OWM1ODk0YWMxNGM5NGJhNTI5ODlmZGE0ZTFkMmE1MmZkOTQ1YTU1ZWQ3MTllZDQifX19"
+    name: "&7Oak Q"
+    tags:
+      - alphabet/oak
+      - character/letter_q
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_letter_q"
+          input: { head: "mini_oak_planks" }
+  oak_letter_r:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTVjZWQ5OTMxYWNlMjNhZmMzNTEzNzEzNzliZjA1YzYzNWFkMTg2OTQzYmMxMzY0NzRlNGU1MTU2YzRjMzcifX19"
+    name: "&7Oak R"
+    tags:
+      - alphabet/oak
+      - character/letter_r
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_letter_r"
+          input: { head: "mini_oak_planks" }
+  oak_letter_s:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvM2U0MWM2MDU3MmM1MzNlOTNjYTQyMTIyODkyOWU1NGQ2Yzg1NjUyOTQ1OTI0OWMyNWMzMmJhMzNhMWIxNTE3In19fQ=="
+    name: "&7Oak S"
+    tags:
+      - alphabet/oak
+      - character/letter_s
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_letter_s"
+          input: { head: "mini_oak_planks" }
+  oak_letter_t:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTU2MmU4YzFkNjZiMjFlNDU5YmU5YTI0ZTVjMDI3YTM0ZDI2OWJkY2U0ZmJlZTJmNzY3OGQyZDNlZTQ3MTgifX19"
+    name: "&7Oak T"
+    tags:
+      - alphabet/oak
+      - character/letter_t
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_letter_t"
+          input: { head: "mini_oak_planks" }
+  oak_letter_u:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjA3ZmJjMzM5ZmYyNDFhYzNkNjYxOWJjYjY4MjUzZGZjM2M5ODc4MmJhZjNmMWY0ZWZkYjk1NGY5YzI2In19fQ=="
+    name: "&7Oak U"
+    tags:
+      - alphabet/oak
+      - character/letter_u
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_letter_u"
+          input: { head: "mini_oak_planks" }
+  oak_letter_v:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvY2M5YTEzODYzOGZlZGI1MzRkNzk5Mjg4NzZiYWJhMjYxYzdhNjRiYTc5YzQyNGRjYmFmY2M5YmFjNzAxMGI4In19fQ=="
+    name: "&7Oak V"
+    tags:
+      - alphabet/oak
+      - character/letter_v
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_letter_v"
+          input: { head: "mini_oak_planks" }
+  oak_letter_w:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjY5YWQxYTg4ZWQyYjA3NGUxMzAzYTEyOWY5NGU0YjcxMGNmM2U1YjRkOTk1MTYzNTY3ZjY4NzE5YzNkOTc5MiJ9fX0="
+    name: "&7Oak W"
+    tags:
+      - alphabet/oak
+      - character/letter_w
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_letter_w"
+          input: { head: "mini_oak_planks" }
+  oak_letter_x:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNWE2Nzg3YmEzMjU2NGU3YzJmM2EwY2U2NDQ5OGVjYmIyM2I4OTg0NWU1YTY2YjVjZWM3NzM2ZjcyOWVkMzcifX19"
+    name: "&7Oak X"
+    tags:
+      - alphabet/oak
+      - character/letter_x
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_letter_x"
+          input: { head: "mini_oak_planks" }
+  oak_letter_y:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzUyZmIzODhlMzMyMTJhMjQ3OGI1ZTE1YTk2ZjI3YWNhNmM2MmFjNzE5ZTFlNWY4N2ExY2YwZGU3YjE1ZTkxOCJ9fX0="
+    name: "&7Oak Y"
+    tags:
+      - alphabet/oak
+      - character/letter_y
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_letter_y"
+          input: { head: "mini_oak_planks" }
+  oak_letter_z:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTA1ODJiOWI1ZDk3OTc0YjExNDYxZDYzZWNlZDg1ZjQzOGEzZWVmNWRjMzI3OWY5YzQ3ZTFlMzhlYTU0YWU4ZCJ9fX0="
+    name: "&7Oak Z"
+    tags:
+      - alphabet/oak
+      - character/letter_z
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_letter_z"
+          input: { head: "mini_oak_planks" }
+  oak_number_0:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMGViZTdlNTIxNTE2OWE2OTlhY2M2Y2VmYTdiNzNmZGIxMDhkYjg3YmI2ZGFlMjg0OWZiZTI0NzE0YjI3In19fQ=="
+    name: "&7Oak 0"
+    tags:
+      - alphabet/oak
+      - character/number_0
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_number_0"
+          input: { head: "mini_oak_planks" }
+  oak_number_1:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzFiYzJiY2ZiMmJkMzc1OWU2YjFlODZmYzdhNzk1ODVlMTEyN2RkMzU3ZmMyMDI4OTNmOWRlMjQxYmM5ZTUzMCJ9fX0="
+    name: "&7Oak 1"
+    tags:
+      - alphabet/oak
+      - character/number_1
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_number_1"
+          input: { head: "mini_oak_planks" }
+  oak_number_2:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGNkOWVlZWU4ODM0Njg4ODFkODM4NDhhNDZiZjMwMTI0ODVjMjNmNzU3NTNiOGZiZTg0ODczNDE0MTk4NDcifX19"
+    name: "&7Oak 2"
+    tags:
+      - alphabet/oak
+      - character/number_2
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_number_2"
+          input: { head: "mini_oak_planks" }
+  oak_number_3:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWQ0ZWFlMTM5MzM4NjBhNmRmNWU4ZTk1NTY5M2I5NWE4YzNiMTVjMzZiOGI1ODc1MzJhYzA5OTZiYzM3ZTUifX19"
+    name: "&7Oak 3"
+    tags:
+      - alphabet/oak
+      - character/number_3
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_number_3"
+          input: { head: "mini_oak_planks" }
+  oak_number_4:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDJlNzhmYjIyNDI0MjMyZGMyN2I4MWZiY2I0N2ZkMjRjMWFjZjc2MDk4NzUzZjJkOWMyODU5ODI4N2RiNSJ9fX0="
+    name: "&7Oak 4"
+    tags:
+      - alphabet/oak
+      - character/number_4
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_number_4"
+          input: { head: "mini_oak_planks" }
+  oak_number_5:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNmQ1N2UzYmM4OGE2NTczMGUzMWExNGUzZjQxZTAzOGE1ZWNmMDg5MWE2YzI0MzY0M2I4ZTU0NzZhZTIifX19"
+    name: "&7Oak 5"
+    tags:
+      - alphabet/oak
+      - character/number_5
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_number_5"
+          input: { head: "mini_oak_planks" }
+  oak_number_6:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzM0YjM2ZGU3ZDY3OWI4YmJjNzI1NDk5YWRhZWYyNGRjNTE4ZjVhZTIzZTcxNjk4MWUxZGNjNmIyNzIwYWIifX19"
+    name: "&7Oak 6"
+    tags:
+      - alphabet/oak
+      - character/number_6
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_number_6"
+          input: { head: "mini_oak_planks" }
+  oak_number_7:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNmRiNmViMjVkMWZhYWJlMzBjZjQ0NGRjNjMzYjU4MzI0NzVlMzgwOTZiN2UyNDAyYTNlYzQ3NmRkN2I5In19fQ=="
+    name: "&7Oak 7"
+    tags:
+      - alphabet/oak
+      - character/number_7
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_number_7"
+          input: { head: "mini_oak_planks" }
+  oak_number_8:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTkxOTQ5NzNhM2YxN2JkYTk5NzhlZDYyNzMzODM5OTcyMjI3NzRiNDU0Mzg2YzgzMTljMDRmMWY0Zjc0YzJiNSJ9fX0="
+    name: "&7Oak 8"
+    tags:
+      - alphabet/oak
+      - character/number_8
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_number_8"
+          input: { head: "mini_oak_planks" }
+  oak_number_9:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTY3Y2FmNzU5MWIzOGUxMjVhODAxN2Q1OGNmYzY0MzNiZmFmODRjZDQ5OWQ3OTRmNDFkMTBiZmYyZTViODQwIn19fQ=="
+    name: "&7Oak 9"
+    tags:
+      - alphabet/oak
+      - character/number_9
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_number_9"
+          input: { head: "mini_oak_planks" }
+  oak_number_00:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNWNlMmQzYWM2NGFiYjI2N2FmZDRjOGI5YjcxOWUyOTFkMmFjMTBjNjY3MWEzYWE3YzQ4Y2YzYjcyOGJmMmNjIn19fQ=="
+    name: "&7Oak 00"
+    tags:
+      - alphabet/oak
+      - character/number_00
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_number_00"
+          input: { head: "mini_oak_planks" }
+  oak_number_01:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYWQzNGRiM2MzMmE2NjZlYzkxMTkzMTI2NjU5MWQzYzJjZDVmMjcxZThhNzRhYmJkNTYxYmFmNjFkNzY4MzljNCJ9fX0="
+    name: "&7Oak 01"
+    tags:
+      - alphabet/oak
+      - character/number_01
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_number_01"
+          input: { head: "mini_oak_planks" }
+  oak_number_02:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNmVkZTUxMGQzZDU2Y2MxNTA5OTg4MzVhNWM3ZWJjMTYyZjRkNjEyNjdlYjI3ODBhNDFmMWYzNzVkYmQxYTNlMCJ9fX0="
+    name: "&7Oak 02"
+    tags:
+      - alphabet/oak
+      - character/number_02
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_number_02"
+          input: { head: "mini_oak_planks" }
+  oak_number_03:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDY3OWQwMjVmZDY5NmNkODhkOGQ2MjBlZGNmMTM3ZDk5MTAwYzI3YTgxMjNmM2Q0ZmQ4YTZmYjQ0ZDhkN2NhZCJ9fX0="
+    name: "&7Oak 03"
+    tags:
+      - alphabet/oak
+      - character/number_03
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_number_03"
+          input: { head: "mini_oak_planks" }
+  oak_number_04:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTAyYjYwNzM2Nzk4MWYxYzA4OWNjMGY3MDFiODJiMjEzYjk0YjVmMjZlMzY0ZGYwNDk4NGNlM2EwYWYwNjY4MyJ9fX0="
+    name: "&7Oak 04"
+    tags:
+      - alphabet/oak
+      - character/number_04
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_number_04"
+          input: { head: "mini_oak_planks" }
+  oak_number_05:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMmNhNGRhOTVhOTIyNzY4M2E3ZTZlZGU5OTA2YzI4NTU4Nzg0NjBlOTFjN2NjZDc1Y2Q5YjAwZmFlMTQwNjY2YiJ9fX0="
+    name: "&7Oak 05"
+    tags:
+      - alphabet/oak
+      - character/number_05
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_number_05"
+          input: { head: "mini_oak_planks" }
+  oak_number_06:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzAxMWRhYTFiNDQ2MjQ3ZGE4NzRjZDIyYjQ2MWI0YTJjM2Y0MWRhYzcwYTQ0YWNjOWU0NzMzODkyY2Q1MjQ5MyJ9fX0="
+    name: "&7Oak 06"
+    tags:
+      - alphabet/oak
+      - character/number_06
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_number_06"
+          input: { head: "mini_oak_planks" }
+  oak_number_07:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjJlN2ZmOTA5YjMzYjI4N2IyOWFjZTNjNzc1NjMwYzQ2MzliNTRkMDFmMjkwNjEyMDA0Yzk4NmQ0NTQyOTU3NyJ9fX0="
+    name: "&7Oak 07"
+    tags:
+      - alphabet/oak
+      - character/number_07
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_number_07"
+          input: { head: "mini_oak_planks" }
+  oak_number_08:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTliOTdmZDMyNWZlMjFkMzhiZGY5Mjc0MWFmODk4ZWZkMWE5ZTc0ZDI1ODljZjEwMTgyM2I0ZTMyYTE3ZDZmNSJ9fX0="
+    name: "&7Oak 08"
+    tags:
+      - alphabet/oak
+      - character/number_08
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_number_08"
+          input: { head: "mini_oak_planks" }
+  oak_number_09:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjI0YzFkYzE5NjM4MmY5OTBjZDcxZmRlZWJmMzc3ZWRkMGVkMjg4ZDNkNGZkZjA1NzQxYzNiMGJhYTVkMGY3NSJ9fX0="
+    name: "&7Oak 09"
+    tags:
+      - alphabet/oak
+      - character/number_09
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_number_09"
+          input: { head: "mini_oak_planks" }
+  oak_number_10:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDlkZDM2NzU5MzA3ZGI4ZTJkOWY0YjBjMmFlZDI1NTZkYjFkZGNmM2Y2N2ZhMTljYzgyNmFjYmQ5NjVmZSJ9fX0="
+    name: "&7Oak 10"
+    tags:
+      - alphabet/oak
+      - character/number_10
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_number_10"
+          input: { head: "mini_oak_planks" }
+  oak_number_11:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDU5NzNiMTFkZjcyNmMyNDk5YjRkOWY5OWQ3ZGU4ZjVmOTgxNjNjZjQ1MWFlOTVhZGY1N2NlODQzOGIxMjgifX19"
+    name: "&7Oak 11"
+    tags:
+      - alphabet/oak
+      - character/number_11
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_number_11"
+          input: { head: "mini_oak_planks" }
+  oak_number_12:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTE2YTdiOGJhNzlhMmVmZTVkOTcxMWY5ZjM2Y2M2YjI4ZTMxYjQ3NGFjNWE0OTI0YjRhZGY5ZmU5ZWExOWEifX19"
+    name: "&7Oak 12"
+    tags:
+      - alphabet/oak
+      - character/number_12
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_number_12"
+          input: { head: "mini_oak_planks" }
+  oak_number_13:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvY2Q5OWZkNTE2YjUxOWE4ZTk2ZmY5OGNkNzA1MzJhNWQ1ODFhNjYwOTBhZTY1ZTI3Y2I5ZTUzYTZjM2Q1YzUyIn19fQ=="
+    name: "&7Oak 13"
+    tags:
+      - alphabet/oak
+      - character/number_13
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_number_13"
+          input: { head: "mini_oak_planks" }
+  oak_number_14:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjhjYzk1MTkzOTZjMWIyMWU0ZWFjYmM3NzUyMjQxYmRlYmIzMmE4NmQ2MzhlMzlhOTg3OGY0NzA4MzI5NWIifX19"
+    name: "&7Oak 14"
+    tags:
+      - alphabet/oak
+      - character/number_14
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_number_14"
+          input: { head: "mini_oak_planks" }
+  oak_number_15:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjhmYjZmNzI0NTYzZmY4MmE4M2FiMTdlZGI5YjhhYmExZDI4YjViMzI0NDQ0MDU3ZmVjZGE1YjE2N2NkMiJ9fX0="
+    name: "&7Oak 15"
+    tags:
+      - alphabet/oak
+      - character/number_15
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_number_15"
+          input: { head: "mini_oak_planks" }
+  oak_number_16:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDVhYzVmNjMzYjc2NTQxMzJjMWJhNzQ0OGQ5M2QwZTk1NjNkY2VmOGUxN2Y1MjhmMWQxMzgxNTFiMWY2ZTcyIn19fQ=="
+    name: "&7Oak 16"
+    tags:
+      - alphabet/oak
+      - character/number_16
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_number_16"
+          input: { head: "mini_oak_planks" }
+  oak_number_17:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzk5ODQ0MzI5OWNlOGRhYzdkZjQ1NGZjNGRjN2Q5Y2ExYzZjOTg2NjE2OWM5YTJhN2JjNzIzYjMxMjhlIn19fQ=="
+    name: "&7Oak 17"
+    tags:
+      - alphabet/oak
+      - character/number_17
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_number_17"
+          input: { head: "mini_oak_planks" }
+  oak_number_18:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzRmNWNjOTM0NGM0YjJhNGY0OGYxNTFkODQ3MmY2MmFjMWU1NWU2NjdmZjgxY2Q2MTY2NGEyOTllN2JmIn19fQ=="
+    name: "&7Oak 18"
+    tags:
+      - alphabet/oak
+      - character/number_18
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_number_18"
+          input: { head: "mini_oak_planks" }
+  oak_number_19:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDY3M2Y1ZTRiN2Q1N2IzNDcxZmRjYmEzMmM3ZjMyNWNmZTYxN2JmZjJmMTZkMzQzMmMzYWI1NmJmYWRiZCJ9fX0="
+    name: "&7Oak 19"
+    tags:
+      - alphabet/oak
+      - character/number_19
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_number_19"
+          input: { head: "mini_oak_planks" }
+  oak_number_20:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzQ0YjMxOWIyNTQzYjBhZWYxNmJhZTkyNWZlY2M0MWI1NzRkYmViZGIxNjQ4MzBhMDVkZWVhM2VjOTdmYmUifX19"
+    name: "&7Oak 20"
+    tags:
+      - alphabet/oak
+      - character/number_20
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_number_20"
+          input: { head: "mini_oak_planks" }
+  oak_number_21:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjI0YjJlNDJhMTgzNGJjOTFmMTEyN2FhOTgzYTIxN2NiZmMzNTdiN2RiODJhMmExNTk2ZmU4ZmZkYzYyYiJ9fX0="
+    name: "&7Oak 21"
+    tags:
+      - alphabet/oak
+      - character/number_21
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_number_21"
+          input: { head: "mini_oak_planks" }
+  oak_number_22:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDY5NWMyN2VkZDViNDlmZWExZDQ4NmQ1NDE5NjQ2ZmNiZjM5NTVlYmRmMzM2Y2Q1NjI1ZWIyNDlkMjE3ZDVlIn19fQ=="
+    name: "&7Oak 22"
+    tags:
+      - alphabet/oak
+      - character/number_22
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_number_22"
+          input: { head: "mini_oak_planks" }
+  oak_number_23:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOWQxMDllNDEzNWY4NWQxY2JjNDQ2NmQ3NTUzZTFmZDRmNTk1ZjYyN2I1ZTZhZjg0MjBiYzc4YTY2ZGUzYTIifX19"
+    name: "&7Oak 23"
+    tags:
+      - alphabet/oak
+      - character/number_23
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_number_23"
+          input: { head: "mini_oak_planks" }
+  oak_number_24:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDdhYzI4YzNlYzU0MTQxZGIxZjVjOGQ0MmM3NmI5MmM0ZGZlM2I0OWQxN2Y3ZTY4MzkyMjcwM2RkOWFiYTIifX19"
+    name: "&7Oak 24"
+    tags:
+      - alphabet/oak
+      - character/number_24
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_number_24"
+          input: { head: "mini_oak_planks" }
+  oak_number_25:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOGZiNDZjM2E3Mjg0N2Q3ZmFjMjQ3NDRmNWQ4ZmI1NmI2YzNiYjcyNThmY2JkMzgwYTJhMDJlYjk2ODBhYyJ9fX0="
+    name: "&7Oak 25"
+    tags:
+      - alphabet/oak
+      - character/number_25
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_number_25"
+          input: { head: "mini_oak_planks" }
+  oak_number_26:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjYwYjg4MTI1NTI3NjJmOThjNzQzNjUxMzg4NDQ3ZThiNzMwYTc2OGMwNmIzYTk5ZmI4YzhkYmE0NWI2MzQ0NSJ9fX0="
+    name: "&7Oak 26"
+    tags:
+      - alphabet/oak
+      - character/number_26
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_number_26"
+          input: { head: "mini_oak_planks" }
+  oak_number_27:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDYzM2I3MzZkYTUzYTkxZWE0ZTkyNWMzODIzYmNhM2FiYmM5OGUyNDdlNGRiYTRmZDUwZDFkYmFkNmY5NjJmNyJ9fX0="
+    name: "&7Oak 27"
+    tags:
+      - alphabet/oak
+      - character/number_27
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_number_27"
+          input: { head: "mini_oak_planks" }
+  oak_number_28:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTIxYWY2OTkwNjZlYTlkN2FlMmFjNmNmYTcxMjRjOGRmYjlkNjI5ODcyMTZjYzllMGVhZjNjYmFkZDY5MWIzYSJ9fX0="
+    name: "&7Oak 28"
+    tags:
+      - alphabet/oak
+      - character/number_28
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_number_28"
+          input: { head: "mini_oak_planks" }
+  oak_number_29:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjA1N2MyYmRmZTg4MmI1YzM4ZmZiODk5MDYxMDNkY2I5Y2I1NzYwNTdjMzg4MzI2YzhjNWEwNDkzMDQzMWYxNCJ9fX0="
+    name: "&7Oak 29"
+    tags:
+      - alphabet/oak
+      - character/number_29
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_number_29"
+          input: { head: "mini_oak_planks" }
+  oak_number_30:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNmIyZTMxNjI0ZjhlNTE4NmU5ZmE4YzdhZDExMmVjODNmYWRkYjVhODVmOWY5YzMyZDdmOWU4NDg3MWFlMDY0OSJ9fX0="
+    name: "&7Oak 30"
+    tags:
+      - alphabet/oak
+      - character/number_30
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_number_30"
+          input: { head: "mini_oak_planks" }
+  oak_number_31:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzZiZTJkOGRjNWQ1Y2U5YjMzNjkyYWUzNTJiMWVmMDk3YmMwODkzM2Q4YmZlYzM4NjllYTM0NWI3MzVlZDE2YyJ9fX0="
+    name: "&7Oak 31"
+    tags:
+      - alphabet/oak
+      - character/number_31
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_number_31"
+          input: { head: "mini_oak_planks" }
+  oak_number_32:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzhjZmFhNzdiMjcxOTIwOGQ1MTU2YmM4NjJlM2Q0ZGI4NTFlMjRhZGY5NjU5NGNiOThhYzg5NzhhNjNiNDg0ZSJ9fX0="
+    name: "&7Oak 32"
+    tags:
+      - alphabet/oak
+      - character/number_32
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_number_32"
+          input: { head: "mini_oak_planks" }
+  oak_number_33:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZGNkYTVjOWIxZjg3NTkwNzA0MDFjODk0N2NhNThmODFiNDVlYzdjZWNhODE1NGM4OTA4ZDVjYWQ2MzY4NThkIn19fQ=="
+    name: "&7Oak 33"
+    tags:
+      - alphabet/oak
+      - character/number_33
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_number_33"
+          input: { head: "mini_oak_planks" }
+  oak_number_34:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjYyOTc4ZmJhMDRjMDgzZWUwY2NkOGE5MmE5ODQxMjM1MGRiNzQ1MmEwMWZiMDg3YTFiYTJiYmQ1M2YwOWY0OSJ9fX0="
+    name: "&7Oak 34"
+    tags:
+      - alphabet/oak
+      - character/number_34
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_number_34"
+          input: { head: "mini_oak_planks" }
+  oak_number_35:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzY5ZDJjM2I4NGQ2ZjY4YjM5YWM4MTczNzgzNmIwMGEzMTE1MmM1ODU4ZDVjOWU5MWQ0MWZkNmQxZDc5ODYwMyJ9fX0="
+    name: "&7Oak 35"
+    tags:
+      - alphabet/oak
+      - character/number_35
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_number_35"
+          input: { head: "mini_oak_planks" }
+  oak_number_36:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMmRhZjQwN2RlZjAxMTNlZjFkZjJlM2Y2YzI3NWYzYWU5Yjc4OWEwNmQyYzgyZTdjZTcwZWQ0NWQ1ZTgzOGFiYSJ9fX0="
+    name: "&7Oak 36"
+    tags:
+      - alphabet/oak
+      - character/number_36
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_number_36"
+          input: { head: "mini_oak_planks" }
+  oak_number_37:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjYzYjFhM2EwNDg5NzRlMmQyOWI1MWNhOGRiN2Y2MDZmODM4OWExNmVhNmJkYTdmOGJmZjQ5ZmI0MGRmNmQyNSJ9fX0="
+    name: "&7Oak 37"
+    tags:
+      - alphabet/oak
+      - character/number_37
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_number_37"
+          input: { head: "mini_oak_planks" }
+  oak_number_38:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTA0OWFjN2JlYWQ3ZTRiYmY2NmQ1MGNkZmU3YWZiMGViY2Q2YzAwYTFhMGU0NjFhYzdiODk1NWM2MWQ1MjhhNCJ9fX0="
+    name: "&7Oak 38"
+    tags:
+      - alphabet/oak
+      - character/number_38
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_number_38"
+          input: { head: "mini_oak_planks" }
+  oak_number_100:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZmU5NzFhNmUwYzFlNzE1YmI3MjEwZDcxMWZmN2QxZWM0YjU3YzM4Y2Q2Mjc4Y2FhZjQ4YmUwNTAyYzJhZTk0MSJ9fX0="
+    name: "&7Oak 100"
+    tags:
+      - alphabet/oak
+      - character/number_100
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_number_100"
+          input: { head: "mini_oak_planks" }
+  oak_exclamation:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMmUzZjUwYmE2MmNiZGEzZWNmNTQ3OWI2MmZlZGViZDYxZDc2NTg5NzcxY2MxOTI4NmJmMjc0NWNkNzFlNDdjNiJ9fX0="
+    name: "&7Oak !"
+    tags:
+      - alphabet/oak
+      - character/exclamation
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_exclamation"
+          input: { head: "mini_oak_planks" }
+  oak_reverse_exclamation:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzMyNzAwOWNkNDcxODg0MTE1MjAzODYwYzFkYWY2ZDgyNWMwODQ1ZjhhNTI4YzZlZjZiZDI0ZWI4NmI0YjM4YiJ9fX0="
+    name: "&7Oak ¡"
+    tags:
+      - alphabet/oak
+      - character/reverse_exclamation
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_reverse_exclamation"
+          input: { head: "mini_oak_planks" }
+  oak_question:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmFkYzA0OGE3Y2U3OGY3ZGFkNzJhMDdkYTI3ZDg1YzA5MTY4ODFlNTUyMmVlZWQxZTNkYWYyMTdhMzhjMWEifX19"
+    name: "&7Oak ?"
+    tags:
+      - alphabet/oak
+      - character/question
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_question"
+          input: { head: "mini_oak_planks" }
+  oak_reverse_question:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvY2I3OTgwYWZiODZkNzFjMDgwYTI1MDUyODFkMTRhODY2MWIwOTAyZGRiODMwMWJmYjdhODFlYWY1ZGRkZjNhYiJ9fX0="
+    name: "&7Oak ¿"
+    tags:
+      - alphabet/oak
+      - character/reverse_question
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_reverse_question"
+          input: { head: "mini_oak_planks" }
+  oak_period:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzQ1NjQ4NWFhMjM2MTQzNGNiM2JlNTMxYmMxMjE2NTlmNTU1YTRhYWYyNjFkMjFhMDZkN2FmZGU1YWE2MGIyIn19fQ=="
+    name: "&7Oak ."
+    tags:
+      - alphabet/oak
+      - character/period
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_period"
+          input: { head: "mini_oak_planks" }
+  oak_comma:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzg0MGI0ZTdhNjgwNDM0ODU3NDI3MTExYmRhZjY0ZTdmYmE5MTJlYTU3MDcxODJlOThiYzU4NWNjYjUzIn19fQ=="
+    name: "&7Oak ,"
+    tags:
+      - alphabet/oak
+      - character/comma
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_comma"
+          input: { head: "mini_oak_planks" }
+  oak_colon:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvY2NiZWUyOGUyYzc5ZGIxMzhmMzk3N2JhNDcyZGZhZTZiMTFhOWJiODJkNWIzZDdmMjU0NzkzMzhmZmYxZmU5MiJ9fX0="
+    name: "&7Oak :"
+    tags:
+      - alphabet/oak
+      - character/colon
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_colon"
+          input: { head: "mini_oak_planks" }
+  oak_semicolon:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTcxZjRkMmJmZmI1OTRjMTU4YzZjZTFlZjlkOTgyYjZmZDI0NTgyNzVlN2Y4OTY1NWJiNzRlZGU3NjhkZWQifX19"
+    name: "&7Oak ;"
+    tags:
+      - alphabet/oak
+      - character/semicolon
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_semicolon"
+          input: { head: "mini_oak_planks" }
+  oak_apostrophe:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTQ1ODg0NWY2NTEzZjRlZWNmZmFmNmJiMWZkYzQxNDg2MzFlZWIxYmQ4ODUyNTdjNjE3Y2E3YTFmYWFmZDEifX19"
+    name: "&7Oak '"
+    tags:
+      - alphabet/oak
+      - character/apostrophe
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_apostrophe"
+          input: { head: "mini_oak_planks" }
+  oak_quote:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODg1OWU4Y2U3YjFiMmNkOGNkMDM4NmI4YWExYmJhMTk4NmJlYjllMzc2ODNhMGFhMjgyZjdiZjQ5ZjJmZTM0ZiJ9fX0="
+    name: "&7Oak \""
+    tags:
+      - alphabet/oak
+      - character/quote
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_quote"
+          input: { head: "mini_oak_planks" }
+  oak_ellipses:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmRkMmViMGM2ZjhhOTU0M2VmNWZkNzI1MjVjYzJmYWIzNTY2M2NkNzA5MTM1ZTQzYjhlMjU3ZGMwYjc1ODk0OCJ9fX0="
+    name: "&7Oak ..."
+    tags:
+      - alphabet/oak
+      - character/ellipses
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_ellipses"
+          input: { head: "mini_oak_planks" }
+  oak_ampersand:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTFhM2RjYWZjOTMzYjllNTc3YzA3ZTc0ODg0YmY3NTUxOTgxOGI2MTQyNjY1OGQwNTlkNDRhYzYzNTIifX19"
+    name: "&7Oak &"
+    tags:
+      - alphabet/oak
+      - character/ampersand
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_ampersand"
+          input: { head: "mini_oak_planks" }
+  oak_at:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTNmMDJkNzYwMzBmOTUxMTFiN2VkY2Q2NWU1NzI4YWU3ZjNmMDk0Zjc5YmU1NzdiM2Q2N2I5MDA3YmE2OWU4In19fQ=="
+    name: "&7Oak @"
+    tags:
+      - alphabet/oak
+      - character/at
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_at"
+          input: { head: "mini_oak_planks" }
+  oak_hash:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOWFlODVmNzRmOGUyYzA1NGI3ODFhMjlmYTliMjU5MzRiYTYzYmI3OWYxZGU4YTk1YjQzNmQ5YmZkY2FmNGNkIn19fQ=="
+    name: "&7Oak #"
+    tags:
+      - alphabet/oak
+      - character/hash
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_hash"
+          input: { head: "mini_oak_planks" }
+  oak_dollar:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjdmYzRkZmE1ZjY1MmY2ZTFjMWIxOWZiODc2NTU5NjdlYjgyZmI1ZmE3MTkwNDJmOGM4MDVjYWQ3ZjAxZTQ4NyJ9fX0="
+    name: "&7Oak $"
+    tags:
+      - alphabet/oak
+      - character/dollar
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_dollar"
+          input: { head: "mini_oak_planks" }
+  oak_euro:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzg4ZTQ1NjhhMTAxZTliYWEyNTA1ZTRhMWZlNWQ5NTRiNTY3MDZhMWNlYjg1NDBhZWNmNjJmYWQ5MjFmMjIyOSJ9fX0="
+    name: "&7Oak €"
+    tags:
+      - alphabet/oak
+      - character/euro
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_euro"
+          input: { head: "mini_oak_planks" }
+  oak_pound:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNmVlMmI2MGUyMDFiMDc1MGQzN2MxNWRkYzM0NmIyMDU2ZTI0Mzk3MGZmNTU3NWE0MDJiNDMyYTE5N2JhYzc2NiJ9fX0="
+    name: "&7Oak £"
+    tags:
+      - alphabet/oak
+      - character/pound
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_pound"
+          input: { head: "mini_oak_planks" }
+  oak_yen:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmI2YWVmN2I1MjBlMjdmNjBhNTEyNzMwMGI0Nzk2NWFiNzUzNzQ3N2U2OTY0MGU2NTEzOTU2YTFjOGE0NjljYSJ9fX0="
+    name: "&7Oak ¥"
+    tags:
+      - alphabet/oak
+      - character/yen
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_yen"
+          input: { head: "mini_oak_planks" }
+  oak_percent:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTA4NTFjZjA2MjU0OGM0MzYyNTNjMzM3YTQxMTJjZmM5ODU0NDNhNzQ4ZDkzMWNmMjAxZDFlODRmYzcyYjEyYyJ9fX0="
+    name: "&7Oak %"
+    tags:
+      - alphabet/oak
+      - character/percent
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_percent"
+          input: { head: "mini_oak_planks" }
+  oak_plus:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvM2VkZDIwYmU5MzUyMDk0OWU2Y2U3ODlkYzRmNDNlZmFlYjI4YzcxN2VlNmJmY2JiZTAyNzgwMTQyZjcxNiJ9fX0="
+    name: "&7Oak +"
+    tags:
+      - alphabet/oak
+      - character/plus
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_plus"
+          input: { head: "mini_oak_planks" }
+  oak_minus:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmQ4YTk5ZGIyYzM3ZWM3MWQ3MTk5Y2Q1MjYzOTk4MWE3NTEzY2U5Y2NhOTYyNmEzOTM2Zjk2NWIxMzExOTMifX19"
+    name: "&7Oak -"
+    tags:
+      - alphabet/oak
+      - character/minus
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_minus"
+          input: { head: "mini_oak_planks" }
+  oak_equals:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzg3Njg5ZjgzMzQzNmFhNzExYWJiZDQ1MTY4ODU2Nzc1YTJiMTE0NjU2Y2RmNGRjNWE2YzZmMWFmYWU1MjAifX19"
+    name: "&7Oak ="
+    tags:
+      - alphabet/oak
+      - character/equals
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_equals"
+          input: { head: "mini_oak_planks" }
+  oak_slash:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvN2Y5NWQ3YzFiYmYzYWZhMjg1ZDhkOTY3NTdiYjU1NzIyNTlhM2FlODU0ZjUzODlkYzUzMjA3Njk5ZDk0ZmQ4In19fQ=="
+    name: "&7Oak /"
+    tags:
+      - alphabet/oak
+      - character/slash
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_slash"
+          input: { head: "mini_oak_planks" }
+  oak_backslash:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzM2MmRhYTQxYTEyNTRiMmVkNmU5ZmQzYTAxNWI0ZDdhNDE5YmEyOTIwZGUxMGI0NzgyNTFmNDlhYWNhMTkifX19"
+    name: "&7Oak \\"
+    tags:
+      - alphabet/oak
+      - character/backslash
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_backslash"
+          input: { head: "mini_oak_planks" }
+  oak_underscore:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzk2NmY4OTFjMTU0NmFlY2JmY2MzYmFlZGNmYjY3MDc5ZDdmMmE2YThiNzM5ZWQ1YmFjMmJiM2NmMzA4ZDM4In19fQ=="
+    name: "&7Oak _"
+    tags:
+      - alphabet/oak
+      - character/underscore
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_underscore"
+          input: { head: "mini_oak_planks" }
+  oak_star:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNWZkZWMyYTA5ODE4NWQ4M2Q5NjUyNGQzMDM0ODA5NTNkZTBkZTY4ZjE1MDJjOTZiMzZhNDExNmU2OWZjMjdkNyJ9fX0="
+    name: "&7Oak *"
+    tags:
+      - alphabet/oak
+      - character/star
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_star"
+          input: { head: "mini_oak_planks" }
+  oak_heart:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzM2ZmViZWNhN2M0ODhhNjY3MWRjMDcxNjU1ZGRlMmExYjY1YzNjY2IyMGI2ZThlYWY5YmZiMDhlNjRiODAifX19"
+    name: "&7Oak ♥"
+    tags:
+      - alphabet/oak
+      - character/heart
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_heart"
+          input: { head: "mini_oak_planks" }
+  oak_blank:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNWRiNTMyYjVjY2VkNDZiNGI1MzVlY2UxNmVjZWQ3YmJjNWNhYzU1NTk0ZDYxZThiOGY4ZWFjNDI5OWM5ZmMifX19"
+    name: "&7Oak  "
+    tags:
+      - alphabet/oak
+      - character/blank
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_blank"
+          input: { head: "mini_oak_planks" }
+  oak_degree:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZmE5NTRiNDlkMjg3NjYwOWEzYzc3MzZhNDMyMDlhZmY2ODAxMWFmNWQ1N2I1NzY0MzBhMmQ2NmFlNjhiMGIwNyJ9fX0="
+    name: "&7Oak °"
+    tags:
+      - alphabet/oak
+      - character/degree
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_degree"
+          input: { head: "mini_oak_planks" }
+  oak_checkmark:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTMwZjQ1MzdkMjE0ZDM4NjY2ZTYzMDRlOWM4NTFjZDZmN2U0MWEwZWI3YzI1MDQ5YzlkMjJjOGM1ZjY1NDVkZiJ9fX0="
+    name: "&7Oak ✓"
+    tags:
+      - alphabet/oak
+      - character/checkmark
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_checkmark"
+          input: { head: "mini_oak_planks" }
+  oak_pause:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzc3YWFlMWEyNmI5NTI0OTNhNzM3MWMzMGFkOGM0OTFmMTJiNTc0Y2M5NGE0MWIyZjkxYTM3M2NhNjhmOTA5OCJ9fX0="
+    name: "&7Oak ⏸"
+    tags:
+      - alphabet/oak
+      - character/pause
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_pause"
+          input: { head: "mini_oak_planks" }
+  oak_note:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNWYwMGY1N2RkNjlkODFjZWEwNzZkZDFjZDJkNzAxNjlhZTkxY2JjYjQ2YzBmMWM3MTJiZjBiZGU4YmY1NDE4MSJ9fX0="
+    name: "&7Oak ♪"
+    tags:
+      - alphabet/oak
+      - character/note
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_note"
+          input: { head: "mini_oak_planks" }
+  oak_paren_open:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzI3ZDI3YjUwNDdlMDllODA1MzJhYWExNjY5ZTg5M2RjNGNiMzVmMjUxNWFjZDA1MmJlZDRkMDRiYzRjMDg4In19fQ=="
+    name: "&7Oak ("
+    tags:
+      - alphabet/oak
+      - character/paren_open
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_paren_open"
+          input: { head: "mini_oak_planks" }
+  oak_paren_close:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjU5ZDNhNjZmNmNmN2UyNTQxNjhmYWJmZmY0NTQ0OWU5NTFmNGFmNjRjYjRlNmYzNTczMjE3OTNjM2QxMzc5In19fQ=="
+    name: "&7Oak )"
+    tags:
+      - alphabet/oak
+      - character/paren_close
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_paren_close"
+          input: { head: "mini_oak_planks" }
+  oak_bracket_open:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMmNjNmJkMTNhNjFmY2JhNGEzODU5ZWMwNmJiOGM4MjM3MzliNmJlYWNiYThjZmEwMTUyZThjNjBkYjk0In19fQ=="
+    name: "&7Oak ["
+    tags:
+      - alphabet/oak
+      - character/bracket_open
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_bracket_open"
+          input: { head: "mini_oak_planks" }
+  oak_bracket_close:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTY1MDczMzZlMzUwNjZkYWE4ZTRlNmU2MjRmOTNmNjVlMzVlZTk3NGU5ZThiNjRkMmRkOTkwNGVjZWZkYTIifX19"
+    name: "&7Oak ]"
+    tags:
+      - alphabet/oak
+      - character/bracket_close
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_bracket_close"
+          input: { head: "mini_oak_planks" }
+  oak_brace_open:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODNiMTNmZjhlN2EzZmFiNWZmMWU5OGU4ZmQ5MzljYzA5N2I2YjQ1Yzg1MjQwZDMyNDUwOTk0Zjc2NzE0MzlkIn19fQ=="
+    name: "&7Oak {"
+    tags:
+      - alphabet/oak
+      - character/brace_open
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_brace_open"
+          input: { head: "mini_oak_planks" }
+  oak_brace_close:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjE3NmVmMDU1ODgxNWI3ZjA1YzE1M2NmNGNkYzY5ZjliYTRiYTFjMTBlYTFhODc0OWFlYjhjMmI5NzdlIn19fQ=="
+    name: "&7Oak }"
+    tags:
+      - alphabet/oak
+      - character/brace_close
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_brace_close"
+          input: { head: "mini_oak_planks" }
+  oak_arrow_up:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzA0MGZlODM2YTZjMmZiZDJjN2E5YzhlYzZiZTUxNzRmZGRmMWFjMjBmNTVlMzY2MTU2ZmE1ZjcxMmUxMCJ9fX0="
+    name: "&7Oak ↑"
+    tags:
+      - alphabet/oak
+      - character/arrow_up
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_arrow_up"
+          input: { head: "mini_oak_planks" }
+  oak_arrow_down:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzQzNzM0NmQ4YmRhNzhkNTI1ZDE5ZjU0MGE5NWU0ZTc5ZGFlZGE3OTVjYmM1YTEzMjU2MjM2MzEyY2YifX19"
+    name: "&7Oak ↓"
+    tags:
+      - alphabet/oak
+      - character/arrow_down
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_arrow_down"
+          input: { head: "mini_oak_planks" }
+  oak_arrow_left:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmQ2OWUwNmU1ZGFkZmQ4NGU1ZjNkMWMyMTA2M2YyNTUzYjJmYTk0NWVlMWQ0ZDcxNTJmZGM1NDI1YmMxMmE5In19fQ=="
+    name: "&7Oak ←"
+    tags:
+      - alphabet/oak
+      - character/arrow_left
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_arrow_left"
+          input: { head: "mini_oak_planks" }
+  oak_arrow_right:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDM0ZWYwNjM4NTM3MjIyYjIwZjQ4MDY5NGRhZGMwZjg1ZmJlMDc1OWQ1ODFhYTdmY2RmMmU0MzEzOTM3NzE1OCJ9fX0="
+    name: "&7Oak →"
+    tags:
+      - alphabet/oak
+      - character/arrow_right
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_arrow_right"
+          input: { head: "mini_oak_planks" }
+  oak_arrow_left_up:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODY1NDI2YTMzZGY1OGI0NjVmMDYwMWRkOGI5YmVjMzY5MGIyMTkzZDFmOTUwM2MyY2FhYjc4ZjZjMjQzOCJ9fX0="
+    name: "&7Oak ↖"
+    tags:
+      - alphabet/oak
+      - character/arrow_left_up
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_arrow_left_up"
+          input: { head: "mini_oak_planks" }
+  oak_arrow_right_up:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTBlMGE0ZDQ4Y2Q4MjlhNmQ1ODY4OTA5ZDY0M2ZhNGFmZmQzOWU4YWU2Y2FhZjZlYzc5NjA5Y2Y3NjQ5YjFjIn19fQ=="
+    name: "&7Oak ↗"
+    tags:
+      - alphabet/oak
+      - character/arrow_right_up
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_arrow_right_up"
+          input: { head: "mini_oak_planks" }
+  oak_arrow_left_down:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTE0ZjA1OTIzOGQyYzVjNmU4ZjkzZGY3MWQyYTRkNTVjMDFiOGU1ZGQ5MmRmOGQ1YTVmMzRmNDE3MTFiMGZiMSJ9fX0="
+    name: "&7Oak ↙"
+    tags:
+      - alphabet/oak
+      - character/arrow_left_down
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_arrow_left_down"
+          input: { head: "mini_oak_planks" }
+  oak_arrow_right_down:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzVjYmRiMjg5OTFhMTZlYjJjNzkzNDc0ZWY3ZDBmNDU4YTVkMTNmZmZjMjgzYzRkNzRkOTI5OTQxYmIxOTg5In19fQ=="
+    name: "&7Oak ↘"
+    tags:
+      - alphabet/oak
+      - character/arrow_right_down
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_arrow_right_down"
+          input: { head: "mini_oak_planks" }
+  oak_arrows:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDA4OWQwZTBjODhlNTI1MDAzOGU2NTlmNTA4ZWJkYTViNjVhNWJlMGJmYzQxMDNkMGUxMmZhYmE0MDE4ZDVjYiJ9fX0="
+    name: "&7Oak ⇄"
+    tags:
+      - alphabet/oak
+      - character/arrows
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_arrows"
+          input: { head: "mini_oak_planks" }
+  oak_forward:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMmEzYjhmNjgxZGFhZDhiZjQzNmNhZThkYTNmZTgxMzFmNjJhMTYyYWI4MWFmNjM5YzNlMDY0NGFhNmFiYWMyZiJ9fX0="
+    name: "&7Oak ⏩"
+    tags:
+      - alphabet/oak
+      - character/forward
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_forward"
+          input: { head: "mini_oak_planks" }
+  oak_forward_ii:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOWM5ZWM3MWMxMDY4ZWM2ZTAzZDJjOTI4N2Y5ZGE5MTkzNjM5ZjNhNjM1ZTJmYmQ1ZDg3YzJmYWJlNjQ5OSJ9fX0="
+    name: "&7Oak ⏭"
+    tags:
+      - alphabet/oak
+      - character/forward_ii
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_forward_ii"
+          input: { head: "mini_oak_planks" }
+  oak_backward:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODY1MmUyYjkzNmNhODAyNmJkMjg2NTFkN2M5ZjI4MTlkMmU5MjM2OTc3MzRkMThkZmRiMTM1NTBmOGZkYWQ1ZiJ9fX0="
+    name: "&7Oak ⏪"
+    tags:
+      - alphabet/oak
+      - character/backward
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_backward"
+          input: { head: "mini_oak_planks" }
+  oak_backward_ii:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODE2ZWEzNGE2YTZlYzVjMDUxZTY5MzJmMWM0NzFiNzAxMmIyOThkMzhkMTc5ZjFiNDg3YzQxM2Y1MTk1OWNkNCJ9fX0="
+    name: "&7Oak ⏮"
+    tags:
+      - alphabet/oak
+      - character/backward_ii
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_backward_ii"
+          input: { head: "mini_oak_planks" }
+  oak_refresh:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTg4N2NjMzg4YzhkY2ZjZjFiYThhYTVjM2MxMDJkY2U5Y2Y3YjFiNjNlNzg2YjM0ZDRmMWMzNzk2ZDNlOWQ2MSJ9fX0="
+    name: "&7Oak ↻"
+    tags:
+      - alphabet/oak
+      - character/refresh
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_refresh"
+          input: { head: "mini_oak_planks" }
+  oak_letter_a_acute:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjVmMGRhYmJmNGEyNmQwOGNjYjdkNDE5NzhmMjcyMGQ4ZDdiNWVkMTJkM2NlZmNjMDRjYzlhNjU3OTg1NDM2MSJ9fX0="
+    name: "&7Oak Á"
+    tags:
+      - alphabet/oak
+      - character/letter_a_acute
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_letter_a_acute"
+          input: { head: "mini_oak_planks" }
+  oak_letter_a_umlaut:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTVjZDZkYjllYzNjN2Q5MTEzZTZkZDQ5YTE2Zjk5YTMyNmI5ZjU5NGNlOTg3ZjkxOTU1OWFjN2RiZDNiNTU1In19fQ=="
+    name: "&7Oak Ä"
+    tags:
+      - alphabet/oak
+      - character/letter_a_umlaut
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_letter_a_umlaut"
+          input: { head: "mini_oak_planks" }
+  oak_letter_c_cedilla:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzQwMTM2NTEyMTQ2OWNmZjdmMDA2NzYzYzg3OGEwYjY2NzBmN2VlZjYwZDExOGY3ZWVhMmRkMTc0MDUxM2ZjOCJ9fX0="
+    name: "&7Oak Ç"
+    tags:
+      - alphabet/oak
+      - character/letter_c_cedilla
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_letter_c_cedilla"
+          input: { head: "mini_oak_planks" }
+  oak_letter_e_acute:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNmViZWNkZjA4MzRjZGI0NmM1MDZhY2FmMTk5YTNiM2VmZjQ1MmExZWU3NjUxNWIwNmNjZWMxN2ZhNWYyMjNiZiJ9fX0="
+    name: "&7Oak É"
+    tags:
+      - alphabet/oak
+      - character/letter_e_acute
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_letter_e_acute"
+          input: { head: "mini_oak_planks" }
+  oak_letter_i_acute:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNmQyMGYxNWE1YTdlY2EzMmZmMTkzYzEwZjVkMWQzODcyODU4YzkyZTJiYTBhY2JmNjAyODUyM2M5NzcyZTVhZSJ9fX0="
+    name: "&7Oak Í"
+    tags:
+      - alphabet/oak
+      - character/letter_i_acute
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_letter_i_acute"
+          input: { head: "mini_oak_planks" }
+  oak_letter_n_tilde:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTIyOTEyNDgxMTdhM2MzYTE1YmNhY2UwMjFhNDNmMzZiZmQ3NDU3OWNiZDBiZjg3NjZjMmI1N2MxOGNlODFmZSJ9fX0="
+    name: "&7Oak Ñ"
+    tags:
+      - alphabet/oak
+      - character/letter_n_tilde
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_letter_n_tilde"
+          input: { head: "mini_oak_planks" }
+  oak_letter_o_acute:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjFmYTIzOWQ2ZTQ3MzgzMWVkMGY1YzExNGIwMTRhNGQ3NzE0NDg3ODg1MDY1YjgzNjIwNTY0MzRkMzQ2MThmIn19fQ=="
+    name: "&7Oak Ó"
+    tags:
+      - alphabet/oak
+      - character/letter_o_acute
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_letter_o_acute"
+          input: { head: "mini_oak_planks" }
+  oak_letter_o_umlaut:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNmVkYmI0NGM2MzliOTUzMDhmZmNkZjhjNDc3MGRmZThiMDJkNzUyZGVjNGIzMTk2ZjRhOGY5YWMyMzE1MzkzYSJ9fX0="
+    name: "&7Oak Ö"
+    tags:
+      - alphabet/oak
+      - character/letter_o_umlaut
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_letter_o_umlaut"
+          input: { head: "mini_oak_planks" }
+  oak_letter_u_acute:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGY2Yzc5OTQ3MGNhNmZkMjhhNGYwYjA2N2ViMmYxODUzN2UzYWJhOTgzYWFkOWNiMjIxZDkzZmUwYmUxMzg1NSJ9fX0="
+    name: "&7Oak Ú"
+    tags:
+      - alphabet/oak
+      - character/letter_u_acute
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_letter_u_acute"
+          input: { head: "mini_oak_planks" }
+  oak_letter_u_umlaut:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvN2I1MmI5NGM2NTE2Y2JlNDYxZmVhNjIxZDMxNmNlZTBiODc1ZjBmYmMyMzlkMjUyNzNlODI0YjYxM2U3M2RkNCJ9fX0="
+    name: "&7Oak Ü"
+    tags:
+      - alphabet/oak
+      - character/letter_u_umlaut
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_letter_u_umlaut"
+          input: { head: "mini_oak_planks" }
+  oak_greek_alpha:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzgxMTYyYTBjM2I4ZWQxNzJiMjRlZGNlZjhlNmFhMDkzOTJhZjQ2OWRkMWJlNzE2YjgzMDk1MGYwZWRlYmZiYSJ9fX0="
+    name: "&7Oak α"
+    tags:
+      - alphabet/oak
+      - character/greek_alpha
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_greek_alpha"
+          input: { head: "mini_oak_planks" }
+  oak_greek_lambda:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNWJhOWNlZGFhZTJjMmU2OTQ3ZjM2NWQwMzY1NTY1ODkxMjEwNDZmYmY2OTI2OWZhYWU5NDJhZjA4MmM1OWE0MCJ9fX0="
+    name: "&7Oak λ"
+    tags:
+      - alphabet/oak
+      - character/greek_lambda
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_greek_lambda"
+          input: { head: "mini_oak_planks" }
+  oak_greek_pi:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjMyNmJmYzNjYjk3ZDczMDQ2N2ZiNjRkOGFhMzRlNzZjYjkyYzE3YTY0YmQwMWM1NWE1OTRlMTAzMDc0OTI5ZCJ9fX0="
+    name: "&7Oak π"
+    tags:
+      - alphabet/oak
+      - character/greek_pi
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_greek_pi"
+          input: { head: "mini_oak_planks" }
+  oak_greek_omega:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTgzODI0MWUyOTg1MjZjNTg5YzAwM2VhN2FiZWViOGFmZGRhZTc1NWVlNzhlYzgyNzZlZjA2MTU2MmUwZjNkZiJ9fX0="
+    name: "&7Oak Ω"
+    tags:
+      - alphabet/oak
+      - character/greek_omega
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_greek_omega"
+          input: { head: "mini_oak_planks" }
+  oak_greek_sigma:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZWExMWUxMjk1ZjZlNGJkZGU1NGEzZDYwZjI1ODMwOGMwMmI2ZDA1MDY3YWNiNDM1NDdjZDQ5NjZlM2RmZTI0In19fQ=="
+    name: "&7Oak ∑"
+    tags:
+      - alphabet/oak
+      - character/greek_sigma
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_greek_sigma"
+          input: { head: "mini_oak_planks" }
+  oak_cyrillic_yo:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDY4ZmJjZTkzY2E2ODZlMWQ5NmZiZDQ2NmY3NDUyM2JjZTg3OWNjZjQ1NWU3ZGIyM2M5OTVmMDg5ODNkNyJ9fX0="
+    name: "&7Oak Ё"
+    tags:
+      - alphabet/oak
+      - character/cyrillic_yo
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_cyrillic_yo"
+          input: { head: "mini_oak_planks" }
+  oak_cyrillic_be:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTdlMDhmNThlZmRmZjhlOGU5ZDRhY2UxM2M1OGFiZjMxOWVkMWVjODk2ODJiNzAyNGYyNDUyZDViOGY2In19fQ=="
+    name: "&7Oak Б"
+    tags:
+      - alphabet/oak
+      - character/cyrillic_be
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_cyrillic_be"
+          input: { head: "mini_oak_planks" }
+  oak_cyrillic_ge:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjEwN2M0ODU0ZTM2NzE5ZGM3ZjI1ZGRhYmFhODgzOTUyMmNhMjlkYWY1MWU2NzI0OThlZjhlNDQxZWE2In19fQ=="
+    name: "&7Oak Г"
+    tags:
+      - alphabet/oak
+      - character/cyrillic_ge
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_cyrillic_ge"
+          input: { head: "mini_oak_planks" }
+  oak_cyrillic_de:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTVmYmZiM2VjM2EyOGFmMWJlNTEyMjBjZTkyNTliYjZmZTViN2Q3OTc2NWYyZWU4NzBlN2I0YzRiMWY1In19fQ=="
+    name: "&7Oak Д"
+    tags:
+      - alphabet/oak
+      - character/cyrillic_de
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_cyrillic_de"
+          input: { head: "mini_oak_planks" }
+  oak_cyrillic_zhe:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTVmMTlmOWQ1ZDc2YjE3MTUyZmVjN2QwNmVkOGY1OTAxMWQ2NDdhNjY5NTM2MTg2NDM0Y2FkOWZlZjgzNCJ9fX0="
+    name: "&7Oak Ж"
+    tags:
+      - alphabet/oak
+      - character/cyrillic_zhe
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_cyrillic_zhe"
+          input: { head: "mini_oak_planks" }
+  oak_cyrillic_ze:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYWI0ZDNhYjhlMDVjNDliZjZlZjg4MmQyOGEzMWUxNGYzZjBhNmMzYzM4OGM5OTExNDZiZDQyMTdlN2I2ODNiIn19fQ=="
+    name: "&7Oak З"
+    tags:
+      - alphabet/oak
+      - character/cyrillic_ze
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_cyrillic_ze"
+          input: { head: "mini_oak_planks" }
+  oak_cyrillic_i:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTQ2YTU4ODFhMGEzODQ4ZWRkZDUzODdjYzlkYjMwZWU5ZjEyOTA3YWY5NDFmMjk2MWEzZmRiMTIzNmY5MjgxIn19fQ=="
+    name: "&7Oak И"
+    tags:
+      - alphabet/oak
+      - character/cyrillic_i
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_cyrillic_i"
+          input: { head: "mini_oak_planks" }
+  oak_cyrillic_short_i:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNmZjOTk4NWZjN2YwYmI0NGZkN2IyZWNkZjQ4Y2E1ZThjYzUwNTNlMTZkNGQ5ZDQ0NzgxY2RjOTIwOGFlZGQxIn19fQ=="
+    name: "&7Oak Й"
+    tags:
+      - alphabet/oak
+      - character/cyrillic_short_i
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_cyrillic_short_i"
+          input: { head: "mini_oak_planks" }
+  oak_cyrillic_el:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzA0ZmFlOGE3YWRlODA0Yjk2MmIzYzNiMmU1M2Q2ZjFjOGY4ZWM2ODY1MmQyNzRlNGFmZTY5N2FjNTI1ZmUifX19"
+    name: "&7Oak Л"
+    tags:
+      - alphabet/oak
+      - character/cyrillic_el
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_cyrillic_el"
+          input: { head: "mini_oak_planks" }
+  oak_cyrillic_pe:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmZkNDU0ZWNjNmNkZWZlYmNkZmE5YjJlMjFiODAxOTZkYTMxNDQxZWE3Y2I5NzMzYmVkZGMzMmQ0OWQ2NTM0In19fQ=="
+    name: "&7Oak П"
+    tags:
+      - alphabet/oak
+      - character/cyrillic_pe
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_cyrillic_pe"
+          input: { head: "mini_oak_planks" }
+  oak_cyrillic_u:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNmY5YTRjNzMzNGJkNDVhZTk0OTY4YjdiZThjMjUwMzQ3NmI5NmQwMzc4OWIyYzhkMDU0MmMyMGNiZjY4YTViIn19fQ=="
+    name: "&7Oak У"
+    tags:
+      - alphabet/oak
+      - character/cyrillic_u
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_cyrillic_u"
+          input: { head: "mini_oak_planks" }
+  oak_cyrillic_ef:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjhhOWQzYjZmMzY1NTg1NGRjOGFhYzc5NjMwNjlhNjczYmU1ODhiZWUyMjczZDg2MWIxNTA0OWVhZThmZDlkIn19fQ=="
+    name: "&7Oak Ф"
+    tags:
+      - alphabet/oak
+      - character/cyrillic_ef
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_cyrillic_ef"
+          input: { head: "mini_oak_planks" }
+  oak_cyrillic_tse:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvM2U1OGM1NGJhMmY2MTE2MWVkZTdkOGZhZDMzMWVhYzI2NjQ4MjU2YWM0NDc5NGNlOWVmMzNjMjkyNzY4ODNiIn19fQ=="
+    name: "&7Oak Ц"
+    tags:
+      - alphabet/oak
+      - character/cyrillic_tse
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_cyrillic_tse"
+          input: { head: "mini_oak_planks" }
+  oak_cyrillic_che:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzczYjQ4ODQ2MzJlOGZhMTFiOTk2OTUyYjE0MWU3ZWJmOTYxZDgyMjFhYjU3YTFiM2I2MWU4OWJlZTRlOTE2In19fQ=="
+    name: "&7Oak Ч"
+    tags:
+      - alphabet/oak
+      - character/cyrillic_che
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_cyrillic_che"
+          input: { head: "mini_oak_planks" }
+  oak_cyrillic_sha:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjk1ZmY0ZDA4YjdiOTk2ZDFiMjQ4ODE1ZmIxODE1NmE2NzFiMmE0MTAxMjkxZjEyMTU2NzIxZThlYTU5NWQifX19"
+    name: "&7Oak Ш"
+    tags:
+      - alphabet/oak
+      - character/cyrillic_sha
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_cyrillic_sha"
+          input: { head: "mini_oak_planks" }
+  oak_cyrillic_shcha:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmU5ZWI3NjU3ZjY3NDc4M2I0Y2FmOWU2ODMzNGE4ODU0YmVkYmNiODNjNjQzODI0MTExYzM4ZTU0OGU4Y2MyIn19fQ=="
+    name: "&7Oak Щ"
+    tags:
+      - alphabet/oak
+      - character/cyrillic_shcha
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_cyrillic_shcha"
+          input: { head: "mini_oak_planks" }
+  oak_cyrillic_hard:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZmRmMmRjZmUzZjNiYzgzYzA0MmU3NzFiNWFiM2IwYmZkZjMyYTliYjIyMTMwOTM5MmNkNDkzYTk1ZDQifX19"
+    name: "&7Oak Ъ"
+    tags:
+      - alphabet/oak
+      - character/cyrillic_hard
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_cyrillic_hard"
+          input: { head: "mini_oak_planks" }
+  oak_cyrillic_yeru:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjQyNjY2ODRkMDg2NzUzYTU0M2EyYjc4NDY4MzY0YmJkYzdjYTYxOGUyNGE1NjI2NjUwNGQ0MWM0MjQifX19"
+    name: "&7Oak Ы"
+    tags:
+      - alphabet/oak
+      - character/cyrillic_yeru
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_cyrillic_yeru"
+          input: { head: "mini_oak_planks" }
+  oak_cyrillic_soft:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjk3YzFiYWYzZTY1ZWY5MzM4ZGMyN2VhMzFhZGVmZTkxYjQzMTE2OTI3ZmI3MzQwMmM2ZjQyZDRkNmU5YSJ9fX0="
+    name: "&7Oak Ь"
+    tags:
+      - alphabet/oak
+      - character/cyrillic_soft
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_cyrillic_soft"
+          input: { head: "mini_oak_planks" }
+  oak_cyrillic_e:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTQzZTdjZTVkOTk4NGY0ZjYzZTIxZTE3MWE1OTU4MjQ2NDVmMjI2NDJlMzM5MmFkZjk3NjhiNTdlMDNmMCJ9fX0="
+    name: "&7Oak Э"
+    tags:
+      - alphabet/oak
+      - character/cyrillic_e
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_cyrillic_e"
+          input: { head: "mini_oak_planks" }
+  oak_cyrillic_yu:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjJiMDE3YjYxYTgwOTU1YjYwZjNkMzI5ZmU1YzNmZTYyZTYzOTZlNWE4ZmQ3MzQ3MzM4YzdkNTJhMzcxNyJ9fX0="
+    name: "&7Oak Ю"
+    tags:
+      - alphabet/oak
+      - character/cyrillic_yu
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_cyrillic_yu"
+          input: { head: "mini_oak_planks" }
+  oak_cyrillic_ya:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzFkZDJmZWRiMjg4YjI1NmJjY2JjNmVlZGUzYzk1NDhjNzE5ZjBhZGVlNTY0ZTY0OWY5NWViM2I2NDRjNzBkNCJ9fX0="
+    name: "&7Oak Я"
+    tags:
+      - alphabet/oak
+      - character/cyrillic_ya
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_cyrillic_ya"
+          input: { head: "mini_oak_planks" }
+  oak_zodiac_aquarius:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDJjZDlhMTFhZDJlNGQ5NTU0NzlmZWQ5MmJlNzhkZmE1MTg0YTI1MmVjMWFmY2RiNzNkM2EzMjM5MzlmYyJ9fX0="
+    name: "&7Oak ♒"
+    tags:
+      - alphabet/oak
+      - character/zodiac_aquarius
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_zodiac_aquarius"
+          input: { head: "mini_oak_planks" }
+  oak_zodiac_aries:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvY2E5NzFmNGRlNDNjMTY0YTkzNmI1NTJiYzY1OGI5NjZlNmI0ZWI1ZWI3OTYzNzQ2MzI0ZDJlMjljNjRhN2I4YSJ9fX0="
+    name: "&7Oak ♈"
+    tags:
+      - alphabet/oak
+      - character/zodiac_aries
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_zodiac_aries"
+          input: { head: "mini_oak_planks" }
+  oak_zodiac_cancer:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDc2M2FmYzhlYWM2M2UyZDRmZjFlNmMwNTA0ZmE0ZGIwOWFhZjZlYzExYmU2ZDBjMjZiOGE3ZTk4YTFhODNmIn19fQ=="
+    name: "&7Oak ♋"
+    tags:
+      - alphabet/oak
+      - character/zodiac_cancer
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_zodiac_cancer"
+          input: { head: "mini_oak_planks" }
+  oak_zodiac_capricorn:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTRhYjdmNTc4ZDk3NzliOGYyMDlmNGRlM2ZiZWU5Njg4ODViMGRkYWE1YWZjNTljNmIxOGMzMjIxZTE0N2IyZiJ9fX0="
+    name: "&7Oak ♑"
+    tags:
+      - alphabet/oak
+      - character/zodiac_capricorn
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_zodiac_capricorn"
+          input: { head: "mini_oak_planks" }
+  oak_zodiac_gemini:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjZiZjYzN2FhMTk5NzEyYTYzOTIyNGExYzVmOWZhMDQ1YjIxZTU3YjhjYzZjZDkyMDgzOWRhNzQ2MjJlNTYifX19"
+    name: "&7Oak ♊"
+    tags:
+      - alphabet/oak
+      - character/zodiac_gemini
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_zodiac_gemini"
+          input: { head: "mini_oak_planks" }
+  oak_zodiac_leo:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWUxOGI2ODNlNDJmNGVlNzFjZmMxZWZkMWJiOGE2NGQ2YTViYTNlMzc0N2YzMTBmMzY2MTA4NmVkZjVmMzc5In19fQ=="
+    name: "&7Oak ♌"
+    tags:
+      - alphabet/oak
+      - character/zodiac_leo
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_zodiac_leo"
+          input: { head: "mini_oak_planks" }
+  oak_zodiac_libra:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTBkZTc0NmU3M2RjZDBlODQ5YTFjYWZhY2ExYjRiZDI5OTQwN2Q1MTNiZDQ3NjMwYWI1MWM5NjYyZTQ0ODUifX19"
+    name: "&7Oak ♎"
+    tags:
+      - alphabet/oak
+      - character/zodiac_libra
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_zodiac_libra"
+          input: { head: "mini_oak_planks" }
+  oak_zodiac_ophiuchus:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTMxMTJlNGIwMDVkNDVmZTExNjY3YWEyODFlODJjN2E5MDAxYzViMTBiZTFkNWIxZDdlYzM1ODllNzIzMGM5ZCJ9fX0="
+    name: "&7Oak ⛎"
+    tags:
+      - alphabet/oak
+      - character/zodiac_ophiuchus
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_zodiac_ophiuchus"
+          input: { head: "mini_oak_planks" }
+  oak_zodiac_pisces:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWZlMzhlYTY2ZTkyNjYzM2JhY2MwMTRhMjY0Y2QyNTFlMTYzNGYxZjljOTQ4MWZmNjc5YzQ1Nzc0NDExOCJ9fX0="
+    name: "&7Oak ♓"
+    tags:
+      - alphabet/oak
+      - character/zodiac_pisces
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_zodiac_pisces"
+          input: { head: "mini_oak_planks" }
+  oak_zodiac_sagittarius:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDljMzg4NmYxZTUxNjg4NDNjMmQwYTk2YWFlMjlhMzcyZjY3NDZmNTU3MzE4OGVjNTQzODZmMDg2ZWY4ZiJ9fX0="
+    name: "&7Oak ♐"
+    tags:
+      - alphabet/oak
+      - character/zodiac_sagittarius
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_zodiac_sagittarius"
+          input: { head: "mini_oak_planks" }
+  oak_zodiac_scorpio:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMmZlNDMxZGI0ZTNmYmE2ZTE3YmNkYmQwNDg5NTJiNTRlOWM5Y2E3NDIzZDRlYTc0NjNiYWJlYjcxMDFmMDczYSJ9fX0="
+    name: "&7Oak ♏"
+    tags:
+      - alphabet/oak
+      - character/zodiac_scorpio
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_zodiac_scorpio"
+          input: { head: "mini_oak_planks" }
+  oak_zodiac_taurus:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvM2I3MDZmOTFkOGY3NmQ1NjgyZjBjNThiN2E0N2UyMzNlNTE3OGZiMTNiNzg2NTE2NWFhMTNhOTYzNmM3NmY3In19fQ=="
+    name: "&7Oak ♉"
+    tags:
+      - alphabet/oak
+      - character/zodiac_taurus
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_zodiac_taurus"
+          input: { head: "mini_oak_planks" }
+  oak_zodiac_virgo:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDBkZDIxZjQ1M2I4NTNkZmI5NzM0YmMyYjA5Nzg5MTM2NmNiNWRkYjdhZjBiOTIwYjhjZDkzNGIyZGIxZjVhOCJ9fX0="
+    name: "&7Oak ♍"
+    tags:
+      - alphabet/oak
+      - character/zodiac_virgo
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_zodiac_virgo"
+          input: { head: "mini_oak_planks" }
+  oak_female:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWEyMjA2ODJhYjdmMjBmYmNlOTEzMDY2MGVjOTgyMjliMzMyMGEyMzlhNDc4MmViMTUzMzg1ZWRhOWJmYmZkOCJ9fX0="
+    name: "&7Oak ♀"
+    tags:
+      - alphabet/oak
+      - character/female
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_female"
+          input: { head: "mini_oak_planks" }
+  oak_male:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvM2EwOGQwZGFiYzQzNGEwOTNmMDk4YmFmNTA1YjE2NWMxNGNiZTk2NDU3M2VkOGU5ZTYxODUxNTg5MTc5NTcwIn19fQ=="
+    name: "&7Oak ♂"
+    tags:
+      - alphabet/oak
+      - character/male
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_male"
+          input: { head: "mini_oak_planks" }
+  oak_rune_0:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjM3YzFhZjE0Njc0ODZhZDU3NzA2OTgxMzczMzBkMDM3MjZjNWY3Zjk1M2Y2ZDM0ZjU5MjI1MGY1NGQ0ZjRlNiJ9fX0="
+    name: "&7Oak Rune"
+    tags:
+      - alphabet/oak
+      - character/rune_0
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_rune_0"
+          input: { head: "mini_oak_planks" }
+  oak_rune_1:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjBmMjJjOTM2ZWRjMjcyYjkxMDBhY2U2ZDBlNjM1NTViZmM4Y2E3ZDhlMjc2NjUzODZhYTEwNjA3YjU0ZGJiIn19fQ=="
+    name: "&7Oak Rune"
+    tags:
+      - alphabet/oak
+      - character/rune_1
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_rune_1"
+          input: { head: "mini_oak_planks" }
+  oak_rune_2:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWI3N2ZmNzQ2ZGNkYjdiNjZiZDJkYWQ3OTM2YjBhZDI1MjhiYmQ4ZGIyMDRlMTdmYmYzMmMzZTdlOGJhNGFkIn19fQ=="
+    name: "&7Oak Rune"
+    tags:
+      - alphabet/oak
+      - character/rune_2
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_rune_2"
+          input: { head: "mini_oak_planks" }
+  oak_rune_3:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWMyODNjNTBlN2IzYWEwOGViMDk4ZTMzOGM5OGMxMjBjZDJiZDNmYmNjNmE0YTQzMWY0N2Q1YTEzYmQxNjIzMyJ9fX0="
+    name: "&7Oak Rune"
+    tags:
+      - alphabet/oak
+      - character/rune_3
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_rune_3"
+          input: { head: "mini_oak_planks" }
+  oak_rune_4:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzAyODU1ODU0NTY3ZDZhMWViMTQwNDJkMWQzNTAyZjc1YjBkMTZiYzQ4NmU2YmYyMzJiMjUzZmQ0YmY2YTE2NyJ9fX0="
+    name: "&7Oak Rune"
+    tags:
+      - alphabet/oak
+      - character/rune_4
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_rune_4"
+          input: { head: "mini_oak_planks" }
+  oak_rune_5:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvM2YzMzc4MDAxYzRiN2E3NjU4ZTQ3ZDI3MjY1Y2ZhNGRlNDdiN2UwYjlmZTI4NjBhYTQ2YzAxYjQyMzIxZmFhZiJ9fX0="
+    name: "&7Oak Rune"
+    tags:
+      - alphabet/oak
+      - character/rune_5
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_rune_5"
+          input: { head: "mini_oak_planks" }
+  oak_rune_6:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTc1Y2IwNGRlMmY3NDBiZDlmMzMyODAwZDg4MTYzNzMzNWMxYmQyNWI2NGZmMTBiMjcyMDEzMTU4N2U3ZDM5OSJ9fX0="
+    name: "&7Oak Rune"
+    tags:
+      - alphabet/oak
+      - character/rune_6
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_rune_6"
+          input: { head: "mini_oak_planks" }
+  oak_rune_7:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvM2EzYWNhMjM3OTA3ODQ0ODZhOTcyMTlkOWU2MGE4ZWFkN2Q0ODkwNDNjYmVhNTg0ODk0YTUzY2FiYWQyNzMwZCJ9fX0="
+    name: "&7Oak Rune"
+    tags:
+      - alphabet/oak
+      - character/rune_7
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_rune_7"
+          input: { head: "mini_oak_planks" }
+  oak_rune_8:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTYwZDRkY2UwYWUwZjM2YzA3MTJjNzE4OTNjYjA1Nzc2ZjNlNDQyNzAwOGM1NzkzMWJhMDY2ZTI4MDdmNWQ2MiJ9fX0="
+    name: "&7Oak Rune"
+    tags:
+      - alphabet/oak
+      - character/rune_8
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_rune_8"
+          input: { head: "mini_oak_planks" }
+  oak_rune_9:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDZjOGY3NWQyYThjMmE2MjA3MDRjYTRlOTAyNGNkYTA3ZjFmMzAxZjM0NWE0NTFhZWI3YzFlNGIyNzUyMGNlOCJ9fX0="
+    name: "&7Oak Rune"
+    tags:
+      - alphabet/oak
+      - character/rune_9
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_rune_9"
+          input: { head: "mini_oak_planks" }
+  oak_rune_10:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjMwZGVhMWQwMmNhOTg5NGQ0ZGExMjQ2MzJkZDQwMjdhNDYwMzEzN2UxZWNiMTA4NDczNTMyZDEwYWQ0MGZjNCJ9fX0="
+    name: "&7Oak Rune"
+    tags:
+      - alphabet/oak
+      - character/rune_10
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_rune_10"
+          input: { head: "mini_oak_planks" }
+  oak_rune_11:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjNmYmUzOWQzZmI0OGM4NmM5MTdkZTZkNGUwZDE1ZjJhZTQ2ZWE2NTE0YzJkOGQ3MmYyYWYxMzNlOGI2YTVlIn19fQ=="
+    name: "&7Oak Rune"
+    tags:
+      - alphabet/oak
+      - character/rune_11
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_rune_11"
+          input: { head: "mini_oak_planks" }
+  oak_galactic_a:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYWM1ZGE5Yjk2MGM1Yzg5YTczNTAxYzAwNzc1ZWYxMDViMDg1OGZjZDRhNzIwYTMwNTA3YTA5YWE0MzY3ZTM1ZSJ9fX0="
+    name: "&7Oak Galactic A"
+    tags:
+      - alphabet/oak
+      - character/galactic_a
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_galactic_a"
+          input: { head: "mini_oak_planks" }
+  oak_galactic_b:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTkzZWI3MTQwYjUwMjY1NDA5OTIwZDU0ZjdhOWY2Y2M5OGRjZmU2NjcwZDAxZTc2NzViZTU2NDVmMmMzODc2In19fQ=="
+    name: "&7Oak Galactic B"
+    tags:
+      - alphabet/oak
+      - character/galactic_b
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_galactic_b"
+          input: { head: "mini_oak_planks" }
+  oak_galactic_c:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZGEwMzNmZjU1YmVmMGI2Njc2OGVhZGZhM2MxMWY3NjA1ZWFkMGNkZTg0NWNmNzM0OWJkYjVjOTMwZGQ4YzUyNiJ9fX0="
+    name: "&7Oak Galactic C"
+    tags:
+      - alphabet/oak
+      - character/galactic_c
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_galactic_c"
+          input: { head: "mini_oak_planks" }
+  oak_galactic_d:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTk2MjcwNjE2NjFhMWUwODQwNWE2ZWQ3NGIxMjJlZDQ3MmFjMjlmMGRkNWIzMWYzZDVlMmViMjdjZWZkNjFiOCJ9fX0="
+    name: "&7Oak Galactic D"
+    tags:
+      - alphabet/oak
+      - character/galactic_d
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_galactic_d"
+          input: { head: "mini_oak_planks" }
+  oak_galactic_e:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTVlZjZiOTQwNTU1MzkxYmFiOGZjYjAyMzEyYTM0MjM3OTFmMzY1OTVkODJkNjY2NmEwMTA4YjI3MDkzYjVkOCJ9fX0="
+    name: "&7Oak Galactic E"
+    tags:
+      - alphabet/oak
+      - character/galactic_e
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_galactic_e"
+          input: { head: "mini_oak_planks" }
+  oak_galactic_f:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjI4NzlmZDZmNDhiYTRlMDI3YWMxYTNmZGQ0MWU2M2FlNjMyYzk4MzI0YjNkNzkzMTRmZTgyMGQzMTlmMTNkMSJ9fX0="
+    name: "&7Oak Galactic F"
+    tags:
+      - alphabet/oak
+      - character/galactic_f
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_galactic_f"
+          input: { head: "mini_oak_planks" }
+  oak_galactic_g:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDM2NzhjMjNiZjI4YWQ1YmE1YzNhYjM3NGYzMjNmNTViNjIyYTM5ZjdiMGE2MzE3NDQ4MjNiMDc1MTNkODIyNCJ9fX0="
+    name: "&7Oak Galactic G"
+    tags:
+      - alphabet/oak
+      - character/galactic_g
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_galactic_g"
+          input: { head: "mini_oak_planks" }
+  oak_galactic_h:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjAxY2M0NjNlMzI4MjM2MjQ2OGY4MWE3ZjI1YzUyMGFjYjAwOTU0YmY2ZDk3NWQ3MzE2NTEwZmY1ZWQ3NDY4In19fQ=="
+    name: "&7Oak Galactic H"
+    tags:
+      - alphabet/oak
+      - character/galactic_h
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_galactic_h"
+          input: { head: "mini_oak_planks" }
+  oak_galactic_i:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOGE2ZDVhY2RiYTMzMmFmYzFjYWQ2NWJhYWRjM2QzMGQ5YzQ5NjExNzk5M2VhOTk0YzI1ZGIzNWEzNDJjNDM4OSJ9fX0="
+    name: "&7Oak Galactic I"
+    tags:
+      - alphabet/oak
+      - character/galactic_i
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_galactic_i"
+          input: { head: "mini_oak_planks" }
+  oak_galactic_j:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZWUwYmVjNmZkMjA0NzA4ZGQ2ZDcwODIyNmIzMGU2N2Y4M2I1ZTJkZjY1ZTZkNWFlYzU5ZTExMTExYjRhMGM2NiJ9fX0="
+    name: "&7Oak Galactic J"
+    tags:
+      - alphabet/oak
+      - character/galactic_j
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_galactic_j"
+          input: { head: "mini_oak_planks" }
+  oak_galactic_k:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjM0NTExMDE4ZTM1NmJjZjIyODZmYjg3NTA5MmFhODY2MmQ1ODUwZmE4NTliZmU3ZTcwNjQ2MDIwMzU4NTU2YyJ9fX0="
+    name: "&7Oak Galactic K"
+    tags:
+      - alphabet/oak
+      - character/galactic_k
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_galactic_k"
+          input: { head: "mini_oak_planks" }
+  oak_galactic_l:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDU0YmNlZjMwMzJiNjRmYzMyZTkzNjQzNmY0ZTM3Nzc5ZGEwMmYyNjE2ODg0N2YzMGI1YTllNzZmZDFiNTY1YyJ9fX0="
+    name: "&7Oak Galactic L"
+    tags:
+      - alphabet/oak
+      - character/galactic_l
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_galactic_l"
+          input: { head: "mini_oak_planks" }
+  oak_galactic_m:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZGNjMWI5MGJmOWMxYWQyNTEwNTdhYThlZjRiNGU3YTg2OGNiZDg2N2MyZmYxZGExMGE1ZDdjMDcyMGNhNmJhNSJ9fX0="
+    name: "&7Oak Galactic M"
+    tags:
+      - alphabet/oak
+      - character/galactic_m
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_galactic_m"
+          input: { head: "mini_oak_planks" }
+  oak_galactic_n:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvY2M2YzE0MTI3NjZjYjI2NzE3ZWJhMDFhNDg1NDNjNmIwYjExYmRiYzA4ZmZkOWMxYTEyNGQ0MjgxYTQ5MTJhZiJ9fX0="
+    name: "&7Oak Galactic N"
+    tags:
+      - alphabet/oak
+      - character/galactic_n
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_galactic_n"
+          input: { head: "mini_oak_planks" }
+  oak_galactic_o:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjVmMmZjYmJkMTQ3ZjliOWE0ZmUxNzE5NjhlZmFhMDM5OGRjNTZhYzhhN2ZlNjYzMmJiYThkNzQ5MGRkMDY3ZiJ9fX0="
+    name: "&7Oak Galactic O"
+    tags:
+      - alphabet/oak
+      - character/galactic_o
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_galactic_o"
+          input: { head: "mini_oak_planks" }
+  oak_galactic_p:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjhmNzNjNTUxNmI1YjAwZTNhYzE0M2IxZDU4MTE0MmFiMWM5NzE1NTQxNTQ0NGU3NmIxMTg2YzBjMjU2N2MifX19"
+    name: "&7Oak Galactic P"
+    tags:
+      - alphabet/oak
+      - character/galactic_p
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_galactic_p"
+          input: { head: "mini_oak_planks" }
+  oak_galactic_q:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzA5MDFhOWIzNWE3N2RkZTQyYzQ5MzhlMDlmNWM3Y2U3YTlmYWFmY2E5NDI5MTU5NjkxOTY1NTFhNTE2MTBhNCJ9fX0="
+    name: "&7Oak Galactic Q"
+    tags:
+      - alphabet/oak
+      - character/galactic_q
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_galactic_q"
+          input: { head: "mini_oak_planks" }
+  oak_galactic_r:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvN2NjZDQ1OWFlYjdlMTBhMjJhMDJjMDIyZDA0YTM2YmVlN2UyMTM2OTM5MmZmMTg5OTY5OWE3MjY4ODE3ZjU5MiJ9fX0="
+    name: "&7Oak Galactic R"
+    tags:
+      - alphabet/oak
+      - character/galactic_r
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_galactic_r"
+          input: { head: "mini_oak_planks" }
+  oak_galactic_s:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjVkODRjN2NmZWIxMjZkOWUyMTM3MjYzOTI1NWQ2Y2U1MjAyYzUyNTk2MWQ4NzZlNjI2NzFkMmY2NmYxNTlhMSJ9fX0="
+    name: "&7Oak Galactic S"
+    tags:
+      - alphabet/oak
+      - character/galactic_s
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_galactic_s"
+          input: { head: "mini_oak_planks" }
+  oak_galactic_t:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTM4Y2FjNWVmYTcwZGU0YzFlZTg5YTJiYWFiMTNiYWUwNTg5NGE2ZTJmMDcwY2MxYjY4NWZlY2YwMzcxNmI4MSJ9fX0="
+    name: "&7Oak Galactic T"
+    tags:
+      - alphabet/oak
+      - character/galactic_t
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_galactic_t"
+          input: { head: "mini_oak_planks" }
+  oak_galactic_u:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTY2NmNiZTJiMjE1YTY2OTEzNGQ5ZTA4ODFjOWMxNDcwMWEwMGVkZDQzOGYxYmE5NWI0NDI0MjdjMWM5NDFhNCJ9fX0="
+    name: "&7Oak Galactic U"
+    tags:
+      - alphabet/oak
+      - character/galactic_u
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_galactic_u"
+          input: { head: "mini_oak_planks" }
+  oak_galactic_v:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODExZmM5ZWYyNmYxYzE4MThiNzc4NTAzMTNmNzgxYTgzZjgwOWY0NTYzOWMxNjJkYjA3MDAwNzk4MjkzYWU4In19fQ=="
+    name: "&7Oak Galactic V"
+    tags:
+      - alphabet/oak
+      - character/galactic_v
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_galactic_v"
+          input: { head: "mini_oak_planks" }
+  oak_galactic_w:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzE1NmI1YmQ0NTgwMTNhMDkzMWRkMjYzZWQ5OTc3YTFlODczOWVkNWYyMWQ1N2YwODc3MzdlYTQyMzMyMzJmNyJ9fX0="
+    name: "&7Oak Galactic W"
+    tags:
+      - alphabet/oak
+      - character/galactic_w
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_galactic_w"
+          input: { head: "mini_oak_planks" }
+  oak_galactic_x:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDkxYmNjNzg0NGY0NDViYzBlOTAxMWZiZjMzNGJmYTk0Y2ZmZGFjODdhNDMwMGVhOTZlMWY5MDM2NzEwODY2MSJ9fX0="
+    name: "&7Oak Galactic X"
+    tags:
+      - alphabet/oak
+      - character/galactic_x
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_galactic_x"
+          input: { head: "mini_oak_planks" }
+  oak_galactic_y:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTBhMThmZjIzMmE0YjU0MTJmZWYxODU5OTdlNDJlMGI0NDg5MWZiYTk3NzE0NDU1MDM1Y2U4NDY3ZDk2ZWM5NiJ9fX0="
+    name: "&7Oak Galactic Y"
+    tags:
+      - alphabet/oak
+      - character/galactic_y
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_galactic_y"
+          input: { head: "mini_oak_planks" }
+  oak_galactic_z:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTJiNTViODE4Yjc1ZGViYjFjOWRjZjJhZTBkMjY4MDgzNzhkMzZlZGFlZDY0ZGE2Y2Y2MDRkNGNiZGViMjgzYiJ9fX0="
+    name: "&7Oak Galactic Z"
+    tags:
+      - alphabet/oak
+      - character/galactic_z
+      - wood
+    recipes:
+      stonecutter:
+        - id: "oak_galactic_z"
+          input: { head: "mini_oak_planks" }

@@ -1,0 +1,2016 @@
+# Generated Cherry Planks Alphabet Blocks
+
+heads:
+  cherry_planks_letter_a:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMmZjOTVjNDQ0MmExYTY2MzIyMzEwMzM0MDI0ZjI3YjNhM2QxZjRjMjkxZmJmODQ2M2YxYTU2ZTdlODlmOTYyOCJ9fX0="
+    name: "&7Cherry Planks A"
+    tags:
+      - alphabet/cherry_planks
+      - character/letter_a
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_letter_a"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_letter_b:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjdlMTRkMmE3MDMxNTQ2ZTgyZWU1MWY1ZWQwODYzMWMyMjdhN2M0YzAzMGE2NGRhODMwMTE4MGEyYjI4NGU1NyJ9fX0="
+    name: "&7Cherry Planks B"
+    tags:
+      - alphabet/cherry_planks
+      - character/letter_b
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_letter_b"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_letter_c:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNmIwN2Q5NDc2ODA0ZjJlMGI0NzRiOGYyZWNjODRkNmEwNjRlOWI4NTg4NTQ3Zjc3NmYwZGM0ZDZkNGVmY2MzZCJ9fX0="
+    name: "&7Cherry Planks C"
+    tags:
+      - alphabet/cherry_planks
+      - character/letter_c
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_letter_c"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_letter_d:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMmNiMjI2NTg3YWM1ODNjZTQ0ZTYyYTZlMGRjZTBhNjU5NjU4Yzg3OTZiNmQzY2ViMWMyYjhkOGJlN2U5YjI2MiJ9fX0="
+    name: "&7Cherry Planks D"
+    tags:
+      - alphabet/cherry_planks
+      - character/letter_d
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_letter_d"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_letter_e:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTAzYTQ0NTBjNmI2N2NjZDA3ODVjYzViMWViMTMyMjc0Yzc3NGFkMWY3N2FmMzg0MTg4YjQ2OTc3NDQ5YWQ4NiJ9fX0="
+    name: "&7Cherry Planks E"
+    tags:
+      - alphabet/cherry_planks
+      - character/letter_e
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_letter_e"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_letter_f:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDYxMWUxOGM4YTJmZGNhMzY3MWQ4MjNiMTFmOGRmZjkxZWFmZTJjYzIyYzE2NDc5YTliZmJiYjdlNDA1MTI3YSJ9fX0="
+    name: "&7Cherry Planks F"
+    tags:
+      - alphabet/cherry_planks
+      - character/letter_f
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_letter_f"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_letter_g:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTM2MDJmMmEwNGNkNGMyZmZkZjQzMTkyYWMwZTkzZTdiYjQ0NzRjMWZiM2E1MDcxODg3NzljZjc3ZmZlMmY4YSJ9fX0="
+    name: "&7Cherry Planks G"
+    tags:
+      - alphabet/cherry_planks
+      - character/letter_g
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_letter_g"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_letter_h:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzUxZmFmOGJjMTUwMDBiOWE2MmZjOGNkMTk3NjdmZWMzYmZmNmVkZDA4NTc1M2RmZTMxNzc5MjFmNDc1YWFlYiJ9fX0="
+    name: "&7Cherry Planks H"
+    tags:
+      - alphabet/cherry_planks
+      - character/letter_h
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_letter_h"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_letter_i:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTkwMDYwOWRhNWI0NzlkNWUwZjJjZTE0ZmNlZDU5N2U1NTAxMGI5NWVhNGQ0ZWYxZTU5NTRhMWJhYWFlMWZlZCJ9fX0="
+    name: "&7Cherry Planks I"
+    tags:
+      - alphabet/cherry_planks
+      - character/letter_i
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_letter_i"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_letter_j:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTlmNTBlZDcyZWM5M2RlOGJlZjZlYjI0ZTg5OTY4YWM4NDBjZTVkMzg0OGI4NDQyZTk4YWIzZTc1NGI0MTc4YSJ9fX0="
+    name: "&7Cherry Planks J"
+    tags:
+      - alphabet/cherry_planks
+      - character/letter_j
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_letter_j"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_letter_k:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNThhOGY5YzFiMWJhMDUyNjg0MjFjNzcxNzM2MjdlMTNlZDI5ZGQ1YmNlZDU1NmMzMjZhOWVlM2I1ZWIxNzI5In19fQ=="
+    name: "&7Cherry Planks K"
+    tags:
+      - alphabet/cherry_planks
+      - character/letter_k
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_letter_k"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_letter_l:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmY2ZjgxYzZlNjE1YWQ4MzMzNTc4NjMxYmY2MThkOTE4NmU5MmZiOTYxZjVhODQ3Nzc2MzE1YjdmMzdmMWJjZiJ9fX0="
+    name: "&7Cherry Planks L"
+    tags:
+      - alphabet/cherry_planks
+      - character/letter_l
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_letter_l"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_letter_m:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDhmMTY1OTBhMTgzOGJmOGMwZjQ3MTg3YzdiZWNkNzM0ZGJmMmY0MmI1MTMwMGZjOTJkMTVkNDhiNzQ4NDBlZiJ9fX0="
+    name: "&7Cherry Planks M"
+    tags:
+      - alphabet/cherry_planks
+      - character/letter_m
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_letter_m"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_letter_n:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTc2ZjEyMGJmZjlkZGE1NjgxOGRjYTFmMGY3NjBhNTJlNDU4MzBlZGE5MGE1NmMwNjY5Nzc1ZTg5NzNiZjQ5MSJ9fX0="
+    name: "&7Cherry Planks N"
+    tags:
+      - alphabet/cherry_planks
+      - character/letter_n
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_letter_n"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_letter_o:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvM2Q5NzQwMjg3ZGQxOWJiZTllYzQxN2QzOTk1ZWYyYTFmM2MyZTJkMGM4NzIzYTIzN2Y3YjYyMzJkZWM4NGYyMiJ9fX0="
+    name: "&7Cherry Planks O"
+    tags:
+      - alphabet/cherry_planks
+      - character/letter_o
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_letter_o"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_letter_p:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZWMwNWNiNjIxNzFhYmE4ODk2OGRiNTgzYjU4NjZhNjQ1MjI2OWQxZmJiZWM2ODY0YzMyN2RkN2FhNWY2NDNhZCJ9fX0="
+    name: "&7Cherry Planks P"
+    tags:
+      - alphabet/cherry_planks
+      - character/letter_p
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_letter_p"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_letter_q:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNWI1ZDBjY2YyZWQ3MGYyYjQ2YjRiMzdiOWM4NGI0Mzk5NzRmYjgwZmJlMTliZmE2YjA1ZDI1YjQyZWUwNzQ1YSJ9fX0="
+    name: "&7Cherry Planks Q"
+    tags:
+      - alphabet/cherry_planks
+      - character/letter_q
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_letter_q"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_letter_r:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTA0YmE2NjdlZmNmOGMyNTc2YjQ5NzM0ZDVlZmYzNmZmNWYxZDEyZTljM2M4NTExY2ViZDQzMGY4ZTEyZjJhYSJ9fX0="
+    name: "&7Cherry Planks R"
+    tags:
+      - alphabet/cherry_planks
+      - character/letter_r
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_letter_r"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_letter_s:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOWYwZWVhNWNhMmVkOTEzN2UzOTQwNWQ0NzU1YjVlYTBlOWE4N2M0YTJkYWIwM2IxNGI3NmVjYzA5ZmQ1MDg0NyJ9fX0="
+    name: "&7Cherry Planks S"
+    tags:
+      - alphabet/cherry_planks
+      - character/letter_s
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_letter_s"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_letter_t:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmZhZWZiYzJiZjBhNTY3YTkyODU4OWVjZmI5MjVmODk2NDI3N2YxOTE5ZDM1ZDc4ZWZkNGM5OTk1ZjQ3ZjEyMiJ9fX0="
+    name: "&7Cherry Planks T"
+    tags:
+      - alphabet/cherry_planks
+      - character/letter_t
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_letter_t"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_letter_u:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjBjZGViNjQ1ZTQyYmNjZmIwNzQwMTEwMzA1NzdlNGFlNjcwODI3OTMyZjJhN2M0MjA0MTYwNWQzZTg4MGM0YiJ9fX0="
+    name: "&7Cherry Planks U"
+    tags:
+      - alphabet/cherry_planks
+      - character/letter_u
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_letter_u"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_letter_v:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTg1OWI4MGQ4NzlhNzcyNmYyOGM0Mzg3MGRhYmQ5NTVjMjVhODAzNTYxOGM1ZjE0YmMxZjM5ZGRjMWMwYWE5MSJ9fX0="
+    name: "&7Cherry Planks V"
+    tags:
+      - alphabet/cherry_planks
+      - character/letter_v
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_letter_v"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_letter_w:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNmQ4MzlmMzNkNGI2ZTIwNmM0ODc1MTA0OTcwMWFjMTAxZjZlYmMyMmE2MWE4NTI3YmE4ODA2YWNkOTNlN2Q2NyJ9fX0="
+    name: "&7Cherry Planks W"
+    tags:
+      - alphabet/cherry_planks
+      - character/letter_w
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_letter_w"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_letter_x:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNWUzYTQzOGE0ZGEzMTFiNWYzYjJmZGJhM2Q0YjFjMzE0ZmJmOTZhODZmOGY5YzMwYThhMTAxZDE1NjA5MjgyNyJ9fX0="
+    name: "&7Cherry Planks X"
+    tags:
+      - alphabet/cherry_planks
+      - character/letter_x
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_letter_x"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_letter_y:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZGVkYjYwNmI4ZTY0NWFmMjY3NzQxZTUyMDI1NjQ5ZTg1Y2MyMzcxZGNkOTE2MjkzZmUzYzRiOTk5NDViOTE1OCJ9fX0="
+    name: "&7Cherry Planks Y"
+    tags:
+      - alphabet/cherry_planks
+      - character/letter_y
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_letter_y"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_letter_z:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTUyMDc1NWUwM2QwYWMzYzdjYTExZTE1MTM4YTA2ZWVmMGZlOTE5Y2EyYTQ3MmRiZDE2YmQ3NDA1Yzk2MGMwZCJ9fX0="
+    name: "&7Cherry Planks Z"
+    tags:
+      - alphabet/cherry_planks
+      - character/letter_z
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_letter_z"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_number_0:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTFkZDEzNmU1ODBkOWVkY2Y4MWI1ZjQ2YWViOGE5Y2UzMTg3ZDYyODNhNTI4Y2UxOTQ4OTk0M2I5ZWE4Njc4NCJ9fX0="
+    name: "&7Cherry Planks 0"
+    tags:
+      - alphabet/cherry_planks
+      - character/number_0
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_number_0"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_number_1:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNWE1ODNjNjE1NjUwYjk1NDUwN2QxZDkzNjc1YjhmYzU2ZGRkMjY2MmEwMjRiNGY5ODcyMzBiNjI3OGExMzUzNCJ9fX0="
+    name: "&7Cherry Planks 1"
+    tags:
+      - alphabet/cherry_planks
+      - character/number_1
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_number_1"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_number_2:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjVlM2FhNzQ3OGQwMzBlMWUxODA5NDM2OWMxZDVhNDczN2ZiNGY1ODBjNmZkZDVlMzA2OWYyMWMzMzhmY2JjIn19fQ=="
+    name: "&7Cherry Planks 2"
+    tags:
+      - alphabet/cherry_planks
+      - character/number_2
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_number_2"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_number_3:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTVlNDE3NjM0ZTNmZTA1OGVmNDY3MzZhNDBiMjYxOGM3M2YxZDc0Yzc2MmYzZGM2MGVlNTE5MTFiZDNiMjc3NyJ9fX0="
+    name: "&7Cherry Planks 3"
+    tags:
+      - alphabet/cherry_planks
+      - character/number_3
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_number_3"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_number_4:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODllMzA1YmE1Y2QxOTNjOWQ5NGNhMmU5NzlkZjk2ODQyNTNmNDk4OWZlMDg0ZjY0Mzg4MTllZGZjODMyYjQ2ZSJ9fX0="
+    name: "&7Cherry Planks 4"
+    tags:
+      - alphabet/cherry_planks
+      - character/number_4
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_number_4"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_number_5:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjYwZGIwMDJjNDJmNzdiNjVhMTI2MzliYWJiZjUyMzA1ODIzMmU5NmUzODBlNzczY2U5ZGViMDAwMzJkNWQ0MiJ9fX0="
+    name: "&7Cherry Planks 5"
+    tags:
+      - alphabet/cherry_planks
+      - character/number_5
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_number_5"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_number_6:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZGMwN2NlN2ZhZDMyMjNkZDBmMWIwNTAyNGEwOWE2MGM1OTA4ODNjMzI1NTYzMzJjOGQ0YzdjMTNlMGQ2MGZlMiJ9fX0="
+    name: "&7Cherry Planks 6"
+    tags:
+      - alphabet/cherry_planks
+      - character/number_6
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_number_6"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_number_7:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjkyOWNmMmNkYzIwYzFjNjk1MDYyMTg3YjFkYzVlY2Q0YmYxNjQ1NDViODdlMGFjOWQzN2QzNTAwMzUzOWZiMCJ9fX0="
+    name: "&7Cherry Planks 7"
+    tags:
+      - alphabet/cherry_planks
+      - character/number_7
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_number_7"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_number_8:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTU2MGIzODM0YThmN2U2NjA3ZjA1NGVkMjZlNzRiMDdlOTVjMTMwNmQyOGYxYzExZTFiMDYyMTQ0NDM0OTQ4ZiJ9fX0="
+    name: "&7Cherry Planks 8"
+    tags:
+      - alphabet/cherry_planks
+      - character/number_8
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_number_8"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_number_9:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvN2Q3YWM3NTQ5Yzk0M2JmMTZhMTFlMzA5MzA1ZDk3NzNkOWZiNTExOWVkNTNhZjEzOWNiZjg3MWRlOTkyM2I2MCJ9fX0="
+    name: "&7Cherry Planks 9"
+    tags:
+      - alphabet/cherry_planks
+      - character/number_9
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_number_9"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_number_10:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjk1NzFlY2JiYmYwNTVjZDlkNDVhYTE4MjAxYWM1YWVjYzc1NGNkZDdlYjFmZmFhMWY5MzkyMzg5NDNiMjJjZCJ9fX0="
+    name: "&7Cherry Planks 10"
+    tags:
+      - alphabet/cherry_planks
+      - character/number_10
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_number_10"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_number_11:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjBjZWUyNzBlODg3MWY3ZjRhZDRmOWM3MmY2MTBhNDUxNzVhYmM3MGJhMzUzMmFlMzg5NDNlYWM5MDRmNTE0MCJ9fX0="
+    name: "&7Cherry Planks 11"
+    tags:
+      - alphabet/cherry_planks
+      - character/number_11
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_number_11"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_number_12:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjYyODEyZDI5OTRiNTNjY2JhODc2MWYxMGEzNDAyMmFmZjBmMzFhOGJiYzBkMTY1ODQ2MWVmOWViYTYzZTNkYSJ9fX0="
+    name: "&7Cherry Planks 12"
+    tags:
+      - alphabet/cherry_planks
+      - character/number_12
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_number_12"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_number_13:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWE4ODMzY2FkNjg3YTc0YTg0NGM2MzM3MmM4M2ZkZjlhMzMyZjQ1OWU3M2JhMzI5YTNmNjFkNTNhZTgyOGE5ZSJ9fX0="
+    name: "&7Cherry Planks 13"
+    tags:
+      - alphabet/cherry_planks
+      - character/number_13
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_number_13"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_number_14:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTNjYTBmZDUyMmU3MWI2NjUzNWEyMzhkNjQyMjM3YWNiZmM5N2NiNTAzYWM3Yjc0YjlkYzRlOTNhYzdlZDRhOCJ9fX0="
+    name: "&7Cherry Planks 14"
+    tags:
+      - alphabet/cherry_planks
+      - character/number_14
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_number_14"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_number_15:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTNlZjBlOTFkYTI1MWNjYjc1YTZlNWUzZmM4ZTljN2RjYzdhN2RkYzcyNmRkNjQyNGU5MWZlNjY5MTFkZTU5MCJ9fX0="
+    name: "&7Cherry Planks 15"
+    tags:
+      - alphabet/cherry_planks
+      - character/number_15
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_number_15"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_number_16:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjZjNWJmMjU5Mzg2ZGM0YTkwODQ0NTk2NzNkNTJlMDBmNDNmM2YzZjcwODI4ZGVhOTQ5MmIzMDg4ZjMzMjlhMiJ9fX0="
+    name: "&7Cherry Planks 16"
+    tags:
+      - alphabet/cherry_planks
+      - character/number_16
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_number_16"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_number_17:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNmFiZjdhYThlYWFmNjM1OTU4YjMxNDE2MGE5ZGViNWNkZDAzMjZiYTdiNjRjMTZmNjNhYmYzODA4NTExYWMwNyJ9fX0="
+    name: "&7Cherry Planks 17"
+    tags:
+      - alphabet/cherry_planks
+      - character/number_17
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_number_17"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_number_18:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOWMyMDc3Yzg4Mzc4NDZjZjQzYWIwZDA4NWU3NmU0NTM3NDJjYzhjZmUyNjQwMmJkNzQzOGUxMGNkOTMzZGQ0MCJ9fX0="
+    name: "&7Cherry Planks 18"
+    tags:
+      - alphabet/cherry_planks
+      - character/number_18
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_number_18"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_number_19:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOWNkMzY5MmUyN2RmMjgzNzQ5ODg1MjhjZGMzNDUwOTg5NmZhYTgzMzY4N2RhZWY4YzBiZDAwNjdjZjM0MjA5ZCJ9fX0="
+    name: "&7Cherry Planks 19"
+    tags:
+      - alphabet/cherry_planks
+      - character/number_19
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_number_19"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_number_20:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjcyOWYxNWUwNDgzNzUyYTZkMGUyMzhjMjA0NzYzNzc2NTUwNzgzOGM2M2U5ZTM1ZDdhYzQ5NWFjZDQwN2Q2YSJ9fX0="
+    name: "&7Cherry Planks 20"
+    tags:
+      - alphabet/cherry_planks
+      - character/number_20
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_number_20"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_number_21:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTQ2ZWE4OTNlZjVhNjIxNzNmNTM0YWQzZGI1MWYzNzllNGM1ZjNlNmIzZjI3MmViMTMyODRkNTAwOWJmNGQwMiJ9fX0="
+    name: "&7Cherry Planks 21"
+    tags:
+      - alphabet/cherry_planks
+      - character/number_21
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_number_21"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_number_22:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTI1OGRlOTAyZTlmYzZmOGY4MDRjZWFhNTg3N2ExYzc5NjkzZWVhZTg2NWM5MGQ4MzRiY2NjNzFiYWY4M2E0MiJ9fX0="
+    name: "&7Cherry Planks 22"
+    tags:
+      - alphabet/cherry_planks
+      - character/number_22
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_number_22"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_number_23:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzAyYzBiY2VkZTQ4ZTJjNzVlMzMwYTIzNGQwY2EyYjRjYWU4ODJmN2E4OWFjNWY1Yzk5ZWRiM2JhNWQ1NDVhMiJ9fX0="
+    name: "&7Cherry Planks 23"
+    tags:
+      - alphabet/cherry_planks
+      - character/number_23
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_number_23"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_number_24:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDQwOTMxNWE5ZTFiN2EwY2U0ZjRlMzE1YTllODA0M2RkNmViMDkxNmFlODIzZmFjMGRkMzExNzg0ODRlYjQ5YiJ9fX0="
+    name: "&7Cherry Planks 24"
+    tags:
+      - alphabet/cherry_planks
+      - character/number_24
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_number_24"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_number_25:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzQ0MjBiODAwN2YyYjJkODI0N2RjZmI1NzBlYTY1N2I0MmE5NDMwZWEwYzIxZGFlN2Q1Njk5ZDY5YTk4NmUwMSJ9fX0="
+    name: "&7Cherry Planks 25"
+    tags:
+      - alphabet/cherry_planks
+      - character/number_25
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_number_25"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_number_26:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTNiYTZmNTU4Y2M4ZGEyZWZiNmViOGU1MjIzODY2OTA1YzIzZDg2YzkyNWI3MWJlOTA2NTYxYWNjN2FlNzRjOSJ9fX0="
+    name: "&7Cherry Planks 26"
+    tags:
+      - alphabet/cherry_planks
+      - character/number_26
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_number_26"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_number_27:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYWU5ZDNiNDc2ZDBlMzAzZjIwMDMxZmI3MjA5NzQ4YTQyNjdlZTMyMDNmNjU5ODY1ODQyZDI3YTc1NmJlOTM2OCJ9fX0="
+    name: "&7Cherry Planks 27"
+    tags:
+      - alphabet/cherry_planks
+      - character/number_27
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_number_27"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_number_28:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjhiOTM5NjdmMjE1YTBjNzc3YzQ2OTA0NDU4YzRlYzU0NjRlMDg3Y2QzNGQwNzkyNTE5Yjg4OGVmNmIwNDNmIn19fQ=="
+    name: "&7Cherry Planks 28"
+    tags:
+      - alphabet/cherry_planks
+      - character/number_28
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_number_28"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_number_29:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTIyMzM2YjFjNDM1NzBhZjUwNGQzZjFkYTY1MzA1NjBmNzE3ODE3ZWU2ZTZkZWI3MTFlMzczOTJmMjBmOGRkIn19fQ=="
+    name: "&7Cherry Planks 29"
+    tags:
+      - alphabet/cherry_planks
+      - character/number_29
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_number_29"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_number_30:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvN2UyNTY3ZmQyZmQzMDc3ZjE4YzQxNjRmZjc3ODE0YWU3YTUyNTc4MDU2M2RlMTU2ZTRhNDFjZDlmYjRkODdmYSJ9fX0="
+    name: "&7Cherry Planks 30"
+    tags:
+      - alphabet/cherry_planks
+      - character/number_30
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_number_30"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_number_31:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGU4YzU4Y2JhMzQyNWUwNzhlZDQ2MTRhYzZhZmQ1YWRmMGYyOTIzNTZmNDYxMzYzMzZiODA5ZTQ3ZTA0YjUwYyJ9fX0="
+    name: "&7Cherry Planks 31"
+    tags:
+      - alphabet/cherry_planks
+      - character/number_31
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_number_31"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_number_100:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTM0Yzg3M2RmNDY1ZTIwMzQ5MThhMWUxZDkxNjc1Njc5YTU4MjQzOTJlZTMzZDI0OGY0ZDg1NzgzOWY0ZTUxIn19fQ=="
+    name: "&7Cherry Planks 100"
+    tags:
+      - alphabet/cherry_planks
+      - character/number_100
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_number_100"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_exclamation:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvY2I2OGM5Mjg4YWQ5ZjU5ZThhZDFmODU1NDFmY2QyNDUzMzg5ZDQxZjMyODM4NGYxMTI2ZDI2ODkxMWEwOTNlZiJ9fX0="
+    name: "&7Cherry Planks !"
+    tags:
+      - alphabet/cherry_planks
+      - character/exclamation
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_exclamation"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_reverse_exclamation:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjIyNzZiZTgwZjAxOGQxYWI1MDAzNTFlZjYzZTc1NDY3Njg0ZThmZDQ3MGE0YzZhOGMyNjBiOWY4OGM0NmEzYiJ9fX0="
+    name: "&7Cherry Planks ¡"
+    tags:
+      - alphabet/cherry_planks
+      - character/reverse_exclamation
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_reverse_exclamation"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_question:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjc0YzAwNDY3MjJiZWUzNmI1NDgxNzhjMTUzODNiOTAzYzMyYTk5OGE4Y2QyNmMyMjVkYzAxZmQxNWE0N2ExIn19fQ=="
+    name: "&7Cherry Planks ?"
+    tags:
+      - alphabet/cherry_planks
+      - character/question
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_question"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_reverse_question:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZWQ2Nzg3ZGYyOWE2ZDY4ZjA1NWIwOWZiODc0NWMyYmVjMjBhNGRjNGNkM2M5MzBiYTRiYWFjYzE0ZWFhYTliNiJ9fX0="
+    name: "&7Cherry Planks ¿"
+    tags:
+      - alphabet/cherry_planks
+      - character/reverse_question
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_reverse_question"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_period:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZWE1Y2E3OWQ3YjY0MzFjNGI5YzhhM2U4NDhmOTMwOTJjYzQ2OTFkZDVkOGMzMGU3NDhlYjc2OTIyNWY5ZjQ3YiJ9fX0="
+    name: "&7Cherry Planks ."
+    tags:
+      - alphabet/cherry_planks
+      - character/period
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_period"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_comma:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTgzZmIwMmVjOGU0MzI0ODgzNjQ3MTkxODVmMTUxMTY1OGMxMmJhYmIxZDViM2Y1MDlhYjNlODVhZjM0ODBhOSJ9fX0="
+    name: "&7Cherry Planks ,"
+    tags:
+      - alphabet/cherry_planks
+      - character/comma
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_comma"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_colon:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmJhOWRjZWViZDcwODkzMjU0OWU5NGNjNTczMGVmM2FiZTEwZTMwNGQ5YjA4NmY2Nzc1YjdlZDNmODFkYzc2In19fQ=="
+    name: "&7Cherry Planks :"
+    tags:
+      - alphabet/cherry_planks
+      - character/colon
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_colon"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_semicolon:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZGVjOWY5YjBiOWI3N2JlY2UyN2YyMTE5NTAyZjk5Y2RkMGUzNGUxZTNhN2YxZmI5MDk3OTY2OGZjNzQ1ZTZkNSJ9fX0="
+    name: "&7Cherry Planks ;"
+    tags:
+      - alphabet/cherry_planks
+      - character/semicolon
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_semicolon"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_apostrophe:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDQyNGVjYWU5YjJiODY2ZTlkNjk0NTllZDUxYmI4ZGVlOGUyNTAyOWUyZWZhNzE5YWY4ZmE1YjUwNGQ1MTAyNCJ9fX0="
+    name: "&7Cherry Planks '"
+    tags:
+      - alphabet/cherry_planks
+      - character/apostrophe
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_apostrophe"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_quote:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGMyNGYxMTgxNWNkN2YzOTdlNzhhYjE0YTQ2YmEwMjljMjE3OTE3ZWQ0YmM1OGY4MzdhMGE3ODMyODU4ZGViNSJ9fX0="
+    name: "&7Cherry Planks \""
+    tags:
+      - alphabet/cherry_planks
+      - character/quote
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_quote"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_ellipses:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZGMzMGM0MDZlOThmYWUyMzQ5NjdhYmE1MGRlNWQyNjUwNTczMDkyODU3YTBkNjkyMWVlODFlMjNiMzViMjg2MiJ9fX0="
+    name: "&7Cherry Planks ..."
+    tags:
+      - alphabet/cherry_planks
+      - character/ellipses
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_ellipses"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_ampersand:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMmQ1MGZjZTAyYWQ5ZWQ4MDMyZWU4ODk1MmYzNGNkNzI2ZGNkYTg2ZDIyZTk2NGQ1Zjk4MTI3ZDM4NDc1MDVkZSJ9fX0="
+    name: "&7Cherry Planks &"
+    tags:
+      - alphabet/cherry_planks
+      - character/ampersand
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_ampersand"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_at:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZmEyYmM1ZjQ4NDg3NTcwNjNjNWNlYzU4ZDg2MGI0YmEzYmFlYzMzYzBlMGZhNDQ2MTBhZDQ5OGIwMzdlMGFiOSJ9fX0="
+    name: "&7Cherry Planks @"
+    tags:
+      - alphabet/cherry_planks
+      - character/at
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_at"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_hash:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMmJlMjVkYzgxYzg2ZGNhMzQxNjY0NDllZDc5MDJhZWYzMjZiNzg5MjhhMTcxY2UwMTgzNDg4NmQyZThjNWZjYiJ9fX0="
+    name: "&7Cherry Planks #"
+    tags:
+      - alphabet/cherry_planks
+      - character/hash
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_hash"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_dollar:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTQzNDczYzFjMGE5OTg0NTAzOGI3NzNhZjI5NjY5OGZlNjgxYmEwNDIzNTZjZTdmNzgwZTdiMjE2Y2QxZTc4ZCJ9fX0="
+    name: "&7Cherry Planks $"
+    tags:
+      - alphabet/cherry_planks
+      - character/dollar
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_dollar"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_euro:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOWU2MGNmM2NiOGI5Mzk2NWEyNWEyNGFjODQ5OTIzY2M2MWJmYWE3MTcwMjU5OGY2MzhhOWVkNmZjNDhlOThlNiJ9fX0="
+    name: "&7Cherry Planks €"
+    tags:
+      - alphabet/cherry_planks
+      - character/euro
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_euro"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_pound:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOWUyMzY5ZTlkNGI5MDM2MzRkMjFhMWJkODg1YWExNzc2MTAwZmE4YTNjNGE5YTQzNmMxN2M4ZTk4ZTY4ZmI3MSJ9fX0="
+    name: "&7Cherry Planks £"
+    tags:
+      - alphabet/cherry_planks
+      - character/pound
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_pound"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_yen:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTBjOTViNWRkYzZmN2M0OWI5YmE5MDEzYjM3Y2NmZTBhMzkzMjc4ZWMyNzdiOTRlZjY4MDUwODkwOGJiNzY0In19fQ=="
+    name: "&7Cherry Planks ¥"
+    tags:
+      - alphabet/cherry_planks
+      - character/yen
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_yen"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_percent:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNmRkNzc4ZDE3ZjliN2M2MDk2YTNmZjBjMDcwZDY0OWVlZGMyZGRlZGQ4OTI1YjlmYTY5ODM1MjIzYzAxNDI0ZSJ9fX0="
+    name: "&7Cherry Planks %"
+    tags:
+      - alphabet/cherry_planks
+      - character/percent
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_percent"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_plus:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzA0NWE5NDQ4ZDdlMzZiMTE0MzMzMzAyMGU3N2ZjY2QxM2UzYmUxYTI3ZDQwYWNjNWI4ODg3MWRmZTM0ZWExNiJ9fX0="
+    name: "&7Cherry Planks +"
+    tags:
+      - alphabet/cherry_planks
+      - character/plus
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_plus"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_minus:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTllZmU0NmE2ZjZmNjFiOWY4YjFmZmUwYWE1MWIyYjBjZmJkZTkyMThkNDNlMmViMDVhOGExYTA2MTQ5MDYxZSJ9fX0="
+    name: "&7Cherry Planks -"
+    tags:
+      - alphabet/cherry_planks
+      - character/minus
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_minus"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_equals:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWRkMDM0ZDg3ZGEwNTJmNWM0NmYwYWUyZDRkMjk0MDI1YjFkZGYxYzJhMGFiZWNjYWJjYWE5MjNjZjFmMjlmNiJ9fX0="
+    name: "&7Cherry Planks ="
+    tags:
+      - alphabet/cherry_planks
+      - character/equals
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_equals"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_slash:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzM4YmQzZDdhNTA0M2EyZjMzYzQ5ZmJlNGU4MWZmNzM3NzE5ZTBhZmU2OWNjNDk2M2UzMmIzYTQ4YTEyMjJjOCJ9fX0="
+    name: "&7Cherry Planks /"
+    tags:
+      - alphabet/cherry_planks
+      - character/slash
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_slash"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_backslash:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjZmYzc5YTZhY2VhMmU4YmUzOWIyOTlmNTAxZGU4NGQ0ZWQ3ZGJhN2I4ODc5MGVlOGY3YzkzOGMwNzRjZTFmNiJ9fX0="
+    name: "&7Cherry Planks \\"
+    tags:
+      - alphabet/cherry_planks
+      - character/backslash
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_backslash"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_underscore:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzQ5N2QwNTk4OTM0NTQ1NWQzMTBmM2Q2ZTY3MmQ4N2M1YTYwMzBiMGQ1Yjk2M2E0NTM4OGY5OTRmYmJkZmVkMCJ9fX0="
+    name: "&7Cherry Planks _"
+    tags:
+      - alphabet/cherry_planks
+      - character/underscore
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_underscore"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_heart:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOGJjMmI1MmUwMzE5YjU0OTIzNjE3MzhlMDY0NDkzMDU2ZTQ3ZWI5NjMzNDYwNDY5ZmM4YWJlOWM2ODU0NmE4MSJ9fX0="
+    name: "&7Cherry Planks ♥"
+    tags:
+      - alphabet/cherry_planks
+      - character/heart
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_heart"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_degree:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjA2YWQwNGUxNDE5MWFiMDg2NDcxYjk5YzQ1ZTczMTQ4MTkwN2ZjMTk2MTI4NjQ2YTFmOGMyYzZiY2M3NmRlNiJ9fX0="
+    name: "&7Cherry Planks °"
+    tags:
+      - alphabet/cherry_planks
+      - character/degree
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_degree"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_checkmark:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDQ5NzJlODkyNWY3OWFhZTcyZWI5ZjYyY2FmOGExNjFhMzg5MWI1MWJiNGZiZDRmMWY0YmVjNWNiNjA1YmVjNSJ9fX0="
+    name: "&7Cherry Planks ✓"
+    tags:
+      - alphabet/cherry_planks
+      - character/checkmark
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_checkmark"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_note:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNWNlMjIzMWVkMTM5OTIzZWUzZGY4YzM0NzJjM2Q4OGNkNzQ0NDFhN2NiNjcyNzUxNWM4Nzg0ZjNlYWZhN2NjNiJ9fX0="
+    name: "&7Cherry Planks ♪"
+    tags:
+      - alphabet/cherry_planks
+      - character/note
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_note"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_paren_open:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvN2VhZTRlOGJmNTk0MWY0MjRkNGJiNThkMzY1NjIwNWU0OWY3N2Y1ZWVkYjc3OGNiNTc0MmQwMmFkM2U3NTE5ZSJ9fX0="
+    name: "&7Cherry Planks ("
+    tags:
+      - alphabet/cherry_planks
+      - character/paren_open
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_paren_open"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_paren_close:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDM5NTY3ZDI0ZGQ0ZTU1ZGVjYWNiNmQzZWQ0ZTliNDc0MDYzYmZhNjNjYWJmNGQxNTA4Y2U1OWQ0NjI3YmRkNCJ9fX0="
+    name: "&7Cherry Planks )"
+    tags:
+      - alphabet/cherry_planks
+      - character/paren_close
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_paren_close"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_bracket_open:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOWMyNTM3ODRlOTMxNWU0YjJjYWEyMmViZTI3MTk5MmIwYjEyMTlkMjMyNGMyZDcwNzE2MzQzNzlhMDExMDI3In19fQ=="
+    name: "&7Cherry Planks ["
+    tags:
+      - alphabet/cherry_planks
+      - character/bracket_open
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_bracket_open"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_bracket_close:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODkxNGEzYzhhZGE4MjhkZDQxNWQ3MWZkY2U3MDg1ZDQ4N2FhNzZjMmQ4MGFjOGNmMGQxZmE3ZDU1OTk2N2M1NSJ9fX0="
+    name: "&7Cherry Planks ]"
+    tags:
+      - alphabet/cherry_planks
+      - character/bracket_close
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_bracket_close"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_brace_open:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODVmODNkNDUwNDlhMDc1ZWI1NmVkZTNhNDI3NGFhMTZiZDQ5OWEzMmIxMTk5NzBiYTAxOGM3ZjAyMjEyNGRjMSJ9fX0="
+    name: "&7Cherry Planks {"
+    tags:
+      - alphabet/cherry_planks
+      - character/brace_open
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_brace_open"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_brace_close:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjNhMDUwNDIxOTA4MTFkMjk2YmFhYTlkYTZmNTc5N2YzOGNhZjhkM2EwZmFlYTg4ZGU0YmRiMzhkY2YzMWRkMSJ9fX0="
+    name: "&7Cherry Planks }"
+    tags:
+      - alphabet/cherry_planks
+      - character/brace_close
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_brace_close"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_arrow_up:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzhhMjU4MDkzODFjY2I3MTI2YzBkZjVjM2QxOWM0MWFmNTM4YWFiY2FlMjc4MTM0M2IwMzI0YjFkZGUwNzhlMCJ9fX0="
+    name: "&7Cherry Planks ↑"
+    tags:
+      - alphabet/cherry_planks
+      - character/arrow_up
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_arrow_up"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_arrow_down:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzM5NDNjMTcxOTNjMDA0MDU0YWFjZWU5NmZjZWVjZDQ5OGY1MTc4YzY3ODYzOWRmNjdiOTRkYTVhNjY0NDlhMSJ9fX0="
+    name: "&7Cherry Planks ↓"
+    tags:
+      - alphabet/cherry_planks
+      - character/arrow_down
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_arrow_down"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_arrow_left:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTI4YjhjZjQwNWVhZjYwNmEwMjEwZjAzMDNiMDEzMTc5ZjhmMTJlYWE5NTgyNDEyOWViZWVmOWU0NGI2ODIzMCJ9fX0="
+    name: "&7Cherry Planks ←"
+    tags:
+      - alphabet/cherry_planks
+      - character/arrow_left
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_arrow_left"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_arrow_right:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNWRjZGE2ZTNjNmRjYTdlOWI4YjZiYTNmZWJmNWNkMDkxN2Y5OTdiNjRiMmFlZjE4YzNmNzczNzY1ZTNhNTc5In19fQ=="
+    name: "&7Cherry Planks →"
+    tags:
+      - alphabet/cherry_planks
+      - character/arrow_right
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_arrow_right"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_arrow_left_up:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTU4YTNlNTYxN2I3ZmMxNmZmNDM2ZWRhYjU5OTYwMjc5ODZjNTg0ZGQ4ODM3YjYzMjYwNTc3YzMyNDIxYmQxYyJ9fX0="
+    name: "&7Cherry Planks ↖"
+    tags:
+      - alphabet/cherry_planks
+      - character/arrow_left_up
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_arrow_left_up"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_arrow_right_up:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvY2E0Yjk3YWM3YWFhOTk0MjdhOGMzYTExMDE5YTc5NzdlZmE5OTk4MDJlZjRiMWRkODc3NTU2NmMyOTAyZWZiMiJ9fX0="
+    name: "&7Cherry Planks ↗"
+    tags:
+      - alphabet/cherry_planks
+      - character/arrow_right_up
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_arrow_right_up"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_arrow_left_down:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmU3NzFkMDBiNzM4NGMzZGFjZDJkNjIzY2NiMzYyNDk3ZDg5NzlmN2NhYTUwNWE0NzcxMjc3N2EyZGQyYjU5ZSJ9fX0="
+    name: "&7Cherry Planks ↙"
+    tags:
+      - alphabet/cherry_planks
+      - character/arrow_left_down
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_arrow_left_down"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_arrow_right_down:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTQ2ZTQ2M2E4ODExMzVkZWI5ODk3ODE3YmI0YzBkNDAwMGViYmFkNmMxNzI2YTRiMjE0ZGUzMTc3M2ZmMTgyZSJ9fX0="
+    name: "&7Cherry Planks ↘"
+    tags:
+      - alphabet/cherry_planks
+      - character/arrow_right_down
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_arrow_right_down"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_forward:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDBiMWYyODRlNzllZTFmZGViOTI1MTY2ODNiYzdiNTlmOTU4MWEyMmEyMjg4M2Y0MDVjMGUzMDExODljYzFlMSJ9fX0="
+    name: "&7Cherry Planks ⏩"
+    tags:
+      - alphabet/cherry_planks
+      - character/forward
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_forward"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_forward_ii:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNmJlZmQ1MDJlZTljY2UxMWZjZjhjNTcxM2ZjMDJiNDk3ODdiZDlhYjhiMTBlZDEyOTA0M2Y2Y2E4ZjRlMjA3ZCJ9fX0="
+    name: "&7Cherry Planks ⏭"
+    tags:
+      - alphabet/cherry_planks
+      - character/forward_ii
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_forward_ii"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_backward:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzg4MjU4OThmNDBjZGVhOTUzZmVkMGFmZmNmM2EzZGU5M2JmZDJkYzY5OGExMjUwZGE4ZjljZWVmYTE5NDY3ZCJ9fX0="
+    name: "&7Cherry Planks ⏪"
+    tags:
+      - alphabet/cherry_planks
+      - character/backward
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_backward"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_backward_ii:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTAyYWMyNjE3NDgyZjYxYmFkMTk0ZjdiY2I4Yjk5MzQzMTA0MGViNDBiZDFiNjYzYWQ0MWU5OGYzYjMyNGQyNiJ9fX0="
+    name: "&7Cherry Planks ⏮"
+    tags:
+      - alphabet/cherry_planks
+      - character/backward_ii
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_backward_ii"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_refresh:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTVmOThkZWExOGEzNGIzYjkyOTQzYjg4ZjdjZGNjZDRkZjcyYjk5OTg2OGY4MWJmM2M0NzdiZWY0NzBmZDJmMSJ9fX0="
+    name: "&7Cherry Planks ↻"
+    tags:
+      - alphabet/cherry_planks
+      - character/refresh
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_refresh"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_letter_a_acute:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNWRlNTE5ZDRhN2VkMTVmZmI1MjIxMTIxODYxOTMxOTM2NGYzMjA2ZmU5ZjliZDY0ZjY0MTQ0Mzk4OWU4ZjZjZSJ9fX0="
+    name: "&7Cherry Planks Á"
+    tags:
+      - alphabet/cherry_planks
+      - character/letter_a_acute
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_letter_a_acute"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_letter_a_umlaut:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNWFhNTUxNjhmNWI2Y2YyODUxYzJhYTU5MTVjZDEyOWJmN2FiODRlYzIwN2QyMTM4MWY0Nzc4Njc0NzU5YWI0NiJ9fX0="
+    name: "&7Cherry Planks Ä"
+    tags:
+      - alphabet/cherry_planks
+      - character/letter_a_umlaut
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_letter_a_umlaut"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_letter_c_cedilla:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDI4MmJmNjZjYTBlNzI3NWY2MTAxZDlkYWFlMGI4N2Y2MjZkZTAxYTcwMzE2MDQxMzY1YTljZGE5YzYxN2E5NSJ9fX0="
+    name: "&7Cherry Planks Ç"
+    tags:
+      - alphabet/cherry_planks
+      - character/letter_c_cedilla
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_letter_c_cedilla"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_letter_e_acute:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYWNjZDY4MjE4MTQzNWQ1NDI5ZGIyMmQ2MjViYjYwODQ0NjBlMjhmZmNhYmFjZWY2NTg2OWU5YzE5MGNlMjUzYyJ9fX0="
+    name: "&7Cherry Planks É"
+    tags:
+      - alphabet/cherry_planks
+      - character/letter_e_acute
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_letter_e_acute"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_letter_i_acute:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDExMjM0ZTE5NTYwY2E2MzM2ZTAxOGUxNjE1MmY5MTQ3MzVhNmE5YmVlOTFjOGVmOTJjZjQ5ZGNlYzA4NWUwZiJ9fX0="
+    name: "&7Cherry Planks Í"
+    tags:
+      - alphabet/cherry_planks
+      - character/letter_i_acute
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_letter_i_acute"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_letter_n_tilde:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYWE1ZDgzOGUwNzE2ODQyYjBhMzcxNzI3YWFhZDE1NDZlN2NiOGNlOGMxMDc5NGExZjQzYTZmNDBjNjYwYTRiYSJ9fX0="
+    name: "&7Cherry Planks Ñ"
+    tags:
+      - alphabet/cherry_planks
+      - character/letter_n_tilde
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_letter_n_tilde"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_letter_o_acute:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNWI0MWJmYTQyNjRlYjQzNDRhZWZlNzJlY2Y4NTQzNDlkZGEwZGEzNzFmMGI3OTZhZTQxNTBkM2RkYzRhYTAzNiJ9fX0="
+    name: "&7Cherry Planks Ó"
+    tags:
+      - alphabet/cherry_planks
+      - character/letter_o_acute
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_letter_o_acute"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_letter_o_umlaut:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNmM3MTVhNGUyZDE4NGE4NjQxZDdmMTZiNmI4YWJhMDA3Nzc5NGM1NzlkYTI5NjQ0MjUxZTlhMzJlMWFiNDkxNCJ9fX0="
+    name: "&7Cherry Planks Ö"
+    tags:
+      - alphabet/cherry_planks
+      - character/letter_o_umlaut
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_letter_o_umlaut"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_letter_u_acute:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzdmZjQ2MDcxMzNlNTY5Yzc4OGJkYThlNTA3ZTRjYzNlZmZlMDRhY2EyZjQ1MmZkYjc4NzJlOGQ1NzA4ODI0MSJ9fX0="
+    name: "&7Cherry Planks Ú"
+    tags:
+      - alphabet/cherry_planks
+      - character/letter_u_acute
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_letter_u_acute"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_letter_u_umlaut:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOThlNTIyNTE2ZTMxYTkxN2FhNmEwNDUxNDEwYTUwNTc2YTkzNDMwNWUyY2Y3ZmZiZTIyZTZhZmQ1OGQ4MmI0YSJ9fX0="
+    name: "&7Cherry Planks Ü"
+    tags:
+      - alphabet/cherry_planks
+      - character/letter_u_umlaut
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_letter_u_umlaut"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_greek_alpha:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWY2NmQzNGVkMWVmNjM3NDkxZmEwMTA2ZDc2OGQzNWYyOThiODM4NDIxNGNiZmQ3YWVmZGExODFlYjE4NjJkOCJ9fX0="
+    name: "&7Cherry Planks α"
+    tags:
+      - alphabet/cherry_planks
+      - character/greek_alpha
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_greek_alpha"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_greek_lambda:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDNkOGNjNDM0ZDZkMTYzMjAzYjY1ZWZiM2JlNzIwNDBjN2Q0MDY3Y2UxMzM2MjllNDUzYThkY2U0OWZhMDVlZCJ9fX0="
+    name: "&7Cherry Planks λ"
+    tags:
+      - alphabet/cherry_planks
+      - character/greek_lambda
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_greek_lambda"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_greek_pi:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvM2I2OTViMWMyNDI1ODk4Nzg2MTNiMjk1YzQ0NjI3NDZlMGU0MTMxYmMxZTFlODYzZDg5YzI1ODA1NDZmMzUxZCJ9fX0="
+    name: "&7Cherry Planks π"
+    tags:
+      - alphabet/cherry_planks
+      - character/greek_pi
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_greek_pi"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_greek_omega:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjYzZWIwMDJiMTYwY2YyMzc2NWRiOWI3MWY5ZDk1YzQzMmFmYTUwZmQzNDc4MGE1OGRiNjhhZTA0MDM5ZjIwNCJ9fX0="
+    name: "&7Cherry Planks Ω"
+    tags:
+      - alphabet/cherry_planks
+      - character/greek_omega
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_greek_omega"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_greek_sigma:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYWUwZmMyMDRiZTUyMjAwYWZhMmY2NzVkM2YwYjkxN2MzNzJiNTY3NmY3MzdhNGVjYTI3NTFjZjYyZjYwNTk4ZiJ9fX0="
+    name: "&7Cherry Planks ∑"
+    tags:
+      - alphabet/cherry_planks
+      - character/greek_sigma
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_greek_sigma"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_cyrillic_yo:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzIwNjE3N2Q5ZGE2ZGI4ZjY4MjY4OWQzNDI3MmNmZjk3YzA5NDhlNWE3YWMwMGIwMTg3NWJjZTk2NmQ3MjU1ZCJ9fX0="
+    name: "&7Cherry Planks Ё"
+    tags:
+      - alphabet/cherry_planks
+      - character/cyrillic_yo
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_cyrillic_yo"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_cyrillic_be:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjczMzQ1ZGZlMGE0MmZhNjcwYjA2MDI2YjgzN2I4MWFiZTA2Yzg2ZTc2MjVhYjEyM2I3NzE1ZjAyMGZiMjJmMCJ9fX0="
+    name: "&7Cherry Planks Б"
+    tags:
+      - alphabet/cherry_planks
+      - character/cyrillic_be
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_cyrillic_be"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_cyrillic_ge:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTM2NzE5MzkwZDY0ZTZhNmNlODRiZTJmMTg1MThiYjkyMmIyY2NhZDBmMTNhZWU5MjIyNGJmYWFhMGMxN2ZjNSJ9fX0="
+    name: "&7Cherry Planks Г"
+    tags:
+      - alphabet/cherry_planks
+      - character/cyrillic_ge
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_cyrillic_ge"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_cyrillic_de:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZGVlNDc2NDY1MGM3YTdiMGQ1ZDFmMWFkYTE0MTNjZjNkMjIzZDMwZDZmZWVhYTVjMWZkMjkzOTk0NzBhMDc4YSJ9fX0="
+    name: "&7Cherry Planks Д"
+    tags:
+      - alphabet/cherry_planks
+      - character/cyrillic_de
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_cyrillic_de"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_cyrillic_zhe:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzliMmM1ZjVkMzk3NDc1NDA2YTllZjRkYzA0OTliNzVjMjVhMDRiYjNlMTExYTA0ZmRjODk5MDU4OTMxNWEzOCJ9fX0="
+    name: "&7Cherry Planks Ж"
+    tags:
+      - alphabet/cherry_planks
+      - character/cyrillic_zhe
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_cyrillic_zhe"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_cyrillic_ze:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOWI1ZjAzNDAyMmY2ZGU3NDkwMGFiZDE1ZTlmYmM1YjA0NTY3MzRkZmVlZjJkYzE3MTY1ZGNjMWRkMjE3NjAxNCJ9fX0="
+    name: "&7Cherry Planks З"
+    tags:
+      - alphabet/cherry_planks
+      - character/cyrillic_ze
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_cyrillic_ze"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_cyrillic_i:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjk5NzM2YTUwYzFkNGZlMGQzYTBjMWJhZTFlZmQ4NzhjNmI3OGVkMzA1NGM1MTI4NGY5ODM4MDgyN2YwZWM3MCJ9fX0="
+    name: "&7Cherry Planks И"
+    tags:
+      - alphabet/cherry_planks
+      - character/cyrillic_i
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_cyrillic_i"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_cyrillic_short_i:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOWQ1MzliMzBiYTVmYWE2NDk0YTAzZTlkOTA5NTY5ODRjYThjZDRmZmZlMGRkZjRmYmMzNzVhMDgxOGMyYjg1MiJ9fX0="
+    name: "&7Cherry Planks Й"
+    tags:
+      - alphabet/cherry_planks
+      - character/cyrillic_short_i
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_cyrillic_short_i"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_cyrillic_el:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDcwYzlhODdmNmQxZDcxZGI3MmFjZjllYjJjYTM2NzRlZDIyZWNkNDc2NWFhN2M3YzFiNjZiOWIzNGM3YjBjYyJ9fX0="
+    name: "&7Cherry Planks Л"
+    tags:
+      - alphabet/cherry_planks
+      - character/cyrillic_el
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_cyrillic_el"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_cyrillic_pe:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzQ3YTg0Y2NlMGZkOGFiZDIxZWFiNjA5OTc2MWFkZTY2ZGE1NjAzNDhlZjUyMGM4N2M2YjEzYzVjODM2Mzc2ZiJ9fX0="
+    name: "&7Cherry Planks П"
+    tags:
+      - alphabet/cherry_planks
+      - character/cyrillic_pe
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_cyrillic_pe"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_cyrillic_u:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjc1YTc1OTZhN2Q0NzdkYTEwMzM4YzAwODQzOTEwZTJkMzhiYTM2YzkxYzY1ODFkYzJjZDNhNTdiMDI1NjM4ZSJ9fX0="
+    name: "&7Cherry Planks У"
+    tags:
+      - alphabet/cherry_planks
+      - character/cyrillic_u
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_cyrillic_u"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_cyrillic_ef:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMmY0OTg3MDM1MDcxMzNmY2YzMTQ3YTllNGUwZjVlNTMyYTNlM2QwNWIyN2QyZjNjN2VlOGMyMDI3ODYxYmUxMyJ9fX0="
+    name: "&7Cherry Planks Ф"
+    tags:
+      - alphabet/cherry_planks
+      - character/cyrillic_ef
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_cyrillic_ef"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_cyrillic_tse:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWEyZDQzNjFiMDA2Y2M2NTg4ZTQyOGQ0ZGU4NzRhYTQ4Njc2MmNiZDFhNmIwZGQxMGJlZDE5ZTUxMGVlNmJiYSJ9fX0="
+    name: "&7Cherry Planks Ц"
+    tags:
+      - alphabet/cherry_planks
+      - character/cyrillic_tse
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_cyrillic_tse"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_cyrillic_che:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTJmODg4Mjc0MWFhOGIwMzgyODRlNjJjZTBhODM0MDliOTBiN2FjMGE5YTI0OWU2MTVlNjViMDMyMmE5Zjg3MyJ9fX0="
+    name: "&7Cherry Planks Ч"
+    tags:
+      - alphabet/cherry_planks
+      - character/cyrillic_che
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_cyrillic_che"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_cyrillic_sha:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTRkMTg0NzY2YTJlYmY5MDhkYzE3YjdjYTU5ZDI1NWY4Nzc1NjgxNjk0MDI5ODE2ODgyMWI0NTdlMDM3NWUwZSJ9fX0="
+    name: "&7Cherry Planks Ш"
+    tags:
+      - alphabet/cherry_planks
+      - character/cyrillic_sha
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_cyrillic_sha"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_cyrillic_shcha:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOGRiZGQ1NjhhZTI0ZjNhY2MyZWM0Mzg2MGVmYjE4ODVkNTkzYWQ5OWYyNTU0ODBhNmRmMDU4MzI0MzAzZTk2MSJ9fX0="
+    name: "&7Cherry Planks Щ"
+    tags:
+      - alphabet/cherry_planks
+      - character/cyrillic_shcha
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_cyrillic_shcha"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_cyrillic_hard:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjcyYTRiNDEzNDg1OWUxYTNmMzI5ZTY0MjIxYzY1ZWVhODhlZTE3MGJkZDQ0MzUzZmVkNjdiYTU5ZWYxY2ExNSJ9fX0="
+    name: "&7Cherry Planks Ъ"
+    tags:
+      - alphabet/cherry_planks
+      - character/cyrillic_hard
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_cyrillic_hard"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_cyrillic_yeru:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNWQ4NTA2YWIxNmU5NWQzYzY3ZGY3ZmI3Yjk2NTczZjZjMDVlNGY4NDgyMWNkMjgwNDk4MWRmNWQ4YmVhMzA5OSJ9fX0="
+    name: "&7Cherry Planks Ы"
+    tags:
+      - alphabet/cherry_planks
+      - character/cyrillic_yeru
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_cyrillic_yeru"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_cyrillic_soft:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvY2QyZTI1ZTYxN2U5ODE4ZGUyZjBhNzUwOGQ4MjE2OWQ1NDU0OGQyOTcyZDgxZjk2MDU3YWQ3NzA4ZmFhMzU1NyJ9fX0="
+    name: "&7Cherry Planks Ь"
+    tags:
+      - alphabet/cherry_planks
+      - character/cyrillic_soft
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_cyrillic_soft"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_cyrillic_e:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYThhOTcyNDZhY2FlNjEyYWZhNGY5MWU3NjQ3M2QyMTQ3YmE1YzY5ODA3OTgwN2FmOTg1OWQzOTU5YWFlYmZjMCJ9fX0="
+    name: "&7Cherry Planks Э"
+    tags:
+      - alphabet/cherry_planks
+      - character/cyrillic_e
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_cyrillic_e"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_cyrillic_yu:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTdiMTgzZTMzYjgzMDgxYjVhYWNiNGNjY2YyZjQ5OGM3ZmZhMTdiMmQ1YTM1ZmIwZTdkY2E4ZmIyYjQyOWFkOCJ9fX0="
+    name: "&7Cherry Planks Ю"
+    tags:
+      - alphabet/cherry_planks
+      - character/cyrillic_yu
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_cyrillic_yu"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_cyrillic_ya:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTcxMGRkNDUzYzQwZWU4NmFiMjMxZmE0OGI3ZDAzZjBjMzE5MTU0NWMyYmY1NzEyNWFmMzI2ZmMxZDg2NDIwMyJ9fX0="
+    name: "&7Cherry Planks Я"
+    tags:
+      - alphabet/cherry_planks
+      - character/cyrillic_ya
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_cyrillic_ya"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_zodiac_aquarius:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjVmYmZjM2Q3ODUxZDdhMmNhMjJhZGEzYzRhZmJmZjE2ZTljNjY4NjFkMjlhYTBmYjUzY2FhYjkxMTQxOTgwYSJ9fX0="
+    name: "&7Cherry Planks ♒"
+    tags:
+      - alphabet/cherry_planks
+      - character/zodiac_aquarius
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_zodiac_aquarius"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_zodiac_aries:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDhhZWM0MDNhZmIxY2Q1MjQ4MDFmZGY2ODlkYTY2ZmFmNzBiZWQwYjgwNzEyMzhlNTBiYjI3NGU2NzNkMjk4MyJ9fX0="
+    name: "&7Cherry Planks ♈"
+    tags:
+      - alphabet/cherry_planks
+      - character/zodiac_aries
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_zodiac_aries"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_zodiac_cancer:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDQ0ZmRjZWU3MjhkYjc4N2I5NTAxODM1ZjZjZGEwMjY1YTJiMWY1YjIyZjE5N2ZkZmJhZDhmZTRlNjI1MmM3MSJ9fX0="
+    name: "&7Cherry Planks ♋"
+    tags:
+      - alphabet/cherry_planks
+      - character/zodiac_cancer
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_zodiac_cancer"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_zodiac_gemini:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYWZhYzUyNmJkYWFjYzRiNTZkOWIxMGFmMWEyMzdiNTdlZmQyZDBkZjllOGNhNzVkZjZhN2M5M2QzNzk3ZDAyNCJ9fX0="
+    name: "&7Cherry Planks ♊"
+    tags:
+      - alphabet/cherry_planks
+      - character/zodiac_gemini
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_zodiac_gemini"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_zodiac_leo:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvN2ExZjg1MjU0ZTczN2MxYTk4NTJhNTE1Yjk3MTEwMjViZGFlNTJmNDMzNTg4ZTYzMGZmN2E3YWY2ZTVhODYzMSJ9fX0="
+    name: "&7Cherry Planks ♌"
+    tags:
+      - alphabet/cherry_planks
+      - character/zodiac_leo
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_zodiac_leo"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_zodiac_libra:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODBiOGZjNzk3NmFkNTliY2Y2OTVmNWVjNzM2ZDI2ZTQ0NTBlOWQ0ZDY0YWEwMjY3MjIwNTA5NjM2OTcwNzk3MiJ9fX0="
+    name: "&7Cherry Planks ♎"
+    tags:
+      - alphabet/cherry_planks
+      - character/zodiac_libra
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_zodiac_libra"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_zodiac_pisces:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTBiNTI3MzMwZWFiMTZlZWUzMmFmY2ViNmE2MDAzZGQ2NDk0YTkxNGNmOTI4NGIzYTk4ZjE0YTMxMDM4NWIyMCJ9fX0="
+    name: "&7Cherry Planks ♓"
+    tags:
+      - alphabet/cherry_planks
+      - character/zodiac_pisces
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_zodiac_pisces"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_zodiac_sagittarius:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDI0MTg0NmI4NTRlZTU3ZmM4YTA2MWU3NmJjN2VhMjI3MTVlY2U5Yzg4M2NjZGJlNjA3OGQyNjg3ODQxYzE0NyJ9fX0="
+    name: "&7Cherry Planks ♐"
+    tags:
+      - alphabet/cherry_planks
+      - character/zodiac_sagittarius
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_zodiac_sagittarius"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_zodiac_scorpio:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjQxNWRiOTdmZjkxNDYxOWM1MGVlMDM4NWM3M2M3NzZiM2FmZjNmZmQ3MjBkYjY3Mzg4ODMzZWQxZTVhZDU5NiJ9fX0="
+    name: "&7Cherry Planks ♏"
+    tags:
+      - alphabet/cherry_planks
+      - character/zodiac_scorpio
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_zodiac_scorpio"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_zodiac_taurus:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjc1MzBjOWY4MWU1MmZlMzAyMzQ2YTc4ZDIyMjhkNmE4N2Q1YzhlNGUxOTMzMGI2MDhmNjk2MjEyYWVjODY5NSJ9fX0="
+    name: "&7Cherry Planks ♉"
+    tags:
+      - alphabet/cherry_planks
+      - character/zodiac_taurus
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_zodiac_taurus"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_zodiac_virgo:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDc2NmRiZGM4ZmRlNDIyM2UwNDE4ZDBjZTJiNjZjMDBkNWJmMzAwMDQyODEyMjI5OWI4ZWMwOWM1MzQ4ZWU2MyJ9fX0="
+    name: "&7Cherry Planks ♍"
+    tags:
+      - alphabet/cherry_planks
+      - character/zodiac_virgo
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_zodiac_virgo"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_female:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZmUxZTFiYTUxMDM3MDdmZjc0OTdkYWQ5NjQwMDVjN2ZlZWQ0YmU3ZDY3MTE3NzkzY2Q4YzhkNjIxZjlmMjEyNCJ9fX0="
+    name: "&7Cherry Planks ♀"
+    tags:
+      - alphabet/cherry_planks
+      - character/female
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_female"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_male:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjZjZmNjNWFmZmE2NThjMzYyNDQ5MDU1YzIyN2EzNmNhNzVmNTJmYTliM2ZkMmZhYWMxNGU5MzA3M2U4NDk5ZCJ9fX0="
+    name: "&7Cherry Planks ♂"
+    tags:
+      - alphabet/cherry_planks
+      - character/male
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_male"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_galactic_a:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDI0ZTcyZDI2YTQxMDEzZTRlNGJiM2JkOWUyMzA0YTQzYTE3Y2M0ZTcxOTA5NTMwNjMwYWQyMjNlZWExNWRhIn19fQ=="
+    name: "&7Cherry Planks Galactic A"
+    tags:
+      - alphabet/cherry_planks
+      - character/galactic_a
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_galactic_a"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_galactic_b:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmEzZDlkM2QxMzBkYmY5OTY1MjVjODg0NmMzYTRmMjdlYTg4ZjlmYmJmYWY1MjhjYjEwMzUyNDBlNTU3ZmIyOCJ9fX0="
+    name: "&7Cherry Planks Galactic B"
+    tags:
+      - alphabet/cherry_planks
+      - character/galactic_b
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_galactic_b"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_galactic_c:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjZiOTM3YjNkNjhkMzMyN2FlOGNlZTZhYzU1YjI0MzQ0M2JjYzc4MzNmNDRjYWMyNWFhYmM5NGI3OTQwZWI4ZCJ9fX0="
+    name: "&7Cherry Planks Galactic C"
+    tags:
+      - alphabet/cherry_planks
+      - character/galactic_c
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_galactic_c"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_galactic_d:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmQ0ODg5M2QyMGQyOWVmZDRlYzk1MDE1YTdkYzU4MjQ3NWY3ZDllNjUyNjZkYjM4Y2IxYzNjM2UzYWYyNDcyZSJ9fX0="
+    name: "&7Cherry Planks Galactic D"
+    tags:
+      - alphabet/cherry_planks
+      - character/galactic_d
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_galactic_d"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_galactic_e:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMmE4YzAzY2UwZmE2Nzc0NjFiMDM3ZTUwMTgwYzdjNDFjYTk0NWQ5ZDIxNTgzNGE0MGI0YjQxNmU1ZWI3NmRiNCJ9fX0="
+    name: "&7Cherry Planks Galactic E"
+    tags:
+      - alphabet/cherry_planks
+      - character/galactic_e
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_galactic_e"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_galactic_f:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTQwOWE3NjBiYzMxOTViYTQxY2VhZjIyZDlkYmZlZWQyOWE1M2U0OGUzMzdmMzU2MTk3MGM0ZGViZWFhNGI4ZCJ9fX0="
+    name: "&7Cherry Planks Galactic F"
+    tags:
+      - alphabet/cherry_planks
+      - character/galactic_f
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_galactic_f"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_galactic_g:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDExNjEyMTBmZmEwYzhhYWE1ZGM3MDI5ZWY4YTAxMGY3OWZhOGMwZjMyZTlmZGMwN2UzMjI1MTRkOWVlYzY2MCJ9fX0="
+    name: "&7Cherry Planks Galactic G"
+    tags:
+      - alphabet/cherry_planks
+      - character/galactic_g
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_galactic_g"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_galactic_h:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDRiNDE0MDllNzA4MmJiOGNmZjY3OTdiNDQ4MWM0ZGZlZGUwYmY1ODljMDQyZjllYzQ4NjZlNzA5NTQyZDI5NSJ9fX0="
+    name: "&7Cherry Planks Galactic H"
+    tags:
+      - alphabet/cherry_planks
+      - character/galactic_h
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_galactic_h"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_galactic_i:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjhjODExNTRjZTRjODRiMDM3ZTI2ZTBlNDEzNTQ1MGQxZmMyMjEwNTUyNzA0Y2Q4NTc2ZmEwN2IwMmQ0YTkzMCJ9fX0="
+    name: "&7Cherry Planks Galactic I"
+    tags:
+      - alphabet/cherry_planks
+      - character/galactic_i
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_galactic_i"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_galactic_j:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTUxZDE0OGMwZTk3MGY3Nzc0ZWE3MTJlMDRmMGIxMjc4NGM3MWUyOTFjYWU1Y2JmOTcxNzFhNmE2MGNlZjI4NSJ9fX0="
+    name: "&7Cherry Planks Galactic J"
+    tags:
+      - alphabet/cherry_planks
+      - character/galactic_j
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_galactic_j"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_galactic_k:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNmJkNjE4NGM1Yjc0MWI5MjY3YjIwZmQ2ZWU1NDkzODgwMjU3M2M1N2I5Y2Y2ZWIyYzZkZDU0MTFhZTZhYmRmZiJ9fX0="
+    name: "&7Cherry Planks Galactic K"
+    tags:
+      - alphabet/cherry_planks
+      - character/galactic_k
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_galactic_k"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_galactic_l:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvN2I4NzVlZWQ1YzZhZjQzOGQ5YmJlMWJmMGE0MWFmYmE1ZGNkNWQ1NTNmNWQwOTBhNDNmOWQ5NmY4NTkxZDdiNCJ9fX0="
+    name: "&7Cherry Planks Galactic L"
+    tags:
+      - alphabet/cherry_planks
+      - character/galactic_l
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_galactic_l"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_galactic_m:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjliMDYwNTQwOWU3NDQxZTBlMzg3YmYxYWQ4ZWFmYmE5YTM4NTJiYmU1YmMyOWZjNGM3MjNhMmYxMTkxMWUzNSJ9fX0="
+    name: "&7Cherry Planks Galactic M"
+    tags:
+      - alphabet/cherry_planks
+      - character/galactic_m
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_galactic_m"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_galactic_n:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvM2Y0MzJjOGIzOTQ3MGQzZmE4ODZhYmIyYTViZWMzNWM2ZmJkYmU0Mzg3MDk4Y2I0NzQyMWQwZWJkMGQzZTNlNCJ9fX0="
+    name: "&7Cherry Planks Galactic N"
+    tags:
+      - alphabet/cherry_planks
+      - character/galactic_n
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_galactic_n"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_galactic_o:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzQyOTY3NWY3NTIyNzg2MWEwMTg3NmYyZWZiZjY0NzJmMzE2MmVlYzg4YmE1NzY2YThkMWQzY2E1OTI3NDU3OCJ9fX0="
+    name: "&7Cherry Planks Galactic O"
+    tags:
+      - alphabet/cherry_planks
+      - character/galactic_o
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_galactic_o"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_galactic_p:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTFiZWM4NzY2ZDBkYjcyY2Q1MjlmNmZkNDU3MjM4MTI2NjQxMTM0OTY2YWY5MTJiOTQ0MjJiNzhkMzYwZjYifX19"
+    name: "&7Cherry Planks Galactic P"
+    tags:
+      - alphabet/cherry_planks
+      - character/galactic_p
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_galactic_p"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_galactic_q:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjczZmZkOTk3YWY4NjFhYzI0NzM3ODM1YzBhZWU1NmE0MmZjOTk2MTNlMDRmNGRjZWE2NzU3MzYxYzFjMDE4ZSJ9fX0="
+    name: "&7Cherry Planks Galactic Q"
+    tags:
+      - alphabet/cherry_planks
+      - character/galactic_q
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_galactic_q"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_galactic_r:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWM5ODQ4YzcwZDBjYTZjODdjMjIzYjk1MDM1MDlkZmQwZDMyOTQ0MDY3MDM3NzM0NDE1ODdiMTRjNzQwYzFjOSJ9fX0="
+    name: "&7Cherry Planks Galactic R"
+    tags:
+      - alphabet/cherry_planks
+      - character/galactic_r
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_galactic_r"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_galactic_s:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTQ0OGUzYmM4MWNiNmIxODZjMmQ3OGRhNWFlZDc0MDA2YzA0Njk4ZDMwYjIxODAzZDM4ZmIzNTYxYThjNWEyMiJ9fX0="
+    name: "&7Cherry Planks Galactic S"
+    tags:
+      - alphabet/cherry_planks
+      - character/galactic_s
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_galactic_s"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_galactic_t:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTY5NjMzZWNmNzYxMmEyZDVhNzEyZDI0MjJlYTBiZTE4MDUwYTZiM2NmMjFiZGNmYTRjYTFjMTEyODNlMDk5NCJ9fX0="
+    name: "&7Cherry Planks Galactic T"
+    tags:
+      - alphabet/cherry_planks
+      - character/galactic_t
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_galactic_t"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_galactic_u:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTYwODdlZjFhNTFkZGM0OThkMDAzZGQ3NjJiODY0ZThmY2U2NTAwYjhjNmVlZGUyYWUzN2Q5MGViY2E1M2U3ZSJ9fX0="
+    name: "&7Cherry Planks Galactic U"
+    tags:
+      - alphabet/cherry_planks
+      - character/galactic_u
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_galactic_u"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_galactic_v:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTA0ZGFkNGFjODQ2MWYzZDQwOGY3MTQzZmQzMGNhZmJmNWFjODY0ZGUxYWZiNjVhZDkxMjI5MDFjZGZmMTI5MyJ9fX0="
+    name: "&7Cherry Planks Galactic V"
+    tags:
+      - alphabet/cherry_planks
+      - character/galactic_v
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_galactic_v"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_galactic_w:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTkyMTZmMzk1MTRmYjkwOGFlNWNhODNlNDk1ZDFlYTRlYTE2NGJlNzliOWUzNzc3MmMyYjFlOTQ0OThjMzlmYiJ9fX0="
+    name: "&7Cherry Planks Galactic W"
+    tags:
+      - alphabet/cherry_planks
+      - character/galactic_w
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_galactic_w"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_galactic_x:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNmIxOGIwZjc2N2NhN2ExODdlMmVlYThlMWI1ZjI0Y2E2MTBiODRkYTQ0MDg0NTVjNTc2NTZkMjU0NWMxZTMzYiJ9fX0="
+    name: "&7Cherry Planks Galactic X"
+    tags:
+      - alphabet/cherry_planks
+      - character/galactic_x
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_galactic_x"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_galactic_y:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjA5ZDc3OGRkY2I1N2YwOGFmYjcwNDQ4ZWQ1NTRlYTgwYzFmNjIzZDIzYWVjMWE0MWJlZWU3ZjM5MzU5ZWQ0In19fQ=="
+    name: "&7Cherry Planks Galactic Y"
+    tags:
+      - alphabet/cherry_planks
+      - character/galactic_y
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_galactic_y"
+          input: { head: "mini_cherry_planks" }
+  cherry_planks_galactic_z:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMmI1ZmZlNWFjZTY0YTIzMzNhNTMxMzcwZmIwYWY3YzBlYWU0ODA3ZjFkODFlNzg1ODQxMmJjZDc5ZjdkMTI3MiJ9fX0="
+    name: "&7Cherry Planks Galactic Z"
+    tags:
+      - alphabet/cherry_planks
+      - character/galactic_z
+      - wood
+    recipes:
+      stonecutter:
+        - id: "cherry_planks_galactic_z"
+          input: { head: "mini_cherry_planks" }

@@ -1,0 +1,959 @@
+# Candles - Decorative candle heads from vanilla block candles
+
+heads:
+  candle:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMmI3ZGJjZGE0NTRlYTdiMzhhYmM2NmNkZmVkOGU0ZTZjMDEyOTRmNmE5NjJlYzY2ZWYyMjY1MTBhZTM3MTcxYiJ9fX0="
+    name: "&fCandle"
+    properties:
+      - lightable
+    recipes:
+      craft:
+        shaped:
+          - id: "candle"
+            pattern:
+              - "CC"
+              - "CC"
+            key:
+              C: { material: "CANDLE" }
+
+  white_candle:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTlhYmUzMjQyZDRhN2YxNWE4OWQ0YzY4NTg3OTRkYTFlODBhOWFhNWY0NjNiOGM3ZTc5MjMzYTE3MTJlZDM2MCJ9fX0="
+    name: "&fWhite Candle"
+    tags: [color/white]
+    properties:
+      - lightable
+    recipes:
+      craft:
+        shaped:
+          - id: "white_candle"
+            pattern:
+              - "CC"
+              - "CC"
+            key:
+              C: { material: "WHITE_CANDLE" }
+
+  light_gray_candle:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMmQzZWY5NGY3NzAwMjZiZTJjMjgxN2QxOGQyYzlmMzI4NTE3MDUwYThkOTFmMWIzMWEyMjNhNGU2NzcwZDEwZSJ9fX0="
+    name: "&7Light Gray Candle"
+    tags: [color/light_gray]
+    properties:
+      - lightable
+    recipes:
+      craft:
+        shaped:
+          - id: "light_gray_candle"
+            pattern:
+              - "CC"
+              - "CC"
+            key:
+              C: { material: "LIGHT_GRAY_CANDLE" }
+
+  gray_candle:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzFmNmQwZDBmYjA4NjE0OTI0OTU3YjNmZDE5ZGM5NzQwMjY5MDE5ZTM3ZWFlNjQ2Y2FlZDEyMmY2MzFlNzAyZiJ9fX0="
+    name: "&8Gray Candle"
+    tags: [color/gray]
+    properties: [lightable]
+    recipes:
+      craft:
+        shaped:
+          - id: "gray_candle"
+            pattern:
+              - "CC"
+              - "CC"
+            key:
+              C: { material: "GRAY_CANDLE" }
+
+  black_candle:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzUwMjYyOGRjZGU1OWZjYmNmZDBkNWM5NmFiOWZjMmEzYzY0MmE3ZDcwYjM5Mjg5NTkzZGFhYmViZmRkNjY0MSJ9fX0="
+    name: "&0Black Candle"
+    tags: [color/black]
+    properties: [lightable]
+    recipes:
+      craft:
+        shaped:
+          - id: "black_candle"
+            pattern:
+              - "CC"
+              - "CC"
+            key:
+              C: { material: "BLACK_CANDLE" }
+
+  brown_candle:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTJhMTJlYjkzNDM5YjA0Mjk1NGQyNzlmZTNmNTFlNDliZGFjYTBmOTg2MjNjYjMxNzQwZmVlYjY1M2MwZWVhIn19fQ=="
+    name: "&6Brown Candle"
+    tags: [color/brown]
+    properties: [lightable]
+    recipes:
+      craft:
+        shaped:
+          - id: "brown_candle"
+            pattern:
+              - "CC"
+              - "CC"
+            key:
+              C: { material: "BROWN_CANDLE" }
+
+  red_candle:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjI2MmU3MDljNzlkNTM4MzI4MTUyOWQ0MDc0Yzk2N2ZhNDAzNDBmN2YyNmY5ODY3ZmFhZTkwZDM1MTc3NzQzZSJ9fX0="
+    name: "&cRed Candle"
+    tags: [color/red]
+    properties: [lightable]
+    recipes:
+      craft:
+        shaped:
+          - id: "red_candle"
+            pattern:
+              - "CC"
+              - "CC"
+            key:
+              C: { material: "RED_CANDLE" }
+
+  orange_candle:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjFlOGQ0ZDlmNWZiMWQ4OTM3ZjhjMzA1NmY1ZTllMDU4ZTAwZmMxY2VjMTgwNDVkNDAzYjRmZDIwN2I3ZTI4NCJ9fX0="
+    name: "&6Orange Candle"
+    tags: [color/orange]
+    properties: [lightable]
+    recipes:
+      craft:
+        shaped:
+          - id: "orange_candle"
+            pattern:
+              - "CC"
+              - "CC"
+            key:
+              C: { material: "ORANGE_CANDLE" }
+
+  yellow_candle:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzQ0NDUyY2I0Nzg3YjJjY2U5OGRiMjEwYzVhOGIxZjI5NDM4NTYwNDRmOGVkYWYwOGU1NDZmNzE1ODg1NWFiMSJ9fX0="
+    name: "&eYellow Candle"
+    tags: [color/yellow]
+    properties: [lightable]
+    recipes:
+      craft:
+        shaped:
+          - id: "yellow_candle"
+            pattern:
+              - "CC"
+              - "CC"
+            key:
+              C: { material: "YELLOW_CANDLE" }
+
+  lime_candle:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzU1MzU3OTMwNzU3NmNmMDljMjM5MTRlMTUzYTE5YmY3MGZmNzA1YjFlNDRjODg3NzMwODgzYmQyODkwMDdkMCJ9fX0="
+    name: "&aLime Candle"
+    tags: [color/lime]
+    properties: [lightable]
+    recipes:
+      craft:
+        shaped:
+          - id: "lime_candle"
+            pattern:
+              - "CC"
+              - "CC"
+            key:
+              C: { material: "LIME_CANDLE" }
+
+  green_candle:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGE3YmU5NjEzOTBjNzk0MTQ0MWEzZGU2ODRjNzBmZDk5ODJhODY5N2JhNmFmZWMyNGYwNWIzNDBhYTBmMjI5NyJ9fX0="
+    name: "&2Green Candle"
+    tags: [color/green]
+    properties: [lightable]
+    recipes:
+      craft:
+        shaped:
+          - id: "green_candle"
+            pattern:
+              - "CC"
+              - "CC"
+            key:
+              C: { material: "GREEN_CANDLE" }
+
+  cyan_candle:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDcxM2EyYTI3OGMzMDY0OTQyYzA5ZmEzZDUxNTI5ZDY5Yjg0ODA0ZGUxN2Q3NmQ4MzU2Mzg2ZWMxZmY2NmM4ZCJ9fX0="
+    name: "&3Cyan Candle"
+    tags: [color/cyan]
+    properties: [lightable]
+    recipes:
+      craft:
+        shaped:
+          - id: "cyan_candle"
+            pattern:
+              - "CC"
+              - "CC"
+            key:
+              C: { material: "CYAN_CANDLE" }
+
+  light_blue_candle:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWU4ZjNlNjhjZGY4NDcxNjhiNDFjMTlhMTM1OGUzMjY2MzBmZDY3ZTJjYjM4OTBmMDkwYmNiZjQ5NzNiYTJhZCJ9fX0="
+    name: "&bLight Blue Candle"
+    tags: [color/light_blue]
+    properties: [lightable]
+    recipes:
+      craft:
+        shaped:
+          - id: "light_blue_candle"
+            pattern:
+              - "CC"
+              - "CC"
+            key:
+              C: { material: "LIGHT_BLUE_CANDLE" }
+
+  blue_candle:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzZlZWJiOGIzZTRhNGZhMmYyMGYyYzNjNjc2NTk3NGVhMTQ0NjAwMWFmNzZjYjI1M2JlNWE1OTA3ZmM2NmM3OCJ9fX0="
+    name: "&9Blue Candle"
+    tags: [color/blue]
+    properties: [lightable]
+    recipes:
+      craft:
+        shaped:
+          - id: "blue_candle"
+            pattern:
+              - "CC"
+              - "CC"
+            key:
+              C: { material: "BLUE_CANDLE" }
+
+  purple_candle:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjY4YzQ4MDIyYmJjNGJlMDUzNmM1MWI2ZGQ0NjhlYmE5OTEwZTEzNDA5NDIyYjJjZGFkOTkxNWYzNGIxMGFjMCJ9fX0="
+    name: "&5Purple Candle"
+    tags: [color/purple]
+    properties: [lightable]
+    recipes:
+      craft:
+        shaped:
+          - id: "purple_candle"
+            pattern:
+              - "CC"
+              - "CC"
+            key:
+              C: { material: "PURPLE_CANDLE" }
+
+  magenta_candle:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjFiYmM5Zjk0ZTY2ZjhlZGI5YmE3Mjc2NmI0ODQyMzUyYmE2NDIyNDNhNjA5NWZiZGQ2MGEyZGFmZDU4ZDU0ZCJ9fX0="
+    name: "&dMagenta Candle"
+    tags: [color/magenta]
+    properties: [lightable]
+    recipes:
+      craft:
+        shaped:
+          - id: "magenta_candle"
+            pattern:
+              - "CC"
+              - "CC"
+            key:
+              C: { material: "MAGENTA_CANDLE" }
+
+  pink_candle:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTI3ZDYyYWZkMmVmODgyNTk1OTEzOWE5ZjNkODExYjgxNGE4OTY1ZjRkZWJlODk3ZmFjMmYzYjczYzExNTIzNiJ9fX0="
+    name: "&dPink Candle"
+    tags: [color/pink]
+    properties: [lightable]
+    recipes:
+      craft:
+        shaped:
+          - id: "pink_candle"
+            pattern:
+              - "CC"
+              - "CC"
+            key:
+              C: { material: "PINK_CANDLE" }
+
+  # ============================================
+  # COLORED CANDLE VARIANTS (Stonecutter from base candles)
+  # ============================================
+
+  # Black Candle variants
+  black_candle_1:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODAxMDFhZDAwOTFkYzYwMjk0ZTc0ODFlY2FlMDIxZTQ5OWIwMTU1Yjc1ZDBlMjQ0MWE4YWI5ZWE3NzcwYjQ4YSJ9fX0="
+    name: "&0Black Candle"
+    tags: [color/black]
+    properties: [lightable]
+    recipes:
+      stonecutter:
+        - id: "black_candle_1"
+          input: { head: "black_candle" }
+
+  black_candle_2:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZGFmYzRiMDQ1OTgzZTY4OTVjNWY0MDAyOGU5OTNkNTE2NzMyZTkzNmRlMTU4M2VjYmEzZjMyZmUxNWZjZjAzZiJ9fX0="
+    name: "&0Black Candle"
+    tags: [color/black]
+    properties: [lightable]
+    recipes:
+      stonecutter:
+        - id: "black_candle_2"
+          input: { head: "black_candle" }
+
+  black_candle_3:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTc5ZjU0MjI1MmMxNjQ3ZGU0MTU1OGE3NzJkNmM2MTIyZTA0ZjgyYTc3MWE3NzVjZmE3NjllYTNmMzJlNzk0In19fQ=="
+    name: "&0Black Candle"
+    tags: [color/black]
+    properties: [lightable]
+    recipes:
+      stonecutter:
+        - id: "black_candle_3"
+          input: { head: "black_candle" }
+
+  # Blue Candle variants
+  blue_candle_1:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMmQ4NTJlM2E3MzVhMjI3Y2FlNjQ4ZjIwNmExNWFiNTdjN2I5ZTQ2ODY2YTRjNzU2YjYyZjg5YjNhNTJlMWU5YyJ9fX0="
+    name: "&9Blue Candle"
+    tags: [color/blue]
+    properties: [lightable]
+    recipes:
+      stonecutter:
+        - id: "blue_candle_1"
+          input: { head: "blue_candle" }
+
+  blue_candle_2:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNmQ5NjQ3N2Y0MDUyYWZjMzZiZDg4MDg2NjQzOTYxZGU3OTg3OWYyNDgwZDIzZGYxODI2MjBhNmQwYzdiZjNjMCJ9fX0="
+    name: "&9Blue Candle"
+    tags: [color/blue]
+    properties: [lightable]
+    recipes:
+      stonecutter:
+        - id: "blue_candle_2"
+          input: { head: "blue_candle" }
+
+  blue_candle_3:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzlkNGRkYjU0MDNmYWNmMzVlYzNlMGI2MjA0MWM0NDZiOWQ2NzcxOWU3MTE5MTMyNzI5YTc2N2RjNGVlMSJ9fX0="
+    name: "&9Blue Candle"
+    tags: [color/blue]
+    properties: [lightable]
+    recipes:
+      stonecutter:
+        - id: "blue_candle_3"
+          input: { head: "blue_candle" }
+
+  blue_candle_4:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTlhNDg0ZjczN2RkNTlmMWE1NjViNDI3NzZmNTZjMzU3ZDc5OGY0NGM2M2U2YmFlZjExMmE0OTM0MjJkZCJ9fX0="
+    name: "&9Blue Candle"
+    tags: [color/blue]
+    properties: [lightable]
+    recipes:
+      stonecutter:
+        - id: "blue_candle_4"
+          input: { head: "blue_candle" }
+
+  blue_candle_5:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzdhMGQzZWQyNWEzOTRkMTZmMjBjMWVhMDkzM2EwM2I4NDM5NDgyNTZjZDk1NWY4YzY1NTI3MDI4OTJmYSJ9fX0="
+    name: "&9Blue Candle"
+    tags: [color/blue]
+    properties: [lightable]
+    recipes:
+      stonecutter:
+        - id: "blue_candle_5"
+          input: { head: "blue_candle" }
+
+  blue_candle_6:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzllNzg5ZmJlNDE5YjgyY2VjNmMyMGI3YTczNmY3YjFiMjA1ZDg3YWZmMzdiZTc3NmNmOWYzYTNhY2ZkOTI1YSJ9fX0="
+    name: "&9Blue Candle"
+    tags: [color/blue]
+    properties: [lightable]
+    recipes:
+      stonecutter:
+        - id: "blue_candle_6"
+          input: { head: "blue_candle" }
+
+  blue_candle_7:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDFjOTQ0OGU5MGUxZmZhMjhmYTcyNDM0YTAyNTUxZjI1NzRjNjhmZTZhN2FhOGE5OTVjZDE2OTcxYWE4YTMyMyJ9fX0="
+    name: "&9Blue Candle"
+    tags: [color/blue]
+    properties: [lightable]
+    recipes:
+      stonecutter:
+        - id: "blue_candle_7"
+          input: { head: "blue_candle" }
+
+  blue_candle_8:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTM5ODg2YTdhM2VlOTUyMjY4OTI1MmE1ZDg0OWNlMjM5OGE4OTg5OTE1NzMzMTk5MTZmYzVhYmMzNzM4ZjUifX19"
+    name: "&9Blue Candle"
+    tags: [color/blue]
+    properties: [lightable]
+    recipes:
+      stonecutter:
+        - id: "blue_candle_8"
+          input: { head: "blue_candle" }
+
+  # Brown Candle variants
+  brown_candle_1:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMmE2ZTJlZjVjZmQ1NzRmNGVlNmJkOGZlMDkwYTJlZjFhNmI1NjZlODM1NGQwYzQwM2NiNTJjMWE5MmExZCJ9fX0="
+    name: "&6Brown Candle"
+    tags: [color/brown]
+    properties: [lightable]
+    recipes:
+      stonecutter:
+        - id: "brown_candle_1"
+          input: { head: "brown_candle" }
+
+  brown_candle_2:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzE0MDlmNmQxZGY1NWZhNTlkNjI3ZWM2NWNlYTBhZWRiNDNiOTgyNDE2ZDVkOTliNzEyZTBmNDYwZmY3M2QzOCJ9fX0="
+    name: "&6Brown Candle"
+    tags: [color/brown]
+    properties: [lightable]
+    recipes:
+      stonecutter:
+        - id: "brown_candle_2"
+          input: { head: "brown_candle" }
+
+  brown_candle_3:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzU4Yjk1MTZmZjhjNDNhYzYzYWJlMzMwNWNmODkyYWI0MDg2YzIwMTk5ZGE1MTlhODQ4YjBkZGRmZjRkMTMzIn19fQ=="
+    name: "&6Brown Candle"
+    tags: [color/brown]
+    properties: [lightable]
+    recipes:
+      stonecutter:
+        - id: "brown_candle_3"
+          input: { head: "brown_candle" }
+
+  brown_candle_4:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDU2OWRiYTI2NTRiYzFjN2MyNGZhNmNhZDQ2NTE0NWNlZWY3NWYxMzA5YjMxMTdiYWQ1ZjY5ODk3M2IwNTE3MSJ9fX0="
+    name: "&6Brown Candle"
+    tags: [color/brown]
+    properties: [lightable]
+    recipes:
+      stonecutter:
+        - id: "brown_candle_4"
+          input: { head: "brown_candle" }
+
+  # Cyan Candle variants
+  cyan_candle_1:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzFmYWQzN2RhOTU2N2NmMjA1ODAyNzRhNzU2ODYzNDMxMWIwY2E2Y2U5MGZmZWE0MmU5NDkzN2Y3NTRjOGM0OCJ9fX0="
+    name: "&3Cyan Candle"
+    tags: [color/cyan]
+    properties: [lightable]
+    recipes:
+      stonecutter:
+        - id: "cyan_candle_1"
+          input: { head: "cyan_candle" }
+
+  cyan_candle_2:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzlkYzI2ZWJhYTI1NmNmYTAyNGM4ZmZiZDQxZGNjOGVkZDliZjE3YTEyODM3OTA2OTY3YjdhZjE5NGM3N2QzMiJ9fX0="
+    name: "&3Cyan Candle"
+    tags: [color/cyan]
+    properties: [lightable]
+    recipes:
+      stonecutter:
+        - id: "cyan_candle_2"
+          input: { head: "cyan_candle" }
+
+  # Gray Candle variants
+  gray_candle_1:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWMyNGM5NzBmMGUwNmFmODFiZDFiZGRjNTkzN2Q4MjRhMjExYjc4YjQzZDY1YzZmZDI1MmQ5OTljZDRmNTEzIn19fQ=="
+    name: "&8Gray Candle"
+    tags: [color/gray]
+    properties: [lightable]
+    recipes:
+      stonecutter:
+        - id: "gray_candle_1"
+          input: { head: "gray_candle" }
+
+  gray_candle_2:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDZkYTNkZTQzNjY1ZGRlN2ZjY2FkZWQ4NTBhMjc5NzMzYTk3N2U3ZDE1YmVmOTFmYzU3YzczZGQ5ZmIzNjQyIn19fQ=="
+    name: "&8Gray Candle"
+    tags: [color/gray]
+    properties: [lightable]
+    recipes:
+      stonecutter:
+        - id: "gray_candle_2"
+          input: { head: "gray_candle" }
+
+  gray_candle_3:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvN2VmM2E0YTQ1M2RhNzkyMDkzNzZjNjI2ZGVmNDIwYTZhNjEyMGIzYmYwOGY2MjFmOGJmOGI3NjU3ZTZjZWNmYiJ9fX0="
+    name: "&8Gray Candle"
+    tags: [color/gray]
+    properties: [lightable]
+    recipes:
+      stonecutter:
+        - id: "gray_candle_3"
+          input: { head: "gray_candle" }
+
+  gray_candle_4:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzcxNjViZTE5NTg3ZmZmODFkMjNiNmNkZTUwMWI3NmRiMDE5M2M5YmZiN2EzY2UxMWZkNzYxNzRjZTFmYzkifX19"
+    name: "&8Gray Candle"
+    tags: [color/gray]
+    properties: [lightable]
+    recipes:
+      stonecutter:
+        - id: "gray_candle_4"
+          input: { head: "gray_candle" }
+
+  gray_candle_5:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZGE2NjRhZGJmMzc1YjU4ZTk4NTQ5NDY5ZTljYjA0NWQxZDM2M2ZlZWVhNTYwODZjODQ0ZWQzY2E1OWZjMzYzNiJ9fX0="
+    name: "&8Gray Candle"
+    tags: [color/gray]
+    properties: [lightable]
+    recipes:
+      stonecutter:
+        - id: "gray_candle_5"
+          input: { head: "gray_candle" }
+
+  # Green Candle variants
+  green_candle_1:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjgzNzgyYzliN2RjZjgyYmJkZDg1MGRmMmZiZTY4ZTc2ZjYzNmU0YTY1Y2IzYTQxYTRhNDY3ZjJmMzc5N2ZlNSJ9fX0="
+    name: "&2Green Candle"
+    tags: [color/green]
+    properties: [lightable]
+    recipes:
+      stonecutter:
+        - id: "green_candle_1"
+          input: { head: "green_candle" }
+
+  green_candle_2:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzYyNGE5ZWRiZjg3ZDVlODQxYzE5NDFjMjM5ODk2MWMyMGY5NzhlNmJmMjcxNTJiMDdmN2U1Y2NiZjA0OTFhIn19fQ=="
+    name: "&2Green Candle"
+    tags: [color/green]
+    properties: [lightable]
+    recipes:
+      stonecutter:
+        - id: "green_candle_2"
+          input: { head: "green_candle" }
+
+  green_candle_3:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNWFjZWYwOWFjNzc3OGNmMWIxZjY4Y2MxMjg3MGQ5OTBjYWQ3Y2FiMWE3YmVkMzA2NjRkYTMzZmNhMTU0MiJ9fX0="
+    name: "&2Green Candle"
+    tags: [color/green]
+    properties: [lightable]
+    recipes:
+      stonecutter:
+        - id: "green_candle_3"
+          input: { head: "green_candle" }
+
+  green_candle_4:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjBiNmMyZjU2YTQwYWNhZWFjYjYyZjczNzg0ZDVjY2EyNDgxZTY5ZTIyM2UzODQ2OGI3NTUxMDIwZjM2MTdhIn19fQ=="
+    name: "&2Green Candle"
+    tags: [color/green]
+    properties: [lightable]
+    recipes:
+      stonecutter:
+        - id: "green_candle_4"
+          input: { head: "green_candle" }
+
+  green_candle_5:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmU4Mjk5NzM4NmZjMWNmNjQ4NDlhZGNlMjU1YTRmNzY2YmZkY2U4Mzk5NzM3YmJiYzk0ODA3YmRhM2QzIn19fQ=="
+    name: "&2Green Candle"
+    tags: [color/green]
+    properties: [lightable]
+    recipes:
+      stonecutter:
+        - id: "green_candle_5"
+          input: { head: "green_candle" }
+
+  green_candle_6:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDM1MmZkNTM1ZDZmYWE5MTk5ZGNhZDFhYzgxZmUxZTkxYWRiZjM5M2MyYTAzMWUyYzkwOGZmOGRhYTg2ZWMxZCJ9fX0="
+    name: "&2Green Candle"
+    tags: [color/green]
+    properties: [lightable]
+    recipes:
+      stonecutter:
+        - id: "green_candle_6"
+          input: { head: "green_candle" }
+
+  # Light Blue Candle variants
+  light_blue_candle_1:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDY2ZTI5ZjMxOTMzODY5MjJkZTRkNThmZjFiMzU4ZTYyZGI3NWYxYWU2N2E1YmY4ZDJjODc3MjUxNWU1ZTYzIn19fQ=="
+    name: "&bLight Blue Candle"
+    tags: [color/light_blue]
+    properties: [lightable]
+    recipes:
+      stonecutter:
+        - id: "light_blue_candle_1"
+          input: { head: "light_blue_candle" }
+
+  light_blue_candle_2:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjVhZmJjYzc0ZjRmMzk5YTJlYWJlNWY1ZjBkNDc2MjMwYmMwZDU0MGZlNWY3ZjMxOTViNGJhNWY2MGVmOTlhOSJ9fX0="
+    name: "&bLight Blue Candle"
+    tags: [color/light_blue]
+    properties: [lightable]
+    recipes:
+      stonecutter:
+        - id: "light_blue_candle_2"
+          input: { head: "light_blue_candle" }
+
+  light_blue_candle_3:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzM4ZjdiODlkZDViNDBkZjAyYzM1ZGVlZDQxZTg1Y2Q2NmVmN2YyNDM3ZTczOTZjYTcxZmVlMDg1N2RjOThkMCJ9fX0="
+    name: "&bLight Blue Candle"
+    tags: [color/light_blue]
+    properties: [lightable]
+    recipes:
+      stonecutter:
+        - id: "light_blue_candle_3"
+          input: { head: "light_blue_candle" }
+
+  light_blue_candle_4:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjg2NWRkNDYyZTRhZjMxMmI5NjY1MjllNjZkMjg3MzJiNDVhN2ZjOGVhM2FlMWNjNzM0NzQ4MDViOTQxNjc3In19fQ=="
+    name: "&bLight Blue Candle"
+    tags: [color/light_blue]
+    properties: [lightable]
+    recipes:
+      stonecutter:
+        - id: "light_blue_candle_4"
+          input: { head: "light_blue_candle" }
+
+  # Light Gray Candle variants
+  light_gray_candle_1:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTM1MmUzZjE5YzZiM2QxYjllNjFjOTUzZDg1NjI1M2YyNTNjYzZjOTc3NzJlY2JmZWZhZTJkN2Q2NGY5MjRkIn19fQ=="
+    name: "&7Light Gray Candle"
+    tags: [color/light_gray]
+    properties: [lightable]
+    recipes:
+      stonecutter:
+        - id: "light_gray_candle_1"
+          input: { head: "light_gray_candle" }
+
+  light_gray_candle_2:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWU3N2FkNTI1ZmJhODE0MzQ3MzNhZDU4NmQ5NTZhN2YzYjZjNjE5ZGM1MWIxNzQzNDE1MTAzNTNmYmE1MDExNSJ9fX0="
+    name: "&7Light Gray Candle"
+    tags: [color/light_gray]
+    properties: [lightable]
+    recipes:
+      stonecutter:
+        - id: "light_gray_candle_2"
+          input: { head: "light_gray_candle" }
+
+  light_gray_candle_3:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTM4OWNhOTM4NWQ3OGFhMWI4NzRmODkxYjE4N2UyZDg0YjllZWMzOWYyMDU4NGI0Njk3YjJmNzdkODVlNTY0MSJ9fX0="
+    name: "&7Light Gray Candle"
+    tags: [color/light_gray]
+    properties: [lightable]
+    recipes:
+      stonecutter:
+        - id: "light_gray_candle_3"
+          input: { head: "light_gray_candle" }
+
+  # Lime Candle variants
+  lime_candle_1:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTI5N2U4NjU1MGZjMmRjOTFjNDYxN2EzMzIyMGZiNmUxNDAyN2QzMWRlN2Y3YjI5YmRkNzJmODE1NDczODU2OCJ9fX0="
+    name: "&aLime Candle"
+    tags: [color/lime]
+    properties: [lightable]
+    recipes:
+      stonecutter:
+        - id: "lime_candle_1"
+          input: { head: "lime_candle" }
+
+  lime_candle_2:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvY2E2OTdjYjcxNWNjMDM4OTlmM2ZkN2UzYTM3ZWRlZWM2YjAyZGEyZGE0MTM0ZTgxMDBjZDU5OWU5YmFhMmM2YiJ9fX0="
+    name: "&aLime Candle"
+    tags: [color/lime]
+    properties: [lightable]
+    recipes:
+      stonecutter:
+        - id: "lime_candle_2"
+          input: { head: "lime_candle" }
+
+  # Magenta Candle variants
+  magenta_candle_1:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzVkYzZjYjNjZDZjZmRjZmU1ZTdiZDk3OGEyOWQxZjdkNDU5N2RkM2JlYjhlNjk0ZTQ5MjgwNjE5NTNlMzUifX19"
+    name: "&dMagenta Candle"
+    tags: [color/magenta]
+    properties: [lightable]
+    recipes:
+      stonecutter:
+        - id: "magenta_candle_1"
+          input: { head: "magenta_candle" }
+
+  magenta_candle_2:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOWJjMjk3MmI2MGJlZmVkOWVkZWMzYzY2ZGQzNzc0OTMzMzg5NTU5N2JlYWUwMDZkZDNkYjFkMjE3NjdhZDZlMCJ9fX0="
+    name: "&dMagenta Candle"
+    tags: [color/magenta]
+    properties: [lightable]
+    recipes:
+      stonecutter:
+        - id: "magenta_candle_2"
+          input: { head: "magenta_candle" }
+
+  magenta_candle_3:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTIzZjhhNjU2MzlmNmUyNjQ2NmMzNTE4YTFlODE4NTA0YjgzNWFmY2JmNmZkNzA5NmVlM2JkOTc3MTMzZWMwMSJ9fX0="
+    name: "&dMagenta Candle"
+    tags: [color/magenta]
+    properties: [lightable]
+    recipes:
+      stonecutter:
+        - id: "magenta_candle_3"
+          input: { head: "magenta_candle" }
+
+  # Orange Candle variants
+  orange_candle_1:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTZkMTJiMzBiMGM3ZDI4ODdjN2QxYmEyZGZmZWIyN2VlY2YxZWE2ZjhlNDdjNGVlZTQ1NDk5M2NiZjg4NTg3In19fQ=="
+    name: "&6Orange Candle"
+    tags: [color/orange]
+    properties: [lightable]
+    recipes:
+      stonecutter:
+        - id: "orange_candle_1"
+          input: { head: "orange_candle" }
+
+  orange_candle_2:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjZjMGIzMTdiZGVmMDBmYWJiOTA0YTk5MGM3NWM0NzcyYjNiZWIxNjQ2NWM0ZmNlYzY5YTVkNmIzM2FiOTZiMCJ9fX0="
+    name: "&6Orange Candle"
+    tags: [color/orange]
+    properties: [lightable]
+    recipes:
+      stonecutter:
+        - id: "orange_candle_2"
+          input: { head: "orange_candle" }
+
+  orange_candle_3:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzA2YzdmMzFiNDI5M2U5ZGI2NzU1NTc4ODcwMjExMzgxYjFhNjM2MDc4NGQ4NGRjY2E1ODhjMDM4NmY1MjE2OSJ9fX0="
+    name: "&6Orange Candle"
+    tags: [color/orange]
+    properties: [lightable]
+    recipes:
+      stonecutter:
+        - id: "orange_candle_3"
+          input: { head: "orange_candle" }
+
+  orange_candle_4:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTUyMWNmNDVlYmUzMjFlNDg2MGQ3NmZkN2I2YWJkMzc5OTkzYzZmMmM5ZDRhMTljMzdiZGNiN2IxMWI2YiJ9fX0="
+    name: "&6Orange Candle"
+    tags: [color/orange]
+    properties: [lightable]
+    recipes:
+      stonecutter:
+        - id: "orange_candle_4"
+          input: { head: "orange_candle" }
+
+  # Pink Candle variants
+  pink_candle_1:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMmYxYjNmNTgwZDJkYWU4NjMzZWFkYzdmNTNlNzUzODc2MjFlMDhiMzM1Mjg0OWIwYjlmOWRlODI0ZTNhNDM4OCJ9fX0="
+    name: "&dPink Candle"
+    tags: [color/pink]
+    properties: [lightable]
+    recipes:
+      stonecutter:
+        - id: "pink_candle_1"
+          input: { head: "pink_candle" }
+
+  pink_candle_2:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDc5Nzg0Yjg4ZTFiMTRkZjZjMWVlNGVmNjA3MGIyYzViMGY1YWEzZWQ3MmM0ZmFjNjg0YTU0N2U3YTg2OTIifX19"
+    name: "&dPink Candle"
+    tags: [color/pink]
+    properties: [lightable]
+    recipes:
+      stonecutter:
+        - id: "pink_candle_2"
+          input: { head: "pink_candle" }
+
+  pink_candle_3:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOWY5MGFkNjA4YWI1Zjc5YmRiNTE3YWU2MzRiNGRjNDQzZGY2ZmI2ZDBiMTc2YzExMjQyYmY4ODQ3YjRlYjhjIn19fQ=="
+    name: "&dPink Candle"
+    tags: [color/pink]
+    properties: [lightable]
+    recipes:
+      stonecutter:
+        - id: "pink_candle_3"
+          input: { head: "pink_candle" }
+
+  pink_candle_4:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmU1YzQ1NTY5NGI5MjIyNTZjOWU0ZWY2ZTAyYWQ1ZGQ5OTM0NmQzNzM5NWYwYTY4MTNmZTc2MTIzNTdkNjQifX19"
+    name: "&dPink Candle"
+    tags: [color/pink]
+    properties: [lightable]
+    recipes:
+      stonecutter:
+        - id: "pink_candle_4"
+          input: { head: "pink_candle" }
+
+  pink_candle_5:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDFmNThhMjc3NjUzOTM4NDk2ODY3ZjgxNDg5M2EzZWFkZWYzNmQyODg0YTQ2ZDEyZjFiZWQ5ZDhmMDQ1MjgzMyJ9fX0="
+    name: "&dPink Candle"
+    tags: [color/pink]
+    properties: [lightable]
+    recipes:
+      stonecutter:
+        - id: "pink_candle_5"
+          input: { head: "pink_candle" }
+
+  # Purple Candle variants
+  purple_candle_1:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTNiNDdiYTcwYzljMzZhYTA0ZDQ1OTA0ZWJmNDFiMWZhOTRjYzc0MDFhNjc2YTg2YjI1ZjE0MzRlZGMzNjhkOCJ9fX0="
+    name: "&5Purple Candle"
+    tags: [color/purple]
+    properties: [lightable]
+    recipes:
+      stonecutter:
+        - id: "purple_candle_1"
+          input: { head: "purple_candle" }
+
+  purple_candle_2:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNWZjZTgxOTFhOGM1NDBlYzhmMGE0MDM4YjBkNzU2MjMyODVhMDQzODZkYzM2NmZiODk2NmQ0OGE5MGY3NDIzOSJ9fX0="
+    name: "&5Purple Candle"
+    tags: [color/purple]
+    properties: [lightable]
+    recipes:
+      stonecutter:
+        - id: "purple_candle_2"
+          input: { head: "purple_candle" }
+
+  purple_candle_3:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYWQ5MmZlZWExZGVlZTYxY2Q1ZTIzOWNiM2VkOWM0NDRlNTk3YzkxODMzMjZkMWZlODRiOTUyYzg1ZmVhMzNhIn19fQ=="
+    name: "&5Purple Candle"
+    tags: [color/purple]
+    properties: [lightable]
+    recipes:
+      stonecutter:
+        - id: "purple_candle_3"
+          input: { head: "purple_candle" }
+
+  # Red Candle variants
+  red_candle_1:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjY1YzNiZGIzZDM2ZWVkNWNkZGY3NWIxZmI0NmRhZjhjMWZjODM0Mjg1NDBhMWU0YTZlNmQ2NjNlNWY4OWQ5OCJ9fX0="
+    name: "&cRed Candle"
+    tags: [color/red]
+    properties: [lightable]
+    recipes:
+      stonecutter:
+        - id: "red_candle_1"
+          input: { head: "red_candle" }
+
+  red_candle_2:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjhjYTM2MTBiZjFlZDJkY2NlNWNhN2Y3ZjI5MTRhMWMyNWZiZmFiZDc0ZGNlNTFiM2Y1MTI2YmE0NGJhMWEyMCJ9fX0="
+    name: "&cRed Candle"
+    tags: [color/red]
+    properties: [lightable]
+    recipes:
+      stonecutter:
+        - id: "red_candle_2"
+          input: { head: "red_candle" }
+
+  red_candle_3:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODRhZTNkZTUxNDE5NmZkNmZiNzA1MjhiOGI4NzhmYjI3OTRmYjAzN2Q1ZDViNmJkODQ0N2VmNTZiZTU5MTkzMyJ9fX0="
+    name: "&cRed Candle"
+    tags: [color/red]
+    properties: [lightable]
+    recipes:
+      stonecutter:
+        - id: "red_candle_3"
+          input: { head: "red_candle" }
+
+  red_candle_4:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOWZkZGRkYjhlZWUxMWJjMzEyZDFhY2ZkNjIxYTQ0NmI1Njg2OGFhZjY2YTUwNzFjYTk0MjU1ODJiMThjZGQ2In19fQ=="
+    name: "&cRed Candle"
+    tags: [color/red]
+    properties: [lightable]
+    recipes:
+      stonecutter:
+        - id: "red_candle_4"
+          input: { head: "red_candle" }
+
+  red_candle_5:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTEzODgyNDhhYzFhOTA1YWNmZWM4MDE3MjkyOTNjZTVlYmE3OGViODlhNzAzYTJiOWQ4N2MxZTVhYzExMDQ3NCJ9fX0="
+    name: "&cRed Candle"
+    tags: [color/red]
+    properties: [lightable]
+    recipes:
+      stonecutter:
+        - id: "red_candle_5"
+          input: { head: "red_candle" }
+
+  red_candle_6:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvY2VhYTU1ZjQzZTVlM2FkNDliMTE0MGRmMjQ4NjYyNmNmOWYxMWRmYWY3NmYxYjI3OGI1ZDkzYmY0ZWRmMTI0In19fQ=="
+    name: "&cRed Candle"
+    tags: [color/red]
+    properties: [lightable]
+    recipes:
+      stonecutter:
+        - id: "red_candle_6"
+          input: { head: "red_candle" }
+
+  # White Candle variants
+  white_candle_1:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjA2Y2ZiNzRmNmM5NDUyZWNiOTE0MmZjNTQzZTZjOWM4MzUxYmFiOTk3ZDBkOGUyYjhlOGM2NmViM2Y0NDAifX19"
+    name: "&fWhite Candle"
+    tags: [color/white]
+    properties: [lightable]
+    recipes:
+      stonecutter:
+        - id: "white_candle_1"
+          input: { head: "white_candle" }
+
+  white_candle_2:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzgxMjI2NjU2ZDgyNTI5MWIxZDdlNDU2Yjc0ZWNkY2UyODY3MjE2OTY0MWU2YzM1YjFlMjNiOWI0MDI3NGUifX19"
+    name: "&fWhite Candle"
+    tags: [color/white]
+    properties: [lightable]
+    recipes:
+      stonecutter:
+        - id: "white_candle_2"
+          input: { head: "white_candle" }
+
+  white_candle_3:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzg3ZDgzNWI1NDNlZDFiMDI0MTU3MDFjYTdiM2Y4YzhhMGExMTJhZjEzMThmOWNlYzVhNWU5MWU0ODE0YTI0OSJ9fX0="
+    name: "&fWhite Candle"
+    tags: [color/white]
+    properties: [lightable]
+    recipes:
+      stonecutter:
+        - id: "white_candle_3"
+          input: { head: "white_candle" }
+
+  white_candle_4:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvN2FjYzYxNjY2YWRmMWU0Y2Q3Y2Y1N2FmM2UxZTE3YmExNzMxMGIyZmNkOGUzZWQyN2NmODhiN2QwZDg4NTE4In19fQ=="
+    name: "&fWhite Candle"
+    tags: [color/white]
+    properties: [lightable]
+    recipes:
+      stonecutter:
+        - id: "white_candle_4"
+          input: { head: "white_candle" }
+
+  white_candle_5:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOWQzMGM1YjkzNTgxNzlkMDk4Nzc0MGQ3NDc4YzBlZWI2YjljN2ZhMDdjZTQ4OGRkNjk4NTE4MWFmNjFmYjhhMiJ9fX0="
+    name: "&fWhite Candle"
+    tags: [color/white]
+    properties: [lightable]
+    recipes:
+      stonecutter:
+        - id: "white_candle_5"
+          input: { head: "white_candle" }
+
+  white_candle_6:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZWFlODg4OTI3MDM3Zjg3YTU1Mzk1NDFhODljYzVmYTdkOWM0M2M4ZGM1NjMyNjk4YmFkNjRiNzAyNDRkZCJ9fX0="
+    name: "&fWhite Candle"
+    tags: [color/white]
+    properties: [lightable]
+    recipes:
+      stonecutter:
+        - id: "white_candle_6"
+          input: { head: "white_candle" }
+
+  # Yellow Candle variants
+  yellow_candle_1:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGU2ZWY4OTFmM2QyNDlmZDIwN2Y3MWVmNWUyOWJhYjcyYjA0YzMwOTY3YzhhZWI1YzI5NzM3ZjAzMDgyNmMxMCJ9fX0="
+    name: "&eYellow Candle"
+    tags: [color/yellow]
+    properties: [lightable]
+    recipes:
+      stonecutter:
+        - id: "yellow_candle_1"
+          input: { head: "yellow_candle" }
+
+  yellow_candle_2:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGU3MDhiMTNiYWZiNWE3NThkOWQyZjAxMzZmM2I3N2QxMzk1ODNiODZkNDY3ZGU4NmQyMTYyNmQwNDUzNGUifX19"
+    name: "&eYellow Candle"
+    tags: [color/yellow]
+    properties: [lightable]
+    recipes:
+      stonecutter:
+        - id: "yellow_candle_2"
+          input: { head: "yellow_candle" }
+
+  yellow_candle_3:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjZkMmM3NzdmZGYwNTdkMzY1NzUzZmZiNGQ3NGYzMGI4YzRlOGVkZTdiYzY4ZWFkMWYyMWY2MmE5OThhYTI0ZCJ9fX0="
+    name: "&eYellow Candle"
+    tags: [color/yellow]
+    properties: [lightable]
+    recipes:
+      stonecutter:
+        - id: "yellow_candle_3"
+          input: { head: "yellow_candle" }
+
+  yellow_candle_4:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTQ4Mzc0NTE0YjYxYzM3OGEyZDllNjY1NjMxMTI1MzhiYjE5MWMzZDdkMmMzYjQ5ODAxNGY2YTlhYWU1YjkifX19"
+    name: "&eYellow Candle"
+    tags: [color/yellow]
+    properties: [lightable]
+    recipes:
+      stonecutter:
+        - id: "yellow_candle_4"
+          input: { head: "yellow_candle" }

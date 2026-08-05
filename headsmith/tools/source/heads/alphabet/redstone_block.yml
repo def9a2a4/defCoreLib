@@ -1,0 +1,2038 @@
+# Generated Redstone Block Alphabet Blocks
+
+heads:
+  redstone_block_letter_a:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTE0NDAyMDNmYTY2NmRhZWFlZDU1NDczMTFhMWYxYmFhNzVlNTlmOTZjNTlhNWE4YTU3ZTExMWUyM2MxYTdkMiJ9fX0="
+    name: "&7Redstone Block A"
+    tags:
+      - alphabet/redstone_block
+      - character/letter_a
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_letter_a"
+          input: { head: "mini_redstone_block" }
+  redstone_block_letter_b:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTEwMGZiZWU1NmE5YzBkZTE5Mjg3OWMxZTdkMDM1ZGI0MjIxMzRjNjcxZGQ1MTJmMzBmMTIzNjVkODk2ODA2YyJ9fX0="
+    name: "&7Redstone Block B"
+    tags:
+      - alphabet/redstone_block
+      - character/letter_b
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_letter_b"
+          input: { head: "mini_redstone_block" }
+  redstone_block_letter_c:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmUxOGNkNGQxOWZkZGMwODE4MTI0ZDk2YmZkNDBiOGUxYzU2NDU3MTY5OTM5ZTAyNTI5MmQ2NTk4NWQ4ODY1NSJ9fX0="
+    name: "&7Redstone Block C"
+    tags:
+      - alphabet/redstone_block
+      - character/letter_c
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_letter_c"
+          input: { head: "mini_redstone_block" }
+  redstone_block_letter_d:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZmI2YzkyZWUwNmY2MmY0Y2YyOWIyYmY0M2I4MTI1YzI0YmI2YTJjNjU4Y2ZiNzE4ZGY5ZTk1ZjJlYzM0NTA1ZSJ9fX0="
+    name: "&7Redstone Block D"
+    tags:
+      - alphabet/redstone_block
+      - character/letter_d
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_letter_d"
+          input: { head: "mini_redstone_block" }
+  redstone_block_letter_e:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTVjZTgyN2Y1N2E2MTdjZTBhMDAzOTk0YmYwNzZmMzA2MTdjMjNmMzMwMzE0MjdmYjY5YTFjOTEyOWY0OTdjMyJ9fX0="
+    name: "&7Redstone Block E"
+    tags:
+      - alphabet/redstone_block
+      - character/letter_e
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_letter_e"
+          input: { head: "mini_redstone_block" }
+  redstone_block_letter_f:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzY4NDc0ZjJiZGJiYjNmNjEzZWU5YTcxMDJiNzZkZDRjZTk2YjQ4ZjJkZmZmNGUxNTM3OGM2M2E1Y2MzY2Q3ZSJ9fX0="
+    name: "&7Redstone Block F"
+    tags:
+      - alphabet/redstone_block
+      - character/letter_f
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_letter_f"
+          input: { head: "mini_redstone_block" }
+  redstone_block_letter_g:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMmQwYzA4MTdmNzgxZjc1MThhYzg1MmYyMTBhODRlMzUxZDBlMzg1MGQ5MzY0YTYyOWY5ODllMThhMDQ1YmM0NyJ9fX0="
+    name: "&7Redstone Block G"
+    tags:
+      - alphabet/redstone_block
+      - character/letter_g
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_letter_g"
+          input: { head: "mini_redstone_block" }
+  redstone_block_letter_h:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMmI4NjI0Nzc1MTNhMWNlZGI0NDU5M2VlNDk3ODNhYjc4NjRkZmI4YjllYzNkOTAxMzQzMzMwMDI2YTU1MjgxMCJ9fX0="
+    name: "&7Redstone Block H"
+    tags:
+      - alphabet/redstone_block
+      - character/letter_h
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_letter_h"
+          input: { head: "mini_redstone_block" }
+  redstone_block_letter_i:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOGRhNGQwNzM2NmMzZjA5ZjU5ODUxOGJlYjY5MWMyZjJhYWE3OTU0Y2E1ZTA3NGUzODcyYTFlZjllMzdmMDRkMCJ9fX0="
+    name: "&7Redstone Block I"
+    tags:
+      - alphabet/redstone_block
+      - character/letter_i
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_letter_i"
+          input: { head: "mini_redstone_block" }
+  redstone_block_letter_j:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjQyOWM0ZTQ5MGFhODlmNzJmYWQwOTJhNzRiYWZiNTJkNDkwYTIyNWZiNjMyM2JlZDNmZjI5MGFkM2MyNmQ4MiJ9fX0="
+    name: "&7Redstone Block J"
+    tags:
+      - alphabet/redstone_block
+      - character/letter_j
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_letter_j"
+          input: { head: "mini_redstone_block" }
+  redstone_block_letter_k:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGQwYmM1OGE0MzQwNWE1OTNjODA4Zjc2OTU4ZDJlN2U3YjUwM2ZiYzBmZWNhNjJmNTQ3ZGExYWFiMDdjMDkzZSJ9fX0="
+    name: "&7Redstone Block K"
+    tags:
+      - alphabet/redstone_block
+      - character/letter_k
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_letter_k"
+          input: { head: "mini_redstone_block" }
+  redstone_block_letter_l:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjVlM2VjODk1YjA2NjY3M2RhZGYzZWQzYzg1NjRiOTkyNjVhZmFiOTc5ZDMwNmM1MjY1YzM4ZGM5ODMxYzgxYSJ9fX0="
+    name: "&7Redstone Block L"
+    tags:
+      - alphabet/redstone_block
+      - character/letter_l
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_letter_l"
+          input: { head: "mini_redstone_block" }
+  redstone_block_letter_m:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODQzMGIwMmIxNTVlNjY5MjczYTc3ODQwYjA3ZjQ1M2U3OWIzOTQ4OTBhNGQ2MGI0MGM3YWMzMGFhNzhmZTkzNiJ9fX0="
+    name: "&7Redstone Block M"
+    tags:
+      - alphabet/redstone_block
+      - character/letter_m
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_letter_m"
+          input: { head: "mini_redstone_block" }
+  redstone_block_letter_n:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzZiZDlmNjU5M2JiODJkNzkyZjRlNGFiMTViNTJlMDc5ZDMzZDQyMjY2NjNiYjY1MDY0NDAyMjUwZTlmZGYzZCJ9fX0="
+    name: "&7Redstone Block N"
+    tags:
+      - alphabet/redstone_block
+      - character/letter_n
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_letter_n"
+          input: { head: "mini_redstone_block" }
+  redstone_block_letter_o:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTk1ZDU2NjVjNTQyMTljZmI5NThhYzY0NzcwOWNhNzlmNTAwM2I2OGUyNTEzZjM4ZjA3ZTQ1OWI4ZjIyYjVjYyJ9fX0="
+    name: "&7Redstone Block O"
+    tags:
+      - alphabet/redstone_block
+      - character/letter_o
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_letter_o"
+          input: { head: "mini_redstone_block" }
+  redstone_block_letter_p:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTkwODFjMzhlYTgzN2UxOThmYjdkYjI1MzE1MDdiODJjYTI2MjRmOWI1ZDdkODU2ZTU3ZDk5MmM1OGU5ZDIzOCJ9fX0="
+    name: "&7Redstone Block P"
+    tags:
+      - alphabet/redstone_block
+      - character/letter_p
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_letter_p"
+          input: { head: "mini_redstone_block" }
+  redstone_block_letter_q:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjAxNWI2NTJmY2IyNjAzNzczZWIzMjA3NDdjNTEyMTQ4ZGMxZjRlZTI2NWRjNzdhNTRiMTFkZWNhNTI2NDA5YiJ9fX0="
+    name: "&7Redstone Block Q"
+    tags:
+      - alphabet/redstone_block
+      - character/letter_q
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_letter_q"
+          input: { head: "mini_redstone_block" }
+  redstone_block_letter_r:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTVmM2EzYmU4YWJiY2E4ODU0ODA5YjVkYzQwMDNlY2QzYjA1YTAyNjI0NzNiNThjNmM0ZTAzZDNkNjY3OTczYyJ9fX0="
+    name: "&7Redstone Block R"
+    tags:
+      - alphabet/redstone_block
+      - character/letter_r
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_letter_r"
+          input: { head: "mini_redstone_block" }
+  redstone_block_letter_s:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDVhM2E0MDRjY2RiNDBhZWI3MzY1MTQ3ZjBmY2YyNDkyY2ZkNjliNzgxZmMwYjI4ODNkMWM5YjljMzdlM2NlZiJ9fX0="
+    name: "&7Redstone Block S"
+    tags:
+      - alphabet/redstone_block
+      - character/letter_s
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_letter_s"
+          input: { head: "mini_redstone_block" }
+  redstone_block_letter_t:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZmJlODE3ODkyZjgxYTdhMTUyYTQxZTE5ZWQyMzY0YmRkNTNhNWNlMjVjZTA3M2UxZWVlOWVjMTRmNDNjZmRiOCJ9fX0="
+    name: "&7Redstone Block T"
+    tags:
+      - alphabet/redstone_block
+      - character/letter_t
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_letter_t"
+          input: { head: "mini_redstone_block" }
+  redstone_block_letter_u:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzc1ZGNmZGNkMTBkZTU0ODhmN2I4Y2YyMWRhYWY0NzhjMGYyNGIzMmE2MjhlMTJkYTEyOTU5Y2QzNTE4MGQ4MCJ9fX0="
+    name: "&7Redstone Block U"
+    tags:
+      - alphabet/redstone_block
+      - character/letter_u
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_letter_u"
+          input: { head: "mini_redstone_block" }
+  redstone_block_letter_v:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjMwZGYyZWNlNzg1OTJhY2UwNTliNGQzMGE4NjQ0NDJiYTI3OTEyNDUwNDU3YmUyNjAwMmUzYzdiNjE3YWM1NSJ9fX0="
+    name: "&7Redstone Block V"
+    tags:
+      - alphabet/redstone_block
+      - character/letter_v
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_letter_v"
+          input: { head: "mini_redstone_block" }
+  redstone_block_letter_w:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjczZmY2YzU3YzBjNjM3MWY5ZTU5ZWVjYWY0NzdlNzE0M2Q1NjgyZTEwZGE0ZTRkODJlYjBjYjI0ZGNiYWQxYSJ9fX0="
+    name: "&7Redstone Block W"
+    tags:
+      - alphabet/redstone_block
+      - character/letter_w
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_letter_w"
+          input: { head: "mini_redstone_block" }
+  redstone_block_letter_x:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZWQwYTE0MjA4NDRjZTIzN2E0NWQyZTdlNTQ0ZDEzNTg0MWU5ZjgyZDA5ZTIwMzI2N2NmODg5NmM4NTE1ZTM2MCJ9fX0="
+    name: "&7Redstone Block X"
+    tags:
+      - alphabet/redstone_block
+      - character/letter_x
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_letter_x"
+          input: { head: "mini_redstone_block" }
+  redstone_block_letter_y:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmUxNDBmYjZkOTY5MmIzYTUzOWMyYWUxYmY2NTA1MGNiOTdkNjUwOTA5NzlmMjc3Nzc2MTg1ZjI2ZjBhNDRhNCJ9fX0="
+    name: "&7Redstone Block Y"
+    tags:
+      - alphabet/redstone_block
+      - character/letter_y
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_letter_y"
+          input: { head: "mini_redstone_block" }
+  redstone_block_letter_z:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTVmZjUzZjdlZGU2Y2U1YTRmNjM1ZDJkYTYzMGRjYzMxOWMxOTExNTEzOTg5NDMyZGRhMWJiZGI3MDM0ZmZjMSJ9fX0="
+    name: "&7Redstone Block Z"
+    tags:
+      - alphabet/redstone_block
+      - character/letter_z
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_letter_z"
+          input: { head: "mini_redstone_block" }
+  redstone_block_number_0:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDRjNmIxOWEwMTQ0ZjYzZmQyNmE2OTBmMjAxNjQwYjRiMmYxNTFlZWY3MmNjNDliZmUwNjEyMDQ0Y2VhNTZlNyJ9fX0="
+    name: "&7Redstone Block 0"
+    tags:
+      - alphabet/redstone_block
+      - character/number_0
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_number_0"
+          input: { head: "mini_redstone_block" }
+  redstone_block_number_1:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTM5Yzg0NmY2NWQ1ZjI3MmE4MzlmZDljMmFlYjExYmRjOGUzZjgyMjlmYmUzNTgzNDg2ZTc4ZjRjMjNjOGI1YiJ9fX0="
+    name: "&7Redstone Block 1"
+    tags:
+      - alphabet/redstone_block
+      - character/number_1
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_number_1"
+          input: { head: "mini_redstone_block" }
+  redstone_block_number_2:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTQxNWM0ZDBjN2I4MTQxNTAxOTQ5ZjczY2UwYzc4YjJiMWU5OTAyNTUzNzFhN2ZjNzE5OTk2MGM5YjAzN2Q1MSJ9fX0="
+    name: "&7Redstone Block 2"
+    tags:
+      - alphabet/redstone_block
+      - character/number_2
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_number_2"
+          input: { head: "mini_redstone_block" }
+  redstone_block_number_3:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNWY4ZDNjOGNiMDk4M2E0ZjU2Y2MyNmE3MWZmY2VkYmQ3YmVjYzUyMTI5MWM3ODM2MWZmMWU5OWRmNDE0NGNiYyJ9fX0="
+    name: "&7Redstone Block 3"
+    tags:
+      - alphabet/redstone_block
+      - character/number_3
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_number_3"
+          input: { head: "mini_redstone_block" }
+  redstone_block_number_4:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjEyNzgxMjE2NmUxNDE4NmRlY2YxNzUxOTYwM2IzNTU2OTk0OTlhNTQ1Mzk3Zjg5MzE3OTRmYWQ2ZTllZmQ5MiJ9fX0="
+    name: "&7Redstone Block 4"
+    tags:
+      - alphabet/redstone_block
+      - character/number_4
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_number_4"
+          input: { head: "mini_redstone_block" }
+  redstone_block_number_5:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZmUxMDA4NTkyZTNhZDI0ZDY1ZGZhNGZmNWEzYzgwMGQ3OGEzZGIxMzRjYmQ4ZTllYzNjYmFjMWVhODM5MWI5ZCJ9fX0="
+    name: "&7Redstone Block 5"
+    tags:
+      - alphabet/redstone_block
+      - character/number_5
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_number_5"
+          input: { head: "mini_redstone_block" }
+  redstone_block_number_6:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTMwOThmM2E5OTRjMWNkNjhlMGU4NjJhMDA2ODg4NjZmMmU2NzM0ODFjZDM0NDdjODVkOTgwMWJjMDMxN2I1ZiJ9fX0="
+    name: "&7Redstone Block 6"
+    tags:
+      - alphabet/redstone_block
+      - character/number_6
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_number_6"
+          input: { head: "mini_redstone_block" }
+  redstone_block_number_7:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODEwMmE4ZWIwZmZkZmU1OTgyMDczZGJjNDFiNzViYzIyZTU3N2UzYjFhZDAwYmIxNDg2OGNlZTM4NGJlYzdiIn19fQ=="
+    name: "&7Redstone Block 7"
+    tags:
+      - alphabet/redstone_block
+      - character/number_7
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_number_7"
+          input: { head: "mini_redstone_block" }
+  redstone_block_number_8:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODNhNmQ5ZWNhNjg2Mjg1MThlNmI5OTA1NGJjMGExZjdmY2M3OWUyYzk2OWYzZWI4ZjllZjAzNDE2NWUwM2JiNSJ9fX0="
+    name: "&7Redstone Block 8"
+    tags:
+      - alphabet/redstone_block
+      - character/number_8
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_number_8"
+          input: { head: "mini_redstone_block" }
+  redstone_block_number_9:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjUyMjc0NmYyZDExMTEzZGIyYzdkZTVkYzczNTI3NjE0MmRjNGJhZGU3YmVkNDczNDQyYTk1NGExYzQyMjc5ZiJ9fX0="
+    name: "&7Redstone Block 9"
+    tags:
+      - alphabet/redstone_block
+      - character/number_9
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_number_9"
+          input: { head: "mini_redstone_block" }
+  redstone_block_number_10:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZmYzMjIyMmRlZjFjN2IzYmQwNDUxM2IxYTQwNDkzNDA3YzQyODdiNmVjMzk0M2Y3MzMzZjcxNTc3M2Q0Y2I2MSJ9fX0="
+    name: "&7Redstone Block 10"
+    tags:
+      - alphabet/redstone_block
+      - character/number_10
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_number_10"
+          input: { head: "mini_redstone_block" }
+  redstone_block_number_11:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzAzNWRiOGFjODlmOWMwNWZkYTA0NGM2MjE5MzZmYzlmZDU4N2E2NmVlMmIwYjljMDg3NmU2YjU5ODhjZTgzZiJ9fX0="
+    name: "&7Redstone Block 11"
+    tags:
+      - alphabet/redstone_block
+      - character/number_11
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_number_11"
+          input: { head: "mini_redstone_block" }
+  redstone_block_number_12:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTJjNmU5YTFmZWRiMjYwZDdjNjZiZTcwZGQzNmY0ODg2NmQxMWI2ZDIwNjI2N2MyOGVjYmY0NDkzYzNhYjliYiJ9fX0="
+    name: "&7Redstone Block 12"
+    tags:
+      - alphabet/redstone_block
+      - character/number_12
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_number_12"
+          input: { head: "mini_redstone_block" }
+  redstone_block_number_13:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMmVkMWYyOTI1YzFlNGI5MjhmNDc0NWY2OWQyMjgyZTg1ZDA2NmJlMjgyNDhkNzBmMGI3NjY5OGQzNmNlNGFkNCJ9fX0="
+    name: "&7Redstone Block 13"
+    tags:
+      - alphabet/redstone_block
+      - character/number_13
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_number_13"
+          input: { head: "mini_redstone_block" }
+  redstone_block_number_14:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvY2FkYzJkZjJkMDMwZTRkODAwY2UxZDZmNzM0YzU0NzQyNzdiNjlmMmNjOWU3NTI2ODM0N2MzNzdiZWUyNDc5ZiJ9fX0="
+    name: "&7Redstone Block 14"
+    tags:
+      - alphabet/redstone_block
+      - character/number_14
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_number_14"
+          input: { head: "mini_redstone_block" }
+  redstone_block_number_15:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODdiODE0NWJlNGVmNTE2ZmFhOWU4MDk0YTllZWNjOGZkMzQ0ZTJiYTE5NTQ2NGZjMzk2NmQ3MWNkOTczZWM3YyJ9fX0="
+    name: "&7Redstone Block 15"
+    tags:
+      - alphabet/redstone_block
+      - character/number_15
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_number_15"
+          input: { head: "mini_redstone_block" }
+  redstone_block_number_16:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMmM2ZjEwMDU5YTQ2NmQ3OTM2MjU2NDQ5ZTg5YzdkZmJmZjhmN2ZhYjYxYTJlZWQwNjhlMjJmYWM4Y2YwZDczYiJ9fX0="
+    name: "&7Redstone Block 16"
+    tags:
+      - alphabet/redstone_block
+      - character/number_16
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_number_16"
+          input: { head: "mini_redstone_block" }
+  redstone_block_number_17:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGMyYTk0OWU5MTZkMTMxYzNjYWUxOGJmMTc5MzA4ZDJjOTQ0OTQ5MDU0M2E4MzcyMmE5NTY1MzMxNTNhOWIwNSJ9fX0="
+    name: "&7Redstone Block 17"
+    tags:
+      - alphabet/redstone_block
+      - character/number_17
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_number_17"
+          input: { head: "mini_redstone_block" }
+  redstone_block_number_18:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDRiMzk3NWM2ZDlhMTcxMzFmMzgzNmYzNjA5YmEzZGNjMzU0MTU4ZTY3NzVmZWE5YTJjOTZmOWIwMmQwNGYwMCJ9fX0="
+    name: "&7Redstone Block 18"
+    tags:
+      - alphabet/redstone_block
+      - character/number_18
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_number_18"
+          input: { head: "mini_redstone_block" }
+  redstone_block_number_19:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTFjNjYxZmMxMjZkNjM1OGM0NTJlODQyYjc0NmQwNTliODcyMTY4ZDExYWZhOTA2YmVjYjJhNjg0OTBkNjQxNCJ9fX0="
+    name: "&7Redstone Block 19"
+    tags:
+      - alphabet/redstone_block
+      - character/number_19
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_number_19"
+          input: { head: "mini_redstone_block" }
+  redstone_block_number_20:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvN2M1OTdmMTRlYzE4NmQ2ZWQ1NTM3NDM1Yjk5MjFmYTlkMTQyZjRkZDNlYTBiNGE5YjliMTk2NjU0YTliN2JiNCJ9fX0="
+    name: "&7Redstone Block 20"
+    tags:
+      - alphabet/redstone_block
+      - character/number_20
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_number_20"
+          input: { head: "mini_redstone_block" }
+  redstone_block_number_21:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjczYzBhMGRiOWQ5M2ZmMDA0Yjg1MDJlMWM3MjdiY2E4MmRhMDAxNzA0ZmUyZGQwZjk1YWU2NDUwYWEzYzJlNiJ9fX0="
+    name: "&7Redstone Block 21"
+    tags:
+      - alphabet/redstone_block
+      - character/number_21
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_number_21"
+          input: { head: "mini_redstone_block" }
+  redstone_block_number_22:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZmI5MWQyZDJjNjkxNWFkZDU2MTA4MzhmNjllODg2NjhjM2M5MDhiMTNmMWExZjUwMzQzODYyMjcyZTMzNDg2MyJ9fX0="
+    name: "&7Redstone Block 22"
+    tags:
+      - alphabet/redstone_block
+      - character/number_22
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_number_22"
+          input: { head: "mini_redstone_block" }
+  redstone_block_number_23:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODRmMTg5Y2I1YTAwODI2ZjhlYmJhYTA1Njg4YzFiYzg4ZmJjZDBmOWRlZTdjMmY3MjI4N2M1YjY5ZTU1OWRiYyJ9fX0="
+    name: "&7Redstone Block 23"
+    tags:
+      - alphabet/redstone_block
+      - character/number_23
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_number_23"
+          input: { head: "mini_redstone_block" }
+  redstone_block_number_24:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZWIzNmVjYjk3NGUwYzVjZGQ1Zjc2ODBiY2ZmNDY2OGIwOGE0NzljZDE2N2QzNzBhYjBkZmJhMmI5ZTFiNTUwNiJ9fX0="
+    name: "&7Redstone Block 24"
+    tags:
+      - alphabet/redstone_block
+      - character/number_24
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_number_24"
+          input: { head: "mini_redstone_block" }
+  redstone_block_number_25:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTBlMTE3NmM2OWM5ZWU1NzQwZGMwMzUwNzc4M2UyYjY4MWRmNGEzY2M4YzIwOTgxOTdmNjVmYmM0NjAwNDY1OCJ9fX0="
+    name: "&7Redstone Block 25"
+    tags:
+      - alphabet/redstone_block
+      - character/number_25
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_number_25"
+          input: { head: "mini_redstone_block" }
+  redstone_block_number_26:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTBlOTQyZjlhOTIyNGRmMmIxZDQyNDZmNjM1OGU0Yzg2NTIzMjQzOTU1NWRlOTljZTRmYjhmM2YxMjExZTI5MyJ9fX0="
+    name: "&7Redstone Block 26"
+    tags:
+      - alphabet/redstone_block
+      - character/number_26
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_number_26"
+          input: { head: "mini_redstone_block" }
+  redstone_block_number_27:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjRhZmUxNDA5NGNiZWMyNTQzZTYwZDNjZWE4ZjVmOThmNzlhMGU5NzUwNjQ1MzAwY2QwYmYyODNjMTZmMTI0ZCJ9fX0="
+    name: "&7Redstone Block 27"
+    tags:
+      - alphabet/redstone_block
+      - character/number_27
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_number_27"
+          input: { head: "mini_redstone_block" }
+  redstone_block_number_28:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmUzZTAxYzVmYjJkYmYyMzM5NmY5OTcwMWFkOWZkMzkyYjFjOWM4M2EwNGUzNDg5MjA0YTBjMDhjZjBjYzUyMSJ9fX0="
+    name: "&7Redstone Block 28"
+    tags:
+      - alphabet/redstone_block
+      - character/number_28
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_number_28"
+          input: { head: "mini_redstone_block" }
+  redstone_block_number_29:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzFlM2Y1Zjk5ZjM5OWQyMDc5ODA3YWVjNjEyNjJhMThmOWMxMzYzZGJhMjNjYTgyZDZlNWQ1YWVmMDQyMmIwYyJ9fX0="
+    name: "&7Redstone Block 29"
+    tags:
+      - alphabet/redstone_block
+      - character/number_29
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_number_29"
+          input: { head: "mini_redstone_block" }
+  redstone_block_number_30:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWRkMDBkNjE5NWQ5NDQyMzZjNTIxOGJjNDEyNjQ4N2UwOThiYjFmMzkyZTEyMWM5ODg4MGE2ZTMyZDMxNjQ1OCJ9fX0="
+    name: "&7Redstone Block 30"
+    tags:
+      - alphabet/redstone_block
+      - character/number_30
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_number_30"
+          input: { head: "mini_redstone_block" }
+  redstone_block_number_31:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjZmMGMzMjc3Zjc2MmEyOGMzMjAyYTJkZjdhNjg3MDM1NWFhM2RiNzYzZDhjYTI0MTVlNDk0YTU1MTBkODhlNyJ9fX0="
+    name: "&7Redstone Block 31"
+    tags:
+      - alphabet/redstone_block
+      - character/number_31
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_number_31"
+          input: { head: "mini_redstone_block" }
+  redstone_block_number_100:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOWIwZGJjYWYxYzIwMzU3ZDBhNzJkODI5YTQzZmFkMjkzYjZlZjI2MzlhNmJlMTE3OWVmMGQ4MTU5ZTFhNjJmOCJ9fX0="
+    name: "&7Redstone Block 100"
+    tags:
+      - alphabet/redstone_block
+      - character/number_100
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_number_100"
+          input: { head: "mini_redstone_block" }
+  redstone_block_exclamation:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDBlZTI4YjNkZjBkMDI1MGUyNDE2ZTJhNjJkN2RkY2Y5ZjJjOWNjODIzNjkwNDQ2OWZhMWY5MWYyYTk1OTVmZiJ9fX0="
+    name: "&7Redstone Block !"
+    tags:
+      - alphabet/redstone_block
+      - character/exclamation
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_exclamation"
+          input: { head: "mini_redstone_block" }
+  redstone_block_reverse_exclamation:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMmNmOGU3MjM2ZGQwMDcyYzIzYjRiOGM3OGNmZDc2ZDFmMjJhMjNkYjAyMzQyNDU0MTdkNTQwNmJlYzlkOGM3ZSJ9fX0="
+    name: "&7Redstone Block ¡"
+    tags:
+      - alphabet/redstone_block
+      - character/reverse_exclamation
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_reverse_exclamation"
+          input: { head: "mini_redstone_block" }
+  redstone_block_question:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNWZhYmY1ZDM3MDc1N2FhZjQ2ZmVmOWExOGI1MmVkYzk1OTQ1NzZjMDBhMzUzMWUwNDQ4ZTRkY2ExN2RiZjRlNCJ9fX0="
+    name: "&7Redstone Block ?"
+    tags:
+      - alphabet/redstone_block
+      - character/question
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_question"
+          input: { head: "mini_redstone_block" }
+  redstone_block_reverse_question:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmFmZGEwMDUxZThiMzY4ZjU3YzVjNjQ1ZTliMzI0NDc4MmE2NmM5NWZhZmI2ZTRkMjAzZmMzMzI5Nzk4NjEzMiJ9fX0="
+    name: "&7Redstone Block ¿"
+    tags:
+      - alphabet/redstone_block
+      - character/reverse_question
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_reverse_question"
+          input: { head: "mini_redstone_block" }
+  redstone_block_period:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTQxOTNjNjEyOTE1Y2Y5MDQzMzkyY2MyN2M0ZGZmNjkzOWZiMDk4M2NmNzYxMmRhYzk3ODg4YmRlMDdlMjdlZSJ9fX0="
+    name: "&7Redstone Block ."
+    tags:
+      - alphabet/redstone_block
+      - character/period
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_period"
+          input: { head: "mini_redstone_block" }
+  redstone_block_comma:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTQ3ZjVmMTllZGQ1ZTc1OTI2NjYxMWFhZmQ0ZDY1Mzg2M2VlMGEyOWUwMGU1ZGJmMWJlYjdiOTk3N2ZiMmY4NSJ9fX0="
+    name: "&7Redstone Block ,"
+    tags:
+      - alphabet/redstone_block
+      - character/comma
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_comma"
+          input: { head: "mini_redstone_block" }
+  redstone_block_colon:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNmU0YTIxODdiOGY0YzQ5NmI3MGEzZjBiMDQzMmJlMzJlMjE4NWFhOThlMzZlZWViMDIzMWZjZDY4NGU4YWI5MSJ9fX0="
+    name: "&7Redstone Block :"
+    tags:
+      - alphabet/redstone_block
+      - character/colon
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_colon"
+          input: { head: "mini_redstone_block" }
+  redstone_block_semicolon:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvN2ZjMjJhNGFkNmMwZWZjZTY3MDg0NDcxMjRhMzMyMzQ4M2ExZGVjYTU1YmQzODhmM2RjYjUzZjVhNmY5YzBlMCJ9fX0="
+    name: "&7Redstone Block ;"
+    tags:
+      - alphabet/redstone_block
+      - character/semicolon
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_semicolon"
+          input: { head: "mini_redstone_block" }
+  redstone_block_apostrophe:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNmU3OGI0OWE2ODdkZGM2MjRjMzRmNDhlYTMzOGY4OTg3MTlhODA2ZjU1MzJmNmRkZTY4ZTQzZTY3MTM4NDMzYSJ9fX0="
+    name: "&7Redstone Block '"
+    tags:
+      - alphabet/redstone_block
+      - character/apostrophe
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_apostrophe"
+          input: { head: "mini_redstone_block" }
+  redstone_block_quote:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjk1Y2VlMDgzNmUyODk1NDJmNjZjYWFiN2UyMDkxMTZmZGFkZWY2MWFlNGQ1ZTE5OTk1NmVkZmExZGMxOTk1NiJ9fX0="
+    name: "&7Redstone Block \""
+    tags:
+      - alphabet/redstone_block
+      - character/quote
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_quote"
+          input: { head: "mini_redstone_block" }
+  redstone_block_ellipses:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDJhMjVlM2I4MzEyNWNjYmIwMWE4Y2UyODMwZjllNmU5OTA5ZmNlMDA0MWQ0NTg2MWM1ZDg0NTNkOGRkNzRjIn19fQ=="
+    name: "&7Redstone Block ..."
+    tags:
+      - alphabet/redstone_block
+      - character/ellipses
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_ellipses"
+          input: { head: "mini_redstone_block" }
+  redstone_block_ampersand:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTgwYWI1YTAxNDljOGNjMWI5OGZkYTA1ZGZkZjJkNWU0MDA1MjkxOGFmZDVmMmQwMzVmMTU1MzM5OTgwZDcxYiJ9fX0="
+    name: "&7Redstone Block &"
+    tags:
+      - alphabet/redstone_block
+      - character/ampersand
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_ampersand"
+          input: { head: "mini_redstone_block" }
+  redstone_block_at:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTQwYjEzMDJmNzA4M2EwM2RjMmU4YTRkMzU4ZWJjOWFmMjk0MmU5NThlYmNjOGU1NjE1Y2UyMzIzYWZlODU4MiJ9fX0="
+    name: "&7Redstone Block @"
+    tags:
+      - alphabet/redstone_block
+      - character/at
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_at"
+          input: { head: "mini_redstone_block" }
+  redstone_block_hash:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWRiNDUwZDg3MGU0YmY5Yjk3MjZlYWYzYTUwNjU1YmMyMjQ3NDk0MjgyYTZjMjdkMTE5OWNmMTQ4NmFmNTMwOCJ9fX0="
+    name: "&7Redstone Block #"
+    tags:
+      - alphabet/redstone_block
+      - character/hash
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_hash"
+          input: { head: "mini_redstone_block" }
+  redstone_block_dollar:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDgwODM5MDY5OWJiMDY5NTNjODZjMWEzNTU3OTJlZTYzNjc4OTgxNjE4ZjgwNDdiNzVjOTNiYTA3YTk4MWEwOCJ9fX0="
+    name: "&7Redstone Block $"
+    tags:
+      - alphabet/redstone_block
+      - character/dollar
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_dollar"
+          input: { head: "mini_redstone_block" }
+  redstone_block_euro:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjE4NzVkNmQxODA4Nzc0YjlmYTFiNTg1MDg2MGJmODQyZjgwMGUzODZiMjUwYmY2ZDQyMTQwNzlmYzRjMDc0MiJ9fX0="
+    name: "&7Redstone Block €"
+    tags:
+      - alphabet/redstone_block
+      - character/euro
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_euro"
+          input: { head: "mini_redstone_block" }
+  redstone_block_pound:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZmNmNWY3OTg3OWZkOTRkZjM5NjhmNTI3MDg2MDE0M2JjOGQyN2UzMTE4MDVhOTU0MjE1NjdkMDEyNGY2NzExMiJ9fX0="
+    name: "&7Redstone Block £"
+    tags:
+      - alphabet/redstone_block
+      - character/pound
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_pound"
+          input: { head: "mini_redstone_block" }
+  redstone_block_yen:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzE3ZGIwYWY2YjMxMzMxZmE0YjA2YjgxNmE2MDc3YmFiZjUwZWE1ODMxNjkxNWY2OGYwNmVhOTIzMGMwODlhOCJ9fX0="
+    name: "&7Redstone Block ¥"
+    tags:
+      - alphabet/redstone_block
+      - character/yen
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_yen"
+          input: { head: "mini_redstone_block" }
+  redstone_block_percent:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTMzZDhjZDU3NzMzYTBlZWI3ZDg4OTgwZDViZmZkMDVjNjcxNGQ3YTZjZDhjODg1OGEzNmE3YzgzOThlMjNjMSJ9fX0="
+    name: "&7Redstone Block %"
+    tags:
+      - alphabet/redstone_block
+      - character/percent
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_percent"
+          input: { head: "mini_redstone_block" }
+  redstone_block_plus:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjlmZjk4ODQyY2I2NjQwNWQyMGE4ZTZiMmVmZmFjNDYwMTBiOGY1NjAyZWE3MzI2ZDRkMTg1YjliNWRjZTA2In19fQ=="
+    name: "&7Redstone Block +"
+    tags:
+      - alphabet/redstone_block
+      - character/plus
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_plus"
+          input: { head: "mini_redstone_block" }
+  redstone_block_minus:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjhkNWEzOGQ2YmZjYTU5Nzg2NDE3MzM2M2QyODRhOGQzMjljYWFkOTAxOGM2MzgxYjFiNDI5OWI4YjhiOTExYyJ9fX0="
+    name: "&7Redstone Block -"
+    tags:
+      - alphabet/redstone_block
+      - character/minus
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_minus"
+          input: { head: "mini_redstone_block" }
+  redstone_block_equals:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjczNjFhYTg4Zjc2YWZhYTk0NDZhOGRhMTU1NDI2M2YxMmFhM2ViMmUzMDJiMzlhNjFlODhiZTcxYzQ1MGJlMyJ9fX0="
+    name: "&7Redstone Block ="
+    tags:
+      - alphabet/redstone_block
+      - character/equals
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_equals"
+          input: { head: "mini_redstone_block" }
+  redstone_block_slash:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOWJjZDllMTk5ODAzYmUzYjljZDFmZDZmMmI5M2EzYzdlYWM2MmRlMGRkYWY1ZDlkMThlZDZmNTMzNDYzNjFmMiJ9fX0="
+    name: "&7Redstone Block /"
+    tags:
+      - alphabet/redstone_block
+      - character/slash
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_slash"
+          input: { head: "mini_redstone_block" }
+  redstone_block_backslash:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZGE3MWMxMjFiNDYzMWNhZDg4ZjI2YTU1NDQzMDU3ODAxNzQ2Y2RjYTBiNzA3YTE4ZTUwNjA4YTZkYTY5ZjViZSJ9fX0="
+    name: "&7Redstone Block \\"
+    tags:
+      - alphabet/redstone_block
+      - character/backslash
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_backslash"
+          input: { head: "mini_redstone_block" }
+  redstone_block_underscore:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzY3Y2Y2NzU3MTMxMjY3NTc5OGExODQyOGNiMWNjZmFmM2UxZDRhZjdhNTIzOGE0ZDM5M2M5NGVhYzk2ODIwYiJ9fX0="
+    name: "&7Redstone Block _"
+    tags:
+      - alphabet/redstone_block
+      - character/underscore
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_underscore"
+          input: { head: "mini_redstone_block" }
+  redstone_block_heart:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTM0ZDBlNTc2NDlmZDY2MTkyZTA3MzE2MDVkYjA5MzBiMTA5ZDgxMjVkOGRlYWQ4YzFlYzBmZTlmN2Y3YWJjYyJ9fX0="
+    name: "&7Redstone Block ♥"
+    tags:
+      - alphabet/redstone_block
+      - character/heart
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_heart"
+          input: { head: "mini_redstone_block" }
+  redstone_block_blank:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzc5Njk1MzM4MjZmZTRlZjQ2NTc4OWY4MjMzMTU5OGM4YjhlYzhkYWJhMjk2Yjc1MzA0NGI1MDlmYWJlYWI4NiJ9fX0="
+    name: "&7Redstone Block  "
+    tags:
+      - alphabet/redstone_block
+      - character/blank
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_blank"
+          input: { head: "mini_redstone_block" }
+  redstone_block_degree:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNWMzZWQxYmUwZTQ3OWI5OGEyMmRkZWQ5YmNjNGViMDZhODljMDZhOTFiOTYxNTc1OGE4NGNmMzlkODRjN2E4MSJ9fX0="
+    name: "&7Redstone Block °"
+    tags:
+      - alphabet/redstone_block
+      - character/degree
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_degree"
+          input: { head: "mini_redstone_block" }
+  redstone_block_checkmark:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMmJkMmJlYzVlYmI0Njc1Y2YyOTA2YjVmNGMyMjE4OTgyMjM2NTYzZmQ3YjQyYjg1OGIyOWRmZGU2Y2VmYzQyOCJ9fX0="
+    name: "&7Redstone Block ✓"
+    tags:
+      - alphabet/redstone_block
+      - character/checkmark
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_checkmark"
+          input: { head: "mini_redstone_block" }
+  redstone_block_pause:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWU0NTFkNzRkYTM5NTNjMjZhMTFhNmI1YzdkNDMwMDg2NDMxYWI3YmMyZjczNmFiNWE3MDIzYzA2ZDQxMmM1YyJ9fX0="
+    name: "&7Redstone Block ⏸"
+    tags:
+      - alphabet/redstone_block
+      - character/pause
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_pause"
+          input: { head: "mini_redstone_block" }
+  redstone_block_note:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWY1YjM4N2UwYTBmMGZlYzk2OGFhMDFlZTQ4MmYzNmE5MmI5ODNmMWJkYTIxOTEzMmRlNDk0NmE4OWI5YWQ2MSJ9fX0="
+    name: "&7Redstone Block ♪"
+    tags:
+      - alphabet/redstone_block
+      - character/note
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_note"
+          input: { head: "mini_redstone_block" }
+  redstone_block_paren_open:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTYxN2RhZTQxZGUzYWQxMTkxODcyMDRjNDFjMjkxMjUwMTg4ZjljM2Y1MjczYWQxNzM4ZTdkOTM2NjJiNzU1ZCJ9fX0="
+    name: "&7Redstone Block ("
+    tags:
+      - alphabet/redstone_block
+      - character/paren_open
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_paren_open"
+          input: { head: "mini_redstone_block" }
+  redstone_block_paren_close:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZGZiYTc2YWRiY2YzNDE2NDMxZjRmNTU5NmU2ZTNhMDkxYWJiYzQ5OTk4ZDM0MTVhMjc1MWQ2OWQzMjUyZjgyZCJ9fX0="
+    name: "&7Redstone Block )"
+    tags:
+      - alphabet/redstone_block
+      - character/paren_close
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_paren_close"
+          input: { head: "mini_redstone_block" }
+  redstone_block_bracket_open:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTk3NTk3MTI3YjRjYzQ3YTFmMmViNGIzMDM5YWRjNTI3OGM3YzQ5ZWFiMDcxNmRlZDU0MzI2NjYxNTBiMGE5MSJ9fX0="
+    name: "&7Redstone Block ["
+    tags:
+      - alphabet/redstone_block
+      - character/bracket_open
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_bracket_open"
+          input: { head: "mini_redstone_block" }
+  redstone_block_bracket_close:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODgwYzI1MTc4ZDJjNmU3M2FhY2Q1ZTYzNzA4ZmE2OTBmMjQ1NTFiNWYwZmJlMmU0ODliOTEwOTY3YzU4YTJmZCJ9fX0="
+    name: "&7Redstone Block ]"
+    tags:
+      - alphabet/redstone_block
+      - character/bracket_close
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_bracket_close"
+          input: { head: "mini_redstone_block" }
+  redstone_block_brace_open:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjVjMjdmNDZhMDk0ODUyMzM4ZTM3MmM1ODI3MzRiOTc5Mjk2OTUyZmUzNGYyNmI5YjA1MzhiYmE2NTEwZWMzYSJ9fX0="
+    name: "&7Redstone Block {"
+    tags:
+      - alphabet/redstone_block
+      - character/brace_open
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_brace_open"
+          input: { head: "mini_redstone_block" }
+  redstone_block_brace_close:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZWYyMDc0Y2VhYTQyNTBmNjRjMzY1ODRmODY4Y2U5OTgwMWRlYWI1YzM0OWRhN2Q3OTk1NmJhY2NjYTc5OThkMyJ9fX0="
+    name: "&7Redstone Block }"
+    tags:
+      - alphabet/redstone_block
+      - character/brace_close
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_brace_close"
+          input: { head: "mini_redstone_block" }
+  redstone_block_arrow_up:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTYwYTVhYjBlYjNlYWY0ZTI3NmI4Zjc2M2VlNDdkMjQxYzRhZjAwOTFjYzFiMDQ1ZDk5NGNkNTExNDE3YWY3YyJ9fX0="
+    name: "&7Redstone Block ↑"
+    tags:
+      - alphabet/redstone_block
+      - character/arrow_up
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_arrow_up"
+          input: { head: "mini_redstone_block" }
+  redstone_block_arrow_down:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvY2M1Yjk1NDJjYTQ2YjAwMjM1ZDNkZGRhZGEwMjk5M2JjNGQyZjdlNjNhNWJmNDViMDRhZTZlNzI1OWM3M2U0OCJ9fX0="
+    name: "&7Redstone Block ↓"
+    tags:
+      - alphabet/redstone_block
+      - character/arrow_down
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_arrow_down"
+          input: { head: "mini_redstone_block" }
+  redstone_block_arrow_left:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTJiYTgxYjQ3ZDVlZTA2YjQ4NGVhOWJkZjIyOTM0ZTZhYmNhNWU0Y2VkN2JlMzkwNWQ2YWU2ZWNkNmZjZWEyYSJ9fX0="
+    name: "&7Redstone Block ←"
+    tags:
+      - alphabet/redstone_block
+      - character/arrow_left
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_arrow_left"
+          input: { head: "mini_redstone_block" }
+  redstone_block_arrow_right:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTg2NjA2OTFkMWNhMDI5ZjEyMGEzZmYwZWFiYWI5M2EyMzA2YjM3YTdkNjExMTlmY2QxNDFmZjJmNmZjZDc5OCJ9fX0="
+    name: "&7Redstone Block →"
+    tags:
+      - alphabet/redstone_block
+      - character/arrow_right
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_arrow_right"
+          input: { head: "mini_redstone_block" }
+  redstone_block_arrow_left_up:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDU0MTkxOWYzN2YwZjU2NTBkNGJkNDFjMDUyZDkxMTU3NzBhYTM1ZTAzZTU4ODZkMmQ1NzUyYTc5ZGQxNDIxNyJ9fX0="
+    name: "&7Redstone Block ↖"
+    tags:
+      - alphabet/redstone_block
+      - character/arrow_left_up
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_arrow_left_up"
+          input: { head: "mini_redstone_block" }
+  redstone_block_arrow_right_up:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvY2FiNzllNDZkYTcyNDZlYjc1MjllY2U4MDQ1NDRlZWRiOGIzNTlmOWQ4NGExNzBmZjZiOTg1YTc2YzhiMmFjYiJ9fX0="
+    name: "&7Redstone Block ↗"
+    tags:
+      - alphabet/redstone_block
+      - character/arrow_right_up
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_arrow_right_up"
+          input: { head: "mini_redstone_block" }
+  redstone_block_arrow_left_down:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvN2Y5YTc3OGRmYzY2ZDUzYmI5OTRhNzA5NTdkNTI5M2EyNjdmODU4MTgyNzA1ODM1NWYwOTAzN2VkOTYwYWUwMyJ9fX0="
+    name: "&7Redstone Block ↙"
+    tags:
+      - alphabet/redstone_block
+      - character/arrow_left_down
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_arrow_left_down"
+          input: { head: "mini_redstone_block" }
+  redstone_block_arrow_right_down:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjRjZDA1ZTE0Yzk1ZGZlYzIyZjIyODcwNjdhZTc0NDk3MWI0Mjg3YzgzYWM5ZWJhNzc2OTBiODBiZmViNDNjYSJ9fX0="
+    name: "&7Redstone Block ↘"
+    tags:
+      - alphabet/redstone_block
+      - character/arrow_right_down
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_arrow_right_down"
+          input: { head: "mini_redstone_block" }
+  redstone_block_forward:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvM2E0N2M1MGU1YTBmN2ZlNDQxODY5YzJhN2Q1ZGU4MDc0ZWRiMTNmYTZmYzg1ZWYxYTQwNzBiOTUzMTI2MTI3OSJ9fX0="
+    name: "&7Redstone Block ⏩"
+    tags:
+      - alphabet/redstone_block
+      - character/forward
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_forward"
+          input: { head: "mini_redstone_block" }
+  redstone_block_forward_ii:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzY5YWEyNTZiMTkzYTJkMzI1MjE3MGEzYjFkZDNlZGJiOGQ0YmY5YTA2ZjBiOTNlZDVhODYzZTcyYTE3ZjJkYSJ9fX0="
+    name: "&7Redstone Block ⏭"
+    tags:
+      - alphabet/redstone_block
+      - character/forward_ii
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_forward_ii"
+          input: { head: "mini_redstone_block" }
+  redstone_block_backward:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjZkOGVmZjRjNjczZTA2MzY5MDdlYTVjMGI1ZmY0ZjY0ZGMzNWM2YWFkOWI3OTdmMWRmNjYzMzUxYjRjMDgxNCJ9fX0="
+    name: "&7Redstone Block ⏪"
+    tags:
+      - alphabet/redstone_block
+      - character/backward
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_backward"
+          input: { head: "mini_redstone_block" }
+  redstone_block_backward_ii:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTc0OTQyZTMyNGE2NDhlOWFlZDcyZWFmMzY0NjkyMGEyOTI2NDM4YmU2NWVmM2FlYjkzZjZhMmVjYjAzZTU5NiJ9fX0="
+    name: "&7Redstone Block ⏮"
+    tags:
+      - alphabet/redstone_block
+      - character/backward_ii
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_backward_ii"
+          input: { head: "mini_redstone_block" }
+  redstone_block_refresh:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzA1ZWI3ZTA0ODg2ODMyNTRlZGI2NzgyYzVkYjhkMjdjZDA3OGU3ODRkZTJkY2RjZDI1Y2UwODY0ZGZhYmQzOCJ9fX0="
+    name: "&7Redstone Block ↻"
+    tags:
+      - alphabet/redstone_block
+      - character/refresh
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_refresh"
+          input: { head: "mini_redstone_block" }
+  redstone_block_letter_a_acute:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjE5NjlkODE3NGU3OWNjYjUyZWM2NWNhOWQ2ZjYzNjYwYjMyOWQ1OTljZTI1NGNlODRkMjU3YjYzMzA3OGFiYiJ9fX0="
+    name: "&7Redstone Block Á"
+    tags:
+      - alphabet/redstone_block
+      - character/letter_a_acute
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_letter_a_acute"
+          input: { head: "mini_redstone_block" }
+  redstone_block_letter_a_umlaut:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODg0Njc2NWM0ZDJkYTc3MzA3ZWY4ZmM4MmQ3NDhmMzVmZGFiNTVlYThmZDNmOGY1MDU2ZDEzMTg0ZDg0YTA3NCJ9fX0="
+    name: "&7Redstone Block Ä"
+    tags:
+      - alphabet/redstone_block
+      - character/letter_a_umlaut
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_letter_a_umlaut"
+          input: { head: "mini_redstone_block" }
+  redstone_block_letter_c_cedilla:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvY2VhNzRjZWRjMjFkODE3MGEzMzk2NWE3YWJhYjE5MWEwZmQ3NGEyNmViZTM5YjAyM2RlYzVjYjRlMDg3NGFjNSJ9fX0="
+    name: "&7Redstone Block Ç"
+    tags:
+      - alphabet/redstone_block
+      - character/letter_c_cedilla
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_letter_c_cedilla"
+          input: { head: "mini_redstone_block" }
+  redstone_block_letter_e_acute:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTIwOGEwYTBlMTdlYTQxZTRmODdiNDQxM2I5ODM2ZjA4YThmN2M0YWI2ZDA2Nzk2MTg3MDJiOGE4MjQzYWY2MCJ9fX0="
+    name: "&7Redstone Block É"
+    tags:
+      - alphabet/redstone_block
+      - character/letter_e_acute
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_letter_e_acute"
+          input: { head: "mini_redstone_block" }
+  redstone_block_letter_i_acute:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDU1ZjhiNjAzOGYwOGY4YTBhNDRlNzZkMjQ4ZWMyYmY3OTZlZTE3NTViZDY3NWJhNmMxZjc5NzQwYWNhMDc5NSJ9fX0="
+    name: "&7Redstone Block Í"
+    tags:
+      - alphabet/redstone_block
+      - character/letter_i_acute
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_letter_i_acute"
+          input: { head: "mini_redstone_block" }
+  redstone_block_letter_n_tilde:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjE5ZGM3ZDI2YzQ2ZGRjYjczMWExNmEwZGQ2ZWYyNTNmOWJjOTA0Y2MyOWQ2NWQ0ODA2NzI0OTg1NDYwZjg5MCJ9fX0="
+    name: "&7Redstone Block Ñ"
+    tags:
+      - alphabet/redstone_block
+      - character/letter_n_tilde
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_letter_n_tilde"
+          input: { head: "mini_redstone_block" }
+  redstone_block_letter_o_acute:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzc4MTcyZDk4N2EzNmZmYjExYTE2OTMxZTg2MzNjZTBjZmM1MTBiZDA3MGM0MzdmOWFkY2QwZmY4NmExYWU4OSJ9fX0="
+    name: "&7Redstone Block Ó"
+    tags:
+      - alphabet/redstone_block
+      - character/letter_o_acute
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_letter_o_acute"
+          input: { head: "mini_redstone_block" }
+  redstone_block_letter_o_umlaut:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMmJiYzY1N2U1YjczY2JiM2I0ZTE3NDQ2MjQzNTVmZDU2NzE4YmRiYzFjZTdkODc2YmQ4MjAyNTliMTU1OGE3NyJ9fX0="
+    name: "&7Redstone Block Ö"
+    tags:
+      - alphabet/redstone_block
+      - character/letter_o_umlaut
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_letter_o_umlaut"
+          input: { head: "mini_redstone_block" }
+  redstone_block_letter_u_acute:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTdmOWYyZTU0ZjU3NDdlNmFhMTFkM2VkMjFkNGFmOThlMDY4Njg1YjE3MjY4MTJiODg5Zjk3ZGEyYjdhYmEwNyJ9fX0="
+    name: "&7Redstone Block Ú"
+    tags:
+      - alphabet/redstone_block
+      - character/letter_u_acute
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_letter_u_acute"
+          input: { head: "mini_redstone_block" }
+  redstone_block_letter_u_umlaut:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzEzNTU0YmEyN2I5ZDViZWJmODNiMzZkODY3OTlkZjZhOGU5MTgyYmU0OTA2MTZhMGI2NjBlYWVjNGQ2YWI4MSJ9fX0="
+    name: "&7Redstone Block Ü"
+    tags:
+      - alphabet/redstone_block
+      - character/letter_u_umlaut
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_letter_u_umlaut"
+          input: { head: "mini_redstone_block" }
+  redstone_block_greek_alpha:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmVmZTc2NTZiY2UxOWQ4Mzg1ZTk3NzFiY2I1ZTEwZDBjMmM1ZmM2NTRlYTI5ZDdmYjhjZWZhOTJiYzMzODc1ZiJ9fX0="
+    name: "&7Redstone Block α"
+    tags:
+      - alphabet/redstone_block
+      - character/greek_alpha
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_greek_alpha"
+          input: { head: "mini_redstone_block" }
+  redstone_block_greek_lambda:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjBhZTNlZjJiNmZkY2Y5ZDAxM2E0ZGZmN2MwNDYxZTQ5NTBhMzQzZmIzOGFhNjNlNTIzMGQ4NmQ1Njk1NTVkZCJ9fX0="
+    name: "&7Redstone Block λ"
+    tags:
+      - alphabet/redstone_block
+      - character/greek_lambda
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_greek_lambda"
+          input: { head: "mini_redstone_block" }
+  redstone_block_greek_pi:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYWQwNjNkZjRhMjMxM2U5NjJjNjg4NzBlODE1Mzg4NzQzZjM2NjQ3NTM4MTViYTU5ODFmMjQ1YWYzMTk3OTQ4MSJ9fX0="
+    name: "&7Redstone Block π"
+    tags:
+      - alphabet/redstone_block
+      - character/greek_pi
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_greek_pi"
+          input: { head: "mini_redstone_block" }
+  redstone_block_greek_omega:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTFjMjhjOTE0NTNkY2U3YTQzNjQ3Y2RhNDZjYzZhNzkyZmFlNjk4YmIyODJjNTQ2ZjZmMzEzMGExZTgyNGVjNiJ9fX0="
+    name: "&7Redstone Block Ω"
+    tags:
+      - alphabet/redstone_block
+      - character/greek_omega
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_greek_omega"
+          input: { head: "mini_redstone_block" }
+  redstone_block_greek_sigma:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjM3MjgxNzhhMTMzOTQzMGFhYzQ4NGZmMjI1NzNmOGVlNzRlZmY1ZGJkNGFlOTVkYjhmMmRmY2ZjMzUzYzEzMiJ9fX0="
+    name: "&7Redstone Block ∑"
+    tags:
+      - alphabet/redstone_block
+      - character/greek_sigma
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_greek_sigma"
+          input: { head: "mini_redstone_block" }
+  redstone_block_cyrillic_yo:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTRiNWI4ZmYyY2Y0MTA2ZWY2ZGEyNmM3YjUyNGRkM2I0N2YzZjY4OGYxODM4YTUzMDM4ZTE3NDZlOTk3OGVmYiJ9fX0="
+    name: "&7Redstone Block Ё"
+    tags:
+      - alphabet/redstone_block
+      - character/cyrillic_yo
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_cyrillic_yo"
+          input: { head: "mini_redstone_block" }
+  redstone_block_cyrillic_be:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGVjYzMxOWEyM2I1OGQxYTZlNzQwM2Q2M2YwNmEzZTMwN2JmOGIyNWU5MjdjNWExNTRmMjUwNWNjZmFlNzU1In19fQ=="
+    name: "&7Redstone Block Б"
+    tags:
+      - alphabet/redstone_block
+      - character/cyrillic_be
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_cyrillic_be"
+          input: { head: "mini_redstone_block" }
+  redstone_block_cyrillic_ge:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDcxZWY5MDZhNjI4YmUxNzBhNTA2MmYzMTg2NjFlZWU5NDQ0MzQ0MmQ4ZmRjODJmNmExYmE5OGNiZjU5YTAwNiJ9fX0="
+    name: "&7Redstone Block Г"
+    tags:
+      - alphabet/redstone_block
+      - character/cyrillic_ge
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_cyrillic_ge"
+          input: { head: "mini_redstone_block" }
+  redstone_block_cyrillic_de:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWIwNGU5ZGZjZDZjNThjYzIwNjdlYmVjYWRiYmRmMmU5MThiZmViYWFjYjE0OTNkMDJhZDZmYWUzOTgyMTFjOSJ9fX0="
+    name: "&7Redstone Block Д"
+    tags:
+      - alphabet/redstone_block
+      - character/cyrillic_de
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_cyrillic_de"
+          input: { head: "mini_redstone_block" }
+  redstone_block_cyrillic_zhe:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTA0MmZjZTEyNTA2MTI0MzU1ODMzMjc5YjNlYmMyNWJkZmY5NDI3ZTE5YzE2NzRkMDk4MjlhOWI4NThhYzVkNSJ9fX0="
+    name: "&7Redstone Block Ж"
+    tags:
+      - alphabet/redstone_block
+      - character/cyrillic_zhe
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_cyrillic_zhe"
+          input: { head: "mini_redstone_block" }
+  redstone_block_cyrillic_ze:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvM2ZlNWQxZGZjNWJlNzE1ZDU0NWRlMDk3YzMwMGY4OWIwMDY4OGFjMGJiOTgyNjMwMTA5ZmMwYzc5OTJmZDFmYSJ9fX0="
+    name: "&7Redstone Block З"
+    tags:
+      - alphabet/redstone_block
+      - character/cyrillic_ze
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_cyrillic_ze"
+          input: { head: "mini_redstone_block" }
+  redstone_block_cyrillic_i:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGMwNWI1Y2ZkMDhmNzkyOTdmZTg3MTExNzczM2E5NGU5OTg3ODM5OTE2NjQwNWZkZWFjOWUzY2NlZTQ5ZGY4ZiJ9fX0="
+    name: "&7Redstone Block И"
+    tags:
+      - alphabet/redstone_block
+      - character/cyrillic_i
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_cyrillic_i"
+          input: { head: "mini_redstone_block" }
+  redstone_block_cyrillic_short_i:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTM1NGRhZWZlMzgzN2ZiZjcyN2M4MmNjOTQzODU0MDlhNTgyMWIzZGFmMWEwNzEzMGZiMGU3Nzg5MGQzOTMzMiJ9fX0="
+    name: "&7Redstone Block Й"
+    tags:
+      - alphabet/redstone_block
+      - character/cyrillic_short_i
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_cyrillic_short_i"
+          input: { head: "mini_redstone_block" }
+  redstone_block_cyrillic_el:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjE0N2MyMzNiNDllMmVhMDliYWMxNzU1NTVhMThlZmViNDYxZTdmNjIzYzM5NmYxYjk3MTY3YzQ0Y2EyODM5ZCJ9fX0="
+    name: "&7Redstone Block Л"
+    tags:
+      - alphabet/redstone_block
+      - character/cyrillic_el
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_cyrillic_el"
+          input: { head: "mini_redstone_block" }
+  redstone_block_cyrillic_pe:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGQxYjEwYzFhOWUzNjM5MjczMjlkOGY1ZTlhN2UyODBiYzQ0MmFhMmNiNWJmOTUzODVhZTJmOWU0YTNlOGVmMiJ9fX0="
+    name: "&7Redstone Block П"
+    tags:
+      - alphabet/redstone_block
+      - character/cyrillic_pe
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_cyrillic_pe"
+          input: { head: "mini_redstone_block" }
+  redstone_block_cyrillic_u:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvM2E4NjU1MzZlOWE1Njg1MDhkYTQxNzA2N2Y0MjRiNzU1NTUzMzgyZTVkNWY3YjY0N2JkZjk4NmI2ZGE0NWQyNyJ9fX0="
+    name: "&7Redstone Block У"
+    tags:
+      - alphabet/redstone_block
+      - character/cyrillic_u
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_cyrillic_u"
+          input: { head: "mini_redstone_block" }
+  redstone_block_cyrillic_ef:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDIxNTljMjUwYTNmMDc3M2Y0NTRkMGY0ZDQ1MGM2NDI2MzQ0N2Y0MGJlYjJjYmEzNTVkNzkzMmJjN2RjNDIyNCJ9fX0="
+    name: "&7Redstone Block Ф"
+    tags:
+      - alphabet/redstone_block
+      - character/cyrillic_ef
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_cyrillic_ef"
+          input: { head: "mini_redstone_block" }
+  redstone_block_cyrillic_tse:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvN2FmNWYxYjRiN2E0OWM5ZDk0NmYyMTFkZWI4NTFlMDExMWU0ZDE4ZmYxM2RmYTJmMDYzYTRkNjdlMjNlMGY2OSJ9fX0="
+    name: "&7Redstone Block Ц"
+    tags:
+      - alphabet/redstone_block
+      - character/cyrillic_tse
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_cyrillic_tse"
+          input: { head: "mini_redstone_block" }
+  redstone_block_cyrillic_che:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDEwNGFjOGQzYzZjNWFiMDUzMGYzZTU4ZjJmMGVhMGQ5OTlmOTIwZjZhODVmZTg3NzJiM2M4YzlhYzBhNmEzYiJ9fX0="
+    name: "&7Redstone Block Ч"
+    tags:
+      - alphabet/redstone_block
+      - character/cyrillic_che
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_cyrillic_che"
+          input: { head: "mini_redstone_block" }
+  redstone_block_cyrillic_sha:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZmQ4MzMwYjRiODA2YjBlYzcwN2E1MzZlMjEwNjY1ZjI5MDU2NjU2ZTRkNzFmZDEzNmY5OTdlODJjM2YzMmQzOSJ9fX0="
+    name: "&7Redstone Block Ш"
+    tags:
+      - alphabet/redstone_block
+      - character/cyrillic_sha
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_cyrillic_sha"
+          input: { head: "mini_redstone_block" }
+  redstone_block_cyrillic_shcha:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTEzOTM2ZjhhZTY0YjczOWYyZmZmMDIzMDdkMmU5Y2YwNDJiMjRmNTE3NmViOTRhNTcwMTQ1NTkzNTJhOTE0MyJ9fX0="
+    name: "&7Redstone Block Щ"
+    tags:
+      - alphabet/redstone_block
+      - character/cyrillic_shcha
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_cyrillic_shcha"
+          input: { head: "mini_redstone_block" }
+  redstone_block_cyrillic_hard:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTU2Yjc5MWQ5ZDFkZWIzNDYyZDIwZjIxNWU2NDhmNDRlNjEyYWI5MWQzODNiY2IxMGEwZmU3MjY5MjllNGM1In19fQ=="
+    name: "&7Redstone Block Ъ"
+    tags:
+      - alphabet/redstone_block
+      - character/cyrillic_hard
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_cyrillic_hard"
+          input: { head: "mini_redstone_block" }
+  redstone_block_cyrillic_yeru:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGI5ZmIyNzdmNjM3NWQ0ZDk3NjQyNzE0OWM5YzJhMTc2YTZjMWRlYmRhZjk2OWUyODdlMjA5OTg5OWU4MGNiYiJ9fX0="
+    name: "&7Redstone Block Ы"
+    tags:
+      - alphabet/redstone_block
+      - character/cyrillic_yeru
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_cyrillic_yeru"
+          input: { head: "mini_redstone_block" }
+  redstone_block_cyrillic_soft:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODgxYjlhNGZkODgzZjg3M2ZjNmE5OTYzZTgwNTZkZmFhOWE3YjlkOGFmMDllNWMwZTAyOTk3M2FjNzg2M2VkNiJ9fX0="
+    name: "&7Redstone Block Ь"
+    tags:
+      - alphabet/redstone_block
+      - character/cyrillic_soft
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_cyrillic_soft"
+          input: { head: "mini_redstone_block" }
+  redstone_block_cyrillic_e:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjQwMWI5OTc5ZWUzNGQ1YTEwMjI3NzRiMWQ5NjM3OWZlNDU0YmM4YWUwMmM2OGQ2YmEyMjBhMWNkMWVhMDY5OCJ9fX0="
+    name: "&7Redstone Block Э"
+    tags:
+      - alphabet/redstone_block
+      - character/cyrillic_e
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_cyrillic_e"
+          input: { head: "mini_redstone_block" }
+  redstone_block_cyrillic_yu:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDBhYTQxMjNlMDI3ZjgwZWNhYmI0ZTIzYjA2OWFmZTllYTI0MmMyMjEzZGJhMjc1ZDYzMjNkYTA3NTRhNWE1MiJ9fX0="
+    name: "&7Redstone Block Ю"
+    tags:
+      - alphabet/redstone_block
+      - character/cyrillic_yu
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_cyrillic_yu"
+          input: { head: "mini_redstone_block" }
+  redstone_block_cyrillic_ya:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjUxNzliMmNmNjI4MmY0ZDBmNGFmOWIxZGJhNjhkMTJkNjk3MTBiMGExMTkxNmM2OGFjZjE0ZjcwMzcwMDE4YyJ9fX0="
+    name: "&7Redstone Block Я"
+    tags:
+      - alphabet/redstone_block
+      - character/cyrillic_ya
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_cyrillic_ya"
+          input: { head: "mini_redstone_block" }
+  redstone_block_zodiac_aquarius:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvM2NiODdkNDkyMTUwNGYyODU3ZjhhYzMyYTYxNjU0YjI4MWEyNDE5OTgzOGFhYTU2NWRmNTFjNGVkY2NiYjczZSJ9fX0="
+    name: "&7Redstone Block ♒"
+    tags:
+      - alphabet/redstone_block
+      - character/zodiac_aquarius
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_zodiac_aquarius"
+          input: { head: "mini_redstone_block" }
+  redstone_block_zodiac_aries:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOWVlZDgwOWZiNjY3NTdhMWE2ZDE2NzI5NjIyMDhlOWFmYjJjZTE2MTc4ZTZhZTE4NGM5MTZkYTE3MDdhZjAwMCJ9fX0="
+    name: "&7Redstone Block ♈"
+    tags:
+      - alphabet/redstone_block
+      - character/zodiac_aries
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_zodiac_aries"
+          input: { head: "mini_redstone_block" }
+  redstone_block_zodiac_cancer:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTgyZWFlZmIzYTJmNGVmOTBjNGMzNmZlYmVlOGUzY2VjMjQyYTJiZGZhMTQwZGQ5ZjI2NmM5MmVkZmIxOGUyNiJ9fX0="
+    name: "&7Redstone Block ♋"
+    tags:
+      - alphabet/redstone_block
+      - character/zodiac_cancer
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_zodiac_cancer"
+          input: { head: "mini_redstone_block" }
+  redstone_block_zodiac_gemini:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGVjNDlkNzE4MTIwNTFmYjMxZWRlZDQzMzY0ZmU4MmRlZjY5MzRjZTdiYTRkOGQzMjNhZDBlM2IzNjgwYTQ5NCJ9fX0="
+    name: "&7Redstone Block ♊"
+    tags:
+      - alphabet/redstone_block
+      - character/zodiac_gemini
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_zodiac_gemini"
+          input: { head: "mini_redstone_block" }
+  redstone_block_zodiac_leo:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOGNmOTliMjMxZTkwM2VlNjIwMzQzMGQ0MDA3Y2MyNmNlZjgwOTRjMjQzNWQ4YTNmZjUyNjFjOTQ1MDA0ZDNkZSJ9fX0="
+    name: "&7Redstone Block ♌"
+    tags:
+      - alphabet/redstone_block
+      - character/zodiac_leo
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_zodiac_leo"
+          input: { head: "mini_redstone_block" }
+  redstone_block_zodiac_libra:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvY2JjZDAxYmIyOGQ0MTM2MmVlYjAxODg3N2I1OTFhOWUwZmNkZGZiMzVkYzgyYmFiYmIzMjhkMTJhMjc2MGI5MSJ9fX0="
+    name: "&7Redstone Block ♎"
+    tags:
+      - alphabet/redstone_block
+      - character/zodiac_libra
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_zodiac_libra"
+          input: { head: "mini_redstone_block" }
+  redstone_block_zodiac_pisces:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTBiZWZhMjU1YjdmNjU5ZWExYjJhNDUzMjg3M2M0MTJmZGI1NmYwM2JhMmRiNjJlZmVjNDRiN2YzMzJkMmY2NyJ9fX0="
+    name: "&7Redstone Block ♓"
+    tags:
+      - alphabet/redstone_block
+      - character/zodiac_pisces
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_zodiac_pisces"
+          input: { head: "mini_redstone_block" }
+  redstone_block_zodiac_sagittarius:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGIxN2MyZGQzY2QzNDkxYzI3Zjk4MjY1YWQzNmRiNjkzZjI3MWFhN2QwZTFkMGJmYjM1YzBmZjY0OTkxZDc4NCJ9fX0="
+    name: "&7Redstone Block ♐"
+    tags:
+      - alphabet/redstone_block
+      - character/zodiac_sagittarius
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_zodiac_sagittarius"
+          input: { head: "mini_redstone_block" }
+  redstone_block_zodiac_scorpio:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjkxNzQ0YmMzZjk4NGEwMmU4MTYzZWYyMTA1OWM5NmE2MTExMzE2OTQyNGRiYjFiODE0OTQ2MTg1ZmU3YWYzOSJ9fX0="
+    name: "&7Redstone Block ♏"
+    tags:
+      - alphabet/redstone_block
+      - character/zodiac_scorpio
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_zodiac_scorpio"
+          input: { head: "mini_redstone_block" }
+  redstone_block_zodiac_taurus:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNmZiYjkwNGZhNmZkNWI3NjkwMTNjNTVhZmU1ZTYwZjBhNTAyZTYyZjg5NWVjMjAxYTA3MTc3OWNjNzU2NWQ1OSJ9fX0="
+    name: "&7Redstone Block ♉"
+    tags:
+      - alphabet/redstone_block
+      - character/zodiac_taurus
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_zodiac_taurus"
+          input: { head: "mini_redstone_block" }
+  redstone_block_zodiac_virgo:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTBlOTBhNTc2NDdlMjY3YTNiYzQ4OGQ0NWFjZmMxNTMyYTA5NjU0ZDgyYjNmNDYxYzA3YjNhZjY3ZTgxYjk5NCJ9fX0="
+    name: "&7Redstone Block ♍"
+    tags:
+      - alphabet/redstone_block
+      - character/zodiac_virgo
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_zodiac_virgo"
+          input: { head: "mini_redstone_block" }
+  redstone_block_female:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjU4OTI5N2EwNTg4YzhjNDk4OTE0MzJkMmM5MTEyN2QzOTNiODI3NDI1N2YwNTZiN2U5NDcwYmNkZjBmYTk1OSJ9fX0="
+    name: "&7Redstone Block ♀"
+    tags:
+      - alphabet/redstone_block
+      - character/female
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_female"
+          input: { head: "mini_redstone_block" }
+  redstone_block_male:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNmViYmYwYmZlZjRiN2M4MjI1NDVlZjdkOTAzZGE1ZjU2NGEyYTQxOWQwODE0ODFiODBmZTkyODUxMTM4ODU2ZiJ9fX0="
+    name: "&7Redstone Block ♂"
+    tags:
+      - alphabet/redstone_block
+      - character/male
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_male"
+          input: { head: "mini_redstone_block" }
+  redstone_block_galactic_a:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNWU4YTVjMGMwYjE0ZWNlYzhiZmRiYmJhMTY2YTVhZTBhZGM4YjQ5Njg4OWU4MTE2NmM5NmZkY2I4Y2EzODQwMiJ9fX0="
+    name: "&7Redstone Block Galactic A"
+    tags:
+      - alphabet/redstone_block
+      - character/galactic_a
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_galactic_a"
+          input: { head: "mini_redstone_block" }
+  redstone_block_galactic_b:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjg4MGMwMjAxYTZmYWI3MGRjMDljNDNmM2E2NjRhMTU3NDYyZjFiOTk0YzBjMzk2MTc0NGY5YTc4ZWVmNTRhMiJ9fX0="
+    name: "&7Redstone Block Galactic B"
+    tags:
+      - alphabet/redstone_block
+      - character/galactic_b
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_galactic_b"
+          input: { head: "mini_redstone_block" }
+  redstone_block_galactic_c:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZmRiYmZlOGFhNTNkN2IxYTFmMDA4NzE1OTExNDExMzQ5MzFmY2E0NGE0ZGFlYzcxZDA1MzI5N2I1YTUwNDc1YSJ9fX0="
+    name: "&7Redstone Block Galactic C"
+    tags:
+      - alphabet/redstone_block
+      - character/galactic_c
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_galactic_c"
+          input: { head: "mini_redstone_block" }
+  redstone_block_galactic_d:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTU2MTFjNTYyYWFhNjlhNzUyNWU3MmM2NmZlZGZiZjg4OTM4NTllNTk5Njc3NGFmNTIxYTBjZjQ3NmZhOTE4MCJ9fX0="
+    name: "&7Redstone Block Galactic D"
+    tags:
+      - alphabet/redstone_block
+      - character/galactic_d
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_galactic_d"
+          input: { head: "mini_redstone_block" }
+  redstone_block_galactic_e:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTBiMmJjY2NjZDkyNzg3ZTdhYjg0NWZjOWU2ODQ4NzE5NTA5ZTcwMDI3ODgzNmNlZjM2ODM0Yzk4NmMxN2EzYSJ9fX0="
+    name: "&7Redstone Block Galactic E"
+    tags:
+      - alphabet/redstone_block
+      - character/galactic_e
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_galactic_e"
+          input: { head: "mini_redstone_block" }
+  redstone_block_galactic_f:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvN2NiMjhlZjcwMjJmMTdjOGM2MGMwNzY5MmUyMjIyMTM3NjNkYTQ5ZmY0MzM1NGVhZTQ4MTRmNzA1MDk2YTZiYyJ9fX0="
+    name: "&7Redstone Block Galactic F"
+    tags:
+      - alphabet/redstone_block
+      - character/galactic_f
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_galactic_f"
+          input: { head: "mini_redstone_block" }
+  redstone_block_galactic_g:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZGEwMjE2MjA0OTI5YWJjNjU3NjQ0MzAzNjY0Zjc3Y2Q4NjJhYzFmNWYzNmQ1NGUzZGFhNDc0Zjc4YjkyNjM1NCJ9fX0="
+    name: "&7Redstone Block Galactic G"
+    tags:
+      - alphabet/redstone_block
+      - character/galactic_g
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_galactic_g"
+          input: { head: "mini_redstone_block" }
+  redstone_block_galactic_h:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzczNDhlY2RiNmFjYjJmNzUzODA1ZjgxMWZhNTk5MWJlNWU2NTFlZWRhOGU5NzcyMjI3NThlYTgyYTdmNDc1YiJ9fX0="
+    name: "&7Redstone Block Galactic H"
+    tags:
+      - alphabet/redstone_block
+      - character/galactic_h
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_galactic_h"
+          input: { head: "mini_redstone_block" }
+  redstone_block_galactic_i:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDllN2I3OTVlN2VkZTk2M2FjYmQ1ZGE0OTRjYjExM2EyNDE4Y2I1Nzg3ZTVjNDljYTM0ZDEwMDU5NTg3ODYwMSJ9fX0="
+    name: "&7Redstone Block Galactic I"
+    tags:
+      - alphabet/redstone_block
+      - character/galactic_i
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_galactic_i"
+          input: { head: "mini_redstone_block" }
+  redstone_block_galactic_j:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOGNiN2FkMmQwODQ5YWQyNDhjMTE5ZjgyNDY3MzE0MTZiYjk4YzQ0NDJhNjZkYWY4ZDA5ZWJkOWRhOWU3YWYyNSJ9fX0="
+    name: "&7Redstone Block Galactic J"
+    tags:
+      - alphabet/redstone_block
+      - character/galactic_j
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_galactic_j"
+          input: { head: "mini_redstone_block" }
+  redstone_block_galactic_k:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjEyMTRkZWFhMjcxOTczYWZlMDBjYWQyOGYwODdlNmZkNWQ3Zjg4OTEwYjEwYmMxNThhZWQxMWQxY2ZlMDY3OSJ9fX0="
+    name: "&7Redstone Block Galactic K"
+    tags:
+      - alphabet/redstone_block
+      - character/galactic_k
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_galactic_k"
+          input: { head: "mini_redstone_block" }
+  redstone_block_galactic_l:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZGUyNDIyZTFiMTU3YzQ4Y2E5MjdmOTFjYmYyOTA3ZDc2YzcyZTA3MDViZTQ2YzFlMzVjYzliNmE3N2VhNjFmNCJ9fX0="
+    name: "&7Redstone Block Galactic L"
+    tags:
+      - alphabet/redstone_block
+      - character/galactic_l
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_galactic_l"
+          input: { head: "mini_redstone_block" }
+  redstone_block_galactic_m:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzNmNWZjZDViNDIyNDdhYTMzMTkxZmE4NGEwMzM3ZTA5ZjcwMTEzZTNjY2Q3NThjMjhkNjljMDcxODYwZmRjOCJ9fX0="
+    name: "&7Redstone Block Galactic M"
+    tags:
+      - alphabet/redstone_block
+      - character/galactic_m
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_galactic_m"
+          input: { head: "mini_redstone_block" }
+  redstone_block_galactic_n:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOWVkMDE4YmFlNTE0ZGUzMGIxNTJjOGU0YTc5ZDdmMGQyYzU0YWE1OGEwMGQyMzVhNjVkN2VkNDY0MjY4ZmUwZSJ9fX0="
+    name: "&7Redstone Block Galactic N"
+    tags:
+      - alphabet/redstone_block
+      - character/galactic_n
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_galactic_n"
+          input: { head: "mini_redstone_block" }
+  redstone_block_galactic_o:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzI3Y2FhZDU5MDdhZGE0YzA0Y2NmNmQxZDAzM2RhMzZiZDFlNGQ2OGI2NDdiNmVjZTg3MjJkYTIyYjFiNjJhIn19fQ=="
+    name: "&7Redstone Block Galactic O"
+    tags:
+      - alphabet/redstone_block
+      - character/galactic_o
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_galactic_o"
+          input: { head: "mini_redstone_block" }
+  redstone_block_galactic_p:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZWI1YWNjZTAwZjZlODA3Mzk3YjVlZTBjODY3NzkzNmNhNGZkODg4M2YyMjIxMDQ2OWFjYjhmMjBhNzJiYjE5NyJ9fX0="
+    name: "&7Redstone Block Galactic P"
+    tags:
+      - alphabet/redstone_block
+      - character/galactic_p
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_galactic_p"
+          input: { head: "mini_redstone_block" }
+  redstone_block_galactic_q:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNWVlNDdlNmQzN2I3ZjdkMjcyZGYwNTlhZGU0ZTI2NDc4OWVjZmNkNzk5OTZjZGRkMDAzZWYxMWIxNDAwY2ZlNiJ9fX0="
+    name: "&7Redstone Block Galactic Q"
+    tags:
+      - alphabet/redstone_block
+      - character/galactic_q
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_galactic_q"
+          input: { head: "mini_redstone_block" }
+  redstone_block_galactic_r:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjBjNTA4YTUyMDQwMWZhYzU4YWEyYTQ4MWVlNmVjODJlYTAxNzJhNmI3NTFmMmMzZWMwYjI1Y2FiMTgzYzdmIn19fQ=="
+    name: "&7Redstone Block Galactic R"
+    tags:
+      - alphabet/redstone_block
+      - character/galactic_r
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_galactic_r"
+          input: { head: "mini_redstone_block" }
+  redstone_block_galactic_s:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzJiMzk2MDQ4ZTYyNTBkYmIxNDBhM2NhODZjOWE4ZDdmNGY3YTIyY2JmMzMxN2NiOGQ2M2VmYWY3NzgxODJiMyJ9fX0="
+    name: "&7Redstone Block Galactic S"
+    tags:
+      - alphabet/redstone_block
+      - character/galactic_s
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_galactic_s"
+          input: { head: "mini_redstone_block" }
+  redstone_block_galactic_t:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZWUxNDE2N2MwNjQ3ZGViNDgwMGNiNDY3MzQ4ZmYyM2E0NGZjODhhODU0NmIzYTE4YmYzZWY0ZWEyMWY0OTAyYyJ9fX0="
+    name: "&7Redstone Block Galactic T"
+    tags:
+      - alphabet/redstone_block
+      - character/galactic_t
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_galactic_t"
+          input: { head: "mini_redstone_block" }
+  redstone_block_galactic_u:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDJlZDI2NjViODRkYTdmYjkyYjZlM2JmYWY3MmQzMWE4YWVkNWM5ODgxNjRmYTgzNDA3MDliY2NiNDQyYWQ0MSJ9fX0="
+    name: "&7Redstone Block Galactic U"
+    tags:
+      - alphabet/redstone_block
+      - character/galactic_u
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_galactic_u"
+          input: { head: "mini_redstone_block" }
+  redstone_block_galactic_v:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjE3NjNlOTRiY2Y5OTQ2YWM5NDdmMDRlNjk2ZmNkOWU0MGIxNjJlMjUxY2ExNjc5NTQyOWE5NmVlZmFkZmI0OSJ9fX0="
+    name: "&7Redstone Block Galactic V"
+    tags:
+      - alphabet/redstone_block
+      - character/galactic_v
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_galactic_v"
+          input: { head: "mini_redstone_block" }
+  redstone_block_galactic_w:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWNiZGUyY2JjYzlmOTI3NWFkZmQ2MjBlYWY1ZThjMThmYzAyYjA0NTY0YjA1MjlkYTk0MzVjZTBjNmYwNmRiOSJ9fX0="
+    name: "&7Redstone Block Galactic W"
+    tags:
+      - alphabet/redstone_block
+      - character/galactic_w
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_galactic_w"
+          input: { head: "mini_redstone_block" }
+  redstone_block_galactic_x:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGUwN2EzMjFlNzJlZDNjZWMyNDgyMTQ4NGQzZTNhMDgxN2M0MGM0MGQxMGJjNjc2ZWIxYTNmNDhmODZlZWJhYSJ9fX0="
+    name: "&7Redstone Block Galactic X"
+    tags:
+      - alphabet/redstone_block
+      - character/galactic_x
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_galactic_x"
+          input: { head: "mini_redstone_block" }
+  redstone_block_galactic_y:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTdhNWM2MGEwZWRiNTZkZDUyYmI1NjhhZTA4NzAyYzNmYTRiMzM3MzM2ZWEyZDhiNmQ1OGM3YThmNjA4OGZhMiJ9fX0="
+    name: "&7Redstone Block Galactic Y"
+    tags:
+      - alphabet/redstone_block
+      - character/galactic_y
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_galactic_y"
+          input: { head: "mini_redstone_block" }
+  redstone_block_galactic_z:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODdlOGQ2NjZkY2U4ZWYxMWYxYjQ2ZjNjYjk5MDc1Y2ZhN2MxNTU5NTY0NDcxYzJmZjFlYjAwNTFkN2VkMTY5NyJ9fX0="
+    name: "&7Redstone Block Galactic Z"
+    tags:
+      - alphabet/redstone_block
+      - character/galactic_z
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "redstone_block_galactic_z"
+          input: { head: "mini_redstone_block" }

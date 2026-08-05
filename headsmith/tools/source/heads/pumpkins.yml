@@ -1,0 +1,291 @@
+# Pumpkins - Jack O'Lantern decorative heads
+
+heads:
+  # ===== STANDARD JACK O'LANTERN VARIANTS (Stonecutter) =====
+
+  jack_o_lantern_1:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjc1MmE5YTlhZWMwZjE2MTgwYjhjYjAwMDMwNTFiYjUyOWQ3YTMyMTIwMWZlZTc3NjdhZTBjMmJhNmFmOTE0OSJ9fX0="
+    name: "&6Jack O' Lantern"
+    properties: [glowing]
+    recipes:
+      stonecutter:
+        - id: "jack_o_lantern_1"
+          input: { material: "JACK_O_LANTERN" }
+
+  jack_o_lantern_2:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNWQ4MWExZjRkOGI4NzJmMGY5MzljNWFmZWUyOWZhOWU2ZDMwMjg0MTM2ZTAwMDIxOWJkNTFlYzg2YWZhNjEyYyJ9fX0="
+    name: "&6Jack O' Lantern"
+    properties: [glowing]
+    recipes:
+      stonecutter:
+        - id: "jack_o_lantern_2"
+          input: { material: "JACK_O_LANTERN" }
+
+  jack_o_lantern_3:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYThmOGNiNDY4OGI0MDY1MmNkMTM3M2YzNTMwMDE2Y2JiYTdiNGYxOGY5YmQyMTlhYjEyM2I0NWI4ZWUzYTU3NSJ9fX0="
+    name: "&6Jack O' Lantern"
+    properties: [glowing]
+    recipes:
+      stonecutter:
+        - id: "jack_o_lantern_3"
+          input: { material: "JACK_O_LANTERN" }
+
+  jack_o_lantern_4:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTVhODliOTY5NzgzNDljNjQ5OGRiNmM0ZmM4MTUyYTUwYjRkYzRhMmIwZWU2MTNmMzY4NDlmZDFmYmNlMWMzNyJ9fX0="
+    name: "&6Jack O' Lantern"
+    properties: [glowing]
+    recipes:
+      stonecutter:
+        - id: "jack_o_lantern_4"
+          input: { material: "JACK_O_LANTERN" }
+
+  jack_o_lantern_5:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzViMzM5ZGUwNzg0NDlkMTUyZmNjYzMzZGQyNTI3ZTZmMzYzOGJmMDExZjhiMWFhYWI0NDAwOGRlY2Q3Mjk4NyJ9fX0="
+    name: "&6Jack O' Lantern"
+    properties: [glowing]
+    recipes:
+      stonecutter:
+        - id: "jack_o_lantern_5"
+          input: { material: "JACK_O_LANTERN" }
+
+  jack_o_lantern_vanilla:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMmMxY2YzODExYmIxZDc2MzNhM2UxZDgyY2QxOGEyNTYzN2M4M2IyNTZiYjJlYzhkMzg5MDNkNGQzMjIxNDk0ZSJ9fX0="
+    name: "&6Jack O' Lantern (Vanilla)"
+    properties: [glowing]
+    recipes:
+      stonecutter:
+        - id: "jack_o_lantern_vanilla"
+          input: { material: "JACK_O_LANTERN" }
+
+  # ===== SPECIAL VARIANTS (Stonecutter) =====
+
+  soul_jack_o_lantern:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTc2MGIxYmYyNzFmOTNjMmM0MmFmNDU3ODMyMzllY2MyM2ViYzJmNWQ3MTRhMDQzMjkwNDdhMDAyZWE4ODEyMiJ9fX0="
+    name: "&3Soul Jack O'Lantern"
+    properties: [glowing]
+    recipes:
+      craft:
+        shapeless:
+          - id: "soul_jack_o_lantern"
+            ingredients:
+              - { material: "CARVED_PUMPKIN" }
+              - { material: "SOUL_TORCH" }
+
+  creeper_jack_o_lantern:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOWI3OTRmOWFiZjhmMjljOGUzNjRjN2M5NWYwZDNmMjVkNzk3NGJjY2NkNjYyNDhmZGMzNGI4MmU2ZjBmNTgwNyJ9fX0="
+    name: "&aCreeper Jack O'Lantern"
+    properties: [glowing]
+    recipes:
+      stonecutter:
+        - id: "creeper_jack_o_lantern"
+          input: { material: "JACK_O_LANTERN" }
+
+  # ===== COLORED JACK O'LANTERNS (Shapeless crafting with dye) =====
+
+  jack_o_lantern_black:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvN2M4NjZlNDIzOTU1MTQyOGY5YzgxNGQ5ZGMxMWU3MDAyZTA0M2I4N2Y1OTBmMWZkY2I0ZmY2YmI0OTdiOGUxOCJ9fX0="
+    name: "&0Jack O'Lantern (Black)"
+    tags: [color/black]
+    properties: [glowing]
+    recipes:
+      craft:
+        shapeless:
+          - id: "jack_o_lantern_black"
+            ingredients:
+              - { material: "JACK_O_LANTERN" }
+              - { material: "BLACK_DYE" }
+
+  jack_o_lantern_blue:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjM4NzI2NWQxMzE3Mjg0Nzk1MGVhNTA2YmEwZmYyYjA0Yjc5OTk4Mjg1MjVhMDMyOTA1N2E5ODk4NWRiMjVmYyJ9fX0="
+    name: "&9Jack O'Lantern (Blue)"
+    tags: [color/blue]
+    properties: [glowing]
+    recipes:
+      craft:
+        shapeless:
+          - id: "jack_o_lantern_blue"
+            ingredients:
+              - { material: "JACK_O_LANTERN" }
+              - { material: "BLUE_DYE" }
+
+  jack_o_lantern_brown:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjI3MDQyOTM0YjJhNGIwNDZmODdlZDA5MDVmZDA5MmE4OTNhZmZjNWRiZWUwOTU1NjQzNjliY2M2YmVhYWJiIn19fQ=="
+    name: "&6Jack O'Lantern (Brown)"
+    tags: [color/brown]
+    properties: [glowing]
+    recipes:
+      craft:
+        shapeless:
+          - id: "jack_o_lantern_brown"
+            ingredients:
+              - { material: "JACK_O_LANTERN" }
+              - { material: "BROWN_DYE" }
+
+  jack_o_lantern_cyan:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTIzYjBjN2YyMTNmZDUxZGQ4ODhlYTJjZmNjZGQ3YTI4YjI0N2E5ZDQ4ZmM1NDk3YjkzNDNmYmNhZGE3NjMyMyJ9fX0="
+    name: "&3Jack O'Lantern (Cyan)"
+    tags: [color/cyan]
+    properties: [glowing]
+    recipes:
+      craft:
+        shapeless:
+          - id: "jack_o_lantern_cyan"
+            ingredients:
+              - { material: "JACK_O_LANTERN" }
+              - { material: "CYAN_DYE" }
+
+  jack_o_lantern_gray:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODFiM2QxMmQxNmM5MDZlMjllODI1ZjU0M2JiYjQ2OGE2MTJjMzgzYjUzM2Q0Zjc4MjY4MDYzNjBiN2FlYzNiYiJ9fX0="
+    name: "&8Jack O'Lantern (Gray)"
+    tags: [color/gray]
+    properties: [glowing]
+    recipes:
+      craft:
+        shapeless:
+          - id: "jack_o_lantern_gray"
+            ingredients:
+              - { material: "JACK_O_LANTERN" }
+              - { material: "GRAY_DYE" }
+
+  jack_o_lantern_green:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjQ3YzMyMzY3NmVkMWQyZTUyNjIyYTA2ZjJmNmJhNTE4MTJlNmM4NmE2NjNhZjUyYjBiNDY1NDlhNWU1ZmI1MSJ9fX0="
+    name: "&2Jack O'Lantern (Green)"
+    tags: [color/green]
+    properties: [glowing]
+    recipes:
+      craft:
+        shapeless:
+          - id: "jack_o_lantern_green"
+            ingredients:
+              - { material: "JACK_O_LANTERN" }
+              - { material: "GREEN_DYE" }
+
+  jack_o_lantern_light_blue:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjhjZTRkMjY4OTU2YmY0NzA4NjNiMGM4NTk1ZGM1ZjA2OTRkNjA0YmNiYzg1OWU2ZTY2MThmYTMwMTJkMGUwYyJ9fX0="
+    name: "&bJack O'Lantern (Light Blue)"
+    tags: [color/light_blue]
+    properties: [glowing]
+    recipes:
+      craft:
+        shapeless:
+          - id: "jack_o_lantern_light_blue"
+            ingredients:
+              - { material: "JACK_O_LANTERN" }
+              - { material: "LIGHT_BLUE_DYE" }
+
+  jack_o_lantern_light_gray:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmMwMWIzNzU2YmZmNDE4NzQ1MWYxZDRlNGE2ODNkZjg2Zjk3YTBlOGZlMzdhNTI2ODUwZTYyMmExNTUzNjdmMiJ9fX0="
+    name: "&7Jack O'Lantern (Light Gray)"
+    tags: [color/light_gray]
+    properties: [glowing]
+    recipes:
+      craft:
+        shapeless:
+          - id: "jack_o_lantern_light_gray"
+            ingredients:
+              - { material: "JACK_O_LANTERN" }
+              - { material: "LIGHT_GRAY_DYE" }
+
+  jack_o_lantern_lime:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzY3MDk5NTQ1MGJkYjcxMDlmYTViZmU2ZDEzZmVlZGUzMjRmNDM5NWZjOTAwOTAwMGM4MGVlNTU0ZmFmYTYzNyJ9fX0="
+    name: "&aJack O'Lantern (Lime)"
+    tags: [color/lime]
+    properties: [glowing]
+    recipes:
+      craft:
+        shapeless:
+          - id: "jack_o_lantern_lime"
+            ingredients:
+              - { material: "JACK_O_LANTERN" }
+              - { material: "LIME_DYE" }
+
+  jack_o_lantern_magenta:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTQ5ZTA3N2ZmYWFlNWJiYjk1Mjk5MzAyZDY0ZDkzMjNkNDYyYzRkZjFmMjhjYTI0NjZlOTFmYWE4NmM0M2MxNSJ9fX0="
+    name: "&dJack O'Lantern (Magenta)"
+    tags: [color/magenta]
+    properties: [glowing]
+    recipes:
+      craft:
+        shapeless:
+          - id: "jack_o_lantern_magenta"
+            ingredients:
+              - { material: "JACK_O_LANTERN" }
+              - { material: "MAGENTA_DYE" }
+
+  jack_o_lantern_orange:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTMyMWNlNDcwZjIzMmI5ZTczZmNlMDkxY2U4NDhkZTkzODYwYTAzMzgxZDMxMDBjNDJiMzk2YzAyNTRiZTBlZiJ9fX0="
+    name: "&6Jack O'Lantern (Orange)"
+    tags: [color/orange]
+    properties: [glowing]
+    recipes:
+      craft:
+        shapeless:
+          - id: "jack_o_lantern_orange"
+            ingredients:
+              - { material: "JACK_O_LANTERN" }
+              - { material: "ORANGE_DYE" }
+
+  jack_o_lantern_pink:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTUyZjI4YWMyMmUwOWM1Yzc1NWJlNWVmOWI4N2NiZmI3ZjI4N2ZkZDg3Y2Y5Y2E1OGNlYTMyM2RiZmYyY2VjIn19fQ=="
+    name: "&dJack O'Lantern (Pink)"
+    tags: [color/pink]
+    properties: [glowing]
+    recipes:
+      craft:
+        shapeless:
+          - id: "jack_o_lantern_pink"
+            ingredients:
+              - { material: "JACK_O_LANTERN" }
+              - { material: "PINK_DYE" }
+
+  jack_o_lantern_purple:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjQzYTFjMTU1ZmRlZWNlNmVmNzA0ZWQ1NzJkODU0ZGJkNjIxYzRmMDc5OTkwYzViYWY5MzE5ZWMyZTA2ZTI2YiJ9fX0="
+    name: "&5Jack O'Lantern (Purple)"
+    tags: [color/purple]
+    properties: [glowing]
+    recipes:
+      craft:
+        shapeless:
+          - id: "jack_o_lantern_purple"
+            ingredients:
+              - { material: "JACK_O_LANTERN" }
+              - { material: "PURPLE_DYE" }
+
+  jack_o_lantern_red:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWI3NzE5OGI2YzcwMDM2ZmU0YWMzNTk2MWFlMDcxZGMzY2RkMDE3NmVhMzdmMDkxMzU4MmEwMTVlMGIzNzNjMCJ9fX0="
+    name: "&cJack O'Lantern (Red)"
+    tags: [color/red]
+    properties: [glowing]
+    recipes:
+      craft:
+        shapeless:
+          - id: "jack_o_lantern_red"
+            ingredients:
+              - { material: "JACK_O_LANTERN" }
+              - { material: "RED_DYE" }
+
+  jack_o_lantern_white:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTIzODg5YjVkY2NiYWE3NTdiOTUzMTMzOGRjODU4ZDA3NDAxYzRkZWQxMzc2M2M5OGZkZmEwYjI0MDE4ZWYzZSJ9fX0="
+    name: "&fJack O'Lantern (White)"
+    tags: [color/white]
+    properties: [glowing]
+    recipes:
+      craft:
+        shapeless:
+          - id: "jack_o_lantern_white"
+            ingredients:
+              - { material: "JACK_O_LANTERN" }
+              - { material: "WHITE_DYE" }
+
+  jack_o_lantern_yellow:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTRhOTg5ZmFiNTUzZjM3OTE5MjYzOGY3MjU4OTMxM2Q5MTNmYzBiMzVlMGNjZjdiYWQwNzFkODcyNjA3ZWUzMSJ9fX0="
+    name: "&eJack O'Lantern (Yellow)"
+    tags: [color/yellow]
+    properties: [glowing]
+    recipes:
+      craft:
+        shapeless:
+          - id: "jack_o_lantern_yellow"
+            ingredients:
+              - { material: "JACK_O_LANTERN" }
+              - { material: "YELLOW_DYE" }

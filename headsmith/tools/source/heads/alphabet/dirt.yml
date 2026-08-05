@@ -1,0 +1,1466 @@
+# Generated Dirt Alphabet Blocks
+
+heads:
+  dirt_letter_a:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzdlOGEyZGI3Y2MxYjMyNmFiZDk5ZDIzOGM3YTU0NGFmODQ0MjMzNGZiY2QyMjc1MTE2Mzk1OTgzNWIzNzU0In19fQ=="
+    name: "&7Dirt A"
+    tags:
+      - alphabet/dirt
+      - character/letter_a
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "dirt_letter_a"
+          input: { head: "mini_dirt" }
+  dirt_letter_b:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjU2MzRmMmZkZGIxOTNjM2EzZjYwNTY0MjI5YWRlYWYyZGE0MTZkZjA0NmQwYWQzMmQ5YjJjZjQ2OTViOCJ9fX0="
+    name: "&7Dirt B"
+    tags:
+      - alphabet/dirt
+      - character/letter_b
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "dirt_letter_b"
+          input: { head: "mini_dirt" }
+  dirt_letter_c:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNmFmZGYxNzRhYTU3Y2YxOGE4ZGU1ZjdhODM2OTE1ZjQyYWE2MDFiNTVmMzEyMmViZWQ5NmNjZTkzNjUxYSJ9fX0="
+    name: "&7Dirt C"
+    tags:
+      - alphabet/dirt
+      - character/letter_c
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "dirt_letter_c"
+          input: { head: "mini_dirt" }
+  dirt_letter_d:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmQxYzgyYmQ0MGM3MjYzMWJjNzgzZjg5ODZjY2JiM2ZmZmNjYWE4MWFmZGY1MzY1YTM1M2Q2MTQwYmZjYSJ9fX0="
+    name: "&7Dirt D"
+    tags:
+      - alphabet/dirt
+      - character/letter_d
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "dirt_letter_d"
+          input: { head: "mini_dirt" }
+  dirt_letter_e:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNmY3NTg1NzRhNzJjNjM3YTliZmMzNzc4YzZjOGI3ZTE1NGEwMWM1MDI2ZDBlODQxNTY3NzIwODBlZDkxMzE5YyJ9fX0="
+    name: "&7Dirt E"
+    tags:
+      - alphabet/dirt
+      - character/letter_e
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "dirt_letter_e"
+          input: { head: "mini_dirt" }
+  dirt_letter_f:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGViNGVmMmVjM2IyOTk2ZGYyYWM5MGI2ODgwOTJmNDJlOTRlNDZjNTNkYjA5YzdiMTRjMjU3YTFiM2IifX19"
+    name: "&7Dirt F"
+    tags:
+      - alphabet/dirt
+      - character/letter_f
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "dirt_letter_f"
+          input: { head: "mini_dirt" }
+  dirt_letter_g:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmIzZGE1M2RhZDgwNDAxMmI1MzhjOTRjZDU1OWE0ZDU4ODYxM2RlMjE5YTIxZTU3ODFkNmRkMWRkOGEyIn19fQ=="
+    name: "&7Dirt G"
+    tags:
+      - alphabet/dirt
+      - character/letter_g
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "dirt_letter_g"
+          input: { head: "mini_dirt" }
+  dirt_letter_h:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjJmMTM4YjVkYjg5ZGQ0ZTU5YmY4M2U2ZmZiOThlNGZhM2NkNDE2OWE4NGU4Y2MzZjIwMTRhMjM5YWI5ZTMifX19"
+    name: "&7Dirt H"
+    tags:
+      - alphabet/dirt
+      - character/letter_h
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "dirt_letter_h"
+          input: { head: "mini_dirt" }
+  dirt_letter_i:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDNhMjU2ZDA1MTNjMWVhNjZhZmE5NjRkNjFjNjhlOTgxOWI1OTEzNjJiMDMxOTE5YTZmYmIxODQzM2QyNDJhIn19fQ=="
+    name: "&7Dirt I"
+    tags:
+      - alphabet/dirt
+      - character/letter_i
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "dirt_letter_i"
+          input: { head: "mini_dirt" }
+  dirt_letter_j:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMmMxZjhkNDI3ODU4YzZmZWQ3ZmZjYjVhM2ZlODI2ZTFkOTAxYmQ2NjJhMTJhZDY1YTY4NWNkMWE3MGQxIn19fQ=="
+    name: "&7Dirt J"
+    tags:
+      - alphabet/dirt
+      - character/letter_j
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "dirt_letter_j"
+          input: { head: "mini_dirt" }
+  dirt_letter_k:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTlkYWQwNjAyMDVmZTQ0MmE5MTFmZGRjNGI0NmJjNWM0NmFmMzJiYWNiNThkMTcwODViOWEzNzQ3N2FmMzEifX19"
+    name: "&7Dirt K"
+    tags:
+      - alphabet/dirt
+      - character/letter_k
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "dirt_letter_k"
+          input: { head: "mini_dirt" }
+  dirt_letter_l:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTdjNzVmMTM4ZTJkMTk1YmJjYjA5OTc4OWZmODQzODdhOTIyYzdmNzYzYWM4NzVmNTlhODE1OWE3NmFiM2U5In19fQ=="
+    name: "&7Dirt L"
+    tags:
+      - alphabet/dirt
+      - character/letter_l
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "dirt_letter_l"
+          input: { head: "mini_dirt" }
+  dirt_letter_m:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODRhNGVkZTJlZDIxZDdlY2I5MDI4YzY3NjcxYjM5MDhjYjI5NDcxYmNlMmE2MzIzNGNmZTNkNzkzOWYzZDAifX19"
+    name: "&7Dirt M"
+    tags:
+      - alphabet/dirt
+      - character/letter_m
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "dirt_letter_m"
+          input: { head: "mini_dirt" }
+  dirt_letter_n:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDc4OWM0MjhjYjgzYmFhNDUxNjRjZDc2MGZhYWVlM2FhYzk2MGVmZGQ4NzRkY2EzM2ZlOTI1ZTFmYWIyMSJ9fX0="
+    name: "&7Dirt N"
+    tags:
+      - alphabet/dirt
+      - character/letter_n
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "dirt_letter_n"
+          input: { head: "mini_dirt" }
+  dirt_letter_o:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOGY3MDM2MzhlYWQ3NThhZWI5MzBiNjdiNDA1YWQ5ZWM2MmRlOGU2NGExMzRlMTE2YjU5MzlhMjgwYTg0ODU2In19fQ=="
+    name: "&7Dirt O"
+    tags:
+      - alphabet/dirt
+      - character/letter_o
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "dirt_letter_o"
+          input: { head: "mini_dirt" }
+  dirt_letter_p:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjg0NjM2ZTYzZjJmYzkzNDQ0NDM5ODA4M2Q1NjI1MzE1NWYxM2MxZmU2NDhhMTU0NzIzOTQzMjVhNWY2NiJ9fX0="
+    name: "&7Dirt P"
+    tags:
+      - alphabet/dirt
+      - character/letter_p
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "dirt_letter_p"
+          input: { head: "mini_dirt" }
+  dirt_letter_q:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTVlMTU0M2Y0YmEyNzU1ZGUyMjU1NWI0NjQzNDQyM2VjZjIyM2Q4NzE1ODNmMGUyMmFlZGZjNWYyMzM1ZjIifX19"
+    name: "&7Dirt Q"
+    tags:
+      - alphabet/dirt
+      - character/letter_q
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "dirt_letter_q"
+          input: { head: "mini_dirt" }
+  dirt_letter_r:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvY2VjNmEzZGIzYmMyNzQ4MTExM2M1ODlhMmI5NTQ1NDVjNWI3YTM5ZDYyYmIxN2U1MTJjMWI5OTVlNjlhNSJ9fX0="
+    name: "&7Dirt R"
+    tags:
+      - alphabet/dirt
+      - character/letter_r
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "dirt_letter_r"
+          input: { head: "mini_dirt" }
+  dirt_letter_s:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjZiMjYzZWZlNzUyNzE2ODlhMTU1OGQ0YTU4Mzc2MmY4ZjIzMzZlNTc3M2UxOThmMjFiMmQ2NTkzOWY2ZiJ9fX0="
+    name: "&7Dirt S"
+    tags:
+      - alphabet/dirt
+      - character/letter_s
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "dirt_letter_s"
+          input: { head: "mini_dirt" }
+  dirt_letter_t:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzg1ZWRiOWNiNDI2YWU3MDUyYTA1ZTU0NGU3ODUxYjc5YTg1YWFkOTlhYzYyZGI3ODViMjhkOGU1YjMifX19"
+    name: "&7Dirt T"
+    tags:
+      - alphabet/dirt
+      - character/letter_t
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "dirt_letter_t"
+          input: { head: "mini_dirt" }
+  dirt_letter_u:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMmVmYWY4NmIxMTgzYjQ2Yzc3ZjM1YWE1OTZiYzRjYmQ5YWI3NWRjMTk1ZTVjN2I1ODExNjVmZmIyZTdhM2QzIn19fQ=="
+    name: "&7Dirt U"
+    tags:
+      - alphabet/dirt
+      - character/letter_u
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "dirt_letter_u"
+          input: { head: "mini_dirt" }
+  dirt_letter_v:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzEzZDQ1MzIzMjllY2QxODAxMGEzNDZmYmQ2ZmY4NzE0MTg2ZGI3YjA4ZGRiNTAzZjQ0NzE4YzVlZDVmIn19fQ=="
+    name: "&7Dirt V"
+    tags:
+      - alphabet/dirt
+      - character/letter_v
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "dirt_letter_v"
+          input: { head: "mini_dirt" }
+  dirt_letter_w:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzkzNDAwYTk4ZjE5OTI4ZDJlYzU0ZWVjMDlhMzI5YmMwN2FhNzFkM2Q4M2UxZTUzZGM4ZGRjYWIwOTUyNyJ9fX0="
+    name: "&7Dirt W"
+    tags:
+      - alphabet/dirt
+      - character/letter_w
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "dirt_letter_w"
+          input: { head: "mini_dirt" }
+  dirt_letter_x:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGVkN2I4OTg2YTkxYTdlZGU2M2M2MmNmZmVhNzI1YjY3ZTFlMjRjMGM0N2RkMDcwOTdiZjlhZTcyMTVlY2Y4ZSJ9fX0="
+    name: "&7Dirt X"
+    tags:
+      - alphabet/dirt
+      - character/letter_x
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "dirt_letter_x"
+          input: { head: "mini_dirt" }
+  dirt_letter_y:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTcxNjg4ZWI5YmExN2NjYTllNjUzODVlNzI2ZmI1ZDI4Njg4N2M4NDQ0Y2MzODFhNjdkNmU5MWI5MWY5YyJ9fX0="
+    name: "&7Dirt Y"
+    tags:
+      - alphabet/dirt
+      - character/letter_y
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "dirt_letter_y"
+          input: { head: "mini_dirt" }
+  dirt_letter_z:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTU1NjMwN2JjMGJkOTRiOWJjZjY3ZDE2ZDg2OTUyNGYyMTE4ZWJkYTg3MmQ2ZDE2MzZjNGJkZGJmNGU3MTIyIn19fQ=="
+    name: "&7Dirt Z"
+    tags:
+      - alphabet/dirt
+      - character/letter_z
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "dirt_letter_z"
+          input: { head: "mini_dirt" }
+  dirt_number_0:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTViOGMzODk4ZjdmOTM3ZWFlNDliYzE1NjU1OWFlODA4YmRlNmM4ZWY1NzU0NDQ5Y2RmOWEzMzFiYWEyMzUifX19"
+    name: "&7Dirt 0"
+    tags:
+      - alphabet/dirt
+      - character/number_0
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "dirt_number_0"
+          input: { head: "mini_dirt" }
+  dirt_number_1:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvM2FhOWE3Mjg5ODY2ZTVjOWJlOWMxNWY1OTczNGYwNWY2YTcxYmQ1YjI4NDE1NzlhM2I2NmJiYWYzY2NhOWQ3In19fQ=="
+    name: "&7Dirt 1"
+    tags:
+      - alphabet/dirt
+      - character/number_1
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "dirt_number_1"
+          input: { head: "mini_dirt" }
+  dirt_number_2:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvN2ZkODg4Y2NlODc0ZWIwYmU4OTJmNzcyNWQ3YjZkMzg5NjI4YTNhMDdiNzg5ZmRmOGU1MzI0ZmQ3ZDgifX19"
+    name: "&7Dirt 2"
+    tags:
+      - alphabet/dirt
+      - character/number_2
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "dirt_number_2"
+          input: { head: "mini_dirt" }
+  dirt_number_3:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzRjNDEyYTU1N2M5MzIxOWY4N2MyNTM4Mzc2NzI5M2M3NmNkMTZiYzVhYTZlNTVjNmExZThhYTYxNTJhMzIifX19"
+    name: "&7Dirt 3"
+    tags:
+      - alphabet/dirt
+      - character/number_3
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "dirt_number_3"
+          input: { head: "mini_dirt" }
+  dirt_number_4:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWYxNTc3ZjRjYTEzMDM5NGI3ZjFlZjFiYWZmYjY3YWM2MDU4YmIzYmE4YzFhODZlZWJiNzljMDJhNGYifX19"
+    name: "&7Dirt 4"
+    tags:
+      - alphabet/dirt
+      - character/number_4
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "dirt_number_4"
+          input: { head: "mini_dirt" }
+  dirt_number_5:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYWFlMGJhYmU5MTYzNGUwYmRlOThiZmRkYWZiOTVlYzQyNTk4MzY4ODA2ODExNjU1OTJjMjFjOWE2NzNhZiJ9fX0="
+    name: "&7Dirt 5"
+    tags:
+      - alphabet/dirt
+      - character/number_5
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "dirt_number_5"
+          input: { head: "mini_dirt" }
+  dirt_number_6:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvN2VjNDIyNDMzYWY2NDlmNGYxZWNhMTNkYmRlNWFhYTQ4OTZlZGRkZDU1NDUzMTA2MGNkOTYyODM3N2VjZSJ9fX0="
+    name: "&7Dirt 6"
+    tags:
+      - alphabet/dirt
+      - character/number_6
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "dirt_number_6"
+          input: { head: "mini_dirt" }
+  dirt_number_7:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTdjNGFmZDE2NjFkNTA0ZDYxNWY5M2MzZTQzNzdmNjllYzViN2E5OGI1NTdhNjM4OGJlMTEzZGQ3YzZjNjMyMiJ9fX0="
+    name: "&7Dirt 7"
+    tags:
+      - alphabet/dirt
+      - character/number_7
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "dirt_number_7"
+          input: { head: "mini_dirt" }
+  dirt_number_8:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjJmZjNhOWVmOWJjYzEyNTE0YTIzY2FiM2Y1Mzk1NWYzN2M1M2M4ZDIxNGFjYzhiYTFiYzJhODBlMmI3YWUyIn19fQ=="
+    name: "&7Dirt 8"
+    tags:
+      - alphabet/dirt
+      - character/number_8
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "dirt_number_8"
+          input: { head: "mini_dirt" }
+  dirt_number_9:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMmY3YWVjOWNkOWNiMjdmYmVhYTE1ZThkZmU5YjdkN2M4OTg1MDdhZjY3ZjNkZWQyOTNhNzY4NDcwYzJjNyJ9fX0="
+    name: "&7Dirt 9"
+    tags:
+      - alphabet/dirt
+      - character/number_9
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "dirt_number_9"
+          input: { head: "mini_dirt" }
+  dirt_number_10:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTFkMjJhNjczMWFjY2YzNjM0MTEyNThmNGIyZTcyNWVhZjZiNTkxZGM4Y2Y5OGZjYWNhODk4MGE2YTM0NjYifX19"
+    name: "&7Dirt 10"
+    tags:
+      - alphabet/dirt
+      - character/number_10
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "dirt_number_10"
+          input: { head: "mini_dirt" }
+  dirt_number_11:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTNjNzQ5NTMyNjIwYTI4NmUwYmNkMDI5YTVmYzIwMzQyZDRhYjE1NTFmMzFjZTQyYzUyMDYyZDI3YTdhOGU4NyJ9fX0="
+    name: "&7Dirt 11"
+    tags:
+      - alphabet/dirt
+      - character/number_11
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "dirt_number_11"
+          input: { head: "mini_dirt" }
+  dirt_number_12:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTBiMzRiN2ExNWQzZWY0M2JlZjNmYzVjMTVkOWMxNzEzOWI2ZmY0NmQ3YjdiYmJlYTlhOTIxOWZlOWNiYmYifX19"
+    name: "&7Dirt 12"
+    tags:
+      - alphabet/dirt
+      - character/number_12
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "dirt_number_12"
+          input: { head: "mini_dirt" }
+  dirt_number_13:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOGI5NWU5NDhlZjIwZTFlYzMwNTk5NjU0NzU5N2I4YWM2ZDk5NmZiZTNiOTMxZmU0NWZmZjY5OThjNGVkNmJkIn19fQ=="
+    name: "&7Dirt 13"
+    tags:
+      - alphabet/dirt
+      - character/number_13
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "dirt_number_13"
+          input: { head: "mini_dirt" }
+  dirt_number_14:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDg0YWY1NGU1ZDUyN2U2MThlMjA1MWY2ODY3N2VlMjY3NmY0MmQ4YWRiNzE3YzU3YTlmYzc4ZmU2ODFmMjdhZSJ9fX0="
+    name: "&7Dirt 14"
+    tags:
+      - alphabet/dirt
+      - character/number_14
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "dirt_number_14"
+          input: { head: "mini_dirt" }
+  dirt_number_15:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTE3YTU1N2Q0MjdmYWYxNjhkYTY1NDkwMmU3Yjk2OTYyYjQzMTA5NmEzZWY1ZmQ4MWNhNmE4OGY1ZjU3ZWZkOCJ9fX0="
+    name: "&7Dirt 15"
+    tags:
+      - alphabet/dirt
+      - character/number_15
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "dirt_number_15"
+          input: { head: "mini_dirt" }
+  dirt_number_16:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNmI1MjIyODhhMmVjM2M0NGY1MWM4NDdiYjIyYWVjYjBiMThkNzExNGFmYWQ1MDc4NDVhYWY5MjU0MTU3MSJ9fX0="
+    name: "&7Dirt 16"
+    tags:
+      - alphabet/dirt
+      - character/number_16
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "dirt_number_16"
+          input: { head: "mini_dirt" }
+  dirt_number_17:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvY2ZkNTFlYTVjYjJmYWM0OWFjMjIzZTI4ZTBjZmNlYzg3NjY5YmFmZTNmZDk3MjNjM2M4OTNmN2E0NTgifX19"
+    name: "&7Dirt 17"
+    tags:
+      - alphabet/dirt
+      - character/number_17
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "dirt_number_17"
+          input: { head: "mini_dirt" }
+  dirt_number_18:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzg1ZTJiYjA0MjRiMjQ2ZWUwOGVkNTFlNWFhMjAyZmRmNDNmMmVlMmVhODliZjMzYjhmMzUzMjQ0NTY3MCJ9fX0="
+    name: "&7Dirt 18"
+    tags:
+      - alphabet/dirt
+      - character/number_18
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "dirt_number_18"
+          input: { head: "mini_dirt" }
+  dirt_number_19:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjM2NTk3Nzk5MTY4ZTNmYWI4NjMxYTYwMjlkZTgxNzExMWE5NTU0NTJiYjc0YjY2NzNhYjVhZTkyNmVlNWIifX19"
+    name: "&7Dirt 19"
+    tags:
+      - alphabet/dirt
+      - character/number_19
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "dirt_number_19"
+          input: { head: "mini_dirt" }
+  dirt_number_20:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmZhNDU0MzJlNmM0MjUxN2RlNWNmZGI1OGFiZTc3OTYyM2NkYzRhZjNmYzQ5YTgwMjNiMTk1NGY2YTE4NDYyMiJ9fX0="
+    name: "&7Dirt 20"
+    tags:
+      - alphabet/dirt
+      - character/number_20
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "dirt_number_20"
+          input: { head: "mini_dirt" }
+  dirt_number_21:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjNjZWYxNWQ1ZWU1OTI5YzUxYTg4NjUyYjRlNWNkY2YzMjgzYTZlOThjN2U1OGZkODczOWNhYjdlZTYzMWFiIn19fQ=="
+    name: "&7Dirt 21"
+    tags:
+      - alphabet/dirt
+      - character/number_21
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "dirt_number_21"
+          input: { head: "mini_dirt" }
+  dirt_number_22:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODhkZjI3MjNhMTE2YTc1ZjlkNWQ5M2VkOTgxMGY5YjZjMGYxZGFjOWY5YTkyMDlkZGRkZDY3Y2NhOWQ5YmI0In19fQ=="
+    name: "&7Dirt 22"
+    tags:
+      - alphabet/dirt
+      - character/number_22
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "dirt_number_22"
+          input: { head: "mini_dirt" }
+  dirt_number_23:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGFkZjZlMzNhODI4MWU0NjdiOGE1OWQ2ZWQzMzhiMmM0ZDBiNzE0MTg5OThkYjQ2MjliMjA5NDY2ZjZkMzI1In19fQ=="
+    name: "&7Dirt 23"
+    tags:
+      - alphabet/dirt
+      - character/number_23
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "dirt_number_23"
+          input: { head: "mini_dirt" }
+  dirt_number_24:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYWM1NTY2YjE0YTE1MTJmMTdkNmJiZGU2MTBhZjY5OGY2ZDcxZTc0YmVlN2RjMjE0ZWE0MDIyN2ViODlkOTEifX19"
+    name: "&7Dirt 24"
+    tags:
+      - alphabet/dirt
+      - character/number_24
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "dirt_number_24"
+          input: { head: "mini_dirt" }
+  dirt_number_25:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOGE0MmI5MTRkZTg3MzMyZTMyNTcxNDVkOWE4Nzg4ZTkwMjY2NDIwM2RlZDE5OTBlZTU0YjVlMjIyZjFmMjkifX19"
+    name: "&7Dirt 25"
+    tags:
+      - alphabet/dirt
+      - character/number_25
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "dirt_number_25"
+          input: { head: "mini_dirt" }
+  dirt_exclamation:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDZlOWYyNzJkY2IyNWI3MWYxZWNmNGI5NGZmN2MzNjgxYmM1YTdiNWFjMzQzNGQ2ODljOWQxZTM2YWUyZSJ9fX0="
+    name: "&7Dirt !"
+    tags:
+      - alphabet/dirt
+      - character/exclamation
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "dirt_exclamation"
+          input: { head: "mini_dirt" }
+  dirt_reverse_exclamation:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGNiODY3MDhhZDlhY2VkMGUzYzNmOTM0NDAzMjU1Y2UxZmE0MDZiMmEwOTMwNzU1ZTg3YmI1MTUyYTU2ZmU1OCJ9fX0="
+    name: "&7Dirt ¡"
+    tags:
+      - alphabet/dirt
+      - character/reverse_exclamation
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "dirt_reverse_exclamation"
+          input: { head: "mini_dirt" }
+  dirt_question:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZThjNzhmOGFjOWY0MGM1M2M0NjNiOTYzZTg0YWI1YzFlYjg4M2E0NmUzODc3Y2FhODBhYTIxNzQ0ZjFlNTIifX19"
+    name: "&7Dirt ?"
+    tags:
+      - alphabet/dirt
+      - character/question
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "dirt_question"
+          input: { head: "mini_dirt" }
+  dirt_reverse_question:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjg4ZWVkNDYyNTViZGMxMmI4ZmI4NzYzZTg4NmI4ODVlNTNlOTE0MDA2YWYzNThlYzYzNjNjZmJlZGU4ZTUzMSJ9fX0="
+    name: "&7Dirt ¿"
+    tags:
+      - alphabet/dirt
+      - character/reverse_question
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "dirt_reverse_question"
+          input: { head: "mini_dirt" }
+  dirt_period:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzg1NTM1ZmVhMmZmNTI0MjJhZjY5Y2RhZTdiZmY4NDQzOTMwOGViMTFiZGM4YjZjOTU4YWQ1MmM0YzliMTg5NCJ9fX0="
+    name: "&7Dirt ."
+    tags:
+      - alphabet/dirt
+      - character/period
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "dirt_period"
+          input: { head: "mini_dirt" }
+  dirt_comma:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvN2RkZjQwODYyMGFlNGI4ZDg4ZDJiODQ5NTZkN2UyMTkxNTI3NDFhYmE2Y2Q4MjhlMTg0YWRiZThkNTVmN2Y3In19fQ=="
+    name: "&7Dirt ,"
+    tags:
+      - alphabet/dirt
+      - character/comma
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "dirt_comma"
+          input: { head: "mini_dirt" }
+  dirt_colon:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDdjMWIxMjRhODIxZWI2NGY0YjRmNzdhNGFlODhhYjEzM2JlZDU0ZDRjZmY3YTI3ZTRjZDU0NDAzMDc1MmYifX19"
+    name: "&7Dirt :"
+    tags:
+      - alphabet/dirt
+      - character/colon
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "dirt_colon"
+          input: { head: "mini_dirt" }
+  dirt_semicolon:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzhiOWVjNDY4NzhmNjhmNTY5YzJkZGYzMTA0ZWNlZDc5OWUyNGQ4YmE1MjExYjc0ZThhMzhkYzhkYTc3MWQifX19"
+    name: "&7Dirt ;"
+    tags:
+      - alphabet/dirt
+      - character/semicolon
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "dirt_semicolon"
+          input: { head: "mini_dirt" }
+  dirt_apostrophe:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDVhNmM5MTNjNzhlNjc1NTU3NzRlZjk1MDhiNmM2ZGE3NDg1MWRhYzdjNzJjYjljN2RkYzUyNmEzYjkwMzRjYyJ9fX0="
+    name: "&7Dirt '"
+    tags:
+      - alphabet/dirt
+      - character/apostrophe
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "dirt_apostrophe"
+          input: { head: "mini_dirt" }
+  dirt_quote:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzg3MDNmMWEzNDUyN2NlZWRhYWY2ODNiOGJlYWE5YjZlYTFmMzk3NjhkN2QzNGY2YWI2MTliNGE5YmJkYzkifX19"
+    name: "&7Dirt \""
+    tags:
+      - alphabet/dirt
+      - character/quote
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "dirt_quote"
+          input: { head: "mini_dirt" }
+  dirt_ampersand:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvN2JhZWRkNDFjNGMxMjRhNmI2ZDczYThmNWJjZjg4ZDZhM2NlMzFlMzY4Y2JiOGVlZGIyOWE2ODM2NDVjZCJ9fX0="
+    name: "&7Dirt &"
+    tags:
+      - alphabet/dirt
+      - character/ampersand
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "dirt_ampersand"
+          input: { head: "mini_dirt" }
+  dirt_hash:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjc5NTVmNzc4YmJmOTAzNzRiYjVlZTE2MTQzYTg4ZjI1ZmY4YzIyYzlhYmUwMmQ5OTc1YTA5N2NmZjNiNjU0In19fQ=="
+    name: "&7Dirt #"
+    tags:
+      - alphabet/dirt
+      - character/hash
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "dirt_hash"
+          input: { head: "mini_dirt" }
+  dirt_dollar:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNmUwNTNiOGZlZTYxM2NhMjQyYzBjYjJjMDMwMjUzOTQ1YjE1NDEyMmFiMDUxYWY1ZDIwMzY4MjY5NzdjMGFkZSJ9fX0="
+    name: "&7Dirt $"
+    tags:
+      - alphabet/dirt
+      - character/dollar
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "dirt_dollar"
+          input: { head: "mini_dirt" }
+  dirt_plus:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNWE1MWE1ODk2N2YzYjdhZjAyNmM5YzI4OWRmZGNhNGM0MzYyNjg1NzUxNjY5NTRhNjk0OTIxNTQxZWMwZmMifX19"
+    name: "&7Dirt +"
+    tags:
+      - alphabet/dirt
+      - character/plus
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "dirt_plus"
+          input: { head: "mini_dirt" }
+  dirt_minus:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTZhODQ2NDk5MGNkNzY2NjgxMWQ2ZjI5MmZlODY5NjkyYTE4NGUwYzc0NDZmYTU4N2VkMWM5YjFmZWE3MjQifX19"
+    name: "&7Dirt -"
+    tags:
+      - alphabet/dirt
+      - character/minus
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "dirt_minus"
+          input: { head: "mini_dirt" }
+  dirt_equals:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZmRkM2Q1ZDE0NmM2MTUzYWNjOGJmMTMyOGE1N2UxNDQ4MTU2Mjk5MGIzZWE0ZWVhMzY4NzA3YWQ4Yzk3MzQyIn19fQ=="
+    name: "&7Dirt ="
+    tags:
+      - alphabet/dirt
+      - character/equals
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "dirt_equals"
+          input: { head: "mini_dirt" }
+  dirt_slash:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTg4OTAxN2NiODJlNzcyZWRiODRjMTc3MTc0ZDNjNDkxNjljYTljMjY3YTQyZDVmYzg3ZjhkZjYxMTVjIn19fQ=="
+    name: "&7Dirt /"
+    tags:
+      - alphabet/dirt
+      - character/slash
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "dirt_slash"
+          input: { head: "mini_dirt" }
+  dirt_backslash:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOGI5ODhiZDA3MzFjNTVkZGYyYzdjMmE1ODFlNDA1OWMyZTY2NzM5Nzc3ZDZjN2QzZmNmMTgzZGJlYzVkIn19fQ=="
+    name: "&7Dirt \\"
+    tags:
+      - alphabet/dirt
+      - character/backslash
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "dirt_backslash"
+          input: { head: "mini_dirt" }
+  dirt_underscore:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMmUyZjdiOTU4ZjZiN2I4NmIwNDQxY2MzM2RjNTZhNTExZGMxZWVlZjUxMjE1Y2RkZGM4NDQyZWJmYWNmYzIifX19"
+    name: "&7Dirt _"
+    tags:
+      - alphabet/dirt
+      - character/underscore
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "dirt_underscore"
+          input: { head: "mini_dirt" }
+  dirt_heart:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjZjNDdiMWFmZjk3NmU3MjA5YzZkODVkNzE0MjJlNzNjMmY2OWEzNzE5ZjBmMmE5NjlhMGM0ZWIzMWM2MTkifX19"
+    name: "&7Dirt ♥"
+    tags:
+      - alphabet/dirt
+      - character/heart
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "dirt_heart"
+          input: { head: "mini_dirt" }
+  dirt_blank:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjAzNmJmOTc5MjZjMDJhNmRhNTI0YmY0ODdkYjViOTc0MmQ1YmM1ODg0YWEyZmFmOTRlNTc2ZmM4NjkifX19"
+    name: "&7Dirt  "
+    tags:
+      - alphabet/dirt
+      - character/blank
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "dirt_blank"
+          input: { head: "mini_dirt" }
+  dirt_checkmark:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODAzZmEyMmQ5NjM2YjQ0YjNiZDI4ODllMTlmN2JmYjY1MDIwMjliZjBmODNmNWFhYzg0MDdkZTMzOGQ4MmYxOSJ9fX0="
+    name: "&7Dirt ✓"
+    tags:
+      - alphabet/dirt
+      - character/checkmark
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "dirt_checkmark"
+          input: { head: "mini_dirt" }
+  dirt_note:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMmFjOGM1NjlmMzk1NmViYmQxMzdjYWJkNzU3MDlmMWJkYzc2NDBmNGVjMDA5ODhlYmJiZjFmMWExM2UwNDhiNyJ9fX0="
+    name: "&7Dirt ♪"
+    tags:
+      - alphabet/dirt
+      - character/note
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "dirt_note"
+          input: { head: "mini_dirt" }
+  dirt_paren_open:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzNmZTAzNzZkN2I2YmZiNjBkMWI2MjFlNWViMjY2N2JlYjU5YWE5YzIwNjc0Mjg1MzJkN2U2Mjk2NTJiN2MifX19"
+    name: "&7Dirt ("
+    tags:
+      - alphabet/dirt
+      - character/paren_open
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "dirt_paren_open"
+          input: { head: "mini_dirt" }
+  dirt_paren_close:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTMxNjRhMTc5N2Q3YWEwOTdiZDMyNjE3NjFiZGY5ZGVkNTBlMDI0YjMxMDRlNWJmZTA2YTdjMzNkNGQ5ZjYifX19"
+    name: "&7Dirt )"
+    tags:
+      - alphabet/dirt
+      - character/paren_close
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "dirt_paren_close"
+          input: { head: "mini_dirt" }
+  dirt_bracket_open:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmNmMTE3NDg2ZWI0ZDVlNWY3ZTE4ZjVhMDUyZDA5NDlkMjc4YTM1NjY2ZTFlMmZkNDI4ZmQwMzhmNWE2NCJ9fX0="
+    name: "&7Dirt ["
+    tags:
+      - alphabet/dirt
+      - character/bracket_open
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "dirt_bracket_open"
+          input: { head: "mini_dirt" }
+  dirt_bracket_close:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOWIzNDJlYzIzNWM4NzczNGJhYzRmOWYzNDRhNTRlZGU3YjM3N2MyOGM1Mjk4M2E0MWRjYTE5Njc0NmRjYTUifX19"
+    name: "&7Dirt ]"
+    tags:
+      - alphabet/dirt
+      - character/bracket_close
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "dirt_bracket_close"
+          input: { head: "mini_dirt" }
+  dirt_brace_open:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTViMGQ1OGU3YzdhODYyZDVlZDNlMTNjNzFjMWJlOWE4M2JmYjNkNWI5ZjZlZGE3OWQyOWVkNWU3ZDIxMmNkIn19fQ=="
+    name: "&7Dirt {"
+    tags:
+      - alphabet/dirt
+      - character/brace_open
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "dirt_brace_open"
+          input: { head: "mini_dirt" }
+  dirt_brace_close:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzZmMDJmNGU1MTlmNGM2NDNkYzY3NTcxMjhkMThiNDUzNWM0NDQ0ZWY0MjEzOTU4MGU4YzZlZWRkMWVjOGFlIn19fQ=="
+    name: "&7Dirt }"
+    tags:
+      - alphabet/dirt
+      - character/brace_close
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "dirt_brace_close"
+          input: { head: "mini_dirt" }
+  dirt_arrow_up:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTJiNmYxZTJhYzk0ODQxZDZiNmE5ZDRkN2I1NjUxODM5NjI2ZjJiMjU5MTU5MmY1ZTA5NGIxMjBmNmM4Y2E5YSJ9fX0="
+    name: "&7Dirt ↑"
+    tags:
+      - alphabet/dirt
+      - character/arrow_up
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "dirt_arrow_up"
+          input: { head: "mini_dirt" }
+  dirt_arrow_down:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTIzNzZlZWNhYjVmNjE3YjhjNzFjZmNlZTRiZGZjNmNiMWI2NzFkN2JlNDkyMTQ3NGM5Y2I5ZmIxMzQxNDEifX19"
+    name: "&7Dirt ↓"
+    tags:
+      - alphabet/dirt
+      - character/arrow_down
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "dirt_arrow_down"
+          input: { head: "mini_dirt" }
+  dirt_arrow_left:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYWU3YWY1YWQ5MTJkYTZkNWNmYjhlYmNlM2QxZTYxNDExYmJkMjUwMTJjNTgzZjE3ZDJlNzE4ZjU1MzY3MWYifX19"
+    name: "&7Dirt ←"
+    tags:
+      - alphabet/dirt
+      - character/arrow_left
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "dirt_arrow_left"
+          input: { head: "mini_dirt" }
+  dirt_arrow_right:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDdhNmRmMTk0ZmI0Y2Q2Mjc3M2VmNzE2NDBjMzY4NDhjYzI3ZDlmZGY3YzQ1MWIzMTFmMjZiZjhkY2E0In19fQ=="
+    name: "&7Dirt →"
+    tags:
+      - alphabet/dirt
+      - character/arrow_right
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "dirt_arrow_right"
+          input: { head: "mini_dirt" }
+  dirt_arrow_left_up:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOGRhZWNhYTVlNGI0NGY5NzhjODhkM2QwMWIxZWJlNzM5ZjhhYjYzYmI5OWRmMzgzM2E2ZTJmMzFkYzE2NSJ9fX0="
+    name: "&7Dirt ↖"
+    tags:
+      - alphabet/dirt
+      - character/arrow_left_up
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "dirt_arrow_left_up"
+          input: { head: "mini_dirt" }
+  dirt_arrow_right_up:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOGNjYTI1OWQzZWM4YTllMjYyNzlhMDljOTgxZmM1N2Q0NmE3NGIyN2EyN2YyZDhhMWM0ODc3ODY3YmI3ODk5In19fQ=="
+    name: "&7Dirt ↗"
+    tags:
+      - alphabet/dirt
+      - character/arrow_right_up
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "dirt_arrow_right_up"
+          input: { head: "mini_dirt" }
+  dirt_arrow_left_down:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMGMxNTExZDU5Zjg2MWQ4ZmM1NjFmY2JhODg5MTliNmFmNmVkOGYwMjA4OGQxNjQ5N2ZkOTNiYTRjNzk0ZTIwIn19fQ=="
+    name: "&7Dirt ↙"
+    tags:
+      - alphabet/dirt
+      - character/arrow_left_down
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "dirt_arrow_left_down"
+          input: { head: "mini_dirt" }
+  dirt_arrow_right_down:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYWUxYzM4MzhmYzYzYTlkNWM5ZTJmNThmZmU4ODlhMjY2NTM0M2QzMzExOWU5ZGEzNDgwYzU1NGZmNjdlYTc0In19fQ=="
+    name: "&7Dirt ↘"
+    tags:
+      - alphabet/dirt
+      - character/arrow_right_down
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "dirt_arrow_right_down"
+          input: { head: "mini_dirt" }
+  dirt_forward:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzY1Yjc4N2U5ZDYwYWRjNjRkNTRiMjQyMzE4NWMyNzJhMzZmZDRiZDEwZWFiZTg4ZmZhMTI0NmFhODIwODAifX19"
+    name: "&7Dirt ⏩"
+    tags:
+      - alphabet/dirt
+      - character/forward
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "dirt_forward"
+          input: { head: "mini_dirt" }
+  dirt_forward_ii:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDc0OWNhZTNkODdiNzY0MWI3YzcwNGNkNTk1ZjMzYzU0YWVhZGYxYjlkMmE0ODQxYjMxZWQzOTU3NzkzZDU0In19fQ=="
+    name: "&7Dirt ⏭"
+    tags:
+      - alphabet/dirt
+      - character/forward_ii
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "dirt_forward_ii"
+          input: { head: "mini_dirt" }
+  dirt_backward:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvY2E1NTNlZTM4ZDE0ZWUyZTM1MjYyMTkyMTU0NDhlMzQ2NmRmOGVlN2MyMTk5NDk0OTQ0ZjQyZDc0Nzc2In19fQ=="
+    name: "&7Dirt ⏪"
+    tags:
+      - alphabet/dirt
+      - character/backward
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "dirt_backward"
+          input: { head: "mini_dirt" }
+  dirt_backward_ii:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvY2VmNWU5MzI2MmQ2YmI4NzgzZjcxN2NkN2ZkZDRiNjZjZjhiZDRiNTVlMTRmNjU2ZWE5N2YyZmY3NDE3ZDMxIn19fQ=="
+    name: "&7Dirt ⏮"
+    tags:
+      - alphabet/dirt
+      - character/backward_ii
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "dirt_backward_ii"
+          input: { head: "mini_dirt" }
+  dirt_letter_a_umlaut:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjg1MzIyNjFkYTFiOTMyNzczODE2NWRiYzNkNzc1ZGIyZDVjZDU5NTJkOGRlZTVjMTZlZDU4YmY0MmM1YzkifX19"
+    name: "&7Dirt Ä"
+    tags:
+      - alphabet/dirt
+      - character/letter_a_umlaut
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "dirt_letter_a_umlaut"
+          input: { head: "mini_dirt" }
+  dirt_letter_n_tilde:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjkzOTlmODcwOTUwNjIwOWE2MzYzMDc3NmVhZDYwNzM3NTY2MWY0OTYyZTMxOWY1NmM2ZTFmODc2NmNmMGYzOSJ9fX0="
+    name: "&7Dirt Ñ"
+    tags:
+      - alphabet/dirt
+      - character/letter_n_tilde
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "dirt_letter_n_tilde"
+          input: { head: "mini_dirt" }
+  dirt_letter_o_umlaut:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOWJkYTQzY2VlZDI0NmFkYjY0NjM5YjIxZDE2YTM4NzZkNDFmYWY0MWFhZjI0OWZkMmU4MDE4ZTBmYzE4YiJ9fX0="
+    name: "&7Dirt Ö"
+    tags:
+      - alphabet/dirt
+      - character/letter_o_umlaut
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "dirt_letter_o_umlaut"
+          input: { head: "mini_dirt" }
+  dirt_letter_u_umlaut:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzcyY2RkMjFmMzUwYTgxYjk0NmRhOTMyYjk5YmE4NTBmNmVjYmRmZmM0MTNjZjQ4OTgxNGNiMTg0MjgyNGQifX19"
+    name: "&7Dirt Ü"
+    tags:
+      - alphabet/dirt
+      - character/letter_u_umlaut
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "dirt_letter_u_umlaut"
+          input: { head: "mini_dirt" }
+  dirt_cyrillic_yo:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNWU3NTYwNjA0ODE4ODE3NjNjNmE1M2FmZmU2NGJmZDBhZDgxM2Y0MjEwYjFmMzcyZjJkNDllMjU4M2VjM2E0In19fQ=="
+    name: "&7Dirt Ё"
+    tags:
+      - alphabet/dirt
+      - character/cyrillic_yo
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "dirt_cyrillic_yo"
+          input: { head: "mini_dirt" }
+  dirt_cyrillic_be:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjZlODVkMmQzZGM4YjM4YWM0OWE4OGUzZWMyY2M5Yjk0YzU1ZDNmYWVmYWE1MGVlODQ2Njc1M2MxMjI4NWMifX19"
+    name: "&7Dirt Б"
+    tags:
+      - alphabet/dirt
+      - character/cyrillic_be
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "dirt_cyrillic_be"
+          input: { head: "mini_dirt" }
+  dirt_cyrillic_ge:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZGQ0Yzc5MTY0ZTRkMjY3ZWJhYzJiOGUyNTY3ZTY3ZTNkMTc3NzU5ZjkyOTg3NTU2ZmI0ZWFiNmVmMWNkNTUzIn19fQ=="
+    name: "&7Dirt Г"
+    tags:
+      - alphabet/dirt
+      - character/cyrillic_ge
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "dirt_cyrillic_ge"
+          input: { head: "mini_dirt" }
+  dirt_cyrillic_de:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzk1Nzk2OGQ0OWY0Mjg4Njk5YmNiZjQ2ZTk2YTliN2QyMjEyOWQ0ZTgzYjNmYWRhZTgwMzU5OGU2ZTcifX19"
+    name: "&7Dirt Д"
+    tags:
+      - alphabet/dirt
+      - character/cyrillic_de
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "dirt_cyrillic_de"
+          input: { head: "mini_dirt" }
+  dirt_cyrillic_zhe:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYWVjNWY4MGZlODkxNWUyZTc5NGNlNTQzY2FhYWI3NzhkYTUyMTJjODBiNTc3YTg4ZWY4YmMzY2JjMTllYiJ9fX0="
+    name: "&7Dirt Ж"
+    tags:
+      - alphabet/dirt
+      - character/cyrillic_zhe
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "dirt_cyrillic_zhe"
+          input: { head: "mini_dirt" }
+  dirt_cyrillic_ze:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOWM2NDVjNjdhZjk2OWU1YzlhZDgzZjIzZGQ4MjU4ZTkzOWY5NmU4YzExYmZkYjM5MTRiMzVmODhjYzhhMjQxIn19fQ=="
+    name: "&7Dirt З"
+    tags:
+      - alphabet/dirt
+      - character/cyrillic_ze
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "dirt_cyrillic_ze"
+          input: { head: "mini_dirt" }
+  dirt_cyrillic_i:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYWE2YzNlY2VjZWNkY2NlMGVlZWFjZTA0MDI3MmE0ZDg5ZjE0Mjc4MzNmZDQ4MmIxZjQ0MTY4N2ViMTUifX19"
+    name: "&7Dirt И"
+    tags:
+      - alphabet/dirt
+      - character/cyrillic_i
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "dirt_cyrillic_i"
+          input: { head: "mini_dirt" }
+  dirt_cyrillic_short_i:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmM0YTgyZmQzMDUxZTM4M2QxMzliZWExZjY1OTk1ZmRlZGU1MmRlYTdkNjZhMzYxNWVhMjIzMjhlNjllYmUzZCJ9fX0="
+    name: "&7Dirt Й"
+    tags:
+      - alphabet/dirt
+      - character/cyrillic_short_i
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "dirt_cyrillic_short_i"
+          input: { head: "mini_dirt" }
+  dirt_cyrillic_el:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNmM0NjE4NzAzNWU3YmViYjk1N2ExOGJjY2Q3ZWVhYjAxMGVhZmIzZDUyMjQ3OWQyM2U5NmRiYjdlYWI0MiJ9fX0="
+    name: "&7Dirt Л"
+    tags:
+      - alphabet/dirt
+      - character/cyrillic_el
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "dirt_cyrillic_el"
+          input: { head: "mini_dirt" }
+  dirt_cyrillic_pe:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzk0MmMzNDc2Nzg0NWFiYTljOWNjNGM5ZjBlZTgxYzliYWQxNjYzNTI4NDFiNjQwMWQ5Y2FjODJmZjhkOSJ9fX0="
+    name: "&7Dirt П"
+    tags:
+      - alphabet/dirt
+      - character/cyrillic_pe
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "dirt_cyrillic_pe"
+          input: { head: "mini_dirt" }
+  dirt_cyrillic_u:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMDkzYjk3MjE4ZjQ0N2JiMmQ4NzcxYWI3MzljYzNiNjA4YmM2MTkxODhiYTg2ZjUwZTY1Y2Q2MjVkZDVjZiJ9fX0="
+    name: "&7Dirt У"
+    tags:
+      - alphabet/dirt
+      - character/cyrillic_u
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "dirt_cyrillic_u"
+          input: { head: "mini_dirt" }
+  dirt_cyrillic_ef:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDA4ODUyOTNkNGY0NjhkYjFmZjgxMzM3NmY5YTk0MmZkYTY3ZTYyY2Y2NDZjZmU1NDRkNGZlNjgzM2M2MWYifX19"
+    name: "&7Dirt Ф"
+    tags:
+      - alphabet/dirt
+      - character/cyrillic_ef
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "dirt_cyrillic_ef"
+          input: { head: "mini_dirt" }
+  dirt_cyrillic_tse:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjNiMWQ0ZjM0NmZkM2ZlZDI0OTI4NjI2MjBmMmZhMmFjMDExZjQ2NzM1ZWMyYjU3OTYzODhiY2I3N2IxZTZmYiJ9fX0="
+    name: "&7Dirt Ц"
+    tags:
+      - alphabet/dirt
+      - character/cyrillic_tse
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "dirt_cyrillic_tse"
+          input: { head: "mini_dirt" }
+  dirt_cyrillic_che:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTRhZmNmOWFjNjczZDc1MzFkYmRjNzc5ZWRlMjdhZWI2MzhiY2IxODE4OTkxNWM2ZGMxOGZmZDc1NGM1NSJ9fX0="
+    name: "&7Dirt Ч"
+    tags:
+      - alphabet/dirt
+      - character/cyrillic_che
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "dirt_cyrillic_che"
+          input: { head: "mini_dirt" }
+  dirt_cyrillic_sha:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNmFkZDJlYTM2NGRiYjZhN2RhYzljNTI0ODdhMWFhOTM5YjkzOGFjOWE5OGE3YzJkZWUzMTdlMTYxNmFhNTM4MiJ9fX0="
+    name: "&7Dirt Ш"
+    tags:
+      - alphabet/dirt
+      - character/cyrillic_sha
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "dirt_cyrillic_sha"
+          input: { head: "mini_dirt" }
+  dirt_cyrillic_shcha:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDYxYjY2YWMxMTVlNWNkMTcxYmYxOGJkYWE3NTNlNTcyYjg1NDFlYjUyZWQzYjY2YTlhMmI3ZjNlZTc2MzhmMyJ9fX0="
+    name: "&7Dirt Щ"
+    tags:
+      - alphabet/dirt
+      - character/cyrillic_shcha
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "dirt_cyrillic_shcha"
+          input: { head: "mini_dirt" }
+  dirt_cyrillic_hard:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTRiNGYxYzkzMWRkNTg1YTYzMjEyYWViMTFkODU3YjQzNjhhMGI5M2Y5ZWFhODhjZTJhMmMzOTY3Y2ZmYThlIn19fQ=="
+    name: "&7Dirt Ъ"
+    tags:
+      - alphabet/dirt
+      - character/cyrillic_hard
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "dirt_cyrillic_hard"
+          input: { head: "mini_dirt" }
+  dirt_cyrillic_yeru:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDNjN2Y3NmRiN2IzYWYzYWU3ZTExMzUyZmI2ZmQ4YTQyYmViMWEzZDI4ZmU0ODFmNjhmOTNhNTM0NjQ2OWJiIn19fQ=="
+    name: "&7Dirt Ы"
+    tags:
+      - alphabet/dirt
+      - character/cyrillic_yeru
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "dirt_cyrillic_yeru"
+          input: { head: "mini_dirt" }
+  dirt_cyrillic_soft:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZGU4NWJlNThmYjFmZmJjYjk5NTUyZjhkOTEzM2NhNmMyOTg3NzFlOGNmNDI5NzU1MTM0ZTM3MTdmYjY0MzRhIn19fQ=="
+    name: "&7Dirt Ь"
+    tags:
+      - alphabet/dirt
+      - character/cyrillic_soft
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "dirt_cyrillic_soft"
+          input: { head: "mini_dirt" }
+  dirt_cyrillic_e:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDcyZWY4OTY2ODZlZjc5ZDkzN2U4MTA1YmE1YjU4YmNkMDdmZmNhYWI0YmNiNjEyZTFiODY1YzJjZTIzIn19fQ=="
+    name: "&7Dirt Э"
+    tags:
+      - alphabet/dirt
+      - character/cyrillic_e
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "dirt_cyrillic_e"
+          input: { head: "mini_dirt" }
+  dirt_cyrillic_yu:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTgzNGNhM2EzNzc2OWUxMDRmZDkxNTEzNDZhMjJmZmM4NDhmNzk2NmNiZDM4YzVjNzViZTg0NjVlNDFmOSJ9fX0="
+    name: "&7Dirt Ю"
+    tags:
+      - alphabet/dirt
+      - character/cyrillic_yu
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "dirt_cyrillic_yu"
+          input: { head: "mini_dirt" }
+  dirt_cyrillic_ya:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOWM3MGE3MjdkOGZkOGQxNjc2ZDZkMmM4ZTQ2Mzg5ZjU2OTk4OGM3NDI3MTNhZTdhNDc3ODA0YjEzOTJlYTRlIn19fQ=="
+    name: "&7Dirt Я"
+    tags:
+      - alphabet/dirt
+      - character/cyrillic_ya
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "dirt_cyrillic_ya"
+          input: { head: "mini_dirt" }
+  dirt_zodiac_aquarius:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjIxYmE0YjcyN2Y2NGM2MzAyZWUwYjRiMTIyNjZiYzE0M2U2NzUyNGM1NDhkYjJmM2IyZDRlYzc2ODhhZTEwYSJ9fX0="
+    name: "&7Dirt ♒"
+    tags:
+      - alphabet/dirt
+      - character/zodiac_aquarius
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "dirt_zodiac_aquarius"
+          input: { head: "mini_dirt" }
+  dirt_zodiac_aries:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGE4OGFjNDY0Y2JlMDNkYTc0MmQwOGJlMmM2ZjdiYTkxM2FhYTZhMmE2M2NmODFkN2ZmNGFhMmFiOWJmNGE4OSJ9fX0="
+    name: "&7Dirt ♈"
+    tags:
+      - alphabet/dirt
+      - character/zodiac_aries
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "dirt_zodiac_aries"
+          input: { head: "mini_dirt" }
+  dirt_zodiac_cancer:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGE5NTFhYWVjZmQ2OWU1M2NhNWYyNmM4ZjVlNGFlZWExOWQ1NGI0MWNkNzIxN2QxYmY2N2I1Njk5OTYwMDUzNyJ9fX0="
+    name: "&7Dirt ♋"
+    tags:
+      - alphabet/dirt
+      - character/zodiac_cancer
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "dirt_zodiac_cancer"
+          input: { head: "mini_dirt" }
+  dirt_zodiac_capricorn:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTQxNzYxMWEwNTNjOThhNDc1MzBhNTkzZmMxN2E3ZTZmYTdkMGQ1NWVjNDNlYjE5MDZhMTkxMjllYzQ3YTU0OSJ9fX0="
+    name: "&7Dirt ♑"
+    tags:
+      - alphabet/dirt
+      - character/zodiac_capricorn
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "dirt_zodiac_capricorn"
+          input: { head: "mini_dirt" }
+  dirt_zodiac_gemini:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTcwOWQ2NGFiOThhYTJlNmQ2ODVkMzk3NTE2ZWI2ZmZmYWI1ZDVhMTI0YTdmNGEwOGVlNjg5ZTMxODc3NWVhZiJ9fX0="
+    name: "&7Dirt ♊"
+    tags:
+      - alphabet/dirt
+      - character/zodiac_gemini
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "dirt_zodiac_gemini"
+          input: { head: "mini_dirt" }
+  dirt_zodiac_leo:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDhkODdjZWMzMTIxMjFiYzNhMGUyY2UwNTM5YWNhZjlmMGQwNTMyMmEyZDc1OTRkNjJkNTE1M2E4ZThlMGNkMCJ9fX0="
+    name: "&7Dirt ♌"
+    tags:
+      - alphabet/dirt
+      - character/zodiac_leo
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "dirt_zodiac_leo"
+          input: { head: "mini_dirt" }
+  dirt_zodiac_libra:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODBhN2RhNmVjMDg1YzExOTgwOTk0N2MyOTlkOTkwNjBhOGRjYWM3MzVkZDk4OTU3NmZkYTRmZmNlZjg5NGUxYiJ9fX0="
+    name: "&7Dirt ♎"
+    tags:
+      - alphabet/dirt
+      - character/zodiac_libra
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "dirt_zodiac_libra"
+          input: { head: "mini_dirt" }
+  dirt_zodiac_pisces:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNmNkYTg1OWFjYmM5NDU3YWI0ZjI0ODk4MTc1NTRkMzZmMTMwZWNjNzkzZjBhODM0NTM4NGNjZDc3ZTZiNDNmYSJ9fX0="
+    name: "&7Dirt ♓"
+    tags:
+      - alphabet/dirt
+      - character/zodiac_pisces
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "dirt_zodiac_pisces"
+          input: { head: "mini_dirt" }
+  dirt_zodiac_sagittarius:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzcxMjFkZDJkMmEyZDU4NDk3ZGZkNWVhMjY2Yzc0MzMyNGI4N2ZlYjFmZWE2NjBhNjdkZjFhMjcyNjFmZmU3YSJ9fX0="
+    name: "&7Dirt ♐"
+    tags:
+      - alphabet/dirt
+      - character/zodiac_sagittarius
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "dirt_zodiac_sagittarius"
+          input: { head: "mini_dirt" }
+  dirt_zodiac_scorpio:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzY4NWI2ZmI0YzFhZDk2Mzc1MjYwOWQ3Mzc5MzUxMDMxYzMwNzA0MTNmYWFhMzI0ODVkNzQ3YTk0MDBiMmNiZSJ9fX0="
+    name: "&7Dirt ♏"
+    tags:
+      - alphabet/dirt
+      - character/zodiac_scorpio
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "dirt_zodiac_scorpio"
+          input: { head: "mini_dirt" }
+  dirt_zodiac_taurus:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTQ4MDM2YThjZjY1MTFkYjk0YzBiYTQyMDk5MGM0ZGQ3ZWQwYTM3MjUzNWEzM2IyY2UwYjQxNjliMmQ2MjdiMSJ9fX0="
+    name: "&7Dirt ♉"
+    tags:
+      - alphabet/dirt
+      - character/zodiac_taurus
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "dirt_zodiac_taurus"
+          input: { head: "mini_dirt" }
+  dirt_zodiac_virgo:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDAyMmRjNzE4MDRlMGUzYzdlZGEwMzBhMjU4NjEwNmQxYzY0NjhmMGM5OTA1N2IwODg5Y2FmNzY3ZWNhYTRiMSJ9fX0="
+    name: "&7Dirt ♍"
+    tags:
+      - alphabet/dirt
+      - character/zodiac_virgo
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "dirt_zodiac_virgo"
+          input: { head: "mini_dirt" }
+  dirt_female:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMmY0MDI4ZWZhOGU3NjMzNTQ2NjlkNmU4YjQ3OWJkNTkwZWExZGU0MjExOTIzNGI0M2RiZWYzNjFlZTk0YzFiNiJ9fX0="
+    name: "&7Dirt ♀"
+    tags:
+      - alphabet/dirt
+      - character/female
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "dirt_female"
+          input: { head: "mini_dirt" }
+  dirt_male:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWMxZmY4NWFiMmJjZDVkNGJjNjc5YTAyM2I2ZDg0NjlmMGY4OTQxMjQ2ZTdhNGQ4NjcwYjc4MGM5ZTI0NTFhYiJ9fX0="
+    name: "&7Dirt ♂"
+    tags:
+      - alphabet/dirt
+      - character/male
+      - natural/dirt
+    recipes:
+      stonecutter:
+        - id: "dirt_male"
+          input: { head: "mini_dirt" }

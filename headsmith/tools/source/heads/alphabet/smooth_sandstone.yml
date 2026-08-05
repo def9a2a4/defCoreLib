@@ -1,0 +1,289 @@
+# Generated Smooth Sandstone Alphabet Blocks
+
+heads:
+  smooth_sandstone_letter_a:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjBlNDIwZjJhZWU0ZTBmOGZiNDA4ZDVlNjM0MjY0ZTQ0OWE5NjlhZjllMjQyOGUyZTRhYTE3ODNkZmNmNjg2YSJ9fX0="
+    name: "&7Smooth Sandstone A"
+    tags:
+      - alphabet/smooth_sandstone
+      - character/letter_a
+      - stone
+    recipes:
+      stonecutter:
+        - id: "smooth_sandstone_letter_a"
+          input: { head: "mini_smooth_sandstone" }
+  smooth_sandstone_letter_b:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNWU3MTQwNTY2NWRhZDYwZWMxMjk2YmQ5NmViNmZjZjIxYWY4MWRhMTAyNTM4MDk1OTMwN2RhZTk5ZmY5OGNkIn19fQ=="
+    name: "&7Smooth Sandstone B"
+    tags:
+      - alphabet/smooth_sandstone
+      - character/letter_b
+      - stone
+    recipes:
+      stonecutter:
+        - id: "smooth_sandstone_letter_b"
+          input: { head: "mini_smooth_sandstone" }
+  smooth_sandstone_letter_c:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNmI0YjYyYTgwNmUyODNlZTBlMThlZGE4NmYyZTg2OWMwNDA1M2M3ODc3YmE1ZTA4OWFhNjNkMmNjZDllOGJmYSJ9fX0="
+    name: "&7Smooth Sandstone C"
+    tags:
+      - alphabet/smooth_sandstone
+      - character/letter_c
+      - stone
+    recipes:
+      stonecutter:
+        - id: "smooth_sandstone_letter_c"
+          input: { head: "mini_smooth_sandstone" }
+  smooth_sandstone_letter_d:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDBiNzQ2OWNlYmFmNzQ4ZGExNTcxZDYzOGE5YTRhMjgzNjY3OWRkMzFhMzNlMzUzZWQ1MDc3YTEyNTA4YzNlZSJ9fX0="
+    name: "&7Smooth Sandstone D"
+    tags:
+      - alphabet/smooth_sandstone
+      - character/letter_d
+      - stone
+    recipes:
+      stonecutter:
+        - id: "smooth_sandstone_letter_d"
+          input: { head: "mini_smooth_sandstone" }
+  smooth_sandstone_letter_e:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzg5YmFhMDQyNTk5ZDA3OTI0MTcyZDg5N2FjNDE1MTg2ZDllNWYyNTQ2ODE1MjEwMjAxZGY3YmI2MzJkYTFjNCJ9fX0="
+    name: "&7Smooth Sandstone E"
+    tags:
+      - alphabet/smooth_sandstone
+      - character/letter_e
+      - stone
+    recipes:
+      stonecutter:
+        - id: "smooth_sandstone_letter_e"
+          input: { head: "mini_smooth_sandstone" }
+  smooth_sandstone_letter_f:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTlmY2FmOGMyYTE0ZTdkNGU4NDBiMDc5MGE5NTA5MWE2YzA2YTQ3NWQ2Yzk4ZTNlYjBmYmJmNzYzNDIzZWE2ZCJ9fX0="
+    name: "&7Smooth Sandstone F"
+    tags:
+      - alphabet/smooth_sandstone
+      - character/letter_f
+      - stone
+    recipes:
+      stonecutter:
+        - id: "smooth_sandstone_letter_f"
+          input: { head: "mini_smooth_sandstone" }
+  smooth_sandstone_letter_g:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNWUxYzI0YjEzMmE0Zjk4NmFiOWI5MjViMDk0ZjJkY2UwMGM1YjE2ZGU0ZDdkNDlkMTliMTk3NjRmZmZhNWMxMyJ9fX0="
+    name: "&7Smooth Sandstone G"
+    tags:
+      - alphabet/smooth_sandstone
+      - character/letter_g
+      - stone
+    recipes:
+      stonecutter:
+        - id: "smooth_sandstone_letter_g"
+          input: { head: "mini_smooth_sandstone" }
+  smooth_sandstone_letter_h:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOWQ5MTE0NzE3ZjljZmU0N2ViODE0NDBlMTY4NDA1MjhjNzQ2MjcyOGU2MjdhNTZhODdiOGVmNzdmNjg3YWYwMiJ9fX0="
+    name: "&7Smooth Sandstone H"
+    tags:
+      - alphabet/smooth_sandstone
+      - character/letter_h
+      - stone
+    recipes:
+      stonecutter:
+        - id: "smooth_sandstone_letter_h"
+          input: { head: "mini_smooth_sandstone" }
+  smooth_sandstone_letter_i:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZGRkNDI0MDA2MDJkYjNlYTQ3ZDVjNmQyNDEzYTgxMzVlYjRkN2YzZmEyZjIyNjE3ZWYxYmNiMGM3MGIwNGU2MCJ9fX0="
+    name: "&7Smooth Sandstone I"
+    tags:
+      - alphabet/smooth_sandstone
+      - character/letter_i
+      - stone
+    recipes:
+      stonecutter:
+        - id: "smooth_sandstone_letter_i"
+          input: { head: "mini_smooth_sandstone" }
+  smooth_sandstone_letter_j:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvM2Q5ZThlZDA5YjYwYjljMjE3ZTk1ODdlNmNmYmZkNzk1Yjk5MzY3YTA2NDVlZDcyYjI4NzUwOTRmYThkNWRhMyJ9fX0="
+    name: "&7Smooth Sandstone J"
+    tags:
+      - alphabet/smooth_sandstone
+      - character/letter_j
+      - stone
+    recipes:
+      stonecutter:
+        - id: "smooth_sandstone_letter_j"
+          input: { head: "mini_smooth_sandstone" }
+  smooth_sandstone_letter_k:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTEwODc4MGJmZmI5ZmMxZmMxMzdkNjk0ZmI0Y2Y4MGZhODhkOGE2M2Y4NWI0ZjcwMmNjMzEyYWFiNDBhMmNkOCJ9fX0="
+    name: "&7Smooth Sandstone K"
+    tags:
+      - alphabet/smooth_sandstone
+      - character/letter_k
+      - stone
+    recipes:
+      stonecutter:
+        - id: "smooth_sandstone_letter_k"
+          input: { head: "mini_smooth_sandstone" }
+  smooth_sandstone_letter_l:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODM5M2QwOTdmYzA2MGJjYjMxZmY5NTM5YzFhMzY3MzhjYzMzNTI5MmY0NmMyOTk3NTE4YWU0M2UwZmNmMDMyZCJ9fX0="
+    name: "&7Smooth Sandstone L"
+    tags:
+      - alphabet/smooth_sandstone
+      - character/letter_l
+      - stone
+    recipes:
+      stonecutter:
+        - id: "smooth_sandstone_letter_l"
+          input: { head: "mini_smooth_sandstone" }
+  smooth_sandstone_letter_m:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjgyZmU4ODFmYmI3MzM2MmM1NmM0MWUxZDE0MDkxZDZkMmY3YjUxYzI4NjI1ZmIyN2Y4OTA3YzM2NmVmOGYxNCJ9fX0="
+    name: "&7Smooth Sandstone M"
+    tags:
+      - alphabet/smooth_sandstone
+      - character/letter_m
+      - stone
+    recipes:
+      stonecutter:
+        - id: "smooth_sandstone_letter_m"
+          input: { head: "mini_smooth_sandstone" }
+  smooth_sandstone_letter_n:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYWRkOTMwY2E3MDA0NzdmYmM1ZTNhZjdjYzgwZDMyMDg0ZTQwYjI4MWI3ZmJjY2FhMDRkOGI1NTdhN2ZjMmYyOCJ9fX0="
+    name: "&7Smooth Sandstone N"
+    tags:
+      - alphabet/smooth_sandstone
+      - character/letter_n
+      - stone
+    recipes:
+      stonecutter:
+        - id: "smooth_sandstone_letter_n"
+          input: { head: "mini_smooth_sandstone" }
+  smooth_sandstone_letter_o:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNmMyYzRmZjBlYzg5MzI5N2YyMzQzNGZhZmVhZDYwNDkzYmVhMWY3NTgyMjA3NmM0NDM5NDQxZmJhMjI5YWI2OSJ9fX0="
+    name: "&7Smooth Sandstone O"
+    tags:
+      - alphabet/smooth_sandstone
+      - character/letter_o
+      - stone
+    recipes:
+      stonecutter:
+        - id: "smooth_sandstone_letter_o"
+          input: { head: "mini_smooth_sandstone" }
+  smooth_sandstone_letter_p:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDc1YzE0ZTMzZGQ0YzA2MWMxNDk2MTI4MGFkZDU1NDJiZjgxNGNhNWVmZjU2NGI4MjgxZmM3NjNlMDgwNWE0NiJ9fX0="
+    name: "&7Smooth Sandstone P"
+    tags:
+      - alphabet/smooth_sandstone
+      - character/letter_p
+      - stone
+    recipes:
+      stonecutter:
+        - id: "smooth_sandstone_letter_p"
+          input: { head: "mini_smooth_sandstone" }
+  smooth_sandstone_letter_q:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOWJjNTk5NGU5MDc2Yjc3NTY1YWVmMTBjZTI5OWFjODZkMThkYmY3MmIyNjhjNzY1NTg2YTgyZGNhMDJlYjA1OCJ9fX0="
+    name: "&7Smooth Sandstone Q"
+    tags:
+      - alphabet/smooth_sandstone
+      - character/letter_q
+      - stone
+    recipes:
+      stonecutter:
+        - id: "smooth_sandstone_letter_q"
+          input: { head: "mini_smooth_sandstone" }
+  smooth_sandstone_letter_r:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWIwOWU1YjM4NmQ0MWQ2NjAxY2I0NDI1NzJhZDMwNjMyOGUwYTI0OTljYzk0Mjg0NWNmZmJmYTEwNzBiYzgzMyJ9fX0="
+    name: "&7Smooth Sandstone R"
+    tags:
+      - alphabet/smooth_sandstone
+      - character/letter_r
+      - stone
+    recipes:
+      stonecutter:
+        - id: "smooth_sandstone_letter_r"
+          input: { head: "mini_smooth_sandstone" }
+  smooth_sandstone_letter_s:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYWRhMGMxYzM2MTUyZjgyOGQ0MjM3YWIyNzg5MWQxZTFjZmRkNzExZmVjOTZiNDU1MmZjNTUwM2E5NjNlZmU2ZCJ9fX0="
+    name: "&7Smooth Sandstone S"
+    tags:
+      - alphabet/smooth_sandstone
+      - character/letter_s
+      - stone
+    recipes:
+      stonecutter:
+        - id: "smooth_sandstone_letter_s"
+          input: { head: "mini_smooth_sandstone" }
+  smooth_sandstone_letter_t:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTk5NTc1Yjg0OTI4YTA3M2EwODdmMGY1OTFjYjAyMGZmN2UxNTM2YTQ0M2ZjZmFjNGRiZmYwMWJlNWM0M2JiNiJ9fX0="
+    name: "&7Smooth Sandstone T"
+    tags:
+      - alphabet/smooth_sandstone
+      - character/letter_t
+      - stone
+    recipes:
+      stonecutter:
+        - id: "smooth_sandstone_letter_t"
+          input: { head: "mini_smooth_sandstone" }
+  smooth_sandstone_letter_u:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzgxZjMxNDg4MzFlYTk4ZjcxOGVkZWM4YzIxNjU2OGJiYTlhN2Y0NDZkZTkzY2ExNzU3MDBjMmNkOTIwZDBjYiJ9fX0="
+    name: "&7Smooth Sandstone U"
+    tags:
+      - alphabet/smooth_sandstone
+      - character/letter_u
+      - stone
+    recipes:
+      stonecutter:
+        - id: "smooth_sandstone_letter_u"
+          input: { head: "mini_smooth_sandstone" }
+  smooth_sandstone_letter_v:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTI2NjE5NzE3ZjUxOWUwNDRiMzQwZWI5YzMwOWQ4MzlhZTRkZjlhMzg2YTY3N2M3MTE3NmU1MzlmMWEyNDY4OCJ9fX0="
+    name: "&7Smooth Sandstone V"
+    tags:
+      - alphabet/smooth_sandstone
+      - character/letter_v
+      - stone
+    recipes:
+      stonecutter:
+        - id: "smooth_sandstone_letter_v"
+          input: { head: "mini_smooth_sandstone" }
+  smooth_sandstone_letter_w:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzFmMjMzMmFlYTUwOGJiOWFiYjc2YjZkOGZhNDk2MDNjMTM0ZmNkMzU1ZWQyMmYwNjk1Nzc4MTliMjcxODVhOCJ9fX0="
+    name: "&7Smooth Sandstone W"
+    tags:
+      - alphabet/smooth_sandstone
+      - character/letter_w
+      - stone
+    recipes:
+      stonecutter:
+        - id: "smooth_sandstone_letter_w"
+          input: { head: "mini_smooth_sandstone" }
+  smooth_sandstone_letter_x:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvM2MzMDE1MGU5MWY3ODM4Mzg2N2ZmMDVhNDhiY2M1NTQyZTY4ZDY5YjQwYzRjMTFjZGU1ZGZiNjc3OGU3NWU3NSJ9fX0="
+    name: "&7Smooth Sandstone X"
+    tags:
+      - alphabet/smooth_sandstone
+      - character/letter_x
+      - stone
+    recipes:
+      stonecutter:
+        - id: "smooth_sandstone_letter_x"
+          input: { head: "mini_smooth_sandstone" }
+  smooth_sandstone_letter_y:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzE3ZjE0ZDYzMTkyMGJlN2VjMjIzN2M0Y2Y5YjE2MDU5NzhlN2MzZmMyMjNjZjY0YmIyMzQ4NWUyNGQ1MWY1MCJ9fX0="
+    name: "&7Smooth Sandstone Y"
+    tags:
+      - alphabet/smooth_sandstone
+      - character/letter_y
+      - stone
+    recipes:
+      stonecutter:
+        - id: "smooth_sandstone_letter_y"
+          input: { head: "mini_smooth_sandstone" }
+  smooth_sandstone_letter_z:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTcyZTBhYzQzMDkzZTMzZTkxZDk1OTRmMzljNzY1YjMwYjk5MDc0M2ZkYjc3MjBhZjNhZWMzMTBjZGEwNWRiYSJ9fX0="
+    name: "&7Smooth Sandstone Z"
+    tags:
+      - alphabet/smooth_sandstone
+      - character/letter_z
+      - stone
+    recipes:
+      stonecutter:
+        - id: "smooth_sandstone_letter_z"
+          input: { head: "mini_smooth_sandstone" }

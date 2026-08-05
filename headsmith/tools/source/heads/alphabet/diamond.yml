@@ -1,0 +1,2549 @@
+# Generated Diamond Alphabet Blocks
+
+heads:
+  diamond_letter_a:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjQxNzYxOGNhMWY1MDMxZDFhYjk3YmEzMjUzZDA4OGY0ZGE3YTc3M2JiYjU2ZjFkZWM5Yjk5OWQ3MWVjIn19fQ=="
+    name: "&7Diamond A"
+    tags:
+      - alphabet/diamond
+      - character/letter_a
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "diamond_letter_a"
+          input: { head: "mini_diamond_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "DIAMOND_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "diamond_letter_a" }
+  diamond_letter_b:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjVmZWI4MTU3Njk1YTI1OTRhNTU4NWI5ZGVmNWY3ODI3YzZlNWU4ZmNiMmYyM2NjM2QzNGQ3MzNjYTYzNWIifX19"
+    name: "&7Diamond B"
+    tags:
+      - alphabet/diamond
+      - character/letter_b
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "diamond_letter_b"
+          input: { head: "mini_diamond_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "DIAMOND_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "diamond_letter_b" }
+  diamond_letter_c:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzZmZmY1MmI0MTc4MTlhYTFlODA1OTk1YzE1NGI1OWJjZTc3YWZiNTkzZGU4NjhjMzk3MzEyYzNiNTExNGI2MSJ9fX0="
+    name: "&7Diamond C"
+    tags:
+      - alphabet/diamond
+      - character/letter_c
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "diamond_letter_c"
+          input: { head: "mini_diamond_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "DIAMOND_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "diamond_letter_c" }
+  diamond_letter_d:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjM1MjNjYTRlYzI1YTg4MzkzNmIzYzdkOTAyY2QwZGQwZmM5NGI4ZmVlNjE5YTk5ZDcxNWQyZTI3N2RkZCJ9fX0="
+    name: "&7Diamond D"
+    tags:
+      - alphabet/diamond
+      - character/letter_d
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "diamond_letter_d"
+          input: { head: "mini_diamond_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "DIAMOND_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "diamond_letter_d" }
+  diamond_letter_e:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMmZiYzQxYWI2ZWU0Zjk3YzY1OWQ0ZjZlNDdjNDk0ZTk2MTI1NWEwNmE0OTZiZDVjNjYzOGIzMzlkYzAifX19"
+    name: "&7Diamond E"
+    tags:
+      - alphabet/diamond
+      - character/letter_e
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "diamond_letter_e"
+          input: { head: "mini_diamond_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "DIAMOND_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "diamond_letter_e" }
+  diamond_letter_f:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDRmYTk2YTNjZjg4NTYxMTE2ZDI0ZTgxYWRiNDY2MWY4YmI3YjQyYTQwNjFmNDEyYmJkMDM2NTQ1MjY2OWJlZSJ9fX0="
+    name: "&7Diamond F"
+    tags:
+      - alphabet/diamond
+      - character/letter_f
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "diamond_letter_f"
+          input: { head: "mini_diamond_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "DIAMOND_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "diamond_letter_f" }
+  diamond_letter_g:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNWViYWI2OTUyYTRlNjM1NjhmNmI1ODFlZWY1YzRjOGFhNmY0YmQyZGQyZTE0YTRkY2EzMjQyNTdmMzNjNWYifX19"
+    name: "&7Diamond G"
+    tags:
+      - alphabet/diamond
+      - character/letter_g
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "diamond_letter_g"
+          input: { head: "mini_diamond_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "DIAMOND_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "diamond_letter_g" }
+  diamond_letter_h:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjgxODlmNmQyNDUwYTkxMTQ5ZWYyZGZiOTQ3NDIzMmM2ZmNlZDg0Y2ZmZjRlMjc3ODdmNTEwMjE5NzcxN2IifX19"
+    name: "&7Diamond H"
+    tags:
+      - alphabet/diamond
+      - character/letter_h
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "diamond_letter_h"
+          input: { head: "mini_diamond_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "DIAMOND_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "diamond_letter_h" }
+  diamond_letter_i:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjVlZGZhYjE2OTc0OGM1NTk4NGJjOGQ2ODcyYzU5NjU4ZDMzYWE1ZWEyMjc5MmNmZTk5YjNkYmFiNjI4ZDlmZCJ9fX0="
+    name: "&7Diamond I"
+    tags:
+      - alphabet/diamond
+      - character/letter_i
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "diamond_letter_i"
+          input: { head: "mini_diamond_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "DIAMOND_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "diamond_letter_i" }
+  diamond_letter_j:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTJiMThhMmI4N2Y1NzdkM2IwMzhiZTE2OGMyNTJjMWRmMTllYmRlMmM0NTQ4MWZlNDM1OTU0ZWExZGZiZDcifX19"
+    name: "&7Diamond J"
+    tags:
+      - alphabet/diamond
+      - character/letter_j
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "diamond_letter_j"
+          input: { head: "mini_diamond_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "DIAMOND_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "diamond_letter_j" }
+  diamond_letter_k:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDRlMjg5OWI2OGMxYzEyODcyZTRlMzY4OTdlNDcyYTkxMDJmYWI4ODU4YjU2MzAxNTZkNWI2M2JlMDU4YWMifX19"
+    name: "&7Diamond K"
+    tags:
+      - alphabet/diamond
+      - character/letter_k
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "diamond_letter_k"
+          input: { head: "mini_diamond_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "DIAMOND_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "diamond_letter_k" }
+  diamond_letter_l:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDFjMmJiYmY4ZjJiNzk4ZWRkZjBjMjQzZmY3ODkwODdjM2VhOTY5NTc1ZjFjMzFhNzk3MmRlYjdmNGYxZjU3MiJ9fX0="
+    name: "&7Diamond L"
+    tags:
+      - alphabet/diamond
+      - character/letter_l
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "diamond_letter_l"
+          input: { head: "mini_diamond_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "DIAMOND_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "diamond_letter_l" }
+  diamond_letter_m:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMmM3OWZlNTU4MjdjYmE4ZGNiYzE5YmRmOTNiNWNkNWQwNDE2ZTVhODM2MmU2NjgzMDg0YTI1MjMzNDI4MyJ9fX0="
+    name: "&7Diamond M"
+    tags:
+      - alphabet/diamond
+      - character/letter_m
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "diamond_letter_m"
+          input: { head: "mini_diamond_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "DIAMOND_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "diamond_letter_m" }
+  diamond_letter_n:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvY2VmODljMjFiN2JjY2VlMzYyMjc0MTYwYmQzNGE0NWNlMmFiMzQ3YjZkZjliMjY4OTY2MGYwZTk0YWRlZGQ1MCJ9fX0="
+    name: "&7Diamond N"
+    tags:
+      - alphabet/diamond
+      - character/letter_n
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "diamond_letter_n"
+          input: { head: "mini_diamond_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "DIAMOND_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "diamond_letter_n" }
+  diamond_letter_o:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNmVkZTYwODI0NDIzODNlNWUxYzI4MjU3YjZkYjI2MTNkYzM3Zjk3NDlmNDhlYTBiNGY5NGFmOThhZTBjZSJ9fX0="
+    name: "&7Diamond O"
+    tags:
+      - alphabet/diamond
+      - character/letter_o
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "diamond_letter_o"
+          input: { head: "mini_diamond_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "DIAMOND_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "diamond_letter_o" }
+  diamond_letter_p:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNWIxZTQyNzY3MDkwODI4OTcwYTliNDMyNzYyMDYyZmY2ZGY0Y2JjMjMxMWRlMjNhMWJiNDI1M2VjYjE2OTJjIn19fQ=="
+    name: "&7Diamond P"
+    tags:
+      - alphabet/diamond
+      - character/letter_p
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "diamond_letter_p"
+          input: { head: "mini_diamond_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "DIAMOND_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "diamond_letter_p" }
+  diamond_letter_q:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzY5MzNlY2VlMjdkM2E3NDg1YzVkYjJlOTA0MzliZDc2OTQxMjUyMmE5OTE1ZDIzNDU3MWI5YTdiODJhIn19fQ=="
+    name: "&7Diamond Q"
+    tags:
+      - alphabet/diamond
+      - character/letter_q
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "diamond_letter_q"
+          input: { head: "mini_diamond_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "DIAMOND_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "diamond_letter_q" }
+  diamond_letter_r:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzkzZWQ4MDdkYmYxNDdjNWVmOWI4ZWM0NmQzZmE2ZTJkN2IyZGJkMzQzMWEyMzQxN2MxMzU0YmI4NjNjNCJ9fX0="
+    name: "&7Diamond R"
+    tags:
+      - alphabet/diamond
+      - character/letter_r
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "diamond_letter_r"
+          input: { head: "mini_diamond_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "DIAMOND_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "diamond_letter_r" }
+  diamond_letter_s:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTc0NzQxOGQ4NmE2YWE1MmZiOTg5ODBiNzM1YjhkMWQzNjg4ODJiYzNmNTE2YjVhMzQ4ZDQ0ZGY1M2RlMjYifX19"
+    name: "&7Diamond S"
+    tags:
+      - alphabet/diamond
+      - character/letter_s
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "diamond_letter_s"
+          input: { head: "mini_diamond_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "DIAMOND_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "diamond_letter_s" }
+  diamond_letter_t:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZmJhOTE1ZTMxOTRiMTc0NTZkZWIyYWM3YzhmOGM2MmRjYTIzZTUxYTQ1NjIzNzRiNTIyODAzNWVmYzFjOGFjIn19fQ=="
+    name: "&7Diamond T"
+    tags:
+      - alphabet/diamond
+      - character/letter_t
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "diamond_letter_t"
+          input: { head: "mini_diamond_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "DIAMOND_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "diamond_letter_t" }
+  diamond_letter_u:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTE4NGVlNzE0MjVkNmI3NGMzZTY4NzJjM2ExMTc3ZGNiZmIwZmU3OTlkMmM0NzIxMGI1YTQ0NjcyY2UxZmJhIn19fQ=="
+    name: "&7Diamond U"
+    tags:
+      - alphabet/diamond
+      - character/letter_u
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "diamond_letter_u"
+          input: { head: "mini_diamond_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "DIAMOND_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "diamond_letter_u" }
+  diamond_letter_v:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODU3MjdhODQyOTdjMzM0MmRlMjMzYmVjZmRlNzM1MjZkOGQ1NjA1ZmRhMjUyOWQyZTE1MTQ5Mzg5NTBlNmE4In19fQ=="
+    name: "&7Diamond V"
+    tags:
+      - alphabet/diamond
+      - character/letter_v
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "diamond_letter_v"
+          input: { head: "mini_diamond_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "DIAMOND_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "diamond_letter_v" }
+  diamond_letter_w:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTc5NmIyNGM1ZmQ3ZjVjNThiYzI2MWE1MmEyZWFmOTY3NGVlNTJhNTI0NjhmYzc5ZmJlMjljODQ0NDc5MDhjIn19fQ=="
+    name: "&7Diamond W"
+    tags:
+      - alphabet/diamond
+      - character/letter_w
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "diamond_letter_w"
+          input: { head: "mini_diamond_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "DIAMOND_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "diamond_letter_w" }
+  diamond_letter_x:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZmE0ZTFiYjRlYjc2YjcxMjM5OTU5MmNiMjAyZjYxM2I1Yjk2MjgzZjIyZTQxZjRiOTU5ZGI3MTM0ZmY3MmZhNiJ9fX0="
+    name: "&7Diamond X"
+    tags:
+      - alphabet/diamond
+      - character/letter_x
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "diamond_letter_x"
+          input: { head: "mini_diamond_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "DIAMOND_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "diamond_letter_x" }
+  diamond_letter_y:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTE2NzQxYTY1OTdiNjgzY2NlYmUyMTFmMmY0MWY1NGQ3ZjIyNTRmNTg0NTlhZGZmZWE3ZDM1YzlkYTIxYjcifX19"
+    name: "&7Diamond Y"
+    tags:
+      - alphabet/diamond
+      - character/letter_y
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "diamond_letter_y"
+          input: { head: "mini_diamond_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "DIAMOND_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "diamond_letter_y" }
+  diamond_letter_z:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTBhNmRmMzg3OWI1MjlhMzQ5NGE1YTk1ODc2NTZjODM1NGFmMGJkY2VjNjdjZDhjZjczMzVmM2Q2YTdmIn19fQ=="
+    name: "&7Diamond Z"
+    tags:
+      - alphabet/diamond
+      - character/letter_z
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "diamond_letter_z"
+          input: { head: "mini_diamond_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "DIAMOND_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "diamond_letter_z" }
+  diamond_number_0:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTg4ODI4YzFkMGFmMmQ4NjYwODRhYWY1Y2Y3Mjk2MTQwOGZjNTRjMThlMTVlZDQ1MjU5NTY5NzM2YjE5OSJ9fX0="
+    name: "&7Diamond 0"
+    tags:
+      - alphabet/diamond
+      - character/number_0
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "diamond_number_0"
+          input: { head: "mini_diamond_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "DIAMOND_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "diamond_number_0" }
+  diamond_number_1:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYWYzMDM0ZDI0YTg1ZGEzMWQ2NzkzMmMzM2U1ZjE4MjFlMjE5ZDVkY2Q5YzJiYTRmMjU1OWRmNDhkZWVhIn19fQ=="
+    name: "&7Diamond 1"
+    tags:
+      - alphabet/diamond
+      - character/number_1
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "diamond_number_1"
+          input: { head: "mini_diamond_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "DIAMOND_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "diamond_number_1" }
+  diamond_number_2:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvM2EyOGExMzUzODMzZjQwYTQyMWNhYmFhMzk2NWI5NzBhZDlmNjJjMWQ5NjJhY2E5ODQxNGQyZGVjNWMzMzgifX19"
+    name: "&7Diamond 2"
+    tags:
+      - alphabet/diamond
+      - character/number_2
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "diamond_number_2"
+          input: { head: "mini_diamond_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "DIAMOND_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "diamond_number_2" }
+  diamond_number_3:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTUxYzZkYTQ2Zjc1ODViZjJmZDVjYTQ0YzRhYmVjNTY4YzIzZWFmNjdjM2Y2ODFjZDJiYzFiM2ViMjc1YSJ9fX0="
+    name: "&7Diamond 3"
+    tags:
+      - alphabet/diamond
+      - character/number_3
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "diamond_number_3"
+          input: { head: "mini_diamond_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "DIAMOND_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "diamond_number_3" }
+  diamond_number_4:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMGU5MzRjMGUwZTU2ZmI2NTkxY2E5OGQ3YzhhODNmZTM4Njg5OGNmNjRiZTMxNDMzMGJkODI3OGQ4MmEyIn19fQ=="
+    name: "&7Diamond 4"
+    tags:
+      - alphabet/diamond
+      - character/number_4
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "diamond_number_4"
+          input: { head: "mini_diamond_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "DIAMOND_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "diamond_number_4" }
+  diamond_number_5:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzQzNDNlZWIyM2QxOGVlMzdiYTZlZWRkOWRiMDYxYTQ3MDU3MzBlMzRkYzg1NTk2NDZmNzI5Zjk1ZTUwYTM3ZiJ9fX0="
+    name: "&7Diamond 5"
+    tags:
+      - alphabet/diamond
+      - character/number_5
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "diamond_number_5"
+          input: { head: "mini_diamond_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "DIAMOND_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "diamond_number_5" }
+  diamond_number_6:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzJlNzFiOGY3ZTFiZjQ5ZDVkODkyZTQyMzYxYzlkNDA5M2NlZTY0MTM5NTJlNmE0ZGI2NDY0ZmY3OGFlZTgifX19"
+    name: "&7Diamond 6"
+    tags:
+      - alphabet/diamond
+      - character/number_6
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "diamond_number_6"
+          input: { head: "mini_diamond_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "DIAMOND_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "diamond_number_6" }
+  diamond_number_7:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDhhM2M1YjEyMmRmZjkzNjM2YmRiY2Q2NjY5YjU5Y2RhM2ZjZmFlOTM1Y2U3NjE1YTI3ZTVkYWIxN2M3NTU2MSJ9fX0="
+    name: "&7Diamond 7"
+    tags:
+      - alphabet/diamond
+      - character/number_7
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "diamond_number_7"
+          input: { head: "mini_diamond_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "DIAMOND_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "diamond_number_7" }
+  diamond_number_8:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODU5ODM4MjM3Zjg4OWY1YmNhYWYyNmM3NTZmNjRlODE2YTEzNTBjM2M1NGFhN2EwZjcyODM5MjI2NTkwOGUzNSJ9fX0="
+    name: "&7Diamond 8"
+    tags:
+      - alphabet/diamond
+      - character/number_8
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "diamond_number_8"
+          input: { head: "mini_diamond_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "DIAMOND_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "diamond_number_8" }
+  diamond_number_9:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZmFjM2E5NDk1NzUzMmYyODA3NjExYWMzMjViY2RlZTRlNGQ3Y2I0YTIyMTIyZTQyMDgwNmNlNmIwZDdjM2MxIn19fQ=="
+    name: "&7Diamond 9"
+    tags:
+      - alphabet/diamond
+      - character/number_9
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "diamond_number_9"
+          input: { head: "mini_diamond_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "DIAMOND_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "diamond_number_9" }
+  diamond_number_10:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOThiYTQxYjMzNWFmZjk2YjlmM2RlYTg0ZGFjZmJjZjU2NDRiNWE2ZDYyNWViNzc4ODRiYjdiODhmZjg3ZWQifX19"
+    name: "&7Diamond 10"
+    tags:
+      - alphabet/diamond
+      - character/number_10
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "diamond_number_10"
+          input: { head: "mini_diamond_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "DIAMOND_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "diamond_number_10" }
+  diamond_number_11:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDY4MWY3OTFmMzNlYmNkYzZkM2U3MjA3NTUxZjNlZGFhOGM4Mzk3NDUyM2YxNTEyZTNiZWQ5NjY3NzM4YmYifX19"
+    name: "&7Diamond 11"
+    tags:
+      - alphabet/diamond
+      - character/number_11
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "diamond_number_11"
+          input: { head: "mini_diamond_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "DIAMOND_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "diamond_number_11" }
+  diamond_number_12:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzFiOWVhYWVjOWQyZGNjMzViNjliNTllM2E1ZmJkYmRlODYzZDViZDQ5NDNlY2FlODBmM2M1YTFiYTljZiJ9fX0="
+    name: "&7Diamond 12"
+    tags:
+      - alphabet/diamond
+      - character/number_12
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "diamond_number_12"
+          input: { head: "mini_diamond_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "DIAMOND_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "diamond_number_12" }
+  diamond_number_13:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTdlMDc0YjUyMjgzZGI4ZmZhYjE1YWU3N2ZkNzEzZjI5N2M5MWE0ZjY2MjEyMTViY2U4OThhMDMwZjYxM2RkIn19fQ=="
+    name: "&7Diamond 13"
+    tags:
+      - alphabet/diamond
+      - character/number_13
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "diamond_number_13"
+          input: { head: "mini_diamond_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "DIAMOND_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "diamond_number_13" }
+  diamond_number_14:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTExOGRkZjU5MWM0Y2I3ZDlhNGJkNzFhZjU5NWI0NTNhNzdmZjkxMDY3YThjOWU3MTIzNWFhMzJhOWJkYzcifX19"
+    name: "&7Diamond 14"
+    tags:
+      - alphabet/diamond
+      - character/number_14
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "diamond_number_14"
+          input: { head: "mini_diamond_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "DIAMOND_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "diamond_number_14" }
+  diamond_number_15:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvN2I5ZDgyYmM1MDZiNTNjMjMzZjQxNWE2ZmRkMmNlMTEyMmI3N2M5ZjExNDUyZWQ0MTg1NTQ2ZjVjOGM0MmE5YSJ9fX0="
+    name: "&7Diamond 15"
+    tags:
+      - alphabet/diamond
+      - character/number_15
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "diamond_number_15"
+          input: { head: "mini_diamond_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "DIAMOND_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "diamond_number_15" }
+  diamond_number_16:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzVhNWFjNDIzMmIyYTJmZjIzZjc3NGVmYTVmY2E4ZmEwOWU5Yzg3ZWQ2ZTMzYjNjOTgyZmYxZjVkYTQ4OCJ9fX0="
+    name: "&7Diamond 16"
+    tags:
+      - alphabet/diamond
+      - character/number_16
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "diamond_number_16"
+          input: { head: "mini_diamond_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "DIAMOND_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "diamond_number_16" }
+  diamond_number_17:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOWVhZmY3MmZhZjkwMmM0MzM2ZDNkNGNjYTFmOTcxNDQ4Y2UzNmQ3NjE4NDcyNmRiM2MzY2ZlMWI4NjkxZGQxZSJ9fX0="
+    name: "&7Diamond 17"
+    tags:
+      - alphabet/diamond
+      - character/number_17
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "diamond_number_17"
+          input: { head: "mini_diamond_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "DIAMOND_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "diamond_number_17" }
+  diamond_number_18:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjFlMmI0NjQ1YWMyMzg5YTk3YzNhOTNmOTI0ZjgyNzYzN2Q2ZjY0OTJjODAzNjYwZTUyODVjNmVkNjc1OWJiMiJ9fX0="
+    name: "&7Diamond 18"
+    tags:
+      - alphabet/diamond
+      - character/number_18
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "diamond_number_18"
+          input: { head: "mini_diamond_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "DIAMOND_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "diamond_number_18" }
+  diamond_number_19:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZWQ3ZTMzNWJjMzRjYmU5ZTUwNzY5Y2UyMjRlMjdhZDc5Yzk0M2M3YjIzNzk4Y2U1YzY2NWIwZmY2MmI2MjIifX19"
+    name: "&7Diamond 19"
+    tags:
+      - alphabet/diamond
+      - character/number_19
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "diamond_number_19"
+          input: { head: "mini_diamond_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "DIAMOND_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "diamond_number_19" }
+  diamond_number_20:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNWE3Njg4ZGIyZjkwM2NkZmY2MmYxY2ZjMDI4ODIzMTc3ZjI3OGRhNGNkOWNkODQ3ZDg1MjBjYWQ4NDIyZWM2In19fQ=="
+    name: "&7Diamond 20"
+    tags:
+      - alphabet/diamond
+      - character/number_20
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "diamond_number_20"
+          input: { head: "mini_diamond_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "DIAMOND_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "diamond_number_20" }
+  diamond_number_21:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjE0NThkNTY5M2JlMjg4YWY0YmQ5NTFiZDM3MTk2OWMwYTBhZWFlNjlmNTZhNTk1NDEyMjFiMTUzYTI1MSJ9fX0="
+    name: "&7Diamond 21"
+    tags:
+      - alphabet/diamond
+      - character/number_21
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "diamond_number_21"
+          input: { head: "mini_diamond_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "DIAMOND_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "diamond_number_21" }
+  diamond_number_22:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzJjNDY2Y2EzYzJhNzExZmMzNzJjOWZkMTIxYWZlMThjYTk3ZTVlOTFhMzdjNjM5MGVkYWI2MzlhODVjMWNhIn19fQ=="
+    name: "&7Diamond 22"
+    tags:
+      - alphabet/diamond
+      - character/number_22
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "diamond_number_22"
+          input: { head: "mini_diamond_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "DIAMOND_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "diamond_number_22" }
+  diamond_number_23:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTA4MGU2M2VkM2U3ODIzODdiZTU1Y2VjODRkYzE4ZmNlY2NhYTcyMDFiNTBhN2MyNTNmZGY5NGQ0ZWEzMzhiIn19fQ=="
+    name: "&7Diamond 23"
+    tags:
+      - alphabet/diamond
+      - character/number_23
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "diamond_number_23"
+          input: { head: "mini_diamond_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "DIAMOND_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "diamond_number_23" }
+  diamond_number_24:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYWY2ZDIzYmJjMmM2ZTRjZGFmZjUyMWI3Yzk4NThjZWE2YjZjZGM5OTU0ZGM5MGNhMWVkMzBiMTNiMzA5OCJ9fX0="
+    name: "&7Diamond 24"
+    tags:
+      - alphabet/diamond
+      - character/number_24
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "diamond_number_24"
+          input: { head: "mini_diamond_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "DIAMOND_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "diamond_number_24" }
+  diamond_number_25:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDVhNjdhNDQyNmI4MTE3NjI4OGY5MGI5NDg4ZDkyYjM1NzYxMTkyN2ZjOTRlZGMxOGJhOTRjOGU4ODNkY2ZmIn19fQ=="
+    name: "&7Diamond 25"
+    tags:
+      - alphabet/diamond
+      - character/number_25
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "diamond_number_25"
+          input: { head: "mini_diamond_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "DIAMOND_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "diamond_number_25" }
+  diamond_exclamation:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjhjYzk1MWJkYzZiOGZmM2I4ZGQ3NDQzY2M0OWQxZjFiNzRjOWY5M2NmMDQ0OWY4YzhhMjExYjg1ZTc2YjE1In19fQ=="
+    name: "&7Diamond !"
+    tags:
+      - alphabet/diamond
+      - character/exclamation
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "diamond_exclamation"
+          input: { head: "mini_diamond_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "DIAMOND_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "diamond_exclamation" }
+  diamond_reverse_exclamation:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODBmYWU4MDMwZGU3ODFiYjAwMDhmYjQxZDU3OTczZjc5ZjliZDcyOTA0YzRkY2U4NTU0ODQ3ODIwYmUzYmM1ZCJ9fX0="
+    name: "&7Diamond ¡"
+    tags:
+      - alphabet/diamond
+      - character/reverse_exclamation
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "diamond_reverse_exclamation"
+          input: { head: "mini_diamond_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "DIAMOND_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "diamond_reverse_exclamation" }
+  diamond_question:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzA2NDk4M2M3OGVmNTg3YzVlNTc0YjA4MGE4NDU0ZmZkNjJjYzMyOWM2ODNhNjhmNjJhZjdmOTJhMWY0YSJ9fX0="
+    name: "&7Diamond ?"
+    tags:
+      - alphabet/diamond
+      - character/question
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "diamond_question"
+          input: { head: "mini_diamond_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "DIAMOND_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "diamond_question" }
+  diamond_reverse_question:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzVjZmZlYmQyY2YwNWI0MjQ4NDdlZGQzMGNjMjFlYjhiYmE2ZDNhZjc3OGJiMGYyYTJkYWU0OTgxNWE1Y2IzIn19fQ=="
+    name: "&7Diamond ¿"
+    tags:
+      - alphabet/diamond
+      - character/reverse_question
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "diamond_reverse_question"
+          input: { head: "mini_diamond_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "DIAMOND_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "diamond_reverse_question" }
+  diamond_period:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmNlNzIzZDk0OTk0ZjZjYmM5YzRjZjg2MzkxNmFhZmI4MWEzYzYxZjE2YzU2NjYxODE0MTA4Yzk5NDc1NTJhIn19fQ=="
+    name: "&7Diamond ."
+    tags:
+      - alphabet/diamond
+      - character/period
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "diamond_period"
+          input: { head: "mini_diamond_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "DIAMOND_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "diamond_period" }
+  diamond_comma:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDhkNWQxNDRkMDk3ZDIxZjk3MjFjZGJiOWE2MzlhMGNmZDU0YWRmZWZlZmE0NTk5ZjEyNzEyNzRlMWExIn19fQ=="
+    name: "&7Diamond ,"
+    tags:
+      - alphabet/diamond
+      - character/comma
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "diamond_comma"
+          input: { head: "mini_diamond_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "DIAMOND_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "diamond_comma" }
+  diamond_colon:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjE0MTg1NjI4MjU0OTBlY2E2N2JiNjg2ZDkxYWE5OGRkNDNiYThkNzFlOGJmYzdkODEwNzIzMWYzZDZlMzQifX19"
+    name: "&7Diamond :"
+    tags:
+      - alphabet/diamond
+      - character/colon
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "diamond_colon"
+          input: { head: "mini_diamond_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "DIAMOND_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "diamond_colon" }
+  diamond_semicolon:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjdlZmY5YTE5OTRiNmFjZjU0M2Y0Zjk2ZWM0ODg2MWI3NjkyODM1ZWY2NTBjODJkOTFhZmU2ZmU0NzNlYiJ9fX0="
+    name: "&7Diamond ;"
+    tags:
+      - alphabet/diamond
+      - character/semicolon
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "diamond_semicolon"
+          input: { head: "mini_diamond_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "DIAMOND_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "diamond_semicolon" }
+  diamond_apostrophe:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODA5Zjc0NjkxZmY4MTFjNTBjMjZhODc4MTI3YzI3MjBlODc4MDdiOTZjYzRhYmE1MDJlMzU5MDQ5YzI4ZDk0In19fQ=="
+    name: "&7Diamond '"
+    tags:
+      - alphabet/diamond
+      - character/apostrophe
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "diamond_apostrophe"
+          input: { head: "mini_diamond_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "DIAMOND_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "diamond_apostrophe" }
+  diamond_quote:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjRlNTNjODYyM2Y2ZjE0YTllMDkzM2QzNTliYzQ1NDRjNmZiZmIxYWYxN2UzNjRiYjhkNTdlMWMwYTIyYmI3YiJ9fX0="
+    name: "&7Diamond \""
+    tags:
+      - alphabet/diamond
+      - character/quote
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "diamond_quote"
+          input: { head: "mini_diamond_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "DIAMOND_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "diamond_quote" }
+  diamond_ampersand:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMmI3YTRkMjgzMzQyN2VhNmNkM2M3NTgwNWMzM2QzMjM5YTE3ZGYxMWRkOWJjZmQ0NGIxNTIyYjhiNTYyMjkyMSJ9fX0="
+    name: "&7Diamond &"
+    tags:
+      - alphabet/diamond
+      - character/ampersand
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "diamond_ampersand"
+          input: { head: "mini_diamond_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "DIAMOND_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "diamond_ampersand" }
+  diamond_hash:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzE1ODIxYzNmNTQzYmRkNjJiMTE1NmVjMjFkZjgwZjkzN2VlOGU5YzEyNGY3NTc2NzMxYmMxNDZkZjljNmFhIn19fQ=="
+    name: "&7Diamond #"
+    tags:
+      - alphabet/diamond
+      - character/hash
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "diamond_hash"
+          input: { head: "mini_diamond_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "DIAMOND_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "diamond_hash" }
+  diamond_dollar:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmYxYWM3MTgyZjkxZWZjYzI3NGQ2ZGQzODdlNzVkMjEyMjdmMWFkMGEwNmIwNzI1M2Q0M2NjYzlkZWEyOWZmIn19fQ=="
+    name: "&7Diamond $"
+    tags:
+      - alphabet/diamond
+      - character/dollar
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "diamond_dollar"
+          input: { head: "mini_diamond_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "DIAMOND_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "diamond_dollar" }
+  diamond_percent:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTJkOWIzN2E4YTVlMTM2ZDM1NzI5NzI1ZjZkMTAzZjJmZGU2YzkwZDNkZDVjMWRkYTZhNGVlMjZkZjM3MjIifX19"
+    name: "&7Diamond %"
+    tags:
+      - alphabet/diamond
+      - character/percent
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "diamond_percent"
+          input: { head: "mini_diamond_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "DIAMOND_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "diamond_percent" }
+  diamond_plus:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTgxMzZmZmYyZTk2MjM4MTBjNzg0ODZhNmZmZTJmOWFlZTUxNDhmM2IyODJmMmZkMjA3ZDI1NWY1OGUwZDEifX19"
+    name: "&7Diamond +"
+    tags:
+      - alphabet/diamond
+      - character/plus
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "diamond_plus"
+          input: { head: "mini_diamond_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "DIAMOND_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "diamond_plus" }
+  diamond_minus:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzk0MTZiNjBkOTNkNGYxOWZkOGQ2YTZmODc3YzZiNjI1MWQ1ZTRmODdlNjQ4NGQwNTc3NWI2NmI3OGMzZTUifX19"
+    name: "&7Diamond -"
+    tags:
+      - alphabet/diamond
+      - character/minus
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "diamond_minus"
+          input: { head: "mini_diamond_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "DIAMOND_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "diamond_minus" }
+  diamond_equals:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvY2IzYWQ4YWM2M2ZiNjVmYWEyMzg3NDQyYjc2N2I5OThjYmFjMjU1YTg4ODMyMDNiMzhhNTJkY2Y1MjdjZTYyIn19fQ=="
+    name: "&7Diamond ="
+    tags:
+      - alphabet/diamond
+      - character/equals
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "diamond_equals"
+          input: { head: "mini_diamond_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "DIAMOND_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "diamond_equals" }
+  diamond_slash:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTQ0ODUxZWQxMTcyNzZmMGE3OWNiMmVmNzQ1ZTI0Nzc0OTQyNjlmMGRlMzJiNjU2ZDUzNzcyNmE0MjNlZmYifX19"
+    name: "&7Diamond /"
+    tags:
+      - alphabet/diamond
+      - character/slash
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "diamond_slash"
+          input: { head: "mini_diamond_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "DIAMOND_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "diamond_slash" }
+  diamond_backslash:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDQyMTgzOWYzOTNkNjY0NGMzNWE3N2E3Y2I2ZWY2MzQyMzI3MmMzNDk4NmNjODk0M2JhNmRjNjE5YjM1MWEwIn19fQ=="
+    name: "&7Diamond \\"
+    tags:
+      - alphabet/diamond
+      - character/backslash
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "diamond_backslash"
+          input: { head: "mini_diamond_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "DIAMOND_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "diamond_backslash" }
+  diamond_underscore:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTg0MjIxOGI0YTlmZTM2MTQ3YjA5NGU2YmYyOWEwOTYzYWMwOTZkMzYzN2NiMzQyZjU3ZmYzNTdkMjEyMiJ9fX0="
+    name: "&7Diamond _"
+    tags:
+      - alphabet/diamond
+      - character/underscore
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "diamond_underscore"
+          input: { head: "mini_diamond_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "DIAMOND_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "diamond_underscore" }
+  diamond_heart:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTllN2VkYTU0OTM4YjE3Mzk0NmVjYTcyY2ZhMzI5OTNkOTk3OThjMjM5MTVkM2U2ODgyN2Q1MWYxY2U3ODkifX19"
+    name: "&7Diamond ♥"
+    tags:
+      - alphabet/diamond
+      - character/heart
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "diamond_heart"
+          input: { head: "mini_diamond_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "DIAMOND_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "diamond_heart" }
+  diamond_blank:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODNjN2FkZmMzZDg2NGJlYTgzYmQ3NzZhY2E0NzkxN2YxMmU2NTg3NmI2NGQ2Yzk2ODIyY2ZhNmEzNjhjMmVhIn19fQ=="
+    name: "&7Diamond  "
+    tags:
+      - alphabet/diamond
+      - character/blank
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "diamond_blank"
+          input: { head: "mini_diamond_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "DIAMOND_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "diamond_blank" }
+  diamond_checkmark:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDI4ODcyZGM5ZDYzNGQyNzRjNGMwZTgwZGU2MTc2M2MyMmI2Y2JlNDk3NDBlODdlMzY1N2JjMzZkM2VkNGJlYSJ9fX0="
+    name: "&7Diamond ✓"
+    tags:
+      - alphabet/diamond
+      - character/checkmark
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "diamond_checkmark"
+          input: { head: "mini_diamond_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "DIAMOND_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "diamond_checkmark" }
+  diamond_note:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjFkYzIwYThiMzFmYTA2MGI0OWNlYmMzNGViYWI2ZDBjOGY2Mjk3N2RkYTNkNzVjMTFlNDZjNGUwM2NmN2JhYSJ9fX0="
+    name: "&7Diamond ♪"
+    tags:
+      - alphabet/diamond
+      - character/note
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "diamond_note"
+          input: { head: "mini_diamond_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "DIAMOND_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "diamond_note" }
+  diamond_paren_open:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDE5OWIyYWQ1YmYwODI4NTQ4ZGI0MjNkM2U0ZmJmYTQ3N2U4MzNhZTdkODhhNTJjNTVkMWFlNTUyYzNiZmZhZSJ9fX0="
+    name: "&7Diamond ("
+    tags:
+      - alphabet/diamond
+      - character/paren_open
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "diamond_paren_open"
+          input: { head: "mini_diamond_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "DIAMOND_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "diamond_paren_open" }
+  diamond_paren_close:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOGM4MGMwM2E1OGY2YjQ0MzFiNGJiZDljZDE4Nzk4YWNiMzY2MzRkOGQ3ZTM5YzMxMWFiOTZkNzkyNGJjIn19fQ=="
+    name: "&7Diamond )"
+    tags:
+      - alphabet/diamond
+      - character/paren_close
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "diamond_paren_close"
+          input: { head: "mini_diamond_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "DIAMOND_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "diamond_paren_close" }
+  diamond_bracket_open:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZGE2OGM3OWI5ZjZiYjI2ZTcwMzAzYWY1Y2EzZGI3N2VmMDk0ZGJlNTlhNjg0MWNmMzY1M2QxZTY4Y2Y4NzNhIn19fQ=="
+    name: "&7Diamond ["
+    tags:
+      - alphabet/diamond
+      - character/bracket_open
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "diamond_bracket_open"
+          input: { head: "mini_diamond_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "DIAMOND_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "diamond_bracket_open" }
+  diamond_bracket_close:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZmQ5YzY4YjhkMTNjNzVlOTJhNGE3ZTA2OGEzZjRhOTNlNGJkMWEzYWVmOTE0ODBiZmVjZjNlNzliNWQxIn19fQ=="
+    name: "&7Diamond ]"
+    tags:
+      - alphabet/diamond
+      - character/bracket_close
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "diamond_bracket_close"
+          input: { head: "mini_diamond_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "DIAMOND_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "diamond_bracket_close" }
+  diamond_brace_open:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODE3ZGIyNWFkODNkNDFiM2QwOWRmN2Y1NWEzNzE1YzYxODRlNjM2Yjg2MWI3NjdmZWE3NGNjYTk3NDdhZWMifX19"
+    name: "&7Diamond {"
+    tags:
+      - alphabet/diamond
+      - character/brace_open
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "diamond_brace_open"
+          input: { head: "mini_diamond_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "DIAMOND_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "diamond_brace_open" }
+  diamond_brace_close:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNmU0NGQ2Yjc1MzQ4YzMyMmI0YmIxMGQ3Y2RjYWUxNzk5OWY4ZmVhNDYwZDQ1ZWE4NzQ2NmZkODg2OGJlMWJjMyJ9fX0="
+    name: "&7Diamond }"
+    tags:
+      - alphabet/diamond
+      - character/brace_close
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "diamond_brace_close"
+          input: { head: "mini_diamond_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "DIAMOND_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "diamond_brace_close" }
+  diamond_arrow_up:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvN2Q2OTVkMzM1ZTZiZThjYjJhMzRlMDVlMThlYTJkMTJjM2IxN2I4MTY2YmE2MmQ2OTgyYTY0M2RmNzFmZmFjNSJ9fX0="
+    name: "&7Diamond ↑"
+    tags:
+      - alphabet/diamond
+      - character/arrow_up
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "diamond_arrow_up"
+          input: { head: "mini_diamond_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "DIAMOND_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "diamond_arrow_up" }
+  diamond_arrow_down:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDM3ODYyY2RjMTU5OTk4ZWQ2YjZmZGNjYWFhNDY3NTg2N2Q0NDg0ZGI1MTJhODRjMzY3ZmFiZjRjYWY2MCJ9fX0="
+    name: "&7Diamond ↓"
+    tags:
+      - alphabet/diamond
+      - character/arrow_down
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "diamond_arrow_down"
+          input: { head: "mini_diamond_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "DIAMOND_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "diamond_arrow_down" }
+  diamond_arrow_left:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWI2MTQwYWYzMmNiMzY0ZDliZTNiOTRlOTMwODFkNmNmYzhjMjdkM2NmZTBiNGRkNDVlNzg1MjI1ZWIifX19"
+    name: "&7Diamond ←"
+    tags:
+      - alphabet/diamond
+      - character/arrow_left
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "diamond_arrow_left"
+          input: { head: "mini_diamond_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "DIAMOND_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "diamond_arrow_left" }
+  diamond_arrow_right:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZmNhODQyNjdjYjVhMzdkNjk5YWJlN2Q2YTAzMTc4ZGUwODlkN2NmMmU3MjZmMzdkYTNmZTk5N2ZkNyJ9fX0="
+    name: "&7Diamond →"
+    tags:
+      - alphabet/diamond
+      - character/arrow_right
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "diamond_arrow_right"
+          input: { head: "mini_diamond_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "DIAMOND_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "diamond_arrow_right" }
+  diamond_arrow_left_up:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTI5ZGJiMDgxZGFiZjcxZGQ5ZWEwNjFkNDI3NmExZWQ0ODU1NWI3ZjA3YWNkYWRkMzNkMjdhOGUxNDlkOSJ9fX0="
+    name: "&7Diamond ↖"
+    tags:
+      - alphabet/diamond
+      - character/arrow_left_up
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "diamond_arrow_left_up"
+          input: { head: "mini_diamond_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "DIAMOND_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "diamond_arrow_left_up" }
+  diamond_arrow_right_up:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTBjYTE2OWQxY2E2NTQ2YTIzYzhlZTViOTNmM2E0ZTY5ODNkMTRkYzk4MWU0ODA0ODgyOWMzMGQzMTMyNTM5In19fQ=="
+    name: "&7Diamond ↗"
+    tags:
+      - alphabet/diamond
+      - character/arrow_right_up
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "diamond_arrow_right_up"
+          input: { head: "mini_diamond_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "DIAMOND_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "diamond_arrow_right_up" }
+  diamond_arrow_left_down:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTliNzE4ODU1ZDU0ZmRlMjZiMDYxZTFkMzVkYjllMTZlMjc4MmJlNjgyMGFlOTEyZTUzZTJjZDNhMTM4MmZiIn19fQ=="
+    name: "&7Diamond ↙"
+    tags:
+      - alphabet/diamond
+      - character/arrow_left_down
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "diamond_arrow_left_down"
+          input: { head: "mini_diamond_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "DIAMOND_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "diamond_arrow_left_down" }
+  diamond_arrow_right_down:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDExYjMyMTRkM2Y4YWUzMjdjYzBmY2RjYTJkMmQ0YTZiMmRjZjRhZjlmZjIzZWUyMWE5ODZjMmZmZDUyZDVkIn19fQ=="
+    name: "&7Diamond ↘"
+    tags:
+      - alphabet/diamond
+      - character/arrow_right_down
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "diamond_arrow_right_down"
+          input: { head: "mini_diamond_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "DIAMOND_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "diamond_arrow_right_down" }
+  diamond_forward:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzc0NTNhYzJkN2E0MmE5MzY3NGZiZjYyY2FmMzMxYzcxNDNkY2JiY2M0ZjJiYWJiYzJmNjViOTUxNzQyMTQifX19"
+    name: "&7Diamond ⏩"
+    tags:
+      - alphabet/diamond
+      - character/forward
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "diamond_forward"
+          input: { head: "mini_diamond_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "DIAMOND_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "diamond_forward" }
+  diamond_forward_ii:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvN2Q0NjhiZGU4NGRhY2MxMWZiNTUyNmU1MzRjYTZhYmVkNjliYmMzNDNlODdlOWVhNWYwNGJjNjQ3MzBhYiJ9fX0="
+    name: "&7Diamond ⏭"
+    tags:
+      - alphabet/diamond
+      - character/forward_ii
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "diamond_forward_ii"
+          input: { head: "mini_diamond_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "DIAMOND_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "diamond_forward_ii" }
+  diamond_backward:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTg5NGRhNjk1OTY1NDhjNzRkOTY0ZTk5YjdhNGM5MjE3NjEwZjFhMjdjOTkxZGZhNDRkYWE1ZGE3NzFkODI1In19fQ=="
+    name: "&7Diamond ⏪"
+    tags:
+      - alphabet/diamond
+      - character/backward
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "diamond_backward"
+          input: { head: "mini_diamond_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "DIAMOND_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "diamond_backward" }
+  diamond_backward_ii:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjI3MmZhOWQ1ZDUyNWJmNGJkZjUzM2VjMWI5MmIxZDJjZTI0MjM0YTFlNDNlZDVjZGU3ZDI0MWU3YWMwZGUifX19"
+    name: "&7Diamond ⏮"
+    tags:
+      - alphabet/diamond
+      - character/backward_ii
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "diamond_backward_ii"
+          input: { head: "mini_diamond_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "DIAMOND_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "diamond_backward_ii" }
+  diamond_letter_a_umlaut:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzk1OGUwYzk3MzhmYTA0NGI3MTI1MzUzZTI2ZWY4YjUxNjY4ZWQ5YmNiZmVmYTIyMzRmNDEyOWE1M2Y1Y2IxIn19fQ=="
+    name: "&7Diamond Ä"
+    tags:
+      - alphabet/diamond
+      - character/letter_a_umlaut
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "diamond_letter_a_umlaut"
+          input: { head: "mini_diamond_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "DIAMOND_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "diamond_letter_a_umlaut" }
+  diamond_letter_n_tilde:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzNkODQ0NTY0ZjI5MDExYWEyYzg1OWFhZTU3NzBhZmNjNzJlYjNlZDliMzM5ZTEyYTRhYTI0ZTkxYWY0ZTNiYyJ9fX0="
+    name: "&7Diamond Ñ"
+    tags:
+      - alphabet/diamond
+      - character/letter_n_tilde
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "diamond_letter_n_tilde"
+          input: { head: "mini_diamond_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "DIAMOND_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "diamond_letter_n_tilde" }
+  diamond_letter_o_umlaut:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjVkMGFkNzdlOGI5YzhmNmE0OTAzNjk1MjJhZTQyNmEzZDJmN2M2NDMzNDNlN2MxM2FlYjVhY2E0N2U5NWQifX19"
+    name: "&7Diamond Ö"
+    tags:
+      - alphabet/diamond
+      - character/letter_o_umlaut
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "diamond_letter_o_umlaut"
+          input: { head: "mini_diamond_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "DIAMOND_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "diamond_letter_o_umlaut" }
+  diamond_letter_u_umlaut:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzE3MTk3Yzc1ZWQ2YTAyMjUwZjc0M2JiYzliMDZlZjJkZTc5ODYyMjM1Y2UzMzcwZDllMzNiMTE3YWUxYmQifX19"
+    name: "&7Diamond Ü"
+    tags:
+      - alphabet/diamond
+      - character/letter_u_umlaut
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "diamond_letter_u_umlaut"
+          input: { head: "mini_diamond_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "DIAMOND_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "diamond_letter_u_umlaut" }
+  diamond_cyrillic_yo:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZThiMWU2OTI4OTc3OTBlNGY0ZWM2OGRjYmUxN2YwNTJmMzgyMWJiZDFjNzE2NzA0NzJjZGRjMDZlZjk2NWRjIn19fQ=="
+    name: "&7Diamond Ё"
+    tags:
+      - alphabet/diamond
+      - character/cyrillic_yo
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "diamond_cyrillic_yo"
+          input: { head: "mini_diamond_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "DIAMOND_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "diamond_cyrillic_yo" }
+  diamond_cyrillic_be:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzM3MDQ0ZTE3ZGUxY2FjOTMyMjgxN2E5ZWNiZDRiYzBiMDUxOTliYWRhNGFjZDZmNTgyNDhmZWE0ZTJiNzEifX19"
+    name: "&7Diamond Б"
+    tags:
+      - alphabet/diamond
+      - character/cyrillic_be
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "diamond_cyrillic_be"
+          input: { head: "mini_diamond_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "DIAMOND_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "diamond_cyrillic_be" }
+  diamond_cyrillic_ge:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTcyZTRkZTk2ZWI5NGNhNzI3ZWNkM2UxZDFmZTY1M2U4OGU3ZDlhNTc2YmQyZTZhNWU3Nzg5MTAxZjYzZWIifX19"
+    name: "&7Diamond Г"
+    tags:
+      - alphabet/diamond
+      - character/cyrillic_ge
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "diamond_cyrillic_ge"
+          input: { head: "mini_diamond_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "DIAMOND_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "diamond_cyrillic_ge" }
+  diamond_cyrillic_de:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvY2JmNzIxODQxNzcwYzNhZTg2N2VmZTVhZWUxMjI1OTNmZmQzMDE3YWVlZTVjN2IxODJmMDI0MTY3MmYxMSJ9fX0="
+    name: "&7Diamond Д"
+    tags:
+      - alphabet/diamond
+      - character/cyrillic_de
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "diamond_cyrillic_de"
+          input: { head: "mini_diamond_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "DIAMOND_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "diamond_cyrillic_de" }
+  diamond_cyrillic_zhe:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvN2RhNzFkNWU2OWE3OTg5NjhmMTVhOTkxOGM4ZTNmZWZmNTZlNThjOWU3ZjM4NTM1Zjk2MDNjZmZmOTZmYThjNiJ9fX0="
+    name: "&7Diamond Ж"
+    tags:
+      - alphabet/diamond
+      - character/cyrillic_zhe
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "diamond_cyrillic_zhe"
+          input: { head: "mini_diamond_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "DIAMOND_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "diamond_cyrillic_zhe" }
+  diamond_cyrillic_ze:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjQ2NTVjNGJiZmM2ZjE4ZGRiN2Q0ZGFjMTk4OGI5MWNmYTdkZDdjNmFlYjk0MGM3YTgxNmQwODhlZmFiY2YifX19"
+    name: "&7Diamond З"
+    tags:
+      - alphabet/diamond
+      - character/cyrillic_ze
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "diamond_cyrillic_ze"
+          input: { head: "mini_diamond_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "DIAMOND_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "diamond_cyrillic_ze" }
+  diamond_cyrillic_i:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNmIyN2U0YmY4YmFiZTJkOWI5ZjBiMjdhNDJlZDVlZGM4M2E0Nzg2ZDY3ZTcxOTYwNmU4OWZkNzVlYmQyMTMzOCJ9fX0="
+    name: "&7Diamond И"
+    tags:
+      - alphabet/diamond
+      - character/cyrillic_i
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "diamond_cyrillic_i"
+          input: { head: "mini_diamond_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "DIAMOND_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "diamond_cyrillic_i" }
+  diamond_cyrillic_short_i:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzMxNzViYTMyYTczOGU2MDM1YjE5MmY2NDI3ODZiZTNiYWE1YWI5Y2JmNzNjMDNhYjZlOTRiZjVlNDEyNTAifX19"
+    name: "&7Diamond Й"
+    tags:
+      - alphabet/diamond
+      - character/cyrillic_short_i
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "diamond_cyrillic_short_i"
+          input: { head: "mini_diamond_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "DIAMOND_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "diamond_cyrillic_short_i" }
+  diamond_cyrillic_el:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjc3YzdjZDAyYzEzNTU2OGRmZDIzNDM5YWEwNGNhZGU3Y2M1NjZmMjM5YWFhMmMwYzNkOWMxMTJmZGUyIn19fQ=="
+    name: "&7Diamond Л"
+    tags:
+      - alphabet/diamond
+      - character/cyrillic_el
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "diamond_cyrillic_el"
+          input: { head: "mini_diamond_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "DIAMOND_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "diamond_cyrillic_el" }
+  diamond_cyrillic_pe:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZmM4NzYyOWFkMDg3M2VkODY4ZGEzODE4OTk4YzU4YjQ4ZDVhNTZjZjRhNmM4ZWQzNDk2NmQ0NWE1MGM1NWMifX19"
+    name: "&7Diamond П"
+    tags:
+      - alphabet/diamond
+      - character/cyrillic_pe
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "diamond_cyrillic_pe"
+          input: { head: "mini_diamond_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "DIAMOND_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "diamond_cyrillic_pe" }
+  diamond_cyrillic_u:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzNhMjE4YTJmYzI3ZTY3NDc3YjliODJiN2FlNmI4NmNlYjZhNDgxYTllN2Y2MzQzYzUzYmU1MmM1MTM2YmFiIn19fQ=="
+    name: "&7Diamond У"
+    tags:
+      - alphabet/diamond
+      - character/cyrillic_u
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "diamond_cyrillic_u"
+          input: { head: "mini_diamond_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "DIAMOND_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "diamond_cyrillic_u" }
+  diamond_cyrillic_ef:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZGQ5MTEyMmY2OTMxODE2YjI4YjMzZDZkMTRiZTg1ZDUyODJjN2FmYTdhY2YxMTM1MjFjY2EyYzdiYjRiNjJkIn19fQ=="
+    name: "&7Diamond Ф"
+    tags:
+      - alphabet/diamond
+      - character/cyrillic_ef
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "diamond_cyrillic_ef"
+          input: { head: "mini_diamond_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "DIAMOND_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "diamond_cyrillic_ef" }
+  diamond_cyrillic_tse:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZGM2MjQ4ODNiNTk1M2RmOGFhMTM2MzVkNmQ5ZDkxZjUyODk3MjY5NWI2MWQyMzVmYWMyNjAxNThjOTlmNWQ2In19fQ=="
+    name: "&7Diamond Ц"
+    tags:
+      - alphabet/diamond
+      - character/cyrillic_tse
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "diamond_cyrillic_tse"
+          input: { head: "mini_diamond_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "DIAMOND_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "diamond_cyrillic_tse" }
+  diamond_cyrillic_che:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGQ4MTQ0NzU3Y2ZkMDk1NDdjNmRmOWYyZWQ0NjVjNWJjZWNiYWEwYzI0YTQ2YTk1OTIxYjI5MmFkYzUzOSJ9fX0="
+    name: "&7Diamond Ч"
+    tags:
+      - alphabet/diamond
+      - character/cyrillic_che
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "diamond_cyrillic_che"
+          input: { head: "mini_diamond_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "DIAMOND_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "diamond_cyrillic_che" }
+  diamond_cyrillic_sha:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMmYzNmU4Y2QyZjcwZGZkNzg4ZGJkNWYyNGRiNGU3MTQ2MjVjMmRiMTNmNTllMzQ3YmNiNjcyM2JkZDJhZTA3OCJ9fX0="
+    name: "&7Diamond Ш"
+    tags:
+      - alphabet/diamond
+      - character/cyrillic_sha
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "diamond_cyrillic_sha"
+          input: { head: "mini_diamond_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "DIAMOND_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "diamond_cyrillic_sha" }
+  diamond_cyrillic_shcha:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvY2IyMzRhYWIzOWU1Y2I1ODZkOGI5Y2Y1ZmY4NmQ5NTczODMyYzY0ZDU2ZGQzZWY3ZjMyNDY4MjA0MTZkIn19fQ=="
+    name: "&7Diamond Щ"
+    tags:
+      - alphabet/diamond
+      - character/cyrillic_shcha
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "diamond_cyrillic_shcha"
+          input: { head: "mini_diamond_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "DIAMOND_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "diamond_cyrillic_shcha" }
+  diamond_cyrillic_hard:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYWI5ODczOWE0ZDg2MTA5YWY2NmYxZjlmYWQ2NDJkYzg4OGE3YzIxZTQyYmQ0ZjJmY2IzY2IxZjBiYzFhZDM4YiJ9fX0="
+    name: "&7Diamond Ъ"
+    tags:
+      - alphabet/diamond
+      - character/cyrillic_hard
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "diamond_cyrillic_hard"
+          input: { head: "mini_diamond_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "DIAMOND_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "diamond_cyrillic_hard" }
+  diamond_cyrillic_yeru:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOGE4NGQxNzJjMTA4OGQ3NzA0MjFiZTJjZWZjNzhiN2RiY2RiZjNjZjFhZjY3MzM4NDVmZDlmNjljYzk5MSJ9fX0="
+    name: "&7Diamond Ы"
+    tags:
+      - alphabet/diamond
+      - character/cyrillic_yeru
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "diamond_cyrillic_yeru"
+          input: { head: "mini_diamond_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "DIAMOND_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "diamond_cyrillic_yeru" }
+  diamond_cyrillic_soft:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOGZhNmIzNDJkYzExNDBhMjgwZjE4NjNmZWUxN2JjMTM3OTRkOTZhOTQ2ZDM2YmJkZDJjNGEzMTVjY2RkYjkifX19"
+    name: "&7Diamond Ь"
+    tags:
+      - alphabet/diamond
+      - character/cyrillic_soft
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "diamond_cyrillic_soft"
+          input: { head: "mini_diamond_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "DIAMOND_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "diamond_cyrillic_soft" }
+  diamond_cyrillic_e:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzE2ZjRjZmEyZTg0NDVlNTI5NWY4MWMzNTY1YTZkNDBkYmE0ZTQ4YWFiNjE0ODI3YTViNzY3ZmYzZTkxMTgifX19"
+    name: "&7Diamond Э"
+    tags:
+      - alphabet/diamond
+      - character/cyrillic_e
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "diamond_cyrillic_e"
+          input: { head: "mini_diamond_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "DIAMOND_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "diamond_cyrillic_e" }
+  diamond_cyrillic_yu:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTJiMTA3MzVkMzMzYmU4NDgxNWI3N2ExYTAzYjJiYTc0OWI1NjE2MTMzZmM4ZTc1Zjc5NGU5MmFlZmJhNzEifX19"
+    name: "&7Diamond Ю"
+    tags:
+      - alphabet/diamond
+      - character/cyrillic_yu
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "diamond_cyrillic_yu"
+          input: { head: "mini_diamond_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "DIAMOND_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "diamond_cyrillic_yu" }
+  diamond_cyrillic_ya:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWM0YzRiNmVmZjJmMWVlZTM4YmY4MGYzOTQ2N2JhNWQ3ZTVlNzk4ZjdmZDU5NmZkMTc3YTY4OTc3OGIwMjUzMyJ9fX0="
+    name: "&7Diamond Я"
+    tags:
+      - alphabet/diamond
+      - character/cyrillic_ya
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "diamond_cyrillic_ya"
+          input: { head: "mini_diamond_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "DIAMOND_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "diamond_cyrillic_ya" }
+  diamond_zodiac_aquarius:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZGMyNTQxYjVhNDZmODU5Y2VhNWIxYmI1MWVhNTIzZjU0YTU3OTAyYTdlNjkyNjY2NzA2MjljZDk4MGE0YzExNyJ9fX0="
+    name: "&7Diamond ♒"
+    tags:
+      - alphabet/diamond
+      - character/zodiac_aquarius
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "diamond_zodiac_aquarius"
+          input: { head: "mini_diamond_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "DIAMOND_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "diamond_zodiac_aquarius" }
+  diamond_zodiac_aries:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTdhNDcyNmZlZjM1OWQyNmI1OGQ1NmY3NzQ4YzhlZDE5NGU1MzIwNTFlODdjYzgzNzUxNzM3ZWY5NWMyZDJlMiJ9fX0="
+    name: "&7Diamond ♈"
+    tags:
+      - alphabet/diamond
+      - character/zodiac_aries
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "diamond_zodiac_aries"
+          input: { head: "mini_diamond_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "DIAMOND_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "diamond_zodiac_aries" }
+  diamond_zodiac_cancer:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjZkYmNlODNhMTExNzQwNWRlZGVhODc2MjQzYTY4YmIzZjVkYzZiMjMxZjBlMDIyOWFhNGU5MGFiMDViNzRjOCJ9fX0="
+    name: "&7Diamond ♋"
+    tags:
+      - alphabet/diamond
+      - character/zodiac_cancer
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "diamond_zodiac_cancer"
+          input: { head: "mini_diamond_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "DIAMOND_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "diamond_zodiac_cancer" }
+  diamond_zodiac_capricorn:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOGQ4MmQ0Njk3NTg0M2UzZTIyOTBlNGFlNzdjNzQ3ZjE2YjRlMWIzYmJiODRkNjBlYTFjNjQ2ODU4MWVlZGE5NSJ9fX0="
+    name: "&7Diamond ♑"
+    tags:
+      - alphabet/diamond
+      - character/zodiac_capricorn
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "diamond_zodiac_capricorn"
+          input: { head: "mini_diamond_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "DIAMOND_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "diamond_zodiac_capricorn" }
+  diamond_zodiac_gemini:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOGYzMzNmNmMwYjViMDBhYzgzNDViNzE2MjhiMjA4NzAzZGRlOTAyZTExMWExNWM4Njg5MzcyNTg0ZjU5YmYzMCJ9fX0="
+    name: "&7Diamond ♊"
+    tags:
+      - alphabet/diamond
+      - character/zodiac_gemini
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "diamond_zodiac_gemini"
+          input: { head: "mini_diamond_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "DIAMOND_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "diamond_zodiac_gemini" }
+  diamond_zodiac_leo:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNWVlMDA2NTJhOGVhZDM4OWYzZDhiNDc1MWQ0ZWI5ZTQ5ZjdiYjdlZmIxMjBkZjc2ZjMxZDMxZTNlM2FjYWU1NyJ9fX0="
+    name: "&7Diamond ♌"
+    tags:
+      - alphabet/diamond
+      - character/zodiac_leo
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "diamond_zodiac_leo"
+          input: { head: "mini_diamond_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "DIAMOND_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "diamond_zodiac_leo" }
+  diamond_zodiac_libra:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODFkMzBmODQ5MGM3ZjgwZmJhNTZlNTdhYzI1OWMwMWEzMGQ1ZjAzMGU4YmQ0YTdlMGQwYjI3NDQxNmQyM2M2NiJ9fX0="
+    name: "&7Diamond ♎"
+    tags:
+      - alphabet/diamond
+      - character/zodiac_libra
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "diamond_zodiac_libra"
+          input: { head: "mini_diamond_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "DIAMOND_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "diamond_zodiac_libra" }
+  diamond_zodiac_pisces:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNWIzZmI4NjJmYzc0YWM1NjA3ZWI1OGQ4MjhkYWRhMzhkYzI2NjZmMTE0NzA0MTgyOTYwMmIxNjA4NzhiY2Q3In19fQ=="
+    name: "&7Diamond ♓"
+    tags:
+      - alphabet/diamond
+      - character/zodiac_pisces
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "diamond_zodiac_pisces"
+          input: { head: "mini_diamond_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "DIAMOND_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "diamond_zodiac_pisces" }
+  diamond_zodiac_sagittarius:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTgwM2QxNGI1M2E4YWZmYzkyNGViYmVlYzIxZThmODUxMWMxNmE3NzYwODJmMTFhNmI4YTY1NDNhZTc1NWEzMyJ9fX0="
+    name: "&7Diamond ♐"
+    tags:
+      - alphabet/diamond
+      - character/zodiac_sagittarius
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "diamond_zodiac_sagittarius"
+          input: { head: "mini_diamond_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "DIAMOND_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "diamond_zodiac_sagittarius" }
+  diamond_zodiac_scorpio:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYWM0N2JjMDExMjgxYmM0OTNlYmMwNTdmMWI5ZDMzMTA2YzgzMGNkZDc3NTk1OWMyZTZjMjlhMWIyODRkM2NkZiJ9fX0="
+    name: "&7Diamond ♏"
+    tags:
+      - alphabet/diamond
+      - character/zodiac_scorpio
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "diamond_zodiac_scorpio"
+          input: { head: "mini_diamond_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "DIAMOND_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "diamond_zodiac_scorpio" }
+  diamond_zodiac_taurus:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODc1M2JjZjdmZThjNTViMDU4NTAwNzNhOTRkOWFkNDkwNDNlOTk5YzVkZjFiNDA5MWExMGNkN2JiYjVlOGRiMCJ9fX0="
+    name: "&7Diamond ♉"
+    tags:
+      - alphabet/diamond
+      - character/zodiac_taurus
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "diamond_zodiac_taurus"
+          input: { head: "mini_diamond_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "DIAMOND_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "diamond_zodiac_taurus" }
+  diamond_zodiac_virgo:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvN2ZmNjliYzFhYjlmYTE1M2RhM2FkZWYxNDljMzU4YTE3YjdhZGViZWJmZjczYTMyOWYyZTVhNDEwYmZmMjU0NCJ9fX0="
+    name: "&7Diamond ♍"
+    tags:
+      - alphabet/diamond
+      - character/zodiac_virgo
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "diamond_zodiac_virgo"
+          input: { head: "mini_diamond_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "DIAMOND_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "diamond_zodiac_virgo" }
+  diamond_female:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTFmMWQ0NGM3NzI5MzRlYTliZDExMjdhYzYwY2FiM2U4ODQ1OTI5ZTJhNzUzYjM2OTk5MGQ4ZWQ4ZDljZGIwMyJ9fX0="
+    name: "&7Diamond ♀"
+    tags:
+      - alphabet/diamond
+      - character/female
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "diamond_female"
+          input: { head: "mini_diamond_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "DIAMOND_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "diamond_female" }
+  diamond_male:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTQ3N2FkNmNkYTAyMDI4MWU4ZWU0N2M1NjMzNjMxNWVhOGVlZGRkOTRjNjliOWJlZGY5YmNlMWY1NjA2NWI2OSJ9fX0="
+    name: "&7Diamond ♂"
+    tags:
+      - alphabet/diamond
+      - character/male
+      - natural/ore_block
+    recipes:
+      stonecutter:
+        - id: "diamond_male"
+          input: { head: "mini_diamond_block" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "DIAMOND_BLOCK" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "diamond_male" }

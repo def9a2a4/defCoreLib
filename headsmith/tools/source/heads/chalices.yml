@@ -1,0 +1,172 @@
+# Chalices - Decorative chalices crafted from material blocks
+
+heads:
+  coal_chalice:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWFiMTE3MjcyZmFiZmU0YzAxYTgxNGNhNGNhMjRhODU2Y2U3OTQ5N2ZmZjg2MWJhYWUzN2Q3OTJiYWY1NDM5MSJ9fX0="
+    name: "&8Coal Chalice"
+    recipes:
+      stonecutter:
+        - id: "coal_chalice"
+          input: { material: "COAL_BLOCK" }
+
+  copper_chalice:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNWQ1NmRhZGQwZjkyZjU1NWQ0NjBmOGNiZTgxM2UyMmE0YmM2YTY3MWQ5MzQxOWVmYTcwZDE0NTE1ZmE0YTc5ZiJ9fX0="
+    name: "&6Copper Chalice"
+    recipes:
+      stonecutter:
+        - id: "copper_chalice"
+          input: { material: "COPPER_BLOCK" }
+
+  diamond_chalice:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjJlNWZmMzg4NDlhNjc3ZTUxYTlhY2I3YmM2YzM5OGFmOTczYWUyMThhMDMxMjM1MmFlMDYwYzc5NjA5ZDg2In19fQ=="
+    name: "&bDiamond Chalice"
+    recipes:
+      stonecutter:
+        - id: "diamond_chalice"
+          input: { material: "DIAMOND_BLOCK" }
+
+  emerald_chalice:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjM2YjgyMWMxYWZkZDVhNWQxNGUzYjNiZDBhMzIyNjNjOGRmNWRmNWRiNmUxZTg4YmY2NWU5N2IyN2E4NTMwIn19fQ=="
+    name: "&aEmerald Chalice"
+    recipes:
+      stonecutter:
+        - id: "emerald_chalice"
+          input: { material: "EMERALD_BLOCK" }
+
+  golden_chalice:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvN2E3YTExMjA4ZWRhNzQzMzFlNDZjODQ0M2Q3MGY5ZjM1MGMzNGI4YzI1MTk1MjFjOTc4YzVjYzU3Y2ZhNGYyNCJ9fX0="
+    name: "&eGolden Chalice"
+    recipes:
+      stonecutter:
+        - id: "golden_chalice"
+          input: { material: "GOLD_BLOCK" }
+
+  iron_chalice:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTVmZGRlYzM2NjU1ZDNiMzcxYzc5ZDYxMTMzNTQ4Nzc1NzcwODljMWZjYjFiM2Q4ZTAwYWYzMjYxMmYyNmYyOCJ9fX0="
+    name: "&fIron Chalice"
+    recipes:
+      stonecutter:
+        - id: "iron_chalice"
+          input: { material: "IRON_BLOCK" }
+
+  lapis_chalice:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYWQ3MjlkODMwZTM5MDcxMTQ0MTI4NTQyZjZmMzNiNWRhODMyZDI2YjZjNmJiOWQ0Mjk5ZDI3YjA0N2FiNGQzYiJ9fX0="
+    name: "&9Lapis Chalice"
+    recipes:
+      stonecutter:
+        - id: "lapis_chalice"
+          input: { material: "LAPIS_BLOCK" }
+
+  redstone_chalice:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTU1MWFhNTA4OTQ4MWEwMGJmYWEzODE3MDVlNDIzNjdjZTkzZjYxMmVkYTBlNTJiNzM5M2JiNGExMjliZWQ4NSJ9fX0="
+    name: "&cRedstone Chalice"
+    recipes:
+      stonecutter:
+        - id: "redstone_chalice"
+          input: { material: "REDSTONE_BLOCK" }
+
+  golden_skull_chalice:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjdkYjQxMzJiNGU1OTgyOWJhMTFiZmIxZDBiNmJhM2FmYWQ4NzQ5YmU3ZTY0MTA5NGFhZGRlMjViZDA5NmQ1In19fQ=="
+    name: "&eGolden Skull Chalice"
+    recipes:
+      stonecutter:
+        - id: "golden_skull_chalice"
+          input: { material: "GOLD_BLOCK" }
+
+  # Golden Chalices with Liquid - crafted from Golden Skull Chalice + dye
+
+  golden_chalice_light_blue:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzRkZTRkOTViYTRhNDZkYjdlNTY2YjM0NWY3ODk0ZDFkMjU4Zjg5M2ViOTJjNzgwYjNkYTc3NWVlZGY5MSJ9fX0="
+    name: "&bGolden Skull Chalice with Light Blue Dye"
+    tags: [color/light_blue]
+    recipes:
+      craft:
+        shapeless:
+          - id: "golden_chalice_light_blue"
+            ingredients:
+              - { head: "golden_skull_chalice" }
+              - { material: "LIGHT_BLUE_DYE" }
+
+  golden_chalice_lime:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDI5NGU3ZjlkMGRlYzZiZmM4Mjg4OTM5ODdkNjllODVlYTI5MjUzNDJjZjlhMWYzMWVkZWRmYmE2M2M0NSJ9fX0="
+    name: "&aGolden Skull Chalice with Lime Dye"
+    tags: [color/lime]
+    recipes:
+      craft:
+        shapeless:
+          - id: "golden_chalice_lime"
+            ingredients:
+              - { head: "golden_skull_chalice" }
+              - { material: "LIME_DYE" }
+
+  golden_chalice_orange:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvN2Q3MTllNzg1ZjJiMjY3ZDg0YjlhMWQ0MGM2M2EzNDdhMTJmYzE1ZmYxZTU0YjE2NGIyYmU1M2Y1NDlkNTM1In19fQ=="
+    name: "&6Golden Skull Chalice with Orange Dye"
+    tags: [color/orange]
+    recipes:
+      craft:
+        shapeless:
+          - id: "golden_chalice_orange"
+            ingredients:
+              - { head: "golden_skull_chalice" }
+              - { material: "ORANGE_DYE" }
+
+  golden_chalice_pink:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZThmMTY0NzdhZWFmZmM2MDJlMmUxZDNiYjQwYzI3MmYwZjYyMTE0NWZlNTIxOWFlNjJlMmE1YmJjZjY3YSJ9fX0="
+    name: "&dGolden Skull Chalice with Pink Dye"
+    tags: [color/pink]
+    recipes:
+      craft:
+        shapeless:
+          - id: "golden_chalice_pink"
+            ingredients:
+              - { head: "golden_skull_chalice" }
+              - { material: "PINK_DYE" }
+
+  golden_chalice_purple:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODk1NTYwYzYzN2ZhNjI3YzE5NjBjM2Q5OGY2MzNiNDIzYmVjNjc2MzEyZmViNGI2ZmY0NWVhNDFmMzNjZTYifX19"
+    name: "&5Golden Skull Chalice with Purple Dye"
+    tags: [color/purple]
+    recipes:
+      craft:
+        shapeless:
+          - id: "golden_chalice_purple"
+            ingredients:
+              - { head: "golden_skull_chalice" }
+              - { material: "PURPLE_DYE" }
+
+  golden_chalice_red:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZWM1MTZiZDllN2M1ZWRjYzM0OTRkNTQ1ZDlhNDdlZjM1NDk1ODdiM2I3YjY4ZDU0MzVjMGZmMjI2ZTlmIn19fQ=="
+    name: "&cGolden Skull Chalice with Red Dye"
+    tags: [color/red]
+    recipes:
+      craft:
+        shapeless:
+          - id: "golden_chalice_red"
+            ingredients:
+              - { head: "golden_skull_chalice" }
+              - { material: "RED_DYE" }
+
+  golden_chalice_white:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzIyNTEwNGUxNTgwYmZiNjlmZDBhZTJjNDFjN2JiNzM3ZGUwN2M0N2NhMWI1Y2I3MTZkNzU4NTZkMzllZjA4YyJ9fX0="
+    name: "&fGolden Skull Chalice with White Dye"
+    tags: [color/white]
+    recipes:
+      craft:
+        shapeless:
+          - id: "golden_chalice_white"
+            ingredients:
+              - { head: "golden_skull_chalice" }
+              - { material: "WHITE_DYE" }
+
+  golden_chalice_yellow:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTQ4NzU1YjQ1NWRkNTMwNDQ0MmJiODRkMzQ5YWU5NGY1YjM5NzYxMDQ4YzZlNzI4NDBiZWM4ZGU2MmQ5ZTAifX19"
+    name: "&eGolden Skull Chalice with Yellow Dye"
+    tags: [color/yellow]
+    recipes:
+      craft:
+        shapeless:
+          - id: "golden_chalice_yellow"
+            ingredients:
+              - { head: "golden_skull_chalice" }
+              - { material: "YELLOW_DYE" }

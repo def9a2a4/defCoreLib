@@ -1,0 +1,564 @@
+# Generated Chiseled Sandstone Alphabet Blocks
+
+heads:
+  chiseled_sandstone_letter_a:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDNjYmUyOTYwNjgzMWNjYmEyMDEyOTMwNjU4MWI0MTBiYmNiMWRiZmQzMTZkZTQyYTJhNTU2OWVjZGEwZmZjIn19fQ=="
+    name: "&7Chiseled Sandstone A"
+    tags:
+      - alphabet/chiseled_sandstone
+      - character/letter_a
+      - stone
+    recipes:
+      stonecutter:
+        - id: "chiseled_sandstone_letter_a"
+          input: { head: "mini_chiseled_sandstone" }
+  chiseled_sandstone_letter_b:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOWUyYzI0ZGEzYWU5NDU5OGY4OTA3MTEyNzkzOWQ2ZDg0MzI1YTViNjg1ZTZiYjcyYmUxMDlmOTJlNGJkNTQ5MiJ9fX0="
+    name: "&7Chiseled Sandstone B"
+    tags:
+      - alphabet/chiseled_sandstone
+      - character/letter_b
+      - stone
+    recipes:
+      stonecutter:
+        - id: "chiseled_sandstone_letter_b"
+          input: { head: "mini_chiseled_sandstone" }
+  chiseled_sandstone_letter_c:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZGNlNGYwMTg1YTg0NThiYjE3YWU3OTFlNTkwZjIyY2U1ODVlMjUyYjFkNDk0MzI5OTU4NThkYjdkYzIyYWJhMSJ9fX0="
+    name: "&7Chiseled Sandstone C"
+    tags:
+      - alphabet/chiseled_sandstone
+      - character/letter_c
+      - stone
+    recipes:
+      stonecutter:
+        - id: "chiseled_sandstone_letter_c"
+          input: { head: "mini_chiseled_sandstone" }
+  chiseled_sandstone_letter_d:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZmNjMWZmYzc2YzZlZmNkNjQ0ZTRjZGY2Mjc0NTg2MzMyNTcyYmRmNjIzYzhhMTU1YjZhNzExNjE0YTRiYTNmNyJ9fX0="
+    name: "&7Chiseled Sandstone D"
+    tags:
+      - alphabet/chiseled_sandstone
+      - character/letter_d
+      - stone
+    recipes:
+      stonecutter:
+        - id: "chiseled_sandstone_letter_d"
+          input: { head: "mini_chiseled_sandstone" }
+  chiseled_sandstone_letter_e:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjAxY2M2YzU0NjNiMWJlMjNhMDVlODk5OWZlYWY3YjgwNGUzYWM4ODU3M2NjODU4ZmY5ZTkwZDM3Y2E2MTNjNyJ9fX0="
+    name: "&7Chiseled Sandstone E"
+    tags:
+      - alphabet/chiseled_sandstone
+      - character/letter_e
+      - stone
+    recipes:
+      stonecutter:
+        - id: "chiseled_sandstone_letter_e"
+          input: { head: "mini_chiseled_sandstone" }
+  chiseled_sandstone_letter_f:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZmI3ZDg2MzVmMjg5MmUxYThmYzAwMWM5NGY0MTcwYjExM2Q3YTc1NmM5ZjI4ODhiZTg5YTAxYjQ2ZjU3MWMzZCJ9fX0="
+    name: "&7Chiseled Sandstone F"
+    tags:
+      - alphabet/chiseled_sandstone
+      - character/letter_f
+      - stone
+    recipes:
+      stonecutter:
+        - id: "chiseled_sandstone_letter_f"
+          input: { head: "mini_chiseled_sandstone" }
+  chiseled_sandstone_letter_g:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDlkNGEwZDI1ZTI0MjZhMzM3NmI1MDkwNDNkNTFjYWI3NDg1N2U2MjI3YjBjNjZlZGYyNjU3NzFjMDY4YzRiNCJ9fX0="
+    name: "&7Chiseled Sandstone G"
+    tags:
+      - alphabet/chiseled_sandstone
+      - character/letter_g
+      - stone
+    recipes:
+      stonecutter:
+        - id: "chiseled_sandstone_letter_g"
+          input: { head: "mini_chiseled_sandstone" }
+  chiseled_sandstone_letter_h:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzUzYzY3ZTkxYzBlZjkxMjZiY2MyMzI0MWJhNzJmY2ViZGZiY2FkOTFkZTNmNDI5ODg1MDdjMWQ0ZWJiMjBjOSJ9fX0="
+    name: "&7Chiseled Sandstone H"
+    tags:
+      - alphabet/chiseled_sandstone
+      - character/letter_h
+      - stone
+    recipes:
+      stonecutter:
+        - id: "chiseled_sandstone_letter_h"
+          input: { head: "mini_chiseled_sandstone" }
+  chiseled_sandstone_letter_i:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYWU5YjYxZDY1NzY4ZDk2MDgyZDVjZTM3ZDcxMWJkNzM5OTVmYmU0M2UzYTgxODU3YzViMmQ0ZWNlMjU3MWZiOCJ9fX0="
+    name: "&7Chiseled Sandstone I"
+    tags:
+      - alphabet/chiseled_sandstone
+      - character/letter_i
+      - stone
+    recipes:
+      stonecutter:
+        - id: "chiseled_sandstone_letter_i"
+          input: { head: "mini_chiseled_sandstone" }
+  chiseled_sandstone_letter_j:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODYwMmRiODJhODUyMjU1NjQ2YzhkZWViMmI0ZTZmZjFmMjdiNjMyMzY2ZjUwYzhiMTExMjAzMWI1OGE3YzMzZSJ9fX0="
+    name: "&7Chiseled Sandstone J"
+    tags:
+      - alphabet/chiseled_sandstone
+      - character/letter_j
+      - stone
+    recipes:
+      stonecutter:
+        - id: "chiseled_sandstone_letter_j"
+          input: { head: "mini_chiseled_sandstone" }
+  chiseled_sandstone_letter_k:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjE3MWFlOWZkYjIzY2QyMDYwY2NiYzU1MWU4NTNjY2Q3OWQ0ZWRhNjM5YmUzZGRlNGQzYzA5NDkwMzUyZmRhMyJ9fX0="
+    name: "&7Chiseled Sandstone K"
+    tags:
+      - alphabet/chiseled_sandstone
+      - character/letter_k
+      - stone
+    recipes:
+      stonecutter:
+        - id: "chiseled_sandstone_letter_k"
+          input: { head: "mini_chiseled_sandstone" }
+  chiseled_sandstone_letter_l:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYWYyNjI5MDZiZGUxZDAxNWMxYWEzNGFkOTI0OGJmYTgxOTE3M2EzMWI5NTUwMTNmNDg1ODhkZTBiMGNlNDllYyJ9fX0="
+    name: "&7Chiseled Sandstone L"
+    tags:
+      - alphabet/chiseled_sandstone
+      - character/letter_l
+      - stone
+    recipes:
+      stonecutter:
+        - id: "chiseled_sandstone_letter_l"
+          input: { head: "mini_chiseled_sandstone" }
+  chiseled_sandstone_letter_m:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWJiYzYxNjQzZmU2NmQzNzI4MDI0OGMwMmQ0MzBiYmQyMzMxZjE2NzVmYTIyZWNjOTIwYTk2NzgxNGM0OTZiZSJ9fX0="
+    name: "&7Chiseled Sandstone M"
+    tags:
+      - alphabet/chiseled_sandstone
+      - character/letter_m
+      - stone
+    recipes:
+      stonecutter:
+        - id: "chiseled_sandstone_letter_m"
+          input: { head: "mini_chiseled_sandstone" }
+  chiseled_sandstone_letter_n:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTIxMmU5NWE1ZGYwOTdiZjk1MWIzNjE5ZTAyMjY0YmE4MGRiOWMzN2NlN2Q4ZDVlZjc1YjFjODZiZjFkYTkwMCJ9fX0="
+    name: "&7Chiseled Sandstone N"
+    tags:
+      - alphabet/chiseled_sandstone
+      - character/letter_n
+      - stone
+    recipes:
+      stonecutter:
+        - id: "chiseled_sandstone_letter_n"
+          input: { head: "mini_chiseled_sandstone" }
+  chiseled_sandstone_letter_o:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTFlMTg2ZDU5MTM4MWE0ZTAzZjgxZTU0NTQ0YmQ0YWM2MjIyYTA5ZGJjOGM5ZjIyNTEzZDJmOTkxNTFjZTM0NyJ9fX0="
+    name: "&7Chiseled Sandstone O"
+    tags:
+      - alphabet/chiseled_sandstone
+      - character/letter_o
+      - stone
+    recipes:
+      stonecutter:
+        - id: "chiseled_sandstone_letter_o"
+          input: { head: "mini_chiseled_sandstone" }
+  chiseled_sandstone_letter_p:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmJkYzljMDNlNDg3MjA3ZDgyNzUzYjNlYWU3NTQ1MWMxYmY2ODA5OWE1NGFkZTMxZGZlYThhOTg2NDY3YzNmYiJ9fX0="
+    name: "&7Chiseled Sandstone P"
+    tags:
+      - alphabet/chiseled_sandstone
+      - character/letter_p
+      - stone
+    recipes:
+      stonecutter:
+        - id: "chiseled_sandstone_letter_p"
+          input: { head: "mini_chiseled_sandstone" }
+  chiseled_sandstone_letter_q:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMmNlYTExNmQ5NjNkYWZiNDdkNmI5OTM5OWU5NjA5MTRhMWU4ZmFjMzg1OTBmZTVhMjQxM2EzMTRiOWQwMmY2NSJ9fX0="
+    name: "&7Chiseled Sandstone Q"
+    tags:
+      - alphabet/chiseled_sandstone
+      - character/letter_q
+      - stone
+    recipes:
+      stonecutter:
+        - id: "chiseled_sandstone_letter_q"
+          input: { head: "mini_chiseled_sandstone" }
+  chiseled_sandstone_letter_r:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWFmYjk2MDllNGY4ZTA0YWJiZWE1NWY1NDhmMzU1MWViNWY4MTU2NDk4ZTBiMWQxMmQ2ZWU0NWIwODRjZDMzOSJ9fX0="
+    name: "&7Chiseled Sandstone R"
+    tags:
+      - alphabet/chiseled_sandstone
+      - character/letter_r
+      - stone
+    recipes:
+      stonecutter:
+        - id: "chiseled_sandstone_letter_r"
+          input: { head: "mini_chiseled_sandstone" }
+  chiseled_sandstone_letter_s:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTAyNGE5ZTdjOWE3NmVkZjQ5NmVhMTJmNmNiMzFkYzYwMjkxOWM1Y2U1ODUzMmE4YTFmZTQ5NTY4ODBiZjNmYyJ9fX0="
+    name: "&7Chiseled Sandstone S"
+    tags:
+      - alphabet/chiseled_sandstone
+      - character/letter_s
+      - stone
+    recipes:
+      stonecutter:
+        - id: "chiseled_sandstone_letter_s"
+          input: { head: "mini_chiseled_sandstone" }
+  chiseled_sandstone_letter_t:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzQ4ODMxMThkYWY5NGZkNTRkOGIwNGNlYzRiMjRhYjQxZmFhOWYyMDMzNzBmM2YwMDRjZDc0ZDljYTg1ZjE4YiJ9fX0="
+    name: "&7Chiseled Sandstone T"
+    tags:
+      - alphabet/chiseled_sandstone
+      - character/letter_t
+      - stone
+    recipes:
+      stonecutter:
+        - id: "chiseled_sandstone_letter_t"
+          input: { head: "mini_chiseled_sandstone" }
+  chiseled_sandstone_letter_u:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZWNjOGVmNjIyYTAyM2ZkOGYxNWMyNjhlYTgwYzMyYWFhODBkNTA3NjQ2NzAxZWUxNDYxYjg3NGFjYjAwNTMzOCJ9fX0="
+    name: "&7Chiseled Sandstone U"
+    tags:
+      - alphabet/chiseled_sandstone
+      - character/letter_u
+      - stone
+    recipes:
+      stonecutter:
+        - id: "chiseled_sandstone_letter_u"
+          input: { head: "mini_chiseled_sandstone" }
+  chiseled_sandstone_letter_v:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODQ1ZTg1ZDMxNTcwY2QwNDJlZDYwNWRlYTljODZkNDgxOGQ3ZTVkMzBkMGRkOWVhMTBkMDQ0ZWQ1MmRiZGRiMyJ9fX0="
+    name: "&7Chiseled Sandstone V"
+    tags:
+      - alphabet/chiseled_sandstone
+      - character/letter_v
+      - stone
+    recipes:
+      stonecutter:
+        - id: "chiseled_sandstone_letter_v"
+          input: { head: "mini_chiseled_sandstone" }
+  chiseled_sandstone_letter_w:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmMxZTNmODBjMDA3YTViZDgxNTVkNzFmZDRkZmIxNzJhMzg0Y2YwZWNhN2RlNDIyZjQ3M2FlMGQ0YjhmY2IyNyJ9fX0="
+    name: "&7Chiseled Sandstone W"
+    tags:
+      - alphabet/chiseled_sandstone
+      - character/letter_w
+      - stone
+    recipes:
+      stonecutter:
+        - id: "chiseled_sandstone_letter_w"
+          input: { head: "mini_chiseled_sandstone" }
+  chiseled_sandstone_letter_x:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjQwMjFhMjUzNjU5MTk5ZTg4YmUwY2MxYWRlOTg3OGI5ZjkzZTllOGU5YmIwMjI2ZDQ0YTA1OGY1Njg5NWU3MCJ9fX0="
+    name: "&7Chiseled Sandstone X"
+    tags:
+      - alphabet/chiseled_sandstone
+      - character/letter_x
+      - stone
+    recipes:
+      stonecutter:
+        - id: "chiseled_sandstone_letter_x"
+          input: { head: "mini_chiseled_sandstone" }
+  chiseled_sandstone_letter_y:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGUxYzM1MzFhYzQ0NjM0M2RlMTU1NDQwZTExZDMzMTZkOWZhODIwZjJmNWNjZDc5YzlhMjEzZGQ3NTc0YTg2NiJ9fX0="
+    name: "&7Chiseled Sandstone Y"
+    tags:
+      - alphabet/chiseled_sandstone
+      - character/letter_y
+      - stone
+    recipes:
+      stonecutter:
+        - id: "chiseled_sandstone_letter_y"
+          input: { head: "mini_chiseled_sandstone" }
+  chiseled_sandstone_letter_z:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjRkNzcwNzEwMmMzYmIzMzkwOGYzNDgxMmJkODYyYTg1NzcyNTgxNDFkM2YwNTEwNWVjMmE1NGZiNDMyNjNlOCJ9fX0="
+    name: "&7Chiseled Sandstone Z"
+    tags:
+      - alphabet/chiseled_sandstone
+      - character/letter_z
+      - stone
+    recipes:
+      stonecutter:
+        - id: "chiseled_sandstone_letter_z"
+          input: { head: "mini_chiseled_sandstone" }
+  chiseled_sandstone_number_0:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTM2NDdlYzRjNDM1NjJiYWM2NjQ3MjZmNzcyMzFkNzk5N2Y4ZjJlMDc3MjYyZjE5MTZlODZmMDdkNmZkMjBmMCJ9fX0="
+    name: "&7Chiseled Sandstone 0"
+    tags:
+      - alphabet/chiseled_sandstone
+      - character/number_0
+      - stone
+    recipes:
+      stonecutter:
+        - id: "chiseled_sandstone_number_0"
+          input: { head: "mini_chiseled_sandstone" }
+  chiseled_sandstone_number_1:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDcwN2MxOWNmZDgyYWQyOGZlM2YwYWFhNzRjMjllMGQ1NDIxMjhlMzk2NjgwMjMxZjM3ZGJlMWI2ZTA1MjYyNCJ9fX0="
+    name: "&7Chiseled Sandstone 1"
+    tags:
+      - alphabet/chiseled_sandstone
+      - character/number_1
+      - stone
+    recipes:
+      stonecutter:
+        - id: "chiseled_sandstone_number_1"
+          input: { head: "mini_chiseled_sandstone" }
+  chiseled_sandstone_number_2:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzE3Njc4YjE2ODk0ZWRkNzRkMjk2NzJhNGRhMzQ0Y2I4NjhlZDFiZjRhODM0MGMwY2FiNjNjMjA2NDk0N2Q1ZSJ9fX0="
+    name: "&7Chiseled Sandstone 2"
+    tags:
+      - alphabet/chiseled_sandstone
+      - character/number_2
+      - stone
+    recipes:
+      stonecutter:
+        - id: "chiseled_sandstone_number_2"
+          input: { head: "mini_chiseled_sandstone" }
+  chiseled_sandstone_number_3:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTFiYjc4ZDNlZTBjOWZiMWUyMDBiOGFkNWI1MjJlZDkyMjVhODYyODU3YjEzNWIwYjU2YjBlYTYwZDdmYTc3MCJ9fX0="
+    name: "&7Chiseled Sandstone 3"
+    tags:
+      - alphabet/chiseled_sandstone
+      - character/number_3
+      - stone
+    recipes:
+      stonecutter:
+        - id: "chiseled_sandstone_number_3"
+          input: { head: "mini_chiseled_sandstone" }
+  chiseled_sandstone_number_4:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjIwYTQyZTFiMjNlNmYyY2EzZjJhYWZmOGNjODI1NGNjMzgxMjZjODZmNDFjZTI3YmYxZDI4NGI3MGQ4YjE2MSJ9fX0="
+    name: "&7Chiseled Sandstone 4"
+    tags:
+      - alphabet/chiseled_sandstone
+      - character/number_4
+      - stone
+    recipes:
+      stonecutter:
+        - id: "chiseled_sandstone_number_4"
+          input: { head: "mini_chiseled_sandstone" }
+  chiseled_sandstone_number_5:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTI5Njk4ODM3ZWQ3MjE3MWIzNWFlN2U2ODhjZDZiNzhlYzYxY2ExOGM4NzUyMjgzNjdiNjc5OWQwNzMyYzY5NyJ9fX0="
+    name: "&7Chiseled Sandstone 5"
+    tags:
+      - alphabet/chiseled_sandstone
+      - character/number_5
+      - stone
+    recipes:
+      stonecutter:
+        - id: "chiseled_sandstone_number_5"
+          input: { head: "mini_chiseled_sandstone" }
+  chiseled_sandstone_number_6:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzA5YzY4ZTdlMjRiNmFkYWE1MzZkMTgwNzg4MzcxMTY1MjRhMzk0NjU3MmQ2MGIxMzU0ZjdhOGY4ZWM0YTVmIn19fQ=="
+    name: "&7Chiseled Sandstone 6"
+    tags:
+      - alphabet/chiseled_sandstone
+      - character/number_6
+      - stone
+    recipes:
+      stonecutter:
+        - id: "chiseled_sandstone_number_6"
+          input: { head: "mini_chiseled_sandstone" }
+  chiseled_sandstone_number_7:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZGNmNWViYjgyYzFhOGVhOWU0Y2Y4MzAwMGNlMjRiMzk0ZWUwNDE4YjUyM2I0NzA5ZjE4MzgwOTc3NWQ3ZGYwYSJ9fX0="
+    name: "&7Chiseled Sandstone 7"
+    tags:
+      - alphabet/chiseled_sandstone
+      - character/number_7
+      - stone
+    recipes:
+      stonecutter:
+        - id: "chiseled_sandstone_number_7"
+          input: { head: "mini_chiseled_sandstone" }
+  chiseled_sandstone_number_8:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjIyNWQ5NmIyYzFjYmU3NTYxNTk4ZGQ3YTc0ZDcxZmVjNDE4NzFmYTdhNzc4MmUwODhhNzg5NmQ3MzEzODUyMCJ9fX0="
+    name: "&7Chiseled Sandstone 8"
+    tags:
+      - alphabet/chiseled_sandstone
+      - character/number_8
+      - stone
+    recipes:
+      stonecutter:
+        - id: "chiseled_sandstone_number_8"
+          input: { head: "mini_chiseled_sandstone" }
+  chiseled_sandstone_number_9:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTAxMjdiNzQ4YWNlM2NlMDg0ZjhkODgwNWUyN2Y2NWUzZWFlNjYyZDg4NTVlYzFjZjRlYjhmNWFlNTk5OGY3NCJ9fX0="
+    name: "&7Chiseled Sandstone 9"
+    tags:
+      - alphabet/chiseled_sandstone
+      - character/number_9
+      - stone
+    recipes:
+      stonecutter:
+        - id: "chiseled_sandstone_number_9"
+          input: { head: "mini_chiseled_sandstone" }
+  chiseled_sandstone_question:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzRhZmJiNThmNGZhZjgzOTkxZmQyNmUwOTg3NjlkZDcxZTFjY2UyMzgxZTM0MmI0MjM1OGNhYjZhMjQ5M2VjOCJ9fX0="
+    name: "&7Chiseled Sandstone ?"
+    tags:
+      - alphabet/chiseled_sandstone
+      - character/question
+      - stone
+    recipes:
+      stonecutter:
+        - id: "chiseled_sandstone_question"
+          input: { head: "mini_chiseled_sandstone" }
+  chiseled_sandstone_comma:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZThjMjJmNDY4NjUxZDllMGY3ZDNlMDNjYzFiOTJmN2VmMjkzMDU3YzM3MzQwNDU2NzRmMDg2YmNhMzZmNGQ1ZiJ9fX0="
+    name: "&7Chiseled Sandstone ,"
+    tags:
+      - alphabet/chiseled_sandstone
+      - character/comma
+      - stone
+    recipes:
+      stonecutter:
+        - id: "chiseled_sandstone_comma"
+          input: { head: "mini_chiseled_sandstone" }
+  chiseled_sandstone_colon:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTMxYjM3MjMzNmQ2ZmNkODMzMWNlNTU3OTdhMDVkNTk3NWRmYTcwMGZjMzM3MTIxZjY4MzYxNDBhZmExMzc4YiJ9fX0="
+    name: "&7Chiseled Sandstone :"
+    tags:
+      - alphabet/chiseled_sandstone
+      - character/colon
+      - stone
+    recipes:
+      stonecutter:
+        - id: "chiseled_sandstone_colon"
+          input: { head: "mini_chiseled_sandstone" }
+  chiseled_sandstone_semicolon:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjI2MDA2YTlmNjVjOGFlZDM1ODhhOTI2M2Y0ZTQyNTVhYzI3YmZkMTBhOTdhNTVkZmM0ZTZjM2YwOWFkNGMzOCJ9fX0="
+    name: "&7Chiseled Sandstone ;"
+    tags:
+      - alphabet/chiseled_sandstone
+      - character/semicolon
+      - stone
+    recipes:
+      stonecutter:
+        - id: "chiseled_sandstone_semicolon"
+          input: { head: "mini_chiseled_sandstone" }
+  chiseled_sandstone_apostrophe:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzg5NmZkOTdjYzE0MjljODZjYmI2OTkwNzY4N2E2OTNlMjZkMDY0NDJjNzZmN2UzZDQxZjJiODZkNTZmM2RjMCJ9fX0="
+    name: "&7Chiseled Sandstone '"
+    tags:
+      - alphabet/chiseled_sandstone
+      - character/apostrophe
+      - stone
+    recipes:
+      stonecutter:
+        - id: "chiseled_sandstone_apostrophe"
+          input: { head: "mini_chiseled_sandstone" }
+  chiseled_sandstone_ampersand:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOGZjZDM2OGRiZjhjMGMzNzhlZmNkZjNiZmVkZjFlMjgzYTQyZTNkOGM2YTBjODE2MDI0MmVmNDFjNTllZjU0In19fQ=="
+    name: "&7Chiseled Sandstone &"
+    tags:
+      - alphabet/chiseled_sandstone
+      - character/ampersand
+      - stone
+    recipes:
+      stonecutter:
+        - id: "chiseled_sandstone_ampersand"
+          input: { head: "mini_chiseled_sandstone" }
+  chiseled_sandstone_at:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTNlOWM3YTdmYzFkZjVkMzM1MzMzZWFlZjBiNzZlMWQ3ZjhkMDNlYTNiNDNmY2ZhYjU5ZjdkYTA4MjE5MTU5MiJ9fX0="
+    name: "&7Chiseled Sandstone @"
+    tags:
+      - alphabet/chiseled_sandstone
+      - character/at
+      - stone
+    recipes:
+      stonecutter:
+        - id: "chiseled_sandstone_at"
+          input: { head: "mini_chiseled_sandstone" }
+  chiseled_sandstone_hash:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzA2ZTEwOWExYmM4ZjRjMDJjNGI3MTg5NTc3ODA3MDc0NDhjYzg1YmY4YmQ4MzhiYmFhNTExYjY3ZmJmZGNjMiJ9fX0="
+    name: "&7Chiseled Sandstone #"
+    tags:
+      - alphabet/chiseled_sandstone
+      - character/hash
+      - stone
+    recipes:
+      stonecutter:
+        - id: "chiseled_sandstone_hash"
+          input: { head: "mini_chiseled_sandstone" }
+  chiseled_sandstone_dollar:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvM2Y0OGQ0Zjk3MTM5Y2EyYjhiY2U1MTFmZjBhZTFkY2U5MmIzODAxMmVjMGU4Yzc4MTUwMGUzMzQ0NzYwZDEyZSJ9fX0="
+    name: "&7Chiseled Sandstone $"
+    tags:
+      - alphabet/chiseled_sandstone
+      - character/dollar
+      - stone
+    recipes:
+      stonecutter:
+        - id: "chiseled_sandstone_dollar"
+          input: { head: "mini_chiseled_sandstone" }
+  chiseled_sandstone_euro:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDQ3NTM5MWJlM2ViN2U1MzJhNTkxZTg3NDQ3MWUxNmNmNWFkYjc1MjM4YWVjZWZmNzllNzU0OTExYWQwMmZkNyJ9fX0="
+    name: "&7Chiseled Sandstone €"
+    tags:
+      - alphabet/chiseled_sandstone
+      - character/euro
+      - stone
+    recipes:
+      stonecutter:
+        - id: "chiseled_sandstone_euro"
+          input: { head: "mini_chiseled_sandstone" }
+  chiseled_sandstone_pound:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvM2JjNjY2MGIyNjBjODA3Yzk1NDU5OTE2OTg1YzFiMWYwZjI3NDUyZTQ3MWRjODA1MTU2YTg3Zjc2ZTA1ODA0MSJ9fX0="
+    name: "&7Chiseled Sandstone £"
+    tags:
+      - alphabet/chiseled_sandstone
+      - character/pound
+      - stone
+    recipes:
+      stonecutter:
+        - id: "chiseled_sandstone_pound"
+          input: { head: "mini_chiseled_sandstone" }
+  chiseled_sandstone_yen:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjIyNGUxMTVlY2NhY2U4YmM1M2Q5N2RjZjg2M2QxNDRhNWMzOWZkMTEyM2FmZWMyNmE5ZDhmN2ZlZmQ2YWE1OSJ9fX0="
+    name: "&7Chiseled Sandstone ¥"
+    tags:
+      - alphabet/chiseled_sandstone
+      - character/yen
+      - stone
+    recipes:
+      stonecutter:
+        - id: "chiseled_sandstone_yen"
+          input: { head: "mini_chiseled_sandstone" }
+  chiseled_sandstone_plus:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvM2NlYWQ0NTk0ZmFjYTA5MzZlNjA5MjcyNWM3NWRiMWQwYzM0ZTgwN2YxMDY1ZmY4ZjU0N2Q2MjM0YTk3OGY4MiJ9fX0="
+    name: "&7Chiseled Sandstone +"
+    tags:
+      - alphabet/chiseled_sandstone
+      - character/plus
+      - stone
+    recipes:
+      stonecutter:
+        - id: "chiseled_sandstone_plus"
+          input: { head: "mini_chiseled_sandstone" }
+  chiseled_sandstone_slash:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTQwYzdjODZiMGU3M2JmNDVmYmYzYjJjNmFmM2I0ZWFjMTI3ZWIwNGE4MDgyMGYwMWY0N2E3NjkyMDQ0MWE0NyJ9fX0="
+    name: "&7Chiseled Sandstone /"
+    tags:
+      - alphabet/chiseled_sandstone
+      - character/slash
+      - stone
+    recipes:
+      stonecutter:
+        - id: "chiseled_sandstone_slash"
+          input: { head: "mini_chiseled_sandstone" }
+  chiseled_sandstone_backslash:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvY2ZkZjkwYjk0NDM3MWQ4MWI0NjIzODQ2NDIyYWVhN2U2Y2UyOWU2YTc1ZDhjZWJmOWI2MDdjNDI1YmRjNWRhOSJ9fX0="
+    name: "&7Chiseled Sandstone \\"
+    tags:
+      - alphabet/chiseled_sandstone
+      - character/backslash
+      - stone
+    recipes:
+      stonecutter:
+        - id: "chiseled_sandstone_backslash"
+          input: { head: "mini_chiseled_sandstone" }

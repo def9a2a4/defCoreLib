@@ -1,0 +1,410 @@
+# Generated Gilded Blackstone Alphabet Blocks
+
+heads:
+  gilded_blackstone_letter_a:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWQ5NzFhZjVmZGRmZTg5MDk4NzNmOTY1YmM2ODFlZDk0ZGU0YzIwMDU5MmM3OWY0Yzc1OGVhOWEyYjBmOWM1YiJ9fX0="
+    name: "&7Gilded Blackstone A"
+    tags:
+      - alphabet/gilded_blackstone
+      - character/letter_a
+      - stone
+    recipes:
+      stonecutter:
+        - id: "gilded_blackstone_letter_a"
+          input: { head: "mini_gilded_blackstone" }
+  gilded_blackstone_letter_b:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTFiZjg4MjhiN2IzMzcxMDJhM2Q4OGE4MjI4MzhkMzA5MDk3ZDBhNGFlYzc4OWEyODkxODk4MmNkNzhiOWYyZiJ9fX0="
+    name: "&7Gilded Blackstone B"
+    tags:
+      - alphabet/gilded_blackstone
+      - character/letter_b
+      - stone
+    recipes:
+      stonecutter:
+        - id: "gilded_blackstone_letter_b"
+          input: { head: "mini_gilded_blackstone" }
+  gilded_blackstone_letter_c:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOGYwMDE2OWY3NjY5NzlkZmQ2OGNiNGQ0MzZlOGMxMTA1NGY1ZjE3N2MxM2RkMjY0NTllZTdiN2RiZDBkNjNmNSJ9fX0="
+    name: "&7Gilded Blackstone C"
+    tags:
+      - alphabet/gilded_blackstone
+      - character/letter_c
+      - stone
+    recipes:
+      stonecutter:
+        - id: "gilded_blackstone_letter_c"
+          input: { head: "mini_gilded_blackstone" }
+  gilded_blackstone_letter_d:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYWZlNmQxN2NlNDQyY2NlMzQ0YjBiZjU3MGI2YmZlNmEwYWRhZmFiZTZkMTE2ZDhiZjVkYTliNDA3NGM0MWExMSJ9fX0="
+    name: "&7Gilded Blackstone D"
+    tags:
+      - alphabet/gilded_blackstone
+      - character/letter_d
+      - stone
+    recipes:
+      stonecutter:
+        - id: "gilded_blackstone_letter_d"
+          input: { head: "mini_gilded_blackstone" }
+  gilded_blackstone_letter_e:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGViZWU4ODhmMmI4ZjM3M2FhMjNjNWUwZWFiNDExY2UzZTExYTU5MmE4MWFmNDZiZDZkOGVlYjYzMTA0YWI1OSJ9fX0="
+    name: "&7Gilded Blackstone E"
+    tags:
+      - alphabet/gilded_blackstone
+      - character/letter_e
+      - stone
+    recipes:
+      stonecutter:
+        - id: "gilded_blackstone_letter_e"
+          input: { head: "mini_gilded_blackstone" }
+  gilded_blackstone_letter_f:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDliZDAxNmRmNTQwMDY2NGYzMWY0OGViMjcyNzY4MzViZjRhN2I2N2RlMGUyNjg0ZDdkMTEzMjlmMjYwMjZjZiJ9fX0="
+    name: "&7Gilded Blackstone F"
+    tags:
+      - alphabet/gilded_blackstone
+      - character/letter_f
+      - stone
+    recipes:
+      stonecutter:
+        - id: "gilded_blackstone_letter_f"
+          input: { head: "mini_gilded_blackstone" }
+  gilded_blackstone_letter_g:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTRlMDBhNjEyZGE2NDFmYWFjNzc4OWU3ZmZkZjRmZThjODY4ODQwZTc1MmUwYWFhNzc2ODYyMGFkOTkyN2U0MCJ9fX0="
+    name: "&7Gilded Blackstone G"
+    tags:
+      - alphabet/gilded_blackstone
+      - character/letter_g
+      - stone
+    recipes:
+      stonecutter:
+        - id: "gilded_blackstone_letter_g"
+          input: { head: "mini_gilded_blackstone" }
+  gilded_blackstone_letter_h:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDEyMTQ4MWU4YjE1MTZiYTkyNGJkMWRmNTExZGEyYWRiNzU0MTJhZDJkNGU2MGNkZmU4ZTIyOWU1Y2YzMmUzMiJ9fX0="
+    name: "&7Gilded Blackstone H"
+    tags:
+      - alphabet/gilded_blackstone
+      - character/letter_h
+      - stone
+    recipes:
+      stonecutter:
+        - id: "gilded_blackstone_letter_h"
+          input: { head: "mini_gilded_blackstone" }
+  gilded_blackstone_letter_i:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOThiNTZjMDFkOGZhZjhkY2U2Zjg2YzgyODFjMGJmZWQwMDVlMDlmYTRkODFjMjFkODQ2NWEzMzNhOWQ0NmYwMyJ9fX0="
+    name: "&7Gilded Blackstone I"
+    tags:
+      - alphabet/gilded_blackstone
+      - character/letter_i
+      - stone
+    recipes:
+      stonecutter:
+        - id: "gilded_blackstone_letter_i"
+          input: { head: "mini_gilded_blackstone" }
+  gilded_blackstone_letter_j:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzE0NmIyMmE0Y2JjNDkxNWU0NWRkZWM2ZDBlMjM2NzJlYTdhOTkxYzVjMTM0MGM2M2FhZTQzMzRjYWE2Yzc5MCJ9fX0="
+    name: "&7Gilded Blackstone J"
+    tags:
+      - alphabet/gilded_blackstone
+      - character/letter_j
+      - stone
+    recipes:
+      stonecutter:
+        - id: "gilded_blackstone_letter_j"
+          input: { head: "mini_gilded_blackstone" }
+  gilded_blackstone_letter_k:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTc3YjA4MmRiY2U1ZmE5MWE2NzM1MTc3MDY0M2ZhMzFhMzFlM2IzYjk4NjM1MDk4YWFhMTNhOTJiNGYyN2NjZiJ9fX0="
+    name: "&7Gilded Blackstone K"
+    tags:
+      - alphabet/gilded_blackstone
+      - character/letter_k
+      - stone
+    recipes:
+      stonecutter:
+        - id: "gilded_blackstone_letter_k"
+          input: { head: "mini_gilded_blackstone" }
+  gilded_blackstone_letter_l:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDJlMzdhZTJlZWEwNGRlNTljNTllNjZkZThlOTYxMzA5NThhMTg4YTBjYzA0NzdlMmNiM2ZiNDNjMGMyZDkyOSJ9fX0="
+    name: "&7Gilded Blackstone L"
+    tags:
+      - alphabet/gilded_blackstone
+      - character/letter_l
+      - stone
+    recipes:
+      stonecutter:
+        - id: "gilded_blackstone_letter_l"
+          input: { head: "mini_gilded_blackstone" }
+  gilded_blackstone_letter_m:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTk2ZGMxMGFmMjFkNjUyNTNiM2QyMDZlMjg4YzM0YmI0NDFkN2VlMjg4MjdiZjgzMjA3NWQyNDhkY2I3MTc4In19fQ=="
+    name: "&7Gilded Blackstone M"
+    tags:
+      - alphabet/gilded_blackstone
+      - character/letter_m
+      - stone
+    recipes:
+      stonecutter:
+        - id: "gilded_blackstone_letter_m"
+          input: { head: "mini_gilded_blackstone" }
+  gilded_blackstone_letter_n:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTMzZWI4N2Q3ZDg0YmM5NzJiZTJlOGQxNzQ2MWU5MGZjM2IyYzA5Mzg3ZTM4ZGMxYjFhNjZiOTEyODhmYjM0ZCJ9fX0="
+    name: "&7Gilded Blackstone N"
+    tags:
+      - alphabet/gilded_blackstone
+      - character/letter_n
+      - stone
+    recipes:
+      stonecutter:
+        - id: "gilded_blackstone_letter_n"
+          input: { head: "mini_gilded_blackstone" }
+  gilded_blackstone_letter_o:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjM0NjA1YjY2Y2ZhNjBiNDcwOTI0ODEyNzI4YWU2NTFmMmJkODlkZjg0MTEwMzJkY2YzMTdkZDFlMTk5N2E1ZSJ9fX0="
+    name: "&7Gilded Blackstone O"
+    tags:
+      - alphabet/gilded_blackstone
+      - character/letter_o
+      - stone
+    recipes:
+      stonecutter:
+        - id: "gilded_blackstone_letter_o"
+          input: { head: "mini_gilded_blackstone" }
+  gilded_blackstone_letter_p:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNWY4ZDZlMDViN2Q2YWVlNzRhMmJkM2EwYjFlNDgyZDY2OTA2MWQxMmI1ZWRhZjk4NTBmZDNmZGQ3YzY2YWNhMyJ9fX0="
+    name: "&7Gilded Blackstone P"
+    tags:
+      - alphabet/gilded_blackstone
+      - character/letter_p
+      - stone
+    recipes:
+      stonecutter:
+        - id: "gilded_blackstone_letter_p"
+          input: { head: "mini_gilded_blackstone" }
+  gilded_blackstone_letter_q:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDA1ZjQzYWY2Yzg0MWFlMmNiOGIwZTI4ZWEzNGFhNTE0ZWZjNTE4N2Y0Y2E5NzU2MTQ1MTlhNzNiMzc0YzU5YyJ9fX0="
+    name: "&7Gilded Blackstone Q"
+    tags:
+      - alphabet/gilded_blackstone
+      - character/letter_q
+      - stone
+    recipes:
+      stonecutter:
+        - id: "gilded_blackstone_letter_q"
+          input: { head: "mini_gilded_blackstone" }
+  gilded_blackstone_letter_r:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvN2RiYTFiYmU1ZWQzNzYwYzA5NjliOTQ4Yzk3OTA5YjM5NTY3MzY0NTNhMzM1MzdhNmMyMjcwZjhhMjQ2Y2UxMSJ9fX0="
+    name: "&7Gilded Blackstone R"
+    tags:
+      - alphabet/gilded_blackstone
+      - character/letter_r
+      - stone
+    recipes:
+      stonecutter:
+        - id: "gilded_blackstone_letter_r"
+          input: { head: "mini_gilded_blackstone" }
+  gilded_blackstone_letter_s:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZWVmY2JlOTIxN2Y4OWYyYzEyNDcxNjQ5YTk1NDVhNzVhYjFiMDdiNzZmNWQ4NjlhYjM2NDUxYmEzOTczNzIyMCJ9fX0="
+    name: "&7Gilded Blackstone S"
+    tags:
+      - alphabet/gilded_blackstone
+      - character/letter_s
+      - stone
+    recipes:
+      stonecutter:
+        - id: "gilded_blackstone_letter_s"
+          input: { head: "mini_gilded_blackstone" }
+  gilded_blackstone_letter_t:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDYxYmNiMDM3N2FkY2JkMTY5NDVjYjc0ZWVmYmZjYTg4NDQ3MTAwYmQxMThkMjU1NjRlZTc3N2NmNTQxYjA5MiJ9fX0="
+    name: "&7Gilded Blackstone T"
+    tags:
+      - alphabet/gilded_blackstone
+      - character/letter_t
+      - stone
+    recipes:
+      stonecutter:
+        - id: "gilded_blackstone_letter_t"
+          input: { head: "mini_gilded_blackstone" }
+  gilded_blackstone_letter_u:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODJlNjk2ZTc4MzcwMWIzYjVjOGE3MTkwMjJmZGFkMmRhMWE0YWRmMzM4YzA3NjM4ODIwMWU5MmE2NzA4NzAyYyJ9fX0="
+    name: "&7Gilded Blackstone U"
+    tags:
+      - alphabet/gilded_blackstone
+      - character/letter_u
+      - stone
+    recipes:
+      stonecutter:
+        - id: "gilded_blackstone_letter_u"
+          input: { head: "mini_gilded_blackstone" }
+  gilded_blackstone_letter_v:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzA4NDYzNDY0NTEyOWM1MDg2OTM5NTUwYzRhNGEwMGJjZmE0ZmQ5NWQxNGEzNGIzN2Y5ZjgyNzg2ZmY5ZjA2OSJ9fX0="
+    name: "&7Gilded Blackstone V"
+    tags:
+      - alphabet/gilded_blackstone
+      - character/letter_v
+      - stone
+    recipes:
+      stonecutter:
+        - id: "gilded_blackstone_letter_v"
+          input: { head: "mini_gilded_blackstone" }
+  gilded_blackstone_letter_w:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjM0NTVjNDkzNzVmNDRmYThlMjcxZGQwZjk5Y2Y0MzM5NDU4ZGY0ZmUyMWUwNWJkMGQzYTYyODg0YzM1NGZjYiJ9fX0="
+    name: "&7Gilded Blackstone W"
+    tags:
+      - alphabet/gilded_blackstone
+      - character/letter_w
+      - stone
+    recipes:
+      stonecutter:
+        - id: "gilded_blackstone_letter_w"
+          input: { head: "mini_gilded_blackstone" }
+  gilded_blackstone_letter_x:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMmE0Y2FiYjY5Y2E4ZTUxNDY1YjkzYTQ2NDhkYWEzMWMzYzY0MzA2ZDlkYzM4YzczZWEyMmYyYjNkZTQ0YjUwOCJ9fX0="
+    name: "&7Gilded Blackstone X"
+    tags:
+      - alphabet/gilded_blackstone
+      - character/letter_x
+      - stone
+    recipes:
+      stonecutter:
+        - id: "gilded_blackstone_letter_x"
+          input: { head: "mini_gilded_blackstone" }
+  gilded_blackstone_letter_y:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODA0YTUwYmRiNTVkNWFjMGE0NmNkZGFmNDA0N2RmZjg0ODNlNTg2OTU0YmMzNjgyZGIwNDEzNDJjOTAwMmI3YyJ9fX0="
+    name: "&7Gilded Blackstone Y"
+    tags:
+      - alphabet/gilded_blackstone
+      - character/letter_y
+      - stone
+    recipes:
+      stonecutter:
+        - id: "gilded_blackstone_letter_y"
+          input: { head: "mini_gilded_blackstone" }
+  gilded_blackstone_letter_z:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNWFiYWMyOGQwMjhhZTA3YjhkOTRhZDY5Nzg4MTg5YTE3MDEwZTY4MmIzNDA4YzU4NjhjNTg2MWI5YmI0M2Q0In19fQ=="
+    name: "&7Gilded Blackstone Z"
+    tags:
+      - alphabet/gilded_blackstone
+      - character/letter_z
+      - stone
+    recipes:
+      stonecutter:
+        - id: "gilded_blackstone_letter_z"
+          input: { head: "mini_gilded_blackstone" }
+  gilded_blackstone_number_0:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjA3MjNjMWVmM2U2ZTUxZWM0ZmQzOTZiNmJhMzg5NGE3Njc0YmU5MzVmNmVkY2E1ODNmYjU4Y2M5NGRmODE4NCJ9fX0="
+    name: "&7Gilded Blackstone 0"
+    tags:
+      - alphabet/gilded_blackstone
+      - character/number_0
+      - stone
+    recipes:
+      stonecutter:
+        - id: "gilded_blackstone_number_0"
+          input: { head: "mini_gilded_blackstone" }
+  gilded_blackstone_number_1:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODZiYzE4NzcyYWNkMzQzZTZhYjIwMTAzYzRhOWU0MjExNWYyMjQ4NDI3ZWNiZDIwNjcxZDZjZDI0ZWU3ZWY4YyJ9fX0="
+    name: "&7Gilded Blackstone 1"
+    tags:
+      - alphabet/gilded_blackstone
+      - character/number_1
+      - stone
+    recipes:
+      stonecutter:
+        - id: "gilded_blackstone_number_1"
+          input: { head: "mini_gilded_blackstone" }
+  gilded_blackstone_number_2:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNWI3ODFjOTUzZjg1ZGY3NzVmOTdjNjRmZWYyZjUwYjczMTM2NjI1NjgyN2UwZjg4YzIyOTcwYzIzMzE3YzY5NSJ9fX0="
+    name: "&7Gilded Blackstone 2"
+    tags:
+      - alphabet/gilded_blackstone
+      - character/number_2
+      - stone
+    recipes:
+      stonecutter:
+        - id: "gilded_blackstone_number_2"
+          input: { head: "mini_gilded_blackstone" }
+  gilded_blackstone_number_3:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTk0ZGM4ZWU0ODJiMTkxN2JkZWQ2Yjk1MjM5ZDAwODY2MzZkNWI2YjA3MGQ3MWRkNWViNWY0YjI3NWQ2OTNiMCJ9fX0="
+    name: "&7Gilded Blackstone 3"
+    tags:
+      - alphabet/gilded_blackstone
+      - character/number_3
+      - stone
+    recipes:
+      stonecutter:
+        - id: "gilded_blackstone_number_3"
+          input: { head: "mini_gilded_blackstone" }
+  gilded_blackstone_number_4:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzc2NTc5YTQxZDU3OWExZmUxN2RkZTg4Zjg5ZmE4Mzc3NmRlNzE2YmM5ZjI0ZGEyN2YyMTFiZTlmZTIxOWFmZSJ9fX0="
+    name: "&7Gilded Blackstone 4"
+    tags:
+      - alphabet/gilded_blackstone
+      - character/number_4
+      - stone
+    recipes:
+      stonecutter:
+        - id: "gilded_blackstone_number_4"
+          input: { head: "mini_gilded_blackstone" }
+  gilded_blackstone_number_5:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTEwYTZmY2MyMjRkYzg1YjNlNzI1YWUyYjg2ZmQ1ZmRhNGUyNGMwMDQ3NTUzMDdjZDNmZGNlNGFlNmRhYTFmMSJ9fX0="
+    name: "&7Gilded Blackstone 5"
+    tags:
+      - alphabet/gilded_blackstone
+      - character/number_5
+      - stone
+    recipes:
+      stonecutter:
+        - id: "gilded_blackstone_number_5"
+          input: { head: "mini_gilded_blackstone" }
+  gilded_blackstone_number_6:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZmExZDgxNGExMTZiNGI1MGQ0ODYyZTVjZTUzZDFhNDExYjhiYTJhNmYxOTUzMWIzYWUyMmNlZDdmNzA5ZTJhZCJ9fX0="
+    name: "&7Gilded Blackstone 6"
+    tags:
+      - alphabet/gilded_blackstone
+      - character/number_6
+      - stone
+    recipes:
+      stonecutter:
+        - id: "gilded_blackstone_number_6"
+          input: { head: "mini_gilded_blackstone" }
+  gilded_blackstone_number_7:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTY5YTdmNTZlMWJmZWIwZDU5ZjU4OWUzNzc0MDZlYTViMWQxYzFkYzFjNDA4Nzk0ZDAzNWY3M2NmODhiNjdmNSJ9fX0="
+    name: "&7Gilded Blackstone 7"
+    tags:
+      - alphabet/gilded_blackstone
+      - character/number_7
+      - stone
+    recipes:
+      stonecutter:
+        - id: "gilded_blackstone_number_7"
+          input: { head: "mini_gilded_blackstone" }
+  gilded_blackstone_number_8:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjU4NjlmNjJhYmM1ZGM3M2NlNzZiMGQ3OTAxMzZlNzQ3MTNhYTIxNWRmYWNmMWRmNzMxNzVjMTkxMDJlNzYzYiJ9fX0="
+    name: "&7Gilded Blackstone 8"
+    tags:
+      - alphabet/gilded_blackstone
+      - character/number_8
+      - stone
+    recipes:
+      stonecutter:
+        - id: "gilded_blackstone_number_8"
+          input: { head: "mini_gilded_blackstone" }
+  gilded_blackstone_number_9:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzVlOWRlNDBmNjdiM2YyN2Y4ZGE5Y2I0NDYwMGIyM2U4NTBkNWVkYTYxZDVjMzgyNTU1NGM1ZWQ1ODk5MGU0MSJ9fX0="
+    name: "&7Gilded Blackstone 9"
+    tags:
+      - alphabet/gilded_blackstone
+      - character/number_9
+      - stone
+    recipes:
+      stonecutter:
+        - id: "gilded_blackstone_number_9"
+          input: { head: "mini_gilded_blackstone" }
+  gilded_blackstone_forward:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWZjNDljYjM2NjE5YWQ2MmU5NTJjNDVlZjBiZDBmODNlYTE4NThjNDhhYmE4MDVjMDk3Nzc5ZGIyZjNjMTRjYiJ9fX0="
+    name: "&7Gilded Blackstone ⏩"
+    tags:
+      - alphabet/gilded_blackstone
+      - character/forward
+      - stone
+    recipes:
+      stonecutter:
+        - id: "gilded_blackstone_forward"
+          input: { head: "mini_gilded_blackstone" }

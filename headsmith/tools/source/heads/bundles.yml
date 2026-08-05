@@ -1,0 +1,738 @@
+# Bundles and Bags - Colored bundles and bags of items
+
+heads:
+  # ============================================
+  # COLORED BUNDLES (Stonecutter recipes)
+  # ============================================
+
+  bundle:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODZiZDkyMGI0MDI4MTVhZDg5MDE4ZGY4Mjk3N2JlOWY3ZWExOWU3OTllY2YwMTZmN2YwZGE0YWI0N2NhMjNjNSJ9fX0="
+    name: "&6Bundle"
+    tags: [storage]
+    lore:
+      - "&7A bundle for storing items."
+      - "&7Silk touch to keep the bundle."
+    recipes:
+      stonecutter:
+        - id: "bundle"
+          input: { material: "BUNDLE" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "BUNDLE" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "bundle" }
+
+  white_bundle:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMmEzMGU4Y2E1NjM1YmZkZDMzOGEwMDZkMmI2OGFhYjI3MzhhNjg5NjBmYzhhMTNjY2QxZGNmMzk4NDIyNDA4YyJ9fX0="
+    name: "&fWhite Bundle"
+    tags: [storage]
+    lore:
+      - "&7A white bundle."
+      - "&7Silk touch to keep the bundle."
+    recipes:
+      stonecutter:
+        - id: "white_bundle"
+          input: { material: "WHITE_BUNDLE" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "WHITE_BUNDLE" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "white_bundle" }
+
+  light_gray_bundle:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvN2Y1YTBkMTlmNWU1YjI0MjI3ZDNlMzQ2ZDU0NjQ0MmVkMjVlOWQwOWY0NTExMmQ1NzdmZGZjNTdjMTZmNTI5NyJ9fX0="
+    name: "&7Light Gray Bundle"
+    tags: [storage]
+    lore:
+      - "&7A light gray bundle."
+      - "&7Silk touch to keep the bundle."
+    recipes:
+      stonecutter:
+        - id: "light_gray_bundle"
+          input: { material: "LIGHT_GRAY_BUNDLE" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "LIGHT_GRAY_BUNDLE" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "light_gray_bundle" }
+
+  gray_bundle:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvY2Y2YjQyY2UzOTk4YTIyYWU1Zjc5N2NiM2EzYmVlYTZmZGVkOTQ1YjZiZDI2ZjM5NGJjMWY0OWVhM2MzOGRhNyJ9fX0="
+    name: "&8Gray Bundle"
+    tags: [storage]
+    lore:
+      - "&7A gray bundle."
+      - "&7Silk touch to keep the bundle."
+    recipes:
+      stonecutter:
+        - id: "gray_bundle"
+          input: { material: "GRAY_BUNDLE" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "GRAY_BUNDLE" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "gray_bundle" }
+
+  black_bundle:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzY4MzQ2NWY3ZDBkYTJkZDA1NGQwNGViOTc0ZDdkYjkyOTA0NzgxMTc3ZmQwODAzODViNmJjOGFjMDEyN2IwOSJ9fX0="
+    name: "&0Black Bundle"
+    tags: [storage]
+    lore:
+      - "&7A black bundle."
+      - "&7Silk touch to keep the bundle."
+    recipes:
+      stonecutter:
+        - id: "black_bundle"
+          input: { material: "BLACK_BUNDLE" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "BLACK_BUNDLE" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "black_bundle" }
+
+  brown_bundle:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzJkMjUwZjUzMzY0NDliMzJiZmU5OTBiZGZkMzA3YTFiMzlhZTVjYTA3ZTlhMTU5M2IxYmI2ZWQzM2VjMTRiYSJ9fX0="
+    name: "&6Brown Bundle"
+    tags: [storage]
+    lore:
+      - "&7A brown bundle."
+      - "&7Silk touch to keep the bundle."
+    recipes:
+      stonecutter:
+        - id: "brown_bundle"
+          input: { material: "BROWN_BUNDLE" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "BROWN_BUNDLE" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "brown_bundle" }
+
+  red_bundle:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvM2RjY2U4NzhjMmYxMWUxOWNjYjdkODI3ZDA0MGE0OTgxNzkyZTNmMzFiNTNjNDNmZDc2ODYwNWRjY2QxMzJkNyJ9fX0="
+    name: "&cRed Bundle"
+    tags: [storage]
+    lore:
+      - "&7A red bundle."
+      - "&7Silk touch to keep the bundle."
+    recipes:
+      stonecutter:
+        - id: "red_bundle"
+          input: { material: "RED_BUNDLE" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "RED_BUNDLE" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "red_bundle" }
+
+  orange_bundle:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTIyMTMyZTA1MDBhMjlmNjJlOTM5OGEyMWExMmIxYzY5MjUyMWE5NWJiM2YyYjFkZWZiMDY3N2M2NjIyNmEzMSJ9fX0="
+    name: "&6Orange Bundle"
+    tags: [storage]
+    lore:
+      - "&7An orange bundle."
+      - "&7Silk touch to keep the bundle."
+    recipes:
+      stonecutter:
+        - id: "orange_bundle"
+          input: { material: "ORANGE_BUNDLE" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "ORANGE_BUNDLE" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "orange_bundle" }
+
+  yellow_bundle:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjc5ZTliYzZmYzFjOWRhNWE5N2Q5YjY5ZWM4MDVjYTU1NzdjMTUxN2RmZjg5NTcwNmQ1ODNlNTg2NzFjYjczNiJ9fX0="
+    name: "&eYellow Bundle"
+    tags: [storage]
+    lore:
+      - "&7A yellow bundle."
+      - "&7Silk touch to keep the bundle."
+    recipes:
+      stonecutter:
+        - id: "yellow_bundle"
+          input: { material: "YELLOW_BUNDLE" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "YELLOW_BUNDLE" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "yellow_bundle" }
+
+  lime_bundle:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDIzYTZlY2UzZTdmNzJkZWJjNmMyYmRmM2M3YWNlYjUyZGFkYTY2MTgyMTIxZjY1OWM2MzlhZmYyZjA4NWIzZCJ9fX0="
+    name: "&aLime Bundle"
+    tags: [storage]
+    lore:
+      - "&7A lime bundle."
+      - "&7Silk touch to keep the bundle."
+    recipes:
+      stonecutter:
+        - id: "lime_bundle"
+          input: { material: "LIME_BUNDLE" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "LIME_BUNDLE" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "lime_bundle" }
+
+  green_bundle:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGM1YTlkY2NiMDE4YjljODNlNWRlNDc5NDg4ZWRlZWM0M2M5YTYxOTUxMjBmNjE4NzczNGVhMDVjZTkxZjIyMSJ9fX0="
+    name: "&2Green Bundle"
+    tags: [storage]
+    lore:
+      - "&7A green bundle."
+      - "&7Silk touch to keep the bundle."
+    recipes:
+      stonecutter:
+        - id: "green_bundle"
+          input: { material: "GREEN_BUNDLE" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "GREEN_BUNDLE" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "green_bundle" }
+
+  cyan_bundle:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTIyNmY4YzkxZTVhOTJhZTljYzYyZWJhMTg0M2UzNzlmNmQ1Njc1NTczNDcwM2JiNjY0ZDVjMjFmMTBmNTNkMSJ9fX0="
+    name: "&3Cyan Bundle"
+    tags: [storage]
+    lore:
+      - "&7A cyan bundle."
+      - "&7Silk touch to keep the bundle."
+    recipes:
+      stonecutter:
+        - id: "cyan_bundle"
+          input: { material: "CYAN_BUNDLE" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "CYAN_BUNDLE" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "cyan_bundle" }
+
+  light_blue_bundle:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWQ5MjFkMjI0NTMyZTE4ZWFkZTU0MjYxYmM1ZTc0ZjZiYmZlOWVjZWE4ZWY4YzRlYTE4ODBhM2VmMmI0MWM0ZiJ9fX0="
+    name: "&bLight Blue Bundle"
+    tags: [storage]
+    lore:
+      - "&7A light blue bundle."
+      - "&7Silk touch to keep the bundle."
+    recipes:
+      stonecutter:
+        - id: "light_blue_bundle"
+          input: { material: "LIGHT_BLUE_BUNDLE" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "LIGHT_BLUE_BUNDLE" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "light_blue_bundle" }
+
+  blue_bundle:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjkxYzdiZDA0MTZmNjhkNmU5YjU4NmU3ODE4Mjg2M2E0ZmQwNGY5MDI5YzgwNWY5MjFhMTdjNzAzZDUyZWRlMSJ9fX0="
+    name: "&9Blue Bundle"
+    tags: [storage]
+    lore:
+      - "&7A blue bundle."
+      - "&7Silk touch to keep the bundle."
+    recipes:
+      stonecutter:
+        - id: "blue_bundle"
+          input: { material: "BLUE_BUNDLE" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "BLUE_BUNDLE" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "blue_bundle" }
+
+  purple_bundle:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzA2MDNjZjliYTNmN2Q3MTQyMGE0ODI4NDE3NGQ5ZTBlM2FmMTVlN2JiYzk5MjIyNWM0MjRjODgwM2ZmZjk5MiJ9fX0="
+    name: "&5Purple Bundle"
+    tags: [storage]
+    lore:
+      - "&7A purple bundle."
+      - "&7Silk touch to keep the bundle."
+    recipes:
+      stonecutter:
+        - id: "purple_bundle"
+          input: { material: "PURPLE_BUNDLE" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "PURPLE_BUNDLE" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "purple_bundle" }
+
+  magenta_bundle:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvN2FmN2ViYjQ4ZTIzM2UwMTM5ZDIwMDliZWFmOWQ5NzM2MGEwZjRmYjZjMmNiMmE1MGY1MGJiNzgzMTRhZjg2In19fQ=="
+    name: "&dMagenta Bundle"
+    tags: [storage]
+    lore:
+      - "&7A magenta bundle."
+      - "&7Silk touch to keep the bundle."
+    recipes:
+      stonecutter:
+        - id: "magenta_bundle"
+          input: { material: "MAGENTA_BUNDLE" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "MAGENTA_BUNDLE" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "magenta_bundle" }
+
+  pink_bundle:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTgyZjBiNzFiNDkxNDBjMWRjZmU0OWZmYTAyNmYyY2IyYWYxZTQ0M2JmNmIxMjM1MWI5NzI5NDdmYWFmNGQ1In19fQ=="
+    name: "&dPink Bundle"
+    tags: [storage]
+    lore:
+      - "&7A pink bundle."
+      - "&7Silk touch to keep the bundle."
+    recipes:
+      stonecutter:
+        - id: "pink_bundle"
+          input: { material: "PINK_BUNDLE" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "PINK_BUNDLE" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "pink_bundle" }
+
+  # ============================================
+  # BAGS OF ITEMS (Shapeless: any bundle + item)
+  # ============================================
+
+  bag_of_bones:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjQ1MTg0NTk0M2ZkMGMwN2Y2Mjk3MTFlMzQwMWE3MWEzMWNkMzcxY2MzY2IzNmYzZjk2MzdiMGU3NTljYzQ4YSJ9fX0="
+    name: "&fBag of Bones"
+    tags: [storage]
+    lore:
+      - "&7A bag full of bones."
+      - "&7Silk touch to keep the bag."
+    recipes:
+      craft:
+        shapeless:
+          - id: "bag_of_bones"
+            ingredients:
+              - { material: "BUNDLE" }
+              - { material: "BONE" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "BUNDLE" }
+            - { material: "BONE" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "bag_of_bones" }
+
+  bag_of_diamonds:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjZhNjg4NmU4NGVhZTViYTJiMmI2MDI0MzI0MjljNmZiMjg2OTFmYzAyZTlmOWNjYjVjNTdmMmNkZDBmMWQ4In19fQ=="
+    name: "&bBag of Diamonds"
+    tags: [storage]
+    lore:
+      - "&7A bag full of diamonds."
+      - "&7Silk touch to keep the bag."
+    recipes:
+      craft:
+        shapeless:
+          - id: "bag_of_diamonds"
+            ingredients:
+              - { material: "BUNDLE" }
+              - { material: "DIAMOND" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "BUNDLE" }
+            - { material: "DIAMOND" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "bag_of_diamonds" }
+
+  bag_of_emeralds:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzFkODI3YTVkZWNiMGFlNzMwYWJiNjk2MTc3NzZlMTg5NGYyYmRiNDY5Njg1NDA0MzMxMTVkMzY4OGZiYWMzOCJ9fX0="
+    name: "&aBag of Emeralds"
+    tags: [storage]
+    lore:
+      - "&7A bag full of emeralds."
+      - "&7Silk touch to keep the bag."
+    recipes:
+      craft:
+        shapeless:
+          - id: "bag_of_emeralds"
+            ingredients:
+              - { material: "BUNDLE" }
+              - { material: "EMERALD" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "BUNDLE" }
+            - { material: "EMERALD" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "bag_of_emeralds" }
+
+  bag_of_ender_pearls:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzEyZDJmOTMxMDQ0NDFjYTU2NmY3YjcxOGMzZGQwMzgyY2IzOGY5Njc4YjVjYjE4MWVhMjQ4N2EyZjdmODI2YiJ9fX0="
+    name: "&5Bag of Ender Pearls"
+    tags: [storage]
+    lore:
+      - "&7A bag full of ender pearls."
+      - "&7Silk touch to keep the bag."
+    recipes:
+      craft:
+        shapeless:
+          - id: "bag_of_ender_pearls"
+            ingredients:
+              - { material: "BUNDLE" }
+              - { material: "ENDER_PEARL" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "BUNDLE" }
+            - { material: "ENDER_PEARL" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "bag_of_ender_pearls" }
+
+  bag_of_gold:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzVjOWNjY2Y2MWE2ZTYyODRmZTliYmU2NDkxNTViZTRkOWNhOTZmNzhmZmNiMjc5Yjg0ZTE2MTc4ZGFjYjUyMiJ9fX0="
+    name: "&6Bag of Gold"
+    tags: [storage]
+    lore:
+      - "&7A bag full of gold."
+      - "&7Silk touch to keep the bag."
+    recipes:
+      craft:
+        shapeless:
+          - id: "bag_of_gold"
+            ingredients:
+              - { material: "BUNDLE" }
+              - { material: "GOLD_INGOT" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "BUNDLE" }
+            - { material: "GOLD_INGOT" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "bag_of_gold" }
+
+  bag_of_gunpowder:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODIyYTQ4YTU3NTllZGRlZjllMjkxOGZjODU5OTZmODQ5MWNjOTI1NzhkNTRkY2Q2MmUyYjZkOTEzYmZiNDIxZSJ9fX0="
+    name: "&8Bag of Gunpowder"
+    tags: [storage]
+    lore:
+      - "&7A bag full of gunpowder."
+      - "&7Silk touch to keep the bag."
+    recipes:
+      craft:
+        shapeless:
+          - id: "bag_of_gunpowder"
+            ingredients:
+              - { material: "BUNDLE" }
+              - { material: "GUNPOWDER" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "BUNDLE" }
+            - { material: "GUNPOWDER" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "bag_of_gunpowder" }
+
+  bag_of_iron:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDk4MGQxNmVkMmYxZGJmOWExZDU0ZmFiZGU5MTY2MWU0NjJmOGU5ZmFjZWI2OWE3NTgxM2ZhYjg3Y2VkZmNmZiJ9fX0="
+    name: "&7Bag of Iron"
+    tags: [storage]
+    lore:
+      - "&7A bag full of iron."
+      - "&7Silk touch to keep the bag."
+    recipes:
+      craft:
+        shapeless:
+          - id: "bag_of_iron"
+            ingredients:
+              - { material: "BUNDLE" }
+              - { material: "IRON_INGOT" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "BUNDLE" }
+            - { material: "IRON_INGOT" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "bag_of_iron" }
+
+  bag_of_leather:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmQ4OTViMjllOWJkYTQ1NjE2NGUxM2I0ZDQ1Yzc3YjY0ZGY4MzY4OGEzNTk2NWVjYjJlNjIxNzZkMjQ5M2IzNCJ9fX0="
+    name: "&6Bag of Leather"
+    tags: [storage]
+    lore:
+      - "&7A bag full of leather."
+      - "&7Silk touch to keep the bag."
+    recipes:
+      craft:
+        shapeless:
+          - id: "bag_of_leather"
+            ingredients:
+              - { material: "BUNDLE" }
+              - { material: "LEATHER" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "BUNDLE" }
+            - { material: "LEATHER" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "bag_of_leather" }
+
+  bag_of_redstone:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTYxYTkxOGMwYzQ5YmE4ZDA1M2U1MjJjYjkxYWJjNzQ2ODkzNjdiNGQ4YWEwNmJmYzFiYTkxNTQ3MzA5ODVmZiJ9fX0="
+    name: "&cBag of Redstone"
+    tags: [storage]
+    lore:
+      - "&7A bag full of redstone."
+      - "&7Silk touch to keep the bag."
+    recipes:
+      craft:
+        shapeless:
+          - id: "bag_of_redstone"
+            ingredients:
+              - { material: "BUNDLE" }
+              - { material: "REDSTONE" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "BUNDLE" }
+            - { material: "REDSTONE" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "bag_of_redstone" }
+
+  bag_of_snowballs:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmVjMzE0ZmMxM2IzMDA5ZDBhYTg1ODMwOGJlYzljZDU5ZjE0MGY1NjAxYTM0ZWYyMGY5Yzc2OWQ1MzM3NDM5NyJ9fX0="
+    name: "&fBag of Snowballs"
+    tags: [storage]
+    lore:
+      - "&7A bag full of snowballs."
+      - "&7Silk touch to keep the bag."
+    recipes:
+      craft:
+        shapeless:
+          - id: "bag_of_snowballs"
+            ingredients:
+              - { material: "BUNDLE" }
+              - { material: "SNOWBALL" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "BUNDLE" }
+            - { material: "SNOWBALL" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "bag_of_snowballs" }
+
+  bag_of_sugar:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTNjZTc2NjAyZDNmZWM3YzAyNzNkYTYwMDA5MDA3YmU0MTQwYWM5ZmFjMDM0MTQ1MGMwNzU3ZTUzZDc1MTU3NyJ9fX0="
+    name: "&fBag of Sugar"
+    tags: [storage]
+    lore:
+      - "&7A bag full of sugar."
+      - "&7Silk touch to keep the bag."
+    recipes:
+      craft:
+        shapeless:
+          - id: "bag_of_sugar"
+            ingredients:
+              - { material: "BUNDLE" }
+              - { material: "SUGAR" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "BUNDLE" }
+            - { material: "SUGAR" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "bag_of_sugar" }
+
+  bag_of_amethyst:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMmFmNDZjYjhjZDY0YWRjM2MwMzU1YzYyNjEyNmVkNTlmOTE0NjE1ZDcyZmJhNzkwNTQwMTZmZGE5MTlhYzVhYSJ9fX0="
+    name: "&dBag of Amethyst"
+    tags: [storage]
+    lore:
+      - "&7A bag full of amethyst shards."
+      - "&7Silk touch to keep the bag."
+    recipes:
+      craft:
+        shapeless:
+          - id: "bag_of_amethyst"
+            ingredients:
+              - { material: "BUNDLE" }
+              - { material: "AMETHYST_SHARD" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "BUNDLE" }
+            - { material: "AMETHYST_SHARD" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "bag_of_amethyst" }
+
+  # ============================================
+  # BAGS OF SEEDS (Shapeless: any bundle + seeds)
+  # ============================================
+
+  bag_of_seeds:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvN2FhZGIzN2RkNTU2ZjllZWZiYjhlYTU0OTQzZTFmNjU3ZmFjNDU0MDllMzRjZDk5YzgxMGQ0ZGQ0NjFiYzYzMyJ9fX0="
+    name: "&eBag of Seeds"
+    tags: [storage]
+    lore:
+      - "&7A bag full of wheat seeds."
+      - "&7Silk touch to keep the bag."
+    recipes:
+      craft:
+        shapeless:
+          - id: "bag_of_seeds"
+            ingredients:
+              - { material: "BUNDLE" }
+              - { material: "WHEAT_SEEDS" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "BUNDLE" }
+            - { material: "WHEAT_SEEDS" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "bag_of_seeds" }
+
+  bag_of_beetroot_seeds:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDFjY2ViNmVlMTIxMGUxNzI1Y2UzMGE3ZGEzZDhlNjhmYzM4YTdkOGI2ZDMwYWJjMDMwYTI2MDFkZjk1MWQyZCJ9fX0="
+    name: "&cBag of Beetroot Seeds"
+    tags: [storage]
+    lore:
+      - "&7A bag full of beetroot seeds."
+      - "&7Silk touch to keep the bag."
+    recipes:
+      craft:
+        shapeless:
+          - id: "bag_of_beetroot_seeds"
+            ingredients:
+              - { material: "BUNDLE" }
+              - { material: "BEETROOT_SEEDS" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "BUNDLE" }
+            - { material: "BEETROOT_SEEDS" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "bag_of_beetroot_seeds" }
+
+  bag_of_melon_seeds:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODRhYWNlMmI0MDU4Zjg0NDUyYzY0YTFiN2ExN2U2ZDRkZjA4M2VkMGVlOTRhZTYwZmUxMGI0ZThmNDFjNWY4YSJ9fX0="
+    name: "&aBag of Melon Seeds"
+    tags: [storage]
+    lore:
+      - "&7A bag full of melon seeds."
+      - "&7Silk touch to keep the bag."
+    recipes:
+      craft:
+        shapeless:
+          - id: "bag_of_melon_seeds"
+            ingredients:
+              - { material: "BUNDLE" }
+              - { material: "MELON_SEEDS" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "BUNDLE" }
+            - { material: "MELON_SEEDS" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "bag_of_melon_seeds" }
+
+  bag_of_pumpkin_seeds:
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzkzZDU2OGNmNzc1NDVkZGY0OTQyOTI2ZmVjZjMxYmFmNjJlOWU0ZDRiMThiMmY5NDg0OGM5YTFmNGYzMWMzOCJ9fX0="
+    name: "&6Bag of Pumpkin Seeds"
+    tags: [storage]
+    lore:
+      - "&7A bag full of pumpkin seeds."
+      - "&7Silk touch to keep the bag."
+    recipes:
+      craft:
+        shapeless:
+          - id: "bag_of_pumpkin_seeds"
+            ingredients:
+              - { material: "BUNDLE" }
+              - { material: "PUMPKIN_SEEDS" }
+    drops:
+      on_break:
+        - when: { silk_touch: false }
+          drops:
+            - { material: "BUNDLE" }
+            - { material: "PUMPKIN_SEEDS" }
+        - when: { silk_touch: true }
+          drops:
+            - { head: "bag_of_pumpkin_seeds" }
