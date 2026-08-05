@@ -50,6 +50,7 @@ final class MechanismState {
         float wfX, wfY, wfZ;
         boolean ghost;
         boolean wasBare;                // a bare shaft reverted to an encased head for capture (re-bared on landing)
+        int throttleLevel = -1;         // captured throttle 0-15 level (chunk-PDC, not tile) or -1 if not a throttle
         byte @Nullable [] storage;      // ItemStack[] serialized (Base64 in YAML)
         int @Nullable [] glueOffsets;
         byte @Nullable [] configPdc;    // tile PDC bytes (Base64 in YAML)
@@ -88,6 +89,7 @@ final class MechanismState {
             if (b.hasWallFacing) m.put("wall", List.of((double) b.wfX, (double) b.wfY, (double) b.wfZ));
             if (b.ghost) m.put("ghost", true);
             if (b.wasBare) m.put("bare", true);
+            if (b.throttleLevel >= 0) m.put("throttle", b.throttleLevel);
             if (b.storage != null) m.put("storage", Base64.getEncoder().encodeToString(b.storage));
             if (b.glueOffsets != null) {
                 List<Integer> g = new ArrayList<>(b.glueOffsets.length);
@@ -142,6 +144,7 @@ final class MechanismState {
                 }
                 b.ghost = Boolean.TRUE.equals(raw.get("ghost"));
                 b.wasBare = Boolean.TRUE.equals(raw.get("bare"));
+                b.throttleLevel = raw.get("throttle") instanceof Number tn ? tn.intValue() : -1;
                 Object storage = raw.get("storage");
                 if (storage instanceof String ss) b.storage = Base64.getDecoder().decode(ss);
                 Object glue = raw.get("glue");

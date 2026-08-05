@@ -480,6 +480,7 @@ final class BasicMechanism implements Mechanism {
             }
             b.ghost = mb.ghost;
             b.wasBare = mb.wasBare;
+            b.throttleLevel = mb.throttleLevel;
             if (mb.storage != null) {
                 try {
                     b.storage = ItemStack.serializeItemsAsBytes(mb.storage.getContents());
@@ -1035,6 +1036,7 @@ final class BasicMechanism implements Mechanism {
                 registry.restoreBlock(target, type, landedState);
                 if (mb.storage != null) registry.restoreStorageSnapshot(target, mb.storage);
                 registry.restoreConfigPdc(target, mb.configPdc);   // usually null for a bare block
+                registry.applyThrottleLevel(target, mb.throttleLevel);   // no-op unless a throttle (bare-first)
                 flipLandedSpinDir(target, mb, snappedYaw);
             } else if (type != null) {
                 // The vanilla data was rotated above; re-derive the custom state for the landed

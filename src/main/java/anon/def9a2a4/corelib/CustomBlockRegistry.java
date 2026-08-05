@@ -803,6 +803,18 @@ public class CustomBlockRegistry {
         if (h != null) h.accept(block);
     }
 
+    // Throttle-lever bridge: the throttle keeps its 0-15 level in the CHUNK PDC (not the block's tile PDC),
+    // so a mechanism move can't carry it via configPdc. These delegate to the lever so assembleCore/placeBlock
+    // (which hold this registry) can capture and re-apply it. Null until ThrottleLever registers.
+    private @Nullable ThrottleLever throttleLever;
+    void setThrottleLever(ThrottleLever lever) { this.throttleLever = lever; }
+    /** Captured throttle level for a mechanism move, or -1 if {@code block} isn't a throttle. */
+    int throttleLevelAt(Block block) { return throttleLever != null ? throttleLever.levelForCapture(block) : -1; }
+    /** Re-apply a captured throttle level to a landed throttle. No-op for a non-throttle / level < 0. */
+    void applyThrottleLevel(Block block, int level) {
+        if (throttleLever != null && level >= 0) throttleLever.applyCapturedLevel(block, level);
+    }
+
     /** Axis suffix (x/y/z) of a chain's Orientable blockdata, defaulting to y. */
     private static String chainAxisSuffix(Block block) {
         if (block.getBlockData() instanceof org.bukkit.block.data.Orientable o) {

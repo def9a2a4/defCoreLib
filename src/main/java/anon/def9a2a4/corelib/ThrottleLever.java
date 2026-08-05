@@ -74,7 +74,15 @@ final class ThrottleLever implements Listener {
 
     ThrottleLever(CustomBlockRegistry registry) {
         this.registry = registry;
+        registry.setThrottleLever(this);   // so a mechanism move can capture/restore the level (chunk-PDC, not tile)
     }
+
+    /** Level to carry when a mechanism captures {@code b}, or -1 if it isn't a throttle. The level lives in
+     *  the chunk PDC (not the block's tile PDC), so the mechanism's configPdc snapshot can't reach it. */
+    int levelForCapture(Block b) { return isThrottle(b) ? levelOf(b) : -1; }
+
+    /** Re-apply a captured level to a landed throttle (writes the chunk-PDC cell + cache and drives output). */
+    void applyCapturedLevel(Block b, int level) { setLevel(b, level); }
 
     void register() {
         CustomHeadBlock block = registry.getType(BLOCK_ID);

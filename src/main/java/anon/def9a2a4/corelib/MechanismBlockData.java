@@ -39,6 +39,11 @@ public final class MechanismBlockData {
     // bare-first block (the casing rides natively and is never flagged).
     boolean wasBare;
 
+    // Captured 0-15 throttle-lever level, or -1 when this block isn't a throttle. The throttle keeps its level
+    // in the CHUNK PDC (not a tile PDC), so configPdc can't carry it — captured at assembly via
+    // CustomBlockRegistry.throttleLevelAt and re-applied on landing. Set post-construction like the fields below.
+    int throttleLevel = -1;
+
     // True for ghost blocks (assembly GhostBlocks and BasicMechanism.appendGhost): data-only members
     // that were never captured from the world. Landing rules differ — a blocked ghost whose cell
     // already holds its identical block is discarded, not dropped (dropping would mint an item from

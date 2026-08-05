@@ -442,6 +442,7 @@ public class MechanismRegistry {
             MechanismBlockData mbd = new MechanismBlockData(bd, local, collision,
                 customType, customState, decs, bdecs, particles, storage, spinReversed, wallFacing);
             mbd.wasBare = wasBare;   // re-bared on landing (rebareAfterLanding) so a carried bare shaft stays bare
+            mbd.throttleLevel = registry.throttleLevelAt(block);   // chunk-PDC level (not tile) — carried in the field
 
             // Banner attachments: BetterBanners displays hosted on this block, plus a synthesized
             // entry carrying a vanilla banner block's patterns (its block-entity NBT is otherwise
@@ -1366,6 +1367,7 @@ public class MechanismRegistry {
                 decs, bdecs, particles, storage, b.spinReversed, wall);
             mbd.ghost = b.ghost;
             mbd.wasBare = b.wasBare;
+            mbd.throttleLevel = b.throttleLevel;
             mbd.glueOffsets = b.glueOffsets;
             mbd.configPdc = b.configPdc;
             mbd.blockEntitySnapshot = b.blockEntity;
