@@ -40,6 +40,10 @@ public class MechanismRegistry {
     // cleanupOrphanedEntities from reaping those entities before recovery claims them, and bridges the
     // 1-tick deferEntityRemoval window on a restore-to-blocks landing.
     private final Set<UUID> mechIdsBeingRecovered = new HashSet<>();
+    // Consumer hooks fired at assembly AFTER displays+colliders spawn but BEFORE the source blocks are
+    // aired out — the window where the source blocks are still LIVE and the colliders exist (leads: a
+    // consumer re-parents leashes from world fences onto the mechanism's collider shulkers). See 3a-ii.
+    private final List<java.util.function.BiConsumer<Mechanism, List<Block>>> preAirOutListeners = new ArrayList<>();
     private final Set<UUID> tickWarned = new HashSet<>();  // mechs already warned about a tick throw (rate-limit)
 
     private @Nullable BukkitTask tickTask;
@@ -116,6 +120,31 @@ public class MechanismRegistry {
     }
 
     MechanismPersistence persistence() { return persistence; }
+
+    /**
+     * Register a hook fired during assembly AFTER the mechanism's displays + collider shulkers are spawned
+     * but BEFORE its source blocks are removed from the world — the only window where both the live source
+     * blocks and the colliders coexist. A consumer uses it to move live-block-attached state onto the
+     * mechanism (e.g. re-parent leashes from world fences onto the collider shulkers). Filter by
+     * {@code mech.type()}. <b>Must not yield the tick</b> (no scheduling): the source blocks are aired out
+     * synchronously on the same tick, so a deferred hook would run against already-removed blocks.
+     */
+    @org.jetbrains.annotations.ApiStatus.Experimental
+    public void addPreAirOutListener(java.util.function.BiConsumer<Mechanism, List<Block>> listener) {
+        preAirOutListeners.add(listener);
+    }
+
+    /** Fire the pre-air-out listeners (source blocks still live). Isolated so one bad hook can't abort assembly. */
+    private void firePreAirOut(Mechanism mech, List<Block> sourceBlocks) {
+        for (var listener : preAirOutListeners) {
+            try {
+                listener.accept(mech, sourceBlocks);
+            } catch (Exception e) {
+                plugin.getLogger().warning("pre-air-out listener threw for mechanism " + mech.type()
+                    + " (" + e.getMessage() + "); continuing assembly");
+            }
+        }
+    }
 
     /** Live snapshot of the currently-assembled mechanisms (a copy — safe to iterate). Lets a consumer/demo
      *  look one up after crash recovery repopulated the registry from disk (the in-memory handles are gone). */
@@ -677,6 +706,7 @@ public class MechanismRegistry {
                 mech.removeAllEntities();   // drop the just-spawned mech displays/colliders; blocks untouched
                 throw e;                    // the owning overload's catch then removes the vehicle
             }
+            firePreAirOut(mech, blocks); // 3a-ii: source blocks still LIVE + colliders spawned (leads seam)
             airOutSourceBlocks(blocks);
             // Remove the captured world banner displays only now: same tick as the mount (no
             // double-render frame), and any throw up to here — including inside airOutSourceBlocks'

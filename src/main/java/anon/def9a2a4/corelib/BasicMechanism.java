@@ -805,6 +805,18 @@ final class BasicMechanism implements Mechanism {
             for (Display d : bannerGroup) d.remove();
         }
 
+        // Consumer pre-removal seam (3a-ii): every block is placed, but the display/collider/vehicle
+        // entities are still LIVE — the window to read live collider state against the freshly-placed
+        // blocks (e.g. re-parent leads off collider shulkers onto the landed fences). Best-effort: a hook
+        // throw must not abort teardown (blocks placed but entities leaked), so swallow and continue.
+        if (beforeEntityRemoval != null) {
+            try {
+                beforeEntityRemoval.run();
+            } catch (Exception ignored) {
+                // consumer hook failed; proceed with entity removal so nothing leaks
+            }
+        }
+
         // Unregister now so the tick loop won't re-touch this disassembled mech. For an owned vehicle, DEFER
         // removing the mech's display entities one tick so the just-placed blocks' own displays get a frame to
         // render first — else custom-block displays blink as the mech displays vanish (the landing flicker).
@@ -1012,6 +1024,12 @@ final class BasicMechanism implements Mechanism {
             drop = new ItemStack(mb.blockData.getMaterial());
         } else {
             drop = null; // block-only material with no item mapping (e.g. wall variants) — no drop
+        }
+        // Consumer drop-item hook (3a-ii): substitute a custom-item identity, remap a wall variant that
+        // has no item form (default drop == null), or suppress the drop (return null). The hook fully
+        // decides the final item from the engine default.
+        if (dropItemHook != null) {
+            drop = dropItemHook.construct(mb, drop);
         }
         if (drop != null) {
             loc.getWorld().dropItemNaturally(loc.clone().add(0.5, 0.5, 0.5), drop);
