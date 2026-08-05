@@ -1,0 +1,26 @@
+# HeadSmith Configuration
+
+# Exclude specific tags from loading.
+# Tags are derived from file paths: heads/alphabet/oak.yml -> "alphabet/oak"
+# Excluding a parent tag also excludes children (e.g., "alphabet" excludes all alphabet heads)
+excluded-tags:
+  # - alphabet/oak
+  # - alphabet
+
+# Exclude specific head IDs from loading
+excluded-heads:
+  # - candle
+  # - stack_of_books
+
+# Custom head files to load from the plugin data folder
+# These are user-created files, not bundled in the JAR
+custom-head-files:
+  # - custom/my-heads.yml
+
+# Control tag display order in the menu
+# Tags are sorted alphabetically by default, with these exceptions:
+tag-order:
+  first:
+    # - favorites
+  last:
+    - alphabet

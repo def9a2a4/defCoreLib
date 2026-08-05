@@ -1,0 +1,550 @@
+@font-face {
+  font-family: 'Monocraft';
+  src: url('https://cdn.jsdelivr.net/gh/IdreesInc/Monocraft@main/dist/Monocraft-ttf/Monocraft.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  font-family: 'Monocraft', monospace;
+  background: #1a1a1a;
+  color: #e0e0e0;
+  margin: 0;
+  padding: 20px;
+}
+
+h1 {
+  text-align: center;
+  color: #fff;
+  margin-bottom: 20px;
+}
+
+.search-container {
+  max-width: 600px;
+  margin: 0 auto 20px;
+  display: flex;
+  gap: 10px;
+}
+
+#search-input {
+  flex: 1;
+  padding: 12px 16px;
+  font-family: 'Monocraft', monospace;
+  font-size: 1em;
+  background: #2a2a2a;
+  border: 1px solid #3a3a3a;
+  border-radius: 8px;
+  color: #e0e0e0;
+}
+
+#search-input::placeholder {
+  color: #666;
+}
+
+#search-input:focus {
+  outline: none;
+  border-color: #4ecca3;
+}
+
+#error {
+  background: #5c1a1a;
+  color: #ff8080;
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  display: none;
+}
+
+#heads-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 20px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.head-card {
+  background: #2a2a2a;
+  border-radius: 12px;
+  padding: 20px;
+  border: 1px solid #3a3a3a;
+}
+
+.head-header {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 15px;
+}
+
+.head-texture-container {
+  width: 92px;
+  height: 108px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.head-texture-container canvas {
+  image-rendering: pixelated;
+}
+
+.head-texture.placeholder {
+  width: 64px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  color: #666;
+  text-align: center;
+  background: #1a1a1a;
+  border-radius: 4px;
+}
+
+.head-info h2 {
+  margin: 0 0 5px 0;
+  font-size: 1.1em;
+}
+
+.head-info .head-id {
+  color: #888;
+  font-size: 0.85em;
+  font-family: monospace;
+}
+
+
+.lore {
+  margin: 10px 0;
+  padding: 10px;
+  background: #222;
+  border-radius: 6px;
+  font-size: 0.9em;
+}
+
+.lore p {
+  margin: 3px 0;
+}
+
+.recipes-section {
+  margin-top: 15px;
+}
+
+.recipes-section h3 {
+  font-size: 0.9em;
+  color: #aaa;
+  margin: 10px 0 8px 0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.recipe {
+  background: #222;
+  border-radius: 6px;
+  padding: 10px;
+  margin-bottom: 8px;
+}
+
+.recipe-type {
+  font-size: 0.75em;
+  color: #888;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.recipe-flow {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.recipe-inputs {
+  flex-shrink: 0;
+}
+
+.recipe-arrow {
+  font-size: 1.5em;
+  color: #666;
+  flex-shrink: 0;
+}
+
+.recipe-output {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 8px;
+  background: #1a1a1a;
+  border: 1px solid #3a3a3a;
+  border-radius: 6px;
+  min-width: 60px;
+}
+
+.recipe-output .output-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.recipe-output .output-icon .item-icon {
+  width: 40px;
+  height: 40px;
+}
+
+.recipe-output .output-amount {
+  font-size: 0.8em;
+  color: #50fa7b;
+}
+
+.crafting-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 48px);
+  gap: 3px;
+  margin: 10px 0;
+}
+
+.grid-slot {
+  width: 48px;
+  height: 48px;
+  background: #1a1a1a;
+  border: 1px solid #3a3a3a;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.grid-slot.empty {
+  background: #151515;
+}
+
+.grid-slot .amount-badge {
+  position: absolute;
+  bottom: 2px;
+  right: 2px;
+  font-size: 0.7em;
+  color: #fff;
+  text-shadow: 1px 1px 1px #000;
+}
+
+.item-icon {
+  width: 32px;
+  height: 32px;
+  image-rendering: pixelated;
+}
+
+.head-icon-container {
+  width: 46px;
+  height: 54px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.head-icon-container canvas {
+  image-rendering: pixelated;
+}
+
+.drop-head-icon-container {
+  width: 28px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.drop-head-icon-container canvas {
+  image-rendering: pixelated;
+}
+
+.item-text {
+  font-size: 0.6em;
+  text-align: center;
+  color: #ccc;
+  padding: 2px;
+  word-break: break-word;
+}
+
+.ingredients-list, .stonecutter-recipe {
+  font-size: 0.85em;
+}
+
+.ingredient {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 0;
+}
+
+.ingredient .item-icon {
+  width: 24px;
+  height: 24px;
+}
+
+.ingredient .amount {
+  color: #888;
+  min-width: 25px;
+}
+
+.ingredient .material {
+  color: #8cb4ff;
+}
+
+.ingredient .head-ref {
+  color: #ffb86c;
+}
+
+
+.drops-section {
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px solid #3a3a3a;
+}
+
+.drops-section h3 {
+  font-size: 0.9em;
+  color: #aaa;
+  margin: 0 0 8px 0;
+}
+
+.drop-rule {
+  background: #222;
+  border-radius: 6px;
+  padding: 10px;
+  margin-bottom: 8px;
+  font-size: 0.85em;
+}
+
+.drop-condition {
+  color: #bd93f9;
+  margin-bottom: 5px;
+}
+
+/* Minecraft color codes */
+.mc-0 { color: #000000; } .mc-1 { color: #0000AA; } .mc-2 { color: #00AA00; }
+.mc-3 { color: #00AAAA; } .mc-4 { color: #AA0000; } .mc-5 { color: #AA00AA; }
+.mc-6 { color: #FFAA00; } .mc-7 { color: #AAAAAA; } .mc-8 { color: #555555; }
+.mc-9 { color: #5555FF; } .mc-a { color: #55FF55; } .mc-b { color: #55FFFF; }
+.mc-c { color: #FF5555; } .mc-d { color: #FF55FF; } .mc-e { color: #FFFF55; }
+.mc-f { color: #FFFFFF; }
+.mc-l { font-weight: bold; } .mc-o { font-style: italic; }
+.mc-n { text-decoration: underline; } .mc-m { text-decoration: line-through; }
+
+/* Refresh button */
+#refresh-btn {
+  background: #2a2a2a;
+  border: 1px solid #3a3a3a;
+  color: #e0e0e0;
+  padding: 0 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1.2rem;
+  font-family: 'Monocraft', monospace;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+#refresh-btn:hover {
+  background: #3a3a3a;
+  border-color: #4a4a4a;
+}
+
+#refresh-btn:active {
+  background: #4a4a4a;
+}
+
+/* Filter container */
+.filter-container {
+  max-width: 900px;
+  margin: 0 auto 20px;
+  padding: 0 10px;
+}
+
+.filter-section {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+}
+
+.filter-label {
+  color: #888;
+  font-size: 0.85rem;
+  min-width: 80px;
+}
+
+.filter-pills {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.filter-pill {
+  background: #2a2a2a;
+  border: 1px solid #3a3a3a;
+  color: #ccc;
+  padding: 6px 14px;
+  border-radius: 16px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-family: 'Monocraft', monospace;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+
+.filter-pill:hover {
+  background: #3a3a3a;
+  border-color: #4a4a4a;
+  color: #fff;
+}
+
+.filter-pill.active {
+  background: #4ecca3;
+  border-color: #4ecca3;
+  color: #1a1a1a;
+}
+
+/* Clear button */
+#clear-btn {
+  background: #2a2a2a;
+  border: 1px solid #3a3a3a;
+  color: #e0e0e0;
+  padding: 0 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-family: 'Monocraft', monospace;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+#clear-btn:hover {
+  background: #3a3a3a;
+  border-color: #4a4a4a;
+}
+
+#clear-btn:active {
+  background: #4a4a4a;
+}
+
+/* Head counter */
+.head-counter {
+  text-align: center;
+  color: #888;
+  font-size: 0.9rem;
+  margin-bottom: 15px;
+}
+
+/* Loading progress bar */
+.loading-container {
+  max-width: 400px;
+  margin: 40px auto;
+  text-align: center;
+}
+
+.loading-text {
+  color: #e0e0e0;
+  margin-bottom: 12px;
+}
+
+.progress-bar {
+  position: relative;
+  height: 8px;
+  background: #2a2a2a;
+  border-radius: 4px;
+  overflow: hidden;
+  border: 1px solid #3a3a3a;
+}
+
+.progress-fill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 0%;
+  transition: width 0.1s ease-out;
+}
+
+.progress-download {
+  background: #3a5a4a;
+  z-index: 1;
+}
+
+.progress-parse {
+  background: #4ecca3;
+  z-index: 2;
+}
+
+.progress-text {
+  color: #888;
+  font-size: 0.85rem;
+  margin-top: 8px;
+}
+
+/* Hierarchical tag breadcrumb navigation */
+.tag-breadcrumb {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-right: 16px;
+  padding: 6px 12px;
+  background: #1a1a1a;
+  border-radius: 16px;
+  border: 1px solid #3a3a3a;
+}
+
+.breadcrumb-link {
+  background: none;
+  border: none;
+  color: #4ecca3;
+  cursor: pointer;
+  font-family: 'Monocraft', monospace;
+  font-size: 0.85rem;
+  padding: 2px 6px;
+  border-radius: 4px;
+  transition: background 0.15s, color 0.15s;
+}
+
+.breadcrumb-link:hover {
+  background: #2a2a2a;
+  color: #6eecc3;
+}
+
+.breadcrumb-link.current {
+  color: #fff;
+  cursor: default;
+}
+
+.breadcrumb-link.current:hover {
+  background: none;
+  color: #fff;
+}
+
+.breadcrumb-sep {
+  color: #666;
+  font-size: 0.9rem;
+}
+
+/* Parent tag pill (has children) */
+.filter-pill.has-children {
+  border-color: #4ecca3;
+  color: #4ecca3;
+}
+
+.filter-pill.has-children:hover {
+  background: #2a3a35;
+  border-color: #6eecc3;
+  color: #6eecc3;
+}
+
+/* Hint message when at parent tag level */
+.select-subtag-hint {
+  text-align: center;
+  color: #888;
+  font-size: 1.1rem;
+  padding: 40px 20px;
+  margin: 0;
+}
