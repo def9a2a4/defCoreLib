@@ -287,6 +287,14 @@ final class BasicMechanism implements Mechanism {
                     -mb.wallFacing.x * 0.25f, 0.25f, -mb.wallFacing.z * 0.25f);
                 wdm.rotateY(faceYawRadians(mb.wallFacing));
                 primary.setTransformationMatrix(wdm);
+            } else if (mb.floorHeadYaw != null) {
+                // Floor custom head: the moving ItemDisplay spawns unrotated, so apply the skull's captured
+                // 16-step yaw (already sign-corrected). Post-multiplied on a COPY of dm so it composes with
+                // the mechanism's rotation (swings with rotators/drawbridges) and doesn't corrupt aux displays.
+                // No wall translate — a floor head is already center-bottom correct.
+                Matrix4f fdm = new Matrix4f(dm);
+                fdm.rotateY(mb.floorHeadYaw);
+                primary.setTransformationMatrix(fdm);
             } else {
                 primary.setTransformationMatrix(dm);
             }
@@ -477,6 +485,10 @@ final class BasicMechanism implements Mechanism {
             if (mb.wallFacing != null) {
                 b.hasWallFacing = true;
                 b.wfX = mb.wallFacing.x; b.wfY = mb.wallFacing.y; b.wfZ = mb.wallFacing.z;
+            }
+            if (mb.floorHeadYaw != null) {
+                b.hasFloorYaw = true;
+                b.floorYaw = mb.floorHeadYaw;
             }
             b.ghost = mb.ghost;
             b.wasBare = mb.wasBare;
@@ -848,8 +860,9 @@ final class BasicMechanism implements Mechanism {
                 // PLACE → fall through to the normal dispatch
             }
 
-            if (target.getType().isAir() || target.getType() == Material.WATER
-                    || target.getType() == Material.LAVA) {
+            if (MovableBlocks.isEmptyOrPassable(target.getType())) {
+                // Overwrite air/fluid — and an ephemeral LIGHT block a stroke swept through (else it would
+                // fall to the "solid wins" branch below and drop this block as an item + explosion).
                 placeBlock(target, mb, snappedYaw);
                 placed.add(target);
                 if (mb.wasBare) rebareTargets.add(target);

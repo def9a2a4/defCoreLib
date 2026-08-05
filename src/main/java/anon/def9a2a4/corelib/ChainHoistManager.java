@@ -863,8 +863,7 @@ final class ChainHoistManager implements Listener {
         // finds nothing to stop it and pays out past y=-64 forever — chain AND load. Bounding it here
         // rather than in payOut means clearForAll bounds the whole body, not just the column.
         if (b.getY() < b.getWorld().getMinHeight()) return false;
-        Material m = b.getType();
-        return m.isAir() || m == Material.WATER || m == Material.LAVA;
+        return MovableBlocks.isEmptyOrPassable(b.getType());
     }
 
     // ──────────────────────────────────────────────────────────────────────

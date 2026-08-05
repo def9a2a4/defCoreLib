@@ -48,6 +48,8 @@ final class MechanismState {
         boolean spinReversed;
         boolean hasWallFacing;
         float wfX, wfY, wfZ;
+        boolean hasFloorYaw;            // floor-head transit yaw (radians) — parity with wallFacing above
+        float floorYaw;
         boolean ghost;
         boolean wasBare;                // a bare shaft reverted to an encased head for capture (re-bared on landing)
         int throttleLevel = -1;         // captured throttle 0-15 level (chunk-PDC, not tile) or -1 if not a throttle
@@ -92,6 +94,7 @@ final class MechanismState {
             if (b.customState != null) m.put("cstate", b.customState);
             if (b.spinReversed) m.put("spin_rev", true);
             if (b.hasWallFacing) m.put("wall", List.of((double) b.wfX, (double) b.wfY, (double) b.wfZ));
+            if (b.hasFloorYaw) m.put("floor_yaw", (double) b.floorYaw);
             if (b.ghost) m.put("ghost", true);
             if (b.wasBare) m.put("bare", true);
             if (b.throttleLevel >= 0) m.put("throttle", b.throttleLevel);
@@ -147,6 +150,10 @@ final class MechanismState {
                     b.wfX = ((Number) wl.get(0)).floatValue();
                     b.wfY = ((Number) wl.get(1)).floatValue();
                     b.wfZ = ((Number) wl.get(2)).floatValue();
+                }
+                if (raw.get("floor_yaw") instanceof Number fy) {
+                    b.hasFloorYaw = true;
+                    b.floorYaw = fy.floatValue();
                 }
                 b.ghost = Boolean.TRUE.equals(raw.get("ghost"));
                 b.wasBare = Boolean.TRUE.equals(raw.get("bare"));

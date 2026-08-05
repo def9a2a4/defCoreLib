@@ -37,7 +37,11 @@ final class MovableBlocks {
             Material.REPEATING_COMMAND_BLOCK, Material.END_PORTAL, Material.END_PORTAL_FRAME,
             Material.END_GATEWAY, Material.NETHER_PORTAL,
             // piston hardware
-            Material.PISTON, Material.STICKY_PISTON, Material.PISTON_HEAD);
+            Material.PISTON, Material.STICKY_PISTON, Material.PISTON_HEAD,
+            // ephemeral plugin lighting: a LIGHT block is derived from a head's LightConfig offset, never a
+            // real payload — carrying it would orphan the source head's light and strand a stray block. It is
+            // swept-through / overwritten instead (see isEmptyOrPassable + the mover clearance/landing gates).
+            Material.LIGHT);
         // 1.21 additions — resolve by name so a differing runtime doesn't hard-fail at class load.
         addByName(s, "TRIAL_SPAWNER");
         addByName(s, "VAULT");
@@ -56,5 +60,16 @@ final class MovableBlocks {
         Material m = b.getType();
         if (m.isAir() || m == Material.WATER || m == Material.LAVA) return false;
         return !IMMOVABLE.contains(m);
+    }
+
+    /**
+     * A cell a mechanism may sweep <em>through</em> (clearance) or <em>overwrite on landing</em>: air, fluid, or
+     * an ephemeral plugin {@code LIGHT} block. Shared by the piston/hoist clearance sweeps and the disassembly
+     * landing gate so the three stay in sync — a LIGHT block treated as clear by clearance but NOT by landing
+     * would let a stroke advance onto it and then drop the payload as an item. Deliberately narrow (not
+     * {@link Block#isPassable()}): a piston must still stop at torches/rails/plants, unlike a cart.
+     */
+    static boolean isEmptyOrPassable(Material m) {
+        return m.isAir() || m == Material.WATER || m == Material.LAVA || m == Material.LIGHT;
     }
 }

@@ -32,6 +32,12 @@ public final class MechanismBlockData {
     boolean spinReversed;
     final @Nullable Vector3f wallFacing;
 
+    // Floor-head yaw (radians about +Y, already sign-corrected to the vanilla skull convention),
+    // captured from the skull's Rotatable at assembly so the moving ItemDisplay renders the head's
+    // real orientation in transit (wallFacing does the equivalent for wall heads). Set post-construction
+    // like the fields below; null for non-floor-heads. Persisted across a mid-move crash by MechanismState.
+    @Nullable Float floorHeadYaw;
+
     // True when this block was a BARE block reverted to an encased head for capture (a bare shaft; see
     // MechanismRegistry.assembleCore / CustomBlockRegistry.revertBareBlockForCapture). Set post-construction
     // like the fields below. On landing, BasicMechanism.disassemble re-bares it via rebareAfterLanding so a

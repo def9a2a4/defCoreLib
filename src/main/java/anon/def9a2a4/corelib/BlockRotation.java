@@ -190,7 +190,8 @@ public final class BlockRotation {
         };
     }
 
-    private static int rotationToStep(BlockFace face) {
+    // Package-visible: also drives the standing-banner and floor-head yaw tables in MechanismRegistry.
+    static int rotationToStep(BlockFace face) {
         return switch (face) {
             case SOUTH -> 0; case SOUTH_SOUTH_WEST -> 1; case SOUTH_WEST -> 2; case WEST_SOUTH_WEST -> 3;
             case WEST -> 4; case WEST_NORTH_WEST -> 5; case NORTH_WEST -> 6; case NORTH_NORTH_WEST -> 7;

@@ -391,6 +391,7 @@ public class MechanismRegistry {
             Inventory storage = null;
             boolean spinReversed = false;
             Vector3f wallFacing = null;
+            Float floorHeadYaw = null;
 
             CustomHeadBlock chb = registry.getTypeFromBlock(block);
             if (chb != null) {
@@ -408,6 +409,12 @@ public class MechanismRegistry {
                         && bd instanceof org.bukkit.block.data.Directional wallDir) {
                     org.bukkit.util.Vector f = wallDir.getFacing().getDirection();
                     wallFacing = new Vector3f((float) f.getX(), (float) f.getY(), (float) f.getZ());
+                } else if (!wasBare && block.getType() == Material.PLAYER_HEAD
+                        && bd instanceof org.bukkit.block.data.Rotatable rot) {
+                    // Floor head: capture the skull's 16-step yaw so the moving ItemDisplay renders it (the
+                    // display spawns unrotated). !wasBare excludes a bare shaft reverted to an encased head —
+                    // it renders as a CHAIN BlockDisplay in transit, never the head ItemDisplay.
+                    floorHeadYaw = floorHeadYawRadians(rot);
                 }
                 if (chb.storage() != null) {
                     // Snapshot the live cached holder (if a pipe/tick/GUI has out-run the PDC) and evict
@@ -443,6 +450,7 @@ public class MechanismRegistry {
                 customType, customState, decs, bdecs, particles, storage, spinReversed, wallFacing);
             mbd.wasBare = wasBare;   // re-bared on landing (rebareAfterLanding) so a carried bare shaft stays bare
             mbd.throttleLevel = registry.throttleLevelAt(block);   // chunk-PDC level (not tile) — carried in the field
+            mbd.floorHeadYaw = floorHeadYaw;   // rendered in transit by BasicMechanism.rotate(); null unless a floor head
 
             // Banner attachments: BetterBanners displays hosted on this block, plus a synthesized
             // entry carrying a vanilla banner block's patterns (its block-entity NBT is otherwise
@@ -889,19 +897,22 @@ public class MechanismRegistry {
             vanillaBannerTransform(bd), new Vector3f());
     }
 
+    /**
+     * Yaw (radians about +Y) turning a floor head's primary ItemDisplay so it matches the vanilla skull's
+     * {@code Rotatable} orientation on the static path. 16-step SOUTH=0 · 22.5°/step, same table as standing
+     * banners. The sign is baked in (negated) to the proven convention: the standing-banner transform applies
+     * its yaw as {@code rotateY(-yaw)}; this returns radians meant to be applied POSITIVELY at the render site.
+     */
+    private static float floorHeadYawRadians(org.bukkit.block.data.Rotatable rot) {
+        return (float) Math.toRadians(-BlockRotation.rotationToStep(rot.getRotation()) * 22.5);
+    }
+
     private static org.bukkit.util.Transformation vanillaBannerTransform(BlockData bd) {
         Vector3f translation = new Vector3f(0, VANILLA_STANDING_Y, 0);
         float yaw = 0f;
         if (bd instanceof org.bukkit.block.data.Rotatable rot) {
-            // Standing banner: 16-step rotation, same SOUTH=0 · 22.5°/step table as BlockRotation.
-            yaw = switch (rot.getRotation()) {
-                case SOUTH -> 0; case SOUTH_SOUTH_WEST -> 22.5f; case SOUTH_WEST -> 45;
-                case WEST_SOUTH_WEST -> 67.5f; case WEST -> 90; case WEST_NORTH_WEST -> 112.5f;
-                case NORTH_WEST -> 135; case NORTH_NORTH_WEST -> 157.5f; case NORTH -> 180;
-                case NORTH_NORTH_EAST -> 202.5f; case NORTH_EAST -> 225; case EAST_NORTH_EAST -> 247.5f;
-                case EAST -> 270; case EAST_SOUTH_EAST -> 292.5f; case SOUTH_EAST -> 315;
-                case SOUTH_SOUTH_EAST -> 337.5f; default -> 0;
-            };
+            // Standing banner: 16-step rotation, SOUTH=0 · 22.5°/step — same table as floor heads.
+            yaw = BlockRotation.rotationToStep(rot.getRotation()) * 22.5f;
         } else if (bd instanceof org.bukkit.block.data.Directional dir) {
             // Wall banner: cloth faces `facing`, hangs against the opposite (attachment) face.
             org.bukkit.util.Vector f = dir.getFacing().getDirection();
@@ -1372,6 +1383,7 @@ public class MechanismRegistry {
             mbd.ghost = b.ghost;
             mbd.wasBare = b.wasBare;
             mbd.throttleLevel = b.throttleLevel;
+            mbd.floorHeadYaw = b.hasFloorYaw ? b.floorYaw : null;
             mbd.glueOffsets = b.glueOffsets;
             mbd.configPdc = b.configPdc;
             mbd.blockEntitySnapshot = b.blockEntity;

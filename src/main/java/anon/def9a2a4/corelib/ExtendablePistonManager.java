@@ -660,8 +660,7 @@ final class ExtendablePistonManager {
     }
 
     private static boolean isClear(Block b) {
-        Material m = b.getType();
-        return m.isAir() || m == Material.WATER || m == Material.LAVA;
+        return MovableBlocks.isEmptyOrPassable(b.getType());
     }
 
     private static @Nullable Block blockOf(CustomBlockRegistry.LocationKey k) {
