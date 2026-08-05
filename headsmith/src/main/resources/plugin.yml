@@ -1,0 +1,26 @@
+name: HeadSmith
+version: '${version}'
+main: anon.def9a2a4.headsmith.HeadSmithPlugin
+api-version: '1.21'
+depend: [DefCoreLib]
+description: Decorative player-head blocks as DefCoreLib data (barrels, candles, letters, and more).
+author: anon.def9a2a4
+
+commands:
+  headsmith:
+    description: HeadSmith commands (give, recipes, migrate).
+    usage: |-
+      /headsmith give <id> [amount]
+      /headsmith recipes <give|take> [player]
+      /headsmith migrate
+
+permissions:
+  headsmith.give:
+    description: Give a HeadSmith head item.
+    default: op
+  headsmith.recipes:
+    description: Reveal/hide HeadSmith recipes in your recipe book.
+    default: true
+  headsmith.migrate:
+    description: Run the legacy placed-head migration sweep.
+    default: op
