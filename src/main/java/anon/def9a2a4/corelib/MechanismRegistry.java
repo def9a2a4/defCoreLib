@@ -610,6 +610,16 @@ public class MechanismRegistry {
                 MechanismBlockData mb = blockData.get(i);
                 if (mb.ghost) continue;
                 int level = mb.blockData.getLightEmission();
+                // A custom head is a PLAYER_HEAD (vanilla emission 0), so its light lives in the head
+                // definition, not the block data. Fold in the head's per-state light (glowing heads, lit
+                // candles) so it tags a collider and the DynLight companion lights it while moving.
+                if (mb.customTypeId != null) {
+                    CustomHeadBlock t = registry.getType(mb.customTypeId);
+                    if (t != null) {
+                        CustomHeadBlock.LightConfig lc = t.resolveLight(mb.customState);
+                        if (lc != null) level = Math.max(level, lc.level());
+                    }
+                }
                 if (level <= 0) continue;
                 Vector3f t = mb.localTransform.getTranslation(new Vector3f());
                 int x = Math.round(t.x), y = Math.round(t.y), z = Math.round(t.z);

@@ -561,7 +561,13 @@ final class BasicMechanism implements Mechanism {
         // distanceSquared/subtract across worlds is meaningless and setVelocity would fling the body.
         if (loc.getWorld() == null || previousVehicleLoc.getWorld() == null
                 || !loc.getWorld().equals(previousVehicleLoc.getWorld())) {
+            // Re-snap to the new world's block center so the snapped frame survives the jump — do NOT
+            // overwrite with the raw corner vehicle loc (that sinks displays/colliders half a block).
+            // Mirrors updateFromVehicle's cross-world branch.
             this.pivot = loc.clone();
+            this.pivot.setX(Math.floor(loc.getX()) + 0.5);
+            this.pivot.setY(Math.floor(loc.getY()) + 0.5);
+            this.pivot.setZ(Math.floor(loc.getZ()) + 0.5);
             rotate(relYaw);
             this.previousVehicleLoc = loc.clone();
             this.previousVehicleYaw = loc.getYaw();
@@ -572,7 +578,12 @@ final class BasicMechanism implements Mechanism {
         // matching the per-tick collider teleports. Vehicle ONLY — never the carriers (that jitters
         // standing/seated riders). The consumer's own per-tick teleport stays authoritative for position.
         org.bukkit.util.Vector disp = loc.toVector().subtract(previousVehicleLoc.toVector());
-        this.pivot = loc.clone();
+        // Delta-track the pivot (accumulate movement) rather than overwriting it with the raw vehicle loc.
+        // The pivot is the block-CENTER snapped frame established at assembly (floor+0.5); the consumer
+        // drives the vehicle in the block-corner frame, so overwriting would discard that +0.5 and sink
+        // every display + collider half a block (−X,−Y,−Z). Mirrors updateFromVehicle:delta-track + the
+        // constructor contract ("deltas accumulate onto [the snapped pivot]").
+        this.pivot.add(disp.getX(), disp.getY(), disp.getZ());
         rotate(relYaw);   // absolute about the axis; relYaw is "degrees from as-built" (rotate(0) == as-built)
         vehicle.setVelocity(disp);
         this.previousVehicleLoc = loc.clone();
