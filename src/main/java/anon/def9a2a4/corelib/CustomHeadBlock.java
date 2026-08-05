@@ -136,8 +136,11 @@ public final class CustomHeadBlock {
         // Future: record TimePassed(int ticks) implements Trigger {}
     }
 
-    /** Particle effect played during a state transition (one-shot, not ongoing). */
-    public record TransitionParticle(Particle type, int count, double spread) {}
+    /** Particle effect played during a state transition (one-shot, not ongoing).
+     *  {@code floorOffset}/{@code wallOffsets} anchor the particle to a model feature (e.g. a candle wick),
+     *  resolved by facing exactly like {@link ParticleConfig}; an absent wall offset falls back to floor. */
+    public record TransitionParticle(Particle type, int count, double spread,
+            Vector floorOffset, Map<BlockFace, Vector> wallOffsets) {}
 
     /** A state transition with optional sound, particle, and item consumption effects. */
     public record StateTransition(

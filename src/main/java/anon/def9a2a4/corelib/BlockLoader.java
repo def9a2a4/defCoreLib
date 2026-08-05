@@ -806,7 +806,15 @@ public final class BlockLoader {
             Particle pType = Particle.valueOf(String.valueOf(pMap.get("type")).toUpperCase());
             int pCount = toInt(pMap.get("count"), 5);
             double pSpread = toDouble(pMap.get("spread"), 0.2);
-            transParticle = new CustomHeadBlock.TransitionParticle(pType, pCount, pSpread);
+            Vector pFloor = parseVector(pMap.get("floor_offset"), new Vector(0, 0.5, 0));
+            Map<BlockFace, Vector> pWall = new HashMap<>();
+            if (pMap.get("wall_offsets") instanceof Map<?, ?> wm) {
+                for (Map.Entry<?, ?> e : wm.entrySet()) {
+                    BlockFace face = BlockFace.valueOf(String.valueOf(e.getKey()).toUpperCase());
+                    pWall.put(face, parseVector(e.getValue(), new Vector(0, 0.5, 0)));
+                }
+            }
+            transParticle = new CustomHeadBlock.TransitionParticle(pType, pCount, pSpread, pFloor, pWall);
         }
 
         float volume = (float) toDouble(map.get("volume"), 1.0);

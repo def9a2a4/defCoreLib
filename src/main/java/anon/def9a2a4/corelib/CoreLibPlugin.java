@@ -1452,9 +1452,30 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
             if (!(event.getWhoClicked() instanceof Player player)) return;
 
             int slot = event.getRawSlot();
-            if (slot < 0 || slot >= holder.recipes().size()) return;
+            int size = event.getInventory().getSize();
+            int bottomStart = size - 9;
 
-            var recipe = holder.recipes().get(slot);
+            // Bottom-bar navigation
+            if (slot == bottomStart) { // previous page
+                if (holder.page() > 0) {
+                    openStonecutterSelectMenu(player, holder.inputBlockId(), holder.page() - 1);
+                }
+                return;
+            }
+            if (slot == size - 1) { // next page
+                int totalPages = Math.max(1, (holder.recipes().size() + SC_PAGE - 1) / SC_PAGE);
+                if (holder.page() < totalPages - 1) {
+                    openStonecutterSelectMenu(player, holder.inputBlockId(), holder.page() + 1);
+                }
+                return;
+            }
+
+            // Output items only occupy the area above the bottom bar; map to the current page.
+            if (slot < 0 || slot >= bottomStart) return;
+            int recipeIndex = holder.page() * SC_PAGE + slot;
+            if (recipeIndex >= holder.recipes().size()) return; // empty cell on a partial page
+
+            var recipe = holder.recipes().get(recipeIndex);
             handleStonecutterCraft(player, holder.inputBlockId(), recipe);
             return;
         }
@@ -1545,38 +1566,53 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         }
     }
 
+    /** Output slots per page in the stonecutter selection GUI (the 5 rows above the bottom nav bar). */
+    private static final int SC_PAGE = 45;
+
     private void openStonecutterSelectMenu(Player player, String inputBlockId) {
+        openStonecutterSelectMenu(player, inputBlockId, 0);
+    }
+
+    private void openStonecutterSelectMenu(Player player, String inputBlockId, int page) {
         var recipes = registry.getStonecutterRecipesForInput(inputBlockId);
         if (recipes.isEmpty()) {
             player.sendMessage(Component.text("No stonecutter recipes available.", NamedTextColor.RED));
             return;
         }
 
-        StonecutterSelectHolder holder = new StonecutterSelectHolder(inputBlockId, recipes);
+        int totalPages = Math.max(1, (recipes.size() + SC_PAGE - 1) / SC_PAGE);
+        if (page < 0) page = 0;
+        if (page >= totalPages) page = totalPages - 1;
+        int start = page * SC_PAGE;
+        int itemSlots = Math.min(SC_PAGE, recipes.size() - start);
+
+        StonecutterSelectHolder holder = new StonecutterSelectHolder(inputBlockId, recipes, page);
 
         CustomHeadBlock inputType = registry.getType(inputBlockId);
         Component title = Component.text("Stonecutter", NamedTextColor.DARK_PURPLE);
         if (inputType != null && inputType.name() != null) {
             title = title.append(Component.text(": ")).append(inputType.name());
         }
+        if (totalPages > 1) {
+            title = title.append(Component.text(" (" + (page + 1) + "/" + totalPages + ")"));
+        }
 
-        // Items area (up to 45) + bottom row for navigation/info
-        int itemSlots = Math.min(recipes.size(), 45);
+        // Items area (this page, up to 45) + bottom row for navigation/info
         int rows = Math.max(1, (itemSlots + 8) / 9) + 1; // +1 row for bottom bar
         int size = rows * 9;
 
         org.bukkit.inventory.Inventory inv = getServer().createInventory(holder, size, title);
         holder.setInventory(inv);
 
-        // Populate output items
+        // Populate this page's output items
         for (int i = 0; i < itemSlots; i++) {
-            var recipe = recipes.get(i);
+            var recipe = recipes.get(start + i);
             CustomHeadBlock outputType = registry.getType(recipe.outputBlockId());
             if (outputType == null) continue;
             inv.setItem(i, outputType.createItem(recipe.amount()));
         }
 
-        // Bottom bar: filler + input display + close button
+        // Bottom bar: filler + input display + prev/next nav
         int bottomStart = size - 9;
         ItemStack filler = new ItemStack(Material.GRAY_STAINED_GLASS_PANE);
         var fillerMeta = filler.getItemMeta();
@@ -1586,7 +1622,26 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         // Input item display (center of bottom row)
         if (inputType != null) inv.setItem(bottomStart + 4, inputType.createItem(1));
 
+        // Prev (bottom-left) / next (bottom-right) navigation, only when applicable
+        if (page > 0) {
+            inv.setItem(bottomStart, stonecutterNavButton("Previous page", "Page " + page + "/" + totalPages));
+        }
+        if (page < totalPages - 1) {
+            inv.setItem(size - 1, stonecutterNavButton("Next page", "Page " + (page + 2) + "/" + totalPages));
+        }
+
         player.openInventory(inv);
+    }
+
+    private ItemStack stonecutterNavButton(String name, String lore) {
+        ItemStack it = new ItemStack(Material.ARROW);
+        var m = it.getItemMeta();
+        if (m != null) {
+            m.displayName(Component.text(name, NamedTextColor.YELLOW));
+            m.lore(List.of(Component.text(lore, NamedTextColor.GRAY)));
+            it.setItemMeta(m);
+        }
+        return it;
     }
 
     private void handleStonecutterCraft(Player player, String inputBlockId,

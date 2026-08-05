@@ -14,15 +14,18 @@ final class StonecutterSelectHolder implements InventoryHolder, ReadOnlyGuiHolde
 
     private final String inputBlockId;
     private final List<CustomBlockRegistry.HeadStonecutterRecipe> recipes;
+    private final int page;
     private @Nullable Inventory inventory;
 
-    StonecutterSelectHolder(String inputBlockId, List<CustomBlockRegistry.HeadStonecutterRecipe> recipes) {
+    StonecutterSelectHolder(String inputBlockId, List<CustomBlockRegistry.HeadStonecutterRecipe> recipes, int page) {
         this.inputBlockId = inputBlockId;
         this.recipes = recipes;
+        this.page = page;
     }
 
     String inputBlockId() { return inputBlockId; }
     List<CustomBlockRegistry.HeadStonecutterRecipe> recipes() { return recipes; }
+    int page() { return page; }
 
     void setInventory(Inventory inventory) { this.inventory = inventory; }
 
