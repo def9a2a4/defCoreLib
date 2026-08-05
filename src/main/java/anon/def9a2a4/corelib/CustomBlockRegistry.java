@@ -303,12 +303,24 @@ public class CustomBlockRegistry {
 
     JavaPlugin getPlugin() { return plugin; }
 
+    // A7: keyed recipes grouped by namespace, and the namespaces whose recipes are NOT auto-discovered
+    // into the vanilla recipe book (they stay registered + craftable; players opt in via a companion
+    // command such as /headsmith recipes give). Keeps a 3,300-head namespace from flooding the book.
+    private final Map<String, List<org.bukkit.NamespacedKey>> recipeKeysByNamespace = new HashMap<>();
+    private final Set<String> noAutoDiscoverNamespaces = new HashSet<>(List.of("headsmith"));
+
     // ──────────────────────────────────────────────────────────────────────
     // Type registration
     // ──────────────────────────────────────────────────────────────────────
 
     public void register(CustomHeadBlock type) {
-        types.put(type.fullId(), type);
+        CustomHeadBlock existing = types.put(type.fullId(), type);
+        if (existing != null && existing != type) {
+            // A6b: duplicate ids silently corrupt identity resolution (and the migrator's texture→id
+            // adoption table). Warn instead of overwriting silently.
+            plugin.getLogger().warning("Duplicate block id '" + type.fullId()
+                    + "' — a later definition overwrote the earlier one; ids must be unique.");
+        }
         // Bare-first types (base_block set, e.g. casing_oak = OAK_STAIRS) auto-register for identity
         // resolution + chunk restore. Skull-first bare types (the shaft) instead call registerBareBlock
         // explicitly with their revert handler, since their base_block isn't set (they place as a head).
@@ -1651,11 +1663,15 @@ public class CustomBlockRegistry {
                     transition.sound(), transition.volume(), transition.pitch());
         }
 
-        // Play transition particle
+        // Play transition particle (orientation-aware: same offset resolver as the ongoing-particle tick,
+        // so a wall candle's extinguish smoke lands on the wick, not the block center)
         if (transition.particle() != null) {
             var tp = transition.particle();
+            Vector off = orientedOffset(block, tp.floorOffset(), tp.wallOffsets());
             block.getWorld().spawnParticle(tp.type(),
-                    block.getLocation().add(0.5, 0.5, 0.5),
+                    block.getX() + 0.5 + off.getX(),
+                    block.getY() + off.getY(),
+                    block.getZ() + 0.5 + off.getZ(),
                     tp.count(), tp.spread(), tp.spread(), tp.spread(), 0.01);
         }
 
@@ -1959,12 +1975,18 @@ public class CustomBlockRegistry {
     }
 
     private Vector getOrientedOffset(Block block, CustomHeadBlock.ParticleConfig pc) {
+        return orientedOffset(block, pc.floorOffset(), pc.wallOffsets());
+    }
+
+    /** Resolve a model-anchored offset by facing: a wall head uses its per-face offset (if present),
+     *  everything else uses the floor offset. Shared by the ongoing-particle tick and one-shot
+     *  transition particles so both land on the same point (e.g. a candle wick). */
+    private Vector orientedOffset(Block block, Vector floorOffset, Map<BlockFace, Vector> wallOffsets) {
         if (block.getType() == Material.PLAYER_WALL_HEAD && block.getBlockData() instanceof Directional dir) {
-            BlockFace facing = dir.getFacing();
-            Vector wallOffset = pc.wallOffsets().get(facing);
-            if (wallOffset != null) return wallOffset;
+            Vector w = wallOffsets.get(dir.getFacing());
+            if (w != null) return w;
         }
-        return pc.floorOffset();
+        return floorOffset;
     }
 
     // ──────────────────────────────────────────────────────────────────────
@@ -2316,6 +2338,12 @@ public class CustomBlockRegistry {
                 trackAdvancementRecipe(type.unlockAdvancement(), registeredRecipeKeys.get(i));
             }
         }
+
+        // A7: index the newly-registered keys by namespace (for batch discovery + per-namespace gating)
+        for (int i = keysBefore; i < registeredRecipeKeys.size(); i++) {
+            recipeKeysByNamespace.computeIfAbsent(type.namespace(), k -> new ArrayList<>())
+                    .add(registeredRecipeKeys.get(i));
+        }
     }
 
     /** The id of the first {@code block:} ingredient that doesn't resolve to a registered type,
@@ -2393,31 +2421,52 @@ public class CustomBlockRegistry {
         gatedRecipeKeys.add(recipeKey);
     }
 
-    /** Sync recipe discovery for a player based on their advancement progress. */
+    /** Sync recipe discovery for a player based on their advancement progress. Batched (A7): one
+     *  {@code discoverRecipes}/{@code undiscoverRecipes} call instead of hundreds of single calls,
+     *  and namespaces in {@link #noAutoDiscoverNamespaces} (e.g. headsmith) are skipped entirely. */
     void syncRecipeDiscovery(org.bukkit.entity.Player player) {
-        for (var entry : advancementRecipes.entrySet()) {
-            String advKey = entry.getKey();
-            org.bukkit.NamespacedKey nsKey = parseAdvancementKey(advKey);
-            if (nsKey == null) continue;
+        List<org.bukkit.NamespacedKey> toDiscover = new ArrayList<>();
+        List<org.bukkit.NamespacedKey> toUndiscover = new ArrayList<>();
 
+        for (var entry : advancementRecipes.entrySet()) {
+            org.bukkit.NamespacedKey nsKey = parseAdvancementKey(entry.getKey());
+            if (nsKey == null) continue;
             org.bukkit.advancement.Advancement adv = Bukkit.getAdvancement(nsKey);
             boolean done = adv != null && player.getAdvancementProgress(adv).isDone();
-
-            for (org.bukkit.NamespacedKey recipeKey : entry.getValue()) {
-                if (done) {
-                    player.discoverRecipe(recipeKey);
-                } else {
-                    player.undiscoverRecipe(recipeKey);
-                }
-            }
+            (done ? toDiscover : toUndiscover).addAll(entry.getValue());
         }
 
-        // Recipes without an advancement requirement: always discover
+        // Recipes without an advancement requirement: auto-discover unless their namespace opts out.
+        Set<org.bukkit.NamespacedKey> suppressed = suppressedRecipeKeys();
         for (org.bukkit.NamespacedKey key : registeredRecipeKeys) {
-            if (!gatedRecipeKeys.contains(key)) {
-                player.discoverRecipe(key);
+            if (!gatedRecipeKeys.contains(key) && !suppressed.contains(key)) {
+                toDiscover.add(key);
             }
         }
+
+        if (!toDiscover.isEmpty()) player.discoverRecipes(toDiscover);
+        if (!toUndiscover.isEmpty()) player.undiscoverRecipes(toUndiscover);
+    }
+
+    private Set<org.bukkit.NamespacedKey> suppressedRecipeKeys() {
+        Set<org.bukkit.NamespacedKey> s = new HashSet<>();
+        for (String ns : noAutoDiscoverNamespaces) {
+            List<org.bukkit.NamespacedKey> ks = recipeKeysByNamespace.get(ns);
+            if (ks != null) s.addAll(ks);
+        }
+        return s;
+    }
+
+    /** Reveal all of a namespace's recipes in a player's recipe book (e.g. {@code /headsmith recipes give}). */
+    public void discoverNamespaceRecipes(org.bukkit.entity.Player player, String namespace) {
+        List<org.bukkit.NamespacedKey> ks = recipeKeysByNamespace.get(namespace);
+        if (ks != null && !ks.isEmpty()) player.discoverRecipes(ks);
+    }
+
+    /** Hide all of a namespace's recipes from a player's recipe book (e.g. {@code /headsmith recipes take}). */
+    public void undiscoverNamespaceRecipes(org.bukkit.entity.Player player, String namespace) {
+        List<org.bukkit.NamespacedKey> ks = recipeKeysByNamespace.get(namespace);
+        if (ks != null && !ks.isEmpty()) player.undiscoverRecipes(ks);
     }
 
     /** Discover recipes unlocked by a specific advancement. */

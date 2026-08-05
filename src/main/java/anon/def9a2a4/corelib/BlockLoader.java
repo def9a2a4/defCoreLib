@@ -966,9 +966,18 @@ public final class BlockLoader {
         if (itemsObj instanceof List<?> il) {
             for (Object item : il) {
                 if (item instanceof Map<?, ?> im) {
-                    Material mat = Material.matchMaterial(String.valueOf(im.get("material")));
+                    Object matObj = im.get("material");
+                    Material mat = matObj != null ? Material.matchMaterial(String.valueOf(matObj)) : null;
                     int amount = toInt(im.get("amount"), 1);
-                    if (mat != null) itemDrops.add(new CustomHeadBlock.ItemDrop(mat, amount));
+                    if (mat != null) {
+                        itemDrops.add(new CustomHeadBlock.ItemDrop(mat, amount));
+                    } else {
+                        // NEW-2: core drop items are material-only. A {block:}/{head:} value (or a typo)
+                        // resolves to nothing and would silently vanish on break — warn instead. To drop
+                        // the custom head itself, use "items: self".
+                        org.bukkit.Bukkit.getLogger().warning("[defCoreLib] Ignoring drop item with no"
+                                + " resolvable 'material' (" + im + "); use 'items: self' to drop the head.");
+                    }
                 }
             }
         }
