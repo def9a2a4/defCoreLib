@@ -25,8 +25,10 @@ import org.joml.Vector3f;
 import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -596,6 +598,61 @@ final class BasicMechanism implements Mechanism {
     @Override public void setCellPlacePolicy(@Nullable CellPlacePolicy policy) { this.cellPlacePolicy = policy; }
     @Override public void setDropItemHook(@Nullable DropItemHook hook) { this.dropItemHook = hook; }
     @Override public void setBeforeEntityRemoval(@Nullable Runnable callback) { this.beforeEntityRemoval = callback; }
+
+    // ── Seats (4a) ────────────────────────────────────────────────────────────
+    // Seat = a collider block a player rides. Core marks it (+ tags its shulker so it survives recovery),
+    // tracks occupancy, and repositions it (repositionColliders already re-mounts the nested rider and
+    // skips no-op teleports). The consumer performs the actual addPassenger/dismount.
+    private final Set<Integer> seatIndices = new HashSet<>();
+    private final Set<Integer> driverSeatIndices = new HashSet<>();
+    private final Map<Integer, UUID> seatOccupants = new HashMap<>();
+
+    /** The collider (carrier+shulker) for a block index, or null if that block has none. */
+    private @Nullable ColliderPair colliderForBlock(int blockIndex) {
+        for (ColliderPair cp : colliders) if (cp.blockIndex() == blockIndex) return cp;
+        return null;
+    }
+
+    @Override
+    public void designateSeat(int blockIndex, boolean driver) {
+        checkMainThread();
+        ColliderPair cp = colliderForBlock(blockIndex);
+        if (cp == null) return; // no collider → nothing to ride
+        seatIndices.add(blockIndex);
+        if (driver) driverSeatIndices.add(blockIndex);
+        Shulker s = cp.shulker();
+        // Tag the (persistent) shulker so recovery re-detects the seat after a restart — no separate
+        // serialization needed (idempotent; addScoreboardTag no-ops if already present).
+        s.addScoreboardTag("corelib:mech:" + id + ":" + blockIndex + ":seat");
+        if (driver) s.addScoreboardTag("corelib:mech:" + id + ":" + blockIndex + ":driver_seat");
+        if (mechanismRegistry != null) mechanismRegistry.fireSeatSpawned(this, blockIndex, s);
+    }
+
+    /** Recovery path: re-record a seat detected from its shulker tag, WITHOUT re-tagging or firing
+     *  onSeatSpawned (recoverOne fires onSeatRecovered instead). */
+    void addRecoveredSeat(int blockIndex, boolean driver) {
+        seatIndices.add(blockIndex);
+        if (driver) driverSeatIndices.add(blockIndex);
+    }
+
+    @Override
+    public @Nullable Shulker seatEntity(int blockIndex) {
+        if (!seatIndices.contains(blockIndex)) return null;
+        ColliderPair cp = colliderForBlock(blockIndex);
+        return (cp != null && cp.shulker().isValid()) ? cp.shulker() : null;
+    }
+
+    @Override public boolean isSeat(int blockIndex) { return seatIndices.contains(blockIndex); }
+    @Override public boolean isDriverSeat(int blockIndex) { return driverSeatIndices.contains(blockIndex); }
+    @Override public Set<Integer> seatBlockIndices() { return new HashSet<>(seatIndices); }
+
+    @Override
+    public void setSeatOccupant(int blockIndex, @Nullable UUID player) {
+        if (player == null) seatOccupants.remove(blockIndex);
+        else seatOccupants.put(blockIndex, player);
+    }
+
+    @Override public @Nullable UUID seatOccupant(int blockIndex) { return seatOccupants.get(blockIndex); }
 
     @Override
     public Matrix4f landingRotation() {

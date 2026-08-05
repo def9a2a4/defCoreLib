@@ -44,6 +44,8 @@ public class MechanismRegistry {
     // aired out — the window where the source blocks are still LIVE and the colliders exist (leads: a
     // consumer re-parents leashes from world fences onto the mechanism's collider shulkers). See 3a-ii.
     private final List<java.util.function.BiConsumer<Mechanism, List<Block>>> preAirOutListeners = new ArrayList<>();
+    // Single consumer hook for seat spawn/recovery (the consumer configures the seat entity it doesn't own).
+    private @Nullable SeatListener seatListener;
     private final Set<UUID> tickWarned = new HashSet<>();  // mechs already warned about a tick throw (rate-limit)
 
     private @Nullable BukkitTask tickTask;
@@ -132,6 +134,39 @@ public class MechanismRegistry {
     @org.jetbrains.annotations.ApiStatus.Experimental
     public void addPreAirOutListener(java.util.function.BiConsumer<Mechanism, List<Block>> listener) {
         preAirOutListeners.add(listener);
+    }
+
+    /**
+     * Register the (single) seat listener — fired when a seat's shulker becomes ridable (fresh
+     * {@link Mechanism#designateSeat} or crash recovery re-adopting a seat-tagged collider). {@code null}
+     * clears it. See {@link SeatListener}.
+     */
+    @org.jetbrains.annotations.ApiStatus.Experimental
+    public void setSeatListener(@Nullable SeatListener listener) {
+        this.seatListener = listener;
+    }
+
+    /** Fire onSeatSpawned (called from {@link BasicMechanism#designateSeat}). Isolated so a bad hook can't
+     *  break assembly/designation. */
+    void fireSeatSpawned(Mechanism mech, int seatIndex, Shulker seat) {
+        if (seatListener == null) return;
+        try {
+            seatListener.onSeatSpawned(mech, seatIndex, seat);
+        } catch (Exception e) {
+            plugin.getLogger().warning("SeatListener.onSeatSpawned threw for " + mech.type()
+                + " seat " + seatIndex + " (" + e.getMessage() + ")");
+        }
+    }
+
+    /** Fire onSeatRecovered (called from {@link #recoverOne}). */
+    void fireSeatRecovered(Mechanism mech, int seatIndex, Shulker seat) {
+        if (seatListener == null) return;
+        try {
+            seatListener.onSeatRecovered(mech, seatIndex, seat);
+        } catch (Exception e) {
+            plugin.getLogger().warning("SeatListener.onSeatRecovered threw for " + mech.type()
+                + " seat " + seatIndex + " (" + e.getMessage() + ")");
+        }
     }
 
     /** Fire the pre-air-out listeners (source blocks still live). Isolated so one bad hook can't abort assembly. */
@@ -1088,16 +1123,18 @@ public class MechanismRegistry {
         Map<Integer, TreeMap<Integer, Display>> banners = new HashMap<>();
         Map<Integer, Entity> carriers = new HashMap<>();
         Map<Integer, Shulker> shulkers = new HashMap<>();
+        Map<Integer, Boolean> seatFlags = new HashMap<>(); // seat block index → isDriver (a shulker carries
+                                                           // :collider AND :seat[+:driver_seat], so process ALL tags)
         for (Entity e : candidates) {
             for (String tag : e.getScoreboardTags()) {
                 if (!tag.startsWith(prefix)) continue;
                 String rest = tag.substring(prefix.length());
-                if (rest.equals("vehicle")) { vehicle = e; break; }
-                if (rest.equals("parent")) { if (e instanceof org.bukkit.entity.BlockDisplay bd) parent = bd; break; }
+                if (rest.equals("vehicle")) { vehicle = e; continue; }
+                if (rest.equals("parent")) { if (e instanceof org.bukkit.entity.BlockDisplay bd) parent = bd; continue; }
                 int c = rest.indexOf(':');
-                if (c < 0) break;
+                if (c < 0) continue;
                 int i;
-                try { i = Integer.parseInt(rest.substring(0, c)); } catch (NumberFormatException nf) { break; }
+                try { i = Integer.parseInt(rest.substring(0, c)); } catch (NumberFormatException nf) { continue; }
                 String role = rest.substring(c + 1);
                 if (role.equals("display") && e instanceof Display d) primaries.put(i, d);
                 else if (role.startsWith("extra_") && e instanceof Display d) putIndexed(itemExtras, i, role, "extra_", d);
@@ -1105,7 +1142,9 @@ public class MechanismRegistry {
                 else if (role.startsWith("banner_") && e instanceof Display d) putIndexed(banners, i, role, "banner_", d);
                 else if (role.equals("carrier")) carriers.put(i, e);
                 else if (role.equals("collider") && e instanceof Shulker s) shulkers.put(i, s);
-                break; // one mech tag per entity
+                else if (role.equals("seat")) seatFlags.merge(i, false, (a, b) -> a); // keep an earlier driver=true
+                else if (role.equals("driver_seat")) seatFlags.put(i, true);
+                // no break: an entity (a seat shulker) legitimately carries several mech tags
             }
         }
 
@@ -1185,6 +1224,15 @@ public class MechanismRegistry {
         activeMechanisms.put(st.mechId, mech);
         for (ColliderPair cp : colliders) {
             colliderIndex.put(cp.shulker().getUniqueId(), new ColliderRef(mech, cp.blockIndex()));
+        }
+
+        // Re-adopt seats from the shulker tags detected above, then notify the consumer so it can re-mirror
+        // health onto the seat entity it doesn't own. (No re-tagging: the tags persisted on the shulker.)
+        for (Map.Entry<Integer, Boolean> seat : seatFlags.entrySet()) {
+            Shulker sh = shulkers.get(seat.getKey());
+            if (sh == null) continue; // seat's shulker in a not-yet-loaded neighbour chunk — adopted later
+            mech.addRecoveredSeat(seat.getKey(), seat.getValue());
+            fireSeatRecovered(mech, seat.getKey(), sh);
         }
 
         // Position the body at its saved orientation: sets currentYaw + currentTransform, lays out every

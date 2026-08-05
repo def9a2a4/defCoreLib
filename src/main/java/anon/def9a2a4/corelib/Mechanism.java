@@ -3,6 +3,7 @@ package anon.def9a2a4.corelib;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Display;
+import org.bukkit.entity.Shulker;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.BoundingBox;
 import org.bukkit.inventory.Inventory;
@@ -11,6 +12,7 @@ import org.jspecify.annotations.Nullable;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.function.Consumer;
 
@@ -146,4 +148,44 @@ public interface Mechanism {
 
     /** Get the primary display entity for a block index. */
     Display primaryDisplay(int blockIndex);
+
+    // ── Seats (4a) ────────────────────────────────────────────────────────────
+    // A "seat" is a collider block a player rides (its shulker is the mount point). The consumer decides
+    // which blocks are seats and performs the actual addPassenger/dismount; core owns the seat marking,
+    // occupancy bookkeeping, repositioning (nested re-mount + movement threshold), and persistence (the
+    // seat's shulker is tagged, so seats survive a restart and re-fire onSeatRecovered).
+
+    /**
+     * Designate the collider at {@code blockIndex} as a seat; {@code driver} marks the steering seat. Tags
+     * the seat's shulker so it survives recovery, and fires {@link SeatListener#onSeatSpawned}. No-op if
+     * that block has no collider (nothing to ride). Call after assembly.
+     */
+    @ApiStatus.Experimental
+    void designateSeat(int blockIndex, boolean driver);
+
+    /** The live shulker a rider mounts for a seat block, or {@code null} if {@code blockIndex} isn't a seat
+     *  (or its shulker is gone). Stable across recovery — keyed on block index. */
+    @ApiStatus.Experimental
+    @Nullable Shulker seatEntity(int blockIndex);
+
+    /** Whether {@code blockIndex} is a designated seat. */
+    @ApiStatus.Experimental
+    boolean isSeat(int blockIndex);
+
+    /** Whether {@code blockIndex} is the (a) driver/steering seat. */
+    @ApiStatus.Experimental
+    boolean isDriverSeat(int blockIndex);
+
+    /** Block indices currently designated as seats (a copy — safe to iterate). */
+    @ApiStatus.Experimental
+    Set<Integer> seatBlockIndices();
+
+    /** Record who occupies a seat (core bookkeeping; the consumer still does the actual mount). {@code null}
+     *  clears it. */
+    @ApiStatus.Experimental
+    void setSeatOccupant(int blockIndex, @Nullable UUID player);
+
+    /** The recorded occupant of a seat, or {@code null} if empty / not a seat. */
+    @ApiStatus.Experimental
+    @Nullable UUID seatOccupant(int blockIndex);
 }
