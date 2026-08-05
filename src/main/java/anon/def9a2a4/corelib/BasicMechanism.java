@@ -588,6 +588,15 @@ final class BasicMechanism implements Mechanism {
         this.onDisassembled = callback;
     }
 
+    // Consumer disassembly seams (3a-ii). Null = engine defaults.
+    private @Nullable CellPlacePolicy cellPlacePolicy = null;
+    private @Nullable DropItemHook dropItemHook = null;
+    private @Nullable Runnable beforeEntityRemoval = null;
+
+    @Override public void setCellPlacePolicy(@Nullable CellPlacePolicy policy) { this.cellPlacePolicy = policy; }
+    @Override public void setDropItemHook(@Nullable DropItemHook hook) { this.dropItemHook = hook; }
+    @Override public void setBeforeEntityRemoval(@Nullable Runnable callback) { this.beforeEntityRemoval = callback; }
+
     @Override
     public Matrix4f landingRotation() {
         float snappedYaw = Math.round(currentYaw / 90f) * 90f;
@@ -700,6 +709,22 @@ final class BasicMechanism implements Mechanism {
             if (protectedCells != null && protectedCells.contains(CustomBlockRegistry.LocationKey.of(target))) {
                 dropBannerItems(blockLoc, mb);
                 continue;
+            }
+
+            // Consumer pre-place policy (3a-ii): redirect this cell to a drop (anti-laundering across a
+            // protected boundary) or skip it, before the normal air/fragile/solid dispatch below.
+            if (cellPlacePolicy != null) {
+                PlaceDecision decision = cellPlacePolicy.decide(target, mb);
+                if (decision == PlaceDecision.DROP) {
+                    droppedChainCells = noteIfChain(droppedChainCells, mb, blockLoc);
+                    dropBlockAsItem(blockLoc, mb);
+                    continue;
+                }
+                if (decision == PlaceDecision.SKIP) {
+                    dropBannerItems(blockLoc, mb); // never silently swallow a host's banners
+                    continue;
+                }
+                // PLACE → fall through to the normal dispatch
             }
 
             if (target.getType().isAir() || target.getType() == Material.WATER

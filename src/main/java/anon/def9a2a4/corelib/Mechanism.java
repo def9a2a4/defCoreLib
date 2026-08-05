@@ -3,10 +3,12 @@ package anon.def9a2a4.corelib;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Display;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.BoundingBox;
 import org.bukkit.inventory.Inventory;
 import org.joml.Matrix4f;
 import org.jspecify.annotations.Nullable;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.util.List;
 import java.util.UUID;
@@ -17,6 +19,56 @@ import java.util.function.Consumer;
  * All mutating methods must be called from the main server thread.
  */
 public interface Mechanism {
+
+    /** Per-cell disassembly decision (see {@link CellPlacePolicy}). */
+    @ApiStatus.Experimental
+    enum PlaceDecision {
+        /** Land the block normally (default). */ PLACE,
+        /** Drop the block as an item instead of writing it (e.g. a WorldGuard-protected destination). */ DROP,
+        /** Discard the block silently (its banners still drop). */ SKIP
+    }
+
+    /**
+     * Consumer policy consulted for EACH block cell at {@link #disassemble()}, after the off-world +
+     * protected-cell checks and before the normal air/fragile/solid dispatch. Lets a consumer redirect a
+     * cell to a drop (anti-block-laundering across a protected boundary) or skip it, without forking the
+     * landing loop. {@code null} = every cell places normally.
+     */
+    @ApiStatus.Experimental
+    @FunctionalInterface
+    interface CellPlacePolicy {
+        PlaceDecision decide(Block target, MechanismBlockData block);
+    }
+
+    /**
+     * Consumer hook to construct the {@link ItemStack} a block drops when it can't be placed (off-world,
+     * DROP policy, or solid-wins). Receives the engine's default drop (may be {@code null} — e.g. a wall
+     * variant with no item form) and returns the final item to drop, or {@code null} to suppress the drop.
+     * Use for a config-driven identity ({@code ship_engine}), a wall-variant→floor-variant remap, or to
+     * transfer a head texture / name onto the item.
+     */
+    @ApiStatus.Experimental
+    @FunctionalInterface
+    interface DropItemHook {
+        @Nullable ItemStack construct(MechanismBlockData block, @Nullable ItemStack defaultDrop);
+    }
+
+    /** Set the per-cell placement policy consulted at {@link #disassemble()}; {@code null} clears it. */
+    @ApiStatus.Experimental
+    void setCellPlacePolicy(@Nullable CellPlacePolicy policy);
+
+    /** Set the drop-item construction hook; {@code null} clears it (engine default drops apply). */
+    @ApiStatus.Experimental
+    void setDropItemHook(@Nullable DropItemHook hook);
+
+    /**
+     * Set a callback invoked at {@link #disassemble()} AFTER all blocks have landed but BEFORE the
+     * mechanism's display/collider/vehicle entities are removed — the window a consumer needs to read
+     * live collider state against the just-placed blocks (e.g. re-parent leads from collider shulkers
+     * onto freshly-placed fences). {@code null} clears it.
+     */
+    @ApiStatus.Experimental
+    void setBeforeEntityRemoval(@Nullable Runnable callback);
 
     UUID id();
     String type();
