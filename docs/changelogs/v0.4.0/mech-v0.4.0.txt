@@ -26,6 +26,10 @@ Two new frame blocks — the **Gearbox** and the **Chassis** — and a new **Rat
 - **Bare shafts stay bare when carried** — a shaft wrenched to its bare **chain** form now stays bare after a rotator (or any mechanism) swings it, instead of silently reverting to the encased shaft on landing. A shaft carried while encased still lands encased.
 - **Carried blocks keep their decoration** — a block's block-entity data now survives a mechanism move: a sign's text/colour/glow, a container's custom name, a lectern's book, a jukebox's disc, decorated-pot sherds, a command block's command, and the like. A block also stays waterlogged only where it lands back into a water source.
 - **Chunk-boundary crash** — fixed a server error when a mechanism minecart crossed a chunk boundary while it was being ticked.
+- **Bare shafts ride bare** — a shaft carried in its bare **chain** form now renders as a spinning chain while the contraption moves (and while it rides a saved/restored one), instead of showing the boxed shaft head until it lands.
+- **Carried banners survive** — vanilla, **large**, and **huge** banners on a mechanism now keep their patterns, tier, and orientation across a save/restart, instead of drifting to the pivot and then vanishing when the contraption is taken apart. A vanilla banner on a mechanism also no longer shows a duplicate floating "ghost" copy.
+- **Throttle keeps its level when carried** — a throttle lever moved by a mechanism re-lands at its set level instead of resetting to 0.
+- **Engines keep their fuel when carried** — a lit engine/burner moved by a mechanism no longer lands empty; its remaining fuel rides along.
 
 ## Recipes
 
