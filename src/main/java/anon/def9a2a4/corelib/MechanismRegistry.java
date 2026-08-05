@@ -408,7 +408,10 @@ public class MechanismRegistry {
             }
             // Decorated block-entity state (sign text, skull profile, container name, …) via registered
             // BlockSnapshotProviders — captured HERE while the block is still live, re-applied in placeBlock.
-            mbd.blockEntitySnapshot = registry.captureBlockSnapshot(block);
+            // Registry-first: a corelib custom head owns its own identity/state/texture (restoreBlock), so the
+            // provider only supplements NON-registry blocks — else it would double-restore (or freeze an
+            // animated head at its captured frame).
+            if (chb == null) mbd.blockEntitySnapshot = registry.captureBlockSnapshot(block);
             blockData.add(mbd);
         }
 
