@@ -52,6 +52,13 @@ public class RotationMachineAdapter implements ContainerAdapter {
     }
 
     @Override
+    public Inventory backingInventory(Block block) {
+        // The machine's virtual storage — the SAME live cached inventory insert() mutates, so a
+        // caller's snapshot/insert/rollback all hit one instance.
+        return CoreLibPlugin.getInstance().getRegistry().getOrCreateStorage(block);
+    }
+
+    @Override
     public ItemStack insert(Block block, ItemStack item) {
         Inventory inv = CoreLibPlugin.getInstance().getRegistry().getOrCreateStorage(block);
         if (inv == null) return item;

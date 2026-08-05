@@ -883,12 +883,15 @@ public class PipeManager {
         // Atomic insertion: snapshot destination, insert all items, rollback on any failure.
         // Prevents item duplication when some items fit but others don't — without rollback,
         // the machine stalls (keeps inputs) while already-inserted items remain in the destination.
-        if (!(destBlock.getState() instanceof org.bukkit.block.Container container)) return false;
-        Inventory inv = container.getInventory();
+        // Snapshot the adapter's backing inventory (real tile OR virtual machine storage), not the
+        // block's raw tile state, so machine-to-machine pushes deliver into virtual storage too.
+        Inventory inv = destAdapter.backingInventory(destBlock);
+        if (inv == null) return false;
         ItemStack[] snapshot = Arrays.stream(inv.getContents())
             .map(s -> s == null ? null : s.clone()).toArray(ItemStack[]::new);
 
         for (ItemStack item : items) {
+            if (item == null) continue;
             ItemStack leftover = destAdapter.insert(destBlock, item);
             if (leftover != null) {
                 inv.setContents(snapshot);

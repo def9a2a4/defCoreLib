@@ -18,6 +18,11 @@ public class BrewingStandContainerAdapter implements ContainerAdapter {
     }
 
     @Override
+    public org.bukkit.inventory.Inventory backingInventory(Block block) {
+        return block.getState() instanceof BrewingStand stand ? stand.getInventory() : null;
+    }
+
+    @Override
     public ItemStack insert(Block block, ItemStack item) {
         if (!(block.getState() instanceof BrewingStand stand)) return item;
         BrewerInventory inv = stand.getInventory();

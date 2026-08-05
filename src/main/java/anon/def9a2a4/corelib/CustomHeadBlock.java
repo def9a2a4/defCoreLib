@@ -336,6 +336,10 @@ public final class CustomHeadBlock {
     private final @Nullable StateChangeHandler onStateChanged;
     private final @Nullable BiConsumer<Block, String> onBlockPlaced;
     private final @Nullable BiConsumer<Block, String> onBlockRemoved;
+    // Fired when a mechanism is about to CAPTURE this block (before its configPdc is snapshotted and before
+    // air-out), so a block whose live state lives in a side store — engine fuel (in-memory manager) — can
+    // flush it to its tile PDC so the snapshot carries it. See MechanismRegistry.assembleCore.
+    private final @Nullable Consumer<Block> onCapture;
     private final @Nullable BiFunction<Block, org.bukkit.event.player.PlayerInteractEvent, Boolean> onInteract;
     private final java.util.function.@Nullable BiFunction<Block, String, org.bukkit.inventory.ItemStack> displayItemResolver;
     private final @Nullable DisplayTransformResolver displayTransformResolver;
@@ -398,6 +402,7 @@ public final class CustomHeadBlock {
         this.onStateChanged = b.onStateChanged;
         this.onBlockPlaced = b.onBlockPlaced;
         this.onBlockRemoved = b.onBlockRemoved;
+        this.onCapture = b.onCapture;
         this.onInteract = b.onInteract;
         this.displayItemResolver = b.displayItemResolver;
         this.displayTransformResolver = b.displayTransformResolver;

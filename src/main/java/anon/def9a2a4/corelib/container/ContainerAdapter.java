@@ -4,10 +4,20 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.jspecify.annotations.Nullable;
 
 public interface ContainerAdapter {
 
     boolean canReceive(Block block);
+
+    /** The live inventory this adapter reads/writes for {@code block} — the block's real tile
+     *  inventory for vanilla containers, or the plugin-side virtual inventory for machine adapters.
+     *  Returned so callers can snapshot/roll back an all-or-nothing insert (see
+     *  {@code PipeManager.deliverFromAbove}) without caring whether the storage is real or virtual.
+     *  Null when no inventory is resolvable. */
+    default @Nullable Inventory backingInventory(Block block) {
+        return null;
+    }
 
     /** Whether this adapter reads/writes the block's REAL tile inventory. Adapters serving a
      *  plugin-side virtual inventory (e.g. {@link RotationMachineAdapter}) override to false —

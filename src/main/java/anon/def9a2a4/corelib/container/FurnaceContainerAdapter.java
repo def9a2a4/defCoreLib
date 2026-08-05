@@ -13,6 +13,11 @@ public class FurnaceContainerAdapter implements ContainerAdapter {
     }
 
     @Override
+    public org.bukkit.inventory.Inventory backingInventory(Block block) {
+        return block.getState() instanceof Furnace furnace ? furnace.getInventory() : null;
+    }
+
+    @Override
     public ItemStack insert(Block block, ItemStack item) {
         if (!(block.getState() instanceof Furnace furnace)) return item;
         FurnaceInventory inv = furnace.getInventory();

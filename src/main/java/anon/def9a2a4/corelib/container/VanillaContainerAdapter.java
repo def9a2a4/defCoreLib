@@ -15,6 +15,11 @@ public class VanillaContainerAdapter implements ContainerAdapter {
     }
 
     @Override
+    public org.bukkit.inventory.Inventory backingInventory(Block block) {
+        return block.getState() instanceof Container container ? container.getInventory() : null;
+    }
+
+    @Override
     public ItemStack insert(Block block, ItemStack item) {
         if (!(block.getState() instanceof Container container)) return item;
         HashMap<Integer, ItemStack> leftover = container.getInventory().addItem(item.clone());
