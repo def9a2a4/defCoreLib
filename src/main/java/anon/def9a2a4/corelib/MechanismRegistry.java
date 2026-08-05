@@ -715,6 +715,7 @@ public class MechanismRegistry {
         } else {
             // External vehicle (minecart): remove the real blocks now, then defer the mount one tick —
             // minecarts silently reject addPassenger for non-living entities at the NMS level.
+            firePreAirOut(mech, blocks); // 3a-ii: source blocks still LIVE + colliders spawned (leads seam)
             airOutSourceBlocks(blocks);
             for (Display d : capturedWorldBanners) d.remove(); // see owned branch — after air-out
             Bukkit.getScheduler().runTaskLater(plugin, () -> {
