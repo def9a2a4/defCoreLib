@@ -220,6 +220,18 @@ clean:
 server-plugin-copy:
 	cp bin/*.jar server/plugins/
 
+# Copy the sibling BlockShips plugin jar into test-server/plugins/ so the test-server runs BlockShips
+# against THIS defCoreLib build (BlockShips depend:s on DefCoreLib). Relative sibling path for now
+# (JitPack pin later). Build BlockShips first: `cd ../BlockShips && make build` populates ../BlockShips/bin/.
+BLOCKSHIPS_JAR := $(wildcard ../BlockShips/bin/BlockShips-*.jar)
+
+.PHONY: blockships
+blockships:
+	@[ -n "$(BLOCKSHIPS_JAR)" ] || { echo "ERROR: no ../BlockShips/bin/BlockShips-*.jar found — run 'cd ../BlockShips && make build' first"; exit 1; }
+	mkdir -p test-server/plugins
+	cp $(BLOCKSHIPS_JAR) test-server/plugins/
+	@echo "Copied $(BLOCKSHIPS_JAR) -> test-server/plugins/"
+
 .PHONY: server-clear-plugin-data
 server-clear-plugin-data:
 	rm -rf server/plugins/DefCoreLib/
