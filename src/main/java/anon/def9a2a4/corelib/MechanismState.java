@@ -49,6 +49,7 @@ final class MechanismState {
         boolean hasWallFacing;
         float wfX, wfY, wfZ;
         boolean ghost;
+        boolean wasBare;                // a bare shaft reverted to an encased head for capture (re-bared on landing)
         byte @Nullable [] storage;      // ItemStack[] serialized (Base64 in YAML)
         int @Nullable [] glueOffsets;
         byte @Nullable [] configPdc;    // tile PDC bytes (Base64 in YAML)
@@ -81,6 +82,7 @@ final class MechanismState {
             if (b.spinReversed) m.put("spin_rev", true);
             if (b.hasWallFacing) m.put("wall", List.of((double) b.wfX, (double) b.wfY, (double) b.wfZ));
             if (b.ghost) m.put("ghost", true);
+            if (b.wasBare) m.put("bare", true);
             if (b.storage != null) m.put("storage", Base64.getEncoder().encodeToString(b.storage));
             if (b.glueOffsets != null) {
                 List<Integer> g = new ArrayList<>(b.glueOffsets.length);
@@ -133,6 +135,7 @@ final class MechanismState {
                     b.wfZ = ((Number) wl.get(2)).floatValue();
                 }
                 b.ghost = Boolean.TRUE.equals(raw.get("ghost"));
+                b.wasBare = Boolean.TRUE.equals(raw.get("bare"));
                 Object storage = raw.get("storage");
                 if (storage instanceof String ss) b.storage = Base64.getDecoder().decode(ss);
                 Object glue = raw.get("glue");
