@@ -161,7 +161,7 @@ public class PipeBlockRegistrar {
             }
         });
 
-        registry.register(builder.build());
+        registry.overlayType(builder.build());
         plugin.getLogger().info("Registered " + variant.id() + " with CoreLib");
     }
 
