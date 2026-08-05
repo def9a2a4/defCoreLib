@@ -485,10 +485,11 @@ final class ChainHoistManager implements Listener {
             // can move (a hoist resting powered on a floor would otherwise churn a mechanism every trigger).
             // With budget >> startDepth the ray exits the column and reads the real clearance; advance owns
             // per-block re-verification from here, so r0 >= 1 is all this needs.
-            // Mow only the immediate frontier so a plant directly below doesn't bail the whole descent;
-            // advance's frontierClear mows each deeper cell as the body reaches it (no over-mow past the stop).
-            mowFragilesAhead(frontier, footprint, BlockFace.DOWN, 1);
-            if (clearForAll(frontier, footprint, BlockFace.DOWN, budget) < 1) return;
+            // Measure clearance counting fragile plants as passable (throughFragile) instead of mowing them
+            // up front — the actual mow is deferred to post-commit (after the busy-anchor + assemble bails
+            // below), so an aborted descent destroys nothing. advance's frontierClear mows each deeper cell
+            // as the body reaches it (no over-mow past the stop).
+            if (clearForAll(frontier, footprint, BlockFace.DOWN, budget, true) < 1) return;
         } else {
             // Rising: clamp the WHOLE committed span by the LOAD's upward clearance — a load wider than the
             // rope (a platform under a floor with a 1×1 rope hole) otherwise rises into occupied external
@@ -528,6 +529,11 @@ final class ChainHoistManager implements Listener {
         Mechanism mech = mechRegistry.assembleMechanism(MECH_TYPE, group,
             List.of(new MechanismRegistry.GhostBlock(ghostCell.getLocation(), chainData())),
             hoist.getLocation().add(0.5, 0, 0.5), AXIS_Y, null);
+
+        // Stroke committed (every bail — clearance, busy anchor, assemble throw — is above this line): NOW mow
+        // the immediate descending frontier, so an aborted descent never destroys a player's plant. Mirrors
+        // rising, which also defers its mow past the abort checks.
+        if (descend) mowFragilesAhead(frontier, footprint, BlockFace.DOWN, 1);
 
         // RESERVE the descend's whole budget now; the landing hook refunds the un-travelled remainder.
         // Billing against a reservation instead of an end-of-stroke consume means a mid-stroke GUI

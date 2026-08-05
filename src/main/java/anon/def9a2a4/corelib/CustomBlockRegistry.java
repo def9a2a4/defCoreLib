@@ -1721,6 +1721,10 @@ public class CustomBlockRegistry {
                     try {
                         Block block = mark.block();
                         if (!isNeighborReactive(block)) continue; // removed / no longer reactive since the mark
+                        // Don't force-load a chunk to re-evaluate a block: during /mvunload this next-tick flush
+                        // fires against a world Bukkit already unloaded, and getTypeFromBlock (→ getState) would
+                        // resurrect the chunk. Mirrors the isChunkLoaded guards on the other scan loops.
+                        if (!block.getWorld().isChunkLoaded(block.getX() >> 4, block.getZ() >> 4)) continue;
                         CustomHeadBlock type = getTypeFromBlock(block);
                         if (type == null) continue;               // unloaded / not a custom block anymore
                         if (type.onNeighborChange() != null) {
