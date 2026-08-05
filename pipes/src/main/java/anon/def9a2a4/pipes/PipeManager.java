@@ -460,7 +460,8 @@ public class PipeManager {
     }
 
     private void spawnDebugParticles() {
-        for (Location loc : pipes.keySet()) {
+        // Snapshot for the same reason as transferAllPipes: a reentrant chunk callback could mutate `pipes`.
+        for (Location loc : new ArrayList<>(pipes.keySet())) {
             world.spawnParticle(
                     Particle.DUST,
                     loc.clone().add(0.5, 0.5, 0.5),
@@ -476,9 +477,11 @@ public class PipeManager {
         long currentTick = Bukkit.getCurrentTick();
         List<Location> toRemove = new ArrayList<>();
 
-        for (Map.Entry<Location, PipeData> entry : pipes.entrySet()) {
-            Location loc = entry.getKey();
-            PipeData data = entry.getValue();
+        // Snapshot: transferItems reads blocks that can force-load a chunk, whose synchronous
+        // ChunkLoadEvent re-enters registerPipe/removePipeData and would mutate `pipes` mid-iteration → CME.
+        for (Location loc : new ArrayList<>(pipes.keySet())) {
+            PipeData data = pipes.get(loc);
+            if (data == null) continue; // removed mid-tick by a reentrant chunk-unload callback
 
             // Sleep check
             Long wakeTick = sleepUntil.get(loc);
