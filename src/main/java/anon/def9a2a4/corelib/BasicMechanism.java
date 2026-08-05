@@ -152,6 +152,19 @@ final class BasicMechanism implements Mechanism {
         return blocks.get(blockIndex).storage;
     }
 
+    /** Force-close any player viewing a captured block's storage before its contents are copied back to
+     *  the world (disassemble/destroy/drop). Otherwise the open view aliases a snapshot that is ALSO
+     *  written to the landed block → the viewer extracts a duplicate. One chokepoint covers every
+     *  teardown caller (RC-1). Viewer-count-agnostic; iterates a snapshot of getViewers(). */
+    private void closeStorageViewers() {
+        for (MechanismBlockData mb : blocks) {
+            if (mb.storage == null) continue;
+            for (org.bukkit.entity.HumanEntity viewer : new ArrayList<>(mb.storage.getViewers())) {
+                viewer.closeInventory();
+            }
+        }
+    }
+
     // ──────────────────────────────────────────────────────────────────────
     // Live-position queries (used by MechanismRotationDriver)
     // ──────────────────────────────────────────────────────────────────────
@@ -683,6 +696,9 @@ final class BasicMechanism implements Mechanism {
         // by this one guard rather than a per-caller catch. No-op on the success path (completed=true).
         boolean completed = false;
         try {
+        // RC-1: sever any open storage view BEFORE contents are copied back to landed blocks, or the
+        // viewer aliases a snapshot that is also written to the world → duplicate on extract.
+        closeStorageViewers();
         // Snap to 90° about the rotation axis. For Y this is yaw; for X/Z it tips a drawbridge
         // back to a cardinal orientation. 90° rotations about a cardinal axis map integer
         // offsets to integers, so block positions stay exact.
@@ -918,6 +934,8 @@ final class BasicMechanism implements Mechanism {
     @Override
     public void destroy() {
         checkMainThread();
+        // RC-1: sever any open storage view before contents are dropped to the world (see disassemble()).
+        closeStorageViewers();
         // destroy() discards the blocks by design, but the riding banners' world displays are
         // already gone (removed at capture) — dropping nothing here would delete the items with
         // no trace. Drop them at each block's live cell.

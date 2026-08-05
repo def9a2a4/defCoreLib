@@ -426,6 +426,11 @@ public class MechanismRegistry {
                     ItemStack item = orig.getItem(s);
                     if (item != null) storage.setItem(s, item.clone());
                 }
+                // A10b: close any open view before the source block is aired out, else the viewer aliases
+                // a container whose contents were copied into the mechanism → duplicate on extract.
+                for (org.bukkit.entity.HumanEntity viewer : new ArrayList<>(orig.getViewers())) {
+                    viewer.closeInventory();
+                }
             }
 
             // Resolve the collider: a custom block's own config wins, else the vanilla shape registry,
@@ -899,7 +904,9 @@ public class MechanismRegistry {
     private void airOutSourceBlocks(List<Block> blocks) {
         for (Block b : blocks) {
             CustomHeadBlock chb = registry.getTypeFromBlock(b);
-            if (chb != null) registry.onBlockRemoved(b, chb);
+            // Capture (not break): consumers keep per-block state in the mechanism (e.g. filter items in
+            // configPdc) instead of dropping it, so it isn't duplicated on landing (A10a).
+            if (chb != null) registry.onBlockRemovedForCapture(b, chb);
         }
         for (Block b : blocks) {
             if (FragileBlocks.isAttachable(b.getType())) b.setType(Material.AIR, false);

@@ -309,6 +309,10 @@ public class CustomBlockRegistry {
     private final Map<String, List<org.bukkit.NamespacedKey>> recipeKeysByNamespace = new HashMap<>();
     private final Set<String> noAutoDiscoverNamespaces = new HashSet<>(List.of("headsmith"));
 
+    /** A namespace managed by a companion plugin: kept out of the vanilla recipe book (auto-discovery)
+     *  AND out of the core {@code /defcorelib give} tab-complete (it provides its own give command). */
+    public boolean isCompanionManaged(String namespace) { return noAutoDiscoverNamespaces.contains(namespace); }
+
     // ──────────────────────────────────────────────────────────────────────
     // Type registration
     // ──────────────────────────────────────────────────────────────────────
@@ -1479,6 +1483,24 @@ public class CustomBlockRegistry {
             onBlockRemoved0(block, type);
         } finally {
             physicsSuppressionDepth--;
+        }
+    }
+
+    private int mechanismCaptureDepth = 0;
+
+    /** True while {@link #onBlockRemoved} is firing as part of a mechanism CAPTURE (assembly), not a real
+     *  break. Consumers whose per-block state rides along in the mechanism (e.g. filter items serialized
+     *  into {@code configPdc}) must NOT also drop it to the world here — that would duplicate against the
+     *  restore on landing (A10a). Closing an open GUI is still correct; only the drop must be suppressed. */
+    public boolean isCapturingForMechanism() { return mechanismCaptureDepth > 0; }
+
+    /** {@link #onBlockRemoved} variant used by mechanism capture; see {@link #isCapturingForMechanism()}. */
+    public void onBlockRemovedForCapture(Block block, CustomHeadBlock type) {
+        mechanismCaptureDepth++;
+        try {
+            onBlockRemoved(block, type);
+        } finally {
+            mechanismCaptureDepth--;
         }
     }
 

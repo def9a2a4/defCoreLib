@@ -107,10 +107,13 @@ public class PipeBlockRegistrar {
                 // Close any open config menu FIRST so its (real) items can't be dragged out of a stale menu
                 // after we drop them (a dupe); the close saves current contents to the still-intact PDC.
                 plugin.getFilterGui().closeFor(block);
-                // Filter items were consumed from the player — return them. Read before removePipeData
-                // (which evicts the cache); the head/PDC is still intact at this pre-cleanup callback.
-                for (var item : PipeFilterStore.read(block).dropContents()) {
-                    block.getWorld().dropItemNaturally(block.getLocation().add(0.5, 0.5, 0.5), item);
+                // Filter items were consumed from the player — return them on a real break. But during a
+                // mechanism CAPTURE the items ride along in the block's configPdc and are restored on
+                // landing, so dropping them here would duplicate them (A10a) — suppress the drop then.
+                if (!registry.isCapturingForMechanism()) {
+                    for (var item : PipeFilterStore.read(block).dropContents()) {
+                        block.getWorld().dropItemNaturally(block.getLocation().add(0.5, 0.5, 0.5), item);
+                    }
                 }
             }
             manager.removePipeData(block.getLocation());

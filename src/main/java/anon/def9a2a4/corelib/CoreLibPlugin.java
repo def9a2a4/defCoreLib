@@ -2263,14 +2263,22 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
                     blockId = "mech:glue_item";
                 }
 
-                // Try with namespace prefix, fall back to searching all namespaces
+                // Try the explicit namespace:id first; else resolve a bare id deterministically (A5):
+                // exactly one match → use it; multiple across namespaces → refuse and list the options.
                 CustomHeadBlock type = registry.getType(blockId);
                 if (type == null) {
+                    List<CustomHeadBlock> matches = new ArrayList<>();
                     for (CustomHeadBlock t : registry.allTypes()) {
-                        if (t.typeId().equals(blockId)) {
-                            type = t;
-                            break;
-                        }
+                        if (t.typeId().equals(blockId)) matches.add(t);
+                    }
+                    if (matches.size() == 1) {
+                        type = matches.get(0);
+                    } else if (matches.size() > 1) {
+                        sender.sendMessage(Component.text("Ambiguous id '" + blockId + "' — specify a namespace: "
+                                + matches.stream().map(CustomHeadBlock::fullId)
+                                        .collect(java.util.stream.Collectors.joining(", ")),
+                                NamedTextColor.RED));
+                        return true;
                     }
                 }
 
@@ -2504,9 +2512,13 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         }
         if (args.length == 2 && args[0].equalsIgnoreCase("give")) {
             String prefix = args[1].toLowerCase();
+            if (prefix.isEmpty()) return List.of(); // A4: don't dump thousands of ids on an empty prefix
             return registry.allTypes().stream()
                     .map(CustomHeadBlock::fullId)
+                    // A4: companion-managed namespaces (e.g. headsmith) use their own give command
+                    .filter(id -> !registry.isCompanionManaged(id.contains(":") ? id.substring(0, id.indexOf(':')) : ""))
                     .filter(id -> id.toLowerCase().startsWith(prefix))
+                    .limit(50)
                     .toList();
         }
         if (args.length == 2 && args[0].equalsIgnoreCase("showcase")) {
