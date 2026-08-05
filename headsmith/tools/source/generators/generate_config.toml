@@ -1,0 +1,765 @@
+# Configuration for generate_mini_blocks.py
+
+# Materials that require silk touch to drop the mini block (otherwise drops the vanilla material)
+valuable_drop_materials = [
+    "DIAMOND_BLOCK",
+    "EMERALD_BLOCK",
+    "GOLD_BLOCK",
+    "NETHERITE_BLOCK",
+]
+
+# Minecraft material names for mini blocks (must be before table sections)
+materials = [
+    # Ore/Gem Blocks
+    "QUARTZ_BLOCK",
+    "LAPIS_BLOCK",
+    "REDSTONE_BLOCK",
+    "DIAMOND_BLOCK",
+    "EMERALD_BLOCK",
+    "GOLD_BLOCK",
+    "RAW_GOLD_BLOCK",
+    "IRON_BLOCK",
+    "RAW_IRON_BLOCK",
+    "COAL_BLOCK",
+    "RAW_COPPER_BLOCK",
+    "COPPER_BLOCK",
+    "CUT_COPPER",
+    "EXPOSED_COPPER",
+    "EXPOSED_CUT_COPPER",
+    "WEATHERED_COPPER",
+    "WEATHERED_CUT_COPPER",
+    "OXIDIZED_COPPER",
+    "OXIDIZED_CUT_COPPER",
+    "WAXED_COPPER_BLOCK",
+    "WAXED_CUT_COPPER",
+    "WAXED_EXPOSED_COPPER",
+    "WAXED_EXPOSED_CUT_COPPER",
+    "WAXED_WEATHERED_COPPER",
+    "WAXED_WEATHERED_CUT_COPPER",
+    "WAXED_OXIDIZED_COPPER",
+    "WAXED_OXIDIZED_CUT_COPPER",
+    "CHISELED_COPPER",
+    "EXPOSED_CHISELED_COPPER",
+    "WEATHERED_CHISELED_COPPER",
+    "OXIDIZED_CHISELED_COPPER",
+    "WAXED_CHISELED_COPPER",
+    "WAXED_EXPOSED_CHISELED_COPPER",
+    "WAXED_WEATHERED_CHISELED_COPPER",
+    "WAXED_OXIDIZED_CHISELED_COPPER",
+    "COPPER_GRATE",
+    "EXPOSED_COPPER_GRATE",
+    "WEATHERED_COPPER_GRATE",
+    "OXIDIZED_COPPER_GRATE",
+    "WAXED_COPPER_GRATE",
+    "WAXED_EXPOSED_COPPER_GRATE",
+    "WAXED_WEATHERED_COPPER_GRATE",
+    "WAXED_OXIDIZED_COPPER_GRATE",
+    "COPPER_BULB",
+    "EXPOSED_COPPER_BULB",
+    "WEATHERED_COPPER_BULB",
+    "OXIDIZED_COPPER_BULB",
+    "WAXED_COPPER_BULB",
+    "WAXED_EXPOSED_COPPER_BULB",
+    "WAXED_WEATHERED_COPPER_BULB",
+    "WAXED_OXIDIZED_COPPER_BULB",
+    "NETHERITE_BLOCK",
+    "AMETHYST_BLOCK",
+    "BUDDING_AMETHYST",
+    # Stone variants
+    "STONE",
+    "SMOOTH_STONE",
+    "STONE_BRICKS",
+    "CRACKED_STONE_BRICKS",
+    "MOSSY_STONE_BRICKS",
+    "CHISELED_STONE_BRICKS",
+    "COBBLESTONE",
+    "MOSSY_COBBLESTONE",
+    "GRANITE",
+    "POLISHED_GRANITE",
+    "DIORITE",
+    "POLISHED_DIORITE",
+    "ANDESITE",
+    "POLISHED_ANDESITE",
+    "CALCITE",
+    "TUFF",
+    "POLISHED_TUFF",
+    "TUFF_BRICKS",
+    "CHISELED_TUFF",
+    "CHISELED_TUFF_BRICKS",
+    "DRIPSTONE_BLOCK",
+    # Deepslate
+    "DEEPSLATE",
+    "COBBLED_DEEPSLATE",
+    "POLISHED_DEEPSLATE",
+    "DEEPSLATE_BRICKS",
+    "CRACKED_DEEPSLATE_BRICKS",
+    "DEEPSLATE_TILES",
+    "CRACKED_DEEPSLATE_TILES",
+    "CHISELED_DEEPSLATE",
+    "REINFORCED_DEEPSLATE",
+    # Blackstone
+    "BLACKSTONE",
+    "GILDED_BLACKSTONE",
+    "POLISHED_BLACKSTONE",
+    "POLISHED_BLACKSTONE_BRICKS",
+    "CRACKED_POLISHED_BLACKSTONE_BRICKS",
+    "CHISELED_POLISHED_BLACKSTONE",
+    # Sandstone
+    "SANDSTONE",
+    "CHISELED_SANDSTONE",
+    "CUT_SANDSTONE",
+    "SMOOTH_SANDSTONE",
+    "RED_SANDSTONE",
+    "CHISELED_RED_SANDSTONE",
+    "CUT_RED_SANDSTONE",
+    "SMOOTH_RED_SANDSTONE",
+    # Nether blocks
+    "NETHERRACK",
+    "NETHER_BRICKS",
+    "RED_NETHER_BRICKS",
+    "CRACKED_NETHER_BRICKS",
+    "CHISELED_NETHER_BRICKS",
+    "NETHER_WART_BLOCK",
+    "WARPED_WART_BLOCK",
+    "SOUL_SAND",
+    "SOUL_SOIL",
+    "GLOWSTONE",
+    "SHROOMLIGHT",
+    "MAGMA_BLOCK",
+    "CRYING_OBSIDIAN",
+    "BASALT",
+    "POLISHED_BASALT",
+    "SMOOTH_BASALT",
+    "CRIMSON_NYLIUM",
+    "WARPED_NYLIUM",
+    # End blocks
+    "END_STONE",
+    "END_STONE_BRICKS",
+    "PURPUR_BLOCK",
+    "PURPUR_PILLAR",
+    # Prismarine
+    "PRISMARINE",
+    "PRISMARINE_BRICKS",
+    "DARK_PRISMARINE",
+    "SEA_LANTERN",
+    # Quartz variants
+    "QUARTZ_BRICKS",
+    "CHISELED_QUARTZ_BLOCK",
+    "QUARTZ_PILLAR",
+    "SMOOTH_QUARTZ",
+    # Wood planks
+    "OAK_PLANKS",
+    "SPRUCE_PLANKS",
+    "BIRCH_PLANKS",
+    "JUNGLE_PLANKS",
+    "ACACIA_PLANKS",
+    "DARK_OAK_PLANKS",
+    "MANGROVE_PLANKS",
+    "CHERRY_PLANKS",
+    "BAMBOO_PLANKS",
+    "BAMBOO_MOSAIC",
+    "CRIMSON_PLANKS",
+    "WARPED_PLANKS",
+    "PALE_OAK_PLANKS",
+    # Wood logs
+    "OAK_LOG",
+    "SPRUCE_LOG",
+    "BIRCH_LOG",
+    "JUNGLE_LOG",
+    "ACACIA_LOG",
+    "DARK_OAK_LOG",
+    "MANGROVE_LOG",
+    "CHERRY_LOG",
+    "BAMBOO_BLOCK",
+    "CRIMSON_STEM",
+    "WARPED_STEM",
+    "PALE_OAK_LOG",
+    # Stripped logs
+    "STRIPPED_OAK_LOG",
+    "STRIPPED_SPRUCE_LOG",
+    "STRIPPED_BIRCH_LOG",
+    "STRIPPED_JUNGLE_LOG",
+    "STRIPPED_ACACIA_LOG",
+    "STRIPPED_DARK_OAK_LOG",
+    "STRIPPED_MANGROVE_LOG",
+    "STRIPPED_CHERRY_LOG",
+    "STRIPPED_BAMBOO_BLOCK",
+    "STRIPPED_CRIMSON_STEM",
+    "STRIPPED_WARPED_STEM",
+    "STRIPPED_PALE_OAK_LOG",
+    # Leaves
+    "OAK_LEAVES",
+    "SPRUCE_LEAVES",
+    "BIRCH_LEAVES",
+    "JUNGLE_LEAVES",
+    "ACACIA_LEAVES",
+    "DARK_OAK_LEAVES",
+    "MANGROVE_LEAVES",
+    "CHERRY_LEAVES",
+    "AZALEA_LEAVES",
+    "FLOWERING_AZALEA_LEAVES",
+    "PALE_OAK_LEAVES",
+    # Bricks and clay
+    "BRICKS",
+    "MUD_BRICKS",
+    "PACKED_MUD",
+    "MUD",
+    "CLAY",
+    "TERRACOTTA",
+    # Colored terracotta
+    "WHITE_TERRACOTTA",
+    "ORANGE_TERRACOTTA",
+    "MAGENTA_TERRACOTTA",
+    "LIGHT_BLUE_TERRACOTTA",
+    "YELLOW_TERRACOTTA",
+    "LIME_TERRACOTTA",
+    "PINK_TERRACOTTA",
+    "GRAY_TERRACOTTA",
+    "LIGHT_GRAY_TERRACOTTA",
+    "CYAN_TERRACOTTA",
+    "PURPLE_TERRACOTTA",
+    "BLUE_TERRACOTTA",
+    "BROWN_TERRACOTTA",
+    "GREEN_TERRACOTTA",
+    "RED_TERRACOTTA",
+    "BLACK_TERRACOTTA",
+    # Glazed terracotta
+    "WHITE_GLAZED_TERRACOTTA",
+    "ORANGE_GLAZED_TERRACOTTA",
+    "MAGENTA_GLAZED_TERRACOTTA",
+    "LIGHT_BLUE_GLAZED_TERRACOTTA",
+    "YELLOW_GLAZED_TERRACOTTA",
+    "LIME_GLAZED_TERRACOTTA",
+    "PINK_GLAZED_TERRACOTTA",
+    "GRAY_GLAZED_TERRACOTTA",
+    "LIGHT_GRAY_GLAZED_TERRACOTTA",
+    "CYAN_GLAZED_TERRACOTTA",
+    "PURPLE_GLAZED_TERRACOTTA",
+    "BLUE_GLAZED_TERRACOTTA",
+    "BROWN_GLAZED_TERRACOTTA",
+    "GREEN_GLAZED_TERRACOTTA",
+    "RED_GLAZED_TERRACOTTA",
+    "BLACK_GLAZED_TERRACOTTA",
+    # Concrete
+    "WHITE_CONCRETE",
+    "ORANGE_CONCRETE",
+    "MAGENTA_CONCRETE",
+    "LIGHT_BLUE_CONCRETE",
+    "YELLOW_CONCRETE",
+    "LIME_CONCRETE",
+    "PINK_CONCRETE",
+    "GRAY_CONCRETE",
+    "LIGHT_GRAY_CONCRETE",
+    "CYAN_CONCRETE",
+    "PURPLE_CONCRETE",
+    "BLUE_CONCRETE",
+    "BROWN_CONCRETE",
+    "GREEN_CONCRETE",
+    "RED_CONCRETE",
+    "BLACK_CONCRETE",
+    # Concrete powder
+    "WHITE_CONCRETE_POWDER",
+    "ORANGE_CONCRETE_POWDER",
+    "MAGENTA_CONCRETE_POWDER",
+    "LIGHT_BLUE_CONCRETE_POWDER",
+    "YELLOW_CONCRETE_POWDER",
+    "LIME_CONCRETE_POWDER",
+    "PINK_CONCRETE_POWDER",
+    "GRAY_CONCRETE_POWDER",
+    "LIGHT_GRAY_CONCRETE_POWDER",
+    "CYAN_CONCRETE_POWDER",
+    "PURPLE_CONCRETE_POWDER",
+    "BLUE_CONCRETE_POWDER",
+    "BROWN_CONCRETE_POWDER",
+    "GREEN_CONCRETE_POWDER",
+    "RED_CONCRETE_POWDER",
+    "BLACK_CONCRETE_POWDER",
+    # Wool
+    "WHITE_WOOL",
+    "ORANGE_WOOL",
+    "MAGENTA_WOOL",
+    "LIGHT_BLUE_WOOL",
+    "YELLOW_WOOL",
+    "LIME_WOOL",
+    "PINK_WOOL",
+    "GRAY_WOOL",
+    "LIGHT_GRAY_WOOL",
+    "CYAN_WOOL",
+    "PURPLE_WOOL",
+    "BLUE_WOOL",
+    "BROWN_WOOL",
+    "GREEN_WOOL",
+    "RED_WOOL",
+    "BLACK_WOOL",
+    # Glass
+    "GLASS",
+    "TINTED_GLASS",
+    "WHITE_STAINED_GLASS",
+    "ORANGE_STAINED_GLASS",
+    "MAGENTA_STAINED_GLASS",
+    "LIGHT_BLUE_STAINED_GLASS",
+    "YELLOW_STAINED_GLASS",
+    "LIME_STAINED_GLASS",
+    "PINK_STAINED_GLASS",
+    "GRAY_STAINED_GLASS",
+    "LIGHT_GRAY_STAINED_GLASS",
+    "CYAN_STAINED_GLASS",
+    "PURPLE_STAINED_GLASS",
+    "BLUE_STAINED_GLASS",
+    "BROWN_STAINED_GLASS",
+    "GREEN_STAINED_GLASS",
+    "RED_STAINED_GLASS",
+    "BLACK_STAINED_GLASS",
+    # Natural blocks
+    "DIRT",
+    "COARSE_DIRT",
+    "ROOTED_DIRT",
+    "GRASS_BLOCK",
+    "PODZOL",
+    "MYCELIUM",
+    "DIRT_PATH",
+    "FARMLAND",
+    "GRAVEL",
+    "SAND",
+    "RED_SAND",
+    "SNOW_BLOCK",
+    # "POWDER_SNOW",  # Not an item, can't be used in recipes
+    "ICE",
+    "PACKED_ICE",
+    "BLUE_ICE",
+    "OBSIDIAN",
+    "BEDROCK",
+    "MOSS_BLOCK",
+    # Ore blocks
+    "COAL_ORE",
+    "DEEPSLATE_COAL_ORE",
+    "IRON_ORE",
+    "DEEPSLATE_IRON_ORE",
+    "COPPER_ORE",
+    "DEEPSLATE_COPPER_ORE",
+    "GOLD_ORE",
+    "DEEPSLATE_GOLD_ORE",
+    "REDSTONE_ORE",
+    "DEEPSLATE_REDSTONE_ORE",
+    "EMERALD_ORE",
+    "DEEPSLATE_EMERALD_ORE",
+    "LAPIS_ORE",
+    "DEEPSLATE_LAPIS_ORE",
+    "DIAMOND_ORE",
+    "DEEPSLATE_DIAMOND_ORE",
+    "NETHER_GOLD_ORE",
+    "NETHER_QUARTZ_ORE",
+    "ANCIENT_DEBRIS",
+    # Utility blocks
+    "CRAFTING_TABLE",
+    "FURNACE",
+    "BLAST_FURNACE",
+    "SMOKER",
+    "SMITHING_TABLE",
+    "FLETCHING_TABLE",
+    "CARTOGRAPHY_TABLE",
+    "BREWING_STAND",
+    "CAULDRON",
+    "COMPOSTER",
+    "BARREL",
+    "LOOM",
+    "STONECUTTER",
+    "GRINDSTONE",
+    "ANVIL",
+    "CHIPPED_ANVIL",
+    "DAMAGED_ANVIL",
+    "ENCHANTING_TABLE",
+    "BOOKSHELF",
+    "CHISELED_BOOKSHELF",
+    "LECTERN",
+    "NOTE_BLOCK",
+    "JUKEBOX",
+    "BEACON",
+    "CONDUIT",
+    "LODESTONE",
+    "RESPAWN_ANCHOR",
+    "END_PORTAL_FRAME",
+    "DECORATED_POT",
+    # Redstone
+    "REDSTONE_LAMP",
+    "OBSERVER",
+    "DROPPER",
+    "DISPENSER",
+    "PISTON",
+    "STICKY_PISTON",
+    "SLIME_BLOCK",
+    "HONEY_BLOCK",
+    "HONEYCOMB_BLOCK",
+    "TARGET",
+    "TNT",
+    "DAYLIGHT_DETECTOR",
+    # Storage
+    "CHEST",
+    "ENDER_CHEST",
+    "TRAPPED_CHEST",
+    "SHULKER_BOX",
+    "WHITE_SHULKER_BOX",
+    "ORANGE_SHULKER_BOX",
+    "MAGENTA_SHULKER_BOX",
+    "LIGHT_BLUE_SHULKER_BOX",
+    "YELLOW_SHULKER_BOX",
+    "LIME_SHULKER_BOX",
+    "PINK_SHULKER_BOX",
+    "GRAY_SHULKER_BOX",
+    "LIGHT_GRAY_SHULKER_BOX",
+    "CYAN_SHULKER_BOX",
+    "PURPLE_SHULKER_BOX",
+    "BLUE_SHULKER_BOX",
+    "BROWN_SHULKER_BOX",
+    "GREEN_SHULKER_BOX",
+    "RED_SHULKER_BOX",
+    "BLACK_SHULKER_BOX",
+    # Sculk
+    "SCULK",
+    "SCULK_CATALYST",
+    "SCULK_SHRIEKER",
+    "SCULK_SENSOR",
+    "CALIBRATED_SCULK_SENSOR",
+    # Misc
+    "BONE_BLOCK",
+    "HAY_BLOCK",
+    "DRIED_KELP_BLOCK",
+    "SPONGE",
+    "WET_SPONGE",
+    "MELON",
+    "PUMPKIN",
+    "CARVED_PUMPKIN",
+    "JACK_O_LANTERN",
+    "BEE_NEST",
+    "BEEHIVE",
+    # Infested blocks
+    "INFESTED_STONE",
+    "INFESTED_COBBLESTONE",
+    "INFESTED_STONE_BRICKS",
+    "INFESTED_MOSSY_STONE_BRICKS",
+    "INFESTED_CRACKED_STONE_BRICKS",
+    "INFESTED_CHISELED_STONE_BRICKS",
+    "INFESTED_DEEPSLATE",
+    # Command blocks
+    "COMMAND_BLOCK",
+    "CHAIN_COMMAND_BLOCK",
+    "REPEATING_COMMAND_BLOCK",
+    "STRUCTURE_BLOCK",
+    "JIGSAW",
+    # 1.21 blocks
+    "RESIN_BLOCK",
+    "RESIN_BRICKS",
+    "CHISELED_RESIN_BRICKS",
+    "CREAKING_HEART",
+]
+
+# Properties to automatically add for specific materials
+[material_properties]
+CRAFTING_TABLE = ["workbench"]
+ANVIL = ["anvil"]
+CHIPPED_ANVIL = ["anvil"]
+DAMAGED_ANVIL = ["anvil"]
+ENCHANTING_TABLE = ["enchanting"]
+SMITHING_TABLE = ["smithing"]
+LOOM = ["loom"]
+STONECUTTER = ["stonecutter"]
+GRINDSTONE = ["grindstone"]
+CARTOGRAPHY_TABLE = ["cartography"]
+ENDER_CHEST = ["enderchest"]
+# Glowing blocks
+GLOWSTONE = ["glowing"]
+SHROOMLIGHT = ["glowing"]
+SEA_LANTERN = ["glowing"]
+JACK_O_LANTERN = ["glowing"]
+
+# Pattern-based tags (use fnmatch patterns)
+[material_tag_patterns]
+wood = ["*_PLANKS", "*_LOG", "*_STEM", "BAMBOO_BLOCK", "BAMBOO_MOSAIC", "STRIPPED_BAMBOO_BLOCK"]
+wool = ["*_WOOL"]
+concrete = ["*_CONCRETE", "*_CONCRETE_POWDER"]
+glass = ["*_GLASS", "*_STAINED_GLASS", "TINTED_GLASS"]
+terracotta = ["*_TERRACOTTA"]
+copper = ["*COPPER*"]
+ore = ["*_ORE", "ANCIENT_DEBRIS"]
+shulker = ["*SHULKER_BOX"]
+bricks = ["*_BRICKS"]
+"natural/greenery" = ["*_LEAVES", "*_NYLIUM"]
+# Color tags for dyed blocks (wool, concrete, glass, terracotta, shulker boxes)
+"color/white" = ["WHITE_*"]
+"color/orange" = ["ORANGE_*"]
+"color/magenta" = ["MAGENTA_*"]
+"color/light_blue" = ["LIGHT_BLUE_*"]
+"color/yellow" = ["YELLOW_*"]
+"color/lime" = ["LIME_*"]
+"color/pink" = ["PINK_*"]
+"color/gray" = ["GRAY_*"]
+"color/light_gray" = ["LIGHT_GRAY_*"]
+"color/cyan" = ["CYAN_*"]
+"color/purple" = ["PURPLE_*"]
+"color/blue" = ["BLUE_*"]
+"color/brown" = ["BROWN_*"]
+"color/green" = ["GREEN_*"]
+"color/red" = ["RED_*"]
+"color/black" = ["BLACK_*"]
+
+# Materials that need explicit tag assignment
+[material_tag_lists]
+stone = [
+    "STONE", "SMOOTH_STONE", "COBBLESTONE", "MOSSY_COBBLESTONE",
+    "GRANITE", "POLISHED_GRANITE", "DIORITE", "POLISHED_DIORITE",
+    "ANDESITE", "POLISHED_ANDESITE", "CALCITE", "TUFF", "POLISHED_TUFF",
+    "TUFF_BRICKS", "CHISELED_TUFF", "CHISELED_TUFF_BRICKS",
+    "DRIPSTONE_BLOCK", "DEEPSLATE", "COBBLED_DEEPSLATE", "POLISHED_DEEPSLATE",
+    "DEEPSLATE_BRICKS", "CRACKED_DEEPSLATE_BRICKS", "DEEPSLATE_TILES",
+    "CRACKED_DEEPSLATE_TILES", "CHISELED_DEEPSLATE", "REINFORCED_DEEPSLATE",
+    "BLACKSTONE", "GILDED_BLACKSTONE", "POLISHED_BLACKSTONE",
+    "POLISHED_BLACKSTONE_BRICKS", "CRACKED_POLISHED_BLACKSTONE_BRICKS",
+    "CHISELED_POLISHED_BLACKSTONE",
+    "SANDSTONE", "CHISELED_SANDSTONE", "CUT_SANDSTONE", "SMOOTH_SANDSTONE",
+    "RED_SANDSTONE", "CHISELED_RED_SANDSTONE", "CUT_RED_SANDSTONE", "SMOOTH_RED_SANDSTONE",
+    "END_STONE", "END_STONE_BRICKS", "PRISMARINE", "PRISMARINE_BRICKS", "DARK_PRISMARINE",
+    "PURPUR_BLOCK", "PURPUR_PILLAR",
+    "BASALT", "POLISHED_BASALT", "SMOOTH_BASALT",
+    "QUARTZ_BLOCK", "QUARTZ_BRICKS", "CHISELED_QUARTZ_BLOCK", "QUARTZ_PILLAR", "SMOOTH_QUARTZ",
+]
+"natural/ore_block" = [
+    "DIAMOND_BLOCK", "EMERALD_BLOCK", "GOLD_BLOCK", "IRON_BLOCK",
+    "COAL_BLOCK", "LAPIS_BLOCK", "REDSTONE_BLOCK", "NETHERITE_BLOCK",
+    "AMETHYST_BLOCK", "BUDDING_AMETHYST", "RAW_GOLD_BLOCK", "RAW_IRON_BLOCK",
+    "RAW_COPPER_BLOCK",
+]
+"natural/ice" = ["ICE", "PACKED_ICE", "BLUE_ICE"]
+"natural/greenery" = ["GRASS_BLOCK", "MOSS_BLOCK", "PODZOL", "MYCELIUM"]
+"natural/dirt" = ["DIRT", "COARSE_DIRT", "ROOTED_DIRT", "MUD", "GRAVEL", "SAND", "RED_SAND"]
+bricks = ["BRICKS", "MUD_BRICKS"]
+terracotta = ["TERRACOTTA"]
+shulker = ["SHULKER_BOX"]
+
+# Mapping from CSV font name to mini block head ID
+[font_to_mini_block]
+Oak = "mini_oak_planks"
+Birch = "mini_birch_planks"
+Spruce = "mini_spruce_planks"
+Jungle = "mini_jungle_planks"
+"Cherry Planks" = "mini_cherry_planks"
+"Mangrove Planks" = "mini_mangrove_planks"
+Cobblestone = "mini_cobblestone"
+Diamond = "mini_diamond_block"
+Emerald = "mini_emerald_block"
+Gold = "mini_gold_block"
+Iron = "mini_iron_block"
+Quartz = "mini_quartz_block"
+Ice = "mini_ice"
+Dirt = "mini_dirt"
+Obsidian = "mini_obsidian"
+Netherite = "mini_netherite_block"
+"Gilded Blackstone" = "mini_gilded_blackstone"
+Dripstone = "mini_dripstone_block"
+"Chiseled Sandstone" = "mini_chiseled_sandstone"
+"Red Chiseled Sandstone" = "mini_chiseled_red_sandstone"
+"Smooth Sandstone" = "mini_smooth_sandstone"
+"Redstone Block" = "mini_redstone_block"
+Pumpkin = "mini_pumpkin"
+"Oak Log" = "mini_oak_log"
+# Characters to generate for alphabet blocks
+# Format: search_suffix = [yaml_id_suffix, display_char]
+[alphabet.letters]
+A = ["letter_a", "A"]
+B = ["letter_b", "B"]
+C = ["letter_c", "C"]
+D = ["letter_d", "D"]
+E = ["letter_e", "E"]
+F = ["letter_f", "F"]
+G = ["letter_g", "G"]
+H = ["letter_h", "H"]
+I = ["letter_i", "I"]
+J = ["letter_j", "J"]
+K = ["letter_k", "K"]
+L = ["letter_l", "L"]
+M = ["letter_m", "M"]
+N = ["letter_n", "N"]
+O = ["letter_o", "O"]
+P = ["letter_p", "P"]
+Q = ["letter_q", "Q"]
+R = ["letter_r", "R"]
+S = ["letter_s", "S"]
+T = ["letter_t", "T"]
+U = ["letter_u", "U"]
+V = ["letter_v", "V"]
+W = ["letter_w", "W"]
+X = ["letter_x", "X"]
+Y = ["letter_y", "Y"]
+Z = ["letter_z", "Z"]
+
+[alphabet.numbers]
+"0" = ["number_0", "0"]
+"1" = ["number_1", "1"]
+"2" = ["number_2", "2"]
+"3" = ["number_3", "3"]
+"4" = ["number_4", "4"]
+"5" = ["number_5", "5"]
+"6" = ["number_6", "6"]
+"7" = ["number_7", "7"]
+"8" = ["number_8", "8"]
+"9" = ["number_9", "9"]
+"00" = ["number_00", "00"]
+"01" = ["number_01", "01"]
+"02" = ["number_02", "02"]
+"03" = ["number_03", "03"]
+"04" = ["number_04", "04"]
+"05" = ["number_05", "05"]
+"06" = ["number_06", "06"]
+"07" = ["number_07", "07"]
+"08" = ["number_08", "08"]
+"09" = ["number_09", "09"]
+"10" = ["number_10", "10"]
+"11" = ["number_11", "11"]
+"12" = ["number_12", "12"]
+"13" = ["number_13", "13"]
+"14" = ["number_14", "14"]
+"15" = ["number_15", "15"]
+"16" = ["number_16", "16"]
+"17" = ["number_17", "17"]
+"18" = ["number_18", "18"]
+"19" = ["number_19", "19"]
+"20" = ["number_20", "20"]
+"21" = ["number_21", "21"]
+"22" = ["number_22", "22"]
+"23" = ["number_23", "23"]
+"24" = ["number_24", "24"]
+"25" = ["number_25", "25"]
+"26" = ["number_26", "26"]
+"27" = ["number_27", "27"]
+"28" = ["number_28", "28"]
+"29" = ["number_29", "29"]
+"30" = ["number_30", "30"]
+"31" = ["number_31", "31"]
+"32" = ["number_32", "32"]
+"33" = ["number_33", "33"]
+"34" = ["number_34", "34"]
+"35" = ["number_35", "35"]
+"36" = ["number_36", "36"]
+"37" = ["number_37", "37"]
+"38" = ["number_38", "38"]
+"39" = ["number_39", "39"]
+"100" = ["number_100", "100"]
+
+[alphabet.punctuation]
+"Exclamation Mark" = ["exclamation", "!"]
+"Reverse Exclamation Mark" = ["reverse_exclamation", "¡"]
+"Question Mark" = ["question", "?"]
+"Reverse Question Mark" = ["reverse_question", "¿"]
+"Period" = ["period", "."]
+"Comma" = ["comma", ","]
+"Colon" = ["colon", ":"]
+"Semicolon" = ["semicolon", ";"]
+"Apostrophe" = ["apostrophe", "'"]
+"Quote" = ["quote", '"']
+"Ellipses" = ["ellipses", "..."]
+"Ampersand" = ["ampersand", "&"]
+"@" = ["at", "@"]
+"Octothorpe" = ["hash", "#"]
+"Dollar" = ["dollar", "$"]
+"Euro" = ["euro", "€"]
+"Pound" = ["pound", "£"]
+"Yen" = ["yen", "¥"]
+"Percent Sign" = ["percent", "%"]
+"Plus" = ["plus", "+"]
+"Minus" = ["minus", "-"]
+"Equals" = ["equals", "="]
+"Slash" = ["slash", "/"]
+"Backslash" = ["backslash", "\\"]
+"Underscore" = ["underscore", "_"]
+"Star" = ["star", "*"]
+"Heart" = ["heart", "♥"]
+"Blank" = ["blank", " "]
+"Degree" = ["degree", "°"]
+"Checkmark" = ["checkmark", "✓"]
+"Pause" = ["pause", "⏸"]
+"Note" = ["note", "♪"]
+
+[alphabet.brackets]
+"Round Bracket (open)" = ["paren_open", "("]
+"Round Bracket (closed)" = ["paren_close", ")"]
+"Square Bracket (open)" = ["bracket_open", "["]
+"Square Bracket (closed)" = ["bracket_close", "]"]
+"Curly Bracket (open)" = ["brace_open", "{"]
+"Curly Bracket (closed)" = ["brace_close", "}"]
+
+[alphabet.arrows]
+"Arrow Up" = ["arrow_up", "↑"]
+"Arrow Down" = ["arrow_down", "↓"]
+"Arrow Left" = ["arrow_left", "←"]
+"Arrow Right" = ["arrow_right", "→"]
+"Arrow Left Up" = ["arrow_left_up", "↖"]
+"Arrow Right Up" = ["arrow_right_up", "↗"]
+"Arrow Left Down" = ["arrow_left_down", "↙"]
+"Arrow Right Down" = ["arrow_right_down", "↘"]
+"Arrows" = ["arrows", "⇄"]
+"Forward" = ["forward", "⏩"]
+"Forward II" = ["forward_ii", "⏭"]
+"Backward" = ["backward", "⏪"]
+"Backward II" = ["backward_ii", "⏮"]
+"Refresh" = ["refresh", "↻"]
+
+[alphabet.accented]
+"Á" = ["letter_a_acute", "Á"]
+"Ä" = ["letter_a_umlaut", "Ä"]
+"Ç" = ["letter_c_cedilla", "Ç"]
+"É" = ["letter_e_acute", "É"]
+"Í" = ["letter_i_acute", "Í"]
+"Ñ" = ["letter_n_tilde", "Ñ"]
+"Ó" = ["letter_o_acute", "Ó"]
+"Ö" = ["letter_o_umlaut", "Ö"]
+"Ú" = ["letter_u_acute", "Ú"]
+"Ü" = ["letter_u_umlaut", "Ü"]
+
+[alphabet.greek]
+"α (alpha)" = ["greek_alpha", "α"]
+"λ (lambda)" = ["greek_lambda", "λ"]
+"π (pi)" = ["greek_pi", "π"]
+"Ω (omega)" = ["greek_omega", "Ω"]
+"∑ (sigma)" = ["greek_sigma", "∑"]
+
+[alphabet.cyrillic]
+"Ё" = ["cyrillic_yo", "Ё"]
+"Б" = ["cyrillic_be", "Б"]
+"Г" = ["cyrillic_ge", "Г"]
+"Д" = ["cyrillic_de", "Д"]
+"Ж" = ["cyrillic_zhe", "Ж"]
+"З" = ["cyrillic_ze", "З"]
+"И" = ["cyrillic_i", "И"]
+"Й" = ["cyrillic_short_i", "Й"]
+"Л" = ["cyrillic_el", "Л"]
+"П" = ["cyrillic_pe", "П"]
+"У" = ["cyrillic_u", "У"]
+"Ф" = ["cyrillic_ef", "Ф"]
+"Ц" = ["cyrillic_tse", "Ц"]
+"Ч" = ["cyrillic_che", "Ч"]
+"Ш" = ["cyrillic_sha", "Ш"]
+"Щ" = ["cyrillic_shcha", "Щ"]
+"Ъ" = ["cyrillic_hard", "Ъ"]
+"Ы" = ["cyrillic_yeru", "Ы"]
+"Ь" = ["cyrillic_soft", "Ь"]
+"Э" = ["cyrillic_e", "Э"]
+"Ю" = ["cyrillic_yu", "Ю"]
+"Я" = ["cyrillic_ya", "Я"]
+
+[alphabet.zodiac]
+"Aquarius" = ["zodiac_aquarius", "♒"]
+"Aries" = ["zodiac_aries", "♈"]
+"Cancer" = ["zodiac_cancer", "♋"]
+"Capricornus" = ["zodiac_capricorn", "♑"]
+"Gemini" = ["zodiac_gemini", "♊"]
+"Leo" = ["zodiac_leo", "♌"]
+"Libra" = ["zodiac_libra", "♎"]
+"Ophiuchus" = ["zodiac_ophiuchus", "⛎"]
+"Pisces" = ["zodiac_pisces", "♓"]
+"Sagittarius" = ["zodiac_sagittarius", "♐"]
+"Scorpio" = ["zodiac_scorpio", "♏"]
+"Taurus" = ["zodiac_taurus", "♉"]
+"Virgo" = ["zodiac_virgo", "♍"]
+
+[alphabet.gender]
+"Female" = ["female", "♀"]
+"Male" = ["male", "♂"]

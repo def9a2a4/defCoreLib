@@ -1,0 +1,8 @@
+# Large derived head-database dumps + generator outputs — reproducible from the
+# generators, NOT committed (mirrors the original HeadSmith repo's data/.gitignore).
+# The canonical, committed source is ../heads/**, which the converter actually reads.
+# These stay on disk locally so the generators can be re-run, but git ignores them.
+*.csv
+*.txt
+*_GENERATED.yml
+*_GENERATED/
