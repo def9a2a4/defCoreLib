@@ -1056,6 +1056,9 @@ final class BasicMechanism implements Mechanism {
                 // Carry over per-block config (rotator angle, throttle levels, dynamo mode, …) — must
                 // run AFTER the steps above, which own the identity/state/storage keys it skips.
                 registry.restoreConfigPdc(target, mb.configPdc);
+                // Re-load any side-store state (engine fuel) from the just-restored tile PDC — restoreBlock's
+                // onChunkLoad above ran BEFORE restoreConfigPdc, so it read a stale/empty counter.
+                if (type.onRestore() != null) type.onRestore().accept(target);
                 flipLandedSpinDir(target, mb, snappedYaw);
             }
         } else if (mb.storage != null && target.getState() instanceof Container c) {

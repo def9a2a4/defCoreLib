@@ -701,6 +701,8 @@ final class RotationBlocks {
             // A mechanism is capturing this engine: flush the in-memory fuel counter to the skull PDC so the
             // mechanism's configPdc snapshot carries it (air-out's onBlockRemoved above would else discard it).
             .onCapture(b -> fuelManager.writeToPDC(b))
+            // Landing counterpart: re-read the fuel the mechanism's restoreConfigPdc just wrote back.
+            .onRestore(b -> fuelManager.readFromPDC(b))
             .build());
     }
 
