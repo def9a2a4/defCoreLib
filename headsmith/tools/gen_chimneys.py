@@ -27,6 +27,39 @@ HERE = Path(__file__).resolve().parent
 CSV = HERE / "source" / "generators" / "heads-db.csv"
 OUT = HERE / "source" / "heads" / "chimneys.yml"
 
+# Chimney base-material name (from the CSV "(…)" suffix, lowercased; "" = plain "Chimney")
+# -> the Bukkit block you feed into a stonecutter to cut the chimney. Plain and "metal"
+# have no obvious block, so they map to bricks / iron block respectively.
+MATERIAL_BLOCK: dict[str, str] = {
+    "": "BRICKS",
+    "metal": "IRON_BLOCK",
+    "iron": "IRON_BLOCK",
+    "andesite": "ANDESITE",
+    "polished andesite": "POLISHED_ANDESITE",
+    "blackstone": "BLACKSTONE",
+    "polished blackstone": "POLISHED_BLACKSTONE",
+    "bricks": "BRICKS",
+    "cobblestone": "COBBLESTONE",
+    "mossy cobblestone": "MOSSY_COBBLESTONE",
+    "stone": "STONE",
+    "stone bricks": "STONE_BRICKS",
+    "cracked stone bricks": "CRACKED_STONE_BRICKS",
+    "mossy stone bricks": "MOSSY_STONE_BRICKS",
+    "diorite": "DIORITE",
+    "polished diorite": "POLISHED_DIORITE",
+    "granite": "GRANITE",
+    "polished granite": "POLISHED_GRANITE",
+    "deepslate tile": "DEEPSLATE_TILES",
+    "end stone": "END_STONE",
+    "nether bricks": "NETHER_BRICKS",
+    "red nether bricks": "RED_NETHER_BRICKS",
+    "prismarine": "PRISMARINE",
+    "prismarine brick": "PRISMARINE_BRICKS",
+    "dark prismarine": "DARK_PRISMARINE",
+    "sandstone": "SANDSTONE",
+    "red sandstone": "RED_SANDSTONE",
+}
+
 
 def texture_b64(hash_: str) -> str:
     doc = {"textures": {"SKIN": {"url": f"http://textures.minecraft.net/texture/{hash_}"}}}
@@ -64,11 +97,18 @@ def main() -> int:
         # Display name: "Chimney" or "Chimney (Cobblestone)"
         disp = "Chimney" if not material else f"Chimney ({material.title()})"
 
-        heads[head_id] = {
+        head: dict = {
             "texture": texture_b64(hash_),
             "name": f"&7{disp}",
             "properties": ["chimney"],
         }
+        # Craft in a stonecutter from the matching base block (all variants of a material share it).
+        block = MATERIAL_BLOCK.get(material.lower())
+        if block is None:
+            print(f"  WARNING: no stonecutter block mapped for material {material!r} ({name}) — give-only")
+        else:
+            head["recipes"] = {"stonecutter": [{"id": head_id, "input": {"material": block}}]}
+        heads[head_id] = head
 
     doc = {"heads": heads}
     with OUT.open("w") as fh:

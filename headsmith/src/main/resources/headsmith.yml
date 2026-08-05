@@ -51702,11 +51702,11 @@ blocks:
         particles:
           type: CAMPFIRE_COSY_SMOKE
           count: 1
-          speed: 0
+          speed: 0.05
           interval: 5
           floor_offset:
           - 0
-          - 1.1
+          - 0.85
           - 0
     transitions:
     - trigger:
@@ -51734,6 +51734,11 @@ blocks:
       volume: 0.7
       pitch: 1.2
     drops: self
+    recipes:
+      stonecutter:
+      - id: chimney
+        input:
+          material: BRICKS
   chimney_2:
     texture: eyJ0ZXh0dXJlcyI6IHsiU0tJTiI6IHsidXJsIjogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDIzMGIxMjFkMTQzYWM4MWFhNjI1MmVmMmE2MGQyMDA3YjI5YjAyOTA5M2ZhNmZjZDMyNDQxZjczYTc0MTg3ZCJ9fX0=
     name: '&7Chimney'
@@ -51746,11 +51751,11 @@ blocks:
         particles:
           type: CAMPFIRE_COSY_SMOKE
           count: 1
-          speed: 0
+          speed: 0.05
           interval: 5
           floor_offset:
           - 0
-          - 1.1
+          - 0.85
           - 0
     transitions:
     - trigger:
@@ -51778,6 +51783,11 @@ blocks:
       volume: 0.7
       pitch: 1.2
     drops: self
+    recipes:
+      stonecutter:
+      - id: chimney_2
+        input:
+          material: BRICKS
   chimney_3:
     texture: eyJ0ZXh0dXJlcyI6IHsiU0tJTiI6IHsidXJsIjogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjg2MDY2MTBmODY0ZTM4NDEwZWQyYTI2YjczYzlkNTllODFhNTBhMjI2NWM0YzU4ZTIwMDE1MTM2ODgyMWJmMyJ9fX0=
     name: '&7Chimney'
@@ -51790,11 +51800,11 @@ blocks:
         particles:
           type: CAMPFIRE_COSY_SMOKE
           count: 1
-          speed: 0
+          speed: 0.05
           interval: 5
           floor_offset:
           - 0
-          - 1.1
+          - 0.85
           - 0
     transitions:
     - trigger:
@@ -51822,6 +51832,11 @@ blocks:
       volume: 0.7
       pitch: 1.2
     drops: self
+    recipes:
+      stonecutter:
+      - id: chimney_3
+        input:
+          material: BRICKS
   chimney_andesite:
     texture: eyJ0ZXh0dXJlcyI6IHsiU0tJTiI6IHsidXJsIjogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOGUwNjhmMTcyZTBiZGQyMWIwM2ExMjhiYmI3MTMxNjgzOWIxNzAxYTE2NDI5MzZjZTJlY2Y4OGY1NDgxOGIyIn19fQ==
     name: '&7Chimney (Andesite)'
@@ -51834,11 +51849,11 @@ blocks:
         particles:
           type: CAMPFIRE_COSY_SMOKE
           count: 1
-          speed: 0
+          speed: 0.05
           interval: 5
           floor_offset:
           - 0
-          - 1.1
+          - 0.85
           - 0
     transitions:
     - trigger:
@@ -51866,6 +51881,11 @@ blocks:
       volume: 0.7
       pitch: 1.2
     drops: self
+    recipes:
+      stonecutter:
+      - id: chimney_andesite
+        input:
+          material: ANDESITE
   chimney_blackstone:
     texture: eyJ0ZXh0dXJlcyI6IHsiU0tJTiI6IHsidXJsIjogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZGQ1NDc0MGJiMDU0MjM0YzIyZWIyMmU0OTk2YWEyMTlhYmJiOWQzZGRiMTZkMWJmMTI4NWMyZTMyZWI3NzcwNSJ9fX0=
     name: '&7Chimney (Blackstone)'
@@ -51878,11 +51898,11 @@ blocks:
         particles:
           type: CAMPFIRE_COSY_SMOKE
           count: 1
-          speed: 0
+          speed: 0.05
           interval: 5
           floor_offset:
           - 0
-          - 1.1
+          - 0.85
           - 0
     transitions:
     - trigger:
@@ -51910,6 +51930,11 @@ blocks:
       volume: 0.7
       pitch: 1.2
     drops: self
+    recipes:
+      stonecutter:
+      - id: chimney_blackstone
+        input:
+          material: BLACKSTONE
   chimney_bricks:
     texture: eyJ0ZXh0dXJlcyI6IHsiU0tJTiI6IHsidXJsIjogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDk2MTBhYWRmYzNhZDhiOTBjNWM4OTgyN2FiYzY0MmE0YjVhMDM2NzY3ZWQ2NmExZTZlODBiM2RlYzg2MTM0NyJ9fX0=
     name: '&7Chimney (Bricks)'
@@ -51922,11 +51947,11 @@ blocks:
         particles:
           type: CAMPFIRE_COSY_SMOKE
           count: 1
-          speed: 0
+          speed: 0.05
           interval: 5
           floor_offset:
           - 0
-          - 1.1
+          - 0.85
           - 0
     transitions:
     - trigger:
@@ -51954,6 +51979,11 @@ blocks:
       volume: 0.7
       pitch: 1.2
     drops: self
+    recipes:
+      stonecutter:
+      - id: chimney_bricks
+        input:
+          material: BRICKS
   chimney_bricks_2:
     texture: eyJ0ZXh0dXJlcyI6IHsiU0tJTiI6IHsidXJsIjogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzZlMTE3ZTcyZDY0YmVhZGE5NjVhNzMzMWY4Y2NlMmI5ZjljYjczYzI3NGFiNDEzMWQ5ZTU1ZGE1MGRkOGI3NSJ9fX0=
     name: '&7Chimney (Bricks)'
@@ -51966,11 +51996,11 @@ blocks:
         particles:
           type: CAMPFIRE_COSY_SMOKE
           count: 1
-          speed: 0
+          speed: 0.05
           interval: 5
           floor_offset:
           - 0
-          - 1.1
+          - 0.85
           - 0
     transitions:
     - trigger:
@@ -51998,6 +52028,11 @@ blocks:
       volume: 0.7
       pitch: 1.2
     drops: self
+    recipes:
+      stonecutter:
+      - id: chimney_bricks_2
+        input:
+          material: BRICKS
   chimney_bricks_3:
     texture: eyJ0ZXh0dXJlcyI6IHsiU0tJTiI6IHsidXJsIjogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDAxMzQ3Nzk5YjJlYWM4YzZlMWJmOGQzYjE1YWQ3ZWFhZWMyYmU5ZThhNmIzNTNmNGY4NGRkNzE1N2M1OTI3ZSJ9fX0=
     name: '&7Chimney (Bricks)'
@@ -52010,11 +52045,11 @@ blocks:
         particles:
           type: CAMPFIRE_COSY_SMOKE
           count: 1
-          speed: 0
+          speed: 0.05
           interval: 5
           floor_offset:
           - 0
-          - 1.1
+          - 0.85
           - 0
     transitions:
     - trigger:
@@ -52042,6 +52077,11 @@ blocks:
       volume: 0.7
       pitch: 1.2
     drops: self
+    recipes:
+      stonecutter:
+      - id: chimney_bricks_3
+        input:
+          material: BRICKS
   chimney_cobblestone:
     texture: eyJ0ZXh0dXJlcyI6IHsiU0tJTiI6IHsidXJsIjogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzA1OGVjNGQzOTIwYWRiZmE4NjU1MGY1ODUyNDIyZTFhZjU1MDU0YTE1YWZjOWMyYzkyMmQ1ODc2NWZhYTViIn19fQ==
     name: '&7Chimney (Cobblestone)'
@@ -52054,11 +52094,11 @@ blocks:
         particles:
           type: CAMPFIRE_COSY_SMOKE
           count: 1
-          speed: 0
+          speed: 0.05
           interval: 5
           floor_offset:
           - 0
-          - 1.1
+          - 0.85
           - 0
     transitions:
     - trigger:
@@ -52086,6 +52126,11 @@ blocks:
       volume: 0.7
       pitch: 1.2
     drops: self
+    recipes:
+      stonecutter:
+      - id: chimney_cobblestone
+        input:
+          material: COBBLESTONE
   chimney_cobblestone_2:
     texture: eyJ0ZXh0dXJlcyI6IHsiU0tJTiI6IHsidXJsIjogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTJjMTdhZmY2MGRlZGM5NDFlNzIwMGM3NTlkMmNmMGI4MzJhNTk1MTAzMzQ3MzcxODMwMGQ1OTE3YWM1ZGVjNSJ9fX0=
     name: '&7Chimney (Cobblestone)'
@@ -52098,11 +52143,11 @@ blocks:
         particles:
           type: CAMPFIRE_COSY_SMOKE
           count: 1
-          speed: 0
+          speed: 0.05
           interval: 5
           floor_offset:
           - 0
-          - 1.1
+          - 0.85
           - 0
     transitions:
     - trigger:
@@ -52130,6 +52175,11 @@ blocks:
       volume: 0.7
       pitch: 1.2
     drops: self
+    recipes:
+      stonecutter:
+      - id: chimney_cobblestone_2
+        input:
+          material: COBBLESTONE
   chimney_cobblestone_3:
     texture: eyJ0ZXh0dXJlcyI6IHsiU0tJTiI6IHsidXJsIjogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjk5NTljYjk5YzY5ZjA3MzE2YWUxNGY4OWVlMjU0YTAwMzRkOTFkMThiMTZmMGM5NDBiOTNjZDUzMjUzNjQ1MSJ9fX0=
     name: '&7Chimney (Cobblestone)'
@@ -52142,11 +52192,11 @@ blocks:
         particles:
           type: CAMPFIRE_COSY_SMOKE
           count: 1
-          speed: 0
+          speed: 0.05
           interval: 5
           floor_offset:
           - 0
-          - 1.1
+          - 0.85
           - 0
     transitions:
     - trigger:
@@ -52174,6 +52224,11 @@ blocks:
       volume: 0.7
       pitch: 1.2
     drops: self
+    recipes:
+      stonecutter:
+      - id: chimney_cobblestone_3
+        input:
+          material: COBBLESTONE
   chimney_cobblestone_4:
     texture: eyJ0ZXh0dXJlcyI6IHsiU0tJTiI6IHsidXJsIjogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjExYWNlNzk5MzMzNTQ3YjZmNDRmMzZiN2ZjMGFiZjM2ZDM0ZGFhMjMzY2JiYzhkYjE5MDU3ZjA3ODJmZTcxOCJ9fX0=
     name: '&7Chimney (Cobblestone)'
@@ -52186,11 +52241,11 @@ blocks:
         particles:
           type: CAMPFIRE_COSY_SMOKE
           count: 1
-          speed: 0
+          speed: 0.05
           interval: 5
           floor_offset:
           - 0
-          - 1.1
+          - 0.85
           - 0
     transitions:
     - trigger:
@@ -52218,6 +52273,11 @@ blocks:
       volume: 0.7
       pitch: 1.2
     drops: self
+    recipes:
+      stonecutter:
+      - id: chimney_cobblestone_4
+        input:
+          material: COBBLESTONE
   chimney_cobblestone_5:
     texture: eyJ0ZXh0dXJlcyI6IHsiU0tJTiI6IHsidXJsIjogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNWQ2ZTc3ZjgyNDhhZTY0ZDdiODk0ZDY2YjY1NmE4MzVhMzMzM2RkNjk0YmY2MjRjODhlNjMxMGNmMzc2MzVkIn19fQ==
     name: '&7Chimney (Cobblestone)'
@@ -52230,11 +52290,11 @@ blocks:
         particles:
           type: CAMPFIRE_COSY_SMOKE
           count: 1
-          speed: 0
+          speed: 0.05
           interval: 5
           floor_offset:
           - 0
-          - 1.1
+          - 0.85
           - 0
     transitions:
     - trigger:
@@ -52262,6 +52322,11 @@ blocks:
       volume: 0.7
       pitch: 1.2
     drops: self
+    recipes:
+      stonecutter:
+      - id: chimney_cobblestone_5
+        input:
+          material: COBBLESTONE
   chimney_cobblestone_6:
     texture: eyJ0ZXh0dXJlcyI6IHsiU0tJTiI6IHsidXJsIjogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGEyOWVlZjljYTM2OWVhZGQ5ODlhNjgzMmY1MDk3MGY4YjA3NGY5ZDcwNjU5NGUzNzhhOGI4ODRhZjRiZDllIn19fQ==
     name: '&7Chimney (Cobblestone)'
@@ -52274,11 +52339,11 @@ blocks:
         particles:
           type: CAMPFIRE_COSY_SMOKE
           count: 1
-          speed: 0
+          speed: 0.05
           interval: 5
           floor_offset:
           - 0
-          - 1.1
+          - 0.85
           - 0
     transitions:
     - trigger:
@@ -52306,6 +52371,11 @@ blocks:
       volume: 0.7
       pitch: 1.2
     drops: self
+    recipes:
+      stonecutter:
+      - id: chimney_cobblestone_6
+        input:
+          material: COBBLESTONE
   chimney_cracked_stone_bricks:
     texture: eyJ0ZXh0dXJlcyI6IHsiU0tJTiI6IHsidXJsIjogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTc5OGNmNTlmMDU2NmE4ZjNiYTE4MDY3MTg4ODhhMjY1ZmExZTg4NWFlMTE5YjU2ZDkxZTEzZDNjZmFhZSJ9fX0=
     name: '&7Chimney (Cracked Stone Bricks)'
@@ -52318,11 +52388,11 @@ blocks:
         particles:
           type: CAMPFIRE_COSY_SMOKE
           count: 1
-          speed: 0
+          speed: 0.05
           interval: 5
           floor_offset:
           - 0
-          - 1.1
+          - 0.85
           - 0
     transitions:
     - trigger:
@@ -52350,6 +52420,11 @@ blocks:
       volume: 0.7
       pitch: 1.2
     drops: self
+    recipes:
+      stonecutter:
+      - id: chimney_cracked_stone_bricks
+        input:
+          material: CRACKED_STONE_BRICKS
   chimney_dark_prismarine:
     texture: eyJ0ZXh0dXJlcyI6IHsiU0tJTiI6IHsidXJsIjogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzMxY2M0NWRkYzNjOTkyYWJjMDQyYjU0NzE5NDdjZWY1YjkzOGM2MTMwOTJiMWRkMTlhMTIyZjM5YzAyZTg3ZSJ9fX0=
     name: '&7Chimney (Dark Prismarine)'
@@ -52362,11 +52437,11 @@ blocks:
         particles:
           type: CAMPFIRE_COSY_SMOKE
           count: 1
-          speed: 0
+          speed: 0.05
           interval: 5
           floor_offset:
           - 0
-          - 1.1
+          - 0.85
           - 0
     transitions:
     - trigger:
@@ -52394,6 +52469,11 @@ blocks:
       volume: 0.7
       pitch: 1.2
     drops: self
+    recipes:
+      stonecutter:
+      - id: chimney_dark_prismarine
+        input:
+          material: DARK_PRISMARINE
   chimney_deepslate_tile:
     texture: eyJ0ZXh0dXJlcyI6IHsiU0tJTiI6IHsidXJsIjogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNWRjMjI0MTQ1MjVlMDUwZjlhZjRmZGVmMWE0YWM1YjljNTJhYWRiOGI0NThhMGRiNzVjYWM5MDU5ZDgyODJmIn19fQ==
     name: '&7Chimney (Deepslate Tile)'
@@ -52406,11 +52486,11 @@ blocks:
         particles:
           type: CAMPFIRE_COSY_SMOKE
           count: 1
-          speed: 0
+          speed: 0.05
           interval: 5
           floor_offset:
           - 0
-          - 1.1
+          - 0.85
           - 0
     transitions:
     - trigger:
@@ -52438,6 +52518,11 @@ blocks:
       volume: 0.7
       pitch: 1.2
     drops: self
+    recipes:
+      stonecutter:
+      - id: chimney_deepslate_tile
+        input:
+          material: DEEPSLATE_TILES
   chimney_diorite:
     texture: eyJ0ZXh0dXJlcyI6IHsiU0tJTiI6IHsidXJsIjogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOWZmZjJkMGEyY2VhZTg2NzUyZGZiNDMwYmJjYWMzMWVkOTJlMzYwN2ZkZTY4MTdiYTZjYWI1MWIxMzQzY2Q3ZSJ9fX0=
     name: '&7Chimney (Diorite)'
@@ -52450,11 +52535,11 @@ blocks:
         particles:
           type: CAMPFIRE_COSY_SMOKE
           count: 1
-          speed: 0
+          speed: 0.05
           interval: 5
           floor_offset:
           - 0
-          - 1.1
+          - 0.85
           - 0
     transitions:
     - trigger:
@@ -52482,6 +52567,11 @@ blocks:
       volume: 0.7
       pitch: 1.2
     drops: self
+    recipes:
+      stonecutter:
+      - id: chimney_diorite
+        input:
+          material: DIORITE
   chimney_diorite_2:
     texture: eyJ0ZXh0dXJlcyI6IHsiU0tJTiI6IHsidXJsIjogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTJiMTY3NjczZmEyMGRjNmQyNGM4ZDdhNzljMDEzN2IwMjRjMTBlODQ2Y2VkZmFkNGM5M2M2N2E1MTI4MDJlZCJ9fX0=
     name: '&7Chimney (Diorite)'
@@ -52494,11 +52584,11 @@ blocks:
         particles:
           type: CAMPFIRE_COSY_SMOKE
           count: 1
-          speed: 0
+          speed: 0.05
           interval: 5
           floor_offset:
           - 0
-          - 1.1
+          - 0.85
           - 0
     transitions:
     - trigger:
@@ -52526,6 +52616,11 @@ blocks:
       volume: 0.7
       pitch: 1.2
     drops: self
+    recipes:
+      stonecutter:
+      - id: chimney_diorite_2
+        input:
+          material: DIORITE
   chimney_end_stone:
     texture: eyJ0ZXh0dXJlcyI6IHsiU0tJTiI6IHsidXJsIjogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvY2Y5NjMyNjI0YjAxYzFhNWMyYTcxYThkMDJiYTFhMjYwYjljOWRmMzk2M2I4MmMzYzQwNzA1OGJiZDBjMGU4MiJ9fX0=
     name: '&7Chimney (End Stone)'
@@ -52538,11 +52633,11 @@ blocks:
         particles:
           type: CAMPFIRE_COSY_SMOKE
           count: 1
-          speed: 0
+          speed: 0.05
           interval: 5
           floor_offset:
           - 0
-          - 1.1
+          - 0.85
           - 0
     transitions:
     - trigger:
@@ -52570,6 +52665,11 @@ blocks:
       volume: 0.7
       pitch: 1.2
     drops: self
+    recipes:
+      stonecutter:
+      - id: chimney_end_stone
+        input:
+          material: END_STONE
   chimney_granite:
     texture: eyJ0ZXh0dXJlcyI6IHsiU0tJTiI6IHsidXJsIjogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMmUwNjI5MzY0MDZlMWJiMTFiMTlhYWVlM2E3MTZhZTkxMmRiYzYzYjI4NDFjMDRiOWI3YzlmZTgxNTQwZDk1MiJ9fX0=
     name: '&7Chimney (Granite)'
@@ -52582,11 +52682,11 @@ blocks:
         particles:
           type: CAMPFIRE_COSY_SMOKE
           count: 1
-          speed: 0
+          speed: 0.05
           interval: 5
           floor_offset:
           - 0
-          - 1.1
+          - 0.85
           - 0
     transitions:
     - trigger:
@@ -52614,6 +52714,11 @@ blocks:
       volume: 0.7
       pitch: 1.2
     drops: self
+    recipes:
+      stonecutter:
+      - id: chimney_granite
+        input:
+          material: GRANITE
   chimney_iron:
     texture: eyJ0ZXh0dXJlcyI6IHsiU0tJTiI6IHsidXJsIjogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNWY4ZTE2MWQ1ZTM3YWRiMzFmODc1YzQzYTVkYmFmNzRhOTNlMWJjOTMwNTRiMzYxZjRjZTBiNTRhNjc0NCJ9fX0=
     name: '&7Chimney (Iron)'
@@ -52626,11 +52731,11 @@ blocks:
         particles:
           type: CAMPFIRE_COSY_SMOKE
           count: 1
-          speed: 0
+          speed: 0.05
           interval: 5
           floor_offset:
           - 0
-          - 1.1
+          - 0.85
           - 0
     transitions:
     - trigger:
@@ -52658,6 +52763,11 @@ blocks:
       volume: 0.7
       pitch: 1.2
     drops: self
+    recipes:
+      stonecutter:
+      - id: chimney_iron
+        input:
+          material: IRON_BLOCK
   chimney_metal:
     texture: eyJ0ZXh0dXJlcyI6IHsiU0tJTiI6IHsidXJsIjogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTQ1MmQ3ZThiOWE4ZmUzZGY5MTU1ODQyMjI4NDZjZjk4ODU0ODc1OGI0ODU1NmFiNGM4NjgzZDA4NGNhNWZjOSJ9fX0=
     name: '&7Chimney (Metal)'
@@ -52670,11 +52780,11 @@ blocks:
         particles:
           type: CAMPFIRE_COSY_SMOKE
           count: 1
-          speed: 0
+          speed: 0.05
           interval: 5
           floor_offset:
           - 0
-          - 1.1
+          - 0.85
           - 0
     transitions:
     - trigger:
@@ -52702,6 +52812,11 @@ blocks:
       volume: 0.7
       pitch: 1.2
     drops: self
+    recipes:
+      stonecutter:
+      - id: chimney_metal
+        input:
+          material: IRON_BLOCK
   chimney_metal_2:
     texture: eyJ0ZXh0dXJlcyI6IHsiU0tJTiI6IHsidXJsIjogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzRjMzJjZDJlYzE4NDJjNzc1YzRmOTY0ZDc1MTQ2N2FmYWY5NzBjM2JkNmI5OTFkM2NlNDM3YmFjNzUyMjZlZCJ9fX0=
     name: '&7Chimney (Metal)'
@@ -52714,11 +52829,11 @@ blocks:
         particles:
           type: CAMPFIRE_COSY_SMOKE
           count: 1
-          speed: 0
+          speed: 0.05
           interval: 5
           floor_offset:
           - 0
-          - 1.1
+          - 0.85
           - 0
     transitions:
     - trigger:
@@ -52746,6 +52861,11 @@ blocks:
       volume: 0.7
       pitch: 1.2
     drops: self
+    recipes:
+      stonecutter:
+      - id: chimney_metal_2
+        input:
+          material: IRON_BLOCK
   chimney_mossy_cobblestone:
     texture: eyJ0ZXh0dXJlcyI6IHsiU0tJTiI6IHsidXJsIjogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmIwODU5ZGFiMjcyZGMyNzBiNDRjOWFlNTcxZDM1ZWQ3OGNjZjZlODM0MDVhNmViMTQyYmQzZDQ2MGY0ZGExNyJ9fX0=
     name: '&7Chimney (Mossy Cobblestone)'
@@ -52758,11 +52878,11 @@ blocks:
         particles:
           type: CAMPFIRE_COSY_SMOKE
           count: 1
-          speed: 0
+          speed: 0.05
           interval: 5
           floor_offset:
           - 0
-          - 1.1
+          - 0.85
           - 0
     transitions:
     - trigger:
@@ -52790,6 +52910,11 @@ blocks:
       volume: 0.7
       pitch: 1.2
     drops: self
+    recipes:
+      stonecutter:
+      - id: chimney_mossy_cobblestone
+        input:
+          material: MOSSY_COBBLESTONE
   chimney_mossy_cobblestone_2:
     texture: eyJ0ZXh0dXJlcyI6IHsiU0tJTiI6IHsidXJsIjogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjY0ZjI0NDYyOGY0ZGZlOTBmOWZhYzNlZjEyNjVkYzI5ODI2MTVjODJmMGU3ZTkzYTIyZjhmYTU1OWZmMzZmIn19fQ==
     name: '&7Chimney (Mossy Cobblestone)'
@@ -52802,11 +52927,11 @@ blocks:
         particles:
           type: CAMPFIRE_COSY_SMOKE
           count: 1
-          speed: 0
+          speed: 0.05
           interval: 5
           floor_offset:
           - 0
-          - 1.1
+          - 0.85
           - 0
     transitions:
     - trigger:
@@ -52834,6 +52959,11 @@ blocks:
       volume: 0.7
       pitch: 1.2
     drops: self
+    recipes:
+      stonecutter:
+      - id: chimney_mossy_cobblestone_2
+        input:
+          material: MOSSY_COBBLESTONE
   chimney_mossy_cobblestone_3:
     texture: eyJ0ZXh0dXJlcyI6IHsiU0tJTiI6IHsidXJsIjogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZWNiNzE5M2FkYWEwMzg2YjNjYjMzN2EzODIyYzFhOGRhZTVhOTU3ZWIxZjFhMzc0ZTAwNDc5ZjEwMDBjZTJmOSJ9fX0=
     name: '&7Chimney (Mossy Cobblestone)'
@@ -52846,11 +52976,11 @@ blocks:
         particles:
           type: CAMPFIRE_COSY_SMOKE
           count: 1
-          speed: 0
+          speed: 0.05
           interval: 5
           floor_offset:
           - 0
-          - 1.1
+          - 0.85
           - 0
     transitions:
     - trigger:
@@ -52878,6 +53008,11 @@ blocks:
       volume: 0.7
       pitch: 1.2
     drops: self
+    recipes:
+      stonecutter:
+      - id: chimney_mossy_cobblestone_3
+        input:
+          material: MOSSY_COBBLESTONE
   chimney_mossy_cobblestone_4:
     texture: eyJ0ZXh0dXJlcyI6IHsiU0tJTiI6IHsidXJsIjogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOGI5NzMxZDE1MjQ2MzAwZWRiNTc4NmUyNWNiOTQyNjU2MDk1OTdjMWRiMDJmNDY2OTBhNzU0ZjJmNTBlOGQ4MSJ9fX0=
     name: '&7Chimney (Mossy Cobblestone)'
@@ -52890,11 +53025,11 @@ blocks:
         particles:
           type: CAMPFIRE_COSY_SMOKE
           count: 1
-          speed: 0
+          speed: 0.05
           interval: 5
           floor_offset:
           - 0
-          - 1.1
+          - 0.85
           - 0
     transitions:
     - trigger:
@@ -52922,6 +53057,11 @@ blocks:
       volume: 0.7
       pitch: 1.2
     drops: self
+    recipes:
+      stonecutter:
+      - id: chimney_mossy_cobblestone_4
+        input:
+          material: MOSSY_COBBLESTONE
   chimney_mossy_stone_bricks:
     texture: eyJ0ZXh0dXJlcyI6IHsiU0tJTiI6IHsidXJsIjogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvM2U1ZDliMDg1OWQ3OThhOGUyMWQ2MjY5ODg4NmM5MmQ4ZWVlNWIzNTUyZmVmYzNjMmI4NGQ3Y2JjYmJiNjAifX19
     name: '&7Chimney (Mossy Stone Bricks)'
@@ -52934,11 +53074,11 @@ blocks:
         particles:
           type: CAMPFIRE_COSY_SMOKE
           count: 1
-          speed: 0
+          speed: 0.05
           interval: 5
           floor_offset:
           - 0
-          - 1.1
+          - 0.85
           - 0
     transitions:
     - trigger:
@@ -52966,6 +53106,11 @@ blocks:
       volume: 0.7
       pitch: 1.2
     drops: self
+    recipes:
+      stonecutter:
+      - id: chimney_mossy_stone_bricks
+        input:
+          material: MOSSY_STONE_BRICKS
   chimney_nether_bricks:
     texture: eyJ0ZXh0dXJlcyI6IHsiU0tJTiI6IHsidXJsIjogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZWViMDM2NWJkOWM5MzljNGY2MjhlOWI3ODU3MjI4OTc5ODg4MDhiYTM4Y2Y0MzE1M2VjYzFmYzIzMWNmYTcyYiJ9fX0=
     name: '&7Chimney (Nether Bricks)'
@@ -52978,11 +53123,11 @@ blocks:
         particles:
           type: CAMPFIRE_COSY_SMOKE
           count: 1
-          speed: 0
+          speed: 0.05
           interval: 5
           floor_offset:
           - 0
-          - 1.1
+          - 0.85
           - 0
     transitions:
     - trigger:
@@ -53010,6 +53155,11 @@ blocks:
       volume: 0.7
       pitch: 1.2
     drops: self
+    recipes:
+      stonecutter:
+      - id: chimney_nether_bricks
+        input:
+          material: NETHER_BRICKS
   chimney_nether_bricks_2:
     texture: eyJ0ZXh0dXJlcyI6IHsiU0tJTiI6IHsidXJsIjogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjIzNmVmYzNiM2NlNDQyMDJmYTg4ZmMyN2FiMzAxNzZmZDM5NTM0ZDM1OGI1ZWEwZGZiOWM2MzQyNDE0ZSJ9fX0=
     name: '&7Chimney (Nether Bricks)'
@@ -53022,11 +53172,11 @@ blocks:
         particles:
           type: CAMPFIRE_COSY_SMOKE
           count: 1
-          speed: 0
+          speed: 0.05
           interval: 5
           floor_offset:
           - 0
-          - 1.1
+          - 0.85
           - 0
     transitions:
     - trigger:
@@ -53054,6 +53204,11 @@ blocks:
       volume: 0.7
       pitch: 1.2
     drops: self
+    recipes:
+      stonecutter:
+      - id: chimney_nether_bricks_2
+        input:
+          material: NETHER_BRICKS
   chimney_polished_andesite:
     texture: eyJ0ZXh0dXJlcyI6IHsiU0tJTiI6IHsidXJsIjogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOWI5ZjJlNWVkMDU5ZTM2MjhlNjUwODM2NDM2NzczY2Q3YTUwMDZjOGQzZDUzNjU3YTljNDVmMWIxYzI4MTJhNiJ9fX0=
     name: '&7Chimney (Polished Andesite)'
@@ -53066,11 +53221,11 @@ blocks:
         particles:
           type: CAMPFIRE_COSY_SMOKE
           count: 1
-          speed: 0
+          speed: 0.05
           interval: 5
           floor_offset:
           - 0
-          - 1.1
+          - 0.85
           - 0
     transitions:
     - trigger:
@@ -53098,6 +53253,11 @@ blocks:
       volume: 0.7
       pitch: 1.2
     drops: self
+    recipes:
+      stonecutter:
+      - id: chimney_polished_andesite
+        input:
+          material: POLISHED_ANDESITE
   chimney_polished_blackstone:
     texture: eyJ0ZXh0dXJlcyI6IHsiU0tJTiI6IHsidXJsIjogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjVhNDdlMjExYTU4NDY3MTljZjNlY2RmNzM4MDQ3NTdiOGVhMDMwZjQ5OTVjZWM5ZDk2Y2ViMjc0ZmZhZjdkOCJ9fX0=
     name: '&7Chimney (Polished Blackstone)'
@@ -53110,11 +53270,11 @@ blocks:
         particles:
           type: CAMPFIRE_COSY_SMOKE
           count: 1
-          speed: 0
+          speed: 0.05
           interval: 5
           floor_offset:
           - 0
-          - 1.1
+          - 0.85
           - 0
     transitions:
     - trigger:
@@ -53142,6 +53302,11 @@ blocks:
       volume: 0.7
       pitch: 1.2
     drops: self
+    recipes:
+      stonecutter:
+      - id: chimney_polished_blackstone
+        input:
+          material: POLISHED_BLACKSTONE
   chimney_polished_diorite:
     texture: eyJ0ZXh0dXJlcyI6IHsiU0tJTiI6IHsidXJsIjogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZWI1OTM2NzgxYTJmMjEwNjQyNDI5ZjE1MDZkOWU3MjAwMzdlNDlkMGI0ZTM4MGVkZTIxYTg0ZWQxNjI1ZTA0MyJ9fX0=
     name: '&7Chimney (Polished Diorite)'
@@ -53154,11 +53319,11 @@ blocks:
         particles:
           type: CAMPFIRE_COSY_SMOKE
           count: 1
-          speed: 0
+          speed: 0.05
           interval: 5
           floor_offset:
           - 0
-          - 1.1
+          - 0.85
           - 0
     transitions:
     - trigger:
@@ -53186,6 +53351,11 @@ blocks:
       volume: 0.7
       pitch: 1.2
     drops: self
+    recipes:
+      stonecutter:
+      - id: chimney_polished_diorite
+        input:
+          material: POLISHED_DIORITE
   chimney_polished_diorite_2:
     texture: eyJ0ZXh0dXJlcyI6IHsiU0tJTiI6IHsidXJsIjogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTg1M2U2YzJjZGZjNGJkZmM3MmI5NWI5NTRlMTBhMmU5MmZiMzE0YWY2NDcwMjc4ZGY0ODA5NmJiN2QzN2I3NCJ9fX0=
     name: '&7Chimney (Polished Diorite)'
@@ -53198,11 +53368,11 @@ blocks:
         particles:
           type: CAMPFIRE_COSY_SMOKE
           count: 1
-          speed: 0
+          speed: 0.05
           interval: 5
           floor_offset:
           - 0
-          - 1.1
+          - 0.85
           - 0
     transitions:
     - trigger:
@@ -53230,6 +53400,11 @@ blocks:
       volume: 0.7
       pitch: 1.2
     drops: self
+    recipes:
+      stonecutter:
+      - id: chimney_polished_diorite_2
+        input:
+          material: POLISHED_DIORITE
   chimney_polished_granite:
     texture: eyJ0ZXh0dXJlcyI6IHsiU0tJTiI6IHsidXJsIjogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzY3ZGE1NTNiYTM1YzhiNjQxMTJiZTllNzhlZjFmZWM3OTRhMmRiZjVhMjEzMTMwYmE3YWI4MWVmODAzZjZhZiJ9fX0=
     name: '&7Chimney (Polished Granite)'
@@ -53242,11 +53417,11 @@ blocks:
         particles:
           type: CAMPFIRE_COSY_SMOKE
           count: 1
-          speed: 0
+          speed: 0.05
           interval: 5
           floor_offset:
           - 0
-          - 1.1
+          - 0.85
           - 0
     transitions:
     - trigger:
@@ -53274,6 +53449,11 @@ blocks:
       volume: 0.7
       pitch: 1.2
     drops: self
+    recipes:
+      stonecutter:
+      - id: chimney_polished_granite
+        input:
+          material: POLISHED_GRANITE
   chimney_prismarine_brick:
     texture: eyJ0ZXh0dXJlcyI6IHsiU0tJTiI6IHsidXJsIjogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNmRmNDIzZjAzNmNkNDgyYzRiMzFiMjA3MDU2M2JhNzJhZTEyOWQ5Njk3MzVkZWZjMThiOGYxZWEzNjcxOWFmMyJ9fX0=
     name: '&7Chimney (Prismarine Brick)'
@@ -53286,11 +53466,11 @@ blocks:
         particles:
           type: CAMPFIRE_COSY_SMOKE
           count: 1
-          speed: 0
+          speed: 0.05
           interval: 5
           floor_offset:
           - 0
-          - 1.1
+          - 0.85
           - 0
     transitions:
     - trigger:
@@ -53318,6 +53498,11 @@ blocks:
       volume: 0.7
       pitch: 1.2
     drops: self
+    recipes:
+      stonecutter:
+      - id: chimney_prismarine_brick
+        input:
+          material: PRISMARINE_BRICKS
   chimney_prismarine:
     texture: eyJ0ZXh0dXJlcyI6IHsiU0tJTiI6IHsidXJsIjogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTQ0MGRmMGJkZmI4NDUyMjlmNDkyNWZmNDdmYTNhZWMzY2JlZmE0ZmQzNTE2OTY0NWVjOWVlZjZlNGRlNzY5NCJ9fX0=
     name: '&7Chimney (Prismarine)'
@@ -53330,11 +53515,11 @@ blocks:
         particles:
           type: CAMPFIRE_COSY_SMOKE
           count: 1
-          speed: 0
+          speed: 0.05
           interval: 5
           floor_offset:
           - 0
-          - 1.1
+          - 0.85
           - 0
     transitions:
     - trigger:
@@ -53362,6 +53547,11 @@ blocks:
       volume: 0.7
       pitch: 1.2
     drops: self
+    recipes:
+      stonecutter:
+      - id: chimney_prismarine
+        input:
+          material: PRISMARINE
   chimney_red_nether_bricks:
     texture: eyJ0ZXh0dXJlcyI6IHsiU0tJTiI6IHsidXJsIjogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTdhOWE5ZjlhMWJkNjZhZGM3MDA2MDM4NWE3NzBjYjg2YmM3NjIxZGQ0MmI3NDMyZmNmNTMyNmViMGQzOGUzNSJ9fX0=
     name: '&7Chimney (Red Nether Bricks)'
@@ -53374,11 +53564,11 @@ blocks:
         particles:
           type: CAMPFIRE_COSY_SMOKE
           count: 1
-          speed: 0
+          speed: 0.05
           interval: 5
           floor_offset:
           - 0
-          - 1.1
+          - 0.85
           - 0
     transitions:
     - trigger:
@@ -53406,6 +53596,11 @@ blocks:
       volume: 0.7
       pitch: 1.2
     drops: self
+    recipes:
+      stonecutter:
+      - id: chimney_red_nether_bricks
+        input:
+          material: RED_NETHER_BRICKS
   chimney_red_sandstone:
     texture: eyJ0ZXh0dXJlcyI6IHsiU0tJTiI6IHsidXJsIjogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzQ3YWQwN2FkYjQ0YjM2ZmFkYzgyYTFmOGJiNzJhNGFmNTU3MmFjYWM3MDczY2M4NWNlNWQyNTFiNTljOTkxOSJ9fX0=
     name: '&7Chimney (Red Sandstone)'
@@ -53418,11 +53613,11 @@ blocks:
         particles:
           type: CAMPFIRE_COSY_SMOKE
           count: 1
-          speed: 0
+          speed: 0.05
           interval: 5
           floor_offset:
           - 0
-          - 1.1
+          - 0.85
           - 0
     transitions:
     - trigger:
@@ -53450,6 +53645,11 @@ blocks:
       volume: 0.7
       pitch: 1.2
     drops: self
+    recipes:
+      stonecutter:
+      - id: chimney_red_sandstone
+        input:
+          material: RED_SANDSTONE
   chimney_sandstone:
     texture: eyJ0ZXh0dXJlcyI6IHsiU0tJTiI6IHsidXJsIjogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzZjM2NiYWU5ODVlZDRiMjZlNmE1MTE2ZjdiMzY2NjRkYWMzNWNlNTNkYzFjODE0MTc2ZmRiZjAwYTFlYTlmNyJ9fX0=
     name: '&7Chimney (Sandstone)'
@@ -53462,11 +53662,11 @@ blocks:
         particles:
           type: CAMPFIRE_COSY_SMOKE
           count: 1
-          speed: 0
+          speed: 0.05
           interval: 5
           floor_offset:
           - 0
-          - 1.1
+          - 0.85
           - 0
     transitions:
     - trigger:
@@ -53494,6 +53694,11 @@ blocks:
       volume: 0.7
       pitch: 1.2
     drops: self
+    recipes:
+      stonecutter:
+      - id: chimney_sandstone
+        input:
+          material: SANDSTONE
   chimney_stone_bricks:
     texture: eyJ0ZXh0dXJlcyI6IHsiU0tJTiI6IHsidXJsIjogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjNhMjYwOTUxYmMyZjU4YjRiNTFjZGFhZDlkMTM1ODUxNTlmNDc0NjNhODUxMWVmY2I3MmM1NjI4MjNmNzdkIn19fQ==
     name: '&7Chimney (Stone Bricks)'
@@ -53506,11 +53711,11 @@ blocks:
         particles:
           type: CAMPFIRE_COSY_SMOKE
           count: 1
-          speed: 0
+          speed: 0.05
           interval: 5
           floor_offset:
           - 0
-          - 1.1
+          - 0.85
           - 0
     transitions:
     - trigger:
@@ -53538,6 +53743,11 @@ blocks:
       volume: 0.7
       pitch: 1.2
     drops: self
+    recipes:
+      stonecutter:
+      - id: chimney_stone_bricks
+        input:
+          material: STONE_BRICKS
   chimney_stone:
     texture: eyJ0ZXh0dXJlcyI6IHsiU0tJTiI6IHsidXJsIjogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjJmNzJkMmY2YTg4NDI0YWVhYWFkYjk3NjRkM2ZkY2I4ZmNmZmU2MWVkNTNiZWM1YmIxOGExODVlYmEifX19
     name: '&7Chimney (Stone)'
@@ -53550,11 +53760,11 @@ blocks:
         particles:
           type: CAMPFIRE_COSY_SMOKE
           count: 1
-          speed: 0
+          speed: 0.05
           interval: 5
           floor_offset:
           - 0
-          - 1.1
+          - 0.85
           - 0
     transitions:
     - trigger:
@@ -53582,6 +53792,11 @@ blocks:
       volume: 0.7
       pitch: 1.2
     drops: self
+    recipes:
+      stonecutter:
+      - id: chimney_stone
+        input:
+          material: STONE
   chimney_stone_2:
     texture: eyJ0ZXh0dXJlcyI6IHsiU0tJTiI6IHsidXJsIjogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjM5NGY4ZmI2ZDA4ZDE1ZTk4NTQyMjM0YTZmMmQ2NDVjYjMwYjdkZjE5YTFmYzJkOThhNWEzOGI5YTBiNSJ9fX0=
     name: '&7Chimney (Stone)'
@@ -53594,11 +53809,11 @@ blocks:
         particles:
           type: CAMPFIRE_COSY_SMOKE
           count: 1
-          speed: 0
+          speed: 0.05
           interval: 5
           floor_offset:
           - 0
-          - 1.1
+          - 0.85
           - 0
     transitions:
     - trigger:
@@ -53626,6 +53841,11 @@ blocks:
       volume: 0.7
       pitch: 1.2
     drops: self
+    recipes:
+      stonecutter:
+      - id: chimney_stone_2
+        input:
+          material: STONE
   mini_quartz_block:
     texture: eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDNiNTAwMWE2NzAwN2E5M2FkZTY2NTkxNzVlOTA1NGE5Mjk3NmIwODdmYzYyOWYwNDJiY2Q1N2U3NzU3NjQ2YSJ9fX0=
     name: '&7Mini Quartz Block'
