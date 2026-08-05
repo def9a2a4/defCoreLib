@@ -81,7 +81,7 @@ public class PipeManager {
         if (variant.isFilter()) {
             filterPowered.put(normalized, isPipePowered(normalized.getBlock()));
         }
-        pathCache.clear();
+        clearPathCaches();
     }
 
     public boolean isPipe(Location location) {
@@ -589,15 +589,22 @@ public class PipeManager {
         Location normalized = normalizeLocation(location);
         pipes.remove(normalized);
         sleepUntil.remove(normalized);
-        deadEndRecheckAt.remove(normalized);
         filterCache.remove(normalized);
         filterPowered.remove(normalized);
+        clearPathCaches();
+    }
+
+    /** Clear the path-geometry caches together: resolved routes ({@code pathCache}) and the dead-end
+     *  recheck deadlines ({@code deadEndRecheckAt}). Both are path-identity-coupled, so any pipe add/
+     *  remove or neighbor change must invalidate them as a unit — otherwise a rebuilt dead-end path can
+     *  inherit a stale recheck deadline and keep spilling items after a container appears at its end. */
+    private void clearPathCaches() {
         pathCache.clear();
+        deadEndRecheckAt.clear();
     }
 
     public void invalidatePathCache() {
-        pathCache.clear();
-        deadEndRecheckAt.clear();
+        clearPathCaches();
     }
 
     /**
@@ -953,11 +960,10 @@ public class PipeManager {
     public void shutdown() {
         stopTasks();
         pipes.clear();
-        pathCache.clear();
         filterCache.clear();
         filterPowered.clear();
         sleepUntil.clear();
-        deadEndRecheckAt.clear();
+        clearPathCaches();
     }
 
     /**
@@ -1023,9 +1029,8 @@ public class PipeManager {
                 plugin.getLogger().warning("Variant '" + data.variant().id() + "' no longer exists after reload; pipe at " + entry.getKey().toVector() + " is stale");
             }
         }
-        pathCache.clear();
         sleepUntil.clear();
-        deadEndRecheckAt.clear();
+        clearPathCaches();
     }
 
     public void restartTasks() {

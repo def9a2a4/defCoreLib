@@ -135,12 +135,29 @@ final class DefaultBlockSnapshotProvider implements BlockSnapshotProvider {
             sign.update(true, false);
         }
 
-        // Skull profile
+        // Skull profile — apply when ANY identity field was captured (id, name, OR textures). A name/UUID-only
+        // head (unresolved skin, no embedded textures blob) still restores: Paper re-resolves the skin from
+        // the profile on render, like vanilla player_head[profile={name:"…"}]. Gating solely on textures
+        // dropped those heads to a default Steve head.
         String tex = str(from.get("bs_skull_tex"));
-        if (tex != null && block.getState() instanceof Skull skull) {
-            UUID id = from.get("bs_skull_id") != null ? UUID.fromString(str(from.get("bs_skull_id"))) : UUID.randomUUID();
-            PlayerProfile profile = Bukkit.createProfile(id, str(from.get("bs_skull_name")));
-            profile.setProperty(new ProfileProperty("textures", tex, str(from.get("bs_skull_sig"))));
+        String skullId = str(from.get("bs_skull_id"));
+        String skullName = str(from.get("bs_skull_name"));
+        if ((tex != null || skullId != null || skullName != null) && block.getState() instanceof Skull skull) {
+            PlayerProfile profile;
+            if (skullId != null) {
+                profile = Bukkit.createProfile(UUID.fromString(skullId), skullName);
+            } else if (skullName != null) {
+                profile = Bukkit.createProfile(skullName); // Paper owns the UUID + name→skin resolution
+            } else {
+                // Custom-texture head with no identity: derive a STABLE UUID from the texture so the head
+                // keeps one profile across move cycles (lets identical heads stack; avoids a fresh random
+                // UUID each disassemble that would provoke Mojang lookups).
+                profile = Bukkit.createProfile(
+                    UUID.nameUUIDFromBytes(tex.getBytes(java.nio.charset.StandardCharsets.UTF_8)), null);
+            }
+            if (tex != null) {
+                profile.setProperty(new ProfileProperty("textures", tex, str(from.get("bs_skull_sig"))));
+            }
             skull.setPlayerProfile(profile);
             skull.update(true, false);
         }

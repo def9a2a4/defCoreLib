@@ -803,6 +803,7 @@ final class BasicMechanism implements Mechanism {
             // Protected cell (e.g. the piston core the rod slid through): consume the block silently
             // — but never its banners; those items would vanish with it.
             if (protectedCells != null && protectedCells.contains(CustomBlockRegistry.LocationKey.of(target))) {
+                droppedChainCells = noteIfChain(droppedChainCells, mb, blockLoc);
                 dropBannerItems(blockLoc, mb);
                 continue;
             }
@@ -817,6 +818,7 @@ final class BasicMechanism implements Mechanism {
                     continue;
                 }
                 if (decision == PlaceDecision.SKIP) {
+                    droppedChainCells = noteIfChain(droppedChainCells, mb, blockLoc);
                     dropBannerItems(blockLoc, mb); // never silently swallow a host's banners
                     continue;
                 }

@@ -340,6 +340,10 @@ public final class CustomHeadBlock {
     // air-out), so a block whose live state lives in a side store — engine fuel (in-memory manager) — can
     // flush it to its tile PDC so the snapshot carries it. See MechanismRegistry.assembleCore.
     private final @Nullable Consumer<Block> onCapture;
+    // Counterpart to onCapture: fired on a mechanism LANDING this block, AFTER restoreConfigPdc has rewritten
+    // its tile PDC, so a block whose live state was flushed to PDC at capture (engine fuel) can re-load it
+    // into its side store. Needed because restoreBlock's onChunkLoad runs BEFORE restoreConfigPdc.
+    private final @Nullable Consumer<Block> onRestore;
     private final @Nullable BiFunction<Block, org.bukkit.event.player.PlayerInteractEvent, Boolean> onInteract;
     private final java.util.function.@Nullable BiFunction<Block, String, org.bukkit.inventory.ItemStack> displayItemResolver;
     private final @Nullable DisplayTransformResolver displayTransformResolver;
@@ -403,6 +407,7 @@ public final class CustomHeadBlock {
         this.onBlockPlaced = b.onBlockPlaced;
         this.onBlockRemoved = b.onBlockRemoved;
         this.onCapture = b.onCapture;
+        this.onRestore = b.onRestore;
         this.onInteract = b.onInteract;
         this.displayItemResolver = b.displayItemResolver;
         this.displayTransformResolver = b.displayTransformResolver;
@@ -970,6 +975,7 @@ public final class CustomHeadBlock {
         public Builder onStateChanged(StateChangeHandler handler) { this.onStateChanged = handler; return this; }
         public Builder onBlockPlaced(BiConsumer<Block, String> handler) { this.onBlockPlaced = handler; return this; }
         public Builder onBlockRemoved(BiConsumer<Block, String> handler) { this.onBlockRemoved = handler; return this; }
+        public Builder onCapture(Consumer<Block> handler) { this.onCapture = handler; return this; }
         public Builder onInteract(BiFunction<Block, org.bukkit.event.player.PlayerInteractEvent, Boolean> handler) { this.onInteract = handler; return this; }
         public Builder drillable(boolean drillable) { this.drillable = drillable; return this; }
         public Builder displayItemResolver(BiFunction<Block, String, org.bukkit.inventory.ItemStack> resolver) { this.displayItemResolver = resolver; return this; }
