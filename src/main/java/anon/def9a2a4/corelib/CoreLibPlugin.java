@@ -57,6 +57,9 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         instance = this;
         new Metrics(this, 32317);
         registry = new CustomBlockRegistry(this);
+        // Preserve decorated block-entity state (sign text, skull profile, container name, …) through a
+        // mechanism move + recovery. Consumers can register more via registerBlockSnapshotProvider.
+        registry.registerBlockSnapshotProvider(new DefaultBlockSnapshotProvider());
         registry.startTasks();
         mechanismRegistry = new MechanismRegistry(this, registry);
         mechanismRegistry.startTasks();

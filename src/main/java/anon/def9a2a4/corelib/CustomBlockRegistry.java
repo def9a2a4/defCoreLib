@@ -228,6 +228,9 @@ public class CustomBlockRegistry {
     // entity rather than a skull PDC (e.g. bare chain shafts). Run for hinted chunks in onChunkLoad;
     // each restores its own blocks and reports whether it kept ≥1 so the hint isn't wiped.
     private final List<ChunkRestorer> chunkRestorers = new ArrayList<>();
+    // Consumer-registered providers that capture/restore decorated block-entity state (sign text, skull
+    // profile, container name, …) so it survives a mechanism move + recovery. See BlockSnapshotProvider.
+    private final List<BlockSnapshotProvider> blockSnapshotProviders = new ArrayList<>();
 
     private @Nullable BukkitTask redstoneTask;
     private @Nullable BukkitTask particleTask;
@@ -982,6 +985,45 @@ public class CustomBlockRegistry {
 
     void registerChunkRestorer(ChunkRestorer restorer) {
         chunkRestorers.add(restorer);
+    }
+
+    /**
+     * Register a {@link BlockSnapshotProvider} so decorated block-entity state (sign text, skull profile,
+     * container name, …) captured on a block moved by a mechanism survives the move and crash recovery.
+     * defCoreLib registers a {@code DefaultBlockSnapshotProvider} at enable covering common vanilla blocks;
+     * consumers can add more. Providers cooperate on one shared per-block map (see the interface doc).
+     */
+    public void registerBlockSnapshotProvider(BlockSnapshotProvider provider) {
+        blockSnapshotProviders.add(provider);
+    }
+
+    /** Capture every provider's decorated state for {@code block} into one map, or null if none contributed.
+     *  Called at mechanism assembly while the block is still LIVE in the world. */
+    @Nullable Map<String, Object> captureBlockSnapshot(Block block) {
+        if (blockSnapshotProviders.isEmpty()) return null;
+        Map<String, Object> into = new java.util.LinkedHashMap<>();
+        for (BlockSnapshotProvider p : blockSnapshotProviders) {
+            try {
+                p.capture(block, into);
+            } catch (Exception e) {
+                plugin.getLogger().warning("BlockSnapshotProvider capture failed at " + block.getLocation()
+                    + " (" + e.getMessage() + "); some decorated state may be lost");
+            }
+        }
+        return into.isEmpty() ? null : into;
+    }
+
+    /** Re-apply a captured snapshot onto a freshly-placed {@code block} (its BlockData is already set).
+     *  Each provider is isolated so one bad key can't skip the rest. */
+    void applyBlockSnapshot(Block block, Map<String, Object> snapshot) {
+        for (BlockSnapshotProvider p : blockSnapshotProviders) {
+            try {
+                p.apply(block, snapshot);
+            } catch (Exception e) {
+                plugin.getLogger().warning("BlockSnapshotProvider apply failed at " + block.getLocation()
+                    + " (" + e.getMessage() + "); that decoration is skipped");
+            }
+        }
     }
 
     /**

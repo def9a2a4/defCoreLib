@@ -52,6 +52,7 @@ final class MechanismState {
         byte @Nullable [] storage;      // ItemStack[] serialized (Base64 in YAML)
         int @Nullable [] glueOffsets;
         byte @Nullable [] configPdc;    // tile PDC bytes (Base64 in YAML)
+        @Nullable Map<String, Object> blockEntity; // BlockSnapshotProvider decorated state (YAML-safe map)
     }
 
     void write(ConfigurationSection s) {
@@ -87,6 +88,7 @@ final class MechanismState {
                 m.put("glue", g);
             }
             if (b.configPdc != null) m.put("pdc", Base64.getEncoder().encodeToString(b.configPdc));
+            if (b.blockEntity != null && !b.blockEntity.isEmpty()) m.put("be", b.blockEntity);
             blockList.add(m);
         }
         s.set("blocks", blockList);
@@ -140,6 +142,12 @@ final class MechanismState {
                 }
                 Object pdc = raw.get("pdc");
                 if (pdc instanceof String ps) b.configPdc = Base64.getDecoder().decode(ps);
+                Object be = raw.get("be");
+                if (be instanceof Map<?, ?> beMap) {
+                    Map<String, Object> m = new LinkedHashMap<>();
+                    for (Map.Entry<?, ?> e : beMap.entrySet()) m.put(String.valueOf(e.getKey()), e.getValue());
+                    b.blockEntity = m;
+                }
                 st.blocks.add(b);
             }
             return st;

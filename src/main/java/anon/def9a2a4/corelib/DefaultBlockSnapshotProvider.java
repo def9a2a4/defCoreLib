@@ -1,0 +1,265 @@
+package anon.def9a2a4.corelib;
+
+import com.destroystokyo.paper.profile.PlayerProfile;
+import com.destroystokyo.paper.profile.ProfileProperty;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
+import org.bukkit.Bukkit;
+import org.bukkit.DyeColor;
+import org.bukkit.Nameable;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockState;
+import org.bukkit.block.BrushableBlock;
+import org.bukkit.block.CommandBlock;
+import org.bukkit.block.CreatureSpawner;
+import org.bukkit.block.DecoratedPot;
+import org.bukkit.block.Jukebox;
+import org.bukkit.block.Lectern;
+import org.bukkit.block.Sign;
+import org.bukkit.block.Skull;
+import org.bukkit.block.sign.Side;
+import org.bukkit.block.sign.SignSide;
+import org.bukkit.entity.EntityType;
+import org.bukkit.inventory.ItemStack;
+
+import java.util.ArrayList;
+import java.util.Base64;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
+/**
+ * Built-in {@link BlockSnapshotProvider} covering the common vanilla block-entities whose state defCoreLib
+ * would otherwise blank when a mechanism moves them: signs, player-head profiles, custom names, lectern
+ * books, jukebox discs, brushable-block loot, decorated-pot sherds, command blocks, and mob spawners.
+ * Registered once at plugin enable. Container <em>inventories</em> and banners are handled by the core
+ * assembly path already, so they're intentionally NOT duplicated here (custom NAME still is, via Nameable).
+ *
+ * <p>All keys are namespaced ({@code bs_*}) and all values YAML-safe (String / boxed / List / base64), so
+ * the map round-trips through the mechanism's persisted state. Every {@code apply} branch re-checks the
+ * live block type, so a snapshot applied to a mismatched block is a harmless no-op.
+ *
+ * <p>Not (yet) captured — documented limitations: beehive occupants (bee entity NBT; the honey_level is
+ * BlockData and survives regardless), spawner potential-entity lists / custom spawn NBT (common timing
+ * fields ARE captured), and banner patterns on a non-block banner (core banners handle real banners).
+ */
+final class DefaultBlockSnapshotProvider implements BlockSnapshotProvider {
+
+    private static final GsonComponentSerializer GSON = GsonComponentSerializer.gson();
+
+    @Override
+    public void capture(Block block, Map<String, Object> into) {
+        BlockState state = block.getState();
+
+        if (state instanceof Sign sign) {
+            captureSignSide(into, "front", sign.getSide(Side.FRONT));
+            captureSignSide(into, "back", sign.getSide(Side.BACK));
+            into.put("bs_sign_waxed", sign.isWaxed());
+        }
+
+        if (state instanceof Skull skull) {
+            PlayerProfile profile = skull.getPlayerProfile();
+            if (profile != null) {
+                for (ProfileProperty p : profile.getProperties()) {
+                    if (p.getName().equals("textures")) {
+                        into.put("bs_skull_tex", p.getValue());
+                        if (p.getSignature() != null) into.put("bs_skull_sig", p.getSignature());
+                        break;
+                    }
+                }
+                if (profile.getId() != null) into.put("bs_skull_id", profile.getId().toString());
+                if (profile.getName() != null) into.put("bs_skull_name", profile.getName());
+            }
+        }
+
+        // Custom name (named chest/barrel/anvil-output tile, etc.). A separate branch from the type-specific
+        // ones so it fires for a named block that has no other captured decoration.
+        if (state instanceof Nameable nameable) {
+            Component name = nameable.customName();
+            if (name != null) into.put("bs_name", GSON.serialize(name));
+        }
+
+        if (state instanceof Lectern lectern) {
+            ItemStack book = lectern.getInventory().getItem(0);
+            if (book != null && !book.getType().isAir()) into.put("bs_lectern_book", encodeItem(book));
+            into.put("bs_lectern_page", lectern.getPage());
+        }
+
+        if (state instanceof Jukebox jukebox) {
+            ItemStack record = jukebox.getRecord();
+            if (record != null && !record.getType().isAir()) into.put("bs_jukebox_disc", encodeItem(record));
+        }
+
+        if (state instanceof BrushableBlock brushable) {
+            ItemStack item = brushable.getItem();
+            if (item != null && !item.getType().isAir()) into.put("bs_brushable_item", encodeItem(item));
+        }
+
+        if (state instanceof DecoratedPot pot) {
+            List<String> sherds = new ArrayList<>();
+            for (Map.Entry<DecoratedPot.Side, org.bukkit.Material> e : pot.getSherds().entrySet()) {
+                sherds.add(e.getKey().name() + "=" + e.getValue().name());
+            }
+            if (!sherds.isEmpty()) into.put("bs_pot_sherds", sherds);
+            ItemStack potItem = pot.getInventory().getItem(0);
+            if (potItem != null && !potItem.getType().isAir()) into.put("bs_pot_item", encodeItem(potItem));
+        }
+
+        if (state instanceof CommandBlock cmd) {
+            into.put("bs_cmd", cmd.getCommand());
+            Component cmdName = cmd.name();
+            if (cmdName != null) into.put("bs_cmd_name", GSON.serialize(cmdName));
+        }
+
+        if (state instanceof CreatureSpawner sp) {
+            EntityType t = sp.getSpawnedType();
+            if (t != null) into.put("bs_spawner_type", t.name());
+            into.put("bs_spawner_delay", sp.getDelay());
+            into.put("bs_spawner_min", sp.getMinSpawnDelay());
+            into.put("bs_spawner_max", sp.getMaxSpawnDelay());
+            into.put("bs_spawner_count", sp.getSpawnCount());
+            into.put("bs_spawner_nearby", sp.getMaxNearbyEntities());
+            into.put("bs_spawner_range", sp.getRequiredPlayerRange());
+            into.put("bs_spawner_spawnrange", sp.getSpawnRange());
+        }
+    }
+
+    @Override
+    public void apply(Block block, Map<String, Object> from) {
+        // Sign
+        if (block.getState() instanceof Sign sign) {
+            applySignSide(from, "front", sign.getSide(Side.FRONT));
+            applySignSide(from, "back", sign.getSide(Side.BACK));
+            Object waxed = from.get("bs_sign_waxed");
+            if (waxed instanceof Boolean b) sign.setWaxed(b);
+            sign.update(true, false);
+        }
+
+        // Skull profile
+        String tex = str(from.get("bs_skull_tex"));
+        if (tex != null && block.getState() instanceof Skull skull) {
+            UUID id = from.get("bs_skull_id") != null ? UUID.fromString(str(from.get("bs_skull_id"))) : UUID.randomUUID();
+            PlayerProfile profile = Bukkit.createProfile(id, str(from.get("bs_skull_name")));
+            profile.setProperty(new ProfileProperty("textures", tex, str(from.get("bs_skull_sig"))));
+            skull.setPlayerProfile(profile);
+            skull.update(true, false);
+        }
+
+        // Custom name (Nameable is implemented by the block-entity BlockState subtypes)
+        String name = str(from.get("bs_name"));
+        if (name != null) {
+            BlockState nbs = block.getState();
+            if (nbs instanceof Nameable nameable) {
+                nameable.customName(GSON.deserialize(name));
+                nbs.update(true, false);
+            }
+        }
+
+        // Lectern book + page
+        if (block.getState() instanceof Lectern lectern) {
+            String book = str(from.get("bs_lectern_book"));
+            if (book != null) lectern.getInventory().setItem(0, decodeItem(book));
+            Object page = from.get("bs_lectern_page");
+            if (page instanceof Number pg) lectern.setPage(pg.intValue());
+            lectern.update(true, false);
+        }
+
+        // Jukebox disc
+        String disc = str(from.get("bs_jukebox_disc"));
+        if (disc != null && block.getState() instanceof Jukebox jukebox) {
+            jukebox.setRecord(decodeItem(disc));
+            jukebox.update(true, false);
+        }
+
+        // Brushable loot
+        String brush = str(from.get("bs_brushable_item"));
+        if (brush != null && block.getState() instanceof BrushableBlock brushable) {
+            brushable.setItem(decodeItem(brush));
+            brushable.update(true, false);
+        }
+
+        // Decorated pot
+        if (block.getState() instanceof DecoratedPot pot) {
+            Object sherds = from.get("bs_pot_sherds");
+            if (sherds instanceof List<?> list) {
+                for (Object o : list) {
+                    String[] kv = String.valueOf(o).split("=", 2);
+                    if (kv.length != 2) continue;
+                    try {
+                        pot.setSherd(DecoratedPot.Side.valueOf(kv[0]), org.bukkit.Material.valueOf(kv[1]));
+                    } catch (IllegalArgumentException ignored) { /* unknown side/material across versions */ }
+                }
+            }
+            String potItem = str(from.get("bs_pot_item"));
+            if (potItem != null) pot.getInventory().setItem(0, decodeItem(potItem));
+            pot.update(true, false);
+        }
+
+        // Command block
+        String cmd = str(from.get("bs_cmd"));
+        if (cmd != null && block.getState() instanceof CommandBlock cb) {
+            cb.setCommand(cmd);
+            String cmdName = str(from.get("bs_cmd_name"));
+            if (cmdName != null) cb.name(GSON.deserialize(cmdName));
+            cb.update(true, false);
+        }
+
+        // Spawner
+        if (from.containsKey("bs_spawner_delay") && block.getState() instanceof CreatureSpawner sp) {
+            String t = str(from.get("bs_spawner_type"));
+            if (t != null) {
+                try { sp.setSpawnedType(EntityType.valueOf(t)); } catch (IllegalArgumentException ignored) { }
+            }
+            sp.setDelay(intOr(from.get("bs_spawner_delay"), sp.getDelay()));
+            sp.setMinSpawnDelay(intOr(from.get("bs_spawner_min"), sp.getMinSpawnDelay()));
+            sp.setMaxSpawnDelay(intOr(from.get("bs_spawner_max"), sp.getMaxSpawnDelay()));
+            sp.setSpawnCount(intOr(from.get("bs_spawner_count"), sp.getSpawnCount()));
+            sp.setMaxNearbyEntities(intOr(from.get("bs_spawner_nearby"), sp.getMaxNearbyEntities()));
+            sp.setRequiredPlayerRange(intOr(from.get("bs_spawner_range"), sp.getRequiredPlayerRange()));
+            sp.setSpawnRange(intOr(from.get("bs_spawner_spawnrange"), sp.getSpawnRange()));
+            sp.update(true, false);
+        }
+    }
+
+    // ── helpers ──────────────────────────────────────────────────────────────
+
+    private static void captureSignSide(Map<String, Object> into, String key, SignSide side) {
+        List<String> lines = new ArrayList<>(4);
+        for (Component c : side.lines()) lines.add(GSON.serialize(c));
+        into.put("bs_sign_" + key, lines);
+        into.put("bs_sign_" + key + "_glow", side.isGlowingText());
+        DyeColor color = side.getColor();
+        if (color != null) into.put("bs_sign_" + key + "_color", color.name());
+    }
+
+    private static void applySignSide(Map<String, Object> from, String key, SignSide side) {
+        Object lines = from.get("bs_sign_" + key);
+        if (lines instanceof List<?> list) {
+            for (int i = 0; i < list.size() && i < 4; i++) {
+                side.line(i, GSON.deserialize(String.valueOf(list.get(i))));
+            }
+        }
+        Object glow = from.get("bs_sign_" + key + "_glow");
+        if (glow instanceof Boolean g) side.setGlowingText(g);
+        String color = str(from.get("bs_sign_" + key + "_color"));
+        if (color != null) {
+            try { side.setColor(DyeColor.valueOf(color)); } catch (IllegalArgumentException ignored) { }
+        }
+    }
+
+    private static String encodeItem(ItemStack item) {
+        return Base64.getEncoder().encodeToString(item.serializeAsBytes());
+    }
+
+    private static ItemStack decodeItem(String base64) {
+        return ItemStack.deserializeBytes(Base64.getDecoder().decode(base64));
+    }
+
+    private static String str(Object o) {
+        return o == null ? null : String.valueOf(o);
+    }
+
+    private static int intOr(Object o, int fallback) {
+        return o instanceof Number n ? n.intValue() : fallback;
+    }
+}

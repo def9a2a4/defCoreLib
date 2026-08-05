@@ -307,6 +307,14 @@ public class MechanismRegistry {
             // Remember whether it was bare so disassembly can re-bare it on landing (rebareAfterLanding).
             boolean wasBare = registry.revertBareBlockForCapture(block);
             BlockData bd = block.getBlockData();
+            // Waterlog is destination-authoritative, never inherited from the source (mirrors BlockShips):
+            // strip it at capture so the moving/landed block is dry, and re-derive it at the destination in
+            // placeBlock (a block landing into a water source re-waterlogs). Avoids carrying "wet" into a dry
+            // cell and self-heals stale saved data.
+            if (bd instanceof org.bukkit.block.data.Waterlogged wlSrc && wlSrc.isWaterlogged()) {
+                bd = bd.clone();
+                ((org.bukkit.block.data.Waterlogged) bd).setWaterlogged(false);
+            }
             Matrix4f local = new Matrix4f().translation(
                 (float) ((block.getX() + 0.5) - snapX),
                 (float) ((block.getY() + 0.5) - snapY),
@@ -398,6 +406,9 @@ public class MechanismRegistry {
                     // Unserializable PDC: skip config carry-over (block still moves + restores normally).
                 }
             }
+            // Decorated block-entity state (sign text, skull profile, container name, …) via registered
+            // BlockSnapshotProviders — captured HERE while the block is still live, re-applied in placeBlock.
+            mbd.blockEntitySnapshot = registry.captureBlockSnapshot(block);
             blockData.add(mbd);
         }
 
@@ -408,6 +419,10 @@ public class MechanismRegistry {
         for (GhostBlock ghost : ghosts) {
             Block tmpl = ghost.template();   // null for a data-only ghost (no real block to mirror)
             BlockData gbd = tmpl != null ? tmpl.getBlockData() : ghost.data();
+            if (gbd instanceof org.bukkit.block.data.Waterlogged wlG && wlG.isWaterlogged()) {
+                gbd = gbd.clone();
+                ((org.bukkit.block.data.Waterlogged) gbd).setWaterlogged(false);
+            }
             Matrix4f glocal = new Matrix4f().translation(
                 (float) ((ghost.target().getBlockX() + 0.5) - snapX),
                 (float) ((ghost.target().getBlockY() + 0.5) - snapY),
@@ -1240,6 +1255,7 @@ public class MechanismRegistry {
             mbd.ghost = b.ghost;
             mbd.glueOffsets = b.glueOffsets;
             mbd.configPdc = b.configPdc;
+            mbd.blockEntitySnapshot = b.blockEntity;
             out.add(mbd);
         }
         return out;

@@ -7,6 +7,7 @@ import org.joml.Vector3f;
 import org.jspecify.annotations.Nullable;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Snapshot of a single block within a mechanism.
@@ -54,6 +55,12 @@ public final class MechanismBlockData {
     // reorients its glued region on landing (BasicMechanism.disassemble writes R × these back). Null
     // unless the block is a glue anchor with a brushed region.
     int @Nullable [] glueOffsets;
+
+    // Decorated block-entity state captured by registered BlockSnapshotProviders (sign text, skull
+    // profile, container name, …) — a YAML-safe map, set post-construction like the fields above. Null for
+    // a block with no such decoration. Re-applied on landing by CustomBlockRegistry.applyBlockSnapshot and
+    // serialized into MechanismState.BlockRec so it survives crash recovery. See BlockSnapshotProvider.
+    @Nullable Map<String, Object> blockEntitySnapshot;
 
     // Full tile PDC captured at assembly (serialized bytes; set post-construction like glueOffsets),
     // so per-block CONFIG survives a move — e.g. a rotator's selected angle (mech:rotator_target), a

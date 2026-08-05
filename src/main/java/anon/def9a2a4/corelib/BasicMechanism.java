@@ -473,6 +473,7 @@ final class BasicMechanism implements Mechanism {
             }
             b.glueOffsets = mb.glueOffsets;
             b.configPdc = mb.configPdc;
+            b.blockEntity = mb.blockEntitySnapshot;
             st.blocks.add(b);
         }
         return st;
@@ -847,12 +848,23 @@ final class BasicMechanism implements Mechanism {
     // ──────────────────────────────────────────────────────────────────────
 
     private void placeBlock(Block target, MechanismBlockData mb, float snappedYaw) {
+        // Destination-authoritative waterlog: capture cleared it (see assembleCore), so a waterloggable
+        // block landing INTO a water source re-waterlogs. Sample the target BEFORE we overwrite it. Only a
+        // true source (Levelled level 0), never transient flowing water — matches BlockShips.
+        boolean intoWaterSource = target.getType() == Material.WATER
+            && target.getBlockData() instanceof org.bukkit.block.data.Levelled lv && lv.getLevel() == 0;
+
         // Attachables land physics-suppressed (matching airOutSourceBlocks' physics-false removal):
         // the two-pass landing order puts supports first, but a support that was consumed/dropped
         // would still pop the attachable DURING setBlockData — before its block-entity data
         // (banner patterns) is written back, dropping a blank item.
         boolean attachable = FragileBlocks.isAttachable(mb.blockData.getMaterial());
-        target.setBlockData(BlockRotation.rotateBlockData(mb.blockData, snappedYaw), !attachable);
+        BlockData landed = BlockRotation.rotateBlockData(mb.blockData, snappedYaw);
+        if (intoWaterSource && landed instanceof org.bukkit.block.data.Waterlogged wl && !wl.isWaterlogged()) {
+            landed = landed.clone();
+            ((org.bukkit.block.data.Waterlogged) landed).setWaterlogged(true);
+        }
+        target.setBlockData(landed, !attachable);
 
         // Vanilla banner block: write the captured patterns back into the landed block entity
         // (the orientation was already rotated by rotateBlockData above).
@@ -913,6 +925,13 @@ final class BasicMechanism implements Mechanism {
         } else if (mb.storage != null && target.getState() instanceof Container c) {
             c.getSnapshotInventory().setContents(mb.storage.getContents());
             c.update();
+        }
+
+        // Decorated block-entity state (sign text, skull profile, container name, …). LAST — after
+        // BlockData + custom/container/banner restores — so each provider fetches a fresh, correctly-typed
+        // BlockState and re-applies its keys (see BlockSnapshotProvider). No-op when nothing was captured.
+        if (mb.blockEntitySnapshot != null) {
+            registry.applyBlockSnapshot(target, mb.blockEntitySnapshot);
         }
     }
 
