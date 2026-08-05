@@ -54,6 +54,11 @@ final class MechanismState {
         int @Nullable [] glueOffsets;
         byte @Nullable [] configPdc;    // tile PDC bytes (Base64 in YAML)
         @Nullable Map<String, Object> blockEntity; // BlockSnapshotProvider decorated state (YAML-safe map)
+        // Riding banner attachments (vanilla flag/bed/block + BetterBanners large/huge), in list order —
+        // one YAML-safe map per BannerAttachment: {item: Base64 bytes, face: String, xf: 14 doubles
+        // (translation xyz, leftRot xyzw, scale xyz, rightRot xyzw), anchor: 3 doubles}. Reconstructed into
+        // MechanismBlockData.banners in rebuildBlocks. Order MUST be preserved (pairs with banner_k displays).
+        @Nullable List<Map<String, Object>> banners;
     }
 
     void write(ConfigurationSection s) {
@@ -91,6 +96,7 @@ final class MechanismState {
             }
             if (b.configPdc != null) m.put("pdc", Base64.getEncoder().encodeToString(b.configPdc));
             if (b.blockEntity != null && !b.blockEntity.isEmpty()) m.put("be", b.blockEntity);
+            if (b.banners != null && !b.banners.isEmpty()) m.put("banners", b.banners);
             blockList.add(m);
         }
         s.set("blocks", blockList);
@@ -150,6 +156,17 @@ final class MechanismState {
                     Map<String, Object> m = new LinkedHashMap<>();
                     for (Map.Entry<?, ?> e : beMap.entrySet()) m.put(String.valueOf(e.getKey()), e.getValue());
                     b.blockEntity = m;
+                }
+                Object bn = raw.get("banners");
+                if (bn instanceof List<?> bnList) {
+                    List<Map<String, Object>> out = new ArrayList<>();
+                    for (Object el : bnList) {
+                        if (!(el instanceof Map<?, ?> em)) continue;
+                        Map<String, Object> m = new LinkedHashMap<>();
+                        for (Map.Entry<?, ?> e : em.entrySet()) m.put(String.valueOf(e.getKey()), e.getValue());
+                        out.add(m);
+                    }
+                    if (!out.isEmpty()) b.banners = out;
                 }
                 st.blocks.add(b);
             }
