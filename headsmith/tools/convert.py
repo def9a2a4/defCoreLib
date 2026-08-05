@@ -109,9 +109,9 @@ def chimney_states() -> dict:
             "lit": {
                 "particles": {
                     "type": "CAMPFIRE_COSY_SMOKE", "interval": 5,
-                    "floor_offset": [0, 0.85, 0],  # spawn origin, inside the chimney top (no light block)
+                    "floor_offset": [0, 0.65, 0],  # spawn origin, inside the chimney top (no light block)
                     "velocity": [0, 0.1, 0],       # directional: smoke rises straight up (not random spread)
-                    "speed": 0.04,                 # magnitude of that upward velocity
+                    "speed": 0.5,                 # magnitude of that upward velocity
                 },
             },
         },

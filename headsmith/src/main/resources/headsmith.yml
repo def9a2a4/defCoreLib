@@ -51701,13 +51701,16 @@ blocks:
       lit:
         particles:
           type: CAMPFIRE_COSY_SMOKE
-          count: 1
-          speed: 0.05
           interval: 5
           floor_offset:
           - 0
-          - 0.85
+          - 0.65
           - 0
+          velocity:
+          - 0
+          - 0.1
+          - 0
+          speed: 0.5
     transitions:
     - trigger:
         type: interact
@@ -51750,13 +51753,16 @@ blocks:
       lit:
         particles:
           type: CAMPFIRE_COSY_SMOKE
-          count: 1
-          speed: 0.05
           interval: 5
           floor_offset:
           - 0
-          - 0.85
+          - 0.65
           - 0
+          velocity:
+          - 0
+          - 0.1
+          - 0
+          speed: 0.5
     transitions:
     - trigger:
         type: interact
@@ -51799,13 +51805,16 @@ blocks:
       lit:
         particles:
           type: CAMPFIRE_COSY_SMOKE
-          count: 1
-          speed: 0.05
           interval: 5
           floor_offset:
           - 0
-          - 0.85
+          - 0.65
           - 0
+          velocity:
+          - 0
+          - 0.1
+          - 0
+          speed: 0.5
     transitions:
     - trigger:
         type: interact
@@ -51848,13 +51857,16 @@ blocks:
       lit:
         particles:
           type: CAMPFIRE_COSY_SMOKE
-          count: 1
-          speed: 0.05
           interval: 5
           floor_offset:
           - 0
-          - 0.85
+          - 0.65
           - 0
+          velocity:
+          - 0
+          - 0.1
+          - 0
+          speed: 0.5
     transitions:
     - trigger:
         type: interact
@@ -51897,13 +51909,16 @@ blocks:
       lit:
         particles:
           type: CAMPFIRE_COSY_SMOKE
-          count: 1
-          speed: 0.05
           interval: 5
           floor_offset:
           - 0
-          - 0.85
+          - 0.65
           - 0
+          velocity:
+          - 0
+          - 0.1
+          - 0
+          speed: 0.5
     transitions:
     - trigger:
         type: interact
@@ -51946,13 +51961,16 @@ blocks:
       lit:
         particles:
           type: CAMPFIRE_COSY_SMOKE
-          count: 1
-          speed: 0.05
           interval: 5
           floor_offset:
           - 0
-          - 0.85
+          - 0.65
           - 0
+          velocity:
+          - 0
+          - 0.1
+          - 0
+          speed: 0.5
     transitions:
     - trigger:
         type: interact
@@ -51995,13 +52013,16 @@ blocks:
       lit:
         particles:
           type: CAMPFIRE_COSY_SMOKE
-          count: 1
-          speed: 0.05
           interval: 5
           floor_offset:
           - 0
-          - 0.85
+          - 0.65
           - 0
+          velocity:
+          - 0
+          - 0.1
+          - 0
+          speed: 0.5
     transitions:
     - trigger:
         type: interact
@@ -52044,13 +52065,16 @@ blocks:
       lit:
         particles:
           type: CAMPFIRE_COSY_SMOKE
-          count: 1
-          speed: 0.05
           interval: 5
           floor_offset:
           - 0
-          - 0.85
+          - 0.65
           - 0
+          velocity:
+          - 0
+          - 0.1
+          - 0
+          speed: 0.5
     transitions:
     - trigger:
         type: interact
@@ -52093,13 +52117,16 @@ blocks:
       lit:
         particles:
           type: CAMPFIRE_COSY_SMOKE
-          count: 1
-          speed: 0.05
           interval: 5
           floor_offset:
           - 0
-          - 0.85
+          - 0.65
           - 0
+          velocity:
+          - 0
+          - 0.1
+          - 0
+          speed: 0.5
     transitions:
     - trigger:
         type: interact
@@ -52142,13 +52169,16 @@ blocks:
       lit:
         particles:
           type: CAMPFIRE_COSY_SMOKE
-          count: 1
-          speed: 0.05
           interval: 5
           floor_offset:
           - 0
-          - 0.85
+          - 0.65
           - 0
+          velocity:
+          - 0
+          - 0.1
+          - 0
+          speed: 0.5
     transitions:
     - trigger:
         type: interact
@@ -52191,13 +52221,16 @@ blocks:
       lit:
         particles:
           type: CAMPFIRE_COSY_SMOKE
-          count: 1
-          speed: 0.05
           interval: 5
           floor_offset:
           - 0
-          - 0.85
+          - 0.65
           - 0
+          velocity:
+          - 0
+          - 0.1
+          - 0
+          speed: 0.5
     transitions:
     - trigger:
         type: interact
@@ -52240,13 +52273,16 @@ blocks:
       lit:
         particles:
           type: CAMPFIRE_COSY_SMOKE
-          count: 1
-          speed: 0.05
           interval: 5
           floor_offset:
           - 0
-          - 0.85
+          - 0.65
           - 0
+          velocity:
+          - 0
+          - 0.1
+          - 0
+          speed: 0.5
     transitions:
     - trigger:
         type: interact
@@ -52289,13 +52325,16 @@ blocks:
       lit:
         particles:
           type: CAMPFIRE_COSY_SMOKE
-          count: 1
-          speed: 0.05
           interval: 5
           floor_offset:
           - 0
-          - 0.85
+          - 0.65
           - 0
+          velocity:
+          - 0
+          - 0.1
+          - 0
+          speed: 0.5
     transitions:
     - trigger:
         type: interact
@@ -52338,13 +52377,16 @@ blocks:
       lit:
         particles:
           type: CAMPFIRE_COSY_SMOKE
-          count: 1
-          speed: 0.05
           interval: 5
           floor_offset:
           - 0
-          - 0.85
+          - 0.65
           - 0
+          velocity:
+          - 0
+          - 0.1
+          - 0
+          speed: 0.5
     transitions:
     - trigger:
         type: interact
@@ -52387,13 +52429,16 @@ blocks:
       lit:
         particles:
           type: CAMPFIRE_COSY_SMOKE
-          count: 1
-          speed: 0.05
           interval: 5
           floor_offset:
           - 0
-          - 0.85
+          - 0.65
           - 0
+          velocity:
+          - 0
+          - 0.1
+          - 0
+          speed: 0.5
     transitions:
     - trigger:
         type: interact
@@ -52436,13 +52481,16 @@ blocks:
       lit:
         particles:
           type: CAMPFIRE_COSY_SMOKE
-          count: 1
-          speed: 0.05
           interval: 5
           floor_offset:
           - 0
-          - 0.85
+          - 0.65
           - 0
+          velocity:
+          - 0
+          - 0.1
+          - 0
+          speed: 0.5
     transitions:
     - trigger:
         type: interact
@@ -52485,13 +52533,16 @@ blocks:
       lit:
         particles:
           type: CAMPFIRE_COSY_SMOKE
-          count: 1
-          speed: 0.05
           interval: 5
           floor_offset:
           - 0
-          - 0.85
+          - 0.65
           - 0
+          velocity:
+          - 0
+          - 0.1
+          - 0
+          speed: 0.5
     transitions:
     - trigger:
         type: interact
@@ -52534,13 +52585,16 @@ blocks:
       lit:
         particles:
           type: CAMPFIRE_COSY_SMOKE
-          count: 1
-          speed: 0.05
           interval: 5
           floor_offset:
           - 0
-          - 0.85
+          - 0.65
           - 0
+          velocity:
+          - 0
+          - 0.1
+          - 0
+          speed: 0.5
     transitions:
     - trigger:
         type: interact
@@ -52583,13 +52637,16 @@ blocks:
       lit:
         particles:
           type: CAMPFIRE_COSY_SMOKE
-          count: 1
-          speed: 0.05
           interval: 5
           floor_offset:
           - 0
-          - 0.85
+          - 0.65
           - 0
+          velocity:
+          - 0
+          - 0.1
+          - 0
+          speed: 0.5
     transitions:
     - trigger:
         type: interact
@@ -52632,13 +52689,16 @@ blocks:
       lit:
         particles:
           type: CAMPFIRE_COSY_SMOKE
-          count: 1
-          speed: 0.05
           interval: 5
           floor_offset:
           - 0
-          - 0.85
+          - 0.65
           - 0
+          velocity:
+          - 0
+          - 0.1
+          - 0
+          speed: 0.5
     transitions:
     - trigger:
         type: interact
@@ -52681,13 +52741,16 @@ blocks:
       lit:
         particles:
           type: CAMPFIRE_COSY_SMOKE
-          count: 1
-          speed: 0.05
           interval: 5
           floor_offset:
           - 0
-          - 0.85
+          - 0.65
           - 0
+          velocity:
+          - 0
+          - 0.1
+          - 0
+          speed: 0.5
     transitions:
     - trigger:
         type: interact
@@ -52730,13 +52793,16 @@ blocks:
       lit:
         particles:
           type: CAMPFIRE_COSY_SMOKE
-          count: 1
-          speed: 0.05
           interval: 5
           floor_offset:
           - 0
-          - 0.85
+          - 0.65
           - 0
+          velocity:
+          - 0
+          - 0.1
+          - 0
+          speed: 0.5
     transitions:
     - trigger:
         type: interact
@@ -52779,13 +52845,16 @@ blocks:
       lit:
         particles:
           type: CAMPFIRE_COSY_SMOKE
-          count: 1
-          speed: 0.05
           interval: 5
           floor_offset:
           - 0
-          - 0.85
+          - 0.65
           - 0
+          velocity:
+          - 0
+          - 0.1
+          - 0
+          speed: 0.5
     transitions:
     - trigger:
         type: interact
@@ -52828,13 +52897,16 @@ blocks:
       lit:
         particles:
           type: CAMPFIRE_COSY_SMOKE
-          count: 1
-          speed: 0.05
           interval: 5
           floor_offset:
           - 0
-          - 0.85
+          - 0.65
           - 0
+          velocity:
+          - 0
+          - 0.1
+          - 0
+          speed: 0.5
     transitions:
     - trigger:
         type: interact
@@ -52877,13 +52949,16 @@ blocks:
       lit:
         particles:
           type: CAMPFIRE_COSY_SMOKE
-          count: 1
-          speed: 0.05
           interval: 5
           floor_offset:
           - 0
-          - 0.85
+          - 0.65
           - 0
+          velocity:
+          - 0
+          - 0.1
+          - 0
+          speed: 0.5
     transitions:
     - trigger:
         type: interact
@@ -52926,13 +53001,16 @@ blocks:
       lit:
         particles:
           type: CAMPFIRE_COSY_SMOKE
-          count: 1
-          speed: 0.05
           interval: 5
           floor_offset:
           - 0
-          - 0.85
+          - 0.65
           - 0
+          velocity:
+          - 0
+          - 0.1
+          - 0
+          speed: 0.5
     transitions:
     - trigger:
         type: interact
@@ -52975,13 +53053,16 @@ blocks:
       lit:
         particles:
           type: CAMPFIRE_COSY_SMOKE
-          count: 1
-          speed: 0.05
           interval: 5
           floor_offset:
           - 0
-          - 0.85
+          - 0.65
           - 0
+          velocity:
+          - 0
+          - 0.1
+          - 0
+          speed: 0.5
     transitions:
     - trigger:
         type: interact
@@ -53024,13 +53105,16 @@ blocks:
       lit:
         particles:
           type: CAMPFIRE_COSY_SMOKE
-          count: 1
-          speed: 0.05
           interval: 5
           floor_offset:
           - 0
-          - 0.85
+          - 0.65
           - 0
+          velocity:
+          - 0
+          - 0.1
+          - 0
+          speed: 0.5
     transitions:
     - trigger:
         type: interact
@@ -53073,13 +53157,16 @@ blocks:
       lit:
         particles:
           type: CAMPFIRE_COSY_SMOKE
-          count: 1
-          speed: 0.05
           interval: 5
           floor_offset:
           - 0
-          - 0.85
+          - 0.65
           - 0
+          velocity:
+          - 0
+          - 0.1
+          - 0
+          speed: 0.5
     transitions:
     - trigger:
         type: interact
@@ -53122,13 +53209,16 @@ blocks:
       lit:
         particles:
           type: CAMPFIRE_COSY_SMOKE
-          count: 1
-          speed: 0.05
           interval: 5
           floor_offset:
           - 0
-          - 0.85
+          - 0.65
           - 0
+          velocity:
+          - 0
+          - 0.1
+          - 0
+          speed: 0.5
     transitions:
     - trigger:
         type: interact
@@ -53171,13 +53261,16 @@ blocks:
       lit:
         particles:
           type: CAMPFIRE_COSY_SMOKE
-          count: 1
-          speed: 0.05
           interval: 5
           floor_offset:
           - 0
-          - 0.85
+          - 0.65
           - 0
+          velocity:
+          - 0
+          - 0.1
+          - 0
+          speed: 0.5
     transitions:
     - trigger:
         type: interact
@@ -53220,13 +53313,16 @@ blocks:
       lit:
         particles:
           type: CAMPFIRE_COSY_SMOKE
-          count: 1
-          speed: 0.05
           interval: 5
           floor_offset:
           - 0
-          - 0.85
+          - 0.65
           - 0
+          velocity:
+          - 0
+          - 0.1
+          - 0
+          speed: 0.5
     transitions:
     - trigger:
         type: interact
@@ -53269,13 +53365,16 @@ blocks:
       lit:
         particles:
           type: CAMPFIRE_COSY_SMOKE
-          count: 1
-          speed: 0.05
           interval: 5
           floor_offset:
           - 0
-          - 0.85
+          - 0.65
           - 0
+          velocity:
+          - 0
+          - 0.1
+          - 0
+          speed: 0.5
     transitions:
     - trigger:
         type: interact
@@ -53318,13 +53417,16 @@ blocks:
       lit:
         particles:
           type: CAMPFIRE_COSY_SMOKE
-          count: 1
-          speed: 0.05
           interval: 5
           floor_offset:
           - 0
-          - 0.85
+          - 0.65
           - 0
+          velocity:
+          - 0
+          - 0.1
+          - 0
+          speed: 0.5
     transitions:
     - trigger:
         type: interact
@@ -53367,13 +53469,16 @@ blocks:
       lit:
         particles:
           type: CAMPFIRE_COSY_SMOKE
-          count: 1
-          speed: 0.05
           interval: 5
           floor_offset:
           - 0
-          - 0.85
+          - 0.65
           - 0
+          velocity:
+          - 0
+          - 0.1
+          - 0
+          speed: 0.5
     transitions:
     - trigger:
         type: interact
@@ -53416,13 +53521,16 @@ blocks:
       lit:
         particles:
           type: CAMPFIRE_COSY_SMOKE
-          count: 1
-          speed: 0.05
           interval: 5
           floor_offset:
           - 0
-          - 0.85
+          - 0.65
           - 0
+          velocity:
+          - 0
+          - 0.1
+          - 0
+          speed: 0.5
     transitions:
     - trigger:
         type: interact
@@ -53465,13 +53573,16 @@ blocks:
       lit:
         particles:
           type: CAMPFIRE_COSY_SMOKE
-          count: 1
-          speed: 0.05
           interval: 5
           floor_offset:
           - 0
-          - 0.85
+          - 0.65
           - 0
+          velocity:
+          - 0
+          - 0.1
+          - 0
+          speed: 0.5
     transitions:
     - trigger:
         type: interact
@@ -53514,13 +53625,16 @@ blocks:
       lit:
         particles:
           type: CAMPFIRE_COSY_SMOKE
-          count: 1
-          speed: 0.05
           interval: 5
           floor_offset:
           - 0
-          - 0.85
+          - 0.65
           - 0
+          velocity:
+          - 0
+          - 0.1
+          - 0
+          speed: 0.5
     transitions:
     - trigger:
         type: interact
@@ -53563,13 +53677,16 @@ blocks:
       lit:
         particles:
           type: CAMPFIRE_COSY_SMOKE
-          count: 1
-          speed: 0.05
           interval: 5
           floor_offset:
           - 0
-          - 0.85
+          - 0.65
           - 0
+          velocity:
+          - 0
+          - 0.1
+          - 0
+          speed: 0.5
     transitions:
     - trigger:
         type: interact
@@ -53612,13 +53729,16 @@ blocks:
       lit:
         particles:
           type: CAMPFIRE_COSY_SMOKE
-          count: 1
-          speed: 0.05
           interval: 5
           floor_offset:
           - 0
-          - 0.85
+          - 0.65
           - 0
+          velocity:
+          - 0
+          - 0.1
+          - 0
+          speed: 0.5
     transitions:
     - trigger:
         type: interact
@@ -53661,13 +53781,16 @@ blocks:
       lit:
         particles:
           type: CAMPFIRE_COSY_SMOKE
-          count: 1
-          speed: 0.05
           interval: 5
           floor_offset:
           - 0
-          - 0.85
+          - 0.65
           - 0
+          velocity:
+          - 0
+          - 0.1
+          - 0
+          speed: 0.5
     transitions:
     - trigger:
         type: interact
@@ -53710,13 +53833,16 @@ blocks:
       lit:
         particles:
           type: CAMPFIRE_COSY_SMOKE
-          count: 1
-          speed: 0.05
           interval: 5
           floor_offset:
           - 0
-          - 0.85
+          - 0.65
           - 0
+          velocity:
+          - 0
+          - 0.1
+          - 0
+          speed: 0.5
     transitions:
     - trigger:
         type: interact
@@ -53759,13 +53885,16 @@ blocks:
       lit:
         particles:
           type: CAMPFIRE_COSY_SMOKE
-          count: 1
-          speed: 0.05
           interval: 5
           floor_offset:
           - 0
-          - 0.85
+          - 0.65
           - 0
+          velocity:
+          - 0
+          - 0.1
+          - 0
+          speed: 0.5
     transitions:
     - trigger:
         type: interact
@@ -53808,13 +53937,16 @@ blocks:
       lit:
         particles:
           type: CAMPFIRE_COSY_SMOKE
-          count: 1
-          speed: 0.05
           interval: 5
           floor_offset:
           - 0
-          - 0.85
+          - 0.65
           - 0
+          velocity:
+          - 0
+          - 0.1
+          - 0
+          speed: 0.5
     transitions:
     - trigger:
         type: interact
