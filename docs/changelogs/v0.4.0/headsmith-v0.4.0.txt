@@ -1,0 +1,40 @@
+headsmith v0.4.0
+
+INITIAL RELEASE (NEW)
+HeadSmith is a new companion plugin that adds a large library of decorative
+player-head blocks to your world. Everything lives as DefCoreLib data under
+the "headsmith" namespace, so the heads register, craft, place, and break
+like any other def block, and show up in the core item catalog. It needs
+DefCoreLib installed; without the core, the heads simply don't load.
+
+HEADS
+- A big catalog of decorative heads organized into families: the alphabet
+  (letters, numbers, greek, cyrillic, runes, galactic, zodiac, arrows, and
+  symbols across many materials), mini-blocks, candles, books, barrels,
+  bundles, buckets, pumpkins, chalices, bottles, and more.
+- A cross-cutting color axis groups every black / white / red / … head under
+  its color, so you can browse by shape or by color.
+- Browse them all in-game with the core catalog: `/defcorelib catalog` groups
+  every HeadSmith head by category, and each dye-color node shows that color's
+  mini-wool as its icon.
+- Get them in survival by crafting: most heads are carved in the stonecutter
+  from mini-blocks (for example, a mini birch-planks block cuts into birch
+  letters), with some shaped and shapeless recipes too.
+- HeadSmith recipes stay out of the vanilla recipe book by default. Run
+  `/headsmith recipes give` to reveal them in your book, or `take` to hide
+  them again.
+
+CHIMNEY HEADS (NEW)
+- Chimney heads in a range of materials (stone, brick, cobblestone,
+  sandstone, nether brick, metal, and more). Light one with flint & steel and
+  it puffs a steady rising campfire-smoke plume; right-click again to snuff it
+  out with an extinguish sound. Chimneys give off smoke only — they emit no
+  light.
+
+COMMANDS
+- `/headsmith give <id> [amount]` - give yourself a head by id (op).
+- `/headsmith recipes <give|take> [player]` - reveal or hide HeadSmith recipes
+  in a recipe book (anyone may run it for themselves; an operator can run it
+  for another player).
+- `/headsmith migrate` - adopt already-placed heads from the old standalone
+  HeadSmith plugin (op).
