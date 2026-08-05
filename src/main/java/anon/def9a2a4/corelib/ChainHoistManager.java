@@ -125,7 +125,7 @@ final class ChainHoistManager implements Listener {
             plugin.getLogger().warning("ChainHoist: block '" + HOIST_ID + "' not found — skipping");
             return;
         }
-        registry.register(type.toBuilder()
+        registry.overlayType(type.toBuilder()
             .drillable(false)
             .cancelPistons(true)
             .reactsToNeighbors(true)
@@ -485,6 +485,9 @@ final class ChainHoistManager implements Listener {
             // can move (a hoist resting powered on a floor would otherwise churn a mechanism every trigger).
             // With budget >> startDepth the ray exits the column and reads the real clearance; advance owns
             // per-block re-verification from here, so r0 >= 1 is all this needs.
+            // Mow only the immediate frontier so a plant directly below doesn't bail the whole descent;
+            // advance's frontierClear mows each deeper cell as the body reaches it (no over-mow past the stop).
+            mowFragilesAhead(frontier, footprint, BlockFace.DOWN, 1);
             if (clearForAll(frontier, footprint, BlockFace.DOWN, budget) < 1) return;
         } else {
             // Rising: clamp the WHOLE committed span by the LOAD's upward clearance — a load wider than the
@@ -498,6 +501,9 @@ final class ChainHoistManager implements Listener {
             // per-block: rising's ghost/swallow accounting needs `span` final at assembly time — the ghost
             // lands on the protected hoist cell only when the stroke runs its full span. Bare chain (empty
             // load) is a no-op here: clearForAll of no blocks returns max.
+            // Rising commits its whole span up front, so mow the full span of fragile plants above the load
+            // (they'd otherwise clamp the stroke short) before measuring the real ceiling clearance.
+            mowFragilesAhead(load, footprint, BlockFace.UP, span);
             span = Math.min(span, clearForAll(load, footprint, BlockFace.UP, span));
             if (span < 1) return;
         }
@@ -836,6 +842,10 @@ final class ChainHoistManager implements Listener {
     private boolean frontierClear(ActiveMove m, int unlocked) {
         List<Block> at = new ArrayList<>(m.frontier.size());
         for (Block b : m.frontier) at.add(b.getRelative(0, -unlocked, 0));
+        // Break a fragile plant directly below the front so the body descends THROUGH it (one cell per
+        // tick) rather than stopping at it. Only reached when the body is genuinely about to enter this
+        // cell (see advance's short-circuited gate), so the break tracks the descent progressively.
+        mowFragilesAhead(at, NO_FOOTPRINT, BlockFace.DOWN, 1);
         return clearForAll(at, NO_FOOTPRINT, BlockFace.DOWN, 1) >= 1;
     }
 
@@ -851,6 +861,27 @@ final class ChainHoistManager implements Listener {
             if (n < best) best = n;
         }
         return best;
+    }
+
+    /**
+     * Break fragile plants (grass, ferns, small + tall flowers, …) the hoist body is about to sweep
+     * through, so {@link #clearForAll} then reads air and moves through instead of stopping at them.
+     * Mirrors clearForAll's walk: footprint + already-clear cells are skipped, a fragile cell is broken
+     * and the walk continues, the first solid non-fragile block ends that column. Event-less
+     * {@code breakNaturally()} matches the disassembly landing path (the hoist has no rider to attribute a
+     * {@code BlockBreakEvent} to — this bypasses protection, exactly like landing). Two-tall plants are
+     * safe: breakNaturally on either half removes both.
+     */
+    private void mowFragilesAhead(List<Block> moving, Set<Long> footprint, BlockFace face, int max) {
+        for (Block b : moving) {
+            Block c = b;
+            for (int i = 0; i < max; i++) {
+                c = c.getRelative(face);
+                if (footprint.contains(cellKey(c)) || isClear(c)) continue;
+                if (FragileBlocks.isFragile(c.getType())) { c.breakNaturally(); continue; }
+                break;
+            }
+        }
     }
 
     private static long cellKey(Block b) {

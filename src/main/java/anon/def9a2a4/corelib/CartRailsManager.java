@@ -90,7 +90,7 @@ final class CartRailsManager implements Listener {
         for (String id : new String[]{DESTRUCTOR_ID, CONTROLLER_ID}) {
             CustomHeadBlock type = registry.getType(id);
             if (type == null) continue;
-            registry.register(type.toBuilder()
+            registry.overlayType(type.toBuilder()
                 .displayTransformResolver((b, state, cfg, idx) -> orientRail(b, cfg))
                 .onBlockRemoved((b, state) -> forgetFacing(b))
                 .build());

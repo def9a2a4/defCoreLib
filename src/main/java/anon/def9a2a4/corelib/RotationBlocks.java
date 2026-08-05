@@ -239,7 +239,7 @@ final class RotationBlocks {
         }
         // Piston behavior (cancel vs. break) is YAML-driven per block (cancel_pistons /
         // break_on_piston) and carried through toBuilder(); the overlay leaves it untouched.
-        registry.register(block.toBuilder()
+        registry.overlayType(block.toBuilder()
             .drillable(false)
             .reactsToNeighbors(true)
             .onNeighborChange((b, face) -> {
@@ -294,7 +294,7 @@ final class RotationBlocks {
             registry.getPlugin().getLogger().warning("RotationBlocks: block '" + blockId + "' not found — skipping overlay");
             return;
         }
-        registry.register(block.toBuilder()
+        registry.overlayType(block.toBuilder()
             .drillable(false)
             .reactsToNeighbors(true)
             .onNeighborChange((b, face) -> {
@@ -344,7 +344,7 @@ final class RotationBlocks {
             registry.getPlugin().getLogger().warning("RotationBlocks: block '" + blockId + "' not found — skipping overlay");
             return;
         }
-        registry.register(block.toBuilder()
+        registry.overlayType(block.toBuilder()
             .drillable(false)
             .reactsToNeighbors(true)
             .onNeighborChange((b, face) -> recalcIfKnown(b, network))
@@ -475,7 +475,7 @@ final class RotationBlocks {
         String blockId = "mech:water_wheel";
         CustomHeadBlock block = registry.getType(blockId);
         if (block == null) { warn(registry, blockId); return; }
-        registry.register(block.toBuilder()
+        registry.overlayType(block.toBuilder()
             .drillable(false)
             .reactsToNeighbors(true)
             // Poll on a tick: neighbor callbacks miss water-level changes a couple cells away,
@@ -612,7 +612,7 @@ final class RotationBlocks {
         String blockId = "mech:engine";
         CustomHeadBlock block = registry.getType(blockId);
         if (block == null) { warn(registry, blockId); return; }
-        registry.register(block.toBuilder()
+        registry.overlayType(block.toBuilder()
             .drillable(false)
             .reactsToNeighbors(true)
             .tickInterval(20)
@@ -783,7 +783,7 @@ final class RotationBlocks {
             .onChunkUnload(b -> network.removeNode(CustomBlockRegistry.LocationKey.of(b)))
             .onBlockRemoved((b, state) -> network.removeNode(CustomBlockRegistry.LocationKey.of(b)));
         if (spec.playerHeadStates() != null) builder.playerHeadStates(spec.playerHeadStates());
-        registry.register(builder.build());
+        registry.overlayType(builder.build());
     }
 
     private static void overlayMillstone(CustomBlockRegistry registry, RotationNetwork network,
@@ -884,7 +884,7 @@ final class RotationBlocks {
         // output above (a fluid endpoint directly, or a pipe chain routed via FluidRouting;
         // the body display stretches up to meet a horizontal corner pipe — pumpBodyTransform);
         // a wrench flips the flow. All units are whole buckets (docs/todo/mechanism/fluids.md).
-        registry.register(block.toBuilder()
+        registry.overlayType(block.toBuilder()
             .drillable(false)
             .reactsToNeighbors(true)
             .tickInterval(config.pumpTickInterval)
@@ -1145,7 +1145,7 @@ final class RotationBlocks {
     private static void overlayBurner(CustomBlockRegistry registry, EngineFuelManager fuelManager) {
         CustomHeadBlock block = registry.getType(BURNER_ID);
         if (block == null) { warn(registry, BURNER_ID); return; }
-        registry.register(block.toBuilder()
+        registry.overlayType(block.toBuilder()
             .drillable(false)
             .onBlockPlaced(RotationBlocks::snapCardinalFloorRotation)
             .displayTransformResolver((b, state, dec, idx) -> orientShellToSkull(b, dec.transform()))
@@ -1201,7 +1201,7 @@ final class RotationBlocks {
         if (block == null) { warn(registry, BOILER_ID); return; }
         anon.def9a2a4.corelib.fluid.FluidTanks.registerTank(BOILER_ID,
             anon.def9a2a4.corelib.fluid.FluidType.WATER, config.boilerTankUnits);
-        registry.register(block.toBuilder()
+        registry.overlayType(block.toBuilder()
             .onBlockPlaced((b, state) -> healChestMerges(registry, b))
             // The tank art fronts the placer: yaw the shell to the chest's facing (set from the
             // placer in CoreLibPlugin's physical_material placement, vanilla-chest style).
@@ -1235,7 +1235,7 @@ final class RotationBlocks {
         // on its horizontal axle, power exits to both sides at piston level. Runs the engine's
         // removeNode+addNode SOURCE↔TRANSMITTER discipline, gated on the stack below it:
         // a burning burner two below and a watered boiler one below.
-        registry.register(block.toBuilder()
+        registry.overlayType(block.toBuilder()
             .drillable(false)
             .reactsToNeighbors(true)
             .tickInterval(20)
@@ -1961,7 +1961,7 @@ final class RotationBlocks {
         String blockId = "mech:redstone_motor";
         CustomHeadBlock block = registry.getType(blockId);
         if (block == null) { warn(registry, blockId); return; }
-        registry.register(block.toBuilder()
+        registry.overlayType(block.toBuilder()
             .drillable(false)
             .reactsToNeighbors(true)
             .onNeighborChange((b, face) -> {
@@ -2050,7 +2050,7 @@ final class RotationBlocks {
         CustomHeadBlock block = registry.getType(blockId);
         if (block == null) { warn(registry, blockId); return; }
         // Piston behavior is YAML-driven (drill sets cancel_pistons in rotation-blocks.yml).
-        registry.register(block.toBuilder()
+        registry.overlayType(block.toBuilder()
             .drillable(false)
             .reactsToNeighbors(true)
             .tickInterval(drillTickInterval)
@@ -2278,7 +2278,7 @@ final class RotationBlocks {
                                                   BannerTier tier, RotationNetwork network) {
         CustomHeadBlock block = registry.getType(blockId);
         if (block == null) { warn(registry, blockId); return; }
-        registry.register(block.toBuilder()
+        registry.overlayType(block.toBuilder()
             .bannerTier(tier)
             .onInteract((b, event) -> {
                 if (!isWrench(event.getPlayer().getInventory().getItemInMainHand())) return false;

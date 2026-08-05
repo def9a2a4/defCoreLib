@@ -133,7 +133,12 @@ snow: false                  # the SNOW layer only; SNOW_BLOCK stays full
 # plants
 "#saplings": false
 "#small_flowers": false
-"#tall_flowers": false
+# Two-tall flowers: no vanilla collision. Listed by material because 1.21 has no #tall_flowers block tag.
+sunflower: false
+lilac: false
+peony: false
+rose_bush: false
+pitcher_plant: false
 short_grass: false
 fern: false
 tall_grass: false

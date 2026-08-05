@@ -338,13 +338,30 @@ public class CustomBlockRegistry {
     // Type registration
     // ──────────────────────────────────────────────────────────────────────
 
+    /** Register a NEW block id. Warns if the id already exists — that's an accidental collision, which
+     *  corrupts identity resolution (and the migrator's texture→id adoption table). */
     public void register(CustomHeadBlock type) {
+        put(type, false);
+    }
+
+    /** Re-register an EXISTING id with an enriched copy — the YAML-base + Java-overlay pattern
+     *  (visuals/states/recipes come from YAML; {@code toBuilder()} carries them forward and the caller
+     *  adds runtime callbacks). Silent on the intended replacement; warns only when there is NO base to
+     *  enrich (a missing YAML definition / wrong load order — the real overlay bug). */
+    public void overlayType(CustomHeadBlock type) {
+        put(type, true);
+    }
+
+    private void put(CustomHeadBlock type, boolean overlay) {
         CustomHeadBlock existing = types.put(type.fullId(), type);
-        if (existing != null && existing != type) {
+        if (!overlay && existing != null && existing != type) {
             // A6b: duplicate ids silently corrupt identity resolution (and the migrator's texture→id
             // adoption table). Warn instead of overwriting silently.
             plugin.getLogger().warning("Duplicate block id '" + type.fullId()
                     + "' — a later definition overwrote the earlier one; ids must be unique.");
+        } else if (overlay && existing == null) {
+            plugin.getLogger().warning("Overlay for unknown block id '" + type.fullId()
+                    + "' — no base definition to enrich; check load order.");
         }
         // Bare-first types (base_block set, e.g. casing_oak = OAK_STAIRS) auto-register for identity
         // resolution + chunk restore. Skull-first bare types (the shaft) instead call registerBareBlock
@@ -2294,6 +2311,10 @@ public class CustomBlockRegistry {
      * "no crash / no orphaned recipe-book entries", not a full teardown.)
      */
     public void disableRecipes(String namespace) {
+        // Full server stop: recipes + side-tables die with the process and clients are disconnecting —
+        // nothing to clean, no one to resync. (Skips the per-key removeRecipe/undiscover client work that
+        // made disable slow with a player online.) Only a live /reload needs the teardown below.
+        if (Bukkit.isStopping()) return;
         if (!enabledRecipeNamespaces.remove(namespace)) return; // wasn't enabled
         String prefix = namespace + "_";
         List<org.bukkit.NamespacedKey> toRemove = new ArrayList<>();
@@ -2301,8 +2322,7 @@ public class CustomBlockRegistry {
             if (key.getKey().startsWith(prefix)) toRemove.add(key);
         }
         for (org.bukkit.NamespacedKey key : toRemove) {
-            Bukkit.removeRecipe(key);
-            for (org.bukkit.entity.Player p : Bukkit.getOnlinePlayers()) p.undiscoverRecipe(key);
+            Bukkit.removeRecipe(key, false);   // suppress per-key resend; one batched resync below
         }
         registeredRecipeKeys.removeAll(toRemove);
         gatedRecipeKeys.removeAll(toRemove);
@@ -2311,7 +2331,11 @@ public class CustomBlockRegistry {
                 || r.outputBlockId().startsWith(namespace + ":"));
         toggleRecipes.keySet().removeIf(k -> k.getKey().startsWith(prefix));
         advancementRecipes.values().forEach(list -> list.removeAll(toRemove));
-        if (!Bukkit.getOnlinePlayers().isEmpty()) Bukkit.updateRecipes(); // resend so they leave the book
+        if (!Bukkit.getOnlinePlayers().isEmpty()) {
+            // One batched undiscover per player + one resend, instead of per-key × per-player packets.
+            for (org.bukkit.entity.Player p : Bukkit.getOnlinePlayers()) p.undiscoverRecipes(toRemove);
+            Bukkit.updateRecipes(); // resend so the removed recipes leave the book
+        }
     }
 
     /** Register all recipes for all registered block types. Call after all blocks are loaded. */
@@ -2472,13 +2496,20 @@ public class CustomBlockRegistry {
 
     /** Remove all previously registered recipes. */
     void unregisterRecipes() {
+        // On a full server stop the recipes die with the process and every client is disconnecting, so
+        // there is nothing to clean and no one to resync — bail before touching Bukkit. (The single-arg
+        // removeRecipe resends the whole recipe list to every online player PER key; over the ~3,300
+        // headsmith recipes that was the slow-disable-with-a-player-online cost.) Removal only matters on
+        // a live /reload, where isStopping() is false.
+        if (Bukkit.isStopping()) return;
         for (org.bukkit.NamespacedKey key : registeredRecipeKeys) {
-            Bukkit.removeRecipe(key);
+            Bukkit.removeRecipe(key, false);   // suppress the per-key client resend; one bulk resync below
         }
         registeredRecipeKeys.clear();
         headStonecutterRecipes.clear();
         toggleRecipes.clear();
         recipeRegisteredTypes.clear();
+        if (!Bukkit.getOnlinePlayers().isEmpty()) Bukkit.updateRecipes();  // one resync so the book updates
     }
 
     @Nullable ToggleRecipeInfo getToggleRecipe(org.bukkit.NamespacedKey recipeKey) {

@@ -95,7 +95,7 @@ final class RotationRotator implements Listener {
             plugin.getLogger().warning("RotationRotator: block '" + ROTATOR_ID + "' not found — skipping");
             return;
         }
-        registry.register(block.toBuilder()
+        registry.overlayType(block.toBuilder()
             .drillable(false)
             .reactsToNeighbors(true)
             // Vertical states render as a floating floor PLAYER_HEAD (mirrors the drill): a ceiling

@@ -90,7 +90,7 @@ final class ChainPulley {
             registry.getPlugin().getLogger().warning("ChainPulley: block '" + PULLEY_ID + "' not found — skipping overlay");
             return;
         }
-        registry.register(block.toBuilder()
+        registry.overlayType(block.toBuilder()
             .drillable(false)
             .reactsToNeighbors(true)
             .onNeighborChange((b, face) -> recalcIfNode(b))

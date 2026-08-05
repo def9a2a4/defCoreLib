@@ -38,7 +38,7 @@ final class DoorDemo {
                 + "(check demo-blocks.yml) — door behavior not installed");
             return;
         }
-        registry.register(base.toBuilder()
+        registry.overlayType(base.toBuilder()
             .onStateChanged((block, oldState, newState) -> {
                 if ("open".equals(newState)) openDoor(block);
                 else if ("closed".equals(newState)) closeDoor(block);

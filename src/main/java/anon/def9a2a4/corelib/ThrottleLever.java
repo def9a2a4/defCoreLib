@@ -91,7 +91,7 @@ final class ThrottleLever implements Listener {
                     "ThrottleLever: block '" + BLOCK_ID + "' not found — skipping overlay");
             return;
         }
-        registry.register(block.toBuilder()
+        registry.overlayType(block.toBuilder()
             .drillable(false)
             .onChunkLoad((b, state) -> onLoad(b)) // also fires on initial placement
             // Drop the cache entry only — the durable level lives in the chunk PDC and must survive an

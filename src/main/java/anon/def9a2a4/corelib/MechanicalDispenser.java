@@ -81,7 +81,7 @@ final class MechanicalDispenser implements Listener {
                     "RotationBlocks: block '" + BLOCK_ID + "' not found — skipping overlay");
             return;
         }
-        registry.register(block.toBuilder()
+        registry.overlayType(block.toBuilder()
             .drillable(false)
             .reactsToNeighbors(true)
             .lockContainer(false)   // vanilla GUI + hoppers + item pipes stay open

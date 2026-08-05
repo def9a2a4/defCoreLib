@@ -74,7 +74,7 @@ final class ExtendablePistonManager {
             plugin.getLogger().warning("ExtendablePiston: block '" + CORE_ID + "' not found — skipping");
             return;
         }
-        registry.register(core.toBuilder()
+        registry.overlayType(core.toBuilder()
             .drillable(false)
             .cancelPistons(true)
             .reactsToNeighbors(true)
@@ -108,7 +108,7 @@ final class ExtendablePistonManager {
             plugin.getLogger().warning("ExtendablePiston: block '" + id + "' not found — skipping");
             return;
         }
-        registry.register(t.toBuilder()
+        registry.overlayType(t.toBuilder()
             .drillable(false)
             .cancelPistons(true)
             .onBlockPlaced((b, state) -> snapFloorRotation(b))
@@ -139,7 +139,7 @@ final class ExtendablePistonManager {
             plugin.getLogger().warning("ExtendablePiston: block '" + HEAD_ID + "' not found — skipping");
             return;
         }
-        registry.register(t.toBuilder()
+        registry.overlayType(t.toBuilder()
             .drillable(false)
             .cancelPistons(true)
             .reactsToNeighbors(true)
@@ -361,6 +361,9 @@ final class ExtendablePistonManager {
         // The ghost pole slides OUT of the core cell too — scan its ray as well, or a block that survived
         // capture right beside the core (an excluded-barrier casing) silently eats the ghost's landing.
         moving.add(line.core());
+        // Mow fragile plants out of the stroke's path first, so the clearance below sees air and advances
+        // through them instead of stopping at them (plants are not isEmptyOrPassable). Break, don't push.
+        mowFragilesAhead(moving, footprint, moveFace, reserve);
         int r = clearForAll(moving, footprint, moveFace, reserve);
         if (r > 0) startMove(coreKey, line, payload, moveFace, r, dir);
     }
@@ -461,6 +464,28 @@ final class ExtendablePistonManager {
             if (n < best) best = n;
         }
         return best;
+    }
+
+    /**
+     * Break fragile plants (grass, ferns, small + tall flowers, …) the assembly is about to sweep through,
+     * so the {@link #clearForAll} measurement then sees air and advances instead of stopping at them
+     * (plants are not {@link MovableBlocks#isEmptyOrPassable}). Mirrors clearForAll's per-moving-block walk:
+     * the assembly's own footprint cells and already-clear cells are skipped, a fragile cell is broken and
+     * the walk continues, and the first solid non-fragile block ends that column (the assembly still stops
+     * there). Event-less {@code breakNaturally()} matches the disassembly landing path — a piston has no
+     * rider to attribute a {@code BlockBreakEvent} to (so this bypasses protection, exactly like landing).
+     * Two-tall plants are safe: breakNaturally on either half removes both.
+     */
+    private void mowFragilesAhead(List<Block> moving, Set<Long> footprint, BlockFace face, int max) {
+        for (Block b : moving) {
+            Block c = b;
+            for (int i = 0; i < max; i++) {
+                c = c.getRelative(face);
+                if (footprint.contains(cellKey(c)) || isClear(c)) continue;
+                if (FragileBlocks.isFragile(c.getType())) { c.breakNaturally(); continue; }
+                break;
+            }
+        }
     }
 
     /** Cells occupied by the moving assembly, plus the core cell (the rod slides through it — ghost-filled). */

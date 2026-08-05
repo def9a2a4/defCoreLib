@@ -128,7 +128,7 @@ final class RedstoneDynamo implements Listener {
                     "RotationBlocks: block '" + BLOCK_ID + "' not found — skipping overlay");
             return;
         }
-        registry.register(block.toBuilder()
+        registry.overlayType(block.toBuilder()
             .drillable(false)
             .reactsToNeighbors(true)
             .tickInterval(tickInterval)
