@@ -100,6 +100,30 @@ final class DrivenDemo {
         return true;
     }
 
+    /** Prove the 3a-ii disassembly seams: disassemble the parked mechanism with a place-policy that DROPS
+     *  every cell (nothing lands) and a drop-item hook that tags each dropped item's name. The contrast with
+     *  a normal {@code unpark} (all cells PLACE) is the test. */
+    boolean dropUnpark(Player player) {
+        Mechanism m = parked.remove(player.getUniqueId());
+        if (m == null) m = nearestParked(player);
+        if (m == null) {
+            player.sendMessage("§enothing parked nearby");
+            return false;
+        }
+        // DROP every cell instead of placing it (models WorldGuard-protected-destination routing).
+        m.setCellPlacePolicy((target, block) -> Mechanism.PlaceDecision.DROP);
+        // Rename each dropped item so the seam is visibly exercised (models a custom-item identity / remap).
+        m.setDropItemHook((block, defaultDrop) -> {
+            if (defaultDrop == null) return null;
+            org.bukkit.inventory.ItemStack it = defaultDrop.clone();
+            it.editMeta(meta -> meta.displayName(net.kyori.adventure.text.Component.text("§bseam-dropped")));
+            return it;
+        });
+        m.disassemble();
+        player.sendMessage("§edropunpark: every cell DROPPED as a 'seam-dropped' item (place-policy + drop hook)");
+        return true;
+    }
+
     /** Nearest recovered demo:parked mechanism within 8 blocks of the player (post-restart lookup). */
     private Mechanism nearestParked(Player player) {
         Mechanism best = null;
