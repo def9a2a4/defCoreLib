@@ -1033,7 +1033,6 @@ public class MechanismRegistry {
         String prefix = "corelib:mech:" + st.mechId + ":";
         Entity vehicle = null;
         org.bukkit.entity.BlockDisplay parent = null;
-        List<Entity> tagged = new ArrayList<>();
         Map<Integer, Display> primaries = new HashMap<>();
         Map<Integer, TreeMap<Integer, Display>> itemExtras = new HashMap<>();
         Map<Integer, TreeMap<Integer, Display>> blockExtras = new HashMap<>();
@@ -1041,10 +1040,8 @@ public class MechanismRegistry {
         Map<Integer, Entity> carriers = new HashMap<>();
         Map<Integer, Shulker> shulkers = new HashMap<>();
         for (Entity e : candidates) {
-            boolean matched = false;
             for (String tag : e.getScoreboardTags()) {
                 if (!tag.startsWith(prefix)) continue;
-                matched = true;
                 String rest = tag.substring(prefix.length());
                 if (rest.equals("vehicle")) { vehicle = e; break; }
                 if (rest.equals("parent")) { if (e instanceof org.bukkit.entity.BlockDisplay bd) parent = bd; break; }
@@ -1061,7 +1058,6 @@ public class MechanismRegistry {
                 else if (role.equals("collider") && e instanceof Shulker s) shulkers.put(i, s);
                 break; // one mech tag per entity
             }
-            if (matched) tagged.add(e);
         }
 
         // The vehicle + parent are the load-bearing frame (the ctor needs both; the vehicle carries the
