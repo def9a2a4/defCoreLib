@@ -236,9 +236,11 @@ final class MechanismMinecartManager implements Listener {
     // ──────────────────────────────────────────────────────────────────────
 
     private void tick() {
-        Iterator<Map.Entry<UUID, MinecartState>> it = tracked.entrySet().iterator();
-        while (it.hasNext()) {
-            MinecartState state = it.next().getValue();
+        // Snapshot: ticking a cart can move it across a chunk border, which fires EntitiesLoadEvent →
+        // scanChunkForMinecarts → tracked.put and would CME a live iterator. Carts added mid-tick are
+        // picked up next tick. Mirrors CustomCartManager.tick.
+        for (MinecartState state : new ArrayList<>(tracked.values())) {
+            UUID id = state.minecart.getUniqueId();
             if (state.minecart.isDead()) {                  // truly destroyed
                 if (state.mechanism != null) safeDisassemble(state.mechanism);
                 // A death that skipped VehicleDestroyEvent (/kill, void, plugin removal, some environmental
@@ -249,7 +251,7 @@ final class MechanismMinecartManager implements Listener {
                     state.minecart.getWorld().dropItemNaturally(
                         state.minecart.getLocation(), itemType.createItem(1));
                 }
-                it.remove();
+                tracked.remove(id);
                 continue;
             }
             if (!state.minecart.isValid()) {                // chunk unloaded — onEntitiesUnload owns the
