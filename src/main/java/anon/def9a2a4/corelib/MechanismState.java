@@ -16,9 +16,13 @@ import org.jspecify.annotations.Nullable;
  *
  * <p>Captures everything geometry-related needed to re-land the blocks (pivot, axis, live yaw, per-block
  * local offset, block data, collision, custom identity/state, storage, glue, config PDC) plus a
- * {@code vehicleUuid} recovery hint. Display/particle configs are NOT stored — they are re-derived from
- * {@code customType}+{@code customState} via the registry on recovery. Banners are not yet captured
- * (follow-up). Written as one YAML file per mechanism by {@link MechanismPersistence}.
+ * {@code vehicleUuid} recovery hint. Also captured: riding banner attachments ({@code banners}), a
+ * reverted-bare-shaft flag ({@code wasBare}), the carried throttle level ({@code throttleLevel}), the
+ * floor-head transit yaw ({@code floorYaw}), and the facing-resolved display-transform overrides
+ * ({@code displayXf}). The <em>static</em> display/particle configs are NOT stored — they are re-derived
+ * from {@code customType}+{@code customState} via the registry on recovery; only the neighbour-resolved
+ * transform overrides ride along in {@code displayXf}. Written as one YAML file per mechanism by
+ * {@link MechanismPersistence}.
  */
 final class MechanismState {
 

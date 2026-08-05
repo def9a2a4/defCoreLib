@@ -1394,8 +1394,11 @@ public class MechanismRegistry {
     }
 
     /** Reconstruct riding banner attachments from a saved block's serialized maps (inverse of the banner
-     *  block in {@link BasicMechanism#snapshotState}). Per-attachment guarded: a corrupt entry is logged and
-     *  skipped rather than aborting the whole mechanism's recovery. Null if none survive. */
+     *  block in {@link BasicMechanism#snapshotState}). All-or-nothing per block: one corrupt entry drops the
+     *  whole block's banner list (returns null). The re-adopted {@code banner_k} displays pair to
+     *  {@code mb.banners} positionally, and a display carries no {@code faceKey}, so a corrupt attachment
+     *  cannot be reconstructed — keeping only the survivors would shift the pairing and make banners wear
+     *  each other's transforms. Dropping is the safe choice (rare, save-corruption-only). Null if empty. */
     private @Nullable List<BannerAttachment> rebuildBanners(List<Map<String, Object>> raw, UUID mechId) {
         List<BannerAttachment> out = new ArrayList<>(raw.size());
         for (Map<String, Object> m : raw) {
@@ -1412,8 +1415,12 @@ public class MechanismRegistry {
                 List<?> an = (List<?>) m.get("anchor");
                 out.add(new BannerAttachment(item, face, t, new Vector3f(bf(an, 0), bf(an, 1), bf(an, 2))));
             } catch (Exception e) {
+                // Drop the block's ENTIRE banner list — a shorter survivor list would mispair the
+                // positionally-paired displays. Collateral: a vanilla banner block then lands blank (no
+                // pattern write-back) and no banner items drop for this block.
                 plugin.getLogger().warning("Mechanism recovery: unreadable banner for " + mechId
-                    + " (" + e.getMessage() + "); it will not re-attach or drop");
+                    + " (" + e.getMessage() + "); dropping this block's banners — it will not re-attach or drop");
+                return null;
             }
         }
         return out.isEmpty() ? null : out;

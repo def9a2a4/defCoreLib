@@ -861,7 +861,18 @@ final class BasicMechanism implements Mechanism {
             // Consumer pre-place policy (3a-ii): redirect this cell to a drop (anti-laundering across a
             // protected boundary) or skip it, before the normal air/fragile/solid dispatch below.
             if (cellPlacePolicy != null) {
-                PlaceDecision decision = cellPlacePolicy.decide(target, mb);
+                PlaceDecision decision;
+                try {
+                    decision = cellPlacePolicy.decide(target, mb);
+                } catch (RuntimeException ex) {
+                    // A misbehaving consumer policy must not fall to the per-block guard's fallback drop
+                    // (which would mint an item on a ghost cell, or drop one a SKIP cell means to withhold).
+                    // Default to PLACE — the normal dispatch below then handles this cell exactly as it
+                    // would with no policy set, and each branch clears fallbackDrop itself.
+                    registry.getPlugin().getLogger().log(Level.WARNING,
+                        "disassemble: cellPlacePolicy.decide threw at " + blockLoc + "; defaulting to PLACE", ex);
+                    decision = PlaceDecision.PLACE;
+                }
                 if (decision == PlaceDecision.DROP) {
                     droppedChainCells = noteIfChain(droppedChainCells, mb, blockLoc);
                     fallbackDrop = false; // this branch owns the drop

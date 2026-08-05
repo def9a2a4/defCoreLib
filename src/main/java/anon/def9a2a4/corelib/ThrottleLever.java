@@ -121,10 +121,14 @@ final class ThrottleLever implements Listener {
         // so only re-assert it if it actually drifted (e.g. an entity was on the plate at unload).
         Bukkit.getScheduler().runTask(registry.getPlugin(), () -> {
             if (!isThrottle(b)) return;
-            if (!(b.getBlockData() instanceof AnaloguePowerable ap) || ap.getPower() != level) {
-                applyPower(b, level);
+            // Re-read at fire time: a mechanism landing writes the carried level (applyThrottleLevel)
+            // *after* this callback ran, so the `level` captured above is stale (0) for a landed lever.
+            // levelOf reads the now-current cache/PDC; on a normal chunk load it equals `level`.
+            int cur = levelOf(b);
+            if (!(b.getBlockData() instanceof AnaloguePowerable ap) || ap.getPower() != cur) {
+                applyPower(b, cur);
             }
-            updateHandle(b, level);
+            updateHandle(b, cur);
         });
     }
 
