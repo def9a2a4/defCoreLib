@@ -490,6 +490,28 @@ final class BasicMechanism implements Mechanism {
             b.glueOffsets = mb.glueOffsets;
             b.configPdc = mb.configPdc;
             b.blockEntity = mb.blockEntitySnapshot;
+            // Riding banners (all kinds, incl. the BLOCK_FACE_KEY entry that carries a vanilla banner's
+            // patterns). One YAML-safe map per attachment; transformation as 14 doubles (quaternions x,y,z,w).
+            if (mb.banners != null && !mb.banners.isEmpty()) {
+                List<Map<String, Object>> bl = new ArrayList<>(mb.banners.size());
+                for (BannerAttachment a : mb.banners) {
+                    Map<String, Object> m = new java.util.LinkedHashMap<>();
+                    m.put("item", java.util.Base64.getEncoder().encodeToString(a.item().serializeAsBytes()));
+                    m.put("face", a.faceKey());
+                    org.bukkit.util.Transformation t = a.transformation();
+                    Vector3f tr = t.getTranslation(), sc = t.getScale();
+                    org.joml.Quaternionf lq = t.getLeftRotation(), rq = t.getRightRotation();
+                    m.put("xf", List.of(
+                        (double) tr.x, (double) tr.y, (double) tr.z,
+                        (double) lq.x, (double) lq.y, (double) lq.z, (double) lq.w,
+                        (double) sc.x, (double) sc.y, (double) sc.z,
+                        (double) rq.x, (double) rq.y, (double) rq.z, (double) rq.w));
+                    Vector3f an = a.anchorOffset();
+                    m.put("anchor", List.of((double) an.x, (double) an.y, (double) an.z));
+                    bl.add(m);
+                }
+                b.banners = bl;
+            }
             st.blocks.add(b);
         }
         return st;

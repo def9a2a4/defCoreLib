@@ -674,9 +674,16 @@ public class MechanismRegistry {
             // banner loop in BasicMechanism.rotate(). Ghost blocks have banners == null → empty.
             List<Display> bannerGroup = new ArrayList<>();
             if (mb.banners != null) {
+                // A vanilla banner BLOCK's patterns ride as the BLOCK_FACE_KEY attachment (DATA only) — its
+                // in-transit render is the primary BlockDisplay above, so spawning an ItemDisplay for it just
+                // adds a mispositioned "ghost". Skip it. Use a running counter (not the loop index) for the
+                // banner_ ordinal so the skip leaves NO gap: bannerGroup pairs to the non-block-banner
+                // attachments in order, and rotate()/recovery pair the two lists positionally by prefix.
+                int k = 0;
                 for (int b = 0; b < mb.banners.size(); b++) {
+                    if (mb.banners.get(b).isBlockBanner()) continue;
                     bannerGroup.add(spawnMechDisplay(spawnLoc, mb.banners.get(b).item().clone(),
-                        mechId, i, "banner_" + b));
+                        mechId, i, "banner_" + k++));
                 }
             }
             bannerDisplaysPerBlock.add(bannerGroup);
@@ -1358,10 +1365,39 @@ public class MechanismRegistry {
             mbd.glueOffsets = b.glueOffsets;
             mbd.configPdc = b.configPdc;
             mbd.blockEntitySnapshot = b.blockEntity;
+            if (b.banners != null) mbd.banners = rebuildBanners(b.banners, st.mechId);
             out.add(mbd);
         }
         return out;
     }
+
+    /** Reconstruct riding banner attachments from a saved block's serialized maps (inverse of the banner
+     *  block in {@link BasicMechanism#snapshotState}). Per-attachment guarded: a corrupt entry is logged and
+     *  skipped rather than aborting the whole mechanism's recovery. Null if none survive. */
+    private @Nullable List<BannerAttachment> rebuildBanners(List<Map<String, Object>> raw, UUID mechId) {
+        List<BannerAttachment> out = new ArrayList<>(raw.size());
+        for (Map<String, Object> m : raw) {
+            try {
+                ItemStack item = ItemStack.deserializeBytes(
+                    java.util.Base64.getDecoder().decode(String.valueOf(m.get("item"))));
+                String face = String.valueOf(m.get("face"));
+                List<?> xf = (List<?>) m.get("xf");
+                org.bukkit.util.Transformation t = new org.bukkit.util.Transformation(
+                    new Vector3f(bf(xf, 0), bf(xf, 1), bf(xf, 2)),
+                    new org.joml.Quaternionf(bf(xf, 3), bf(xf, 4), bf(xf, 5), bf(xf, 6)),   // JOML order x,y,z,w
+                    new Vector3f(bf(xf, 7), bf(xf, 8), bf(xf, 9)),
+                    new org.joml.Quaternionf(bf(xf, 10), bf(xf, 11), bf(xf, 12), bf(xf, 13)));
+                List<?> an = (List<?>) m.get("anchor");
+                out.add(new BannerAttachment(item, face, t, new Vector3f(bf(an, 0), bf(an, 1), bf(an, 2))));
+            } catch (Exception e) {
+                plugin.getLogger().warning("Mechanism recovery: unreadable banner for " + mechId
+                    + " (" + e.getMessage() + "); it will not re-attach or drop");
+            }
+        }
+        return out.isEmpty() ? null : out;
+    }
+
+    private static float bf(List<?> l, int i) { return ((Number) l.get(i)).floatValue(); }
 
     private void tickMechanisms() {
         long currentTick = Bukkit.getServer().getCurrentTick();
