@@ -18,6 +18,7 @@ build:
 	cp rsd/build/libs/RedstoneDisplays*.jar bin/
 	cp pipes/build/libs/Pipes*.jar bin/
 	cp railbound/build/libs/Railbound*.jar bin/
+	cp headsmith/build/libs/HeadSmith*.jar bin/
 
 # Docs build: compile the plugin, boot a SEPARATE server (test-server/, not the playtest server/)
 # that exports the ground-truth placed-display data (-Ddefcorelib.export), then generate the catalog
@@ -51,7 +52,8 @@ docs:
 		bbanners/build/libs/BetterBanners*.jar mech/build/libs/Mechanism*.jar \
 		rsd/build/libs/RedstoneDisplays*.jar \
 		pipes/build/libs/Pipes*.jar \
-		railbound/build/libs/Railbound*.jar test-server/plugins/
+		railbound/build/libs/Railbound*.jar \
+		headsmith/build/libs/HeadSmith*.jar test-server/plugins/
 	rm -f .temp/display-spec.json
 ifeq ($(KEEP_ALIVE),1)
 	@echo ">>> test-server keep-alive on localhost:25575 (offline, MC 1.21.11). You spawn at the grid."
@@ -129,7 +131,8 @@ showcase-test:
 		bbanners/build/libs/BetterBanners*.jar mech/build/libs/Mechanism*.jar \
 		rsd/build/libs/RedstoneDisplays*.jar \
 		pipes/build/libs/Pipes*.jar \
-		railbound/build/libs/Railbound*.jar test-server/plugins/
+		railbound/build/libs/Railbound*.jar \
+		headsmith/build/libs/HeadSmith*.jar test-server/plugins/
 	cd test-server && timeout --foreground -k 30 180 java -Ddefcorelib.showcaseTest=true \
 		-Xmx2G -jar $(PAPER_JAR) --nogui --port 25576 < /dev/null
 
@@ -199,7 +202,8 @@ showcase-capture:
 		bbanners/build/libs/BetterBanners*.jar mech/build/libs/Mechanism*.jar \
 		rsd/build/libs/RedstoneDisplays*.jar \
 		pipes/build/libs/Pipes*.jar \
-		railbound/build/libs/Railbound*.jar test-server/plugins/
+		railbound/build/libs/Railbound*.jar \
+		headsmith/build/libs/HeadSmith*.jar test-server/plugins/
 	rm -f .temp/showcase-spec.json
 	cd test-server && timeout --foreground -k 30 180 java -Ddefcorelib.showcaseCapture="$(CURDIR)/.temp/showcase-spec.json" \
 		-Xmx2G -jar $(PAPER_JAR) --nogui --port 25576 < /dev/null || true
