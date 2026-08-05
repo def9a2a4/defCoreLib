@@ -361,11 +361,14 @@ final class ExtendablePistonManager {
         // The ghost pole slides OUT of the core cell too — scan its ray as well, or a block that survived
         // capture right beside the core (an excluded-barrier casing) silently eats the ghost's landing.
         moving.add(line.core());
-        // Mow fragile plants out of the stroke's path first, so the clearance below sees air and advances
-        // through them instead of stopping at them (plants are not isEmptyOrPassable). Break, don't push.
-        mowFragilesAhead(moving, footprint, moveFace, reserve);
-        int r = clearForAll(moving, footprint, moveFace, reserve);
-        if (r > 0) startMove(coreKey, line, payload, moveFace, r, dir);
+        // Measure the reachable distance treating fragile plants as passable (they'll be mowed), so `r` is
+        // the real committed stroke — the MIN across all columns. Then mow only up to `r`, so a column that
+        // stops short doesn't destroy plants the assembly never enters (over-mow). Break, don't push.
+        int r = clearForAll(moving, footprint, moveFace, reserve, true);
+        if (r > 0) {
+            mowFragilesAhead(moving, footprint, moveFace, r);
+            startMove(coreKey, line, payload, moveFace, r, dir);
+        }
     }
 
     // ──────────────────────────────────────────────────────────────────────
@@ -452,14 +455,18 @@ final class ExtendablePistonManager {
      * footprint (cells that also vacate). Checking every block — not just the leading column — is what stops a
      * wide glued payload from shearing off and destroying blocks on landing.
      */
-    private int clearForAll(List<Block> moving, Set<Long> footprint, BlockFace face, int max) {
+    /** {@code throughFragile}: count fragile plants as passable (the stroke will mow them), so the reach
+     *  reflects the real committed distance and the mow can be bounded to it. */
+    private int clearForAll(List<Block> moving, Set<Long> footprint, BlockFace face, int max,
+                            boolean throughFragile) {
         int best = max;
         for (Block b : moving) {
             int n = 0;
             Block c = b;
             for (int i = 0; i < max; i++) {
                 c = c.getRelative(face);
-                if (footprint.contains(cellKey(c)) || isClear(c)) n++; else break;
+                if (footprint.contains(cellKey(c)) || isClear(c)
+                        || (throughFragile && FragileBlocks.isFragile(c.getType()))) n++; else break;
             }
             if (n < best) best = n;
         }

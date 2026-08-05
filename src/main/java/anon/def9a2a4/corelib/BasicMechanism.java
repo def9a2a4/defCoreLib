@@ -1029,16 +1029,18 @@ final class BasicMechanism implements Mechanism {
         checkMainThread();
         // RC-1: sever any open storage view before contents are dropped to the world (see disassemble()).
         closeStorageViewers();
-        // destroy() discards the blocks by design, but the riding banners' world displays are
-        // already gone (removed at capture) — dropping nothing here would delete the items with
-        // no trace. Drop them at each block's live cell.
+        // destroy() discards the blocks by design, but the riding banners AND captured storage would
+        // otherwise vanish with them — their world displays/contents are already gone (removed at capture),
+        // so dropping nothing here would delete the items with no trace. Drop both at each block's live cell.
         World w = pivot.getWorld();
         if (w != null) {
             for (int i = 0; i < blocks.size(); i++) {
                 MechanismBlockData mb = blocks.get(i);
-                if (mb.banners == null) continue;
+                if (mb.banners == null && mb.storage == null) continue;
                 org.joml.Vector3i cell = liveCell(i);
-                dropBannerItems(new Location(w, cell.x, cell.y, cell.z), mb);
+                Location loc = new Location(w, cell.x, cell.y, cell.z);
+                if (mb.banners != null) dropBannerItems(loc, mb);
+                dropStorageItems(loc, mb);   // null-safe: no-op when mb.storage == null
             }
         }
         // Deregister BEFORE removing entities: if removeAllEntities threw first, the mech would linger
@@ -1069,10 +1071,13 @@ final class BasicMechanism implements Mechanism {
             landed = landed.clone();
             ((org.bukkit.block.data.Waterlogged) landed).setWaterlogged(true);
         }
-        target.setBlockData(landed, !attachable);   // COMMIT POINT: the sole world write. Everything below
-        // runs against an already-committed block, so isolate it — a throw in the restoration tail must NOT
-        // propagate out of placeBlock, or disassemble()'s per-block guard would drop this already-placed
-        // block as an item (dupe). Swallow + log; the block stays placed, at worst with partial state.
+        target.setBlockData(landed, !attachable);   // COMMIT POINT: the sole world write, and the one
+        // statement left OUTSIDE the try below. Everything below runs against an already-committed block, so
+        // isolate it — a throw in the restoration tail must NOT propagate out of placeBlock, or disassemble()'s
+        // per-block guard would drop this already-placed block as an item (dupe). Swallow + log; the block
+        // stays placed, at worst with partial state. (A throw from the commit call ITSELF is left uncaught on
+        // purpose: it's near-unreachable — Bukkit swallows physics-listener exceptions — and leaving it out
+        // lets a genuine pre-write failure fall through to the per-block guard and recover the block as a drop.)
         try {
 
         // Vanilla banner block: write the captured patterns back into the landed block entity
@@ -1152,7 +1157,8 @@ final class BasicMechanism implements Mechanism {
         } catch (RuntimeException ex) {
             // A custom block's identity/config restore failing is corruption-class (SEVERE); a vanilla
             // block's banner/snapshot restore failing is cosmetic (WARNING). Either way the block stays
-            // placed and is NEVER dropped — so no dupe, at worst partial block-entity state on this one cell.
+            // placed and is not dropped (bar the near-unreachable commit-line case noted at the COMMIT POINT
+            // above) — so no dupe, at worst partial block-entity state on this one cell.
             Level sev = mb.customTypeId != null ? Level.SEVERE : Level.WARNING;
             registry.getPlugin().getLogger().log(sev,
                 "placeBlock: post-place restore failed at " + target.getLocation()
