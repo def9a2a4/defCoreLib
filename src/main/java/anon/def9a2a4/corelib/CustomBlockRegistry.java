@@ -401,7 +401,14 @@ public class CustomBlockRegistry {
 
                     Block block = ts.getBlock();
                     String state = ts.getPersistentDataContainer().get(STATE_KEY, PersistentDataType.STRING);
-                    restoreBlock(block, type, state);
+                    // Per-tile isolation: this runs synchronously inside a late-registering plugin's onEnable,
+                    // so a throwing tile must neither strand the rest of the rescan nor propagate out and fail
+                    // that plugin's enable.
+                    try {
+                        restoreBlock(block, type, state);
+                    } catch (Throwable t) {
+                        logChunkLoadFailureOnce(type, t);
+                    }
                 }
             }
         }
@@ -1189,7 +1196,14 @@ public class CustomBlockRegistry {
 
             Block block = ts.getBlock();
             String state = ts.getPersistentDataContainer().get(STATE_KEY, PersistentDataType.STRING);
-            restoreBlock(block, type, state);
+            // Per-tile isolation: one block whose restore throws must not strand the rest of the chunk —
+            // this loop runs on every live ChunkLoadEvent and in the startup sweep. Throwable for parity
+            // with the onEntitiesLoad restorer loop below; dedup'd once per type.
+            try {
+                restoreBlock(block, type, state);
+            } catch (Throwable t) {
+                logChunkLoadFailureOnce(type, t);
+            }
         }
         // The hint-wipe decision happens in onEntitiesLoad: entity-hosted blocks (bare chain shafts)
         // can't be checked yet — ChunkLoadEvent does not guarantee entities are loaded on Paper, and
@@ -1264,20 +1278,35 @@ public class CustomBlockRegistry {
      */
     int restoreLoadedChunks() {
         int swept = 0;
-        for (World world : Bukkit.getWorlds()) {
-            for (Chunk chunk : world.getLoadedChunks()) {
-                // Entities not loaded yet → the real EntitiesLoadEvent is still coming; let it do the
-                // work. Racing it would let restoreBareBlocksInChunk's pass 1 miss the live shell and
-                // pass 2 respawn a duplicate alongside it. Its ChunkLoadEvent is in the same boat, so
-                // defer the tile pass too — the pair will fire together and restore this chunk normally.
-                if (!chunk.isEntitiesLoaded()) continue;
-                if (!chunkMayHaveCustomBlocks(chunk)) continue;
-                onChunkLoad(chunk);     // tile-hosted (skulls / physical_material)
-                onEntitiesLoad(chunk);  // entity-hosted (bare casings/shafts) + hint-wipe decision
-                swept++;
+        try {
+            for (World world : Bukkit.getWorlds()) {
+                for (Chunk chunk : world.getLoadedChunks()) {
+                    // Entities not loaded yet → the real EntitiesLoadEvent is still coming; let it do the
+                    // work. Racing it would let restoreBareBlocksInChunk's pass 1 miss the live shell and
+                    // pass 2 respawn a duplicate alongside it. Its ChunkLoadEvent is in the same boat, so
+                    // defer the tile pass too — the pair will fire together and restore this chunk normally.
+                    if (!chunk.isEntitiesLoaded()) continue;
+                    // Per-chunk isolation so one bad chunk can't abort the whole sweep (and thus strand the
+                    // completion flag below). A chunk-level throw here (e.g. getTileEntities) skips
+                    // onEntitiesLoad for THIS chunk and deliberately leaves its hint intact — safe, it's just
+                    // re-checked on the chunk's next real load.
+                    try {
+                        if (!chunkMayHaveCustomBlocks(chunk)) continue;
+                        onChunkLoad(chunk);     // tile-hosted (skulls / physical_material)
+                        onEntitiesLoad(chunk);  // entity-hosted (bare casings/shafts) + hint-wipe decision
+                        swept++;
+                    } catch (Throwable t) {
+                        plugin.getLogger().log(Level.SEVERE,
+                            "Startup chunk sweep failed for chunk " + chunkKey(chunk) + " in "
+                            + world.getName() + " (skipped; sweep continues)", t);
+                    }
+                }
             }
+        } finally {
+            // Guarantee the flag flips even if a loop header / PDC read threw: register() gates per-type
+            // catch-up on it, so a stuck-false flag would permanently disable that fallback.
+            chunkSweepComplete = true;
         }
-        chunkSweepComplete = true;
         return swept;
     }
 

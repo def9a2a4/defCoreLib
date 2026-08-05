@@ -130,7 +130,9 @@ public interface Mechanism {
      */
     void setOnDisassembled(@Nullable Consumer<List<Block>> callback);
 
-    /** Remove all entities without restoring blocks. */
+    /** Remove all entities without restoring blocks. Terminal and mutually exclusive with
+     *  {@link #disassemble()}: whichever is called first tears the mechanism down and makes the other
+     *  (and any repeat call) a no-op. */
     void destroy();
 
     /** Whether a specific block index has collision enabled. */

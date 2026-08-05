@@ -1038,27 +1038,45 @@ final class BasicMechanism implements Mechanism {
     @Override
     public void destroy() {
         checkMainThread();
-        // RC-1: sever any open storage view before contents are dropped to the world (see disassemble()).
-        closeStorageViewers();
-        // destroy() discards the blocks by design, but the riding banners AND captured storage would
-        // otherwise vanish with them — their world displays/contents are already gone (removed at capture),
-        // so dropping nothing here would delete the items with no trace. Drop both at each block's live cell.
-        World w = pivot.getWorld();
-        if (w != null) {
-            for (int i = 0; i < blocks.size(); i++) {
-                MechanismBlockData mb = blocks.get(i);
-                if (mb.banners == null && mb.storage == null) continue;
-                org.joml.Vector3i cell = liveCell(i);
-                Location loc = new Location(w, cell.x, cell.y, cell.z);
-                if (mb.banners != null) dropBannerItems(loc, mb);
-                dropStorageItems(loc, mb);   // null-safe: no-op when mb.storage == null
+        // Share disassemble()'s terminal latch: destroy() and disassemble() are mutually-exclusive teardowns,
+        // so whichever runs first makes the other a no-op — else a second pass re-drops banners/storage (dupe).
+        if (disassembled) return;
+        disassembled = true;
+        // Latch is set before any work (like disassemble()), so the teardown below MUST be finally-guarded:
+        // a throw in the drop loop would otherwise skip deregister + entity removal, leaving a re-ticked ghost
+        // in activeMechanisms with leaked entities — made permanent by the latch. Both teardown calls are
+        // idempotent (see disassemble()).
+        try {
+            // RC-1: sever any open storage view before contents are dropped to the world (see disassemble()).
+            closeStorageViewers();
+            // destroy() discards the blocks by design, but the riding banners AND captured storage would
+            // otherwise vanish with them — their world displays/contents are already gone (removed at capture),
+            // so dropping nothing here would delete the items with no trace. Drop both at each block's live cell.
+            World w = pivot.getWorld();
+            if (w != null) {
+                for (int i = 0; i < blocks.size(); i++) {
+                    MechanismBlockData mb = blocks.get(i);
+                    if (mb.banners == null && mb.storage == null) continue;
+                    // Per-block isolation (mirrors disassemble()'s landing loop): one failed drop must not
+                    // skip the rest, and — with the latch set — must not escape into the finally either.
+                    try {
+                        org.joml.Vector3i cell = liveCell(i);
+                        Location loc = new Location(w, cell.x, cell.y, cell.z);
+                        if (mb.banners != null) dropBannerItems(loc, mb);
+                        dropStorageItems(loc, mb);   // null-safe: no-op when mb.storage == null
+                    } catch (RuntimeException ex) {
+                        registry.getPlugin().getLogger().log(Level.WARNING,
+                            "destroy: drop failed for block " + i + " (continuing)", ex);
+                    }
+                }
             }
+        } finally {
+            // Deregister BEFORE removing entities: if removeAllEntities threw first, the mech would linger
+            // in activeMechanisms as a ghost. Order between the two is independent (onMechanismRemoved reads
+            // mech.colliders, which removeAllEntities doesn't clear).
+            if (mechanismRegistry != null) mechanismRegistry.onMechanismRemoved(this);
+            removeAllEntities();
         }
-        // Deregister BEFORE removing entities: if removeAllEntities threw first, the mech would linger
-        // in activeMechanisms as a ghost. Order between the two is independent (onMechanismRemoved reads
-        // mech.colliders, which removeAllEntities doesn't clear).
-        if (mechanismRegistry != null) mechanismRegistry.onMechanismRemoved(this);
-        removeAllEntities();
     }
 
     // ──────────────────────────────────────────────────────────────────────
