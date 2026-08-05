@@ -650,6 +650,13 @@ public class MechanismRegistry {
                     ? HeadUtil.createHead(tex, 1)
                     : new ItemStack(Material.PLAYER_HEAD);
                 primary = spawnMechDisplay(spawnLoc, headItem, mechId, i, "display");
+            } else if (mb.banners != null && mb.banners.stream().anyMatch(BannerAttachment::isBlockBanner)) {
+                // A vanilla banner BLOCK (standing or wall): a BlockDisplay renders only the base cloth
+                // colour, never the woven patterns — those can only ride via the banner ItemDisplay spawned
+                // below. Make the primary invisible AIR so it doesn't duplicate that ItemDisplay. The real
+                // banner blockdata still rides in mb.blockData (landing/persistence read it, not this display),
+                // and the AIR entity keeps the "display" tag for recovery/collider/group-shape parity.
+                primary = spawnMechBlockDisplay(spawnLoc, Material.AIR.createBlockData(), mechId, i, "display");
             } else {
                 primary = spawnMechBlockDisplay(spawnLoc, mb.blockData, mechId, i, "display");
             }
@@ -687,16 +694,13 @@ public class MechanismRegistry {
             // banner loop in BasicMechanism.rotate(). Ghost blocks have banners == null → empty.
             List<Display> bannerGroup = new ArrayList<>();
             if (mb.banners != null) {
-                // A vanilla banner BLOCK's patterns ride as the BLOCK_FACE_KEY attachment (DATA only) — its
-                // in-transit render is the primary BlockDisplay above, so spawning an ItemDisplay for it just
-                // adds a mispositioned "ghost". Skip it. Use a running counter (not the loop index) for the
-                // banner_ ordinal so the skip leaves NO gap: bannerGroup pairs to the non-block-banner
-                // attachments in order, and rotate()/recovery pair the two lists positionally by prefix.
-                int k = 0;
+                // One ItemDisplay per attachment, positioned by BasicMechanism.rotate()'s banner loop. The
+                // vanilla banner BLOCK entry (BLOCK_FACE_KEY) is INCLUDED — only an ItemDisplay can show its
+                // patterns (the primary was aired out above). It's appended last in mb.banners, so bannerGroup
+                // stays 1:1 index-aligned with mb.banners, which is how rotate()/recovery pair the two lists.
                 for (int b = 0; b < mb.banners.size(); b++) {
-                    if (mb.banners.get(b).isBlockBanner()) continue;
                     bannerGroup.add(spawnMechDisplay(spawnLoc, mb.banners.get(b).item().clone(),
-                        mechId, i, "banner_" + k++));
+                        mechId, i, "banner_" + b));
                 }
             }
             bannerDisplaysPerBlock.add(bannerGroup);
@@ -866,14 +870,15 @@ public class MechanismRegistry {
         return out;
     }
 
-    // Vanilla-banner in-transit rendering constants — starting values, tune in-game as needed
-    // (same precedent as BannerManager's flag transforms). The banner ITEM model renders as the full
-    // 3D banner (cloth + pole), so the standing case just yaws it in place; the wall case shifts it
-    // toward its attachment face and up to roughly match the block-entity's cloth position (the item
-    // model's pole has no vanilla wall equivalent — accepted approximation).
+    // Vanilla-banner in-transit rendering constants. The banner ITEM model is bottom-anchored and renders
+    // as the full 3D banner (cloth + pole), so it sits ~½ block above the cell anchor — the standing case
+    // drops it back down and yaws it in place; the wall case shifts it toward its attachment face and to
+    // roughly the block-entity's cloth height (the item model's pole has no vanilla wall equivalent —
+    // accepted approximation). These Y values are EMPIRICAL starting values (I can't run the server) —
+    // tune in-game; the standing case may want 0.0 instead (see BannerManager.standingTransform).
     private static final float VANILLA_BANNER_SCALE = 1.0f;
-    private static final float VANILLA_STANDING_Y = 0.0f;
-    private static final float VANILLA_WALL_Y = 0.6f;
+    private static final float VANILLA_STANDING_Y = -0.5f;
+    private static final float VANILLA_WALL_Y = 0.0f;
     private static final float VANILLA_WALL_DEPTH = 0.38f; // toward the wall from the cell center
 
     /**
