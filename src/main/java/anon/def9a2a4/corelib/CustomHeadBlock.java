@@ -89,7 +89,8 @@ public final class CustomHeadBlock {
             int intervalTicks,
             Vector floorOffset,
             Map<BlockFace, Vector> wallOffsets,
-            @Nullable Object data  // e.g. Particle.DustOptions for DUST type
+            @Nullable Object data,  // e.g. Particle.DustOptions for DUST type
+            @Nullable Vector velocity  // directional motion: count-0 spawn, offset args = this vector, speed = magnitude
     ) {}
 
     /** An ItemDisplay entity attached to the block.

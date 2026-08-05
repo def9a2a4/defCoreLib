@@ -622,7 +622,11 @@ public final class BlockLoader {
             data = new org.bukkit.inventory.ItemStack(mat);
         }
 
-        return new CustomHeadBlock.ParticleConfig(type, count, speed, interval, floorOffset, wallOffsets, data);
+        // Optional directional velocity: when present, the particle rises/moves along this vector instead of
+        // the default random spread (see tickParticles). Absent/malformed -> null (random-spread path).
+        Vector velocity = parseVector(sec.get("velocity"), null);
+
+        return new CustomHeadBlock.ParticleConfig(type, count, speed, interval, floorOffset, wallOffsets, data, velocity);
     }
 
     private static CustomHeadBlock.Scaling parseScaling(Object obj, double defaultVal) {

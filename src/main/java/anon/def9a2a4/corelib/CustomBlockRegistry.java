@@ -1983,7 +1983,18 @@ public class CustomBlockRegistry {
             double speed = pc.speed().resolve(power);
 
             try {
-                if (pc.data() != null) {
+                Vector vel = pc.velocity();
+                if (vel != null) {
+                    // Directional: Bukkit treats count-0 spawns as "emit ONE particle whose velocity is the
+                    // offset vector", with `extra` (speed) scaling the magnitude. Config `count` is ignored.
+                    if (pc.data() != null) {
+                        block.getWorld().spawnParticle(pc.type(), x, y, z,
+                                0, vel.getX(), vel.getY(), vel.getZ(), speed, pc.data());
+                    } else {
+                        block.getWorld().spawnParticle(pc.type(), x, y, z,
+                                0, vel.getX(), vel.getY(), vel.getZ(), speed);
+                    }
+                } else if (pc.data() != null) {
                     block.getWorld().spawnParticle(pc.type(), x, y, z,
                             count, 0.05, 0.05, 0.05, speed, pc.data());
                 } else {
