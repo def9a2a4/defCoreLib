@@ -224,6 +224,10 @@ server-plugin-copy:
 # against THIS defCoreLib build (BlockShips depend:s on DefCoreLib). Relative sibling path for now
 # (JitPack pin later). Build BlockShips first: `cd ../BlockShips && make build` populates ../BlockShips/bin/.
 BLOCKSHIPS_JAR := $(wildcard ../BlockShips/bin/BlockShips-*.jar)
+# BlockShips' ship-smoothness position-sync is a per-tick ENTITY_TELEPORT packet sent via ProtocolLib
+# (softdepend). Without ProtocolLib the packet silently no-ops and moving ships rubber-band, so stage it
+# into the combined server too (it lives in the BlockShips playtest server's plugins dir).
+PROTOCOLLIB_JAR := $(firstword $(wildcard ../BlockShips/server/plugins/ProtocolLib*.jar) $(wildcard ../BlockShips/.download-cache/plugins/ProtocolLib*.jar))
 
 .PHONY: blockships
 blockships:
@@ -231,6 +235,7 @@ blockships:
 	mkdir -p test-server/plugins
 	cp $(BLOCKSHIPS_JAR) test-server/plugins/
 	@echo "Copied $(BLOCKSHIPS_JAR) -> test-server/plugins/"
+	@[ -n "$(PROTOCOLLIB_JAR)" ] && { cp $(PROTOCOLLIB_JAR) test-server/plugins/ && echo "Copied $(PROTOCOLLIB_JAR) -> test-server/plugins/ (ship position-sync)"; } || echo "WARN: no ProtocolLib jar found under ../BlockShips — moving ships will rubber-band until one is staged"
 
 .PHONY: server-clear-plugin-data
 server-clear-plugin-data:

@@ -255,10 +255,30 @@ final class BasicMechanism implements Mechanism {
                 rotationAxis.x, rotationAxis.y, rotationAxis.z);
         this.currentTransform = rot;
 
+        // Driven mode: displays are passengers of the CONSUMER's vehicle, which the consumer drives in the
+        // block-CORNER frame (BlockShips spawns it at wheelLoc). But display transforms are authored in the
+        // block-CENTER pivot frame (center-to-center localTransform + the -0.5 corner shift below), the SAME
+        // frame repositionColliders() teleports the colliders into. Without compensation the vehicle-anchored
+        // displays render (pivot - vehicle) = half a block low/-X/-Z from the pivot-anchored colliders. Add
+        // that constant world offset so displays share the collider frame (== BlockShips native's single-frame
+        // result). It's a constant (+0.5 per axis): the pivot delta-tracks vehicle movement, so no jitter.
+        // Gate on `driven`: owned doors/drawbridges/minecarts have vehicle==pivot and must NOT get this offset.
+        double compX = 0, compY = 0, compZ = 0;
+        if (driven) {
+            Location vl = vehicle.getLocation();
+            compX = pivot.getX() - vl.getX();
+            compY = pivot.getY() - vl.getY();
+            compZ = pivot.getZ() - vl.getZ();
+        }
+
         for (int i = 0; i < blocks.size(); i++) {
             MechanismBlockData mb = blocks.get(i);
             Matrix4f dm = new Matrix4f(rot).mul(mb.localTransform);
             dm.m31(dm.m31() - rideOffset); // compensate vehicle passenger riding offset
+            // Corner-vehicle → center-pivot frame reconciliation (driven only); see comment above the loop.
+            // dm is the per-block base every primary/aux/block/banner display derives from, so this one add
+            // propagates to all of them. Parent yaw is frozen 0, so dm's translation is world-space.
+            if (driven) { dm.m30(dm.m30() + (float) compX); dm.m31(dm.m31() + (float) compY); dm.m32(dm.m32() + (float) compZ); }
 
             // Primary display (index 0): BlockDisplay renders the unit cube from its MIN corner, so
             // shift -0.5 on ALL axes (in LOCAL space, post-multiply) to put the cube's true 3D center
