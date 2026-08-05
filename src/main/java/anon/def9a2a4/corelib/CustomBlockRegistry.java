@@ -239,6 +239,14 @@ public class CustomBlockRegistry {
     private @Nullable BukkitTask hintSaveTask;
     private boolean finalized;
 
+    // Set once, at the end of the first-tick restoreLoadedChunks() sweep. Before it flips, a type's
+    // already-loaded blocks are restored in bulk by that single sweep (one walk over every loaded
+    // chunk), so register() must NOT scan per-type — that per-type walk over 3,000+ types was the
+    // ~2.5 min startup cost. After the sweep, a type registered late (a companion re-enabling past the
+    // first tick, or a /reload) has missed the bulk pass and self-scans via rescanLoadedChunks. Plain
+    // boolean, not volatile: register / finalizeLoading / the sweep are all main-thread (cf. finalized).
+    private boolean chunkSweepComplete;
+
     // Reusable work matrix for animation tick (avoids allocation per frame)
     private final Matrix4f animationWorkMatrix = new Matrix4f();
 
@@ -333,13 +341,23 @@ public class CustomBlockRegistry {
         if (type.baseBlock() != null && !bareBaseById.containsKey(type.fullId())) {
             registerBareBlock(type, type.baseBlock(), null);
         }
-        rescanLoadedChunks(type);
+        // The first-tick restoreLoadedChunks() sweep restores every already-loaded chunk once, covering
+        // all types registered before it (core + companions' onEnable). Only a type registered AFTER the
+        // sweep — a runtime /reload or a late companion enable — has missed it and needs its own catch-up.
+        if (chunkSweepComplete) {
+            rescanLoadedChunks(type);
+        }
         if (finalized) {
             registerRecipesForType(type);
         }
     }
 
-    /** Scan all loaded, hinted chunks for blocks of the given type. */
+    /**
+     * Per-type catch-up scan: restore tile-hosted blocks of {@code type} in loaded, hinted chunks.
+     * Only for types registered AFTER the one-shot startup sweep ({@link #restoreLoadedChunks}) has
+     * run — a runtime /reload or a companion re-enabling past the first tick. Types present during the
+     * sweep are restored there in a single pass, so register() skips this (see {@code chunkSweepComplete}).
+     */
     private void rescanLoadedChunks(CustomHeadBlock type) {
         for (World world : Bukkit.getWorlds()) {
             Set<String> hints = chunkHints.get(world.getUID());
@@ -1195,19 +1213,22 @@ public class CustomBlockRegistry {
     }
 
     /**
-     * Enable-time recovery for chunks that were already loaded before our EntitiesLoadEvent listener
-     * existed. Paper loads worlds — and their spawn / force-loaded chunks — before it enables plugins,
-     * so those chunks fired ChunkLoad/EntitiesLoad already and, being resident, never fire them again.
+     * Enable-time recovery for chunks that were already loaded before our listeners existed. Paper
+     * loads worlds — and their spawn / force-loaded chunks — before it enables plugins, so those chunks
+     * fired ChunkLoad/EntitiesLoad already and, being resident, never fire them again.
      *
-     * <p>{@link #rescanLoadedChunks} is the equivalent catch-up for tile-hosted blocks, but it walks
-     * {@code getTileEntities()} only — a bare block's host (a casing's stair, a shaft's CHAIN) has no
-     * tile entity, so it is invisible there and {@link #bareLocations} stays empty for it: the block
-     * decays to plain stairs/chain and its shell reads as an orphan to {@link #scanOrphanedDisplays}.
-     * This sweep closes that gap for every bare type at once (casings and shafts share one restorer,
-     * see {@link #registerBareBlock}).
+     * <p>This is the SINGLE catch-up pass for every already-loaded chunk: per qualifying chunk it runs
+     * the tile-hosted restore ({@link #onChunkLoad}, for skulls / physical_material blocks) and the
+     * entity-hosted restore + hint-wipe decision ({@link #onEntitiesLoad}, for bare casings/shafts whose
+     * host block — a stair, a CHAIN — has no tile entity and so is invisible to a getTileEntities() walk;
+     * without it {@link #bareLocations} stays empty, the block decays to plain stairs/chain, and its
+     * shell reads as an orphan to {@link #scanOrphanedDisplays}). Restoring both here for all types at
+     * once replaces the old per-type {@link #rescanLoadedChunks} scan, which walked every loaded chunk
+     * once per registered type (~2.5 min at 3,000+ HeadSmith types).
      *
      * <p>Call once, on the first tick after enable — not during it: other plugins register their own
-     * types in their {@code onEnable}, which runs after ours.
+     * types in their {@code onEnable}, which runs after ours. Sets {@code chunkSweepComplete} on return,
+     * so any type registered later self-scans via {@link #rescanLoadedChunks}.
      *
      * @return number of chunks swept
      */
@@ -1217,13 +1238,16 @@ public class CustomBlockRegistry {
             for (Chunk chunk : world.getLoadedChunks()) {
                 // Entities not loaded yet → the real EntitiesLoadEvent is still coming; let it do the
                 // work. Racing it would let restoreBareBlocksInChunk's pass 1 miss the live shell and
-                // pass 2 respawn a duplicate alongside it.
+                // pass 2 respawn a duplicate alongside it. Its ChunkLoadEvent is in the same boat, so
+                // defer the tile pass too — the pair will fire together and restore this chunk normally.
                 if (!chunk.isEntitiesLoaded()) continue;
                 if (!chunkMayHaveCustomBlocks(chunk)) continue;
-                onEntitiesLoad(chunk);
+                onChunkLoad(chunk);     // tile-hosted (skulls / physical_material)
+                onEntitiesLoad(chunk);  // entity-hosted (bare casings/shafts) + hint-wipe decision
                 swept++;
             }
         }
+        chunkSweepComplete = true;
         return swept;
     }
 

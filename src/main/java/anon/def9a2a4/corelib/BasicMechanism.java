@@ -513,6 +513,28 @@ final class BasicMechanism implements Mechanism {
                 }
                 b.banners = bl;
             }
+            // Facing-RESOLVED item-display transforms: only for a type with a displayTransformResolver
+            // (recovery's static resolveDisplayEntities can't reproduce them without a live block). {i, xf:[14]}.
+            if (mb.customTypeId != null && mb.displayEntityConfigs != null && !mb.displayEntityConfigs.isEmpty()) {
+                CustomHeadBlock dt = registry.getType(mb.customTypeId);
+                if (dt != null && dt.displayTransformResolver() != null) {
+                    List<Map<String, Object>> dl = new ArrayList<>();
+                    for (int di = 0; di < mb.displayEntityConfigs.size(); di++) {
+                        org.bukkit.util.Transformation t = mb.displayEntityConfigs.get(di).transform();
+                        Vector3f tr = t.getTranslation(), sc = t.getScale();
+                        org.joml.Quaternionf lq = t.getLeftRotation(), rq = t.getRightRotation();
+                        Map<String, Object> m = new java.util.LinkedHashMap<>();
+                        m.put("i", di);
+                        m.put("xf", List.of(
+                            (double) tr.x, (double) tr.y, (double) tr.z,
+                            (double) lq.x, (double) lq.y, (double) lq.z, (double) lq.w,
+                            (double) sc.x, (double) sc.y, (double) sc.z,
+                            (double) rq.x, (double) rq.y, (double) rq.z, (double) rq.w));
+                        dl.add(m);
+                    }
+                    if (!dl.isEmpty()) b.displayXf = dl;
+                }
+            }
             st.blocks.add(b);
         }
         return st;

@@ -60,6 +60,11 @@ final class MechanismState {
         // (translation xyz, leftRot xyzw, scale xyz, rightRot xyzw), anchor: 3 doubles}. Reconstructed into
         // MechanismBlockData.banners in rebuildBlocks. Order MUST be preserved (pairs with banner_k displays).
         @Nullable List<Map<String, Object>> banners;
+        // Facing-RESOLVED item-display transforms for resolver-driven blocks (dynamo head, boiler/burner
+        // shell, pump body, dispenser eye, piston head, cart rail) — recovery rebuilds the STATIC configs
+        // without a live block, so the resolver output is lost. One map per resolved display: {i: index,
+        // xf: 14 doubles}. Only emitted for blocks whose type has a displayTransformResolver.
+        @Nullable List<Map<String, Object>> displayXf;
     }
 
     void write(ConfigurationSection s) {
@@ -99,6 +104,7 @@ final class MechanismState {
             if (b.configPdc != null) m.put("pdc", Base64.getEncoder().encodeToString(b.configPdc));
             if (b.blockEntity != null && !b.blockEntity.isEmpty()) m.put("be", b.blockEntity);
             if (b.banners != null && !b.banners.isEmpty()) m.put("banners", b.banners);
+            if (b.displayXf != null && !b.displayXf.isEmpty()) m.put("dxf", b.displayXf);
             blockList.add(m);
         }
         s.set("blocks", blockList);
@@ -170,6 +176,17 @@ final class MechanismState {
                         out.add(m);
                     }
                     if (!out.isEmpty()) b.banners = out;
+                }
+                Object dxf = raw.get("dxf");
+                if (dxf instanceof List<?> dxfList) {
+                    List<Map<String, Object>> out = new ArrayList<>();
+                    for (Object el : dxfList) {
+                        if (!(el instanceof Map<?, ?> em)) continue;
+                        Map<String, Object> m = new LinkedHashMap<>();
+                        for (Map.Entry<?, ?> e : em.entrySet()) m.put(String.valueOf(e.getKey()), e.getValue());
+                        out.add(m);
+                    }
+                    if (!out.isEmpty()) b.displayXf = out;
                 }
                 st.blocks.add(b);
             }

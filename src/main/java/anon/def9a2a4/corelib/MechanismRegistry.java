@@ -1360,6 +1360,10 @@ public class MechanismRegistry {
                     decs = chb.resolveDisplayEntities(b.customState);
                     bdecs = chb.resolveBlockDisplayEntities(b.customState);
                     particles = chb.resolveParticles(b.customState);
+                    // Overwrite the RESOLVED facing transforms the static resolve above can't reproduce
+                    // (no live block on recovery). Only present for resolver-driven types; index-aligned
+                    // with `decs` because both draw from the same resolveDisplayEntities(customState).
+                    if (b.displayXf != null && decs != null) decs = applyDisplayXf(decs, b.displayXf, st.mechId);
                 }
             }
             Vector3f wall = b.hasWallFacing ? new Vector3f(b.wfX, b.wfY, b.wfZ) : null;
@@ -1404,6 +1408,33 @@ public class MechanismRegistry {
     }
 
     private static float bf(List<?> l, int i) { return ((Number) l.get(i)).floatValue(); }
+
+    /** Overwrite the facing-resolved transforms onto the statically-rebuilt display configs on recovery
+     *  (the resolver can't run without a live block). Index-aligned with {@code decs}; per-entry guarded so a
+     *  corrupt transform keeps the static config. Returns a fresh mutable list. */
+    private List<CustomHeadBlock.DisplayEntityConfig> applyDisplayXf(
+            List<CustomHeadBlock.DisplayEntityConfig> decs, List<Map<String, Object>> saved, UUID mechId) {
+        List<CustomHeadBlock.DisplayEntityConfig> out = new ArrayList<>(decs);
+        for (Map<String, Object> m : saved) {
+            try {
+                int i = ((Number) m.get("i")).intValue();
+                if (i < 0 || i >= out.size()) continue;
+                List<?> xf = (List<?>) m.get("xf");
+                org.bukkit.util.Transformation t = new org.bukkit.util.Transformation(
+                    new Vector3f(bf(xf, 0), bf(xf, 1), bf(xf, 2)),
+                    new org.joml.Quaternionf(bf(xf, 3), bf(xf, 4), bf(xf, 5), bf(xf, 6)),   // JOML order x,y,z,w
+                    new Vector3f(bf(xf, 7), bf(xf, 8), bf(xf, 9)),
+                    new org.joml.Quaternionf(bf(xf, 10), bf(xf, 11), bf(xf, 12), bf(xf, 13)));
+                CustomHeadBlock.DisplayEntityConfig o = out.get(i);
+                out.set(i, new CustomHeadBlock.DisplayEntityConfig(o.displayItem(), t, o.tagSuffix(),
+                    o.animation(), o.interpolationDuration(), o.wallOffset()));
+            } catch (Exception e) {
+                plugin.getLogger().warning("Mechanism recovery: unreadable display transform for " + mechId
+                    + " (" + e.getMessage() + "); keeping the static config");
+            }
+        }
+        return out;
+    }
 
     private void tickMechanisms() {
         long currentTick = Bukkit.getServer().getCurrentTick();
