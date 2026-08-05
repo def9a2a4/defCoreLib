@@ -277,6 +277,11 @@ final class CartRailsManager implements Listener {
         // The re-shape may not be applied at event time; act next tick once the shape has settled — and
         // coalesce a re-pulse storm to ONE settle-check per rail per tick.
         dirtyRails.add(CustomBlockRegistry.LocationKey.of(b));
+        // During onDisable the scheduler rejects new tasks: landing a custom rail from a disassembling
+        // mechanism emits a physics event on a shutting-down server, and scheduling here would throw the
+        // confusing "Plugin attempted to register task while disabled" line (the event bus swallows it, so
+        // it's log-noise, not a functional failure). No next tick at shutdown — just skip.
+        if (!plugin.isEnabled()) return;
         if (!railFlushScheduled) {
             railFlushScheduled = true;
             Bukkit.getScheduler().runTask(plugin, this::flushDirtyRails);

@@ -305,6 +305,19 @@ public class CustomBlockRegistry {
         }
     }
 
+    private final Set<String> loggedChunkLoadFailures = new HashSet<>();
+
+    /** Log a throwing onChunkLoad callback once per block type (the callback is type-level code, so it would
+     *  throw for every block of that type — one loud line, not thousands). See restoreBlock's dispatch. */
+    private void logChunkLoadFailureOnce(CustomHeadBlock type, Throwable e) {
+        String key = type.namespace() + ":" + type.typeId();
+        if (loggedChunkLoadFailures.size() > 1024) loggedChunkLoadFailures.clear(); // bound memory
+        if (loggedChunkLoadFailures.add(key)) {
+            plugin.getLogger().log(Level.SEVERE, "Chunk-load callback for '" + key
+                    + "' threw during restoreBlock (further errors for this type are suppressed)", e);
+        }
+    }
+
     CustomBlockRegistry(JavaPlugin plugin) {
         this.plugin = plugin;
     }
@@ -1294,7 +1307,17 @@ public class CustomBlockRegistry {
 
         // Dispatch chunk load callback for plugin-specific restore
         if (type.onChunkLoadCallback() != null) {
-            type.onChunkLoadCallback().accept(block, state);
+            try {
+                type.onChunkLoadCallback().accept(block, state);
+            } catch (Exception e) {
+                // A chunk-load callback that throws (e.g. one scheduling a task during onDisable, or any
+                // genuine bug) must not abort restoreBlock. On BasicMechanism.disassemble()'s landing loop
+                // that would strand every not-yet-placed block of the mechanism; on a normal chunk load /
+                // startup sweep it would skip the rest of the chunk's custom blocks. The callback is the LAST
+                // step here, so swallowing can't half-roll-back the block's engine registration above. Log
+                // once per type and continue.
+                logChunkLoadFailureOnce(type, e);
+            }
         }
     }
 
@@ -1597,6 +1620,12 @@ public class CustomBlockRegistry {
     }
 
     public void refreshReactiveNeighbors(Block changed) {
+        // During onDisable the scheduler rejects the coalesced-flush task below, and this runs mid-way through
+        // BasicMechanism.disassemble()'s shutdown restore — a throw here trips shutdown()'s false "removing
+        // entities without block restore" warning and skips rebareAfterLanding. Running the flush inline is
+        // unsafe (RotationRotator.onNeighborChange re-enters the scheduler and leaks a mechanism); the neighbor
+        // re-settle is rebuilt from topology on next chunk load, so skipping it at shutdown is lossless.
+        if (!plugin.isEnabled()) return;
         // Cheap per-pulse work only: record which reactive neighbors need re-evaluation (and from which
         // faces, for handlers like pipes that care), then let the coalesced flush do the expensive
         // getState/onNeighborChange/recalc once next tick. No getState/getTypeFromBlock here — those are

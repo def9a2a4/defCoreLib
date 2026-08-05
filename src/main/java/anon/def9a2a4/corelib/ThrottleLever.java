@@ -110,6 +110,12 @@ final class ThrottleLever implements Listener {
     private void onLoad(Block b) {
         int level = readLevel(b);
         levelCache.put(CustomBlockRegistry.LocationKey.of(b), level);
+        // During onDisable the scheduler rejects new tasks — and this callback is dispatched from
+        // restoreBlock mid-way through a mechanism's shutdown landing, so a throw here would strand the
+        // mechanism's not-yet-placed blocks. There is no next tick at shutdown; the plate's power persists
+        // with the block (and a mechanism landing re-asserts it synchronously via applyThrottleLevel), so
+        // just skip the deferred re-assert. (restoreBlock also catches this, but skipping is cleaner.)
+        if (!registry.getPlugin().isEnabled()) return;
         // Defer to next tick: displays are (re)spawned by applyConfig around this callback, and we'd
         // rather not drive a physics update mid chunk-load. The plate's power persists with the block,
         // so only re-assert it if it actually drifted (e.g. an entity was on the plate at unload).
