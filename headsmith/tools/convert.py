@@ -149,9 +149,7 @@ def categories_for(src: dict, file_stem: str, is_alphabet: bool) -> list[str]:
         else:
             cls = next((t for t in tags if not t.startswith("color/")), None)
             add(f"{NAMESPACE}/mini_blocks/{cls.split('/')[0] if cls else 'other'}")
-    elif file_stem == "barrels":
-        add(f"{NAMESPACE}/barrels/food" if "food" in tags else f"{NAMESPACE}/barrels")
-    else:  # candles, books, pumpkins, chalices, bottles, buckets, bundles — flat family
+    else:  # barrels, candles, books, pumpkins, chalices, bottles, buckets, bundles — flat family
         add(f"{NAMESPACE}/{file_stem}")
 
     # Axis B — color (cross-cutting)

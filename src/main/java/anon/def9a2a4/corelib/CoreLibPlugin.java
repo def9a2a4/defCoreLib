@@ -1700,10 +1700,22 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
     private static final int CATALOG_PAGE = 45; // content slots per page (top 5 rows); bottom row = nav bar
 
     /** Category path → block id whose item texture represents that category node (else its first member).
+     *  Keyed by the child path as rendered in the tree (top-level = single segment, deeper = full path).
      *  Could later move to a resource; a handful of overrides doesn't warrant it yet. */
-    private static final Map<String, String> CATEGORY_ICON_IDS =
-            Map.of("mech", "mech:gear", "pipes", "pipes:copper_pipe",
-                    "headsmith", "headsmith:black_skull_candle");
+    private static final Map<String, String> CATEGORY_ICON_IDS = buildCategoryIconIds();
+
+    private static Map<String, String> buildCategoryIconIds() {
+        Map<String, String> m = new java.util.HashMap<>();
+        m.put("mech", "mech:gear");
+        m.put("pipes", "pipes:copper_pipe");
+        m.put("headsmith", "headsmith:black_skull_candle");
+        // HeadSmith color facet: each color node shows that color's mini wool.
+        for (String c : List.of("white", "orange", "magenta", "light_blue", "yellow", "lime", "pink",
+                "gray", "light_gray", "cyan", "purple", "blue", "brown", "green", "red", "black")) {
+            m.put("headsmith/color/" + c, "headsmith:mini_" + c + "_wool");
+        }
+        return Map.copyOf(m);
+    }
 
     /** Grouping labels for a type: its explicit {@code categories}, else a single {@code [namespace]}. */
     private static List<String> catalogGroupsOf(CustomHeadBlock t) {
