@@ -361,14 +361,11 @@ final class ExtendablePistonManager {
         // The ghost pole slides OUT of the core cell too — scan its ray as well, or a block that survived
         // capture right beside the core (an excluded-barrier casing) silently eats the ghost's landing.
         moving.add(line.core());
-        // Measure the reachable distance treating fragile plants as passable (they'll be mowed), so `r` is
-        // the real committed stroke — the MIN across all columns. Then mow only up to `r`, so a column that
-        // stops short doesn't destroy plants the assembly never enters (over-mow). Break, don't push.
+        // Measure the reachable distance treating fragile plants as passable (they'll be mowed as the
+        // stroke crosses each cell — see advance()), so `r` is the real committed stroke: the MIN across
+        // all columns, stopping at the first solid non-fragile wall.
         int r = clearForAll(moving, footprint, moveFace, reserve, true);
-        if (r > 0) {
-            mowFragilesAhead(moving, footprint, moveFace, r);
-            startMove(coreKey, line, payload, moveFace, r, dir);
-        }
+        if (r > 0) startMove(coreKey, line, payload, moveFace, r, dir);
     }
 
     // ──────────────────────────────────────────────────────────────────────
@@ -471,33 +468,6 @@ final class ExtendablePistonManager {
             if (n < best) best = n;
         }
         return best;
-    }
-
-    /**
-     * Break fragile plants (grass, ferns, small + tall flowers, …) the assembly is about to sweep through,
-     * so the {@link #clearForAll} measurement then sees air and advances instead of stopping at them
-     * (plants are not {@link MovableBlocks#isEmptyOrPassable}). Mirrors clearForAll's per-moving-block walk:
-     * the assembly's own footprint cells and already-clear cells are skipped, a fragile cell is broken and
-     * the walk continues, and the first solid non-fragile block ends that column (the assembly still stops
-     * there). Event-less {@code breakNaturally()} matches the disassembly landing path — a piston has no
-     * rider to attribute a {@code BlockBreakEvent} to (so this bypasses protection, exactly like landing).
-     * Two-tall plants are safe: breakNaturally on either half removes both.
-     *
-     * <p>Scope is the FULL {@link FragileBlocks} set by design — not just soft weeds. That includes leaves,
-     * snow, cobweb, cactus, bamboo, sugar cane, and chorus, so a stroke bulldozes those in-path too.
-     * Callers must pass {@code max = } the committed move distance (not the max reach), or columns that
-     * stop short will over-mow plants the assembly never enters.
-     */
-    private void mowFragilesAhead(List<Block> moving, Set<Long> footprint, BlockFace face, int max) {
-        for (Block b : moving) {
-            Block c = b;
-            for (int i = 0; i < max; i++) {
-                c = c.getRelative(face);
-                if (footprint.contains(cellKey(c)) || isClear(c)) continue;
-                if (FragileBlocks.isFragile(c.getType())) { c.breakNaturally(); continue; }
-                break;
-            }
-        }
     }
 
     /** Cells occupied by the moving assembly, plus the core cell (the rod slides through it — ghost-filled). */
@@ -615,8 +585,12 @@ final class ExtendablePistonManager {
             });
             Location start = mech.pivot(); // block-centered after assembly
             Location target = start.clone().add(dir.x * r, dir.y * r, dir.z * r);
+            // Progressive plant-mow inputs: walk every moving block's forward ray — the deduped assembly
+            // plus the core cell (the ghost pole slides out of it). advance() breaks plants cell-by-cell.
+            List<Block> mowMovers = new ArrayList<>(assembleBlocks);
+            mowMovers.add(line.core());
             active.put(coreKey, new ActiveMove(coreKey, mech, start, target, dir,
-                assembleBlocks.size() + ghosts.size(), spinDir));
+                assembleBlocks.size() + ghosts.size(), spinDir, mowMovers, moveFace, r));
         } catch (Throwable t) {
             safeDisassemble(mech, coreKey);   // restore the aired-out rod instead of leaking the mech
             throw t;
@@ -645,6 +619,21 @@ final class ExtendablePistonManager {
             return false;
         }
         Location cur = m.mech.pivot();
+        // Progressive plant-mow: as the stroke crosses into each whole cell, break the fragile plants in
+        // it (event-less, like landing). Runs only here in advance() — post-commit — so an aborted stroke
+        // mows nothing and a stop-then-reverse mows only cells actually traversed. `mowedTo` only advances,
+        // capped at mowDist, so no cell is re-mown or over-mown. Non-leading movers' target cells are
+        // already air (swept/aired-out), so only each column's leading external plant breaks.
+        double moved = (cur.getX() - m.start.getX()) * m.dir.x
+                     + (cur.getY() - m.start.getY()) * m.dir.y
+                     + (cur.getZ() - m.start.getZ()) * m.dir.z;
+        int frontier = Math.min(m.mowDist, (int) Math.floor(moved + 1e-6) + 1);
+        for (; m.mowedTo < frontier; m.mowedTo++) {
+            for (Block o : m.mowMovers) {
+                Block cell = o.getRelative(m.mowFace, m.mowedTo + 1);
+                if (FragileBlocks.isFragile(cell.getType())) cell.breakNaturally();
+            }
+        }
         // Stop-then-reverse: if power is cut OR the spin direction flips mid-slide, stop at the NEXT whole block
         // (don't run to the full planned target). Retarget to start + dir·ceil(progress); `start`/`target` are
         // block-centered so the arrival branch lands on-grid, and the next trigger scan drives the other way.
@@ -755,8 +744,14 @@ final class ExtendablePistonManager {
         final RotationNetwork.SpinDirection spinDir;  // the spin that started this move; a flip stops it
         int warmup = 2;                        // ticks to wait before the first move (mount + rotate(0) first)
         int settle = -1;                       // ≥0: parked at target, counting down to disassembly (client lerp)
+        // Progressive plant-mow: as the stroke crosses each whole cell, break fragile plants in that cell.
+        final List<Block> mowMovers;           // moving block origins (their forward rays hold the path plants)
+        final BlockFace mowFace;               // the stroke direction as a BlockFace
+        final int mowDist;                     // committed cells (== r); mow never runs past it
+        int mowedTo = 0;                       // highest whole cell already mowed (only advances)
         ActiveMove(CustomBlockRegistry.LocationKey coreKey, Mechanism mech, Location start, Location target,
-                   Vector3f dir, int mass, RotationNetwork.SpinDirection spinDir) {
+                   Vector3f dir, int mass, RotationNetwork.SpinDirection spinDir,
+                   List<Block> mowMovers, BlockFace mowFace, int mowDist) {
             this.coreKey = coreKey;
             this.mech = mech;
             this.start = start;
@@ -764,6 +759,9 @@ final class ExtendablePistonManager {
             this.dir = dir;
             this.mass = mass;
             this.spinDir = spinDir;
+            this.mowMovers = mowMovers;
+            this.mowFace = mowFace;
+            this.mowDist = mowDist;
         }
     }
 }

@@ -87,8 +87,10 @@ public final class FragileBlocks {
         // Explicit additions the name patterns miss (support-needing, no block-entity data). REDSTONE_WIRE
         // is the placed block — the old name.equals("REDSTONE") added the dust ITEM, a no-op. Skulls/heads
         // are intentionally NOT added: PLAYER_HEAD is this plugin's custom-block base, so reclassifying it
-        // risks perturbing the mechanism's own custom-block landing — leave for a dedicated change.
-        for (String id : new String[]{"REDSTONE_WIRE", "END_ROD", "CHAIN", "LIGHTNING_ROD",
+        // risks perturbing the mechanism's own custom-block landing — leave for a dedicated change. CHAIN and
+        // END_ROD are deliberately NOT here: both are free-floating (need no support), and CHAIN is a runtime
+        // no-op anyway (1.21 renamed chain → IRON_CHAIN).
+        for (String id : new String[]{"REDSTONE_WIRE", "LIGHTNING_ROD",
                 "POINTED_DRIPSTONE", "AMETHYST_CLUSTER", "SMALL_AMETHYST_BUD", "MEDIUM_AMETHYST_BUD",
                 "LARGE_AMETHYST_BUD", "SCULK_VEIN"}) {
             Material m = Material.getMaterial(id);

@@ -522,11 +522,6 @@ final class ChainHoistManager implements Listener {
         Block busy = mechRegistry.firstMovingCapturedAnchor(group);
         if (busy != null) { MoverExclusion.blockedParticle(null, busy); return; }
 
-        // Rising: mow the fragile plants the load will sweep up through, now that the stroke is committed
-        // (all bail conditions above have passed). Bounded to the clamped `span`, so it only breaks cells
-        // the body actually enters. Descending mows progressively in advance()/frontierClear instead.
-        if (!descend) mowFragilesAhead(load, footprint, BlockFace.UP, span);
-
         // The emerging link. Descending it starts inside the hoist and layLinks appends one more per block;
         // rising it starts above the body's top link and lands back inside the hoist to be discarded.
         Block ghostCell = descend ? hoist : hoist.getRelative(0, -span, 0);
@@ -600,7 +595,7 @@ final class ChainHoistManager implements Listener {
             Location target = start.clone().add(0, descend ? -1 : span, 0);
             active.put(hoistKey, new ActiveMove(hoistKey, hoist, mech,
                 start, target, descend ? -1f : 1f, mass, spinDir, descend, span, startDepth, frontier,
-                linksDeleted));
+                linksDeleted, descend ? List.of() : load));
         } catch (Throwable t) {
             safeDisassemble(mech, hoistKey);
             throw t;
@@ -665,6 +660,21 @@ final class ChainHoistManager implements Listener {
             return false;
         }
         Location cur = m.mech.pivot();
+        // Rising: progressive plant-mow — break the fragile plants in each whole cell above the load as the
+        // body rises into it (event-less, like landing; descent mows via frontierClear instead). Runs only
+        // here in advance() — post-commit — so an aborted rise mows nothing; `riseMowedTo` only advances and
+        // is capped at steps, so a power-cut stop mows only the cells traversed. Lower load cells are already
+        // air (aired out at assembly), so only the load's leading external plant breaks.
+        if (!m.descend) {
+            double risen = (cur.getY() - m.start.getY()) * m.dirY;
+            int frontier = Math.min(m.steps, (int) Math.floor(risen + 1e-6) + 1);
+            for (; m.riseMowedTo < frontier; m.riseMowedTo++) {
+                for (Block o : m.riseLoad) {
+                    Block cell = o.getRelative(BlockFace.UP, m.riseMowedTo + 1);
+                    if (FragileBlocks.isFragile(cell.getType())) cell.breakNaturally();
+                }
+            }
+        }
         boolean powered = network.isPowered(m.hoistKey) && network.getDirection(m.hoistKey) == m.spinDir;
         if (!powered) {
             // Stop at the next whole cell if power is cut or the spin flips mid-travel.
@@ -998,6 +1008,10 @@ final class ChainHoistManager implements Listener {
         /** Descending leading-edge blocks (load, or the bottom bare link) at their rest positions; shifted
          *  down by the current depth each tick to re-probe obstruction. Empty rising (no obstruction scan). */
         final List<Block> frontier;
+        /** Rising: the load blocks at their rest positions, whose upward rays hold the plants to mow as the
+         *  body rises into each cell (empty descending — that path mows via {@link #frontierClear}). */
+        final List<Block> riseLoad;
+        int riseMowedTo = 0;   // highest whole cell above the load already mowed (only advances, capped at steps)
         /** Links appended (descending) or taken up (rising) so far. Makes {@link #layLinks} idempotent. */
         int linksDone = 0;
         /** Rising: links {@link #layLinks} actually AIRED (skips player-mined gaps). Shared with the
@@ -1008,7 +1022,8 @@ final class ChainHoistManager implements Listener {
 
         ActiveMove(CustomBlockRegistry.LocationKey hoistKey, Block hoist, Mechanism mech, Location start,
                    Location target, float dirY, int mass, RotationNetwork.SpinDirection spinDir,
-                   boolean descend, int steps, int startDepth, List<Block> frontier, int[] linksDeleted) {
+                   boolean descend, int steps, int startDepth, List<Block> frontier, int[] linksDeleted,
+                   List<Block> riseLoad) {
             this.hoistKey = hoistKey;
             this.hoist = hoist;
             this.mech = mech;
@@ -1022,6 +1037,7 @@ final class ChainHoistManager implements Listener {
             this.startDepth = startDepth;
             this.frontier = frontier;
             this.linksDeleted = linksDeleted;
+            this.riseLoad = riseLoad;
         }
     }
 }

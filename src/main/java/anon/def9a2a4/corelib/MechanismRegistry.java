@@ -440,6 +440,21 @@ public class MechanismRegistry {
                 }
             }
 
+            // Head orientation for a NON-registry vanilla skull (registered heads captured it above). A
+            // PLAYER_WALL_HEAD's facing / PLAYER_HEAD's 16-step yaw, so the moving textured ItemDisplay (spawned
+            // below from the captured skull profile) renders at the right orientation — mirrors the registered-
+            // head path and BlockShips' native applySkullTransform. Guarded so it never overrides the chb capture.
+            if (wallFacing == null && floorHeadYaw == null) {
+                if (block.getType() == Material.PLAYER_WALL_HEAD
+                        && bd instanceof org.bukkit.block.data.Directional wallDir) {
+                    org.bukkit.util.Vector f = wallDir.getFacing().getDirection();
+                    wallFacing = new Vector3f((float) f.getX(), (float) f.getY(), (float) f.getZ());
+                } else if (!wasBare && block.getType() == Material.PLAYER_HEAD
+                        && bd instanceof org.bukkit.block.data.Rotatable rot) {
+                    floorHeadYaw = floorHeadYawRadians(rot);
+                }
+            }
+
             // Resolve the collider: a custom block's own config wins, else the vanilla shape registry,
             // else a full block (colliderRegistry.get returns DEFAULT for unlisted materials).
             CollisionConfig customCollision = chb != null ? chb.resolveCollision(customState) : null;
@@ -657,6 +672,16 @@ public class MechanismRegistry {
                 // banner blockdata still rides in mb.blockData (landing/persistence read it, not this display),
                 // and the AIR entity keeps the "display" tag for recovery/collider/group-shape parity.
                 primary = spawnMechBlockDisplay(spawnLoc, Material.AIR.createBlockData(), mechId, i, "display");
+            } else if ((mb.blockData.getMaterial() == Material.PLAYER_HEAD
+                        || mb.blockData.getMaterial() == Material.PLAYER_WALL_HEAD)
+                    && mb.blockEntitySnapshot != null
+                    && mb.blockEntitySnapshot.get("bs_skull_tex") instanceof String skullTex) {
+                // A NON-registry vanilla skull with a captured profile (e.g. BlockShips' ship wheel, decorative
+                // player heads): a BlockDisplay of PLAYER_HEAD carries no profile and renders as Steve, so spawn
+                // a TEXTURED ItemDisplay from the captured texture instead — exactly like the registered-head
+                // branch above. Orientation (wallFacing/floorHeadYaw, captured for this case too) is applied by
+                // rotate(). The real skull profile still lands on disassembly via the block-entity snapshot.
+                primary = spawnMechDisplay(spawnLoc, HeadUtil.createHead(skullTex, 1), mechId, i, "display");
             } else {
                 primary = spawnMechBlockDisplay(spawnLoc, mb.blockData, mechId, i, "display");
             }
