@@ -40,6 +40,7 @@ public final class FragileBlocks {
             Material.WHEAT, Material.CARROTS, Material.POTATOES, Material.BEETROOTS,
             Material.MELON_STEM, Material.PUMPKIN_STEM,
             Material.ATTACHED_MELON_STEM, Material.ATTACHED_PUMPKIN_STEM,
+            Material.NETHER_WART, Material.COCOA, Material.TORCHFLOWER_CROP, Material.PITCHER_CROP,
             Material.SWEET_BERRY_BUSH, Material.RED_MUSHROOM, Material.BROWN_MUSHROOM,
             Material.CRIMSON_FUNGUS, Material.WARPED_FUNGUS,
             // Leaves
@@ -57,25 +58,41 @@ public final class FragileBlocks {
             Material.SUGAR_CANE, Material.CACTUS, Material.BAMBOO, Material.BAMBOO_SAPLING,
             Material.CHORUS_PLANT, Material.CHORUS_FLOWER
         ));
-        // Version-specific
-        Material paleLeaves = Material.getMaterial("PALE_OAK_LEAVES");
-        if (paleLeaves != null) fragile.add(paleLeaves);
-        Material paleSapling = Material.getMaterial("PALE_OAK_SAPLING");
-        if (paleSapling != null) fragile.add(paleSapling);
+        // Version-specific (1.21.4/1.21.5 pale-garden & spring blocks — resolve by name so an older
+        // runtime doesn't hard-fail at class load). All are pass-through plants in colliders.yml.
+        for (String id : new String[]{"PALE_OAK_LEAVES", "PALE_OAK_SAPLING",
+                "BUSH", "FIREFLY_BUSH", "LEAF_LITTER", "PALE_MOSS_CARPET"}) {
+            Material m = Material.getMaterial(id);
+            if (m != null) fragile.add(m);
+        }
         FRAGILE_BLOCKS = Set.copyOf(fragile);
 
-        // Attachable blocks: need support from other blocks, removed first during assembly
+        // Attachable blocks: need support from other blocks, removed first during assembly / placed last.
         Set<Material> attachable = EnumSet.noneOf(Material.class);
         String[] patterns = {
             "BANNER", "SIGN", "TORCH", "BUTTON", "LEVER", "CARPET", "PRESSURE_PLATE",
             "LADDER", "LANTERN", "BELL", "CANDLE", "REPEATER", "COMPARATOR", "TRIPWIRE", "RAIL"
         };
+        // Blocks the substrings wrongly capture: a jack-o-lantern / sea lantern is a full solid block (not
+        // support-fragile); the torchflower family are plants, not torches; a candle CAKE sits on the ground.
+        Set<Material> excluded = Set.of(Material.JACK_O_LANTERN, Material.SEA_LANTERN,
+            Material.TORCHFLOWER, Material.TORCHFLOWER_CROP, Material.POTTED_TORCHFLOWER);
         for (Material mat : Material.values()) {
             String name = mat.name();
-            if (name.equals("REDSTONE")) { attachable.add(mat); continue; }
+            if (excluded.contains(mat) || name.endsWith("CANDLE_CAKE")) continue;
             for (String pattern : patterns) {
                 if (name.contains(pattern)) { attachable.add(mat); break; }
             }
+        }
+        // Explicit additions the name patterns miss (support-needing, no block-entity data). REDSTONE_WIRE
+        // is the placed block — the old name.equals("REDSTONE") added the dust ITEM, a no-op. Skulls/heads
+        // are intentionally NOT added: PLAYER_HEAD is this plugin's custom-block base, so reclassifying it
+        // risks perturbing the mechanism's own custom-block landing — leave for a dedicated change.
+        for (String id : new String[]{"REDSTONE_WIRE", "END_ROD", "CHAIN", "LIGHTNING_ROD",
+                "POINTED_DRIPSTONE", "AMETHYST_CLUSTER", "SMALL_AMETHYST_BUD", "MEDIUM_AMETHYST_BUD",
+                "LARGE_AMETHYST_BUD", "SCULK_VEIN"}) {
+            Material m = Material.getMaterial(id);
+            if (m != null) attachable.add(m);
         }
         ATTACHABLE_MATERIALS = Set.copyOf(attachable);
     }

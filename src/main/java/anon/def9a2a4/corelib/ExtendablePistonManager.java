@@ -482,6 +482,11 @@ final class ExtendablePistonManager {
      * there). Event-less {@code breakNaturally()} matches the disassembly landing path — a piston has no
      * rider to attribute a {@code BlockBreakEvent} to (so this bypasses protection, exactly like landing).
      * Two-tall plants are safe: breakNaturally on either half removes both.
+     *
+     * <p>Scope is the FULL {@link FragileBlocks} set by design — not just soft weeds. That includes leaves,
+     * snow, cobweb, cactus, bamboo, sugar cane, and chorus, so a stroke bulldozes those in-path too.
+     * Callers must pass {@code max = } the committed move distance (not the max reach), or columns that
+     * stop short will over-mow plants the assembly never enters.
      */
     private void mowFragilesAhead(List<Block> moving, Set<Long> footprint, BlockFace face, int max) {
         for (Block b : moving) {

@@ -501,10 +501,10 @@ final class ChainHoistManager implements Listener {
             // per-block: rising's ghost/swallow accounting needs `span` final at assembly time — the ghost
             // lands on the protected hoist cell only when the stroke runs its full span. Bare chain (empty
             // load) is a no-op here: clearForAll of no blocks returns max.
-            // Rising commits its whole span up front, so mow the full span of fragile plants above the load
-            // (they'd otherwise clamp the stroke short) before measuring the real ceiling clearance.
-            mowFragilesAhead(load, footprint, BlockFace.UP, span);
-            span = Math.min(span, clearForAll(load, footprint, BlockFace.UP, span));
+            // Measure the ceiling clearance counting fragile plants as passable (they'll be mowed just
+            // before the stroke commits, below) so `span` is the real committed distance — the actual mow
+            // is bounded to it (and deferred past the abort checks) so an aborted stroke destroys nothing.
+            span = Math.min(span, clearForAll(load, footprint, BlockFace.UP, span, true));
             if (span < 1) return;
         }
         List<Block> group = new ArrayList<>(column.subList(descend ? 0 : span, column.size()));
@@ -521,6 +521,11 @@ final class ChainHoistManager implements Listener {
         // inner mechanism. Runs before assemble; our own protected hoist head is not in `group`.
         Block busy = mechRegistry.firstMovingCapturedAnchor(group);
         if (busy != null) { MoverExclusion.blockedParticle(null, busy); return; }
+
+        // Rising: mow the fragile plants the load will sweep up through, now that the stroke is committed
+        // (all bail conditions above have passed). Bounded to the clamped `span`, so it only breaks cells
+        // the body actually enters. Descending mows progressively in advance()/frontierClear instead.
+        if (!descend) mowFragilesAhead(load, footprint, BlockFace.UP, span);
 
         // The emerging link. Descending it starts inside the hoist and layLinks appends one more per block;
         // rising it starts above the body's top link and lands back inside the hoist to be discarded.
@@ -850,13 +855,21 @@ final class ChainHoistManager implements Listener {
     }
 
     private int clearForAll(List<Block> moving, Set<Long> footprint, BlockFace face, int max) {
+        return clearForAll(moving, footprint, face, max, false);
+    }
+
+    /** {@code throughFragile}: count fragile plants as passable (the stroke will mow them), so the reach
+     *  reflects the real committed distance and the mow can be bounded to it. */
+    private int clearForAll(List<Block> moving, Set<Long> footprint, BlockFace face, int max,
+                            boolean throughFragile) {
         int best = max;
         for (Block b : moving) {
             int n = 0;
             Block c = b;
             for (int i = 0; i < max; i++) {
                 c = c.getRelative(face);
-                if (footprint.contains(cellKey(c)) || isClear(c)) n++; else break;
+                if (footprint.contains(cellKey(c)) || isClear(c)
+                        || (throughFragile && FragileBlocks.isFragile(c.getType()))) n++; else break;
             }
             if (n < best) best = n;
         }
@@ -871,6 +884,10 @@ final class ChainHoistManager implements Listener {
      * {@code breakNaturally()} matches the disassembly landing path (the hoist has no rider to attribute a
      * {@code BlockBreakEvent} to — this bypasses protection, exactly like landing). Two-tall plants are
      * safe: breakNaturally on either half removes both.
+     *
+     * <p>Scope is the FULL {@link FragileBlocks} set by design (leaves, snow, cobweb, cactus, bamboo,
+     * sugar cane, chorus included), so a stroke bulldozes those in-path too. Callers must pass
+     * {@code max = } the committed distance, not the max reach, or a short-stopping column over-mows.
      */
     private void mowFragilesAhead(List<Block> moving, Set<Long> footprint, BlockFace face, int max) {
         for (Block b : moving) {
