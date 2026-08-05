@@ -1337,8 +1337,8 @@ public class MechanismRegistry {
 
     /** Reconstruct the {@link MechanismBlockData} list from a saved {@link MechanismState} — the inverse of
      *  {@link BasicMechanism#snapshotState}. Display/particle configs are RE-RESOLVED from the type registry
-     *  via {@code customState} (in-memory, no world access) so a recovered custom block still animates; banners
-     *  and {@code wasBare} are not yet captured (documented follow-ups). */
+     *  via {@code customState} (in-memory, no world access) so a recovered custom block still animates; banners,
+     *  {@code wasBare}, and the floor-head yaw are restored from the saved record. */
     private List<MechanismBlockData> rebuildBlocks(MechanismState st) {
         List<MechanismBlockData> out = new ArrayList<>(st.blocks.size());
         for (MechanismState.BlockRec b : st.blocks) {

@@ -32,6 +32,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.Consumer;
+import java.util.logging.Level;
 
 /**
  * Default implementation of {@link Mechanism}.
@@ -733,7 +734,8 @@ final class BasicMechanism implements Mechanism {
     }
 
     // Cells that must never be overwritten on disassemble (e.g. a piston core the rod slides through).
-    // A mechanism block whose landing cell is protected is discarded — not placed, not dropped.
+    // A mechanism block whose landing cell is protected is discarded (not placed) — but its contained
+    // player items (banners + captured storage) still drop, never silently swallowed.
     private java.util.@Nullable Set<CustomBlockRegistry.LocationKey> protectedCells = null;
 
     /** Mark cells that disassembly must not overwrite (consumed instead). */
@@ -825,21 +827,34 @@ final class BasicMechanism implements Mechanism {
             Location blockLoc = pivot.clone().add(
                 Math.round(worldOffset.x), Math.round(worldOffset.y), Math.round(worldOffset.z));
 
+            // Per-block failure isolation: a throw landing ONE block (setBlockData, a restore provider,
+            // onRestore…) must not strand blocks k+1..n — the outer finally only deregisters + removes
+            // entities, and the `disassembled` latch makes a re-run impossible. On a caught throw, best-effort
+            // drop THIS block and carry on. `fallbackDrop` gates that drop: it starts true and is cleared the
+            // instant the block is committed to the world (post-placeBlock, which is post-commit-safe) or a
+            // branch takes ownership of the block's disposal (its own drop) or deliberately withholds one
+            // (protected / SKIP / ghost). So the fallback can neither re-drop a placed block (dupe) nor mint a
+            // drop a consume/ghost branch exists to suppress. blockLoc is pure math, kept above the try.
+            boolean fallbackDrop = true;
+            try {
             // Off-world guard: a tall drawbridge can swing a block below world-min or above
             // world-max. Don't try to place there — drop it as an item instead.
             if (blockLoc.getBlockY() < blockLoc.getWorld().getMinHeight()
                     || blockLoc.getBlockY() >= blockLoc.getWorld().getMaxHeight()) {
                 droppedChainCells = noteIfChain(droppedChainCells, mb, blockLoc);
+                fallbackDrop = false; // this branch owns the drop
                 dropBlockAsItem(blockLoc, mb);
                 continue;
             }
             Block target = blockLoc.getBlock();
 
-            // Protected cell (e.g. the piston core the rod slid through): consume the block silently
-            // — but never its banners; those items would vanish with it.
+            // Protected cell (e.g. the piston core the rod slid through): the block is consumed (not placed)
+            // — but never its contents; banners AND captured storage drop, or they'd vanish with the block.
             if (protectedCells != null && protectedCells.contains(CustomBlockRegistry.LocationKey.of(target))) {
+                fallbackDrop = false; // block intentionally consumed — the fallback must not mint it
                 droppedChainCells = noteIfChain(droppedChainCells, mb, blockLoc);
                 dropBannerItems(blockLoc, mb);
+                dropStorageItems(blockLoc, mb);
                 continue;
             }
 
@@ -849,12 +864,15 @@ final class BasicMechanism implements Mechanism {
                 PlaceDecision decision = cellPlacePolicy.decide(target, mb);
                 if (decision == PlaceDecision.DROP) {
                     droppedChainCells = noteIfChain(droppedChainCells, mb, blockLoc);
+                    fallbackDrop = false; // this branch owns the drop
                     dropBlockAsItem(blockLoc, mb);
                     continue;
                 }
                 if (decision == PlaceDecision.SKIP) {
+                    fallbackDrop = false; // block intentionally skipped — the fallback must not mint it
                     droppedChainCells = noteIfChain(droppedChainCells, mb, blockLoc);
-                    dropBannerItems(blockLoc, mb); // never silently swallow a host's banners
+                    dropBannerItems(blockLoc, mb); // never silently swallow a host's banners…
+                    dropStorageItems(blockLoc, mb); // …or its captured storage
                     continue;
                 }
                 // PLACE → fall through to the normal dispatch
@@ -864,6 +882,7 @@ final class BasicMechanism implements Mechanism {
                 // Overwrite air/fluid — and an ephemeral LIGHT block a stroke swept through (else it would
                 // fall to the "solid wins" branch below and drop this block as an item + explosion).
                 placeBlock(target, mb, snappedYaw);
+                fallbackDrop = false; // committed to the world (placeBlock is post-commit-safe)
                 placed.add(target);
                 if (mb.wasBare) rebareTargets.add(target);
                 landBanners(target, mb, snappedYaw, upright);
@@ -871,11 +890,13 @@ final class BasicMechanism implements Mechanism {
             } else if (FragileBlocks.isFragile(target.getType())) {
                 target.breakNaturally();
                 placeBlock(target, mb, snappedYaw);
+                fallbackDrop = false; // committed to the world (placeBlock is post-commit-safe)
                 placed.add(target);
                 if (mb.wasBare) rebareTargets.add(target);
                 landBanners(target, mb, snappedYaw, upright);
                 if (mb.glueOffsets != null && !ChainHoistManager.isHoist(target, registry)) { landedAnchorTargets.add(target); landedAnchorOffsets.add(mb.glueOffsets); }
             } else if (mb.ghost && target.getBlockData().equals(mb.blockData)) {
+                fallbackDrop = false; // ghost silent-discard — dropping would mint an item from nothing
                 // A blocked GHOST whose cell already holds its identical block is discarded silently:
                 // ghosts are data-only (never captured from the world), so dropping one here mints an
                 // item from nothing. The concrete case: a hoist reel-in stopped short lands its emerging
@@ -886,7 +907,19 @@ final class BasicMechanism implements Mechanism {
                 target.getWorld().spawnParticle(Particle.EXPLOSION,
                     blockLoc.clone().add(0.5, 0.5, 0.5), 1);
                 droppedChainCells = noteIfChain(droppedChainCells, mb, blockLoc);
+                fallbackDrop = false; // this branch owns the drop
                 dropBlockAsItem(blockLoc, mb);
+            }
+            } catch (RuntimeException ex) {
+                registry.getPlugin().getLogger().log(Level.WARNING,
+                    "disassemble: landing block index " + i + " at " + blockLoc
+                    + " failed; best-effort drop, continuing teardown", ex);
+                if (fallbackDrop) {
+                    try {
+                        droppedChainCells = noteIfChain(droppedChainCells, mb, blockLoc);
+                        dropBlockAsItem(blockLoc, mb);
+                    } catch (RuntimeException ignore) { /* drop itself failed; single-block loss, keep going */ }
+                }
             }
         }
 
@@ -1036,7 +1069,11 @@ final class BasicMechanism implements Mechanism {
             landed = landed.clone();
             ((org.bukkit.block.data.Waterlogged) landed).setWaterlogged(true);
         }
-        target.setBlockData(landed, !attachable);
+        target.setBlockData(landed, !attachable);   // COMMIT POINT: the sole world write. Everything below
+        // runs against an already-committed block, so isolate it — a throw in the restoration tail must NOT
+        // propagate out of placeBlock, or disassemble()'s per-block guard would drop this already-placed
+        // block as an item (dupe). Swallow + log; the block stays placed, at worst with partial state.
+        try {
 
         // Vanilla banner block: write the captured patterns back into the landed block entity
         // (the orientation was already rotated by rotateBlockData above).
@@ -1071,6 +1108,9 @@ final class BasicMechanism implements Mechanism {
                 registry.restoreBlock(target, type, landedState);
                 if (mb.storage != null) registry.restoreStorageSnapshot(target, mb.storage);
                 registry.restoreConfigPdc(target, mb.configPdc);   // usually null for a bare block
+                // Re-load any side-store state from the restored PDC, mirroring the skull arm below. Latent
+                // today (no bare-first type registers onRestore), but keeps the capture/restore hook symmetric.
+                if (type.onRestore() != null) type.onRestore().accept(target);
                 registry.applyThrottleLevel(target, mb.throttleLevel);   // no-op unless a throttle (bare-first)
                 flipLandedSpinDir(target, mb, snappedYaw);
             } else if (type != null) {
@@ -1108,6 +1148,15 @@ final class BasicMechanism implements Mechanism {
         // BlockState and re-applies its keys (see BlockSnapshotProvider). No-op when nothing was captured.
         if (mb.blockEntitySnapshot != null) {
             registry.applyBlockSnapshot(target, mb.blockEntitySnapshot);
+        }
+        } catch (RuntimeException ex) {
+            // A custom block's identity/config restore failing is corruption-class (SEVERE); a vanilla
+            // block's banner/snapshot restore failing is cosmetic (WARNING). Either way the block stays
+            // placed and is NEVER dropped — so no dupe, at worst partial block-entity state on this one cell.
+            Level sev = mb.customTypeId != null ? Level.SEVERE : Level.WARNING;
+            registry.getPlugin().getLogger().log(sev,
+                "placeBlock: post-place restore failed at " + target.getLocation()
+                + " (type=" + mb.customTypeId + "); block left placed with partial state", ex);
         }
     }
 
@@ -1174,16 +1223,25 @@ final class BasicMechanism implements Mechanism {
             loc.getWorld().dropItemNaturally(loc.clone().add(0.5, 0.5, 0.5), drop);
         }
 
-        if (mb.storage != null) {
-            for (ItemStack item : mb.storage.getContents()) {
-                if (item != null && !item.getType().isAir()) {
-                    loc.getWorld().dropItemNaturally(loc.clone().add(0.5, 0.5, 0.5), item);
-                }
-            }
-        }
+        dropStorageItems(loc, mb);
 
         // A dropped host takes its riding BetterBanners down with it — as items, never silently.
         dropBannerItems(loc, mb);
+    }
+
+    /** Drop this block's captured storage contents as loose items at {@code loc}. Used by every branch that
+     *  discards a storage-bearing block without a placed tile to restore into — the drop / off-world / solid-
+     *  win paths (via {@link #dropBlockAsItem}) and the consumed protected / SKIP cells. Contents are player
+     *  items and must never be silently swallowed. No-op for a block that captured no storage. */
+    private void dropStorageItems(Location loc, MechanismBlockData mb) {
+        if (mb.storage == null) return;
+        World w = loc.getWorld();
+        if (w == null) return;
+        for (ItemStack item : mb.storage.getContents()) {
+            if (item != null && !item.getType().isAir()) {
+                w.dropItemNaturally(loc.clone().add(0.5, 0.5, 0.5), item);
+            }
+        }
     }
 
     /** The BLOCK_FACE_KEY attachment's item (a vanilla banner block's pattern-carrying drop), or null. */

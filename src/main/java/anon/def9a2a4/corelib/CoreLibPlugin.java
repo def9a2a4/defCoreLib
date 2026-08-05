@@ -1702,7 +1702,8 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
     /** Category path → block id whose item texture represents that category node (else its first member).
      *  Could later move to a resource; a handful of overrides doesn't warrant it yet. */
     private static final Map<String, String> CATEGORY_ICON_IDS =
-            Map.of("mech", "mech:gear", "pipes", "pipes:copper_pipe");
+            Map.of("mech", "mech:gear", "pipes", "pipes:copper_pipe",
+                    "headsmith", "headsmith:black_skull_candle");
 
     /** Grouping labels for a type: its explicit {@code categories}, else a single {@code [namespace]}. */
     private static List<String> catalogGroupsOf(CustomHeadBlock t) {

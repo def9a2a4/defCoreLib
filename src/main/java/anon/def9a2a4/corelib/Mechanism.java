@@ -27,7 +27,7 @@ public interface Mechanism {
     enum PlaceDecision {
         /** Land the block normally (default). */ PLACE,
         /** Drop the block as an item instead of writing it (e.g. a WorldGuard-protected destination). */ DROP,
-        /** Discard the block silently (its banners still drop). */ SKIP
+        /** Discard the block (don't place it); its contained items (banners + storage) still drop. */ SKIP
     }
 
     /**
