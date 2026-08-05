@@ -22,7 +22,8 @@ blocks:
   # that reads as bottled oil, stacks to 16, and is not a machine input, so a Seed Oil item is
   # never mistaken for a press/mill ingredient (and it stays stackable for fuel / reagent use).
   #   Uses: engine fuel (RotationBlocks engine onInteract, by PDC) and the iron/copper
-  #   lantern recipes (RotationBlocks.registerSeedOilRecipes, seed oil + string as wick).
+  #   lantern recipes below (seed oil + string as wick). The copper variant self-skips on
+  #   MC versions without COPPER_NUGGET/COPPER_LANTERN (pre-1.21.9).
   seed_oil:
     name: "&eSeed Oil"
     lore:
@@ -34,6 +35,30 @@ blocks:
       - "&7iron/copper nuggets into a lantern."
     item_material: HONEY_BOTTLE
     placeable: false
+    recipes:
+      craft:
+        shaped:
+          - id: iron_lantern
+            output: LANTERN
+            pattern:
+              - "NSN"
+              - "NON"
+              - "NNN"
+            key:
+              N: { material: IRON_NUGGET }
+              S: { material: STRING }
+              O: { block: mech:seed_oil }
+          # Copper variant — skipped on pre-1.21.9 runtimes (COPPER_NUGGET/COPPER_LANTERN absent).
+          - id: copper_lantern
+            output: COPPER_LANTERN
+            pattern:
+              - "NSN"
+              - "NON"
+              - "NNN"
+            key:
+              N: { material: COPPER_NUGGET }
+              S: { material: STRING }
+              O: { block: mech:seed_oil }
 
   # Ground from wheat in the millstone; feeds the flour -> dough -> bread chain.
   # SUGAR reskin (white powder), distinct by name (real texture via resource pack later).
