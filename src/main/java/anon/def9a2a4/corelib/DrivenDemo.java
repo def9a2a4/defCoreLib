@@ -116,7 +116,8 @@ final class DrivenDemo {
         m.setDropItemHook((block, defaultDrop) -> {
             if (defaultDrop == null) return null;
             org.bukkit.inventory.ItemStack it = defaultDrop.clone();
-            it.editMeta(meta -> meta.displayName(net.kyori.adventure.text.Component.text("§bseam-dropped")));
+            it.editMeta(meta -> meta.displayName(net.kyori.adventure.text.Component.text(
+                "seam-dropped", net.kyori.adventure.text.format.NamedTextColor.AQUA)));
             return it;
         });
         m.disassemble();
