@@ -2399,14 +2399,15 @@ public class CustomBlockRegistry {
         // Shaped recipes
         for (CustomHeadBlock.ShapedRecipeDef r : type.shapedRecipes()) {
             try {
-                String missing = firstUnresolvableBlockIngredient(r.key().values());
+                String missing = firstUnresolvableIngredient(r.key().values());
                 if (missing != null) {
                     plugin.getLogger().info("Skipping recipe '" + prefix + r.id() + "' — ingredient '"
-                            + missing + "' is not registered (optional plugin absent?)");
+                            + missing + "' is unavailable (optional plugin absent or newer MC version needed?)");
                     continue;
                 }
+                org.bukkit.inventory.ItemStack result = resolveOutput(r.output(), r.amount(), type);
+                if (result == null) continue; // output unknown on this MC version — skip the recipe
                 org.bukkit.NamespacedKey key = new org.bukkit.NamespacedKey(plugin, prefix + r.id());
-                org.bukkit.inventory.ItemStack result = type.createItem(r.amount());
                 org.bukkit.inventory.ShapedRecipe recipe = new org.bukkit.inventory.ShapedRecipe(key, result);
                 recipe.shape(r.pattern().toArray(new String[0]));
                 recipe.setCategory(categoryFor(type));
@@ -2434,14 +2435,15 @@ public class CustomBlockRegistry {
         // Shapeless recipes
         for (CustomHeadBlock.ShapelessRecipeDef r : type.shapelessRecipes()) {
             try {
-                String missing = firstUnresolvableBlockIngredient(r.ingredients());
+                String missing = firstUnresolvableIngredient(r.ingredients());
                 if (missing != null) {
                     plugin.getLogger().info("Skipping recipe '" + prefix + r.id() + "' — ingredient '"
-                            + missing + "' is not registered (optional plugin absent?)");
+                            + missing + "' is unavailable (optional plugin absent or newer MC version needed?)");
                     continue;
                 }
+                org.bukkit.inventory.ItemStack result = resolveOutput(r.output(), r.amount(), type);
+                if (result == null) continue; // output unknown on this MC version — skip the recipe
                 org.bukkit.NamespacedKey key = new org.bukkit.NamespacedKey(plugin, prefix + r.id());
-                org.bukkit.inventory.ItemStack result = type.createItem(r.amount());
                 org.bukkit.inventory.ShapelessRecipe recipe = new org.bukkit.inventory.ShapelessRecipe(key, result);
                 recipe.setCategory(categoryFor(type));
                 for (CustomHeadBlock.IngredientSpec spec : r.ingredients()) {
@@ -2457,7 +2459,8 @@ public class CustomBlockRegistry {
                 }
                 Bukkit.addRecipe(recipe);
                 registeredRecipeKeys.add(key);
-                if (type.itemMaterial() != null
+                if (r.output() == null // an output override isn't an uncraft-toggle of the owning item
+                        && type.itemMaterial() != null
                         && r.ingredients().size() == 1
                         && r.ingredients().get(0).isMaterial()
                         && r.ingredients().get(0).material() == type.itemMaterial()) {
@@ -2472,9 +2475,11 @@ public class CustomBlockRegistry {
         for (CustomHeadBlock.StonecutterRecipeDef r : type.stonecutterRecipes()) {
             try {
                 CustomHeadBlock.IngredientSpec input = r.input();
+                if (input.isUnresolved()) continue; // input material absent on this MC version
                 if (input.isMaterial()) {
+                    org.bukkit.inventory.ItemStack result = resolveOutput(r.output(), r.amount(), type);
+                    if (result == null) continue; // output unknown on this MC version — skip the recipe
                     org.bukkit.NamespacedKey key = new org.bukkit.NamespacedKey(plugin, prefix + "sc_" + r.id());
-                    org.bukkit.inventory.ItemStack result = type.createItem(r.amount());
                     org.bukkit.inventory.StonecuttingRecipe recipe = new org.bukkit.inventory.StonecuttingRecipe(
                             key, result, new org.bukkit.inventory.RecipeChoice.MaterialChoice(input.material()));
                     Bukkit.addRecipe(recipe);
@@ -2484,6 +2489,30 @@ public class CustomBlockRegistry {
                 }
             } catch (Exception e) {
                 plugin.getLogger().warning("Failed to register stonecutter recipe '" + prefix + r.id() + "': " + e.getMessage());
+            }
+        }
+
+        // Cooking recipes (furnace / smoker)
+        for (CustomHeadBlock.CookingRecipeDef r : type.cookingRecipes()) {
+            try {
+                CustomHeadBlock.IngredientSpec input = r.input();
+                if (input.isUnresolved() || (input.isBlock() && getType(input.blockId()) == null)) {
+                    plugin.getLogger().info("Skipping cooking recipe '" + prefix + r.id() + "' — input unavailable "
+                            + "(optional plugin absent or newer MC version needed?)");
+                    continue;
+                }
+                org.bukkit.inventory.ItemStack result = resolveOutput(r.output(), 1, type);
+                if (result == null) continue; // output unknown on this MC version — skip the recipe
+                org.bukkit.inventory.RecipeChoice choice = ingredientChoice(input);
+                org.bukkit.NamespacedKey key = new org.bukkit.NamespacedKey(plugin, prefix + "cook_" + r.id());
+                org.bukkit.inventory.CookingRecipe<?> recipe = switch (r.type()) {
+                    case FURNACE -> new org.bukkit.inventory.FurnaceRecipe(key, result, choice, r.experience(), r.cookTime());
+                    case SMOKING -> new org.bukkit.inventory.SmokingRecipe(key, result, choice, r.experience(), r.cookTime());
+                };
+                Bukkit.addRecipe(recipe);
+                registeredRecipeKeys.add(key);
+            } catch (Exception e) {
+                plugin.getLogger().warning("Failed to register cooking recipe '" + prefix + r.id() + "': " + e.getMessage());
             }
         }
 
@@ -2501,16 +2530,49 @@ public class CustomBlockRegistry {
         }
     }
 
-    /** The id of the first {@code block:} ingredient that doesn't resolve to a registered type,
-     *  or null when all resolve. A recipe with an unresolvable block ingredient is SKIPPED at
-     *  registration — that is how a recipe soft-depends on another plugin's block (e.g. the pump
-     *  needs {@code pipes:copper_pipe}: no Pipes plugin, no pump recipe). */
-    private @Nullable String firstUnresolvableBlockIngredient(
+    /** The first ingredient that doesn't resolve on this runtime (a {@code block:} referencing an
+     *  unregistered type, or a {@code material:} name absent on this MC version), or null when all
+     *  resolve. A recipe with an unresolvable ingredient is SKIPPED at registration — that is how a
+     *  recipe soft-depends on another plugin's block (the pump needs {@code pipes:copper_pipe}: no
+     *  Pipes plugin, no pump recipe) or on a newer MC version (the copper lantern needs
+     *  {@code COPPER_NUGGET}: pre-1.21.9, no copper lantern). */
+    private @Nullable String firstUnresolvableIngredient(
             java.util.Collection<CustomHeadBlock.IngredientSpec> specs) {
         for (CustomHeadBlock.IngredientSpec spec : specs) {
             if (spec.isBlock() && getType(spec.blockId()) == null) return spec.blockId();
+            if (spec.isUnresolved()) return spec.unresolvedMaterial();
         }
         return null;
+    }
+
+    /** Resolve a recipe's {@code output:} into an ItemStack. Null {@code output} → the owning type's own
+     *  item (the historical default). Otherwise follows the same string convention as
+     *  {@link MachineRecipes#parseOutput}: a {@code namespace:id} is a custom item (via {@link #getType}),
+     *  anything else is a vanilla material name via {@code matchMaterial}. Returns null (with a warning) when
+     *  the name resolves to nothing on this runtime, so the caller skips just that recipe. */
+    private org.bukkit.inventory.@Nullable ItemStack resolveOutput(@Nullable String output, int amount,
+                                                                   CustomHeadBlock owningType) {
+        if (output == null) return owningType.createItem(amount);
+        if (output.contains(":")) {
+            CustomHeadBlock refType = getType(output);
+            if (refType != null) return refType.createItem(amount);
+            plugin.getLogger().warning("Recipe output references unknown custom item '" + output + "' — recipe skipped");
+            return null;
+        }
+        Material mat = Material.matchMaterial(output.toUpperCase(java.util.Locale.ROOT));
+        if (mat == null) {
+            plugin.getLogger().info("Recipe output '" + output + "' is unavailable on this MC version — recipe skipped");
+            return null;
+        }
+        return new org.bukkit.inventory.ItemStack(mat, amount);
+    }
+
+    /** RecipeChoice for any resolvable ingredient spec (tag / materials / material / custom block). */
+    private org.bukkit.inventory.RecipeChoice ingredientChoice(CustomHeadBlock.IngredientSpec spec) {
+        if (spec.isTag()) return new org.bukkit.inventory.RecipeChoice.MaterialChoice(spec.tag());
+        if (spec.isMaterials()) return new org.bukkit.inventory.RecipeChoice.MaterialChoice(spec.materials());
+        if (spec.isBlock()) return choiceForBlock(spec.blockId());
+        return new org.bukkit.inventory.RecipeChoice.MaterialChoice(spec.material());
     }
 
     /** RecipeChoice for a custom-block ingredient: an ExactChoice of the referenced type's item,

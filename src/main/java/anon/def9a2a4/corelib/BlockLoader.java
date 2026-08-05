@@ -14,6 +14,7 @@ import org.bukkit.util.Vector;
 
 import org.joml.AxisAngle4f;
 import org.joml.Vector3f;
+import org.jspecify.annotations.Nullable;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -298,7 +299,7 @@ public final class BlockLoader {
                         }
                     }
                 }
-                b.shapedRecipe(new CustomHeadBlock.ShapedRecipeDef(id, amount, pattern, key));
+                b.shapedRecipe(new CustomHeadBlock.ShapedRecipeDef(id, amount, pattern, key, outputOf(m)));
             }
 
             // Shapeless recipes
@@ -314,7 +315,7 @@ public final class BlockLoader {
                         }
                     }
                 }
-                b.shapelessRecipe(new CustomHeadBlock.ShapelessRecipeDef(id, amount, ingredients));
+                b.shapelessRecipe(new CustomHeadBlock.ShapelessRecipeDef(id, amount, ingredients, outputOf(m)));
             }
         }
 
@@ -325,8 +326,33 @@ public final class BlockLoader {
             int amount = toInt(m.get("amount"), 1);
             if (m.get("input") instanceof Map<?, ?> im) {
                 CustomHeadBlock.IngredientSpec input = parseIngredient(im, namespace);
-                b.stonecutterRecipe(new CustomHeadBlock.StonecutterRecipeDef(id, amount, input));
+                b.stonecutterRecipe(new CustomHeadBlock.StonecutterRecipeDef(id, amount, input, outputOf(m)));
             }
+        }
+
+        // Cooking recipes (furnace / smoker) — direct children of `recipes:`, like `stonecutter:`.
+        parseCookingRecipes(b, sec, "furnace", CustomHeadBlock.CookType.FURNACE, 200, namespace);
+        parseCookingRecipes(b, sec, "smoking", CustomHeadBlock.CookType.SMOKING, 100, namespace);
+    }
+
+    /** The optional {@code output:} of a recipe entry (a vanilla material name or {@code namespace:id});
+     *  null → the owning type's own item. */
+    private static @Nullable String outputOf(Map<?, ?> m) {
+        Object o = m.get("output");
+        return o != null ? String.valueOf(o) : null;
+    }
+
+    private static void parseCookingRecipes(CustomHeadBlock.Builder b, ConfigurationSection sec,
+                                            String key, CustomHeadBlock.CookType type, int defaultCookTime,
+                                            String namespace) {
+        int idx = 0;
+        for (Map<?, ?> m : sec.getMapList(key)) {
+            String id = m.get("id") != null ? String.valueOf(m.get("id")) : key + "_" + idx++;
+            if (!(m.get("input") instanceof Map<?, ?> im)) continue;
+            CustomHeadBlock.IngredientSpec input = parseIngredient(im, namespace);
+            float exp = m.get("experience") instanceof Number n ? n.floatValue() : 0.1f;
+            int cookTime = toInt(m.get("cook_time"), defaultCookTime);
+            b.cookingRecipe(new CustomHeadBlock.CookingRecipeDef(id, outputOf(m), input, exp, cookTime, type));
         }
     }
 
@@ -336,7 +362,9 @@ public final class BlockLoader {
         if (matObj != null) {
             String matName = String.valueOf(matObj).toUpperCase(java.util.Locale.ROOT);
             Material mat = Material.matchMaterial(matName);
-            if (mat == null) throw new IllegalArgumentException("Unknown material: " + matName);
+            // Unknown on this MC version (e.g. COPPER_NUGGET pre-1.21.9): don't throw — carry the raw name so
+            // registration skips just this recipe, not the whole block. Malformed specs still throw below.
+            if (mat == null) return CustomHeadBlock.IngredientSpec.unresolved(matName);
             return new CustomHeadBlock.IngredientSpec(mat, null);
         }
         if (blockObj != null) {
@@ -357,14 +385,15 @@ public final class BlockLoader {
         }
         Object matsObj = map.get("materials");
         if (matsObj instanceof List<?> list) {
+            if (list.isEmpty()) throw new IllegalArgumentException("Ingredient 'materials' list is empty");
             List<Material> mats = new ArrayList<>();
             for (Object o : list) {
                 String n = String.valueOf(o).toUpperCase(java.util.Locale.ROOT);
                 Material m = Material.matchMaterial(n);
-                if (m == null) throw new IllegalArgumentException("Unknown material: " + n);
-                mats.add(m);
+                if (m != null) mats.add(m); // drop version-gated entries; whole recipe skips if none remain
             }
-            if (mats.isEmpty()) throw new IllegalArgumentException("Ingredient 'materials' list is empty");
+            // Every listed material is unknown on this version → mark unresolved so the recipe is skipped.
+            if (mats.isEmpty()) return CustomHeadBlock.IngredientSpec.unresolved(String.valueOf(list.get(0)));
             return new CustomHeadBlock.IngredientSpec(null, null, null, mats);
         }
         throw new IllegalArgumentException("Ingredient must have 'material', 'block', 'tag', or 'materials' key");

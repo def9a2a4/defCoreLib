@@ -48,9 +48,9 @@ blocks:
     placeable: false
 
   # Crafted from 3 flour + a water bucket; smelt in a furnace or smoker -> bread.
-  # Custom head skin (raw base64). The dough->bread step is registered in Java
-  # (RotationBlocks.registerBakingRecipes) via an ExactChoice on this item, so it matches
-  # by the item's PDC regardless of the base material.
+  # Custom head skin (raw base64). The dough->bread step is the furnace/smoking recipes below,
+  # an ExactChoice on this item (block: mech:dough), so it matches by the item's PDC regardless
+  # of the base material. Result BREAD comes from the `output:` override.
   dough:
     name: "&eDough"
     lore:
@@ -68,7 +68,19 @@ blocks:
               - { block: mech:flour }
               - { block: mech:flour }
               - { block: mech:flour }
-              - { material: WATER_BUCKET }
+              - { material: WATER_BUCKET }   # left behind as an empty bucket (vanilla crafting remainder)
+      furnace:
+        - id: bake
+          input: { block: mech:dough }
+          output: BREAD
+          experience: 0.1
+          cook_time: 200
+      smoking:
+        - id: smoke
+          input: { block: mech:dough }
+          output: BREAD
+          experience: 0.1
+          cook_time: 100
 
   # Pressed from sugarcane. A real potion under the hood — short Speed on drink.
   sugarcane_juice:

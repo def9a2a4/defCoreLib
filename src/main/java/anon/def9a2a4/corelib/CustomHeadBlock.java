@@ -221,27 +221,50 @@ public final class CustomHeadBlock {
     // ── Recipe records ───────────────────────────────────────────────────
 
     /** An ingredient: a material, a reference to another custom block by fullId, a material tag, or an
-     *  explicit set of accepted materials ("any of these", e.g. every copper-grate variant). */
+     *  explicit set of accepted materials ("any of these", e.g. every copper-grate variant).
+     *  {@code unresolvedMaterial} carries the raw name of a material that didn't resolve on this MC
+     *  version (e.g. COPPER_NUGGET pre-1.21.9) so the whole recipe can be skipped at registration
+     *  instead of the parser throwing and dropping the entire block. */
     public record IngredientSpec(@Nullable Material material, @Nullable String blockId,
-                                 org.bukkit.@Nullable Tag<Material> tag, @Nullable List<Material> materials) {
-        public IngredientSpec(@Nullable Material material, @Nullable String blockId, org.bukkit.@Nullable Tag<Material> tag) {
-            this(material, blockId, tag, null);
+                                 org.bukkit.@Nullable Tag<Material> tag, @Nullable List<Material> materials,
+                                 @Nullable String unresolvedMaterial) {
+        public IngredientSpec(@Nullable Material material, @Nullable String blockId,
+                              org.bukkit.@Nullable Tag<Material> tag, @Nullable List<Material> materials) {
+            this(material, blockId, tag, materials, null);
         }
-        public IngredientSpec(@Nullable Material material, @Nullable String blockId) { this(material, blockId, null, null); }
+        public IngredientSpec(@Nullable Material material, @Nullable String blockId, org.bukkit.@Nullable Tag<Material> tag) {
+            this(material, blockId, tag, null, null);
+        }
+        public IngredientSpec(@Nullable Material material, @Nullable String blockId) { this(material, blockId, null, null, null); }
+        /** An ingredient whose material name doesn't exist on this MC version. */
+        public static IngredientSpec unresolved(String name) { return new IngredientSpec(null, null, null, null, name); }
         public boolean isMaterial() { return material != null; }
         public boolean isBlock() { return blockId != null; }
         public boolean isTag() { return tag != null; }
         public boolean isMaterials() { return materials != null; }
+        public boolean isUnresolved() { return unresolvedMaterial != null; }
     }
 
-    /** Shaped crafting recipe definition. */
-    public record ShapedRecipeDef(String id, int amount, List<String> pattern, Map<Character, IngredientSpec> key) {}
+    /** Shaped crafting recipe definition. {@code output} (null → the owning type's item) follows the same
+     *  string convention as {@code MachineRecipes} output: a {@code namespace:id} for a custom item, else
+     *  a vanilla material name resolved via matchMaterial. */
+    public record ShapedRecipeDef(String id, int amount, List<String> pattern, Map<Character, IngredientSpec> key,
+                                  @Nullable String output) {}
 
-    /** Shapeless crafting recipe definition. */
-    public record ShapelessRecipeDef(String id, int amount, List<IngredientSpec> ingredients) {}
+    /** Shapeless crafting recipe definition. See {@link ShapedRecipeDef} for {@code output}. */
+    public record ShapelessRecipeDef(String id, int amount, List<IngredientSpec> ingredients,
+                                     @Nullable String output) {}
 
-    /** Stonecutter recipe definition. Material inputs use Bukkit API; block inputs use custom GUI interception. */
-    public record StonecutterRecipeDef(String id, int amount, IngredientSpec input) {}
+    /** Stonecutter recipe definition. Material inputs use Bukkit API; block inputs use custom GUI
+     *  interception. See {@link ShapedRecipeDef} for {@code output}. */
+    public record StonecutterRecipeDef(String id, int amount, IngredientSpec input, @Nullable String output) {}
+
+    /** Furnace / smoker cooking recipe. See {@link ShapedRecipeDef} for {@code output}. */
+    public record CookingRecipeDef(String id, @Nullable String output, IngredientSpec input,
+                                   float experience, int cookTime, CookType type) {}
+
+    /** Which appliance a {@link CookingRecipeDef} targets. Extend with BLASTING/CAMPFIRE when needed. */
+    public enum CookType { FURNACE, SMOKING }
 
     /**
      * Visual/behavioral overrides for a specific state.
@@ -293,6 +316,7 @@ public final class CustomHeadBlock {
     private final List<ShapedRecipeDef> shapedRecipes;
     private final List<ShapelessRecipeDef> shapelessRecipes;
     private final List<StonecutterRecipeDef> stonecutterRecipes;
+    private final List<CookingRecipeDef> cookingRecipes;
     private final @Nullable InteractGUI interactGUI;
     private final @Nullable StorageConfig storage;
     private final @Nullable PlacementConfig placement;
@@ -378,6 +402,7 @@ public final class CustomHeadBlock {
         this.shapedRecipes = List.copyOf(b.shapedRecipes);
         this.shapelessRecipes = List.copyOf(b.shapelessRecipes);
         this.stonecutterRecipes = List.copyOf(b.stonecutterRecipes);
+        this.cookingRecipes = List.copyOf(b.cookingRecipes);
         this.interactGUI = b.interactGUI;
         this.storage = b.storage;
         this.placement = b.placement;
@@ -462,7 +487,9 @@ public final class CustomHeadBlock {
     public List<ShapedRecipeDef> shapedRecipes() { return shapedRecipes; }
     public List<ShapelessRecipeDef> shapelessRecipes() { return shapelessRecipes; }
     public List<StonecutterRecipeDef> stonecutterRecipes() { return stonecutterRecipes; }
-    public boolean hasRecipes() { return !shapedRecipes.isEmpty() || !shapelessRecipes.isEmpty() || !stonecutterRecipes.isEmpty(); }
+    public List<CookingRecipeDef> cookingRecipes() { return cookingRecipes; }
+    public boolean hasRecipes() { return !shapedRecipes.isEmpty() || !shapelessRecipes.isEmpty()
+            || !stonecutterRecipes.isEmpty() || !cookingRecipes.isEmpty(); }
     public @Nullable InteractGUI interactGUI() { return interactGUI; }
     public @Nullable StorageConfig storage() { return storage; }
     public @Nullable PlacementConfig placement() { return placement; }
@@ -724,6 +751,7 @@ public final class CustomHeadBlock {
         b.shapedRecipes.addAll(shapedRecipes);
         b.shapelessRecipes.addAll(shapelessRecipes);
         b.stonecutterRecipes.addAll(stonecutterRecipes);
+        b.cookingRecipes.addAll(cookingRecipes);
         b.interactGUI = interactGUI;
         b.storage = storage;
         b.placement = placement;
@@ -791,6 +819,7 @@ public final class CustomHeadBlock {
         private final List<ShapedRecipeDef> shapedRecipes = new ArrayList<>();
         private final List<ShapelessRecipeDef> shapelessRecipes = new ArrayList<>();
         private final List<StonecutterRecipeDef> stonecutterRecipes = new ArrayList<>();
+        private final List<CookingRecipeDef> cookingRecipes = new ArrayList<>();
         private final List<String> categories = new ArrayList<>();
         private @Nullable InteractGUI interactGUI;
         private @Nullable StorageConfig storage;
@@ -881,6 +910,7 @@ public final class CustomHeadBlock {
         public Builder shapedRecipe(ShapedRecipeDef recipe) { this.shapedRecipes.add(recipe); return this; }
         public Builder shapelessRecipe(ShapelessRecipeDef recipe) { this.shapelessRecipes.add(recipe); return this; }
         public Builder stonecutterRecipe(StonecutterRecipeDef recipe) { this.stonecutterRecipes.add(recipe); return this; }
+        public Builder cookingRecipe(CookingRecipeDef recipe) { this.cookingRecipes.add(recipe); return this; }
         public Builder interactGUI(InteractGUI gui) { this.interactGUI = gui; return this; }
         public Builder storage(InventoryLayout layout) { this.storage = new StorageConfig(layout); return this; }
         public Builder placement(PlacementConfig config) { this.placement = config; return this; }
