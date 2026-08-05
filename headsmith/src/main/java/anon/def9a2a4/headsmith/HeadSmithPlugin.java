@@ -30,6 +30,8 @@ public final class HeadSmithPlugin extends JavaPlugin {
 
     public static final String NAMESPACE = "headsmith";
 
+    private LegacyHeadMigrator migrator;
+
     @Override
     public void onEnable() {
         new Metrics(this, 28528);
@@ -52,6 +54,12 @@ public final class HeadSmithPlugin extends JavaPlugin {
             getLogger().severe("Failed to load headsmith.yml: " + e.getMessage());
         }
         // No namespace-enable call needed: core enables every namespace in every world by default.
+
+        // Adopt already-placed legacy heads (mandatory, on by default). Registers block/item triggers and
+        // runs a tick-spread catch-up sweep over currently-loaded chunks.
+        migrator = new LegacyHeadMigrator(this, registry);
+        getServer().getPluginManager().registerEvents(migrator, this);
+        migrator.startEnableSweep();
     }
 
     @Override
@@ -73,8 +81,18 @@ public final class HeadSmithPlugin extends JavaPlugin {
         switch (args[0].toLowerCase(java.util.Locale.ROOT)) {
             case "give" -> handleGive(sender, registry, args);
             case "recipes" -> handleRecipes(sender, registry, args);
-            case "migrate" -> sender.sendMessage(Component.text(
-                    "Migration is not available in this build yet.", NamedTextColor.RED));
+            case "migrate" -> {
+                if (!sender.hasPermission("headsmith.migrate")) {
+                    sender.sendMessage(Component.text("No permission.", NamedTextColor.RED));
+                } else if (migrator == null) {
+                    sender.sendMessage(Component.text("Migrator unavailable (DefCoreLib missing at enable).",
+                            NamedTextColor.RED));
+                } else {
+                    sender.sendMessage(Component.text("Running migration sweep over loaded chunks…",
+                            NamedTextColor.YELLOW));
+                    migrator.sweep(sender);
+                }
+            }
             default -> sender.sendMessage(Component.text(
                     "Unknown subcommand: " + args[0], NamedTextColor.RED));
         }
