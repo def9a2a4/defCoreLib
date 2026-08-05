@@ -35,6 +35,7 @@ final class CatalogHolder implements InventoryHolder, ReadOnlyGuiHolder {
     final Map<Integer, String> leafSlots   = new HashMap<>(); // → category path to open as ITEMS
     final Map<Integer, String> itemSlots   = new HashMap<>(); // → fullId (left: detail, right: give)
     final Map<Integer, String> drillSlots  = new HashMap<>(); // → fullId (detail of a recipe ingredient)
+    final Map<Integer, String> viewAllSlots = new HashMap<>(); // → input fullId: open the paginated stonecutter menu
 
     // nav-bar slots (−1 when absent)
     int prevSlot = -1, nextSlot = -1, backSlot = -1, closeSlot = -1, searchSlot = -1;

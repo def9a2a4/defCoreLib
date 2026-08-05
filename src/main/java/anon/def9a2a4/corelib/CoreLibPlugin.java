@@ -1915,26 +1915,38 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         if (!cutFrom.isEmpty()) {
             inv.setItem(27, catalogNavItem(Material.STONECUTTER, "Cut from"));
             int slot = 28;
+            boolean overflow = cutFrom.size() > 7; // 28..34 = 7 slots; reserve 34 for a "+N more" indicator
+            int lastItemSlot = overflow ? 33 : 34;
+            int shown = 0;
             for (CustomHeadBlock.StonecutterRecipeDef r : cutFrom) {
-                if (slot > 34) break;
+                if (slot > lastItemSlot) break;
                 ItemStack icon = catalogIngredientIcon(r.input());
                 if (icon == null) continue;
                 inv.setItem(slot, icon);
                 if (r.input().isBlock() && registry.getType(r.input().blockId()) != null) holder.drillSlots.put(slot, r.input().blockId());
-                slot++;
+                slot++; shown++;
             }
+            if (overflow) inv.setItem(34, catalogNavItem(Material.SPYGLASS, "+" + (cutFrom.size() - shown) + " more"));
         }
         var cutsInto = registry.getStonecutterRecipesForInput(id);
         if (!cutsInto.isEmpty()) {
             inv.setItem(36, catalogNavItem(Material.STONECUTTER, "Cuts into"));
             int slot = 37;
+            boolean overflow = cutsInto.size() > 7; // 37..43 = 7 slots; reserve 43 for a "view all" link
+            int lastItemSlot = overflow ? 42 : 43;
+            int shown = 0;
             for (CustomBlockRegistry.HeadStonecutterRecipe r : cutsInto) {
-                if (slot > 43) break;
+                if (slot > lastItemSlot) break;
                 CustomHeadBlock out = registry.getType(r.outputBlockId());
                 if (out == null) continue;
                 inv.setItem(slot, out.createItem(r.amount()));
                 holder.drillSlots.put(slot, r.outputBlockId());
-                slot++;
+                slot++; shown++;
+            }
+            if (overflow) {
+                inv.setItem(43, catalogNavItem(Material.SPYGLASS,
+                        "+" + (cutsInto.size() - shown) + " more — click to view all"));
+                holder.viewAllSlots.put(43, id);
             }
         }
         catalogNavBar(inv, holder, false, false, false);
@@ -2075,6 +2087,8 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         if (leaf != null) { openCatalog(player, leaf, null, 0, h); return; }
         String drill = h.drillSlots.get(slot);
         if (drill != null) { openCatalogDetail(player, drill, h); return; }
+        String viewAll = h.viewAllSlots.get(slot);
+        if (viewAll != null) { openStonecutterSelectMenu(player, viewAll); return; }
         String itemId = h.itemSlots.get(slot);
         if (itemId != null) {
             if (event.isRightClick() && player.hasPermission("corelib.admin")) catalogGive(player, itemId);
