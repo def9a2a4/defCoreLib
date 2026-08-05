@@ -29,7 +29,12 @@ Two new frame blocks — the **Gearbox** and the **Chassis** — and a new **Rat
 - **Bare shafts ride bare** — a shaft carried in its bare **chain** form now renders as a spinning chain while the contraption moves (and while it rides a saved/restored one), instead of showing the boxed shaft head until it lands.
 - **Carried banners survive** — vanilla, **large**, and **huge** banners on a mechanism now keep their patterns, tier, and orientation across a save/restart, instead of drifting to the pivot and then vanishing when the contraption is taken apart. A vanilla banner on a mechanism also no longer shows a duplicate floating "ghost" copy.
 - **Throttle keeps its level when carried** — a throttle lever moved by a mechanism re-lands at its set level instead of resetting to 0.
+- **No blocks lost when stopping the server** — a still-assembled mechanism carrying a **throttle lever** now restores its full structure on `/stop`; previously the shutdown could abort partway through re-placing the blocks, permanently losing every block that hadn't landed yet.
+- **Cleaner shutdown** — stopping the server no longer prints a misleading "failed to disassemble on shutdown … removing entities without block restore" warning for a mechanism resting beside a rotation part or a custom rail. The blocks were in fact always restored; the warning was spurious (and a carried bare **chain shaft** could re-land in its encased form).
 - **Engines keep their fuel when carried** — a lit engine/burner moved by a mechanism no longer lands empty; its remaining fuel rides along.
+- **Machine facings survive a restart** — a dynamo, boiler, burner, pump, mechanical dispenser, piston head, or cart rail on a saved contraption now keeps its oriented shell/head/eye after the world reloads, instead of briefly snapping to a default direction until the contraption next lands.
+- **Floor heads keep their rotation while moving** — a floor-placed custom head (a redstone motor, and the like) now renders at its real facing while a mechanism carries it, instead of snapping to a default orientation in transit and only correcting itself on landing. The rotation also survives a save/restart mid-move.
+- **Light blocks no longer block a mechanism** — a light-emitting head's invisible light block no longer counts as a wall that stops a mechanical piston or chain hoist; the stroke moves through it cleanly. (A stationary light head whose light block is overrun by another block goes dark until its chunk reloads.)
 
 ## Recipes
 
