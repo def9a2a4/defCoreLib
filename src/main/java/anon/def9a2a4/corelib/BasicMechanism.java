@@ -913,10 +913,9 @@ final class BasicMechanism implements Mechanism {
         // past the glue re-stamp and chain-break guard, which walk CHAIN columns — so the shaft becomes a
         // CHAIN only now. makeShaftBare (the reland handler) re-adds/recalcs its rotation node; the node
         // already exists from restoreBlock's onChunkLoad above, so it takes the recalculate branch.
-        if (!rebareTargets.isEmpty()) {
-            CustomHeadBlock shaftType = registry.getType("mech:shaft");
-            for (Block b : rebareTargets) registry.rebareAfterLanding(b, shaftType);
-        }
+        // Resolve the type per-block from the just-landed encased head (getTypeFromBlock), not a hardcoded
+        // "mech:shaft", so a future revert-handler bare type re-bares as itself rather than as a shaft.
+        for (Block b : rebareTargets) registry.rebareAfterLanding(b, registry.getTypeFromBlock(b));
         completed = true;
         } finally {
             if (!completed) {
