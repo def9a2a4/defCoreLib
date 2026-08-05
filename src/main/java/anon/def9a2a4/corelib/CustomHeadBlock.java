@@ -490,6 +490,7 @@ public final class CustomHeadBlock {
     public @Nullable StateChangeHandler onStateChanged() { return onStateChanged; }
     public @Nullable BiConsumer<Block, String> onBlockPlaced() { return onBlockPlaced; }
     public @Nullable BiConsumer<Block, String> onBlockRemoved() { return onBlockRemoved; }
+    public @Nullable Consumer<Block> onCapture() { return onCapture; }
     public @Nullable BiFunction<Block, org.bukkit.event.player.PlayerInteractEvent, Boolean> onInteract() { return onInteract; }
     public boolean drillable() { return drillable; }
     public @Nullable BiFunction<Block, String, org.bukkit.inventory.ItemStack> displayItemResolver() { return displayItemResolver; }
@@ -744,6 +745,7 @@ public final class CustomHeadBlock {
         b.onStateChanged = onStateChanged;
         b.onBlockPlaced = onBlockPlaced;
         b.onBlockRemoved = onBlockRemoved;
+        b.onCapture = onCapture;
         b.onInteract = onInteract;
         b.displayItemResolver = displayItemResolver;
         b.displayTransformResolver = displayTransformResolver;
@@ -814,6 +816,7 @@ public final class CustomHeadBlock {
         private @Nullable StateChangeHandler onStateChanged;
         private @Nullable BiConsumer<Block, String> onBlockPlaced;
         private @Nullable BiConsumer<Block, String> onBlockRemoved;
+        private @Nullable Consumer<Block> onCapture;
         private @Nullable BiFunction<Block, org.bukkit.event.player.PlayerInteractEvent, Boolean> onInteract;
         private @Nullable BiFunction<Block, String, org.bukkit.inventory.ItemStack> displayItemResolver;
         private @Nullable DisplayTransformResolver displayTransformResolver;

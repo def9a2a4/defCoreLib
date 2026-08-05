@@ -738,7 +738,11 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
     // Block breaking — cleanup displays, light, particles, drops
     // ──────────────────────────────────────────────────────────────────────
 
-    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    // MONITOR (not HIGH): the destructive drop + unregister below must run only once the break is
+    // final. At HIGH a protection plugin cancelling at HIGHEST/MONITOR would leave the block standing
+    // while we already dropped its storage/self-drop/filter items → duplication + orphan. MONITOR runs
+    // last (still pre-apply, so the tile/PDC is readable). setDropItems(false) is still honored here.
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onBlockBreak(BlockBreakEvent event) {
         Block block = event.getBlock();
         CustomHeadBlock type = registry.getTypeFromBlock(block);
@@ -794,13 +798,17 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         }
     }
 
-    // Explosion cleanup — remove custom blocks from blast list, drop correct items
-    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    // Explosion cleanup — remove custom blocks from blast list, drop correct items.
+    // MONITOR (not HIGH) for the same reason as onBlockBreak: a protection plugin pruning the blockList
+    // at HIGHEST runs before us, so we only drop for blocks that actually explode (no protection-bypass
+    // dupe). Handlers never cancel/mutate the event — only the (post-protection) blockList — so MONITOR
+    // is appropriate.
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onEntityExplode(EntityExplodeEvent event) {
         handleExplosion(event.blockList());
     }
 
-    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onBlockExplode(BlockExplodeEvent event) {
         handleExplosion(event.blockList());
     }

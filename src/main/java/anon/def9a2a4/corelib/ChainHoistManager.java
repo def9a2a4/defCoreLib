@@ -740,6 +740,9 @@ final class ChainHoistManager implements Listener {
     // a decorative chain shaft as a bare block at HIGH — both AFTER us at NORMAL, which would wipe glue for
     // a break that never happened or a shaft that isn't rope. MONITOR runs last, so isOwnRope/blockList see
     // the final verdict. We only touch our own PDC, never the event or world, so MONITOR is appropriate.
+    // NOTE: CoreLibPlugin.onBlockBreak/onEntityExplode/onBlockExplode also run at MONITOR now; they touch
+    // only custom heads while these touch only chain rope (disjoint block classes), so co-priority order is
+    // immaterial — don't rely on a priority gap between them.
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onChainBreak(BlockBreakEvent e) {
         if (isOwnRope(e.getBlock(), registry)) invalidateGlueForChain(e.getBlock());
