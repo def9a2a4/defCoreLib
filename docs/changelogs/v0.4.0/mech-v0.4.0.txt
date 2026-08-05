@@ -24,6 +24,8 @@ Two new frame blocks — the **Gearbox** and the **Chassis** — and a new **Rat
 - **Carried-hoist glue integrity** — a carried hoist that would be tipped off its vertical column (a horizontal-axis drawbridge) or grabbed mid-stroke is now **refused** rather than corrupted, and a hoist's stored platform glue is cleared whenever its chain length changes out of band (a link mined, placed, or blown up, or the hoist landing with a shortened chain), so its offsets can never mis-reference.
 - **Seed oil returns its bottle** — burning a Seed Oil (a bottled fuel) in a fuel-fed machine now returns the empty glass bottle to the fuel storage (dropping it at the block if the storage is full) instead of consuming the container.
 - **Bare shafts stay bare when carried** — a shaft wrenched to its bare **chain** form now stays bare after a rotator (or any mechanism) swings it, instead of silently reverting to the encased shaft on landing. A shaft carried while encased still lands encased.
+- **Carried blocks keep their decoration** — a block's block-entity data now survives a mechanism move: a sign's text/colour/glow, a container's custom name, a lectern's book, a jukebox's disc, decorated-pot sherds, a command block's command, and the like. A block also stays waterlogged only where it lands back into a water source.
+- **Chunk-boundary crash** — fixed a server error when a mechanism minecart crossed a chunk boundary while it was being ticked.
 
 ## Recipes
 

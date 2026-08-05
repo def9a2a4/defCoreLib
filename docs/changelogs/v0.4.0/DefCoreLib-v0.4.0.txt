@@ -27,7 +27,7 @@ Two new frame blocks join the Casing and a new Ratchet valve, plus the biggest g
 
 ## Items & commands
 
-- **In-game item catalog** — `/defcorelib catalog` opens a browsable menu of every registered block across all def plugins, grouped by category, with search (`/defcorelib catalog search <query>`, or `/defcorelib catalog <category>` to jump straight in) and a detail view that drills into each recipe's ingredients. Open to everyone via the new `corelib.catalog` permission (default on); an admin can right-click an entry to give the item.
+- **In-game item catalog** — `/defcorelib catalog` opens a browsable menu of every registered block across all def plugins, grouped by category, with search (`/defcorelib catalog search <query>`, or `/defcorelib catalog <category>` to jump straight in) and a detail view that drills into each recipe's ingredients — recipe sections with many outputs open a paginated, fully browsable view. Open to everyone via the new `corelib.catalog` permission (default on); an admin can right-click an entry to give the item.
 - **Pick-block** — middle-clicking a custom block or cart no longer mints a free copy in survival or adventure: it only selects a matching item you already carry. Creative still gives the item as before.
 
 ## Stability
