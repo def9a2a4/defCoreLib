@@ -616,7 +616,19 @@ public class MechanismRegistry {
 
             // Primary display
             Display primary;
-            if (mb.customTypeId != null) {
+            if (mb.wasBare && "mech:shaft".equals(mb.customTypeId)) {
+                // A bare shaft was reverted to an encased head for capture (mb.blockData is the head), but its
+                // true form is a bare CHAIN. Render that in transit — the rod extra still spins. Axis from the
+                // (always idle_*) captured state; a default CHAIN is Y, so an X/Z shaft must set it explicitly.
+                org.bukkit.block.data.BlockData chain = Material.CHAIN.createBlockData();
+                if (chain instanceof org.bukkit.block.data.Orientable o) {
+                    RotationNetwork.Axis ax = RotationNetwork.axisFromState(
+                        mb.customState != null ? mb.customState : "idle_y");
+                    o.setAxis(ax == RotationNetwork.Axis.X ? org.bukkit.Axis.X
+                            : ax == RotationNetwork.Axis.Z ? org.bukkit.Axis.Z : org.bukkit.Axis.Y);
+                }
+                primary = spawnMechBlockDisplay(spawnLoc, chain, mechId, i, "display");
+            } else if (mb.customTypeId != null) {
                 CustomHeadBlock chbType = registry.getType(mb.customTypeId);
                 String tex = chbType != null
                     ? chbType.resolveTexture(mb.customState, 0, null)
@@ -1342,6 +1354,7 @@ public class MechanismRegistry {
             MechanismBlockData mbd = new MechanismBlockData(bd, local, col, b.customType, b.customState,
                 decs, bdecs, particles, storage, b.spinReversed, wall);
             mbd.ghost = b.ghost;
+            mbd.wasBare = b.wasBare;
             mbd.glueOffsets = b.glueOffsets;
             mbd.configPdc = b.configPdc;
             mbd.blockEntitySnapshot = b.blockEntity;

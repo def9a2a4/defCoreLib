@@ -479,6 +479,7 @@ final class BasicMechanism implements Mechanism {
                 b.wfX = mb.wallFacing.x; b.wfY = mb.wallFacing.y; b.wfZ = mb.wallFacing.z;
             }
             b.ghost = mb.ghost;
+            b.wasBare = mb.wasBare;
             if (mb.storage != null) {
                 try {
                     b.storage = ItemStack.serializeItemsAsBytes(mb.storage.getContents());
