@@ -913,8 +913,8 @@ public class MechanismRegistry {
     // in-game (floor at 0.0, wall at 1.0).
     private static final float VANILLA_BANNER_SCALE = 1.0f;
     private static final float VANILLA_STANDING_Y = 0.0f;
-    private static final float VANILLA_WALL_Y = 1.0f;
-    private static final float VANILLA_WALL_DEPTH = 0.38f; // toward the wall from the cell center
+    private static final float VANILLA_WALL_Y = -1.0f;
+    private static final float VANILLA_WALL_DEPTH = 0.48f; // toward the wall from the cell center
 
     /**
      * Synthesize the attachment that carries a vanilla banner BLOCK through a move: the equivalent
