@@ -653,8 +653,8 @@ final class ExtendablePistonManager {
         int[] stats = network.getNetworkStats(m.coreKey);
         int base = config.getPower("piston_core", 1);
         int power = (stats != null ? stats[0] - stats[1] : 0) + base;
-        // Whole-mechanism inertial mass (incl. the growing rod, by design), cached at move-start: a heavier
-        // piston extends slower. Fixed for the stroke (block set doesn't change), so read the cached field.
+        // Whole-mechanism inertial mass (whole rod — fully materialized at assembly, does NOT grow), cached
+        // at move-start: a heavier piston extends slower. Fixed for the stroke, so read the cached field.
         float step = clamp((float) (SPEED_K * power / Math.max(1.0, m.mass)), MIN_STEP, (float) config.pistonMaxStep);
 
         if (remaining <= step + 1e-3) {
@@ -742,7 +742,7 @@ final class ExtendablePistonManager {
         final Location start;                  // block-centered assembly pivot (base for the stop retarget)
         Location target;                       // mutable: retargeted to the next whole block on power-cut/reverse
         final Vector3f dir;
-        final double mass;   // whole-mechanism inertial mass (incl. growing rod), cached at move-start from mass.yml
+        final double mass;   // whole-mechanism inertial mass (whole rod, fully materialized at assembly), cached at move-start from mass.yml
         final RotationNetwork.SpinDirection spinDir;  // the spin that started this move; a flip stops it
         int warmup = 2;                        // ticks to wait before the first move (mount + rotate(0) first)
         int settle = -1;                       // ≥0: parked at target, counting down to disassembly (client lerp)

@@ -2572,6 +2572,8 @@ public class CustomBlockRegistry {
         if (spec.isTag()) return new org.bukkit.inventory.RecipeChoice.MaterialChoice(spec.tag());
         if (spec.isMaterials()) return new org.bukkit.inventory.RecipeChoice.MaterialChoice(spec.materials());
         if (spec.isBlock()) return choiceForBlock(spec.blockId());
+        if (!spec.isMaterial()) // unresolved (unknown material on this MC version) — callers must gate first
+            throw new IllegalArgumentException("ingredientChoice on an unresolved ingredient: " + spec.unresolvedMaterial());
         return new org.bukkit.inventory.RecipeChoice.MaterialChoice(spec.material());
     }
 

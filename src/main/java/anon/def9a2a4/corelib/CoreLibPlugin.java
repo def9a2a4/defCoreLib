@@ -2060,6 +2060,23 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         return it;
     }
 
+    /** The result-slot item for a catalog recipe. A recipe with an {@code output:} override (e.g. seed oil
+     *  + string + nuggets → lantern) shows its real output; otherwise the owning type's detail header.
+     *  Display-only: resolves silently and falls back to the type header if the output can't resolve on
+     *  this MC version (e.g. COPPER_LANTERN pre-1.21.9). */
+    private ItemStack catalogResult(CustomHeadBlock type, @org.jspecify.annotations.Nullable String output, int amount) {
+        if (output == null) return catalogDetailHeader(type, amount);
+        int amt = Math.max(1, amount);
+        if (output.contains(":")) {
+            CustomHeadBlock t = registry.getType(output);
+            if (t != null) return t.createItem(amt);
+        } else {
+            Material m = Material.matchMaterial(output.toUpperCase(java.util.Locale.ROOT));
+            if (m != null) return new ItemStack(m, amt);
+        }
+        return catalogDetailHeader(type, amount);
+    }
+
     private static ItemStack catalogDetailHeader(CustomHeadBlock type, int amount) {
         ItemStack it = type.createItem(Math.max(1, amount));
         var m = it.getItemMeta();

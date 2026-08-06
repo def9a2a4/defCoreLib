@@ -94,17 +94,26 @@ public final class MassRegistry {
         }
 
         // Apply in ascending specificity; each tier overwrites the previous. Within the wildcard tier,
-        // apply broader wildcards (more matches) FIRST and narrower ones LAST, so a narrower wildcard wins
-        // regardless of file order (e.g. `*copper_door` beats `*_door` however they are ordered).
+        // apply broader wildcards FIRST and narrower ones LAST — ranked by MATCHED-LITERAL LENGTH (the key
+        // minus its `*`s): a refinement like `*copper_door` (11 literals) has more literals than `*_door`
+        // (5), so it applies last and wins regardless of file order. This is a sound most-specific-wins
+        // rule for prefix/suffix refinements (the only overlaps that occur here); two DISJOINT-but-equal-
+        // specificity wildcards can't conflict, and two partially-overlapping equal-length wildcards would
+        // fall back to file order (none exist in mass.yml).
         for (String key : tags) applyKey(key, resolveKey(key, log), yaml, log);
 
         List<String> byBreadth = new ArrayList<>(wildcards);
-        Map<String, Set<Material>> resolved = new HashMap<>();
-        for (String key : wildcards) resolved.put(key, resolveKey(key, log));
-        byBreadth.sort((a, b) -> Integer.compare(resolved.get(b).size(), resolved.get(a).size()));
-        for (String key : byBreadth) applyKey(key, resolved.get(key), yaml, log);
+        byBreadth.sort(java.util.Comparator.comparingInt(MassRegistry::literalLength));
+        for (String key : byBreadth) applyKey(key, resolveKey(key, log), yaml, log);
 
         for (String key : materials) applyKey(key, resolveKey(key, log), yaml, log);
+    }
+
+    /** Wildcard specificity proxy: literal (non-{@code *}) character count. More literals = narrower. */
+    private static int literalLength(String key) {
+        int n = 0;
+        for (int i = 0; i < key.length(); i++) if (key.charAt(i) != '*') n++;
+        return n;
     }
 
     private void applyKey(String key, Set<Material> materials, YamlConfiguration yaml, Logger log) {
