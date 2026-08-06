@@ -439,6 +439,11 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         if (cartTrainManager != null) {
             cartTrainManager.onEntitiesUnload(event.getEntities());
         }
+        // Park persisted mechanisms anchored to this chunk so they re-recover (and re-fire the recovered
+        // MechanismAssembleEvent) when the chunk reloads, instead of becoming stale zombies in activeMechanisms.
+        if (mechanismRegistry != null) {
+            mechanismRegistry.onEntitiesUnload(event.getChunk());
+        }
     }
 
     // ──────────────────────────────────────────────────────────────────────

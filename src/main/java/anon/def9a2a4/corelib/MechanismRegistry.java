@@ -1173,6 +1173,38 @@ public class MechanismRegistry {
     // ──────────────────────────────────────────────────────────────────────
 
     /**
+     * A chunk's entities are unloading at runtime (player walked away). PARK any persisted mechanism anchored
+     * to this chunk: save its current state, drop it from the live maps, but LEAVE its persistent entities
+     * (they unload with the chunk and reload with it). Without this the mechanism would sit in
+     * {@code activeMechanisms} forever with stale entity refs, and {@link #recoverMechanismsInChunk} would
+     * skip it as "already active" on reload — so no recovered {@link MechanismAssembleEvent} ever fires and a
+     * consumer (BlockShips) that dropped its wrapper on chunk unload could never rebuild it (a zombie).
+     * Parking makes chunk-reload go through the SAME recovery path as a server restart.
+     *
+     * <p>Keyed on the mechanism's pivot chunk (== its persistence index chunk), so re-save re-indexes to the
+     * same chunk recovery will re-trigger on. Non-persisted mechanisms aren't recovered, so they're left
+     * alone (they tick-or-skip against their own entities as before).
+     */
+    public void onEntitiesUnload(org.bukkit.Chunk chunk) {
+        if (activeMechanisms.isEmpty()) return;
+        for (BasicMechanism mech : new ArrayList<>(activeMechanisms.values())) {
+            if (!mech.isPersisted()) continue;
+            Location p = mech.pivot();
+            if (!chunk.getWorld().equals(p.getWorld())) continue;
+            if ((p.getBlockX() >> 4) != chunk.getX() || (p.getBlockZ() >> 4) != chunk.getZ()) continue;
+            try {
+                persistence.save(mech.snapshotState());
+            } catch (Exception e) {
+                plugin.getLogger().warning("Mechanism " + mech.id() + " failed to persist on chunk unload ("
+                    + e.getMessage() + "); leaving it active");
+                continue;
+            }
+            activeMechanisms.remove(mech.id());
+            for (ColliderPair cp : mech.colliders) colliderIndex.remove(cp.shulker().getUniqueId());
+        }
+    }
+
+    /**
      * Recover any persisted mechanisms whose pivot chunk is the one that just finished loading its entities.
      * A persisted mechanism was saved-and-left on shutdown/world-unload (its display/collider/vehicle
      * entities are {@code setPersistent(true)}, so they survive in the region file); this rebinds a
@@ -1185,10 +1217,9 @@ public class MechanismRegistry {
      */
     public void recoverMechanismsInChunk(org.bukkit.Chunk chunk) {
         org.bukkit.World world = chunk.getWorld();
-        Set<UUID> ids = persistence.mechanismsInChunk(world.getName(), chunk.getX(), chunk.getZ());
-        if (ids.isEmpty()) return;
-        for (UUID id : ids) {
-            if (activeMechanisms.containsKey(id) || mechIdsBeingRecovered.contains(id)) continue;
+        // 1. Enrol any persisted mechanism indexed to THIS (pivot) chunk that isn't already live or pending.
+        for (UUID id : persistence.mechanismsInChunk(world.getName(), chunk.getX(), chunk.getZ())) {
+            if (activeMechanisms.containsKey(id) || pendingRecoveries.containsKey(id)) continue;
             MechanismState st = persistence.load(world.getName(), id);
             if (st == null) {
                 // Corrupt/unreadable state file (already logged by load) — drop the dangling index entry so
@@ -1196,30 +1227,44 @@ public class MechanismRegistry {
                 persistence.remove(world.getName(), id);
                 continue;
             }
-            mechIdsBeingRecovered.add(id);
+            pendingRecoveries.put(id, st);
+            mechIdsBeingRecovered.add(id); // guards its entities from the orphan sweep while recovery is in flight
+        }
+        // 2. (Re-)attempt every pending recovery in this world: this chunk load may have brought in more of a
+        //    pending mechanism's entities, so accumulate across successive EntitiesLoad events. Cheap —
+        //    pendingRecoveries holds only mechanisms currently mid-recovery.
+        if (pendingRecoveries.isEmpty()) return;
+        for (MechanismState st : new ArrayList<>(pendingRecoveries.values())) {
+            if (!world.getName().equals(st.worldName)) continue;
             try {
-                recoverOne(chunk, st);
+                attemptRecover(world, st);
             } catch (Exception e) {
-                plugin.getLogger().warning("Mechanism recovery failed for " + id + " ("
-                    + e.getMessage() + "); leaving its state file for a later retry");
-                mechIdsBeingRecovered.remove(id);
+                plugin.getLogger().warning("Mechanism recovery attempt failed for " + st.mechId + " ("
+                    + e.getMessage() + "); leaving its state for a later chunk load");
             }
         }
     }
 
-    /** Rebind one persisted mechanism from its state + surviving tagged entities, then land or resume it. */
-    private void recoverOne(org.bukkit.Chunk pivotChunk, MechanismState st) {
-        org.bukkit.World world = pivotChunk.getWorld();
+    /**
+     * One accumulation pass for a pending persisted mechanism: gather its surviving tagged entities from the
+     * currently-loaded chunks in its footprint, and — once the frame is present AND recovery is complete
+     * ({@code found >= entityCount}) or the whole footprint is loaded (fallback) — rebind a
+     * {@link BasicMechanism} and land/resume it. Otherwise stay pending for a later chunk load.
+     */
+    private void attemptRecover(org.bukkit.World world, MechanismState st) {
+        int pcx = (int) Math.floor(st.px) >> 4;
+        int pcz = (int) Math.floor(st.pz) >> 4;
+        int radius = chunkRadiusFor(st); // footprint radius in chunks, from the block offsets
 
-        // Gather candidate entities: the pivot chunk (parent/vehicle/displays live here) plus its loaded
-        // neighbours (a large structure's FREE collider carriers can sit in an adjacent chunk). Neighbours
-        // not yet loaded contribute nothing now; their strays are adopted on a later load or reaped by the
-        // orphan sweep once this mechanism is no longer persisted.
+        // Gather candidate entities across the structure's chunk footprint (loaded chunks only), and note
+        // whether the WHOLE footprint is loaded — the fallback that finalizes an under-count so a mechanism
+        // that permanently lost an entity still recovers instead of hanging pending forever.
         List<Entity> candidates = new ArrayList<>();
-        for (int dx = -1; dx <= 1; dx++) {
-            for (int dz = -1; dz <= 1; dz++) {
-                if (!world.isChunkLoaded(pivotChunk.getX() + dx, pivotChunk.getZ() + dz)) continue;
-                for (Entity e : world.getChunkAt(pivotChunk.getX() + dx, pivotChunk.getZ() + dz).getEntities()) {
+        boolean allLoaded = true;
+        for (int dx = -radius; dx <= radius; dx++) {
+            for (int dz = -radius; dz <= radius; dz++) {
+                if (!world.isChunkLoaded(pcx + dx, pcz + dz)) { allLoaded = false; continue; }
+                for (Entity e : world.getChunkAt(pcx + dx, pcz + dz).getEntities()) {
                     candidates.add(e);
                 }
             }
@@ -1263,14 +1308,39 @@ public class MechanismRegistry {
         }
 
         // The vehicle + parent are the load-bearing frame (the ctor needs both; the vehicle carries the
-        // authoritative position). If either isn't present yet, recovery FAILS SOFTLY and retries on a
-        // later chunk load — the region file may still be settling, or the frame entity is in an
-        // adjacent chunk not yet loaded. Do NOT remove entities or the state file (that would destroy a
-        // still-recoverable mechanism); the hasMetadata guard keeps any strays we did find alive until
-        // the frame appears. Mirrors ShipInstance.recoverEntities returning false on a missing vehicle.
+        // authoritative position). If either isn't present yet, stay PENDING and retry on a later chunk load
+        // (the region file may still be settling, or the frame entity is in a not-yet-loaded footprint chunk).
+        // Only give up once the WHOLE footprint is loaded and the frame is still missing (it's genuinely
+        // gone) — leaving the state file for a future full reload. Never remove entities here; the hasMetadata
+        // guard keeps strays alive. Mirrors ShipInstance.recoverEntities returning false on a missing vehicle.
         if (vehicle == null || parent == null) {
-            mechIdsBeingRecovered.remove(st.mechId);
+            if (allLoaded) {
+                pendingRecoveries.remove(st.mechId);
+                mechIdsBeingRecovered.remove(st.mechId);
+                plugin.getLogger().warning("Mechanism " + st.mechId + " could not recover: vehicle/parent "
+                    + "entity missing after its whole chunk footprint loaded; leaving state for a later retry");
+            }
             return;
+        }
+
+        // Completeness gate (incremental cross-chunk recovery). Count the persistent entities found so far —
+        // 2 (vehicle+parent) + displays + banners + collider pairs×2 — the same formula snapshotState uses for
+        // entityCount. If we're short AND more of the footprint is still loading, stay pending and accumulate
+        // on the next chunk load; finalize only when complete, or as a fallback once the whole footprint is
+        // loaded (an entity was permanently lost — recover with what survives rather than hang forever).
+        int nBlocks = st.blocks.size();
+        int colliderPairs = 0;
+        for (Map.Entry<Integer, Entity> ce : carriers.entrySet()) {
+            int i = ce.getKey();
+            if (i >= 0 && i < nBlocks && shulkers.get(i) != null) colliderPairs++;
+        }
+        int found = 2 + primaries.size() + sumTree(itemExtras) + sumTree(blockExtras) + sumTree(banners)
+            + colliderPairs * 2;
+        boolean complete = st.entityCount <= 0 || found >= st.entityCount;
+        if (!complete && !allLoaded) return; // still pending: wait for neighbour chunks to load
+        if (!complete) {
+            plugin.getLogger().warning("Mechanism " + st.mechId + " finalizing with " + found + "/"
+                + st.entityCount + " entities after its whole chunk footprint loaded (some were lost).");
         }
 
         // Rebuild the block snapshots (inverse of BasicMechanism.snapshotState).
@@ -1368,14 +1438,9 @@ public class MechanismRegistry {
             }
         }
 
-        // Recovery-completeness diagnostic (BlockShips' entity_count). We rebind single-shot; a shortfall
-        // means some persistent entities are still loading in an adjacent chunk — logged, not fatal.
-        // (Incremental cross-chunk accumulation is deferred to the ship phase.)
-        int found = 2 + countDisplays(displaysPerBlock) + countDisplays(bannerDisplaysPerBlock) + colliders.size() * 2;
-        if (st.entityCount > 0 && found < st.entityCount) {
-            plugin.getLogger().info("Mechanism " + st.mechId + " recovered with " + found + "/" + st.entityCount
-                + " entities (rest may be in unloaded neighbour chunks).");
-        }
+        // Recovery is finalized: this mechanism is now live. Drop it from the pending/in-flight sets.
+        pendingRecoveries.remove(st.mechId);
+        mechIdsBeingRecovered.remove(st.mechId);
 
         // Announce as a RECOVERY (recovered=true) so companion systems re-adopt it (re-mirror health, re-link
         // fuel) rather than treat it as a fresh build. Guarded: a listener throw must not abort recovery.
@@ -1387,14 +1452,26 @@ public class MechanismRegistry {
             plugin.getLogger().warning("Mechanism recovery: a MechanismAssembleEvent listener threw for "
                 + st.mechId + " (" + e.getMessage() + ")");
         }
-
-        mechIdsBeingRecovered.remove(st.mechId);
     }
 
-    private static int countDisplays(List<List<Display>> groups) {
+    /** Sum the sizes of the per-block ordered display sub-maps (extras/banners) — used for the found-entity
+     *  count in the incremental recovery completeness gate. */
+    private static int sumTree(Map<Integer, TreeMap<Integer, Display>> map) {
         int c = 0;
-        for (List<Display> g : groups) c += g.size();
+        for (TreeMap<Integer, Display> t : map.values()) c += t.size();
         return c;
+    }
+
+    /** Footprint radius (in chunks) of a persisted structure, from its block offsets — the neighbourhood
+     *  {@link #attemptRecover} scans for the mechanism's entities. Rotation preserves distance, so the
+     *  unrotated max |x|/|z| offset bounds it; +1 for the corner shift, capped so a corrupt state can't scan
+     *  a huge area. Translation lives at column-major indices 12/14 of the 4×4 localTransform. */
+    private static int chunkRadiusFor(MechanismState st) {
+        double maxOff = 0;
+        for (MechanismState.BlockRec b : st.blocks) {
+            maxOff = Math.max(maxOff, Math.max(Math.abs(b.localTransform[12]), Math.abs(b.localTransform[14])));
+        }
+        return Math.min(8, (int) Math.ceil(maxOff / 16.0) + 1);
     }
 
     /** Add {@code d} to {@code map[blockIndex]} keyed by the integer suffix of {@code role} (e.g. "extra_3" → 3),

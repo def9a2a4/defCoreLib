@@ -265,31 +265,14 @@ final class RotationBlocks {
                     return wrenchInteract(b, event, network, registry);
                 return false;
             })
-            .onChunkLoad((b, state) -> {
-                // Reconcile the lock to live redstone on load — a change while unloaded fires no neighbor
-                // event, and the network reads the lock from this state string, so a stale locked_ would keep
-                // the line severed. Mirror onNeighborChange, minus the live-only MachineActedEvent/recalc.
-                boolean rsPowered = b.getBlockPower() > 0;
-                String resolved = state;
-                if (resolved != null) {
-                    String axis = resolved.substring(resolved.lastIndexOf('_') + 1);
-                    String target = rsPowered ? "locked_" + axis : "idle_" + axis;
-                    if (!target.equals(resolved)) {
-                        registry.setState(b, target);
-                        CustomHeadBlock type = registry.getTypeFromBlock(b);
-                        if (type != null) registry.applyConfig(b, type, target, 0);
-                        resolved = target;
-                    }
-                }
-                network.addNode(b, blockId, RotationNetwork.axisFromState(resolved),
-                    RotationNetwork.NodeRole.TRANSMITTER, 0, false);
-            })
+            .onChunkLoad((b, state) -> network.addNode(b, blockId,
+                RotationNetwork.axisFromState(state), RotationNetwork.NodeRole.TRANSMITTER, 0, false))
             .onChunkUnload(b -> network.removeNode(CustomBlockRegistry.LocationKey.of(b)))
             .onBlockRemoved((b, state) -> network.removeNode(CustomBlockRegistry.LocationKey.of(b)))
             .build());
     }
 
-    //──────────────────────────────────────────────────────────────────────
+    // ──────────────────────────────────────────────────────────────────────
     // Ratchet: one-way check-valve. Transmits only while the shaft turns its allowed way (CW/CCW,
     // stored in the STATE so it survives mechanism moves); otherwise it FREEWHEELS — fully severs so
     // the input keeps spinning while the output goes dead. The allowed direction defaults to the live
@@ -1952,20 +1935,11 @@ final class RotationBlocks {
                 return false;
             })
             .onChunkLoad((b, state) -> {
-                // Reconcile to live redstone on load — a change while the chunk was unloaded fires no neighbor
-                // event, so trusting the saved spinning_/idle_ string would resume a switched-off motor as a
-                // stale power SOURCE (phantom power into the network). Mirror onNeighborChange (inverted).
-                boolean rsPowered = b.getBlockPower() > 0;
-                String axis = state != null ? state.substring(state.lastIndexOf('_') + 1) : "y";
-                String target = rsPowered ? "idle_" + axis : "spinning_" + axis;
-                if (!target.equals(state)) {
-                    registry.setState(b, target);
-                    CustomHeadBlock type = registry.getTypeFromBlock(b);
-                    if (type != null) registry.applyConfig(b, type, target, 0);
-                }
-                network.addNode(b, blockId, RotationNetwork.axisFromState(target),
-                    rsPowered ? RotationNetwork.NodeRole.TRANSMITTER : RotationNetwork.NodeRole.SOURCE,
-                    rsPowered ? 0 : motorPower, false);
+                boolean spinning = state != null && state.startsWith("spinning_");
+                RotationNetwork.Axis axis = RotationNetwork.axisFromState(state != null ? state : "spinning_y");
+                network.addNode(b, blockId, axis,
+                    spinning ? RotationNetwork.NodeRole.SOURCE : RotationNetwork.NodeRole.TRANSMITTER,
+                    spinning ? motorPower : 0, false);
             })
             .onChunkUnload(b -> network.removeNode(CustomBlockRegistry.LocationKey.of(b)))
             .onBlockRemoved((b, state) -> network.removeNode(CustomBlockRegistry.LocationKey.of(b)))
