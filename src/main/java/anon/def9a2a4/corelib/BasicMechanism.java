@@ -255,30 +255,14 @@ final class BasicMechanism implements Mechanism {
                 rotationAxis.x, rotationAxis.y, rotationAxis.z);
         this.currentTransform = rot;
 
-        // Driven mode: displays are passengers of the CONSUMER's vehicle, which the consumer drives in the
-        // block-CORNER frame (BlockShips spawns it at wheelLoc). But display transforms are authored in the
-        // block-CENTER pivot frame (center-to-center localTransform + the -0.5 corner shift below), the SAME
-        // frame repositionColliders() teleports the colliders into. Without compensation the vehicle-anchored
-        // displays render (pivot - vehicle) = half a block low/-X/-Z from the pivot-anchored colliders. Add
-        // that constant world offset so displays share the collider frame (== BlockShips native's single-frame
-        // result). It's a constant (+0.5 per axis): the pivot delta-tracks vehicle movement, so no jitter.
-        // Gate on `driven`: owned doors/drawbridges/minecarts have vehicle==pivot and must NOT get this offset.
-        double compX = 0, compY = 0, compZ = 0;
-        if (driven) {
-            Location vl = vehicle.getLocation();
-            compX = pivot.getX() - vl.getX();
-            compY = pivot.getY() - vl.getY();
-            compZ = pivot.getZ() - vl.getZ();
-        }
-
         for (int i = 0; i < blocks.size(); i++) {
             MechanismBlockData mb = blocks.get(i);
             Matrix4f dm = new Matrix4f(rot).mul(mb.localTransform);
             dm.m31(dm.m31() - rideOffset); // compensate vehicle passenger riding offset
-            // Corner-vehicle → center-pivot frame reconciliation (driven only); see comment above the loop.
-            // dm is the per-block base every primary/aux/block/banner display derives from, so this one add
-            // propagates to all of them. Parent yaw is frozen 0, so dm's translation is world-space.
-            if (driven) { dm.m30(dm.m30() + (float) compX); dm.m31(dm.m31() + (float) compY); dm.m32(dm.m32() + (float) compZ); }
+            // Driven-mode corner-vehicle → center-pivot frame reconciliation (see addDrivenBaseOffset).
+            // dm is the per-block base every primary/aux/block/banner display derives from, so this one
+            // call propagates to all of them.
+            addDrivenBaseOffset(dm);
 
             // Primary display (index 0): BlockDisplay renders the unit cube from its MIN corner, so
             // shift -0.5 on ALL axes (in LOCAL space, post-multiply) to put the cube's true 3D center
@@ -374,6 +358,30 @@ final class BasicMechanism implements Mechanism {
         }
 
         repositionColliders();
+    }
+
+    /**
+     * Driven mode: the per-block displays are passengers of the CONSUMER's vehicle, which the consumer drives
+     * in the block-CORNER frame (e.g. BlockShips spawns its ArmorStand at the block corner). But display
+     * transforms are authored in the block-CENTER pivot frame (center-to-center localTransform + the -0.5
+     * corner shift) — the SAME frame the colliders are teleported into by {@link #repositionColliders()}.
+     * Without compensation the vehicle-anchored displays render (pivot - vehicle) = half a block low/-X/-Z
+     * from the pivot-anchored colliders. Add that constant world offset so displays share the collider frame
+     * (matching a single-frame consumer like native BlockShips). The offset is a constant (~+0.5/axis): the
+     * pivot delta-tracks vehicle movement, so it never drifts and adds no jitter.
+     *
+     * <p>No-op unless {@code driven} (owned doors/drawbridges/minecarts have vehicle == the centered pivot).
+     * This is the SOLE source of the correction — it MUST be called from EVERY display-positioning path
+     * ({@link #rotate(float)} AND {@code MechanismRegistry.updateAnimatedDisplays}) so none can drift out of
+     * frame. m30/m31/m32 are the world-space translation (the parent's entity yaw is frozen 0, so a display
+     * matrix's translation is world-space).
+     */
+    void addDrivenBaseOffset(Matrix4f m) {
+        if (!driven) return;
+        Location vl = vehicle.getLocation();
+        m.m30(m.m30() + (float) (pivot.getX() - vl.getX()));
+        m.m31(m.m31() + (float) (pivot.getY() - vl.getY()));
+        m.m32(m.m32() + (float) (pivot.getZ() - vl.getZ()));
     }
 
     /**

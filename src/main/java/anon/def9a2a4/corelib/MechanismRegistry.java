@@ -1554,6 +1554,7 @@ public class MechanismRegistry {
                     BasicMechanism.applyWallOffset(placed, mb.wallFacing, dec.wallOffset());
                     placed.mul(workMatrix);
                     placed.m31(placed.m31() - mech.rideOffset); // passenger offset — parent space, applied last
+                    mech.addDrivenBaseOffset(placed); // driven corner→center frame reconciliation (same as rotate())
                     display.setTransformationMatrix(placed);
                 }
             }
@@ -1578,6 +1579,7 @@ public class MechanismRegistry {
                     BasicMechanism.applyWallOffset(placed, mb.wallFacing, bdc.wallOffset());
                     placed.mul(workMatrix);
                     placed.m31(placed.m31() - mech.rideOffset); // passenger offset — parent space, applied last
+                    mech.addDrivenBaseOffset(placed); // driven corner→center frame reconciliation (same as rotate())
                     display.setTransformationMatrix(placed);
                 }
             }
