@@ -17,7 +17,6 @@ blocks:
     break_sound: { sound: block.wood.break, volume: 1.0, pitch: 1.0 }
     placement:
       allowed_faces: [NORTH, SOUTH, EAST, WEST]
-      require_solid: true
     default_state: north
     placement_state_map:
       NORTH: north
@@ -63,7 +62,6 @@ blocks:
     break_sound: { sound: block.wood.break, volume: 1.0, pitch: 1.0 }
     placement:
       allowed_faces: [NORTH, SOUTH, EAST, WEST]
-      require_solid: true
     default_state: north
     placement_state_map:
       NORTH: north
@@ -109,7 +107,6 @@ blocks:
     break_sound: { sound: block.wood.break, volume: 1.0, pitch: 1.0 }
     placement:
       allowed_faces: [NORTH, SOUTH, EAST, WEST]
-      require_solid: true
     default_state: north
     placement_state_map:
       NORTH: north
@@ -155,7 +152,6 @@ blocks:
     break_sound: { sound: block.wood.break, volume: 1.0, pitch: 1.0 }
     placement:
       allowed_faces: [NORTH, SOUTH, EAST, WEST]
-      require_solid: true
     default_state: north
     placement_state_map:
       NORTH: north
@@ -201,7 +197,6 @@ blocks:
     break_sound: { sound: block.wood.break, volume: 1.0, pitch: 1.0 }
     placement:
       allowed_faces: [NORTH, SOUTH, EAST, WEST]
-      require_solid: true
     default_state: north
     placement_state_map:
       NORTH: north
@@ -247,7 +242,6 @@ blocks:
     break_sound: { sound: block.wood.break, volume: 1.0, pitch: 1.0 }
     placement:
       allowed_faces: [NORTH, SOUTH, EAST, WEST]
-      require_solid: true
     default_state: north
     placement_state_map:
       NORTH: north
@@ -293,7 +287,6 @@ blocks:
     break_sound: { sound: block.wood.break, volume: 1.0, pitch: 1.0 }
     placement:
       allowed_faces: [NORTH, SOUTH, EAST, WEST]
-      require_solid: true
     default_state: north
     placement_state_map:
       NORTH: north
@@ -339,7 +332,6 @@ blocks:
     break_sound: { sound: block.wood.break, volume: 1.0, pitch: 1.0 }
     placement:
       allowed_faces: [NORTH, SOUTH, EAST, WEST]
-      require_solid: true
     default_state: north
     placement_state_map:
       NORTH: north
@@ -385,7 +377,6 @@ blocks:
     break_sound: { sound: block.wood.break, volume: 1.0, pitch: 1.0 }
     placement:
       allowed_faces: [NORTH, SOUTH, EAST, WEST]
-      require_solid: true
     default_state: north
     placement_state_map:
       NORTH: north
@@ -431,7 +422,6 @@ blocks:
     break_sound: { sound: block.wood.break, volume: 1.0, pitch: 1.0 }
     placement:
       allowed_faces: [NORTH, SOUTH, EAST, WEST]
-      require_solid: true
     default_state: north
     placement_state_map:
       NORTH: north
@@ -477,7 +467,6 @@ blocks:
     break_sound: { sound: block.wood.break, volume: 1.0, pitch: 1.0 }
     placement:
       allowed_faces: [NORTH, SOUTH, EAST, WEST]
-      require_solid: true
     default_state: north
     placement_state_map:
       NORTH: north
@@ -523,7 +512,6 @@ blocks:
     break_sound: { sound: block.nether_wood.break, volume: 1.0, pitch: 1.0 }
     placement:
       allowed_faces: [NORTH, SOUTH, EAST, WEST]
-      require_solid: true
     default_state: north
     placement_state_map:
       NORTH: north
@@ -569,7 +557,6 @@ blocks:
     break_sound: { sound: block.nether_wood.break, volume: 1.0, pitch: 1.0 }
     placement:
       allowed_faces: [NORTH, SOUTH, EAST, WEST]
-      require_solid: true
     default_state: north
     placement_state_map:
       NORTH: north
@@ -615,7 +602,6 @@ blocks:
     break_sound: { sound: block.stone.break, volume: 1.0, pitch: 1.0 }
     placement:
       allowed_faces: [NORTH, SOUTH, EAST, WEST]
-      require_solid: true
     default_state: north
     placement_state_map:
       NORTH: north
@@ -661,7 +647,6 @@ blocks:
     break_sound: { sound: block.stone.break, volume: 1.0, pitch: 1.0 }
     placement:
       allowed_faces: [NORTH, SOUTH, EAST, WEST]
-      require_solid: true
     default_state: north
     placement_state_map:
       NORTH: north
@@ -707,7 +692,6 @@ blocks:
     break_sound: { sound: block.stone.break, volume: 1.0, pitch: 1.0 }
     placement:
       allowed_faces: [NORTH, SOUTH, EAST, WEST]
-      require_solid: true
     default_state: north
     placement_state_map:
       NORTH: north
@@ -753,7 +737,6 @@ blocks:
     break_sound: { sound: block.stone.break, volume: 1.0, pitch: 1.0 }
     placement:
       allowed_faces: [NORTH, SOUTH, EAST, WEST]
-      require_solid: true
     default_state: north
     placement_state_map:
       NORTH: north
@@ -799,7 +782,6 @@ blocks:
     break_sound: { sound: block.stone.break, volume: 1.0, pitch: 1.0 }
     placement:
       allowed_faces: [NORTH, SOUTH, EAST, WEST]
-      require_solid: true
     default_state: north
     placement_state_map:
       NORTH: north
@@ -845,7 +827,6 @@ blocks:
     break_sound: { sound: block.stone.break, volume: 1.0, pitch: 1.0 }
     placement:
       allowed_faces: [NORTH, SOUTH, EAST, WEST]
-      require_solid: true
     default_state: north
     placement_state_map:
       NORTH: north
@@ -891,7 +872,6 @@ blocks:
     break_sound: { sound: block.stone.break, volume: 1.0, pitch: 1.0 }
     placement:
       allowed_faces: [NORTH, SOUTH, EAST, WEST]
-      require_solid: true
     default_state: north
     placement_state_map:
       NORTH: north
@@ -937,7 +917,6 @@ blocks:
     break_sound: { sound: block.stone.break, volume: 1.0, pitch: 1.0 }
     placement:
       allowed_faces: [NORTH, SOUTH, EAST, WEST]
-      require_solid: true
     default_state: north
     placement_state_map:
       NORTH: north
@@ -983,7 +962,6 @@ blocks:
     break_sound: { sound: block.stone.break, volume: 1.0, pitch: 1.0 }
     placement:
       allowed_faces: [NORTH, SOUTH, EAST, WEST]
-      require_solid: true
     default_state: north
     placement_state_map:
       NORTH: north
@@ -1029,7 +1007,6 @@ blocks:
     break_sound: { sound: block.stone.break, volume: 1.0, pitch: 1.0 }
     placement:
       allowed_faces: [NORTH, SOUTH, EAST, WEST]
-      require_solid: true
     default_state: north
     placement_state_map:
       NORTH: north
@@ -1075,7 +1052,6 @@ blocks:
     break_sound: { sound: block.stone.break, volume: 1.0, pitch: 1.0 }
     placement:
       allowed_faces: [NORTH, SOUTH, EAST, WEST]
-      require_solid: true
     default_state: north
     placement_state_map:
       NORTH: north
@@ -1121,7 +1097,6 @@ blocks:
     break_sound: { sound: block.stone.break, volume: 1.0, pitch: 1.0 }
     placement:
       allowed_faces: [NORTH, SOUTH, EAST, WEST]
-      require_solid: true
     default_state: north
     placement_state_map:
       NORTH: north
@@ -1167,7 +1142,6 @@ blocks:
     break_sound: { sound: block.stone.break, volume: 1.0, pitch: 1.0 }
     placement:
       allowed_faces: [NORTH, SOUTH, EAST, WEST]
-      require_solid: true
     default_state: north
     placement_state_map:
       NORTH: north
@@ -1213,7 +1187,6 @@ blocks:
     break_sound: { sound: block.stone.break, volume: 1.0, pitch: 1.0 }
     placement:
       allowed_faces: [NORTH, SOUTH, EAST, WEST]
-      require_solid: true
     default_state: north
     placement_state_map:
       NORTH: north
@@ -1259,7 +1232,6 @@ blocks:
     break_sound: { sound: block.stone.break, volume: 1.0, pitch: 1.0 }
     placement:
       allowed_faces: [NORTH, SOUTH, EAST, WEST]
-      require_solid: true
     default_state: north
     placement_state_map:
       NORTH: north
@@ -1305,7 +1277,6 @@ blocks:
     break_sound: { sound: block.stone.break, volume: 1.0, pitch: 1.0 }
     placement:
       allowed_faces: [NORTH, SOUTH, EAST, WEST]
-      require_solid: true
     default_state: north
     placement_state_map:
       NORTH: north
@@ -1351,7 +1322,6 @@ blocks:
     break_sound: { sound: block.stone.break, volume: 1.0, pitch: 1.0 }
     placement:
       allowed_faces: [NORTH, SOUTH, EAST, WEST]
-      require_solid: true
     default_state: north
     placement_state_map:
       NORTH: north
@@ -1397,7 +1367,6 @@ blocks:
     break_sound: { sound: block.stone.break, volume: 1.0, pitch: 1.0 }
     placement:
       allowed_faces: [NORTH, SOUTH, EAST, WEST]
-      require_solid: true
     default_state: north
     placement_state_map:
       NORTH: north
@@ -1443,7 +1412,6 @@ blocks:
     break_sound: { sound: block.stone.break, volume: 1.0, pitch: 1.0 }
     placement:
       allowed_faces: [NORTH, SOUTH, EAST, WEST]
-      require_solid: true
     default_state: north
     placement_state_map:
       NORTH: north
@@ -1489,7 +1457,6 @@ blocks:
     break_sound: { sound: block.stone.break, volume: 1.0, pitch: 1.0 }
     placement:
       allowed_faces: [NORTH, SOUTH, EAST, WEST]
-      require_solid: true
     default_state: north
     placement_state_map:
       NORTH: north
@@ -1535,7 +1502,6 @@ blocks:
     break_sound: { sound: block.stone.break, volume: 1.0, pitch: 1.0 }
     placement:
       allowed_faces: [NORTH, SOUTH, EAST, WEST]
-      require_solid: true
     default_state: north
     placement_state_map:
       NORTH: north
@@ -1581,7 +1547,6 @@ blocks:
     break_sound: { sound: block.stone.break, volume: 1.0, pitch: 1.0 }
     placement:
       allowed_faces: [NORTH, SOUTH, EAST, WEST]
-      require_solid: true
     default_state: north
     placement_state_map:
       NORTH: north
@@ -1627,7 +1592,6 @@ blocks:
     break_sound: { sound: block.stone.break, volume: 1.0, pitch: 1.0 }
     placement:
       allowed_faces: [NORTH, SOUTH, EAST, WEST]
-      require_solid: true
     default_state: north
     placement_state_map:
       NORTH: north
@@ -1673,7 +1637,6 @@ blocks:
     break_sound: { sound: block.stone.break, volume: 1.0, pitch: 1.0 }
     placement:
       allowed_faces: [NORTH, SOUTH, EAST, WEST]
-      require_solid: true
     default_state: north
     placement_state_map:
       NORTH: north
@@ -1719,7 +1682,6 @@ blocks:
     break_sound: { sound: block.stone.break, volume: 1.0, pitch: 1.0 }
     placement:
       allowed_faces: [NORTH, SOUTH, EAST, WEST]
-      require_solid: true
     default_state: north
     placement_state_map:
       NORTH: north
@@ -1765,7 +1727,6 @@ blocks:
     break_sound: { sound: block.stone.break, volume: 1.0, pitch: 1.0 }
     placement:
       allowed_faces: [NORTH, SOUTH, EAST, WEST]
-      require_solid: true
     default_state: north
     placement_state_map:
       NORTH: north
@@ -1811,7 +1772,6 @@ blocks:
     break_sound: { sound: block.stone.break, volume: 1.0, pitch: 1.0 }
     placement:
       allowed_faces: [NORTH, SOUTH, EAST, WEST]
-      require_solid: true
     default_state: north
     placement_state_map:
       NORTH: north
@@ -1857,7 +1817,6 @@ blocks:
     break_sound: { sound: block.stone.break, volume: 1.0, pitch: 1.0 }
     placement:
       allowed_faces: [NORTH, SOUTH, EAST, WEST]
-      require_solid: true
     default_state: north
     placement_state_map:
       NORTH: north
@@ -1903,7 +1862,6 @@ blocks:
     break_sound: { sound: block.stone.break, volume: 1.0, pitch: 1.0 }
     placement:
       allowed_faces: [NORTH, SOUTH, EAST, WEST]
-      require_solid: true
     default_state: north
     placement_state_map:
       NORTH: north
@@ -1949,7 +1907,6 @@ blocks:
     break_sound: { sound: block.stone.break, volume: 1.0, pitch: 1.0 }
     placement:
       allowed_faces: [NORTH, SOUTH, EAST, WEST]
-      require_solid: true
     default_state: north
     placement_state_map:
       NORTH: north
@@ -1995,7 +1952,6 @@ blocks:
     break_sound: { sound: block.stone.break, volume: 1.0, pitch: 1.0 }
     placement:
       allowed_faces: [NORTH, SOUTH, EAST, WEST]
-      require_solid: true
     default_state: north
     placement_state_map:
       NORTH: north
@@ -2041,7 +1997,6 @@ blocks:
     break_sound: { sound: block.stone.break, volume: 1.0, pitch: 1.0 }
     placement:
       allowed_faces: [NORTH, SOUTH, EAST, WEST]
-      require_solid: true
     default_state: north
     placement_state_map:
       NORTH: north
@@ -2087,7 +2042,6 @@ blocks:
     break_sound: { sound: block.stone.break, volume: 1.0, pitch: 1.0 }
     placement:
       allowed_faces: [NORTH, SOUTH, EAST, WEST]
-      require_solid: true
     default_state: north
     placement_state_map:
       NORTH: north
@@ -2133,7 +2087,6 @@ blocks:
     break_sound: { sound: block.stone.break, volume: 1.0, pitch: 1.0 }
     placement:
       allowed_faces: [NORTH, SOUTH, EAST, WEST]
-      require_solid: true
     default_state: north
     placement_state_map:
       NORTH: north
@@ -2179,7 +2132,6 @@ blocks:
     break_sound: { sound: block.stone.break, volume: 1.0, pitch: 1.0 }
     placement:
       allowed_faces: [NORTH, SOUTH, EAST, WEST]
-      require_solid: true
     default_state: north
     placement_state_map:
       NORTH: north
@@ -2225,7 +2177,6 @@ blocks:
     break_sound: { sound: block.stone.break, volume: 1.0, pitch: 1.0 }
     placement:
       allowed_faces: [NORTH, SOUTH, EAST, WEST]
-      require_solid: true
     default_state: north
     placement_state_map:
       NORTH: north
@@ -2271,7 +2222,6 @@ blocks:
     break_sound: { sound: block.stone.break, volume: 1.0, pitch: 1.0 }
     placement:
       allowed_faces: [NORTH, SOUTH, EAST, WEST]
-      require_solid: true
     default_state: north
     placement_state_map:
       NORTH: north
@@ -2317,7 +2267,6 @@ blocks:
     break_sound: { sound: block.stone.break, volume: 1.0, pitch: 1.0 }
     placement:
       allowed_faces: [NORTH, SOUTH, EAST, WEST]
-      require_solid: true
     default_state: north
     placement_state_map:
       NORTH: north
@@ -2363,7 +2312,6 @@ blocks:
     break_sound: { sound: block.stone.break, volume: 1.0, pitch: 1.0 }
     placement:
       allowed_faces: [NORTH, SOUTH, EAST, WEST]
-      require_solid: true
     default_state: north
     placement_state_map:
       NORTH: north
@@ -2409,7 +2357,6 @@ blocks:
     break_sound: { sound: block.stone.break, volume: 1.0, pitch: 1.0 }
     placement:
       allowed_faces: [NORTH, SOUTH, EAST, WEST]
-      require_solid: true
     default_state: north
     placement_state_map:
       NORTH: north
@@ -2455,7 +2402,6 @@ blocks:
     break_sound: { sound: block.copper.break, volume: 1.0, pitch: 1.0 }
     placement:
       allowed_faces: [NORTH, SOUTH, EAST, WEST]
-      require_solid: true
     default_state: north
     placement_state_map:
       NORTH: north
@@ -2501,7 +2447,6 @@ blocks:
     break_sound: { sound: block.copper.break, volume: 1.0, pitch: 1.0 }
     placement:
       allowed_faces: [NORTH, SOUTH, EAST, WEST]
-      require_solid: true
     default_state: north
     placement_state_map:
       NORTH: north
@@ -2547,7 +2492,6 @@ blocks:
     break_sound: { sound: block.copper.break, volume: 1.0, pitch: 1.0 }
     placement:
       allowed_faces: [NORTH, SOUTH, EAST, WEST]
-      require_solid: true
     default_state: north
     placement_state_map:
       NORTH: north
@@ -2593,7 +2537,6 @@ blocks:
     break_sound: { sound: block.copper.break, volume: 1.0, pitch: 1.0 }
     placement:
       allowed_faces: [NORTH, SOUTH, EAST, WEST]
-      require_solid: true
     default_state: north
     placement_state_map:
       NORTH: north
@@ -2639,7 +2582,6 @@ blocks:
     break_sound: { sound: block.copper.break, volume: 1.0, pitch: 1.0 }
     placement:
       allowed_faces: [NORTH, SOUTH, EAST, WEST]
-      require_solid: true
     default_state: north
     placement_state_map:
       NORTH: north
@@ -2685,7 +2627,6 @@ blocks:
     break_sound: { sound: block.copper.break, volume: 1.0, pitch: 1.0 }
     placement:
       allowed_faces: [NORTH, SOUTH, EAST, WEST]
-      require_solid: true
     default_state: north
     placement_state_map:
       NORTH: north
@@ -2731,7 +2672,6 @@ blocks:
     break_sound: { sound: block.copper.break, volume: 1.0, pitch: 1.0 }
     placement:
       allowed_faces: [NORTH, SOUTH, EAST, WEST]
-      require_solid: true
     default_state: north
     placement_state_map:
       NORTH: north
@@ -2777,7 +2717,6 @@ blocks:
     break_sound: { sound: block.copper.break, volume: 1.0, pitch: 1.0 }
     placement:
       allowed_faces: [NORTH, SOUTH, EAST, WEST]
-      require_solid: true
     default_state: north
     placement_state_map:
       NORTH: north

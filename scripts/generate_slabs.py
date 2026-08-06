@@ -87,10 +87,10 @@ SLABS = [
 ]
 
 SOUNDS = {
-    "wood":        ("BLOCK_WOOD_PLACE",  "BLOCK_WOOD_BREAK"),
-    "nether_wood": ("BLOCK_NETHER_WOOD_PLACE", "BLOCK_NETHER_WOOD_BREAK"),
-    "stone":       ("BLOCK_STONE_PLACE", "BLOCK_STONE_BREAK"),
-    "copper":      ("BLOCK_COPPER_PLACE", "BLOCK_COPPER_BREAK"),
+    "wood":        ("block.wood.place",  "block.wood.break"),
+    "nether_wood": ("block.nether_wood.place", "block.nether_wood.break"),
+    "stone":       ("block.stone.place", "block.stone.break"),
+    "copper":      ("block.copper.place", "block.copper.break"),
 }
 
 
@@ -107,7 +107,6 @@ def block_yaml(slab_id, name, material, block_data, sound_type):
     break_sound: {{ sound: {break_sound}, volume: 1.0, pitch: 1.0 }}
     placement:
       allowed_faces: [NORTH, SOUTH, EAST, WEST]
-      require_solid: true
     default_state: north
     placement_state_map:
       NORTH: north

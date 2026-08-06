@@ -24,7 +24,7 @@ Pipes uses CoreLib's **overlay pattern**: static block definitions (textures, re
 CoreLib owns:
 - Block registration, PDC persistence (`corelib:block_type`), item creation
 - Display entity lifecycle (spawn, despawn, chunk tracking)
-- Recipe registration (shaped recipes from pipes.yml)
+- Recipe registration (all recipes from pipes.yml, including the copper→oxidized water-bucket conversion)
 - Cauldron conversions
 - Per-namespace world filtering
 
@@ -32,7 +32,6 @@ Pipes owns:
 - Pipe transfer logic and pathfinding
 - Display transform calculations (positioning display entities based on adjacent blocks)
 - Variant-specific behavior (REGULAR vs CORNER)
-- Conversion recipes (shapeless, registered by RecipeManager)
 
 ## File Structure
 
@@ -45,8 +44,6 @@ pipes/src/main/java/anon/def9a2a4/pipes/
 ├── PipeVariant.java                - Record: id, behaviorType, transfer settings, fluids, filter (FilterSpec)
 ├── BehaviorType.java               - Enum: REGULAR, CORNER
 ├── VariantRegistry.java            - Loads variant config from config.yml
-├── RecipeManager.java              - Shapeless conversion recipe registration
-├── ConversionRecipeCraftListener.java - Prevents catalyst consumption in conversion crafts
 ├── MachineEjectListener.java       - Handles machine block eject events
 ├── PipeFilterStore.java            - Filter pipe per-block state (items + mode flags) in block PDC
 ├── FilterHolder.java               - InventoryHolder for the filter config GUI
@@ -60,7 +57,7 @@ pipes/src/main/java/anon/def9a2a4/pipes/
 pipes/src/main/resources/
 ├── plugin.yml      - Plugin metadata and permissions
 ├── pipes.yml       - Block definitions for CoreLib (textures, recipes, drops, states)
-├── config.yml      - Variant behavior/transfer settings, cauldron/conversion recipes
+├── config.yml      - Variant behavior/transfer settings, cauldron conversions
 └── display.yml     - Display entity transform tuning values
 ```
 
@@ -158,7 +155,7 @@ CoreLib handles persistence via PDC tags on player head blocks (`corelib:block_t
 ## Config Files
 
 - **pipes.yml** (in JAR, not user-editable): Block definitions — textures, shaped recipes, drops, display entity config. Loaded by `BlockLoader`.
-- **config.yml** (user-editable): Variant behavior/transfer tuning, world filter, performance settings, cauldron conversions, shapeless conversion recipes.
+- **config.yml** (user-editable): Variant behavior/transfer tuning, world filter, performance settings, cauldron conversions.
 - **display.yml** (in JAR): Display entity transform tuning values (scales, offsets, endpoint adjustments).
 
 ## Development TODOs
