@@ -134,14 +134,5 @@ cauldron-conversions:
   copper_pipe: oxidized_copper_pipe
   copper_corner_pipe: oxidized_copper_corner_pipe
 
-# Shapeless conversion recipes - craft pipe + catalyst to get converted pipe
-# The catalyst item remains in the crafting grid after crafting (not consumed)
-conversion-recipes:
-  oxidized_copper_pipe:
-    from-variant: copper_pipe
-    catalyst: WATER_BUCKET
-    result-amount: 1
-  oxidized_copper_corner_pipe:
-    from-variant: copper_corner_pipe
-    catalyst: WATER_BUCKET
-    result-amount: 1
+# (The copper→oxidized crafting recipes — pipe + water bucket — are declared in pipes.yml and handled
+#  by CoreLib. The bucket is left behind via vanilla's crafting remainder; no config needed.)

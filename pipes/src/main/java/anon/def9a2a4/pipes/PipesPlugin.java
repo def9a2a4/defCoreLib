@@ -40,7 +40,6 @@ public class PipesPlugin extends JavaPlugin {
     private DisplayConfig displayConfig;
     private VariantRegistry variantRegistry;
     private WorldManager worldManager;
-    private RecipeManager recipeManager;
     private LegacyPipeMigrator legacyMigrator;
     private FilterGui filterGui;
 
@@ -78,9 +77,8 @@ public class PipesPlugin extends JavaPlugin {
         // Cauldron conversions
         registerCauldronConversions(coreLibRegistry);
 
-        // Conversion recipes only — shaped recipes are handled by CoreLib via pipes.yml
-        recipeManager = new RecipeManager(this);
-        recipeManager.registerRecipes();
+        // (copper→oxidized crafting recipes are declared in pipes.yml and handled by CoreLib;
+        //  the water bucket is left behind via vanilla's crafting remainder.)
 
         // Legacy (standalone Pipes <= v0.2.0) compat shim: adopts old pipes into the CoreLib format
         // and cleans their stray displays. Constructed before the initWorld loop so every enabled
@@ -90,13 +88,11 @@ public class PipesPlugin extends JavaPlugin {
         coreLibRegistry.registerForeignOrphanDetector("pipes-legacy", legacyMigrator::inspectLegacyDisplay);
 
         worldManager = new WorldManager(this, pipeManagers);
-        ConversionRecipeCraftListener conversionRecipeCraftListener = new ConversionRecipeCraftListener(this, recipeManager);
         getServer().getPluginManager().registerEvents(new MachineEjectListener(pipeManagers), this);
         // Fluid transport handshake: corelib's pump routes fluid units through pipe chains via
         // this walker (dependency-inverted like MachineEjectListener/MechanismConduits).
         anon.def9a2a4.corelib.fluid.FluidRouting.register(new FluidPipeWalker(pipeManagers));
         getServer().getPluginManager().registerEvents(worldManager, this);
-        getServer().getPluginManager().registerEvents(conversionRecipeCraftListener, this);
         filterGui = new FilterGui(this);
         getServer().getPluginManager().registerEvents(filterGui, this);
 
@@ -109,9 +105,6 @@ public class PipesPlugin extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        if (recipeManager != null) {
-            recipeManager.unregisterRecipes();
-        }
         CoreLibPlugin.getInstance().getRegistry().unregisterForeignOrphanDetector("pipes-legacy");
         CoreLibPlugin.getInstance().getRegistry().clearCauldronConversions("pipes");
         for (PipeManager manager : pipeManagers.values()) {
@@ -132,10 +125,6 @@ public class PipesPlugin extends JavaPlugin {
 
         if (args[0].equalsIgnoreCase("reload")) {
             return handleReload(sender);
-        }
-
-        if (args[0].equalsIgnoreCase("recipes")) {
-            return handleRecipes(sender);
         }
 
         if (args[0].equalsIgnoreCase("give")) {
@@ -188,9 +177,7 @@ public class PipesPlugin extends JavaPlugin {
             return true;
         }
 
-        recipeManager.unregisterRecipes();
         loadConfigs();
-        recipeManager.registerRecipes();
 
         CustomBlockRegistry registry = CoreLibPlugin.getInstance().getRegistry();
 
@@ -222,20 +209,6 @@ public class PipesPlugin extends JavaPlugin {
         }
 
         sender.sendMessage(Component.text("Pipes config reloaded!").color(NamedTextColor.GREEN));
-        return true;
-    }
-
-    private boolean handleRecipes(CommandSender sender) {
-        if (!sender.hasPermission("pipes.recipes")) {
-            sender.sendMessage(Component.text("You don't have permission to unlock recipes.").color(NamedTextColor.RED));
-            return true;
-        }
-        if (!(sender instanceof Player player)) {
-            sender.sendMessage(Component.text("This command can only be used by players.").color(NamedTextColor.RED));
-            return true;
-        }
-        recipeManager.discoverAllRecipes(player);
-        sender.sendMessage(Component.text("Unlocked all Pipes recipes!").color(NamedTextColor.GREEN));
         return true;
     }
 
@@ -346,7 +319,7 @@ public class PipesPlugin extends JavaPlugin {
         if (!command.getName().equalsIgnoreCase("pipes")) return List.of();
 
         if (args.length == 1) {
-            return Stream.of("help", "reload", "give", "recipes", "info", "delete_all", "migrate")
+            return Stream.of("help", "reload", "give", "info", "delete_all", "migrate")
                     .filter(s -> s.toLowerCase().startsWith(args[0].toLowerCase()))
                     .toList();
         }
@@ -379,10 +352,6 @@ public class PipesPlugin extends JavaPlugin {
         if (sender.hasPermission("pipes.give")) {
             sender.sendMessage(Component.text("/pipes give <item> [amount]").color(NamedTextColor.WHITE)
                     .append(Component.text(" - Give pipe items").color(NamedTextColor.GRAY)));
-        }
-        if (sender.hasPermission("pipes.recipes")) {
-            sender.sendMessage(Component.text("/pipes recipes").color(NamedTextColor.WHITE)
-                    .append(Component.text(" - Unlock all pipe recipes").color(NamedTextColor.GRAY)));
         }
         if (sender.hasPermission("pipes.info")) {
             sender.sendMessage(Component.text("/pipes info").color(NamedTextColor.WHITE)
@@ -464,17 +433,6 @@ public class PipesPlugin extends JavaPlugin {
         CustomHeadBlock type = registry.getType("pipes:" + variant.id());
         if (type == null) return null;
         return type.createItem(1);
-    }
-
-    public PipeVariant getVariant(ItemStack item) {
-        if (item == null) return null;
-        String typeId = CustomBlockRegistry.getItemTypeId(item);
-        if (typeId == null || !typeId.startsWith("pipes:")) return null;
-        return variantRegistry.getVariant(typeId.substring("pipes:".length()));
-    }
-
-    public boolean isPipeItem(ItemStack item) {
-        return getVariant(item) != null;
     }
 
     private List<PipeManager> getQueryableManagers(CommandSender sender) {

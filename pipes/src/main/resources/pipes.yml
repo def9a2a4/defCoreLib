@@ -258,6 +258,16 @@ blocks:
           - texture: "@oxidized_display_down"
             tag: main
             transform: { translation: [0, 0, 0], scale: [1, 1, 1] }
+    # Craft copper_pipe + a water bucket → oxidized. The bucket is left behind as an empty BUCKET
+    # (vanilla crafting remainder); a single bucket also caps a shift-craft at one. (Also obtainable
+    # via cauldron — see config.yml cauldron-conversions.)
+    recipes:
+      craft:
+        shapeless:
+          - id: from_copper_pipe
+            ingredients:
+              - { block: pipes:copper_pipe }
+              - { material: WATER_BUCKET }
 
   # ═══════════════════════════════════════════════════════════════════════
   # FILTER PIPES (REGULAR extraction; visually identical to the plain pipe of
@@ -604,3 +614,11 @@ blocks:
           - texture: "@oxidized_corner_dir_down"
             tag: directional
             transform: { translation: [0, 0, 0], scale: [1, 1, 1] }
+    # Craft copper_corner_pipe + a water bucket → oxidized (bucket left behind; see oxidized_copper_pipe).
+    recipes:
+      craft:
+        shapeless:
+          - id: from_copper_corner_pipe
+            ingredients:
+              - { block: pipes:copper_corner_pipe }
+              - { material: WATER_BUCKET }
