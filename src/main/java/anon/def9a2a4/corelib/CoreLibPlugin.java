@@ -1919,7 +1919,7 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
                 }
             }
             inv.setItem(13, catalogNavItem(Material.ARROW, "→"));
-            inv.setItem(15, catalogDetailHeader(type, r.amount()));
+            inv.setItem(15, catalogResult(type, r.output(), r.amount()));
             rendered = true;
         } else if (!type.shapelessRecipes().isEmpty()) {
             // Shapeless → fill the grid area left-to-right (no positions); same arrow + result.
@@ -1935,7 +1935,7 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
                 if (spec.isBlock() && registry.getType(spec.blockId()) != null) holder.drillSlots.put(gslot, spec.blockId());
             }
             inv.setItem(13, catalogNavItem(Material.ARROW, "→ (shapeless)"));
-            inv.setItem(15, catalogDetailHeader(type, r.amount()));
+            inv.setItem(15, catalogResult(type, r.output(), r.amount()));
             rendered = true;
         }
         if (!rendered) inv.setItem(4, catalogDetailHeader(type, 1)); // stonecutter-only / no craft recipe → header
