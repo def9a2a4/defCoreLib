@@ -206,8 +206,8 @@ final class RotationRotator implements Listener {
             glueManager.rebindLanded(anchor, authored, mech.landingRotation(), new HashSet<>(p)));
         activeRotators.put(key, mech);
 
-        int mass = Math.max(1, mech.blockCount());
-        float speed = clamp(SPEED_K * surplus / mass, MIN_DEG, MAX_DEG);
+        double mass = Math.max(1.0, mech.totalMass());
+        float speed = clamp((float) (SPEED_K * surplus / mass), MIN_DEG, MAX_DEG);
         int targetAngle = readTarget(head);
         float target = (dir == RotationNetwork.SpinDirection.CW) ? -targetAngle : targetAngle;
         network.addTransientDemand(key, SWING_DEMAND);

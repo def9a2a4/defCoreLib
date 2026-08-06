@@ -513,9 +513,11 @@ final class ChainHoistManager implements Listener {
 
         // Speed mass from the LOAD only (computed before assembly airs the load out) — chain paid out never
         // slows the hoist. A deliberate departure from the piston, whose mass includes its whole rod; here the
-        // "rod" grows, so counting it makes the drop decay from ceiling to floor as it extends.
-        int mass = 1;
-        for (Block b : load) if (b.getType() != CHAIN_MATERIAL) mass++;
+        // "rod" grows, so counting it makes the drop decay from ceiling to floor as it extends. Weighted by
+        // per-block inertial mass (mass.yml): a heavy load lifts slower. Chain is excluded by MATERIAL here,
+        // so its own mass value is irrelevant to the hoist.
+        double mass = 1;
+        for (Block b : load) if (b.getType() != CHAIN_MATERIAL) mass += mechRegistry.massOf(b.getType());
 
         // Refuse to hoist an in-motion anchor (mid-swing rotator/door head, mid-stroke piston core, another
         // moving hoist head) pulled into the load — moving it would air it out and force-disassemble that
@@ -706,7 +708,7 @@ final class ChainHoistManager implements Listener {
         // Ceiling held < 1 (HOIST_MAX_STEP) regardless of the operator-configurable pistonMaxStep: the
         // per-block probe above assumes the body crosses at most one whole cell per tick.
         float ceil = Math.min((float) config.pistonMaxStep, HOIST_MAX_STEP);
-        float step = clamp(SPEED_K * power / Math.max(1, m.mass), MIN_STEP, ceil);
+        float step = clamp((float) (SPEED_K * power / Math.max(1.0, m.mass)), MIN_STEP, ceil);
 
         boolean arrived = remaining <= step + 1e-3;
         Location next = arrived ? m.target : cur.clone().add(0, m.dirY * step, 0);
@@ -1003,7 +1005,7 @@ final class ChainHoistManager implements Listener {
         final Location start;
         Location target;
         final float dirY;
-        final int mass;
+        final double mass;   // weighted load mass (chain excluded), from mass.yml
         final RotationNetwork.SpinDirection spinDir;
         final boolean descend;
         /** Rising: the fixed swallow count (ghost lands {@code steps} above). Descending: the budget cap
@@ -1027,7 +1029,7 @@ final class ChainHoistManager implements Listener {
         int settle = -1;
 
         ActiveMove(CustomBlockRegistry.LocationKey hoistKey, Block hoist, Mechanism mech, Location start,
-                   Location target, float dirY, int mass, RotationNetwork.SpinDirection spinDir,
+                   Location target, float dirY, double mass, RotationNetwork.SpinDirection spinDir,
                    boolean descend, int steps, int startDepth, List<Block> frontier, int[] linksDeleted,
                    List<Block> riseLoad) {
             this.hoistKey = hoistKey;

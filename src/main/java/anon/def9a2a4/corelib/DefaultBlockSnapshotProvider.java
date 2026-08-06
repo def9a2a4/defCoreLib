@@ -21,6 +21,8 @@ import org.bukkit.block.sign.Side;
 import org.bukkit.block.sign.SignSide;
 import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.SkullMeta;
 
 import java.util.ArrayList;
 import java.util.Base64;
@@ -261,6 +263,51 @@ final class DefaultBlockSnapshotProvider implements BlockSnapshotProvider {
         String color = str(from.get("bs_sign_" + key + "_color"));
         if (color != null) {
             try { side.setColor(DyeColor.valueOf(color)); } catch (IllegalArgumentException ignored) { }
+        }
+    }
+
+    /**
+     * Re-apply the captured player-head skin and/or custom name onto a DROPPED item, mirroring what
+     * {@link #apply(Block, Map)} does for a landed block. Used when a mechanism can't place a block back
+     * (off-world / WorldGuard-denied / solid-wins) and drops it as an item instead — without this, a
+     * custom-skin vanilla head drops as a plain Steve head and a named container drops unnamed. Snapshot-
+     * and type-gated: a no-op unless {@code snap} carries the relevant key and {@code item} is the matching
+     * meta type. Safe to run on any drop (banner/custom-head items are untouched — their meta isn't skull/
+     * nameable-with-a-captured-name, and this never runs for registry blocks whose snapshot has no bs_* keys).
+     */
+    static void decorateItem(ItemStack item, Map<String, Object> snap) {
+        if (item == null || snap == null) return;
+
+        // Player-head skin: same profile-build logic as apply()'s skull branch.
+        String tex = str(snap.get("bs_skull_tex"));
+        String skullId = str(snap.get("bs_skull_id"));
+        String skullName = str(snap.get("bs_skull_name"));
+        if ((tex != null || skullId != null || skullName != null)
+                && item.getItemMeta() instanceof SkullMeta skullMeta) {
+            PlayerProfile profile;
+            if (skullId != null) {
+                profile = Bukkit.createProfile(UUID.fromString(skullId), skullName);
+            } else if (skullName != null) {
+                profile = Bukkit.createProfile(skullName);
+            } else {
+                profile = Bukkit.createProfile(
+                    UUID.nameUUIDFromBytes(tex.getBytes(java.nio.charset.StandardCharsets.UTF_8)), null);
+            }
+            if (tex != null) {
+                profile.setProperty(new ProfileProperty("textures", tex, str(snap.get("bs_skull_sig"))));
+            }
+            skullMeta.setPlayerProfile(profile);
+            item.setItemMeta(skullMeta);
+        }
+
+        // Custom name (named chest/barrel/anvil-output/etc.).
+        String name = str(snap.get("bs_name"));
+        if (name != null) {
+            ItemMeta meta = item.getItemMeta();
+            if (meta != null) {
+                meta.displayName(GSON.deserialize(name));
+                item.setItemMeta(meta);
+            }
         }
     }
 

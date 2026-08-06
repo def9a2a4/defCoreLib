@@ -149,8 +149,26 @@ public interface Mechanism {
      */
     @Nullable BoundingBox getColliderBoxByBlock(int blockIndex);
 
+    /**
+     * The live collider shulker entity for the given block index, or {@code null} if that block has no
+     * collider (or its shulker is gone). Keyed on BLOCK INDEX (stable across recovery). Lets a consumer
+     * re-parent leashes onto the exact per-block collider (e.g. transferring leads from a source fence to
+     * its mechanism collider at assembly, and back onto the landed fence at disassembly).
+     */
+    @Nullable Shulker colliderEntity(int blockIndex);
+
     /** Get the primary display entity for a block index. */
     Display primaryDisplay(int blockIndex);
+
+    /**
+     * Total inertial mass of this mechanism: the sum of every block's mass (each {@code >= 0}, from
+     * mass.yml). Heavier mechanisms move slower; also the basis for the ship-stats power-to-mass ratio.
+     * This is NOT buoyancy (buoyancy is a separate signed density concern owned by the consumer).
+     */
+    double totalMass();
+
+    /** Inertial mass of a single block index (see {@link #totalMass()}). */
+    double blockMass(int blockIndex);
 
     // ── Seats (4a) ────────────────────────────────────────────────────────────
     // A "seat" is a collider block a player rides (its shulker is the mount point). The consumer decides

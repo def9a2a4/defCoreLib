@@ -32,6 +32,7 @@ public class MechanismRegistry {
     private final JavaPlugin plugin;
     private final CustomBlockRegistry registry;
     private final ColliderRegistry colliderRegistry = new ColliderRegistry(); // vanilla block → collider shape
+    private final MassRegistry massRegistry = new MassRegistry(); // block → inertial mass (heavier = slower)
 
     private final Map<UUID, BasicMechanism> activeMechanisms = new HashMap<>();
     private final Map<UUID, ColliderRef> colliderIndex = new HashMap<>(); // shulker UUID → ref
@@ -190,6 +191,21 @@ public class MechanismRegistry {
     /** Load vanilla-block collider shapes (colliders.yml) into the registry. */
     public void loadColliders(java.io.InputStream in) {
         colliderRegistry.load(in, plugin.getLogger());
+    }
+
+    /** Load per-block inertial masses (mass.yml) into the registry. */
+    public void loadMasses(java.io.InputStream in) {
+        massRegistry.load(in, plugin.getLogger());
+    }
+
+    /** Inertial mass of a mechanism block (custom-type mass wins over its material). */
+    double massOf(MechanismBlockData mb) {
+        return massRegistry.get(mb.blockData.getMaterial(), mb.customTypeId);
+    }
+
+    /** Inertial mass of a plain material (for consumers scanning world blocks, e.g. the hoist load). */
+    double massOf(Material material) {
+        return massRegistry.get(material, null);
     }
 
     /** Warn once if a sub-cube collider is requested but the scale attribute can't be applied. */

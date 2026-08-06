@@ -72,6 +72,13 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
             }
         } catch (IOException ignored) {}
 
+        // Load per-block inertial masses (heavier mechanism => slower motion).
+        try (InputStream massStream = getResource("mass.yml")) {
+            if (massStream != null) {
+                mechanismRegistry.loadMasses(massStream);
+            }
+        } catch (IOException ignored) {}
+
         // Load demo blocks from YAML
         try (InputStream demoStream = getResource("demo-blocks.yml")) {
             if (demoStream != null) {

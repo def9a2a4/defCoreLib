@@ -653,7 +653,8 @@ final class ExtendablePistonManager {
         int[] stats = network.getNetworkStats(m.coreKey);
         int base = config.getPower("piston_core", 1);
         int power = (stats != null ? stats[0] - stats[1] : 0) + base;
-        float step = clamp(SPEED_K * power / Math.max(1, m.mass), MIN_STEP, (float) config.pistonMaxStep);
+        // Whole-mechanism inertial mass (incl. the growing rod, by design): a heavier piston extends slower.
+        float step = clamp((float) (SPEED_K * power / Math.max(1.0, m.mech.totalMass())), MIN_STEP, (float) config.pistonMaxStep);
 
         if (remaining <= step + 1e-3) {
             // Rising: carry riders up by the final delta BEFORE the colliders teleport up (see below).

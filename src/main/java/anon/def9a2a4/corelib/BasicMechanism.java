@@ -144,8 +144,27 @@ final class BasicMechanism implements Mechanism {
     }
 
     @Override
+    public @Nullable Shulker colliderEntity(int blockIndex) {
+        ColliderPair cp = colliderForBlock(blockIndex);
+        return (cp != null && cp.shulker().isValid()) ? cp.shulker() : null;
+    }
+
+    @Override
     public Display primaryDisplay(int blockIndex) {
         return displaysPerBlock.get(blockIndex).get(0);
+    }
+
+    @Override
+    public double totalMass() {
+        if (mechanismRegistry == null) return blocks.size(); // dead-safe fallback (back-ref always set in practice)
+        double sum = 0;
+        for (MechanismBlockData mb : blocks) sum += mechanismRegistry.massOf(mb);
+        return sum;
+    }
+
+    @Override
+    public double blockMass(int blockIndex) {
+        return mechanismRegistry == null ? 1.0 : mechanismRegistry.massOf(blocks.get(blockIndex));
     }
 
     @Override
@@ -1294,6 +1313,12 @@ final class BasicMechanism implements Mechanism {
             drop = dropItemHook.construct(mb, drop);
         }
         if (drop != null) {
+            // Re-apply captured head skin / custom name onto the drop (parity with the landing path's
+            // applyBlockSnapshot). Runs AFTER the hook so a consumer's wall→floor material remap is also
+            // decorated. Snapshot-gated → no-op for blocks with no captured decoration.
+            if (mb.blockEntitySnapshot != null) {
+                DefaultBlockSnapshotProvider.decorateItem(drop, mb.blockEntitySnapshot);
+            }
             loc.getWorld().dropItemNaturally(loc.clone().add(0.5, 0.5, 0.5), drop);
         }
 
