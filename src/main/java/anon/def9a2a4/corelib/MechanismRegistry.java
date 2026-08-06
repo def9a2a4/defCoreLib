@@ -905,15 +905,15 @@ public class MechanismRegistry {
         return out;
     }
 
-    // Vanilla-banner in-transit rendering constants. The banner ITEM model is bottom-anchored and renders
-    // as the full 3D banner (cloth + pole), so it sits ~½ block above the cell anchor — the standing case
-    // drops it back down and yaws it in place; the wall case shifts it toward its attachment face and to
-    // roughly the block-entity's cloth height (the item model's pole has no vanilla wall equivalent —
-    // accepted approximation). These Y values are EMPIRICAL starting values (I can't run the server) —
-    // tune in-game; the standing case may want 0.0 instead (see BannerManager.standingTransform).
+    // Vanilla-banner in-transit rendering constants. The banner ITEM model renders as the full 3D banner
+    // (cloth + pole) and its cloth faces 180° opposite the block-entity, so the transform flips it (see
+    // vanillaBannerTransform's 180 - yaw). The standing case sits it at the cell floor; the wall case lifts
+    // it a block and shifts it toward its attachment face to roughly match the block-entity's cloth height
+    // (the item model's pole has no vanilla wall equivalent — accepted approximation). Y values verified
+    // in-game (floor at 0.0, wall at 1.0).
     private static final float VANILLA_BANNER_SCALE = 1.0f;
-    private static final float VANILLA_STANDING_Y = -0.5f;
-    private static final float VANILLA_WALL_Y = 0.0f;
+    private static final float VANILLA_STANDING_Y = 0.0f;
+    private static final float VANILLA_WALL_Y = 1.0f;
     private static final float VANILLA_WALL_DEPTH = 0.38f; // toward the wall from the cell center
 
     /**
@@ -965,7 +965,9 @@ public class MechanismRegistry {
         }
         return new org.bukkit.util.Transformation(
             translation,
-            new org.joml.Quaternionf().rotateY((float) Math.toRadians(-yaw)),
+            // 180 - yaw: the banner item model's cloth faces the opposite way from the block-entity, so flip
+            // it a half-turn on top of the facing yaw (fixes both standing and wall reading backwards).
+            new org.joml.Quaternionf().rotateY((float) Math.toRadians(180 - yaw)),
             new Vector3f(VANILLA_BANNER_SCALE, VANILLA_BANNER_SCALE, VANILLA_BANNER_SCALE),
             new org.joml.Quaternionf());
     }
