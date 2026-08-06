@@ -37,7 +37,7 @@ import java.util.logging.Logger;
  * material names last, so a specific material always overrides a wildcard/tag regardless of file order.
  * Two reserved top-level keys are handled specially: {@code default} overrides the fallback mass, and
  * {@code custom-blocks} is a section mapping custom-block type ids to masses. Any material not listed
- * resolves to {@link #DEFAULT}.
+ * resolves to the default mass ({@code 1.0}, overridable by a {@code default:} key).
  */
 public final class MassRegistry {
 
@@ -49,8 +49,8 @@ public final class MassRegistry {
 
     /**
      * The inertial mass for {@code material}, or for {@code customTypeId} if that custom-block type has
-     * its own configured mass (a custom-type mass wins over the underlying material). Unlisted ⇒
-     * {@link #DEFAULT}.
+     * its own configured mass (a custom-type mass wins over the underlying material). Unlisted ⇒ the
+     * default mass.
      */
     public double get(Material material, @Nullable String customTypeId) {
         if (customTypeId != null) {
@@ -60,9 +60,6 @@ public final class MassRegistry {
         Double m = byMaterial.get(material);
         return m != null ? m : defaultMass;
     }
-
-    /** The fallback mass for unlisted materials. */
-    public double DEFAULT() { return defaultMass; }
 
     /** Parse {@code mass.yml} from a resource stream into this registry. */
     public void load(InputStream in, Logger log) {
@@ -96,16 +93,24 @@ public final class MassRegistry {
             }
         }
 
-        // Apply in ascending specificity; each tier overwrites the previous.
-        for (String key : tags) applyKey(key, yaml, log);
-        for (String key : wildcards) applyKey(key, yaml, log);
-        for (String key : materials) applyKey(key, yaml, log);
+        // Apply in ascending specificity; each tier overwrites the previous. Within the wildcard tier,
+        // apply broader wildcards (more matches) FIRST and narrower ones LAST, so a narrower wildcard wins
+        // regardless of file order (e.g. `*copper_door` beats `*_door` however they are ordered).
+        for (String key : tags) applyKey(key, resolveKey(key, log), yaml, log);
+
+        List<String> byBreadth = new ArrayList<>(wildcards);
+        Map<String, Set<Material>> resolved = new HashMap<>();
+        for (String key : wildcards) resolved.put(key, resolveKey(key, log));
+        byBreadth.sort((a, b) -> Integer.compare(resolved.get(b).size(), resolved.get(a).size()));
+        for (String key : byBreadth) applyKey(key, resolved.get(key), yaml, log);
+
+        for (String key : materials) applyKey(key, resolveKey(key, log), yaml, log);
     }
 
-    private void applyKey(String key, YamlConfiguration yaml, Logger log) {
+    private void applyKey(String key, Set<Material> materials, YamlConfiguration yaml, Logger log) {
         Double mass = parseMass(yaml.get(key), key, log);
         if (mass == null) return;
-        for (Material m : resolveKey(key, log)) {
+        for (Material m : materials) {
             byMaterial.put(m, mass);
         }
     }
@@ -115,9 +120,11 @@ public final class MassRegistry {
      * so accept any {@link Number} (and a numeric String) rather than casting to a specific box type.
      */
     private static @Nullable Double parseMass(Object value, String key, Logger log) {
-        if (value instanceof Number n) return n.doubleValue();
+        // Inertial mass is always >= 0 (buoyancy is a separate signed concern); clamp so a stray negative
+        // edit can never flip a speed divisor.
+        if (value instanceof Number n) return Math.max(0.0, n.doubleValue());
         try {
-            return Double.parseDouble(String.valueOf(value));
+            return Math.max(0.0, Double.parseDouble(String.valueOf(value)));
         } catch (NumberFormatException e) {
             log.warning("[mass.yml] Non-numeric mass for '" + key + "': " + value);
             return null;

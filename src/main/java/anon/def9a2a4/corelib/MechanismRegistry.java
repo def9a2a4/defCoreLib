@@ -41,6 +41,12 @@ public class MechanismRegistry {
     // cleanupOrphanedEntities from reaping those entities before recovery claims them, and bridges the
     // 1-tick deferEntityRemoval window on a restore-to-blocks landing.
     private final Set<UUID> mechIdsBeingRecovered = new HashSet<>();
+    // Persisted mechanisms mid-recovery whose entities are still arriving across chunk loads. A large or
+    // chunk-straddling structure's displays/colliders/seats can sit in neighbour chunks that load AFTER the
+    // pivot chunk; we accumulate across successive EntitiesLoad events and only finalize (build + fire the
+    // recovered MechanismAssembleEvent) once complete (found >= entityCount) or the whole chunk footprint is
+    // loaded. Mirrors BlockShips' expectedEntityCount / isRecoveryComplete incremental recovery.
+    private final Map<UUID, MechanismState> pendingRecoveries = new HashMap<>();
     // Consumer hooks fired at assembly AFTER displays+colliders spawn but BEFORE the source blocks are
     // aired out — the window where the source blocks are still LIVE and the colliders exist (leads: a
     // consumer re-parents leashes from world fences onto the mechanism's collider shulkers). See 3a-ii.
@@ -186,6 +192,14 @@ public class MechanismRegistry {
      *  look one up after crash recovery repopulated the registry from disk (the in-memory handles are gone). */
     public java.util.List<Mechanism> activeMechanisms() {
         return new java.util.ArrayList<>(activeMechanisms.values());
+    }
+
+    /** The live (in-memory, currently-assembled) mechanism with this id, or null if none is active. Lets a
+     *  consumer test recoverability of an entity it references by id without scanning {@link #activeMechanisms()}.
+     *  NOTE: null here does NOT mean "gone forever" — a persisted-but-not-yet-recovered mechanism is absent from
+     *  this map until its chunk's EntitiesLoad recovery runs. */
+    public @Nullable Mechanism byId(UUID id) {
+        return activeMechanisms.get(id);
     }
 
     /** Load vanilla-block collider shapes (colliders.yml) into the registry. */

@@ -3,6 +3,7 @@ package anon.def9a2a4.corelib;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Display;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Shulker;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.BoundingBox;
@@ -76,6 +77,15 @@ public interface Mechanism {
     UUID id();
     String type();
     Location pivot();
+
+    /**
+     * The vehicle entity this mechanism's displays/colliders are anchored to (the ArmorStand/minecart the
+     * consumer assembled it on, re-adopted from its scoreboard tag on recovery). {@code null} only if the
+     * mechanism has no vehicle. A consumer that lost its own reference across a restart/chunk-reload (e.g.
+     * BlockShips reconstructing a ship from a recovered {@link MechanismAssembleEvent}) reads it back here.
+     */
+    @Nullable Entity vehicle();
+
     int blockCount();
     float getCurrentYaw();
 

@@ -58,6 +58,11 @@ final class MechanismPersistence {
         }
         int cx = (int) Math.floor(st.px) >> 4;
         int cz = (int) Math.floor(st.pz) >> 4;
+        // Re-index onto the CURRENT pivot chunk. A moving mechanism (a sailing ship re-saved as it crosses
+        // chunk borders) must MOVE its index entry, not accumulate one per chunk it ever crossed — else the
+        // index bloats and every stale chunk triggers a futile recovery sweep. Drop the old entry first
+        // (removeFromChunkIndex sweeps all this world's chunks for the id), then add the new one.
+        removeFromChunkIndex(st.worldName, st.mechId);
         addToChunkIndex(st.worldName, st.mechId, cx, cz);
         saveChunkIndex(st.worldName);
     }

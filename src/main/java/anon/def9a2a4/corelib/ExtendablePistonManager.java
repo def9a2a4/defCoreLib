@@ -590,7 +590,7 @@ final class ExtendablePistonManager {
             List<Block> mowMovers = new ArrayList<>(assembleBlocks);
             mowMovers.add(line.core());
             active.put(coreKey, new ActiveMove(coreKey, mech, start, target, dir,
-                assembleBlocks.size() + ghosts.size(), spinDir, mowMovers, moveFace, r));
+                mech.totalMass(), spinDir, mowMovers, moveFace, r));
         } catch (Throwable t) {
             safeDisassemble(mech, coreKey);   // restore the aired-out rod instead of leaking the mech
             throw t;
@@ -653,8 +653,9 @@ final class ExtendablePistonManager {
         int[] stats = network.getNetworkStats(m.coreKey);
         int base = config.getPower("piston_core", 1);
         int power = (stats != null ? stats[0] - stats[1] : 0) + base;
-        // Whole-mechanism inertial mass (incl. the growing rod, by design): a heavier piston extends slower.
-        float step = clamp((float) (SPEED_K * power / Math.max(1.0, m.mech.totalMass())), MIN_STEP, (float) config.pistonMaxStep);
+        // Whole-mechanism inertial mass (incl. the growing rod, by design), cached at move-start: a heavier
+        // piston extends slower. Fixed for the stroke (block set doesn't change), so read the cached field.
+        float step = clamp((float) (SPEED_K * power / Math.max(1.0, m.mass)), MIN_STEP, (float) config.pistonMaxStep);
 
         if (remaining <= step + 1e-3) {
             // Rising: carry riders up by the final delta BEFORE the colliders teleport up (see below).
@@ -741,7 +742,7 @@ final class ExtendablePistonManager {
         final Location start;                  // block-centered assembly pivot (base for the stop retarget)
         Location target;                       // mutable: retargeted to the next whole block on power-cut/reverse
         final Vector3f dir;
-        final int mass;
+        final double mass;   // whole-mechanism inertial mass (incl. growing rod), cached at move-start from mass.yml
         final RotationNetwork.SpinDirection spinDir;  // the spin that started this move; a flip stops it
         int warmup = 2;                        // ticks to wait before the first move (mount + rotate(0) first)
         int settle = -1;                       // ≥0: parked at target, counting down to disassembly (client lerp)
@@ -751,7 +752,7 @@ final class ExtendablePistonManager {
         final int mowDist;                     // committed cells (== r); mow never runs past it
         int mowedTo = 0;                       // highest whole cell already mowed (only advances)
         ActiveMove(CustomBlockRegistry.LocationKey coreKey, Mechanism mech, Location start, Location target,
-                   Vector3f dir, int mass, RotationNetwork.SpinDirection spinDir,
+                   Vector3f dir, double mass, RotationNetwork.SpinDirection spinDir,
                    List<Block> mowMovers, BlockFace mowFace, int mowDist) {
             this.coreKey = coreKey;
             this.mech = mech;

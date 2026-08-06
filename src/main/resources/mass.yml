@@ -133,8 +133,10 @@ copper_lantern: 1
 bookshelf: 1
 chiseled_bookshelf: 1
 "*_shelf": 1
-"#signs": 1
-"#all_hanging_signs": 1
+"#standing_signs": 1
+"#wall_signs": 1
+"#ceiling_hanging_signs": 1
+"#wall_hanging_signs": 1
 
 # ── Heads & skulls (weight 1) ──
 player_head: 1

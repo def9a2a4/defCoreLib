@@ -125,6 +125,7 @@ final class BasicMechanism implements Mechanism {
     @Override public UUID id() { return id; }
     @Override public String type() { return type; }
     @Override public Location pivot() { return pivot.clone(); }
+    @Override public @Nullable Entity vehicle() { return vehicle; }
     @Override public int blockCount() { return blocks.size(); }
     @Override public float getCurrentYaw() { return currentYaw; }
     @Override public MechanismBlockData getBlock(int index) { return blocks.get(index); }
