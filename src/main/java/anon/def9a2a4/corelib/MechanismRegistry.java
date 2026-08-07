@@ -587,6 +587,23 @@ public class MechanismRegistry {
             blockData.add(gmb);
         }
 
+        return spawnMechanismEntities(mechId, type, blockData, pivot, rotationAxis, vehicle, rideOffset,
+            ownsVehicle, driven, serializer, blocks, capturedWorldBanners, blocks.size(), false);
+    }
+
+    /**
+     * Spawn the parent + per-part displays + collider pairs for an already-built {@code blockData} list,
+     * construct + register the {@link BasicMechanism}, mount it, air out {@code blocks} (EMPTY for a
+     * block-free / model-driven assembly), and announce it. Shared by the world-scan {@link #assembleCore}
+     * and the block-free {@link #assembleFromParts}. {@code realBlockCount} excludes any appended ghosts
+     * (it is the count fed to the rotation network); {@code blockFree} marks a mechanism with no world
+     * blocks to restore, so its teardown removes entities without landing them.
+     */
+    private BasicMechanism spawnMechanismEntities(UUID mechId, String type, List<MechanismBlockData> blockData,
+            Location pivot, Vector3f rotationAxis, Entity vehicle, float rideOffset, boolean ownsVehicle,
+            boolean driven, @Nullable MechanismSerializer serializer, List<Block> blocks,
+            List<Display> capturedWorldBanners, int realBlockCount, boolean blockFree) {
+
         // Steps 2-3 (tear down custom-block tracking + air out the source blocks) are deferred to AFTER the
         // display spawn — see airOutSourceBlocks(). For owned vehicles the mech displays are mounted and
         // positioned onto the cells FIRST (synchronously), so removing the real blocks leaves no empty frame
@@ -894,7 +911,7 @@ public class MechanismRegistry {
             // Rotation parts keep functioning while riding: build the mechanism's own rotation
             // network. Only the first blocks.size() entries are real — the ghost snapshots appended
             // after them are appearance-only and may overlap real cells.
-            if (rotationDriver != null) rotationDriver.onAssembled(mech, blocks.size());
+            if (rotationDriver != null) rotationDriver.onAssembled(mech, realBlockCount);
 
             // Surface assembly to companion plugins (e.g. the mech advancement system). Single choke
             // point for every assembleMechanism overload; fired on the main thread, informational only.

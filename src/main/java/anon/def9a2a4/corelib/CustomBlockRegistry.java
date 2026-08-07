@@ -389,11 +389,16 @@ public class CustomBlockRegistry {
      * sweep are restored there in a single pass, so register() skips this (see {@code chunkSweepComplete}).
      */
     private void rescanLoadedChunks(CustomHeadBlock type) {
+        boolean hasEntitiesHook = type.onEntitiesLoadCallback() != null;
         for (World world : Bukkit.getWorlds()) {
             Set<String> hints = chunkHints.get(world.getUID());
             if (hints == null) continue;
             for (Chunk chunk : world.getLoadedChunks()) {
                 if (!hints.contains(chunkKey(chunk))) continue;
+                // onEntitiesLoad needs the chunk's entities present. If they aren't yet, the still-pending
+                // real EntitiesLoadEvent will dispatch the callback via onEntitiesLoad(chunk) — so skipping
+                // here never drops it. restoreBlock below needs no entities and runs regardless.
+                boolean entitiesLoaded = chunk.isEntitiesLoaded();
                 for (BlockState tile : chunk.getTileEntities()) {
                     if (!(tile instanceof TileState ts)) continue;
                     String id = ts.getPersistentDataContainer().get(BLOCK_TYPE_KEY, PersistentDataType.STRING);
@@ -408,6 +413,16 @@ public class CustomBlockRegistry {
                         restoreBlock(block, type, state);
                     } catch (Throwable t) {
                         logChunkLoadFailureOnce(type, t);
+                    }
+                    // Entities-load pass, mirroring the startup sweep's onChunkLoad→onEntitiesLoad order.
+                    // Without this a type registered after the first-tick sweep that uses onEntitiesLoad
+                    // would get no entities pass over already-loaded chunks until each next reloads.
+                    if (hasEntitiesHook && entitiesLoaded) {
+                        try {
+                            type.onEntitiesLoadCallback().accept(block, state);
+                        } catch (Throwable t) {
+                            logChunkLoadFailureOnce(type, t);
+                        }
                     }
                 }
             }
