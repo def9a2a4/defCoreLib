@@ -1219,6 +1219,27 @@ public class CustomBlockRegistry {
     void onEntitiesLoad(Chunk chunk) {
         if (!chunkMayHaveCustomBlocks(chunk)) return;
 
+        // Per-type onEntitiesLoad callbacks for tile-hosted (skull) blocks: the entities-are-loaded
+        // analogue of the onChunkLoad restore loop above. Dispatched HERE — not from CoreLibPlugin's
+        // EntitiesLoadEvent handler — so it also fires on the enable-time startup sweep, which reaches
+        // this method (restoreLoadedChunks → onEntitiesLoad) but not that event handler. Idempotent:
+        // may re-fire on an entities unload/reload cycle, so callbacks must reuse-by-tag, never blind-spawn.
+        for (BlockState tile : chunk.getTileEntities()) {
+            if (!(tile instanceof TileState ts)) continue;
+            String typeId = ts.getPersistentDataContainer().get(BLOCK_TYPE_KEY, PersistentDataType.STRING);
+            if (typeId == null) continue;
+            CustomHeadBlock type = types.get(typeId);
+            if (type == null || type.onEntitiesLoadCallback() == null) continue;
+            if (!isNamespaceEnabledInWorld(type.namespace(), chunk.getWorld().getName())) continue;
+            Block block = ts.getBlock();
+            String state = ts.getPersistentDataContainer().get(STATE_KEY, PersistentDataType.STRING);
+            try {
+                type.onEntitiesLoadCallback().accept(block, state);
+            } catch (Throwable t) {
+                logChunkLoadFailureOnce(type, t);
+            }
+        }
+
         boolean foundAny = false; // any corelib custom block (tile-hosted or entity-hosted) that keeps the hint
 
         // Entity-hosted custom blocks. Each restorer restores its own and reports whether the chunk

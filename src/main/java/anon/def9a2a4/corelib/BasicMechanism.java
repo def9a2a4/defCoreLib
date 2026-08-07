@@ -961,7 +961,7 @@ final class BasicMechanism implements Mechanism {
                 placed.add(target);
                 if (mb.wasBare) rebareTargets.add(target);
                 landBanners(target, mb, snappedYaw, upright);
-                if (mb.glueOffsets != null && !ChainHoistManager.isHoist(target, registry)) { landedAnchorTargets.add(target); landedAnchorOffsets.add(mb.glueOffsets); }
+                if (mb.glueOffsets != null) { if (ChainHoistManager.isHoist(target, registry)) { landedHoistTargets.add(target); landedHoistOffsets.add(mb.glueOffsets); } else { landedAnchorTargets.add(target); landedAnchorOffsets.add(mb.glueOffsets); } }
             } else if (FragileBlocks.isFragile(target.getType())) {
                 target.breakNaturally();
                 placeBlock(target, mb, snappedYaw);
@@ -969,7 +969,7 @@ final class BasicMechanism implements Mechanism {
                 placed.add(target);
                 if (mb.wasBare) rebareTargets.add(target);
                 landBanners(target, mb, snappedYaw, upright);
-                if (mb.glueOffsets != null && !ChainHoistManager.isHoist(target, registry)) { landedAnchorTargets.add(target); landedAnchorOffsets.add(mb.glueOffsets); }
+                if (mb.glueOffsets != null) { if (ChainHoistManager.isHoist(target, registry)) { landedHoistTargets.add(target); landedHoistOffsets.add(mb.glueOffsets); } else { landedAnchorTargets.add(target); landedAnchorOffsets.add(mb.glueOffsets); } }
             } else if (mb.ghost && target.getBlockData().equals(mb.blockData)) {
                 fallbackDrop = false; // ghost silent-discard — dropping would mint an item from nothing
                 // A blocked GHOST whose cell already holds its identical block is discarded silently:
@@ -1009,6 +1009,22 @@ final class BasicMechanism implements Mechanism {
                 int cap = mechanismRegistry != null ? mechanismRegistry.glueMaxSize() : Integer.MAX_VALUE;
                 GlueManager.rebindLanded(registry, cap, new BlockAnchor(landedAnchorTargets.get(k), () -> true),
                     landedAnchorOffsets.get(k), rotation, placedSet);
+            }
+        }
+
+        // F3: re-stamp landed HOISTS via a HoistAnchor (seed-relative origin, re-derived from the now-landed
+        // column) — the generic BlockAnchor above uses the skull as origin, which is the wrong frame for a hoist's
+        // seed-relative offsets (why they were previously excluded, losing the glue). Runs BEFORE the chain-break
+        // guard below so a short-chained hoist still gets its (mis-referenced) glue wiped — the guard wins. The
+        // `upright` gate mirrors that guard: a hoist only nests upright, so a hypothetical non-upright landing
+        // degrades to "glue lost" rather than stamping against a sideways-mapped seed.
+        if (upright && !landedHoistTargets.isEmpty()) {
+            Set<Block> placedSet = new HashSet<>(placed);
+            int cap = mechanismRegistry != null ? mechanismRegistry.glueMaxSize() : Integer.MAX_VALUE;
+            for (int k = 0; k < landedHoistTargets.size(); k++) {
+                GlueManager.rebindLanded(registry, cap,
+                    new HoistAnchor(landedHoistTargets.get(k), registry, () -> true),
+                    landedHoistOffsets.get(k), rotation, placedSet);
             }
         }
 

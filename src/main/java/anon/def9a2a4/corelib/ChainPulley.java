@@ -63,7 +63,11 @@ final class ChainPulley {
      * Strand display type segment. Deliberately NOT "chain_pulley" so the block-display refresh
      * (which removes {@code corelib:mech:chain_pulley:<x>_<y>_<z>*} on every idle↔spinning state change)
      * can't delete the strand. A live strand's owner is the pulley block, not a matching skull, so the
-     * orphan scanner would mis-flag it — it is explicitly skipped there by its {@code chain_strand} tag.
+     * orphan scanner would mis-flag it — the display scanner ({@code scanOrphanedDisplays}) skips it by
+     * design. NOTE the mechanism-entity sweep ({@code MechanismRegistry.cleanupOrphanedEntities}) lets it
+     * survive only INCIDENTALLY (its {@code corelib:mech:chain_strand:…} tag fails the UUID parse and is
+     * ignored) — a future mech-tag-scheme change could start reaping live strands. Deliberate cleanup of
+     * a stale strand is owned by {@link #handleEntitiesLoad} (partner==null → removeStrand).
      */
     private static final String STRAND_TYPE = "chain_strand";
 
@@ -96,6 +100,7 @@ final class ChainPulley {
             .onNeighborChange((b, face) -> recalcIfNode(b))
             .onInteract(this::handleInteract)
             .onChunkLoad(this::handleChunkLoad)
+            .onEntitiesLoad(this::handleEntitiesLoad)
             .onChunkUnload(b -> network.removeNode(CustomBlockRegistry.LocationKey.of(b)))
             .onBlockRemoved((b, state) -> handleBlockRemoved(b))
             .build());
@@ -109,6 +114,10 @@ final class ChainPulley {
     // ──────────────────────────────────────────────────────────────────────
 
     private void handleChunkLoad(Block b, String state) {
+        // NETWORK wiring only — no display work. The chain-strand display can't be touched here:
+        // Paper fires ChunkLoadEvent BEFORE the chunk's entities load, so findByTag/removeByTag would
+        // miss the persisted strand and spawnStrand would then duplicate it (an un-reapable orphan).
+        // The strand is (re)attached in handleEntitiesLoad once entities are guaranteed loaded.
         CustomBlockRegistry.LocationKey key = CustomBlockRegistry.LocationKey.of(b);
         network.addNode(b, PULLEY_ID, RotationNetwork.axisFromState(state),
             RotationNetwork.NodeRole.TRANSMITTER, 0, false);
@@ -125,19 +134,40 @@ final class ChainPulley {
                 CustomHeadBlock ptype = registry.getTypeFromBlock(pb);
                 if (ptype == null || !PULLEY_ID.equals(ptype.fullId())) {
                     clearPartner(b);
-                    // Also delete the persisted strand display — the orphan scanner deliberately
-                    // skips chain_strand tags, so nothing else would ever clean it up.
-                    removeStrand(b.getLocation(), key);
+                    // Strand removal is deferred to handleEntitiesLoad: removeByTag can't see the
+                    // not-yet-loaded display here anyway. Clearing OUT_KEY is the signal — the
+                    // entities pass reads partner==null and reaps the stale strand there.
                     return;
                 }
             }
             network.linkChain(key, partner);
-            // Re-register for animation: reuse the persisted display if it survived the reload,
-            // otherwise spawn a fresh one.
-            var existing = DisplayUtil.findByTag(b.getLocation(), strandTag(b.getLocation()), 1.5);
-            if (!existing.isEmpty()) registerStrand(b, partner, existing.get(0));
-            else spawnStrand(b, partner);
         }
+    }
+
+    /**
+     * Entities-loaded pass (Paper loads a chunk's entities asynchronously, after ChunkLoadEvent): does
+     * the strand DISPLAY work that {@link #handleChunkLoad} cannot. Self-contained — re-derives the link
+     * from PDC — because it runs as its own registry callback, decoupled from the earlier chunk-load pass.
+     * Idempotent: may re-fire on an entities unload/reload cycle, so it reuses the persisted strand by tag
+     * rather than blind-spawning.
+     */
+    private void handleEntitiesLoad(Block b, String state) {
+        CustomBlockRegistry.LocationKey key = CustomBlockRegistry.LocationKey.of(b);
+        CustomBlockRegistry.LocationKey partner = readPartner(b);
+        if (partner == null) {
+            // Either never linked, or handleChunkLoad just cleared a stale link — both look identical
+            // here (OUT_KEY absent), so unconditionally ensure no strand survives. removeByTag is a
+            // harmless no-op when there genuinely is none; this is the only place a stale strand (whose
+            // owner pulley is gone) actually gets reaped, since the mech-entity sweep skips chain_strand
+            // tags only incidentally (its UUID parse fails) and the display scanner skips them by design.
+            removeStrand(b.getLocation(), key);
+            return;
+        }
+        // Linked: entities are loaded now, so findByTag actually sees a persisted strand → reuse it;
+        // only spawn a fresh one when none survived the reload. This is the fix for the load-time dupe.
+        var existing = DisplayUtil.findByTag(b.getLocation(), strandTag(b.getLocation()), 1.5);
+        if (!existing.isEmpty()) registerStrand(b, partner, existing.get(0));
+        else spawnStrand(b, partner);
     }
 
     private void handleBlockRemoved(Block b) {

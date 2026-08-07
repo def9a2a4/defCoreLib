@@ -357,6 +357,10 @@ public final class CustomHeadBlock {
     private final @Nullable BiConsumer<Block, BlockFace> onNeighborChange;
     private final @Nullable Consumer<Block> onTick;
     private final @Nullable BiConsumer<Block, String> onChunkLoadCallback;
+    // Fired once the chunk's ENTITIES have loaded (Paper loads them asynchronously, after ChunkLoadEvent).
+    // Use this — not onChunkLoad — for any re-attach that must see the block's persisted display entities
+    // (findByTag/removeByTag/spawn); at ChunkLoadEvent they don't exist yet, so a load-time spawn dupes.
+    private final @Nullable BiConsumer<Block, String> onEntitiesLoadCallback;
     private final @Nullable Consumer<Block> onChunkUnloadCallback;
     private final @Nullable StateChangeHandler onStateChanged;
     private final @Nullable BiConsumer<Block, String> onBlockPlaced;
@@ -428,6 +432,7 @@ public final class CustomHeadBlock {
         this.onNeighborChange = b.onNeighborChange;
         this.onTick = b.onTick;
         this.onChunkLoadCallback = b.onChunkLoadCallback;
+        this.onEntitiesLoadCallback = b.onEntitiesLoadCallback;
         this.onChunkUnloadCallback = b.onChunkUnloadCallback;
         this.onStateChanged = b.onStateChanged;
         this.onBlockPlaced = b.onBlockPlaced;
@@ -519,6 +524,7 @@ public final class CustomHeadBlock {
     public @Nullable BiConsumer<Block, BlockFace> onNeighborChange() { return onNeighborChange; }
     public @Nullable Consumer<Block> onTick() { return onTick; }
     public @Nullable BiConsumer<Block, String> onChunkLoadCallback() { return onChunkLoadCallback; }
+    public @Nullable BiConsumer<Block, String> onEntitiesLoadCallback() { return onEntitiesLoadCallback; }
     public @Nullable Consumer<Block> onChunkUnloadCallback() { return onChunkUnloadCallback; }
     public @Nullable StateChangeHandler onStateChanged() { return onStateChanged; }
     public @Nullable BiConsumer<Block, String> onBlockPlaced() { return onBlockPlaced; }
@@ -776,6 +782,7 @@ public final class CustomHeadBlock {
         b.onNeighborChange = onNeighborChange;
         b.onTick = onTick;
         b.onChunkLoadCallback = onChunkLoadCallback;
+        b.onEntitiesLoadCallback = onEntitiesLoadCallback;
         b.onChunkUnloadCallback = onChunkUnloadCallback;
         b.onStateChanged = onStateChanged;
         b.onBlockPlaced = onBlockPlaced;
@@ -849,6 +856,7 @@ public final class CustomHeadBlock {
         private @Nullable BiConsumer<Block, BlockFace> onNeighborChange;
         private @Nullable Consumer<Block> onTick;
         private @Nullable BiConsumer<Block, String> onChunkLoadCallback;
+        private @Nullable BiConsumer<Block, String> onEntitiesLoadCallback;
         private @Nullable Consumer<Block> onChunkUnloadCallback;
         private @Nullable StateChangeHandler onStateChanged;
         private @Nullable BiConsumer<Block, String> onBlockPlaced;
@@ -1005,6 +1013,8 @@ public final class CustomHeadBlock {
 
         public Builder onTick(Consumer<Block> handler) { this.onTick = handler; return this; }
         public Builder onChunkLoad(BiConsumer<Block, String> handler) { this.onChunkLoadCallback = handler; return this; }
+        /** Fired once the chunk's entities have loaded (after ChunkLoadEvent). Use for display re-attach. */
+        public Builder onEntitiesLoad(BiConsumer<Block, String> handler) { this.onEntitiesLoadCallback = handler; return this; }
         public Builder onChunkUnload(Consumer<Block> handler) { this.onChunkUnloadCallback = handler; return this; }
         public Builder onStateChanged(StateChangeHandler handler) { this.onStateChanged = handler; return this; }
         public Builder onBlockPlaced(BiConsumer<Block, String> handler) { this.onBlockPlaced = handler; return this; }
