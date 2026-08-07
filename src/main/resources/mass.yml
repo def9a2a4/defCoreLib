@@ -97,6 +97,7 @@ blast_furnace: 3
 smoker: 3
 crafting_table: 2
 "*_shulker_box": 3
+shulker_box: 3          # bare (undyed) box: *_shulker_box regex needs a leading `_`, so match it explicitly
 
 # ── Glass (weight 1) ──
 glass: 1

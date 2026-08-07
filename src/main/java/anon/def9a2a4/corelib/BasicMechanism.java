@@ -609,13 +609,14 @@ final class BasicMechanism implements Mechanism {
         // distanceSquared/subtract across worlds is meaningless and setVelocity would fling the body.
         if (loc.getWorld() == null || previousVehicleLoc.getWorld() == null
                 || !loc.getWorld().equals(previousVehicleLoc.getWorld())) {
-            // Re-snap to the new world's block center so the snapped frame survives the jump — do NOT
-            // overwrite with the raw corner vehicle loc (that sinks displays/colliders half a block).
-            // Mirrors updateFromVehicle's cross-world branch.
-            this.pivot = loc.clone();
-            this.pivot.setX(Math.floor(loc.getX()) + 0.5);
-            this.pivot.setY(Math.floor(loc.getY()) + 0.5);
-            this.pivot.setZ(Math.floor(loc.getZ()) + 0.5);
+            // Preserve the maintained (pivot − vehicle) constant across the jump instead of re-snapping to
+            // floor+0.5. addDrivenBaseOffset reads (pivot − vehicle) live, so it must stay equal to the assembly
+            // comp (+0.5); a plain floor+0.5 re-snap discards a FRACTIONAL vehicle's remainder → a half-block-
+            // remainder shift. pivot and previousVehicleLoc are co-world here (pre-jump), so the delta is valid.
+            double cx = this.pivot.getX() - previousVehicleLoc.getX();
+            double cy = this.pivot.getY() - previousVehicleLoc.getY();
+            double cz = this.pivot.getZ() - previousVehicleLoc.getZ();
+            this.pivot = loc.clone().add(cx, cy, cz);
             rotate(relYaw);
             this.previousVehicleLoc = loc.clone();
             this.previousVehicleYaw = loc.getYaw();
@@ -865,6 +866,10 @@ final class BasicMechanism implements Mechanism {
         // its platform from its seed/chain instead — the correct HoistAnchor-domain behavior.
         List<Block> landedAnchorTargets = new ArrayList<>();
         List<int[]> landedAnchorOffsets = new ArrayList<>();
+        // F3: landed HOISTS route here instead of the generic list — their glue offsets are SEED-relative, so they
+        // must be re-stamped through a HoistAnchor (seed origin), not the skull-relative BlockAnchor used below.
+        List<Block> landedHoistTargets = new ArrayList<>();
+        List<int[]> landedHoistOffsets = new ArrayList<>();
 
         // Two-pass landing, mirroring airOutSourceBlocks' two-pass removal in reverse: supports
         // first, attachables second — an attachable (banner/torch/sign/…) placed before its support

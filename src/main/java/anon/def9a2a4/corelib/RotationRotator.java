@@ -43,7 +43,7 @@ final class RotationRotator implements Listener {
 
     static final String ROTATOR_ID = "mech:rotator";  // package-visible: the drill 2× boost keys on it
 
-    // Tuning (live-tunable): per-tick swing speed = clamp(K * surplus / blockCount, MIN, MAX).
+    // Tuning (live-tunable): per-tick swing speed = clamp(K * surplus / mass, MIN, MAX).
     private static final float SPEED_K = 8f;
     private static final float MIN_DEG = 0.25f;   // 5°/s at 20 t/s
     private static final float MAX_DEG = 4.5f;    // 90°/s at 20 t/s

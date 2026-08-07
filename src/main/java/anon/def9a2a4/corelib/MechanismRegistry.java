@@ -1376,6 +1376,20 @@ public class MechanismRegistry {
         // from the sidecar — ShipInstance.recoverEntities), so a ship that drifted before the crash lands
         // where it actually is. For a static owned mechanism the vehicle is exactly at its saved pivot.
         Location pivot = vehicle.getLocation().clone();
+        // F2: reproduce the assembly pivot frame. A DRIVEN mechanism maintains pivot = vehicle + 0.5 constantly
+        // (assembly spawns the vehicle at an integer corner → floor+0.5 == +0.5; repositionDriven delta-tracks it),
+        // and addDrivenBaseOffset reads (pivot − vehicle) LIVE — so it MUST equal +0.5. A recovered driven vehicle
+        // is commonly at a FRACTIONAL coord (physics deltas + buoyancy Y; alignToGrid snaps only on explicit
+        // align/disassemble), so a plain floor+0.5 would shift the whole ship by the fractional remainder. Owned
+        // mechanisms use the block-center frame (floor+0.5); today only ships persist and ships are always driven,
+        // so the owned branch is defensive/unreached.
+        if (st.driven) {
+            pivot.add(0.5, 0.5, 0.5);
+        } else {
+            pivot.setX(Math.floor(pivot.getX()) + 0.5);
+            pivot.setY(Math.floor(pivot.getY()) + 0.5);
+            pivot.setZ(Math.floor(pivot.getZ()) + 0.5);
+        }
         Vector3f axis = new Vector3f(st.axisX, st.axisY, st.axisZ);
         BasicMechanism mech = new BasicMechanism(st.mechId, st.type, pivot, axis, vehicle, parent,
             st.rideOffset, st.ownsVehicle, displaysPerBlock, bannerDisplaysPerBlock, colliders, blocks,
