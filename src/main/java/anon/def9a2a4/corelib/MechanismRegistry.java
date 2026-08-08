@@ -220,6 +220,49 @@ public class MechanismRegistry {
         return massRegistry.get(mb.blockData.getMaterial(), mb.customTypeId);
     }
 
+    /**
+     * Create a storage inventory that PRESERVES the container's GUI type. Fixed-shape types (hopper 5,
+     * dropper/dispenser 3×3, furnace/smoker/blast-furnace, brewing, shulker box) are created by
+     * {@link org.bukkit.event.inventory.InventoryType} so they open the correct GUI; CHEST/BARREL/generic
+     * use {@code size} (a double chest is 54, which {@code InventoryType.CHEST} — fixed 27 — can't express).
+     * Shared by world-container capture, recovery rebuild, and the block-free storage descriptor.
+     */
+    /**
+     * The {@link org.bukkit.event.inventory.InventoryType} a vanilla container block opens, for paths that
+     * have a material but no live {@code BlockState} to ask (recovery rebuild). Returns {@code CHEST} for
+     * chest-shaped and unrecognised containers, which {@link #createTypedInventory} then sizes rather than
+     * types — so the only entries that matter here are the fixed-shape ones whose slot count is NOT a
+     * multiple of 9 and would otherwise blow up the size-based overload.
+     */
+    static org.bukkit.event.inventory.InventoryType containerTypeOf(@Nullable Material m) {
+        if (m == null) return org.bukkit.event.inventory.InventoryType.CHEST;
+        return switch (m) {
+            case HOPPER -> org.bukkit.event.inventory.InventoryType.HOPPER;
+            case DROPPER -> org.bukkit.event.inventory.InventoryType.DROPPER;
+            case DISPENSER -> org.bukkit.event.inventory.InventoryType.DISPENSER;
+            case FURNACE -> org.bukkit.event.inventory.InventoryType.FURNACE;
+            case BLAST_FURNACE -> org.bukkit.event.inventory.InventoryType.BLAST_FURNACE;
+            case SMOKER -> org.bukkit.event.inventory.InventoryType.SMOKER;
+            case BREWING_STAND -> org.bukkit.event.inventory.InventoryType.BREWING;
+            default -> org.bukkit.event.inventory.InventoryType.CHEST;
+        };
+    }
+
+    static Inventory createTypedInventory(org.bukkit.inventory.@Nullable InventoryHolder holder,
+                                          org.bukkit.event.inventory.InventoryType type, int size,
+                                          net.kyori.adventure.text.@Nullable Component title) {
+        boolean typed = switch (type) {
+            case HOPPER, DROPPER, DISPENSER, FURNACE, BLAST_FURNACE, SMOKER, BREWING, SHULKER_BOX -> true;
+            default -> false;
+        };
+        if (typed) {
+            return title != null ? Bukkit.createInventory(holder, type, title)
+                                 : Bukkit.createInventory(holder, type);
+        }
+        return title != null ? Bukkit.createInventory(holder, size, title)
+                             : Bukkit.createInventory(holder, size);
+    }
+
     /** Inertial mass of a plain material (for consumers scanning world blocks, e.g. the hoist load). */
     double massOf(Material material) {
         return massRegistry.get(material, null);
@@ -522,7 +565,9 @@ public class MechanismRegistry {
                 // carries it — its plugin-owned filler is wiped by onBlockRemoved on pickup (via
                 // airOutSourceBlocks) and refilled by its own tick on landing, never copied/restored.
                 Inventory orig = c.getInventory();
-                storage = Bukkit.createInventory(null, orig.getSize());
+                // Preserve the container's GUI TYPE (hopper 5, dropper/dispenser 3×3, furnace 3, …) — not
+                // just its size — so a moved/recovered container opens its real inventory, not a chest.
+                storage = createTypedInventory(null, orig.getType(), orig.getSize(), null);
                 for (int s = 0; s < orig.getSize(); s++) {
                     ItemStack item = orig.getItem(s);
                     if (item != null) storage.setItem(s, item.clone());
@@ -1644,8 +1689,15 @@ public class MechanismRegistry {
                 try {
                     ItemStack[] items = ItemStack.deserializeItemsFromBytes(b.storage);
                     if (items.length > 0) {
-                        storage = Bukkit.createInventory(null, items.length); // mirrors assembleCore's sizing
-                        storage.setContents(items);
+                        // Recovery has no live BlockState, so re-derive the GUI shape from the saved
+                        // material — mirrors assembleCore, which types off the live inventory. Sizing by
+                        // items.length alone throws for the fixed-shape containers (hopper/brewing 5,
+                        // furnace family 3), and the catch below would turn that into a silently EMPTY
+                        // container, i.e. item loss on every chunk recovery.
+                        storage = createTypedInventory(null,
+                            containerTypeOf(bd == null ? null : bd.getMaterial()), items.length, null);
+                        storage.setContents(items.length > storage.getSize()
+                            ? java.util.Arrays.copyOf(items, storage.getSize()) : items);
                     }
                 } catch (Throwable t) {
                     plugin.getLogger().warning("Mechanism recovery: unreadable storage for a block in "

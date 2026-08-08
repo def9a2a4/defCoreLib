@@ -594,6 +594,8 @@ final class BasicMechanism implements Mechanism {
             if (mb.storage != null) {
                 try {
                     b.storage = ItemStack.serializeItemsAsBytes(mb.storage.getContents());
+                    b.storageType = mb.storage.getType().name(); // preserve the GUI type across recovery
+                    b.storageTitle = mb.storageTitle;
                 } catch (Throwable ignored) {
                     // unserializable inventory — skip storage (block still restores, just empty)
                 }

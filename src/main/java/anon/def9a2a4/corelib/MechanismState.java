@@ -60,6 +60,8 @@ final class MechanismState {
         boolean wasBare;                // a bare shaft reverted to an encased head for capture (re-bared on landing)
         int throttleLevel = -1;         // captured throttle 0-15 level (chunk-PDC, not tile) or -1 if not a throttle
         byte @Nullable [] storage;      // ItemStack[] serialized (Base64 in YAML)
+        @Nullable String storageType;   // InventoryType name — preserves the container GUI shape on recovery
+        @Nullable String storageTitle;  // GUI title for a named block-free (prefab cargo) storage part
         int @Nullable [] glueOffsets;
         byte @Nullable [] configPdc;    // tile PDC bytes (Base64 in YAML)
         @Nullable Map<String, Object> blockEntity; // BlockSnapshotProvider decorated state (YAML-safe map)
@@ -106,6 +108,8 @@ final class MechanismState {
             if (b.wasBare) m.put("bare", true);
             if (b.throttleLevel >= 0) m.put("throttle", b.throttleLevel);
             if (b.storage != null) m.put("storage", Base64.getEncoder().encodeToString(b.storage));
+            if (b.storageType != null) m.put("storage_type", b.storageType);
+            if (b.storageTitle != null) m.put("storage_title", b.storageTitle);
             if (b.glueOffsets != null) {
                 List<Integer> g = new ArrayList<>(b.glueOffsets.length);
                 for (int i : b.glueOffsets) g.add(i);
@@ -169,6 +173,8 @@ final class MechanismState {
                 b.throttleLevel = raw.get("throttle") instanceof Number tn ? tn.intValue() : -1;
                 Object storage = raw.get("storage");
                 if (storage instanceof String ss) b.storage = Base64.getDecoder().decode(ss);
+                b.storageType = str(raw.get("storage_type"));
+                b.storageTitle = str(raw.get("storage_title"));
                 Object glue = raw.get("glue");
                 if (glue instanceof List<?> gl) {
                     b.glueOffsets = new int[gl.size()];

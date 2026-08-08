@@ -101,6 +101,10 @@ public final class MechanismBlockData {
     List<CustomHeadBlock.BlockDisplayEntityConfig> blockDisplayEntityConfigs;
     CustomHeadBlock.ParticleConfig particles;
     Inventory storage;
+    // GUI title for a block-free storage part (a prefab ship's named cargo, from the PartSpec descriptor).
+    // Null for a captured world container (the type carries the GUI shape; the name defaults). Persisted so
+    // the name survives recovery. The Inventory's TYPE is read back via storage.getType() — not stored here.
+    @Nullable String storageTitle;
 
     MechanismBlockData(BlockData blockData, Matrix4f localTransform,
                        CollisionConfig collision,
