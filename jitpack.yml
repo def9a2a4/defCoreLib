@@ -1,0 +1,11 @@
+# JitPack build config for downstream plugin pins (com.github.def9a2a4:defCoreLib:<sha>,
+# consumed by Pipes and BlockShips). JitPack already auto-selects 21.0.2-open, matching the
+# languageVersion 21 toolchain in build.gradle.kts — pin it so a JitPack base-image change
+# cannot silently break an already-green downstream build.
+#
+# Deliberately NO `install:` key. JitPack's auto-detected flow (gradle wrapper + artifact file
+# scan) is what makes the classifier-less defCoreLib-<sha>.jar resolve to the *shadow* jar,
+# which is what downstream plugins ship into plugins/. A custom install command changes
+# artifact discovery and can republish under artifactId `DefCoreLib` instead of `defCoreLib`.
+jdk:
+  - openjdk21

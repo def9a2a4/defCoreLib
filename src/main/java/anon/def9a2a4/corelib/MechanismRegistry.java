@@ -213,8 +213,10 @@ public class MechanismRegistry {
         massRegistry.load(in, plugin.getLogger());
     }
 
-    /** Inertial mass of a mechanism block (custom-type mass wins over its material). */
+    /** Inertial mass of a mechanism block (custom-type mass wins over its material). A block-free /
+     *  standalone display part (a decorative banner/head ItemDisplay, P7.B) has no inertial mass. */
     double massOf(MechanismBlockData mb) {
+        if (mb.blockData == null) return 0;
         return massRegistry.get(mb.blockData.getMaterial(), mb.customTypeId);
     }
 
