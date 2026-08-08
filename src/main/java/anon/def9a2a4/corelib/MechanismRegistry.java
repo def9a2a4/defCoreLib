@@ -11,6 +11,7 @@ import org.bukkit.entity.BlockDisplay;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Display;
 import org.bukkit.entity.ItemDisplay;
+import org.bukkit.entity.ItemDisplay.ItemDisplayTransform;
 import org.bukkit.entity.Shulker;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -352,6 +353,64 @@ public class MechanismRegistry {
                 false, driven, serializer);
         } catch (RuntimeException e) {
             existingVehicle.removeScoreboardTag(vehicleTag);
+            throw e;
+        }
+    }
+
+    /**
+     * A single member of a block-free, model-driven {@link #assembleFromParts} assembly — pure data, unlike a
+     * world {@link Block}. {@code blockData} is the block appearance (null for a standalone display part, e.g.
+     * a banner/head ItemDisplay); {@code localTransform} is an arbitrary 4×4 (translation/rotation/scale/shear)
+     * relative to the vehicle origin; {@code collision} is the collider ({@link CollisionConfig#NONE} for none);
+     * {@code displayItem}/{@code displayMode} render a standalone display part (ignored when {@code blockData}
+     * is set). Seats are designated by the consumer post-assembly via {@link Mechanism#designateSeat}.
+     */
+    public record PartSpec(@Nullable BlockData blockData, Matrix4f localTransform, CollisionConfig collision,
+                           @Nullable ItemStack displayItem,
+                           @Nullable ItemDisplayTransform displayMode) {
+        /** A plain block part: a block appearance + collider, no standalone display. */
+        public static PartSpec block(BlockData blockData, Matrix4f localTransform, CollisionConfig collision) {
+            return new PartSpec(blockData, localTransform, collision, null, null);
+        }
+        /** A standalone display part: an ItemDisplay ({@code item}, {@code mode}) with no backing block. */
+        public static PartSpec display(ItemStack item, ItemDisplayTransform mode,
+                                       Matrix4f localTransform, CollisionConfig collision) {
+            return new PartSpec(null, localTransform, collision, item, mode);
+        }
+    }
+
+    /**
+     * Assemble a mechanism from an in-memory {@link PartSpec} list with NO world blocks — for a structure
+     * that was never placed in the world (a prefab ship built from a model file, a scripted display rig).
+     * Nothing is read from or aired out of the world; block parts render/collide exactly like a scanned
+     * block. The mechanism is DRIVEN (the consumer positions {@code vehicle} each tick via
+     * {@link Mechanism#repositionDriven}) and {@code blockFree} (teardown removes its entities without
+     * restoring world blocks). Seats are designated by the consumer afterwards
+     * ({@link Mechanism#designateSeat}). The pivot is the vehicle's raw location (no block-center snap):
+     * parts carry arbitrary off-grid transforms authored relative to the vehicle origin.
+     *
+     * <p>Standalone display parts (null {@code blockData}) require the nullable-block support added in a
+     * follow-up; today they throw {@link UnsupportedOperationException}.
+     */
+    public Mechanism assembleFromParts(String type, List<PartSpec> parts, Entity vehicle, float rideOffset) {
+        UUID mechId = UUID.randomUUID();
+        Location pivot = vehicle.getLocation();
+        String vehicleTag = "corelib:mech:" + mechId + ":vehicle";
+        vehicle.addScoreboardTag(vehicleTag);
+        try {
+            List<MechanismBlockData> blockData = new ArrayList<>(parts.size());
+            for (PartSpec p : parts) {
+                if (p.blockData() == null) {
+                    throw new UnsupportedOperationException(
+                        "assembleFromParts: standalone display parts (null blockData) not yet supported");
+                }
+                blockData.add(new MechanismBlockData(p.blockData(), new Matrix4f(p.localTransform()),
+                    p.collision(), null, null, null, null, null, null, false, null));
+            }
+            return spawnMechanismEntities(mechId, type, blockData, pivot, AXIS_Y, vehicle, rideOffset,
+                false, true, null, List.of(), List.of(), parts.size(), true);
+        } catch (RuntimeException e) {
+            vehicle.removeScoreboardTag(vehicleTag);
             throw e;
         }
     }

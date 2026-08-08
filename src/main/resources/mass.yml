@@ -182,5 +182,30 @@ purpur_pillar: 2
 purpur_slab: 2
 purpur_stairs: 2
 
+# ── Stone & terrain: heavy structural rock. defCoreLib addition — BlockShips forbade these on ships, so
+#    they were unlisted (= default 1.0, as light as wool). 3 = solid heavy stone; crumbly/baked rock = 2. ──
+"#base_stone_overworld": 3   # stone, granite, diorite, andesite, tuff, deepslate (raw forms)
+"*cobblestone*": 3           # cobblestone/mossy + stairs/slab/wall
+"*stone_brick*": 3           # stone brick block + stairs/slab/wall (mossy/cracked/chiseled)
+"*granite*": 3
+"*diorite*": 3
+"*andesite*": 3
+"*tuff*": 3
+"*deepslate*": 3             # all deepslate variants (incl. deepslate ores) — heavy dark rock
+"*basalt*": 3
+"*blackstone*": 3
+"*sandstone*": 3
+"*prismarine*": 3
+"*quartz*": 3                # quartz block family (+ nether_quartz_ore)
+smooth_stone: 3
+bricks: 3                    # plain red-clay brick block (no underscore → misses *_bricks)
+"*_bricks": 3                # nether/deepslate/mud/quartz/end_stone brick blocks
+"*concrete": 3               # 16 colored concretes (NOT concrete_powder, which ends in _powder)
+"*terracotta": 2             # terracotta + colored + glazed (baked clay, lighter)
+netherrack: 2
+calcite: 3
+dripstone_block: 3
+end_stone: 3
+
 # custom-blocks:            # per-custom-type inertial mass (Phase 6 hook; empty for now)
 #   ship_engine: 5
