@@ -44,6 +44,44 @@ final class MechanismState {
     @Nullable UUID vehicleUuid;     // recovery hint (owned marker ArmorStand, or external cart/ship vehicle)
     final List<BlockRec> blocks = new ArrayList<>();
 
+    // Rotation-exact recovery half-extent (blocks), cached; DERIVED from blocks[].localTransform, never
+    // serialized (a pure function of already-persisted data — computing on load keeps old files valid).
+    private transient double recoveryHalf = -1;
+
+    /**
+     * Half-edge (blocks) of the cube {@code attemptRecover} queries around the pivot to gather this
+     * mechanism's surviving entities. An entity sits at {@code pivot + R·offset}; over ALL rotations R a
+     * single world axis can receive the offset's full EUCLIDEAN MAGNITUDE, so the bound must be the max
+     * {@code √(x²+y²+z²)} of any block offset (a max-component bound under-covers by up to √3× and silently
+     * drops a rotated part). Plus 16 blocks of interpolation-drift + collider slack; keeps a 16-block floor.
+     * Clamped to a far defensive bound (a real mechanism can't have a part 512 blocks out; this only guards
+     * a corrupt localTransform from producing a world-sized query) — logged, never silently truncated.
+     */
+    double recoveryHalf() {
+        if (recoveryHalf < 0) {
+            double mag2 = 0;
+            for (BlockRec b : blocks) {
+                double x = b.localTransform[12], y = b.localTransform[13], z = b.localTransform[14];
+                mag2 = Math.max(mag2, x * x + y * y + z * z);
+            }
+            double h = Math.sqrt(mag2) + 16.0;
+            if (h > 512.0) {
+                java.util.logging.Logger.getLogger("defCoreLib").warning("Mechanism " + mechId
+                    + " recovery extent " + (int) h + " exceeds the 512-block guard; clamping (corrupt localTransform?)");
+                h = 512.0;
+            }
+            recoveryHalf = h;
+        }
+        return recoveryHalf;
+    }
+
+    /** Chunk radius that provably SUPERSETS {@link #recoveryHalf()}'s XZ span (pivot is <16 into its chunk,
+     *  so {@code ceil(half/16)+1} covers every chunk the ±half cube overlaps). Drives the recovery footprint
+     *  gate and the {@code allLoaded} sweep so both stay a superset of the query cube. */
+    int recoveryChunkRadius() {
+        return (int) Math.ceil(recoveryHalf() / 16.0) + 1;
+    }
+
     static final class BlockRec {
         @Nullable String blockData;     // null for a block-free / standalone display part (P7.B)
         float[] localTransform = new float[16]; // JOML Matrix4f column-major

@@ -1377,7 +1377,7 @@ public class MechanismRegistry {
             if (!world.getName().equals(st.worldName)) continue;
             int pcx = (int) Math.floor(st.px) >> 4;
             int pcz = (int) Math.floor(st.pz) >> 4;
-            int radius = chunkRadiusFor(st);
+            int radius = st.recoveryChunkRadius();
             if (Math.abs(lcx - pcx) > radius || Math.abs(lcz - pcz) > radius) continue;
             try {
                 attemptRecover(world, st);

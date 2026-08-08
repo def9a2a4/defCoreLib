@@ -1311,7 +1311,23 @@ final class BasicMechanism implements Mechanism {
                 flipLandedSpinDir(target, mb, snappedYaw);
             }
         } else if (mb.storage != null && target.getState() instanceof Container c) {
-            c.getSnapshotInventory().setContents(mb.storage.getContents());
+            Inventory dest = c.getSnapshotInventory();
+            ItemStack[] saved = mb.storage.getContents();
+            // setContents throws when the array is LONGER than the destination, and the caller's catch
+            // turns that into a WARNING with the items gone. Cap, then drop the tail as entities rather
+            // than swallowing it. A typed capture keeps the sizes equal (see createTypedInventory), so
+            // this only bites on mechanisms saved before storage carried its container's GUI shape.
+            if (saved.length > dest.getSize()) {
+                dest.setContents(java.util.Arrays.copyOf(saved, dest.getSize()));
+                World w = target.getWorld();
+                for (int s = dest.getSize(); s < saved.length; s++) {
+                    if (saved[s] != null && !saved[s].getType().isAir()) {
+                        w.dropItemNaturally(target.getLocation().add(0.5, 0.5, 0.5), saved[s]);
+                    }
+                }
+            } else {
+                dest.setContents(saved);
+            }
             c.update();
         }
 
