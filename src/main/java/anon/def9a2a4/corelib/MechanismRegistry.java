@@ -1397,7 +1397,7 @@ public class MechanismRegistry {
     private void attemptRecover(org.bukkit.World world, MechanismState st) {
         int pcx = (int) Math.floor(st.px) >> 4;
         int pcz = (int) Math.floor(st.pz) >> 4;
-        int radius = chunkRadiusFor(st); // footprint radius in chunks, from the block offsets
+        int radius = st.recoveryChunkRadius(); // one cached extent; a provable superset of the query cube below
 
         // Whether the WHOLE footprint is loaded — the fallback that finalizes an under-count so a mechanism
         // that permanently lost an entity still recovers instead of hanging pending forever. Cheap boolean
@@ -1411,16 +1411,10 @@ public class MechanismRegistry {
         }
 
         // Gather candidate entities with ONE bounded getNearbyEntities around the persisted pivot (only
-        // loaded chunks are consulted; it never force-loads). Every tagged entity is an offset from the
-        // pivot, so a cube of max|offset|+slack covers them all. Replaces a (2·radius+1)² per-chunk
-        // getEntities() sweep — mirrors BlockShips' ShipInstance.recoverEntities single bounded query.
-        double half = 16.0;
-        for (MechanismState.BlockRec b : st.blocks) {
-            half = Math.max(half, Math.abs(b.localTransform[12]));
-            half = Math.max(half, Math.abs(b.localTransform[13]));
-            half = Math.max(half, Math.abs(b.localTransform[14]));
-        }
-        half += 16.0; // slack for drift / interpolation
+        // loaded chunks are consulted; it never force-loads). The half-edge is the rotation-exact
+        // max-Euclidean-magnitude bound (see MechanismState.recoveryHalf) so every entity is covered at any
+        // rotation. Replaces a (2·radius+1)² per-chunk getEntities() sweep.
+        double half = st.recoveryHalf();
         Collection<Entity> candidates = world.getNearbyEntities(
             new Location(world, st.px, st.py, st.pz), half, half, half);
 
@@ -1649,17 +1643,9 @@ public class MechanismRegistry {
         return c;
     }
 
-    /** Footprint radius (in chunks) of a persisted structure, from its block offsets — the neighbourhood
-     *  {@link #attemptRecover} scans for the mechanism's entities. Rotation preserves distance, so the
-     *  unrotated max |x|/|z| offset bounds it; +1 for the corner shift, capped so a corrupt state can't scan
-     *  a huge area. Translation lives at column-major indices 12/14 of the 4×4 localTransform. */
-    private static int chunkRadiusFor(MechanismState st) {
-        double maxOff = 0;
-        for (MechanismState.BlockRec b : st.blocks) {
-            maxOff = Math.max(maxOff, Math.max(Math.abs(b.localTransform[12]), Math.abs(b.localTransform[14])));
-        }
-        return Math.min(8, (int) Math.ceil(maxOff / 16.0) + 1);
-    }
+    // (chunkRadiusFor retired — the recovery footprint gate, the allLoaded sweep, and the getNearbyEntities
+    //  query now all derive from the single cached MechanismState.recoveryHalf()/recoveryChunkRadius(), a
+    //  rotation-exact magnitude bound, so the three can't diverge and a rotated part can't fall outside.)
 
     /** Add {@code d} to {@code map[blockIndex]} keyed by the integer suffix of {@code role} (e.g. "extra_3" → 3),
      *  so a block's extras/banners land back in their authored order regardless of entity iteration order. */
@@ -1833,8 +1819,14 @@ public class MechanismRegistry {
      * each tick and once at assembly with {@code tickAge = 0} to place displays on the first frame.
      */
     void updateAnimatedDisplays(BasicMechanism mech, long tickAge) {
+        // Static-only mechanism: skip the whole per-block scan AND refreshDrivenOffset. The driven-offset
+        // cache is consumed only by addDrivenBaseOffset, which runs only in the animated branches below
+        // (rotate() refreshes its own), so skipping it here is safe when there are no animated displays.
+        if (!mech.hasAnimatedDisplays) return;
         mech.refreshDrivenOffset(); // cache (pivot − vehicle) once so mech.addDrivenBaseOffset below doesn't re-read it per display
-        for (int i = 0; i < mech.blockCount(); i++) {
+        int[] animated = mech.animatedBlockIndices;
+        for (int ai = 0; ai < animated.length; ai++) {
+            int i = animated[ai];
             List<Display> displays = mech.displaysPerBlock.get(i);
             if (displays.isEmpty() || !displays.get(0).isValid()) continue;
 

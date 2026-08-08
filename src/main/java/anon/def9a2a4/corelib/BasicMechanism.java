@@ -77,6 +77,16 @@ final class BasicMechanism implements Mechanism {
     // immutable colliders list; appended ghost blocks carry no collider, so it never goes stale.
     private final Map<Integer, ColliderPair> colliderByBlock;
     final List<MechanismBlockData> blocks;
+    // Fast path for MechanismRegistry.updateAnimatedDisplays: the block indices carrying at least one
+    // ANIMATED display/blockDisplay config. Computed at construction; refreshed by setBlockState (the only
+    // post-construction config mutator). A mechanism with none (e.g. a 300-block static ship) skips the
+    // whole per-tick scan. Ghost-appended blocks (appendGhost) carry null configs and land at the end, so
+    // appending never animates a block nor stales these.
+    boolean hasAnimatedDisplays;
+    int[] animatedBlockIndices = new int[0];
+    // Memoized Σ mechanismRegistry.massOf(block). Lazy (the registry back-ref is null during construction);
+    // -1 = not computed. appendGhost — the sole `blocks` growth path — keeps it in step. Main-thread only.
+    private double totalMassCache = -1;
     final CustomBlockRegistry registry;
     final @Nullable MechanismSerializer serializer;
     final long startTick;
@@ -132,6 +142,7 @@ final class BasicMechanism implements Mechanism {
         for (ColliderPair cp : colliders) cbb.putIfAbsent(cp.blockIndex(), cp); // first-wins, matching the old scan
         this.colliderByBlock = cbb;
         this.blocks = blocks;
+        recomputeAnimatedBlockIndices();
         this.registry = registry;
         this.serializer = serializer;
         this.startTick = Bukkit.getServer().getCurrentTick();
@@ -179,10 +190,17 @@ final class BasicMechanism implements Mechanism {
 
     @Override
     public double totalMass() {
-        if (mechanismRegistry == null) return blocks.size(); // dead-safe fallback (back-ref always set in practice)
-        double sum = 0;
-        for (MechanismBlockData mb : blocks) sum += mechanismRegistry.massOf(mb);
-        return sum;
+        // Null back-ref: dead-safe fallback (set right after construction in practice). Return the LIVE
+        // blocks.size() and DO NOT memoize — the registry may be wired up before the next call. This is the
+        // only fallback; a legitimate 0 total is computed and cached as 0 (masses are clamped ≥0, so the
+        // -1 sentinel is unambiguous).
+        if (mechanismRegistry == null) return blocks.size();
+        if (totalMassCache < 0) {
+            double sum = 0;
+            for (MechanismBlockData mb : blocks) sum += mechanismRegistry.massOf(mb);
+            totalMassCache = sum;
+        }
+        return totalMassCache;
     }
 
     @Override
@@ -439,6 +457,34 @@ final class BasicMechanism implements Mechanism {
         drivenOffX = pivot.getX() - vl.getX();
         drivenOffY = pivot.getY() - vl.getY();
         drivenOffZ = pivot.getZ() - vl.getZ();
+    }
+
+    /** True if any display or blockDisplay config on this block carries an animation. */
+    private static boolean blockIsAnimated(MechanismBlockData mb) {
+        if (mb.displayEntityConfigs != null) {
+            for (int d = 0; d < mb.displayEntityConfigs.size(); d++) {
+                if (mb.displayEntityConfigs.get(d).animation() != null) return true;
+            }
+        }
+        if (mb.blockDisplayEntityConfigs != null) {
+            for (int d = 0; d < mb.blockDisplayEntityConfigs.size(); d++) {
+                if (mb.blockDisplayEntityConfigs.get(d).animation() != null) return true;
+            }
+        }
+        return false;
+    }
+
+    /** Rebuild {@link #animatedBlockIndices}/{@link #hasAnimatedDisplays} from the current block configs.
+     *  Called at construction and again by {@link #setBlockState} only when a state change flips a block's
+     *  animated status. O(blocks). */
+    private void recomputeAnimatedBlockIndices() {
+        int[] tmp = new int[blocks.size()];
+        int n = 0;
+        for (int i = 0; i < blocks.size(); i++) {
+            if (blockIsAnimated(blocks.get(i))) tmp[n++] = i;
+        }
+        animatedBlockIndices = java.util.Arrays.copyOf(tmp, n);
+        hasAnimatedDisplays = n > 0;
     }
 
     /**
@@ -765,6 +811,13 @@ final class BasicMechanism implements Mechanism {
         mb.particles = type.resolveParticles(newState);
         mb.displayEntityConfigs = type.resolveDisplayEntities(newState);
         mb.blockDisplayEntityConfigs = type.resolveBlockDisplayEntities(newState);
+
+        // The new state may add or drop an animation on this block; keep the animated-index fast-path cache
+        // current, but rebuild only on an actual flip (cheap membership scan otherwise).
+        boolean nowAnimated = blockIsAnimated(mb);
+        boolean wasAnimated = false;
+        for (int idx : animatedBlockIndices) { if (idx == index) { wasAnimated = true; break; } }
+        if (nowAnimated != wasAnimated) recomputeAnimatedBlockIndices();
     }
 
     // ──────────────────────────────────────────────────────────────────────
