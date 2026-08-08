@@ -450,6 +450,16 @@ final class BasicMechanism implements Mechanism {
      * ({@link #rotate(float)} AND {@code MechanismRegistry.updateAnimatedDisplays}) so none can drift out of
      * frame. m30/m31/m32 are the world-space translation (the parent's entity yaw is frozen 0, so a display
      * matrix's translation is world-space).
+     *
+     * <p><b>CONTRACT — refresh before add, same synchronous pass.</b> This reads the offset CACHED by
+     * {@link #refreshDrivenOffset()}, not {@code (pivot − vehicle)} live. Any caller MUST invoke
+     * {@code refreshDrivenOffset()} once at the start of the same synchronous positioning pass, before its
+     * first {@code addDrivenBaseOffset} call and with no vehicle move in between — otherwise this applies a
+     * STALE offset from a previous pass (a silent display shift). Nothing enforces this at compile time (a
+     * main-thread assert would check the thread, not that the refresh ran). Today's callers comply: {@code
+     * rotate()} refreshes at its top; {@code updateAnimatedDisplays} refreshes after its static early-return
+     * (safe because {@code addDrivenBaseOffset} runs only inside the animated branches that the early-return
+     * skips). A future caller must uphold the same.
      */
     void addDrivenBaseOffset(Matrix4f m) {
         if (!driven) return;

@@ -240,6 +240,9 @@ public class MechanismRegistry {
      */
     static org.bukkit.event.inventory.InventoryType containerTypeOf(@Nullable Material m) {
         if (m == null) return org.bukkit.event.inventory.InventoryType.CHEST;
+        // Shulker box (any dye): 27 slots so the CHEST size-branch wouldn't THROW, but it should still open as a
+        // shulker GUI rather than a chest. One tag check covers the undyed + all 16 coloured variants.
+        if (org.bukkit.Tag.SHULKER_BOXES.isTagged(m)) return org.bukkit.event.inventory.InventoryType.SHULKER_BOX;
         return switch (m) {
             case HOPPER -> org.bukkit.event.inventory.InventoryType.HOPPER;
             case DROPPER -> org.bukkit.event.inventory.InventoryType.DROPPER;
@@ -549,6 +552,17 @@ public class MechanismRegistry {
                 bd = bd.clone();
                 ((org.bukkit.block.data.Waterlogged) bd).setWaterlogged(false);
             }
+            // A double chest is always split into two independent SINGLE chests. The capture below takes
+            // each half's own 27 slots, so a landed pair that re-formed a double would present one 54-slot
+            // GUI over two separate inventories — the asymmetry this split exists to remove. Also fixes the
+            // in-transit BlockDisplay rendering a visibly half-a-double-chest model.
+            // instanceof, NOT a Material switch: ten materials map to Chest (plain, trapped, and the four
+            // copper tiers plus their waxed variants — colliders.yml/mass.yml already carry copper chests).
+            if (bd instanceof org.bukkit.block.data.type.Chest chestData
+                    && chestData.getType() != org.bukkit.block.data.type.Chest.Type.SINGLE) {
+                bd = bd.clone();
+                ((org.bukkit.block.data.type.Chest) bd).setType(org.bukkit.block.data.type.Chest.Type.SINGLE);
+            }
             Matrix4f local = new Matrix4f().translation(
                 (float) ((block.getX() + 0.5) - snapX),
                 (float) ((block.getY() + 0.5) - snapY),
@@ -613,6 +627,11 @@ public class MechanismRegistry {
                 }
                 // A10b: close any open view before the source block is aired out, else the viewer aliases
                 // a container whose contents were copied into the mechanism → duplicate on extract.
+                // `orig` is this half's live block-entity inventory for a double chest, and that is still
+                // the right list to close from: CompoundContainer#onOpen propagates to BOTH halves as well
+                // as its own list, so a player viewing the combined GUI appears in each half's viewers.
+                // (Do not "simplify" this to getSnapshotInventory() — a snapshot is a detached copy whose
+                // viewer list is always empty, which would silently disable this guard.)
                 for (org.bukkit.entity.HumanEntity viewer : new ArrayList<>(orig.getViewers())) {
                     viewer.closeInventory();
                 }
@@ -1182,12 +1201,75 @@ public class MechanismRegistry {
      * recalc that rewrites downstream transmitters {@code spinning_*→idle_*}, so doing it during capture would
      * snapshot later blocks as idle. Two-pass removal handles attachables before their supports.
      */
+    /**
+     * The face on which a paired chest half meets its partner — vanilla's {@code
+     * ChestBlock#getConnectedDirection}: clockwise of {@code facing} for a LEFT half, counter-clockwise
+     * for a RIGHT one. Null for a SINGLE chest or a non-horizontal facing.
+     */
+    private static org.bukkit.block.@Nullable BlockFace chestPartnerFace(
+            org.bukkit.block.data.type.Chest cd) {
+        boolean left = cd.getType() == org.bukkit.block.data.type.Chest.Type.LEFT;
+        return switch (cd.getFacing()) {
+            case NORTH -> left ? org.bukkit.block.BlockFace.EAST : org.bukkit.block.BlockFace.WEST;
+            case EAST -> left ? org.bukkit.block.BlockFace.SOUTH : org.bukkit.block.BlockFace.NORTH;
+            case SOUTH -> left ? org.bukkit.block.BlockFace.WEST : org.bukkit.block.BlockFace.EAST;
+            case WEST -> left ? org.bukkit.block.BlockFace.NORTH : org.bukkit.block.BlockFace.SOUTH;
+            default -> null;
+        };
+    }
+
     private void airOutSourceBlocks(List<Block> blocks) {
         for (Block b : blocks) {
             CustomHeadBlock chb = registry.getTypeFromBlock(b);
             // Capture (not break): consumers keep per-block state in the mechanism (e.g. filter items in
             // configPdc) instead of dropping it, so it isn't duplicated on landing (A10a).
             if (chb != null) registry.onBlockRemovedForCapture(b, chb);
+        }
+        // A double chest with only ONE half in the mechanism leaves the survivor holding
+        // type=left/right pointing at air, forever: setType(..., false) sets UPDATE_KNOWN_SHAPE, so
+        // updateNeighbourShapes never runs and ChestBlock#updateShape's self-heal branch never fires.
+        // A stale half is also a re-pair magnet — a SINGLE chest landing beside it later flips to the
+        // opposite type and silently merges into a 54-slot double over two separate inventories.
+        // Normalise the survivor to SINGLE here. A same-block rewrite keeps the block entity, so unlike
+        // the AIR passes it cannot trip preRemoveSideEffects and drop that chest's items.
+        Set<Block> leaving = new HashSet<>(blocks);
+        for (Block b : blocks) {
+            if (!(b.getBlockData() instanceof org.bukkit.block.data.type.Chest cd)
+                    || cd.getType() == org.bukkit.block.data.type.Chest.Type.SINGLE) continue;
+            org.bukkit.block.BlockFace partnerFace = chestPartnerFace(cd);
+            if (partnerFace == null) continue;
+            Block partner = b.getRelative(partnerFace);
+            if (leaving.contains(partner)) continue;   // both halves are going; nothing survives to fix
+            if (partner.getBlockData() instanceof org.bukkit.block.data.type.Chest pd
+                    && pd.getType() != org.bukkit.block.data.type.Chest.Type.SINGLE) {
+                org.bukkit.block.data.type.Chest single = (org.bukkit.block.data.type.Chest) pd.clone();
+                single.setType(org.bukkit.block.data.type.Chest.Type.SINGLE);
+                partner.setBlockData(single, false);
+            }
+        }
+
+        // Empty every block inventory before the setType(AIR) passes below, or the world spills a
+        // second copy of everything the capture loop already cloned into the mechanism.
+        // setType(..., applyPhysics=false) maps to chunk-update flag 530, which does NOT carry
+        // UPDATE_SKIP_BLOCK_ENTITY_SIDEEFFECTS — so removing the block runs
+        // BlockEntity#preRemoveSideEffects → Containers.dropContents and the originals hit the floor.
+        // (Mirrors BlockShips' BlockStructureScanner "Pass 0"; TileStateInventoryHolder, not Container,
+        // so lecterns/jukeboxes/decorated pots/chiseled bookshelves are covered too — their contents
+        // are restored from the block-entity snapshot, so dropping them here would dupe as well.)
+        // Deliberately a separate pass AFTER capture succeeded: airOutSourceBlocks runs post display
+        // spawn and mount, so clearing any earlier would turn an aborted assembly into deletion.
+        // Guarded per block — one failure must not leave a half-cleared, half-removed structure.
+        for (Block b : blocks) {
+            try {
+                if (b.getState() instanceof io.papermc.paper.block.TileStateInventoryHolder tsih) {
+                    tsih.getSnapshotInventory().clear();
+                    tsih.update();   // write the emptied state so setType(AIR) can't drop items
+                }
+            } catch (Exception e) {
+                plugin.getLogger().warning("airOutSourceBlocks: failed to clear the container at "
+                    + b.getLocation() + " before removal (" + e.getMessage()
+                    + "); its contents will drop instead of riding along");
+            }
         }
         for (Block b : blocks) {
             if (FragileBlocks.isAttachable(b.getType())) b.setType(Material.AIR, false);
