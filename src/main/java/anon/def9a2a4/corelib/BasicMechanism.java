@@ -48,8 +48,9 @@ final class BasicMechanism implements Mechanism {
     private final Vector3f rotationAxis; // unit axis to rotate about — Y for doors/minecarts, X/Z for drawbridges
     private Matrix4f currentTransform = new Matrix4f(); // identity
 
-    // Per-tick movement scratch — reused every rotate()/repositionColliders() pass so a moving mechanism
-    // allocates ~nothing per block (the pattern battle-tested BlockShips-main uses). setTransformationMatrix
+    // Per-tick movement scratch — reused every rotate()/repositionColliders() pass so the display path
+    // allocates near-nothing per block (the pattern battle-tested BlockShips-main uses; the collider path
+    // still allocates carrier.getLocation() + a passenger list per collider). setTransformationMatrix
     // decomposes/copies the matrix, so a shared scratch is safe to hand it. Main-thread only; per instance,
     // so mechanisms never share these. NOT valid across a yield — read them within one synchronous pass.
     private final Matrix4f scratchBase = new Matrix4f();      // the per-block base dm
@@ -562,6 +563,11 @@ final class BasicMechanism implements Mechanism {
         mb.ghost = true;
         int index = blocks.size();
         blocks.add(mb);
+        // Keep the memoized total in step: an appended ghost carries real BlockData, so massOf(mb) is a real
+        // lookup and changes the sum. If the cache is still cold (-1) leave it — the next totalMass() sums
+        // fresh, including this block. (No animated-index update needed: ghosts carry null configs and land
+        // at the end, so no existing index shifts and no block becomes animated.)
+        if (totalMassCache >= 0) totalMassCache += mechanismRegistry.massOf(mb);
         Display d = mechanismRegistry.spawnMechBlockDisplay(parent.getLocation(), data, id, index, "display");
         parent.addPassenger(d);
         displaysPerBlock.add(new ArrayList<>(List.of(d)));

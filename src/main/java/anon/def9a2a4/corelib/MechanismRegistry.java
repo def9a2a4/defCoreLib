@@ -1547,9 +1547,14 @@ public class MechanismRegistry {
         // and addDrivenBaseOffset reads (pivot − vehicle) LIVE — so it MUST equal +0.5. A recovered driven vehicle
         // is commonly at a FRACTIONAL coord (physics deltas + buoyancy Y; alignToGrid snaps only on explicit
         // align/disassemble), so a plain floor+0.5 would shift the whole ship by the fractional remainder. Owned
-        // mechanisms use the block-center frame (floor+0.5); today only ships persist and ships are always driven,
-        // so the owned branch is defensive/unreached.
-        if (st.driven) {
+        // mechanisms use the block-center frame (floor+0.5). R1: a BLOCK-FREE (prefab) mechanism is a THIRD frame —
+        // assembleFromParts sets pivot = raw vehicle location (offset 0, no snap) and the consumer bakes the corner
+        // compensation into each part's localTransform because the base offset is 0. So a block-free mech must recover
+        // with pivot = raw vehicle (leave it) — applying the custom-ship +0.5 here would shift the whole prefab ½
+        // block diagonally, permanently. Gate the +0.5 on !st.blockFree.
+        if (st.blockFree) {
+            // leave pivot = raw vehicle location (offset 0), matching assembleFromParts
+        } else if (st.driven) {
             pivot.add(0.5, 0.5, 0.5);
         } else {
             pivot.setX(Math.floor(pivot.getX()) + 0.5);
