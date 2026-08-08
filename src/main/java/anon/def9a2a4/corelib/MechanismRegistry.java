@@ -1763,6 +1763,7 @@ public class MechanismRegistry {
      * each tick and once at assembly with {@code tickAge = 0} to place displays on the first frame.
      */
     void updateAnimatedDisplays(BasicMechanism mech, long tickAge) {
+        mech.refreshDrivenOffset(); // cache (pivot − vehicle) once so mech.addDrivenBaseOffset below doesn't re-read it per display
         for (int i = 0; i < mech.blockCount(); i++) {
             List<Display> displays = mech.displaysPerBlock.get(i);
             if (displays.isEmpty() || !displays.get(0).isValid()) continue;

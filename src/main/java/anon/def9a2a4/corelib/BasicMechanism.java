@@ -48,6 +48,20 @@ final class BasicMechanism implements Mechanism {
     private final Vector3f rotationAxis; // unit axis to rotate about — Y for doors/minecarts, X/Z for drawbridges
     private Matrix4f currentTransform = new Matrix4f(); // identity
 
+    // Per-tick movement scratch — reused every rotate()/repositionColliders() pass so a moving mechanism
+    // allocates ~nothing per block (the pattern battle-tested BlockShips-main uses). setTransformationMatrix
+    // decomposes/copies the matrix, so a shared scratch is safe to hand it. Main-thread only; per instance,
+    // so mechanisms never share these. NOT valid across a yield — read them within one synchronous pass.
+    private final Matrix4f scratchBase = new Matrix4f();      // the per-block base dm
+    private final Matrix4f scratchDisplay = new Matrix4f();   // each derived per-display matrix
+    private final Matrix4f scratchTransform = new Matrix4f(); // transformToMatrix dest in the hot loop
+    private final Vector3f scratchLocal = new Vector3f();
+    private final Vector3f scratchWorld = new Vector3f();
+    private @Nullable Location scratchColliderTarget;         // reused collider teleport target (lazy)
+    // Cached driven corner→center offset (pivot − vehicle), refreshed once per positioning pass by
+    // refreshDrivenOffset() so addDrivenBaseOffset applies it per block/display with no getLocation() alloc.
+    private double drivenOffX, drivenOffY, drivenOffZ;
+
     final Entity vehicle;
     final org.bukkit.entity.BlockDisplay parent; // invisible intermediary — all displays mount here
     final float rideOffset; // passenger riding offset — varies by vehicle entity type
@@ -146,13 +160,10 @@ final class BasicMechanism implements Mechanism {
 
     @Override
     public @Nullable BoundingBox getColliderBoxByBlock(int blockIndex) {
-        for (ColliderPair cp : colliders) {
-            if (cp.blockIndex() == blockIndex) {
-                Shulker s = cp.shulker();
-                return s.isValid() ? s.getBoundingBox() : null;
-            }
-        }
-        return null;
+        ColliderPair cp = colliderByBlock.get(blockIndex);
+        if (cp == null) return null;
+        Shulker s = cp.shulker();
+        return s.isValid() ? s.getBoundingBox() : null;
     }
 
     @Override
@@ -285,10 +296,11 @@ final class BasicMechanism implements Mechanism {
         Matrix4f rot = new Matrix4f().rotate((float) Math.toRadians(-yaw),
                 rotationAxis.x, rotationAxis.y, rotationAxis.z);
         this.currentTransform = rot;
+        refreshDrivenOffset(); // one vehicle.getLocation() for the whole pass, not one per block
 
         for (int i = 0; i < blocks.size(); i++) {
             MechanismBlockData mb = blocks.get(i);
-            Matrix4f dm = new Matrix4f(rot).mul(mb.localTransform);
+            Matrix4f dm = scratchBase.set(rot).mul(mb.localTransform);
             dm.m31(dm.m31() - rideOffset); // compensate vehicle passenger riding offset
             // Driven-mode corner-vehicle → center-pivot frame reconciliation (see addDrivenBaseOffset).
             // dm is the per-block base every primary/aux/block/banner display derives from, so this one
@@ -308,7 +320,7 @@ final class BasicMechanism implements Mechanism {
             if (group.isEmpty()) continue;
             Display primary = group.get(0);
             if (primary instanceof org.bukkit.entity.BlockDisplay) {
-                Matrix4f bdm = new Matrix4f(dm).translate(-0.5f, -0.5f, -0.5f);
+                Matrix4f bdm = scratchDisplay.set(dm).translate(-0.5f, -0.5f, -0.5f);
                 primary.setTransformationMatrix(bdm);
             } else if (mb.wallFacing != null) {
                 // Wall-mounted custom head: floor heads (wallFacing == null) are already center-bottom
@@ -319,7 +331,7 @@ final class BasicMechanism implements Mechanism {
                 // real vanilla skull; the moving ItemDisplay is unrotated by default, so without this the
                 // head renders facing the wrong way. rotateY is post-multiplied (applied to the model first,
                 // before the translate/dm), i.e. the head yaws about its own centre, then is positioned.
-                Matrix4f wdm = new Matrix4f(dm).translate(
+                Matrix4f wdm = scratchDisplay.set(dm).translate(
                     -mb.wallFacing.x * 0.25f, 0.25f, -mb.wallFacing.z * 0.25f);
                 wdm.rotateY(faceYawRadians(mb.wallFacing));
                 primary.setTransformationMatrix(wdm);
@@ -328,7 +340,7 @@ final class BasicMechanism implements Mechanism {
                 // 16-step yaw (already sign-corrected). Post-multiplied on a COPY of dm so it composes with
                 // the mechanism's rotation (swings with rotators/drawbridges) and doesn't corrupt aux displays.
                 // No wall translate — a floor head is already center-bottom correct.
-                Matrix4f fdm = new Matrix4f(dm);
+                Matrix4f fdm = scratchDisplay.set(dm);
                 fdm.rotateY(mb.floorHeadYaw);
                 primary.setTransformationMatrix(fdm);
             } else {
@@ -343,9 +355,9 @@ final class BasicMechanism implements Mechanism {
                     if (displayIdx >= group.size()) break;
                     var dec = mb.displayEntityConfigs.get(d);
                     if (dec.animation() != null) continue;
-                    Matrix4f extra = new Matrix4f(dm);
+                    Matrix4f extra = scratchDisplay.set(dm);
                     applyWallOffset(extra, mb.wallFacing, dec.wallOffset());
-                    extra.mul(transformToMatrix(dec.transform()));
+                    extra.mul(transformToMatrix(dec.transform(), scratchTransform));
                     group.get(displayIdx).setTransformationMatrix(extra);
                 }
             }
@@ -362,9 +374,9 @@ final class BasicMechanism implements Mechanism {
                     if (idx >= group.size()) break;
                     var bdc = mb.blockDisplayEntityConfigs.get(d);
                     if (bdc.animation() != null) continue;
-                    Matrix4f bd = new Matrix4f(dm);
+                    Matrix4f bd = scratchDisplay.set(dm);
                     applyWallOffset(bd, mb.wallFacing, bdc.wallOffset());
-                    bd.mul(transformToMatrix(bdc.transform()));
+                    bd.mul(transformToMatrix(bdc.transform(), scratchTransform));
                     group.get(idx).setTransformationMatrix(bd);
                 }
             }
@@ -380,9 +392,9 @@ final class BasicMechanism implements Mechanism {
                     Display bd = bannerGroup.get(b);
                     if (!bd.isValid()) continue;
                     BannerAttachment att = mb.banners.get(b);
-                    Matrix4f m = new Matrix4f(dm)
+                    Matrix4f m = scratchDisplay.set(dm)
                         .translate(att.anchorOffset().x, att.anchorOffset().y, att.anchorOffset().z)
-                        .mul(transformToMatrix(att.transformation()));
+                        .mul(transformToMatrix(att.transformation(), scratchTransform));
                     bd.setTransformationMatrix(m);
                 }
             }
@@ -409,10 +421,24 @@ final class BasicMechanism implements Mechanism {
      */
     void addDrivenBaseOffset(Matrix4f m) {
         if (!driven) return;
+        m.m30(m.m30() + (float) drivenOffX);
+        m.m31(m.m31() + (float) drivenOffY);
+        m.m32(m.m32() + (float) drivenOffZ);
+    }
+
+    /**
+     * Recompute the cached driven corner→center offset {@code (pivot − vehicle)} once per positioning pass,
+     * so {@link #addDrivenBaseOffset} can apply it per block/display without a {@code vehicle.getLocation()}
+     * allocation on each call. MUST be called at the start of every pass that will invoke
+     * {@code addDrivenBaseOffset} — {@link #rotate(float)} and {@code MechanismRegistry.updateAnimatedDisplays}.
+     * No-op unless {@code driven} (vehicle is guaranteed non-null then).
+     */
+    void refreshDrivenOffset() {
+        if (!driven) return;
         Location vl = vehicle.getLocation();
-        m.m30(m.m30() + (float) (pivot.getX() - vl.getX()));
-        m.m31(m.m31() + (float) (pivot.getY() - vl.getY()));
-        m.m32(m.m32() + (float) (pivot.getZ() - vl.getZ()));
+        drivenOffX = pivot.getX() - vl.getX();
+        drivenOffY = pivot.getY() - vl.getY();
+        drivenOffZ = pivot.getZ() - vl.getZ();
     }
 
     /**
@@ -433,9 +459,16 @@ final class BasicMechanism implements Mechanism {
             // the tags) must not throw mid-tick and freeze the whole mechanism.
             if (bi < 0 || bi >= blocks.size()) continue;
             MechanismBlockData mb = blocks.get(bi);
-            Vector3f local = mb.localTransform.getTranslation(new Vector3f()).add(mb.collision.offset());
-            Vector3f worldOff = currentTransform.transformPosition(local, new Vector3f());
-            Location target = pivot.clone().add(worldOff.x, worldOff.y - 0.5, worldOff.z);
+            Vector3f local = mb.localTransform.getTranslation(scratchLocal).add(mb.collision.offset());
+            Vector3f worldOff = currentTransform.transformPosition(local, scratchWorld);
+            if (scratchColliderTarget == null) scratchColliderTarget = new Location(pivot.getWorld(), 0, 0, 0);
+            Location target = scratchColliderTarget;
+            target.setWorld(pivot.getWorld());
+            target.setX(pivot.getX() + worldOff.x);
+            target.setY(pivot.getY() + worldOff.y - 0.5);
+            target.setZ(pivot.getZ() + worldOff.z);
+            target.setYaw(pivot.getYaw());   // match the old pivot.clone() (colliders don't rotate)
+            target.setPitch(pivot.getPitch());
             Entity carrier = cp.carrier();
             // Movement threshold: skip a no-op teleport. Teleporting a carrier every tick (even at rest)
             // is needless churn — and on pre-1.21.9 each teleport ejects/re-adds passengers, which
@@ -757,8 +790,7 @@ final class BasicMechanism implements Mechanism {
 
     /** The collider (carrier+shulker) for a block index, or null if that block has none. */
     private @Nullable ColliderPair colliderForBlock(int blockIndex) {
-        for (ColliderPair cp : colliders) if (cp.blockIndex() == blockIndex) return cp;
-        return null;
+        return colliderByBlock.get(blockIndex);
     }
 
     @Override
@@ -1515,7 +1547,13 @@ final class BasicMechanism implements Mechanism {
     Matrix4f currentTransform() { return currentTransform; }
 
     static Matrix4f transformToMatrix(org.bukkit.util.Transformation t) {
-        return new Matrix4f()
+        return transformToMatrix(t, new Matrix4f());
+    }
+
+    /** As {@link #transformToMatrix(org.bukkit.util.Transformation)} but writes into {@code dest} (reset
+     *  first) instead of allocating — for the per-tick hot loop that reuses a scratch matrix. */
+    static Matrix4f transformToMatrix(org.bukkit.util.Transformation t, Matrix4f dest) {
+        return dest.identity()
                 .translate(t.getTranslation())
                 .rotate(t.getLeftRotation())
                 .scale(t.getScale())

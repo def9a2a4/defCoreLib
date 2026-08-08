@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -236,7 +237,7 @@ final class RotationBlocks {
             registry.getPlugin().getLogger().warning("RotationBlocks: block '" + blockId + "' not found — skipping overlay");
             return;
         }
-        registry.overlayType(block.toBuilder()
+        CustomHeadBlock.Builder builder = block.toBuilder()
             .drillable(false)
             .reactsToNeighbors(true)
             .onNeighborChange((b, face) -> reconcileClutchToRedstone(b, registry, network, blockId))
@@ -245,18 +246,16 @@ final class RotationBlocks {
                     return wrenchInteract(b, event, network, registry);
                 return false;
             })
-            .onChunkLoad((b, state) -> {
-                network.addNode(b, blockId, RotationNetwork.axisFromState(state),
-                    RotationNetwork.NodeRole.TRANSMITTER, 0, false);
-                // A redstone change while the chunk was unloaded fired no neighbor event, so `state` may be a
-                // stale locked_/idle_. Reconcile to live redstone ONE TICK LATER — reading getBlockPower()
-                // mid-load can see a not-yet-loaded neighbour and mis-flip a legitimately-locked clutch.
-                scheduleRedstoneReconcile(b, registry, blockId,
-                    () -> reconcileClutchToRedstone(b, registry, network, blockId));
-            })
             .onChunkUnload(b -> network.removeNode(CustomBlockRegistry.LocationKey.of(b)))
-            .onBlockRemoved((b, state) -> network.removeNode(CustomBlockRegistry.LocationKey.of(b)))
-            .build());
+            .onBlockRemoved((b, state) -> network.removeNode(CustomBlockRegistry.LocationKey.of(b)));
+        // A redstone change while the chunk was unloaded fires no neighbor event, so the saved `state` may
+        // be a stale locked_/idle_. addNode wires the network from that state; the reconcile then corrects
+        // to live redstone once entities are present (see wireRedstoneOnLoad).
+        wireRedstoneOnLoad(builder,
+            (b, state) -> network.addNode(b, blockId, RotationNetwork.axisFromState(state),
+                RotationNetwork.NodeRole.TRANSMITTER, 0, false),
+            b -> reconcileClutchToRedstone(b, registry, network, blockId));
+        registry.overlayType(builder.build());
     }
 
     /** Reconcile a clutch's lock to live redstone: powered ⇒ {@code locked_}, unpowered ⇒ {@code idle_}.
@@ -282,17 +281,24 @@ final class RotationBlocks {
         recalcIfKnown(b, network);
     }
 
-    /** Run {@code reconcile} ONE TICK after a chunk load: reading getBlockPower() during the load itself can
-     *  see a not-yet-loaded neighbour and mis-flip, so defer until neighbours settle. Skips at shutdown (no
-     *  next tick) and if the block unloaded or is no longer {@code blockId} by the time it fires. */
-    private static void scheduleRedstoneReconcile(Block b, CustomBlockRegistry registry, String blockId,
-                                                  Runnable reconcile) {
-        if (!registry.getPlugin().isEnabled()) return; // no next tick at shutdown
-        registry.getPlugin().getServer().getScheduler().runTask(registry.getPlugin(), () -> {
-            if (!b.getWorld().isChunkLoaded(b.getX() >> 4, b.getZ() >> 4)) return; // unloaded again since
-            CustomHeadBlock t = registry.getTypeFromBlock(b);
-            if (t != null && blockId.equals(t.fullId())) reconcile.run();
-        });
+    /** Wire a redstone-reactive rotation overlay's load-time behaviour, covering BOTH dispatch paths once.
+     *  {@code addNode} wires the network from the SAVED (possibly stale) state — needs no entities, so it
+     *  runs on every chunk load. {@code reconcile} corrects state/network/display to LIVE redstone, but it
+     *  mutates display entities, so it may run only once a chunk's entities are loaded:
+     *   - {@code onChunkLoad} reconciles inline ONLY when {@link org.bukkit.Chunk#isEntitiesLoaded()} — true
+     *     on placement, mechanism-landing and the enable-time sweep (entities already present ⇒ dupe-safe).
+     *     Those paths fire onChunkLoad but never onEntitiesLoad, so this keeps them reconciling.
+     *   - {@code onEntitiesLoad} covers the async chunk-load case, where entities arrive after ChunkLoad;
+     *     reconciling before then would {@code removeByTag}-miss the not-yet-loaded display and spawn a
+     *     permanent duplicate.
+     *  A double reconcile on the sweep path (both hooks fire) is a harmless no-op — reconcile is drift-gated
+     *  and idempotent. */
+    private static void wireRedstoneOnLoad(CustomHeadBlock.Builder b,
+                                           BiConsumer<Block, String> addNode, Consumer<Block> reconcile) {
+        b.onChunkLoad((blk, state) -> {
+            addNode.accept(blk, state);
+            if (blk.getChunk().isEntitiesLoaded()) reconcile.accept(blk);
+        }).onEntitiesLoad((blk, state) -> reconcile.accept(blk));
     }
 
     // ──────────────────────────────────────────────────────────────────────
@@ -1926,57 +1932,63 @@ final class RotationBlocks {
         String blockId = "mech:redstone_motor";
         CustomHeadBlock block = registry.getType(blockId);
         if (block == null) { warn(registry, blockId); return; }
-        registry.overlayType(block.toBuilder()
+        CustomHeadBlock.Builder builder = block.toBuilder()
             .drillable(false)
             .reactsToNeighbors(true)
-            .onNeighborChange((b, face) -> reconcileMotorToRedstone(b, registry, network, blockId, motorPower))
+            // Motor follows the ratchet convention: recalc on every neighbor change. reconcile returns
+            // `drifted` — on a real flip it already re-solved the network (removeNode+addNode), so recalc
+            // only when it did NOT drift. (The clutch recalcs only on an actual lock change, hence no bool.)
+            .onNeighborChange((b, face) -> {
+                if (!reconcileMotorToRedstone(b, registry, network, blockId, motorPower))
+                    recalcIfKnown(b, network);
+            })
             .onInteract((b, event) -> {
                 if (isWrench(event.getPlayer().getInventory().getItemInMainHand()))
                     return wrenchInteract(b, event, network, registry);
                 return false;
             })
-            .onChunkLoad((b, state) -> {
+            .onChunkUnload(b -> network.removeNode(CustomBlockRegistry.LocationKey.of(b)))
+            .onBlockRemoved((b, state) -> network.removeNode(CustomBlockRegistry.LocationKey.of(b)));
+        // A redstone change while unloaded fires no neighbor event, so the saved `state` may be stale — a
+        // switched-off motor would resume as a phantom SOURCE. addNode wires from that state; the reconcile
+        // corrects to live redstone once entities are present (see wireRedstoneOnLoad). The on-load callers
+        // ignore the `drifted` return — addNode already wired the network, and a drift re-solves it itself.
+        wireRedstoneOnLoad(builder,
+            (b, state) -> {
                 boolean spinning = state != null && state.startsWith("spinning_");
                 network.addNode(b, blockId, RotationNetwork.axisFromState(state != null ? state : "spinning_y"),
                     spinning ? RotationNetwork.NodeRole.SOURCE : RotationNetwork.NodeRole.TRANSMITTER,
                     spinning ? motorPower : 0, false);
-                // A redstone change while unloaded fired no neighbor event, so `state` may be stale — a
-                // switched-off motor would resume as a phantom power SOURCE. Reconcile to live redstone ONE
-                // TICK LATER — reading getBlockPower() mid-load can see a not-yet-loaded neighbour and mis-flip.
-                scheduleRedstoneReconcile(b, registry, blockId,
-                    () -> reconcileMotorToRedstone(b, registry, network, blockId, motorPower));
-            })
-            .onChunkUnload(b -> network.removeNode(CustomBlockRegistry.LocationKey.of(b)))
-            .onBlockRemoved((b, state) -> network.removeNode(CustomBlockRegistry.LocationKey.of(b)))
-            .build());
+            },
+            b -> reconcileMotorToRedstone(b, registry, network, blockId, motorPower));
+        registry.overlayType(builder.build());
     }
 
     /** Reconcile a redstone motor to live redstone — inverted: powered ⇒ {@code idle_}/TRANSMITTER,
-     *  unpowered ⇒ {@code spinning_}/SOURCE. Shared by onNeighborChange and the deferred on-load reconcile;
+     *  unpowered ⇒ {@code spinning_}/SOURCE. Shared by onNeighborChange and the on-load reconcile;
      *  syncs the network node role (removeNode+addNode) so a switched-off motor stops supplying phantom
-     *  power. No-op unless the state actually drifted. */
-    private static void reconcileMotorToRedstone(Block b, CustomBlockRegistry registry,
-                                                 RotationNetwork network, String blockId, int motorPower) {
+     *  power. Returns {@code true} if the state actually DRIFTED — in which case it has already re-solved
+     *  the network itself, so the caller must NOT also recalc; {@code false} = no-op (caller may recalc). */
+    private static boolean reconcileMotorToRedstone(Block b, CustomBlockRegistry registry,
+                                                    RotationNetwork network, String blockId, int motorPower) {
         boolean rsPowered = b.getBlockPower() > 0;
         String state = registry.getState(b);
-        if (state == null) return;
+        if (state == null) return false;
         String axis = state.substring(state.lastIndexOf('_') + 1);
         // Inverted: redstone ON = idle (disabled), OFF = spinning (active)
         String target = rsPowered ? "idle_" + axis : "spinning_" + axis;
-        if (!target.equals(state)) {
-            registry.setState(b, target);
-            CustomHeadBlock type = registry.getTypeFromBlock(b);
-            if (type != null) registry.applyConfig(b, type, target, 0);
-            // Sync the network node role with the new visual — otherwise a switched-off (idle) motor keeps
-            // supplying power as a stale SOURCE. Mirrors the engine's removeNode+addNode discipline.
-            CustomBlockRegistry.LocationKey key = CustomBlockRegistry.LocationKey.of(b);
-            network.removeNode(key);
-            network.addNode(b, blockId, RotationNetwork.axisFromState(target),
-                rsPowered ? RotationNetwork.NodeRole.TRANSMITTER : RotationNetwork.NodeRole.SOURCE,
-                rsPowered ? 0 : motorPower, false);
-            return;
-        }
-        recalcIfKnown(b, network);
+        if (target.equals(state)) return false;
+        registry.setState(b, target);
+        CustomHeadBlock type = registry.getTypeFromBlock(b);
+        if (type != null) registry.applyConfig(b, type, target, 0);
+        // Sync the network node role with the new visual — otherwise a switched-off (idle) motor keeps
+        // supplying power as a stale SOURCE. Mirrors the engine's removeNode+addNode discipline.
+        CustomBlockRegistry.LocationKey key = CustomBlockRegistry.LocationKey.of(b);
+        network.removeNode(key);
+        network.addNode(b, blockId, RotationNetwork.axisFromState(target),
+            rsPowered ? RotationNetwork.NodeRole.TRANSMITTER : RotationNetwork.NodeRole.SOURCE,
+            rsPowered ? 0 : motorPower, false);
+        return true;
     }
 
     // ──────────────────────────────────────────────────────────────────────
