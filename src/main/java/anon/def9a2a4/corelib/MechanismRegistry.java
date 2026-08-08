@@ -593,7 +593,13 @@ public class MechanismRegistry {
                 // container (e.g. the dynamo's comparator-drive barrel) safe when a glued structure
                 // carries it — its plugin-owned filler is wiped by onBlockRemoved on pickup (via
                 // airOutSourceBlocks) and refilled by its own tick on landing, never copied/restored.
-                Inventory orig = c.getInventory();
+                // A DOUBLE chest's getInventory() returns the COMBINED 54-slot inventory, and a mechanism
+                // scans BOTH halves — so each half would snapshot all 54 items and restore them, duplicating
+                // the cargo. getBlockInventory() returns just THIS chest block's own 27 slots (identical to
+                // getInventory() for a single chest). Other containers have no double variant, so plain
+                // getInventory() is correct for them.
+                Inventory orig = (c instanceof org.bukkit.block.Chest chest) ? chest.getBlockInventory()
+                                                                             : c.getInventory();
                 // Preserve the container's GUI TYPE (hopper 5, dropper/dispenser 3×3, furnace 3, …) — not
                 // just its size — so a moved/recovered container opens its real inventory, not a chest.
                 storage = createTypedInventory(null, orig.getType(), orig.getSize(), null);
