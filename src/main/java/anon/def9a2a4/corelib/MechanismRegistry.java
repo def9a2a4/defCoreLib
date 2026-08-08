@@ -406,21 +406,40 @@ public class MechanismRegistry {
      * A single member of a block-free, model-driven {@link #assembleFromParts} assembly — pure data, unlike a
      * world {@link Block}. {@code blockData} is the block appearance (null for a standalone display part, e.g.
      * a banner/head ItemDisplay); {@code localTransform} is an arbitrary 4×4 (translation/rotation/scale/shear)
-     * relative to the vehicle origin; {@code collision} is the collider ({@link CollisionConfig#NONE} for none);
+     * relative to the vehicle origin; {@code collision} is the collider ({@link CollisionConfig#NONE} for none)
+     * — NOTE the collider honors only the transform's <em>translation and scale</em>: a shulker box is
+     * axis-aligned (not rotatable/shearable), so a rotated or sheared part renders correctly (displays honor the
+     * full 4×4) but gets a grid-aligned hitbox that won't match the visual (clip/bump mismatch, no crash), and
+     * two off-grid parts can share a floored cell index. Only affects genuinely tilted/sheared parts; normal
+     * grid-aligned blocks are exact;
      * {@code displayItem}/{@code displayMode} render a standalone display part (ignored when {@code blockData}
-     * is set). Seats are designated by the consumer post-assembly via {@link Mechanism#designateSeat}.
+     * is set). {@code storageType}/{@code storageSize}/{@code storageTitle} give a block part a typed, named
+     * cargo inventory (null {@code storageType} = no storage). Seats are designated by the consumer
+     * post-assembly via {@link Mechanism#designateSeat}.
      */
     public record PartSpec(@Nullable BlockData blockData, Matrix4f localTransform, CollisionConfig collision,
                            @Nullable ItemStack displayItem,
-                           @Nullable ItemDisplayTransform displayMode) {
-        /** A plain block part: a block appearance + collider, no standalone display. */
+                           @Nullable ItemDisplayTransform displayMode,
+                           org.bukkit.event.inventory.@Nullable InventoryType storageType,
+                           int storageSize, @Nullable String storageTitle) {
+        /** A plain block part: a block appearance + collider, no standalone display, no storage. */
         public static PartSpec block(BlockData blockData, Matrix4f localTransform, CollisionConfig collision) {
-            return new PartSpec(blockData, localTransform, collision, null, null);
+            return new PartSpec(blockData, localTransform, collision, null, null, null, 0, null);
+        }
+        /** A block part with a typed, named storage inventory (a prefab ship's cargo container). The engine
+         *  builds the inventory at assembly via {@link #createTypedInventory} and persists it, so cargo
+         *  survives moves and crash recovery. {@code storageSize} is used only for size-based GUIs
+         *  (CHEST/BARREL, e.g. 54 for a double chest); fixed-shape types size themselves. */
+        public static PartSpec block(BlockData blockData, Matrix4f localTransform, CollisionConfig collision,
+                                     org.bukkit.event.inventory.@Nullable InventoryType storageType,
+                                     int storageSize, @Nullable String storageTitle) {
+            return new PartSpec(blockData, localTransform, collision, null, null,
+                storageType, storageSize, storageTitle);
         }
         /** A standalone display part: an ItemDisplay ({@code item}, {@code mode}) with no backing block. */
         public static PartSpec display(ItemStack item, ItemDisplayTransform mode,
                                        Matrix4f localTransform, CollisionConfig collision) {
-            return new PartSpec(null, localTransform, collision, item, mode);
+            return new PartSpec(null, localTransform, collision, item, mode, null, 0, null);
         }
     }
 
@@ -453,6 +472,15 @@ public class MechanismRegistry {
                     // spawn selector renders it (and recovery re-adopts the persistent entity by tag).
                     mb.displayItem = p.displayItem();
                     mb.displayMode = p.displayMode();
+                }
+                if (p.storageType() != null) {
+                    // Typed, named cargo inventory for a prefab container part (no world block to capture
+                    // from). snapshotState persists storage.getType()/storageTitle so it survives recovery,
+                    // where rebuildBlocks re-derives the GUI shape from the saved type.
+                    net.kyori.adventure.text.Component title = p.storageTitle() != null
+                        ? net.kyori.adventure.text.Component.text(p.storageTitle()) : null;
+                    mb.storage = createTypedInventory(null, p.storageType(), p.storageSize(), title);
+                    mb.storageTitle = p.storageTitle();
                 }
                 blockData.add(mb);
             }
@@ -1693,13 +1721,26 @@ public class MechanismRegistry {
                 try {
                     ItemStack[] items = ItemStack.deserializeItemsFromBytes(b.storage);
                     if (items.length > 0) {
-                        // Recovery has no live BlockState, so re-derive the GUI shape from the saved
-                        // material — mirrors assembleCore, which types off the live inventory. Sizing by
+                        // Recovery has no live BlockState, so re-derive the GUI shape. Prefer the persisted
+                        // storage type (captured from the live inventory at assembly — exact for double
+                        // chests and the only source for block-free prefab cargo, whose material is null and
+                        // would otherwise fold to CHEST); fall back to the block material. Sizing by
                         // items.length alone throws for the fixed-shape containers (hopper/brewing 5,
                         // furnace family 3), and the catch below would turn that into a silently EMPTY
                         // container, i.e. item loss on every chunk recovery.
-                        storage = createTypedInventory(null,
-                            containerTypeOf(bd == null ? null : bd.getMaterial()), items.length, null);
+                        org.bukkit.event.inventory.InventoryType invType;
+                        if (b.storageType != null) {
+                            try {
+                                invType = org.bukkit.event.inventory.InventoryType.valueOf(b.storageType);
+                            } catch (IllegalArgumentException ex) {
+                                invType = containerTypeOf(bd == null ? null : bd.getMaterial());
+                            }
+                        } else {
+                            invType = containerTypeOf(bd == null ? null : bd.getMaterial());
+                        }
+                        net.kyori.adventure.text.Component title = b.storageTitle != null
+                            ? net.kyori.adventure.text.Component.text(b.storageTitle) : null;
+                        storage = createTypedInventory(null, invType, items.length, title);
                         storage.setContents(items.length > storage.getSize()
                             ? java.util.Arrays.copyOf(items, storage.getSize()) : items);
                     }
