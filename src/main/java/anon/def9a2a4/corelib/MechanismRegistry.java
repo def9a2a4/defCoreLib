@@ -1307,13 +1307,16 @@ public class MechanismRegistry {
             if (entity.getScoreboardTags().contains("corelib:mechanism_minecart")) continue;
             for (String tag : entity.getScoreboardTags()) {
                 if (!tag.startsWith("corelib:mech:")) continue;
-                // Tag format: "corelib:mech:{uuid}:{index}:{role}" or "corelib:mech:{uuid}:{role}"
-                // Extract the UUID (3rd colon-separated part, but UUID contains hyphens not colons)
-                // Split by ":" gives ["corelib", "mech", "{uuid}", ...]
-                String[] parts = tag.split(":");
-                if (parts.length < 3) continue;
+                // Tag format: "corelib:mech:{uuid}:{index}:{role}" or "corelib:mech:{uuid}:{role}". Peel the
+                // UUID with substring/indexOf — no split()/regex alloc on this per-entity per-EntitiesLoad
+                // path: a UUID has hyphens but no colons, so the first ':' after the "corelib:mech:" prefix
+                // terminates it (mirrors attemptRecover and BlockShips' ShipTags.extractShipId). The
+                // try/catch below subsumes the old parts.length<3 guard: an empty/garbage id throws → skipped.
+                String rest = tag.substring("corelib:mech:".length());
+                int c = rest.indexOf(':');
+                String idStr = (c < 0) ? rest : rest.substring(0, c);
                 try {
-                    UUID mechId = UUID.fromString(parts[2]);
+                    UUID mechId = UUID.fromString(idStr);
                     // Never reap an entity whose mechanism is active, currently being recovered, or still
                     // has an on-disk state file (a persisted mechanism whose pivot chunk hasn't loaded yet —
                     // its entities must survive until recovery adopts them). Persistence writes are

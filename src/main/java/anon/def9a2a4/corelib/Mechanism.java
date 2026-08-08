@@ -160,6 +160,24 @@ public interface Mechanism {
     @Nullable BoundingBox getColliderBoxByBlock(int blockIndex);
 
     /**
+     * A fresh snapshot of the live world-space bounding boxes of ALL this mechanism's colliders (invalid /
+     * gone shulkers skipped), for a consumer's per-tick collision math. Order is unspecified. The default
+     * walks {@link #blockCount()} via {@link #getColliderBoxByBlock(int)} (O(blocks)); {@link BasicMechanism}
+     * overrides it to iterate its collider list directly (O(collider-count) — cheaper when blocks ≫ colliders,
+     * and it skips the per-index lookup). A fresh list each call: safe to hold for the current pass, and it
+     * never aliases another mechanism's snapshot.
+     */
+    default List<BoundingBox> colliderBoxes() {
+        List<BoundingBox> out = new java.util.ArrayList<>();
+        int n = blockCount();
+        for (int i = 0; i < n; i++) {
+            BoundingBox b = getColliderBoxByBlock(i);
+            if (b != null) out.add(b);
+        }
+        return out;
+    }
+
+    /**
      * The live collider shulker entity for the given block index, or {@code null} if that block has no
      * collider (or its shulker is gone). Keyed on BLOCK INDEX (stable across recovery). Lets a consumer
      * re-parent leashes onto the exact per-block collider (e.g. transferring leads from a source fence to

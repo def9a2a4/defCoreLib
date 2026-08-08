@@ -179,6 +179,19 @@ final class BasicMechanism implements Mechanism {
     }
 
     @Override
+    public List<BoundingBox> colliderBoxes() {
+        // O(collider-count), not O(blockCount) with per-index map lookups: iterate the collider list
+        // directly (as native BlockShips does). Fresh list — never a shared scratch, so two ships' snapshots
+        // held live at once by ShipCollisionCoordinator can't alias. Invalid/gone shulkers skipped.
+        List<BoundingBox> out = new ArrayList<>(colliders.size());
+        for (ColliderPair cp : colliders) {
+            Shulker s = cp.shulker();
+            if (s.isValid()) out.add(s.getBoundingBox());
+        }
+        return out;
+    }
+
+    @Override
     public @Nullable Shulker colliderEntity(int blockIndex) {
         ColliderPair cp = colliderForBlock(blockIndex);
         return (cp != null && cp.shulker().isValid()) ? cp.shulker() : null;
