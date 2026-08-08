@@ -42,6 +42,14 @@ final class MechanismState {
     int entityCount;                // total persistent entities at save time (vehicle+parent+displays+banners+
                                     // colliders×2) — a recovery-completeness check (BlockShips' entity_count).
     @Nullable UUID vehicleUuid;     // recovery hint (owned marker ArmorStand, or external cart/ship vehicle)
+    // (pivot − vehicle) at save time — the frame constant addDrivenBaseOffset reads LIVE, so recovery must
+    // reproduce it EXACTLY. Recorded rather than re-derived because it is a lifetime invariant (both
+    // repositionDriven branches and updateFromVehicle preserve it) while the saved PIVOT is not: a state file
+    // can be minutes stale where the vehicle's own NBT is always fresh. So recovery keeps taking position from
+    // the live vehicle and takes only this constant from disk. Absent (hasPivotDelta false) ⇒ a pre-existing
+    // file, and recovery falls back to its historical synthesis.
+    boolean hasPivotDelta;
+    double dpx, dpy, dpz;
     final List<BlockRec> blocks = new ArrayList<>();
 
     // Rotation-exact recovery half-extent (blocks), cached; DERIVED from blocks[].localTransform, never
@@ -52,10 +60,13 @@ final class MechanismState {
      * Half-edge (blocks) of the cube {@code attemptRecover} queries around the pivot to gather this
      * mechanism's surviving entities. An entity sits at {@code pivot + R·offset}; over ALL rotations R a
      * single world axis can receive the offset's full EUCLIDEAN MAGNITUDE, so the bound must be the max
-     * {@code √(x²+y²+z²)} of any block offset (a max-component bound under-covers by up to √3× and silently
-     * drops a rotated part). Plus 16 blocks of interpolation-drift + collider slack; keeps a 16-block floor.
-     * Clamped to a far defensive bound (a real mechanism can't have a part 512 blocks out; this only guards
-     * a corrupt localTransform from producing a world-sized query) — logged, never silently truncated.
+     * {@code √(x²+y²+z²)} of any entity offset (a max-component bound under-covers by up to √3× and silently
+     * drops a rotated part). Computed EXACT for both a block's anchor and its collider — the collider carrier
+     * sits at {@code localOffset + collision.offset} (rotated), so that offset is folded in (it carries
+     * seats/riders — the worst part to drop). Plus 16 blocks of slack budgeting the collider's world
+     * {@code −0.5·ŷ}, the sub-block display/banner model transforms, and interpolation drift; keeps a 16-block
+     * floor. Clamped to a far defensive bound (a real mechanism can't have a part 512 blocks out; this only
+     * guards a corrupt localTransform from producing a world-sized query) — logged, never silently truncated.
      */
     double recoveryHalf() {
         if (recoveryHalf < 0) {
@@ -63,6 +74,10 @@ final class MechanismState {
             for (BlockRec b : blocks) {
                 double x = b.localTransform[12], y = b.localTransform[13], z = b.localTransform[14];
                 mag2 = Math.max(mag2, x * x + y * y + z * z);
+                if (b.colEnabled) { // collider sits at localOffset + collision.offset (rotated) — fold it in exactly
+                    double cx = x + b.colOffX, cy = y + b.colOffY, cz = z + b.colOffZ;
+                    mag2 = Math.max(mag2, cx * cx + cy * cy + cz * cz);
+                }
             }
             double h = Math.sqrt(mag2) + 16.0;
             if (h > 512.0) {
@@ -126,6 +141,7 @@ final class MechanismState {
         s.set("owns_vehicle", ownsVehicle);
         s.set("driven", driven);
         if (blockFree) s.set("block_free", true);
+        if (hasPivotDelta) s.set("pivot_delta", List.of(dpx, dpy, dpz));
         s.set("entity_count", entityCount);
         if (vehicleUuid != null) s.set("vehicle_uuid", vehicleUuid.toString());
         List<Object> blockList = new ArrayList<>(blocks.size());
@@ -177,6 +193,12 @@ final class MechanismState {
             st.ownsVehicle = s.getBoolean("owns_vehicle");
             st.driven = s.getBoolean("driven");
             st.blockFree = s.getBoolean("block_free");
+            // getDoubleList returns an EMPTY list for a missing key (never null), so size is the presence test.
+            List<Double> pd = s.getDoubleList("pivot_delta");
+            if (pd.size() >= 3) {
+                st.hasPivotDelta = true;
+                st.dpx = pd.get(0); st.dpy = pd.get(1); st.dpz = pd.get(2);
+            }
             st.entityCount = s.getInt("entity_count");
             String vu = s.getString("vehicle_uuid");
             if (vu != null) st.vehicleUuid = UUID.fromString(vu);

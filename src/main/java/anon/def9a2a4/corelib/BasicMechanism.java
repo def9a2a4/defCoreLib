@@ -605,6 +605,20 @@ final class BasicMechanism implements Mechanism {
         st.type = type;
         st.worldName = pivot.getWorld() != null ? pivot.getWorld().getName() : "world";
         st.px = pivot.getX(); st.py = pivot.getY(); st.pz = pivot.getZ();
+        // Record (pivot − vehicle) so recovery reproduces this mechanism's frame constant exactly instead of
+        // synthesizing one. Assembly fixes it at floor(v0)+0.5 − v0, which is +0.5 ONLY for a vehicle built on
+        // an integer corner — true of a BlockShips wheel, false of assembleFromParts (raw vehicle location ⇒ 0)
+        // and of an external cart. Same-world is not guaranteed: a consumer can teleport the vehicle across
+        // worlds and snapshot before the next repositionDriven re-bases the pivot, and a cross-world subtract
+        // is meaningless — leave the flag false there so recovery uses its fallback. A removed entity still
+        // reports its last Location, so entity validity is not required here.
+        if (vehicle != null && vehicle.getWorld().equals(pivot.getWorld())) {
+            Location vl = vehicle.getLocation();
+            st.hasPivotDelta = true;
+            st.dpx = pivot.getX() - vl.getX();
+            st.dpy = pivot.getY() - vl.getY();
+            st.dpz = pivot.getZ() - vl.getZ();
+        }
         st.axisX = rotationAxis.x; st.axisY = rotationAxis.y; st.axisZ = rotationAxis.z;
         st.currentYaw = currentYaw;
         st.rideOffset = rideOffset;

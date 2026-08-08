@@ -434,8 +434,9 @@ public class MechanismRegistry {
      * ({@link Mechanism#designateSeat}). The pivot is the vehicle's raw location (no block-center snap):
      * parts carry arbitrary off-grid transforms authored relative to the vehicle origin.
      *
-     * <p>Standalone display parts (null {@code blockData}) require the nullable-block support added in a
-     * follow-up; today they throw {@link UnsupportedOperationException}.
+     * <p>Standalone display parts (null {@code blockData}) are supported: they render as their descriptor's
+     * {@code displayItem}/{@code displayMode} ItemDisplay via the null-{@code blockData} branch of the spawn
+     * selector, and every block-data dereference (mass, block-light, world-cell) skips them.
      */
     public Mechanism assembleFromParts(String type, List<PartSpec> parts, Entity vehicle, float rideOffset) {
         UUID mechId = UUID.randomUUID();
@@ -1552,7 +1553,19 @@ public class MechanismRegistry {
         // compensation into each part's localTransform because the base offset is 0. So a block-free mech must recover
         // with pivot = raw vehicle (leave it) — applying the custom-ship +0.5 here would shift the whole prefab ½
         // block diagonally, permanently. Gate the +0.5 on !st.blockFree.
-        if (st.blockFree) {
+        //
+        // R2: all three branches below are now the LEGACY fallback, kept only for state files written before
+        // the delta was persisted. They each SYNTHESIZE the frame constant from the mechanism's category, which
+        // only works while every member of a category agrees on it — and that stopped being true once
+        // assembleFromParts introduced a third frame (R1 above is that discovery). A recorded delta needs no
+        // category: it is whatever assembly actually established, so it is correct for a corner-built ship, a
+        // centre-built prefab, and an external cart on rails alike (the last is why the `else` branch is also
+        // wrong in principle — floor(v_live)+0.5 reproduces floor(v0)+0.5 only when the two share a fractional
+        // part, and a cart generally does not). Position still comes from the LIVE vehicle either way; only the
+        // constant comes from disk, so the drifted-ship property above is preserved.
+        if (st.hasPivotDelta) {
+            pivot.add(st.dpx, st.dpy, st.dpz);
+        } else if (st.blockFree) {
             // leave pivot = raw vehicle location (offset 0), matching assembleFromParts
         } else if (st.driven) {
             pivot.add(0.5, 0.5, 0.5);
