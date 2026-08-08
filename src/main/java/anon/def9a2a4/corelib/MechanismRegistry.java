@@ -1464,6 +1464,24 @@ public class MechanismRegistry {
         for (int i = 0; i < n; i++) {
             List<Display> group = new ArrayList<>();
             Display primary = primaries.get(i);
+            if (primary == null) {
+                // F7: this block's primary display was permanently lost, but item/block extras or a banner
+                // survived. Without a valid index-0 primary, rotate()/updateAnimatedDisplays would mis-type the
+                // first surviving extra AS the primary (applying BlockDisplay/head positioning to it), and an
+                // empty group would also skip this block's banner layout. Spawn an invisible AIR primary (mirroring
+                // the head-block AIR-primary in assembleCore) so the index-0 invariant holds and the survivors
+                // render/position correctly. Only when something actually survived for this block.
+                TreeMap<Integer, Display> ieChk = itemExtras.get(i);
+                TreeMap<Integer, Display> beChk = blockExtras.get(i);
+                TreeMap<Integer, Display> bnChk = banners.get(i);
+                boolean hasSurvivors = (ieChk != null && !ieChk.isEmpty())
+                    || (beChk != null && !beChk.isEmpty())
+                    || (bnChk != null && !bnChk.isEmpty());
+                if (hasSurvivors) {
+                    primary = spawnMechBlockDisplay(vehicle.getLocation(), Material.AIR.createBlockData(),
+                        st.mechId, i, "display");   // repositioned by rotate() below; mounted in the passenger loop
+                }
+            }
             if (primary != null) group.add(primary);            // index 0 = primary (rotate() reads group.get(0))
             TreeMap<Integer, Display> ie = itemExtras.get(i);
             if (ie != null) group.addAll(ie.values());

@@ -713,6 +713,9 @@ final class BasicMechanism implements Mechanism {
                 box.getMaxX(), box.getMaxY() + 0.30, box.getMaxZ());
             for (Entity e : w.getNearbyEntities(top)) {
                 if (isMechanismEntity(e)) continue;   // never lift ANY mechanism's own colliders/carriers/etc.
+                // A passenger (e.g. a player SEATED on a seat shulker) is already carried up by its vehicle;
+                // teleporting it here would just eject it from the seat. Skip anything that's already riding.
+                if (e.getVehicle() != null) continue;
                 riders.add(e);
             }
         }
