@@ -202,6 +202,17 @@ bricks: 3                    # plain red-clay brick block (no underscore → mis
 "*_bricks": 3                # nether/deepslate/mud/quartz/end_stone brick blocks
 "*concrete": 3               # 16 colored concretes (NOT concrete_powder, which ends in _powder)
 "*terracotta": 2             # terracotta + colored + glazed (baked clay, lighter)
+# Cut forms of the families above. The block wildcards reach a family's own slab/stairs (cobblestone_slab,
+# deepslate_brick_stairs), but the PLAIN forms have no family wildcard to ride: stone/smooth_stone come from
+# the #base_stone_overworld tag and an exact key, both of which are block-only, and brick_slab/nether_brick_
+# slab/… miss `*_bricks` (singular `brick` before the cut suffix). Without these a stone-slab hull weighed a
+# third of an identical cobblestone one. Redundant against the families that already resolve to 3 — same
+# value, so the specificity order is a no-op there.
+"*stone_slab": 3             # stone_slab, smooth_stone_slab
+"*stone_stairs": 3           # stone_stairs
+"*brick_slab": 3             # brick / nether / red_nether / mud / resin / end_stone brick slabs
+"*brick_stairs": 3           # ditto, stairs
+infested_stone: 3            # the other infested_* forms ride *cobblestone* / *stone_brick* / *deepslate*
 netherrack: 2
 calcite: 3
 dripstone_block: 3

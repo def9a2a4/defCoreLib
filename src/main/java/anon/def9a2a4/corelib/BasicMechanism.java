@@ -923,7 +923,26 @@ final class BasicMechanism implements Mechanism {
         // teardown is destroy() semantics: drop riding banners/storage at each part's live cell, remove the
         // entities, deregister — never run the landing/cell/blockData math below (parts may have null block
         // data). destroy() shares the same `disassembled` latch, so this stays single-shot.
-        if (blockFree) { destroy(); return; }
+        //
+        // The two CONSUMER hooks are fired around it by hand, because destroy() deliberately fires neither
+        // (its own contract is "discard, no callbacks" and direct callers rely on that). Without this,
+        // disassemble() would silently drop a documented public callback based on an internal flag — and
+        // BlockShips already registers beforeEntityRemoval to move leads off the collider shulkers, so a
+        // block-free ship would leak them. Ordering mirrors the block path below: beforeEntityRemoval while
+        // the entities are still live, onDisassembled once they are gone. `placed` is List.of() — a
+        // block-free teardown lands nothing, which is the honest argument here.
+        if (blockFree) {
+            if (beforeEntityRemoval != null) {
+                try {
+                    beforeEntityRemoval.run();
+                } catch (Exception ignored) {
+                    // consumer hook failed; proceed with teardown so nothing leaks (mirrors the block path)
+                }
+            }
+            destroy();
+            if (onDisassembled != null) onDisassembled.accept(List.of());
+            return;
+        }
         disassembled = true;
         // The idempotency latch above is set BEFORE any work, so a throw mid-teardown makes this mech
         // permanently un-retryable (a later disassemble() short-circuits). Guarantee the two teardown
