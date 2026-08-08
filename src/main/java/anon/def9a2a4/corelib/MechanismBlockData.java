@@ -1,7 +1,9 @@
 package anon.def9a2a4.corelib;
 
 import org.bukkit.block.data.BlockData;
+import org.bukkit.entity.ItemDisplay.ItemDisplayTransform;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.jspecify.annotations.Nullable;
@@ -16,7 +18,11 @@ import java.util.Map;
  */
 public final class MechanismBlockData {
 
-    public final BlockData blockData;
+    // Nullable since P7.B: a block-FREE / standalone display part (a prefab ship's banner or balloon head,
+    // assembled via MechanismRegistry.assembleFromParts) has NO backing world block — blockData is null and
+    // the part renders the {@link #displayItem}/{@link #displayMode} ItemDisplay instead. Every landing/
+    // cell/light path that derefs blockData is guarded to skip such a part; a scanned block is never null.
+    public final @Nullable BlockData blockData;
     public final Matrix4f localTransform;
     // Effective collider for this block (custom-block config → vanilla registry → full-block default).
     // NOTE: recovery-relevant — if the deferred MechanismSerializer restore path is ever implemented,
@@ -80,6 +86,13 @@ public final class MechanismBlockData {
     // the landing path re-asserts, and the self-healing mech:drill_facing). Null for bare-first blocks
     // (casing/gearbox/chassis carry no tile PDC) and any block whose state isn't a TileState.
     byte @Nullable [] configPdc;
+
+    // Standalone display descriptor (P7.B): for a block-free part (blockData == null), the ItemDisplay to
+    // render — an item (banner / textured head) + its transform mode. Set post-construction like banners.
+    // Only READ at fresh assembly (the spawn selector); on recovery the persistent ItemDisplay is re-adopted
+    // by tag, so these are not needed then (and are left null). Both null for a normal block part.
+    @Nullable ItemStack displayItem;
+    @Nullable ItemDisplayTransform displayMode;
 
     // Mutable — updated by BasicMechanism.setBlockState()
     // Nullable but not annotated: @Nullable cannot be applied to qualified inner type names

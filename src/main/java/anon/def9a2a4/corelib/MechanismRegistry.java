@@ -400,12 +400,15 @@ public class MechanismRegistry {
         try {
             List<MechanismBlockData> blockData = new ArrayList<>(parts.size());
             for (PartSpec p : parts) {
+                MechanismBlockData mb = new MechanismBlockData(p.blockData(), new Matrix4f(p.localTransform()),
+                    p.collision(), null, null, null, null, null, null, false, null);
                 if (p.blockData() == null) {
-                    throw new UnsupportedOperationException(
-                        "assembleFromParts: standalone display parts (null blockData) not yet supported");
+                    // Standalone display part: no backing block — carry the ItemDisplay descriptor so the
+                    // spawn selector renders it (and recovery re-adopts the persistent entity by tag).
+                    mb.displayItem = p.displayItem();
+                    mb.displayMode = p.displayMode();
                 }
-                blockData.add(new MechanismBlockData(p.blockData(), new Matrix4f(p.localTransform()),
-                    p.collision(), null, null, null, null, null, null, false, null));
+                blockData.add(mb);
             }
             return spawnMechanismEntities(mechId, type, blockData, pivot, AXIS_Y, vehicle, rideOffset,
                 false, true, null, List.of(), List.of(), parts.size(), true);
@@ -708,13 +711,13 @@ public class MechanismRegistry {
             Map<String, Integer> posIndex = new HashMap<>();
             for (int i = 0; i < blockData.size(); i++) {
                 MechanismBlockData mb = blockData.get(i);
-                if (mb.ghost) continue;
+                if (mb.ghost || mb.blockData == null) continue; // block-free parts occupy no world cell
                 Vector3f t = mb.localTransform.getTranslation(new Vector3f());
                 posIndex.put(Math.round(t.x) + "," + Math.round(t.y) + "," + Math.round(t.z), i);
             }
             for (int i = 0; i < blockData.size(); i++) {
                 MechanismBlockData mb = blockData.get(i);
-                if (mb.ghost) continue;
+                if (mb.ghost || mb.blockData == null) continue; // block-free parts emit no vanilla block light
                 int level = mb.blockData.getLightEmission();
                 // A custom head is a PLAYER_HEAD (vanilla emission 0), so its light lives in the head
                 // definition, not the block data. Fold in the head's per-state light (glowing heads, lit
@@ -760,7 +763,15 @@ public class MechanismRegistry {
 
             // Primary display
             Display primary;
-            if (mb.wasBare && "mech:shaft".equals(mb.customTypeId)) {
+            if (mb.blockData == null) {
+                // Block-free / standalone display part (P7.B): no backing block — render the descriptor's
+                // ItemDisplay directly (a prefab ship's banner or balloon head). No BlockDisplay branch
+                // below applies (they all read mb.blockData). displayItem is guaranteed for a null-block part.
+                ItemStack it = mb.displayItem != null ? mb.displayItem : new ItemStack(Material.STONE);
+                ItemDisplay sd = spawnMechDisplay(spawnLoc, it, mechId, i, "display");
+                if (mb.displayMode != null) sd.setItemDisplayTransform(mb.displayMode);
+                primary = sd;
+            } else if (mb.wasBare && "mech:shaft".equals(mb.customTypeId)) {
                 // A bare shaft was reverted to an encased head for capture (mb.blockData is the head), but its
                 // true form is a bare CHAIN. Render that in transit — the rod extra still spins. Axis from the
                 // (always idle_*) captured state; a default CHAIN is Y, so an X/Z shaft must set it explicitly.
@@ -897,6 +908,7 @@ public class MechanismRegistry {
             registry, serializer);
         mech.mechanismRegistry = this;
         mech.setDriven(driven); // driven mechanisms are positioned each tick by their consumer (repositionDriven)
+        mech.setBlockFree(blockFree); // no world blocks to restore → destroy() teardown; parts may be null-block
 
         for (ColliderPair cp : colliders) {
             colliderIndex.put(cp.shulker().getUniqueId(), new ColliderRef(mech, cp.blockIndex()));
@@ -1473,6 +1485,7 @@ public class MechanismRegistry {
         mech.mechanismRegistry = this;
         mech.setPersisted(true); // stays persisted; a later explicit disassemble() removes the state file
         mech.setDriven(st.driven); // a driven (consumer-positioned) body keeps skipping updateFromVehicle
+        mech.setBlockFree(st.blockFree); // a recovered prefab-style mech keeps its no-restore teardown
 
         // Defensively re-establish the passenger chain. Vanilla NBT normally restores display→parent→vehicle
         // and shulker→carrier, but a chunk reload can drop it (BlockShips re-adds carrier→shulker every ~20
@@ -1581,7 +1594,9 @@ public class MechanismRegistry {
     private List<MechanismBlockData> rebuildBlocks(MechanismState st) {
         List<MechanismBlockData> out = new ArrayList<>(st.blocks.size());
         for (MechanismState.BlockRec b : st.blocks) {
-            BlockData bd = Bukkit.createBlockData(b.blockData);
+            // Null for a block-free / standalone display part (P7.B): recovery re-adopts its persistent
+            // ItemDisplay by tag, so the reconstructed part only needs its transform, not a block appearance.
+            BlockData bd = b.blockData != null ? Bukkit.createBlockData(b.blockData) : null;
             Matrix4f local = new Matrix4f().set(b.localTransform); // column-major (matches snapshotState's get())
             CollisionConfig col = new CollisionConfig(b.colEnabled, b.colSize,
                 new Vector3f(b.colOffX, b.colOffY, b.colOffZ));

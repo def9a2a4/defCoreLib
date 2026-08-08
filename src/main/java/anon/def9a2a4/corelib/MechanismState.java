@@ -37,13 +37,15 @@ final class MechanismState {
     boolean driven;                 // restored onto the mechanism so a driven (consumer-positioned) body keeps
                                     // skipping updateFromVehicle after recovery. NOT a recovery-mode switch —
                                     // recovery is always a live entity rebind (see MechanismRegistry.recoverOne).
+    boolean blockFree;              // P7.B: a model-assembled mechanism (prefab ship) with no world blocks to
+                                    // restore — teardown is destroy() semantics; some BlockRecs have null blockData.
     int entityCount;                // total persistent entities at save time (vehicle+parent+displays+banners+
                                     // colliders×2) — a recovery-completeness check (BlockShips' entity_count).
     @Nullable UUID vehicleUuid;     // recovery hint (owned marker ArmorStand, or external cart/ship vehicle)
     final List<BlockRec> blocks = new ArrayList<>();
 
     static final class BlockRec {
-        String blockData;
+        @Nullable String blockData;     // null for a block-free / standalone display part (P7.B)
         float[] localTransform = new float[16]; // JOML Matrix4f column-major
         boolean colEnabled;
         float colSize, colOffX, colOffY, colOffZ;
@@ -83,12 +85,13 @@ final class MechanismState {
         s.set("ride_offset", (double) rideOffset);
         s.set("owns_vehicle", ownsVehicle);
         s.set("driven", driven);
+        if (blockFree) s.set("block_free", true);
         s.set("entity_count", entityCount);
         if (vehicleUuid != null) s.set("vehicle_uuid", vehicleUuid.toString());
         List<Object> blockList = new ArrayList<>(blocks.size());
         for (BlockRec b : blocks) {
             Map<String, Object> m = new LinkedHashMap<>();
-            m.put("data", b.blockData);
+            if (b.blockData != null) m.put("data", b.blockData); // absent for a block-free / standalone part
             List<Double> lt = new ArrayList<>(16);
             for (float f : b.localTransform) lt.add((double) f);
             m.put("lt", lt);
@@ -131,12 +134,14 @@ final class MechanismState {
             st.rideOffset = (float) s.getDouble("ride_offset");
             st.ownsVehicle = s.getBoolean("owns_vehicle");
             st.driven = s.getBoolean("driven");
+            st.blockFree = s.getBoolean("block_free");
             st.entityCount = s.getInt("entity_count");
             String vu = s.getString("vehicle_uuid");
             if (vu != null) st.vehicleUuid = UUID.fromString(vu);
             for (Map<?, ?> raw : s.getMapList("blocks")) {
                 BlockRec b = new BlockRec();
-                b.blockData = String.valueOf(raw.get("data"));
+                Object dataRaw = raw.get("data");
+                b.blockData = dataRaw != null ? String.valueOf(dataRaw) : null; // null = block-free part
                 List<?> lt = (List<?>) raw.get("lt");
                 for (int i = 0; i < 16 && i < lt.size(); i++) b.localTransform[i] = ((Number) lt.get(i)).floatValue();
                 List<?> col = (List<?>) raw.get("col");

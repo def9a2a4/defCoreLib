@@ -71,6 +71,10 @@ final class BasicMechanism implements Mechanism {
     // and survives restart/crash; shutdown/onWorldUnload save-and-leave it rather than disassembling.
     // Default false → today's behaviour (disassemble on stop, no state file).
     boolean persisted;
+    // Block-free (P7.B): this mechanism was assembled from an in-memory part list (a prefab ship), not from
+    // world blocks — so it has NO blocks to restore. disassemble() routes to destroy() (drop riding
+    // banners/storage + remove entities, no world write), and its parts may carry null blockData.
+    boolean blockFree;
 
     // Auto-follow: track vehicle movement for passive vehicles (minecarts on rails)
     private Location previousVehicleLoc;
@@ -498,6 +502,9 @@ final class BasicMechanism implements Mechanism {
     void setPersisted(boolean persisted) { this.persisted = persisted; }
     boolean isPersisted() { return persisted; }
 
+    void setBlockFree(boolean blockFree) { this.blockFree = blockFree; }
+    boolean isBlockFree() { return blockFree; }
+
     /** Build a serializable snapshot of this mechanism for persistence/recovery. Main thread only
      *  (reads live entity/block state). Display/particle configs are re-derived on recovery. */
     MechanismState snapshotState() {
@@ -511,6 +518,7 @@ final class BasicMechanism implements Mechanism {
         st.rideOffset = rideOffset;
         st.ownsVehicle = ownsVehicle;
         st.driven = driven;
+        st.blockFree = blockFree; // restored on recovery so the rebound mechanism keeps no-restore teardown
         st.vehicleUuid = vehicle != null ? vehicle.getUniqueId() : null;
         // Recovery-completeness count: vehicle + parent + every display/banner + each collider's carrier &
         // shulker. recoverOne warns if the entities it finds fall short (a chunk still settling / drifted).
@@ -521,7 +529,8 @@ final class BasicMechanism implements Mechanism {
         st.entityCount = ec;
         for (MechanismBlockData mb : blocks) {
             MechanismState.BlockRec b = new MechanismState.BlockRec();
-            b.blockData = mb.blockData.getAsString();
+            b.blockData = mb.blockData != null ? mb.blockData.getAsString() : null; // null = block-free part
+
             mb.localTransform.get(b.localTransform); // column-major 16 floats
             b.colEnabled = mb.collision.enabled;
             b.colSize = mb.collision.size;
@@ -807,6 +816,11 @@ final class BasicMechanism implements Mechanism {
     public void disassemble() {
         checkMainThread();
         if (disassembled) return;   // idempotent: a second pass would dupe the structure as items
+        // A block-free mechanism (prefab ship, model-assembled — P7.B) has NO world blocks to restore. Its
+        // teardown is destroy() semantics: drop riding banners/storage at each part's live cell, remove the
+        // entities, deregister — never run the landing/cell/blockData math below (parts may have null block
+        // data). destroy() shares the same `disassembled` latch, so this stays single-shot.
+        if (blockFree) { destroy(); return; }
         disassembled = true;
         // The idempotency latch above is set BEFORE any work, so a throw mid-teardown makes this mech
         // permanently un-retryable (a later disassemble() short-circuits). Guarantee the two teardown
