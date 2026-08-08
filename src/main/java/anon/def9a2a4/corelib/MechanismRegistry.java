@@ -109,8 +109,12 @@ public class MechanismRegistry {
 
     @Nullable BannerManager bannerManager() { return bannerManager; }
 
-    // Reusable work matrix for animation tick
+    // Reusable work matrix for animation tick — holds animation().apply(...)'s OUTPUT.
     private final Matrix4f workMatrix = new Matrix4f();
+    // Second reusable scratch for updateAnimatedDisplays: first the transformToMatrix dest (the `base` fed to
+    // animation.apply — dead once apply() returns), then overwritten via .set() into the `placed` accumulator.
+    // Must stay distinct from workMatrix (read at placed.mul(workMatrix)). Main-thread + sequential → safe to share.
+    private final Matrix4f placedMatrix = new Matrix4f();
 
     public MechanismRegistry(JavaPlugin plugin, CustomBlockRegistry registry) {
         this.plugin = plugin;
@@ -1912,11 +1916,12 @@ public class MechanismRegistry {
                     // Animate the display's LOCAL transform (origin = block center), exactly as the standalone
                     // path does — negating the age for a CCW-captured source.
                     long age = mb.spinReversed ? -tickAge : tickAge;
-                    dec.animation().apply(BasicMechanism.transformToMatrix(dec.transform()), age, workMatrix);
+                    dec.animation().apply(BasicMechanism.transformToMatrix(dec.transform(), placedMatrix), age, workMatrix);
 
                     // Place: pivot-rotation · block-offset · [wall offset] · animated-local.
                     // Additional displays are always ItemDisplay (center-rendered) — no XZ shift.
-                    Matrix4f placed = new Matrix4f(mech.currentTransform()).mul(mb.localTransform);
+                    // placedMatrix is dead as the apply() base above; reuse it as the accumulator.
+                    Matrix4f placed = placedMatrix.set(mech.currentTransform()).mul(mb.localTransform);
                     BasicMechanism.applyWallOffset(placed, mb.wallFacing, dec.wallOffset());
                     placed.mul(workMatrix);
                     placed.m31(placed.m31() - mech.rideOffset); // passenger offset — parent space, applied last
@@ -1939,9 +1944,9 @@ public class MechanismRegistry {
                     if (!display.isValid()) continue;
 
                     long age = mb.spinReversed ? -tickAge : tickAge;
-                    bdc.animation().apply(BasicMechanism.transformToMatrix(bdc.transform()), age, workMatrix);
+                    bdc.animation().apply(BasicMechanism.transformToMatrix(bdc.transform(), placedMatrix), age, workMatrix);
 
-                    Matrix4f placed = new Matrix4f(mech.currentTransform()).mul(mb.localTransform);
+                    Matrix4f placed = placedMatrix.set(mech.currentTransform()).mul(mb.localTransform);
                     BasicMechanism.applyWallOffset(placed, mb.wallFacing, bdc.wallOffset());
                     placed.mul(workMatrix);
                     placed.m31(placed.m31() - mech.rideOffset); // passenger offset — parent space, applied last

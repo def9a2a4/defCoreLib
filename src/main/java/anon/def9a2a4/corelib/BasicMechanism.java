@@ -1672,12 +1672,8 @@ final class BasicMechanism implements Mechanism {
 
     Matrix4f currentTransform() { return currentTransform; }
 
-    static Matrix4f transformToMatrix(org.bukkit.util.Transformation t) {
-        return transformToMatrix(t, new Matrix4f());
-    }
-
-    /** As {@link #transformToMatrix(org.bukkit.util.Transformation)} but writes into {@code dest} (reset
-     *  first) instead of allocating — for the per-tick hot loop that reuses a scratch matrix. */
+    /** Build the Transformation's matrix into {@code dest} (reset first) instead of allocating — every caller
+     *  is the per-tick hot loop and hands a reused scratch matrix. */
     static Matrix4f transformToMatrix(org.bukkit.util.Transformation t, Matrix4f dest) {
         return dest.identity()
                 .translate(t.getTranslation())
