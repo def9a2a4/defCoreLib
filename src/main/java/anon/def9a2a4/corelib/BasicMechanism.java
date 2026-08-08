@@ -58,6 +58,10 @@ final class BasicMechanism implements Mechanism {
     // and its positional indexing (rotate/updateAnimatedDisplays/setBlockState) stay untouched.
     final List<List<Display>> bannerDisplaysPerBlock;
     final List<ColliderPair> colliders;
+    // block index → its collider, for O(1) lookup (getColliderBoxByBlock/colliderEntity/seatEntity are
+    // called per block per tick by driven consumers; a list scan there is O(N×C)). Built once from the
+    // immutable colliders list; appended ghost blocks carry no collider, so it never goes stale.
+    private final Map<Integer, ColliderPair> colliderByBlock;
     final List<MechanismBlockData> blocks;
     final CustomBlockRegistry registry;
     final @Nullable MechanismSerializer serializer;
@@ -110,6 +114,9 @@ final class BasicMechanism implements Mechanism {
         this.displaysPerBlock = displaysPerBlock;
         this.bannerDisplaysPerBlock = bannerDisplaysPerBlock;
         this.colliders = colliders;
+        Map<Integer, ColliderPair> cbb = new HashMap<>(Math.max(4, colliders.size() * 2));
+        for (ColliderPair cp : colliders) cbb.putIfAbsent(cp.blockIndex(), cp); // first-wins, matching the old scan
+        this.colliderByBlock = cbb;
         this.blocks = blocks;
         this.registry = registry;
         this.serializer = serializer;

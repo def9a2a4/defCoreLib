@@ -1320,12 +1320,20 @@ public class MechanismRegistry {
             pendingRecoveries.put(id, st);
             mechIdsBeingRecovered.add(id); // guards its entities from the orphan sweep while recovery is in flight
         }
-        // 2. (Re-)attempt every pending recovery in this world: this chunk load may have brought in more of a
-        //    pending mechanism's entities, so accumulate across successive EntitiesLoad events. Cheap —
-        //    pendingRecoveries holds only mechanisms currently mid-recovery.
+        // 2. (Re-)attempt each pending recovery whose footprint contains THIS chunk: the load may have brought
+        //    in more of that mechanism's entities. Only mechanisms near the loaded chunk are re-attempted — a
+        //    chunk load elsewhere brought in none of a distant mechanism's entities, so re-scanning it is pure
+        //    waste. This footprint gate is what keeps a fleet world-load from re-sweeping every pending
+        //    mechanism on every EntitiesLoad (O(all pending) → O(pending near this chunk)); it mirrors
+        //    BlockShips feeding a ship only when one of its entities is in the just-loaded chunk.
         if (pendingRecoveries.isEmpty()) return;
+        int lcx = chunk.getX(), lcz = chunk.getZ();
         for (MechanismState st : new ArrayList<>(pendingRecoveries.values())) {
             if (!world.getName().equals(st.worldName)) continue;
+            int pcx = (int) Math.floor(st.px) >> 4;
+            int pcz = (int) Math.floor(st.pz) >> 4;
+            int radius = chunkRadiusFor(st);
+            if (Math.abs(lcx - pcx) > radius || Math.abs(lcz - pcz) > radius) continue;
             try {
                 attemptRecover(world, st);
             } catch (Exception e) {
@@ -1346,19 +1354,30 @@ public class MechanismRegistry {
         int pcz = (int) Math.floor(st.pz) >> 4;
         int radius = chunkRadiusFor(st); // footprint radius in chunks, from the block offsets
 
-        // Gather candidate entities across the structure's chunk footprint (loaded chunks only), and note
-        // whether the WHOLE footprint is loaded — the fallback that finalizes an under-count so a mechanism
-        // that permanently lost an entity still recovers instead of hanging pending forever.
-        List<Entity> candidates = new ArrayList<>();
+        // Whether the WHOLE footprint is loaded — the fallback that finalizes an under-count so a mechanism
+        // that permanently lost an entity still recovers instead of hanging pending forever. Cheap boolean
+        // sweep: isChunkLoaded() only, NO getEntities().
         boolean allLoaded = true;
+        outer:
         for (int dx = -radius; dx <= radius; dx++) {
             for (int dz = -radius; dz <= radius; dz++) {
-                if (!world.isChunkLoaded(pcx + dx, pcz + dz)) { allLoaded = false; continue; }
-                for (Entity e : world.getChunkAt(pcx + dx, pcz + dz).getEntities()) {
-                    candidates.add(e);
-                }
+                if (!world.isChunkLoaded(pcx + dx, pcz + dz)) { allLoaded = false; break outer; }
             }
         }
+
+        // Gather candidate entities with ONE bounded getNearbyEntities around the persisted pivot (only
+        // loaded chunks are consulted; it never force-loads). Every tagged entity is an offset from the
+        // pivot, so a cube of max|offset|+slack covers them all. Replaces a (2·radius+1)² per-chunk
+        // getEntities() sweep — mirrors BlockShips' ShipInstance.recoverEntities single bounded query.
+        double half = 16.0;
+        for (MechanismState.BlockRec b : st.blocks) {
+            half = Math.max(half, Math.abs(b.localTransform[12]));
+            half = Math.max(half, Math.abs(b.localTransform[13]));
+            half = Math.max(half, Math.abs(b.localTransform[14]));
+        }
+        half += 16.0; // slack for drift / interpolation
+        Collection<Entity> candidates = world.getNearbyEntities(
+            new Location(world, st.px, st.py, st.pz), half, half, half);
 
         // Bucket the tagged entities by role. Substring off the exact "corelib:mech:{id}:" prefix rather
         // than split(":") — a UUID contains hyphens but no colons, so the prefix is unambiguous, and the
