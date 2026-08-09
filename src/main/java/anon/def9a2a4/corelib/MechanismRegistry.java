@@ -225,13 +225,6 @@ public class MechanismRegistry {
     }
 
     /**
-     * Create a storage inventory that PRESERVES the container's GUI type. Fixed-shape types (hopper 5,
-     * dropper/dispenser 3×3, furnace/smoker/blast-furnace, brewing, shulker box) are created by
-     * {@link org.bukkit.event.inventory.InventoryType} so they open the correct GUI; CHEST/BARREL/generic
-     * use {@code size} (a double chest is 54, which {@code InventoryType.CHEST} — fixed 27 — can't express).
-     * Shared by world-container capture, recovery rebuild, and the block-free storage descriptor.
-     */
-    /**
      * The {@link org.bukkit.event.inventory.InventoryType} a vanilla container block opens, for paths that
      * have a material but no live {@code BlockState} to ask (recovery rebuild). Returns {@code CHEST} for
      * chest-shaped and unrecognised containers, which {@link #createTypedInventory} then sizes rather than
@@ -251,15 +244,26 @@ public class MechanismRegistry {
             case BLAST_FURNACE -> org.bukkit.event.inventory.InventoryType.BLAST_FURNACE;
             case SMOKER -> org.bukkit.event.inventory.InventoryType.SMOKER;
             case BREWING_STAND -> org.bukkit.event.inventory.InventoryType.BREWING;
+            // 9 slots, so it never threw — but a carried crafter should open as its 3×3 grid, not a row.
+            case CRAFTER -> org.bukkit.event.inventory.InventoryType.CRAFTER;
             default -> org.bukkit.event.inventory.InventoryType.CHEST;
         };
     }
 
+    /**
+     * Create a storage inventory that PRESERVES the container's GUI type. Fixed-shape types (hopper 5,
+     * dropper/dispenser 3×3, furnace/smoker/blast-furnace, brewing, shulker box, crafter) are created by
+     * {@link org.bukkit.event.inventory.InventoryType} so they open the correct GUI; CHEST/BARREL/generic
+     * use {@code size} — {@code InventoryType.CHEST} is fixed at 27 and so cannot express a prefab cargo
+     * hold declared larger. Shared by world-container capture, recovery rebuild, and the block-free
+     * storage descriptor.
+     */
     static Inventory createTypedInventory(org.bukkit.inventory.@Nullable InventoryHolder holder,
                                           org.bukkit.event.inventory.InventoryType type, int size,
                                           net.kyori.adventure.text.@Nullable Component title) {
         boolean typed = switch (type) {
-            case HOPPER, DROPPER, DISPENSER, FURNACE, BLAST_FURNACE, SMOKER, BREWING, SHULKER_BOX -> true;
+            case HOPPER, DROPPER, DISPENSER, FURNACE, BLAST_FURNACE, SMOKER, BREWING, SHULKER_BOX,
+                 CRAFTER -> true;
             default -> false;
         };
         if (typed) {
@@ -1828,6 +1832,11 @@ public class MechanismRegistry {
                             try {
                                 invType = org.bukkit.event.inventory.InventoryType.valueOf(b.storageType);
                             } catch (IllegalArgumentException ex) {
+                                // Name the bad token: falling back to the material can hand a fixed-shape
+                                // container the CHEST size-branch, which throws into the catch below and
+                                // restores it EMPTY under a generic "unreadable storage" warning.
+                                plugin.getLogger().warning("Mechanism recovery: unknown storage type '"
+                                    + b.storageType + "' in " + st.mechId + "; falling back to the block material");
                                 invType = containerTypeOf(bd == null ? null : bd.getMaterial());
                             }
                         } else {
@@ -1872,6 +1881,10 @@ public class MechanismRegistry {
             mbd.glueOffsets = b.glueOffsets;
             mbd.configPdc = b.configPdc;
             mbd.blockEntitySnapshot = b.blockEntity;
+            // Carry the GUI title forward, not just into the inventory built above: snapshotState reads
+            // this field back when the mechanism is re-saved, so without it a recover→re-save cycle
+            // drops the title permanently — correct for one session, blank ever after.
+            mbd.storageTitle = b.storageTitle;
             if (b.banners != null) mbd.banners = rebuildBanners(b.banners, st.mechId);
             out.add(mbd);
         }

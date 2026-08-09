@@ -1430,8 +1430,11 @@ final class BasicMechanism implements Mechanism {
             ItemStack[] saved = mb.storage.getContents();
             // setContents throws when the array is LONGER than the destination, and the caller's catch
             // turns that into a WARNING with the items gone. Cap, then drop the tail as entities rather
-            // than swallowing it. A typed capture keeps the sizes equal (see createTypedInventory), so
-            // this only bites on mechanisms saved before storage carried its container's GUI shape.
+            // than swallowing it. Sizes match for a captured world container (createTypedInventory types
+            // off the live inventory), but NOT for a prefab part that declares a storageSize larger than
+            // the block it lands in can hold — that is a model bug, and dropping is how it surfaces.
+            // Deliberately drops BEFORE the update() below: this whole block is inside a catch-and-log,
+            // so materialising the tail first means an update() failure cannot swallow it.
             if (saved.length > dest.getSize()) {
                 dest.setContents(java.util.Arrays.copyOf(saved, dest.getSize()));
                 World w = target.getWorld();
@@ -1443,7 +1446,10 @@ final class BasicMechanism implements Mechanism {
             } else {
                 dest.setContents(saved);
             }
-            c.update();
+            // update(force, applyPhysics) — physics OFF, matching setBlockData(landed, !attachable) above
+            // and airOutSourceBlocks. A physics-applying update here would run neighbour updateShape on a
+            // landed chest, which is exactly what re-pairs two chests the capture deliberately split.
+            c.update(true, false);
         }
 
         // Decorated block-entity state (sign text, skull profile, container name, …). LAST — after

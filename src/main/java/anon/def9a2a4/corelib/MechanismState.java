@@ -115,6 +115,10 @@ final class MechanismState {
         byte @Nullable [] storage;      // ItemStack[] serialized (Base64 in YAML)
         @Nullable String storageType;   // InventoryType name — preserves the container GUI shape on recovery
         @Nullable String storageTitle;  // GUI title for a named block-free (prefab cargo) storage part
+        // A captured world container's custom name, GSON-serialized so colours/formatting survive.
+        // Separate from storageTitle because that one is plain text and has already shipped — sniffing
+        // one field for "is this JSON?" would misread a prefab title that happens to look like JSON.
+        @Nullable String storageTitleJson;
         int @Nullable [] glueOffsets;
         byte @Nullable [] configPdc;    // tile PDC bytes (Base64 in YAML)
         @Nullable Map<String, Object> blockEntity; // BlockSnapshotProvider decorated state (YAML-safe map)
