@@ -20,7 +20,41 @@ power level as if it were vanilla redstone.
 
 ---
 
+## Status (2026-08-06)
+
+**Not started.** Nothing in this plan has been built.
+
+- **Part 1 (`externalPowerOverride` API) — unimplemented.** Verified: no occurrences of
+  `externalPowerOverride` in `src/`. `tickRedstone()` still reads `readPower(block, type)`
+  directly with no override branch, and `onBlockRemoved` has no override cleanup.
+- **Parts 2-10 (the `RedstoneCables/` plugin) — not started.** The project directory
+  does not exist.
+
+**Reusable infra already present** (do NOT rebuild):
+- `LocationKey` record with `of(Block)` / `of(Location)` factories — `CustomBlockRegistry.java`.
+- `HeadUtil.applyTexture(Block, String)` — `HeadUtil.java`.
+- All six builder lifecycle hooks the plan relies on: `onNeighborChange`, `onBlockRemoved`,
+  `onChunkLoad`, `onChunkUnload`, `reactsToNeighbors`, `cancelPistons` — `CustomHeadBlock.java`.
+
+**Two gaps in this plan itself — fold both into Part 1 before starting:**
+1. `LocationKey.toBlock(World)` (used all over Parts 3-7) **does not exist** — add it.
+2. `LocationKey` is **package-private**, so an external plugin cannot import
+   `CustomBlockRegistry.LocationKey`. Widen it (and `toBlock`) to `public`, or have the
+   plugin define its own key type.
+
+**Related work — the throttle lever** (`mech:throttle_lever`, `ThrottleLever.java`):
+related by *goal* (a custom block that sources analog redstone) but a **different mechanism**.
+It is a real `HEAVY_WEIGHTED_PRESSURE_PLATE` + `AnaloguePowerable.setPower()` + a
+`BlockRedstoneEvent` veto (`applyPower()` / `onRedstone()`) — it does **not** implement or
+need `externalPowerOverride`. Still useful precedent for (a) pinning/overriding redstone
+output and (b) the chunk-PDC per-block persistence pattern the cable network will need.
+
+---
+
 ## Part 1: defCoreLib — Add external power override API
+
+_Unbuilt (see Status). This part must additionally: (a) add a public `LocationKey.toBlock(World)`
+helper, and (b) widen `LocationKey` visibility to `public` so the external plugin can import it._
 
 One new method pair on `CustomBlockRegistry`. No existing behavior changes.
 
@@ -109,7 +143,7 @@ RedstoneCables/
     └── CableListener.java        # Place/break/chunk/physics event handlers
 ```
 
-Create at `/home/miv/projects/minecraft/RedstoneCables/`.
+Create at `RedstoneCables/` (sibling of `defCoreLib/`).
 
 ### `settings.gradle.kts`
 

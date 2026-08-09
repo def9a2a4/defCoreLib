@@ -3,7 +3,11 @@
 Standing design doc for the fluid subsystem, grounded in an audit of the pipes plugin and
 rotation machinery. Un-defers the tech-tree's "Fluid handling" gate with a deliberately
 small model: fluids move as discrete units along the *existing* pipe chains, driven by a
-rotation-powered pump. Design only — build waves at the bottom; nothing here is implemented.
+rotation-powered pump. Build waves at the bottom.
+
+> **Status (2026-08-09):** no longer design-only — a `corelib/fluid/` package exists (`FluidType`,
+> `FluidTanks`, `FluidRouting`, `FluidEndpoint` + `Cauldron`/`MachineTank`/`WorldSource` endpoints).
+> Re-check each wave below against that package before planning; the per-wave text has not been audited.
 
 Locked decisions: fluid unit = **1 bucket** · pumping **consumes** source blocks (water and
 lava alike) · steam engine stack supplies **20 power** (new top of the source ladder).

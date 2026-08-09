@@ -38,7 +38,8 @@ left, what reuses existing code, what needs new subsystems, and the open decisio
 6. **Alloy tools/armor** — extend the custom-item layer with enchantments + `ArmorTrim` (+ optional
    attribute components); recipes via ExactChoice.
 7. **Fluid handling** — designed in [fluids.md](fluids.md) (bucket-unit fluids over the
-   existing pipe chains + rotation-powered pump). Gates freezer/pump. Not started.
+   existing pipe chains + rotation-powered pump). Gates freezer/pump. Partly built — the
+   `corelib/fluid/` package exists; see that doc's status note.
 
 ## Dependency-ordered waves
 

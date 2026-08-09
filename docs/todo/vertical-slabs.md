@@ -6,10 +6,10 @@ Vertical slabs (half-blocks placed on N/S/E/W faces) as a defCoreLib addon plugi
 Uses BlockDisplay entities for 3D block visuals and the existing YAML-driven
 CustomHeadBlock system for placement, drops, recipes, and persistence.
 
-**Core problem**: defCoreLib's `DisplayEntityConfig` only supports `ItemDisplay` entities.
-Materials like `OAK_PLANKS` rendered via ItemDisplay show as flat 2D item sprites.
-Vertical slabs need `BlockDisplay` entities which render actual 3D block textures at
-any scale.
+**Core problem** _(resolved — see Status)_: defCoreLib's `DisplayEntityConfig` only
+supported `ItemDisplay` entities. Materials like `OAK_PLANKS` rendered via ItemDisplay
+show as flat 2D item sprites. Vertical slabs need `BlockDisplay` entities which render
+actual 3D block textures at any scale. `BlockDisplayEntityConfig` now provides this.
 
 **Design decision**: Add a **separate** `BlockDisplayEntityConfig` record rather than
 making `DisplayEntityConfig.displayItem` nullable. This keeps the existing record,
@@ -24,7 +24,35 @@ No NPE risks, no constructor signature changes, no downstream breakage.
 
 ---
 
-## Part 1: defCoreLib — Add BlockDisplay support (additive only)
+## Status (2026-08-06)
+
+**Parts 1 & 2 (defCoreLib BlockDisplay support + demo block) are ✅ DONE and shipped.**
+The `BlockDisplayEntityConfig` API described below exists and is in production use.
+`mech:throttle_lever` is the live reference consumer — its entire visual is `block_data:`
+BlockDisplay entities (`ThrottleLever.java`, config in `rotation-blocks.yml`), and it drives
+a tagged display's transform at runtime. Study it as the worked example.
+
+Real locations (the plan's internal line numbers below are stale):
+- `BlockDisplayEntityConfig` record — `CustomHeadBlock.java` (record + field/accessor,
+  `resolveBlockDisplayEntities`, `_hasDisplayEntities` cache; `StateConfig` field;
+  Builder/StateBuilder methods; `toBuilder` copy — all present).
+- `parseBlockDisplayEntities()` + extracted `parseTransform()` helper, and `parseDisplayEntities`
+  skipping `block_data` entries — `BlockLoader.java`.
+- BlockDisplay spawn loop in `applyConfig0` and animation re-tracking in `trackAnimations()` —
+  `CustomBlockRegistry.java`; `DisplayUtil.spawnBlock()` — `DisplayUtil.java`.
+- `block_display_test` demo block — `demo-blocks.yml`.
+
+**Remaining work — the entire addon:**
+- **Part 3** — the `VerticalSlabs/` addon project (does not exist yet).
+- **Part 4** — `slabs.yml` variant definitions.
+
+Parts 1 & 2 are kept below as historical record of how the API was designed.
+
+---
+
+## ✅ DONE — Part 1: defCoreLib — Add BlockDisplay support (additive only)
+
+_Shipped and live (see Status). The sub-steps below are historical; real code refs are in Status._
 
 No existing code is modified. All changes are new fields, new methods, new parsing.
 
@@ -262,9 +290,11 @@ to re-register animations on chunk load. Same pattern as above but matching by t
 
 ---
 
-## Part 2: Demo block
+## ✅ DONE — Part 2: Demo block
 
-**File**: `defCoreLib/src/main/resources/demo-blocks.yml`
+_Shipped — `block_display_test` exists in `demo-blocks.yml`. Historical record below._
+
+**File**: `src/main/resources/demo-blocks.yml`
 
 Add a test block to verify BlockDisplay works before building the addon:
 
@@ -305,7 +335,7 @@ VerticalSlabs/
     slabs.yml
 ```
 
-Create at `/home/miv/projects/minecraft/VerticalSlabs/`.
+Create at `VerticalSlabs/` (sibling of `defCoreLib/`).
 
 ### `settings.gradle.kts`
 

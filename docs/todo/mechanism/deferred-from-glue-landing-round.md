@@ -3,7 +3,8 @@
 Tracked-but-not-done items surfaced across the glue-landing, cart-destroyability, world-unload, and
 review rounds. Each verified against the code by investigation agents. Ordered by rough real-world
 impact. Statuses: **DEFERRED** (real, own effort), **PENDING** (approved fix, not yet written),
-**NON-ISSUE** (verified not real / by-design), **INFO** (harmless).
+**NON-ISSUE** (verified not real / by-design), **INFO** (harmless), **✅ DONE** (shipped since —
+kept so the reasoning stays findable, but it is not open work).
 
 Calibration that governs priority: owned mechanisms (door/piston/hoist/rotator) are assembled ONLY
 for the ~1s of their animation — at rest they are real world blocks. The only long-lived assembled
@@ -13,19 +14,31 @@ owned mechs and only really apply to long-lived assembled carts.
 
 ---
 
-## 1. Full crash / restart persistence — DEFERRED (biggest data-loss risk)
+## 1. Full crash / restart persistence — ✅ DONE (2026-08-09, `9b59bf5` and predecessors)
 
-Assembly airs source cells to AIR **on disk immediately** (`MechanismRegistry.airOutSourceBlocks`);
-only a clean disassemble (`onDisable` / `EntitiesUnloadEvent` / `WorldUnloadEvent`) restores them. A
-**hard crash** (`kill -9`, OOM, power loss) while something is assembled leaves a permanent hole; a
-mechanism cart returns *unassembled + frozen* over it, an owned mechanism vanishes entirely (its
-orphaned displays get reaped). `MechanismSerializer` is an unimplemented stub — all six
-`assembleMechanism` call sites pass `null`; `save`/`restore`/`onRecoveryComplete` are never invoked.
+**No longer the biggest data-loss risk — this shipped.** It was built as `MechanismPersistence.java`
+(per-mechanism state files + a chunk index; the index writes async on a 60s flush, the state files stay
+sync because recovery reads them on the main thread) rather than through the `MechanismSerializer` seam
+this item assumed. See `../persistence.md`, whose header now records what actually shipped.
 
-Mostly matters for **long-lived assembled carts** (owned mechs are only exposed during their ~1s
-animation). If scoped down, persisting just mechanism carts may be enough.
+One observation below is still literally true and worth keeping: `MechanismSerializer` remains inert —
+`save` / `restore` / `onRecoveryComplete` are invoked nowhere and every in-repo `assembleMechanism` call
+site still passes `null` (there are 8 now, not six; only the later `onDisassemble` default is live, at
+`BasicMechanism.java:1265`). That is a dead seam to clean up or wire, not a persistence gap.
 
-**Design (recovery-from-entities, aligns with `blockships-integration.md`):** the persistent
+The original statement of the problem, kept for context:
+
+> Assembly airs source cells to AIR **on disk immediately** (`MechanismRegistry.airOutSourceBlocks`);
+> only a clean disassemble (`onDisable` / `EntitiesUnloadEvent` / `WorldUnloadEvent`) restores them. A
+> **hard crash** (`kill -9`, OOM, power loss) while something is assembled leaves a permanent hole; a
+> mechanism cart returns *unassembled + frozen* over it, an owned mechanism vanishes entirely (its
+> orphaned displays get reaped).
+>
+> Mostly matters for **long-lived assembled carts** (owned mechs are only exposed during their ~1s
+> animation). If scoped down, persisting just mechanism carts may be enough.
+
+**Design as planned (recovery-from-entities, aligns with `blockships-integration.md`)** — close to what
+shipped: the persistent
 display/collider entities survive a crash, but recovery is NOT lossless today — a custom block's
 primary is an `ItemDisplay` head texture with no registry id; mid-rotation `currentYaw`, ghost flags,
 `collision.offset`, carried container storage, per-block `configPdc` are stored nowhere. So: at

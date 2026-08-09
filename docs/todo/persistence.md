@@ -1,12 +1,36 @@
 # Mechanism Persistence — BlockShips-style, minecart-first, engine built to port BlockShips later
 
-> Status: PLAN (unbuilt). Line numbers are `~`-approximate anchors — re-grep before editing.
+> Status: **BUILT** (2026-08-09, `9b59bf5` and the commits before it) as `MechanismPersistence.java`, not as
+> the `MechanismSerializer` seam this plan assumed — see "What actually shipped" below before trusting any
+> decision recorded here. Kept as the design record and rationale; it is no longer a to-do.
+> Line numbers are `~`-approximate anchors — re-grep before editing.
 > Reference: `BlockShips/blockships/src/main/java/anon/def9a2a4/blockships/` (`ShipWorldData.java`,
 > `ship/ShipInstance.java`, `ShipTags.java`, `DisplayShip.java`).
 > Hardened by three rounds of adversarial critique (concurrency, BlockShips-fidelity, DefCoreLib-fit,
 > data-round-trip, generalizability, identity-bridge, over-complexity). Fixes are the invariants
 > **R1–R9** + inline notes. Round 3 added: persist `mechId` (P0), default to **sync I/O**, and defer the
 > incremental collector — see those sections.
+
+## What actually shipped (2026-08-09) — read this before the plan below
+
+Persistence is built, but **not through `MechanismSerializer`**. That interface is still inert:
+`save` / `restore` / `onRecoveryComplete` are invoked nowhere, and all 8 in-repo `assembleMechanism` call
+sites still pass `null` (only the later-added `onDisassemble` default method is live, at
+`BasicMechanism.java:1265`). The work landed in a separate class, `MechanismPersistence.java`:
+
+- **Per-mechanism state files stay synchronous** — recovery reads them on the main thread, so an async write
+  could race a read. They are the source of truth.
+- **The chunk index is asynchronous**, which inverts the "default to sync I/O" decision recorded below, and
+  only for this one file. It was the sole per-move O(all-mechanisms) cost. It now keeps a reverse index
+  (`indexLoc`) for an O(1) keyed move, marks the world dirty instead of writing, and flushes on a single
+  daemon `ioExecutor`: a 60s timer (`MechanismRegistry.java:1318-1324`), on chunk-entities unload, and
+  synchronously at world-unload / shutdown / `remove()`.
+- **Cost of that trade:** the on-disk index lags memory by up to 60s and is not self-consistent after a
+  crash, so it is reconciled against the per-mechanism state files on load — any indexed id with no state
+  file is dropped.
+
+The rest of this document is the original design and its rationale; the R1–R9 invariants still describe the
+problem space, but treat every "decision" as historical unless it matches the above.
 
 ## Context & decisions
 
@@ -34,7 +58,9 @@ now-empty `activeMechanisms`). minecarts-v2 §1 (HIGH data loss).
   colliders — entity adoption is impossible. (BlockShips avoids this only because there the entity-tag
   uuid IS the file key; DefCoreLib has two uuids and must bridge them.) File = `{vehicleUuid}.yml`; index
   `"x,z" → [vehicleUuid]`; `mechId` is a field inside the file.
-- **I/O is synchronous** (matches the existing chunk-hint persistence, `CustomBlockRegistry.java:1071`).
+- **I/O is synchronous** — *(shipped as: true for per-mechanism state files, **reversed** for the chunk index,
+  which is async with a 60s flush. See "What actually shipped" above.)* (matches the existing chunk-hint
+  persistence, `CustomBlockRegistry.java:1071`).
   Three critiques agreed async is a self-inflicted hazard at DefCoreLib's scale (it exists in the doc
   only to serve the deferred BlockShips port). Sync collapses R4's ordering fragility and most of R6.
   The `saveMechanismAsync`-shaped seam is kept so swapping in an `ExecutorService` at BlockShips scale is

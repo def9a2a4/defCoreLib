@@ -39,17 +39,17 @@
 
 > Mechanism-related design docs now live under [`../todos/mechanism/`](mechanism).
 
-- [power-chains.md](mechanism/power-chains.md) — long-distance rotational power link (chain wheels) + minecart ski-lift (designed, not started)
-- [extendable-pistons.md](mechanism/extendable-pistons.md) — Create-style multiblock piston (core + poles + head), rotation-powered, glue payload (designed, not started)
+- [power-chains.md](mechanism/power-chains.md) — long-distance rotational power link (chain wheels) + minecart ski-lift; the chain-wheel slice shipped as `ChainPulley.java` (see [chain-pulley.md](mechanism/chain-pulley.md)), the ski-lift is not started
+- [extendable-pistons.md](mechanism/extendable-pistons.md) — Create-style multiblock piston (core + poles + head), rotation-powered, glue payload; **built** (`ExtendablePistonManager.java`), doc is the design record
 - [animations-mechanisms.md](mechanism/animations-mechanisms.md) — animations ✅ done; moveable mechanisms built but buggy
-- [blockships-integration.md](mechanism/blockships-integration.md) — BlockShips integration plan (4 phases, not started)
+- [blockships-integration.md](mechanism/blockships-integration.md) — BlockShips integration plan (4 phases); **in progress** — the work lives on BlockShips' `defcorelib-integration` branch (delegated prefab + custom ships, native→delegated migration); several items in the doc are marked ✅ RESOLVED
 - [display-system-refactor.md](display-system-refactor.md) — display elegance refactor; Phases 1/2 done, 2b blocked, 3 deferred
 - [minecarts.md](mechanism/minecarts.md) — minecart mechanism off-center pivot bug (open) + 7 deferred issues
 - [mixer.md](mechanism/mixer.md) — Mixer multiblock (mixer on a custom water cauldron) for automated flour + water → dough; extends the recipe engine for custom-item inputs (designed, not started)
-- [fluids.md](mechanism/fluids.md) — fluid subsystem design (liquid pipes + pump, lava-on-iron, water-gated sieve, steam engine stack); build waves + open decisions, not started
+- [fluids.md](mechanism/fluids.md) — fluid subsystem design (liquid pipes + pump, lava-on-iron, water-gated sieve, steam engine stack); **partly built** — the `corelib/fluid/` package (endpoints, routing, tanks, types) exists; the doc's own "nothing implemented" note is stale, re-check per wave before planning
 - [pipes.md](pipes.md) — Pipes → CoreLib migration plan
 - [redstone-cables.md](redstone-cables.md) — redstone-cables demo plugin plan
-- [rotation-mechanisms.md](mechanism/rotation-mechanisms.md) — Reverser → Rotator → Glue: network-driven doors/drawbridges bridging rotation-power to mechanisms (3 phases, not started)
+- [rotation-mechanisms.md](mechanism/rotation-mechanisms.md) — Reverser → Rotator → Glue: network-driven doors/drawbridges bridging rotation-power to mechanisms; **all phases ✅ shipped** (0-3), doc kept as the design record
 - [rotation-power.md](mechanism/rotation-power.md) — rotational power network; Phase 1 done, Phase 2 (directionality) in progress
 - [tech-tree.md](mechanism/tech-tree.md) — remaining rotation tech-tree roadmap (sieve, sources, alloys/multiblock furnace, automation, sensors); build waves + open decisions
 - [vertical-slabs.md](vertical-slabs.md) — vertical-slabs demo plugin plan (additive BlockDisplay support)
