@@ -103,6 +103,14 @@ final class ChainHoistManager implements Listener {
 
     private final Set<CustomBlockRegistry.LocationKey> hoists = new HashSet<>();
     private final Map<CustomBlockRegistry.LocationKey, ActiveMove> active = new HashMap<>();
+    // Lifts committed per hoist — survives the lift's teardown so the showcase harness can assert one
+    // actually happened. Mirrors RotationRotator.swingCount; see moveCount below.
+    private final Map<CustomBlockRegistry.LocationKey, Integer> moveCount = new HashMap<>();
+
+    /** Number of lifts this hoist has committed since load (for the showcase test harness). */
+    int moveCount(Block hoist) {
+        return moveCount.getOrDefault(CustomBlockRegistry.LocationKey.of(hoist), 0);
+    }
     private final Set<CustomBlockRegistry.LocationKey> warned = new HashSet<>();
     /** Hoists being torn down right now — see {@link #onRemoved}. Their storage is already dropped, so the
      *  disassembly callback must not bill against it, and must not re-apply state to a dying block. */
@@ -604,6 +612,7 @@ final class ChainHoistManager implements Listener {
             active.put(hoistKey, new ActiveMove(hoistKey, hoist, mech,
                 start, target, descend ? -1f : 1f, mass, spinDir, descend, span, startDepth, frontier,
                 linksDeleted, descend ? List.of() : load));
+            moveCount.merge(hoistKey, 1, Integer::sum);
         } catch (Throwable t) {
             safeDisassemble(mech, hoistKey);
             throw t;

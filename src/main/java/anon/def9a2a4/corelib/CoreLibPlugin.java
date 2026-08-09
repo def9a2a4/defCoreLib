@@ -254,7 +254,8 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
                 rotationNetwork, fuelManager);
 
         // Headless showcase integration tests (-Ddefcorelib.showcaseTest=true): build, run, assert, exit.
-        ShowcaseRunner.armIfRequested(this, registry, rotationNetwork, fuelManager, showcaseBuilder, showcases.values(), rotationRotator);
+        ShowcaseRunner.armIfRequested(this, registry, rotationNetwork, fuelManager, showcaseBuilder,
+                showcases.values(), rotationRotator, chainHoistManager, pistonManager);
 
         getLogger().info("DefCoreLib enabled: " + registry.allTypes().size()
                 + " block types, " + showcases.size() + " showcases");

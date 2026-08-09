@@ -344,7 +344,11 @@ showcases:
       - { block: "LEVER",   at: [0, 0, -1], data: "[face=floor,facing=south,powered=true]" }  # powers reverser
       - { block: "OAK_LOG", at: [2, 0, -2], data: "[axis=y]" }   # payload the head pushes
     activate: passive
-    expect: []
+    expect:
+      # piston_stroked is a COUNTER, not a live read: the stroke assembles a mechanism and tears it down
+      # again, so by assert time the core is idle whether or not it ever ran.
+      - { type: network_powered, at: [1, 0, 0] }
+      - { type: piston_stroked, at: [2, 0, 0] }
 
   # ── Chain pulleys: power jumps a gap by chain, only around a CLOSED loop ────
   - id: chain_pulley_relay
@@ -864,4 +868,7 @@ showcases:
       - { block: "DARK_OAK_BUTTON", at: [-3, -10, 0], data: "[face=wall,facing=west,powered=false]" }
       - { block: "STONE_BRICKS", at: [2, -13, -3] }
     activate: passive
-    expect: []
+    expect:
+      # Same counter rationale as double_extender_piston. The hoist is the deepest consumer in this build,
+      # so this one assertion covers the whole motor → shaft column → gearbox → rotator → hoist chain.
+      - { type: hoist_moved, at: [0, 1, 10] }

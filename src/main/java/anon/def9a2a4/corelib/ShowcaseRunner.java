@@ -46,13 +46,16 @@ final class ShowcaseRunner implements Listener {
     private final boolean testMode;
     private final Path capturePath;   // null if not capturing
     private final RotationRotator rotator;   // for the `mechanism_swung` assertion
+    private final ChainHoistManager hoists;  // for `hoist_moved`
+    private final ExtendablePistonManager pistons; // for `piston_stroked`
     private final Map<ShowcaseSpec, Location> origins = new LinkedHashMap<>();
     private boolean done;
 
     private ShowcaseRunner(CoreLibPlugin plugin, CustomBlockRegistry registry, RotationNetwork network,
                            EngineFuelManager fuelManager, ShowcaseBuilder builder,
                            java.util.Collection<ShowcaseSpec> showcases, boolean testMode, Path capturePath,
-                           RotationRotator rotator) {
+                           RotationRotator rotator, ChainHoistManager hoists,
+                           ExtendablePistonManager pistons) {
         this.plugin = plugin;
         this.registry = registry;
         this.network = network;
@@ -62,17 +65,20 @@ final class ShowcaseRunner implements Listener {
         this.testMode = testMode;
         this.capturePath = capturePath;
         this.rotator = rotator;
+        this.hoists = hoists;
+        this.pistons = pistons;
     }
 
     static boolean armIfRequested(CoreLibPlugin plugin, CustomBlockRegistry registry, RotationNetwork network,
                                   EngineFuelManager fuelManager, ShowcaseBuilder builder,
-                                  java.util.Collection<ShowcaseSpec> showcases, RotationRotator rotator) {
+                                  java.util.Collection<ShowcaseSpec> showcases, RotationRotator rotator,
+                                  ChainHoistManager hoists, ExtendablePistonManager pistons) {
         boolean test = Boolean.getBoolean("defcorelib.showcaseTest");
         String capture = System.getProperty("defcorelib.showcaseCapture");
         if (!test && (capture == null || capture.isBlank())) return false;
         Path capturePath = (capture == null || capture.isBlank()) ? null : Path.of(capture);
         ShowcaseRunner runner = new ShowcaseRunner(plugin, registry, network, fuelManager, builder,
-                showcases, test, capturePath, rotator);
+                showcases, test, capturePath, rotator, hoists, pistons);
         Bukkit.getPluginManager().registerEvents(runner, plugin);
         plugin.getLogger().info("ShowcaseRunner armed (" + (test ? "test " : "") + (capturePath != null
                 ? "capture→" + capturePath : "") + ") — " + showcases.size() + " showcases.");
@@ -151,6 +157,15 @@ final class ShowcaseRunner implements Listener {
             }
             case "mechanism_swung" -> {
                 return rotator != null && rotator.swingCount(block) > 0;
+            }
+            // Both mirror mechanism_swung: a COUNTER, not a live-state read, because the stroke assembles a
+            // mechanism and tears it down again — by assert time the machine is idle either way, so only a
+            // count distinguishes "ran and finished" from "never ran".
+            case "hoist_moved" -> {
+                return hoists != null && hoists.moveCount(block) > 0;
+            }
+            case "piston_stroked" -> {
+                return pistons != null && pistons.strokeCount(block) > 0;
             }
             default -> {
                 plugin.getLogger().warning("[showcase] unknown expect type: " + ex.type());

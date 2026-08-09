@@ -54,6 +54,14 @@ final class ExtendablePistonManager {
 
     private final Set<CustomBlockRegistry.LocationKey> cores = new HashSet<>();
     private final Map<CustomBlockRegistry.LocationKey, ActiveMove> active = new HashMap<>();
+    // Strokes committed per core — survives the stroke's teardown so the showcase harness can assert one
+    // actually happened. Mirrors RotationRotator.swingCount.
+    private final Map<CustomBlockRegistry.LocationKey, Integer> strokeCount = new HashMap<>();
+
+    /** Number of strokes this core has committed since load (for the showcase test harness). */
+    int strokeCount(Block core) {
+        return strokeCount.getOrDefault(CustomBlockRegistry.LocationKey.of(core), 0);
+    }
     private final Set<CustomBlockRegistry.LocationKey> warnedCores = new HashSet<>();  // rate-limit tick warnings
     private int tickCounter = 0;
 
@@ -591,6 +599,7 @@ final class ExtendablePistonManager {
             mowMovers.add(line.core());
             active.put(coreKey, new ActiveMove(coreKey, mech, start, target, dir,
                 mech.totalMass(), spinDir, mowMovers, moveFace, r));
+            strokeCount.merge(coreKey, 1, Integer::sum);
         } catch (Throwable t) {
             safeDisassemble(mech, coreKey);   // restore the aired-out rod instead of leaking the mech
             throw t;
