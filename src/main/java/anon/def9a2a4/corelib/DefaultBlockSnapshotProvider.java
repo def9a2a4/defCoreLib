@@ -145,7 +145,9 @@ final class DefaultBlockSnapshotProvider implements BlockSnapshotProvider {
 
         // A comparator reading a chiseled bookshelf outputs its LAST INTERACTED slot, so this is redstone
         // state, not decoration — a moved bookshelf that loses it silently changes the signal it emits.
-        if (state instanceof ChiseledBookshelf bookshelf) {
+        // (-1 = never interacted, the block's own default — nothing to carry, and not worth round-tripping
+        // a value through setLastInteractedSlot that only exists as an "unset" sentinel.)
+        if (state instanceof ChiseledBookshelf bookshelf && bookshelf.getLastInteractedSlot() >= 0) {
             into.put("bs_bookshelf_last_slot", bookshelf.getLastInteractedSlot());
         }
 
@@ -257,9 +259,8 @@ final class DefaultBlockSnapshotProvider implements BlockSnapshotProvider {
         }
 
         // Chiseled bookshelf / shelf / any other non-Container inventory holder (see capture)
-        if (from.containsKey("bs_tsih_items")
-                && block.getState() instanceof TileStateInventoryHolder tsih
-                && !(block.getState() instanceof Container)) {
+        BlockState tsihState = from.containsKey("bs_tsih_items") ? block.getState() : null;
+        if (tsihState instanceof TileStateInventoryHolder tsih && !(tsihState instanceof Container)) {
             Inventory dest = tsih.getSnapshotInventory();
             List<ItemStack> overflow = new ArrayList<>();
             if (from.get("bs_tsih_items") instanceof List<?> list) {
