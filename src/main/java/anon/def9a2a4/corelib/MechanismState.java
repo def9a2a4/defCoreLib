@@ -43,18 +43,20 @@ final class MechanismState {
                                     // colliders×2) — a recovery-completeness check (BlockShips' entity_count).
     @Nullable UUID vehicleUuid;     // recovery hint (owned marker ArmorStand, or external cart/ship vehicle)
     // (pivot − vehicle) at save time — the frame constant addDrivenBaseOffset reads LIVE, so recovery must
-    // reproduce it EXACTLY. Recorded rather than re-derived because it is stable across a mechanism's normal
-    // life (both repositionDriven branches and updateFromVehicle preserve it) while the saved PIVOT is not:
-    // a state file
-    // — CORRECTION: it is NOT a strict lifetime invariant, as this comment first claimed. BasicMechanism.move()
-    // teleports the vehicle to `position` AND sets pivot = position, so it collapses the constant to 0 whatever
-    // assembly established. That is benign for its only callers (the hoist and piston are owned/non-driven,
-    // where addDrivenBaseOffset is a no-op and the constant is already 0), but move() is public, so a caller
-    // can zero it. Recording the delta per snapshot is still correct — it captures whatever is true AT save
-    // time, including after a move() — which is precisely why recording beats re-deriving from a category.
-    // can be minutes stale where the vehicle's own NBT is always fresh. So recovery keeps taking position from
-    // the live vehicle and takes only this constant from disk. Absent (hasPivotDelta false) ⇒ a pre-existing
-    // file, and recovery falls back to its historical synthesis.
+    // reproduce it EXACTLY. It is RECORDED rather than re-derived because the saved PIVOT is untrustworthy in
+    // a way this constant is not: a state file can be minutes stale, while the vehicle's own NBT is always
+    // fresh. So recovery keeps taking POSITION from the live vehicle and takes only this CONSTANT from disk.
+    //
+    // The constant is stable across normal operation (both repositionDriven branches and updateFromVehicle
+    // preserve it) but it is NOT a strict lifetime invariant: BasicMechanism.move() teleports the vehicle to
+    // `position` and sets pivot = position, collapsing it to 0 whatever assembly established. That is benign
+    // for its only callers — the hoist and piston are owned/non-driven, where addDrivenBaseOffset is a no-op
+    // and the constant is already 0 — but move() is public, so a consumer can zero it. Recording per snapshot
+    // is right precisely BECAUSE of that: it captures whatever is true at save time, including after a move(),
+    // where re-deriving from the mechanism's category would not.
+    //
+    // Absent (hasPivotDelta false) ⇒ a file written before this was persisted; recovery falls back to its
+    // historical per-category synthesis.
     boolean hasPivotDelta;
     double dpx, dpy, dpz;
     final List<BlockRec> blocks = new ArrayList<>();
