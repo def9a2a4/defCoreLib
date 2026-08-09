@@ -168,6 +168,7 @@ final class MechanismState {
             if (b.storage != null) m.put("storage", Base64.getEncoder().encodeToString(b.storage));
             if (b.storageType != null) m.put("storage_type", b.storageType);
             if (b.storageTitle != null) m.put("storage_title", b.storageTitle);
+            if (b.storageTitleJson != null) m.put("storage_title_json", b.storageTitleJson);
             if (b.glueOffsets != null) {
                 List<Integer> g = new ArrayList<>(b.glueOffsets.length);
                 for (int i : b.glueOffsets) g.add(i);
@@ -239,6 +240,7 @@ final class MechanismState {
                 if (storage instanceof String ss) b.storage = Base64.getDecoder().decode(ss);
                 b.storageType = str(raw.get("storage_type"));
                 b.storageTitle = str(raw.get("storage_title"));
+                b.storageTitleJson = str(raw.get("storage_title_json"));
                 Object glue = raw.get("glue");
                 if (glue instanceof List<?> gl) {
                     b.glueOffsets = new int[gl.size()];

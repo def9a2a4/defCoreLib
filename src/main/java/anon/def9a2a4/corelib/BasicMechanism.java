@@ -685,6 +685,7 @@ final class BasicMechanism implements Mechanism {
                     b.storage = ItemStack.serializeItemsAsBytes(mb.storage.getContents());
                     b.storageType = mb.storage.getType().name(); // preserve the GUI type across recovery
                     b.storageTitle = mb.storageTitle;
+                    b.storageTitleJson = mb.storageTitleJson;
                 } catch (Throwable ignored) {
                     // unserializable inventory — skip storage (block still restores, just empty)
                 }
@@ -1288,6 +1289,20 @@ final class BasicMechanism implements Mechanism {
         }
     }
 
+    /**
+     * Block-free teardown: remove the mechanism's entities WITHOUT restoring any world blocks — the teardown a
+     * prefab (block-free) mechanism gets, and the error/rollback teardown for any mechanism.
+     *
+     * <p><b>Cargo-drop ownership (contract).</b> For a block-free mechanism the ENGINE is the single drop
+     * authority: this method drops each part's captured storage contents AND riding banners at that part's live
+     * cell. A consumer MUST NOT also drop the cargo — doing both duplicates items. (BlockShips relies on this:
+     * a delegated prefab keeps its cargo on the mechanism, not in the consumer's own storage map.)
+     *
+     * <p><b>What destroy() deliberately does NOT do.</b> Unlike the block path's {@link #disassemble()}, it fires
+     * NEITHER {@code beforeEntityRemoval} NOR {@code onDisassembled}, and it does NOT consult {@code DropItemHook}
+     * or drop a block-item for the discarded appearance. The consumer owns the "drop the whole thing as an item"
+     * behaviour (e.g. a ship-kit item on death) and any graceful lead/passenger transfer.
+     */
     @Override
     public void destroy() {
         checkMainThread();
@@ -1309,14 +1324,17 @@ final class BasicMechanism implements Mechanism {
             if (w != null) {
                 for (int i = 0; i < blocks.size(); i++) {
                     MechanismBlockData mb = blocks.get(i);
-                    if (mb.banners == null && mb.storage == null) continue;
+                    // blockEntitySnapshot is in the guard because it can carry player items too (a lectern's
+                    // book, a chiseled bookshelf's contents) — skipping on it would delete exactly the cargo
+                    // dropStorageItems was widened to save.
+                    if (mb.banners == null && mb.storage == null && mb.blockEntitySnapshot == null) continue;
                     // Per-block isolation (mirrors disassemble()'s landing loop): one failed drop must not
                     // skip the rest, and — with the latch set — must not escape into the finally either.
                     try {
                         org.joml.Vector3i cell = liveCell(i);
                         Location loc = new Location(w, cell.x, cell.y, cell.z);
                         if (mb.banners != null) dropBannerItems(loc, mb);
-                        dropStorageItems(loc, mb);   // null-safe: no-op when mb.storage == null
+                        dropStorageItems(loc, mb);   // null-safe: no-op when this block carried no items
                     } catch (RuntimeException ex) {
                         registry.getPlugin().getLogger().log(Level.WARNING,
                             "destroy: drop failed for block " + i + " (continuing)", ex);
@@ -1545,15 +1563,26 @@ final class BasicMechanism implements Mechanism {
         dropBannerItems(loc, mb);
     }
 
-    /** Drop this block's captured storage contents as loose items at {@code loc}. Used by every branch that
-     *  discards a storage-bearing block without a placed tile to restore into — the drop / off-world / solid-
-     *  win paths (via {@link #dropBlockAsItem}) and the consumed protected / SKIP cells. Contents are player
-     *  items and must never be silently swallowed. No-op for a block that captured no storage. */
+    /** Drop this block's captured contents as loose items at {@code loc}. Used by every branch that discards
+     *  a cargo-bearing block without a placed tile to restore into — the drop / off-world / solid-win paths
+     *  (via {@link #dropBlockAsItem}) and the consumed protected / SKIP cells. Contents are player items and
+     *  must never be silently swallowed. No-op for a block that captured nothing.
+     *
+     *  <p>TWO sources, because a block's items live in one of two places: the typed {@code storage} inventory
+     *  (vanilla containers + custom storage blocks) and the block-entity snapshot (lectern book, jukebox disc,
+     *  decorated-pot item, chiseled-bookshelf/shelf contents). Both were emptied out of the world by
+     *  airOutSourceBlocks' pass 0, so whatever this method skips is destroyed. */
     private void dropStorageItems(Location loc, MechanismBlockData mb) {
-        if (mb.storage == null) return;
         World w = loc.getWorld();
         if (w == null) return;
-        for (ItemStack item : mb.storage.getContents()) {
+        if (mb.storage != null) {
+            for (ItemStack item : mb.storage.getContents()) {
+                if (item != null && !item.getType().isAir()) {
+                    w.dropItemNaturally(loc.clone().add(0.5, 0.5, 0.5), item);
+                }
+            }
+        }
+        for (ItemStack item : DefaultBlockSnapshotProvider.capturedItems(mb.blockEntitySnapshot)) {
             if (item != null && !item.getType().isAir()) {
                 w.dropItemNaturally(loc.clone().add(0.5, 0.5, 0.5), item);
             }

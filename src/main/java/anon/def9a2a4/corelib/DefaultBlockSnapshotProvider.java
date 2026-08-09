@@ -2,6 +2,7 @@ package anon.def9a2a4.corelib;
 
 import com.destroystokyo.paper.profile.PlayerProfile;
 import com.destroystokyo.paper.profile.ProfileProperty;
+import io.papermc.paper.block.TileStateInventoryHolder;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import org.bukkit.Bukkit;
@@ -10,7 +11,9 @@ import org.bukkit.Nameable;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.BrushableBlock;
+import org.bukkit.block.ChiseledBookshelf;
 import org.bukkit.block.CommandBlock;
+import org.bukkit.block.Container;
 import org.bukkit.block.CreatureSpawner;
 import org.bukkit.block.DecoratedPot;
 import org.bukkit.block.Jukebox;
@@ -20,6 +23,7 @@ import org.bukkit.block.Skull;
 import org.bukkit.block.sign.Side;
 import org.bukkit.block.sign.SignSide;
 import org.bukkit.entity.EntityType;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
@@ -33,9 +37,17 @@ import java.util.UUID;
 /**
  * Built-in {@link BlockSnapshotProvider} covering the common vanilla block-entities whose state defCoreLib
  * would otherwise blank when a mechanism moves them: signs, player-head profiles, custom names, lectern
- * books, jukebox discs, brushable-block loot, decorated-pot sherds, command blocks, and mob spawners.
- * Registered once at plugin enable. Container <em>inventories</em> and banners are handled by the core
- * assembly path already, so they're intentionally NOT duplicated here (custom NAME still is, via Nameable).
+ * books, jukebox discs, brushable-block loot, decorated-pot sherds, chiseled-bookshelf/shelf contents,
+ * command blocks, and mob spawners. Registered once at plugin enable. {@link Container} inventories and
+ * banners are handled by the core assembly path already, so they're intentionally NOT duplicated here
+ * (custom NAME still is, via Nameable).
+ *
+ * <p><b>Inventory ownership.</b> {@code airOutSourceBlocks}' pass 0 empties every
+ * {@link TileStateInventoryHolder} before removing it, so EVERY such block must be captured by somebody or
+ * its contents are destroyed. The split: a {@code Container} is the assembly path's (it owns the typed
+ * {@code storage} inventory); lecterns/jukeboxes/decorated pots own their slot-0 keys below; and the
+ * catch-all {@code bs_tsih_items} branch covers every remaining non-Container holder — chiseled bookshelves
+ * and (1.21.9+) shelves today. Keep that pairing intact when adding a branch here.
  *
  * <p>All keys are namespaced ({@code bs_*}) and all values YAML-safe (String / boxed / List / base64), so
  * the map round-trips through the mechanism's persisted state. Every {@code apply} branch re-checks the
@@ -105,6 +117,36 @@ final class DefaultBlockSnapshotProvider implements BlockSnapshotProvider {
             if (!sherds.isEmpty()) into.put("bs_pot_sherds", sherds);
             ItemStack potItem = pot.getInventory().getItem(0);
             if (potItem != null && !potItem.getType().isAir()) into.put("bs_pot_item", encodeItem(potItem));
+        }
+
+        // Every remaining non-Container TileStateInventoryHolder: chiseled bookshelves and (1.21.9+) shelves.
+        // Keyed on the INTERFACE, not the concrete types — org.bukkit.block.Shelf doesn't exist in the
+        // 1.21.8 compile target, and this is the same predicate airOutSourceBlocks' pass 0 clears by, so
+        // "cleared" and "captured" can't drift apart again for a type Mojang adds later. The exclusions are
+        // the holders another branch already owns (see the class doc); without them those would be captured
+        // twice and restored twice — harmless for a lectern, but a second write to a jukebox is not.
+        if (state instanceof TileStateInventoryHolder tsih
+                && !(state instanceof Container)
+                && !(state instanceof Lectern)
+                && !(state instanceof Jukebox)
+                && !(state instanceof DecoratedPot)) {
+            // Snapshot inventory, not live: these blocks have no GUI, so unlike the Container capture in
+            // MechanismRegistry there are no viewers to sever and a detached copy is the safer read.
+            Inventory inv = tsih.getSnapshotInventory();
+            List<String> items = new ArrayList<>();
+            for (int s = 0; s < inv.getSize(); s++) {
+                ItemStack item = inv.getItem(s);
+                // Sparse "slot=base64": empty slots cost nothing and a size change across versions can't
+                // silently shift every item along by one.
+                if (item != null && !item.getType().isAir()) items.add(s + "=" + encodeItem(item));
+            }
+            if (!items.isEmpty()) into.put("bs_tsih_items", items);
+        }
+
+        // A comparator reading a chiseled bookshelf outputs its LAST INTERACTED slot, so this is redstone
+        // state, not decoration — a moved bookshelf that loses it silently changes the signal it emits.
+        if (state instanceof ChiseledBookshelf bookshelf) {
+            into.put("bs_bookshelf_last_slot", bookshelf.getLastInteractedSlot());
         }
 
         if (state instanceof CommandBlock cmd) {
@@ -214,6 +256,42 @@ final class DefaultBlockSnapshotProvider implements BlockSnapshotProvider {
             pot.update(true, false);
         }
 
+        // Chiseled bookshelf / shelf / any other non-Container inventory holder (see capture)
+        if (from.containsKey("bs_tsih_items")
+                && block.getState() instanceof TileStateInventoryHolder tsih
+                && !(block.getState() instanceof Container)) {
+            Inventory dest = tsih.getSnapshotInventory();
+            List<ItemStack> overflow = new ArrayList<>();
+            if (from.get("bs_tsih_items") instanceof List<?> list) {
+                for (Object o : list) {
+                    String[] kv = String.valueOf(o).split("=", 2);
+                    if (kv.length != 2) continue;
+                    int slot;
+                    try {
+                        slot = Integer.parseInt(kv[0]);
+                    } catch (NumberFormatException ignored) { continue; }
+                    ItemStack item = decodeItem(kv[1]);
+                    // A slot the landed block doesn't have (the block type changed under us, or a version
+                    // shrank the inventory) drops rather than being swallowed — same call the container
+                    // restore's overflow tail makes in BasicMechanism.
+                    if (slot >= 0 && slot < dest.getSize()) dest.setItem(slot, item);
+                    else overflow.add(item);
+                }
+            }
+            tsih.update(true, false);
+            for (ItemStack extra : overflow) {
+                block.getWorld().dropItemNaturally(block.getLocation().add(0.5, 0.5, 0.5), extra);
+            }
+        }
+
+        // Chiseled bookshelf comparator output
+        if (from.containsKey("bs_bookshelf_last_slot")
+                && block.getState() instanceof ChiseledBookshelf bookshelf) {
+            bookshelf.setLastInteractedSlot(intOr(from.get("bs_bookshelf_last_slot"),
+                bookshelf.getLastInteractedSlot()));
+            bookshelf.update(true, false);
+        }
+
         // Command block
         String cmd = str(from.get("bs_cmd"));
         if (cmd != null && block.getState() instanceof CommandBlock cb) {
@@ -309,6 +387,38 @@ final class DefaultBlockSnapshotProvider implements BlockSnapshotProvider {
                 item.setItemMeta(meta);
             }
         }
+    }
+
+    /**
+     * The player items this provider captured OUT of the world, for the drop paths — the static counterpart
+     * to {@link #apply(Block, Map)} the way {@link #decorateItem} is for a block's own item. When a mechanism
+     * discards a block instead of placing it (destroyed / off-world / solid-wins / protected / SKIP) there is
+     * no tile to restore into, and {@code airOutSourceBlocks}' pass 0 already emptied the source — so without
+     * this these items exist nowhere and are simply deleted.
+     *
+     * <p>Covers exactly the keys whose source block pass 0 provably cleared, i.e. the
+     * {@link TileStateInventoryHolder}s: lectern book, jukebox disc, decorated-pot item, and
+     * {@code bs_tsih_items}. {@code bs_brushable_item} is deliberately NOT here — a {@code BrushableBlock}
+     * is not an inventory holder, so pass 0 never touched it and its buried item may still be in the world
+     * from the {@code setType(AIR)}; dropping it again could duplicate it.
+     *
+     * <p>Snapshot-gated and empty for a block that carried nothing. Provider-specific by design: a consumer's
+     * own {@link BlockSnapshotProvider} owns the drop semantics of the keys it captured.
+     */
+    static List<ItemStack> capturedItems(Map<String, Object> snap) {
+        if (snap == null) return List.of();
+        List<ItemStack> out = new ArrayList<>();
+        for (String key : new String[] {"bs_lectern_book", "bs_jukebox_disc", "bs_pot_item"}) {
+            String encoded = str(snap.get(key));
+            if (encoded != null) out.add(decodeItem(encoded));
+        }
+        if (snap.get("bs_tsih_items") instanceof List<?> list) {
+            for (Object o : list) {
+                String[] kv = String.valueOf(o).split("=", 2);
+                if (kv.length == 2) out.add(decodeItem(kv[1]));
+            }
+        }
+        return out;
     }
 
     private static String encodeItem(ItemStack item) {

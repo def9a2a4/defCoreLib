@@ -57,6 +57,7 @@ public class MechanismRegistry {
     private final Set<UUID> tickWarned = new HashSet<>();  // mechs already warned about a tick throw (rate-limit)
 
     private @Nullable BukkitTask tickTask;
+    private @Nullable BukkitTask flushTask; // 60s async chunk-index flush
     private boolean colliderGlowEnabled = false;
     private boolean dynamicLightsEnabled = true; // tag light-emitting blocks for the optional DynLight plugin
     private boolean scaleWarned = false; // one-time guard for the missing-scale-attribute warning
@@ -577,6 +578,7 @@ public class MechanismRegistry {
             List<CustomHeadBlock.BlockDisplayEntityConfig> bdecs = null;
             CustomHeadBlock.ParticleConfig particles = null;
             Inventory storage = null;
+            String storageTitleJson = null;
             boolean spinReversed = false;
             Vector3f wallFacing = null;
             Float floorHeadYaw = null;
@@ -622,9 +624,18 @@ public class MechanismRegistry {
                 // getInventory() is correct for them.
                 Inventory orig = (c instanceof org.bukkit.block.Chest chest) ? chest.getBlockInventory()
                                                                              : c.getInventory();
+                // Carry a renamed container's name onto the in-flight GUI, so a chest labelled "Cargo"
+                // still reads "Cargo" while it is flying. The LANDED block gets its name back separately,
+                // from the block-entity snapshot (bs_name) — this is the in-transit half, which has no
+                // other home. GSON-serialized so colours survive; see storageTitleJson.
+                net.kyori.adventure.text.Component containerName = c.customName();
+                if (containerName != null) {
+                    storageTitleJson = net.kyori.adventure.text.serializer.gson.GsonComponentSerializer
+                        .gson().serialize(containerName);
+                }
                 // Preserve the container's GUI TYPE (hopper 5, dropper/dispenser 3×3, furnace 3, …) — not
                 // just its size — so a moved/recovered container opens its real inventory, not a chest.
-                storage = createTypedInventory(null, orig.getType(), orig.getSize(), null);
+                storage = createTypedInventory(null, orig.getType(), orig.getSize(), containerName);
                 for (int s = 0; s < orig.getSize(); s++) {
                     ItemStack item = orig.getItem(s);
                     if (item != null) storage.setItem(s, item.clone());
@@ -664,6 +675,7 @@ public class MechanismRegistry {
             collision = applyWallHeadShift(collision, bd);
             MechanismBlockData mbd = new MechanismBlockData(bd, local, collision,
                 customType, customState, decs, bdecs, particles, storage, spinReversed, wallFacing);
+            mbd.storageTitleJson = storageTitleJson;   // named world container: keeps its name on the in-flight GUI
             mbd.wasBare = wasBare;   // re-bared on landing (rebareAfterLanding) so a carried bare shaft stays bare
             mbd.throttleLevel = registry.throttleLevelAt(block);   // chunk-PDC level (not tile) — carried in the field
             mbd.floorHeadYaw = floorHeadYaw;   // rendered in transit by BasicMechanism.rotate(); null unless a floor head
@@ -1257,9 +1269,15 @@ public class MechanismRegistry {
         // setType(..., applyPhysics=false) maps to chunk-update flag 530, which does NOT carry
         // UPDATE_SKIP_BLOCK_ENTITY_SIDEEFFECTS — so removing the block runs
         // BlockEntity#preRemoveSideEffects → Containers.dropContents and the originals hit the floor.
-        // (Mirrors BlockShips' BlockStructureScanner "Pass 0"; TileStateInventoryHolder, not Container,
-        // so lecterns/jukeboxes/decorated pots/chiseled bookshelves are covered too — their contents
-        // are restored from the block-entity snapshot, so dropping them here would dupe as well.)
+        // (Mirrors BlockShips' BlockStructureScanner "Pass 0".) Keyed on TileStateInventoryHolder, not
+        // Container, so it clears more than the Container capture above took. INVARIANT: everything this
+        // pass empties must be captured by something, or the emptying IS the deletion. The pairing —
+        //   Container                    → the typed `storage` inventory captured above (~612)
+        //   Lectern / Jukebox / DecoratedPot → their own DefaultBlockSnapshotProvider slot-0 keys
+        //   every other holder           → that provider's bs_tsih_items catch-all, keyed on this same
+        //                                  interface (chiseled bookshelves, 1.21.9+ shelves, whatever's next)
+        // Both halves also feed BasicMechanism.dropStorageItems, so a block the mechanism discards instead
+        // of landing still drops its cargo rather than taking it to the grave.
         // Deliberately a separate pass AFTER capture succeeded: airOutSourceBlocks runs post display
         // spawn and mount, so clearing any earlier would turn an aborted assembly into deletion.
         // Guarded per block — one failure must not leave a half-cleared, half-removed structure.
@@ -1289,10 +1307,15 @@ public class MechanismRegistry {
 
     public void startTasks() {
         tickTask = Bukkit.getScheduler().runTaskTimer(plugin, this::tickMechanisms, 1L, 1L);
+        // Periodic async flush of the chunk index: moving mechanisms re-index in memory per crossing (no
+        // disk), and this lands the dirty worlds' chunks.yml off the main thread every 60s. Chunk/world
+        // unload and shutdown flush on their own; between those this bounds how stale the on-disk index gets.
+        flushTask = Bukkit.getScheduler().runTaskTimer(plugin, persistence::flushDirtyAsync, 20L * 60, 20L * 60);
     }
 
     public void shutdown() {
         if (tickTask != null) tickTask.cancel();
+        if (flushTask != null) flushTask.cancel();
         // Restore real blocks for any still-assembled mechanism (e.g. an open door) so the structure
         // isn't lost on /stop. Per-mechanism guarded: a failure falls back to removeAllEntities so we
         // never leak persistent entities. (Full restart recovery is the deferred persistence work.)
@@ -1368,6 +1391,9 @@ public class MechanismRegistry {
                 }
             }
         }
+        // The parked mechanisms above re-indexed in memory; land the world's chunks.yml before its region
+        // file is written (sync, so the on-disk index can't lag a just-unloaded world).
+        persistence.flushWorldSync(world.getName());
     }
 
     /** Toggle collider debug glow on all active (and future) mechanism shulkers. */
@@ -1465,6 +1491,9 @@ public class MechanismRegistry {
             activeMechanisms.remove(mech.id());
             for (ColliderPair cp : mech.colliders) colliderIndex.remove(cp.shulker().getUniqueId());
         }
+        // Parked mechanisms re-indexed in memory above; flush the dirty worlds off-thread (mirrors
+        // BlockShips' saveAllChunkIndicesAsync on chunk unload).
+        persistence.flushDirtyAsync();
     }
 
     /**
@@ -1842,8 +1871,22 @@ public class MechanismRegistry {
                         } else {
                             invType = containerTypeOf(bd == null ? null : bd.getMaterial());
                         }
-                        net.kyori.adventure.text.Component title = b.storageTitle != null
-                            ? net.kyori.adventure.text.Component.text(b.storageTitle) : null;
+                        // A captured container's name is JSON (formatting preserved); a prefab cargo title
+                        // is plain text. Two keys rather than one sniffed key — a prefab title that looked
+                        // like JSON would otherwise be silently reinterpreted.
+                        net.kyori.adventure.text.Component title = null;
+                        if (b.storageTitleJson != null) {
+                            try {
+                                title = net.kyori.adventure.text.serializer.gson.GsonComponentSerializer
+                                    .gson().deserialize(b.storageTitleJson);
+                            } catch (RuntimeException ex) {
+                                plugin.getLogger().warning("Mechanism recovery: unreadable storage title in "
+                                    + st.mechId + " (" + ex.getMessage() + "); the container will be unnamed");
+                            }
+                        }
+                        if (title == null && b.storageTitle != null) {
+                            title = net.kyori.adventure.text.Component.text(b.storageTitle);
+                        }
                         storage = createTypedInventory(null, invType, items.length, title);
                         storage.setContents(items.length > storage.getSize()
                             ? java.util.Arrays.copyOf(items, storage.getSize()) : items);
@@ -1885,6 +1928,7 @@ public class MechanismRegistry {
             // this field back when the mechanism is re-saved, so without it a recover→re-save cycle
             // drops the title permanently — correct for one session, blank ever after.
             mbd.storageTitle = b.storageTitle;
+            mbd.storageTitleJson = b.storageTitleJson;
             if (b.banners != null) mbd.banners = rebuildBanners(b.banners, st.mechId);
             out.add(mbd);
         }
