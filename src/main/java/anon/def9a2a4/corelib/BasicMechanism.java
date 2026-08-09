@@ -822,8 +822,10 @@ final class BasicMechanism implements Mechanism {
     }
 
     /** True for any DefCoreLib mechanism entity — collider shulker, carrier, vehicle, parent, or display —
-     *  of ANY mechanism, identified by the shared "corelib:mech:" scoreboard-tag prefix. */
-    private static boolean isMechanismEntity(Entity e) {
+     *  of ANY mechanism, identified by the shared "corelib:mech:" scoreboard-tag prefix.
+     *  Package-visible: CoreLibPlugin's portal guard uses the same predicate rather than restating the
+     *  tag convention. */
+    static boolean isMechanismEntity(Entity e) {
         for (String tag : e.getScoreboardTags()) {
             if (tag.startsWith("corelib:mech:")) return true;
         }

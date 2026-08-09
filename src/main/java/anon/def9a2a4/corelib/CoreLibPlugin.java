@@ -446,6 +446,23 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         }
     }
 
+    /**
+     * Refuse to let any mechanism entity travel through a portal. A mechanism is not built to change world:
+     * its colliders are NOT passengers of the vehicle (they are free carriers teleported to the pivot each
+     * tick), so a portalling vehicle would take its displays and strand the colliders behind — a body split
+     * across two worlds. A persisted mechanism additionally orphans its state file and chunk-index entry in
+     * the world it left, because save/remove only ever touch the mechanism's CURRENT world; every later load
+     * of that stale chunk then runs a futile recovery sweep.
+     *
+     * <p>Cancelling leaves the entity sitting in the portal; the event simply re-fires and is re-cancelled.
+     * This closes the portal route only — an admin {@code /tp} or a plugin teleport can still move a
+     * mechanism cross-world and hit the orphan above, which would need the persistence paths fixed instead.
+     */
+    @EventHandler(ignoreCancelled = true)
+    public void onMechanismEntityPortal(org.bukkit.event.entity.EntityPortalEvent event) {
+        if (BasicMechanism.isMechanismEntity(event.getEntity())) event.setCancelled(true);
+    }
+
     // ──────────────────────────────────────────────────────────────────────
     // Block placement — detect custom block items, write PDC, apply config
     // ──────────────────────────────────────────────────────────────────────

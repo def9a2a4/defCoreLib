@@ -94,13 +94,17 @@ public final class MechanismBlockData {
     @Nullable ItemStack displayItem;
     @Nullable ItemDisplayTransform displayMode;
 
-    // Mutable — updated by BasicMechanism.setBlockState()
-    // Nullable but not annotated: @Nullable cannot be applied to qualified inner type names
-    String customState;
-    List<CustomHeadBlock.DisplayEntityConfig> displayEntityConfigs;
-    List<CustomHeadBlock.BlockDisplayEntityConfig> blockDisplayEntityConfigs;
-    CustomHeadBlock.ParticleConfig particles;
-    Inventory storage;
+    // Mutable — updated by BasicMechanism.setBlockState().
+    // All five are null for a block-free / standalone display part (assembleFromParts passes null for each),
+    // and every reader already guards accordingly. jspecify's @Nullable is TYPE_USE, so it sits at the SIMPLE
+    // name of a qualified type — CustomHeadBlock.@Nullable ParticleConfig, not @Nullable CustomHeadBlock.…
+    // (the prefix form would annotate the scoping name and is a compile error). The same idiom is used
+    // throughout this package, e.g. CustomBlockRegistry.@Nullable LocationKey.
+    @Nullable String customState;
+    @Nullable List<CustomHeadBlock.DisplayEntityConfig> displayEntityConfigs;
+    @Nullable List<CustomHeadBlock.BlockDisplayEntityConfig> blockDisplayEntityConfigs;
+    CustomHeadBlock.@Nullable ParticleConfig particles;
+    @Nullable Inventory storage;
     // GUI title for a block-free storage part (a prefab ship's named cargo, from the PartSpec descriptor).
     // Plain text. Persisted so the name survives recovery. The Inventory's TYPE is read back via
     // storage.getType() — not stored here.
@@ -110,13 +114,13 @@ public final class MechanismBlockData {
     // happens to contain JSON. Null for an unnamed container.
     @Nullable String storageTitleJson;
 
-    MechanismBlockData(BlockData blockData, Matrix4f localTransform,
+    MechanismBlockData(@Nullable BlockData blockData, Matrix4f localTransform,
                        CollisionConfig collision,
-                       @Nullable String customTypeId, String customState,
-                       List<CustomHeadBlock.DisplayEntityConfig> displayEntityConfigs,
-                       List<CustomHeadBlock.BlockDisplayEntityConfig> blockDisplayEntityConfigs,
-                       CustomHeadBlock.ParticleConfig particles,
-                       Inventory storage,
+                       @Nullable String customTypeId, @Nullable String customState,
+                       @Nullable List<CustomHeadBlock.DisplayEntityConfig> displayEntityConfigs,
+                       @Nullable List<CustomHeadBlock.BlockDisplayEntityConfig> blockDisplayEntityConfigs,
+                       CustomHeadBlock.@Nullable ParticleConfig particles,
+                       @Nullable Inventory storage,
                        boolean spinReversed, @Nullable Vector3f wallFacing) {
         this.blockData = blockData;
         this.localTransform = localTransform;
@@ -131,9 +135,11 @@ public final class MechanismBlockData {
         this.wallFacing = wallFacing;
     }
 
-    public String customState() { return customState; }
-    public List<CustomHeadBlock.DisplayEntityConfig> displayEntityConfigs() { return displayEntityConfigs; }
-    public List<CustomHeadBlock.BlockDisplayEntityConfig> blockDisplayEntityConfigs() { return blockDisplayEntityConfigs; }
-    public CustomHeadBlock.ParticleConfig particles() { return particles; }
-    public Inventory storage() { return storage; }
+    // All five may be null — see the field declarations. These are the public surface (a consumer reaches a
+    // MechanismBlockData through Mechanism.getBlock(int)), so the annotation matters most here.
+    public @Nullable String customState() { return customState; }
+    public @Nullable List<CustomHeadBlock.DisplayEntityConfig> displayEntityConfigs() { return displayEntityConfigs; }
+    public @Nullable List<CustomHeadBlock.BlockDisplayEntityConfig> blockDisplayEntityConfigs() { return blockDisplayEntityConfigs; }
+    public CustomHeadBlock.@Nullable ParticleConfig particles() { return particles; }
+    public @Nullable Inventory storage() { return storage; }
 }

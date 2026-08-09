@@ -160,7 +160,15 @@ final class MechanismRotationDriver {
         List<NodeSpec> specs = new ArrayList<>();
         for (int i = 0; i < realBlockCount; i++) {
             MechanismBlockData mb = mech.getBlock(i);
-            if (mb.customTypeId == null) continue;
+            // A rotation node needs a real block: the loop below reads blockData for its facing and aim.
+            // The null-blockData half is unreachable today — assembleFromParts is the only source of a
+            // block-free part and PartSpec has no customTypeId component at all, so the two conditions
+            // can't co-occur outside a hand-edited state file (rebuildBlocks deserializes the two
+            // independently). Stated as an invariant rather than left to that coincidence; without it such
+            // a part would silently become a node with a fabricated DOWN aim. NOTE: deliberately NOT
+            // mirrored in the cell-map loop below — that indexes every real block so machines can find
+            // neighbouring travelling inventories, and a block-free part may carry a prefab cargo hold.
+            if (mb.customTypeId == null || mb.blockData == null) continue;
             RotationConfig.MechRotationMeta meta = config.mechMeta(mb.customTypeId);
             if (meta == null) continue;
 

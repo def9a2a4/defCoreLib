@@ -811,7 +811,9 @@ public class MechanismRegistry {
         Location spawnLoc = pivot.clone().add(0, rideOffset, 0);
 
         // Parent BlockDisplay(AIR): invisible intermediary for multi-passenger support.
-        // Minecarts only allow one passenger, so displays mount on parent, parent on vehicle.
+        // Minecarts only allow one passenger, so every display mounts on the parent rather than the vehicle.
+        // Whether the PARENT in turn mounts on the vehicle depends on the branch below: owned/driven mounts
+        // it, an external vehicle deliberately does NOT (it stays free and updateFromVehicle drives it).
         // BlockDisplay→Display passenger offset is zero (confirmed by BlockShips pattern).
         BlockDisplay parentDisplay = pivot.getWorld().spawn(spawnLoc, BlockDisplay.class, d -> {
             d.setBlock(Bukkit.createBlockData(Material.AIR));
@@ -1073,8 +1075,13 @@ public class MechanismRegistry {
             // rotation-network recalc — leaves the world banners (and their items) untouched.
             for (Display d : capturedWorldBanners) d.remove();
         } else {
-            // External vehicle (minecart): remove the real blocks now, then defer the mount one tick —
-            // minecarts silently reject addPassenger for non-living entities at the NMS level.
+            // External vehicle (minecart): remove the real blocks now, then defer the DISPLAY→PARENT mounts
+            // one tick. NOTE the previous justification here — "minecarts silently reject addPassenger for
+            // non-living entities at the NMS level" — is FALSE: CraftEntity.addPassenger forces past the
+            // rider checks and no minecart class overrides couldAcceptPassenger. The original failure this
+            // defer works around was never identified, so it stays; do not remove it on the strength of the
+            // corrected fact alone. Note also that this branch never mounts the parent ON the vehicle —
+            // that is what keeps it free for updateFromVehicle, and recovery now mirrors the same gate.
             firePreAirOut(mech, blocks); // 3a-ii: source blocks still LIVE + colliders spawned (leads seam)
             airOutSourceBlocks(blocks);
             for (Display d : capturedWorldBanners) d.remove(); // see owned branch — after air-out
@@ -1754,7 +1761,18 @@ public class MechanismRegistry {
         // ticks for exactly this — ShipInstance:1148-1150). Do it once here so the first rotate() lays out a
         // fully-mounted chain. addPassenger is a no-op when the link already exists.
         try {
-            if (!vehicle.getPassengers().contains(parent)) vehicle.addPassenger(parent);
+            // The vehicle→parent link is the one that is NOT unconditional: mirror assembleCore's own
+            // `ownsVehicle || driven` branch. An EXTERNAL, non-driven vehicle (a minecart on rails)
+            // deliberately keeps the parent FREE — updateFromVehicle teleports it to the snapped pivot each
+            // tick — so re-mounting it here would recreate a link fresh assembly never makes. The gate is on
+            // the FLAGS, not the entity type, because an external non-driven ArmorStand takes the same
+            // un-mounted assembly path that an `instanceof Minecart` test would miss. The else-branch clears
+            // a link written by an older build, which a plain gate would leave in the entity NBT forever.
+            if (st.ownsVehicle || st.driven) {
+                if (!vehicle.getPassengers().contains(parent)) vehicle.addPassenger(parent);
+            } else if (vehicle.getPassengers().contains(parent)) {
+                vehicle.removePassenger(parent);
+            }
             for (List<Display> group : displaysPerBlock) {
                 for (Display d : group) if (!parent.getPassengers().contains(d)) parent.addPassenger(d);
             }
