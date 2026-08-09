@@ -151,7 +151,12 @@ final class MechanismState {
         s.set("ride_offset", (double) rideOffset);
         s.set("owns_vehicle", ownsVehicle);
         s.set("driven", driven);
-        if (blockFree) s.set("block_free", true);
+        // Always written, never omitted-when-false: a block-free part still carries real BlockData, so
+        // this flag is the ONLY thing keeping a prefab hull out of the world. Read back with
+        // getBoolean(), which returns false for an absent key — so a dropped key silently promotes the
+        // mechanism to "has world blocks", and the next disassemble() pastes the whole hull down.
+        // Nothing else re-derives it (there is no type-based cross-check on recovery).
+        s.set("block_free", blockFree);
         if (hasPivotDelta) s.set("pivot_delta", List.of(dpx, dpy, dpz));
         s.set("entity_count", entityCount);
         if (vehicleUuid != null) s.set("vehicle_uuid", vehicleUuid.toString());

@@ -1450,9 +1450,14 @@ final class BasicMechanism implements Mechanism {
             ItemStack[] saved = mb.storage.getContents();
             // setContents throws when the array is LONGER than the destination, and the caller's catch
             // turns that into a WARNING with the items gone. Cap, then drop the tail as entities rather
-            // than swallowing it. Sizes match for a captured world container (createTypedInventory types
-            // off the live inventory), but NOT for a prefab part that declares a storageSize larger than
-            // the block it lands in can hold — that is a model bug, and dropping is how it surfaces.
+            // than swallowing it.
+            // Unreachable on every path that exists today, and deliberately kept anyway: a captured world
+            // container is sized from its LIVE inventory (createTypedInventory) so the sizes match by
+            // construction, and a double chest is split into 27-slot halves at capture. A part whose
+            // declared storageSize exceeds its block — prefab cargo — never lands at all: those
+            // mechanisms are blockFree, and disassemble() short-circuits to destroy() (which drops the
+            // whole inventory, uncapped) before reaching this method. So this only fires on a
+            // model/persistence inconsistency, e.g. a recovered mechanism that lost its block_free flag.
             // Deliberately drops BEFORE the update() below: this whole block is inside a catch-and-log,
             // so materialising the tail first means an update() failure cannot swallow it.
             if (saved.length > dest.getSize()) {
