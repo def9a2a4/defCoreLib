@@ -470,7 +470,17 @@ public class MechanismRegistry {
      * selector, and every block-data dereference (mass, block-light, world-cell) skips them.
      */
     public Mechanism assembleFromParts(String type, List<PartSpec> parts, Entity vehicle, float rideOffset) {
-        UUID mechId = UUID.randomUUID();
+        return assembleFromParts(UUID.randomUUID(), type, parts, vehicle, rideOffset);
+    }
+
+    /**
+     * Identity-preserving variant of {@link #assembleFromParts(String, List, Entity, float)}: assembles the
+     * mechanism under a CALLER-SUPPLIED id instead of a fresh random one. Used by the BlockShips native→delegated
+     * migration so a re-assembled ship keeps its original UUID (the wheel↔ship link and the {@code ships/{id}.yml}
+     * sidecar both key on it). The caller MUST ensure {@code id} is not already live ({@link #byId(UUID)} null);
+     * there is no pre-existing persisted state to clobber for a never-delegated native ship.
+     */
+    public Mechanism assembleFromParts(UUID mechId, String type, List<PartSpec> parts, Entity vehicle, float rideOffset) {
         Location pivot = vehicle.getLocation();
         String vehicleTag = "corelib:mech:" + mechId + ":vehicle";
         vehicle.addScoreboardTag(vehicleTag);
