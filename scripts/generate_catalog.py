@@ -13,8 +13,10 @@ Run it with:
     uv run scripts/generate_catalog.py
     uv run scripts/generate_catalog.py --no-assets   # JSON only, fast
 
-Outputs:
-    docs/data/items.json               (committed)
+Outputs (all gitignored except models-manifest.json, which IS committed — so a run that can't
+tell "no such model" from "couldn't reach GitHub" refuses to write it rather than commit a guess):
+    docs/data/items.json               (gitignored — see docs/data/.gitignore)
+    docs/data/models-manifest.json     (COMMITTED)
     docs/assets/skins/<hash>.png       (gitignored — head skins)
     docs/assets/items/<material>.png   (gitignored — vanilla item/block textures)
 
@@ -30,7 +32,10 @@ import copy
 import json
 import os
 import re
+import shutil
 import sys
+import time
+import urllib.error
 import urllib.parse
 import urllib.request
 from pathlib import Path
@@ -63,6 +68,7 @@ SKINS_DIR = DOCS / "assets" / "skins"
 ITEMS_DIR = DOCS / "assets" / "items"
 MODELS_DIR = DOCS / "assets" / "models"
 TEXTURES_DIR = DOCS / "assets" / "textures"
+ASSETS_STAMP = DOCS / "assets" / ".assets-version"   # which MC_ASSETS_VERSION the vendored files are from
 OCTAGON_MAP = Path(__file__).resolve().parent / "octagon-textures.json"
 BUNDLED_MODELS = Path(__file__).resolve().parent / "models"   # hand-authored builtin/entity models
 
@@ -125,7 +131,15 @@ BOTTLE_OUTPUTS = {"HONEY_BOTTLE", "POTION", "SPLASH_POTION", "LINGERING_POTION"}
 
 # Vanilla-texture sources, mirroring HeadSmith/docs/util/catalog.js (pinned 1.21.4).
 OCTAGON_BASE = "https://raw.githubusercontent.com/MyOctagon/Minecraft-Block-Textures/main"
-MC_ASSETS_BASE = "https://raw.githubusercontent.com/InventivetalentDev/minecraft-assets/1.21.4/assets/minecraft/textures"
+
+# Pinned by COMMIT, not by the "1.21.4" ref. That ref is ambiguous in the upstream repo — it exists
+# as both a tag and a branch — so raw.githubusercontent could start serving different bytes if the
+# branch is ever advanced. The negative model cache below records "this model does not exist" under
+# this key, which is only a durable fact if the key names immutable content. This SHA is the tag's
+# current target, so the bytes served are unchanged.
+MC_ASSETS_VERSION = "58d92c8cee4c7ac22d02988fb2bc3e4648af9ef2"   # == tag 1.21.4
+MC_ASSETS_REPO = f"https://raw.githubusercontent.com/InventivetalentDev/minecraft-assets/{MC_ASSETS_VERSION}/assets/minecraft"
+MC_ASSETS_BASE = f"{MC_ASSETS_REPO}/textures"
 
 
 # ── YAML helpers ───────────────────────────────────────────────────────────
@@ -596,21 +610,89 @@ def resolve_material_urls(name: str, octagon: dict, item_list: set, block_list: 
 # Vanilla block/item MODELS, flattened at build time so the front-end can render them
 # in three.js without a runtime model resolver. Output: a self-contained resolved model
 # (textures key -> vendored png path, plus elements) per block id.
-MODELS_BASE = MC_ASSETS_BASE.replace("/textures", "/models")
+MODELS_BASE = f"{MC_ASSETS_REPO}/models"
+
+# Model JSON is fetched by parent chain, so one run makes ~122 requests (~90 s) for ~105 block ids.
+# Persist the lot to one flat file so a warm run makes none. Keyed on the pinned commit, so bumping
+# MC_ASSETS_VERSION self-invalidates. One file rather than a tree of <name>.json: model names contain
+# "/" and come partly from the remote JSON's own `parent` field, which is third-party content — a
+# per-name path would be a needless traversal surface.
+MODEL_CACHE_FILE = ROOT / ".temp" / f"model-cache-{MC_ASSETS_VERSION[:12]}.json"
 _MODEL_CACHE: dict = {}
+_MODEL_CACHE_DIRTY = False
+# Names whose fetch failed for a reason that is NOT a 404 — i.e. we do not know whether the model
+# exists. Never cached; makes vendor_models refuse to write a manifest it can't stand behind.
+_MODEL_FETCH_FAILURES: dict[str, str] = {}
+
+MODEL_FETCH_ATTEMPTS = 4
+
+
+def load_model_cache() -> None:
+    """Warm _MODEL_CACHE from disk. A corrupt/unreadable cache is discarded, not fatal."""
+    global _MODEL_CACHE
+    try:
+        raw = json.loads(MODEL_CACHE_FILE.read_text(encoding="utf-8"))
+        if isinstance(raw, dict):
+            # {"__absent__": true} is a confirmed 404; anything else is the model JSON itself.
+            _MODEL_CACHE = {k: (None if v == {"__absent__": True} else v) for k, v in raw.items()}
+            print(f"  model cache: {len(_MODEL_CACHE)} entries from {MODEL_CACHE_FILE.relative_to(ROOT)}")
+    except FileNotFoundError:
+        pass
+    except (json.JSONDecodeError, OSError) as e:
+        print(f"  ! ignoring unreadable model cache {MODEL_CACHE_FILE} -> {e}", file=sys.stderr)
+
+
+def save_model_cache() -> None:
+    if not _MODEL_CACHE_DIRTY:
+        return
+    MODEL_CACHE_FILE.parent.mkdir(parents=True, exist_ok=True)
+    # pid-unique temp name: two concurrent generator runs must not collide on the same partial file.
+    tmp = MODEL_CACHE_FILE.with_name(f"{MODEL_CACHE_FILE.name}.{os.getpid()}.tmp")
+    payload = {k: ({"__absent__": True} if v is None else v) for k, v in _MODEL_CACHE.items()}
+    tmp.write_text(json.dumps(payload), encoding="utf-8")
+    os.replace(tmp, MODEL_CACHE_FILE)
 
 
 def fetch_model_json(name: str):
-    """Fetch assets/.../models/<name>.json (e.g. 'block/oak_slab'), cached. None on 404."""
+    """Fetch assets/.../models/<name>.json (e.g. 'block/oak_slab'), cached in memory and on disk.
+
+    Returns the model dict, or None when upstream confirms the model does not exist (HTTP 404).
+    A transient failure is NOT reported as absence — it returns None too (so the caller's parent
+    walk terminates) but records the name in _MODEL_FETCH_FAILURES and is never cached, so
+    vendor_models can refuse to emit a manifest built on a guess.
+    """
+    global _MODEL_CACHE_DIRTY
     name = name.split(":")[-1]
     if name in _MODEL_CACHE:
         return _MODEL_CACHE[name]
-    try:
-        data = fetch_json(f"{MODELS_BASE}/{name}.json")
-    except Exception:
-        data = None
-    _MODEL_CACHE[name] = data
-    return data
+
+    last = None
+    for attempt in range(MODEL_FETCH_ATTEMPTS):
+        try:
+            data = fetch_json(f"{MODELS_BASE}/{name}.json")
+        except urllib.error.HTTPError as e:
+            if e.code == 404:
+                # A real, permanent absence at this pinned commit. Cacheable.
+                _MODEL_CACHE[name] = None
+                _MODEL_CACHE_DIRTY = True
+                return None
+            last = e
+            # 429/503 carry a Retry-After; honour it rather than hammering an unauthenticated host.
+            retry_after = e.headers.get("Retry-After") if e.headers else None
+            delay = float(retry_after) if (retry_after or "").isdigit() else 2.0 ** attempt
+        except (urllib.error.URLError, TimeoutError, OSError, json.JSONDecodeError) as e:
+            # Includes a truncated/garbled body: that means a bad transfer, not a missing model.
+            last = e
+            delay = 2.0 ** attempt
+        else:
+            _MODEL_CACHE[name] = data
+            _MODEL_CACHE_DIRTY = True
+            return data
+        if attempt < MODEL_FETCH_ATTEMPTS - 1:
+            time.sleep(delay)
+
+    _MODEL_FETCH_FAILURES[name] = f"{type(last).__name__}: {last}"
+    return None
 
 
 def flatten_block_model(block_id: str):
@@ -655,6 +737,7 @@ def vendor_models(items: list[dict]) -> dict:
     Returns a manifest {block_id: bool} of which resolved models are available."""
     blocks = collect_block_models(items)
     manifest: dict = {}
+    load_model_cache()
     print(f"  vendoring {len(blocks)} block/item models -> docs/assets/models/")
     ok = 0
     for block_id in sorted(blocks):
@@ -694,13 +777,53 @@ def vendor_models(items: list[dict]) -> dict:
             json.dumps({"textures": resolved, "elements": elements}), encoding="utf-8")
         manifest[block_id] = True
         ok += 1
+    save_model_cache()
     missing = [b for b, v in manifest.items() if not v]
     print(f"    {ok}/{len(blocks)} models present"
           + (f"; no model for: {', '.join(sorted(missing))}" if missing else ""))
+
+    # A model we could not fetch for a non-404 reason is UNKNOWN, not absent — and a parent chain
+    # is shared, so one dropped connection on e.g. block/slab silently marks 61 block ids missing.
+    # models-manifest.json is the only generated docs artifact under version control, so shipping a
+    # guess here means committing it. Refuse: main() writes the manifest only after this returns.
+    if _MODEL_FETCH_FAILURES:
+        print(f"\nERROR: {len(_MODEL_FETCH_FAILURES)} model fetch(es) failed after "
+              f"{MODEL_FETCH_ATTEMPTS} attempts — cannot tell 'missing' from 'unreachable', so the "
+              f"manifest would be a guess. Refusing to write docs/data/models-manifest.json.",
+              file=sys.stderr)
+        for name, err in sorted(_MODEL_FETCH_FAILURES.items()):
+            print(f"  {name}: {err}", file=sys.stderr)
+        raise SystemExit(1)
     return manifest
 
 
+def refresh_stale_assets() -> None:
+    """Drop vendored files that are pinned to a superseded MC_ASSETS_VERSION.
+
+    download() early-returns whenever the destination exists, so without this a version bump would
+    keep serving the old bytes forever. Only the two directories sourced entirely from the pinned
+    repo are cleared:
+      - TEXTURES_DIR: 100% MC_ASSETS_BASE.
+      - MODELS_DIR:   generated from it (clearing also sweeps ids no longer in the manifest).
+    SKINS_DIR is left alone (textures.minecraft.net URLs are content-hashed, so never stale), and so
+    is ITEMS_DIR — most of those icons come from minecraft.wiki and Octagon, not from the pinned
+    repo, and re-pulling ~84 wiki images on every bump is a worse trade than the ≤21 that do go
+    stale. The stamp is written only after a successful run (see vendor_assets), so a bail leaves it
+    absent and the next run retries.
+    """
+    if not ASSETS_STAMP.exists():
+        return          # first run after this landed, or a fresh tree: nothing known to be stale
+    if ASSETS_STAMP.read_text(encoding="utf-8").strip() == MC_ASSETS_VERSION:
+        return
+    print(f"  assets pinned to a different version — clearing {TEXTURES_DIR.relative_to(ROOT)} "
+          f"and {MODELS_DIR.relative_to(ROOT)}")
+    for d in (TEXTURES_DIR, MODELS_DIR):
+        shutil.rmtree(d, ignore_errors=True)
+
+
 def vendor_assets(items: list[dict]) -> dict:
+    refresh_stale_assets()
+
     # Head skins.
     skin_urls = collect_skin_urls(items)
     print(f"  vendoring {len(skin_urls)} head skins -> docs/assets/skins/")
@@ -714,12 +837,17 @@ def vendor_assets(items: list[dict]) -> dict:
     # Vanilla item/block textures.
     materials = collect_materials(items)
     octagon = json.loads(OCTAGON_MAP.read_text()) if OCTAGON_MAP.exists() else {}
+    # These two lists decide which candidate URL wins in resolve_material_urls, i.e. which PNG gets
+    # cached on disk *permanently* (download() never re-checks a file that exists). Falling back to
+    # empty sets on a blip therefore doesn't degrade one run, it bakes the wrong icon in forever —
+    # the same silent-degradation trap as the model fetch. Fail loudly instead.
     try:
         item_list = {f.replace(".png", "") for f in fetch_json(f"{MC_ASSETS_BASE}/item/_list.json")["files"]}
         block_list = {f.replace(".png", "") for f in fetch_json(f"{MC_ASSETS_BASE}/block/_list.json")["files"]}
     except Exception as e:
-        print(f"  ! could not fetch InventivetalentDev _list.json ({e}); item textures may be sparse", file=sys.stderr)
-        item_list, block_list = set(), set()
+        raise SystemExit(
+            f"ERROR: could not fetch InventivetalentDev _list.json ({e}). Continuing would pick "
+            f"fallback icons and cache them permanently; refusing. Retry when the network is up.")
 
     print(f"  vendoring {len(materials)} material textures -> docs/assets/items/")
     got, missing = 0, []
@@ -735,7 +863,13 @@ def vendor_assets(items: list[dict]) -> dict:
           + (f"; no texture for: {', '.join(sorted(missing))}" if missing else ""))
 
     # Vanilla block/item models for placed display entities.
-    return vendor_models(items)
+    manifest = vendor_models(items)
+
+    # Only now, with every download and the model pass complete, record what these files are pinned
+    # to. Stamping earlier would let a mid-run bail leave a stamp that claims a tree we never filled.
+    ASSETS_STAMP.parent.mkdir(parents=True, exist_ok=True)
+    ASSETS_STAMP.write_text(MC_ASSETS_VERSION + "\n", encoding="utf-8")
+    return manifest
 
 
 # ── Main ───────────────────────────────────────────────────────────────────
@@ -769,7 +903,7 @@ def main() -> int:
 
 
     # Ground-truth placed display data from the headless export (make docs).
-    # display-spec.json is a committed source input (like extras.yml): a full `make docs` run
+    # display-spec.json is gitignored build output, not a source input: a full `make docs` run
     # writes it from .temp/. Fail loud rather than silently zeroing every placedVariants.
     spec_path = DOCS_DATA / "display-spec.json"
     if not spec_path.exists():

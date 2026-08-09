@@ -1311,12 +1311,25 @@ public class MechanismRegistry {
             try {
                 if (b.getState() instanceof io.papermc.paper.block.TileStateInventoryHolder tsih) {
                     tsih.getSnapshotInventory().clear();
-                    tsih.update();   // write the emptied state so setType(AIR) can't drop items
+                    // Write the emptied state so setType(AIR) can't drop items. applyPhysics=false is
+                    // LOAD-BEARING, not cosmetic: physics here means "notify the neighbours", which is
+                    // exactly what runs ChestBlock#updateShape and would re-pair the survivor the
+                    // stale-partner pass above just normalised to SINGLE. It is a no-op only while this
+                    // write is byte-identical (LevelChunk#setBlockState bails before updateNeighbourShapes);
+                    // do not "simplify" to update(). force=true keeps the write happening at all — the
+                    // default update() skips applyTo when the state looks unchanged.
+                    tsih.update(true, false);
                 }
             } catch (Exception e) {
+                // Near-unreachable: the clear() targets a DETACHED snapshot and update() returns false
+                // rather than throwing when the block no longer matches. If it ever does fire, the items
+                // are carried TWICE — the capture loop already cloned them into mb.storage, and the
+                // uncleared block spills the originals via preRemoveSideEffects on setType(AIR). Left as
+                // log-only deliberately: de-duping needs a positional blocks -> MechanismBlockData map,
+                // and getting that wrong turns a rare dupe into routine deletion.
                 plugin.getLogger().warning("airOutSourceBlocks: failed to clear the container at "
                     + b.getLocation() + " before removal (" + e.getMessage()
-                    + "); its contents will drop instead of riding along");
+                    + "); its contents will BOTH drop into the world and ride along in the mechanism");
             }
         }
         for (Block b : blocks) {
