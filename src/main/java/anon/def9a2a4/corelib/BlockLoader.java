@@ -101,14 +101,19 @@ public final class BlockLoader {
                 ? Bukkit.createBlockData(baseBlock, baseData)   // throws IllegalArgumentException on a bad string
                 : Bukkit.createBlockData(baseData));
         }
-        // Base texture: required for placeable head blocks; optional when item_material is set.
-        String tex = itemMat != null ? sec.getString("texture") : requireString(sec, "texture");
+        // Base texture: required for anything that can be PLACED, because a placed block is rendered
+        // as a real skull and CustomBlockRegistry.applyConfig feeds this straight to
+        // HeadUtil.applyTexture. `item_material` alone is NOT a licence to omit it — plenty of
+        // placeable blocks set it (every vertical slab does). Only an inventory-only item
+        // (item_material + placeable: false) may go textureless.
+        boolean placeable = sec.getBoolean("placeable", true);
+        if (!placeable) b.placeable(false);
+        String tex = (itemMat != null && !placeable) ? sec.getString("texture") : requireString(sec, "texture");
         if (tex != null) b.texture(resolveTexture(tex, textures));
         String itemTex = sec.getString("item_texture");
         if (itemTex != null) b.itemTexture(resolveTexture(itemTex, textures));
         if (sec.getBoolean("item_glint")) b.itemGlint(true);
         if (sec.getBoolean("unbreakable")) b.unbreakable(true);
-        if (!sec.getBoolean("placeable", true)) b.placeable(false);
         ConfigurationSection potionSec = sec.getConfigurationSection("potion");
         if (potionSec != null) b.potion(parsePotion(potionSec));
         String recipeCat = sec.getString("recipe_category");

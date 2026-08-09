@@ -296,7 +296,9 @@ public final class CustomHeadBlock {
     private final List<Component> lore;
 
     // Base config
-    private final String texture;
+    // Null only for inventory-only items: BlockLoader requires `texture` unless `item_material` is
+    // set AND the type is non-placeable, so a null here means "this thing is never placed as a head".
+    private final @Nullable String texture;
     private final @Nullable String itemTexture; // optional: different texture for item in hand
     private final @Nullable Material itemMaterial;
     private final @Nullable Material physicalMaterial; // non-null → place this world block (e.g. BARREL) instead of a player head
@@ -465,7 +467,8 @@ public final class CustomHeadBlock {
     public @Nullable Component name() { return name; }
     public List<Component> lore() { return lore; }
 
-    public String texture() { return texture; }
+    /** Base head texture; null only for inventory-only items (never placed, so never rendered). */
+    public @Nullable String texture() { return texture; }
     public @Nullable String itemTexture() { return itemTexture; }
     public @Nullable Material itemMaterial() { return itemMaterial; }
     /** World block to place instead of a player head (e.g. BARREL), or null for the default head. */
@@ -592,8 +595,11 @@ public final class CustomHeadBlock {
     // Resolution: given current state + power, resolve effective config
     // ──────────────────────────────────────────────────────────────────────
 
-    /** Resolve the effective texture for the current state, power level, and orientation. */
-    public String resolveTexture(@Nullable String state, int power, @Nullable BlockFace facing) {
+    /** Resolve the effective texture for the current state, power level, and orientation.
+     *  Null only for inventory-only items, which fall through every override to a null base
+     *  {@link #texture()} — callers that place a real skull must not pass that on to
+     *  {@link HeadUtil#applyTexture}. */
+    public @Nullable String resolveTexture(@Nullable String state, int power, @Nullable BlockFace facing) {
         // Redstone texture overrides take priority
         if (redstone != null) {
             String rsTex = resolveRedstoneTexture(power);
@@ -620,7 +626,7 @@ public final class CustomHeadBlock {
     }
 
     /** Convenience overload without facing (backwards compatible). */
-    public String resolveTexture(@Nullable String state, int power) {
+    public @Nullable String resolveTexture(@Nullable String state, int power) {
         return resolveTexture(state, power, null);
     }
 
@@ -1035,8 +1041,18 @@ public final class CustomHeadBlock {
         public Builder categories(List<String> c) { this.categories.addAll(c); return this; }
 
         public CustomHeadBlock build() {
-            if ((texture == null || texture.isBlank()) && itemMaterial == null) {
-                throw new IllegalStateException("texture is required unless item_material is set (inventory-only item)");
+            if (texture == null || texture.isBlank()) {
+                if (itemMaterial == null) {
+                    throw new IllegalStateException(
+                            "texture is required unless item_material is set (inventory-only item)");
+                }
+                // item_material is not enough on its own: a PLACEABLE block is rendered as a real
+                // skull, and applyConfig hands this texture to HeadUtil.applyTexture, which NPEs on
+                // null the moment a player places it. Only inventory-only items may be textureless.
+                if (placeable) {
+                    throw new IllegalStateException("texture is required for a placeable block; "
+                            + "item_material only permits omitting it on an inventory-only item (placeable: false)");
+                }
             }
             if (!states.isEmpty() && defaultState == null) {
                 throw new IllegalStateException("States defined but no default state set");

@@ -150,7 +150,23 @@ final class DisplayExporter implements Listener {
         Quad windmill = new Quad(-1, -1, WINDMILL_SPACING);
 
         Map<String, Object> out = new LinkedHashMap<>();
+        List<String> skipped = new ArrayList<>();
         for (CustomHeadBlock type : registry.allTypes()) {
+            // Inventory-only items (item_material with no head texture — juices, flour, the wrench)
+            // have no placed appearance at all. Placing a PLAYER_HEAD for one hands applyConfig a
+            // null texture and throws, which the catch below swallowed into a per-type warning — so
+            // they were never in the output anyway. Skip them explicitly instead.
+            //
+            // Load-bearing: this must skip BEFORE exportType, because exportType's `quad.row++` runs
+            // after its variant loop and the NPE unwound from the FIRST buildVariant. So these types
+            // never advanced the grid cursor, and skipping them keeps every other type's (x, z) — and
+            // hence the whole exported file — identical. Do NOT "fix" this by null-guarding
+            // HeadUtil.applyTexture instead: that would let them succeed, advance quad.row, shift
+            // every later type in the same quadrant, and add empty variants to the output.
+            if (!type.placeable() && type.texture() == null) {
+                skipped.add(type.fullId());
+                continue;
+            }
             Quad quad = quadFor(type, demo, rotation, slabs, windmill);
             try {
                 List<Map<String, Object>> variants = exportType(type, world, quad, log);
@@ -163,6 +179,12 @@ final class DisplayExporter implements Listener {
             } catch (Throwable t) {
                 log.warning("export " + type.fullId() + ": " + t);
             }
+        }
+        // One line, not one warning per type — but still say it, so a placeable-but-untextured type
+        // that slips through doesn't silently vanish from the docs with no trace at all.
+        if (!skipped.isEmpty()) {
+            log.info("DisplayExporter: skipped " + skipped.size()
+                    + " inventory-only item type(s) with no placed form: " + String.join(", ", skipped));
         }
         if (keepAlive) {
             // Multi-block showcases live in the same world (windmill quadrant), but only in keep-alive:
