@@ -208,6 +208,15 @@ public class MechanismRegistry {
         return activeMechanisms.get(id);
     }
 
+    /** True if a mechanism with this id has crash-safe persisted state on disk, whether or not it is currently live
+     *  ({@link #byId} may be null for a persisted-but-not-yet-recovered mechanism). Complements {@code byId} so a
+     *  consumer can avoid re-assembling under an id defCoreLib already owns — e.g. the BlockShips native→delegated
+     *  migration guards against a crash between assemble+persist and its own sidecar marker: on the next boot it
+     *  probes here and reaps the stale native entities instead of re-assembling a duplicate mechanism. */
+    public boolean hasPersistedState(org.bukkit.World world, UUID id) {
+        return world != null && persistence.hasMetadata(world.getName(), id);
+    }
+
     /** Load vanilla-block collider shapes (colliders.yml) into the registry. */
     public void loadColliders(java.io.InputStream in) {
         colliderRegistry.load(in, plugin.getLogger());
