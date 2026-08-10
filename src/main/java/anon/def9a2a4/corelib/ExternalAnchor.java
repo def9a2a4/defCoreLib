@@ -38,8 +38,17 @@ public interface ExternalAnchor {
      */
     boolean isAtRest();
 
-    /** Whether this player may author here — ownership, region protection, permissions. */
+    /** Whether this player may author here at all — ownership, permissions. */
     boolean canAuthor(Player player);
+
+    /**
+     * Whether this player may glue one specific world cell. Defaults to the anchor-level answer.
+     *
+     * <p>Override this for region protection. Gluing modifies no block, so no {@code BlockBreakEvent}
+     * fires and no protection plugin can see it on its own — meaning without a per-cell check a player
+     * can park an anchor next to someone else's build, glue their wall to it, and take it away.
+     */
+    default boolean canAuthorCell(Player player, Block cell) { return canAuthor(player); }
 
     /**
      * Blocks that count as connectivity for authoring, beyond the already-glued cells. Return the

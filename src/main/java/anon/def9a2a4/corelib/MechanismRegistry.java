@@ -286,6 +286,19 @@ public class MechanismRegistry {
         return massRegistry.get(material, null);
     }
 
+    /**
+     * The mass table ({@code mass.yml}), for sibling plugins that need to price a block the engine
+     * knows about but they do not.
+     *
+     * <p>This is inertial mass and is always {@code >= 0}. It is NOT buoyancy: BlockShips keeps its
+     * own <em>signed</em> weight scale in {@code blocks.yml}, and the two are deliberately separate
+     * quantities — see the header of {@code mass.yml}. Reach for this when your own table has no
+     * entry for a material (a glued block, say), not as a replacement for it.
+     */
+    public MassRegistry massRegistry() {
+        return massRegistry;
+    }
+
     /** Warn once if a sub-cube collider is requested but the scale attribute can't be applied. */
     private void warnScaleUnavailable() {
         if (scaleWarned) return;

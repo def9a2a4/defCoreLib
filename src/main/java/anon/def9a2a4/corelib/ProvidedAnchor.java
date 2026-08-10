@@ -53,6 +53,10 @@ final class ProvidedAnchor implements Anchor {
 
     @Override public boolean canAuthor(Player player) { return external.canAuthor(player); }
 
+    @Override public boolean canAuthorCell(Player player, Block cell) {
+        return external.canAuthorCell(player, cell);
+    }
+
     @Override public boolean prunesOnLanding() { return external.prunesOnLanding(); }
 
     @Override public Set<Vector3i> extraConnectors() {

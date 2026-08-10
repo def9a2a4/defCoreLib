@@ -178,6 +178,12 @@ final class GlueAuthoring implements Listener {
                         reject(player, clicked, "Can't glue that block");
                         return;
                     }
+                    // Per-CELL protection. Gluing writes no block, so nothing else in the server can
+                    // veto taking someone else's wall along for the ride.
+                    if (!session.anchor.canAuthorCell(player, clicked)) {
+                        reject(player, clicked, "You can't build there");
+                        return;
+                    }
                     GlueManager.Result res = glue.glue(session.anchor, clicked,
                         isDrawbridgeAnchor(session.anchor.originBlock()));
                     reportGlue(player, clicked, res, session.anchor);
@@ -376,6 +382,10 @@ final class GlueAuthoring implements Listener {
         List<Block> movable = boxBlocks(a, clicked).stream()
             .filter(b -> MovableBlocks.isMovable(b, registry))
             .filter(b -> !StickySpread.isSlimeOrHoney(b))
+            // Per-cell protection, same gate as the single-block path — a box drag must not be a way
+            // around it. Filtered rather than refused, like every other per-cell rule here, so one
+            // protected corner doesn't reject the whole selection.
+            .filter(b -> s.anchor.canAuthorCell(player, b))
             .filter(b -> ropeOrigin == null || b.getX() != ropeOrigin.getX()
                 || b.getZ() != ropeOrigin.getZ() || b.getY() <= ropeOrigin.getY())
             .toList();

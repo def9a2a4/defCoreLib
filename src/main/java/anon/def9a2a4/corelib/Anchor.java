@@ -48,6 +48,16 @@ interface Anchor {
     default boolean canAuthor(Player player) { return true; }
 
     /**
+     * Whether {@code player} may glue this particular world cell to the anchor. Defaults to the
+     * anchor-level answer.
+     *
+     * <p>The per-cell form is the one that matters for protection: gluing modifies no block, so no
+     * {@code BlockBreakEvent} fires and no region plugin can see it — without this, a player could
+     * park an anchor beside someone else's build, glue their wall to it and drive off with it.
+     */
+    default boolean canAuthorCell(Player player, Block cell) { return canAuthor(player); }
+
+    /**
      * Whether {@link GlueManager#rebindLanded} may prune landed offsets that are no longer cardinally
      * connected back to the origin.
      *
