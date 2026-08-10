@@ -552,6 +552,14 @@ public final class BlockLoader {
         return out;
     }
 
+    /** The interpolation duration a display should take once a STATE-level animation is filled into it.
+     *  The display was parsed before the animation existed, so it defaulted to {@link #STATIC_INTERPOLATION};
+     *  becoming animated means it is now retargeted every tick and must match that interval. An explicit
+     *  {@code interpolation:} in the YAML still wins. */
+    private static int filledInterpolation(Map<?, ?> map, int parsed) {
+        return map.containsKey("interpolation") ? parsed : ANIMATED_INTERPOLATION;
+    }
+
     /** Fill the state animation into each item display that has no animation of its own.
      *  {@code itemMaps} must be the {@code block_data == null} partition, aligned 1:1 with {@code items}. */
     private static List<CustomHeadBlock.DisplayEntityConfig> fillItemAnimation(
@@ -562,7 +570,7 @@ public final class BlockLoader {
             boolean fill = c.animation() == null && i < itemMaps.size() && !itemMaps.get(i).containsKey("animation");
             out.add(fill
                     ? new CustomHeadBlock.DisplayEntityConfig(c.displayItem(), c.transform(), c.tagSuffix(),
-                            anim, c.interpolationDuration(), c.wallOffset())
+                            anim, filledInterpolation(itemMaps.get(i), c.interpolationDuration()), c.wallOffset())
                     : c);
         }
         return out;
@@ -578,7 +586,7 @@ public final class BlockLoader {
             boolean fill = c.animation() == null && i < blockMaps.size() && !blockMaps.get(i).containsKey("animation");
             out.add(fill
                     ? new CustomHeadBlock.BlockDisplayEntityConfig(c.blockData(), c.transform(), c.tagSuffix(),
-                            anim, c.interpolationDuration(), c.wallOffset())
+                            anim, filledInterpolation(blockMaps.get(i), c.interpolationDuration()), c.wallOffset())
                     : c);
         }
         return out;
@@ -711,6 +719,18 @@ public final class BlockLoader {
                 new AxisAngle4f(0, 0, 0, 1));
     }
 
+    /** Interpolation duration for a display driven by {@link CustomBlockRegistry#tickAnimations()}, which
+     *  retargets every tick. The client reseeds each interpolation from the previous one sampled at its
+     *  current progress, so a duration LONGER than the retarget interval never converges: it becomes a
+     *  first-order low-pass (permanent lag + amplitude attenuation), and because that progress is sampled
+     *  by the RENDERER, a display that goes undrawn (culled, or client FPS below tick rate) stalls its
+     *  baseline entirely and collapses toward its origin pose. Keep duration == retarget interval. */
+    private static final int ANIMATED_INTERPOLATION = 1;
+
+    /** Interpolation duration for a static display, whose transform changes only on discrete events
+     *  (a state swap, a wrench turn) — a 2-tick ease reads better there than a snap. */
+    private static final int STATIC_INTERPOLATION = 2;
+
     private static List<CustomHeadBlock.DisplayEntityConfig> parseDisplayEntities(List<Map<?, ?>> list,
                                                                                   Map<String, String> textures) {
         List<CustomHeadBlock.DisplayEntityConfig> result = new ArrayList<>();
@@ -737,7 +757,8 @@ public final class BlockLoader {
                 animation = parseAnimation(animMap);
             }
 
-            int interpolation = toInt((Object) map.get("interpolation"), 2);
+            int interpolation = toInt((Object) map.get("interpolation"),
+                    animation != null ? ANIMATED_INTERPOLATION : STATIC_INTERPOLATION);
             float wallOffset = (float) toDouble((Object) map.get("wall_offset"), 0);
 
             result.add(new CustomHeadBlock.DisplayEntityConfig(
@@ -763,7 +784,8 @@ public final class BlockLoader {
                 animation = parseAnimation(animMap);
             }
 
-            int interpolation = toInt((Object) map.get("interpolation"), 2);
+            int interpolation = toInt((Object) map.get("interpolation"),
+                    animation != null ? ANIMATED_INTERPOLATION : STATIC_INTERPOLATION);
             float wallOffset = (float) toDouble((Object) map.get("wall_offset"), 0);
 
             result.add(new CustomHeadBlock.BlockDisplayEntityConfig(

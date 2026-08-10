@@ -2087,6 +2087,13 @@ public class CustomBlockRegistry {
                 long tickAge = currentTick - tracked.startTick;
                 if (tracked.reversed) tickAge = -tickAge;
                 tracked.animation.apply(tracked.baseTransform, tickAge, animationWorkMatrix);
+                // Re-arm the client's interpolation clock. Updating the transformation alone does NOT:
+                // vanilla Display recomputes interpolationStartClientTick only when the delay field is
+                // synced, so without this the clock keeps its Integer.MIN_VALUE spawn sentinel, progress
+                // clamps to 1.0 forever, and every transform below renders as a hard snap — a 20 Hz
+                // staircase with the interpolation duration set but inert. Mojang passes force=true on
+                // this setter (and no other Display field), so re-writing 0 over 0 still sends.
+                tracked.display.setInterpolationDelay(0);
                 tracked.display.setTransformationMatrix(animationWorkMatrix);
             }
         }
@@ -2132,6 +2139,13 @@ public class CustomBlockRegistry {
                     block.getLocation(), dec.tagSuffix());
             for (var display : found) {
                 if (display.getScoreboardTags().contains(expectedTag)) {
+                    // Re-apply the duration from config. These displays are persistent, so they carry the
+                    // value they were SPAWNED with in their NBT — a world placed before the animated
+                    // default changed would otherwise keep it forever (this path re-registers tracking but
+                    // never respawns the entity), leaving old windmills laggy while new ones look right.
+                    if (dec.interpolationDuration() != 0) {
+                        display.setInterpolationDuration(dec.interpolationDuration());
+                    }
                     anims.add(new AnimationTracked(display, dec.animation(), startTick,
                             transformToMatrix(dec.transform())));
                     break;
@@ -2146,6 +2160,9 @@ public class CustomBlockRegistry {
                     block.getLocation(), bdc.tagSuffix());
             for (var display : found) {
                 if (display instanceof BlockDisplay && display.getScoreboardTags().contains(expectedTag)) {
+                    if (bdc.interpolationDuration() != 0) { // see the item-display loop above
+                        display.setInterpolationDuration(bdc.interpolationDuration());
+                    }
                     anims.add(new AnimationTracked(display, bdc.animation(), startTick,
                             transformToMatrix(bdc.transform())));
                     break;

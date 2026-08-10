@@ -38,9 +38,9 @@ public class MechanismRegistry {
     private final Map<UUID, BasicMechanism> activeMechanisms = new HashMap<>();
     private final Map<UUID, ColliderRef> colliderIndex = new HashMap<>(); // shulker UUID → ref
     private final MechanismPersistence persistence; // crash-safe state for opted-in (persisted) mechanisms
-    // Mechanisms whose recovery is in flight (adopting their still-loading persistent entities). Guards
-    // cleanupOrphanedEntities from reaping those entities before recovery claims them, and bridges the
-    // 1-tick deferEntityRemoval window on a restore-to-blocks landing.
+    // Mechanisms whose recovery is in flight (adopting their still-loading persistent entities). Guards the
+    // orphan sweep (in recoverMechanismsInChunk) from reaping those entities before recovery claims them, and
+    // bridges the 1-tick deferEntityRemoval window on a restore-to-blocks landing.
     private final Set<UUID> mechIdsBeingRecovered = new HashSet<>();
     // Persisted mechanisms mid-recovery whose entities are still arriving across chunk loads. A large or
     // chunk-straddling structure's displays/colliders/seats can sit in neighbour chunks that load AFTER the
@@ -1307,23 +1307,16 @@ public class MechanismRegistry {
         for (Block b : blocks) {
             try {
                 if (b.getState() instanceof io.papermc.paper.block.TileStateInventoryHolder tsih) {
-                    tsih.getSnapshotInventory().clear();
-                    // Write the emptied state so setType(AIR) can't drop items. applyPhysics=false is
-                    // LOAD-BEARING, not cosmetic: physics here means "notify the neighbours", which is
-                    // exactly what runs ChestBlock#updateShape and would re-pair the survivor the
-                    // stale-partner pass above just normalised to SINGLE. It is a no-op only while this
-                    // write is byte-identical (LevelChunk#setBlockState bails before updateNeighbourShapes);
-                    // do not "simplify" to update(). force=true keeps the write happening at all — the
-                    // default update() skips applyTo when the state looks unchanged.
-                    tsih.update(true, false);
+                    emptyBeforeRemoval(tsih);
                 }
             } catch (Exception e) {
-                // Near-unreachable: the clear() targets a DETACHED snapshot and update() returns false
-                // rather than throwing when the block no longer matches. If it ever does fire, the items
-                // are carried TWICE — the capture loop already cloned them into mb.storage, and the
-                // uncleared block spills the originals via preRemoveSideEffects on setType(AIR). Left as
-                // log-only deliberately: de-duping needs a positional blocks -> MechanismBlockData map,
-                // and getting that wrong turns a rare dupe into routine deletion.
+                // Both the snapshot path and the live retry failed, so this block keeps its contents
+                // AND the mechanism carries a copy: a Container's items were cloned into mb.storage by
+                // the capture loop, while a non-Container holder (jukebox, lectern, decorated pot,
+                // chiseled bookshelf, shelf) rides in mb.blockEntitySnapshot. Left as log-only
+                // deliberately — `blocks` and `blockData` ARE index-aligned (assembleCore appends
+                // ghosts only after the real blocks), so dropping the mechanism's copy is possible; it
+                // just isn't worth the coupling for a path that now needs two independent failures.
                 plugin.getLogger().warning("airOutSourceBlocks: failed to clear the container at "
                     + b.getLocation() + " before removal (" + e.getMessage()
                     + "); its contents will BOTH drop into the world and ride along in the mechanism");
@@ -1334,6 +1327,49 @@ public class MechanismRegistry {
         }
         for (Block b : blocks) {
             if (b.getType() != Material.AIR) b.setType(Material.AIR, false);
+        }
+    }
+
+    /**
+     * Empty one block's inventory so the impending {@code setType(AIR)} can't spill a second copy of
+     * what capture already took. Snapshot first, live tile as a fallback; throws only if BOTH fail.
+     */
+    private static void emptyBeforeRemoval(io.papermc.paper.block.TileStateInventoryHolder tsih) {
+        try {
+            tsih.getSnapshotInventory().clear();
+            // Write the emptied state back so setType(AIR) can't drop items. applyPhysics=false is
+            // DEFENSIVE, not active: the state written here is identity-equal to the world's, so
+            // LevelChunk#setBlockState early-returns on the interned-state compare and Level#setBlock
+            // returns false before it ever reaches notifyAndUpdatePhysics. Keep it false anyway — the
+            // day anything mutates the state before this call, physics=true means "notify the
+            // neighbours", which reaches updateNeighbourShapes -> ChestBlock#updateShape, whose re-pair
+            // branch matches EXACTLY the survivor the stale-partner pass normalised to SINGLE.
+            // force stays FALSE: it takes effect only when the live Material has CHANGED since
+            // getState(), where instead of safely giving up it would write this stale snapshot back
+            // over whatever now occupies the cell. Nothing skips the write for want of it.
+            // Not a blanket guarantee, for anyone generalising: CraftJukebox OVERRIDES update() and
+            // does its own setBlock(pos, data, 3) — physics ON, hardcoded — after a successful super
+            // call. Unreachable here: a jukebox always throws above and takes the live path below,
+            // which calls no update at all.
+            tsih.update(false, false);
+        } catch (Exception snapshotFailed) {
+            // The snapshot inventory is DETACHED — its BlockEntity comes from BlockEntity.loadStatic
+            // with a null level — and not every block entity tolerates that. JukeboxBlockEntity
+            // #setTheItem dereferences level.registryAccess() with no null guard (unlike
+            // ChiseledBookShelfBlockEntity, LecternBlockEntity and ShelfBlockEntity, which Paper did
+            // guard), so clearing a jukebox this way throws 100% of the time. Left uncleared, its disc
+            // is popped out by JukeboxBlockEntity#preRemoveSideEffects on the setType(AIR) while the
+            // mechanism ALSO carries it as bs_jukebox_disc — a straight duplication.
+            // So retry against the LIVE tile, which has a real level. Physics-safe: the resulting
+            // notifyItemChangedInJukebox writes HAS_RECORD with flag 2 (clients only, no neighbour
+            // notification), so it cannot undo the SINGLE normalisation.
+            // Chests MUST take getBlockInventory(), not getInventory(): for a placed double chest the
+            // latter is the merged 54-slot CraftInventoryDoubleChest, and clearing that would wipe the
+            // neighbouring half — which may not belong to this mechanism at all. Same half-selection
+            // the capture loop uses.
+            Inventory live = tsih instanceof org.bukkit.block.Chest liveChest
+                ? liveChest.getBlockInventory() : tsih.getInventory();
+            live.clear();
         }
     }
 
@@ -2107,6 +2143,12 @@ public class MechanismRegistry {
         // (rotate() refreshes its own), so skipping it here is safe when there are no animated displays.
         if (!mech.hasAnimatedDisplays) return;
         mech.refreshDrivenOffset(); // cache (pivot − vehicle) once so mech.addDrivenBaseOffset below doesn't re-read it per display
+        // Re-arm the client interpolation clock per retarget (see CustomBlockRegistry.tickAnimations for why
+        // a transformation-only update never restarts it) — but NOT on the tickAge==0 calls from assembly /
+        // minecart mount / recovery. There the extras were spawned moments ago holding an identity transform
+        // and have never been posed: arming interpolation would smear them in from a unit cube at the block
+        // origin instead of landing on frame 0. Those calls want the snap they get today.
+        boolean rearm = tickAge != 0;
         int[] animated = mech.animatedBlockIndices;
         for (int ai = 0; ai < animated.length; ai++) {
             int i = animated[ai];
@@ -2137,6 +2179,7 @@ public class MechanismRegistry {
                     placed.mul(workMatrix);
                     placed.m31(placed.m31() - mech.rideOffset); // passenger offset — parent space, applied last
                     mech.addDrivenBaseOffset(placed); // driven corner→center frame reconciliation (same as rotate())
+                    if (rearm) display.setInterpolationDelay(0);
                     display.setTransformationMatrix(placed);
                 }
             }
@@ -2162,6 +2205,7 @@ public class MechanismRegistry {
                     placed.mul(workMatrix);
                     placed.m31(placed.m31() - mech.rideOffset); // passenger offset — parent space, applied last
                     mech.addDrivenBaseOffset(placed); // driven corner→center frame reconciliation (same as rotate())
+                    if (rearm) display.setInterpolationDelay(0);
                     display.setTransformationMatrix(placed);
                 }
             }
