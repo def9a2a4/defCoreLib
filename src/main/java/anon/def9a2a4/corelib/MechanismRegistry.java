@@ -1502,9 +1502,17 @@ public class MechanismRegistry {
         if (activeMechanisms.isEmpty()) return;
         for (BasicMechanism mech : new ArrayList<>(activeMechanisms.values())) {
             if (!mech.isPersisted()) continue;
-            Location p = mech.pivot();
-            if (!chunk.getWorld().equals(p.getWorld())) continue;
-            if ((p.getBlockX() >> 4) != chunk.getX() || (p.getBlockZ() >> 4) != chunk.getZ()) continue;
+            // Park when the chunk holding the mechanism's FRAME entities unloads — that's the vehicle's chunk
+            // (its displays ride it as passengers), NOT the pivot chunk. The pivot is offset from the vehicle
+            // (drivenOffX = pivot − vehicle), so at a chunk border floor(pivot)>>4 can name a different chunk
+            // than the vehicle, and keying on it either misses the unload (mechanism ticks on with unloaded
+            // entities) or parks spuriously while the entities are still loaded. Keying on the vehicle also
+            // matches BlockShips' unregister trigger, so the two plugins park together. (Entity-based recovery
+            // re-adopts on any chunk load, so there's no longer any reason to key on the pivot/index chunk.)
+            Entity veh = mech.vehicle();
+            Location anchor = (veh != null) ? veh.getLocation() : mech.pivot();
+            if (!chunk.getWorld().equals(anchor.getWorld())) continue;
+            if ((anchor.getBlockX() >> 4) != chunk.getX() || (anchor.getBlockZ() >> 4) != chunk.getZ()) continue;
             try {
                 persistence.save(mech.snapshotState());
             } catch (Exception e) {

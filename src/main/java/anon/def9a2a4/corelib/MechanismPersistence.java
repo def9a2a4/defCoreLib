@@ -108,7 +108,8 @@ final class MechanismPersistence {
     /** Seed {@link #persistedIds} from disk once, at construction — a filename-only directory walk (each
      *  {@code <id>.yml} name is the UUID, so no YAML is parsed). This must run eagerly here rather than lazily
      *  as chunks load: {@code hasPersistedState} probes ids whose pivot chunk has not loaded yet. Any leftover
-     *  {@code chunks.yml} from the retired persisted-index subsystem is inert now and deleted on sight. */
+     *  {@code chunks.yml} from the retired persisted-index subsystem is inert now and deleted on sight; a
+     *  {@code <id>.yml.tmp} left by a crash between save()'s tmp-write and its rename is likewise swept. */
     private void loadPersistedIds() {
         if (!root.exists()) return;
         File[] worlds = root.listFiles(File::isDirectory);
@@ -120,7 +121,7 @@ final class MechanismPersistence {
             Set<UUID> ids = persistedIds.computeIfAbsent(world, k -> new HashSet<>());
             for (File f : files) {
                 String name = f.getName();
-                if (name.equals("chunks.yml")) {
+                if (name.equals("chunks.yml") || name.endsWith(".yml.tmp")) {
                     if (!f.delete()) plugin.getLogger().warning("mechanism persistence: cannot delete stale " + f);
                     continue;
                 }
