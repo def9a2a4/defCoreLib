@@ -6,6 +6,9 @@ import org.jspecify.annotations.Nullable;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.AtomicMoveNotSupportedException;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -48,7 +51,8 @@ final class MechanismPersistence {
     private File stateFile(String world, UUID id) { return new File(worldDir(world), id + ".yml"); }
 
     /** Snapshot (already done by the caller on the main thread) → write the state file (SYNC) and record the
-     *  id as persisted. */
+     *  id as persisted. Written atomically (tmp sibling + atomic rename) so a crash mid-write can never leave a
+     *  truncated file — recovery's corrupt-file cull would otherwise reap an otherwise-recoverable mechanism. */
     void save(MechanismState st) {
         File dir = worldDir(st.worldName);
         if (!dir.exists() && !dir.mkdirs()) {
@@ -57,11 +61,20 @@ final class MechanismPersistence {
         }
         YamlConfiguration y = new YamlConfiguration();
         st.write(y);
+        File target = stateFile(st.worldName, st.mechId);
+        File tmp = new File(dir, st.mechId + ".yml.tmp");
         try {
-            y.save(stateFile(st.worldName, st.mechId));
+            y.save(tmp);
+            try {
+                Files.move(tmp.toPath(), target.toPath(),
+                    StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING);
+            } catch (AtomicMoveNotSupportedException atomicUnsupported) {
+                Files.move(tmp.toPath(), target.toPath(), StandardCopyOption.REPLACE_EXISTING);
+            }
         } catch (IOException e) {
             plugin.getLogger().warning("mechanism persistence: save failed for " + st.mechId + ": " + e.getMessage());
-            return;
+            if (tmp.exists() && !tmp.delete()) tmp.deleteOnExit();
+            return; // target (if any) is untouched and still correctly reflected in persistedIds
         }
         persistedIds.computeIfAbsent(st.worldName, k -> new HashSet<>()).add(st.mechId);
     }
