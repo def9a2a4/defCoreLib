@@ -3,6 +3,8 @@ package anon.def9a2a4.corelib;
 import org.bukkit.block.Block;
 import org.jspecify.annotations.Nullable;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Set;
 
 /**
