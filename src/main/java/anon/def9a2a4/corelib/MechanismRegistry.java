@@ -717,8 +717,18 @@ public class MechanismRegistry {
             mbd.banners = banners;
             // Preserve authored glue offsets so a captured anchor (e.g. a hoist carried by a rotator)
             // keeps and reorients its glued region on landing. Read from the live skull PDC BEFORE
-            // air-out; null for non-anchor blocks. Only custom head blocks carry a skull PDC.
-            if (chb != null) mbd.glueOffsets = new BlockAnchor(block, () -> true).readOffsets();
+            // air-out; null for non-anchor blocks.
+            //
+            // Gated on the block being a SKULL, not on it being a registered custom block: a foreign
+            // plugin's anchor (an ExternalAnchor — a BlockShips ship wheel is a plain PLAYER_HEAD with
+            // no registry identity) stores its offsets in exactly the same skull PDC and must ride the
+            // same way. readOffsets() returns null when the key is absent, so every other skull in the
+            // world costs one already-fetched BlockState and nothing else. The material pre-check keeps
+            // a 1000-block ship from paying a second getState() per block for its handful of skulls.
+            Material mt = block.getType();
+            if (chb != null || mt == Material.PLAYER_HEAD || mt == Material.PLAYER_WALL_HEAD) {
+                mbd.glueOffsets = new BlockAnchor(block, () -> true).readOffsets();
+            }
             // Flush any live per-block state kept in a side store (engine fuel lives in an in-memory manager,
             // not the PDC) into this block's tile PDC NOW — before the configPdc snapshot below — so the move
             // carries it. Runs before air-out's onBlockRemoved, which would otherwise discard the counter.

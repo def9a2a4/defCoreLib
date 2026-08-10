@@ -224,8 +224,12 @@ final class GlueManager {
             int x = Math.round(v.x), y = Math.round(v.y), z = Math.round(v.z);
             if (placed.contains(w.getBlockAt(ox + x, oy + y, oz + z))) landed.add(new Vector3i(x, y, z));
         }
-        // (3) prune disconnection, then (4) write
-        a.writeOffsets(packOffsets(pruneConnected(registry, cap, a, landed)));
+        // (3) prune disconnection, then (4) write. An anchor whose structure is held together by its
+        // OWN rules opts out (Anchor.prunesOnLanding): a ship's glued extras sit on a hull that is not
+        // itself glued, so origin-seeded pruning would delete nearly all of them here — invisibly, since
+        // the blocks land fine and only a later resolve reveals the loss. The placed-membership filter
+        // above still runs either way, so glue still never claims a cell that holds no block.
+        a.writeOffsets(packOffsets(a.prunesOnLanding() ? pruneConnected(registry, cap, a, landed) : landed));
     }
 
     /** The subset of {@code landed} still connected to the anchor origin — cardinally, through other
@@ -235,6 +239,7 @@ final class GlueManager {
                                                 Set<Vector3i> landed) {
         Set<Vector3i> reachable = new LinkedHashSet<>();
         List<Vector3i> pending = new ArrayList<>(landed);
+        Set<Vector3i> extra = a.extraConnectors();   // owner-declared body also bridges, if any
         boolean changed = true;
         while (changed) {
             changed = false;
@@ -245,6 +250,7 @@ final class GlueManager {
             // origin + reachable means a clump's own sticky neighbours never bridge it back.
             Set<Vector3i> connectors = new LinkedHashSet<>(reachable);
             connectors.addAll(derivedFromStatic(registry, cap, a, reachable));
+            connectors.addAll(extra);
             var it = pending.iterator();
             while (it.hasNext()) {
                 Vector3i off = it.next();
@@ -324,6 +330,11 @@ final class GlueManager {
             Anchor nested = anchorFactory.of(b);
             if (nested == null) continue;
             boolean isHoist = nested instanceof HoistAnchor;
+            // A foreign-plugin anchor that is not at rest is mid-ride: its body is already aired out
+            // into its own mechanism, so capturing it here would tear that mechanism apart. Refuse the
+            // move rather than shear it — the same rule a mid-stroke hoist gets. Checked BEFORE the
+            // no-glue shortcut below so it fires for a bare anchor too (a ship with no glued extras).
+            if (nested instanceof ProvidedAnchor && !nested.isAtRest()) return null;
             if (!isHoist && !hasGlue(nested)) continue;
 
             // Hoists have no valid tipped orientation (a floor winch can't land sideways), so they are
@@ -430,6 +441,7 @@ final class GlueManager {
         if (set.size() >= maxSize) return Result.CAP_HIT;
         Set<Vector3i> connectors = new LinkedHashSet<>(set);
         connectors.addAll(derivedFrom(a, set));
+        connectors.addAll(a.extraConnectors());   // owner-declared body (e.g. a ship hull)
         if (!connects(off, connectors)) return Result.NOT_CONNECTED;
         set.add(off);
         a.writeOffsets(packOffsets(set));
@@ -462,11 +474,15 @@ final class GlueManager {
                     && !(registry != null && StickySpread.isFrameBlock(b, registry))) continue; // can't rotate on X/Z
             pending.add(off);
         }
+        // Hoisted out of the loop: extraConnectors is contractually cached by the anchor, but the fill
+        // runs many passes and there is no reason to re-ask per pass.
+        Set<Vector3i> extra = a.extraConnectors();
         boolean changed = true;
         while (changed && accepted.size() < maxSize) {
             changed = false;
             Set<Vector3i> connectors = new LinkedHashSet<>(accepted);
             connectors.addAll(derivedFrom(a, accepted));
+            connectors.addAll(extra);
             var it = pending.iterator();
             while (it.hasNext()) {
                 if (accepted.size() >= maxSize) break;
@@ -494,10 +510,24 @@ final class GlueManager {
         return true;
     }
 
-    // A candidate connects if it is cardinally adjacent to the origin (0,0,0) or to an already-glued cell.
+    private static final int[][] CARDINAL_OFFSETS =
+        {{1, 0, 0}, {-1, 0, 0}, {0, 1, 0}, {0, -1, 0}, {0, 0, 1}, {0, 0, -1}};
+
+    /**
+     * A candidate connects if it is cardinally adjacent to the origin (0,0,0) or to a connector cell.
+     *
+     * <p>Probes the candidate's six neighbours against the set instead of scanning the set — the two
+     * are equivalent (adjacency is symmetric), but this is O(1) in the connector count rather than
+     * O(n). That matters because {@link #glueCuboid} and {@link #pruneConnected} call this per
+     * candidate per pass, and the connector set can now be a whole ship hull via
+     * {@link Anchor#extraConnectors()}; the old scan made a large fill quadratic on the main thread.
+     */
     private static boolean connects(Vector3i off, Set<Vector3i> set) {
         if (cardinallyAdjacent(off, 0, 0, 0)) return true;
-        for (Vector3i m : set) if (cardinallyAdjacent(off, m.x, m.y, m.z)) return true;
+        Vector3i probe = new Vector3i();
+        for (int[] d : CARDINAL_OFFSETS) {
+            if (set.contains(probe.set(off.x + d[0], off.y + d[1], off.z + d[2]))) return true;
+        }
         return false;
     }
 

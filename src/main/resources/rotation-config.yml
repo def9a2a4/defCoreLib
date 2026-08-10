@@ -11,7 +11,10 @@ dynamic-lights: true
 
 # "Glue": author-controlled block selection for doors/rotators (replaces same-material flood-fill).
 glue:
-  max-size: 256           # cap on a glued selection (defaults to max-structure-size if omitted)
+  # Cap on a glued selection. Independent of max-structure-size and deliberately much larger: a
+  # vehicle-sized anchor (a BlockShips ship, own limit 1000 blocks) needs to glue extras across a
+  # whole hull, while max-structure-size bounds a door or drawbridge.
+  max-size: 1024
   # The glue item itself is declared in corelib-items.yml (corelib:glue_item, SLIME_BALL).
   outline-interval: 5     # ticks between particle-outline refreshes during authoring
   session-timeout: 2400   # ticks of inactivity before an authoring session auto-closes

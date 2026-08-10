@@ -12,9 +12,15 @@ import java.util.logging.Logger;
 final class RotationConfig {
 
     int maxNetworkSize = 256;
-    int maxStructureSize = 256; // default cap for glued selections; overridable via glue.max-size
+    int maxStructureSize = 256; // cap on a mover's captured structure
     boolean dynamicLights = true; // tag light-emitting mechanism blocks for the optional DynLight plugin
-    int glueMaxSize = 256;      // cap on a glued selection; defaults to maxStructureSize
+    // Cap on a glued selection. Deliberately independent of (and larger than) maxStructureSize: a
+    // vehicle-sized anchor — a BlockShips ship, whose own limit is 1000 blocks — needs room to glue
+    // extras across a whole hull, whereas maxStructureSize bounds a door or drawbridge. Safe to raise
+    // only because GlueManager.connects() probes six neighbours instead of scanning the connector set;
+    // with the old linear scan a fill this large would have been quadratic on the main thread.
+    static final int DEFAULT_GLUE_MAX_SIZE = 1024;
+    int glueMaxSize = DEFAULT_GLUE_MAX_SIZE;
     int glueOutlineInterval = 5;
     int glueSessionTimeout = 2400;
     int drillTickInterval = 4;
@@ -104,11 +110,11 @@ final class RotationConfig {
         maxNetworkSize = yaml.getInt("max-network-size", maxNetworkSize);
         maxStructureSize = yaml.getInt("max-structure-size", maxStructureSize);
         dynamicLights = yaml.getBoolean("dynamic-lights", dynamicLights);
-        glueMaxSize = maxStructureSize; // default; overridden by glue.max-size below
+        glueMaxSize = DEFAULT_GLUE_MAX_SIZE; // overridden by glue.max-size below
 
         ConfigurationSection glue = yaml.getConfigurationSection("glue");
         if (glue != null) {
-            glueMaxSize = glue.getInt("max-size", maxStructureSize);
+            glueMaxSize = glue.getInt("max-size", DEFAULT_GLUE_MAX_SIZE);
             glueOutlineInterval = glue.getInt("outline-interval", glueOutlineInterval);
             glueSessionTimeout = glue.getInt("session-timeout", glueSessionTimeout);
             loaded++;

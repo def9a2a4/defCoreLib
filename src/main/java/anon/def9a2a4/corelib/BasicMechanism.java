@@ -1183,7 +1183,14 @@ final class BasicMechanism implements Mechanism {
                 // Cap the sticky-closure walk by the SAME maxSize authoring used (via the registry) — a
                 // smaller cap (e.g. blocks.size()) can starve a legitimate derived bridge and over-prune.
                 int cap = mechanismRegistry != null ? mechanismRegistry.glueMaxSize() : Integer.MAX_VALUE;
-                GlueManager.rebindLanded(registry, cap, new BlockAnchor(landedAnchorTargets.get(k), () -> true),
+                // A foreign plugin's anchor must land as a ProvidedAnchor, not a plain BlockAnchor:
+                // the owner decides whether the connectivity prune applies, and a ship's would delete
+                // nearly all of its glue here (its extras sit on a hull that is not itself glued).
+                // Falls back to BlockAnchor when no provider claims the block — the engine's own case.
+                Block landed = landedAnchorTargets.get(k);
+                ExternalAnchor ext = Anchors.externalFor(landed);
+                Anchor anchor = ext != null ? new ProvidedAnchor(ext) : new BlockAnchor(landed, () -> true);
+                GlueManager.rebindLanded(registry, cap, anchor,
                     landedAnchorOffsets.get(k), rotation, placedSet);
             }
         }

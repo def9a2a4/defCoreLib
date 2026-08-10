@@ -106,6 +106,7 @@ final class GlueAuthoring implements Listener {
                 } else if (session != null) {
                     event.setCancelled(true);
                     if (!session.anchor.isAtRest()) { actionBar(player, "Anchor is moving — wait", NamedTextColor.RED); return; }
+                    if (denied(player, session.anchor)) return;
                     if (closeIfDrifted(player, session)) return;
                     // Clicking the session's own origin (a hoist's platform block) toggles it closed,
                     // mirroring the skull toggle — otherwise the click that opened it would set a
@@ -135,6 +136,7 @@ final class GlueAuthoring implements Listener {
                 if (clicked == null) return;
                 event.setCancelled(true);
                 if (!session.anchor.isAtRest()) { actionBar(player, "Anchor is moving — wait", NamedTextColor.RED); return; }
+                if (denied(player, session.anchor)) return;
                 if (closeIfDrifted(player, session)) return;
                 session.touch(now());
                 if (sneak) {
@@ -240,6 +242,20 @@ final class GlueAuthoring implements Listener {
         return s == null ? null : s.anchor;
     }
 
+    /**
+     * Permission gate, consulted at EVERY mutation rather than once at session open — a session lives
+     * up to {@code glue.session-timeout} (2400 ticks by default), long enough for ownership or region
+     * protection to change under it. Engine anchors always allow; a foreign plugin's
+     * {@link ExternalAnchor} answers for itself.
+     *
+     * @return true when the action must be refused (and the player has been told)
+     */
+    private boolean denied(Player player, Anchor anchor) {
+        if (anchor.canAuthor(player)) return false;
+        actionBar(player, "You can't glue here", NamedTextColor.RED);
+        return true;
+    }
+
     private void toggleSession(Player player, Block anchorBlock) {
         UUID id = player.getUniqueId();
         Object key = CustomBlockRegistry.LocationKey.of(anchorBlock);
@@ -256,6 +272,7 @@ final class GlueAuthoring implements Listener {
             }
         }
         Anchor anchor = anchorFor(anchorBlock);
+        if (denied(player, anchor)) return;
         // Mid-stroke a hoist's origin is meaningless (its column is aired out) — mirror the minecart
         // overload's settled-first gate. Plain BlockAnchors always read at rest here.
         if (!anchor.isAtRest()) {
@@ -319,6 +336,7 @@ final class GlueAuthoring implements Listener {
 
     private void unglueAllAt(Player player, Block anchorBlock) {
         Anchor anchor = anchorFor(anchorBlock);
+        if (denied(player, anchor)) return;
         glue.unglueAll(anchor);
         GlueSession s = sessions.get(player.getUniqueId());
         if (s != null && s.anchor.identityKey().equals(anchor.identityKey())) s.cornerA = null;
@@ -453,6 +471,9 @@ final class GlueAuthoring implements Listener {
     }
 
     private void renderOutline(Player p, GlueSession s) {
+        // Gated like a mutation: the outline enumerates the whole glued structure to whoever holds the
+        // brush, so a player who may no longer author here must not keep reading it either.
+        if (!s.anchor.canAuthor(p)) return;
         Block origin = s.anchor.originBlock();
         World w = s.anchor.world();
         int ox = origin.getX(), oy = origin.getY(), oz = origin.getZ();
