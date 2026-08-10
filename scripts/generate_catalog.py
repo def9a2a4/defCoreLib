@@ -665,6 +665,11 @@ def fetch_model_json(name: str):
     name = name.split(":")[-1]
     if name in _MODEL_CACHE:
         return _MODEL_CACHE[name]
+    if name in _MODEL_FETCH_FAILURES:
+        # Already exhausted its retries this run. Parent chains are shared — block/slab alone is in
+        # 61 of them — so without this a dead host costs 61 × MODEL_FETCH_ATTEMPTS × the socket
+        # timeout instead of failing in seconds. The run is going to abort anyway.
+        return None
 
     last = None
     for attempt in range(MODEL_FETCH_ATTEMPTS):
