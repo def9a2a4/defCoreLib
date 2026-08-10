@@ -57,7 +57,6 @@ public class MechanismRegistry {
     private final Set<UUID> tickWarned = new HashSet<>();  // mechs already warned about a tick throw (rate-limit)
 
     private @Nullable BukkitTask tickTask;
-    private @Nullable BukkitTask flushTask; // 60s async chunk-index flush
     private boolean colliderGlowEnabled = false;
     private boolean dynamicLightsEnabled = true; // tag light-emitting blocks for the optional DynLight plugin
     private boolean scaleWarned = false; // one-time guard for the missing-scale-attribute warning
@@ -133,8 +132,6 @@ public class MechanismRegistry {
         bm.setPersisted(true);
         persistence.save(bm.snapshotState());
     }
-
-    MechanismPersistence persistence() { return persistence; }
 
     /**
      * Register a hook fired during assembly AFTER the mechanism's displays + collider shulkers are spawned
@@ -1346,15 +1343,10 @@ public class MechanismRegistry {
 
     public void startTasks() {
         tickTask = Bukkit.getScheduler().runTaskTimer(plugin, this::tickMechanisms, 1L, 1L);
-        // Periodic async flush of the chunk index: moving mechanisms re-index in memory per crossing (no
-        // disk), and this lands the dirty worlds' chunks.yml off the main thread every 60s. Chunk/world
-        // unload and shutdown flush on their own; between those this bounds how stale the on-disk index gets.
-        flushTask = Bukkit.getScheduler().runTaskTimer(plugin, persistence::flushDirtyAsync, 20L * 60, 20L * 60);
     }
 
     public void shutdown() {
         if (tickTask != null) tickTask.cancel();
-        if (flushTask != null) flushTask.cancel();
         // Restore real blocks for any still-assembled mechanism (e.g. an open door) so the structure
         // isn't lost on /stop. Per-mechanism guarded: a failure falls back to removeAllEntities so we
         // never leak persistent entities. (Full restart recovery is the deferred persistence work.)
@@ -1386,7 +1378,6 @@ public class MechanismRegistry {
         }
         activeMechanisms.clear();
         colliderIndex.clear();
-        persistence.shutdown();
     }
 
     /**
@@ -1430,9 +1421,8 @@ public class MechanismRegistry {
                 }
             }
         }
-        // The parked mechanisms above re-indexed in memory; land the world's chunks.yml before its region
-        // file is written (sync, so the on-disk index can't lag a just-unloaded world).
-        persistence.flushWorldSync(world.getName());
+        // Each parked mechanism's state file was written synchronously by persistence.save() above; recovery
+        // re-discovers them by entity scan when the world reloads. No index to flush.
     }
 
     /** Toggle collider debug glow on all active (and future) mechanism shulkers. */
@@ -1454,50 +1444,9 @@ public class MechanismRegistry {
         this.dynamicLightsEnabled = enabled;
     }
 
-    /**
-     * Remove orphaned mechanism entities from a chunk. These are entities tagged
-     * corelib:mech:* from previous sessions where the mechanism was not properly
-     * cleaned up. All mechanism entities have setPersistent(true), so they never
-     * despawn naturally — this cleanup prevents permanent entity leaks.
-     */
-    public void cleanupOrphanedEntities(org.bukkit.Chunk chunk) {
-        for (Entity entity : chunk.getEntities()) {
-            // A mechanism minecart is a first-class persistent entity, not a disposable mech display.
-            // Never reap it here — even after a hard crash left its stale corelib:mech:{id}:vehicle tag
-            // (disassembly never ran to strip it), the cart and its PDC-stored glue must survive.
-            if (entity.getScoreboardTags().contains("corelib:mechanism_minecart")) continue;
-            for (String tag : entity.getScoreboardTags()) {
-                if (!tag.startsWith("corelib:mech:")) continue;
-                // Tag format: "corelib:mech:{uuid}:{index}:{role}" or "corelib:mech:{uuid}:{role}". Peel the
-                // UUID with substring/indexOf — no split()/regex alloc on this per-entity per-EntitiesLoad
-                // path: a UUID has hyphens but no colons, so the first ':' after the "corelib:mech:" prefix
-                // terminates it (mirrors attemptRecover and BlockShips' ShipTags.extractShipId). The
-                // try/catch below subsumes the old parts.length<3 guard: an empty/garbage id throws → skipped.
-                String rest = tag.substring("corelib:mech:".length());
-                int c = rest.indexOf(':');
-                String idStr = (c < 0) ? rest : rest.substring(0, c);
-                try {
-                    UUID mechId = UUID.fromString(idStr);
-                    // Never reap an entity whose mechanism is active, currently being recovered, or still
-                    // has an on-disk state file (a persisted mechanism whose pivot chunk hasn't loaded yet —
-                    // its entities must survive until recovery adopts them). Persistence writes are
-                    // synchronous today, so recovery in this same EntitiesLoad completes before this sweep;
-                    // the guard also covers a not-yet-loaded pivot chunk and the deferred-removal window.
-                    if (!activeMechanisms.containsKey(mechId)
-                            && !mechIdsBeingRecovered.contains(mechId)
-                            && !persistence.hasMetadata(chunk.getWorld().getName(), mechId)) {
-                        entity.remove();
-                    }
-                } catch (IllegalArgumentException ignored) {
-                    // Not a valid UUID — might be a different tag format, skip
-                }
-                break; // only check first matching tag per entity
-            }
-        }
-    }
-
     // ──────────────────────────────────────────────────────────────────────
-    // Crash recovery (persisted mechanisms)
+    // Crash recovery (persisted mechanisms) — discovery + orphan sweep are unified in
+    // recoverMechanismsInChunk (one entity pass); see below.
     // ──────────────────────────────────────────────────────────────────────
 
     /**
@@ -1530,58 +1479,131 @@ public class MechanismRegistry {
             activeMechanisms.remove(mech.id());
             for (ColliderPair cp : mech.colliders) colliderIndex.remove(cp.shulker().getUniqueId());
         }
-        // Parked mechanisms re-indexed in memory above; flush the dirty worlds off-thread (mirrors
-        // BlockShips' saveAllChunkIndicesAsync on chunk unload).
-        persistence.flushDirtyAsync();
+        // Each parked mechanism's state file was written synchronously by persistence.save() above; recovery
+        // re-discovers it by entity scan when the chunk reloads. No index to flush.
     }
 
     /**
-     * Recover any persisted mechanisms whose pivot chunk is the one that just finished loading its entities.
-     * A persisted mechanism was saved-and-left on shutdown/world-unload (its display/collider/vehicle
-     * entities are {@code setPersistent(true)}, so they survive in the region file); this rebinds a
-     * {@link BasicMechanism} from the saved {@link MechanismState} + those surviving tagged entities and then
-     * either lands it (restore-to-blocks) or resumes it live (restore-to-entities), per {@link #recoverOne}.
+     * The unified per-chunk recovery + orphan-sweep pass, driven by {@code EntitiesLoad} (and the enable-time
+     * {@link #restoreLoadedChunks()} sweep). ONE iteration over the chunk's entities discovers every persisted
+     * mechanism present from its {@code corelib:mech:<id>} scoreboard tags — the entities are the source of
+     * truth, so there is no chunk index to fall out of date. Discovered mechanisms with a state file are
+     * enrolled and (re-)attempted via {@link #attemptRecover}; leftover tagged entities whose mechanism is
+     * neither live, recovering, nor persisted are reaped as orphans. Discovery keys off ANY chunk holding a
+     * tagged entity, so a mechanism recovers as soon as its earliest chunk streams in, not only its pivot
+     * chunk.
      *
-     * <p>Must run in {@code EntitiesLoad} BEFORE {@link #cleanupOrphanedEntities} so the in-flight guard
-     * ({@link #mechIdsBeingRecovered} + {@link MechanismPersistence#hasMetadata}) protects the entities this
-     * adopts from being reaped as orphans.
+     * <p>Public because a consumer (BlockShips) drives it over already-loaded chunks at enable; the
+     * {@code isEntitiesLoaded} guard makes that safe for a chunk whose entities haven't loaded yet.
      */
     public void recoverMechanismsInChunk(org.bukkit.Chunk chunk) {
+        if (!chunk.isEntitiesLoaded()) return; // entities not present yet — the real EntitiesLoad will drive it
         org.bukkit.World world = chunk.getWorld();
-        // 1. Enrol any persisted mechanism indexed to THIS (pivot) chunk that isn't already live or pending.
-        for (UUID id : persistence.mechanismsInChunk(world.getName(), chunk.getX(), chunk.getZ())) {
+        String worldName = world.getName();
+
+        // ONE pass over the chunk's entities. `present` dedupes the mechanism ids seen (for recovery
+        // enrollment); `reapable`/`reapableId` hold the non-minecart tagged entities we may cull as orphans
+        // once recovery has had its chance to claim them. Peel the id with substring/indexOf — a UUID has
+        // hyphens but no colons, so the first ':' after the "corelib:mech:" prefix terminates it.
+        Set<UUID> present = new HashSet<>();
+        List<Entity> reapable = new ArrayList<>();
+        List<UUID> reapableId = new ArrayList<>();
+        for (Entity entity : chunk.getEntities()) {
+            // A mechanism minecart is a first-class persistent entity, not a disposable mech display — never
+            // reap it, even after a hard crash left a stale corelib:mech:{id}:vehicle tag disassembly never
+            // stripped. (It still contributes its id to `present`, but has no state file so it won't enrol.)
+            boolean minecart = entity.getScoreboardTags().contains("corelib:mechanism_minecart");
+            UUID first = null;
+            for (String tag : entity.getScoreboardTags()) {
+                if (!tag.startsWith("corelib:mech:")) continue;
+                String rest = tag.substring("corelib:mech:".length());
+                int c = rest.indexOf(':');
+                String idStr = (c < 0) ? rest : rest.substring(0, c);
+                UUID mechId;
+                try { mechId = UUID.fromString(idStr); } catch (IllegalArgumentException ignored) { continue; }
+                present.add(mechId);
+                if (first == null) first = mechId;
+            }
+            if (first != null && !minecart) { reapable.add(entity); reapableId.add(first); }
+        }
+
+        // 1. Enrol each discovered mechanism that has a state file and isn't already live or pending.
+        for (UUID id : present) {
             if (activeMechanisms.containsKey(id) || pendingRecoveries.containsKey(id)) continue;
-            MechanismState st = persistence.load(world.getName(), id);
+            if (!persistence.hasMetadata(worldName, id)) continue; // not persisted (e.g. minecart-PDC recovery path)
+            MechanismState st = persistence.load(worldName, id);
             if (st == null) {
-                // Corrupt/unreadable state file (already logged by load) — drop the dangling index entry so
-                // we don't retry it every chunk load.
-                persistence.remove(world.getName(), id);
+                // Corrupt/unreadable state file (already logged by load) — cull it so we don't retry it, and
+                // so the orphan sweep below can reap its now-unshielded entities. WITHOUT this a null st would
+                // NPE attemptRecover on st.worldName/st.px every load.
+                persistence.remove(worldName, id);
                 continue;
             }
             pendingRecoveries.put(id, st);
             mechIdsBeingRecovered.add(id); // guards its entities from the orphan sweep while recovery is in flight
         }
+
         // 2. (Re-)attempt each pending recovery whose footprint contains THIS chunk: the load may have brought
         //    in more of that mechanism's entities. Only mechanisms near the loaded chunk are re-attempted — a
         //    chunk load elsewhere brought in none of a distant mechanism's entities, so re-scanning it is pure
         //    waste. This footprint gate is what keeps a fleet world-load from re-sweeping every pending
         //    mechanism on every EntitiesLoad (O(all pending) → O(pending near this chunk)); it mirrors
         //    BlockShips feeding a ship only when one of its entities is in the just-loaded chunk.
-        if (pendingRecoveries.isEmpty()) return;
-        int lcx = chunk.getX(), lcz = chunk.getZ();
-        for (MechanismState st : new ArrayList<>(pendingRecoveries.values())) {
-            if (!world.getName().equals(st.worldName)) continue;
-            int pcx = (int) Math.floor(st.px) >> 4;
-            int pcz = (int) Math.floor(st.pz) >> 4;
-            int radius = st.recoveryChunkRadius();
-            if (Math.abs(lcx - pcx) > radius || Math.abs(lcz - pcz) > radius) continue;
-            try {
-                attemptRecover(world, st);
-            } catch (Exception e) {
-                plugin.getLogger().warning("Mechanism recovery attempt failed for " + st.mechId + " ("
-                    + e.getMessage() + "); leaving its state for a later chunk load");
+        if (!pendingRecoveries.isEmpty()) {
+            int lcx = chunk.getX(), lcz = chunk.getZ();
+            for (MechanismState st : new ArrayList<>(pendingRecoveries.values())) {
+                if (!worldName.equals(st.worldName)) continue;
+                int pcx = (int) Math.floor(st.px) >> 4;
+                int pcz = (int) Math.floor(st.pz) >> 4;
+                int radius = st.recoveryChunkRadius();
+                if (Math.abs(lcx - pcx) > radius || Math.abs(lcz - pcz) > radius) continue;
+                try {
+                    attemptRecover(world, st);
+                } catch (Exception e) {
+                    plugin.getLogger().warning("Mechanism recovery attempt failed for " + st.mechId + " ("
+                        + e.getMessage() + "); leaving its state for a later chunk load");
+                }
             }
         }
+
+        // 3. Reap orphans LAST — after enrollment set mechIdsBeingRecovered and Phase 2 may have gone active —
+        //    so a just-adopted mechanism's entities are never culled. All mechanism entities are
+        //    setPersistent(true) and never despawn naturally, so this is what prevents a permanent leak of a
+        //    tagged entity whose mechanism is gone.
+        for (int i = 0; i < reapable.size(); i++) {
+            UUID id = reapableId.get(i);
+            if (!activeMechanisms.containsKey(id)
+                    && !mechIdsBeingRecovered.contains(id)
+                    && !persistence.hasMetadata(worldName, id)) {
+                reapable.get(i).remove();
+            }
+        }
+    }
+
+    /**
+     * Enable-time sweep: recover (and orphan-sweep) persisted mechanisms in every already-loaded chunk. Chunks
+     * resident before the plugin enabled never re-fire {@code EntitiesLoad}, so without this their mechanisms
+     * would sit unrecovered (and their orphans unswept) until a reload. Mirrors
+     * {@link CustomBlockRegistry#restoreLoadedChunks()}: skips chunks whose entities aren't loaded yet (the
+     * real {@code EntitiesLoad} is still coming and will handle them — scanning now would race it), isolates
+     * each chunk so one failure can't strand the sweep, and returns the count handled. Idempotent: an already
+     * live/pending mechanism is skipped, so a chunk hit by both this and a later {@code EntitiesLoad} is safe.
+     */
+    public int restoreLoadedChunks() {
+        int swept = 0;
+        for (org.bukkit.World world : Bukkit.getWorlds()) {
+            for (org.bukkit.Chunk chunk : world.getLoadedChunks()) {
+                if (!chunk.isEntitiesLoaded()) continue;
+                try {
+                    recoverMechanismsInChunk(chunk);
+                    swept++;
+                } catch (Exception e) {
+                    plugin.getLogger().warning("Mechanism enable-time sweep failed for chunk " + chunk.getX()
+                        + "," + chunk.getZ() + " in " + world.getName() + " (" + e.getMessage() + ")");
+                }
+            }
+        }
+        return swept;
     }
 
     /**

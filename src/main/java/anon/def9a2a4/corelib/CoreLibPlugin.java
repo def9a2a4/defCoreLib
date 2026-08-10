@@ -243,6 +243,15 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
             if (swept > 0) {
                 getLogger().info("Restored custom blocks in " + swept + " already-loaded chunk(s)");
             }
+            // Same first-tick timing for persisted mechanisms: chunks resident before enable never re-fire
+            // EntitiesLoad, so recover (and orphan-sweep) them here. Running at first tick means a consumer's
+            // MechanismAssembleEvent listener (registered in its own onEnable) is already live to catch them.
+            if (mechanismRegistry != null) {
+                int mechSwept = mechanismRegistry.restoreLoadedChunks();
+                if (mechSwept > 0) {
+                    getLogger().info("Swept " + mechSwept + " already-loaded chunk(s) for persisted mechanisms");
+                }
+            }
         });
 
         // (dough→bread and seed-oil→lantern recipes are now declared in YAML — see custom-items.yml —
@@ -394,15 +403,11 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         if (cartTrainManager != null) {
             cartTrainManager.scanChunk(event.getChunk());
         }
-        // Recover persisted mechanisms whose pivot chunk just loaded its entities — BEFORE the orphan
-        // sweep below, so recovery's in-flight guard (mechIdsBeingRecovered + hasMetadata) protects the
-        // still-loading entities it adopts from being reaped.
+        // Recover persisted mechanisms present in this chunk (discovered from their entities' tags) and reap
+        // orphaned mechanism entities from previous sessions — one unified entity pass; recovery's in-flight
+        // guard (mechIdsBeingRecovered + hasMetadata) protects the entities it adopts from the reap.
         if (mechanismRegistry != null) {
             mechanismRegistry.recoverMechanismsInChunk(event.getChunk());
-        }
-        // Clean up orphaned mechanism entities from previous sessions
-        if (mechanismRegistry != null) {
-            mechanismRegistry.cleanupOrphanedEntities(event.getChunk());
         }
         // Entity-hosted custom blocks (bare chain shafts, via registered ChunkRestorers) + the
         // chunk-hint wipe decision. Must run here, not at ChunkLoadEvent: the rod ItemDisplay that
