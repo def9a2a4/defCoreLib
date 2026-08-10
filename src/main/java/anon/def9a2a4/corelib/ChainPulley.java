@@ -64,9 +64,9 @@ final class ChainPulley {
      * (which removes {@code corelib:mech:chain_pulley:<x>_<y>_<z>*} on every idle↔spinning state change)
      * can't delete the strand. A live strand's owner is the pulley block, not a matching skull, so the
      * orphan scanner would mis-flag it — the display scanner ({@code scanOrphanedDisplays}) skips it by
-     * design. NOTE the mechanism-entity sweep ({@code MechanismRegistry.cleanupOrphanedEntities}) lets it
-     * survive only INCIDENTALLY (its {@code corelib:mech:chain_strand:…} tag fails the UUID parse and is
-     * ignored) — a future mech-tag-scheme change could start reaping live strands. Deliberate cleanup of
+     * design. NOTE the mechanism-entity orphan sweep (in {@code MechanismRegistry.recoverMechanismsInChunk})
+     * lets it survive only INCIDENTALLY (its {@code corelib:mech:chain_strand:…} tag fails the UUID parse and
+     * is ignored) — a future mech-tag-scheme change could start reaping live strands. Deliberate cleanup of
      * a stale strand is owned by {@link #handleEntitiesLoad} (partner==null → removeStrand).
      */
     private static final String STRAND_TYPE = "chain_strand";
