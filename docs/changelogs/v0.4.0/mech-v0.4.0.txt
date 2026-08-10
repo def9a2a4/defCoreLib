@@ -36,6 +36,7 @@ Two new frame blocks — the **Gearbox** and the **Chassis** — and a new **Rat
 - **Machine facings ride true** — a dynamo, boiler, burner, pump, mechanical dispenser, piston head, or cart rail carried by a mechanism now keeps its oriented shell/head/eye while it moves and on landing, instead of briefly snapping to a default direction in transit and only correcting itself when it lands.
 - **Floor heads keep their rotation while moving** — a floor-placed custom head (a redstone motor, and the like) now renders at its real facing while a mechanism carries it, instead of snapping to a default orientation in transit and only correcting itself on landing.
 - **Light blocks no longer block a mechanism** — a light-emitting head's invisible light block no longer counts as a wall that stops a mechanical piston or chain hoist; the stroke moves through it cleanly. (A stationary light head whose light block is overrun by another block goes dark until its chunk reloads.)
+- **Contraptions reliably survive a crash** — a parked mechanism (and a BlockShips ship) is now rediscovered directly from its own entities when its chunk loads, so a hard crash — or a missing/damaged save index — can no longer leave an invisible, unusable contraption stranded in the world. Mechanisms in chunks already loaded when the server starts are also swept and recovered.
 
 ## Recipes
 
@@ -60,3 +61,4 @@ Two new frame blocks — the **Gearbox** and the **Chassis** — and a new **Rat
 ## Internal
 
 - Rotation-network reactive recalcs coalesce through a per-tick flush drain, and the read-only lock/ratchet-direction predicates are memoized per recalc — collapsing a comparator storm from many full O(component) rebuilds to one.
+- Mechanism crash-recovery is now driven entirely by the entities' own `corelib:mech:<id>` tags scanned per chunk load (unified with the orphan sweep into one entity pass), replacing the persisted per-world `chunks.yml` index and its async flush thread. The state files remain the sole source of truth; a lightweight in-memory per-world id-set (seeded from the state-file directory at enable) backs the persisted-state guard with no per-entity filesystem stat.

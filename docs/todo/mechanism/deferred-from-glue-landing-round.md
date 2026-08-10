@@ -17,9 +17,10 @@ owned mechs and only really apply to long-lived assembled carts.
 ## 1. Full crash / restart persistence — ✅ DONE (2026-08-09, `9b59bf5` and predecessors)
 
 **No longer the biggest data-loss risk — this shipped.** It was built as `MechanismPersistence.java`
-(per-mechanism state files + a chunk index; the index writes async on a 60s flush, the state files stay
-sync because recovery reads them on the main thread) rather than through the `MechanismSerializer` seam
-this item assumed. See `../persistence.md`, whose header now records what actually shipped.
+(per-mechanism state files, the source of truth) rather than through the `MechanismSerializer` seam this item
+assumed. The chunk index it originally carried was **removed 2026-08-10** — recovery is now entity-tag driven
+(scan a loaded chunk's `corelib:mech:<id>` tags), which can't be stranded by a stale index. See
+`../persistence.md`, whose header records the current model.
 
 One observation below is still literally true and worth keeping: `MechanismSerializer` remains inert —
 `save` / `restore` / `onRecoveryComplete` are invoked nowhere and every in-repo `assembleMechanism` call

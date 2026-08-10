@@ -584,9 +584,10 @@ Not implemented in initial pass. Structure code for easy bolt-on later:
 
 When persistence is added later, copy from BlockShips:
 - Per-mechanism YAML at `mechanisms/{world}/{uuid}.yml`
-- Chunk index at `mechanisms/{world}/chunks.yml`
+- ~~Chunk index at `mechanisms/{world}/chunks.yml`~~ — shipped then **removed 2026-08-10**; recovery is
+  entity-tag driven (scan `corelib:mech:<id>` tags per chunk load), no persisted index. See `../persistence.md`.
 - Inventory serialization: `ItemStack.serializeAsBytes()` → Base64, pipe-delimited per slot
-- Single-threaded I/O executor for writes
+- ~~Single-threaded I/O executor for writes~~ — not needed; state-file writes are synchronous.
 - Two-pass entity recovery: chunk entities by tag, then `getNearbyEntities(loc, 32, 32, 32)` fallback
 - Late-binding: `pendingMechanisms` map for consumer plugins not yet loaded
 

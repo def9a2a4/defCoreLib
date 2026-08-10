@@ -176,8 +176,9 @@ Cross-mover capture (A's slime grabbing B's hardware) is accepted and documented
   - The **float→double snap fix lives in Block A** but the decoupled provider path must preserve it.
   - **Deferred-transform caveat:** the primary display's transform is set on the 1-tick `rotate(0)`,
     not at spawn — provider `spawnPrimaryDisplay` impls must not assume an immediate transform.
-- [ ] **E2. Phase 2 — Persistence & entity recovery.** Per-world YAML + chunk index (mirror
-  `ShipWorldData`/`ShipPersistence`); snapshot-on-main / write-async via a single-thread executor.
+- [ ] **E2. Phase 2 — Persistence & entity recovery.** Per-world per-mechanism YAML state files (the source
+  of truth); recovery discovers mechanisms by scanning a loaded chunk's `corelib:mech:<id>` entity tags. (The
+  originally-planned persisted chunk index was built then removed 2026-08-10 — see `../persistence.md`.)
   - **Metadata-first incremental recovery:** on chunk load, async-load metadata → construct on main
     thread → `RecoveringMechanism` holder collects entities **across multiple chunk loads** against a
     stored `expectedEntityCount` (mirror `DisplayShip.onChunkLoad` + `ShipInstance.recoverEntities`).

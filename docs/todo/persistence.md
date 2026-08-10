@@ -11,6 +11,18 @@
 > **R1–R9** + inline notes. Round 3 added: persist `mechId` (P0), default to **sync I/O**, and defer the
 > incremental collector — see those sections.
 
+## SUPERSEDED (2026-08-10) — the chunk index was deleted; recovery is now entity-tag driven
+
+> The async chunk index described below (`chunks.yml` + `ioExecutor` + `flush*`) had a crash-safety
+> regression (a state file written in the pre-flush window had no index entry on restart → never recovered,
+> yet its entities stayed shielded → invisible zombie). It was **removed entirely**. Recovery now discovers
+> mechanisms by scanning a loaded chunk's entities for their `corelib:mech:<id>` tags
+> (`MechanismRegistry.recoverMechanismsInChunk`, a unified discover+orphan-sweep pass), with an enable-time
+> `restoreLoadedChunks()` sweep. `MechanismPersistence` keeps only state files + an eager in-memory
+> `persistedIds` set (per-world, seeded from the state-file directory) backing `hasMetadata`. This matches how
+> BlockShips-main actually recovers (entities are the source of truth; its own index is a distrusted hint).
+> The async/index details below are kept only as the historical design record.
+
 ## What actually shipped (2026-08-09) — read this before the plan below
 
 Persistence is built, but **not through `MechanismSerializer`**. That interface is still inert:

@@ -205,6 +205,11 @@ favor. BlockShips is the reference implementation we borrow from.
 
 ### BlockShips' proven pattern (to adopt)
 
+> **Superseded (2026-08-10):** defCoreLib's `MechanismPersistence` shipped the per-mechanism state files but
+> its chunk index was later **removed** — recovery is entity-tag driven (scan `corelib:mech:<id>` tags per
+> chunk load), matching how BlockShips-main *actually* recovers (its `chunks.yml` is a distrusted hint, not the
+> discovery source). The `chunks.yml` design below is kept only as reference. See `../persistence.md`.
+
 BlockShips actually has **two** persistence paths; adopt the modern per-world one:
 - `ShipPersistence` → a flat `ships.yml` (legacy whole-world save/load + startup orphan cleanup).
 - `ShipWorldData` → the per-world, chunk-indexed path we model on:
