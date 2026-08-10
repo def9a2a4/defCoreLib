@@ -24,6 +24,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bstats.bukkit.Metrics;
+import org.jspecify.annotations.Nullable;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -373,6 +374,80 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
 
     public RotationNetwork getRotationNetwork() {
         return rotationNetwork;
+    }
+
+    // ──────────────────────────────────────────────────────────────────────
+    // Public glue API
+    //
+    // Glue is otherwise entirely internal. This is the narrow surface a sibling plugin needs to make
+    // one of ITS blocks a glue anchor and to read back what a player glued to it. Everything else —
+    // the Glue Brush, the particle outline, cuboid fill, brush durability, capture at assembly,
+    // persistence across a restart, and the rotated rebind at landing — then works unchanged, because
+    // an ExternalAnchor stores offsets in the same skull PDC every engine anchor uses.
+    //
+    // Lifecycle contract: while the anchor is at rest its skull PDC is authoritative. While it is
+    // riding a mechanism the offsets live in MechanismBlockData.glueOffsets (captured before air-out,
+    // serialized with the mechanism) and are re-stamped on landing. Callers must not keep their own
+    // copy — two sources of truth, rotated by different code, is how glue ends up bound to the wrong
+    // blocks.
+    // ──────────────────────────────────────────────────────────────────────
+
+    /**
+     * Register a provider that claims blocks as glue anchors on this plugin's behalf. Re-registering
+     * the same {@code pluginId} replaces the previous provider.
+     *
+     * <p>Engine anchor types are matched first, so a provider can never shadow a rotator, door,
+     * piston head or hoist.
+     *
+     * @param pluginId stable identifier for the owning plugin (used only for replace-on-reregister)
+     */
+    public void registerAnchorProvider(String pluginId, ExternalAnchor.Provider provider) {
+        Anchors.registerProvider(pluginId, provider);
+    }
+
+    /**
+     * Open (or toggle closed) a Glue Brush authoring session on an arbitrary block, bypassing the
+     * anchor-type gate. The player still needs the brush in hand for the click handlers to do
+     * anything; this only seeds the session.
+     */
+    public void openGlueSession(Player player, Block anchorBlock) {
+        if (glueAuthoring != null) glueAuthoring.startBlockSession(player, anchorBlock);
+    }
+
+    /** Raw glued offsets (flat x,y,z triples relative to {@code anchorBlock}), or null if none. */
+    public int @Nullable [] readGlueOffsets(Block anchorBlock) {
+        return new BlockAnchor(anchorBlock, () -> true).readOffsets();
+    }
+
+    /**
+     * Overwrite the glued offsets. No connectivity check — the caller is authoritative. Intended for
+     * an owner plugin re-basing its own anchor; ordinary authoring goes through the brush.
+     */
+    public void writeGlueOffsets(Block anchorBlock, int[] offsets) {
+        new BlockAnchor(anchorBlock, () -> true).writeOffsets(offsets);
+    }
+
+    /**
+     * Resolve this anchor's glue to the blocks that are actually present right now, or null when the
+     * anchor has no glue. Cells that are now air are skipped; the derived sticky closure (slime/honey
+     * grabs, same-wood frame bonds) is included, exactly as a mover would see it. An empty list means
+     * "glued, but everything is gone".
+     */
+    public @Nullable List<Block> resolveGlue(Block anchorBlock) {
+        if (glueManager == null) return null;
+        ExternalAnchor ext = Anchors.externalFor(anchorBlock);
+        Anchor anchor = ext != null ? new ProvidedAnchor(ext) : new BlockAnchor(anchorBlock, () -> true);
+        return glueManager.resolveStructure(anchor);
+    }
+
+    /** Remove all glue from this anchor. */
+    public void clearGlue(Block anchorBlock) {
+        new BlockAnchor(anchorBlock, () -> true).clearOffsets();
+    }
+
+    /** The cap on a single glued selection ({@code glue.max-size}), so callers can report it. */
+    public int glueMaxSize() {
+        return glueManager != null ? glueManager.maxSize() : 0;
     }
 
     // ──────────────────────────────────────────────────────────────────────
