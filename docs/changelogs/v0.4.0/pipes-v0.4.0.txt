@@ -39,3 +39,8 @@ NOTES
   and pull from that chest with a filter pipe.
 - Filtering is not yet applied while a filter pipe rides a moving
   mechanism (cart / platform) — it transfers everything there for now.
+
+CRAFTING
+- Making an oxidized copper pipe or corner with a water bucket now returns
+  the bucket empty (and a single bucket makes only one at a time), instead
+  of leaving the bucket unconsumed.

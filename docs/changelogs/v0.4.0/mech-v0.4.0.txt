@@ -16,6 +16,8 @@ Two new frame blocks — the **Gearbox** and the **Chassis** — and a new **Rat
 - **Ceiling rotator** — a rotator mounted under a block now hangs as a ceiling hinge, swinging the block above it like a hatch (Y axis) — the floor door, upside down.
 - **Mounted drill mines mid-swing** — a drill carried by a rotator now bores through the whole arc at any angle, not only at the 90° stops, and breaks at 2× speed while swinging since it only grazes each block.
 - **Steadier mover speeds** — the chain hoist and piston floor at about 0.5 block/s, and the rotator runs 5–90°/s.
+- **Heavier contraptions move slower** — a mechanism's speed now scales with the total **mass** of the blocks it carries, not just their count, so a stone-laden platform crawls where a wool one flies.
+- **Onboard windmills give half power** — a windmill carried aboard a mechanism supplies only half its usual power, so a contraption can't run indefinitely off its own windmills.
 - **Wrench-inspect a moving rotation network** — right-click a shaft, gear, or machine on an *assembled* mechanism (rotator, drawbridge, minecart, …) with the wrench to read its live power supply/demand, block count, spin direction, and jam state, with the network members highlighted — the same readout the wrench gives a rotation network in the world, now available while it rides a contraption.
 - **Movers mow plants in their path** — a mechanical piston or chain hoist now breaks the grass, ferns, flowers, and similar fragile blocks in the cells ahead of it (dropping them) instead of stalling against them.
 
@@ -37,6 +39,7 @@ Two new frame blocks — the **Gearbox** and the **Chassis** — and a new **Rat
 - **Floor heads keep their rotation while moving** — a floor-placed custom head (a redstone motor, and the like) now renders at its real facing while a mechanism carries it, instead of snapping to a default orientation in transit and only correcting itself on landing.
 - **Light blocks no longer block a mechanism** — a light-emitting head's invisible light block no longer counts as a wall that stops a mechanical piston or chain hoist; the stroke moves through it cleanly. (A stationary light head whose light block is overrun by another block goes dark until its chunk reloads.)
 - **Contraptions reliably survive a crash** — a parked mechanism (and a BlockShips ship) is now rediscovered directly from its own entities when its chunk loads, so a hard crash — or a missing/damaged save index — can no longer leave an invisible, unusable contraption stranded in the world. Mechanisms in chunks already loaded when the server starts are also swept and recovered.
+- **Smoother animations** — spinning shafts, gears, and windmills now tween smoothly between frames instead of snapping about 20 times a second.
 
 ## Recipes
 
