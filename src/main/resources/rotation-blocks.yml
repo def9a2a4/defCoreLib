@@ -3502,6 +3502,10 @@ blocks:
   # A windmill run in reverse: instead of producing power it CONSUMES it, and pushes. Same blades and
   # the same banner-pattern customisation as the windmill it is built from — only the hub differs.
   # Ships read its powered state to work out thrust; on land it spins and does nothing else.
+  #
+  # All THREE propeller tiers spin at the same 6.0 °/tick, unlike the windmills' 3/2/1. A windmill is
+  # driven by the wind, so a bigger sail turning slower reads correctly; a propeller is driven by the
+  # network, so a bigger one turning slower would just read as underpowered. Keep the three in step.
   propeller:
     cancel_pistons: true
     name: "&bPropeller"
@@ -3602,7 +3606,7 @@ blocks:
           - { material: WHITE_BANNER, tag: blade_b, transform: { translation: [0, -0.25, 1.25],    scale: [2.25, 2.25, 2.25], left_rotation: [90, 1, 0, 0] } }
           - { material: WHITE_BANNER, tag: blade_c, transform: { translation: [-1.25, -0.25, 0],   scale: [2.25, 2.25, 2.25], left_rotation: [120, 1, -1, 1] } }
           - { material: WHITE_BANNER, tag: blade_d, transform: { translation: [0, -0.25, -1.25],   scale: [2.25, 2.25, 2.25], left_rotation: [180, 0, 1, -1] } }
-      spinning_floor: { copy_from: idle_floor, texture: "@prop_bearing_up", animation: { type: rotate, axis: [0, 1, 0], speed: 2.0 } }
+      spinning_floor: { copy_from: idle_floor, texture: "@prop_bearing_up", animation: { type: rotate, axis: [0, 1, 0], speed: 6.0 } }
       idle_wall_n:
         texture: "@prop_bearing_fwd"
         display_entities:
@@ -3610,7 +3614,7 @@ blocks:
           - { material: WHITE_BANNER, tag: blade_b, transform: { translation: [0, 1.25, 0],  scale: [2.25, 2.25, 2.25] }, wall_offset: 0.25 }
           - { material: WHITE_BANNER, tag: blade_c, transform: { translation: [-1.25, 0, 0], scale: [2.25, 2.25, 2.25], left_rotation: [90, 0, 0, 1] }, wall_offset: 0.25 }
           - { material: WHITE_BANNER, tag: blade_d, transform: { translation: [0, -1.25, 0], scale: [2.25, 2.25, 2.25], left_rotation: [180, 0, 0, 1] }, wall_offset: 0.25 }
-      spinning_wall_n: { copy_from: idle_wall_n, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [0, 0, 1], speed: 2.0 } }
+      spinning_wall_n: { copy_from: idle_wall_n, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [0, 0, 1], speed: 6.0 } }
       idle_wall_s:
         texture: "@prop_bearing_fwd"
         display_entities:
@@ -3618,7 +3622,7 @@ blocks:
           - { material: WHITE_BANNER, tag: blade_b, transform: { translation: [0, 1.25, 0],  scale: [2.25, 2.25, 2.25], left_rotation: [180, 0, 1, 0] }, wall_offset: 0.25 }
           - { material: WHITE_BANNER, tag: blade_c, transform: { translation: [-1.25, 0, 0], scale: [2.25, 2.25, 2.25], left_rotation: [180, 1, -1, 0] }, wall_offset: 0.25 }
           - { material: WHITE_BANNER, tag: blade_d, transform: { translation: [0, -1.25, 0], scale: [2.25, 2.25, 2.25], left_rotation: [180, 1, 0, 0] }, wall_offset: 0.25 }
-      spinning_wall_s: { copy_from: idle_wall_s, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [0, 0, 1], speed: 2.0 } }
+      spinning_wall_s: { copy_from: idle_wall_s, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [0, 0, 1], speed: 6.0 } }
       idle_wall_w:
         texture: "@prop_bearing_fwd"
         display_entities:
@@ -3626,7 +3630,7 @@ blocks:
           - { material: WHITE_BANNER, tag: blade_b, transform: { translation: [0, 0, 1.25],  scale: [2.25, 2.25, 2.25], left_rotation: [120, 1, -1, -1] }, wall_offset: 0.25 }
           - { material: WHITE_BANNER, tag: blade_c, transform: { translation: [0, -1.25, 0], scale: [2.25, 2.25, 2.25], left_rotation: [180, 1, 0, -1] }, wall_offset: 0.25 }
           - { material: WHITE_BANNER, tag: blade_d, transform: { translation: [0, 0, -1.25], scale: [2.25, 2.25, 2.25], left_rotation: [-120, 1, 1, -1] }, wall_offset: 0.25 }
-      spinning_wall_w: { copy_from: idle_wall_w, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [1, 0, 0], speed: 2.0 } }
+      spinning_wall_w: { copy_from: idle_wall_w, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [1, 0, 0], speed: 6.0 } }
       idle_wall_e:
         texture: "@prop_bearing_fwd"
         display_entities:
@@ -3634,7 +3638,7 @@ blocks:
           - { material: WHITE_BANNER, tag: blade_b, transform: { translation: [0, 0, 1.25],  scale: [2.25, 2.25, 2.25], left_rotation: [120, 1, 1, 1] }, wall_offset: 0.25 }
           - { material: WHITE_BANNER, tag: blade_c, transform: { translation: [0, -1.25, 0], scale: [2.25, 2.25, 2.25], left_rotation: [180, 1, 0, 1] }, wall_offset: 0.25 }
           - { material: WHITE_BANNER, tag: blade_d, transform: { translation: [0, 0, -1.25], scale: [2.25, 2.25, 2.25], left_rotation: [-120, 1, -1, 1] }, wall_offset: 0.25 }
-      spinning_wall_e: { copy_from: idle_wall_e, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [1, 0, 0], speed: 2.0 } }
+      spinning_wall_e: { copy_from: idle_wall_e, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [1, 0, 0], speed: 6.0 } }
 
   # ─── Huge Propeller ───────────────────────────────────────────────────────────
   # A windmill run in reverse: instead of producing power it CONSUMES it, and pushes. Same blades and
@@ -3671,7 +3675,7 @@ blocks:
           - { material: WHITE_BANNER, tag: blade_b, transform: { translation: [0, -0.333, 1.667],    scale: [3.0, 3.0, 3.0], left_rotation: [90, 1, 0, 0] } }
           - { material: WHITE_BANNER, tag: blade_c, transform: { translation: [-1.667, -0.333, 0],   scale: [3.0, 3.0, 3.0], left_rotation: [120, 1, -1, 1] } }
           - { material: WHITE_BANNER, tag: blade_d, transform: { translation: [0, -0.333, -1.667],   scale: [3.0, 3.0, 3.0], left_rotation: [180, 0, 1, -1] } }
-      spinning_floor: { copy_from: idle_floor, texture: "@prop_bearing_up", animation: { type: rotate, axis: [0, 1, 0], speed: 1.0 } }
+      spinning_floor: { copy_from: idle_floor, texture: "@prop_bearing_up", animation: { type: rotate, axis: [0, 1, 0], speed: 6.0 } }
       idle_wall_n:
         texture: "@prop_bearing_fwd"
         display_entities:
@@ -3679,7 +3683,7 @@ blocks:
           - { material: WHITE_BANNER, tag: blade_b, transform: { translation: [0, 1.667, 0],  scale: [3.0, 3.0, 3.0] }, wall_offset: 0.25 }
           - { material: WHITE_BANNER, tag: blade_c, transform: { translation: [-1.667, 0, 0], scale: [3.0, 3.0, 3.0], left_rotation: [90, 0, 0, 1] }, wall_offset: 0.25 }
           - { material: WHITE_BANNER, tag: blade_d, transform: { translation: [0, -1.667, 0], scale: [3.0, 3.0, 3.0], left_rotation: [180, 0, 0, 1] }, wall_offset: 0.25 }
-      spinning_wall_n: { copy_from: idle_wall_n, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [0, 0, 1], speed: 1.0 } }
+      spinning_wall_n: { copy_from: idle_wall_n, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [0, 0, 1], speed: 6.0 } }
       idle_wall_s:
         texture: "@prop_bearing_fwd"
         display_entities:
@@ -3687,7 +3691,7 @@ blocks:
           - { material: WHITE_BANNER, tag: blade_b, transform: { translation: [0, 1.667, 0],  scale: [3.0, 3.0, 3.0], left_rotation: [180, 0, 1, 0] }, wall_offset: 0.25 }
           - { material: WHITE_BANNER, tag: blade_c, transform: { translation: [-1.667, 0, 0], scale: [3.0, 3.0, 3.0], left_rotation: [180, 1, -1, 0] }, wall_offset: 0.25 }
           - { material: WHITE_BANNER, tag: blade_d, transform: { translation: [0, -1.667, 0], scale: [3.0, 3.0, 3.0], left_rotation: [180, 1, 0, 0] }, wall_offset: 0.25 }
-      spinning_wall_s: { copy_from: idle_wall_s, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [0, 0, 1], speed: 1.0 } }
+      spinning_wall_s: { copy_from: idle_wall_s, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [0, 0, 1], speed: 6.0 } }
       idle_wall_w:
         texture: "@prop_bearing_fwd"
         display_entities:
@@ -3695,7 +3699,7 @@ blocks:
           - { material: WHITE_BANNER, tag: blade_b, transform: { translation: [0, 0, 1.667],  scale: [3.0, 3.0, 3.0], left_rotation: [120, 1, -1, -1] }, wall_offset: 0.25 }
           - { material: WHITE_BANNER, tag: blade_c, transform: { translation: [0, -1.667, 0], scale: [3.0, 3.0, 3.0], left_rotation: [180, 1, 0, -1] }, wall_offset: 0.25 }
           - { material: WHITE_BANNER, tag: blade_d, transform: { translation: [0, 0, -1.667], scale: [3.0, 3.0, 3.0], left_rotation: [-120, 1, 1, -1] }, wall_offset: 0.25 }
-      spinning_wall_w: { copy_from: idle_wall_w, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [1, 0, 0], speed: 1.0 } }
+      spinning_wall_w: { copy_from: idle_wall_w, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [1, 0, 0], speed: 6.0 } }
       idle_wall_e:
         texture: "@prop_bearing_fwd"
         display_entities:
@@ -3703,7 +3707,7 @@ blocks:
           - { material: WHITE_BANNER, tag: blade_b, transform: { translation: [0, 0, 1.667],  scale: [3.0, 3.0, 3.0], left_rotation: [120, 1, 1, 1] }, wall_offset: 0.25 }
           - { material: WHITE_BANNER, tag: blade_c, transform: { translation: [0, -1.667, 0], scale: [3.0, 3.0, 3.0], left_rotation: [180, 1, 0, 1] }, wall_offset: 0.25 }
           - { material: WHITE_BANNER, tag: blade_d, transform: { translation: [0, 0, -1.667], scale: [3.0, 3.0, 3.0], left_rotation: [-120, 1, -1, 1] }, wall_offset: 0.25 }
-      spinning_wall_e: { copy_from: idle_wall_e, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [1, 0, 0], speed: 1.0 } }
+      spinning_wall_e: { copy_from: idle_wall_e, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [1, 0, 0], speed: 6.0 } }
 
   # ─── Thruster ────────────────────────────────────────────────────────────
   # The only propulsion block that burns fuel instead of drawing rotational power. It rides as a
