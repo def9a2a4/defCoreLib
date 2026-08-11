@@ -1228,6 +1228,15 @@ public class MechanismRegistry {
      * {@code Rotatable} orientation on the static path. 16-step SOUTH=0 · 22.5°/step, same table as standing
      * banners. The sign is baked in (negated) to the proven convention: the standing-banner transform applies
      * its yaw as {@code rotateY(-yaw)}; this returns radians meant to be applied POSITIVELY at the render site.
+     *
+     * <p>UNRESOLVED, read before touching: this encodes the same "+Z is the head's face" convention that
+     * {@code BasicMechanism.faceYawRadians} used for WALL heads — and that one was measured wrong in game and
+     * now adds {@code HEAD_ITEM_MODEL_FACE_YAW} (π) to correct it. The two agree on all four cardinals
+     * (WEST → -90°, EAST → +90°, NORTH → 180°), so if the wall case needed a half-turn this one very likely
+     * does too, and every floor head on a mechanism is currently backwards. It has never been reported,
+     * plausibly because gears/casings/bearings are near enough symmetric to hide it. Confirm with a
+     * DIRECTIONAL floor head on a moving mechanism (a drill or an engine) before changing this — getting it
+     * wrong rotates every floor head in every existing world.
      */
     private static float floorHeadYawRadians(org.bukkit.block.data.Rotatable rot) {
         return (float) Math.toRadians(-BlockRotation.rotationToStep(rot.getRotation()) * 22.5);

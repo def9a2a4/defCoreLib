@@ -1769,18 +1769,36 @@ final class BasicMechanism implements Mechanism {
     }
 
     /**
+     * Half-turn correcting the head ITEM model's default face. Measured in game: a player-head ItemDisplay at
+     * identity renders its face toward -Z, not the +Z the block-entity form uses — so every yaw derived from a
+     * skull's BlockData needs π added before it can drive a display. Exactly the same discrepancy the banner
+     * path already carries as {@code 180 - yaw} in {@code MechanismRegistry.vanillaBannerTransform}, and for
+     * the same reason: the item model faces the opposite way from the block-entity.
+     *
+     * <p>Without this, every custom wall head on a mechanism renders backwards. It went unnoticed for a long
+     * time because most head blocks (gears, casings, bearings) are near enough rotationally symmetric to hide
+     * it; the thruster's jet nozzle is the first skin directional enough to make it obvious.
+     */
+    private static final float HEAD_ITEM_MODEL_FACE_YAW = (float) Math.PI;
+
+    /**
      * Yaw (radians, about +Y) that turns a wall head's primary ItemDisplay so its face points along the
      * horizontal {@code facing}, matching the vanilla skull block's orientation on the static path. Only the
-     * four horizontal cardinals occur for wall heads. Mirrors the +Z→facing mapping in
-     * {@code ExtendablePistonManager.faceRotation}; if a bare skull's default face isn't +Z the baseline may
-     * need an in-game tweak (swap the north/south or east/west pair).
+     * four horizontal cardinals occur for wall heads.
+     *
+     * <p>The four cardinal cases below are the block-entity convention (+Z→facing, mirroring
+     * {@code ExtendablePistonManager.faceRotation}); {@link #HEAD_ITEM_MODEL_FACE_YAW} then converts that into
+     * the item model's frame. Keep the two steps separate — the cardinal table is verified geometry, the
+     * half-turn is a model-space correction, and folding them together makes the next bug unreadable.
      */
     private static float faceYawRadians(Vector3f facing) {
         float h = (float) (Math.PI / 2), p = (float) Math.PI;
-        if (facing.z < -0.5f) return p;    // north (-Z)
-        if (facing.x > 0.5f)  return h;    // east (+X)
-        if (facing.x < -0.5f) return -h;   // west (-X)
-        return 0f;                          // south (+Z), and the fallback
+        float yaw;
+        if (facing.z < -0.5f)      yaw = p;    // north (-Z)
+        else if (facing.x > 0.5f)  yaw = h;    // east (+X)
+        else if (facing.x < -0.5f) yaw = -h;   // west (-X)
+        else                       yaw = 0f;   // south (+Z), and the fallback
+        return yaw + HEAD_ITEM_MODEL_FACE_YAW;
     }
 
     /**

@@ -3750,27 +3750,70 @@ blocks:
       WEST:  idle_w
     states:
       idle_down:    { texture: "@jet_off_down" }
+      # Nozzle-down exhaust. `velocity` makes Bukkit emit a single directed particle per tick instead of a
+      # random puff, which is what turns this from a campfire into a rocket. Both the floor and the ceiling
+      # mount are a PLAYER_HEAD (see placement_state_map), so floor_offset covers both — a wall head never
+      # reaches this state. y is relative to the block's BOTTOM face, so -0.05 is just under the nozzle.
       running_down:
         texture: "@jet_on_down"
-        particles: { type: flame, count: 2, offset: [0.25, 0.1, 0.25], speed: 0.02, origin: [0.5, -0.05, 0.5] }
-      # The wall states are spelled out rather than sharing via copy_from: copy_from inherits
-      # display_entities, and these states have none — only a texture and an exhaust particle.
+        particles: { type: flame, interval: 2, speed: 0.2, floor_offset: [0, -0.05, 0], velocity: [0, -1, 0] }
+      # The wall states are spelled out rather than sharing via copy_from: copy_from requires the source
+      # state to declare display_entities, and these states have none — only a texture and an exhaust.
+      #
+      # Every wall state carries ALL FOUR wall_offsets, and they are identical between the four. That is
+      # deliberate: `orientedOffset` picks the entry by the block's live `Directional.getFacing()`, so the
+      # exhaust lands on the nozzle no matter which state name a thruster is in. The state suffixes here do
+      # NOT read consistently (n/s are named for the direction the head faces, e/w for the wall it hangs on),
+      # so anything that reasons from the suffix is a bug waiting to happen. Let the BlockData decide.
+      #
+      # The head's outward face sits on the block's centre plane (a wall head is shifted 0.25 toward its
+      # wall, and the skull is 0.5 deep), so ±0.2 along the facing puts the flame just past the nozzle, and
+      # y 0.5 is the head's centre height. No `velocity` on these: it is world-space and fixed per state,
+      # which would reintroduce exactly the suffix-reasoning this avoids.
+      #
+      # The four blocks below are identical on purpose. No YAML anchor/alias — nothing else in this repo
+      # uses one and the loader has never been exercised against aliased nodes; four copies are cheaper
+      # than finding out. If you edit one, edit all four.
       idle_n:       { texture: "@jet_off_wall" }
       running_n:
         texture: "@jet_on_wall"
-        particles: { type: flame, count: 2, offset: [0.25, 0.25, 0.1], speed: 0.02 }
+        particles:
+          type: flame
+          count: 2
+          speed: 0.02
+          interval: 3
+          floor_offset: [0, 0.5, 0]
+          wall_offsets: { NORTH: [0, 0.5, -0.2], SOUTH: [0, 0.5, 0.2], EAST: [0.2, 0.5, 0], WEST: [-0.2, 0.5, 0] }
       idle_s:       { texture: "@jet_off_wall" }
       running_s:
         texture: "@jet_on_wall"
-        particles: { type: flame, count: 2, offset: [0.25, 0.25, 0.1], speed: 0.02 }
+        particles:
+          type: flame
+          count: 2
+          speed: 0.02
+          interval: 3
+          floor_offset: [0, 0.5, 0]
+          wall_offsets: { NORTH: [0, 0.5, -0.2], SOUTH: [0, 0.5, 0.2], EAST: [0.2, 0.5, 0], WEST: [-0.2, 0.5, 0] }
       idle_e:       { texture: "@jet_off_wall" }
       running_e:
         texture: "@jet_on_wall"
-        particles: { type: flame, count: 2, offset: [0.1, 0.25, 0.25], speed: 0.02 }
+        particles:
+          type: flame
+          count: 2
+          speed: 0.02
+          interval: 3
+          floor_offset: [0, 0.5, 0]
+          wall_offsets: { NORTH: [0, 0.5, -0.2], SOUTH: [0, 0.5, 0.2], EAST: [0.2, 0.5, 0], WEST: [-0.2, 0.5, 0] }
       idle_w:       { texture: "@jet_off_wall" }
       running_w:
         texture: "@jet_on_wall"
-        particles: { type: flame, count: 2, offset: [0.1, 0.25, 0.25], speed: 0.02 }
+        particles:
+          type: flame
+          count: 2
+          speed: 0.02
+          interval: 3
+          floor_offset: [0, 0.5, 0]
+          wall_offsets: { NORTH: [0, 0.5, -0.2], SOUTH: [0, 0.5, 0.2], EAST: [0.2, 0.5, 0], WEST: [-0.2, 0.5, 0] }
 
   # ─── Reaction Wheel ──────────────────────────────────────────────────────
   # A gyroscope. Structurally a chain pulley: a hub skull with one big spinning disc on top, floor
