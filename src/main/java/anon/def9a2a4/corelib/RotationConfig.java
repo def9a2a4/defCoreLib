@@ -22,6 +22,7 @@ final class RotationConfig {
     static final int DEFAULT_GLUE_MAX_SIZE = 1024;
     int glueMaxSize = DEFAULT_GLUE_MAX_SIZE;
     int glueOutlineInterval = 5;
+    int glueOutlineRange = 10;   // blocks from the player within which an anchor's declared body (hull) is outlined
     int glueSessionTimeout = 2400;
     int drillTickInterval = 4;
     int drillBreakStages = 10;
@@ -141,6 +142,7 @@ final class RotationConfig {
         if (glue != null) {
             glueMaxSize = glue.getInt("max-size", DEFAULT_GLUE_MAX_SIZE);
             glueOutlineInterval = glue.getInt("outline-interval", glueOutlineInterval);
+            glueOutlineRange = glue.getInt("outline-range", glueOutlineRange);
             glueSessionTimeout = glue.getInt("session-timeout", glueSessionTimeout);
             loaded++;
         }

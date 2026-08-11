@@ -46,6 +46,7 @@ final class GlueAuthoring implements Listener {
     private final CustomBlockRegistry registry;
     private final GlueManager glue;
     private final int outlineInterval;
+    private final int outlineRange;
     private final int sessionTimeout;
 
     private final Map<UUID, GlueSession> sessions = new HashMap<>();
@@ -55,11 +56,12 @@ final class GlueAuthoring implements Listener {
     private MechanismMinecartManager minecartManager;
 
     GlueAuthoring(JavaPlugin plugin, CustomBlockRegistry registry, GlueManager glue,
-                  int outlineInterval, int sessionTimeout) {
+                  int outlineInterval, int outlineRange, int sessionTimeout) {
         this.plugin = plugin;
         this.registry = registry;
         this.glue = glue;
         this.outlineInterval = Math.max(1, outlineInterval);
+        this.outlineRange = Math.max(0, outlineRange);
         this.sessionTimeout = sessionTimeout;
     }
 
@@ -500,6 +502,25 @@ final class GlueAuthoring implements Listener {
             int bx = ox + off.x, by = oy + off.y, bz = oz + off.z;
             if (!w.isChunkLoaded(bx >> 4, bz >> 4)) continue;
             spawnCorners(p, bx, by, bz, green, ox, oy, oz, seen);
+        }
+
+        // An anchor's declared body (e.g. a ship hull) that isn't glue itself: outline it in a distinct sky-blue
+        // so the player sees the whole structure they're editing, not just the glued cells. Bounded to
+        // outlineRange blocks from the player so a large hull doesn't blanket the world (proximity limits the
+        // particle sends; the connector set is still enumerated). Skips cells already drawn green.
+        Set<Vector3i> connectors = s.anchor.extraConnectors();
+        if (!connectors.isEmpty() && outlineRange > 0) {
+            var hull = new Particle.DustOptions(Color.fromRGB(90, 180, 255), 0.8f);
+            double px = p.getLocation().getX(), py = p.getLocation().getY(), pz = p.getLocation().getZ();
+            long rangeSq = (long) outlineRange * outlineRange;
+            for (Vector3i off : connectors) {
+                if (outlined.contains(off)) continue;
+                int bx = ox + off.x, by = oy + off.y, bz = oz + off.z;
+                if (!w.isChunkLoaded(bx >> 4, bz >> 4)) continue;
+                double dx = (bx + 0.5) - px, dy = (by + 0.5) - py, dz = (bz + 0.5) - pz;
+                if (dx * dx + dy * dy + dz * dz > rangeSq) continue;
+                spawnCorners(p, bx, by, bz, hull, ox, oy, oz, seen);
+            }
         }
 
         // Orange dust around the hinge (anchor) block.

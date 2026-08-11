@@ -182,7 +182,7 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         // bound its sticky-closure walk by the SAME cap authoring used, else it over-prunes.
         mechanismRegistry.setGlueMaxSize(rotConfig.glueMaxSize);
         glueAuthoring = new GlueAuthoring(this, registry, glueManager,
-            rotConfig.glueOutlineInterval, rotConfig.glueSessionTimeout);
+            rotConfig.glueOutlineInterval, rotConfig.glueOutlineRange, rotConfig.glueSessionTimeout);
         getServer().getPluginManager().registerEvents(glueAuthoring, this);
         glueAuthoring.start();
 
