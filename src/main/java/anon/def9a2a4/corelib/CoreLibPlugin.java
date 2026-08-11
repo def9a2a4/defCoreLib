@@ -504,6 +504,18 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
     // Chunk lifecycle — single scan
     // ──────────────────────────────────────────────────────────────────────
 
+    /**
+     * Re-attempt recipes withheld by {@code requires_plugin} when any plugin enables.
+     *
+     * <p>Server load order otherwise decides silently whether a gated recipe exists: core's startup
+     * pass runs once, and a plugin that enables after it would never be noticed. No-op once nothing
+     * is withheld.
+     */
+    @EventHandler
+    public void onPluginEnable(org.bukkit.event.server.PluginEnableEvent event) {
+        if (registry != null) registry.retryWithheldRecipes();
+    }
+
     @EventHandler
     public void onChunkLoad(ChunkLoadEvent event) {
         registry.onChunkLoad(event.getChunk());

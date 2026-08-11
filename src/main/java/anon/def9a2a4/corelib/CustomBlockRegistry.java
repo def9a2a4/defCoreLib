@@ -2370,6 +2370,9 @@ public class CustomBlockRegistry {
     private final Set<String> enabledRecipeNamespaces = new HashSet<>();
     // Per-type guard so an enable can't double-register a type's recipes (idempotency).
     private final Set<String> recipeRegisteredTypes = new HashSet<>();
+    // Types whose recipes are withheld by requires_plugin — tracked only so the startup log line is
+    // emitted once per type rather than on every retry.
+    private final Set<String> withheldForPlugin = new HashSet<>();
 
     // Windmill large/huge tier swap — only active when the bbanners plugin is present (set by mech).
     // Without it, a large/huge banner (from /give/creative) must NOT produce a tier windmill.
@@ -2409,6 +2412,30 @@ public class CustomBlockRegistry {
         // without this the client never learns the just-added recipes and they stay absent from the
         // recipe book (hand-crafting still works). No-op at startup — no players are online yet.
         if (!Bukkit.getOnlinePlayers().isEmpty()) {
+            Bukkit.updateRecipes();
+            for (org.bukkit.entity.Player p : Bukkit.getOnlinePlayers()) syncRecipeDiscovery(p);
+        }
+    }
+
+    /**
+     * Re-attempt any recipes withheld by {@code requires_plugin}, now that some plugin has enabled.
+     *
+     * <p>Without this, whether a gated recipe exists would depend on server load order: if the
+     * required plugin enables after core, the startup pass sees it absent and nothing ever revisits
+     * the decision. Cheap — types whose recipes already registered short-circuit on the idempotency
+     * guard, and it only runs while something is still withheld.
+     */
+    void retryWithheldRecipes() {
+        if (withheldForPlugin.isEmpty() || !finalized) return;
+        boolean any = false;
+        for (String id : new HashSet<>(withheldForPlugin)) {
+            CustomHeadBlock type = types.get(id);
+            if (type == null || recipesPluginMissing(type)) continue;
+            withheldForPlugin.remove(id);
+            registerRecipesForType(type);
+            any = true;
+        }
+        if (any && !Bukkit.getOnlinePlayers().isEmpty()) {
             Bukkit.updateRecipes();
             for (org.bukkit.entity.Player p : Bukkit.getOnlinePlayers()) syncRecipeDiscovery(p);
         }
