@@ -130,6 +130,10 @@ final class RotationBlocks {
         overlayRatchet(registry, network);
         overlayWaterWheel(registry, network, config);
         overlayEngine(registry, network, fuelManager, config);
+        // Ship propulsion. These work as ordinary machines on land; BlockShips reads their live
+        // powered state to drive a ship. No recipes yet — see the header in rotation-blocks.yml.
+        overlayPropulsionConsumers(registry, network, config);
+        overlayThruster(registry, fuelManager);
         overlayMillstone(registry, network, millRecipes, config);
         overlayPress(registry, network, pressRecipes, config);
         overlaySieve(registry, network, sieveRecipes, config);
@@ -675,6 +679,119 @@ final class RotationBlocks {
             // Landing counterpart: re-read the fuel the mechanism's restoreConfigPdc just wrote back.
             .onRestore(b -> fuelManager.readFromPDC(b))
             .build());
+    }
+
+    // ──────────────────────────────────────────────────────────────────────
+    // Ship propulsion: propellers, thruster, reaction wheel
+    // ──────────────────────────────────────────────────────────────────────
+
+    /**
+     * Propellers and the reaction wheel: rotation consumers that do no world work.
+     *
+     * <p>They exist to be READ, not to act — BlockShips looks at whether each one is powered and
+     * turns that into thrust. On land they draw their power and spin, which is the whole of their
+     * static-world behaviour, so the tick is deliberately empty and slow. Registering them as real
+     * consumers is still what makes them cost power, jam a starved network, and show
+     * {@code spinning_}/{@code idle_} correctly both on land and aboard a mechanism.
+     */
+    private static void overlayPropulsionConsumers(CustomBlockRegistry registry, RotationNetwork network,
+                                                   RotationConfig config) {
+        // Axis from the stored facing, exactly like the fan — a floor propeller spins about Y, a wall
+        // one about the axis its blades face along.
+        record Tier(String id, int defaultPower) {}
+        for (Tier t : new Tier[]{
+                new Tier("propeller", 3),
+                new Tier("large_propeller", 8),
+                new Tier("huge_propeller", 20)}) {
+            overlayConsumerMachine(registry, network, new ConsumerSpec(
+                "mech:" + t.id(),
+                b -> fanAxis(readFacing(b)),
+                config.getPower(t.id(), t.defaultPower()),
+                100,               // slow: there is no per-tick work to do
+                b -> { },          // no world effect by design
+                null, null, null));
+        }
+
+        // The reaction wheel is driven from a shaft below, so its axis is always Y.
+        overlayConsumerMachine(registry, network, new ConsumerSpec(
+            "mech:reaction_wheel",
+            b -> RotationNetwork.Axis.Y,
+            config.getPower("reaction_wheel", 4),
+            100,
+            b -> { },
+            null, null, null));
+    }
+
+    /**
+     * The thruster: burns fuel, produces thrust, supplies no rotational power.
+     *
+     * <p>Aboard a mechanism it rides as {@code kind: engine} with power 0 — the engine tick already
+     * burns fuel from the travelling inventory and swaps {@code running_}/{@code idle_}, which is
+     * also exactly the powered/unpowered skin swap, and a 0-power engine contributes nothing to the
+     * network. That is why it is an engine rather than a new kind.
+     *
+     * <p>On land it does the same thing minus the network: burns fuel, shows its flame. It is never
+     * added as a rotation node in the static world, because it neither produces nor consumes
+     * rotational power — a thruster next to a shaft should do nothing to it.
+     */
+    private static void overlayThruster(CustomBlockRegistry registry, EngineFuelManager fuelManager) {
+        String blockId = "mech:thruster";
+        CustomHeadBlock block = registry.getType(blockId);
+        if (block == null) { warn(registry, blockId); return; }
+        registry.overlayType(block.toBuilder()
+            .drillable(false)
+            // The down-nozzle states are a FLOATING PLAYER_HEAD, not a wall head. Both floor and
+            // ceiling mounts land on them, and a ceiling mount would otherwise try to build a
+            // PLAYER_WALL_HEAD facing straight down — which Bukkit rejects, since a wall head only
+            // takes the four horizontal faces.
+            .playerHeadStates("idle_down", "running_down")
+            .tickInterval(20)
+            .onTick(b -> {
+                var key = CustomBlockRegistry.LocationKey.of(b);
+                String state = registry.getState(b);
+                if (state == null) return;
+                if (state.startsWith("idle_")) {
+                    if (fuelManager.getFuel(key) <= 0) {
+                        Inventory storage = registry.getOrCreateStorage(b);
+                        if (storage == null) return;
+                        int fv = consumeOneFuelItem(storage, fuelManager);
+                        if (fv <= 0) return;
+                        fuelManager.addFuel(key, fv);
+                    }
+                    setThrusterState(registry, b, state, "running_");
+                    return;
+                }
+                if (!state.startsWith("running_")) return;
+                if (fuelManager.tick(key) > 0) return;
+                // Counter hit zero: pull the next item in the SAME tick so a fuelled thruster doesn't
+                // flicker off at every item boundary (mirrors the engine).
+                Inventory storage = registry.getOrCreateStorage(b);
+                if (storage != null) {
+                    int fv = consumeOneFuelItem(storage, fuelManager);
+                    if (fv > 0) { fuelManager.addFuel(key, fv); return; }
+                }
+                setThrusterState(registry, b, state, "idle_");
+            })
+            .onChunkLoad((b, state) -> fuelManager.readFromPDC(b))
+            .onChunkUnload(b -> {
+                fuelManager.writeToPDC(b);
+                fuelManager.remove(CustomBlockRegistry.LocationKey.of(b));
+            })
+            .onBlockRemoved((b, state) -> fuelManager.remove(CustomBlockRegistry.LocationKey.of(b)))
+            // Flush the in-memory counter into the skull PDC before a mechanism airs this block out,
+            // and re-read it after landing — otherwise a voyage silently resets the burn.
+            .onCapture(b -> fuelManager.writeToPDC(b))
+            .onRestore(b -> fuelManager.readFromPDC(b))
+            .build());
+    }
+
+    /** Swap a thruster between its idle_/running_ pair, keeping the orientation suffix. */
+    private static void setThrusterState(CustomBlockRegistry registry, Block b, String state, String prefix) {
+        String target = prefix + state.substring(state.indexOf('_') + 1);
+        CustomHeadBlock type = registry.getTypeFromBlock(b);
+        if (type == null || !type.states().containsKey(target)) return;
+        registry.setState(b, target);
+        registry.applyConfig(b, type, target, 0);
     }
 
     // ──────────────────────────────────────────────────────────────────────

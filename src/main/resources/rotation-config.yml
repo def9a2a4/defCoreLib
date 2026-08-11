@@ -111,6 +111,12 @@ power:
   mechanical_dispenser: 1   # light constant demand — any powered network (supply >= 1) activates the launcher
   piston_core: 1   # base rotational demand of a mechanical piston core (speed scales with surplus above this)
   chain_hoist: 1   # base rotational demand of a chain hoist (lift speed scales with surplus above this)
+  # Ship propulsion. The propellers are consumers: they draw this and produce no power. The thruster
+  # has no entry — it burns fuel and never touches the rotation network.
+  propeller: 3
+  large_propeller: 8
+  huge_propeller: 20
+  reaction_wheel: 4
 
 # How each rotation block behaves while assembled into a moving mechanism (minecart, door,
 # drawbridge). Its supply/demand comes from the `power:` map above — not repeated here.
@@ -168,4 +174,12 @@ mechanism:
   sieve:           { kind: consumer, axis: y }
   placer:          { kind: consumer, axis: y }
   fan:             { kind: consumer, axis: facing, blows_outward: true }
+  # Ship propulsion. Propellers act away from their mount like a fan, so a floor one pushes upward.
+  # The thruster rides as a ZERO-POWER engine: that gives it fuel burning and the running_/idle_ skin
+  # swap for free, while supplying nothing to the network — which is exactly what it should do.
+  propeller:       { kind: consumer, axis: facing, blows_outward: true }
+  large_propeller: { kind: consumer, axis: facing, blows_outward: true }
+  huge_propeller:  { kind: consumer, axis: facing, blows_outward: true }
+  reaction_wheel:  { kind: consumer, axis: y }
+  thruster:        { kind: engine }
   suction_hopper:  { kind: consumer, axis: omni }

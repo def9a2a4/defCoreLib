@@ -166,6 +166,15 @@ Cross-mover capture (A's slime grabbing B's hardware) is accepted and documented
 `MoverExclusion`'s javadoc.
 
 ### Block E — BlockShips integration (`blockships-integration.md`; depends on A, ideally B)
+
+> **⚠️ Mostly DONE as of 2026-08-11 — the unchecked boxes below are stale.** BlockShips delegates
+> assembly to `MechanismRegistry`, shares its UUID with the mechanism, and recovers through
+> `MechanismAssembleEvent`. Rotation power runs aboard ships (see the note at the top of
+> `blockships-integration.md`). Since then also landed: a public glue API with an
+> `ExternalAnchor` provider hook, so ship wheels are glue anchors and players can attach blocks the
+> ship's allow-list forbids; a live rotation-state API on `Mechanism`; and the propeller/thruster/
+> reaction-wheel blocks. Re-audit against source before trusting any individual checkbox here.
+
 *Reviewed against the real BlockShips source (`ship/ShipInstance.java`, `DisplayShip.java`,
 `ShipPersistence`/`ShipWorldData`, `ShipModel`) — corrections below supersede the plan where they differ.*
 

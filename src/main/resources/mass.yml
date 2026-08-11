@@ -218,5 +218,13 @@ calcite: 3
 dripstone_block: 3
 end_stone: 3
 
-# custom-blocks:            # per-custom-type inertial mass (Phase 6 hook; empty for now)
-#   ship_engine: 5
+# Per-custom-type inertial mass, keyed by full block id. Anything not listed falls back to the
+# material's own mass (a custom head block is a PLAYER_HEAD, so ~1) — fine for decoration, but real
+# machinery should weigh what it looks like.
+custom-blocks:
+  # Ship propulsion — heavy relative to hull planks, so hanging thrust off a ship costs something.
+  mech:propeller: 3
+  mech:large_propeller: 6
+  mech:huge_propeller: 10
+  mech:thruster: 6
+  mech:reaction_wheel: 4

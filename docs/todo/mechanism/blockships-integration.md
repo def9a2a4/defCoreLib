@@ -1,5 +1,23 @@
 # BlockShips Integration Plan
 
+> ## ⚠️ LARGELY SUPERSEDED — read this first (2026-08-11)
+>
+> The delegation this document plans has **shipped**. BlockShips assembles through
+> `MechanismRegistry.assembleMechanism`, ship UUID *is* mechanism UUID, and recovery runs through
+> `MechanismAssembleEvent`. Two claims below are now actively misleading:
+>
+> - **"currently unstarted (no dependency either direction)"** — false. BlockShips has a hard
+>   `depend: [DefCoreLib]` and compiles against it.
+> - **"machines ride frozen on mechanisms"** — false. `MechanismRegistry.tickMechanisms` drives
+>   `MechanismRotationDriver` for *every* active mechanism with no type filter, so an onboard rotation
+>   network runs on a ship exactly as it does on a minecart: engines burn fuel, consumers actuate,
+>   `idle_`/`spinning_` states flip. Ship propulsion is built on precisely this.
+>
+> What is still live from this document: the per-block provider work (Phase 1), persistence details
+> (Phase 2), and the health/seat notes (Phase 3), all of which describe shipped behaviour rather than
+> planned work. Treat the whole file as historical context, not as a plan. Ship propulsion — propellers,
+> thrusters, reaction wheels, glue on ships, the locked block set — is tracked separately.
+
 > **Verified against current source 2026-07-01.** All major claims confirmed (serializer never called;
 > demo consumers pass `null`; custom-block storage captured but not restored — Known Issue #7; colliders
 > repositioned without `Math.round`; BlockShips health/seats/recovery patterns as described). Two content
