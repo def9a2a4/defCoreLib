@@ -200,11 +200,13 @@ final class MechanismRotationDriver {
                     : null;
 
             // True local aim: the machine's actual mine/place/blow direction, resolving a floating head's
-            // up/down from its state (where localFacing above flattens it to DOWN). A fan blows OUTWARD
-            // from its mount, so a floor fan (storedFacing DOWN) blows UP — mirrors RotationBlocks
-            // .blowDirection. Drill/placer use the stored aim as-is; other kinds don't read this.
+            // up/down from its state (where localFacing above flattens it to DOWN). A blows-outward
+            // machine acts AWAY from its mount, so a floor one (storedFacing DOWN) aims UP — mirrors
+            // RotationBlocks.blowDirection. Drill/placer use the stored aim as-is; other kinds don't
+            // read this. Driven by the meta flag rather than a typeId string test, so propellers and
+            // thrusters get the same rule without another special case here.
             BlockFace storedAim = RotationBlocks.storedFacing(mb.blockData, mb.customState());
-            BlockFace actuationFacing = "mech:fan".equals(mb.customTypeId) && storedAim == BlockFace.DOWN
+            BlockFace actuationFacing = meta.blowsOutward() && storedAim == BlockFace.DOWN
                 ? BlockFace.UP : storedAim;
 
             specs.add(new NodeSpec(i, mb.customTypeId, meta, cx, cy, cz, axis, omni, omniExcluded,
@@ -280,7 +282,13 @@ final class MechanismRotationDriver {
      *  particle highlight). Formatted + emitted by the caller via {@link RotationBlocks#formatRotationDebug}. */
     record RotationDebug(@Nullable String state, int supply, int demand, int blockCount, boolean jammed,
                          boolean powered, RotationNetwork.@Nullable SpinDirection dir,
-                         int cwSources, int ccwSources, List<Vector3i> memberCells) {}
+                         int cwSources, int ccwSources, List<Vector3i> memberCells,
+                         // Added for the public Mechanism rotation API. `surplus` is the solver's own
+                         // per-node headroom — note it is a COMPONENT property, identical for every
+                         // member, not something specific to this block. `actuationFacing` is the
+                         // node's TRUE mechanism-local aim (what a fan blows along), which is not
+                         // derivable from the state name by an outside caller.
+                         int surplus, @Nullable BlockFace actuationFacing) {}
 
     /** Debug snapshot for the block at {@code blockIndex} on an assembled mechanism, or null when the
      *  mechanism isn't driven / the block isn't a rotation node. Reads the last solve — no re-solve. */
@@ -302,7 +310,8 @@ final class MechanismRotationDriver {
         }
         return new RotationDebug(mech.getBlock(blockIndex).customState(),
             agg[0], agg[1], agg[4], result.jammed()[k], result.powered()[k], result.direction()[k],
-            agg[2], agg[3], memberCells);
+            agg[2], agg[3], memberCells,
+            result.surplus()[k], st.specs.get(k).actuationFacing());
     }
 
     // ──────────────────────────────────────────────────────────────────────
@@ -357,8 +366,11 @@ final class MechanismRotationDriver {
                 default -> false;
             };
             int demand = s.meta().kind() == RotationConfig.MechKind.CONSUMER ? s.power() : 0;
+            // scaledSupply applies the mechanism-only supply multiplier (windmills are worth half
+            // aboard). Deliberately NOT applied to `demand` above — the same power: number feeds both,
+            // and scaling it raw would make consumers cheaper aboard too.
             nodes.add(new RotationSolver.Node(s.cellX(), s.cellY(), s.cellZ(), s.axis(),
-                supplies ? s.power() : 0, demand, s.meta().gearLike(), s.meta().gearbox(),
+                supplies ? s.meta().scaledSupply(s.power()) : 0, demand, s.meta().gearLike(), s.meta().gearbox(),
                 s.omni(), s.omniExcludedFace(),
                 supplies ? s.dirPref() : null));
         }
@@ -379,7 +391,7 @@ final class MechanismRotationDriver {
                 default -> false;
             };
             int[] agg = st.debugByComponent.computeIfAbsent(result.component()[k], c -> new int[5]);
-            if (supplies) agg[0] += s.power();
+            if (supplies) agg[0] += s.meta().scaledSupply(s.power());   // match the solve, not raw power
             if (s.meta().kind() == RotationConfig.MechKind.CONSUMER) agg[1] += s.power();
             if (supplies) {
                 if (result.direction()[k] == RotationNetwork.SpinDirection.CCW) agg[3]++;
@@ -414,6 +426,13 @@ final class MechanismRotationDriver {
                     mech.setBlockState(s.blockIndex(), desired);
                 }
             }
+        }
+
+        // Tell consumers that what is powered aboard this mechanism may have changed, so they can
+        // invalidate anything they cached from it (a ship's live thrust totals). Fired after the state
+        // swaps above so a listener reading customState() sees the post-solve values.
+        if (MechanismRotationSolvedEvent.hasListeners()) {
+            org.bukkit.Bukkit.getPluginManager().callEvent(new MechanismRotationSolvedEvent(mech));
         }
     }
 

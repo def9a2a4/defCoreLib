@@ -217,6 +217,33 @@ final class BasicMechanism implements Mechanism {
         return totalMassCache;
     }
 
+    // ── Live rotation state (public API; see Mechanism) ──────────────────────
+    // All three read the driver's cached last solve — no re-solve, no allocation beyond the debug
+    // record. Null-safe for an undriven mechanism or a block that isn't a rotation node.
+
+    private MechanismRotationDriver.@Nullable RotationDebug rotationInfo(int blockIndex) {
+        if (mechanismRegistry == null || blockIndex < 0 || blockIndex >= blocks.size()) return null;
+        return mechanismRegistry.rotationDebug(this, blockIndex);
+    }
+
+    @Override
+    public boolean isRotationPowered(int blockIndex) {
+        MechanismRotationDriver.RotationDebug d = rotationInfo(blockIndex);
+        return d != null && d.powered();
+    }
+
+    @Override
+    public int rotationSurplus(int blockIndex) {
+        MechanismRotationDriver.RotationDebug d = rotationInfo(blockIndex);
+        return d == null ? -1 : d.surplus();
+    }
+
+    @Override
+    public @Nullable BlockFace rotationFacing(int blockIndex) {
+        MechanismRotationDriver.RotationDebug d = rotationInfo(blockIndex);
+        return d == null ? null : d.actuationFacing();
+    }
+
     @Override
     public double blockMass(int blockIndex) {
         return mechanismRegistry == null ? 1.0 : mechanismRegistry.massOf(blocks.get(blockIndex));

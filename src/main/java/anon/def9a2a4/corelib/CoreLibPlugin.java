@@ -46,6 +46,7 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
     private CartRailsManager cartRailsManager;
     private GlueManager glueManager;
     private GlueAuthoring glueAuthoring;
+    private RotationConfig rotationConfig;
     private ShowcaseBuilder showcaseBuilder;
     private java.util.Map<String, ShowcaseSpec> showcases = java.util.Map.of();
     private RotationNetwork rotationNetwork;
@@ -129,7 +130,10 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
                 BlockLoader.load(corelibItemStream, registry, getLogger());
             }
         } catch (IOException ignored) {}
+        // Kept as a field too: the public rotationFacingAt(Block) API needs the mechanism metadata
+        // (specifically blows_outward) to answer for a world block.
         RotationConfig rotConfig = new RotationConfig();
+        this.rotationConfig = rotConfig;
         try (InputStream configStream = getResource("rotation-config.yml")) {
             if (configStream != null) {
                 rotConfig.load(configStream, getLogger());
@@ -448,6 +452,32 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
     /** The cap on a single glued selection ({@code glue.max-size}), so callers can report it. */
     public int glueMaxSize() {
         return glueManager != null ? glueManager.maxSize() : 0;
+    }
+
+    /**
+     * The direction a rotation machine acts along, for a block sitting in the WORLD (not riding a
+     * mechanism) — the static-world sibling of {@link Mechanism#rotationFacing(int)}.
+     *
+     * <p>Needed because the same consumer usually has to describe a machine both while it is riding
+     * and while it is parked: a ship shows its propulsion stats from the wheel menu while docked, when
+     * there is no mechanism to ask.
+     *
+     * <p>Derived from the block's own data + custom state, so it is correct the instant the block is
+     * placed — unlike the engine's internal facing PDC key, which is written lazily and may not exist
+     * yet.
+     *
+     * @return the world-space facing, or null when the block is not a custom rotation block
+     */
+    public @Nullable BlockFace rotationFacingAt(Block block) {
+        if (registry == null) return null;
+        CustomHeadBlock type = registry.getTypeFromBlock(block);
+        if (type == null) return null;
+        BlockFace stored = RotationBlocks.storedFacing(block.getBlockData(), registry.getState(block));
+        RotationConfig.MechRotationMeta meta =
+            rotationConfig == null ? null : rotationConfig.mechMeta(type.fullId());
+        // Same outward flip the mechanism path applies: a floor-mounted fan/propeller acts UPWARD.
+        if (meta != null && meta.blowsOutward() && stored == BlockFace.DOWN) return BlockFace.UP;
+        return stored;
     }
 
     // ──────────────────────────────────────────────────────────────────────

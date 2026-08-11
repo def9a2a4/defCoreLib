@@ -88,7 +88,32 @@ final class RotationConfig {
         /** Omni consumer: draws from the first aligned neighbor on any non-mounted face (suction hopper). */ OMNI
     }
 
-    record MechRotationMeta(MechKind kind, boolean gearLike, boolean gearbox, MechAxisRule axisRule) {}
+    /**
+     * @param blowsOutward    the machine acts AWAY from its mount, so a floor-mounted one aims UP
+     *                        (a fan blows upward off the floor). Replaces what used to be a hardcoded
+     *                        {@code "mech:fan"} string test in the driver, so propellers and thrusters
+     *                        can share the rule.
+     * @param mechPowerScale  multiplier applied to this block's SUPPLY while riding a mechanism, and
+     *                        only to supply — the same {@code power:} value also feeds demand, so
+     *                        scaling the raw number would quietly make consumers cheaper too. Lets a
+     *                        windmill be worth less aboard a ship than bolted to the ground.
+     */
+    record MechRotationMeta(MechKind kind, boolean gearLike, boolean gearbox, MechAxisRule axisRule,
+                            boolean blowsOutward, double mechPowerScale) {
+
+        /** Defaults: acts along its mount, full power aboard. */
+        MechRotationMeta(MechKind kind, boolean gearLike, boolean gearbox, MechAxisRule axisRule) {
+            this(kind, gearLike, gearbox, axisRule, false, 1.0);
+        }
+
+        /** This block's supply while riding, from its configured power. */
+        int scaledSupply(int power) {
+            if (mechPowerScale >= 1.0) return power;
+            // Ceil so a tier-1 windmill (power 1) at 0.5 still supplies 1 rather than silently
+            // becoming dead weight aboard.
+            return power <= 0 ? power : (int) Math.ceil(power * mechPowerScale);
+        }
+    }
 
     /** Mechanism-mode metadata for a full block id ({@code mech:shaft}), or null when the block
      *  takes no part in a mechanism's rotation network. Keyed by short name, like {@code power:}. */
@@ -294,7 +319,10 @@ final class RotationConfig {
                 }
                 boolean gearLike = entry != null && entry.getBoolean("gear_like", false);
                 boolean gearbox = entry != null && entry.getBoolean("gearbox", false);
-                mechMetaValues.put(key, new MechRotationMeta(kind, gearLike, gearbox, axis));
+                boolean blowsOutward = entry != null && entry.getBoolean("blows_outward", false);
+                double powerScale = entry != null ? entry.getDouble("mech_power_scale", 1.0) : 1.0;
+                mechMetaValues.put(key,
+                    new MechRotationMeta(kind, gearLike, gearbox, axis, blowsOutward, powerScale));
             }
             loaded++;
         }
@@ -360,16 +388,24 @@ final class RotationConfig {
         mechMetaValues.put("engine", new MechRotationMeta(MechKind.ENGINE, false, false, MechAxisRule.FROM_STATE));
         var src = new MechRotationMeta(MechKind.CONSTANT_SOURCE, false, false, MechAxisRule.FROM_STATE);
         mechMetaValues.put("redstone_motor", src);
-        mechMetaValues.put("windmill", src);
-        mechMetaValues.put("large_windmill", src);
-        mechMetaValues.put("huge_windmill", src);
+        // Windmills supply HALF aboard a mechanism. They are constant sources with no fuel and no wind
+        // check, so at full strength a wall of them makes a flying ship free to run forever and the
+        // fuel-burning thruster pointless. Halved (ceil, so tier 1 still supplies 1) they remain
+        // worth carrying without dominating.
+        var windSrc = new MechRotationMeta(MechKind.CONSTANT_SOURCE, false, false, MechAxisRule.FROM_STATE,
+            false, 0.5);
+        mechMetaValues.put("windmill", windSrc);
+        mechMetaValues.put("large_windmill", windSrc);
+        mechMetaValues.put("huge_windmill", windSrc);
         var consumer = new MechRotationMeta(MechKind.CONSUMER, false, false, MechAxisRule.FROM_STATE);
         var consumerY = new MechRotationMeta(MechKind.CONSUMER, false, false, MechAxisRule.FIXED_Y);
         mechMetaValues.put("drill", consumer);
         mechMetaValues.put("millstone", consumerY);
         mechMetaValues.put("press", consumerY);
         mechMetaValues.put("placer", consumerY);
-        mechMetaValues.put("fan", new MechRotationMeta(MechKind.CONSUMER, false, false, MechAxisRule.FROM_FACING));
+        // blows_outward: a fan acts away from whatever it is mounted on, so a floor fan aims UP.
+        mechMetaValues.put("fan", new MechRotationMeta(MechKind.CONSUMER, false, false,
+            MechAxisRule.FROM_FACING, true, 1.0));
         mechMetaValues.put("suction_hopper", new MechRotationMeta(MechKind.CONSUMER, false, false, MechAxisRule.OMNI));
     }
 }

@@ -2,6 +2,7 @@ package anon.def9a2a4.corelib;
 
 import org.bukkit.Location;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Display;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Shulker;
@@ -197,6 +198,43 @@ public interface Mechanism {
 
     /** Inertial mass of a single block index (see {@link #totalMass()}). */
     double blockMass(int blockIndex);
+
+    // ──────────────────────────────────────────────────────────────────────
+    // Live rotation state
+    //
+    // An assembled mechanism carries its own rotation network over mechanism-local cells (assembly
+    // airs the real blocks out, so the world-keyed network can't see them). These expose the last
+    // solve so a consumer can react to a machine losing power mid-move — a ship reading whether its
+    // propellers are actually turning, say.
+    //
+    // The solve is refreshed only when a source flips (an engine starting or running dry); topology
+    // is frozen while assembled and world redstone can't reach a riding block. So these are cheap
+    // reads of a cached result, and {@link MechanismRotationSolvedEvent} tells you when it changed.
+    // ──────────────────────────────────────────────────────────────────────
+
+    /** Whether the block at this index is a powered rotation node. False for non-nodes. */
+    @ApiStatus.Experimental
+    boolean isRotationPowered(int blockIndex);
+
+    /**
+     * Spare power on this block's network, or {@code -1} when the block is not a rotation node.
+     *
+     * <p>This is a property of the whole component, identical for every member — machines scale their
+     * work rate by it. It is not a per-block quantity despite the per-block lookup.
+     */
+    @ApiStatus.Experimental
+    int rotationSurplus(int blockIndex);
+
+    /**
+     * The node's MECHANISM-LOCAL aim — the direction a fan blows, a drill mines, a propeller pushes —
+     * or {@code null} when the block is not a rotation node or has no meaningful aim (a shaft, a gear).
+     *
+     * <p>Rotate it into the world with the mechanism's current transform if you need a world facing.
+     * Do not try to derive this from {@code customState()}: the state-name convention ({@code idle_y},
+     * {@code spinning_wall_n}) is engine-internal and does not map to aim for every block type.
+     */
+    @ApiStatus.Experimental
+    @Nullable BlockFace rotationFacing(int blockIndex);
 
     // ── Seats (4a) ────────────────────────────────────────────────────────────
     // A "seat" is a collider block a player rides (its shulker is the mount point). The consumer decides
