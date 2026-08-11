@@ -732,12 +732,13 @@ public class MechanismRegistry {
             // keeps and reorients its glued region on landing. Read from the live skull PDC BEFORE
             // air-out; null for non-anchor blocks.
             //
-            // Gated on the block being a SKULL, not on it being a registered custom block: a foreign
-            // plugin's anchor (an ExternalAnchor — a BlockShips ship wheel is a plain PLAYER_HEAD with
-            // no registry identity) stores its offsets in exactly the same skull PDC and must ride the
-            // same way. readOffsets() returns null when the key is absent, so every other skull in the
-            // world costs one already-fetched BlockState and nothing else. The material pre-check keeps
-            // a 1000-block ship from paying a second getState() per block for its handful of skulls.
+            // Gated on the block being a SKULL, not solely on it being a registered custom block: an
+            // ExternalAnchor (a foreign plugin's anchor, registered via
+            // CoreLibPlugin.registerAnchorProvider) stores its offsets in exactly the same skull PDC
+            // and must ride the same way, whether or not that plugin also registered a block type.
+            // readOffsets() returns null when the key is absent, so every other skull in the world
+            // costs one already-fetched BlockState and nothing else; the material pre-check keeps a
+            // 1000-block structure from paying a second getState() per block for its handful of skulls.
             Material mt = block.getType();
             if (chb != null || mt == Material.PLAYER_HEAD || mt == Material.PLAYER_WALL_HEAD) {
                 mbd.glueOffsets = new BlockAnchor(block, () -> true).readOffsets();
