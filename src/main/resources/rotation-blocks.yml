@@ -3117,9 +3117,10 @@ blocks:
   # start/stop the spin by swapping the prefix while keeping orientation.
   fan:
     cancel_pistons: true
+    categories: [blockships]
     name: "&fFan"
     lore:
-      - "&7Consumes rotation power to blow entities"
+      - "&7Consumes 10 Power to blow entities"
       - "&7Pushes mobs, players & items away from its mount"
       - "&7Stronger with more surplus power; fixed range"
     catalog_notes:
@@ -3486,16 +3487,13 @@ blocks:
 # spin, they draw power, they burn fuel — but their reason to exist is BlockShips, which reads their
 # live powered state to decide how fast a ship goes, how quickly it turns, and whether it flies.
 #
-# NO RECIPES YET, deliberately. These land first as working, tunable hardware; crafting turns on
-# once ship propulsion ships, so their power/thrust numbers can still be rebalanced without players
-# having already built around them. Obtain with `/defcorelib give <id>` meanwhile.
-#
-# When recipes are added, the intended shape is a windmill of the matching tier in the centre, four
-# iron in the corners and four redstone on the edges:  ["IRI", "RWR", "IRI"].  Two things have to be
-# solved first: a `block:` ingredient compiles to an exact-item match, and every CRAFTED windmill
-# carries blade-pattern PDC, so the recipe would never match one a player actually made; and the
-# blade patterns need lifting onto the propeller's own blades, or crafting would silently discard
-# the banner design that is the whole point of the windmill's customisation.
+# Propellers are crafted from a windmill run in reverse: a matching-tier windmill in the centre, four
+# iron in the corners and four redstone on the edges — ["IRI", "RWR", "IRI"]. The windmill's tier picks
+# the propeller tier and its blade patterns carry over, so a customised windmill yields a customised
+# propeller. This works via the `block_type:` ingredient (a tolerant PLAYER_HEAD match, since a crafted
+# windmill's per-instance blade PDC defeats a strict `block:` ExactChoice); the tier-swap + blade copy
+# happens in CoreLibPlugin#capturePropulsionResult. The thruster is built from a fan (same tolerant match).
+# The reaction wheel is still give-only (`/defcorelib give mech:reaction_wheel`).
 # ═══════════════════════════════════════════════════════════════════════════════════════════════
 
   # ─── Propeller ───────────────────────────────────────────────────────────
@@ -3508,15 +3506,27 @@ blocks:
   # network, so a bigger one turning slower would just read as underpowered. Keep the three in step.
   propeller:
     cancel_pistons: true
+    categories: [blockships]
     name: "&bPropeller"
     lore:
-      - "&7Consumes 3 Power"
+      - "&7Consumes 5 Power"
       - "&7Provides thrust on a ship"
     catalog_notes:
       - "&fA powered propeller. Point it along a ship to go faster, across it to turn quicker, or"
       - "&fmount it flat to push the ship up."
-      - "&7Draws 3 power while running — it produces none."
+      - "&7Draws 5 power while running — it produces none."
       - "&7Places on the floor (spins flat) or on a wall (spins like a wheel)."
+    recipes:
+      craft:
+        shaped:
+          # A windmill run in reverse: a matching-tier windmill centre, iron corners, redstone edges. The
+          # windmill's tier decides the propeller tier and its blades carry over. block_type is a tolerant
+          # match — a crafted windmill's per-instance blade PDC would defeat a strict `block:` ExactChoice.
+          - pattern: ["IRI", "RWR", "IRI"]
+            key:
+              I: { material: IRON_INGOT }
+              R: { material: REDSTONE }
+              W: { block_type: "mech:windmill" }
     texture: "@prop_bearing_up"
     item_texture: "@propeller_item"
     drops: self
@@ -3577,14 +3587,16 @@ blocks:
   # Ships read its powered state to work out thrust; on land it spins and does nothing else.
   large_propeller:
     cancel_pistons: true
+    categories: [blockships]
     name: "&bLarge Propeller"
     lore:
-      - "&7Consumes 8 Power"
+      - "&7Consumes 10 Power"
       - "&7Provides thrust on a ship"
     catalog_notes:
       - "&fA powered propeller. Point it along a ship to go faster, across it to turn quicker, or"
       - "&fmount it flat to push the ship up."
-      - "&7Draws 8 power while running — it produces none."
+      - "&7Draws 10 power while running — it produces none."
+      - "&7Craft from a Large Windmill; its blades carry over."
       - "&7Places on the floor (spins flat) or on a wall (spins like a wheel)."
     texture: "@prop_bearing_up"
     item_texture: "@propeller_item"
@@ -3646,6 +3658,7 @@ blocks:
   # Ships read its powered state to work out thrust; on land it spins and does nothing else.
   huge_propeller:
     cancel_pistons: true
+    categories: [blockships]
     name: "&bHuge Propeller"
     lore:
       - "&7Consumes 20 Power"
@@ -3654,6 +3667,7 @@ blocks:
       - "&fA powered propeller. Point it along a ship to go faster, across it to turn quicker, or"
       - "&fmount it flat to push the ship up."
       - "&7Draws 20 power while running — it produces none."
+      - "&7Craft from a Huge Windmill; its blades carry over."
       - "&7Places on the floor (spins flat) or on a wall (spins like a wheel)."
     texture: "@prop_bearing_up"
     item_texture: "@propeller_item"
@@ -3721,6 +3735,7 @@ blocks:
   # `running_<suffix>` by taking the text after the last underscore.
   thruster:
     cancel_pistons: true
+    categories: [blockships]
     name: "&cThruster"
     lore:
       - "&7Burns fuel to produce thrust"
@@ -3730,6 +3745,18 @@ blocks:
       - "&fMounted on the floor or ceiling it fires downward and lifts a ship; on a wall it drives"
       - "&fthe ship along or turns it, depending which way it faces."
       - "&7It produces no rotational power — it only pushes."
+      - "&7Craft from a Fan, blaze rods and a blast furnace."
+    recipes:
+      craft:
+        shaped:
+          # A fan supercharged with blaze rods around a blast furnace. block_type matches any crafted fan
+          # (a fan's blade PDC varies per item, so a strict `block:` ExactChoice could never match one).
+          - pattern: ["IBI", "LFL", "I I"]
+            key:
+              I: { material: IRON_INGOT }
+              B: { material: BLAST_FURNACE }
+              L: { material: BLAZE_ROD }
+              F: { block_type: "mech:fan" }
     texture: "@jet_off_down"
     item_texture: "@jet_on_wall"
     drops: self
@@ -3821,9 +3848,10 @@ blocks:
   # never lift — regardless of which way anything is pointing.
   reaction_wheel:
     cancel_pistons: true
+    categories: [blockships]
     name: "&dReaction Wheel"
     lore:
-      - "&7Consumes 4 Power"
+      - "&7Consumes 1 Power"
       - "&7Turns a ship faster, even at a standstill"
     catalog_notes:
       - "&fA heavy spinning disc. Drive it from a shaft underneath."

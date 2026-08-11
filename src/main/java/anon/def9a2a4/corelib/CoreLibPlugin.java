@@ -1307,6 +1307,8 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
 
         // Capture banner ingredients onto the result item (for windmill blades etc.)
         captureBannerIngredients(event.getInventory());
+        // Ship propulsion: enforce the tolerant windmill/fan centre, tier-swap propellers, carry blades.
+        capturePropulsionResult(event.getInventory());
         // Generic ingredient capture (e.g. water-wheel paddle planks).
         IngredientCapture.capture(event.getInventory(), registry);
     }
@@ -1315,6 +1317,7 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
     public void onCraftItem(org.bukkit.event.inventory.CraftItemEvent event) {
         // Re-capture on actual craft (Bukkit creates a fresh result from the recipe)
         captureBannerIngredients(event.getInventory());
+        capturePropulsionResult(event.getInventory());
         IngredientCapture.capture(event.getInventory(), registry);
     }
 
@@ -1383,6 +1386,74 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         CustomBlockRegistry.applySailLore(newMeta, banners);
         newResult.setItemMeta(newMeta);
         inv.setResult(newResult);
+    }
+
+    /**
+     * Enforce ship-propulsion recipes whose centre is a tolerant {@code block_type} head. A crafted
+     * windmill/fan carries per-instance blade PDC, so the recipe registers its centre as any PLAYER_HEAD
+     * (see {@link CustomBlockRegistry}) and the real identity is enforced here — mirroring how
+     * {@link #captureBannerIngredients} scans the matrix, swaps the tier, and copies blade PDC:
+     * <ul>
+     *   <li><b>Propeller</b>: the windmill in the grid decides the tier (windmill → propeller, large → large,
+     *       huge → huge) and its blade patterns carry onto the propeller. No windmill → null result (a plain
+     *       head + iron/redstone frame can't mint a free propeller).</li>
+     *   <li><b>Thruster</b>: requires a {@code mech:fan} in the grid; otherwise null result.</li>
+     * </ul>
+     */
+    private void capturePropulsionResult(org.bukkit.inventory.CraftingInventory inv) {
+        ItemStack result = inv.getResult();
+        String resultType = headBlockType(result);
+        if (resultType == null) return;
+
+        if (resultType.startsWith("mech:") && resultType.endsWith("propeller")) {
+            ItemStack windmill = null;
+            String windmillType = null;
+            for (ItemStack it : inv.getMatrix()) {
+                String t = headBlockType(it);
+                if (t != null && isWindmillType(t)) { windmill = it; windmillType = t; break; }
+            }
+            if (windmill == null) { inv.setResult(null); return; }
+            CustomHeadBlock propType = registry.getType(propellerForWindmill(windmillType));
+            if (propType == null) { inv.setResult(null); return; }
+            ItemStack out = propType.createItem(result.getAmount());
+            var meta = out.getItemMeta();
+            if (windmill.getItemMeta() != null && meta != null) {
+                CustomBlockRegistry.copyBladePdc(
+                        windmill.getItemMeta().getPersistentDataContainer(),
+                        meta.getPersistentDataContainer());
+                out.setItemMeta(meta);
+            }
+            inv.setResult(out);
+            return;
+        }
+
+        if ("mech:thruster".equals(resultType)) {
+            for (ItemStack it : inv.getMatrix()) {
+                if ("mech:fan".equals(headBlockType(it))) return;   // valid — a fan is present
+            }
+            inv.setResult(null);   // no fan → block the craft
+        }
+    }
+
+    /** The custom block-type id of a player-head item ({@code mech:windmill}, …), or null if it isn't one. */
+    private static String headBlockType(ItemStack item) {
+        if (item == null || item.getType() != Material.PLAYER_HEAD) return null;
+        if (!(item.getItemMeta() instanceof org.bukkit.inventory.meta.SkullMeta meta)) return null;
+        return meta.getPersistentDataContainer()
+                .get(CustomBlockRegistry.BLOCK_TYPE_KEY, PersistentDataType.STRING);
+    }
+
+    private static boolean isWindmillType(String id) {
+        return id.equals("mech:windmill") || id.equals("mech:large_windmill") || id.equals("mech:huge_windmill");
+    }
+
+    /** The propeller tier matching a windmill tier (see {@link #windmillForTier} for the inverse). */
+    private static String propellerForWindmill(String windmillId) {
+        return switch (windmillId) {
+            case "mech:large_windmill" -> "mech:large_propeller";
+            case "mech:huge_windmill"  -> "mech:huge_propeller";
+            default                    -> "mech:propeller";
+        };
     }
 
     /** The banner's tier: a HUGE / LARGE marker, else NORMAL (a plain banner). */

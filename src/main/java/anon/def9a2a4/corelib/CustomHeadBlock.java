@@ -227,22 +227,34 @@ public final class CustomHeadBlock {
      *  instead of the parser throwing and dropping the entire block. */
     public record IngredientSpec(@Nullable Material material, @Nullable String blockId,
                                  org.bukkit.@Nullable Tag<Material> tag, @Nullable List<Material> materials,
-                                 @Nullable String unresolvedMaterial) {
+                                 @Nullable String unresolvedMaterial, @Nullable String blockType) {
+        public IngredientSpec(@Nullable Material material, @Nullable String blockId,
+                              org.bukkit.@Nullable Tag<Material> tag, @Nullable List<Material> materials,
+                              @Nullable String unresolvedMaterial) {
+            this(material, blockId, tag, materials, unresolvedMaterial, null);
+        }
         public IngredientSpec(@Nullable Material material, @Nullable String blockId,
                               org.bukkit.@Nullable Tag<Material> tag, @Nullable List<Material> materials) {
-            this(material, blockId, tag, materials, null);
+            this(material, blockId, tag, materials, null, null);
         }
         public IngredientSpec(@Nullable Material material, @Nullable String blockId, org.bukkit.@Nullable Tag<Material> tag) {
-            this(material, blockId, tag, null, null);
+            this(material, blockId, tag, null, null, null);
         }
-        public IngredientSpec(@Nullable Material material, @Nullable String blockId) { this(material, blockId, null, null, null); }
+        public IngredientSpec(@Nullable Material material, @Nullable String blockId) { this(material, blockId, null, null, null, null); }
         /** An ingredient whose material name doesn't exist on this MC version. */
-        public static IngredientSpec unresolved(String name) { return new IngredientSpec(null, null, null, null, name); }
+        public static IngredientSpec unresolved(String name) { return new IngredientSpec(null, null, null, null, name, null); }
+        /** A tolerant custom-head match: any player head carrying this block's identity PDC, ignoring
+         *  per-instance data (blade patterns etc.). For ship recipes that consume a crafted windmill/fan
+         *  whose blade PDC varies per item, so a strict {@code block:} ExactChoice could never match one.
+         *  Registers as {@code MaterialChoice(PLAYER_HEAD)}; the exact identity is enforced in the
+         *  PrepareItemCraft handler (see CoreLibPlugin#capturePropulsionResult). */
+        public static IngredientSpec blockType(String id) { return new IngredientSpec(null, null, null, null, null, id); }
         public boolean isMaterial() { return material != null; }
         public boolean isBlock() { return blockId != null; }
         public boolean isTag() { return tag != null; }
         public boolean isMaterials() { return materials != null; }
         public boolean isUnresolved() { return unresolvedMaterial != null; }
+        public boolean isBlockType() { return blockType != null; }
     }
 
     /** Shaped crafting recipe definition. {@code output} (null → the owning type's item) follows the same

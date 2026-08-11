@@ -383,6 +383,14 @@ public final class BlockLoader {
             if (!blockId.contains(":")) blockId = namespace + ":" + blockId;
             return new CustomHeadBlock.IngredientSpec(null, blockId);
         }
+        Object blockTypeObj = map.get("block_type");
+        if (blockTypeObj != null) {
+            // Tolerant custom-head match (ignores per-instance PDC like blade patterns). Registers as a
+            // permissive PLAYER_HEAD choice; the exact identity is enforced in the craft handler.
+            String id = String.valueOf(blockTypeObj);
+            if (!id.contains(":")) id = namespace + ":" + id;
+            return CustomHeadBlock.IngredientSpec.blockType(id);
+        }
         Object tagObj = map.get("tag");
         if (tagObj != null) {
             String tagName = String.valueOf(tagObj).toLowerCase(java.util.Locale.ROOT);
@@ -406,7 +414,7 @@ public final class BlockLoader {
             if (mats.isEmpty()) return CustomHeadBlock.IngredientSpec.unresolved(String.valueOf(list.get(0)));
             return new CustomHeadBlock.IngredientSpec(null, null, null, mats);
         }
-        throw new IllegalArgumentException("Ingredient must have 'material', 'block', 'tag', or 'materials' key");
+        throw new IllegalArgumentException("Ingredient must have 'material', 'block', 'block_type', 'tag', or 'materials' key");
     }
 
     // ── Parsers ──────────────────────────────────────────────────────────

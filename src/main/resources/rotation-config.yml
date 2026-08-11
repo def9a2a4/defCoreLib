@@ -102,7 +102,7 @@ power:
   redstone_motor: 1
   drill: 5
   millstone: 5
-  fan: 2
+  fan: 10
   press: 4
   sieve: 10
   pump: 4
@@ -113,10 +113,10 @@ power:
   chain_hoist: 1   # base rotational demand of a chain hoist (lift speed scales with surplus above this)
   # Ship propulsion. The propellers are consumers: they draw this and produce no power. The thruster
   # has no entry — it burns fuel and never touches the rotation network.
-  propeller: 3
-  large_propeller: 8
+  propeller: 5
+  large_propeller: 10
   huge_propeller: 20
-  reaction_wheel: 4
+  reaction_wheel: 1
 
 # How each rotation block behaves while assembled into a moving mechanism (minecart, door,
 # drawbridge). Its supply/demand comes from the `power:` map above — not repeated here.

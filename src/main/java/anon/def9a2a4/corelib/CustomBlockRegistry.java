@@ -2523,6 +2523,11 @@ public class CustomBlockRegistry {
                         recipe.setIngredient(entry.getKey(), spec.material());
                     } else if (spec.isBlock()) {
                         recipe.setIngredient(entry.getKey(), choiceForBlock(spec.blockId()));
+                    } else if (spec.isBlockType()) {
+                        // Tolerant head match: any player head; the exact block-type (and any tier swap /
+                        // blade inheritance) is enforced in CoreLibPlugin#capturePropulsionResult.
+                        recipe.setIngredient(entry.getKey(),
+                                new org.bukkit.inventory.RecipeChoice.MaterialChoice(Material.PLAYER_HEAD));
                     }
                 }
                 Bukkit.addRecipe(recipe);
@@ -2555,6 +2560,8 @@ public class CustomBlockRegistry {
                         recipe.addIngredient(spec.material());
                     } else if (spec.isBlock()) {
                         recipe.addIngredient(choiceForBlock(spec.blockId()));
+                    } else if (spec.isBlockType()) {
+                        recipe.addIngredient(new org.bukkit.inventory.RecipeChoice.MaterialChoice(Material.PLAYER_HEAD));
                     }
                 }
                 Bukkit.addRecipe(recipe);
@@ -2640,6 +2647,7 @@ public class CustomBlockRegistry {
             java.util.Collection<CustomHeadBlock.IngredientSpec> specs) {
         for (CustomHeadBlock.IngredientSpec spec : specs) {
             if (spec.isBlock() && getType(spec.blockId()) == null) return spec.blockId();
+            if (spec.isBlockType() && getType(spec.blockType()) == null) return spec.blockType();
             if (spec.isUnresolved()) return spec.unresolvedMaterial();
         }
         return null;
@@ -2672,6 +2680,7 @@ public class CustomBlockRegistry {
         if (spec.isTag()) return new org.bukkit.inventory.RecipeChoice.MaterialChoice(spec.tag());
         if (spec.isMaterials()) return new org.bukkit.inventory.RecipeChoice.MaterialChoice(spec.materials());
         if (spec.isBlock()) return choiceForBlock(spec.blockId());
+        if (spec.isBlockType()) return new org.bukkit.inventory.RecipeChoice.MaterialChoice(Material.PLAYER_HEAD);
         if (!spec.isMaterial()) // unresolved (unknown material on this MC version) — callers must gate first
             throw new IllegalArgumentException("ingredientChoice on an unresolved ingredient: " + spec.unresolvedMaterial());
         return new org.bukkit.inventory.RecipeChoice.MaterialChoice(spec.material());
