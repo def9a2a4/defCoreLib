@@ -2382,6 +2382,19 @@ public class CustomBlockRegistry {
     }
 
     /**
+     * Whether this block's recipes are withheld because the plugin they declare ({@code requires_plugin})
+     * isn't enabled.
+     *
+     * <p>Checked in the same place, and the same way, as the namespace gate above — crucially, BEFORE
+     * the type is marked registered, so the type is simply retried later rather than being remembered
+     * as done. That retry is what {@code registerAllRecipes()} on {@code PluginEnableEvent} relies on.
+     */
+    private boolean recipesPluginMissing(CustomHeadBlock type) {
+        String required = type.recipesRequirePlugin();
+        return required != null && !org.bukkit.Bukkit.getPluginManager().isPluginEnabled(required);
+    }
+
+    /**
      * Enable crafting recipes for a gated namespace (called from a companion plugin's onEnable).
      * Idempotent; registers the namespace's recipes and syncs recipe-book discovery for online
      * players so they appear immediately.
@@ -2445,6 +2458,13 @@ public class CustomBlockRegistry {
     private void registerRecipesForType(CustomHeadBlock type) {
         if (!type.hasRecipes()) return;
         if (recipesGatedOff(type.namespace())) return; // withheld until a companion enables it
+        if (recipesPluginMissing(type)) {              // withheld until requires_plugin is enabled
+            if (withheldForPlugin.add(type.fullId())) {
+                plugin.getLogger().info("Recipes for " + type.fullId() + " withheld — requires plugin '"
+                    + type.recipesRequirePlugin() + "', which is not enabled.");
+            }
+            return;
+        }
         if (!recipeRegisteredTypes.add(type.fullId())) return; // already registered — idempotent
         String prefix = type.namespace() + "_" + type.typeId() + "_";
         int keysBefore = registeredRecipeKeys.size();

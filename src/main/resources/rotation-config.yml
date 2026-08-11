@@ -125,6 +125,11 @@ power:
 #              omni   — draws from the first aligned neighbor on any non-mounted face
 #   gear_like: meshes with adjacent gears (counter-rotation, bevels)
 #   gearbox:   omnidirectional hub — passes power on all six faces; spin-direction firewall (no CW/CCW across it)
+#   blows_outward:    the machine acts AWAY from its mount, so a floor-mounted one aims UP (a fan
+#                     blows upward off the floor). Affects the reported actuation direction only.
+#   mech_power_scale: multiplier on this block's SUPPLY while riding, and only supply — the same
+#                     `power:` value also feeds demand, so scaling the raw number would quietly make
+#                     consumers cheaper aboard too. Rounded UP, so a tier-1 source never falls to 0.
 # Notes: world redstone can't reach a block riding a mechanism, so the reverser/clutch pass
 # through unlocked, and the (inverted) redstone motor runs as a constant source. The water
 # wheel can't check for water while moving, so it only transmits.
@@ -151,13 +156,16 @@ mechanism:
   water_wheel:     { kind: transmitter }
   engine:          { kind: engine }
   redstone_motor:  { kind: constant_source }
-  windmill:        { kind: constant_source }
-  large_windmill:  { kind: constant_source }
-  huge_windmill:   { kind: constant_source }
+  # Windmills supply HALF aboard a mechanism. They are constant sources with no fuel and no wind
+  # check, so at full strength a wall of them makes a flying ship free to run forever and the
+  # fuel-burning thruster pointless to build. Static-world windmills are unaffected.
+  windmill:        { kind: constant_source, mech_power_scale: 0.5 }
+  large_windmill:  { kind: constant_source, mech_power_scale: 0.5 }
+  huge_windmill:   { kind: constant_source, mech_power_scale: 0.5 }
   drill:           { kind: consumer }
   millstone:       { kind: consumer, axis: y }
   press:           { kind: consumer, axis: y }
   sieve:           { kind: consumer, axis: y }
   placer:          { kind: consumer, axis: y }
-  fan:             { kind: consumer, axis: facing }
+  fan:             { kind: consumer, axis: facing, blows_outward: true }
   suction_hopper:  { kind: consumer, axis: omni }

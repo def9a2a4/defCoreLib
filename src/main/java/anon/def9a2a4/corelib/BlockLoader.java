@@ -283,6 +283,11 @@ public final class BlockLoader {
         String unlockAdv = sec.getString("unlock_advancement");
         if (unlockAdv != null) b.unlockAdvancement(unlockAdv);
 
+        // requires_plugin: withhold every recipe on this block unless that plugin is enabled. For
+        // content that is inert without a companion — a ship thruster on a server with no ships.
+        String requiresPlugin = sec.getString("requires_plugin");
+        if (requiresPlugin != null) b.recipesRequirePlugin(requiresPlugin);
+
         ConfigurationSection craftSec = sec.getConfigurationSection("craft");
         if (craftSec != null) {
             // Shaped recipes

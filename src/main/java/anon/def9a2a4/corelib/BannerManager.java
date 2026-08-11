@@ -8,6 +8,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.World;
+import org.bukkit.util.BoundingBox;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -748,6 +749,46 @@ public class BannerManager implements Listener {
             }
         }
         return null;
+    }
+
+    /**
+     * Every banner tier hosted on a block inside {@code region}, keyed by HOST block.
+     *
+     * <p>One entity sweep for a whole region, rather than a {@code findByTag} per candidate block: a
+     * caller scanning a 500-block ship would otherwise do 500 nearby-entity queries on the main
+     * thread during an operation that is already expensive.
+     *
+     * <p><b>Callers must expand the region.</b> A large/huge banner's display entity is spawned in
+     * the NEIGHBOUR cell, toward the face it hangs on (see {@code placeLargeBanner}) — and further out
+     * once scaled — so a box fitted tightly to a structure misses the banners on its own outer faces.
+     * Expand by at least {@link #SEARCH_RADIUS}.
+     *
+     * <p>A fence flag spawns two displays (front and back) sharing one face key; they are deduped
+     * here, so a flag contributes one tier, not two.
+     */
+    static Map<Block, List<BannerTier>> bannerTiersIn(World world, BoundingBox region) {
+        Map<Block, List<BannerTier>> out = new HashMap<>();
+        Map<Block, Set<String>> seenFaces = new HashMap<>();
+        for (Entity entity : world.getNearbyEntities(region)) {
+            if (!(entity instanceof ItemDisplay display)) continue;
+            for (String tag : display.getScoreboardTags()) {
+                if (!tag.startsWith(TAG_PREFIX)) continue;
+                int[] coords = parseCoords(tag);
+                if (coords == null) continue;
+                String face = extractFace(display);
+                if (face == null) continue;
+                Block host = world.getBlockAt(coords[0], coords[1], coords[2]);
+                // Dedupe on face: a flag's front/back pair share one key and are one banner.
+                if (!seenFaces.computeIfAbsent(host, b -> new HashSet<>()).add(face)) break;
+                ItemStack item = display.getItemStack();
+                BannerTier tier = LargeBannerRecipes.isHugeBanner(item) ? BannerTier.HUGE
+                    : LargeBannerRecipes.isLargeBanner(item) ? BannerTier.LARGE
+                    : BannerTier.NORMAL;
+                out.computeIfAbsent(host, b -> new ArrayList<>()).add(tier);
+                break;
+            }
+        }
+        return out;
     }
 
     private static int[] parseCoords(String tag) {

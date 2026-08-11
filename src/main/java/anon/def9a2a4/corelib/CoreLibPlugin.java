@@ -4,8 +4,10 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.util.BoundingBox;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -452,6 +454,24 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
     /** The cap on a single glued selection ({@code glue.max-size}), so callers can report it. */
     public int glueMaxSize() {
         return glueManager != null ? glueManager.maxSize() : 0;
+    }
+
+    /**
+     * Every banner tier hosted on a block inside {@code region}, keyed by host block.
+     *
+     * <p>Large and huge banners are tagged {@code ItemDisplay} entities attached to an otherwise
+     * untouched host block — there is no block state to inspect — so a material test can never see
+     * them. This is the only way to find them.
+     *
+     * <p>Two things to know: the display is spawned in the neighbour cell toward the face it hangs on,
+     * so <b>expand your region by at least 3 blocks</b> or you will miss the banners on a structure's
+     * own outer faces; and only loaded chunks are searched.
+     *
+     * <p>A vanilla banner BLOCK also reports here, as {@link BannerTier#NORMAL} — ignore that tier if
+     * you already count banner blocks by material, or you will count them twice.
+     */
+    public Map<Block, List<BannerTier>> bannerTiersIn(World world, BoundingBox region) {
+        return BannerManager.bannerTiersIn(world, region);
     }
 
     /**

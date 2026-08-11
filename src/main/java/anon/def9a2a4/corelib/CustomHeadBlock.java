@@ -330,6 +330,7 @@ public final class CustomHeadBlock {
     private final @Nullable SoundConfig breakSound;
     private final @Nullable SoundConfig interactSound;
     private final @Nullable String unlockAdvancement;
+    private final @Nullable String recipesRequirePlugin;
 
     private final boolean reactsToNeighbors;
     private final @Nullable Integer tickInterval;
@@ -420,6 +421,7 @@ public final class CustomHeadBlock {
         this.breakSound = b.breakSound;
         this.interactSound = b.interactSound;
         this.unlockAdvancement = b.unlockAdvancement;
+        this.recipesRequirePlugin = b.recipesRequirePlugin;
 
         this.reactsToNeighbors = b.reactsToNeighbors;
         this.tickInterval = b.tickInterval;
@@ -509,6 +511,15 @@ public final class CustomHeadBlock {
     public @Nullable SoundConfig breakSound() { return breakSound; }
     public @Nullable SoundConfig interactSound() { return interactSound; }
     public @Nullable String unlockAdvancement() { return unlockAdvancement; }
+
+    /**
+     * A plugin that must be enabled for this block's recipes to register, or null for none.
+     *
+     * <p>Lets content that only means something alongside another plugin stay uncraftable without it —
+     * a ship thruster is inert furniture on a server with no ships. Evaluated at registration AND on
+     * {@code PluginEnableEvent}, so load order doesn't silently decide the answer.
+     */
+    public @Nullable String recipesRequirePlugin() { return recipesRequirePlugin; }
 
     public boolean reactsToNeighbors() { return reactsToNeighbors; }
     public @Nullable Integer tickInterval() { return tickInterval; }
@@ -775,6 +786,7 @@ public final class CustomHeadBlock {
         b.breakSound = breakSound;
         b.interactSound = interactSound;
         b.unlockAdvancement = unlockAdvancement;
+        b.recipesRequirePlugin = recipesRequirePlugin;
         b.reactsToNeighbors = reactsToNeighbors;
         b.tickInterval = tickInterval;
         b.defaultState = defaultState;
@@ -845,6 +857,7 @@ public final class CustomHeadBlock {
         private @Nullable SoundConfig breakSound;
         private @Nullable SoundConfig interactSound;
         private @Nullable String unlockAdvancement;
+        private @Nullable String recipesRequirePlugin;
 
         private boolean reactsToNeighbors;
         private @Nullable Integer tickInterval;
@@ -938,6 +951,7 @@ public final class CustomHeadBlock {
         public Builder breakSound(SoundConfig sound) { this.breakSound = sound; return this; }
         public Builder interactSound(SoundConfig sound) { this.interactSound = sound; return this; }
         public Builder unlockAdvancement(String advancement) { this.unlockAdvancement = advancement; return this; }
+        public Builder recipesRequirePlugin(String pluginName) { this.recipesRequirePlugin = pluginName; return this; }
 
         public Builder reactsToNeighbors(boolean reacts) { this.reactsToNeighbors = reacts; return this; }
         public Builder tickInterval(int ticks) { this.tickInterval = Math.max(1, ticks); return this; }
