@@ -1229,14 +1229,28 @@ public class MechanismRegistry {
      * banners. The sign is baked in (negated) to the proven convention: the standing-banner transform applies
      * its yaw as {@code rotateY(-yaw)}; this returns radians meant to be applied POSITIVELY at the render site.
      *
-     * <p>UNRESOLVED, read before touching: this encodes the same "+Z is the head's face" convention that
-     * {@code BasicMechanism.faceYawRadians} used for WALL heads — and that one was measured wrong in game and
-     * now adds {@code HEAD_ITEM_MODEL_FACE_YAW} (π) to correct it. The two agree on all four cardinals
-     * (WEST → -90°, EAST → +90°, NORTH → 180°), so if the wall case needed a half-turn this one very likely
-     * does too, and every floor head on a mechanism is currently backwards. It has never been reported,
-     * plausibly because gears/casings/bearings are near enough symmetric to hide it. Confirm with a
-     * DIRECTIONAL floor head on a moving mechanism (a drill or an engine) before changing this — getting it
-     * wrong rotates every floor head in every existing world.
+     * <p>UNRESOLVED — the facts, so the next reader does not have to re-derive them:
+     * <ul>
+     *   <li>This table is the same cardinal geometry as {@code BasicMechanism.faceYawRadians} before its
+     *       correction: both give WEST → -90°, EAST → +90°, NORTH → 180°, SOUTH → 0.</li>
+     *   <li>That wall table now adds {@code HEAD_ITEM_MODEL_FACE_YAW} (π), because wall heads were observed
+     *       in game rendering backwards on all four walls. This floor table does not.</li>
+     *   <li>A third site uses a third convention: {@code RedstoneDynamo.orientHead} puts a player-head item
+     *       on an ItemDisplay through the same {@code DisplayUtil.spawn} and the same default display mode
+     *       as {@code spawnMechDisplay}, and orients it with {@code Faces.rotationForFace} — no π.</li>
+     * </ul>
+     *
+     * <p>Arguments exist both ways and neither is conclusive from the code. If floor and wall heads share a
+     * baseline, one of the two tables must be wrong, and the wall one was fixed by observation — which would
+     * mean this one needs π too. But vanilla renders a wall skull a half-turn from a floor skull of the same
+     * facing, which would make the present difference correct and this table already right. The dynamo says
+     * a third thing again.
+     *
+     * <p>Resolve by looking, not by reasoning: put a WALL thruster and a FLOOR drill or engine on one
+     * mechanism, move it, and compare each against the same block placed statically; check a dynamo on the
+     * same trip. A floor THRUSTER is useless for this — its nozzle points straight down, which is exactly
+     * why a yaw error here could go unnoticed for so long. Do not change this on inference: it rotates every
+     * floor head on every mechanism in every existing world.
      */
     private static float floorHeadYawRadians(org.bukkit.block.data.Rotatable rot) {
         return (float) Math.toRadians(-BlockRotation.rotationToStep(rot.getRotation()) * 22.5);

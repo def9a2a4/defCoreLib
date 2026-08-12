@@ -3777,15 +3777,27 @@ blocks:
       WEST:  idle_w
     states:
       idle_down:    { texture: "@jet_off_down" }
-      # Nozzle-down exhaust. `velocity` makes Bukkit emit a single directed particle per tick instead of a
-      # random puff, which is what turns this from a campfire into a rocket. Both the floor and the ceiling
-      # mount are a PLAYER_HEAD (see placement_state_map), so floor_offset covers both — a wall head never
-      # reaches this state. y is relative to the block's BOTTOM face, so -0.05 is just under the nozzle.
+      # Nozzle-down exhaust. `velocity` makes Bukkit emit ONE directed particle per interval instead of a
+      # random puff, which is what turns this from a campfire into a rocket; at interval 2 that is 10/s.
+      # y is relative to the block's BOTTOM face, so -0.05 is just under the nozzle.
+      #
+      # Visible on a CEILING mount only, and that is a property of the mount rather than a bug to tune
+      # around. Floor and ceiling share this one state (see placement_state_map), but not their
+      # surroundings: a ceiling thruster has open air beneath it, while a floor thruster is resting ON the
+      # block it was placed against, so its plume has nowhere to go. There is no offset that fixes this —
+      # negative is inside the support, positive is inside the head's own model. The useful lifting
+      # thruster is the one slung under a hull, which is the ceiling case.
+      #
+      # Also worth knowing before chasing a missing plume: particles do not tick on an ASSEMBLED mechanism
+      # at all (MechanismRegistry: "TODO: particle ticking for mechanism blocks" — MechanismBlockData
+      # captures the config and nothing consumes it). So a thruster on a flying ship shows no exhaust
+      # regardless of mount. Only a static, world-placed, fuelled thruster renders this.
       running_down:
         texture: "@jet_on_down"
         particles: { type: flame, interval: 2, speed: 0.2, floor_offset: [0, -0.05, 0], velocity: [0, -1, 0] }
-      # The wall states are spelled out rather than sharing via copy_from: copy_from requires the source
-      # state to declare display_entities, and these states have none — only a texture and an exhaust.
+      # The wall states are spelled out rather than shared. copy_from would not help even if it were
+      # allowed here: it only ever inherits display_entities, never `particles`, which is parsed per
+      # state. (It is also rejected outright for a source with no display_entities, which these have not.)
       #
       # Every wall state carries ALL FOUR wall_offsets, and they are identical between the four. That is
       # deliberate: `orientedOffset` picks the entry by the block's live `Directional.getFacing()`, so the
