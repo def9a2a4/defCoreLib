@@ -710,9 +710,8 @@ public class BannerManager implements Listener {
         return (name.endsWith("_FENCE") && !name.endsWith("_FENCE_GATE")) // all fences
                 || name.endsWith("_WALL")        // all walls (stone/mud brick, deepslate, tuff, blackstone, resin, …)
                 || name.endsWith("_BARS")        // IRON_BARS + all copper bar variants
-                || name.endsWith("_CHAIN")       // all copper chain variants
+                || name.endsWith("_CHAIN")       // IRON_CHAIN + all copper chain variants
                 || name.endsWith("GLASS_PANE")   // plain + all stained glass panes
-                || mat == Material.CHAIN         // iron chain (no "_CHAIN" suffix)
                 || mat == Material.LIGHTNING_ROD
                 || mat == Material.END_ROD;
     }

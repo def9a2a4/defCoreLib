@@ -478,6 +478,39 @@ public class CustomBlockRegistry {
     }
 
     // ──────────────────────────────────────────────────────────────────────
+    // Catalog contributions — non-block entries a companion plugin adds to the catalog GUI
+    // ──────────────────────────────────────────────────────────────────────
+
+    /**
+     * A non-block catalog entry contributed by another plugin (e.g. a BlockShips prefab-ship kit). It
+     * browses in the catalog like a registered head, but has no world identity and no recipes: it carries
+     * its own display icon and an admin-give factory. {@code category} is a normalized grouping path
+     * (e.g. {@code "blockships"}); {@code id} must be unique and contain a ':'. Kept out of {@link #types}
+     * so it never touches block-identity resolution, recipe registration, or chunk rescans.
+     */
+    public record CatalogContribution(String id, String category,
+                                      net.kyori.adventure.text.Component displayName,
+                                      java.util.List<net.kyori.adventure.text.Component> lore,
+                                      org.bukkit.inventory.ItemStack icon,
+                                      java.util.function.Supplier<org.bukkit.inventory.ItemStack> giveFactory) {}
+
+    private final Map<String, CatalogContribution> catalogContributions = new java.util.LinkedHashMap<>();
+
+    /** Register (or replace) a catalog contribution. Keyed by id, so a re-registration on plugin reload
+     *  overwrites cleanly rather than duplicating. */
+    public void registerCatalogContribution(CatalogContribution c) {
+        catalogContributions.put(c.id(), c);
+    }
+
+    public Collection<CatalogContribution> catalogContributions() {
+        return Collections.unmodifiableCollection(catalogContributions.values());
+    }
+
+    public @Nullable CatalogContribution getCatalogContribution(String id) {
+        return catalogContributions.get(id);
+    }
+
+    // ──────────────────────────────────────────────────────────────────────
     // Orphaned display-entity cleanup (admin command: /defcorelib cleanorphans)
     // ──────────────────────────────────────────────────────────────────────
 
@@ -996,6 +1029,7 @@ public class CustomBlockRegistry {
             if (type == null || base == null) continue;                // not a registered bare type
             if (!isNamespaceEnabledInWorld(type.namespace(), world.getName())) continue;
             Block block = world.getBlockAt(bt.x(), bt.y(), bt.z());
+            migrateLegacyShaftHost(block, base);                       // old CHAIN shaft → current copper-chain host
             if (block.getType() != base) continue;                     // block changed → orphan display, skip
             LocationKey key = LocationKey.of(block);
             found = true;
@@ -1018,6 +1052,7 @@ public class CustomBlockRegistry {
             Block block = world.getBlockAt(xyz[0], xyz[1], xyz[2]);
             LocationKey key = LocationKey.of(block);
             if (seen.contains(key)) continue;                          // already handled by a live display
+            migrateLegacyShaftHost(block, base);                       // old CHAIN shaft → current copper-chain host
             if (block.getType() != base) {                             // block gone while unloaded → prune
                 cells.remove(e.getKey());
                 cellsDirty = true;
@@ -1036,6 +1071,26 @@ public class CustomBlockRegistry {
             else chunkPdc.set(BARE_BLOCKS_KEY, PersistentDataType.STRING, serializeBareCells(cells));
         }
         return found;
+    }
+
+    /** One-time old-world migration for the bare-shaft host material rename. Shafts placed before the shaft moved to
+     *  {@link RotationBlocks#SHAFT_MATERIAL} sit in the world as {@code IRON_CHAIN} (vanilla auto-upgraded the
+     *  pre-1.21.9 {@code CHAIN} on load). When the durable index says this cell is a shaft (its registered {@code base}
+     *  is the shaft material) but the world block is still the legacy iron chain, convert it to the shaft material —
+     *  preserving the {@code Orientable} axis — so the {@code == base} identity check passes and the shaft keeps its
+     *  identity/spin instead of orphaning. No-op for every other bare type and for already-migrated shafts. */
+    private void migrateLegacyShaftHost(Block block, Material base) {
+        if (base != RotationBlocks.SHAFT_MATERIAL) return;
+        if (block.getType() != Material.IRON_CHAIN) return;
+        org.bukkit.block.data.BlockData legacy = block.getBlockData();
+        block.setType(RotationBlocks.SHAFT_MATERIAL, false);
+        if (legacy instanceof org.bukkit.block.data.Orientable oldAxis) {
+            org.bukkit.block.data.BlockData now = block.getBlockData();
+            if (now instanceof org.bukkit.block.data.Orientable newAxis) {
+                newAxis.setAxis(oldAxis.getAxis());
+                block.setBlockData(now, false);
+            }
+        }
     }
 
     /** A parsed {@code corelib:{ns}:{name}:{x_y_z}[:suffix]} display tag: fullId {@code ns:name} + coords. */

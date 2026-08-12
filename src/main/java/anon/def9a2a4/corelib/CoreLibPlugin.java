@@ -1976,6 +1976,34 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         return false;
     }
 
+    /** {@link #catalogInSubtree} for a single category path — used for contributed catalog entries,
+     *  which carry one category instead of a list of groups. */
+    private static boolean catalogCategoryInSubtree(String category, String path) {
+        if (path.isEmpty()) return true;
+        return category.equals(path) || category.startsWith(path + "/");
+    }
+
+    private static String catalogPlain(net.kyori.adventure.text.Component c) {
+        return net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer.plainText().serialize(c);
+    }
+
+    /** Add the immediate child of {@code path} implied by a grouping label {@code g} to {@code out}
+     *  (top-level = first segment of g; deeper = path + next segment). Shared by the type and
+     *  contribution passes of {@link #openCatalogTree}. */
+    private static void catalogAddChildPath(java.util.Set<String> out, String g, String path) {
+        if (path.isEmpty()) {
+            int slash = g.indexOf('/');
+            out.add(slash < 0 ? g : g.substring(0, slash));
+        } else if (g.startsWith(path + "/")) {
+            String rem = g.substring(path.length() + 1);
+            int slash = rem.indexOf('/');
+            out.add(path + "/" + (slash < 0 ? rem : rem.substring(0, slash)));
+        }
+    }
+
+    /** A renderable catalog row reduced to an id + display icon — a registered type or a contribution. */
+    private record CatalogListing(String id, ItemStack icon) {}
+
     /** Within the mech namespace, these id-prefixes sort to the END of the catalog list, in this order. */
     private static final List<String> MECH_TRAILING_PREFIXES = List.of("casing_", "gearbox_", "chassis_");
 
@@ -2022,16 +2050,10 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
     void openCatalogTree(Player player, String path, int page, @org.jspecify.annotations.Nullable CatalogHolder parent) {
         java.util.TreeSet<String> childPaths = new java.util.TreeSet<>();
         for (CustomHeadBlock t : registry.allTypes()) {
-            for (String g : catalogGroupsOf(t)) {
-                if (path.isEmpty()) {
-                    int slash = g.indexOf('/');
-                    childPaths.add(slash < 0 ? g : g.substring(0, slash));
-                } else if (g.startsWith(path + "/")) {
-                    String rem = g.substring(path.length() + 1);
-                    int slash = rem.indexOf('/');
-                    childPaths.add(path + "/" + (slash < 0 ? rem : rem.substring(0, slash)));
-                }
-            }
+            for (String g : catalogGroupsOf(t)) catalogAddChildPath(childPaths, g, path);
+        }
+        for (CustomBlockRegistry.CatalogContribution c : registry.catalogContributions()) {
+            if (!c.category().isEmpty()) catalogAddChildPath(childPaths, c.category(), path);
         }
         List<String> children = new ArrayList<>(childPaths);
         if (children.isEmpty()) { openCatalog(player, path, null, page, parent); return; }
@@ -2040,9 +2062,10 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         // child loop never surfaces it. Prepend a "Browse all here" entry (path itself; can't collide with
         // real children, which all start with path+"/") that opens the subtree item list.
         if (!path.isEmpty()) {
-            for (CustomHeadBlock t : registry.allTypes()) {
-                if (catalogGroupsOf(t).contains(path)) { children.add(0, path); break; }
-            }
+            boolean atNode = false;
+            for (CustomHeadBlock t : registry.allTypes()) if (catalogGroupsOf(t).contains(path)) { atNode = true; break; }
+            if (!atNode) for (var c : registry.catalogContributions()) if (c.category().equals(path)) { atNode = true; break; }
+            if (atNode) children.add(0, path);
         }
 
         int total = children.size();
@@ -2070,6 +2093,13 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
                     for (String g : catalogGroupsOf(t)) if (g.startsWith(childPath + "/")) { isBranch = true; break; }
                 }
             }
+            // Contributed entries under this node bump the count (and can make it a branch); their icon is
+            // never the node rep (rep stays a real block), so a node with only contributions is skipped.
+            for (CustomBlockRegistry.CatalogContribution c : registry.catalogContributions()) {
+                if (!catalogCategoryInSubtree(c.category(), childPath)) continue;
+                count++;
+                if (!browseAll && !isBranch && c.category().startsWith(childPath + "/")) isBranch = true;
+            }
             if (rep == null) continue;
             // Designated category icon (e.g. mech→gear, pipes→copper pipe) overrides the first-member icon.
             CustomHeadBlock iconType = rep;
@@ -2088,14 +2118,23 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
     void openCatalog(Player player, String path, @org.jspecify.annotations.Nullable String search,
                      int page, @org.jspecify.annotations.Nullable CatalogHolder parent) {
         String q = search == null ? null : search.toLowerCase(java.util.Locale.ROOT);
-        List<CustomHeadBlock> matches = new ArrayList<>();
+        List<CatalogListing> matches = new ArrayList<>();
         for (CustomHeadBlock t : catalogSortedTypes()) {
             if (q != null) {
                 if (catalogPlainName(t).toLowerCase(java.util.Locale.ROOT).contains(q)
-                        || t.fullId().toLowerCase(java.util.Locale.ROOT).contains(q)) matches.add(t);
+                        || t.fullId().toLowerCase(java.util.Locale.ROOT).contains(q))
+                    matches.add(new CatalogListing(t.fullId(), t.createItem(1)));
             } else if (catalogInSubtree(t, path)) {
-                matches.add(t);
+                matches.add(new CatalogListing(t.fullId(), t.createItem(1)));
             }
+        }
+        // Contributed entries (e.g. prefab-ship kits) list alongside real blocks, after the types.
+        for (CustomBlockRegistry.CatalogContribution c : registry.catalogContributions()) {
+            boolean hit = q != null
+                    ? catalogPlain(c.displayName()).toLowerCase(java.util.Locale.ROOT).contains(q)
+                        || c.id().toLowerCase(java.util.Locale.ROOT).contains(q)
+                    : catalogCategoryInSubtree(c.category(), path);
+            if (hit) matches.add(new CatalogListing(c.id(), c.icon().clone()));
         }
         int total = matches.size();
         int maxPage = Math.max(0, (total - 1) / CATALOG_PAGE);
@@ -2109,9 +2148,9 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         boolean canGive = player.hasPermission("corelib.admin");
         int start = page * CATALOG_PAGE, end = Math.min(start + CATALOG_PAGE, total), slot = 0;
         for (int i = start; i < end; i++, slot++) {
-            CustomHeadBlock t = matches.get(i);
-            inv.setItem(slot, catalogItemCell(t, canGive));
-            holder.itemSlots.put(slot, t.fullId());
+            CatalogListing t = matches.get(i);
+            inv.setItem(slot, catalogItemCell(t.icon(), canGive));
+            holder.itemSlots.put(slot, t.id());
         }
         if (total == 0) inv.setItem(22, catalogNavItem(Material.BARRIER, search != null ? "No matches" : "Empty"));
         catalogNavBar(inv, holder, page > 0, end < total, true);
@@ -2124,7 +2163,11 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
                            @org.jspecify.annotations.Nullable CatalogHolder parent) {
         if (id == null) return;
         CustomHeadBlock type = registry.getType(id);
-        if (type == null) return;
+        if (type == null) {
+            CustomBlockRegistry.CatalogContribution c = registry.getCatalogContribution(id);
+            if (c != null) openCatalogContribDetail(player, c, parent);
+            return;   // unknown id, or handled as a contribution
+        }
         CatalogHolder holder = new CatalogHolder(CatalogHolder.View.DETAIL, "", null, 0, id, parent);
         org.bukkit.inventory.Inventory inv = getServer().createInventory(holder, 54,
                 Component.text("Catalog: " + catalogPlainName(type), NamedTextColor.DARK_PURPLE));
@@ -2214,6 +2257,31 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         player.openInventory(inv);
     }
 
+    /** Detail view for a contributed entry: no recipe grid, just the icon + its lore (a give hint for
+     *  admins). Selecting it in the list is what gives the item; this is the browse/inspect view. */
+    private void openCatalogContribDetail(Player player, CustomBlockRegistry.CatalogContribution c,
+                                          @org.jspecify.annotations.Nullable CatalogHolder parent) {
+        CatalogHolder holder = new CatalogHolder(CatalogHolder.View.DETAIL, "", null, 0, c.id(), parent);
+        org.bukkit.inventory.Inventory inv = getServer().createInventory(holder, 54,
+                Component.text("Catalog: " + catalogPlain(c.displayName()), NamedTextColor.DARK_PURPLE));
+        holder.setInventory(inv);
+        ItemStack icon = c.icon().clone();
+        var m = icon.getItemMeta();
+        if (m != null) {
+            List<Component> lore = new ArrayList<>(c.lore());
+            if (player.hasPermission("corelib.admin")) {
+                lore.add(Component.empty());
+                lore.add(Component.text("In the list, right-click to get one.", NamedTextColor.DARK_GRAY)
+                        .decoration(TextDecoration.ITALIC, false));
+            }
+            if (!lore.isEmpty()) m.lore(lore);
+            icon.setItemMeta(m);
+        }
+        inv.setItem(4, icon);
+        catalogNavBar(inv, holder, false, false, false);
+        player.openInventory(inv);
+    }
+
     private @org.jspecify.annotations.Nullable ItemStack catalogIngredientIcon(CustomHeadBlock.IngredientSpec spec) {
         if (spec.isBlock()) {
             CustomHeadBlock t = registry.getType(spec.blockId());
@@ -2229,9 +2297,17 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
     }
 
     private void catalogGive(Player player, String id) {
+        ItemStack give;
         CustomHeadBlock type = registry.getType(id);
-        if (type == null) return;
-        var overflow = player.getInventory().addItem(type.createItem(1));
+        if (type != null) {
+            give = type.createItem(1);
+        } else {
+            CustomBlockRegistry.CatalogContribution c = registry.getCatalogContribution(id);
+            if (c == null) return;
+            give = c.giveFactory().get();
+            if (give == null) return;   // factory declined (e.g. companion state not ready)
+        }
+        var overflow = player.getInventory().addItem(give);
         for (ItemStack lf : overflow.values()) player.getWorld().dropItemNaturally(player.getLocation(), lf);
         player.playSound(player.getLocation(), org.bukkit.Sound.ENTITY_ITEM_PICKUP, 1f, 1f);
     }
@@ -2277,8 +2353,8 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         return icon;
     }
 
-    private static ItemStack catalogItemCell(CustomHeadBlock type, boolean canGive) {
-        ItemStack it = type.createItem(1);
+    private static ItemStack catalogItemCell(ItemStack base, boolean canGive) {
+        ItemStack it = base.clone();
         var m = it.getItemMeta();
         if (m != null) {
             List<Component> lore = m.lore() != null ? new ArrayList<>(m.lore()) : new ArrayList<>();

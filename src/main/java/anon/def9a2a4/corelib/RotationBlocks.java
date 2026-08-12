@@ -39,6 +39,12 @@ final class RotationBlocks {
 
     private RotationBlocks() {}
 
+    /** Vanilla host block a BARE rotation shaft is placed as. An {@code Orientable} axis block (like the old
+     *  {@code CHAIN}) so the shaft's spin/axis machinery is unchanged. Single source of truth — every bare-shaft
+     *  material check must reference this so the sites can't drift. Existing {@code CHAIN}/{@code IRON_CHAIN} shafts in
+     *  old worlds are converted to this on chunk load (see {@code CustomBlockRegistry.restoreBareBlocksInChunk}). */
+    static final Material SHAFT_MATERIAL = Material.WAXED_COPPER_CHAIN;
+
     /** The 12 plank woods that mech:casing_<wood> / mech:gearbox_<wood> come in (matches
      *  scripts/oneoff/gen_casings.py and gen_gearboxes.py). */
     static final List<String> CASING_WOODS = List.of(
@@ -222,7 +228,7 @@ final class RotationBlocks {
         if ("mech:shaft".equals(blockId)) {
             CustomHeadBlock shaftType = registry.getType(blockId);
             if (shaftType != null) {
-                registry.registerBareBlock(shaftType, Material.CHAIN, b -> makeShaftEncased(b, network, registry));
+                registry.registerBareBlock(shaftType, SHAFT_MATERIAL, b -> makeShaftEncased(b, network, registry));
                 // Inverse of the revert handler: a rotator/mechanism reverts a bare shaft to an encased
                 // head for capture, then re-bares it here on landing (converts CHAIN + re-adds the node).
                 registry.registerBareRelandHandler(blockId, b -> makeShaftBare(b, network, registry));
@@ -2484,7 +2490,7 @@ final class RotationBlocks {
     private static boolean toggleShaftEncasing(Block block, Player player,
                                                RotationNetwork network, CustomBlockRegistry registry) {
         boolean nowBare;
-        if (block.getType() == Material.CHAIN) {
+        if (block.getType() == SHAFT_MATERIAL) {
             makeShaftEncased(block, network, registry);
             nowBare = false;
         } else {
@@ -2492,7 +2498,7 @@ final class RotationBlocks {
             nowBare = true;
         }
         player.sendActionBar(Component.text(
-                nowBare ? "Shaft: bare (chain)" : "Shaft: encased", NamedTextColor.GOLD));
+                nowBare ? "Shaft: bare (copper chain)" : "Shaft: encased", NamedTextColor.GOLD));
         block.getWorld().playSound(block.getLocation().add(0.5, 0.5, 0.5),
                 org.bukkit.Sound.BLOCK_COPPER_PLACE, 1f, 1.3f);
         block.getWorld().spawnParticle(Particle.WAX_ON,
@@ -2500,13 +2506,13 @@ final class RotationBlocks {
         return true;
     }
 
-    /** Encased head → bare CHAIN, keeping the same network node. */
+    /** Encased head → bare copper chain, keeping the same network node. */
     static void makeShaftBare(Block block, RotationNetwork network, CustomBlockRegistry registry) {
         String state = registry.getState(block);
         RotationNetwork.Axis axis = RotationNetwork.axisFromState(state == null ? "idle_y" : state);
         var key = CustomBlockRegistry.LocationKey.of(block);
 
-        block.setType(Material.CHAIN, false);
+        block.setType(SHAFT_MATERIAL, false);
         org.bukkit.block.data.BlockData bd = block.getBlockData();
         if (bd instanceof org.bukkit.block.data.Orientable o) o.setAxis(toBukkitAxis(axis));
         block.setBlockData(bd, false);

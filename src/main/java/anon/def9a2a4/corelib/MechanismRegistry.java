@@ -936,9 +936,9 @@ public class MechanismRegistry {
                 primary = sd;
             } else if (mb.wasBare && "mech:shaft".equals(mb.customTypeId)) {
                 // A bare shaft was reverted to an encased head for capture (mb.blockData is the head), but its
-                // true form is a bare CHAIN. Render that in transit — the rod extra still spins. Axis from the
-                // (always idle_*) captured state; a default CHAIN is Y, so an X/Z shaft must set it explicitly.
-                org.bukkit.block.data.BlockData chain = Material.CHAIN.createBlockData();
+                // true form is a bare copper chain. Render that in transit — the rod extra still spins. Axis from the
+                // (always idle_*) captured state; a default chain is Y, so an X/Z shaft must set it explicitly.
+                org.bukkit.block.data.BlockData chain = RotationBlocks.SHAFT_MATERIAL.createBlockData();
                 if (chain instanceof org.bukkit.block.data.Orientable o) {
                     RotationNetwork.Axis ax = RotationNetwork.axisFromState(
                         mb.customState != null ? mb.customState : "idle_y");
