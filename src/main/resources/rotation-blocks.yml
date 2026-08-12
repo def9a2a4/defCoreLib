@@ -3492,8 +3492,8 @@ blocks:
 # the propeller tier and its blade patterns carry over, so a customised windmill yields a customised
 # propeller. This works via the `block_type:` ingredient (a tolerant PLAYER_HEAD match, since a crafted
 # windmill's per-instance blade PDC defeats a strict `block:` ExactChoice); the tier-swap + blade copy
-# happens in CoreLibPlugin#capturePropulsionResult. The thruster is built from a fan (same tolerant match).
-# The reaction wheel is still give-only (`/defcorelib give mech:reaction_wheel`).
+# happens in CoreLibPlugin#capturePropulsionResult. The thruster is built from a fan (same tolerant match),
+# and the reaction wheel from redstone + iron blocks + a bearing.
 # ═══════════════════════════════════════════════════════════════════════════════════════════════
 
   # ─── Propeller ───────────────────────────────────────────────────────────
@@ -3870,6 +3870,17 @@ blocks:
       - "&fOn a ship it improves turning only — it will not make you go faster or lift you."
       - "&7Unlike sails, it works when the ship is stopped."
       - "&7Floor placement only."
+      - "&7Craft from redstone, iron blocks and a bearing."
+    recipes:
+      craft:
+        shaped:
+          # A redstone-and-iron flywheel driven by a bearing shaft below. Strict `block:` match — a
+          # bearing carries no per-instance PDC, so an ExactChoice matches it fine (as the fan recipe does).
+          - pattern: ["RIR", " B "]
+            key:
+              R: { material: REDSTONE }
+              I: { material: IRON_BLOCK }
+              B: { block: "mech:bearing" }
     texture: "@prop_bearing_up"
     item_texture: "@reaction_wheel"
     drops: self
