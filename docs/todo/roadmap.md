@@ -1,73 +1,77 @@
----
-name: DefCoreLib feature roadmap
-description: Tracked TODO list of remaining features and future work for the defCoreLib plugin core library
-type: project
-originSessionId: 2bc279e0-d887-474b-95a2-e8918ac16902
----
-## Completed
-- Custom player heads (HeadUtil — textures, items, skull blocks)
-- Data-driven CustomHeadBlock with states, redstone (NONE/BINARY/LEVEL, DIRECT/EXTENDED), extensible triggers, scaling
-- Display entities attached to blocks (spawn/find/remove by tag)
-- YAML-driven block definitions (BlockLoader + 10 demo blocks)
-- Recipe system (shaped, shapeless, stonecutter with custom GUI for head inputs)
-- State transitions with sounds and particles
-- Light blocks tied to state
-- Orientation-aware particles
-- Chunk scan with hint YAML + self-healing
-- Lifecycle callbacks (onChunkLoad, onChunkUnload, onTick, onNeighborChange)
-- Placement restrictions (PlacementConfig)
-- Directional texture resolution
-- Commands (/corelib give|list)
-- All event handlers (place, break, interact, explosions, pistons, fire, water, physics, creative pick, crafting validation)
-- 5 rounds of review — all known bugs fixed
+# DefCoreLib roadmap
 
-## Remaining features (ready to implement)
-- **Storage** — StorageConfig record exists but no inventory logic. PDC-based persistence, lazy load, drop on break.
-- **Sounds** — place/break sounds. Add SoundConfig record + YAML parsing + play in event handlers.
-- **Advancement-based recipe unlocking** — per-block-type unlock advancement. Follows Pipes' RecipeUnlockListener pattern.
-- **Batched recipe reload** — BukkitRunnable that processes N recipes/tick for HeadSmith's 3000 heads.
+Re-grounded 2026-08-12 against current code + git (a 3-agent audit; the old version of this file was ~1 month stale and
+listed as "planned/future" many things that had already shipped). This is the single source of truth — do not keep a
+copy in agent memory. Line/commit refs are indicative; the code has moved well past most docs' cited lines.
 
-## Rotation-block display-entity elegance pass (phased)
-rotation-blocks.yml had 3 layers of duplication. Fixing one phase at a time.
-- **Phase 1 — named texture registry (DONE).** Top-level `textures:` map in the YAML; `texture`/`item_texture`/display/directional values use `@alias`. Resolved in BlockLoader.resolveTexture() at parse time (unknown alias → block skipped with warning). Collapsed 69 inline base64 refs → 13 defs. Live-server placement verification still pending.
-- **Phase 2 — auto-derived spin states (planned).** `spinning_*` states are idle + a rotate animation; let a state inherit another's display_entities and add spin around a declared axis (e.g. `spinning_y: { like: idle_y, spin: 3.0 }`).
-- **Phase 3 — axis-orientation composition (planned).** Define parts in a canonical floor/Y frame; loader composes per-axis orientation rotation, removing hand-computed quaternions like [98.42,-0.357,...]. Translations stay explicit (wall variants pull parts to the wall).
+## Complete (verified in code + git — do not re-open)
+- **Core custom blocks:** data-driven CustomHeadBlock (states, redstone, scaling), display entities by tag, YAML block
+  defs (BlockLoader), recipes (shaped/shapeless/stonecutter + head-input GUI), state transitions, light blocks,
+  orientation-aware particles, chunk scan + self-healing, lifecycle callbacks, placement restrictions, commands, all
+  event handlers.
+- **Sounds** — place/break/interact SoundConfig + YAML + handlers (`f343882`).
+- **Advancement-based recipe unlocking** — per-block unlock advancement, batched discover/undiscover (`f343882`).
+- **Storage** — PDC-backed inventory: open/load/save/unload + drop-on-break.
+- **Batched recipe reload** — shipped in HeadSmith (50 recipes/tick); defCoreLib itself synchronous by design (few recipes).
+- **Animated display entities** — oscillation-param system (`DisplayAnimation`: rotate/bob/pulse/compose, `3b94141`).
+- **DynLight integration** — carts AND moving mechanisms (`DynLightTags`, `040c038`).
+- **Rotation-block elegance Phase 1** — named-texture `@alias` registry; plus `copy_from` state inheritance (`61b8e8a`).
+- **Mechanism & glue track:** MechanismRegistry/BasicMechanism (displays + shulker colliders), doors, rotators
+  (drawbridges), mechanism minecarts (A-block geometry, freeze fix, rename), rotation-power network (`RotationNetwork` +
+  `RotationSolver`), gearboxes/casings/ratchets, **glue** (anchor-owned selection, sticky families, public external-anchor
+  API), **hoist/crane** (`ChainHoistManager`, `HoistAnchor`), **inertial mass**, **mechanism persistence + entity-tag
+  recovery**, **public live-rotation API** (`MechanismRotationSolvedEvent`).
+- **Extendable pistons** — BUILT beyond the design-doc MVP (glued payload; spin-driven), `ExtendablePistonManager`.
+- **Power-chain transmission** — `ChainPulley` + `RotationNetwork` distance-edge (closed-loop model; diverges from the
+  doc's mutual-link `chain_wheel` design, same end effect).
+- **Ship propulsion** — propellers (3 tiers), thruster, reaction wheel; banner-tier sail power.
+- **BlockShips ↔ defCoreLib cutover** (2026-08): native→delegated migration, native-engine deletion, chunk-index removal,
+  bare-shaft → `WAXED_COPPER_CHAIN` (paper-api bumped to 1.21.11; old CHAIN shafts migrate on chunk load).
+- **Fluids** — package scaffold present (`corelib/fluid/`, 8 classes) — see "still actionable" for the unfinished part.
+- **Module split** — bbanners / vslab / rsd / railbound / pipes / headsmith; vertical slabs; pipes migration.
 
-## Mechanism & glue track (as of 2026-06-29 — see docs/todos/mechanism/rotation-and-mechanism-fixes.md for the live list; all mechanism design docs now live under defCoreLib/docs/todos/mechanism/)
-The "BlockShips-style moveable mechanisms" future system below is now largely BUILT: MechanismRegistry/
-BasicMechanism (displays + shulker colliders), doors, rotators (drawbridges), mechanism minecarts, and the
-rotation-power network. Done in this track:
-- **Block A** geometry (A1 minecart pivot, A2 drawbridge rotation origin) — verified in-game.
-- **Block C** rotation-power network cleanup (C1–C4 etc.).
-- **Block D — Glue (DONE, committed):** anchor-owned persisted block selection replacing same-material
-  flood-fill for doors+rotators. Commits 881fd65 (FloodFill/Faces extract), 18ce491 (Anchor/BlockAnchor/
-  GlueManager + rebind-on-disassembly seam in BasicMechanism), d32ce9b (slime-glue authoring UX), f7db17b
-  (door+rotator retrofit). Offsets stored as INTEGER_ARRAY in skull PDC; resolveStructure→assemble;
-  rebind-on-disassembly tracks rotated rest positions. **In-game parity testing still pending.**
-Remaining: **Block E** (BlockShips integration onto defCoreLib — incl. EntityAnchor + minecart glue, gated
-on E's persistence/recovery), **Block F** (polish/config). [[DefCoreLib feature roadmap]]
+## Still actionable
 
-## Future systems (not yet designed)
-- **Animated display entities** — display entities on custom blocks that animate (rotate, bob, pulse, etc). Data-driven animation configs (keyframes or simple oscillation params). Needed for decorative blocks.
-- **BlockShips-style moveable mechanisms** — convert a group of blocks into display entities + shulker colliders. Handle movement, collision detection, and disassembly. Core system reusable for ships, redstone doors, drawbridges, elevators. *(Largely built — see Mechanism & glue track above.)*
-- **DynLight integration** — interface hook so custom blocks can declare dynamic light emission via DynLight's API. *(Done for carts — a lit blast-furnace cart emits level-5 dynamic light via a scoreboard-tag integration; see CartConfig `dynamic-lights`.)*
-- **Connected/multi-block structures** — Ropes' vertical chain pattern (breaking one breaks all). Generic multi-block structure support.
-- **Power chains** — long-distance rotational link between two "chain wheel" nodes; requires a complete (mutual) loop; minecarts ride a powered chain like a ski lift. Designed: defCoreLib/docs/todos/mechanism/power-chains.md (chain = a graph edge-at-a-distance injected into RotationNetwork; ski-lift reuses EntityAnchor glue + updateFromVehicle).
-- **Extendable pistons** — Create-style multiblock (piston core + shaft poles + separate head) that translates the head + glued payload several blocks. Designed: defCoreLib/docs/todos/mechanism/extendable-pistons.md (translation via BasicMechanism.move() — no matrix rewrite; new axis-directed multiblock validator; payload via GlueManager/BlockAnchor).
+### Real gaps / correctness
+- **WorldGuard protection-awareness — NOT STARTED.** No protection layer; every mechanism/glue/ship world-write bypasses
+  region protection. Real grief gap. (`mechanism/protection-awareness.md`)
+- **Asymmetric minecart curve-jam.** A turning cart doesn't rotate its payload — rotation is deliberately frozen
+  (`BasicMechanism` turn logic); needs a cumulative-turn accumulator. Most user-visible mechanism bug.
+  (`mechanism/deferred-from-glue-landing-round.md §2`)
+- **Chain-pulley open items** — lock-gate phantom demand (correctness), reload strand duplication, wheel-spin direction
+  cue. (`mechanism/chain-pulley.md`)
 
-## Known follow-ups
-- **1.21.9+ CHAIN→IRON_CHAIN rename breaks bare shafts** (as of 2026-07-14): the bare-shaft code
-  hardcodes `Material.CHAIN` (~6 sites: CustomBlockRegistry getTypeFromBlock/isChainShaft/
-  restoreChainShaftsInChunk, CoreLibPlugin onFluidFlowIntoCustomHead, RotationBlocks
-  makeShaftBare/toggle) while ChainPulley already resolves `IRON_CHAIN`/`CHAIN` by name
-  (resolveChain()). The playtest server jar is already 1.21.11 — reuse the resolveChain pattern.
-- **/reload / hot-enable gap** (pre-existing): chunks already loaded at plugin enable get no
-  ChunkLoadEvent/EntitiesLoadEvent, and rescanLoadedChunks scans tile entities only — bare chain
-  shafts in such chunks stay unresolved until a chunk reload. Optional: run chunkRestorers over
-  world.getLoadedChunks() for hinted chunks after registration finalizes.
+### Features (designed / partial)
+- **Power-chains ski-lift** — cart-on-chain gondola (`ChainRideManager`) is DESIGN-ONLY; transmission half is done.
+  (`mechanism/power-chains.md §E`)
+- **Minecart trains** — coupling/chaining not built (`mechanism/minecarts-v2.md`).
+- **Mixer** — not started, no code (`mechanism/mixer.md`).
+- **Fluids** — package scaffolded; per-wave work needs audit/finish (`mechanism/fluids.md`).
+- **Tech-tree remaining gates** — sieve/steam/etc.; foundation (machines/press/fan/drill + MachineRecipes) shipped
+  (`mechanism/tech-tree.md`).
+
+### Dev-ergonomics refactors (no user-facing change)
+- **Rotation elegance Phase 3** — per-orientation quaternions still hand-computed in `rotation-blocks.yml`; loader should
+  compose a canonical Y-frame across axes. NOT DONE.
+- **Rotation elegance Phase 2 sugar** — `copy_from`+`animation` works, but spin axis is still hand-declared (no
+  `{like/spin}` shorthand). PARTIAL.
+
+### Small cleanups
+- Remove dead `MechanismSerializer.onRecoveryComplete` seam (defined, called nowhere).
+- C9: `RotationNetwork` size-cap is silent — add a warning (trivial).
+- Cosmetic deferrals: mid-stroke display pop (§4), owned-vehicle destroy hole (§3), non-sticky hoist shear (§5).
+
+### Intentionally deferred (design decision — leave unless revisited)
+Reverser/clutch redstone while riding, chain-pulley edges aboard, water-wheel as a mobile source (windmills already are),
+and unifying static `RotationNetwork` onto `RotationSolver` — all explicitly inert-on-mechanism by design
+(`RotationSolver.java:19-39`).
+
+## Housekeeping — stale docs to archive
+These describe already-shipped work and can be archived/deleted: `chain-shaft.md` (approach abandoned — shafts use
+stairs/copper), `minecarts.md`, `rotation-mechanisms.md`, `blockships-integration.md`, `persistence.md`,
+`animations-mechanisms.md`, `display-system-refactor.md`, and top-level `TODO.md`.
+`mechanism/rotation-and-mechanism-fixes.md` (the old "live list") is ~90% done — only C9/C10, F5, and the deferred-doc
+items remain.
 
 ## Infrastructure
-- Test on live server
-- Git push to GitHub + CI
-- Migrate RedstoneDisplays (simplest existing plugin)
-- Two-JAR distribution (slim + bundled) for consumer plugins
+- Test on live server · Git push + CI · Two-JAR distribution (slim + bundled) for consumer plugins.
