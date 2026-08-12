@@ -355,20 +355,36 @@ final class RotationConfig {
         }
     }
 
+    /**
+     * Mirrors the {@code power:} block of rotation-config.yml key for key. That YAML always wins
+     * (it is read from the JAR, never a data folder), so these only surface if a key is dropped
+     * from it — but because this map is pre-populated, a key present here makes the per-call-site
+     * fallback in {@link #getPower} dead, so THIS is the value a dropped key falls back to. Keep
+     * the two in sync; a silent revert to an old balance is the failure mode otherwise.
+     */
     private void initDefaultPower() {
         powerValues.put("windmill", 1);
         powerValues.put("large_windmill", 5);
         powerValues.put("huge_windmill", 15);
         powerValues.put("water_wheel", 2);
-        powerValues.put("engine", 5);
+        powerValues.put("engine", 10);
+        powerValues.put("steam_piston", 20);
         powerValues.put("redstone_motor", 1);
-        powerValues.put("drill", 1);
-        powerValues.put("millstone", 1);
-        powerValues.put("fan", 1);
-        powerValues.put("press", 1);
-        powerValues.put("placer", 1);
-        powerValues.put("suction_hopper", 1);
+        powerValues.put("drill", 5);
+        powerValues.put("millstone", 5);
+        powerValues.put("fan", 2);
+        powerValues.put("press", 4);
+        powerValues.put("sieve", 10);
+        powerValues.put("pump", 4);
+        powerValues.put("placer", 2);
+        powerValues.put("suction_hopper", 3);
         powerValues.put("mechanical_dispenser", 1);
+        powerValues.put("piston_core", 1);
+        powerValues.put("chain_hoist", 1);
+        powerValues.put("propeller", 5);
+        powerValues.put("large_propeller", 10);
+        powerValues.put("huge_propeller", 20);
+        powerValues.put("reaction_wheel", 1);
     }
 
     private void initDefaultMechMeta() {

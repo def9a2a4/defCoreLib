@@ -444,7 +444,7 @@ blocks:
     name: "&6Copper Corner Pipe"
     recipe_category: REDSTONE
     lore:
-      - "&7Pushes items into the direction it was placed."
+      - "&7Pushes items toward the block it was placed against."
       - "&7Must have another pipe feeding into it."
     texture: "@copper_corner_head_h"
     item_texture: "@copper_corner_item"
@@ -490,7 +490,7 @@ blocks:
     name: "&7Iron Corner Pipe"
     recipe_category: REDSTONE
     lore:
-      - "&7Pushes items into the direction it was placed."
+      - "&7Pushes items toward the block it was placed against."
       - "&7Must have another pipe feeding into it."
     texture: "@iron_corner_head_h"
     item_texture: "@iron_corner_item"
@@ -536,7 +536,7 @@ blocks:
     name: "&eGold Corner Pipe"
     recipe_category: REDSTONE
     lore:
-      - "&7Pushes items into the direction it was placed."
+      - "&7Pushes items toward the block it was placed against."
       - "&7Must have another pipe feeding into it."
     texture: "@gold_corner_head_h"
     item_texture: "@gold_corner_item"
@@ -582,7 +582,7 @@ blocks:
     name: "&2Oxidized Copper Corner Pipe"
     recipe_category: REDSTONE
     lore:
-      - "&7Pushes items into the direction it was placed."
+      - "&7Pushes items toward the block it was placed against."
       - "&7Must have another pipe feeding into it."
     texture: "@oxidized_corner_head_h"
     item_texture: "@oxidized_corner_item"

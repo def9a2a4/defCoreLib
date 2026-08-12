@@ -706,8 +706,8 @@ final class RotationBlocks {
         // one about the axis its blades face along.
         record Tier(String id, int defaultPower) {}
         for (Tier t : new Tier[]{
-                new Tier("propeller", 3),
-                new Tier("large_propeller", 8),
+                new Tier("propeller", 5),
+                new Tier("large_propeller", 10),
                 new Tier("huge_propeller", 20)}) {
             overlayConsumerMachine(registry, network, new ConsumerSpec(
                 "mech:" + t.id(),
@@ -722,7 +722,7 @@ final class RotationBlocks {
         overlayConsumerMachine(registry, network, new ConsumerSpec(
             "mech:reaction_wheel",
             b -> RotationNetwork.Axis.Y,
-            config.getPower("reaction_wheel", 4),
+            config.getPower("reaction_wheel", 1),
             100,
             b -> { },
             null, null, null));

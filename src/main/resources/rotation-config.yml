@@ -102,7 +102,13 @@ power:
   redstone_motor: 1
   drill: 5
   millstone: 5
-  fan: 10
+  # 2, not 10. A fan is the entry tier of BlockShips' ship propulsion as well as an entity blower, and
+  # BlockShips rates it at 10 thrust against the propeller's 32. At 10 power it cost the SAME as a large
+  # propeller (100 thrust) and more than a propeller (32 thrust for 5) — strictly dominated, with no
+  # build in which it was ever the right block. At 2 it is worse per block and better per power, which
+  # is what an entry tier should be. Ship thrust lives in BlockShips' custom-ships.stats.thrust; these
+  # two tables are one balance surface split across two repos, so change them together.
+  fan: 2
   press: 4
   sieve: 10
   pump: 4

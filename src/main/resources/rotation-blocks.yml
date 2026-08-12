@@ -826,7 +826,7 @@ blocks:
       - "&7Transmits rotation power"
       - "&7Disconnects when redstone powered"
     catalog_notes:
-      - "&fA shaft you can switch off: give it a redstone signal and it disconnects, cutting power from passing through."
+      - "&fA shaft you can switch off: give it a redstone signal and it disconnects, stopping power from passing through."
       - "&7With no redstone signal it passes power normally, like a plain shaft."
       - "&7Handy as a clutch/gate to start and stop a branch of your network."
     # Copper bearing head (orientation-dependent per state).
@@ -1103,11 +1103,11 @@ blocks:
     physical_material: WAXED_COPPER_CHEST
     name: "&bWater Wheel"
     lore:
-      - "&7Produces 2 Power when adjacent to water"
+      - "&7Produces 2 Power in flowing water"
       - "&7Place on a wall"
     catalog_notes:
-      - "&fA source worth 2 Power. Mount it on a wall with water touching it (still or flowing) and it spins from the current."
-      - "&7Needs water alongside it (its top and sides) to turn — no water, no power. A passive source otherwise (no fuel)."
+      - "&fA source worth 2 Power. Mount it on a wall with flowing water touching it, and it spins from the current."
+      - "&7Needs flowing water alongside it (its top and sides) to turn — no current, no power. A passive source otherwise (no fuel)."
     # Placed hub head = windmill hub (copber2-fwd, same as bearing); item = copper wheel.
     texture: "@windmill_hub_fwd"
     item_texture: "@water_wheel_copper"
@@ -3109,7 +3109,7 @@ blocks:
     # (CoreLibPlugin.captureBannerIngredients swaps the result by banner tier).
 
   # ─── Fan ────────────────────────────────────────────────────────────────
-  # Consumer: 1 Power. Spins only while powered; blows entities (mobs, players,
+  # Consumer: 2 Power. Spins only while powered; blows entities (mobs, players,
   # dropped items) away from the surface it's mounted on — floor → up, wall →
   # outward — in a ~1-wide beam. Push strength scales with surplus power; reach is
   # fixed (see rotation-config.yml fan.range). Blade geometry mirrors the regular
@@ -3120,7 +3120,7 @@ blocks:
     categories: [blockships]
     name: "&fFan"
     lore:
-      - "&7Consumes 10 Power to blow entities"
+      - "&7Consumes 2 Power to blow entities"
       - "&7Pushes mobs, players & items away from its mount"
       - "&7Stronger with more surplus power; fixed range"
     catalog_notes:
@@ -3868,7 +3868,9 @@ blocks:
     catalog_notes:
       - "&fA heavy spinning disc. Drive it from a shaft underneath."
       - "&fOn a ship it improves turning only — it will not make you go faster or lift you."
-      - "&7Unlike sails, it works when the ship is stopped."
+      - "&7Works at a standstill, unlike sails — but so does a propeller mounted across the hull,"
+      - "&7and that turns far harder. This is the cheap, compact option: one power, one floor block,"
+      - "&7no hull width spent on it."
       - "&7Floor placement only."
       - "&7Craft from redstone, iron blocks and a bearing."
     recipes:
