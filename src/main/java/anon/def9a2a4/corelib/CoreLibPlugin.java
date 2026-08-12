@@ -2189,7 +2189,7 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
                     if (icon == null) continue;
                     int gslot = row * 9 + col;
                     inv.setItem(gslot, icon);
-                    if (spec.isBlock() && registry.getType(spec.blockId()) != null) holder.drillSlots.put(gslot, spec.blockId());
+                    { String rid = catalogRefBlockId(spec); if (rid != null && registry.getType(rid) != null) holder.drillSlots.put(gslot, rid); }
                 }
             }
             inv.setItem(13, catalogNavItem(Material.ARROW, "→"));
@@ -2206,7 +2206,7 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
                 if (icon == null) continue;
                 int gslot = gslots[gi++];
                 inv.setItem(gslot, icon);
-                if (spec.isBlock() && registry.getType(spec.blockId()) != null) holder.drillSlots.put(gslot, spec.blockId());
+                { String rid = catalogRefBlockId(spec); if (rid != null && registry.getType(rid) != null) holder.drillSlots.put(gslot, rid); }
             }
             inv.setItem(13, catalogNavItem(Material.ARROW, "→ (shapeless)"));
             inv.setItem(15, catalogResult(type, r.output(), r.amount()));
@@ -2283,9 +2283,10 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
     }
 
     private @org.jspecify.annotations.Nullable ItemStack catalogIngredientIcon(CustomHeadBlock.IngredientSpec spec) {
-        if (spec.isBlock()) {
-            CustomHeadBlock t = registry.getType(spec.blockId());
-            return t != null ? t.createItem(1) : catalogNavItem(Material.PLAYER_HEAD, spec.blockId());
+        if (spec.isBlock() || spec.isBlockType()) {
+            String id = spec.isBlock() ? spec.blockId() : spec.blockType();
+            CustomHeadBlock t = registry.getType(id);
+            return t != null ? t.createItem(1) : catalogNavItem(Material.PLAYER_HEAD, id);
         }
         if (spec.isMaterial() && spec.material() != null) return new ItemStack(spec.material());
         if (spec.isMaterials() && spec.materials() != null && !spec.materials().isEmpty()) return new ItemStack(spec.materials().get(0));
@@ -2294,6 +2295,12 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
             return new ItemStack(vals.isEmpty() ? Material.NAME_TAG : vals.iterator().next());
         }
         return null;
+    }
+
+    /** The custom-block id an ingredient references (a strict {@code block:} or tolerant {@code block_type:}),
+     *  else null — used to make that grid cell drillable to the referenced block's detail. */
+    private static @org.jspecify.annotations.Nullable String catalogRefBlockId(CustomHeadBlock.IngredientSpec spec) {
+        return spec.isBlock() ? spec.blockId() : spec.isBlockType() ? spec.blockType() : null;
     }
 
     private void catalogGive(Player player, String id) {
