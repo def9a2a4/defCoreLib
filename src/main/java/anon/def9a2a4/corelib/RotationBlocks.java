@@ -1103,8 +1103,12 @@ final class RotationBlocks {
 
     /** Rebuild {@code base} with a yaw pointing the art's front (+Z at identity = SOUTH) at
      *  {@code facing}. Same angle table as {@code Faces.rotationForFace} (which the redstone dynamo and
-     *  the mechanical dispenser use) — see {@code MechanismRegistry.floorHeadYawRadians} for the two
-     *  head-yaw conventions and which sites belong to which. */
+     *  the mechanical dispenser use) <b>for the four wall cases</b> — the two diverge on UP/DOWN, where
+     *  {@code rotationForFace} rotates ∓π/2 about X and the {@code default} arm below falls through to
+     *  identity. That divergence is currently unreachable: both callers funnel through
+     *  {@code nearestCardinal} or a chest-style {@code Directional} and never pass a vertical face. See
+     *  {@code MechanismRegistry.floorHeadYawRadians} for the two head-yaw conventions and which sites
+     *  belong to which. */
     private static org.bukkit.util.Transformation yawShell(
             org.bukkit.util.Transformation base, BlockFace facing) {
         float h = (float) (Math.PI / 2), p = (float) Math.PI;

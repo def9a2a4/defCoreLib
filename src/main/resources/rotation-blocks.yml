@@ -3746,7 +3746,7 @@ blocks:
       - "&fMounted on the floor or ceiling it fires downward and lifts a ship; on a wall it drives"
       - "&fthe ship along or turns it, depending which way it faces."
       - "&7It produces no rotational power — it only pushes."
-      - "&7Craft from a Fan, blaze rods and a blast furnace."
+      - "&7Craft from a Fan, four iron ingots, two blaze rods and a blast furnace."
     recipes:
       craft:
         shaped:
@@ -3870,10 +3870,10 @@ blocks:
       - "&fA heavy spinning disc. Drive it from a shaft underneath."
       - "&fOn a ship it improves turning only — it will not make you go faster or lift you."
       - "&7Works at a standstill, unlike sails — but so does a propeller mounted across the hull,"
-      - "&7and that turns far harder. This is the cheap, compact option: one power, one floor block,"
-      - "&7no hull width spent on it."
+      - "&7and that turns far harder. This is the cheap option: one power against a propeller's five,"
+      - "&7and the only turning you can get out of a floor mount."
       - "&7Floor placement only."
-      - "&7Craft from redstone, iron blocks and a bearing."
+      - "&7Craft from two redstone, an iron block and a bearing."
     recipes:
       craft:
         shaped:

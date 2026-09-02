@@ -1249,9 +1249,14 @@ public class MechanismRegistry {
 
     /**
      * Yaw (radians about +Y) turning a floor head's primary ItemDisplay so it matches the vanilla skull's
-     * {@code Rotatable} orientation on the static path. 16-step SOUTH=0 · 22.5°/step, same table as standing
-     * banners. The sign is baked in (negated) to the proven convention: the standing-banner transform applies
-     * its yaw as {@code rotateY(-yaw)}; this returns radians meant to be applied POSITIVELY at the render site.
+     * {@code Rotatable} orientation on the static path. 16-step SOUTH=0 · 22.5°/step — the same raw
+     * <i>lookup</i> standing banners use, but NOT the same effective rotation: the two differ by π, which
+     * is the whole subject of the analysis below. The sign is baked in (negated) to match
+     * {@code BannerManager.standingTransform}, which applies its yaw as {@code rotateY(-yaw)}; this returns
+     * radians meant to be applied POSITIVELY at the render site. (Careful: {@link #vanillaBannerTransform}
+     * is <i>also</i> a "standing banner transform" and sits in the OTHER family — it applies
+     * {@code rotateY(180 - yaw)}. When this javadoc says "standing banners" in the family list below, it
+     * means that one.)
      *
      * <p>UNRESOLVED — the facts, so the next reader does not have to re-derive them. There are TWO
      * conventions across five sites, not three, and they differ by a constant π independent of step:
@@ -1273,7 +1278,11 @@ public class MechanismRegistry {
      * javadoc used to claim: it goes through {@code DisplayUtil.spawn} + {@code setTransformation}, while
      * the mechanism path calls {@code world.spawn} directly and poses with
      * {@code setTransformationMatrix}. They do share the default {@code ItemDisplayTransform.NONE},
-     * since neither ever calls {@code setItemDisplayTransform} — so display mode explains nothing here.
+     * since neither of these two call sites calls {@code setItemDisplayTransform} — so display mode
+     * explains nothing here. (Class-wide it is not true: the block-free {@code PartSpec.display} branch
+     * of {@code spawnMechDisplay} does set it, and BlockShips drives that branch with
+     * {@code ItemDisplayTransform.HEAD}. That branch has no {@code blockData} and so never reaches this
+     * table, which is why it does not disturb the comparison.)
      *
      * <p>So this table is the odd one out against two independently in-game-verified siblings, one of
      * which ({@code faceYawRadians}) is itself a PLAYER_HEAD ItemDisplay — meaning the "a banner model
@@ -1281,7 +1290,10 @@ public class MechanismRegistry {
      * other way: vanilla renders a wall skull a half-turn from a floor skull of the same facing, which
      * would make the present difference correct and this table already right. Supporting that,
      * BlockShips' own long-shipped {@code CustomShipRender.applySkullTransform} — an independently
-     * written fifth implementation — encodes exactly the same wall = floor + π split.
+     * written fifth <i>head</i> implementation, and the sixth site overall — encodes exactly the same
+     * wall = floor + π split. (The "five sites" count above includes {@code vanillaBannerTransform},
+     * which is not a head; count heads and you get five including BlockShips', count sites and you get
+     * six. The DefCoreLib changelog uses the head-only count.)
      *
      * <p>Resolve by looking, not by reasoning, and it needs only two blocks: place a vanilla
      * {@code PLAYER_WALL_HEAD[facing=north]} beside a vanilla {@code PLAYER_HEAD[rotation=south]} (step
@@ -1299,7 +1311,9 @@ public class MechanismRegistry {
         Vector3f translation = new Vector3f(0, VANILLA_STANDING_Y, 0);
         float yaw = 0f;
         if (bd instanceof org.bukkit.block.data.Rotatable rot) {
-            // Standing banner: 16-step rotation, SOUTH=0 · 22.5°/step — same table as floor heads.
+            // Standing banner: 16-step rotation, SOUTH=0 · 22.5°/step — the same raw lookup floor heads
+            // use, but applied below as rotateY(180 - yaw) rather than rotateY(-yaw), so the effective
+            // rotation is a half-turn from theirs. See floorHeadYawRadians for why that matters.
             yaw = BlockRotation.rotationToStep(rot.getRotation()) * 22.5f;
         } else if (bd instanceof org.bukkit.block.data.Directional dir) {
             // Wall banner: cloth faces `facing`, hangs against the opposite (attachment) face.

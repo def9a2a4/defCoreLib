@@ -126,7 +126,8 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
             }
         } catch (IOException ignored) {}
 
-        // corelib-namespace inventory-only items (slime glue) — same model as custom-items.yml
+        // Inventory-only items (slime glue) — same model as custom-items.yml. Note the FILE is named
+        // corelib-items.yml but its declared namespace is `mech`, so its recipes are gated with mech's.
         try (InputStream corelibItemStream = getResource("corelib-items.yml")) {
             if (corelibItemStream != null) {
                 BlockLoader.load(corelibItemStream, registry, getLogger());
@@ -463,12 +464,22 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
      * untouched host block — there is no block state to inspect — so a material test can never see
      * them. This is the only way to find them.
      *
-     * <p>Two things to know: the display is spawned in the neighbour cell toward the face it hangs on,
-     * so <b>expand your region by at least 3 blocks</b> or you will miss the banners on a structure's
-     * own outer faces; and only loaded chunks are searched.
-     *
-     * <p>A vanilla banner BLOCK also reports here, as {@link BannerTier#NORMAL} — ignore that tier if
-     * you already count banner blocks by material, or you will count them twice.
+     * <p>Three things to know:
+     * <ul>
+     *   <li>The display is spawned in the neighbour cell toward the face it hangs on, so <b>expand your
+     *       region by at least 3 blocks</b> or you will miss the banners on a structure's own outer
+     *       faces.</li>
+     *   <li>Only <b>loaded</b> chunks are searched — and "loaded" here means <b>entities</b> loaded, not
+     *       blocks. Paper streams a chunk's entities in asynchronously AFTER its blocks are ready, so
+     *       there is a window in which every host block is present and this returns nothing for them.
+     *       If a wrong answer is worse than a late one, check {@code Chunk.isEntitiesLoaded()} over your
+     *       region first and treat "not yet" as unknown rather than as zero.</li>
+     *   <li>{@link BannerTier#NORMAL} entries exist, but their hosts are <b>never banner blocks</b>. A
+     *       plain banner placed as a block creates no display at all; the NORMAL displays that exist are
+     *       fence flags and bed banners, hosted on fences, walls, bars, chains, panes, rods and beds. A
+     *       material-based banner-block count and this API therefore cannot overlap, and there is
+     *       nothing here to double-count.</li>
+     * </ul>
      */
     public Map<Block, List<BannerTier>> bannerTiersIn(World world, BoundingBox region) {
         return BannerManager.bannerTiersIn(world, region);
@@ -1396,10 +1407,12 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
      * <ul>
      *   <li><b>Propeller</b>: the windmill in the grid decides the tier (windmill → propeller, large → large,
      *       huge → huge) and its blade patterns carry onto the propeller. No windmill → null result (a plain
-     *       head + iron/redstone frame can't mint a free propeller). The tier step is gated the same way the
-     *       windmill's own is — see {@code CustomBlockRegistry.isWindmillTierEnabled}.</li>
-     *   <li><b>Thruster</b>: requires a {@code mech:fan} in the grid; otherwise null result. Deliberately
-     *       ungated: a fan has no tiers, so there is nothing for the bbanners gate to say about it.</li>
+     *       head + iron/redstone frame can't mint a free propeller). This step is deliberately <i>not</i>
+     *       gated on {@code CustomBlockRegistry.isWindmillTierEnabled}: without bbanners no tier windmill can
+     *       be crafted in the first place, so the gate could only ever fire on a {@code /give}n, creative or
+     *       legacy one — and there it silently and permanently downgraded it. Convert tier-for-tier and let
+     *       the windmill gate be the only gate.</li>
+     *   <li><b>Thruster</b>: requires a {@code mech:fan} in the grid; otherwise null result.</li>
      * </ul>
      */
     private void capturePropulsionResult(org.bukkit.inventory.CraftingInventory inv) {
@@ -1415,12 +1428,7 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
                 if (t != null && isWindmillType(t)) { windmill = it; windmillType = t; break; }
             }
             if (windmill == null) { inv.setResult(null); return; }
-            // Mirror the windmill's own tier gate (CustomBlockRegistry.isWindmillTierEnabled): with
-            // bbanners absent the tiers aren't craftable, so a tier windmill that predates its removal
-            // (or came from /give) must not mint a tier propeller either. Substitute the base id rather
-            // than refusing — the craft still succeeds, and the blade copy below must still run.
-            String tierId = registry.isWindmillTierEnabled() ? windmillType : "mech:windmill";
-            CustomHeadBlock propType = registry.getType(propellerForWindmill(tierId));
+            CustomHeadBlock propType = registry.getType(propellerForWindmill(windmillType));
             if (propType == null) { inv.setResult(null); return; }
             ItemStack out = propType.createItem(result.getAmount());
             var meta = out.getItemMeta();
