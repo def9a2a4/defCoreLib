@@ -1,0 +1,23 @@
+# mech v0.5.0
+
+Five new blocks that push a **ship** instead of the world — three tiers of **Propeller**, a fuel-burning **Thruster**, and a **Reaction wheel** gyroscope — turning the rotation network into a propulsion system for BlockShips vessels. The **Fan** joins them as the entry tier: it is what a Thruster is built from, and at 2 power it stays the cheapest thing that pushes. One balance change to read before upgrading — **windmills carried aboard a mechanism now supply half power** — plus a fix for wall-head orientation on moving mechanisms.
+
+## New blocks
+
+- **Propeller**, **Large propeller**, **Huge propeller** — the iron, bronze and steel tiers of ship thrust. Consumers: they draw power (5 / 10 / 20) and produce none, and they have no effect in the world at all — a BlockShips vessel reads their powered state and decides what the thrust does. Like a fan they act *away* from their mount, so a floor-mounted one pushes the ship upward. All three tiers spin at one rate rather than the windmills' 3:2:1 — they are engine-driven, so uniform RPM is what reads correctly. **Craft:** a matching-tier Windmill in the centre, iron corners, redstone edges — the windmill's blade patterns carry onto the propeller, so a banner design you built survives the conversion. The large and huge tiers therefore inherit the Windmill's BetterBanners gate: without that plugin they are uncraftable, though any that already exist keep working in full.
+- **Thruster** — burns fuel instead of drawing rotation power, so it works on a ship with no network at all. It rides as a zero-power engine, which is what gives it fuel burning and the running/idle skin swap. **Craft:** from a Fan. One limitation worth knowing: its exhaust plume does not render while the mechanism is *moving*, because particle ticking for mechanism blocks is not implemented yet. A static, fuelled thruster shows it.
+- **Reaction wheel** — a gyroscope. Turns the ship and nothing else, whichever way it is mounted, and at 1 power it is the most turning per unit of power available — in a single floor block, against a propeller that wants hull width and several times the network.
+
+## Features
+
+- **Mount direction decides the effect.** A propulsion block's facing is rotated into ship-local space: pointing fore or aft adds speed, sideways adds turning, up or down adds lift. One block type, three roles.
+- **Live rotation state is queryable.** `isRotationPowered`, `rotationSurplus` and `rotationFacing` are exported so a dependent plugin can read a network's state per block, plus `MechanismRotationSolvedEvent` when a network re-solves and `bannerTiersIn` for a region banner-tier query.
+- **`requires_plugin` recipe gate** — a block's recipes can be withheld until a named plugin is present, and registered live when it enables.
+
+## Balance
+
+- **Windmills carried aboard a mechanism now supply half power.** New in this release, and it affects builds you already have: a windmill supplies its full rating on a static build, but riding a mechanism it now gives 1 / 3 / 8 instead of 1 / 5 / 15. Rotation power is all-or-nothing, so a contraption that was running near break-even off its own carried windmills will stop running entirely after the upgrade — add a windmill or two, or drop a consumer, before you next assemble it. The point is that a contraption cannot power itself indefinitely, which matters far more now that propellers exist to spend that power on.
+
+## Fixes
+
+- **Wall-mounted heads rendered backwards on a moving mechanism**, on all four walls. The head item model's face is a half-turn from the block's, and the mechanism display path was not compensating. This is the one fix here that affects builds from v0.4.0; the propulsion blocks are new, so anything corrected about them during development is not called out as a fix.

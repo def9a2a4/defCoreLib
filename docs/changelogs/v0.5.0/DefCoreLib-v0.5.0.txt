@@ -1,0 +1,25 @@
+# DefCoreLib v0.5.0
+
+Five new Mechanism blocks turn the rotation network into ship propulsion — three tiers of Propeller, a fuel-burning Thruster, and a Reaction wheel — and the library grows the API a dependent plugin needs to use them: live rotation state per block, a region banner-tier query, and a recipe gate that can withhold a block's recipes until a named plugin is present. This release also fixes wall-head orientation on moving mechanisms.
+
+- **Ship propulsion** — Propeller (3 tiers), Thruster, Reaction wheel; see the mech changelog
+- **Carried windmills now supply half power** — a new `mech_power_scale` multiplier applied to a source riding a mechanism, so a large/huge windmill aboard gives 3/8 rather than 5/15. This changes existing worlds: an under-supplied network runs nothing, so a contraption sitting near break-even stops working until it gains a windmill or sheds a consumer.
+- **Live rotation API** — read a block's powered state, its network's surplus, and its actuation facing; `MechanismRotationSolvedEvent` fires when a network re-solves
+- **Banner tier query** — `bannerTiersIn(world, region)` returns the large/huge banner displays hosted in a region, in one entity sweep instead of one per block
+- **`requires_plugin` recipe gate** — withhold a block's recipes until a named plugin enables, then register them live
+- **Wall heads on mechanisms no longer render backwards** — the head item model's face is a half-turn from the block's, and the mechanism display path now compensates
+
+## API
+
+- `isRotationPowered(int)`, `rotationSurplus(int)`, `rotationFacing(int)`, `rotationFacingAt(Block)` — live rotation state. `powered`, `surplus` and `jammed` are **per-network**, identical for every member; do not build a per-block model on them.
+- `MechanismRotationSolvedEvent` — fires when a mechanism's rotation network re-solves. Topology is frozen while assembled and the solver runs at most every 20 ticks, so this is cheap; a windmill-only mechanism never re-solves after assembly.
+- `bannerTiersIn(World, BoundingBox)` — large/huge banner displays by host block. **Callers must expand the region**: a banner's display entity spawns in the neighbour cell toward the face it hangs on, and scales out from there, so a box fitted tightly to a structure misses precisely the banners mounted on its outside.
+- `massRegistry()` — exposes the mass table so a dependent plugin can price blocks its own config does not list.
+
+## Behavior
+
+- **The BetterBanners tier gate covers propellers too**, not just the windmill swap it was written for — a large or huge Windmill will not mint a tier Propeller without that plugin. It is a **recipe** gate and nothing more: the tiers are uncraftable, but tier blocks that already exist keep placing, dropping, capturing onto mechanisms, and supplying their full tier power. The startup log line said "unavailable", which read as though those blocks stopped working; it now says "uncraftable; existing ones still work".
+
+## Fixes
+
+- **Head-yaw conventions documented.** Four sites orient a head on a display entity and they fall into two families differing by a constant half-turn. The javadoc claimed there were three conventions and that the redstone dynamo shared the mechanism spawn path; both were wrong. The remaining open question — whether floor heads need the same half-turn wall heads got — is stated with the one two-block test that settles it, and deliberately left unchanged, since altering it would rotate every floor head on every mechanism in every existing world.

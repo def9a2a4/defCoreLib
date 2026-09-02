@@ -7,6 +7,10 @@ left, what reuses existing code, what needs new subsystems, and the open decisio
 ## Shipped foundation (reuse these)
 - **Machines:** millstone (formerly grindstone), extractor press, fan, drill — all via the shared
   `overlayConsumerMachine(ConsumerSpec)` + `processingMachineTick` in `RotationBlocks.java`.
+- **Ship propulsion:** propeller / large / huge (iron→bronze→steel, crafted from the matching
+  windmill and inheriting its blades), thruster (zero-power `kind: engine`, so it burns fuel and gets
+  the `running_`/`idle_` skin swap for free), reaction wheel. Consumers with no world effect of their
+  own — BlockShips reads their powered state and decides what the thrust does.
 - **`MachineRecipes`** — generic loader; **already supports `chance` + multi-output + custom-item
   outputs** (so the sieve needs no new recipe code).
 - **Custom-item layer** — `CustomHeadBlock` with `item_material` + `placeable: false`; potions

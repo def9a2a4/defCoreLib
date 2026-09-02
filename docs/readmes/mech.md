@@ -49,6 +49,18 @@ reversers, and ratchets.
 
 The drill, placer, and fan reorient when carried by a mechanism, aiming along their own facing rotated by the mechanism's motion.
 
+## Ship propulsion
+
+These push a ship rather than the world, so they only do anything aboard a [BlockShips](https://github.com/def9a2a4/BlockShips) vessel. **Which way you mount one decides what it does**: pointing fore or aft adds speed, sideways adds turning, up or down adds lift. Like the fan, propellers act *away* from their mount, so a floor-mounted one pushes upward.
+
+- [**Propeller**](https://def9a2a4.github.io/defCoreLib-docs/item.html?id=mech%3Apropeller) - the iron tier of ship thrust; draws 5 power while running and produces none. Craft from a Windmill; its blades carry over.
+- [**Large propeller**](https://def9a2a4.github.io/defCoreLib-docs/item.html?id=mech%3Alarge_propeller) - the bronze tier, roughly three times a propeller's push for 10 power. Craft from a Large Windmill.
+- [**Huge propeller**](https://def9a2a4.github.io/defCoreLib-docs/item.html?id=mech%3Ahuge_propeller) - the steel tier, and a serious investment at 20 power; enough on its own to fly a mid-sized hull. Craft from a Huge Windmill.
+- [**Thruster**](https://def9a2a4.github.io/defCoreLib-docs/item.html?id=mech%3Athruster) - burns fuel instead of drawing rotation power, so it works with no network at all. Craft from a Fan.
+- [**Reaction wheel**](https://def9a2a4.github.io/defCoreLib-docs/item.html?id=mech%3Areaction_wheel) - a gyroscope: turns the ship and nothing else, whichever way it sits. The most turning per unit of power, in one floor block.
+
+Rotation power is all-or-nothing — an under-supplied network runs nothing — so split large propeller banks across separate networks rather than one that can brown out.
+
 ## Power output
 
 - [**Redstone dynamo**](https://def9a2a4.github.io/defCoreLib-docs/item.html?id=mech%3Aredstone_dynamo) - the inverse of the motor: reads your rotation network's power and emits an **analog 0-15 redstone signal** (read it with a comparator against any side). Right-click to choose what it reports (total / used / unused power) and how it scales to 0-15 (clamp / mod-15 / ÷15). Transmits rotation along its axis like a shaft, and draws no power itself.
