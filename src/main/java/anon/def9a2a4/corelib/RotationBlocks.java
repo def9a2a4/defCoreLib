@@ -1102,7 +1102,9 @@ final class RotationBlocks {
     }
 
     /** Rebuild {@code base} with a yaw pointing the art's front (+Z at identity = SOUTH) at
-     *  {@code facing}. Same angle table as {@code RedstoneDynamo.rotationForFace}'s wall cases. */
+     *  {@code facing}. Same angle table as {@code Faces.rotationForFace} (which the redstone dynamo and
+     *  the mechanical dispenser use) — see {@code MechanismRegistry.floorHeadYawRadians} for the two
+     *  head-yaw conventions and which sites belong to which. */
     private static org.bukkit.util.Transformation yawShell(
             org.bukkit.util.Transformation base, BlockFace facing) {
         float h = (float) (Math.PI / 2), p = (float) Math.PI;

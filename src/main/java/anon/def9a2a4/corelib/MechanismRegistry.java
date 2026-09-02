@@ -684,7 +684,8 @@ public class MechanismRegistry {
             // Head orientation for a NON-registry vanilla skull (registered heads captured it above). A
             // PLAYER_WALL_HEAD's facing / PLAYER_HEAD's 16-step yaw, so the moving textured ItemDisplay (spawned
             // below from the captured skull profile) renders at the right orientation — mirrors the registered-
-            // head path and BlockShips' native applySkullTransform. Guarded so it never overrides the chb capture.
+            // head path and BlockShips' own CustomShipRender.applySkullTransform (also copied privately into
+            // its ShipInstance). Guarded so it never overrides the chb capture.
             if (wallFacing == null && floorHeadYaw == null) {
                 if (block.getType() == Material.PLAYER_WALL_HEAD
                         && bd instanceof org.bukkit.block.data.Directional wallDir) {
@@ -1229,28 +1230,43 @@ public class MechanismRegistry {
      * banners. The sign is baked in (negated) to the proven convention: the standing-banner transform applies
      * its yaw as {@code rotateY(-yaw)}; this returns radians meant to be applied POSITIVELY at the render site.
      *
-     * <p>UNRESOLVED — the facts, so the next reader does not have to re-derive them:
+     * <p>UNRESOLVED — the facts, so the next reader does not have to re-derive them. There are TWO
+     * conventions across five sites, not three, and they differ by a constant π independent of step:
      * <ul>
-     *   <li>This table is the same cardinal geometry as {@code BasicMechanism.faceYawRadians} before its
-     *       correction: both give WEST → -90°, EAST → +90°, NORTH → 180°, SOUTH → 0.</li>
-     *   <li>That wall table now adds {@code HEAD_ITEM_MODEL_FACE_YAW} (π), because wall heads were observed
-     *       in game rendering backwards on all four walls. This floor table does not.</li>
-     *   <li>A third site uses a third convention: {@code RedstoneDynamo.orientHead} puts a player-head item
-     *       on an ItemDisplay through the same {@code DisplayUtil.spawn} and the same default display mode
-     *       as {@code spawnMechDisplay}, and orients it with {@code Faces.rotationForFace} — no π.</li>
+     *   <li><b>{@code 180 - 22.5·step}</b> — {@code BasicMechanism.faceYawRadians} (wall heads, which adds
+     *       {@code HEAD_ITEM_MODEL_FACE_YAW}) and {@link #vanillaBannerTransform} (standing banners).
+     *       <b>Both were verified in game</b>: wall heads were observed rendering backwards on all four
+     *       walls, and the banner half-turn is noted below as fixing standing and wall alike.</li>
+     *   <li><b>{@code -22.5·step}</b> — this table, plus {@code Faces.rotationForFace} (used by
+     *       {@code RedstoneDynamo.orientHead}, {@code MechanicalDispenser}, and {@code CartRailsManager}
+     *       ×2) and {@code RotationBlocks.yawShell}. The dynamo is <b>not</b> a third convention — it
+     *       agrees with this table exactly on all four cardinals — and it proves nothing either way,
+     *       since its art was calibrated empirically against it.</li>
      * </ul>
+     * On the cardinals: family one gives S 180 · W +90 · N 0 · E -90; family two gives S 0 · W -90 ·
+     * N 180 · E +90.
      *
-     * <p>Arguments exist both ways and neither is conclusive from the code. If floor and wall heads share a
-     * baseline, one of the two tables must be wrong, and the wall one was fixed by observation — which would
-     * mean this one needs π too. But vanilla renders a wall skull a half-turn from a floor skull of the same
-     * facing, which would make the present difference correct and this table already right. The dynamo says
-     * a third thing again.
+     * <p>Note the dynamo does NOT share {@code spawnMechDisplay}'s spawn helper, contrary to what this
+     * javadoc used to claim: it goes through {@code DisplayUtil.spawn} + {@code setTransformation}, while
+     * the mechanism path calls {@code world.spawn} directly and poses with
+     * {@code setTransformationMatrix}. They do share the default {@code ItemDisplayTransform.NONE},
+     * since neither ever calls {@code setItemDisplayTransform} — so display mode explains nothing here.
      *
-     * <p>Resolve by looking, not by reasoning: put a WALL thruster and a FLOOR drill or engine on one
-     * mechanism, move it, and compare each against the same block placed statically; check a dynamo on the
-     * same trip. A floor THRUSTER is useless for this — its nozzle points straight down, which is exactly
-     * why a yaw error here could go unnoticed for so long. Do not change this on inference: it rotates every
-     * floor head on every mechanism in every existing world.
+     * <p>So this table is the odd one out against two independently in-game-verified siblings, one of
+     * which ({@code faceYawRadians}) is itself a PLAYER_HEAD ItemDisplay — meaning the "a banner model
+     * faces differently from a head model" escape hatch does not apply. The one surviving argument the
+     * other way: vanilla renders a wall skull a half-turn from a floor skull of the same facing, which
+     * would make the present difference correct and this table already right. Supporting that,
+     * BlockShips' own long-shipped {@code CustomShipRender.applySkullTransform} — an independently
+     * written fifth implementation — encodes exactly the same wall = floor + π split.
+     *
+     * <p>Resolve by looking, not by reasoning, and it needs only two blocks: place a vanilla
+     * {@code PLAYER_WALL_HEAD[facing=north]} beside a vanilla {@code PLAYER_HEAD[rotation=south]} (step
+     * 0) in the static world and see whether the skins point the same way. Same way → both tables are
+     * already right, change nothing. 180° apart → this one needs {@code HEAD_ITEM_MODEL_FACE_YAW} too.
+     * That works because nothing here ever normalises a floor skull's 16-step yaw, so a statically
+     * placed custom head is always a real vanilla skull rendered by vanilla. Do not change this on
+     * inference: it rotates every floor head on every mechanism in every existing world.
      */
     private static float floorHeadYawRadians(org.bukkit.block.data.Rotatable rot) {
         return (float) Math.toRadians(-BlockRotation.rotationToStep(rot.getRotation()) * 22.5);

@@ -3515,6 +3515,7 @@ blocks:
       - "&fA powered propeller. Point it along a ship to go faster, across it to turn quicker, or"
       - "&fmount it flat to push the ship up."
       - "&7Draws 5 power while running — it produces none."
+      - "&7Craft from a Windmill; its blades carry over."
       - "&7Places on the floor (spins flat) or on a wall (spins like a wheel)."
     recipes:
       craft:

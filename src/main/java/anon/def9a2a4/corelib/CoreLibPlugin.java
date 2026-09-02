@@ -1396,8 +1396,10 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
      * <ul>
      *   <li><b>Propeller</b>: the windmill in the grid decides the tier (windmill → propeller, large → large,
      *       huge → huge) and its blade patterns carry onto the propeller. No windmill → null result (a plain
-     *       head + iron/redstone frame can't mint a free propeller).</li>
-     *   <li><b>Thruster</b>: requires a {@code mech:fan} in the grid; otherwise null result.</li>
+     *       head + iron/redstone frame can't mint a free propeller). The tier step is gated the same way the
+     *       windmill's own is — see {@code CustomBlockRegistry.isWindmillTierEnabled}.</li>
+     *   <li><b>Thruster</b>: requires a {@code mech:fan} in the grid; otherwise null result. Deliberately
+     *       ungated: a fan has no tiers, so there is nothing for the bbanners gate to say about it.</li>
      * </ul>
      */
     private void capturePropulsionResult(org.bukkit.inventory.CraftingInventory inv) {
@@ -1413,7 +1415,12 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
                 if (t != null && isWindmillType(t)) { windmill = it; windmillType = t; break; }
             }
             if (windmill == null) { inv.setResult(null); return; }
-            CustomHeadBlock propType = registry.getType(propellerForWindmill(windmillType));
+            // Mirror the windmill's own tier gate (CustomBlockRegistry.isWindmillTierEnabled): with
+            // bbanners absent the tiers aren't craftable, so a tier windmill that predates its removal
+            // (or came from /give) must not mint a tier propeller either. Substitute the base id rather
+            // than refusing — the craft still succeeds, and the blade copy below must still run.
+            String tierId = registry.isWindmillTierEnabled() ? windmillType : "mech:windmill";
+            CustomHeadBlock propType = registry.getType(propellerForWindmill(tierId));
             if (propType == null) { inv.setResult(null); return; }
             ItemStack out = propType.createItem(result.getAmount());
             var meta = out.getItemMeta();

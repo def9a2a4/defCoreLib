@@ -2430,7 +2430,14 @@ public class CustomBlockRegistry {
     private final Set<String> withheldForPlugin = new HashSet<>();
 
     // Windmill large/huge tier swap — only active when the bbanners plugin is present (set by mech).
-    // Without it, a large/huge banner (from /give/creative) must NOT produce a tier windmill.
+    //
+    // This is a RECIPE gate, not a content gate. It is read only from the craft-time tier swaps
+    // (CoreLibPlugin.captureBannerIngredients for the windmill, capturePropulsionResult for the
+    // propeller), so with bbanners absent the tiers are simply UNCRAFTABLE. Tier blocks that already
+    // exist — from a world where bbanners was installed, or from /give — keep working in every other
+    // respect: they place, drop, capture onto mechanisms, and supply their full tier power. That is
+    // intended; do not "fix" it by gating placement or power, which would break live builds on any
+    // server that uninstalls bbanners.
     private volatile boolean windmillTierEnabled = false;
     public void setWindmillTierEnabled(boolean enabled) { this.windmillTierEnabled = enabled; }
     public boolean isWindmillTierEnabled() { return windmillTierEnabled; }
