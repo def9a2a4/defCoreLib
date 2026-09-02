@@ -150,7 +150,7 @@ CoreLib handles persistence via PDC tags on player head blocks (`corelib:block_t
 
 ### Legacy migration (standalone Pipes ≤ v0.2.0)
 
-`LegacyPipeMigrator` adopts pipes from the old standalone plugin (identity on `ItemDisplay`s via the `pipe:tag` PDC / `pipe:` scoreboard tag, no block PDC) into the CoreLib format on `EntitiesLoadEvent`, per-world catch-up sweeps, and `/pipes migrate`. It also removes stray legacy displays and plugs a foreign-orphan detector into CoreLib so `/defcorelib cleanorphans` sees them. Sunset: delete the class + its wiring (PipesPlugin, WorldManager, plugin.yml) in v0.4.0 once servers report zero migrations.
+`LegacyPipeMigrator` adopts pipes from the old standalone plugin (identity on `ItemDisplay`s via the `pipe:tag` PDC / `pipe:` scoreboard tag, no block PDC) into the CoreLib format on `EntitiesLoadEvent`, per-world catch-up sweeps, and `/pipes migrate`. It also removes stray legacy displays and plugs a foreign-orphan detector into CoreLib so `/defcorelib cleanorphans` sees them. Sunset: delete the class + its wiring (PipesPlugin, WorldManager, plugin.yml) once servers report zero migrations. This was pencilled in for v0.4.0, which was never released; 0.5.0 still ships it, so the decision is still open rather than overdue.
 
 ## Config Files
 

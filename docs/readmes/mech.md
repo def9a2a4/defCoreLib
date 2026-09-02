@@ -51,13 +51,15 @@ The drill, placer, and fan reorient when carried by a mechanism, aiming along th
 
 ## Ship propulsion
 
-These push a ship rather than the world, so they only do anything aboard a [BlockShips](https://github.com/def9a2a4/BlockShips) vessel. **Which way you mount one decides what it does**: pointing fore or aft adds speed, sideways adds turning, up or down adds lift. Like the fan, propellers act *away* from their mount, so a floor-mounted one pushes upward.
+These push a ship rather than the world, so they only do anything aboard a [BlockShips](https://github.com/def9a2a4/BlockShips) vessel. **Which way you mount one decides what it does**: pointing fore or aft adds speed, sideways adds turning, and any vertical mount — floor or ceiling — adds lift. Like the fan, propellers act *away* from their mount, which is why a floor propeller lifts rather than steers. The reaction wheel is the exception to the whole rule: it turns the ship whichever way it sits.
 
-- [**Propeller**](https://def9a2a4.github.io/defCoreLib-docs/item.html?id=mech%3Apropeller) - the iron tier of ship thrust; draws 5 power while running and produces none. Craft from a Windmill; its blades carry over.
-- [**Large propeller**](https://def9a2a4.github.io/defCoreLib-docs/item.html?id=mech%3Alarge_propeller) - the bronze tier, roughly three times a propeller's push for 10 power. Craft from a Large Windmill.
-- [**Huge propeller**](https://def9a2a4.github.io/defCoreLib-docs/item.html?id=mech%3Ahuge_propeller) - the steel tier, and a serious investment at 20 power; enough on its own to fly a mid-sized hull. Craft from a Huge Windmill.
-- [**Thruster**](https://def9a2a4.github.io/defCoreLib-docs/item.html?id=mech%3Athruster) - burns fuel instead of drawing rotation power, so it works with no network at all. Craft from a Fan.
-- [**Reaction wheel**](https://def9a2a4.github.io/defCoreLib-docs/item.html?id=mech%3Areaction_wheel) - a gyroscope: turns the ship and nothing else, whichever way it sits. The most turning per unit of power, in one floor block.
+- [**Propeller**](https://def9a2a4.github.io/defCoreLib-docs/item.html?id=mech%3Apropeller) - the base tier of ship thrust; draws 5 power while running and produces none. Craft from a Windmill; its blades carry over.
+- [**Large propeller**](https://def9a2a4.github.io/defCoreLib-docs/item.html?id=mech%3Alarge_propeller) - roughly three times a propeller's push for 10 power. Craft from a Large Windmill.
+- [**Huge propeller**](https://def9a2a4.github.io/defCoreLib-docs/item.html?id=mech%3Ahuge_propeller) - a serious investment at 20 power; enough on its own to fly a mid-sized hull. Craft from a Huge Windmill.
+- [**Thruster**](https://def9a2a4.github.io/defCoreLib-docs/item.html?id=mech%3Athruster) - burns fuel instead of drawing rotation power, so it works with no network at all. Craft from a Fan, four iron ingots, two blaze rods and a blast furnace.
+- [**Reaction wheel**](https://def9a2a4.github.io/defCoreLib-docs/item.html?id=mech%3Areaction_wheel) - a gyroscope: turns the ship and nothing else, whichever way it sits. The cheapest turning you can buy — 1 power against a propeller's 5 — and the only turning a floor mount can give you, since a floor propeller blows downward and lifts instead. It is *not* the most turning per unit of power: a huge propeller beats it, and a fuel-burning thruster on a wall draws no rotation power at all. Craft from two redstone, an iron block and a bearing.
+
+The three propeller tiers match the windmill they are crafted from — base, large and huge.
 
 Rotation power is all-or-nothing — an under-supplied network runs nothing — so split large propeller banks across separate networks rather than one that can brown out.
 
