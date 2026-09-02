@@ -22,8 +22,13 @@ import java.util.stream.Collectors;
  * <p>Large/huge windmills are gated on the bbanners plugin: the tier swap that upgrades a windmill
  * by the banner used is only activated when bbanners is present (a soft dependency, so bbanners
  * loads first if installed). This is a <b>recipe</b> gate — without bbanners, plain windmills still
- * craft and the large/huge tiers are uncraftable (as are the propellers made from them). Tier blocks
- * that already exist are unaffected and keep working normally.
+ * craft and the large/huge windmill tiers are uncraftable. Tier blocks that already exist are
+ * unaffected and keep working normally.
+ *
+ * <p>The gate stops at the windmill. Tier propellers are made <i>from</i> tier windmills, so without
+ * bbanners none can be crafted from scratch either — but that follows from having no tier windmill,
+ * not from a second gate. A tier windmill obtained another way ({@code /give}, creative, a world where
+ * bbanners used to be installed) converts tier-for-tier, with no silent downgrade.
  */
 public final class MechPlugin extends JavaPlugin {
 
