@@ -8,6 +8,7 @@ Two new frame blocks — the **Gearbox** and the **Chassis** — a new **Ratchet
 
 - **Bare shafts change material.** A shaft wrenched to its bare form was an iron chain; it is now a **waxed copper chain**. Existing worlds convert in place as their chunks load, keeping each shaft's axis. Nothing to do, but the block sitting in your world will not be the one you left there — and a build that decorated around iron chains will read differently.
 - **Windmills carried aboard a mechanism now supply half power.** A windmill supplies its full rating on a static build, but riding a mechanism it now gives 1 / 3 / 8 instead of 1 / 5 / 15. Rotation power is all-or-nothing, so a contraption that was running near break-even off its own carried windmills will stop running entirely — add a windmill or two, or drop a consumer, before you next assemble it. The point is that a contraption cannot power itself indefinitely, which matters far more now that propellers exist to spend that power on.
+- **Sieve panning yields much less.** Every drop rate came down, most by half and some far more: sifting sand for clay went 14% → 1%, red sand for gold nuggets 12% → 2%, gravel for gold nuggets 5% → 1%, dirt for wheat seeds 10% → 3%. A few outputs moved the other way — gravel can now yield redstone, and red sand yields iron nuggets and raw iron — but an existing sieve farm will produce noticeably less than it did. Size any build that depends on sieve output for the new rates rather than the old ones.
 - **Mixed-wood casing frames no longer auto-glue on their own.** Rebuild a frame in a single wood, or brush-pin the mixed joints.
 - **Run Paper 1.21.11 or newer.** Mechanism needs the datapack-discovery bootstrap API. `api-version` is still `1.21`, so an older server loads the plugin and fails later rather than refusing it at startup.
 
@@ -24,6 +25,7 @@ Two new frame blocks — the **Gearbox** and the **Chassis** — a new **Ratchet
 
 - **Frame blocks are wood-keyed** — casing, gearbox, and chassis are now one "frame" family: a frame block auto-glues only to adjacent frame blocks of the **same wood** (oak casing ↔ oak gearbox ↔ oak chassis, never oak ↔ birch). A plain block no longer auto-drags an adjacent frame — a frame rides only when a machine carries it directly, when it's bonded to a same-wood frame that rides, when a chassis or slime grabs it, or when it's brush-pinned.
 - **Brush-pinning frames** — the glue brush now **pins** a frame block: the pin is stored and rides rigidly, and it *overrides* the wood gate, so you can pin two different woods together, or pin a frame to a plain block.
+- **Glued selections can be four times bigger** — the cap rose from 256 blocks to 1024, which is what makes a hull-sized assembly practical. Worth knowing in both directions: bigger contraptions are now buildable, and a server can now be asked to move one.
 - **Movers carry nested machines** — piston, rotator, drawbridge, minecart, and chain hoist now carry glued **anchors**. Glue a chain hoist onto a rotator (or piston, cart, …) and it comes along: head, chain column, and hanging platform swing as one rigid body and reorient correctly on landing. A carried drill, placer, or fan aims along its own facing rotated by the mechanism — an outward-pointing drill stays pointing outward through the whole motion — and a carried rotator keeps its chosen open angle.
 - **Ceiling rotator** — a rotator mounted under a block now hangs as a ceiling hinge, swinging the block above it like a hatch (Y axis) — the floor door, upside down.
 - **Mounted drill mines mid-swing** — a drill carried by a rotator now bores through the whole arc at any angle, not only at the 90° stops, and breaks at 2× speed while swinging since it only grazes each block.
@@ -40,7 +42,7 @@ Two new frame blocks — the **Gearbox** and the **Chassis** — a new **Ratchet
 - **Shaft** now yields **2** per craft.
 - **Bearing**, **Millstone**, and **Sieve** take a **shaft** as their power intake in place of a lightning rod.
 - **Engine** and **Redstone Motor** gain a **gear** in the base of the recipe.
-- **Sieve** panning drop rates rebalanced.
+- **Sieve** panning drop rates cut across the board — see "Read before upgrading" above for the figures.
 
 ## Fixes
 

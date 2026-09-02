@@ -19,6 +19,7 @@ Two new frame blocks join the Casing, a Ratchet valve arrives, and mechanisms le
 - **Ceiling rotator** — a rotator can mount under a block as a swinging hinge
 - **Ratchet** — a new one-way rotation valve
 - **Ship propulsion** — Propeller (3 tiers), Thruster, Reaction wheel; see the mech changelog
+- **Bigger glued selections** — the cap on one glued assembly rose from 256 blocks to 1024
 - **Item catalog** — browse every registered block in-game with `/defcorelib catalog`
 - **Stability** — fixes a server-thread hang under comparator/observer pulse storms; steadier mover speeds
 
@@ -47,7 +48,7 @@ Two new frame blocks join the Casing, a Ratchet valve arrives, and mechanisms le
 
 - `isRotationPowered(int)`, `rotationSurplus(int)`, `rotationFacing(int)`, `rotationFacingAt(Block)` — live rotation state. `powered`, `surplus` and `jammed` are **per-network**, identical for every member; do not build a per-block model on them.
 - `MechanismRotationSolvedEvent` — fires when a mechanism's rotation network re-solves. Topology is frozen while assembled and the solver runs at most every 20 ticks, so this is cheap; a windmill-only mechanism never re-solves after assembly.
-- `bannerTiersIn(World, BoundingBox)` — large/huge banner displays by host block. **Callers must expand the region**: a banner's display entity spawns in the neighbour cell toward the face it hangs on, and scales out from there, so a box fitted tightly to a structure misses precisely the banners mounted on its outside.
+- `bannerTiersIn(World, BoundingBox)` — large/huge banner displays by host block. Three things to get right: **expand the region by at least 3 blocks**, because a banner's display entity spawns in the neighbour cell toward the face it hangs on and scales out from there, so a box fitted tightly to a structure misses precisely the banners mounted on its outside; **only loaded chunks are searched**; and a vanilla banner **block** also reports here, as `BannerTier.NORMAL` — ignore that tier if you already count banner blocks by material, or you will count them twice.
 - `massRegistry()` — exposes the mass table so a dependent plugin can price blocks its own config does not list.
 - **`requires_plugin` recipe gate** — withhold a block's recipes until a named plugin enables, then register them live.
 
