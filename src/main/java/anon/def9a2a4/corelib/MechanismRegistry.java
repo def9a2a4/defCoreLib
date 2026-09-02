@@ -214,6 +214,29 @@ public class MechanismRegistry {
         return world != null && persistence.hasMetadata(world.getName(), id);
     }
 
+    /**
+     * True if disassembling onto this cell would take the <em>solid wins</em> branch — i.e. the mechanism's
+     * block is NOT placed here, an explosion effect plays, and the block is dropped as an item instead.
+     *
+     * <p>Exposed for consumers that need to predict a landing before committing to it. BlockShips uses it to
+     * tell a captain "something is standing on your wheel's landing spot" and to decide whether a returning
+     * ship's anchor cell can be trusted, rather than discovering after the fact that its wheel came back as a
+     * generic item with the ship's identity gone.
+     *
+     * <p><b>Exists so nobody hand-copies the predicate.</b> The two sets it consults live on opposite sides of
+     * a visibility boundary — {@code MovableBlocks} is package-private, {@link FragileBlocks} is public — so a
+     * consumer that tried to reproduce this would necessarily reimplement half of it against its own material
+     * list, and then drift every time a material is added here. This is the same expression the landing loop
+     * in {@code BasicMechanism.disassemble} evaluates; keep them in sync by keeping there being one.
+     *
+     * <p>Does not model the {@code ghost} special case (a data-only block landing on an identical copy of
+     * itself, which is discarded silently rather than dropped). Ghosts are never captured from the world, so
+     * no consumer holds one.
+     */
+    public static boolean landingSolidWouldWin(org.bukkit.Material m) {
+        return m != null && !MovableBlocks.isEmptyOrPassable(m) && !FragileBlocks.isFragile(m);
+    }
+
     /** Load vanilla-block collider shapes (colliders.yml) into the registry. */
     public void loadColliders(java.io.InputStream in) {
         colliderRegistry.load(in, plugin.getLogger());

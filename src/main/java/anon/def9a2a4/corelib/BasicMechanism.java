@@ -1478,6 +1478,26 @@ final class BasicMechanism implements Mechanism {
                 // onChunkLoad above ran BEFORE restoreConfigPdc, so it read a stale/empty counter.
                 if (type.onRestore() != null) type.onRestore().accept(target);
                 flipLandedSpinDir(target, mb, snappedYaw);
+            } else {
+                // The type was registered when this block was CAPTURED but is not registered NOW — the
+                // owning plugin failed to register on this boot (a missing texture, a load-order problem),
+                // or a persisted mechanism is being recovered into a session without that plugin.
+                //
+                // Without this arm the whole carried tile PDC is silently discarded, and it is the only
+                // copy: capture is asymmetric on purpose, so a block with a customTypeId got configPdc and
+                // NO blockEntitySnapshot (MechanismRegistry: `if (chb == null) … captureBlockSnapshot`).
+                // Both restores above sit inside `type != null` arms, so nothing else can reach it.
+                //
+                // That silently destroys foreign identity keys. Consumers key their own block identity here
+                // precisely BECAUSE restoreConfigPdc preserves non-corelib namespaces across a voyage; when
+                // that key vanishes, the consumer's anchor provider stops resolving, corelib falls back to a
+                // plain BlockAnchor, and BlockAnchor.prunesOnLanding() defaults true — so the mechanism's
+                // glue is pruned to whatever is chained to the origin and the rest is permanently deleted.
+                //
+                // Restores the identity but NOT the appearance: restoreConfigPdc strips corelib: keys, so
+                // the block keeps no block_type mark and no skull texture. It lands as a blank head that
+                // still answers to its owner. That is the recoverable outcome; losing the key is not.
+                registry.restoreConfigPdc(target, mb.configPdc);
             }
         } else if (mb.storage != null && target.getState() instanceof Container c) {
             Inventory dest = c.getSnapshotInventory();
