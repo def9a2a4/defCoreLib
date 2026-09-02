@@ -21,8 +21,9 @@ import java.util.stream.Collectors;
  *
  * <p>Large/huge windmills are gated on the bbanners plugin: the tier swap that upgrades a windmill
  * by the banner used is only activated when bbanners is present (a soft dependency, so bbanners
- * loads first if installed). Without it, plain windmills still craft; large/huge ones are simply
- * unobtainable.
+ * loads first if installed). This is a <b>recipe</b> gate — without bbanners, plain windmills still
+ * craft and the large/huge tiers are uncraftable (as are the propellers made from them). Tier blocks
+ * that already exist are unaffected and keep working normally.
  */
 public final class MechPlugin extends JavaPlugin {
 
@@ -41,7 +42,7 @@ public final class MechPlugin extends JavaPlugin {
         core.getRegistry().setWindmillTierEnabled(banners);
         getLogger().info("Mechanism recipes enabled" + (banners
                 ? " (large/huge windmill tiers active via BetterBanners)."
-                : " (BetterBanners absent - large/huge windmills unavailable)."));
+                : " (BetterBanners absent - large/huge windmills uncraftable; existing ones still work)."));
 
         // Advancements: grant manager + milestone listeners + the /mech advance debug command.
         advancements = new MechAdvancements(this);
