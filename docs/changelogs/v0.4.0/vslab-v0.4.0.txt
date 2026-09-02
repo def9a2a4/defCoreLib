@@ -1,5 +1,0 @@
-vslab v0.4.0
-
-- Vertical slabs no longer require a solid supporting block to place. You can
-  now place a vertical slab against non-solid blocks too, instead of the
-  placement being refused without a solid backing block.

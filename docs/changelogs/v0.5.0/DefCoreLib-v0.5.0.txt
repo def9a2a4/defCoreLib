@@ -1,13 +1,47 @@
 # DefCoreLib v0.5.0
 
-Five new Mechanism blocks turn the rotation network into ship propulsion — three tiers of Propeller, a fuel-burning Thruster, and a Reaction wheel — and the library grows the API a dependent plugin needs to use them: live rotation state per block, a region banner-tier query, and a recipe gate that can withhold a block's recipes until a named plugin is present. This release also fixes wall-head orientation on moving mechanisms.
+The first release since 0.3.2, and it covers two development cycles at once — 0.4.0 was prepared but never published, so everything below is new to you.
 
+Two new frame blocks join the Casing, a Ratchet valve arrives, and mechanisms learn to carry glued machines as one rigid body. On top of that, five new Mechanism blocks turn the rotation network into ship propulsion — three tiers of Propeller, a fuel-burning Thruster, and a Reaction wheel — and the library grows the API a dependent plugin needs to drive them. Also: an in-game item catalog, a pick-block change, and a fix for a rotation-network server hang under redstone pulse storms.
+
+## Read before upgrading
+
+- **Built against Paper 1.21.11** (was 1.21.8). Mechanism additionally needs the datapack-discovery bootstrap API, so run 1.21.11 or newer. `api-version` is still `1.21`, so an older server will load the plugin and fail at runtime rather than refuse it cleanly at startup.
+- **Bare shafts change material.** A shaft wrenched to its bare form was an iron chain; it is now a **waxed copper chain**. Existing worlds are converted in place as their chunks load, keeping each shaft's axis — no action needed, but the block in your world will not be the one you left there.
+- **Carried windmills supply half power.** A windmill supplies its full rating on a static build, but riding a mechanism it now gives 1 / 3 / 8 instead of 1 / 5 / 15. Rotation power is all-or-nothing, so a contraption running near break-even off its own windmills will stop entirely until it gains a windmill or sheds a consumer.
+- **Mixed-wood casing frames no longer auto-glue.** Frame blocks bond by matching wood now. Rebuild a frame in a single wood, or brush-pin the mixed joints.
+
+## Highlights
+
+- **Gearbox** and **Chassis** — two new mechanical frame blocks, in all 12 woods
+- **Frame rework** — casings, gearboxes, and chassis auto-glue by matching wood, and can be brush-pinned rigidly to anything
+- **Carried contraptions** — mechanisms now move glued machines (a chain hoist rides a rotator, load and all)
+- **Ceiling rotator** — a rotator can mount under a block as a swinging hinge
+- **Ratchet** — a new one-way rotation valve
 - **Ship propulsion** — Propeller (3 tiers), Thruster, Reaction wheel; see the mech changelog
-- **Carried windmills now supply half power** — a new `mech_power_scale` multiplier applied to a source riding a mechanism, so a large/huge windmill aboard gives 3/8 rather than 5/15. This changes existing worlds: an under-supplied network runs nothing, so a contraption sitting near break-even stops working until it gains a windmill or sheds a consumer.
-- **Live rotation API** — read a block's powered state, its network's surplus, and its actuation facing; `MechanismRotationSolvedEvent` fires when a network re-solves
-- **Banner tier query** — `bannerTiersIn(world, region)` returns the large/huge banner displays hosted in a region, in one entity sweep instead of one per block
-- **`requires_plugin` recipe gate** — withhold a block's recipes until a named plugin enables, then register them live
-- **Wall heads on mechanisms no longer render backwards** — the head item model's face is a half-turn from the block's, and the mechanism display path now compensates
+- **Item catalog** — browse every registered block in-game with `/defcorelib catalog`
+- **Stability** — fixes a server-thread hang under comparator/observer pulse storms; steadier mover speeds
+
+## Blocks
+
+- **Gearbox** — an omnidirectional power hub: it passes power in every direction, on all six faces, but not spin direction — each side settles its own rotation. Split one input into several outputs, or turn a corner without a gear's counter-rotation.
+- **Chassis** — a slime-reach casing: it grabs every adjacent movable block except honey, so a moving contraption drags its whole payload with no glue brush, while still joining a same-wood casing frame.
+- **Ratchet** — a one-way valve for rotation: it drives one way and freewheels (disconnects) the other, instead of jamming. Wrench to set the direction, sneak-wrench to inspect.
+- **Propeller / Thruster / Reaction wheel** — consumers that push a ship rather than the world. They draw power and produce none, and have no effect on their own; a BlockShips vessel reads their powered state and decides what the thrust does.
+
+## Frame glue
+
+- Casing, gearbox, and chassis are one **frame** family keyed by wood — they auto-glue only to same-wood frame blocks. The glue brush pins one rigidly to anything (any wood, or a plain block).
+
+## Contraptions
+
+- Movers (piston, rotator, drawbridge, minecart, chain hoist) now carry **nested glued machines** — a chain hoist glued onto a rotator swings as one body, head + chain + platform together.
+- Rotators can mount under a block as a **ceiling hinge**, swinging the block above like a hatch.
+
+## Items & commands
+
+- **In-game item catalog** — `/defcorelib catalog` opens a browsable menu of every registered block across all def plugins, grouped by category, with search (`/defcorelib catalog search <query>`, or `/defcorelib catalog <category>` to jump straight in) and a detail view that drills into each recipe's ingredients — recipe sections with many outputs open a paginated, fully browsable view. Open to everyone via the new `corelib.catalog` permission (default on); an admin can right-click an entry to give the item.
+- **Pick-block** — middle-clicking a custom block or cart no longer mints a free copy in survival or adventure: it only selects a matching item you already carry. Creative still gives the item as before.
 
 ## API
 
@@ -15,6 +49,7 @@ Five new Mechanism blocks turn the rotation network into ship propulsion — thr
 - `MechanismRotationSolvedEvent` — fires when a mechanism's rotation network re-solves. Topology is frozen while assembled and the solver runs at most every 20 ticks, so this is cheap; a windmill-only mechanism never re-solves after assembly.
 - `bannerTiersIn(World, BoundingBox)` — large/huge banner displays by host block. **Callers must expand the region**: a banner's display entity spawns in the neighbour cell toward the face it hangs on, and scales out from there, so a box fitted tightly to a structure misses precisely the banners mounted on its outside.
 - `massRegistry()` — exposes the mass table so a dependent plugin can price blocks its own config does not list.
+- **`requires_plugin` recipe gate** — withhold a block's recipes until a named plugin enables, then register them live.
 
 ## Behavior
 
@@ -22,4 +57,10 @@ Five new Mechanism blocks turn the rotation network into ship propulsion — thr
 
 ## Fixes
 
+- **Server hang under pulse storms** — the rotation network and custom rails now coalesce their recomputes to once per tick, and the plugin's own block writes no longer feed their own physics loop.
+- **Wall heads on mechanisms no longer render backwards** — the head item model's face is a half-turn from the block's, and the mechanism display path now compensates.
+- **Contraptions reliably survive a crash** — a parked mechanism is rediscovered from its own entities when its chunk loads, so a hard crash can no longer strand an invisible, unusable contraption.
+- Mover speeds slowed to steadier, more readable rates.
 - **Head-yaw conventions documented.** Four sites orient a head on a display entity and they fall into two families differing by a constant half-turn. The javadoc claimed there were three conventions and that the redstone dynamo shared the mechanism spawn path; both were wrong. The remaining open question — whether floor heads need the same half-turn wall heads got — is stated with the one two-block test that settles it, and deliberately left unchanged, since altering it would rotate every floor head on every mechanism in every existing world.
+
+See the per-plugin **mech** notes for full detail, recipes, and advancements.
