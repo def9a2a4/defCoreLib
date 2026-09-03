@@ -2900,7 +2900,7 @@ blocks:
       - "&fA passive power source — it spins on its own, with no fuel or redstone needed."
       - "&fThe banner patterns from the four banners you craft it with show up on the blades, so a dyed/patterned banner makes a custom windmill."
       - "&7Craft with plain banners for this tier; use Large or Huge banners to get the Large/Huge Windmill instead."
-      - "&7Places on the floor (spins flat) or on a wall (spins like a wheel)."
+      - "&7Places on the floor or a ceiling (spins flat, either way) or on a wall (spins like a wheel)."
     texture: "@large_windmill"
     item_texture: "@windmill_item"
     drops: self
@@ -3579,7 +3579,7 @@ blocks:
       - "&fmount it flat to push the ship up."
       - "&7Draws 5 power while running — it produces none."
       - "&7Craft from a Windmill; its blades carry over."
-      - "&7Places on the floor (spins flat) or on a wall (spins like a wheel)."
+      - "&7Places on the floor or a ceiling (spins flat, either way) or on a wall (spins like a wheel)."
     recipes:
       craft:
         shaped:
@@ -3682,7 +3682,7 @@ blocks:
       - "&fmount it flat to push the ship up."
       - "&7Draws 10 power while running — it produces none."
       - "&7Craft from a Large Windmill; its blades carry over."
-      - "&7Places on the floor (spins flat) or on a wall (spins like a wheel)."
+      - "&7Places on the floor or a ceiling (spins flat, either way) or on a wall (spins like a wheel)."
     texture: "@prop_bearing_up"
     item_texture: "@propeller_item"
     drops: self
@@ -3774,7 +3774,7 @@ blocks:
       - "&fmount it flat to push the ship up."
       - "&7Draws 20 power while running — it produces none."
       - "&7Craft from a Huge Windmill; its blades carry over."
-      - "&7Places on the floor (spins flat) or on a wall (spins like a wheel)."
+      - "&7Places on the floor or a ceiling (spins flat, either way) or on a wall (spins like a wheel)."
     texture: "@prop_bearing_up"
     item_texture: "@propeller_item"
     drops: self

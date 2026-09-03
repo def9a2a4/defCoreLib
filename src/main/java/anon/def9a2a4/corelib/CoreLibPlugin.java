@@ -507,6 +507,15 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         RotationConfig.MechRotationMeta meta =
             rotationConfig == null ? null : rotationConfig.mechMeta(type.fullId());
         // Same outward flip the mechanism path applies: a floor-mounted fan/propeller acts UPWARD.
+        //
+        // A CEILING-mounted one lands here too, and also reports UP — deliberately. Ceiling mounts are
+        // meant to be functionally identical to floor mounts, and the facing model makes that automatic:
+        // storedFacing cannot tell the two apart (both are a floating PLAYER_HEAD with no Directional
+        // data, see RotationBlocks.storedFacing, whose javadoc covers the ceiling state), so both flip
+        // to UP and both lift. This is the intended answer, not a case that slipped through — do not
+        // "fix" it by making the flip symmetric. BlockRotation.rotateCustomState documents the same
+        // floor/ceiling blindness on the mechanism path, and relies on it to keep a landed ceiling
+        // block in its ceiling state.
         if (meta != null && meta.blowsOutward() && stored == BlockFace.DOWN) return BlockFace.UP;
         return stored;
     }

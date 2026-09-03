@@ -302,7 +302,15 @@ final class DisplayExporter implements Listener {
             String mapped = type.placementStateMap().get(placedOn);
             if (mapped != null) state = mapped;
         }
+        // UP counts as a floor head, matching ShowcaseBuilder. A ceiling mount is a FLOATING
+        // PLAYER_HEAD in the cell below the block it hangs from, never a wall head — and a wall head
+        // cannot face straight down, so getting this wrong throws out of placeHead. That throw is
+        // swallowed by exportType's catch, which would silently drop the whole block (all six faces)
+        // from the catalog while `make docs` still exits 0. The playerHeadStates clause below stays
+        // for blocks that name their ceiling states explicitly; the UP test makes it unnecessary for
+        // any block added later.
         boolean floor = placedOn == BlockFace.DOWN
+                || placedOn == BlockFace.UP
                 || (state != null && type.playerHeadStates().contains(state));
         BlockFace headFacing = floor ? null : placedOn.getOppositeFace();
 
@@ -328,7 +336,15 @@ final class DisplayExporter implements Listener {
         if (keepAlive) loc.getChunk().setForceLoaded(true);   // keep animations running off-screen
         Block block = loc.getBlock();
 
+        // UP counts as a floor head, matching ShowcaseBuilder. A ceiling mount is a FLOATING
+        // PLAYER_HEAD in the cell below the block it hangs from, never a wall head — and a wall head
+        // cannot face straight down, so getting this wrong throws out of placeHead. That throw is
+        // swallowed by exportType's catch, which would silently drop the whole block (all six faces)
+        // from the catalog while `make docs` still exits 0. The playerHeadStates clause below stays
+        // for blocks that name their ceiling states explicitly; the UP test makes it unnecessary for
+        // any block added later.
         boolean floor = placedOn == BlockFace.DOWN
+                || placedOn == BlockFace.UP
                 || (state != null && type.playerHeadStates().contains(state));
         BlockFace headFacing = floor ? null : placedOn.getOppositeFace();
 
