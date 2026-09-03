@@ -219,7 +219,7 @@ function addViewer(parent, label, renderFn) {
 // Placed variants split into a placement axis (Floor / Wall N·E·S·W) and a spin axis (Stopped/CW/CCW),
 // parsed from the variant id (e.g. 'wall_west_cw' -> {placement:'wall_west', spin:'cw'}).
 const SPINS = ['stopped', 'cw', 'ccw'];                          // also the display order
-const PLACES = ['floor', 'wall_north', 'wall_east', 'wall_south', 'wall_west'];
+const PLACES = ['floor', 'ceiling', 'wall_north', 'wall_east', 'wall_south', 'wall_west'];
 
 function splitVariantId(id) {
   for (const s of SPINS) {
@@ -230,7 +230,7 @@ function splitVariantId(id) {
 }
 
 const cap = (s) => (s ? s[0].toUpperCase() + s.slice(1) : s);
-const placeLabel = (p) => (p === 'floor' ? 'Floor' : p.startsWith('wall_') ? `Wall ${cap(p.slice(5))}` : (p || 'Default'));
+const placeLabel = (p) => (p === 'floor' ? 'Floor' : p === 'ceiling' ? 'Ceiling' : p.startsWith('wall_') ? `Wall ${cap(p.slice(5))}` : (p || 'Default'));
 const spinLabel = (s) => ({ stopped: 'Stopped', cw: 'CW', ccw: 'CCW' }[s] || s);
 
 const order = (arr, ref) => arr.slice().sort((a, b) => {
