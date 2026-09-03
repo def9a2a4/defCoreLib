@@ -2907,8 +2907,16 @@ blocks:
     break_sound: { sound: block.wood.break, volume: 0.8, pitch: 1.0 }
     place_sound: { sound: block.wood.place, volume: 0.8, pitch: 1.0 }
     default_state: floor
+    placement:
+      # All six faces, and this list must stay complete. These blocks carried NO placement section
+      # until ceiling support was added, so CoreLibPlugin's refuse-or-coerce path never ran for them;
+      # declaring one switches that path on for every face at once, and dropping a face here would
+      # start refusing placements that work today. UP must be listed explicitly or a ceiling click is
+      # silently coerced to a floor placement. Deliberately no require_solid.
+      allowed_faces: [DOWN, UP, NORTH, SOUTH, EAST, WEST]
     placement_state_map:
       DOWN: floor
+      UP: ceiling
       NORTH: wall_s
       SOUTH: wall_n
       EAST: wall_e
@@ -2917,6 +2925,19 @@ blocks:
       floor:
         texture: "@windmill_hub_up"
         display_entities:
+          - { material: WHITE_BANNER, tag: blade_a, transform: { translation: [0.375, -0.2, 0],    scale: [0.75, 0.75, 0.75], left_rotation: [120, 1, 1, -1] } }
+          - { material: WHITE_BANNER, tag: blade_b, transform: { translation: [0, -0.2, 0.375],    scale: [0.75, 0.75, 0.75], left_rotation: [90, 1, 0, 0] } }
+          - { material: WHITE_BANNER, tag: blade_c, transform: { translation: [-0.375, -0.2, 0],   scale: [0.75, 0.75, 0.75], left_rotation: [120, 1, -1, 1] } }
+          - { material: WHITE_BANNER, tag: blade_d, transform: { translation: [0, -0.2, -0.375],   scale: [0.75, 0.75, 0.75], left_rotation: [180, 0, 1, -1] } }
+        animation: { type: rotate, axis: [0, 1, 0], speed: 3.0 }
+      # Ceiling mount. Functionally identical to the floor state — same power, same axis, same
+      # thrust — and visually identical too, but for the drive shaft rising out of the top into
+      # the block above. Written out rather than copy_from because a state cannot set both
+      # copy_from and display_entities (BlockLoader.parseStateDisplays).
+      ceiling:
+        texture: "@windmill_hub_up"
+        display_entities:
+          - { texture: "@rod_up", tag: shaft, transform: { translation: [0, 0.5, 0], scale: [0.66, 0.75, 0.66] } }
           - { material: WHITE_BANNER, tag: blade_a, transform: { translation: [0.375, -0.2, 0],    scale: [0.75, 0.75, 0.75], left_rotation: [120, 1, 1, -1] } }
           - { material: WHITE_BANNER, tag: blade_b, transform: { translation: [0, -0.2, 0.375],    scale: [0.75, 0.75, 0.75], left_rotation: [90, 1, 0, 0] } }
           - { material: WHITE_BANNER, tag: blade_c, transform: { translation: [-0.375, -0.2, 0],   scale: [0.75, 0.75, 0.75], left_rotation: [120, 1, -1, 1] } }
@@ -2986,8 +3007,16 @@ blocks:
     break_sound: { sound: block.wood.break, volume: 0.8, pitch: 0.8 }
     place_sound: { sound: block.wood.place, volume: 0.8, pitch: 0.8 }
     default_state: floor
+    placement:
+      # All six faces, and this list must stay complete. These blocks carried NO placement section
+      # until ceiling support was added, so CoreLibPlugin's refuse-or-coerce path never ran for them;
+      # declaring one switches that path on for every face at once, and dropping a face here would
+      # start refusing placements that work today. UP must be listed explicitly or a ceiling click is
+      # silently coerced to a floor placement. Deliberately no require_solid.
+      allowed_faces: [DOWN, UP, NORTH, SOUTH, EAST, WEST]
     placement_state_map:
       DOWN: floor
+      UP: ceiling
       NORTH: wall_s
       SOUTH: wall_n
       EAST: wall_e
@@ -2996,6 +3025,19 @@ blocks:
       floor:
         texture: "@windmill_hub_up"
         display_entities:
+          - { material: WHITE_BANNER, tag: blade_a, transform: { translation: [1.25, -0.25, 0],    scale: [2.25, 2.25, 2.25], left_rotation: [120, 1, 1, -1] } }
+          - { material: WHITE_BANNER, tag: blade_b, transform: { translation: [0, -0.25, 1.25],    scale: [2.25, 2.25, 2.25], left_rotation: [90, 1, 0, 0] } }
+          - { material: WHITE_BANNER, tag: blade_c, transform: { translation: [-1.25, -0.25, 0],   scale: [2.25, 2.25, 2.25], left_rotation: [120, 1, -1, 1] } }
+          - { material: WHITE_BANNER, tag: blade_d, transform: { translation: [0, -0.25, -1.25],   scale: [2.25, 2.25, 2.25], left_rotation: [180, 0, 1, -1] } }
+        animation: { type: rotate, axis: [0, 1, 0], speed: 2.0 }
+      # Ceiling mount. Functionally identical to the floor state — same power, same axis, same
+      # thrust — and visually identical too, but for the drive shaft rising out of the top into
+      # the block above. Written out rather than copy_from because a state cannot set both
+      # copy_from and display_entities (BlockLoader.parseStateDisplays).
+      ceiling:
+        texture: "@windmill_hub_up"
+        display_entities:
+          - { texture: "@rod_up", tag: shaft, transform: { translation: [0, 0.5, 0], scale: [0.66, 0.75, 0.66] } }
           - { material: WHITE_BANNER, tag: blade_a, transform: { translation: [1.25, -0.25, 0],    scale: [2.25, 2.25, 2.25], left_rotation: [120, 1, 1, -1] } }
           - { material: WHITE_BANNER, tag: blade_b, transform: { translation: [0, -0.25, 1.25],    scale: [2.25, 2.25, 2.25], left_rotation: [90, 1, 0, 0] } }
           - { material: WHITE_BANNER, tag: blade_c, transform: { translation: [-1.25, -0.25, 0],   scale: [2.25, 2.25, 2.25], left_rotation: [120, 1, -1, 1] } }
@@ -3058,8 +3100,16 @@ blocks:
     break_sound: { sound: block.wood.break, volume: 0.8, pitch: 0.8 }
     place_sound: { sound: block.wood.place, volume: 0.8, pitch: 0.8 }
     default_state: floor
+    placement:
+      # All six faces, and this list must stay complete. These blocks carried NO placement section
+      # until ceiling support was added, so CoreLibPlugin's refuse-or-coerce path never ran for them;
+      # declaring one switches that path on for every face at once, and dropping a face here would
+      # start refusing placements that work today. UP must be listed explicitly or a ceiling click is
+      # silently coerced to a floor placement. Deliberately no require_solid.
+      allowed_faces: [DOWN, UP, NORTH, SOUTH, EAST, WEST]
     placement_state_map:
       DOWN: floor
+      UP: ceiling
       NORTH: wall_s
       SOUTH: wall_n
       EAST: wall_e
@@ -3068,6 +3118,19 @@ blocks:
       floor:
         texture: "@windmill_hub_up"
         display_entities:
+          - { material: WHITE_BANNER, tag: blade_a, transform: { translation: [1.667, -0.333, 0],    scale: [3.0, 3.0, 3.0], left_rotation: [120, 1, 1, -1] } }
+          - { material: WHITE_BANNER, tag: blade_b, transform: { translation: [0, -0.333, 1.667],    scale: [3.0, 3.0, 3.0], left_rotation: [90, 1, 0, 0] } }
+          - { material: WHITE_BANNER, tag: blade_c, transform: { translation: [-1.667, -0.333, 0],   scale: [3.0, 3.0, 3.0], left_rotation: [120, 1, -1, 1] } }
+          - { material: WHITE_BANNER, tag: blade_d, transform: { translation: [0, -0.333, -1.667],   scale: [3.0, 3.0, 3.0], left_rotation: [180, 0, 1, -1] } }
+        animation: { type: rotate, axis: [0, 1, 0], speed: 1.0 }
+      # Ceiling mount. Functionally identical to the floor state — same power, same axis, same
+      # thrust — and visually identical too, but for the drive shaft rising out of the top into
+      # the block above. Written out rather than copy_from because a state cannot set both
+      # copy_from and display_entities (BlockLoader.parseStateDisplays).
+      ceiling:
+        texture: "@windmill_hub_up"
+        display_entities:
+          - { texture: "@rod_up", tag: shaft, transform: { translation: [0, 0.5, 0], scale: [0.66, 0.75, 0.66] } }
           - { material: WHITE_BANNER, tag: blade_a, transform: { translation: [1.667, -0.333, 0],    scale: [3.0, 3.0, 3.0], left_rotation: [120, 1, 1, -1] } }
           - { material: WHITE_BANNER, tag: blade_b, transform: { translation: [0, -0.333, 1.667],    scale: [3.0, 3.0, 3.0], left_rotation: [90, 1, 0, 0] } }
           - { material: WHITE_BANNER, tag: blade_c, transform: { translation: [-1.667, -0.333, 0],   scale: [3.0, 3.0, 3.0], left_rotation: [120, 1, -1, 1] } }
@@ -3534,8 +3597,16 @@ blocks:
     break_sound: { sound: block.wood.break, volume: 0.8, pitch: 1.0 }
     place_sound: { sound: block.wood.place, volume: 0.8, pitch: 1.0 }
     default_state: idle_floor
+    placement:
+      # All six faces, and this list must stay complete. These blocks carried NO placement section
+      # until ceiling support was added, so CoreLibPlugin's refuse-or-coerce path never ran for them;
+      # declaring one switches that path on for every face at once, and dropping a face here would
+      # start refusing placements that work today. UP must be listed explicitly or a ceiling click is
+      # silently coerced to a floor placement. Deliberately no require_solid.
+      allowed_faces: [DOWN, UP, NORTH, SOUTH, EAST, WEST]
     placement_state_map:
       DOWN: idle_floor
+      UP: idle_ceiling
       NORTH: idle_wall_s
       SOUTH: idle_wall_n
       EAST: idle_wall_e
@@ -3549,6 +3620,19 @@ blocks:
           - { material: WHITE_BANNER, tag: blade_c, transform: { translation: [-0.375, -0.2, 0],   scale: [0.75, 0.75, 0.75], left_rotation: [120, 1, -1, 1] } }
           - { material: WHITE_BANNER, tag: blade_d, transform: { translation: [0, -0.2, -0.375],   scale: [0.75, 0.75, 0.75], left_rotation: [180, 0, 1, -1] } }
       spinning_floor: { copy_from: idle_floor, texture: "@prop_bearing_up", animation: { type: rotate, axis: [0, 1, 0], speed: 6.0 } }
+      # Ceiling mount. Functionally identical to the floor state — same power, same axis, same
+      # thrust — and visually identical too, but for the drive shaft rising out of the top into
+      # the block above. Written out rather than copy_from because a state cannot set both
+      # copy_from and display_entities (BlockLoader.parseStateDisplays).
+      idle_ceiling:
+        texture: "@prop_bearing_up"
+        display_entities:
+          - { texture: "@rod_up", tag: shaft, transform: { translation: [0, 0.5, 0], scale: [0.66, 0.75, 0.66] } }
+          - { material: WHITE_BANNER, tag: blade_a, transform: { translation: [0.375, -0.2, 0],    scale: [0.75, 0.75, 0.75], left_rotation: [120, 1, 1, -1] } }
+          - { material: WHITE_BANNER, tag: blade_b, transform: { translation: [0, -0.2, 0.375],    scale: [0.75, 0.75, 0.75], left_rotation: [90, 1, 0, 0] } }
+          - { material: WHITE_BANNER, tag: blade_c, transform: { translation: [-0.375, -0.2, 0],   scale: [0.75, 0.75, 0.75], left_rotation: [120, 1, -1, 1] } }
+          - { material: WHITE_BANNER, tag: blade_d, transform: { translation: [0, -0.2, -0.375],   scale: [0.75, 0.75, 0.75], left_rotation: [180, 0, 1, -1] } }
+      spinning_ceiling: { copy_from: idle_ceiling, texture: "@prop_bearing_up", animation: { type: rotate, axis: [0, 1, 0], speed: 6.0 } }
       idle_wall_n:
         texture: "@prop_bearing_fwd"
         display_entities:
@@ -3605,8 +3689,16 @@ blocks:
     break_sound: { sound: block.wood.break, volume: 0.8, pitch: 1.0 }
     place_sound: { sound: block.wood.place, volume: 0.8, pitch: 1.0 }
     default_state: idle_floor
+    placement:
+      # All six faces, and this list must stay complete. These blocks carried NO placement section
+      # until ceiling support was added, so CoreLibPlugin's refuse-or-coerce path never ran for them;
+      # declaring one switches that path on for every face at once, and dropping a face here would
+      # start refusing placements that work today. UP must be listed explicitly or a ceiling click is
+      # silently coerced to a floor placement. Deliberately no require_solid.
+      allowed_faces: [DOWN, UP, NORTH, SOUTH, EAST, WEST]
     placement_state_map:
       DOWN: idle_floor
+      UP: idle_ceiling
       NORTH: idle_wall_s
       SOUTH: idle_wall_n
       EAST: idle_wall_e
@@ -3620,6 +3712,19 @@ blocks:
           - { material: WHITE_BANNER, tag: blade_c, transform: { translation: [-1.25, -0.25, 0],   scale: [2.25, 2.25, 2.25], left_rotation: [120, 1, -1, 1] } }
           - { material: WHITE_BANNER, tag: blade_d, transform: { translation: [0, -0.25, -1.25],   scale: [2.25, 2.25, 2.25], left_rotation: [180, 0, 1, -1] } }
       spinning_floor: { copy_from: idle_floor, texture: "@prop_bearing_up", animation: { type: rotate, axis: [0, 1, 0], speed: 6.0 } }
+      # Ceiling mount. Functionally identical to the floor state — same power, same axis, same
+      # thrust — and visually identical too, but for the drive shaft rising out of the top into
+      # the block above. Written out rather than copy_from because a state cannot set both
+      # copy_from and display_entities (BlockLoader.parseStateDisplays).
+      idle_ceiling:
+        texture: "@prop_bearing_up"
+        display_entities:
+          - { texture: "@rod_up", tag: shaft, transform: { translation: [0, 0.5, 0], scale: [0.66, 0.75, 0.66] } }
+          - { material: WHITE_BANNER, tag: blade_a, transform: { translation: [1.25, -0.25, 0],    scale: [2.25, 2.25, 2.25], left_rotation: [120, 1, 1, -1] } }
+          - { material: WHITE_BANNER, tag: blade_b, transform: { translation: [0, -0.25, 1.25],    scale: [2.25, 2.25, 2.25], left_rotation: [90, 1, 0, 0] } }
+          - { material: WHITE_BANNER, tag: blade_c, transform: { translation: [-1.25, -0.25, 0],   scale: [2.25, 2.25, 2.25], left_rotation: [120, 1, -1, 1] } }
+          - { material: WHITE_BANNER, tag: blade_d, transform: { translation: [0, -0.25, -1.25],   scale: [2.25, 2.25, 2.25], left_rotation: [180, 0, 1, -1] } }
+      spinning_ceiling: { copy_from: idle_ceiling, texture: "@prop_bearing_up", animation: { type: rotate, axis: [0, 1, 0], speed: 6.0 } }
       idle_wall_n:
         texture: "@prop_bearing_fwd"
         display_entities:
@@ -3676,8 +3781,16 @@ blocks:
     break_sound: { sound: block.wood.break, volume: 0.8, pitch: 1.0 }
     place_sound: { sound: block.wood.place, volume: 0.8, pitch: 1.0 }
     default_state: idle_floor
+    placement:
+      # All six faces, and this list must stay complete. These blocks carried NO placement section
+      # until ceiling support was added, so CoreLibPlugin's refuse-or-coerce path never ran for them;
+      # declaring one switches that path on for every face at once, and dropping a face here would
+      # start refusing placements that work today. UP must be listed explicitly or a ceiling click is
+      # silently coerced to a floor placement. Deliberately no require_solid.
+      allowed_faces: [DOWN, UP, NORTH, SOUTH, EAST, WEST]
     placement_state_map:
       DOWN: idle_floor
+      UP: idle_ceiling
       NORTH: idle_wall_s
       SOUTH: idle_wall_n
       EAST: idle_wall_e
@@ -3691,6 +3804,19 @@ blocks:
           - { material: WHITE_BANNER, tag: blade_c, transform: { translation: [-1.667, -0.333, 0],   scale: [3.0, 3.0, 3.0], left_rotation: [120, 1, -1, 1] } }
           - { material: WHITE_BANNER, tag: blade_d, transform: { translation: [0, -0.333, -1.667],   scale: [3.0, 3.0, 3.0], left_rotation: [180, 0, 1, -1] } }
       spinning_floor: { copy_from: idle_floor, texture: "@prop_bearing_up", animation: { type: rotate, axis: [0, 1, 0], speed: 6.0 } }
+      # Ceiling mount. Functionally identical to the floor state — same power, same axis, same
+      # thrust — and visually identical too, but for the drive shaft rising out of the top into
+      # the block above. Written out rather than copy_from because a state cannot set both
+      # copy_from and display_entities (BlockLoader.parseStateDisplays).
+      idle_ceiling:
+        texture: "@prop_bearing_up"
+        display_entities:
+          - { texture: "@rod_up", tag: shaft, transform: { translation: [0, 0.5, 0], scale: [0.66, 0.75, 0.66] } }
+          - { material: WHITE_BANNER, tag: blade_a, transform: { translation: [1.667, -0.333, 0],    scale: [3.0, 3.0, 3.0], left_rotation: [120, 1, 1, -1] } }
+          - { material: WHITE_BANNER, tag: blade_b, transform: { translation: [0, -0.333, 1.667],    scale: [3.0, 3.0, 3.0], left_rotation: [90, 1, 0, 0] } }
+          - { material: WHITE_BANNER, tag: blade_c, transform: { translation: [-1.667, -0.333, 0],   scale: [3.0, 3.0, 3.0], left_rotation: [120, 1, -1, 1] } }
+          - { material: WHITE_BANNER, tag: blade_d, transform: { translation: [0, -0.333, -1.667],   scale: [3.0, 3.0, 3.0], left_rotation: [180, 0, 1, -1] } }
+      spinning_ceiling: { copy_from: idle_ceiling, texture: "@prop_bearing_up", animation: { type: rotate, axis: [0, 1, 0], speed: 6.0 } }
       idle_wall_n:
         texture: "@prop_bearing_fwd"
         display_entities:
