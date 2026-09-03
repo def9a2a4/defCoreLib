@@ -17,6 +17,7 @@ Two new frame blocks join the Casing, a Ratchet valve arrives, and mechanisms le
 - **Frame rework** — casings, gearboxes, and chassis auto-glue by matching wood, and can be brush-pinned rigidly to anything
 - **Carried contraptions** — mechanisms now move glued machines (a chain hoist rides a rotator, load and all)
 - **Ceiling rotator** — a rotator can mount under a block as a swinging hinge
+- **Ceiling propellers and windmills** — all three tiers of each now mount under a block too, on a shaft running up into it; functionally identical to a floor mount
 - **Ratchet** — a new one-way rotation valve
 - **Ship propulsion** — Propeller (3 tiers), Thruster, Reaction wheel; see the mech changelog
 - **Bigger glued selections** — the cap on one glued assembly rose from 256 blocks to 1024
