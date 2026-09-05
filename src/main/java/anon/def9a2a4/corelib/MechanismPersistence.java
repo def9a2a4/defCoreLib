@@ -40,6 +40,9 @@ final class MechanismPersistence {
     // world → mechIds that have a state file on disk. Seeded eagerly at construction; maintained in
     // save()/remove(). Main-thread only. Backs hasMetadata without touching the filesystem.
     private final Map<String, Set<UUID>> persistedIds = new HashMap<>();
+    // Once-per-file guard for the corrupt-state warning: load() re-runs on every nearby chunk load and the
+    // bad file is deliberately never culled (see remove()), so an unguarded warning floods the console.
+    private final Set<String> corruptWarned = new HashSet<>();
 
     MechanismPersistence(JavaPlugin plugin) {
         this.plugin = plugin;
@@ -52,7 +55,8 @@ final class MechanismPersistence {
 
     /** Snapshot (already done by the caller on the main thread) → write the state file (SYNC) and record the
      *  id as persisted. Written atomically (tmp sibling + atomic rename) so a crash mid-write can never leave a
-     *  truncated file — recovery's corrupt-file cull would otherwise reap an otherwise-recoverable mechanism. */
+     *  truncated file — a truncated file would read as corrupt and pause the mechanism's recovery until an
+     *  operator intervened. */
     void save(MechanismState st) {
         File dir = worldDir(st.worldName);
         if (!dir.exists() && !dir.mkdirs()) {
@@ -79,8 +83,9 @@ final class MechanismPersistence {
         persistedIds.computeIfAbsent(st.worldName, k -> new HashSet<>()).add(st.mechId);
     }
 
-    /** Delete a mechanism's state file + drop it from the persisted-id set (on real disassembly, or when a
-     *  corrupt state file is culled during recovery). */
+    /** Delete a mechanism's state file + drop it from the persisted-id set. Real disassembly only — a
+     *  corrupt/unreadable file is deliberately NEVER removed (see the recovery pass in MechanismRegistry:
+     *  the file's existence is what shields the mechanism's entities from the orphan sweep). */
     void remove(String world, UUID id) {
         File f = stateFile(world, id);
         if (f.exists() && !f.delete()) plugin.getLogger().warning("mechanism persistence: cannot delete " + f);
@@ -101,7 +106,13 @@ final class MechanismPersistence {
         File f = stateFile(world, id);
         if (!f.exists()) return null;
         MechanismState st = MechanismState.read(YamlConfiguration.loadConfiguration(f));
-        if (st == null) plugin.getLogger().warning("mechanism persistence: corrupt state file " + f);
+        if (st == null && corruptWarned.add(world + ":" + id)) {
+            plugin.getLogger().warning("mechanism persistence: corrupt or unreadable state file " + f
+                + " — this mechanism's recovery is paused and nothing will be deleted while the file exists."
+                + " Restore or repair the file by hand, then restart (or move it aside and restart to give"
+                + " the mechanism up — the shield is an in-memory set seeded at startup, so removing the"
+                + " file alone does not lift it until then).");
+        }
         return st;
     }
 

@@ -1677,10 +1677,13 @@ public class MechanismRegistry {
             if (!persistence.hasMetadata(worldName, id)) continue; // not persisted (e.g. minecart-PDC recovery path)
             MechanismState st = persistence.load(worldName, id);
             if (st == null) {
-                // Corrupt/unreadable state file (already logged by load) — cull it so we don't retry it, and
-                // so the orphan sweep below can reap its now-unshielded entities. WITHOUT this a null st would
-                // NPE attemptRecover on st.worldName/st.px every load.
-                persistence.remove(worldName, id);
+                // Corrupt/unreadable state file (logged once by load). Deliberately NOT culled: the file
+                // staying keeps hasMetadata answering true, which shields the mechanism's entities from the
+                // orphan sweep below — deleting it here turned one bad read (loadConfiguration swallows
+                // even transient IOExceptions into an empty config) into permanent loss of the mechanism's
+                // blocks. The operator repairs or removes the file by hand; nothing is deleted while it
+                // exists. The continue alone prevents the null-NPE in attemptRecover (a null st never
+                // enters pendingRecoveries); the cost is one fast failed re-parse per nearby chunk load.
                 continue;
             }
             pendingRecoveries.put(id, st);
