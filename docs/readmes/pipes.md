@@ -17,9 +17,15 @@ See [the catalog of pipes](https://def9a2a4.github.io/defCoreLib-docs/index.html
   and route flow. They face toward the block you place them against.
 - **Material variants** — copper, iron, gold, and oxidized copper — with configurable transfer
   speeds and their own textures. Chain them into complex transport networks.
+- **Filter pipes** are what make a sorting network. Right-click one to open its filter GUI: copper
+  filters hold 5 items as a whitelist, iron holds 9 and can be flipped to a blacklist, and gold
+  holds 18 and adds an exact/similar match toggle.
+- **Fluids** — oxidized copper pipes carry water when driven by a pump, which is how Mechanism's
+  boiler and sieve get fed. Lava needs iron.
 - Copper pipes oxidize into their oxidized-copper variant by throwing them into a water cauldron
   (or crafting with a water bucket). Textures, variants, recipes, and transfer rates are all
-  configurable.
+  configurable, in `plugins/Pipes/config.yml` — Pipes is the one plugin here that does write an
+  editable config to disk.
 
 ![Corner pipes routing flow around a build.](https://def9a2a4.github.io/defCoreLib-docs/readmes/assets/pipes/demo-2.png)
 
@@ -29,10 +35,11 @@ Permission `pipes.admin`.
 
 | Command | Description |
 | --- | --- |
+| `/pipes help` | List the commands |
 | `/pipes give <variant>` | Give a pipe item |
 | `/pipes reload` | Reload configuration |
-| `/pipes recipes` | Unlock all pipe recipes |
 | `/pipes info` | Info about currently loaded pipes |
+| `/pipes migrate` | Adopt pipes placed by v0.2.0 and earlier |
 | `/pipes delete_all` | Delete all pipes **(dangerous)** |
 
 ## Requires

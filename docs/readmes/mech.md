@@ -39,7 +39,7 @@ reversers, and ratchets.
 
 - [**Millstone**](https://def9a2a4.github.io/defCoreLib-docs/item.html?id=mech%3Amillstone) - grinds items (e.g. cobblestone -> gravel -> sand, bone -> bone meal).
 - [**Extractor press**](https://def9a2a4.github.io/defCoreLib-docs/item.html?id=mech%3Apress) - presses items into juices and oils (consumes glass bottles).
-- [**Sieve**](https://def9a2a4.github.io/defCoreLib-docs/item.html?id=mech%3Asieve) - pans items from its storage when powered (needs water below) - sifts gravel and sand for nuggets, flint, and other finds.
+- [**Sieve**](https://def9a2a4.github.io/defCoreLib-docs/item.html?id=mech%3Asieve) - pans items from its storage when powered - sifts gravel, sand, red sand, dirt and soul sand for nuggets, flint, and other finds. It needs water in its own tank: right-click it with a water bucket or feed it by liquid pipe. Finds drop into a container below it.
 - [**Fan**](https://def9a2a4.github.io/defCoreLib-docs/item.html?id=mech%3Afan) - pushes entities and items away in a fixed ~5-block beam; surplus power pushes harder, not farther.
 - [**Drill**](https://def9a2a4.github.io/defCoreLib-docs/item.html?id=mech%3Adrill) - breaks the block in front of it in timed stages while powered. Mounted on a rotator it sweep-mines an arc at any angle, at 2x speed.
 - [**Placer**](https://def9a2a4.github.io/defCoreLib-docs/item.html?id=mech%3Aplacer) - places blocks from an attached inventory into the space in front of it.
@@ -85,12 +85,24 @@ Rotation power is all-or-nothing — an under-supplied network runs nothing — 
 - **[DefCoreLib](https://github.com/def9a2a4/defCoreLib/blob/main/docs/readmes/defCoreLib.md)** is required.
 - Soft depend: [BetterBanners](https://github.com/def9a2a4/defCoreLib/blob/main/docs/readmes/bbanners.md) for **Large & Huge windmills** - without it, plain windmills still
   craft but the large/huge tiers are uncraftable.
+- Soft depend: [Pipes](https://github.com/def9a2a4/defCoreLib/blob/main/docs/readmes/pipes.md) for the **copper water pump**, whose recipe uses a copper pipe. Without
+  Pipes that one recipe is skipped silently; every other machine is unaffected.
+- Optional: [DynLight](https://github.com/def9a2a4/dynlight) makes torches, glowstone and other
+  light sources carried by a moving mechanism actually emit light. It is a scoreboard-tag
+  integration with no dependency either way — inert when DynLight is absent.
+
+## Commands
+
+| Command | Description | Permission |
+| --- | --- | --- |
+| `/mech advance <path\|*>` | Grant Mechanism advancements (testing) | `mech.admin` |
 
 ## Configuration
 
-- `rotation-config.yml` - network/structure size caps, machine tick rates, and the fuel & power
-  tables.
-- `mill-recipes.yml`, `press-recipes.yml` - millstone and press recipe definitions.
+There is none to edit. Nothing is written to your plugin folder: `rotation-config.yml` (network and
+structure size caps, machine tick rates, fuel and power tables) and `mill-recipes.yml` /
+`press-recipes.yml` all live inside the DefCoreLib jar and are read only from there. A copy placed in
+`plugins/mech/` or `plugins/DefCoreLib/` is not read.
 
 ## Links
 

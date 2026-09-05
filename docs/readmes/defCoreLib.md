@@ -22,6 +22,7 @@ DefCoreLib is a dependency other plugins install alongside:
 - **[RedstoneDisplays](https://github.com/def9a2a4/defCoreLib/blob/main/docs/readmes/redstonedisplays.md)** - redstone power indicator heads
 - **[Pipes](https://github.com/def9a2a4/defCoreLib/blob/main/docs/readmes/pipes.md)** - item-transport pipes
 - **[Railbound](https://github.com/def9a2a4/defCoreLib/blob/main/docs/readmes/railbound.md)** - self-driving minecart trains, fuel carts, and junction/controller/destructor rails
+- **[HeadSmith](https://github.com/def9a2a4/defCoreLib/blob/main/docs/readmes/headsmith.md)** - decorative player-head blocks (alphabet, candles, chimneys, barrels, and more)
 
 ## Gallery
 
@@ -36,14 +37,18 @@ DefCoreLib is a dependency other plugins install alongside:
 
 ## Commands
 
-Permission `corelib.admin`.
-
-| Command | Description |
-| --- | --- |
-| `/defcorelib give <id> [n]` | Give a custom item (`namespace:id` or shorthand; `give glue` -> glue brush) |
-| `/defcorelib list` | List all registered block ids |
-| `/defcorelib colliders` | Toggle mechanism collider glow visualization |
-| `/defcorelib cleanorphans [confirm]` | Find (and, with `confirm`, remove) orphaned display entities |
+| Command | Description | Permission |
+| --- | --- | --- |
+| `/defcorelib catalog` | Browse every registered block and item in-game | `corelib.catalog` (default: everyone) |
+| `/defcorelib give <id> [n]` | Give a custom item (`namespace:id` or shorthand; `give glue` -> glue brush) | `corelib.admin` |
+| `/defcorelib give_demo` | Give the demo block set | `corelib.admin` |
+| `/defcorelib give_demo_rotation` | Give the rotation demo set | `corelib.admin` |
+| `/defcorelib list` | List all registered block ids | `corelib.admin` |
+| `/defcorelib colliders` | Toggle mechanism collider glow visualization | `corelib.admin` |
+| `/defcorelib refreshdisplays` | Rebuild custom block displays | `corelib.admin` |
+| `/defcorelib showcase` | Open the showcase builds | `corelib.admin` |
+| `/defcorelib reloadbanners` | Reload banner configuration | `corelib.admin` |
+| `/defcorelib cleanorphans [confirm]` | Find (and, with `confirm`, remove) orphaned display entities | `corelib.admin` |
 
 ## Requires
 

@@ -3,7 +3,8 @@
 Thousands of decorative player-head blocks — the full alphabet, candles, chimneys, barrels, books,
 pumpkins, mini-blocks and more. Purely server-side Paper plugin, no mods or resource packs required.
 
-See [the catalog of heads](https://def9a2a4.github.io/defCoreLib-docs/index.html?ns=headsmith).
+Browse every head in-game with `/defcorelib catalog`. (The web catalog does not carry the HeadSmith
+namespace yet.)
 
 [Download on Modrinth](https://modrinth.com/plugin/headsmith)
 
@@ -18,8 +19,10 @@ See [the catalog of heads](https://def9a2a4.github.io/defCoreLib-docs/index.html
   smithing table, cartography, loom, stonecutter, grindstone, enchanting, ender chest); **candles**
   light with flint & steel and go out on a right-click; **chimneys** light the same way and puff
   rising campfire smoke while lit; **barrels** are 3-row storage containers.
-- **Recipes** — chalices and chimneys are cut from their base block in a **stonecutter** (e.g. any
-  cobblestone chimney from a cobblestone block); other heads have their own crafting recipes. Head
+- **Recipes** — most heads are carved in a **stonecutter**, usually from a HeadSmith mini-block
+  rather than from a vanilla one: craft a mini birch-planks block, then cut birch letters from it.
+  Chalices and chimneys come straight off their base block (any cobblestone chimney from a
+  cobblestone block). A small number of heads have ordinary shaped or shapeless recipes. Head
   recipes are kept out of the vanilla recipe book by default so they don't clutter it — reveal them
   per-player with `/headsmith recipes give`.
 - **Migration** — if you ran the old standalone HeadSmith plugin, this adopts the heads you already
@@ -43,7 +46,7 @@ the legacy migration. Without it the heads are unavailable.
 
 ## Links
 
-- Full type list & recipes: https://def9a2a4.github.io/defCoreLib-docs/index.html?ns=headsmith
+- Full type list & recipes: in-game, `/defcorelib catalog`
 - Download on Modrinth: https://modrinth.com/plugin/headsmith
 - Repository: https://github.com/def9a2a4/defCoreLib/
 - Issues: https://github.com/def9a2a4/defCoreLib/issues

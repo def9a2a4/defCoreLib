@@ -20,6 +20,7 @@ DefCoreLib is a dependency other plugins install alongside:
 - **[Mechanism](https://github.com/def9a2a4/defCoreLib/blob/main/docs/readmes/mech.md)** - rotation mechanisms, glue, mechanical minecarts
 - **[RedstoneDisplays](https://github.com/def9a2a4/defCoreLib/blob/main/docs/readmes/redstonedisplays.md)** - redstone power indicator heads
 - **[Pipes](https://github.com/def9a2a4/defCoreLib/blob/main/docs/readmes/pipes.md)** - item-transport pipes
+- **[Railbound](https://github.com/def9a2a4/defCoreLib/blob/main/docs/readmes/railbound.md)** - self-driving minecart trains, fuel carts, and junction/controller/destructor rails
 - **[HeadSmith](https://github.com/def9a2a4/defCoreLib/blob/main/docs/readmes/headsmith.md)** - decorative player-head blocks (alphabet, candles, chimneys, barrels, and more)
 
 ## Gallery
@@ -34,14 +35,11 @@ DefCoreLib is a dependency other plugins install alongside:
 
 ## Commands
 
-Permission `corelib.admin`.
+`/defcorelib catalog` browses every registered block and item in-game, and is available to
+everyone (`corelib.catalog`). The rest are admin commands under `corelib.admin`.
 
-| Command | Description |
-| --- | --- |
-| `/defcorelib give <id> [n]` | Give a custom item (`namespace:id` or shorthand; `give glue` -> glue brush) |
-| `/defcorelib list` | List all registered block ids |
-| `/defcorelib colliders` | Toggle mechanism collider glow visualization |
-| `/defcorelib cleanorphans [confirm]` | Find (and, with `confirm`, remove) orphaned display entities |
+See [the full command table](docs/readmes/defCoreLib.md#commands) — kept in one place so the copies
+stop drifting apart.
 
 ## Requires
 
@@ -57,7 +55,12 @@ Nothing - this is the base plugin.
 ## Requirements
 
 - Java 21
-- Paper 1.21.8 (`api-version: 1.21`)
+- Paper 1.21.9 or newer for DefCoreLib itself. `api-version` is still `1.21`, so an older server
+  will load the plugin and then fail at runtime rather than refusing it cleanly: the rotation shafts
+  use the copper chain blocks added in 1.21.9.
+- **Paper 1.21.11 or newer if you run the Mechanism jar** — its bootstrapper registers the
+  advancement datapack through the 1.21.11 datapack-discovery API. Since that is the usual setup,
+  treat 1.21.11 as the practical floor for the suite.
 
 ## Build
 
@@ -70,10 +73,11 @@ Produces an uber-JAR in `build/libs/`. Drop it into your server's `plugins/` dir
 ## Usage from another plugin
 
 1. Add the DefCoreLib JAR as a `compileOnly` dependency.
-2. Declare `softdepend: [DefCoreLib]` in your `plugin.yml`.
+2. Declare `depend: [DefCoreLib]` in your `plugin.yml` — every plugin here does, as does BlockShips,
+   because step 3 returns null without it. Use `softdepend` only if you genuinely degrade gracefully.
 3. Access registries via `CoreLibPlugin.getInstance()`.
 
-Admin commands: `/defcorelib <give|give_demo|list|colliders|reloadbanners|cleanorphans>` (permission `corelib.admin`).
+Commands: see [the table above](#commands).
 
 ## Block definitions
 

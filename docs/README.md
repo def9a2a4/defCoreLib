@@ -50,13 +50,9 @@ All images load from `docs/assets/` (same-origin), so previews work offline once
 
 ## Images & deployment (important)
 
-`docs/assets/` is **gitignored** — the vendored images are local-only for now. That means
-the **published GitHub Pages site does not include them yet**: it will show text-label
-fallbacks until the assets are made available to the live site. To self-host images on the
-live site later, either:
-
-1. remove `/docs/assets/` from `.gitignore` and commit the images, or
-2. add a CI step that runs `make docs` before the Pages deploy.
+`docs/assets/` is **gitignored here**, so the images are local-only in this repo. They reach the
+live site through `make docs-site`, which copies them into the sibling `defCoreLib-docs` checkout
+where they *are* committed. The published site does show them.
 
 ## Files
 
@@ -85,5 +81,11 @@ them. They live in `data/extras.yml` and must be kept in sync by hand if the Jav
 
 ## Publishing
 
-In the GitHub repo settings → Pages, set the source to **branch `main`, folder `/docs`**.
-Pushing to `main` then publishes the catalog automatically (see the images caveat above).
+The live site is a **separate repo**, `defCoreLib-docs`, served at
+`def9a2a4.github.io/defCoreLib-docs/`. This directory is the source; nothing here is published
+directly.
+
+Run `make docs-site` from the repo root. It mirrors `docs/` into the sibling `../defCoreLib-docs`
+checkout — removing the managed paths first, so files deleted here also disappear there — and then
+you commit and push in that repo. Skipping this step is why the deployed copy can disagree with the
+source.

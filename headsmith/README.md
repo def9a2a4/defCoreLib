@@ -8,6 +8,6 @@ the old standalone HeadSmith plugin.
 
 **Requires [DefCoreLib](https://github.com/def9a2a4/defCoreLib).**
 
-- Full docs & features: [`../../docs/readmes/headsmith.md`](../../docs/readmes/headsmith.md)
-- Head catalog: https://def9a2a4.github.io/defCoreLib-docs/index.html?ns=headsmith
+- Full docs & features: [`../docs/readmes/headsmith.md`](../docs/readmes/headsmith.md)
+- Head catalog: browse in-game with `/defcorelib catalog` (the web catalog does not carry HeadSmith yet)
 - Download on Modrinth: https://modrinth.com/plugin/headsmith

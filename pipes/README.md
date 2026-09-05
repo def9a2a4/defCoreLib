@@ -6,7 +6,7 @@ Item-transport pipes for moving items between containers — a companion module 
 
 **Requires [DefCoreLib](https://github.com/def9a2a4/defCoreLib).**
 
-- Full docs & features: [`../../docs/readmes/pipes.md`](../../docs/readmes/pipes.md)
+- Full docs & features: [`../docs/readmes/pipes.md`](../docs/readmes/pipes.md)
 - Pipe catalog: https://def9a2a4.github.io/defCoreLib-docs/index.html?ns=pipes
 - Download on Modrinth: https://modrinth.com/plugin/pipes
 

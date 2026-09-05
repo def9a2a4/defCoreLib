@@ -25,5 +25,6 @@ See [the catalog of carts & rails](https://def9a2a4.github.io/defCoreLib-docs/in
 ## Links
 
 - Full type list & recipes: https://def9a2a4.github.io/defCoreLib-docs/index.html?ns=railbound
+- Download on Modrinth: https://modrinth.com/plugin/railbound
 - Repository: https://github.com/def9a2a4/defCoreLib/
 - Issues: https://github.com/def9a2a4/defCoreLib/issues
