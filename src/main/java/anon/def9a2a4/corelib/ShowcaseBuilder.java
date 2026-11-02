@@ -125,6 +125,16 @@ final class ShowcaseBuilder {
             // set both (extendable-piston core) unregistered until a chunk reload.
             if (type.onBlockPlaced() != null) {
                 type.onBlockPlaced().accept(block, fstate);
+                // An explicit spec cw/ccw wins over a place-time default: a ratchet adopts a running line's
+                // spin, and the startup restore can already have this machine's motor running by now.
+                if (bs.state() != null) {
+                    String live = registry.getState(block);
+                    String want = BlockRotation.preserveSpinToken(bs.state(), live, 0);
+                    if (live != null && want != null && !live.equals(want)) {
+                        registry.setState(block, want);
+                        registry.applyConfig(block, type, want, 0);
+                    }
+                }
             }
             if (type.onChunkLoadCallback() != null) {
                 type.onChunkLoadCallback().accept(block, fstate);
