@@ -1190,14 +1190,15 @@ final class BasicMechanism implements Mechanism {
         if (currentYaw != snappedYaw) rotate(snappedYaw);
         if (persisted && !relanding) teardownSnapshot = snapshotState();
         Matrix4f rotation = landingRotation();
+        // The same rotation as a face permutation, for block ORIENTATION. Positions use the matrix; a Y-axis
+        // landing is a pure yaw and orients exactly as before, but an X/Z drawbridge at 90/180/270° must turn
+        // its blocks' faces about X/Z too (a yaw there re-oriented stairs/logs/shafts against their positions).
+        BlockRotation.Turn turn = landingTurn(rotation, snappedYaw);
 
-        // Banner landing frame: quarter-turns about the rotation axis. Only a Y-axis landing (or a
-        // net-zero turn about any axis) leaves a banner's up-vector at +Y — anything else (X/Z
-        // drawbridge at 90/180/270) has no re-attachable orientation, so banners drop as items.
-        // floorMod, not %: rotators spin CW with NEGATIVE yaw, and a bare % would mint
-        // non-canonical rot-tags downstream (see BlockRotation's identical normalization).
-        int rotSteps = Math.floorMod(Math.round(snappedYaw / 90f), 4);
-        boolean upright = Math.abs(rotationAxis.y) > 0.5f || rotSteps == 0;
+        // Banner landing frame: only a landing that keeps the up-vector at +Y (any Y-axis landing, or a
+        // net-zero turn about any axis) has a re-attachable banner orientation — anything else (X/Z
+        // drawbridge at 90/180/270) drops banners as items.
+        boolean upright = turn.upright();
 
         // The cells where blocks actually landed — handed to the glue rebind hook so an anchor's
         // offset set tracks the structure's new rest positions (dropped-as-item blocks are excluded).
@@ -1322,10 +1323,21 @@ final class BasicMechanism implements Mechanism {
                 // PLACE → fall through to the normal dispatch
             }
 
+            // What this block lands as. Null → the turn has no representation for it (a door or bed on its side,
+            // a floor-only plant on a wall, a sign on a ceiling, a custom head with no state for its new face):
+            // drop it as an item, like a solid-win cell. A yaw-only landing never returns null.
+            Landing landing = computeLanding(mb, turn);
+            if (landing == null) {
+                droppedChainCells = noteIfChain(droppedChainCells, mb, blockLoc);
+                fallbackDrop = false; // this branch owns the drop
+                dropBlockAsItem(blockLoc, mb);
+                continue;
+            }
+
             if (MovableBlocks.isEmptyOrPassable(target.getType())) {
                 // Overwrite air/fluid — and an ephemeral LIGHT block a stroke swept through (else it would
                 // fall to the "solid wins" branch below and drop this block as an item + explosion).
-                placeBlock(target, mb, snappedYaw);
+                placeBlock(target, mb, turn, landing);
                 fallbackDrop = false; // committed to the world (placeBlock is post-commit-safe)
                 placed.add(target);
                 landedCells.put(i, target);
@@ -1333,17 +1345,19 @@ final class BasicMechanism implements Mechanism {
                 landBanners(target, mb, snappedYaw, upright);
                 if (mb.glueOffsets != null) { if (ChainHoistManager.isHoist(target, registry)) { landedHoistTargets.add(target); landedHoistOffsets.add(mb.glueOffsets); } else { landedAnchorTargets.add(target); landedAnchorOffsets.add(mb.glueOffsets); } }
             } else if (relanding && mb.blockData != null
-                    && (target.getType() == mb.blockData.getMaterial() || mb.wasBare)) {
+                    && (target.getType() == landing.data().getMaterial() || mb.wasBare)) {
                 // Landed before the crash, contents included; placing again would duplicate it. Ahead of the
                 // fragile branch, which would break (drop) a landed plant and place it again. Still a landed
                 // cell, so a carried frame finds its saved self (spawn's UUID guard) instead of paying again,
                 // and glue keeps it. A bare shaft is re-bared to a chain once landed, so its material differs.
+                // Compared against the LANDED material: a drawbridge turn can swap it (torch → wall torch,
+                // floor head → wall head).
                 fallbackDrop = false;
                 placed.add(target);
                 landedCells.put(i, target);
             } else if (FragileBlocks.isFragile(target.getType())) {
                 target.breakNaturally();
-                placeBlock(target, mb, snappedYaw);
+                placeBlock(target, mb, turn, landing);
                 fallbackDrop = false; // committed to the world (placeBlock is post-commit-safe)
                 placed.add(target);
                 landedCells.put(i, target);
@@ -1589,7 +1603,47 @@ final class BasicMechanism implements Mechanism {
     // Internal helpers
     // ──────────────────────────────────────────────────────────────────────
 
-    private void placeBlock(Block target, MechanismBlockData mb, float snappedYaw) {
+    /** What one captured block lands as: its vanilla data and (custom blocks) the custom state to stamp. For a
+     *  yaw-only landing {@code state} is unused — placeBlock keeps deriving it from the placed data exactly as
+     *  before. */
+    private record Landing(BlockData data, @Nullable String state) {}
+
+    /** The face permutation of the landing rotation. A non-quarter-turn matrix (only reachable from a
+     *  non-cardinal yml axis, whose positions don't land on the grid either) falls back to the old yaw. */
+    private BlockRotation.Turn landingTurn(Matrix4f rotation, float snappedYaw) {
+        try {
+            return BlockRotation.Turn.of(rotation);
+        } catch (IllegalArgumentException ex) {
+            registry.getPlugin().getLogger().warning("disassemble: landing rotation about " + rotationAxis
+                + " is not a quarter-turn (" + ex.getMessage() + "); orienting blocks by yaw " + snappedYaw);
+            return BlockRotation.Turn.yaw(snappedYaw);
+        }
+    }
+
+    /**
+     * Compute how {@code mb} lands under {@code turn}, or null when it has no representation (→ drop as item).
+     * Yaw-only: exactly the old {@code rotateBlockData(blockData, yaw)}. Off-yaw (X/Z drawbridge): vanilla blocks
+     * go through {@link BlockRotation#landBlockData} (incl. floor↔wall swaps), skull/physical custom blocks
+     * through {@link BlockRotation#landCustomHead} (state re-derived from the new mount face), bare-first ones
+     * rotate their base block and keep their state.
+     */
+    private @Nullable Landing computeLanding(MechanismBlockData mb, BlockRotation.Turn turn) {
+        if (turn.isYawOnly()) {
+            return new Landing(BlockRotation.rotateBlockData(mb.blockData, turn.yawDegrees()), mb.customState);
+        }
+        CustomHeadBlock type = mb.customTypeId != null ? registry.getType(mb.customTypeId) : null;
+        if (type != null && type.baseBlock() == null) {
+            BlockRotation.HeadLanding hl = BlockRotation.landCustomHead(
+                type, mb.blockData, mb.customState, turn, Material::createBlockData);
+            return hl == null ? null : new Landing(hl.data(), hl.state());
+        }
+        BlockData data = BlockRotation.landBlockData(mb.blockData, turn, Material::createBlockData);
+        // A pinned bare-first block (the casing) re-asserts its pinned data after placing anyway.
+        if (data == null && type != null && type.baseBlockData() != null) data = mb.blockData.clone();
+        return data == null ? null : new Landing(data, mb.customState);
+    }
+
+    private void placeBlock(Block target, MechanismBlockData mb, BlockRotation.Turn turn, Landing landing) {
         // Destination-authoritative waterlog: capture cleared it (see assembleCore), so a waterloggable
         // block landing INTO a water source re-waterlogs. Sample the target BEFORE we overwrite it. Only a
         // true source (Levelled level 0), never transient flowing water — matches BlockShips.
@@ -1601,7 +1655,7 @@ final class BasicMechanism implements Mechanism {
         // would still pop the attachable DURING setBlockData — before its block-entity data
         // (banner patterns) is written back, dropping a blank item.
         boolean attachable = FragileBlocks.isAttachable(mb.blockData.getMaterial());
-        BlockData landed = BlockRotation.rotateBlockData(mb.blockData, snappedYaw);
+        BlockData landed = landing.data();
         if (intoWaterSource && landed instanceof org.bukkit.block.data.Waterlogged wl && !wl.isWaterlogged()) {
             landed = landed.clone();
             ((org.bukkit.block.data.Waterlogged) landed).setWaterlogged(true);
@@ -1655,17 +1709,20 @@ final class BasicMechanism implements Mechanism {
                 // today (no bare-first type registers onRestore), but keeps the capture/restore hook symmetric.
                 if (type.onRestore() != null) type.onRestore().accept(target);
                 registry.applyThrottleLevel(target, mb.throttleLevel);   // no-op unless a throttle (bare-first)
-                flipLandedSpinDir(target, mb, snappedYaw);
+                flipLandedSpinDir(target, mb, turn);
             } else if (type != null) {
                 // The vanilla data was rotated above; re-derive the custom state for the landed
                 // orientation so it doesn't snap to an impossible state (and rejoins the network on the
                 // correct axis).
-                String landedState = BlockRotation.rotateCustomState(type, mb.customState, target.getBlockData());
+                // Off-yaw (drawbridge) landings already chose the state from the turned mount face in computeLanding.
+                String landedState = turn.isYawOnly()
+                    ? BlockRotation.rotateCustomState(type, mb.customState, target.getBlockData())
+                    : landing.state();
                 // A wall ratchet's allowed CW/CCW lives in its state token, but rotateCustomState rebuilds
                 // orientation from the placement map (which hard-codes cw) — losing a CCW setting and never
                 // axis-flipping it. Re-inject the captured direction, flipped iff the landing negated the
                 // spin axis. No-op for every non-ratchet state (none carry a cw/ccw token).
-                landedState = BlockRotation.preserveSpinToken(mb.customState, landedState, snappedYaw);
+                landedState = BlockRotation.preserveSpinToken(mb.customState, landedState, turn);
                 registry.markBlock(target, type, landedState);
                 int power = registry.readPower(target, type);
                 registry.applyConfig(target, type, landedState, power);
@@ -1679,7 +1736,7 @@ final class BasicMechanism implements Mechanism {
                 // Re-load any side-store state (engine fuel) from the just-restored tile PDC — restoreBlock's
                 // onChunkLoad above ran BEFORE restoreConfigPdc, so it read a stale/empty counter.
                 if (type.onRestore() != null) type.onRestore().accept(target);
-                flipLandedSpinDir(target, mb, snappedYaw);
+                flipLandedSpinDir(target, mb, turn);
                 // No corelib storage but a captured inventory: an unlocked physical_material container (the
                 // mechanical dispenser) whose real tile slots were captured — write them back into the tile.
                 // (restoreStorageSnapshot above is a no-op for it: no storage() → no corelib inventory.)
@@ -1775,14 +1832,14 @@ final class BasicMechanism implements Mechanism {
      *  domain to this stored token) and could spuriously jam. Reads a fresh TileState AFTER restoreConfigPdc's
      *  own update() so it doesn't clobber the just-merged config keys. No-op when the block stores no
      *  spin_dir (every non-source block) or its axle is Y (yaw never negates it). */
-    private void flipLandedSpinDir(Block target, MechanismBlockData mb, float snappedYaw) {
+    private void flipLandedSpinDir(Block target, MechanismBlockData mb, BlockRotation.Turn turn) {
         if (mb.customState == null) return;
         if (!(target.getState() instanceof TileState tile)) return;
         var pdc = tile.getPersistentDataContainer();
         String token = pdc.get(RotationNetwork.SPIN_DIR_KEY, PersistentDataType.STRING);
         if (token == null) return;
         String flipped = BlockRotation.rotateSpinDir(
-            RotationNetwork.axisFromState(mb.customState), snappedYaw, token);
+            RotationNetwork.axisFromState(mb.customState), turn, token);
         if (flipped.equals(token)) return;
         pdc.set(RotationNetwork.SPIN_DIR_KEY, PersistentDataType.STRING, flipped);
         tile.update();
@@ -1810,15 +1867,18 @@ final class BasicMechanism implements Mechanism {
         ItemStack drop;
         if (mb.customTypeId != null) {
             CustomHeadBlock type = registry.getType(mb.customTypeId);
-            drop = (type != null) ? type.createItem(1) : new ItemStack(mb.blockData.getMaterial());
+            drop = (type != null) ? type.createItem(1) : new ItemStack(mb.blockData.getPlacementMaterial());
         } else if (blockBannerItem(mb) != null) {
             // A vanilla banner block drops its captured pattern-carrying item. Also load-bearing for
             // wall banners: *_WALL_BANNER has no item form, so new ItemStack() below would throw.
             drop = blockBannerItem(mb).asQuantity(1);
-        } else if (mb.blockData.getMaterial().isItem()) {
-            drop = new ItemStack(mb.blockData.getMaterial());
+        } else if (isSecondaryHalf(mb.blockData)) {
+            drop = null; // a door's upper half / a bed's head: the other half carries the one item
         } else {
-            drop = null; // block-only material with no item mapping (e.g. wall variants) — no drop
+            // getPlacementMaterial maps block-only variants to their item (wall torch → torch, wall head → head,
+            // redstone wire → redstone); still null when there is none.
+            Material item = mb.blockData.getPlacementMaterial();
+            drop = item.isItem() && !item.isAir() ? new ItemStack(item) : null;
         }
         // Consumer drop-item hook (3a-ii): substitute a custom-item identity, remap a wall variant that
         // has no item form (default drop == null), or suppress the drop (return null). The hook fully
@@ -1840,6 +1900,17 @@ final class BasicMechanism implements Mechanism {
 
         // A dropped host takes its riding BetterBanners down with it — as items, never silently.
         dropBannerItems(loc, mb);
+    }
+
+    /** The half of a two-cell block that drops nothing of its own (door/tall-plant upper half, bed head) — the
+     *  same rule BlockShips' landing hook applies. Stairs and trapdoors are Bisected but single-cell. */
+    private static boolean isSecondaryHalf(BlockData bd) {
+        if (bd instanceof org.bukkit.block.data.Bisected bis
+                && !(bd instanceof org.bukkit.block.data.type.Stairs)
+                && !(bd instanceof org.bukkit.block.data.type.TrapDoor)
+                && bis.getHalf() == org.bukkit.block.data.Bisected.Half.TOP) return true;
+        return bd instanceof org.bukkit.block.data.type.Bed bed
+            && bed.getPart() == org.bukkit.block.data.type.Bed.Part.HEAD;
     }
 
     /** Drop this block's captured contents as loose items at {@code loc}. Used by every branch that discards
