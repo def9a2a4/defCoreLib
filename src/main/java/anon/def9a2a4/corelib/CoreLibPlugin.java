@@ -71,6 +71,31 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
     private BannerManager bannerManager;
     private LargeBannerRecipes largeBannerRecipes;
 
+    /**
+     * A thruster aboard a mechanism burns only by the demand its consumer reports. BlockShips before 0.0.18
+     * never reports it, so with this DefCoreLib its thrusters would push for free. Say so once at startup.
+     */
+    private void warnOldBlockShips() {
+        org.bukkit.plugin.Plugin bs = getServer().getPluginManager().getPlugin("BlockShips");
+        if (bs == null) return;
+        String v = bs.getPluginMeta().getVersion();
+        int[] have = new int[3];
+        String[] parts = v.split("[^0-9]+");
+        for (int i = 0, j = 0; i < parts.length && j < 3; i++) {
+            if (!parts[i].isEmpty()) have[j++] = Integer.parseInt(parts[i]);
+        }
+        int[] need = {0, 0, 18};
+        for (int i = 0; i < 3; i++) {
+            if (have[i] != need[i]) {
+                if (have[i] < need[i]) {
+                    getLogger().warning("BlockShips " + v + " is older than 0.0.18: its thrusters will push without"
+                        + " burning fuel on this DefCoreLib. Update BlockShips.");
+                }
+                return;
+            }
+        }
+    }
+
     @Override
     public void onEnable() {
         instance = this;
@@ -272,6 +297,7 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         // and force-loaded chunks load before plugins enable, and being resident never fire
         // ChunkLoad/EntitiesLoad again). Deferred to the first tick on purpose: mech/pipes register
         // their types in their own onEnable, which runs after ours, so sweeping inline would miss them.
+        getServer().getScheduler().runTask(this, this::warnOldBlockShips);
         getServer().getScheduler().runTask(this, () -> {
             int swept = registry.restoreLoadedChunks();
             if (swept > 0) {
