@@ -196,28 +196,36 @@ showcases:
 
   - id: redstone_motor_door
     name: "Motor → Rotator Door"
-    blurb: "A rotator on the floor is a door hinge: a pulse swings the glued 2×2 door a quarter-turn open."
+    blurb: "A rotator on top of a door's hinge column swings the whole glued 3×3 door a quarter-turn open."
     description: >
-      Set on the floor, a rotator hinges about the vertical: everything glued to it swings round the
-      hinge's column like a door. Here a 2×2 spruce door is glued beside the hinge; a redstone pulse
-      swings it a quarter-turn, and the next pulse swings it again — which way is set by the network's
-      spin direction. Power comes down the vertical axle from the motor sitting on top of the hinge.
-    assert_at: 160
+      Set on top of a block, a rotator hinges about the vertical: everything glued to it swings round
+      the column beneath it like a door. Here it sits on the top of the door's hinge edge, a column of
+      three planks, with the rest of a 3×3 spruce door glued beside it. A redstone pulse swings the door
+      a quarter-turn, and the next pulse swings it again — which way is set by the network's spin
+      direction. Power comes down the vertical axle from the motor sitting on top of the rotator.
+    assert_at: 200
     blocks:
-      - { id: "mech:redstone_motor", facing: down, at: [0, 1, 0] }   # Y-axis source above the hinge
-      - { id: "mech:rotator",        facing: down, at: [0, 0, 0],    # floor hinge, Y axis
-          glue: [[0, 0, 1], [0, 1, 1], [0, 0, 2], [0, 1, 2]] }
+      - { id: "mech:redstone_motor", facing: down, at: [0, 4, 0] }   # Y-axis source above the hinge
+      - { id: "mech:rotator",        facing: down, at: [0, 3, 0],    # sits on the hinge column, Y axis
+          glue: [[0, 0, 0], [0, 1, 0], [0, 2, 0],
+                 [0, 0, 1], [0, 1, 1], [0, 2, 1],
+                 [0, 0, 2], [0, 1, 2], [0, 2, 2]] }
     vanilla:
-      # The door: two wide (z), two tall, its edge against the hinge column.
+      # The hinge column (x=0, z=0) under the rotator, and the door's two other columns beside it (+z).
+      - { block: "SPRUCE_PLANKS", at: [0, 0, 0] }
+      - { block: "SPRUCE_PLANKS", at: [0, 1, 0] }
+      - { block: "SPRUCE_PLANKS", at: [0, 2, 0] }
       - { block: "SPRUCE_PLANKS", at: [0, 0, 1] }
       - { block: "SPRUCE_PLANKS", at: [0, 1, 1] }
+      - { block: "SPRUCE_PLANKS", at: [0, 2, 1] }
       - { block: "SPRUCE_PLANKS", at: [0, 0, 2] }
       - { block: "SPRUCE_PLANKS", at: [0, 1, 2] }
-    activate: { pulse: [0, 0, -1] }   # behind the hinge, out of the door's sweep
+      - { block: "SPRUCE_PLANKS", at: [0, 2, 2] }
+    activate: { pulse: [0, 3, -1] }   # behind the rotator, out of the door's sweep and off the motor
     expect:
-      - { type: mechanism_swung, value: "0,0,1; 0,1,1; 0,0,2; 0,1,2", at: [0, 0, 0] }
-      - { type: block_type, value: AIR, at: [0, 0, 1], to: [0, 1, 2] }   # swung away…
-      - { type: material_total, value: "SPRUCE_PLANKS=4", at: [-2, 0, 0], to: [2, 1, 0] }   # …to lie along x
+      - { type: mechanism_swung, value: "0,0,0; 0,1,0; 0,2,0; 0,0,1; 0,1,1; 0,2,1; 0,0,2; 0,1,2; 0,2,2", at: [0, 3, 0] }
+      - { type: block_type, value: AIR, at: [0, 0, 1], to: [0, 2, 2] }   # swung away…
+      - { type: material_total, value: "SPRUCE_PLANKS=9", at: [-2, 0, 0], to: [2, 2, 0] }   # …to lie along x
 
   - id: redstone_motor_chassis_drawbridge
     name: "Motor → Chassis Drawbridge"
@@ -282,11 +290,13 @@ showcases:
       it, and turns that block and everything glued to it about the vertical, like a turntable overhead.
       Here a three-block beam is glued to it; a redstone pulse swings the beam a quarter-turn. It's
       still a Y-axis consumer, so power arrives up the vertical axle from the motor below, while the
-      swung beam sits on the opposite (mounting) side above.
+      swung beam sits on the opposite (mounting) side above. A reverser sits on the axle between them:
+      flip the lever beside it and the next swing turns the other way.
     assert_at: 160
     blocks:
-      # Vertical (Y) axle: motor BELOW feeds the ceiling hinge; the hinge hangs from the block above it.
-      - { id: "mech:redstone_motor", facing: down, at: [0, -1, 0] }
+      # Vertical (Y) axle: motor → reverser → ceiling hinge; the hinge hangs from the block above it.
+      - { id: "mech:redstone_motor", facing: down, at: [0, -2, 0] }
+      - { id: "mech:reverser",       facing: down, at: [0, -1, 0] }   # lever beside it → reverses the swing
       - { id: "mech:rotator",   facing: up,   at: [0, 0, 0],    # ceiling hinge (idle_ceiling), Y axis
           glue: [[0, 1, 0], [1, 1, 0], [2, 1, 0]] }
     vanilla:
@@ -294,6 +304,10 @@ showcases:
       - { block: "OAK_PLANKS", at: [0, 1, 0] }
       - { block: "OAK_PLANKS", at: [1, 1, 0] }
       - { block: "OAK_PLANKS", at: [2, 1, 0] }
+      # Wall lever, switched on, beside the reverser only. It hangs on a post to the west: a floor lever
+      # would power the ground block it stands on, which touches the motor and would switch it off.
+      - { block: "STONE", at: [-2, -1, 0] }
+      - { block: "LEVER", at: [-1, -1, 0], data: "[face=wall,facing=east,powered=true]" }
     activate: { pulse: [1, 0, 0] }   # redstone east of the hinge → rising edge → swing
     expect:
       - { type: mechanism_swung, value: "0,1,0; 1,1,0; 2,1,0", at: [0, 0, 0] }
@@ -385,6 +399,12 @@ showcases:
       - { block: "WATER", at: [1, 1, 0], physics: true }
       - { block: "STONE", at: [2, 1, 0] }
       - { block: "STONE", at: [2, 0, 0] }
+      # Glass walls keep the stream to the source cell and the fall beside the wheel, so it can't spread.
+      - { block: "GLASS", at: [0, 1, 0] }
+      - { block: "GLASS", at: [1, 1, -1] }
+      - { block: "GLASS", at: [1, 1, 1] }
+      - { block: "GLASS", at: [1, 0, -1] }
+      - { block: "GLASS", at: [1, 0, 1] }
     activate: passive
     # Tests disabled: the water never flows, so the wheel doesn't spin and the network
     # never powers up. Re-enable these once flowing-water source works.
@@ -410,10 +430,20 @@ showcases:
       - { id: "mech:shaft",       facing: west,  at: [2, 0, 0] }
       - { id: "mech:water_wheel", facing: east,  at: [3, 0, 0] }
     vanilla:
-      # Water around the wheel (barriers that dammed it in the export are dropped; it never renders).
+      # Water around the wheel: a source on top, running off its south side and down past its rim.
       - { block: "WATER", at: [3, 0, 1], data: "[level=8]", physics: true }
       - { block: "WATER", at: [3, 1, 0], data: "[level=0]", physics: true }
       - { block: "WATER", at: [3, 1, 1], data: "[level=1]", physics: true }
+      # Glass walls dam it in (the export's barriers would never render), so it can't spread over the build.
+      - { block: "GLASS", at: [2, 1, 0] }
+      - { block: "GLASS", at: [4, 1, 0] }
+      - { block: "GLASS", at: [3, 1, -1] }
+      - { block: "GLASS", at: [2, 1, 1] }
+      - { block: "GLASS", at: [4, 1, 1] }
+      - { block: "GLASS", at: [3, 1, 2] }
+      - { block: "GLASS", at: [2, 0, 1] }
+      - { block: "GLASS", at: [4, 0, 1] }
+      - { block: "GLASS", at: [3, 0, 2] }
     activate: passive
     # Asserts the windmill half only. The windmill is a passive source (no water, fuel or redstone
     # needed) and nothing on this network draws power, so it is powered on the windmill's 1 alone and the
