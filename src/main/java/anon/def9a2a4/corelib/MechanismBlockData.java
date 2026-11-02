@@ -121,6 +121,8 @@ public final class MechanismBlockData {
     @Nullable List<CustomHeadBlock.DisplayEntityConfig> displayEntityConfigs;
     @Nullable List<CustomHeadBlock.BlockDisplayEntityConfig> blockDisplayEntityConfigs;
     CustomHeadBlock.@Nullable ParticleConfig particles;
+    /** Set when this block's particle config threw (e.g. missing particle data): stop retrying it. */
+    boolean particlesFailed;
     @Nullable Inventory storage;
     // GUI title for a block-free storage part (a prefab ship's named cargo, from the PartSpec descriptor).
     // Plain text. Persisted so the name survives recovery. The Inventory's TYPE is read back via

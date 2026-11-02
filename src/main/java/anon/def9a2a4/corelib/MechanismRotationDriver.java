@@ -126,6 +126,9 @@ final class MechanismRotationDriver {
         final Map<Integer, Double> demand = new HashMap<>();
         final Map<Integer, Long> lastWorked = new HashMap<>();
         final Map<Integer, double[]> burnAcc = new HashMap<>();
+        // Engines that are running (fuelled) but burned nothing at the last engine tick — their smoke
+        // or flame is muted, so a parked ship doesn't look like it is burning fuel.
+        final java.util.Set<Integer> idleEngines = new java.util.HashSet<>();
         long lastTickAge;
 
         MechState(List<NodeSpec> specs) { this.specs = specs; }
@@ -374,6 +377,7 @@ final class MechanismRotationDriver {
                     double frac = s.power() <= 0
                         ? st.demand.getOrDefault(idx, 1.0) * config.thrusterBurnMultiplier
                         : fracByComponent[k] * config.engineBurnMultiplier;
+                    if (frac <= 0) st.idleEngines.add(idx); else st.idleEngines.remove(idx);
                     int burns = EngineBurn.step(st.burnAcc.computeIfAbsent(idx, i -> new double[1]), frac);
                     for (int b = 0; b < burns; b++) {
                         if (fuel <= 0) {
@@ -438,6 +442,12 @@ final class MechanismRotationDriver {
             out[k] = agg == null || agg[3] == 0 ? 0 : EngineBurn.fraction(agg[0], agg[1], agg[2], config.minBurnFraction);
         }
         return out;
+    }
+
+    /** Whether an engine aboard is fuelled but burning nothing (its particles are muted). */
+    boolean isEngineIdle(BasicMechanism mech, int blockIndex) {
+        MechState st = states.get(mech.id());
+        return st != null && config.burnOnLoad && !config.engineIdleSmoke && st.idleEngines.contains(blockIndex);
     }
 
     /** Demand 0..1 for a block aboard (BlockShips: propellers, wheels, thrusters by use). */

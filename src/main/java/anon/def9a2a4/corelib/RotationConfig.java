@@ -49,6 +49,7 @@ final class RotationConfig {
     double engineBurnMultiplier = 1.0;    // scales every engine's burn
     double minBurnFraction = 0.0;         // floor on the load fraction whenever anything draws power
     double thrusterBurnMultiplier = 1.0;  // scales a thruster's burn (its own demand, not network load)
+    boolean engineIdleSmoke = false;      // show smoke/flame on a fuelled engine that is burning nothing
 
     /** How a consumer counts toward its network's load, for engine burn. */
     enum LoadMode {
@@ -246,6 +247,7 @@ final class RotationConfig {
             burnOnLoad = engines.getBoolean("burn-on-load", burnOnLoad);
             engineBurnMultiplier = engines.getDouble("burn-multiplier", engineBurnMultiplier);
             minBurnFraction = engines.getDouble("min-burn-fraction", minBurnFraction);
+            engineIdleSmoke = engines.getBoolean("idle-smoke", engineIdleSmoke);
             loaded++;
         }
         ConfigurationSection thruster = yaml.getConfigurationSection("thruster");

@@ -2335,7 +2335,7 @@ public class MechanismRegistry implements org.bukkit.event.Listener {
                 if (!mech.driven) mech.updateFromVehicle();
                 updateAnimatedDisplays(mech, currentTick - mech.startTick);
                 if (rotationDriver != null) rotationDriver.tick(mech, currentTick - mech.startTick);
-                // TODO: particle ticking for mechanism blocks
+                tickMechanismParticles(mech, currentTick);
             } catch (Throwable t) {
                 if (tickWarned.add(mech.id())) {
                     plugin.getLogger().log(java.util.logging.Level.WARNING,
@@ -2436,6 +2436,74 @@ public class MechanismRegistry implements org.bukkit.event.Listener {
                     if (rearm) display.setInterpolationDelay(0);
                     display.setTransformationMatrix(placed);
                 }
+            }
+        }
+    }
+
+    /** Particles are only emitted when a player is within this many blocks of the mechanism. */
+    private static final double PARTICLE_VIEW_RANGE = 64.0;
+
+    /**
+     * Emit each carried block's state particles at its LIVE position — the mechanism analogue of
+     * {@code CustomBlockRegistry}'s particle tick, so a thruster's exhaust or an engine's smoke keeps
+     * showing aboard a moving ship. Offsets and the directional {@code velocity} are rotated by the
+     * mechanism's current transform, so a plume follows its nozzle as the ship turns.
+     *
+     * <p>Offsets are authored from the block's bottom face (the static path adds them to the block
+     * corner's Y), and the carried block's origin is its centre, hence the -0.5. The wall offset is
+     * picked by the CAPTURED facing, exactly as the static path picks it by the live one.
+     */
+    private void tickMechanismParticles(BasicMechanism mech, long currentTick) {
+        Location pivot = mech.pivot();
+        org.bukkit.World world = pivot.getWorld();
+        if (world == null) return;
+        boolean viewed = false;
+        double r2 = PARTICLE_VIEW_RANGE * PARTICLE_VIEW_RANGE;
+        for (org.bukkit.entity.Player p : world.getPlayers()) {
+            if (p.getLocation().distanceSquared(pivot) <= r2) { viewed = true; break; }
+        }
+        if (!viewed) return;
+
+        Matrix4f t = mech.currentTransform();
+        for (int i = 0; i < mech.blocks.size(); i++) {
+            MechanismBlockData mb = mech.blocks.get(i);
+            CustomHeadBlock.ParticleConfig pc = mb.particles;
+            if (pc == null || mb.particlesFailed) continue;
+            if (currentTick % Math.max(1, pc.intervalTicks()) != 0) continue;
+            // A fuelled engine or thruster burning nothing (burn-on-load) shows no smoke or flame.
+            if (rotationDriver != null && rotationDriver.isEngineIdle(mech, i)) continue;
+
+            org.bukkit.util.Vector off = pc.floorOffset();
+            if (mb.blockData instanceof org.bukkit.block.data.Directional dir
+                    && mb.blockData.getMaterial() == org.bukkit.Material.PLAYER_WALL_HEAD) {
+                org.bukkit.util.Vector w = pc.wallOffsets().get(dir.getFacing());
+                if (w != null) off = w;
+            }
+            Vector3f local = mb.localTransform.getTranslation(new Vector3f())
+                .add((float) off.getX(), (float) off.getY() - 0.5f, (float) off.getZ());
+            Vector3f at = t.transformPosition(local, new Vector3f());
+            double x = pivot.getX() + at.x, y = pivot.getY() + at.y, z = pivot.getZ() + at.z;
+            if (!world.isChunkLoaded((int) Math.floor(x) >> 4, (int) Math.floor(z) >> 4)) continue;
+
+            int count = pc.count().resolveInt(0);
+            double speed = pc.speed().resolve(0);
+            try {
+                org.bukkit.util.Vector vel = pc.velocity();
+                if (vel != null) {
+                    Vector3f v = t.transformDirection(
+                        new Vector3f((float) vel.getX(), (float) vel.getY(), (float) vel.getZ()), new Vector3f());
+                    if (pc.data() != null) world.spawnParticle(pc.type(), x, y, z, 0, v.x, v.y, v.z, speed, pc.data());
+                    else world.spawnParticle(pc.type(), x, y, z, 0, v.x, v.y, v.z, speed);
+                } else if (pc.data() != null) {
+                    world.spawnParticle(pc.type(), x, y, z, count, 0.05, 0.05, 0.05, speed, pc.data());
+                } else {
+                    world.spawnParticle(pc.type(), x, y, z, count, 0.05, 0.05, 0.05, speed);
+                }
+            } catch (IllegalArgumentException ex) {
+                // Same as the static path: a misconfigured particle disables itself with one warning.
+                mb.particlesFailed = true;
+                plugin.getLogger().warning("Disabling mechanism particle " + pc.type() + " on " + mech.id()
+                    + " — " + ex.getMessage());
             }
         }
     }
