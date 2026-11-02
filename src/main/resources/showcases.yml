@@ -1586,12 +1586,14 @@ showcases:
     test_only: true
     assert_at: 140
     blocks:
+      # A fan above each engine: it draws power whenever it has it, so the engine burns (a drill with
+      # nothing to bore counts as no load at all and the lava would never be burned).
       - { id: "mech:engine", facing: down, at: [0, 0, 0], contents: [LAVA_BUCKET, BUCKET] }
-      - { id: "mech:drill",  facing: down, at: [0, 1, 0] }
+      - { id: "mech:fan",    facing: up,   at: [0, 1, 0] }
       # 6 apart, boxes not touching: the dropped bucket scatters, and at 3 apart it sometimes rolled into
       # the left engine's box (flaky on 26.x).
       - { id: "mech:engine", facing: down, at: [6, 0, 0], contents: [LAVA_BUCKET] }
-      - { id: "mech:drill",  facing: down, at: [6, 1, 0] }
+      - { id: "mech:fan",    facing: up,   at: [6, 1, 0] }
     activate: passive
     expect:
       - { type: contents, at: [0, 0, 0], items: ["LAVA_BUCKET x0", "BUCKET x2"] }
@@ -1719,6 +1721,7 @@ showcases:
       - { tick: 20, do: set, block: REDSTONE_BLOCK, physics: true, at: [-1, 0, 0] }
     expect:
       - { type: block_type, value: "!PLAYER_HEAD", at: [1, 0, 0] }
+      - { type: block_type, value: "!PLAYER_WALL_HEAD", at: [1, 0, 0] }
       - { type: entity_count, value: "item:verticalslabs:oak=1", at: [-2, -1, -2], to: [4, 2, 2] }
       - { type: entity_count, value: "item:PLAYER_HEAD=0", at: [-2, -1, -2], to: [4, 2, 2] }
 
@@ -1733,5 +1736,5 @@ showcases:
     actions:
       - { tick: 20, do: summon, entity: wind_charge, explode: true, at: [0, 0, 1] }
     expect:
-      - { type: block_type, value: PLAYER_HEAD, at: [0, 0, 0] }
+      - { type: block_type, value: "!AIR", at: [0, 0, 0] }   # a vertical slab sits as a wall head
       - { type: entity_count, value: "item:verticalslabs:oak=0", at: [-2, -1, -2], to: [2, 2, 3] }

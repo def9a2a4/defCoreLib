@@ -2861,9 +2861,6 @@ public class MechanismRegistry implements org.bukkit.event.Listener {
             return mb.spinVirtualAge;
         }
         if (!rearm) return mb.spinVirtualAge;
-        if (Boolean.getBoolean("blockships.debugUse") && tickAge % 40 == 0) org.bukkit.Bukkit.getLogger().info(   // TEMP DEBUG
-            "[spin] " + mb.customTypeId + " borrowed=" + (mb.borrowedItemAnims != null) + " frozen=" + mb.spinFrozen
-            + " override=" + mb.spinOverride + " age=" + mb.spinVirtualAge);
         if (mb.spinOverrideAbsolute) {
             float authored = authoredSpinDegrees(mb);
             if (authored != 0f && !Float.isNaN(authored)) mb.spinVirtualAge += mb.spinOverride / authored;
