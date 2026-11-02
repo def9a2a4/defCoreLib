@@ -72,7 +72,9 @@ steam:
 # they could supply. An engine with fuel stays running — the network stays powered — but a network
 # whose machines are idle burns nothing, and one using half an engine's output burns half as fast.
 # Windmills and water wheels on the same network cover the load first.
-# Like the rest of this file, read from the jar only.
+# This file is read from the jar, but admins can override the fuel sections (steam, engines,
+# thruster, load, fuel) by copying them into plugins/DefCoreLib/config/fuel.yml. Sections left out
+# keep these values; a fuel: section there replaces the whole fuel table.
 engines:
   burn-on-load: true        # false = the old behaviour: a fixed burn whenever an engine runs
   burn-multiplier: 1.0      # scales all engine fuel use

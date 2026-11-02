@@ -11,4 +11,9 @@ final class ShowcaseMode {
 
     static final boolean ACTIVE = Boolean.getBoolean("defcorelib.showcaseTest")
         || !System.getProperty("defcorelib.showcaseCapture", "").isBlank();
+
+    /** A docs capture only (no tests): pistons record the stroke they would make instead of making it, so the
+     *  capture reads the build at rest and the docs page plays the stroke back. */
+    static final boolean CAPTURE_ONLY = !Boolean.getBoolean("defcorelib.showcaseTest")
+        && !System.getProperty("defcorelib.showcaseCapture", "").isBlank();
 }

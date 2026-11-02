@@ -140,13 +140,91 @@ final class RotationConfig {
      *  takes no part in a mechanism's rotation network. Keyed by short name, like {@code power:}. */
     @org.jetbrains.annotations.Nullable MechRotationMeta mechMeta(String blockTypeId) {
         int i = blockTypeId.indexOf(':');
-        return mechMetaValues.get(i >= 0 ? blockTypeId.substring(i + 1) : blockTypeId);
+        String key = i >= 0 ? blockTypeId.substring(i + 1) : blockTypeId;
+        MechRotationMeta m = mechMetaValues.get(key);
+        if (m != null) return m;
+        String wheel = RotationBlocks.wheelSize(key);   // every wood of a wheel size shares its entry
+        return wheel == null ? null : mechMetaValues.get(wheel);
     }
 
     RotationConfig() {
         initDefaultFuel();
         initDefaultPower();
         initDefaultMechMeta();
+    }
+
+    /**
+     * The fuel and burn sections: {@code fuel}, {@code steam}, {@code engines}, {@code thruster} and
+     * {@code load}. Shared by {@link #load} (the jar's rotation-config.yml) and {@link #loadFuelOverride}
+     * (the admin's config/fuel.yml), so the two read them identically. Returns the sections found.
+     */
+    private int applyFuelSections(YamlConfiguration yaml, Logger logger) {
+        int loaded = 0;
+        ConfigurationSection steam = yaml.getConfigurationSection("steam");
+        if (steam != null) {
+            boilerTankUnits = steam.getInt("boiler-tank-units", boilerTankUnits);
+            steamWaterIntervalTicks = steam.getInt("water-interval-ticks", steamWaterIntervalTicks);
+            loaded++;
+        }
+
+        ConfigurationSection engines = yaml.getConfigurationSection("engines");
+        if (engines != null) {
+            burnOnLoad = engines.getBoolean("burn-on-load", burnOnLoad);
+            engineBurnMultiplier = engines.getDouble("burn-multiplier", engineBurnMultiplier);
+            minBurnFraction = engines.getDouble("min-burn-fraction", minBurnFraction);
+            engineIdleSmoke = engines.getBoolean("idle-smoke", engineIdleSmoke);
+            loaded++;
+        }
+        ConfigurationSection thruster = yaml.getConfigurationSection("thruster");
+        if (thruster != null) {
+            thrusterBurnMultiplier = thruster.getDouble("burn-multiplier", thrusterBurnMultiplier);
+            loaded++;
+        }
+        ConfigurationSection load = yaml.getConfigurationSection("load");
+        if (load != null) {
+            for (String key : load.getKeys(false)) {
+                String v = String.valueOf(load.getString(key)).toUpperCase(Locale.ROOT);
+                try {
+                    loadModes.put(key, LoadMode.valueOf(v));
+                } catch (IllegalArgumentException e) {
+                    logger.warning("rotation-config: load." + key + ": unknown mode '" + v + "' (always/work/demand)");
+                }
+            }
+            loaded++;
+        }
+
+        ConfigurationSection fuel = yaml.getConfigurationSection("fuel");
+        if (fuel != null) {
+            fuelValues.clear();
+            for (String key : fuel.getKeys(false)) {
+                Material m = Material.matchMaterial(key);
+                if (m != null) fuelValues.put(m, fuel.getInt(key));
+                else logger.warning("rotation-config: unknown fuel material: " + key);
+            }
+            // Dynamic scan for wood types
+            for (Material m : Material.values()) {
+                String name = m.name();
+                if (name.endsWith("_LOG") || name.endsWith("_WOOD")
+                        || name.endsWith("_STEM") || name.endsWith("_HYPHAE")) {
+                    fuelValues.putIfAbsent(m, 8);
+                }
+                if (name.endsWith("_PLANKS")) {
+                    fuelValues.putIfAbsent(m, 3);
+                }
+            }
+            loaded++;
+        }
+        return loaded;
+    }
+
+    /**
+     * Apply an admin's {@code plugins/DefCoreLib/config/fuel.yml} over the jar defaults. Only the fuel
+     * and burn sections are read; anything else in the file is ignored. A section the file leaves out
+     * keeps the jar's value, except {@code fuel:}, which replaces the whole fuel table when present.
+     */
+    int loadFuelOverride(InputStream stream, Logger logger) {
+        YamlConfiguration yaml = YamlConfiguration.loadConfiguration(new InputStreamReader(stream));
+        return applyFuelSections(yaml, logger);
     }
 
     int load(InputStream stream, Logger logger) {
@@ -235,38 +313,7 @@ final class RotationConfig {
             loaded++;
         }
 
-        ConfigurationSection steam = yaml.getConfigurationSection("steam");
-        if (steam != null) {
-            boilerTankUnits = steam.getInt("boiler-tank-units", boilerTankUnits);
-            steamWaterIntervalTicks = steam.getInt("water-interval-ticks", steamWaterIntervalTicks);
-            loaded++;
-        }
-
-        ConfigurationSection engines = yaml.getConfigurationSection("engines");
-        if (engines != null) {
-            burnOnLoad = engines.getBoolean("burn-on-load", burnOnLoad);
-            engineBurnMultiplier = engines.getDouble("burn-multiplier", engineBurnMultiplier);
-            minBurnFraction = engines.getDouble("min-burn-fraction", minBurnFraction);
-            engineIdleSmoke = engines.getBoolean("idle-smoke", engineIdleSmoke);
-            loaded++;
-        }
-        ConfigurationSection thruster = yaml.getConfigurationSection("thruster");
-        if (thruster != null) {
-            thrusterBurnMultiplier = thruster.getDouble("burn-multiplier", thrusterBurnMultiplier);
-            loaded++;
-        }
-        ConfigurationSection load = yaml.getConfigurationSection("load");
-        if (load != null) {
-            for (String key : load.getKeys(false)) {
-                String v = String.valueOf(load.getString(key)).toUpperCase(Locale.ROOT);
-                try {
-                    loadModes.put(key, LoadMode.valueOf(v));
-                } catch (IllegalArgumentException e) {
-                    logger.warning("rotation-config: load." + key + ": unknown mode '" + v + "' (always/work/demand)");
-                }
-            }
-            loaded++;
-        }
+        loaded += applyFuelSections(yaml, logger);
 
         ConfigurationSection placer = yaml.getConfigurationSection("placer");
         if (placer != null) {
@@ -282,27 +329,6 @@ final class RotationConfig {
             loaded++;
         }
 
-        ConfigurationSection fuel = yaml.getConfigurationSection("fuel");
-        if (fuel != null) {
-            fuelValues.clear();
-            for (String key : fuel.getKeys(false)) {
-                Material m = Material.matchMaterial(key);
-                if (m != null) fuelValues.put(m, fuel.getInt(key));
-                else logger.warning("rotation-config: unknown fuel material: " + key);
-            }
-            // Dynamic scan for wood types
-            for (Material m : Material.values()) {
-                String name = m.name();
-                if (name.endsWith("_LOG") || name.endsWith("_WOOD")
-                        || name.endsWith("_STEM") || name.endsWith("_HYPHAE")) {
-                    fuelValues.putIfAbsent(m, 8);
-                }
-                if (name.endsWith("_PLANKS")) {
-                    fuelValues.putIfAbsent(m, 3);
-                }
-            }
-            loaded++;
-        }
 
         ConfigurationSection chainPulley = yaml.getConfigurationSection("chain-pulley");
         if (chainPulley != null) {
@@ -493,6 +519,8 @@ final class RotationConfig {
     LoadMode loadMode(String typeId) {
         if (typeId == null) return LoadMode.ALWAYS;
         String key = typeId.startsWith("mech:") ? typeId.substring(5) : typeId;
+        String wheel = RotationBlocks.wheelSize(key);
+        if (wheel != null && !loadModes.containsKey(key)) key = wheel;   // woods share their size's mode
         LoadMode m = loadModes.get(key);
         if (m != null) return m;
         return DEFAULT_LOAD_MODES.getOrDefault(key, LoadMode.ALWAYS);

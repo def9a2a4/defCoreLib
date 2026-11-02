@@ -219,6 +219,57 @@ showcases:
       - { type: block_type, value: AIR, at: [0, 0, 1], to: [0, 1, 2] }   # swung away…
       - { type: material_total, value: "SPRUCE_PLANKS=4", at: [-2, 0, 0], to: [2, 1, 0] }   # …to lie along x
 
+  - id: redstone_motor_chassis_drawbridge
+    name: "Motor → Chassis Drawbridge"
+    blurb: "A chassis block grabs its neighbours by itself: the hinge swings the whole panel down with no glue at all."
+    description: >
+      A chassis is a casing frame with slime reach: it grabs every movable block touching it (and any
+      same-wood chassis beside it), so whatever the hinge swings it drags its neighbours along — no Glue
+      Brush needed. Here the hinge is mounted on a row of two oak chassis, and the planks sitting on top
+      of them come too: one pulse swings the 2×2 panel down flat, like the glued drawbridge. The build
+      stands on stone pillars so the chassis can't reach — and scoop up — the ground.
+    assert_at: 160
+    blocks:
+      - { id: "mech:redstone_motor", facing: north, at: [0, 1, -2] }
+      - { id: "mech:shaft",          facing: north, at: [0, 1, -1] }
+      - { id: "mech:rotator",        facing: south, at: [0, 1, 0] }    # hinge, Z axis → swings [0,1,1]
+      # The panel's bottom row, on the hinge's axle (so it rolls in place); each grabs the plank above it.
+      - { id: "mech:chassis_oak",    facing: down, state: idle, at: [0, 1, 1] }
+      - { id: "mech:chassis_oak",    facing: down, state: idle, at: [0, 1, 2] }
+    vanilla:
+      - { block: "STONE", at: [0, 0, -2] }
+      - { block: "STONE", at: [0, 0, -1] }
+      - { block: "STONE", at: [0, 0, 0] }
+      - { block: "OAK_PLANKS", at: [0, 2, 1] }
+      - { block: "OAK_PLANKS", at: [0, 2, 2] }
+    activate: { pulse: [1, 1, 0] }   # east of the hinge
+    expect:
+      - { type: mechanism_swung, value: "0,1,1; 0,1,2; 0,2,1; 0,2,2", at: [0, 1, 0] }
+      - { type: block_type, value: AIR, at: [0, 2, 1], to: [0, 2, 2] }   # the top row came down…
+      - { type: material_total, value: "OAK_PLANKS=2", at: [-1, 1, 1], to: [1, 1, 2] }   # …flat beside the chassis
+
+  - id: redstone_motor_ratchet
+    name: "Motor → Ratchets"
+    blurb: "Two ratchets on one motor's axle, set opposite ways: one passes the spin on, the other freewheels."
+    description: >
+      A ratchet is a one-way valve for rotation: it passes power on only while the line turns its
+      allowed direction, and freewheels — fully disconnects — when it turns the other way, so nothing
+      past it moves and it costs the source nothing. Here one motor drives a shaft out of each side,
+      through a ratchet set clockwise on the east and one set counter-clockwise on the west. Both see
+      the same spin, so exactly one of the two shafts beyond them turns. Wrench a ratchet to flip it.
+    blocks:
+      - { id: "mech:redstone_motor", facing: west, at: [0, 0, 0] }   # X-axis source, both faces
+      - { id: "mech:ratchet", facing: east, state: idle_cw_x,  at: [1, 0, 0] }
+      - { id: "mech:shaft",   facing: east, at: [2, 0, 0] }
+      - { id: "mech:shaft",   facing: east, at: [3, 0, 0] }
+      - { id: "mech:ratchet", facing: west, state: idle_ccw_x, at: [-1, 0, 0] }
+      - { id: "mech:shaft",   facing: west, at: [-2, 0, 0] }
+      - { id: "mech:shaft",   facing: west, at: [-3, 0, 0] }
+    activate: passive
+    expect:
+      - { type: spinning, at: [3, 0, 0] }                    # the clockwise ratchet's side turns…
+      - { type: state, value: idle_x, at: [-3, 0, 0] }       # …the counter-clockwise one freewheels
+
   - id: redstone_motor_ceiling_rotator
     name: "Motor → Ceiling Rotator"
     blurb: "A rotator hung under a beam turns it — and everything glued to it — a quarter-turn overhead."

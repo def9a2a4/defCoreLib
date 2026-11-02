@@ -59,6 +59,17 @@ final class ExtendablePistonManager {
     private final Map<CustomBlockRegistry.LocationKey, Integer> strokeCount = new HashMap<>();
 
     /** Number of strokes this core has committed since load (for the showcase test harness). */
+    /** A stroke a docs capture recorded instead of making (see {@link ShowcaseMode#CAPTURE_ONLY}): the blocks it
+     *  would carry (rod + payload, never the core), the pole the ghost copies (or null), and the move. */
+    record PlannedStroke(List<Block> moving, Block core, @Nullable Block ghostTemplate, BlockFace face, int distance) {}
+
+    private final Map<CustomBlockRegistry.LocationKey, PlannedStroke> plannedStrokes = new HashMap<>();
+
+    /** The stroke a docs capture recorded for this core, or null. */
+    @Nullable PlannedStroke plannedStroke(Block core) {
+        return plannedStrokes.get(CustomBlockRegistry.LocationKey.of(core));
+    }
+
     int strokeCount(Block core) {
         return strokeCount.getOrDefault(CustomBlockRegistry.LocationKey.of(core), 0);
     }
@@ -373,6 +384,15 @@ final class ExtendablePistonManager {
         // stroke crosses each cell — see advance()), so `r` is the real committed stroke: the MIN across
         // all columns, stopping at the first solid non-fragile wall.
         int r = clearForAll(moving, footprint, moveFace, reserve, true);
+        if (r > 0 && ShowcaseMode.CAPTURE_ONLY) {   // docs capture: record the stroke, leave the build at rest
+            List<Block> carried = new ArrayList<>(line.rodBlocks());
+            Set<Long> seen = new HashSet<>();
+            for (Block b : carried) seen.add(cellKey(b));
+            for (Block b : payload) if (seen.add(cellKey(b))) carried.add(b);
+            plannedStrokes.putIfAbsent(coreKey, new PlannedStroke(List.copyOf(carried), core,
+                firstPole(line.rodBlocks()), moveFace, r));
+            return;
+        }
         if (r > 0) startMove(coreKey, line, payload, moveFace, r, dir);
     }
 

@@ -21,6 +21,7 @@ import org.jspecify.annotations.Nullable;
 
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -50,6 +51,21 @@ final class RotationBlocks {
     static final List<String> CASING_WOODS = List.of(
             "oak", "acacia", "bamboo", "birch", "cherry", "crimson", "dark_oak",
             "jungle", "mangrove", "pale_oak", "spruce", "warped");
+
+    /**
+     * The size of a land-vehicle wheel id with its wood stripped — {@code wheel}, {@code large_wheel} or
+     * {@code huge_wheel} — or null if the id isn't a wheel. Takes a full ({@code mech:large_wheel_oak})
+     * or short id. Power, mass, load mode and mechanism metadata are keyed by size, not per wood.
+     */
+    static @Nullable String wheelSize(@Nullable String id) {
+        if (id == null) return null;
+        String s = id.startsWith("mech:") ? id.substring(5) : id;
+        for (String size : new String[]{"large_wheel", "huge_wheel", "wheel"}) {
+            if (s.equals(size)) return size;
+            if (s.startsWith(size + "_") && CASING_WOODS.contains(s.substring(size.length() + 1))) return size;
+        }
+        return null;
+    }
 
     // The wrench is declared in custom-items.yml (mech:wrench); identity is the registry
     // block_type PDC, and its recipe auto-registers from YAML.
@@ -743,19 +759,23 @@ final class RotationBlocks {
                                                    RotationConfig config) {
         // Axis from the stored facing, exactly like the fan — a floor propeller spins about Y, a wall
         // one about the axis its blades face along.
-        record Tier(String id, int defaultPower) {}
-        for (Tier t : new Tier[]{
-                new Tier("propeller", 5),
-                new Tier("large_propeller", 10),
-                new Tier("huge_propeller", 20),
-                // Wheels: wall-only, so the stored facing always gives a horizontal axle.
-                new Tier("wheel", 3),
-                new Tier("large_wheel", 6),
-                new Tier("huge_wheel", 12)}) {
+        record Tier(String id, String powerKey, int defaultPower) {}
+        List<Tier> tiers = new ArrayList<>(List.of(
+                new Tier("propeller", "propeller", 5),
+                new Tier("large_propeller", "large_propeller", 10),
+                new Tier("huge_propeller", "huge_propeller", 20)));
+        // Wheels: wall-only, so the stored facing always gives a horizontal axle. One block per size
+        // and wood, all priced by size.
+        for (String wood : CASING_WOODS) {
+            tiers.add(new Tier("wheel_" + wood, "wheel", 2));
+            tiers.add(new Tier("large_wheel_" + wood, "large_wheel", 5));
+            tiers.add(new Tier("huge_wheel_" + wood, "huge_wheel", 10));
+        }
+        for (Tier t : tiers) {
             overlayConsumerMachine(registry, network, new ConsumerSpec(
                 "mech:" + t.id(),
                 b -> fanAxis(readFacing(b)),
-                config.getPower(t.id(), t.defaultPower()),
+                config.getPower(t.powerKey(), t.defaultPower()),
                 100,               // slow: there is no per-tick work to do
                 b -> { },          // no world effect by design
                 null, null, null));

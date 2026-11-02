@@ -55,6 +55,11 @@ public final class MassRegistry {
     public double get(Material material, @Nullable String customTypeId) {
         if (customTypeId != null) {
             Double custom = byCustomType.get(customTypeId);
+            if (custom == null) {
+                // Wheels are listed once per size; every wood of that size weighs the same.
+                String wheel = RotationBlocks.wheelSize(customTypeId);
+                if (wheel != null) custom = byCustomType.get("mech:" + wheel);
+            }
             if (custom != null) return custom;
         }
         Double m = byMaterial.get(material);

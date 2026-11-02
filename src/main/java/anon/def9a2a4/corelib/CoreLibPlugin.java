@@ -143,6 +143,17 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
                 rotConfig.load(configStream, getLogger());
             }
         } catch (IOException ignored) {}
+        // Admins can tune fuel and burn (engines/thruster/steam/fuel/load) in config/fuel.yml; the rest
+        // of rotation-config.yml stays jar-only so future default changes still reach every server.
+        java.io.File fuelOverride = new java.io.File(getDataFolder(), "config/fuel.yml");
+        if (fuelOverride.isFile()) {
+            try (InputStream in = new java.io.FileInputStream(fuelOverride)) {
+                int n = rotConfig.loadFuelOverride(in, getLogger());
+                getLogger().info("Applied " + n + " fuel section(s) from config/fuel.yml");
+            } catch (IOException e) {
+                getLogger().warning("Could not read config/fuel.yml: " + e.getMessage());
+            }
+        }
         mechanismRegistry.setDynamicLights(rotConfig.dynamicLights);
         rotationNetwork = new RotationNetwork(this, registry);
         rotationNetwork.setMaxNetworkSize(rotConfig.maxNetworkSize);
