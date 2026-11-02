@@ -7,14 +7,23 @@ import org.jspecify.annotations.Nullable;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.UncheckedIOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.AtomicMoveNotSupportedException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
 /**
@@ -32,8 +41,11 @@ import java.util.logging.Logger;
  * {@code File.exists} on the chunk-streaming hot path, and it answers "does defCoreLib already own this id?"
  * for a mechanism whose pivot chunk has not loaded yet.
  *
- * <p>All access is on the main thread (the maps are unsynchronized by design). State writes are synchronous;
- * recovery reads them synchronously on the main thread, so there is no writer thread and no file race.
+ * <p>All bookkeeping is on the main thread (the maps are unsynchronized by design). Every file write and
+ * delete runs on ONE writer thread, in submission order: {@link #save}/{@link #remove} submit and wait (their
+ * synchronous contract is unchanged), only the world-save re-snapshot ({@link #saveAsync}) is fire-and-forget.
+ * Because the queue is FIFO, an async write can never land after a later save or delete of the same id.
+ * Recovery reads synchronously on the main thread; the atomic rename means it never sees a half-written file.
  */
 final class MechanismPersistence {
 
@@ -49,13 +61,37 @@ final class MechanismPersistence {
     // skips the re-parse while the file is unchanged. Only content failures are cached: a read that failed
     // with an IOException (a disk blip) is not, so the next chunk load retries it as before.
     private final Map<String, Long> corruptMtimes = new HashMap<>();
-    // world → (mechId → WorldSaveEvents still to pass before the state file may go). A disassembled
-    // mechanism's file must outlive the world save that writes its landed blocks: until then a crash restores
-    // the region with the entities still in it and the blocks NOT placed, and only the file lets recovery
-    // re-adopt the ship (without it the entities are reaped as orphans → the whole structure is lost). The
-    // event fires BEFORE chunks are written, so the first save after removal isn't proof — wait for the
-    // second. Not persisted: a crash leaves queued files behind (inert without their entities); /stop deletes them.
-    private final Map<String, Map<UUID, Integer>> pendingDeletes = new HashMap<>();
+    // world → (mechId → queued delete). A disassembled mechanism's file must outlive the chunk write that
+    // stores its landed blocks: until then a crash restores the region with the entities still in it and the
+    // blocks NOT placed, and only the file lets recovery re-adopt the ship (without it the entities are reaped
+    // as orphans → the whole structure is lost). Paper's WorldSaveEvent proves nothing here: its autosave
+    // (ServerLevel.saveIncrementally) writes NO chunks — Moonrise writes each dirty chunk on its own timer
+    // (chunks.auto-save-interval, defaulting to bukkit.yml ticks-per.autosave) — and under /save-off no chunk
+    // is written at all while the event keeps firing. Neither interval is API, so the delete waits for BOTH
+    // DELETE_AFTER_TICKS since removal and DELETE_AFTER_SAVES autosave-on events (the latter covers a raised
+    // ticks-per.autosave: three events span at least two periods); a save-off event restarts both. Not
+    // persisted: a crash leaves queued files behind (inert without their entities); /stop deletes them.
+    private final Map<String, Map<UUID, PendingDelete>> pendingDeletes = new HashMap<>();
+    /** 2× Paper's default chunk autosave interval (6000 ticks) — margin for the per-tick chunk-save cap. A
+     *  per-world chunks.auto-save-interval raised above bukkit's ticks-per.autosave is not covered. */
+    static final long DELETE_AFTER_TICKS = 12_000;
+    static final int DELETE_AFTER_SAVES = 3;
+
+    private static final class PendingDelete {
+        long since;
+        int saves;
+        PendingDelete(long since) { this.since = since; }
+    }
+
+    // The single writer thread — see the class doc. Daemon: a missed close() never blocks JVM exit.
+    private final ExecutorService writer = Executors.newSingleThreadExecutor(r -> {
+        Thread t = new Thread(r, "defCoreLib-mechanism-persistence");
+        t.setDaemon(true);
+        return t;
+    });
+    // mechId → the YAML last handed to the writer, so saveAsync skips an unchanged snapshot. Main thread
+    // writes it; the writer only drops a FAILED write's entry (so the next world save retries it).
+    private final Map<UUID, String> lastWritten = new ConcurrentHashMap<>();
 
     MechanismPersistence(JavaPlugin plugin) {
         this(plugin.getDataFolder(), plugin.getLogger());
@@ -76,16 +112,52 @@ final class MechanismPersistence {
      *  truncated file — a truncated file would read as corrupt and pause the mechanism's recovery until an
      *  operator intervened. */
     void save(MechanismState st) {
-        File dir = worldDir(st.worldName);
-        if (!dir.exists() && !dir.mkdirs()) {
-            throw new java.io.UncheckedIOException(new IOException("mechanism persistence: cannot create " + dir));
-        }
+        String data = serialize(st);
+        ordered(() -> writeFile(st.worldName, st.mechId, data));
+        lastWritten.put(st.mechId, data);
+        persistedIds.computeIfAbsent(st.worldName, k -> new HashSet<>()).add(st.mechId);
+        corruptMtimes.remove(st.worldName + ":" + st.mechId);
+        Map<UUID, PendingDelete> pending = pendingDeletes.get(st.worldName);
+        if (pending != null) pending.remove(st.mechId);   // re-persisted before its queued delete: keep the file
+    }
+
+    /** The world-save re-snapshot of a LIVE persisted mechanism: serialized here (main thread), written on the
+     *  writer thread without waiting, and skipped when identical to the last write. A failed write is only
+     *  logged — the previous file stays. The id is already persisted (persist() wrote it synchronously). */
+    void saveAsync(MechanismState st) {
+        String data = serialize(st);
+        UUID id = st.mechId;
+        if (data.equals(lastWritten.get(id))) return;
+        lastWritten.put(id, data);
+        String world = st.worldName;
+        corruptMtimes.remove(world + ":" + id);
+        submit(() -> {
+            try {
+                writeFile(world, id, data);
+            } catch (RuntimeException e) {
+                lastWritten.remove(id, data);
+                log.warning("Mechanism " + id + " failed to persist on world save (" + e.getMessage()
+                    + "); its previous state file is kept");
+            }
+        });
+    }
+
+    private static String serialize(MechanismState st) {
         YamlConfiguration y = new YamlConfiguration();
         st.write(y);
-        File target = stateFile(st.worldName, st.mechId);
-        File tmp = new File(dir, st.mechId + ".yml.tmp");
+        return y.saveToString();
+    }
+
+    /** Writer thread (or inline after {@link #close}): tmp sibling + atomic rename. */
+    private void writeFile(String world, UUID id, String data) {
+        File dir = worldDir(world);
+        if (!dir.exists() && !dir.mkdirs()) {
+            throw new UncheckedIOException(new IOException("mechanism persistence: cannot create " + dir));
+        }
+        File target = stateFile(world, id);
+        File tmp = new File(dir, id + ".yml.tmp");
         try {
-            y.save(tmp);
+            Files.writeString(tmp.toPath(), data, StandardCharsets.UTF_8);
             try {
                 Files.move(tmp.toPath(), target.toPath(),
                     StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING);
@@ -97,12 +169,45 @@ final class MechanismPersistence {
             // shutdown/unload disassemble instead) and a swallowed failure skipped all of them. The target (if
             // any) is untouched and still correctly reflected in persistedIds.
             if (tmp.exists() && !tmp.delete()) tmp.deleteOnExit();
-            throw new java.io.UncheckedIOException("mechanism persistence: save failed for " + st.mechId, e);
+            throw new UncheckedIOException("mechanism persistence: save failed for " + id, e);
         }
-        persistedIds.computeIfAbsent(st.worldName, k -> new HashSet<>()).add(st.mechId);
-        corruptMtimes.remove(st.worldName + ":" + st.mechId);
-        Map<UUID, Integer> pending = pendingDeletes.get(st.worldName);
-        if (pending != null) pending.remove(st.mechId);   // re-persisted before its queued delete: keep the file
+    }
+
+    private void deleteFile(File f) {
+        if (f.exists() && !f.delete()) log.warning("mechanism persistence: cannot delete " + f);
+    }
+
+    /** Run on the writer thread behind everything already queued, and wait; its exception is rethrown here. */
+    private void ordered(Runnable task) {
+        if (writer.isShutdown()) { task.run(); return; }   // after close(): the queue is drained, run inline
+        try {
+            writer.submit(task).get();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new UncheckedIOException(new IOException("mechanism persistence: interrupted", e));
+        } catch (ExecutionException e) {
+            if (e.getCause() instanceof RuntimeException re) throw re;
+            if (e.getCause() instanceof Error err) throw err;
+            throw new UncheckedIOException(new IOException(e.getCause()));
+        }
+    }
+
+    private void submit(Runnable task) {
+        if (writer.isShutdown()) task.run();
+        else writer.execute(task);
+    }
+
+    /** Drain the queued writes and stop the writer — plugin disable, after the final sync saves. Later
+     *  calls (none expected) run inline. */
+    void close() {
+        writer.shutdown();
+        try {
+            if (!writer.awaitTermination(30, TimeUnit.SECONDS)) {
+                log.warning("mechanism persistence: queued state writes did not finish within 30s");
+            }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
     }
 
     /** Delete a mechanism's state file + drop it from the persisted-id set. Real disassembly only — a
@@ -110,43 +215,49 @@ final class MechanismPersistence {
      *  the file's existence is what shields the mechanism's entities from the orphan sweep). */
     void remove(String world, UUID id) {
         File f = stateFile(world, id);
-        if (f.exists() && !f.delete()) log.warning("mechanism persistence: cannot delete " + f);
+        ordered(() -> deleteFile(f));
         forget(world, id);
-        Map<UUID, Integer> pending = pendingDeletes.get(world);
+        Map<UUID, PendingDelete> pending = pendingDeletes.get(world);
         if (pending != null) pending.remove(id);
     }
 
     /** {@link #remove} for a real disassembly: the id stops being persisted NOW (hasMetadata answers false, so
      *  the orphan sweep and the migration probe behave exactly as after remove), but the file itself is only
-     *  deleted on the second {@link #onWorldSaved} — see {@link #pendingDeletes}. */
-    void removeAfterSave(String world, UUID id) {
+     *  deleted once the chunks holding its landed blocks have surely been written — see {@link #pendingDeletes}.
+     *  {@code nowTick} is the server tick ({@code Bukkit.getCurrentTick()}). */
+    void removeAfterSave(String world, UUID id, long nowTick) {
         forget(world, id);
-        pendingDeletes.computeIfAbsent(world, k -> new HashMap<>()).put(id, 2);
+        pendingDeletes.computeIfAbsent(world, k -> new HashMap<>()).put(id, new PendingDelete(nowTick));
     }
 
-    /** A WorldSaveEvent for {@code world}: count down the queued deletes and delete the files that are due. */
-    void onWorldSaved(String world) {
-        Map<UUID, Integer> pending = pendingDeletes.get(world);
+    /** A WorldSaveEvent for {@code world}. With autosave on ({@code World#isAutoSave}) count it and delete the
+     *  files that are due; with it off (/save-off) nothing has been written since, so restart their wait. */
+    void onWorldSaved(String world, boolean autoSave, long nowTick) {
+        Map<UUID, PendingDelete> pending = pendingDeletes.get(world);
         if (pending == null) return;
+        List<File> due = new ArrayList<>();
         pending.entrySet().removeIf(e -> {
-            if (e.getValue() > 1) { e.setValue(e.getValue() - 1); return false; }
-            File f = stateFile(world, e.getKey());
-            if (f.exists() && !f.delete()) log.warning("mechanism persistence: cannot delete " + f);
+            PendingDelete d = e.getValue();
+            if (!autoSave) { d.since = nowTick; d.saves = 0; return false; }
+            if (++d.saves < DELETE_AFTER_SAVES || nowTick - d.since < DELETE_AFTER_TICKS) return false;
+            due.add(stateFile(world, e.getKey()));
             return true;
         });
         if (pending.isEmpty()) pendingDeletes.remove(world);
+        if (!due.isEmpty()) ordered(() -> due.forEach(this::deleteFile));
     }
 
-    /** Delete every queued file now — server stop only, see {@code MechanismRegistry.shutdown}. */
+    /** Delete every queued file now — server stop only, see {@code MechanismRegistry.shutdown}. The stop save
+     *  writes every world even under /save-off (MinecraftServer.stopServer clears noSave before saveAllChunks). */
     void deletePending() {
-        pendingDeletes.forEach((world, ids) -> ids.keySet().forEach(id -> {
-            File f = stateFile(world, id);
-            if (f.exists() && !f.delete()) log.warning("mechanism persistence: cannot delete " + f);
-        }));
+        List<File> due = new ArrayList<>();
+        pendingDeletes.forEach((world, ids) -> ids.keySet().forEach(id -> due.add(stateFile(world, id))));
         pendingDeletes.clear();
+        if (!due.isEmpty()) ordered(() -> due.forEach(this::deleteFile));
     }
 
     private void forget(String world, UUID id) {
+        lastWritten.remove(id);
         corruptMtimes.remove(world + ":" + id);
         Set<UUID> ids = persistedIds.get(world);
         if (ids != null) {

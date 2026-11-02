@@ -147,18 +147,24 @@ final class LegacyHeadMigrator implements Listener {
 
     // ── triggers ─────────────────────────────────────────────────────────────────
 
-    /** Adopt as chunks load. LATE, so core's own onChunkLoad (which restores already-marked heads) has run;
+    /** Adopt as chunks load. Texture-only (a placed legacy head carries no marker): a same-skin head placed by
+     *  another plugin is adopted too — the accepted cost of finding the old plugin's heads at all. LATE, so core's own onChunkLoad (which restores already-marked heads) has run;
      *  freshly-marked heads are handled here, and the getTypeFromBlock skip keeps it idempotent. */
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onChunkLoad(ChunkLoadEvent event) {
         adoptChunk(event.getChunk());
     }
 
-    /** Legacy head items placed AFTER migration (into already-loaded chunks that won't re-fire ChunkLoad). */
+    /** Legacy head items placed AFTER migration (into already-loaded chunks that won't re-fire ChunkLoad).
+     *  Only items carrying the legacy headsmith:head_id marker — a same-skin head from another plugin
+     *  (HeadDatabase etc.) must stay that plugin's item, not become ours and lose its name/lore/PDC on break. */
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onBlockPlace(BlockPlaceEvent event) {
         Block b = event.getBlockPlaced();
         if (b.getType() != Material.PLAYER_HEAD && b.getType() != Material.PLAYER_WALL_HEAD) return;
+        ItemStack held = event.getItemInHand();
+        if (!held.hasItemMeta() || !held.getItemMeta().getPersistentDataContainer()
+                .has(headIdKey, PersistentDataType.STRING)) return;
         plugin.getServer().getScheduler().runTask(plugin, () -> adopt(b)); // let the tile settle
     }
 

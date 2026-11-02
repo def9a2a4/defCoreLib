@@ -4,21 +4,30 @@
 # Only the classifier-less shadow jar — never the `-plain` thin jar (which exists solely so the
 # subprojects can compile against corelib via `compileOnly(project(":"))`). Shipping both into a
 # plugins folder makes Paper report "Ambiguous plugin name 'DefCoreLib'", so deploys use this.
-CORE_JAR = $$(ls build/libs/defCoreLib*.jar | grep -v -- -plain)
+#
+# Pinned to the current version: build/libs keeps every past version's jar, and copying a glob put
+# 0.4.0 AND 0.5.0 of each plugin side by side (Paper then loads whichever it likes). Deploys also
+# delete our older jars from the target folder first; other plugins there (BlockShips, …) are kept.
+VERSION := $(shell sed -n 's/^version = "\(.*\)"/\1/p' build.gradle.kts)
+PLUGIN_JARS = build/libs/defCoreLib-$(VERSION).jar vslab/build/libs/vslab-$(VERSION).jar \
+	bbanners/build/libs/BetterBanners-$(VERSION).jar mech/build/libs/Mechanism-$(VERSION).jar \
+	rsd/build/libs/RedstoneDisplays-$(VERSION).jar pipes/build/libs/Pipes-$(VERSION).jar \
+	railbound/build/libs/Railbound-$(VERSION).jar headsmith/build/libs/HeadSmith-$(VERSION).jar
+STALE_JARS = defCoreLib-*.jar vslab-*.jar BetterBanners-*.jar Mechanism-*.jar RedstoneDisplays-*.jar \
+	Pipes-*.jar Railbound-*.jar HeadSmith-*.jar
+
+# $(call deploy_jars,DIR): replace our plugin jars in DIR with this version's.
+define deploy_jars
+	mkdir -p $(1)
+	cd $(1) && rm -f $(STALE_JARS)
+	cp $(PLUGIN_JARS) $(1)/
+endef
 
 .PHONY: build
 build:
 	gradle shadowJar
 	
-	mkdir -p bin
-	cp $(CORE_JAR) bin/
-	cp vslab/build/libs/vslab*.jar bin/
-	cp bbanners/build/libs/BetterBanners*.jar bin/
-	cp mech/build/libs/Mechanism*.jar bin/
-	cp rsd/build/libs/RedstoneDisplays*.jar bin/
-	cp pipes/build/libs/Pipes*.jar bin/
-	cp railbound/build/libs/Railbound*.jar bin/
-	cp headsmith/build/libs/HeadSmith*.jar bin/
+	$(call deploy_jars,bin)
 
 # Docs build: compile the plugin, boot a SEPARATE server (test-server/, not the playtest server/)
 # that exports the ground-truth placed-display data (-Ddefcorelib.export), then generate the catalog
@@ -48,12 +57,7 @@ docs:
 		'generate-structures=false' 'server-port=25575' 'level-name=world' \
 		'motd=DefCoreLib docs export' \
 		> test-server/server.properties
-	cp $(CORE_JAR) vslab/build/libs/vslab*.jar \
-		bbanners/build/libs/BetterBanners*.jar mech/build/libs/Mechanism*.jar \
-		rsd/build/libs/RedstoneDisplays*.jar \
-		pipes/build/libs/Pipes*.jar \
-		railbound/build/libs/Railbound*.jar \
-		headsmith/build/libs/HeadSmith*.jar test-server/plugins/
+	$(call deploy_jars,test-server/plugins)
 	rm -f .temp/display-spec.json
 ifeq ($(KEEP_ALIVE),1)
 	@echo ">>> test-server keep-alive on localhost:25575 (offline, MC 1.21.11). You spawn at the grid."
@@ -127,12 +131,7 @@ showcase-test:
 		'generate-structures=false' 'server-port=25575' 'level-name=world' \
 		'motd=DefCoreLib docs export' \
 		> test-server/server.properties
-	cp $(CORE_JAR) vslab/build/libs/vslab*.jar \
-		bbanners/build/libs/BetterBanners*.jar mech/build/libs/Mechanism*.jar \
-		rsd/build/libs/RedstoneDisplays*.jar \
-		pipes/build/libs/Pipes*.jar \
-		railbound/build/libs/Railbound*.jar \
-		headsmith/build/libs/HeadSmith*.jar test-server/plugins/
+	$(call deploy_jars,test-server/plugins)
 	cd test-server && timeout --foreground -k 30 180 java -Ddefcorelib.showcaseTest=true \
 		-Xmx2G -jar $(PAPER_JAR) --nogui --port 25576 < /dev/null
 
@@ -198,12 +197,7 @@ showcase-capture:
 		'generate-structures=false' 'server-port=25575' 'level-name=world' \
 		'motd=DefCoreLib docs export' \
 		> test-server/server.properties
-	cp $(CORE_JAR) vslab/build/libs/vslab*.jar \
-		bbanners/build/libs/BetterBanners*.jar mech/build/libs/Mechanism*.jar \
-		rsd/build/libs/RedstoneDisplays*.jar \
-		pipes/build/libs/Pipes*.jar \
-		railbound/build/libs/Railbound*.jar \
-		headsmith/build/libs/HeadSmith*.jar test-server/plugins/
+	$(call deploy_jars,test-server/plugins)
 	rm -f .temp/showcase-spec.json
 	cd test-server && timeout --foreground -k 30 180 java -Ddefcorelib.showcaseCapture="$(CURDIR)/.temp/showcase-spec.json" \
 		-Xmx2G -jar $(PAPER_JAR) --nogui --port 25576 < /dev/null || true
@@ -218,6 +212,7 @@ clean:
 
 .PHONY: server-plugin-copy
 server-plugin-copy:
+	cd server/plugins && rm -f $(STALE_JARS)
 	cp bin/*.jar server/plugins/
 
 # Copy the sibling BlockShips plugin jar into test-server/plugins/ so the test-server runs BlockShips

@@ -110,10 +110,12 @@ final class ChainPulley {
                 network.removeNode(key);
             })
             .onBlockRemoved((b, state) -> handleBlockRemoved(b))
-            // A captured pulley's link never survives the move — handleBlockRemoved drops its chains — so
-            // strip the link from the PDC before the capture snapshots it. Otherwise the landed pulley
-            // re-links on its next chunk load and breaking it drops the same chains a second time.
-            .onCapture(this::clearPartner)
+            // A captured pulley's link never survives the move — air-out's handleBlockRemoved drops its
+            // chains — so strip the link the captured configPdc carried from the LANDED pulley (onRestore
+            // runs right after restoreConfigPdc). Otherwise it re-links on its next chunk load and breaking
+            // it drops the same chains a second time. Done at landing, not capture, so an assembly that
+            // throws before air-out leaves the source pulley's PDC link (and its chains) intact.
+            .onRestore(this::clearPartner)
             .build());
         // Per-tick spin: rotate each powered strand about its long axis. Only registry-owned displays
         // are driven by the central tickAnimations loop, so the runtime strands need their own ticker.

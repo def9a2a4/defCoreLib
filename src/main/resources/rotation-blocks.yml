@@ -4031,3 +4031,212 @@ blocks:
             tag: wheel
             transform: { translation: [0, 0.5, 0], scale: [1.5, 1.2, 1.5] }
       spinning_y: { copy_from: idle_y, texture: "@prop_bearing_up", animation: { type: rotate, axis: [0, 1, 0], speed: 8.0 } }
+
+  # ─── Wheels ───────────────────────────────────────────────────────────────────
+  # Land-vehicle drive wheels for BlockShips. Rotation CONSUMERS that do no world work, like the
+  # propellers: BlockShips reads whether each one is powered and turns that into ground thrust, and uses
+  # the wheel's size for ride height and step height. Wall mounts only, so the axle is horizontal.
+  #
+  # Model: an octagonal tyre built from two cubes, the second turned 45 degrees about the axle, plus a
+  # square iron hub. Three display entities at every size; every animated display costs a transform
+  # packet per tick per viewer, so this deliberately does not build the rim from separate segments.
+  # tyre_b is 0.02 thinner along the axle than tyre_a so their flat faces don't z-fight.
+  # Every part sits at translation 0, ON the spin axis, so it spins in place rather than orbiting;
+  # wall_offset (applied outside the animation) pushes the wheel outboard of the hull.
+  #
+  # Spin speeds fall with diameter (6 / 3 / 2) so the tread reads as moving at the same speed.
+  wheel:
+    cancel_pistons: true
+    categories: [blockships]
+    name: "&8Wheel"
+    lore:
+      - "&7Consumes 3 Power"
+      - "&7Drives a vehicle on land"
+    catalog_notes:
+      - "&fA powered wheel. Mount it on the left or right side of a vehicle; wheels on the front"
+      - "&for back face do nothing. Powered wheels drive the vehicle on land; unpowered ones still roll."
+      - "&7Draws 3 power while running — it produces none."
+      - "&7Climbs steps up to 1 block high. The tyre reaches 0 blocks below the block it hangs on."
+      - "&7Craft from four dried kelp blocks, four iron ingots and a shaft."
+      - "&7Wall placement only."
+    recipes:
+      craft:
+        shaped:
+          - pattern: ["KIK", "ISI", "KIK"]
+            key:
+              K: { material: DRIED_KELP_BLOCK }
+              I: { material: IRON_INGOT }
+              S: { block: "mech:shaft" }
+    texture: "@prop_bearing_fwd"
+    item_texture: "@chainwheel"   # placeholder until a wheel head texture exists
+    drops: self
+    break_sound: { sound: block.wood.break, volume: 0.8, pitch: 0.8 }
+    place_sound: { sound: block.wood.place, volume: 0.8, pitch: 0.8 }
+    default_state: idle_wall_n
+    placement:
+      # Walls only: the axle must be horizontal. A floor/ceiling click is refused (as for the millstone).
+      allowed_faces: [NORTH, SOUTH, EAST, WEST]
+    placement_state_map:
+      NORTH: idle_wall_s
+      SOUTH: idle_wall_n
+      EAST: idle_wall_e
+      WEST: idle_wall_w
+    states:
+      idle_wall_n:
+        texture: "@prop_bearing_fwd"
+        display_entities:
+          - { material: BLACK_CONCRETE, tag: tyre_a, transform: { translation: [0, 0, 0], scale: [1, 1, 0.4] }, wall_offset: 0.25 }
+          - { material: BLACK_CONCRETE, tag: tyre_b, transform: { translation: [0, 0, 0], scale: [1, 1, 0.38], left_rotation: [45, 0, 0, 1] }, wall_offset: 0.25 }
+          - { material: IRON_BLOCK,     tag: hub,    transform: { translation: [0, 0, 0], scale: [0.4, 0.4, 0.44], left_rotation: [22.5, 0, 0, 1] }, wall_offset: 0.25 }
+      spinning_wall_n: { copy_from: idle_wall_n, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [0, 0, 1], speed: 6 } }
+      idle_wall_s:
+        texture: "@prop_bearing_fwd"
+        display_entities:
+          - { material: BLACK_CONCRETE, tag: tyre_a, transform: { translation: [0, 0, 0], scale: [1, 1, 0.4] }, wall_offset: 0.25 }
+          - { material: BLACK_CONCRETE, tag: tyre_b, transform: { translation: [0, 0, 0], scale: [1, 1, 0.38], left_rotation: [45, 0, 0, 1] }, wall_offset: 0.25 }
+          - { material: IRON_BLOCK,     tag: hub,    transform: { translation: [0, 0, 0], scale: [0.4, 0.4, 0.44], left_rotation: [22.5, 0, 0, 1] }, wall_offset: 0.25 }
+      spinning_wall_s: { copy_from: idle_wall_s, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [0, 0, 1], speed: 6 } }
+      idle_wall_e:
+        texture: "@prop_bearing_fwd"
+        display_entities:
+          - { material: BLACK_CONCRETE, tag: tyre_a, transform: { translation: [0, 0, 0], scale: [0.4, 1, 1] }, wall_offset: 0.25 }
+          - { material: BLACK_CONCRETE, tag: tyre_b, transform: { translation: [0, 0, 0], scale: [0.38, 1, 1], left_rotation: [45, 1, 0, 0] }, wall_offset: 0.25 }
+          - { material: IRON_BLOCK,     tag: hub,    transform: { translation: [0, 0, 0], scale: [0.44, 0.4, 0.4], left_rotation: [22.5, 1, 0, 0] }, wall_offset: 0.25 }
+      spinning_wall_e: { copy_from: idle_wall_e, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [1, 0, 0], speed: 6 } }
+      idle_wall_w:
+        texture: "@prop_bearing_fwd"
+        display_entities:
+          - { material: BLACK_CONCRETE, tag: tyre_a, transform: { translation: [0, 0, 0], scale: [0.4, 1, 1] }, wall_offset: 0.25 }
+          - { material: BLACK_CONCRETE, tag: tyre_b, transform: { translation: [0, 0, 0], scale: [0.38, 1, 1], left_rotation: [45, 1, 0, 0] }, wall_offset: 0.25 }
+          - { material: IRON_BLOCK,     tag: hub,    transform: { translation: [0, 0, 0], scale: [0.44, 0.4, 0.4], left_rotation: [22.5, 1, 0, 0] }, wall_offset: 0.25 }
+      spinning_wall_w: { copy_from: idle_wall_w, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [1, 0, 0], speed: 6 } }
+  large_wheel:
+    cancel_pistons: true
+    categories: [blockships]
+    name: "&8Large Wheel"
+    lore:
+      - "&7Consumes 6 Power"
+      - "&7Drives a vehicle on land"
+    catalog_notes:
+      - "&fA powered wheel. Mount it on the left or right side of a vehicle; wheels on the front"
+      - "&for back face do nothing. Powered wheels drive the vehicle on land; unpowered ones still roll."
+      - "&7Draws 6 power while running — it produces none."
+      - "&7Climbs steps up to 1.5 blocks high. The tyre reaches 0.5 blocks below the block it hangs on."
+      - "&7Craft from two wheels, four dried kelp blocks and an iron block."
+      - "&7Wall placement only."
+    recipes:
+      craft:
+        shaped:
+          - pattern: ["KWK", "KBK", "KWK"]
+            key:
+              K: { material: DRIED_KELP_BLOCK }
+              W: { block: "mech:wheel" }
+              B: { material: IRON_BLOCK }
+    texture: "@prop_bearing_fwd"
+    item_texture: "@chainwheel"   # placeholder until a wheel head texture exists
+    drops: self
+    break_sound: { sound: block.wood.break, volume: 0.8, pitch: 0.8 }
+    place_sound: { sound: block.wood.place, volume: 0.8, pitch: 0.8 }
+    default_state: idle_wall_n
+    placement:
+      # Walls only: the axle must be horizontal. A floor/ceiling click is refused (as for the millstone).
+      allowed_faces: [NORTH, SOUTH, EAST, WEST]
+    placement_state_map:
+      NORTH: idle_wall_s
+      SOUTH: idle_wall_n
+      EAST: idle_wall_e
+      WEST: idle_wall_w
+    states:
+      idle_wall_n:
+        texture: "@prop_bearing_fwd"
+        display_entities:
+          - { material: BLACK_CONCRETE, tag: tyre_a, transform: { translation: [0, 0, 0], scale: [2, 2, 0.6] }, wall_offset: 0.25 }
+          - { material: BLACK_CONCRETE, tag: tyre_b, transform: { translation: [0, 0, 0], scale: [2, 2, 0.58], left_rotation: [45, 0, 0, 1] }, wall_offset: 0.25 }
+          - { material: IRON_BLOCK,     tag: hub,    transform: { translation: [0, 0, 0], scale: [0.8, 0.8, 0.64], left_rotation: [22.5, 0, 0, 1] }, wall_offset: 0.25 }
+      spinning_wall_n: { copy_from: idle_wall_n, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [0, 0, 1], speed: 3 } }
+      idle_wall_s:
+        texture: "@prop_bearing_fwd"
+        display_entities:
+          - { material: BLACK_CONCRETE, tag: tyre_a, transform: { translation: [0, 0, 0], scale: [2, 2, 0.6] }, wall_offset: 0.25 }
+          - { material: BLACK_CONCRETE, tag: tyre_b, transform: { translation: [0, 0, 0], scale: [2, 2, 0.58], left_rotation: [45, 0, 0, 1] }, wall_offset: 0.25 }
+          - { material: IRON_BLOCK,     tag: hub,    transform: { translation: [0, 0, 0], scale: [0.8, 0.8, 0.64], left_rotation: [22.5, 0, 0, 1] }, wall_offset: 0.25 }
+      spinning_wall_s: { copy_from: idle_wall_s, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [0, 0, 1], speed: 3 } }
+      idle_wall_e:
+        texture: "@prop_bearing_fwd"
+        display_entities:
+          - { material: BLACK_CONCRETE, tag: tyre_a, transform: { translation: [0, 0, 0], scale: [0.6, 2, 2] }, wall_offset: 0.25 }
+          - { material: BLACK_CONCRETE, tag: tyre_b, transform: { translation: [0, 0, 0], scale: [0.58, 2, 2], left_rotation: [45, 1, 0, 0] }, wall_offset: 0.25 }
+          - { material: IRON_BLOCK,     tag: hub,    transform: { translation: [0, 0, 0], scale: [0.64, 0.8, 0.8], left_rotation: [22.5, 1, 0, 0] }, wall_offset: 0.25 }
+      spinning_wall_e: { copy_from: idle_wall_e, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [1, 0, 0], speed: 3 } }
+      idle_wall_w:
+        texture: "@prop_bearing_fwd"
+        display_entities:
+          - { material: BLACK_CONCRETE, tag: tyre_a, transform: { translation: [0, 0, 0], scale: [0.6, 2, 2] }, wall_offset: 0.25 }
+          - { material: BLACK_CONCRETE, tag: tyre_b, transform: { translation: [0, 0, 0], scale: [0.58, 2, 2], left_rotation: [45, 1, 0, 0] }, wall_offset: 0.25 }
+          - { material: IRON_BLOCK,     tag: hub,    transform: { translation: [0, 0, 0], scale: [0.64, 0.8, 0.8], left_rotation: [22.5, 1, 0, 0] }, wall_offset: 0.25 }
+      spinning_wall_w: { copy_from: idle_wall_w, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [1, 0, 0], speed: 3 } }
+  huge_wheel:
+    cancel_pistons: true
+    categories: [blockships]
+    name: "&8Huge Wheel"
+    lore:
+      - "&7Consumes 12 Power"
+      - "&7Drives a vehicle on land"
+    catalog_notes:
+      - "&fA powered wheel. Mount it on the left or right side of a vehicle; wheels on the front"
+      - "&for back face do nothing. Powered wheels drive the vehicle on land; unpowered ones still roll."
+      - "&7Draws 12 power while running — it produces none."
+      - "&7Climbs steps up to 2.5 blocks high. The tyre reaches 1 block below the block it hangs on."
+      - "&7Craft from two large wheels, four dried kelp blocks and an iron block."
+      - "&7Wall placement only."
+    recipes:
+      craft:
+        shaped:
+          - pattern: ["KLK", "KBK", "KLK"]
+            key:
+              K: { material: DRIED_KELP_BLOCK }
+              L: { block: "mech:large_wheel" }
+              B: { material: IRON_BLOCK }
+    texture: "@prop_bearing_fwd"
+    item_texture: "@chainwheel"   # placeholder until a wheel head texture exists
+    drops: self
+    break_sound: { sound: block.wood.break, volume: 0.8, pitch: 0.8 }
+    place_sound: { sound: block.wood.place, volume: 0.8, pitch: 0.8 }
+    default_state: idle_wall_n
+    placement:
+      # Walls only: the axle must be horizontal. A floor/ceiling click is refused (as for the millstone).
+      allowed_faces: [NORTH, SOUTH, EAST, WEST]
+    placement_state_map:
+      NORTH: idle_wall_s
+      SOUTH: idle_wall_n
+      EAST: idle_wall_e
+      WEST: idle_wall_w
+    states:
+      idle_wall_n:
+        texture: "@prop_bearing_fwd"
+        display_entities:
+          - { material: BLACK_CONCRETE, tag: tyre_a, transform: { translation: [0, 0, 0], scale: [3, 3, 0.9] }, wall_offset: 0.25 }
+          - { material: BLACK_CONCRETE, tag: tyre_b, transform: { translation: [0, 0, 0], scale: [3, 3, 0.88], left_rotation: [45, 0, 0, 1] }, wall_offset: 0.25 }
+          - { material: IRON_BLOCK,     tag: hub,    transform: { translation: [0, 0, 0], scale: [1.2, 1.2, 0.94], left_rotation: [22.5, 0, 0, 1] }, wall_offset: 0.25 }
+      spinning_wall_n: { copy_from: idle_wall_n, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [0, 0, 1], speed: 2 } }
+      idle_wall_s:
+        texture: "@prop_bearing_fwd"
+        display_entities:
+          - { material: BLACK_CONCRETE, tag: tyre_a, transform: { translation: [0, 0, 0], scale: [3, 3, 0.9] }, wall_offset: 0.25 }
+          - { material: BLACK_CONCRETE, tag: tyre_b, transform: { translation: [0, 0, 0], scale: [3, 3, 0.88], left_rotation: [45, 0, 0, 1] }, wall_offset: 0.25 }
+          - { material: IRON_BLOCK,     tag: hub,    transform: { translation: [0, 0, 0], scale: [1.2, 1.2, 0.94], left_rotation: [22.5, 0, 0, 1] }, wall_offset: 0.25 }
+      spinning_wall_s: { copy_from: idle_wall_s, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [0, 0, 1], speed: 2 } }
+      idle_wall_e:
+        texture: "@prop_bearing_fwd"
+        display_entities:
+          - { material: BLACK_CONCRETE, tag: tyre_a, transform: { translation: [0, 0, 0], scale: [0.9, 3, 3] }, wall_offset: 0.25 }
+          - { material: BLACK_CONCRETE, tag: tyre_b, transform: { translation: [0, 0, 0], scale: [0.88, 3, 3], left_rotation: [45, 1, 0, 0] }, wall_offset: 0.25 }
+          - { material: IRON_BLOCK,     tag: hub,    transform: { translation: [0, 0, 0], scale: [0.94, 1.2, 1.2], left_rotation: [22.5, 1, 0, 0] }, wall_offset: 0.25 }
+      spinning_wall_e: { copy_from: idle_wall_e, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [1, 0, 0], speed: 2 } }
+      idle_wall_w:
+        texture: "@prop_bearing_fwd"
+        display_entities:
+          - { material: BLACK_CONCRETE, tag: tyre_a, transform: { translation: [0, 0, 0], scale: [0.9, 3, 3] }, wall_offset: 0.25 }
+          - { material: BLACK_CONCRETE, tag: tyre_b, transform: { translation: [0, 0, 0], scale: [0.88, 3, 3], left_rotation: [45, 1, 0, 0] }, wall_offset: 0.25 }
+          - { material: IRON_BLOCK,     tag: hub,    transform: { translation: [0, 0, 0], scale: [0.94, 1.2, 1.2], left_rotation: [22.5, 1, 0, 0] }, wall_offset: 0.25 }
+      spinning_wall_w: { copy_from: idle_wall_w, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [1, 0, 0], speed: 2 } }

@@ -1,5 +1,6 @@
 package anon.def9a2a4.corelib;
 
+import anon.def9a2a4.corelib.container.ContainerAdapterRegistry;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.GameMode;
@@ -399,6 +400,9 @@ final class CustomCartManager implements Listener {
         if (block == null || !isRail(block.getType())) return;
 
         event.setCancelled(true);
+        // Claim plugins see a vanilla minecart placement, not our head-item one → ask them directly.
+        // Plain item: a custom-tagged one would be refused by CoreLibPlugin.onBlockPlace.
+        if (!BuildProbe.mayBuild(event.getPlayer(), block, new ItemStack(block.getType()))) return;
 
         org.bukkit.Location spawnLoc = block.getLocation().add(0.5, 0, 0.5);
         RideableMinecart cart = block.getWorld().spawn(spawnLoc, RideableMinecart.class, m -> {
@@ -451,6 +455,9 @@ final class CustomCartManager implements Listener {
         if (held == Material.SHEARS || isChain(held)) return;
 
         event.setCancelled(true);   // suppress the rideable mount
+        // Claim plugins don't know this is a container cart → probe its cell like any storage access.
+        // Plain item of the held type: the cell's own type may have no item form.
+        if (!BuildProbe.mayBuild(event.getPlayer(), cart.getLocation().getBlock(), new ItemStack(held))) return;
         org.bukkit.inventory.InventoryView view = event.getPlayer().openInventory(state.inv);
         // A blast cart shows its remembered controller cruise target next to its name (set at open time,
         // like the Engine/Burner fuel readout). Mirrors RotationBlocks' view.setTitle pattern.
@@ -500,6 +507,9 @@ final class CustomCartManager implements Listener {
             UUID id = state.cart.getUniqueId();
             if (state.cart.isDead()) { removeBurnLight(id); tracked.remove(id); continue; }
             if (!state.cart.isValid()) continue;   // chunk unloading; onEntitiesUnload owns cleanup
+            // Not ticking = parked at the loaded edge: its neighbour block reads below could sync-load
+            // the adjacent chunk, and nothing about it changes while the world around it is frozen.
+            if (!state.cart.isTicking()) continue;
             if (feedTick) tryFillFromNeighbors(state);
             if (state.type == CartType.BLAST) tickBlast(state);
             else if (state.type == CartType.DISPENSER) tickDispenser(state);
@@ -613,26 +623,39 @@ final class CustomCartManager implements Listener {
         if (state.inv == null) return;
         Block base = state.cart.getLocation().getBlock();
 
+        // findVanillaContainer, not a raw Container check: a locked container's inventory is plugin-owned
+        // (e.g. the Redstone Dynamo's self-refilling barrel) — pulling from it would mint free items.
         for (BlockFace face : PUSH_FACES) {
             Block nb = base.getRelative(face);
             if (nb.getBlockData() instanceof org.bukkit.block.data.type.Hopper hd
-                && nb.getState() instanceof Container c
                 && nb.getRelative(hd.getFacing()).equals(base)) {
-                pullInto(state, c.getInventory());
+                Container c = ContainerAdapterRegistry.findVanillaContainer(nb);
+                if (c != null) pullInto(state, c.getInventory(), true);
             }
         }
 
         Block above = base.getRelative(BlockFace.UP);
-        if (!(above.getBlockData() instanceof org.bukkit.block.data.type.Hopper)
-            && above.getState() instanceof Container c) {
-            pullInto(state, c.getInventory());   // cart self-pulls from a container above
+        if (!(above.getBlockData() instanceof org.bukkit.block.data.type.Hopper)) {
+            Container c = ContainerAdapterRegistry.findVanillaContainer(above);
+            if (c != null) pullInto(state, c.getInventory(), false);   // cart self-pulls from a container above
         }
     }
 
     /** Move one accepted item from {@code source} into the cart's inventory; bounce it back if full.
      *  Fuel carts accept only fuel; the dispenser cart accepts any item. */
-    private void pullInto(CartState state, Inventory source) {
-        ItemStack one = takeOne(source, state.type.fuelOnly ? config::isFuel : m -> true);
+    private void pullInto(CartState state, Inventory source, boolean sourceInitiated) {
+        java.util.function.Predicate<Material> accept = state.type.fuelOnly ? config::isFuel : m -> true;
+        // Fire the vanilla hopper-transfer event first so chest-lock plugins (LWC, …) can veto the pull,
+        // as they would for the native hopper minecart this replaces. Peek, don't take: nothing to undo.
+        ItemStack peek = null;
+        for (ItemStack s : source.getContents()) {
+            if (s != null && !s.getType().isAir() && accept.test(s.getType())) { peek = s.asOne(); break; }
+        }
+        if (peek == null) return;
+        var move = new org.bukkit.event.inventory.InventoryMoveItemEvent(source, peek, state.inv, sourceInitiated);
+        Bukkit.getPluginManager().callEvent(move);
+        if (move.isCancelled()) return;
+        ItemStack one = takeOne(source, accept);
         if (one == null) return;
         // NB: on a blast cart, addItem can only land fuel in slots 0-2 because slots 3-8 are always occupied
         // by the filler panes / speed buttons (decorateBlastGui) — that occupancy IS the slot guard here.

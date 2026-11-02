@@ -22,7 +22,7 @@ public final class BuildProbe {
 
     private BuildProbe() {}
 
-    static boolean mayBuild(Player player, Block block, ItemStack held) {
+    public static boolean mayBuild(Player player, Block block, ItemStack held) {
         BlockPlaceEvent probe = new BlockPlaceEvent(
             block, block.getState(), block, held, player, true, EquipmentSlot.HAND);
         probing = true;

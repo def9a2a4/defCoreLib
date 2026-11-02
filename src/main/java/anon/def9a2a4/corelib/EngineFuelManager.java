@@ -7,7 +7,9 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.Skull;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
+import org.jspecify.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -90,6 +92,42 @@ final class EngineFuelManager {
         if (ticks != null && ticks > 0) {
             fuel.put(key, ticks);
         }
+    }
+
+    /** Fuel ticks carried in a mechanism block's captured tile-PDC snapshot ({@code configPdc}, which
+     *  the capture-time {@link #writeToPDC} filled), or 0 when absent/unreadable. */
+    static int readFromSnapshot(byte @Nullable [] configPdc) {
+        if (configPdc == null) return 0;
+        try {
+            PersistentDataContainer pdc = scratchPdc();
+            pdc.readFromBytes(configPdc, true);
+            Integer ticks = pdc.get(FUEL_KEY, PersistentDataType.INTEGER);
+            return ticks != null && ticks > 0 ? ticks : 0;
+        } catch (java.io.IOException e) {
+            return 0;
+        }
+    }
+
+    /** {@code configPdc} with its fuel count replaced by {@code ticks} (key removed at 0, like
+     *  {@link #writeToPDC}) — keeps an aboard engine's live burn in the snapshot that the state file
+     *  persists and landing's restoreConfigPdc hands back to {@link #readFromPDC}. Returns the input
+     *  unchanged if it can't be read. */
+    static byte @Nullable [] writeToSnapshot(byte @Nullable [] configPdc, int ticks) {
+        try {
+            PersistentDataContainer pdc = scratchPdc();
+            if (configPdc != null) pdc.readFromBytes(configPdc, true);
+            if (ticks > 0) pdc.set(FUEL_KEY, PersistentDataType.INTEGER, ticks);
+            else pdc.remove(FUEL_KEY);
+            return pdc.serializeToBytes();
+        } catch (java.io.IOException e) {
+            return configPdc;
+        }
+    }
+
+    private static PersistentDataContainer scratchPdc() {
+        // No tile exists aboard — borrow an item meta's adapter context for a detached container.
+        return Bukkit.getItemFactory().getItemMeta(Material.STONE).getPersistentDataContainer()
+            .getAdapterContext().newPersistentDataContainer();
     }
 
     /** Remove fuel tracking for a location (chunk unload cleanup after PDC write). */

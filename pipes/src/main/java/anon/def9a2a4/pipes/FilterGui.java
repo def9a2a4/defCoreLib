@@ -248,8 +248,9 @@ final class FilterGui implements Listener {
     @EventHandler
     public void onClose(InventoryCloseEvent event) {
         if (!(event.getInventory().getHolder() instanceof FilterHolder holder)) return;
+        // Not in the map → saveAndCloseAll already saved this menu and is closing it; nothing to do.
+        if (openFilters.remove(key(holder.location())) == null) return;
         save(holder);
-        openFilters.remove(key(holder.location()));
         // A mid-chain filter edit may need to wake an upstream extractor that slept while everything was
         // blocked; do it once on close rather than on every toggle-click save.
         PipeManager manager = plugin.getPipeManager(holder.location().getWorld());
@@ -264,6 +265,23 @@ final class FilterGui implements Listener {
     void closeFor(Block block) {
         Player viewer = openFilters.get(key(block.getLocation()));
         if (viewer != null) viewer.closeInventory();
+    }
+
+    /**
+     * Plugin disable: save every open menu's contents to its block PDC, then close it. Must run directly —
+     * a disabling plugin receives no events, so {@link #onClose} won't fire (on /stop players are still
+     * online at this point). The close just discards the menu; the saved items live on in the PDC and nothing
+     * is handed to the player (an item already on their cursor was taken out of the menu, so it's theirs).
+     */
+    void saveAndCloseAll() {
+        List<Player> viewers = new ArrayList<>(openFilters.values());
+        openFilters.clear();   // before closing, so an onClose that does fire skips (no double save)
+        for (Player viewer : viewers) {
+            if (viewer.getOpenInventory().getTopInventory().getHolder() instanceof FilterHolder holder) {
+                save(holder);
+            }
+            viewer.closeInventory();
+        }
     }
 
     /** Persist the current filter items + toggle flags to the block PDC and refresh the cache. */

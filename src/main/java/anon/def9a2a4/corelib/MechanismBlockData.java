@@ -36,6 +36,16 @@ public final class MechanismBlockData {
     // MechanismRegistry.updateAnimatedDisplays every tick and REWRITTEN by MechanismRotationDriver
     // when the mechanism's own rotation network solves a direction (meshed gears counter-rotate).
     boolean spinReversed;
+
+    // Runtime spin override set by a consumer (Mechanism.setBlockSpinScale / setBlockSpinSpeed), e.g.
+    // BlockShips spinning a propeller with the throttle. NaN = none: the animation runs on the
+    // mechanism's own tick age as before. Transient by design — the consumer re-pushes it every tick,
+    // so it is neither persisted nor carried through recovery. spinVirtualAge is the accumulated
+    // animation age the override drives, seeded from the live angle so setting it never snaps.
+    double spinOverride = Double.NaN;
+    boolean spinOverrideAbsolute;
+    double spinVirtualAge;
+    boolean spinSeeded;
     final @Nullable Vector3f wallFacing;
 
     // Floor-head yaw (radians about +Y, already sign-corrected to the vanilla skull convention),

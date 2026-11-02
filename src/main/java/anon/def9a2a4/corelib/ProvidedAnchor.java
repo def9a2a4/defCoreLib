@@ -4,6 +4,7 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.joml.Vector3i;
 import org.jspecify.annotations.Nullable;
 
@@ -53,8 +54,11 @@ final class ProvidedAnchor implements Anchor {
 
     @Override public boolean canAuthor(Player player) { return external.canAuthor(player); }
 
+    // The owner's rule AND the same protection probe as Anchor's default — an owner overriding (or not
+    // overriding) canAuthorCell must not silently drop region protection. Plain item: see Anchor.
     @Override public boolean canAuthorCell(Player player, Block cell) {
-        return external.canAuthorCell(player, cell);
+        return external.canAuthorCell(player, cell) && BuildProbe.mayBuild(player, cell,
+            new ItemStack(player.getInventory().getItemInMainHand().getType()));
     }
 
     @Override public boolean prunesOnLanding() { return external.prunesOnLanding(); }

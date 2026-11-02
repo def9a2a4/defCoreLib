@@ -229,11 +229,16 @@ final class RotationRotator implements Listener {
                 if (done) {
                     // Order matters: keep the activeTasks guard up THROUGH disassembly so the
                     // block-place physics it fires can't re-enter trigger() and start a new swing.
-                    mech.disassemble();
-                    activeRotators.remove(key);
-                    network.clearTransientDemand(key);
-                    BukkitTask t = activeTasks.remove(key);
-                    if (t != null) t.cancel();
+                    // finally (as DoorDemo): a throwing disassemble must still clear the maps and cancel
+                    // the task, else the head reads "moving" forever and the exception repeats every tick.
+                    try {
+                        mech.disassemble();
+                    } finally {
+                        activeRotators.remove(key);
+                        network.clearTransientDemand(key);
+                        BukkitTask t = activeTasks.remove(key);
+                        if (t != null) t.cancel();
+                    }
                 }
             }
         }, 2L, 1L); // 2-tick delay lets the display passengers mount before the first rotate

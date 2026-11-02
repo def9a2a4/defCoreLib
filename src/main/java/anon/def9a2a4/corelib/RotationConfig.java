@@ -43,6 +43,25 @@ final class RotationConfig {
     double pumpStretchToCorner = 0.1985; // body-top raise under a corner pipe; 1.0015 + d = 1.2, a vertical pipe's height under a corner
     int boilerTankUnits = 8;
     int steamWaterIntervalTicks = 1200;   // running time per boiler water unit (~60 s)
+
+    // Engines burn fuel for the power actually USED, not for the power they could supply (engines:).
+    boolean burnOnLoad = true;            // false = the old fixed burn while running
+    double engineBurnMultiplier = 1.0;    // scales every engine's burn
+    double minBurnFraction = 0.0;         // floor on the load fraction whenever anything draws power
+    double thrusterBurnMultiplier = 1.0;  // scales a thruster's burn (its own demand, not network load)
+
+    /** How a consumer counts toward its network's load, for engine burn. */
+    enum LoadMode {
+        /** Its full power whenever it is on a powered network (fans, and anything unlisted). */
+        ALWAYS,
+        /** Its full power only for a short window after it actually did work (a millstone with input). */
+        WORK,
+        /** Its power times a demand a consumer plugin sets (BlockShips: propellers with the throttle).
+         *  1 when nothing has set one, so an unmanaged block costs what it always did. */
+        DEMAND
+    }
+    /** Load mode by short type id (no {@code mech:} prefix); see {@link #loadMode}. */
+    final Map<String, LoadMode> loadModes = new HashMap<>();
     int placerTickInterval = 20;
     int suctionTickInterval = 2;
     double suctionPullRange = 2.5;     // pull-box side = 2*(range+0.75); 2.5 → 6.5×6.5×6.5 cube
@@ -222,6 +241,31 @@ final class RotationConfig {
             loaded++;
         }
 
+        ConfigurationSection engines = yaml.getConfigurationSection("engines");
+        if (engines != null) {
+            burnOnLoad = engines.getBoolean("burn-on-load", burnOnLoad);
+            engineBurnMultiplier = engines.getDouble("burn-multiplier", engineBurnMultiplier);
+            minBurnFraction = engines.getDouble("min-burn-fraction", minBurnFraction);
+            loaded++;
+        }
+        ConfigurationSection thruster = yaml.getConfigurationSection("thruster");
+        if (thruster != null) {
+            thrusterBurnMultiplier = thruster.getDouble("burn-multiplier", thrusterBurnMultiplier);
+            loaded++;
+        }
+        ConfigurationSection load = yaml.getConfigurationSection("load");
+        if (load != null) {
+            for (String key : load.getKeys(false)) {
+                String v = String.valueOf(load.getString(key)).toUpperCase(Locale.ROOT);
+                try {
+                    loadModes.put(key, LoadMode.valueOf(v));
+                } catch (IllegalArgumentException e) {
+                    logger.warning("rotation-config: load." + key + ": unknown mode '" + v + "' (always/work/demand)");
+                }
+            }
+            loaded++;
+        }
+
         ConfigurationSection placer = yaml.getConfigurationSection("placer");
         if (placer != null) {
             placerTickInterval = placer.getInt("tick-interval", placerTickInterval);
@@ -385,6 +429,9 @@ final class RotationConfig {
         powerValues.put("large_propeller", 10);
         powerValues.put("huge_propeller", 20);
         powerValues.put("reaction_wheel", 1);
+        powerValues.put("wheel", 3);
+        powerValues.put("large_wheel", 6);
+        powerValues.put("huge_wheel", 12);
     }
 
     private void initDefaultMechMeta() {
@@ -425,5 +472,27 @@ final class RotationConfig {
         mechMetaValues.put("fan", new MechRotationMeta(MechKind.CONSUMER, false, false,
             MechAxisRule.FROM_FACING, true, 1.0));
         mechMetaValues.put("suction_hopper", new MechRotationMeta(MechKind.CONSUMER, false, false, MechAxisRule.OMNI));
+    }
+
+    /** Defaults for {@link #loadModes}; the {@code load:} section overrides per type. */
+    private static final Map<String, LoadMode> DEFAULT_LOAD_MODES = Map.ofEntries(
+        Map.entry("millstone", LoadMode.WORK),
+        Map.entry("press", LoadMode.WORK),
+        Map.entry("sieve", LoadMode.WORK),
+        Map.entry("propeller", LoadMode.DEMAND),
+        Map.entry("large_propeller", LoadMode.DEMAND),
+        Map.entry("huge_propeller", LoadMode.DEMAND),
+        Map.entry("reaction_wheel", LoadMode.DEMAND),
+        Map.entry("wheel", LoadMode.DEMAND),
+        Map.entry("large_wheel", LoadMode.DEMAND),
+        Map.entry("huge_wheel", LoadMode.DEMAND));
+
+    /** How a consumer type counts toward engine load. Accepts a full id ({@code mech:press}) or a short one. */
+    LoadMode loadMode(String typeId) {
+        if (typeId == null) return LoadMode.ALWAYS;
+        String key = typeId.startsWith("mech:") ? typeId.substring(5) : typeId;
+        LoadMode m = loadModes.get(key);
+        if (m != null) return m;
+        return DEFAULT_LOAD_MODES.getOrDefault(key, LoadMode.ALWAYS);
     }
 }

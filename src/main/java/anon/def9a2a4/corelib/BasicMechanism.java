@@ -233,6 +233,43 @@ final class BasicMechanism implements Mechanism {
     }
 
     @Override
+    public void setBlockDemand(int blockIndex, double demand) {
+        if (mechanismRegistry == null || blockIndex < 0 || blockIndex >= blocks.size() || Double.isNaN(demand)) return;
+        mechanismRegistry.setBlockDemand(this, blockIndex, demand);
+    }
+
+    @Override
+    public boolean isEngineFuelled(int blockIndex) {
+        if (mechanismRegistry == null || blockIndex < 0 || blockIndex >= blocks.size()) return false;
+        return mechanismRegistry.isEngineFuelled(this, blockIndex);
+    }
+
+    @Override
+    public void setBlockSpinScale(int blockIndex, double scale) {
+        setSpin(blockIndex, scale, false);
+    }
+
+    @Override
+    public void setBlockSpinSpeed(int blockIndex, double degreesPerTick) {
+        setSpin(blockIndex, degreesPerTick, true);
+    }
+
+    @Override
+    public void clearBlockSpin(int blockIndex) {
+        if (blockIndex < 0 || blockIndex >= blocks.size()) return;
+        MechanismBlockData mb = blocks.get(blockIndex);
+        mb.spinOverride = Double.NaN;
+        mb.spinSeeded = false;
+    }
+
+    private void setSpin(int blockIndex, double value, boolean absolute) {
+        if (blockIndex < 0 || blockIndex >= blocks.size() || Double.isNaN(value)) return;
+        MechanismBlockData mb = blocks.get(blockIndex);
+        mb.spinOverride = value;
+        mb.spinOverrideAbsolute = absolute;
+    }
+
+    @Override
     public int rotationSurplus(int blockIndex) {
         MechanismRotationDriver.RotationDebug d = rotationInfo(blockIndex);
         return d == null ? -1 : d.surplus();
@@ -1549,6 +1586,17 @@ final class BasicMechanism implements Mechanism {
                 // the block keeps no block_type mark and no skull texture. It lands as a blank head that
                 // still answers to its owner. That is the recoverable outcome; losing the key is not.
                 registry.restoreConfigPdc(target, mb.configPdc);
+                // Same for carried cargo: a real container tile (the mechanical dispenser) takes it back in the
+                // Container write below; a head can't hold it with its type gone — drop it, never delete it.
+                realContainerCargo = true;
+                if (mb.storage != null && !(target.getState() instanceof Container)) {
+                    for (ItemStack it : mb.storage.getContents()) {
+                        if (it != null && !it.getType().isAir()) {
+                            target.getWorld().dropItemNaturally(target.getLocation().add(0.5, 0.5, 0.5), it);
+                        }
+                    }
+                    mb.storage.clear();
+                }
             }
         }
         if (realContainerCargo && mb.storage != null && target.getState() instanceof Container c) {

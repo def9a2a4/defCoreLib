@@ -308,6 +308,8 @@ final class CartRailsManager implements Listener {
             try {
                 World w = Bukkit.getWorld(key.worldId());
                 if (w == null) continue;
+                // Unloaded since the poke: the block read below would sync-load it just to settle a rail.
+                if (!w.isChunkLoaded(key.x() >> 4, key.z() >> 4)) continue;
                 Block cur = w.getBlockAt(key.x(), key.y(), key.z());
                 CustomHeadBlock type = ourRailType(cur); // re-check: covers rails broken/unloaded since the poke
                 if (type == null) continue;

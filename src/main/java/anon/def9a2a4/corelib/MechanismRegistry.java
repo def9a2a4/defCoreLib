@@ -1526,19 +1526,20 @@ public class MechanismRegistry implements org.bukkit.event.Listener {
      * A world is saving (autosave, /save-all): re-snapshot every live persisted mechanism in it, so a crash
      * recovers it where it is NOW rather than where it was last parked/persisted — the region file about to
      * be written holds its entities at their current positions, and a state file from an older pose would
-     * rebuild the ship against the wrong frame. Also advances the queued state-file deletes. One failing save
-     * must not cost the others their snapshot, so each is isolated and only logged (the previous file stays).
+     * rebuild the ship against the wrong frame. Also advances the queued state-file deletes. Snapshot +
+     * serialize happen here; the file write is queued on the persistence writer thread and skipped when
+     * unchanged (saveAsync). One failing write must not cost the others theirs: each is only logged.
      */
     @org.bukkit.event.EventHandler
     public void onWorldSave(org.bukkit.event.world.WorldSaveEvent event) {
         org.bukkit.World world = event.getWorld();
-        persistence.onWorldSaved(world.getName());
+        persistence.onWorldSaved(world.getName(), world.isAutoSave(), Bukkit.getCurrentTick());
         for (BasicMechanism mech : activeMechanisms.values()) {
             if (!mech.isPersisted() || !world.equals(mech.pivot().getWorld())) continue;
             try {
-                persistence.save(mech.snapshotState());
-            } catch (java.io.UncheckedIOException e) {
-                plugin.getLogger().warning("Mechanism " + mech.id() + " failed to persist on world save ("
+                persistence.saveAsync(mech.snapshotState());
+            } catch (RuntimeException e) {
+                plugin.getLogger().warning("Mechanism " + mech.id() + " failed to snapshot on world save ("
                     + e.getMessage() + "); its previous state file is kept");
             }
         }
@@ -1581,6 +1582,7 @@ public class MechanismRegistry implements org.bukkit.event.Listener {
         // safe to drop now — waiting for WorldSaveEvents that will never reach us would strand them forever.
         // A crash never gets here (files stay for recovery), nor does a bare plugin disable (no save follows).
         if (org.bukkit.Bukkit.isStopping()) persistence.deletePending();
+        persistence.close();   // drain queued world-save writes (the sync saves above already waited on them)
     }
 
     /**
@@ -2370,6 +2372,10 @@ public class MechanismRegistry implements org.bukkit.event.Listener {
             if (displays.isEmpty() || !displays.get(0).isValid()) continue;
 
             MechanismBlockData mb = mech.blocks.get(i);
+            // Runtime spin override (Mechanism.setBlockSpinScale/Speed): drive this block's animations
+            // from an accumulated virtual age instead of the shared tick age.
+            boolean overridden = !Double.isNaN(mb.spinOverride);
+            double virtualAge = overridden ? advanceSpinAge(mb, tickAge, rearm) : 0;
 
             if (mb.displayEntityConfigs != null) {
                 for (int d = 0; d < mb.displayEntityConfigs.size(); d++) {
@@ -2383,7 +2389,11 @@ public class MechanismRegistry implements org.bukkit.event.Listener {
                     // Animate the display's LOCAL transform (origin = block center), exactly as the standalone
                     // path does — negating the age for a CCW-captured source.
                     long age = mb.spinReversed ? -tickAge : tickAge;
-                    dec.animation().apply(BasicMechanism.transformToMatrix(dec.transform(), placedMatrix), age, workMatrix);
+                    if (overridden) {
+                        dec.animation().apply(BasicMechanism.transformToMatrix(dec.transform(), placedMatrix), virtualAge, workMatrix);
+                    } else {
+                        dec.animation().apply(BasicMechanism.transformToMatrix(dec.transform(), placedMatrix), age, workMatrix);
+                    }
 
                     // Place: pivot-rotation · block-offset · [wall offset] · animated-local.
                     // Additional displays are always ItemDisplay (center-rendered) — no XZ shift.
@@ -2412,7 +2422,11 @@ public class MechanismRegistry implements org.bukkit.event.Listener {
                     if (!display.isValid()) continue;
 
                     long age = mb.spinReversed ? -tickAge : tickAge;
-                    bdc.animation().apply(BasicMechanism.transformToMatrix(bdc.transform(), placedMatrix), age, workMatrix);
+                    if (overridden) {
+                        bdc.animation().apply(BasicMechanism.transformToMatrix(bdc.transform(), placedMatrix), virtualAge, workMatrix);
+                    } else {
+                        bdc.animation().apply(BasicMechanism.transformToMatrix(bdc.transform(), placedMatrix), age, workMatrix);
+                    }
 
                     Matrix4f placed = placedMatrix.set(mech.currentTransform()).mul(mb.localTransform);
                     BasicMechanism.applyWallOffset(placed, mb.wallFacing, bdc.wallOffset());
@@ -2424,6 +2438,52 @@ public class MechanismRegistry implements org.bukkit.event.Listener {
                 }
             }
         }
+    }
+
+    /**
+     * Advance and return a block's virtual animation age under a spin override.
+     *
+     * <p>Seeded from the live (direction-signed) age the first time, so turning an override on never
+     * snaps the pose. After that it advances once per real tick ({@code rearm} is false only on the
+     * tickAge-0 placement calls): by {@code scale} in the solved direction for a relative override, or
+     * by degrees-per-tick over the block's authored speed for an absolute one. Every display on the block
+     * shares the one age, so displays authored at different speeds keep their ratio.
+     */
+    private static double advanceSpinAge(MechanismBlockData mb, long tickAge, boolean rearm) {
+        if (!mb.spinSeeded) {
+            mb.spinVirtualAge = mb.spinReversed ? -tickAge : tickAge;
+            mb.spinSeeded = true;
+            return mb.spinVirtualAge;
+        }
+        if (!rearm) return mb.spinVirtualAge;
+        if (mb.spinOverrideAbsolute) {
+            float authored = authoredSpinDegrees(mb);
+            if (authored != 0f && !Float.isNaN(authored)) mb.spinVirtualAge += mb.spinOverride / authored;
+        } else {
+            mb.spinVirtualAge += mb.spinReversed ? -mb.spinOverride : mb.spinOverride;
+        }
+        // Keep the magnitude bounded so a long voyage doesn't lose float precision in the angle.
+        if (Math.abs(mb.spinVirtualAge) > 1e7) mb.spinVirtualAge %= 1e7;
+        return mb.spinVirtualAge;
+    }
+
+    /** The first rotate animation's authored degrees per tick on this block, or NaN if it has none. */
+    private static float authoredSpinDegrees(MechanismBlockData mb) {
+        if (mb.displayEntityConfigs != null) {
+            for (var dec : mb.displayEntityConfigs) {
+                if (dec.animation() != null && !Float.isNaN(dec.animation().degreesPerTick())) {
+                    return dec.animation().degreesPerTick();
+                }
+            }
+        }
+        if (mb.blockDisplayEntityConfigs != null) {
+            for (var bdc : mb.blockDisplayEntityConfigs) {
+                if (bdc.animation() != null && !Float.isNaN(bdc.animation().degreesPerTick())) {
+                    return bdc.animation().degreesPerTick();
+                }
+            }
+        }
+        return Float.NaN;
     }
 
     // ──────────────────────────────────────────────────────────────────────
@@ -2443,6 +2503,14 @@ public class MechanismRegistry implements org.bukkit.event.Listener {
         return rotationDriver != null ? rotationDriver.rotationDebug(mech, blockIndex) : null;
     }
 
+    void setBlockDemand(BasicMechanism mech, int blockIndex, double demand) {
+        if (rotationDriver != null) rotationDriver.setDemand(mech, blockIndex, demand);
+    }
+
+    boolean isEngineFuelled(BasicMechanism mech, int blockIndex) {
+        return rotationDriver != null && rotationDriver.isEngineFuelled(mech, blockIndex);
+    }
+
     // ──────────────────────────────────────────────────────────────────────
     // Cleanup (called by BasicMechanism on disassemble/destroy)
     // ──────────────────────────────────────────────────────────────────────
@@ -2459,7 +2527,7 @@ public class MechanismRegistry implements org.bukkit.event.Listener {
         // (Shutdown/world-unload of a persisted mechanism must NOT disassemble — see the branched shutdown —
         // so this only fires on a real teardown.)
         if (mech.isPersisted() && mech.pivot().getWorld() != null) {
-            persistence.removeAfterSave(mech.pivot().getWorld().getName(), mech.id());
+            persistence.removeAfterSave(mech.pivot().getWorld().getName(), mech.id(), Bukkit.getCurrentTick());
         }
     }
 

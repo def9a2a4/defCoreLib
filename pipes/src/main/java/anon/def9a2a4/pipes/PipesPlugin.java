@@ -106,6 +106,8 @@ public class PipesPlugin extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        // First, while worlds and managers are intact: open filter menus hold real items (see FilterGui).
+        if (filterGui != null) filterGui.saveAndCloseAll();
         CoreLibPlugin.getInstance().getRegistry().unregisterForeignOrphanDetector("pipes-legacy");
         CoreLibPlugin.getInstance().getRegistry().clearCauldronConversions("pipes");
         for (PipeManager manager : pipeManagers.values()) {
@@ -426,6 +428,13 @@ public class PipesPlugin extends JavaPlugin {
         if (!legacy && !missingList) return;
 
         File file = new File(getDataFolder(), "config.yml");
+        // A YAML syntax error loads as an empty config (Bukkit logs the parse error); saving now would
+        // overwrite the user's file with our defaults. Leave it alone — the defaults apply until it's fixed.
+        if (cfg.getKeys(false).isEmpty() && file.length() > 0) {
+            getLogger().warning("config.yml has no readable settings (a YAML error?) — not migrating it;"
+                + " using defaults until it's fixed.");
+            return;
+        }
         if (legacy) {
             File backup = new File(getDataFolder(), "config-pre-0.5.0.yml");
             try {

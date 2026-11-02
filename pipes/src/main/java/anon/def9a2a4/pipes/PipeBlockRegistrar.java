@@ -1,5 +1,6 @@
 package anon.def9a2a4.pipes;
 
+import anon.def9a2a4.corelib.BuildProbe;
 import anon.def9a2a4.corelib.CustomBlockRegistry;
 import anon.def9a2a4.corelib.CustomHeadBlock;
 import anon.def9a2a4.corelib.HeadUtil;
@@ -69,7 +70,11 @@ public class PipeBlockRegistrar {
         // Filter pipes open their config GUI on right-click (returning true cancels vanilla interaction).
         if (variant.isFilter()) {
             builder.onInteract((block, event) -> {
-                plugin.getFilterGui().open(event.getPlayer(), block, variant);
+                // The menu edits the block (its filter items are real), so respect protection plugins. Probe
+                // with a plain head: a held corelib item would reach our own placement handler and fail.
+                if (BuildProbe.mayBuild(event.getPlayer(), block, new ItemStack(Material.PLAYER_HEAD))) {
+                    plugin.getFilterGui().open(event.getPlayer(), block, variant);
+                }
                 return true;
             });
             // A mechanism capture snapshots the block's PDC BEFORE onBlockRemoved runs, so close (and save)
@@ -106,7 +111,6 @@ public class PipeBlockRegistrar {
 
         builder.onBlockRemoved((block, state) -> {
             PipeManager manager = plugin.getPipeManager(block.getWorld());
-            if (manager == null) return;
             if (variant.isFilter()) {
                 // Close any open config menu FIRST so its (real) items can't be dragged out of a stale menu
                 // after we drop them (a dupe); the close saves current contents to the still-intact PDC.
@@ -120,6 +124,8 @@ public class PipeBlockRegistrar {
                     }
                 }
             }
+            // Filter items above are dropped even in a world without pipes enabled (no manager).
+            if (manager == null) return;
             manager.removePipeData(block.getLocation());
             // Same physics-suppression gap on removal — refresh neighbors next tick, once this pipe's
             // block is actually gone, so they recompute against the now-empty cell.

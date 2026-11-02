@@ -378,7 +378,11 @@ final class ChainHoistManager implements Listener {
         // stores it) wins; a glue-bearing skull riding as the seed (rotator head on a hanging platform)
         // is consulted only without it. A union could carry up to twice the glue cap.
         HoistAnchor hoistGlue = new HoistAnchor(hoist, registry, () -> true);
-        Anchor anchor = glueManager.hasGlue(hoistGlue) ? hoistGlue : new BlockAnchor(seed, () -> true);
+        boolean authored = glueManager.hasGlue(hoistGlue);
+        // Hoist offsets are seed-relative and the seed moves every stroke: drop offsets whose block is
+        // gone now, or after the next stroke they re-point at whatever sits at the new depth.
+        if (authored) glueManager.pruneOffsets(hoistGlue, ChainHoistManager::isClear);
+        Anchor anchor = authored ? hoistGlue : new BlockAnchor(seed, () -> true);
         List<Block> glued = glueManager.resolveStructure(anchor, excluded, null);
         List<Block> base = new ArrayList<>();
         boolean seedIn = false;

@@ -119,6 +119,14 @@ final class MechanismRotationDriver {
         final Map<Integer, Integer> engineFuel = new HashMap<>();     // blockIndex → engine-ticks left
         final Map<Integer, Boolean> engineRunning = new HashMap<>();  // blockIndex → supplying?
         final Map<Integer, DrillTrack> drills = new HashMap<>();      // blockIndex → break progress
+        // Burn-on-load (see tickEngines): demand a consumer plugin reports per block (DEMAND-mode
+        // consumers, and thrusters — 1 when unset), the tickAge a WORK-mode machine last processed at,
+        // and each engine's fractional burn carried between engine ticks. None of it is solver input,
+        // so none of it dirties the solve.
+        final Map<Integer, Double> demand = new HashMap<>();
+        final Map<Integer, Long> lastWorked = new HashMap<>();
+        final Map<Integer, double[]> burnAcc = new HashMap<>();
+        long lastTickAge;
 
         MechState(List<NodeSpec> specs) { this.specs = specs; }
     }
@@ -242,7 +250,11 @@ final class MechanismRotationDriver {
             if (s.meta().kind() == RotationConfig.MechKind.ENGINE) {
                 String cur = mech.getBlock(s.blockIndex()).customState();
                 st.engineRunning.put(s.blockIndex(), cur != null && cur.startsWith("running_"));
-                st.engineFuel.put(s.blockIndex(), 0); // world counter died at assembly; refuel from storage
+                // The world counter died at assembly, but capture flushed it into the block's configPdc
+                // (engine onCapture → writeToPDC), and tickEngines keeps that snapshot current — so this
+                // seeds both a fresh assembly and a restart/recovery with the partial burn.
+                st.engineFuel.put(s.blockIndex(), EngineFuelManager.readFromSnapshot(
+                    mech.getBlock(s.blockIndex()).configPdc));
             }
         }
         // Solve BEFORE registering: solveAndApply reads only the passed `st`, never the map, so if it throws
@@ -256,6 +268,7 @@ final class MechanismRotationDriver {
         MechState st = states.get(mech.id());
         if (st == null) return;
 
+        st.lastTickAge = tickAge;
         if (tickAge % ENGINE_INTERVAL == 0) tickEngines(mech, st);
         if (st.dirty) solveAndApply(mech, st);
         actuateConsumers(mech, st, tickAge);
@@ -321,36 +334,136 @@ final class MechanismRotationDriver {
     /** Mirrors the static engine overlay's cycle: refill from storage when the counter is empty,
      *  auto-start when fueled, burn one engine-tick while running, stop at zero. */
     private void tickEngines(BasicMechanism mech, MechState st) {
-        for (NodeSpec s : st.specs) {
+        double[] fracByComponent = loadFractions(st);
+        for (int k = 0; k < st.specs.size(); k++) {
+            NodeSpec s = st.specs.get(k);
             if (s.meta().kind() != RotationConfig.MechKind.ENGINE) continue;
             int idx = s.blockIndex();
             boolean running = st.engineRunning.getOrDefault(idx, false);
-            int fuel = st.engineFuel.getOrDefault(idx, 0);
+            int before = st.engineFuel.getOrDefault(idx, 0);
+            int fuel = before;
+            Inventory inv = mech.getStorage(idx);
 
-            if (fuel <= 0) {
-                Inventory inv = mech.getStorage(idx);
-                if (inv != null) fuel += RotationBlocks.consumeOneFuelItem(inv, fuelManager);
-            }
-            if (!running && fuel > 0) {
-                st.engineRunning.put(idx, true);
-                st.dirty = true;
-            } else if (running) {
-                fuel--;
-                if (fuel <= 0) {
-                    // Burn counter hit zero — pull the next fuel item in the SAME tick so the engine
-                    // doesn't stop for a full interval at every fuel-item boundary. Only stop when
-                    // storage is dry. On a successful refill we keep running and leave st.dirty alone
-                    // (the engine never changed running state, so no re-solve is needed).
-                    Inventory inv = mech.getStorage(idx);
-                    if (inv != null) fuel += RotationBlocks.consumeOneFuelItem(inv, fuelManager);
+            if (!config.burnOnLoad) {
+                // The old fixed burn: refill when empty, burn one engine-tick while running.
+                if (fuel <= 0 && inv != null) fuel += RotationBlocks.consumeOneFuelItem(inv, fuelManager, liveDropAt(mech, idx));
+                if (!running && fuel > 0) {
+                    st.engineRunning.put(idx, true);
+                    st.dirty = true;
+                } else if (running) {
+                    fuel--;
                     if (fuel <= 0) {
+                        // Pull the next item in the SAME tick so there is no power gap at an item boundary.
+                        if (inv != null) fuel += RotationBlocks.consumeOneFuelItem(inv, fuelManager, liveDropAt(mech, idx));
+                        if (fuel <= 0) {
+                            st.engineRunning.put(idx, false);
+                            st.dirty = true;
+                        }
+                    }
+                }
+            } else {
+                // Burn-on-load: RUNNING means fuelled (counter, or an unburned item aboard), so the network
+                // stays powered at zero load and nothing re-solves as demand changes. The burn is the
+                // share of this engine's output in use — or, for a 0-power engine (the thruster), its own
+                // reported demand.
+                boolean fuelled = fuel > 0 || RotationBlocks.hasFuelItem(inv, fuelManager);
+                if (!running && fuelled) {
+                    st.engineRunning.put(idx, true);
+                    st.dirty = true;
+                } else if (running) {
+                    double frac = s.power() <= 0
+                        ? st.demand.getOrDefault(idx, 1.0) * config.thrusterBurnMultiplier
+                        : fracByComponent[k] * config.engineBurnMultiplier;
+                    int burns = EngineBurn.step(st.burnAcc.computeIfAbsent(idx, i -> new double[1]), frac);
+                    for (int b = 0; b < burns; b++) {
+                        if (fuel <= 0) {
+                            if (inv != null) fuel += RotationBlocks.consumeOneFuelItem(inv, fuelManager, liveDropAt(mech, idx));
+                            if (fuel <= 0) break;
+                        }
+                        fuel--;
+                    }
+                    if (fuel <= 0 && !RotationBlocks.hasFuelItem(inv, fuelManager)) {
                         st.engineRunning.put(idx, false);
+                        st.burnAcc.remove(idx);
                         st.dirty = true;
                     }
                 }
             }
-            st.engineFuel.put(idx, Math.max(fuel, 0));
+            fuel = Math.max(fuel, 0);
+            st.engineFuel.put(idx, fuel);
+            if (fuel != before) {
+                // Mirror the live counter into the captured snapshot: the state file (park/restart) and
+                // landing (restoreConfigPdc → onRestore readFromPDC) both read configPdc.
+                MechanismBlockData bd = mech.getBlock(idx);
+                bd.configPdc = EngineFuelManager.writeToSnapshot(bd.configPdc, fuel);
+            }
         }
+    }
+
+    /**
+     * Load fraction per spec index (the value of its component), from the last solve plus the current
+     * demand and work records — see {@link EngineBurn#fraction}. Components that are unpowered or
+     * jammed get 0. Constant sources cover the load before engines.
+     */
+    private double[] loadFractions(MechState st) {
+        double[] out = new double[st.specs.size()];
+        RotationSolver.Result result = st.result;
+        if (result == null || !config.burnOnLoad) {
+            java.util.Arrays.fill(out, 1.0);
+            return out;
+        }
+        Map<Integer, double[]> byComponent = new HashMap<>();  // {active, free, fuel, anyPowered}
+        long window = RotationBlocks.WORK_LOAD_WINDOW_TICKS;
+        for (int k = 0; k < st.specs.size(); k++) {
+            NodeSpec s = st.specs.get(k);
+            double[] agg = byComponent.computeIfAbsent(result.component()[k], c -> new double[4]);
+            if (result.powered()[k]) agg[3] = 1;
+            switch (s.meta().kind()) {
+                case CONSUMER -> agg[0] += switch (config.loadMode(s.typeId())) {
+                    case ALWAYS -> s.power();
+                    case WORK -> st.lastTickAge - st.lastWorked.getOrDefault(s.blockIndex(), Long.MIN_VALUE / 2) <= window
+                        ? s.power() : 0;
+                    case DEMAND -> s.power() * st.demand.getOrDefault(s.blockIndex(), 1.0);
+                };
+                case CONSTANT_SOURCE -> agg[1] += s.meta().scaledSupply(s.power());
+                case ENGINE -> {
+                    if (st.engineRunning.getOrDefault(s.blockIndex(), false)) agg[2] += s.meta().scaledSupply(s.power());
+                }
+                default -> { }
+            }
+        }
+        for (int k = 0; k < st.specs.size(); k++) {
+            double[] agg = byComponent.get(result.component()[k]);
+            // An unpowered (overloaded) or jammed component runs no machine, so it burns nothing.
+            out[k] = agg == null || agg[3] == 0 ? 0 : EngineBurn.fraction(agg[0], agg[1], agg[2], config.minBurnFraction);
+        }
+        return out;
+    }
+
+    /** Demand 0..1 for a block aboard (BlockShips: propellers, wheels, thrusters by use). */
+    void setDemand(BasicMechanism mech, int blockIndex, double demand) {
+        MechState st = states.get(mech.id());
+        if (st == null) return;
+        st.demand.put(blockIndex, Math.max(0, Math.min(1, demand)));
+    }
+
+    /** Whether an engine aboard has fuel — burning or not. False for anything that isn't an engine. */
+    boolean isEngineFuelled(BasicMechanism mech, int blockIndex) {
+        MechState st = states.get(mech.id());
+        if (st == null) return false;
+        NodeSpec spec = st.specByIndex.get(blockIndex);
+        if (spec == null || spec.meta().kind() != RotationConfig.MechKind.ENGINE) return false;
+        if (st.engineFuel.getOrDefault(blockIndex, 0) > 0) return true;
+        return RotationBlocks.hasFuelItem(mech.getStorage(blockIndex), fuelManager);
+    }
+
+    /** Centre of an aboard block's live cell — where its burned fuel's empty container drops (its
+     *  storage is a holderless virtual inventory with no location of its own). */
+    private static @Nullable Location liveDropAt(BasicMechanism mech, int idx) {
+        World world = mech.pivot().getWorld();
+        if (world == null) return null;
+        Vector3i cell = mech.liveCell(idx);
+        return new Location(world, cell.x + 0.5, cell.y + 0.5, cell.z + 0.5);
     }
 
     // ──────────────────────────────────────────────────────────────────────
@@ -573,6 +686,7 @@ final class MechanismRotationDriver {
         }
 
         if (RotationBlocks.processingEffect(in, batch, recipes, registry, eject)) {
+            st.lastWorked.put(s.blockIndex(), st.lastTickAge);  // WORK-mode load, for engine burn
             Vector3i cell = mech.liveCell(s.blockIndex());
             if (world.isChunkLoaded(cell.x >> 4, cell.z >> 4)) {
                 world.playSound(new Location(world, cell.x + 0.5, cell.y + 0.5, cell.z + 0.5),

@@ -4,7 +4,12 @@
 
 **It now needs DefCoreLib installed** (0.5.0 or newer, on Paper 1.21.11 or newer). Without the core, the heads simply don't load.
 
-**Upgrading from the standalone?** Run `/headsmith migrate` to adopt heads you have already placed in the world.
+**Upgrading from the standalone?**
+
+- Remove the old standalone HeadSmith jar first — both are named HeadSmith and can't be installed together.
+- Its `config.yml` is no longer read: `excluded-tags`, `excluded-heads`, `custom-head-files` and `tag-order` have no effect.
+- Heads you already placed are adopted automatically as their chunks load, and old head items convert when they land in an inventory. `/headsmith migrate` only re-runs the sweep over loaded chunks by hand.
+- Placed heads are recognized by their skin alone (the old plugin marked nothing else on them), so a head from another plugin that uses the exact same skin, already placed in the world, is taken over as a HeadSmith head too and drops as one. Head items are matched by the old plugin's own marker, so newly placing another plugin's head is never affected.
 
 ## Heads
 
@@ -23,4 +28,4 @@
 
 - `/headsmith give <id> [amount]` — give yourself a head by id (op).
 - `/headsmith recipes <give|take> [player]` — reveal or hide HeadSmith recipes in a recipe book (anyone may run it for themselves; running it for another player needs `headsmith.recipes.others`, operators by default).
-- `/headsmith migrate` — adopt already-placed heads from the old standalone HeadSmith plugin (op).
+- `/headsmith migrate` — re-run the adoption sweep for already-placed heads from the old standalone HeadSmith plugin over loaded chunks (op; adoption otherwise happens automatically).

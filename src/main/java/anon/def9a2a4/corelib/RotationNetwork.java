@@ -160,6 +160,8 @@ public class RotationNetwork {
     public void removeNode(CustomBlockRegistry.LocationKey key) {
         nodes.remove(key);
         transientDemand.remove(key);
+        activeUntil.remove(key);
+        blockDemand.remove(key);
         recalculate(key);
     }
 
@@ -299,6 +301,66 @@ public class RotationNetwork {
         return new int[]{ state.supply(), state.demand() + transientSum, members.size() };
     }
 
+    // ── Load, for engine fuel burn ────────────────────────────────────────────
+    // What the network's machines are actually drawing, as opposed to what they would draw if all ran.
+    // Read by fuel-burning sources to burn for use; never part of the solve, so changing it costs no
+    // recalculation (same idea as transientDemand).
+    private final Map<CustomBlockRegistry.LocationKey, Long> activeUntil = new HashMap<>();
+    private final Map<CustomBlockRegistry.LocationKey, Double> blockDemand = new HashMap<>();
+    private final Map<Integer, Double> loadMemo = new HashMap<>();
+    private int loadMemoTick = Integer.MIN_VALUE;
+    private static final java.util.Set<String> FUEL_SOURCES = java.util.Set.of("mech:engine", "mech:steam_piston");
+
+    /** A WORK-mode consumer just did work: count it as load until {@code untilTick} (server tick). */
+    public void markWorked(CustomBlockRegistry.LocationKey key, long untilTick) {
+        activeUntil.merge(key, untilTick, Math::max);
+    }
+
+    /** Demand, 0..1, for a DEMAND-mode consumer (1 when never set). */
+    public void setDemand(CustomBlockRegistry.LocationKey key, double demand) {
+        blockDemand.put(key, Math.max(0, Math.min(1, demand)));
+    }
+
+    /**
+     * Fraction of this network's fuel-burning supply that is in use right now, 0..1; see
+     * {@link EngineBurn#fraction}. 0 for an unpowered or jammed network (no machine runs on it).
+     * Memoized per server tick per network, so every engine on a network shares one walk.
+     */
+    public double loadFraction(CustomBlockRegistry.LocationKey key, RotationConfig config) {
+        if (!config.burnOnLoad) return 1.0;
+        Integer netId = nodeNetworkId.get(key);
+        if (netId == null) return 0;
+        int now = org.bukkit.Bukkit.getCurrentTick();
+        if (now != loadMemoTick) { loadMemo.clear(); loadMemoTick = now; }
+        Double cached = loadMemo.get(netId);
+        if (cached != null) return cached;
+
+        double frac = 0;
+        NetworkState state = networks.get(netId);
+        Set<CustomBlockRegistry.LocationKey> members = networkMembers.get(netId);
+        if (state != null && members != null && state.powered()) {
+            double active = 0, fuelSupply = 0;
+            for (CustomBlockRegistry.LocationKey m : members) {
+                RotationNode node = nodes.get(m);
+                if (node == null) continue;
+                if (node.role() == NodeRole.SOURCE && FUEL_SOURCES.contains(node.blockTypeId())) {
+                    fuelSupply += node.powerUnits();
+                } else if (node.role() == NodeRole.CONSUMER) {
+                    active += switch (config.loadMode(node.blockTypeId())) {
+                        case ALWAYS -> node.powerUnits();
+                        case WORK -> activeUntil.getOrDefault(m, Long.MIN_VALUE) >= now ? node.powerUnits() : 0;
+                        case DEMAND -> node.powerUnits() * blockDemand.getOrDefault(m, 1.0);
+                    };
+                }
+                Integer t = transientDemand.get(m);
+                if (t != null) active += t;
+            }
+            frac = EngineBurn.fraction(active, state.supply() - fuelSupply, fuelSupply, config.minBurnFraction);
+        }
+        loadMemo.put(netId, frac);
+        return frac;
+    }
+
     /** Register extra demand for a node that consumes only while active (a Rotator while
      *  swinging). Folded into {@link #getNetworkStats}'s demand with no recalculation. Read your
      *  surplus BEFORE calling this so the reading excludes your own load. */
@@ -375,6 +437,7 @@ public class RotationNetwork {
     }
 
     private void doRecalculate(CustomBlockRegistry.LocationKey changed) {
+        loadMemo.clear();  // network ids are reassigned below
         // Scope the read-only STATE cache to exactly this doRecalculate (a re-entrant drain call gets a
         // fresh map; reads outside a recalc stay live). `prev` keeps it null-nesting-safe though today
         // doRecalculate is never nested.

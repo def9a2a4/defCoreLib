@@ -60,18 +60,60 @@ class MechanismPersistenceTest {
         assertEquals(0, left.length);
     }
 
-    /** A disassembly unshields the id at once but keeps the file until the world has saved twice (the event
-     *  fires before the chunks are written), so a crash in between can still recover the ship. */
+    /** A disassembly unshields the id at once but keeps the file until its landed blocks' chunks have surely
+     *  been written: Paper's WorldSaveEvent writes no chunks (they autosave on their own timers), so the delete
+     *  needs both enough ticks and enough autosave events. */
     @Test
-    void removeAfterSaveDeletesOnTheSecondWorldSave() {
+    void removeAfterSaveWaitsForTicksAndSaves() {
         MechanismState st = MechanismStateTest.sample();
         p.save(st);
-        p.removeAfterSave(st.worldName, st.mechId);
+        long t = 1000;
+        p.removeAfterSave(st.worldName, st.mechId, t);
         assertFalse(p.hasMetadata(st.worldName, st.mechId));
-        p.onWorldSaved("some_other_world");
-        p.onWorldSaved(st.worldName);
+        p.onWorldSaved("some_other_world", true, t + 100_000);
+        // Many saves, too little time (e.g. repeated /save-all): kept.
+        for (int i = 0; i < 5; i++) p.onWorldSaved(st.worldName, true, t + 6_000);
         assertTrue(stateFile(st).exists());
-        p.onWorldSaved(st.worldName);
+        // Enough time but the count was already met: deleted at the first event past the tick bound.
+        p.onWorldSaved(st.worldName, true, t + MechanismPersistence.DELETE_AFTER_TICKS);
+        assertFalse(stateFile(st).exists());
+    }
+
+    @Test
+    void removeAfterSaveNeedsEnoughAutosaveEvents() {
+        MechanismState st = MechanismStateTest.sample();
+        p.save(st);
+        p.removeAfterSave(st.worldName, st.mechId, 0);
+        // A raised ticks-per.autosave: few events, each far apart — the event count gates the delete.
+        for (int i = 1; i < MechanismPersistence.DELETE_AFTER_SAVES; i++) p.onWorldSaved(st.worldName, true, i * 50_000L);
+        assertTrue(stateFile(st).exists());
+        p.onWorldSaved(st.worldName, true, MechanismPersistence.DELETE_AFTER_SAVES * 50_000L);
+        assertFalse(stateFile(st).exists());
+    }
+
+    /** Under /save-off no chunk is written, yet the event still fires: it must restart the wait, not count. */
+    @Test
+    void saveOffRestartsTheQueuedDelete() {
+        MechanismState st = MechanismStateTest.sample();
+        p.save(st);
+        p.removeAfterSave(st.worldName, st.mechId, 0);
+        for (int i = 1; i <= 10; i++) p.onWorldSaved(st.worldName, false, i * 6_000L);
+        assertTrue(stateFile(st).exists());
+        long off = 60_000;   // last save-off event
+        p.onWorldSaved(st.worldName, true, off + 6_000);
+        p.onWorldSaved(st.worldName, true, off + 6_000);
+        p.onWorldSaved(st.worldName, true, off + 6_000);
+        assertTrue(stateFile(st).exists(), "the tick bound restarted at the save-off event");
+        p.onWorldSaved(st.worldName, true, off + MechanismPersistence.DELETE_AFTER_TICKS);
+        assertFalse(stateFile(st).exists());
+    }
+
+    @Test
+    void stopDeletesQueuedFiles() {
+        MechanismState st = MechanismStateTest.sample();
+        p.save(st);
+        p.removeAfterSave(st.worldName, st.mechId, 0);
+        p.deletePending();
         assertFalse(stateFile(st).exists());
     }
 
@@ -79,12 +121,31 @@ class MechanismPersistenceTest {
     void aSaveCancelsTheQueuedDelete() {
         MechanismState st = MechanismStateTest.sample();
         p.save(st);
-        p.removeAfterSave(st.worldName, st.mechId);
+        p.removeAfterSave(st.worldName, st.mechId, 0);
         p.save(st);
-        p.onWorldSaved(st.worldName);
-        p.onWorldSaved(st.worldName);
+        for (int i = 1; i <= 5; i++) p.onWorldSaved(st.worldName, true, i * 12_000L);
         assertTrue(stateFile(st).exists());
         assertTrue(p.hasMetadata(st.worldName, st.mechId));
+    }
+
+    /** The world-save path writes off-thread and skips an unchanged snapshot; it is ordered before later
+     *  sync deletes, so it can never resurrect a removed file. */
+    @Test
+    void saveAsyncSkipsUnchangedAndStaysOrdered() throws Exception {
+        MechanismState st = MechanismStateTest.sample();
+        p.save(st);
+        File f = stateFile(st);
+        Files.writeString(f.toPath(), "marker: 1\n");
+        p.saveAsync(st);                      // identical to the last write: skipped
+        p.close();
+        assertEquals("marker: 1\n", Files.readString(f.toPath()));
+
+        MechanismPersistence q = new MechanismPersistence(dataFolder.resolve("q").toFile(), log);
+        q.saveAsync(st);
+        q.remove(st.worldName, st.mechId);    // queued behind the async write
+        q.close();
+        assertFalse(dataFolder.resolve("q").resolve("mechanisms").resolve(st.worldName)
+            .resolve(st.mechId + ".yml").toFile().exists());
     }
 
     @Test

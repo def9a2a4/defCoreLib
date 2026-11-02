@@ -68,6 +68,34 @@ steam:
   boiler-tank-units: 8      # boiler water tank capacity, in buckets
   water-interval-ticks: 1200 # running time per boiler water unit (~60 s)
 
+# Engines (and steam pistons) burn fuel for the power actually USED on their network, not for what
+# they could supply. An engine with fuel stays running — the network stays powered — but a network
+# whose machines are idle burns nothing, and one using half an engine's output burns half as fast.
+# Windmills and water wheels on the same network cover the load first.
+engines:
+  burn-on-load: true        # false = the old behaviour: a fixed burn whenever an engine runs
+  burn-multiplier: 1.0      # scales all engine fuel use
+  min-burn-fraction: 0.0    # floor on the used fraction whenever anything draws power at all
+
+# A thruster burns by its own use (BlockShips sets it from the throttle, steering and lift).
+thruster:
+  burn-multiplier: 1.0
+
+# How each consumer counts toward engine load. always = its full power whenever powered (the default
+# for anything not listed); work = only just after it actually processed something; demand = scaled
+# by what a plugin reports (BlockShips: propellers and wheels by throttle/steering/lift; 1 if unset).
+load:
+  millstone: work
+  press: work
+  sieve: work
+  propeller: demand
+  large_propeller: demand
+  huge_propeller: demand
+  reaction_wheel: demand
+  wheel: demand
+  large_wheel: demand
+  huge_wheel: demand
+
 placer:
   tick-interval: 20   # ticks between placements (one block placed per cycle)
 
@@ -123,6 +151,11 @@ power:
   large_propeller: 10
   huge_propeller: 20
   reaction_wheel: 1
+  # Land-vehicle wheels. Consumers like the propellers; BlockShips turns a powered wheel into ground
+  # thrust. Priced so thrust per power beats the matching propeller (wheels only work on the ground).
+  wheel: 3
+  large_wheel: 6
+  huge_wheel: 12
 
 # How each rotation block behaves while assembled into a moving mechanism (minecart, door,
 # drawbridge). Its supply/demand comes from the `power:` map above — not repeated here.
@@ -187,5 +220,8 @@ mechanism:
   large_propeller: { kind: consumer, axis: facing, blows_outward: true }
   huge_propeller:  { kind: consumer, axis: facing, blows_outward: true }
   reaction_wheel:  { kind: consumer, axis: y }
+  wheel:           { kind: consumer, axis: facing }
+  large_wheel:     { kind: consumer, axis: facing }
+  huge_wheel:      { kind: consumer, axis: facing }
   thruster:        { kind: engine }
   suction_hopper:  { kind: consumer, axis: omni }

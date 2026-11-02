@@ -41,6 +41,7 @@ final class GlueAuthoring implements Listener {
 
     /** A cuboid-fill box larger than this many cells is rejected (avoids enumerating huge volumes). */
     private static final int MAX_BOX_VOLUME = 32_768;
+    private static final int MAX_BOX_SPAN = 128;   // per horizontal axis; bounds the chunk-loaded scan
 
     private final JavaPlugin plugin;
     private final CustomBlockRegistry registry;
@@ -391,6 +392,13 @@ final class GlueAuthoring implements Listener {
             actionBar(player, "Box too large (" + volume + " cells)", NamedTextColor.RED);
             return;
         }
+        // Corner A may have been set far away (fly off, click B): bound the horizontal span and refuse
+        // if any chunk the box touches is unloaded — isMovable's getType() would load/generate them.
+        if (Math.abs(a.getX() - clicked.getX()) >= MAX_BOX_SPAN || Math.abs(a.getZ() - clicked.getZ()) >= MAX_BOX_SPAN
+                || !boxChunksLoaded(a, clicked)) {
+            actionBar(player, "Box too far apart — set both corners nearby", NamedTextColor.RED);
+            return;
+        }
         // Filter out immovable cells (like glueCuboid already filters air/anchor/already-glued) rather than
         // rejecting the whole box for one bedrock. Slime/honey are filtered — they auto-glue (derived); frame
         // blocks (casing/gearbox/chassis) are kept so a box-glue can PIN them. Hoist sessions also drop the
@@ -401,13 +409,13 @@ final class GlueAuthoring implements Listener {
             .filter(b -> !StickySpread.isSlimeOrHoney(b))
             .filter(b -> ropeOrigin == null || b.getX() != ropeOrigin.getX()
                 || b.getZ() != ropeOrigin.getZ() || b.getY() <= ropeOrigin.getY())
-            // Per-cell protection, same gate as the single-block path — a box drag must not be a way
-            // around it. Filtered rather than refused, like every other per-cell rule here, so one
-            // protected corner doesn't reject the whole selection. Last: it fires a probe event per cell.
-            .filter(b -> s.anchor.canAuthorCell(player, b))
             .toList();
+        // Per-cell protection, same gate as the single-block path — a box drag must not be a way
+        // around it. Filtered rather than refused, like every other per-cell rule here, so one
+        // protected corner doesn't reject the whole selection. Asked inside glueCuboid only for cells
+        // about to be accepted: it fires a probe event per cell, so it must be bounded by the cap.
         GlueManager.FillResult r = glue.glueCuboid(s.anchor, movable,
-            isDrawbridgeAnchor(s.anchor.originBlock()));
+            isDrawbridgeAnchor(s.anchor.originBlock()), b -> s.anchor.canAuthorCell(player, b));
         damageBrush(player, r.added());
         if (r.added() > 0 && GlueAppliedEvent.hasListeners()) {
             Bukkit.getPluginManager().callEvent(
@@ -422,6 +430,14 @@ final class GlueAuthoring implements Listener {
     private void damageBrush(Player player, int amount) {
         if (amount <= 0) return;
         player.damageItemStack(EquipmentSlot.HAND, amount);
+    }
+
+    private static boolean boxChunksLoaded(Block a, Block b) {
+        World w = a.getWorld();
+        for (int cx = Math.min(a.getX(), b.getX()) >> 4; cx <= Math.max(a.getX(), b.getX()) >> 4; cx++)
+            for (int cz = Math.min(a.getZ(), b.getZ()) >> 4; cz <= Math.max(a.getZ(), b.getZ()) >> 4; cz++)
+                if (!w.isChunkLoaded(cx, cz)) return false;
+        return true;
     }
 
     private List<Block> boxBlocks(Block a, Block b) {

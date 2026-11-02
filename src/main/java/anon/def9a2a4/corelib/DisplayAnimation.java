@@ -17,6 +17,18 @@ public interface DisplayAnimation {
      * @param output   write the result here (do not mutate base)
      */
     void apply(Matrix4f base, long tickAge, Matrix4f output);
+
+    /**
+     * As {@link #apply(Matrix4f, long, Matrix4f)} with a fractional age, for a spin whose speed is set at
+     * runtime ({@link Mechanism#setBlockSpinScale}). The default rounds down; {@code rotate} overrides it
+     * so slow spins move smoothly instead of in whole-tick steps.
+     */
+    default void apply(Matrix4f base, double tickAge, Matrix4f output) {
+        apply(base, (long) Math.floor(tickAge), output);
+    }
+
+    /** Authored spin speed in degrees per tick for a {@code rotate} animation; NaN for anything else. */
+    default float degreesPerTick() { return Float.NaN; }
 }
 
 /**
@@ -45,8 +57,14 @@ final class Animations {
         float radiansPerTick = (float) Math.toRadians(degreesPerTick);
         float phase = phaseTurns * TAU;
         Vector3f norm = normalizedAxis(axis);
-        return (base, tickAge, output) -> {
-            new Matrix4f().rotate(radiansPerTick * tickAge + phase, norm.x, norm.y, norm.z).mul(base, output);
+        return new DisplayAnimation() {
+            @Override public void apply(Matrix4f base, long tickAge, Matrix4f output) {
+                new Matrix4f().rotate(radiansPerTick * tickAge + phase, norm.x, norm.y, norm.z).mul(base, output);
+            }
+            @Override public void apply(Matrix4f base, double tickAge, Matrix4f output) {
+                new Matrix4f().rotate((float) (radiansPerTick * tickAge) + phase, norm.x, norm.y, norm.z).mul(base, output);
+            }
+            @Override public float degreesPerTick() { return degreesPerTick; }
         };
     }
 

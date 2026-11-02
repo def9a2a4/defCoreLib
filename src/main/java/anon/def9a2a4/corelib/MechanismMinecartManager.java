@@ -9,6 +9,7 @@ import org.bukkit.World;
 import org.bukkit.entity.Display;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Minecart;
+import org.bukkit.entity.Player;
 import org.bukkit.entity.minecart.RideableMinecart;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -24,6 +25,8 @@ import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.NamespacedKey;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
+
+import org.jspecify.annotations.Nullable;
 
 import java.util.*;
 
@@ -207,6 +210,9 @@ final class MechanismMinecartManager implements Listener {
             && type != Material.DETECTOR_RAIL && type != Material.ACTIVATOR_RAIL) return;
 
         event.setCancelled(true);
+        // Claim plugins see a vanilla minecart placement, not our head-item one → ask them directly.
+        // Plain item: a custom-tagged one would be refused by CoreLibPlugin.onBlockPlace.
+        if (!BuildProbe.mayBuild(event.getPlayer(), block, new ItemStack(type))) return;
 
         org.bukkit.Location spawnLoc = block.getLocation().add(0.5, 0, 0.5);
         Minecart minecart = block.getWorld().spawn(spawnLoc, RideableMinecart.class, m -> {
@@ -283,7 +289,7 @@ final class MechanismMinecartManager implements Listener {
             // Rising edge: only trigger on off → on transition
             if (onPowered && !state.wasOnPoweredRail) {
                 if (state.mechanism == null) {
-                    assemble(state);
+                    assemble(state, null);
                 } else {
                     disassemble(state);
                 }
@@ -402,7 +408,9 @@ final class MechanismMinecartManager implements Listener {
         minecart.setVelocity(new org.bukkit.util.Vector(0, 0, 0));
     }
 
-    private void assemble(MinecartState state) {
+    /** @param player who asked (right-click), or null for an activator-rail trigger; a player's
+     *  assembly is refused if any captured cell is one they may not build at. */
+    private void assemble(MinecartState state, @Nullable Player player) {
         // The cart's "self" cells — never captured: the rail it rides and the block below it. The cart
         // has no block hardware of its own, but slime/honey in the carried set could otherwise scoop
         // the track out from under it (casings can't — they bond only to casings).
@@ -413,7 +421,14 @@ final class MechanismMinecartManager implements Listener {
         // Structure = the cart's glued selection (offsets in the cart's PDC, resolved relative to its
         // current cell — glued blocks must be co-located with the cart: assemble in place). With no
         // authored glue, default to the single block directly above the cart.
-        Anchor anchor = new EntityAnchor(state.minecart, () -> state.mechanism == null);
+        EntityAnchor anchor = new EntityAnchor(state.minecart, () -> state.mechanism == null);
+        // Pushed off its glue cell (a piston ignores the maxSpeed-0 freeze): the offsets now point at
+        // other blocks than the ones authored → drop the stale glue rather than carry the wrong cells.
+        if (anchor.movedSinceGlued()) {
+            anchor.clearOffsets();
+            MoverExclusion.blockedParticle(null, railCell);
+            return;
+        }
         // Transitive capture: a nested anchor in the cargo brings its own glued region (the engine
         // re-stamps each captured anchor's offsets at landing). A cart rides the rail level with no
         // tipping, so a carried hoist stays upright — hoistAllowed = true.
@@ -442,6 +457,14 @@ final class MechanismMinecartManager implements Listener {
         // snapAndStop so a refusal leaves the cart rolling, side-effect-free like the refused() check above.
         Block busy = mechRegistry.firstMovingCapturedAnchor(blocks);
         if (busy != null) { MoverExclusion.blockedParticle(null, busy); return; }
+        // A right-click assembly picks up cells nobody authored for this player (the default block
+        // above, sticky-spread neighbours) → claim-check every captured cell, like glue authoring does.
+        if (player != null) {
+            ItemStack probeItem = new ItemStack(player.getInventory().getItemInMainHand().getType());
+            for (Block b : blocks) {
+                if (!BuildProbe.mayBuild(player, b, probeItem)) { MoverExclusion.blockedParticle(null, b); return; }
+            }
+        }
 
         // Cart is committed to assembling — snap it to cell-center and kill its velocity so the
         // mechanism's displays align to the grid. (Done here, not at the top, so a declined assembly
@@ -523,7 +546,7 @@ final class MechanismMinecartManager implements Listener {
         if (state == null) return;
         event.setCancelled(true);
         if (state.mechanism == null) {
-            assemble(state);
+            assemble(state, event.getPlayer());
         } else {
             disassemble(state);
         }

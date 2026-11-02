@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.BiConsumer;
+import java.util.function.Predicate;
 
 /**
  * Anchor-owned block selection ("glue"). Stores a set of block offsets relative to an
@@ -406,6 +407,17 @@ final class GlueManager {
 
     void unglueAll(Anchor a) { a.clearOffsets(); }
 
+    /** Rewrite the stored offsets without those whose cell is {@code stale}. For anchors whose origin
+     *  moves (a hoist's seed): an offset left pointing at a removed block would otherwise resolve to
+     *  whatever sits there after the next stroke. No write when nothing is dropped. */
+    void pruneOffsets(Anchor a, Predicate<Block> stale) {
+        Set<Vector3i> set = offsets(a);
+        Block origin = a.originBlock();
+        World w = a.world();
+        if (!set.removeIf(v -> stale.test(w.getBlockAt(origin.getX() + v.x, origin.getY() + v.y, origin.getZ() + v.z)))) return;
+        if (set.isEmpty()) a.clearOffsets(); else a.writeOffsets(packOffsets(set));
+    }
+
     /** Current glued offsets (for the authoring outline). Insertion-ordered. */
     Set<Vector3i> offsets(Anchor a) {
         Set<Vector3i> set = new LinkedHashSet<>();
@@ -458,8 +470,12 @@ final class GlueManager {
      * more connects or the cap is hit. The derived sticky closure counts as connectivity, and is
      * recomputed per pass — an accepted block can attract a new casing frame that in turn bridges to
      * candidates on its far side.
+     *
+     * <p>{@code mayGlue} is asked only for a cell about to be accepted (connected, under the cap), so
+     * costly per-cell checks (protection probes) are bounded by the cap, not the box volume. A refused
+     * cell is dropped like the other filters — not counted as skipped, not re-asked.
      */
-    FillResult glueCuboid(Anchor a, List<Block> candidates, boolean horizontalAxis) {
+    FillResult glueCuboid(Anchor a, List<Block> candidates, boolean horizontalAxis, Predicate<Block> mayGlue) {
         Block origin = a.originBlock();
         int ox = origin.getX(), oy = origin.getY(), oz = origin.getZ();
         Set<Vector3i> accepted = offsets(a);
@@ -488,9 +504,10 @@ final class GlueManager {
                 if (accepted.size() >= maxSize) break;
                 Vector3i off = it.next();
                 if (connects(off, connectors)) {
+                    it.remove();
+                    if (!mayGlue.test(origin.getWorld().getBlockAt(ox + off.x, oy + off.y, oz + off.z))) continue;
                     accepted.add(off);
                     connectors.add(off);   // accepted cells connect immediately; new derived waits a pass
-                    it.remove();
                     changed = true;
                 }
             }

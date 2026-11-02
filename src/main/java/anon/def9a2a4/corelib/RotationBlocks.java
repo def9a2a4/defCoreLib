@@ -77,6 +77,29 @@ final class RotationBlocks {
     /** Remove the first fuel item from {@code storage} and return its engine-tick value, or 0 when
      *  the inventory holds no fuel. Shared by the static engine overlay and mechanism engines. */
     static int consumeOneFuelItem(Inventory storage, EngineFuelManager fuelManager) {
+        // Engine/burner storage is a virtual inventory (Bukkit.createInventory), whose getLocation()
+        // is null — take the block location from the StorageHolder so a returned container can drop.
+        return consumeOneFuelItem(storage, fuelManager,
+            storage.getHolder() instanceof StorageHolder sh ? sh.location() : storage.getLocation());
+    }
+
+    /** Whether {@code storage} holds anything an engine could burn — without burning it. */
+    static boolean hasFuelItem(@Nullable Inventory storage, EngineFuelManager fuelManager) {
+        if (storage == null) return false;
+        for (int i = 0; i < storage.getSize(); i++) {
+            ItemStack it = storage.getItem(i);
+            if (it != null && !it.getType().isAir() && fuelTicksFor(it, fuelManager) > 0) return true;
+        }
+        return false;
+    }
+
+    /** Fractional fuel burn carried between engine ticks (burn-on-load), per static engine. In-memory:
+     *  a restart forgives under one fuel tick, same tolerance as the fuel counter itself. */
+    private static final Map<CustomBlockRegistry.LocationKey, double[]> engineBurnAcc = new HashMap<>();
+
+    /** As above, dropping a burned fuel's empty container at {@code dropAt} (mechanism engines pass
+     *  their live cell — their storage has no holder location). */
+    static int consumeOneFuelItem(Inventory storage, EngineFuelManager fuelManager, @Nullable Location dropAt) {
         for (int i = 0; i < storage.getSize(); i++) {
             ItemStack it = storage.getItem(i);
             if (it == null || it.getType().isAir()) continue;
@@ -86,26 +109,34 @@ final class RotationBlocks {
                 // bucket), or the glass bottle for Seed Oil (a custom item on a magma-cream skin).
                 Material container = "mech:seed_oil".equals(CustomBlockRegistry.getItemTypeId(it))
                     ? Material.GLASS_BOTTLE : it.getType().getCraftingRemainingItem();
+                // Nowhere to put the container (no stack to merge into, no drop location) → don't
+                // burn this unit, so the bucket/bottle is never destroyed.
+                if (container != null && !returnContainer(storage, container, dropAt)) continue;
                 it.setAmount(it.getAmount() - 1);
                 storage.setItem(i, it.getAmount() <= 0 ? null : it);
-                if (container != null) returnContainer(storage, container);
                 return fv;
             }
         }
         return 0;
     }
 
-    /** Put a burned fuel's empty container (bucket, glass bottle) back into {@code storage}; if the
-     *  storage is full, drop it at the storage block's location. */
-    private static void returnContainer(Inventory storage, Material container) {
-        Map<Integer, ItemStack> leftover = storage.addItem(new ItemStack(container));
-        if (leftover.isEmpty()) return;
-        // Engine/burner storage is a virtual inventory (Bukkit.createInventory), whose getLocation()
-        // is null — take the block location from the StorageHolder so the overflow actually drops.
-        Location loc = storage.getHolder() instanceof StorageHolder sh ? sh.location() : storage.getLocation();
-        if (loc != null && loc.getWorld() != null) {
-            for (ItemStack extra : leftover.values()) loc.getWorld().dropItemNaturally(loc, extra);
+    /** Hand back a burned fuel's empty container (bucket, glass bottle): merge it into an existing
+     *  stack of the same item that has room, else drop it at {@code dropAt}. Never claims an empty
+     *  slot — pipes can't extract from machine storage, so parked buckets would fill the slots and
+     *  starve the engine. Returns false (nothing done) when neither is possible. */
+    private static boolean returnContainer(Inventory storage, Material container, @Nullable Location dropAt) {
+        ItemStack one = new ItemStack(container);
+        for (int i = 0; i < storage.getSize(); i++) {
+            ItemStack s = storage.getItem(i);
+            if (s != null && s.isSimilar(one) && s.getAmount() < s.getMaxStackSize()) {
+                s.setAmount(s.getAmount() + 1);
+                storage.setItem(i, s);
+                return true;
+            }
         }
+        if (dropAt == null || dropAt.getWorld() == null) return false;
+        dropAt.getWorld().dropItemNaturally(dropAt, one);
+        return true;
     }
 
     // dough→bread (furnace/smoker) and seed-oil→iron/copper-lantern recipes are now declared in YAML
@@ -617,18 +648,17 @@ final class RotationBlocks {
             .onTick(b -> {
                 String state = registry.getState(b);
                 var key = CustomBlockRegistry.LocationKey.of(b);
+                Inventory storage = registry.getOrCreateStorage(b);
 
-                // Auto-consume fuel from internal storage when the fuel counter is empty
-                if (fuelManager.getFuel(key) <= 0) {
-                    Inventory storage = registry.getOrCreateStorage(b);
-                    if (storage != null) {
-                        int fv = consumeOneFuelItem(storage, fuelManager);
-                        if (fv > 0) fuelManager.addFuel(key, fv);
-                    }
-                }
+                // Burn-on-load: an engine is RUNNING (supplying) whenever it is fuelled — counter or an
+                // unburned item in storage — and burns only for the share of its output the network
+                // actually uses. A network of idle machines keeps its power and costs nothing; nothing
+                // is pulled from storage until something needs it. burn-on-load: false gives frac 1:
+                // the old fixed burn, pulling the next item the moment the counter runs out.
+                boolean fuelled = fuelManager.getFuel(key) > 0 || hasFuelItem(storage, fuelManager);
 
                 // Auto-start: an idle engine that has fuel begins running
-                if (state != null && state.startsWith("idle_") && fuelManager.getFuel(key) > 0) {
+                if (state != null && state.startsWith("idle_") && fuelled) {
                     String axis = state.substring(state.lastIndexOf('_') + 1);
                     String target = "running_" + axis;
                     registry.setState(b, target);
@@ -640,29 +670,34 @@ final class RotationBlocks {
                     return;
                 }
                 if (state == null || !state.startsWith("running_")) return;
-                int remaining = fuelManager.tick(key);
-                if (remaining <= 0) {
-                    // Fuel counter hit zero this tick. Before idling, pull the next fuel item from
-                    // storage in the SAME tick so a running engine doesn't drop power for a full tick
-                    // cycle at every fuel-item boundary. Only fall through to idle when nothing's left.
-                    Inventory storage = registry.getOrCreateStorage(b);
-                    if (storage != null) {
-                        int fv = consumeOneFuelItem(storage, fuelManager);
-                        if (fv > 0) {
-                            fuelManager.addFuel(key, fv);
-                            return; // stays running_ — no power gap
-                        }
+
+                double frac = network.loadFraction(key, config) * config.engineBurnMultiplier;
+                int burns = EngineBurn.step(engineBurnAcc.computeIfAbsent(key, k -> new double[1]), frac);
+                for (int i = 0; i < burns && fuelled; i++) {
+                    if (fuelManager.getFuel(key) <= 0) {
+                        int fv = storage == null ? 0 : consumeOneFuelItem(storage, fuelManager);
+                        if (fv <= 0) { fuelled = false; break; }
+                        fuelManager.addFuel(key, fv);
                     }
-                    // Out of fuel — transition to idle
-                    String axis = state.substring(state.lastIndexOf('_') + 1);
-                    String target = "idle_" + axis;
-                    registry.setState(b, target);
-                    CustomHeadBlock type = registry.getTypeFromBlock(b);
-                    if (type != null) registry.applyConfig(b, type, target, 0);
-                    network.removeNode(key);
-                    network.addNode(b, blockId, RotationNetwork.axisFromState(target),
-                        RotationNetwork.NodeRole.TRANSMITTER, 0, false);
+                    fuelManager.tick(key);
                 }
+                // Old behaviour kept for burn-on-load: false — refill the instant the counter empties.
+                if (!config.burnOnLoad && fuelManager.getFuel(key) <= 0 && storage != null) {
+                    int fv = consumeOneFuelItem(storage, fuelManager);
+                    if (fv > 0) fuelManager.addFuel(key, fv);
+                }
+                if (fuelManager.getFuel(key) > 0 || hasFuelItem(storage, fuelManager)) return;
+
+                // Out of fuel — transition to idle
+                engineBurnAcc.remove(key);
+                String axis = state.substring(state.lastIndexOf('_') + 1);
+                String target = "idle_" + axis;
+                registry.setState(b, target);
+                CustomHeadBlock type = registry.getTypeFromBlock(b);
+                if (type != null) registry.applyConfig(b, type, target, 0);
+                network.removeNode(key);
+                network.addNode(b, blockId, RotationNetwork.axisFromState(target),
+                    RotationNetwork.NodeRole.TRANSMITTER, 0, false);
             })
             .onChunkLoad((b, state) -> {
                 fuelManager.readFromPDC(b);
@@ -675,10 +710,12 @@ final class RotationBlocks {
             .onChunkUnload(b -> {
                 fuelManager.writeToPDC(b);
                 fuelManager.remove(CustomBlockRegistry.LocationKey.of(b));
+                engineBurnAcc.remove(CustomBlockRegistry.LocationKey.of(b));
                 network.removeNode(CustomBlockRegistry.LocationKey.of(b));
             })
             .onBlockRemoved((b, state) -> {
                 fuelManager.remove(CustomBlockRegistry.LocationKey.of(b));
+                engineBurnAcc.remove(CustomBlockRegistry.LocationKey.of(b));
                 network.removeNode(CustomBlockRegistry.LocationKey.of(b));
             })
             // A mechanism is capturing this engine: flush the in-memory fuel counter to the skull PDC so the
@@ -710,7 +747,11 @@ final class RotationBlocks {
         for (Tier t : new Tier[]{
                 new Tier("propeller", 5),
                 new Tier("large_propeller", 10),
-                new Tier("huge_propeller", 20)}) {
+                new Tier("huge_propeller", 20),
+                // Wheels: wall-only, so the stored facing always gives a horizontal axle.
+                new Tier("wheel", 3),
+                new Tier("large_wheel", 6),
+                new Tier("huge_wheel", 12)}) {
             overlayConsumerMachine(registry, network, new ConsumerSpec(
                 "mech:" + t.id(),
                 b -> fanAxis(readFacing(b)),
@@ -1799,9 +1840,15 @@ final class RotationBlocks {
             processingEffect(in, batch, recipes, registry, outputs -> ejectOutputs(machine, outputs));
         if (processed) {
             machine.getWorld().playSound(machine.getLocation().add(0.5, 0.5, 0.5), sound, 0.6f, 1f);
+            // Counts as engine load for a while after real work (a WORK-mode consumer) — long enough
+            // to span the slowest machine's cycle, so a busy line reads as busy between cycles.
+            network.markWorked(key, org.bukkit.Bukkit.getCurrentTick() + WORK_LOAD_WINDOW_TICKS);
         }
         return processed;
     }
+
+    /** How long a WORK-mode consumer counts as engine load after it last did work. */
+    static final int WORK_LOAD_WINDOW_TICKS = 100;
 
     /**
      * The recipe-processing core of {@link #processingMachineTick}: up to {@code batch} recipe
@@ -2019,10 +2066,15 @@ final class RotationBlocks {
         for (org.bukkit.entity.Entity e : world.getNearbyEntities(box)) {
             if (!(e instanceof org.bukkit.entity.Item item)) continue;   // Displays are not Items
             if (!item.isValid() || item.isDead()) continue;
+            // Never-pickup items (vanilla's 32767 "infinite" delay) are shop/display props — leave them be.
+            if (item.getPickupDelay() >= Short.MAX_VALUE) continue;
             Location il = item.getLocation();
 
             // Capture inside the block's own 1×1×1 cell.
             if (il.getBlockX() == cellX && il.getBlockY() == cellY && il.getBlockZ() == cellZ) {
+                // Same veto a vanilla hopper honours, so protection/shop plugins can keep their items.
+                var pickup = new org.bukkit.event.inventory.InventoryPickupItemEvent(internal, item);
+                if (!pickup.callEvent()) continue;
                 ItemStack stack = item.getItemStack();
                 var leftover = internal.addItem(stack.clone());
                 if (leftover.isEmpty()) {

@@ -1620,6 +1620,8 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         // Storage interaction
         if (type.storage() != null) {
             event.setCancelled(true);
+            // Claim plugins don't treat a player head as a container, so ask them as if building here.
+            if (!BuildProbe.mayBuild(event.getPlayer(), block, new ItemStack(block.getType()))) return;
             registry.openStorage(block, event.getPlayer(), type);
             return;
         }
@@ -2559,6 +2561,9 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         }
     }
 
+    // Not ignoreCancelled: BlockShips cancels its collider clicks at NORMAL and still relies on the wrench
+    // readout / interact transitions here. Claims are enforced by BuildProbe on the two branches that change
+    // something (storage, transitions), which asks the same protection plugins whose cancel we'd otherwise honour.
     @EventHandler(priority = EventPriority.HIGH)
     public void onEntityInteract(org.bukkit.event.player.PlayerInteractEntityEvent event) {
         if (!(event.getRightClicked() instanceof org.bukkit.entity.Shulker shulker)) return;
@@ -2598,6 +2603,10 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
             // Already open (a consumer such as BlockShips opened it at a lower priority, or this is the
             // off-hand pass): reopening closes and reopens the view, which jumps the cursor and fires a close.
             if (event.getPlayer().getOpenInventory().getTopInventory() == mb.storage()) return;
+            // Claim check: a parked ship's cargo sits in someone's claim, and claim plugins never see this
+            // shulker as a container — probe the cell the collider stands in as if opening a chest there.
+            if (!BuildProbe.mayBuild(event.getPlayer(), shulker.getLocation().getBlock(),
+                    new ItemStack(Material.CHEST))) return;
             event.getPlayer().openInventory(mb.storage());
             return;
         }
@@ -2614,7 +2623,8 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
             event.getPlayer().getInventory().getItemInMainHand().getType() == Material.AIR
                 ? null : event.getPlayer().getInventory().getItemInMainHand().getType());
         var transition = type.findTransition(trigger, currentState);
-        if (transition != null) {
+        if (transition != null && BuildProbe.mayBuild(event.getPlayer(), shulker.getLocation().getBlock(),
+                new ItemStack(Material.LEVER))) {
             mech.setBlockState(blockIndex, transition.toState());
             if (transition.sound() != null) {
                 shulker.getWorld().playSound(shulker.getLocation(),

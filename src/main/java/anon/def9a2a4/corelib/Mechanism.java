@@ -236,6 +236,50 @@ public interface Mechanism {
     @ApiStatus.Experimental
     @Nullable BlockFace rotationFacing(int blockIndex);
 
+    // ── Fuel by use ──────────────────────────────────────────────────────────
+    // Engines burn fuel for the share of their output actually used (rotation-config engines:). A
+    // consumer whose use only its plugin knows — a ship's propeller is "in use" while the throttle is
+    // open — reports it here; so does a thruster, which burns by its own demand.
+
+    /**
+     * How much of its power this block is using right now, 0..1. Honoured by DEMAND-mode consumers
+     * (propellers, wheels, the reaction wheel) and 0-power engines (the thruster). Defaults to 1 for any
+     * block never set, so an unmanaged mechanism costs what it always did. No re-solve.
+     */
+    @ApiStatus.Experimental
+    default void setBlockDemand(int blockIndex, double demand) {}
+
+    /**
+     * Whether the engine (or thruster) at this index has fuel — in its counter or unburned in its
+     * storage. With burn-on-load an engine can be fuelled and idle at once, so a fuelled engine's
+     * {@code customState()} says {@code running_} even while it burns nothing.
+     */
+    @ApiStatus.Experimental
+    default boolean isEngineFuelled(int blockIndex) { return false; }
+
+    // ── Runtime spin (visual only) ────────────────────────────────────────────
+    // Override how fast a block's rotate animation turns, without touching its power or state. The
+    // block must be in an animated state (a powered consumer's spinning_*) for anything to show.
+
+    /**
+     * Spin this block's animation at {@code scale} times its authored speed: 1 = normal, 0 = stopped,
+     * negative = backwards. Follows the network's solved direction, like the normal animation.
+     */
+    @ApiStatus.Experimental
+    default void setBlockSpinScale(int blockIndex, double scale) {}
+
+    /**
+     * Spin this block's animation at an absolute signed speed, in degrees per tick about the authored
+     * animation axis. Ignores the solved spin direction, so two blocks given the same speed turn the
+     * same way whatever their gears' meshing — what a vehicle's wheels need.
+     */
+    @ApiStatus.Experimental
+    default void setBlockSpinSpeed(int blockIndex, double degreesPerTick) {}
+
+    /** Drop a {@link #setBlockSpinScale}/{@link #setBlockSpinSpeed} override; the normal animation resumes. */
+    @ApiStatus.Experimental
+    default void clearBlockSpin(int blockIndex) {}
+
     // ── Seats (4a) ────────────────────────────────────────────────────────────
     // A "seat" is a collider block a player rides (its shulker is the mount point). The consumer decides
     // which blocks are seats and performs the actual addPassenger/dismount; core owns the seat marking,
