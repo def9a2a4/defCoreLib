@@ -20,12 +20,12 @@ WOODS = ["oak", "acacia", "bamboo", "birch", "cherry", "crimson", "dark_oak",
          "jungle", "mangrove", "pale_oak", "spruce", "warped"]
 
 # size id prefix, display prefix, diameter, power, step height, tyre reach below the block, spin
-# speed (deg/tick, falls with diameter so the tread speed reads the same), in-hand skin alias,
-# windmill that crafts it
+# speed (deg/tick, falls with diameter so the tread speed reads the same), windmill that crafts it.
+# The in-hand skin is per size AND wood: @<id>_item (assets/rotation/wheels/make_wheels.py).
 SIZES = [
-    ("wheel",       "",       1, 2,  "1 block",    "0 blocks",   6, "@wheel_item",       "Windmill"),
-    ("large_wheel", "Large ", 2, 5,  "1.5 blocks", "0.5 blocks", 3, "@large_wheel_item", "Large Windmill"),
-    ("huge_wheel",  "Huge ",  3, 10, "2 blocks",   "1 block",    2, "@large_wheel_item", "Huge Windmill"),
+    ("wheel",       "",       1, 2,  "1 block",    "0 blocks",   6, "Windmill"),
+    ("large_wheel", "Large ", 2, 5,  "1.5 blocks", "0.5 blocks", 3, "Large Windmill"),
+    ("huge_wheel",  "Huge ",  3, 10, "2 blocks",   "1 block",    2, "Huge Windmill"),
 ]
 
 THICK = 0.4        # tyre thickness along the axle
@@ -103,7 +103,7 @@ def display_line(slab: str, tag: str, angle: float, length: float, width: float,
 
 
 def block(size, wood: str) -> str:
-    sid, sname, d, power, step, reach, speed, item_tex, windmill = size
+    sid, sname, d, power, step, reach, speed, windmill = size
     bid = f"{sid}_{wood}"
     slab = f"{wood.upper()}_SLAB"
     planks = f"{wood.upper()}_PLANKS"
@@ -136,7 +136,7 @@ def block(size, wood: str) -> str:
                 f"              P: {{ material: {planks} }}",
                 '              W: { block_type: "mech:windmill" }']
     out += ['    texture: "@prop_bearing_fwd"',
-            f'    item_texture: "{item_tex}"',
+            f'    item_texture: "@{bid}_item"',
             "    drops: self",
             "    break_sound: { sound: block.wood.break, volume: 0.8, pitch: 0.8 }",
             "    place_sound: { sound: block.wood.place, volume: 0.8, pitch: 0.8 }",

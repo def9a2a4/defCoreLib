@@ -17,12 +17,13 @@ CACHE = Path("scripts/skin_cache.csv")
 with CACHE.open(newline="") as fh:
     cache = {row["name"]: row["base64"] for row in csv.DictReader(fh)}
 
-# Scoped to the casing + gearbox art on purpose: the other ~44 aliases are not ours to touch. Both
-# share the same "# casing/<subdir>/<wood>.png" trailing-comment cache key, so one pattern covers both
-# (casing_* → cased/, gearbox_* → gearbox/). Chassis aliases are hand-maintained and left alone.
+# Scoped to the casing, gearbox and wheel art on purpose: the other ~44 aliases are not ours to touch.
+# Each alias carries its cache key as a trailing comment — "# casing/<subdir>/<wood>.png" (casing_* →
+# cased/, gearbox_* → gearbox/) or "# wheels/<size>/<wood>.png" (<size>_<wood>_item, from
+# assets/rotation/wheels/make_wheels.py). Chassis aliases are hand-maintained and left alone.
 LINE = re.compile(
-    r'^(?P<pre>\s*(?:casing|gearbox)_\w+:\s*)"[^"]*"'
-    r'(?P<post>\s*#\s*(?P<key>casing/(?:cased|gearbox)/\w+\.png)\s*)$')
+    r'^(?P<pre>\s*(?:casing|gearbox|(?:large_|huge_)?wheel)_\w+:\s*)"[^"]*"'
+    r'(?P<post>\s*#\s*(?P<key>(?:casing/(?:cased|gearbox)|wheels/\w+)/\w+\.png)\s*)$')
 
 out, changed, missing = [], 0, []
 for line in YML.read_text().splitlines(keepends=True):

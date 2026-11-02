@@ -21,8 +21,42 @@ textures:
   jet_off_down:      "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvN2Q0YzRjYTE4MDRjMGE2ZDYxNzBjZTljNTE0MDI0NjIxMzE0MWRlNGFiNjU0NjY5OWI3NTI3YTEzZDUxNmRjZSJ9fX0="  # jet-engine-down-off — thruster placed head, nozzle down, idle
   jet_on_down:       "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTkwZTRmNjVlN2FkZTcwYTgwMWE5NWE4MjdlYzFhOTZhNTlmZGMxY2I2ODQ5YWJlZWUzYjZjMjg1MmM0ODNjIn19fQ=="  # jet-engine-down-powered — thruster placed head, nozzle down, burning
   minecart-lodestone: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjcxOGM2Y2VhOTI3NmM3ODljM2I4N2JjZWM2ZjkxMzI4YThmYmFiOTY2MjZlNWZjZWZmMTFjNGFkNzlkNDA1NSJ9fX0="  # cart-lodestone — mechanism-minecart in-hand item
-  wheel_item:        "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWIxZmRhMDQyOTkwODliMDFjY2VlMzljZjg4ZTljNzFiZGQzOTRiZmU0NzNlYWUzNjRmNTM3OTNhNmQ1OTMifX19"  # small wheels, in-hand
-  large_wheel_item:  "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTE4YWFmOWQxNjhjZDc4MWNjMGU2ZDM2ZGQ1MzVlNzJkOWY0NTk5NTQ5ZjhlZmU1NWUxYjhjNzcyMmU3YmEzIn19fQ=="  # large and huge wheels, in-hand
+  wheel_oak_item:           "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvM2NjNDFlYmFjMmIxNTk0NjNkMjJjYWU0MzNkZjBmMDRhNjljMjM1MjM3MjM0OWI5YjVjNWU5ZjNjZjI5ODhiZSJ9fX0="  # wheels/wheel/oak.png
+  wheel_acacia_item:        "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjA1MzdjZWVlZmQxYTNmMzcxZjc3NDBhNmFmNmNhMzdhMjI0ZjBkODU4NzkxNjIwODExZDZkOWIwNDhiMThmNyJ9fX0="  # wheels/wheel/acacia.png
+  wheel_bamboo_item:        "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTNhMzM1NGE0ZDViNzE1OWRjZWY4OWY4ZTYxYzFhMDc4MzU2ZWQ0MjFhZGM5MmQ4ZDFhZjMzOGFiY2VjYzNhYSJ9fX0="  # wheels/wheel/bamboo.png
+  wheel_birch_item:         "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjBhMDEwZDM5NmVhMzcyNDlhNTlhYTYzN2U2OGUxNDQ0ZDY0YzU2ODU0ZmJkMzA1MDdmZDcwZjcxZDZjYzNlOCJ9fX0="  # wheels/wheel/birch.png
+  wheel_cherry_item:        "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNmFmYjAzMjdjMDljMGY0OTQzMjhjOTYxMDNhOGY4MDRkNWI0MzZjOTEwZGM3NmU0NzQzOTYwZWRkMWFiOTg5ZCJ9fX0="  # wheels/wheel/cherry.png
+  wheel_crimson_item:       "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjdkZGY2MzhmZWJlYjRhMjA1NGJhZDg5ODI2M2M1MmIxYzRhYTdjZTE1MDY4ZWU4OTEwY2IzOGNlNjkzZTlmIn19fQ=="  # wheels/wheel/crimson.png
+  wheel_dark_oak_item:      "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjE2YTA4Y2M0YWVkZjk5YjZkOTdiMDBhOTkxOGI2NzY3Njg4YmIxZTM0OTI0ZTk5YTA4NWQ2Mjg5MWZlMmQzYSJ9fX0="  # wheels/wheel/dark_oak.png
+  wheel_jungle_item:        "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjNiMWIxM2IxZjYyYjI1MDcyZjViNDQwYzZlZjBmM2Y1YmZhMDc1YjEyYTdhN2ZiNjVkMGY2ODRkOWUxMWEzMyJ9fX0="  # wheels/wheel/jungle.png
+  wheel_mangrove_item:      "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzVlM2JkNWFmYjBlNmMyNTUyNjRjMTQ5YzZjNzk2NTlkYWU0MTg1ZWM1YzVlYjFiZDYxZGMyNmIzN2QwODRmOSJ9fX0="  # wheels/wheel/mangrove.png
+  wheel_pale_oak_item:      "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTQ1ZGRjMDYyMjIzMTA3OTU5NjhkMTNkYjE0MWVlZmVlM2Y0ZmY1Mjc1YzliYzcyMzBlNDA2ZTRhMzNmY2JkOSJ9fX0="  # wheels/wheel/pale_oak.png
+  wheel_spruce_item:        "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzU5ZmE0MGMyZjIxMWNiMTJiZWQ2ZjY3NjZlZDdhZTdhNWVkY2QyMmViMzljNDI4Y2QxNGYwYzZmZjFiMDg2NiJ9fX0="  # wheels/wheel/spruce.png
+  wheel_warped_item:        "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTAxNmJjNzE4NDgxMzRiODIyNTM4NTdkOWY3M2NkMTM4OTdmNTRhMjk5OGFmODNjZmExNDU3YzI0Y2NlN2NmMyJ9fX0="  # wheels/wheel/warped.png
+  large_wheel_oak_item:     "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNmU4MzdhZjAwMjI4Yzk0YzJiYzA2OGI3MzA0ZDgxODFhNWRkMGZjZThiZTRiMGIwYzA0MTAyN2Q3MzRlNzI4MSJ9fX0="  # wheels/large_wheel/oak.png
+  large_wheel_acacia_item:  "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODAxZGFlMDU5OWRiM2Y4ZjQ2MmE3NzMyNTMwODViMjViM2JhOGNmN2ZhNDk0N2FkNmRhZjc5NDcxY2UzZWJlYSJ9fX0="  # wheels/large_wheel/acacia.png
+  large_wheel_bamboo_item:  "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmQ3Y2I3ODQ1YmQzZmRhZjQ0OTcyNzZkOGRhNzYyMWMwNDVkNDk5NjFjNThlYWI5OWQ5ZjNiNzE1ZmQwZTUxZiJ9fX0="  # wheels/large_wheel/bamboo.png
+  large_wheel_birch_item:   "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjA5OWJhNWYyNTg1NDZhMDg0NWQ0YTkzYWYxMzg0ZWJlNTA5ZTNmYzU1ODI2ZGQ1ODU0OTE5Yjc3OTEyNjExNyJ9fX0="  # wheels/large_wheel/birch.png
+  large_wheel_cherry_item:  "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTg0ZmQ1ZDJkOGYzNjE4YTkyMzVlNWEyZWZkMjU3NWZiNGNmMDc4YWIyNTk4M2FjMDQ2ODNjYjllYTVjNWRhIn19fQ=="  # wheels/large_wheel/cherry.png
+  large_wheel_crimson_item: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvN2JiYjE5YjQ1ZTBhOWVhM2E1MTUxMTMxNTQwYjNmMjZmN2Y2N2Y0ZjE0NWIwNmU3YTY1NWRjZDdiOGQxNjhjMiJ9fX0="  # wheels/large_wheel/crimson.png
+  large_wheel_dark_oak_item: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTk3MDM3MDU0ZTQ3OGQ2NTQ4NjNhYmEwYWM2Zjk3YWJmZjkyOGU0NmM1NmFiNGU2MjVhNGJiNTQ2ZmY4MTViMiJ9fX0="  # wheels/large_wheel/dark_oak.png
+  large_wheel_jungle_item:  "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDdjMjBiYzEwYWNhMmEwZjk5NWQ2OGNlZDZmYjY4ZWExMTVhOWMzMTY3YjJhYjA3MTk1N2ZmMWQ4ZWE4YmM4NiJ9fX0="  # wheels/large_wheel/jungle.png
+  large_wheel_mangrove_item: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTM2NjNhMGUzMWYxMjljNmVhOTc1MmM2YzNmYTlkZTVjZGY0ODU3ZDM3YzI3MjZmZWI2NzEyYjFmYzYwMjlhIn19fQ=="  # wheels/large_wheel/mangrove.png
+  large_wheel_pale_oak_item: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmVhYWE5OTMxNzg0NTRjZmUzOTBhOGE4MWQ0Y2JlMGQxYTRjZTBjNGE4Nzc1YmY4OGRkMmRlNGVkOTJhMDgzNyJ9fX0="  # wheels/large_wheel/pale_oak.png
+  large_wheel_spruce_item:  "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTZiMzIyNmQ0MmJlYjQ1Yzk2MmFkM2QzNGMzNjQwYTZjMGQ2YTRjN2ViNDE3NTM4OGE4NGM0YjhlZmU4YjVkYyJ9fX0="  # wheels/large_wheel/spruce.png
+  large_wheel_warped_item:  "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzFiNWFjMzBhZDYwZGFhY2MyYTI3ZTBhY2UyNDRjNDgzODI3MzBmNDhkNWViNzFlNTViNGJlYzYwMDAwYWExOCJ9fX0="  # wheels/large_wheel/warped.png
+  huge_wheel_oak_item:      "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjI4M2QxOGUxMTUwODJlMGU2NGM0ZWI2NzA3OThjNTI4ZjY3ZWQxNmRiZWJmNjA1ODg1MzM3YWUwOGJhMjFhYiJ9fX0="  # wheels/huge_wheel/oak.png
+  huge_wheel_acacia_item:   "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODUzZWU0YTllZmQ0OTEwNGNkYjkwM2JjZTgwYjlkMDEyZjE5YjFmMWMzNzBiZTYzZjg5NDkwZmNiZTg0MDQxMiJ9fX0="  # wheels/huge_wheel/acacia.png
+  huge_wheel_bamboo_item:   "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvM2I3NDQ0NTNmMDdhMjE4NjE2NTMzYzA1YTFiYjU4ODQ5ZGQ3MDcwYWU3NDliM2M1YjkzMmNjZjg3YzgzMDFlZSJ9fX0="  # wheels/huge_wheel/bamboo.png
+  huge_wheel_birch_item:    "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNmMzMTJhOGZiMzNmMzhjYzA4Zjg3NjcwMzNhN2MxZjNjNWE1ZWZhNzc1M2EyZWM2YWRlYzY1NTNkN2U2Njc0ZSJ9fX0="  # wheels/huge_wheel/birch.png
+  huge_wheel_cherry_item:   "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmRmZmNhY2FjZjE2ODAwYWZkNjIyNjkzYzdmN2ZmYzdlNGFmZjExN2M0N2Q3Mzc0NmU4ZTMxMjhiMTU2MzAzOCJ9fX0="  # wheels/huge_wheel/cherry.png
+  huge_wheel_crimson_item:  "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTc1NzZiMjBmYjViZTZjM2Q1ODBhMTY4ZGIwMWRiYTZjMjZjY2M4ZmUxZjZkMWRiNDMyMjE4ZWQxNTIzZGE3ZiJ9fX0="  # wheels/huge_wheel/crimson.png
+  huge_wheel_dark_oak_item: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvN2M1NDg0NmNlYjlhN2RiYjVmOGVjYjg4NjM4MDkyYjhhYmU5ZTZhNTRjYTY5ODhkOWYxMTgxMDI2NmE2ODRhMiJ9fX0="  # wheels/huge_wheel/dark_oak.png
+  huge_wheel_jungle_item:   "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTk5NzE4NjI5ZWFjYTRiNWVlYTc1ZGYzY2E5MDZiZmI3YzI3MWEzYzMzZmM1ZjA1ZDMyOTliZmQzNmQyMmU5OCJ9fX0="  # wheels/huge_wheel/jungle.png
+  huge_wheel_mangrove_item: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzNmMWQxYzBkMTZmYWIzMzFlNjkzOWE0ZmVlMTJlZTJmZmNlY2M0MjJiMmRiMjcwYjc1MDVhOWQxNTA4MDE5NSJ9fX0="  # wheels/huge_wheel/mangrove.png
+  huge_wheel_pale_oak_item: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjExZjhhZmQxOTYyNzgwZjE2MTQyMmUxNjIwMWZkYmUzYjQzYTYzODQzZjg0ZGY4NzVmZjA3ZGQwODFlNmYyNyJ9fX0="  # wheels/huge_wheel/pale_oak.png
+  huge_wheel_spruce_item:   "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOWNlYTNkMTg1OWViMmZmYmE4MTViNjgyNjFmNTczNTY3MTliMmQ0ZmE3Y2RkODM1OGJlMDhlYjQyZThmMTUwNCJ9fX0="  # wheels/huge_wheel/spruce.png
+  huge_wheel_warped_item:   "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTVmNTIyNjk3ZDcwNGRjZmY0YjE1MmI4ZDY5N2Q3ZGJkMGJhNTRhNmVkMzE2ZDkwOTI0NGVkOGEyZjI0MmUzNCJ9fX0="  # wheels/huge_wheel/warped.png
   chainwheel:        "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTliNzc4MjJhODNmZDBjNWFkMGEyMmE4ZWI5NzViNWIyM2Y1ODhkMTkzMzg4ZGE2MzNmZWZlMzFlMjZlOWU0NiJ9fX0="  # Chain Pulley — in-hand item + spinning wheel display
   chain_hoist_item:  "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDZiNzg5MDZmNDgwOGJhNmJmMmNkYmRmNDJhODZhMDEyYzk2NjVmN2QzYzY4ZTFjMzhkMzZkMmEyZmNhZmNiIn19fQ=="  # chain/chain-hoist-sideways — chain hoist in-hand item
   chain_hoist_head:  "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHBzOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlLzMyMjlmYTZhZDBlMDNmNjYyYmVlMjkwZWVhOGMxOWI4YTgxZDA2MDc1YjRhNTVhZjIxOWE3N2VhOWRhZjEzMjMifX19"  # chain hoist placed head — shared with the Pipes plugin's copper_display_down
@@ -4074,7 +4108,7 @@ blocks:
               P: { material: OAK_PLANKS }
               W: { block_type: "mech:windmill" }
     texture: "@prop_bearing_fwd"
-    item_texture: "@wheel_item"
+    item_texture: "@wheel_oak_item"
     drops: self
     break_sound: { sound: block.wood.break, volume: 0.8, pitch: 0.8 }
     place_sound: { sound: block.wood.place, volume: 0.8, pitch: 0.8 }
@@ -4148,7 +4182,7 @@ blocks:
               P: { material: ACACIA_PLANKS }
               W: { block_type: "mech:windmill" }
     texture: "@prop_bearing_fwd"
-    item_texture: "@wheel_item"
+    item_texture: "@wheel_acacia_item"
     drops: self
     break_sound: { sound: block.wood.break, volume: 0.8, pitch: 0.8 }
     place_sound: { sound: block.wood.place, volume: 0.8, pitch: 0.8 }
@@ -4222,7 +4256,7 @@ blocks:
               P: { material: BAMBOO_PLANKS }
               W: { block_type: "mech:windmill" }
     texture: "@prop_bearing_fwd"
-    item_texture: "@wheel_item"
+    item_texture: "@wheel_bamboo_item"
     drops: self
     break_sound: { sound: block.wood.break, volume: 0.8, pitch: 0.8 }
     place_sound: { sound: block.wood.place, volume: 0.8, pitch: 0.8 }
@@ -4296,7 +4330,7 @@ blocks:
               P: { material: BIRCH_PLANKS }
               W: { block_type: "mech:windmill" }
     texture: "@prop_bearing_fwd"
-    item_texture: "@wheel_item"
+    item_texture: "@wheel_birch_item"
     drops: self
     break_sound: { sound: block.wood.break, volume: 0.8, pitch: 0.8 }
     place_sound: { sound: block.wood.place, volume: 0.8, pitch: 0.8 }
@@ -4370,7 +4404,7 @@ blocks:
               P: { material: CHERRY_PLANKS }
               W: { block_type: "mech:windmill" }
     texture: "@prop_bearing_fwd"
-    item_texture: "@wheel_item"
+    item_texture: "@wheel_cherry_item"
     drops: self
     break_sound: { sound: block.wood.break, volume: 0.8, pitch: 0.8 }
     place_sound: { sound: block.wood.place, volume: 0.8, pitch: 0.8 }
@@ -4444,7 +4478,7 @@ blocks:
               P: { material: CRIMSON_PLANKS }
               W: { block_type: "mech:windmill" }
     texture: "@prop_bearing_fwd"
-    item_texture: "@wheel_item"
+    item_texture: "@wheel_crimson_item"
     drops: self
     break_sound: { sound: block.wood.break, volume: 0.8, pitch: 0.8 }
     place_sound: { sound: block.wood.place, volume: 0.8, pitch: 0.8 }
@@ -4518,7 +4552,7 @@ blocks:
               P: { material: DARK_OAK_PLANKS }
               W: { block_type: "mech:windmill" }
     texture: "@prop_bearing_fwd"
-    item_texture: "@wheel_item"
+    item_texture: "@wheel_dark_oak_item"
     drops: self
     break_sound: { sound: block.wood.break, volume: 0.8, pitch: 0.8 }
     place_sound: { sound: block.wood.place, volume: 0.8, pitch: 0.8 }
@@ -4592,7 +4626,7 @@ blocks:
               P: { material: JUNGLE_PLANKS }
               W: { block_type: "mech:windmill" }
     texture: "@prop_bearing_fwd"
-    item_texture: "@wheel_item"
+    item_texture: "@wheel_jungle_item"
     drops: self
     break_sound: { sound: block.wood.break, volume: 0.8, pitch: 0.8 }
     place_sound: { sound: block.wood.place, volume: 0.8, pitch: 0.8 }
@@ -4666,7 +4700,7 @@ blocks:
               P: { material: MANGROVE_PLANKS }
               W: { block_type: "mech:windmill" }
     texture: "@prop_bearing_fwd"
-    item_texture: "@wheel_item"
+    item_texture: "@wheel_mangrove_item"
     drops: self
     break_sound: { sound: block.wood.break, volume: 0.8, pitch: 0.8 }
     place_sound: { sound: block.wood.place, volume: 0.8, pitch: 0.8 }
@@ -4740,7 +4774,7 @@ blocks:
               P: { material: PALE_OAK_PLANKS }
               W: { block_type: "mech:windmill" }
     texture: "@prop_bearing_fwd"
-    item_texture: "@wheel_item"
+    item_texture: "@wheel_pale_oak_item"
     drops: self
     break_sound: { sound: block.wood.break, volume: 0.8, pitch: 0.8 }
     place_sound: { sound: block.wood.place, volume: 0.8, pitch: 0.8 }
@@ -4814,7 +4848,7 @@ blocks:
               P: { material: SPRUCE_PLANKS }
               W: { block_type: "mech:windmill" }
     texture: "@prop_bearing_fwd"
-    item_texture: "@wheel_item"
+    item_texture: "@wheel_spruce_item"
     drops: self
     break_sound: { sound: block.wood.break, volume: 0.8, pitch: 0.8 }
     place_sound: { sound: block.wood.place, volume: 0.8, pitch: 0.8 }
@@ -4888,7 +4922,7 @@ blocks:
               P: { material: WARPED_PLANKS }
               W: { block_type: "mech:windmill" }
     texture: "@prop_bearing_fwd"
-    item_texture: "@wheel_item"
+    item_texture: "@wheel_warped_item"
     drops: self
     break_sound: { sound: block.wood.break, volume: 0.8, pitch: 0.8 }
     place_sound: { sound: block.wood.place, volume: 0.8, pitch: 0.8 }
@@ -4952,7 +4986,7 @@ blocks:
       - "&7Wall placement only."
     catalog_variant_of: large_wheel_oak
     texture: "@prop_bearing_fwd"
-    item_texture: "@large_wheel_item"
+    item_texture: "@large_wheel_oak_item"
     drops: self
     break_sound: { sound: block.wood.break, volume: 0.8, pitch: 0.8 }
     place_sound: { sound: block.wood.place, volume: 0.8, pitch: 0.8 }
@@ -5016,7 +5050,7 @@ blocks:
       - "&7Wall placement only."
     catalog_variant_of: large_wheel_oak
     texture: "@prop_bearing_fwd"
-    item_texture: "@large_wheel_item"
+    item_texture: "@large_wheel_acacia_item"
     drops: self
     break_sound: { sound: block.wood.break, volume: 0.8, pitch: 0.8 }
     place_sound: { sound: block.wood.place, volume: 0.8, pitch: 0.8 }
@@ -5080,7 +5114,7 @@ blocks:
       - "&7Wall placement only."
     catalog_variant_of: large_wheel_oak
     texture: "@prop_bearing_fwd"
-    item_texture: "@large_wheel_item"
+    item_texture: "@large_wheel_bamboo_item"
     drops: self
     break_sound: { sound: block.wood.break, volume: 0.8, pitch: 0.8 }
     place_sound: { sound: block.wood.place, volume: 0.8, pitch: 0.8 }
@@ -5144,7 +5178,7 @@ blocks:
       - "&7Wall placement only."
     catalog_variant_of: large_wheel_oak
     texture: "@prop_bearing_fwd"
-    item_texture: "@large_wheel_item"
+    item_texture: "@large_wheel_birch_item"
     drops: self
     break_sound: { sound: block.wood.break, volume: 0.8, pitch: 0.8 }
     place_sound: { sound: block.wood.place, volume: 0.8, pitch: 0.8 }
@@ -5208,7 +5242,7 @@ blocks:
       - "&7Wall placement only."
     catalog_variant_of: large_wheel_oak
     texture: "@prop_bearing_fwd"
-    item_texture: "@large_wheel_item"
+    item_texture: "@large_wheel_cherry_item"
     drops: self
     break_sound: { sound: block.wood.break, volume: 0.8, pitch: 0.8 }
     place_sound: { sound: block.wood.place, volume: 0.8, pitch: 0.8 }
@@ -5272,7 +5306,7 @@ blocks:
       - "&7Wall placement only."
     catalog_variant_of: large_wheel_oak
     texture: "@prop_bearing_fwd"
-    item_texture: "@large_wheel_item"
+    item_texture: "@large_wheel_crimson_item"
     drops: self
     break_sound: { sound: block.wood.break, volume: 0.8, pitch: 0.8 }
     place_sound: { sound: block.wood.place, volume: 0.8, pitch: 0.8 }
@@ -5336,7 +5370,7 @@ blocks:
       - "&7Wall placement only."
     catalog_variant_of: large_wheel_oak
     texture: "@prop_bearing_fwd"
-    item_texture: "@large_wheel_item"
+    item_texture: "@large_wheel_dark_oak_item"
     drops: self
     break_sound: { sound: block.wood.break, volume: 0.8, pitch: 0.8 }
     place_sound: { sound: block.wood.place, volume: 0.8, pitch: 0.8 }
@@ -5400,7 +5434,7 @@ blocks:
       - "&7Wall placement only."
     catalog_variant_of: large_wheel_oak
     texture: "@prop_bearing_fwd"
-    item_texture: "@large_wheel_item"
+    item_texture: "@large_wheel_jungle_item"
     drops: self
     break_sound: { sound: block.wood.break, volume: 0.8, pitch: 0.8 }
     place_sound: { sound: block.wood.place, volume: 0.8, pitch: 0.8 }
@@ -5464,7 +5498,7 @@ blocks:
       - "&7Wall placement only."
     catalog_variant_of: large_wheel_oak
     texture: "@prop_bearing_fwd"
-    item_texture: "@large_wheel_item"
+    item_texture: "@large_wheel_mangrove_item"
     drops: self
     break_sound: { sound: block.wood.break, volume: 0.8, pitch: 0.8 }
     place_sound: { sound: block.wood.place, volume: 0.8, pitch: 0.8 }
@@ -5528,7 +5562,7 @@ blocks:
       - "&7Wall placement only."
     catalog_variant_of: large_wheel_oak
     texture: "@prop_bearing_fwd"
-    item_texture: "@large_wheel_item"
+    item_texture: "@large_wheel_pale_oak_item"
     drops: self
     break_sound: { sound: block.wood.break, volume: 0.8, pitch: 0.8 }
     place_sound: { sound: block.wood.place, volume: 0.8, pitch: 0.8 }
@@ -5592,7 +5626,7 @@ blocks:
       - "&7Wall placement only."
     catalog_variant_of: large_wheel_oak
     texture: "@prop_bearing_fwd"
-    item_texture: "@large_wheel_item"
+    item_texture: "@large_wheel_spruce_item"
     drops: self
     break_sound: { sound: block.wood.break, volume: 0.8, pitch: 0.8 }
     place_sound: { sound: block.wood.place, volume: 0.8, pitch: 0.8 }
@@ -5656,7 +5690,7 @@ blocks:
       - "&7Wall placement only."
     catalog_variant_of: large_wheel_oak
     texture: "@prop_bearing_fwd"
-    item_texture: "@large_wheel_item"
+    item_texture: "@large_wheel_warped_item"
     drops: self
     break_sound: { sound: block.wood.break, volume: 0.8, pitch: 0.8 }
     place_sound: { sound: block.wood.place, volume: 0.8, pitch: 0.8 }
@@ -5720,7 +5754,7 @@ blocks:
       - "&7Wall placement only."
     catalog_variant_of: huge_wheel_oak
     texture: "@prop_bearing_fwd"
-    item_texture: "@large_wheel_item"
+    item_texture: "@huge_wheel_oak_item"
     drops: self
     break_sound: { sound: block.wood.break, volume: 0.8, pitch: 0.8 }
     place_sound: { sound: block.wood.place, volume: 0.8, pitch: 0.8 }
@@ -5784,7 +5818,7 @@ blocks:
       - "&7Wall placement only."
     catalog_variant_of: huge_wheel_oak
     texture: "@prop_bearing_fwd"
-    item_texture: "@large_wheel_item"
+    item_texture: "@huge_wheel_acacia_item"
     drops: self
     break_sound: { sound: block.wood.break, volume: 0.8, pitch: 0.8 }
     place_sound: { sound: block.wood.place, volume: 0.8, pitch: 0.8 }
@@ -5848,7 +5882,7 @@ blocks:
       - "&7Wall placement only."
     catalog_variant_of: huge_wheel_oak
     texture: "@prop_bearing_fwd"
-    item_texture: "@large_wheel_item"
+    item_texture: "@huge_wheel_bamboo_item"
     drops: self
     break_sound: { sound: block.wood.break, volume: 0.8, pitch: 0.8 }
     place_sound: { sound: block.wood.place, volume: 0.8, pitch: 0.8 }
@@ -5912,7 +5946,7 @@ blocks:
       - "&7Wall placement only."
     catalog_variant_of: huge_wheel_oak
     texture: "@prop_bearing_fwd"
-    item_texture: "@large_wheel_item"
+    item_texture: "@huge_wheel_birch_item"
     drops: self
     break_sound: { sound: block.wood.break, volume: 0.8, pitch: 0.8 }
     place_sound: { sound: block.wood.place, volume: 0.8, pitch: 0.8 }
@@ -5976,7 +6010,7 @@ blocks:
       - "&7Wall placement only."
     catalog_variant_of: huge_wheel_oak
     texture: "@prop_bearing_fwd"
-    item_texture: "@large_wheel_item"
+    item_texture: "@huge_wheel_cherry_item"
     drops: self
     break_sound: { sound: block.wood.break, volume: 0.8, pitch: 0.8 }
     place_sound: { sound: block.wood.place, volume: 0.8, pitch: 0.8 }
@@ -6040,7 +6074,7 @@ blocks:
       - "&7Wall placement only."
     catalog_variant_of: huge_wheel_oak
     texture: "@prop_bearing_fwd"
-    item_texture: "@large_wheel_item"
+    item_texture: "@huge_wheel_crimson_item"
     drops: self
     break_sound: { sound: block.wood.break, volume: 0.8, pitch: 0.8 }
     place_sound: { sound: block.wood.place, volume: 0.8, pitch: 0.8 }
@@ -6104,7 +6138,7 @@ blocks:
       - "&7Wall placement only."
     catalog_variant_of: huge_wheel_oak
     texture: "@prop_bearing_fwd"
-    item_texture: "@large_wheel_item"
+    item_texture: "@huge_wheel_dark_oak_item"
     drops: self
     break_sound: { sound: block.wood.break, volume: 0.8, pitch: 0.8 }
     place_sound: { sound: block.wood.place, volume: 0.8, pitch: 0.8 }
@@ -6168,7 +6202,7 @@ blocks:
       - "&7Wall placement only."
     catalog_variant_of: huge_wheel_oak
     texture: "@prop_bearing_fwd"
-    item_texture: "@large_wheel_item"
+    item_texture: "@huge_wheel_jungle_item"
     drops: self
     break_sound: { sound: block.wood.break, volume: 0.8, pitch: 0.8 }
     place_sound: { sound: block.wood.place, volume: 0.8, pitch: 0.8 }
@@ -6232,7 +6266,7 @@ blocks:
       - "&7Wall placement only."
     catalog_variant_of: huge_wheel_oak
     texture: "@prop_bearing_fwd"
-    item_texture: "@large_wheel_item"
+    item_texture: "@huge_wheel_mangrove_item"
     drops: self
     break_sound: { sound: block.wood.break, volume: 0.8, pitch: 0.8 }
     place_sound: { sound: block.wood.place, volume: 0.8, pitch: 0.8 }
@@ -6296,7 +6330,7 @@ blocks:
       - "&7Wall placement only."
     catalog_variant_of: huge_wheel_oak
     texture: "@prop_bearing_fwd"
-    item_texture: "@large_wheel_item"
+    item_texture: "@huge_wheel_pale_oak_item"
     drops: self
     break_sound: { sound: block.wood.break, volume: 0.8, pitch: 0.8 }
     place_sound: { sound: block.wood.place, volume: 0.8, pitch: 0.8 }
@@ -6360,7 +6394,7 @@ blocks:
       - "&7Wall placement only."
     catalog_variant_of: huge_wheel_oak
     texture: "@prop_bearing_fwd"
-    item_texture: "@large_wheel_item"
+    item_texture: "@huge_wheel_spruce_item"
     drops: self
     break_sound: { sound: block.wood.break, volume: 0.8, pitch: 0.8 }
     place_sound: { sound: block.wood.place, volume: 0.8, pitch: 0.8 }
@@ -6424,7 +6458,7 @@ blocks:
       - "&7Wall placement only."
     catalog_variant_of: huge_wheel_oak
     texture: "@prop_bearing_fwd"
-    item_texture: "@large_wheel_item"
+    item_texture: "@huge_wheel_warped_item"
     drops: self
     break_sound: { sound: block.wood.break, volume: 0.8, pitch: 0.8 }
     place_sound: { sound: block.wood.place, volume: 0.8, pitch: 0.8 }
