@@ -1873,7 +1873,7 @@ final class BasicMechanism implements Mechanism {
                     // A painting can't hang sideways; a frame follows any turn. Its cell must be open — a roll can
                     // turn a face into terrain or another landed block, where vanilla would pop it later anyway.
                     if (pose != null && (upright || AttachedEntities.KIND_FRAME.equals(ce.kind()))
-                            && MovableBlocks.isEmptyOrPassable(pose.cell().getType()) && mayOccupy(pose.cell(), mb)) {
+                            && AttachedEntities.isOpen(pose.cell()) && mayOccupy(pose.cell(), mb)) {
                         handled = AttachedEntities.spawn(ce, pose, quarterTurns)
                             != AttachedEntities.SpawnResult.FAILED;
                     }
@@ -1974,7 +1974,7 @@ final class BasicMechanism implements Mechanism {
                         // must be open — unless it is the anchor's own cell (a carpet, a slab).
                         Block cell = loc.getBlock();
                         if (!mayOccupy(cell, anchorData)
-                                || (!cell.equals(anchor) && !MovableBlocks.isEmptyOrPassable(cell.getType()))) {
+                                || (!cell.equals(anchor) && !AttachedEntities.isOpen(cell))) {
                             loc = null;
                         }
                     }

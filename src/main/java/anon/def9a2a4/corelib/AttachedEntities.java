@@ -451,13 +451,20 @@ final class AttachedEntities {
     /** Where to drop items meant for {@code cell}: the cell itself when open, else its first open neighbour
      *  (above first). An item dropped inside a solid block is shoved out at speed and can fly off. */
     static Block openCellNear(Block cell) {
-        if (MovableBlocks.isEmptyOrPassable(cell.getType())) return cell;
+        if (isOpen(cell)) return cell;
         for (BlockFace f : new BlockFace[]{BlockFace.UP, BlockFace.NORTH, BlockFace.SOUTH, BlockFace.EAST,
                 BlockFace.WEST, BlockFace.DOWN}) {
             Block n = cell.getRelative(f);
-            if (MovableBlocks.isEmptyOrPassable(n.getType())) return n;
+            if (isOpen(n)) return n;
         }
         return cell;
+    }
+
+    /** Room for a frame, painting, cushion or dropped item: nothing in the cell collides (air, grass, flowers, a
+     *  torch, water — what vanilla lets a hanging entity share) and it isn't lava, which would burn it. Looser than
+     *  {@link MovableBlocks#isEmptyOrPassable}, which decides where a landing BLOCK may go. */
+    static boolean isOpen(Block b) {
+        return b.getType() != Material.LAVA && b.isPassable();
     }
 
     private static @Nullable BlockFace faceOf(int x, int y, int z) {
