@@ -180,8 +180,10 @@ def parse_ingredient(node, namespace: str | None = None) -> dict | None:
     fullId-keyed items and falls back to rendering the raw text (e.g. chassis's `casing_oak`)."""
     if not isinstance(node, dict):
         return None
-    if "block" in node:
-        value = str(node["block"])
+    if "block" in node or "block_type" in node:
+        # block_type is the tolerant match (any crafted windmill/fan, whatever its blade pattern); it
+        # shows the same as a strict block ref.
+        value = str(node.get("block", node.get("block_type")))
         if namespace and ":" not in value:
             value = f"{namespace}:{value}"
         return {"kind": "block", "value": value}

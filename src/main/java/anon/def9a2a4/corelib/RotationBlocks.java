@@ -1277,7 +1277,9 @@ final class RotationBlocks {
 
     /** Interval ticks accumulated toward the boiler's next water unit, per piston. In-memory —
      *  a restart forgives a partial minute, same tolerance as the sieve's pan counter. */
-    private static final Map<CustomBlockRegistry.LocationKey, Integer> steamWaterTicks = new HashMap<>();
+    private static final Map<CustomBlockRegistry.LocationKey, Double> steamWaterTicks = new HashMap<>();
+    /** Burn-on-load accumulator per steam piston (see {@link EngineBurn}); transient like the engine's. */
+    private static final Map<CustomBlockRegistry.LocationKey, double[]> steamBurnAcc = new HashMap<>();
     /** Churn guard for the boiler's rendered state (applyConfig respawns displays, so only
      *  re-apply on an actual idle↔running transition). In-memory: after a reload the first
      *  piston tick re-applies the right state. */
@@ -1429,11 +1431,13 @@ final class RotationBlocks {
                 var key = CustomBlockRegistry.LocationKey.of(b);
                 network.removeNode(key);
                 steamWaterTicks.remove(key);
+                steamBurnAcc.remove(key);
             })
             .onBlockRemoved((b, state) -> {
                 var key = CustomBlockRegistry.LocationKey.of(b);
                 network.removeNode(key);
                 steamWaterTicks.remove(key);
+                steamBurnAcc.remove(key);
             })
             .build());
     }
@@ -1491,33 +1495,37 @@ final class RotationBlocks {
         Block burner = boiler.getRelative(BlockFace.DOWN);
         boolean stackOk = isType(registry, boiler, BOILER_ID) && isType(registry, burner, BURNER_ID);
 
+        // Burn-on-load, as the engine: a running piston burns its burner's fuel and drinks boiler water
+        // only for the share of its output the network uses, and counts as fuelled while the burner holds
+        // an unburned item. burn-on-load: false gives frac 1 and the old refill-on-empty timing.
+        double frac = running ? network.loadFraction(key, config) * config.engineBurnMultiplier : 0;
         boolean hasFuel = false;
         if (stackOk) {
             var burnerKey = CustomBlockRegistry.LocationKey.of(burner);
-            if (fuelManager.getFuel(burnerKey) <= 0) {
-                Inventory storage = registry.getOrCreateStorage(burner);
-                if (storage != null) {
-                    int fv = consumeOneFuelItem(storage, fuelManager);
-                    if (fv > 0) fuelManager.addFuel(burnerKey, fv);
+            Inventory storage = registry.getOrCreateStorage(burner);
+            int burns = running ? EngineBurn.step(steamBurnAcc.computeIfAbsent(key, k -> new double[1]), frac) : 0;
+            for (int i = 0; i < burns; i++) {
+                if (fuelManager.getFuel(burnerKey) <= 0) {
+                    int fv = storage == null ? 0 : consumeOneFuelItem(storage, fuelManager);
+                    if (fv <= 0) break;
+                    fuelManager.addFuel(burnerKey, fv);
                 }
+                fuelManager.tick(burnerKey);
             }
-            if (running && fuelManager.getFuel(burnerKey) > 0 && fuelManager.tick(burnerKey) <= 0) {
-                Inventory storage = registry.getOrCreateStorage(burner);
-                if (storage != null) {
-                    int fv = consumeOneFuelItem(storage, fuelManager);
-                    if (fv > 0) fuelManager.addFuel(burnerKey, fv);
-                }
+            if (!config.burnOnLoad && fuelManager.getFuel(burnerKey) <= 0 && storage != null) {
+                int fv = consumeOneFuelItem(storage, fuelManager);
+                if (fv > 0) fuelManager.addFuel(burnerKey, fv);
             }
-            hasFuel = fuelManager.getFuel(burnerKey) > 0;
+            hasFuel = fuelManager.getFuel(burnerKey) > 0 || hasFuelItem(storage, fuelManager);
         }
         boolean hasWater = stackOk && anon.def9a2a4.corelib.fluid.FluidTanks.units(boiler) > 0;
         boolean shouldRun = stackOk && hasFuel && hasWater;
 
         if (shouldRun && running) {
-            // Drink one boiler unit per configured interval of running time.
-            int accrued = steamWaterTicks.merge(key, 20, Integer::sum);
+            // Drink one boiler unit per configured interval of loaded running time.
+            double accrued = steamWaterTicks.merge(key, 20 * frac, Double::sum);
             if (accrued >= config.steamWaterIntervalTicks) {
-                steamWaterTicks.remove(key);
+                steamWaterTicks.put(key, accrued - config.steamWaterIntervalTicks);
                 anon.def9a2a4.corelib.fluid.FluidTanks.takeUnit(boiler);
             }
         }
@@ -1535,7 +1543,7 @@ final class RotationBlocks {
         network.addNode(piston, STEAM_PISTON_ID, RotationNetwork.axisFromState(target),
             shouldRun ? RotationNetwork.NodeRole.SOURCE : RotationNetwork.NodeRole.TRANSMITTER,
             shouldRun ? steamPower : 0, false);
-        if (!shouldRun) steamWaterTicks.remove(key);
+        if (!shouldRun) { steamWaterTicks.remove(key); steamBurnAcc.remove(key); }
         if (stackOk) applySteamPartStates(registry, burner, boiler, shouldRun);
     }
 

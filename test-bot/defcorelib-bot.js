@@ -169,6 +169,9 @@ async function testPlaceBreak() {
   await sleep(800)
   let err = await serverAssert('placed')
   if (err) return fail(NAME, err)
+  // Placing in creative doesn't use up the item: clear it, so the only head held afterwards is the drop.
+  bot.chat('/clear @s player_head')
+  await sleep(400)
 
   bot.chat('/gamemode survival')
   await sleep(600)

@@ -1376,14 +1376,16 @@ showcases:
     blocks:
       - { id: "mech:engine", facing: down, at: [0, 0, 0], contents: [LAVA_BUCKET, BUCKET] }
       - { id: "mech:drill",  facing: down, at: [0, 1, 0] }
-      - { id: "mech:engine", facing: down, at: [3, 0, 0], contents: [LAVA_BUCKET] }
-      - { id: "mech:drill",  facing: down, at: [3, 1, 0] }
+      # 6 apart, boxes not touching: the dropped bucket scatters, and at 3 apart it sometimes rolled into
+      # the left engine's box (flaky on 26.x).
+      - { id: "mech:engine", facing: down, at: [6, 0, 0], contents: [LAVA_BUCKET] }
+      - { id: "mech:drill",  facing: down, at: [6, 1, 0] }
     activate: passive
     expect:
       - { type: contents, at: [0, 0, 0], items: ["LAVA_BUCKET x0", "BUCKET x2"] }
-      - { type: entity_count, value: "item:BUCKET=0", at: [-1, -1, -2], to: [1, 2, 2] }
-      - { type: contents, at: [3, 0, 0], items: ["LAVA_BUCKET x0", "BUCKET x0"] }
-      - { type: entity_count, value: "item:BUCKET=1", at: [2, -1, -2], to: [4, 2, 2] }
+      - { type: entity_count, value: "item:BUCKET=0", at: [-2, -1, -2], to: [2, 2, 2] }
+      - { type: contents, at: [6, 0, 0], items: ["LAVA_BUCKET x0", "BUCKET x0"] }
+      - { type: entity_count, value: "item:BUCKET=1", at: [4, -1, -2], to: [8, 2, 2] }
 
   # Breaking a copper-chest machine must not wipe the chest it is paired with. The water wheel IS a waxed
   # copper chest (physical_material). Its placement unpairs it, but a vanilla chest placed beside it later
@@ -1430,10 +1432,10 @@ showcases:
 
   # A persisted mechanism's state file must outlive its disassembly until the world saves: the landed plank is
   # only in memory, the region on disk still holds the parked entities. Deleted at disassembly, a crash here
-  # leaves entities without state, the orphan sweep reaps them, and the plank is gone. Kept, boot 2 recovers
-  # the mechanism (and there is no plank to duplicate it).
+  # leaves entities without state, the orphan sweep reaps them, and the plank is gone. Kept (and marked
+  # "landed"), boot 2 redoes the landing instead of reviving the mechanism: the plank is back, nothing is left.
   - id: test_restart_crash_disassembled_state_kept
-    name: "Test: disassembled mechanism's state file survives a crash"
+    name: "Test: a disassembly a crash undid is redone"
     test_only: true
     restart: crash
     assert_at: 60
@@ -1447,8 +1449,8 @@ showcases:
       - { type: block_type, value: OAK_PLANKS, at: [0, 0, 0] }   # landed…
       - { type: mechanism_state_file, at: [0, 0, 0] }            # …but the file waits for a world save
     after_restart:
-      - { type: mechanism_count, value: "1", at: [-1, -1, -1], to: [1, 1, 1] }
-      - { type: block_type, value: AIR, at: [0, 0, 0] }
+      - { type: mechanism_count, value: "0", at: [-1, -1, -1], to: [1, 1, 1] }
+      - { type: block_type, value: OAK_PLANKS, at: [0, 0, 0] }
 
   # The clean counterpart: disassembled, then a normal stop (which saves the landed plank). Boot 2 must find
   # the plank and nothing else — no recovered ghost mechanism, no leftover display or collider entities.
