@@ -12,11 +12,9 @@ import java.util.logging.Logger;
 final class RotationConfig {
 
     int maxNetworkSize = 256;
-    int maxStructureSize = 256; // cap on a mover's captured structure
     boolean dynamicLights = true; // tag light-emitting mechanism blocks for the optional DynLight plugin
-    // Cap on a glued selection. Deliberately independent of (and larger than) maxStructureSize: a
-    // vehicle-sized anchor — a BlockShips ship, whose own limit is 1000 blocks — needs room to glue
-    // extras across a whole hull, whereas maxStructureSize bounds a door or drawbridge. Safe to raise
+    // Cap on a glued selection. Large because a vehicle-sized anchor — a BlockShips ship, whose own
+    // limit is 1000 blocks — needs room to glue extras across a whole hull. Safe to raise
     // only because GlueManager.connects() probes six neighbours instead of scanning the connector set;
     // with the old linear scan a fill this large would have been quadratic on the main thread.
     static final int DEFAULT_GLUE_MAX_SIZE = 1024;
@@ -233,7 +231,6 @@ final class RotationConfig {
         int loaded = 0;
 
         maxNetworkSize = yaml.getInt("max-network-size", maxNetworkSize);
-        maxStructureSize = yaml.getInt("max-structure-size", maxStructureSize);
         dynamicLights = yaml.getBoolean("dynamic-lights", dynamicLights);
         glueMaxSize = DEFAULT_GLUE_MAX_SIZE; // overridden by glue.max-size below
 
@@ -489,8 +486,8 @@ final class RotationConfig {
         mechMetaValues.put("redstone_motor", src);
         // Windmills supply HALF aboard a mechanism. They are constant sources with no fuel and no wind
         // check, so at full strength a wall of them makes a flying ship free to run forever and the
-        // fuel-burning thruster pointless. Halved (ceil, so tier 1 still supplies 1) they remain
-        // worth carrying without dominating.
+        // fuel-burning thruster pointless. Halved (floored: 1/5/15 → 0/2/7, so a small one supplies
+        // nothing aboard) they remain worth carrying without dominating.
         var windSrc = new MechRotationMeta(MechKind.CONSTANT_SOURCE, false, false, MechAxisRule.FROM_STATE,
             false, 0.5);
         mechMetaValues.put("windmill", windSrc);

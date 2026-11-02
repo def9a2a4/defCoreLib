@@ -1,10 +1,10 @@
-# rsd v0.5.0
+# RedstoneDisplays v0.5.0
 
-The first release since 0.3.2 (0.4.0 was never published). Catalog support and piston and pick-block fixes. The indicators live in DefCoreLib, so these changes come from the core.
+The first release since 0.3.2 (0.4.0 was never published). Catalog support and piston and pick-block fixes. The indicators live in DefCoreLib, so these changes come from the core; this jar alone changes nothing.
 
 ## Update notes
 
-- **Needs DefCoreLib 0.5.0 or newer**, on Paper or Purpur 1.21.11 or newer.
+- **Needs DefCoreLib 0.5.0**, on Paper or Purpur 1.21.11, 26.1.2, 26.2 or 26.3.
 
 ## New features
 
@@ -12,5 +12,5 @@ The first release since 0.3.2 (0.4.0 was never published). Catalog support and p
 
 ## Fixes
 
-- **Pistons no longer strip indicators** — a pushed indicator dropped as a plain player head; it now drops as itself.
+- **Pistons pop indicators instead of stripping them** — a pushed indicator moved as a plain player head; it now drops as itself.
 - **Pick-block** selects an indicator you carry instead of minting one in survival or adventure (creative still gives it).

@@ -1,16 +1,18 @@
-# vslab v0.5.0
+# VerticalSlabs v0.5.0
 
-The first release since 0.3.2 (0.4.0 was never published). Vertical slabs place against any block, and two item-loss fixes.
+The first release since 0.3.2 (0.4.0 was never published). Vertical slabs place against the side of any block, and item-loss fixes. The slabs live in DefCoreLib, so these changes come from the core; this jar alone changes nothing.
 
 ## Update notes
 
-- **Needs DefCoreLib 0.5.0 or newer**, on Paper or Purpur 1.21.11 or newer.
+- **Needs DefCoreLib 0.5.0**, on Paper or Purpur 1.21.11, 26.1.2, 26.2 or 26.3.
 
 ## New features
 
-- **Place against anything** — a vertical slab no longer needs a solid block behind it.
+- **Place against any block's side** — a vertical slab no longer needs a solid block behind it.
+- **Catalog** — the vertical slabs show up, with recipes, in `/defcorelib catalog`.
 
 ## Fixes
 
-- **Placing a vertical slab beside a normal slab no longer destroys it** — next to a bottom slab of the same wood it merged into it and wiped it out. That placement is now refused.
-- **Pistons no longer strip vertical slabs** — a pushed slab dropped as a plain player head; it now drops as itself.
+- **Placing a vertical slab beside a normal slab no longer destroys it** — next to a normal slab of the same kind it merged into it and wiped it out. That placement is now refused.
+- **Pistons pop vertical slabs instead of stripping them** — a pushed slab moved as a plain player head; it now drops as itself.
+- **Pick-block** selects a vertical slab you carry instead of minting one in survival or adventure (creative still gives it).

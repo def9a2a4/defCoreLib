@@ -1331,10 +1331,6 @@ final class RotationBlocks {
             .build());
     }
 
-    /** The boiler is a copper chest disguised by its tank shell (dynamo pattern — the default
-     *  lockContainer seals the chest inventory), holding the stack's water tank in its tile
-     *  entity's PDC. Fillable by pipe (machine-tank endpoint) or water bucket. Its
-     *  idle/running display is driven by the steam piston above. */
     /** Force a chest block back to a SINGLE half (no-op for non-chests / already-single). */
     private static void unpairChest(Block b) {
         if (b.getBlockData() instanceof org.bukkit.block.data.type.Chest chest
@@ -1381,6 +1377,10 @@ final class RotationBlocks {
         }
     }
 
+    /** The boiler is a copper chest disguised by its tank shell (dynamo pattern — the default
+     *  lockContainer seals the chest inventory), holding the stack's water tank in its tile
+     *  entity's PDC. Fillable by pipe (machine-tank endpoint) or water bucket. Its
+     *  idle/running display is driven by the steam piston above. */
     private static void overlayBoiler(CustomBlockRegistry registry, RotationConfig config) {
         CustomHeadBlock block = registry.getType(BOILER_ID);
         if (block == null) { warn(registry, BOILER_ID); return; }

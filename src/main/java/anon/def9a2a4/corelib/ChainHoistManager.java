@@ -698,13 +698,13 @@ final class ChainHoistManager implements Listener {
         }
     }
 
-    /** BlockData for a link: a Y-axis chain, matching what disassembly will land in the column. */
     /** The chain link's blockstate as the docs capture writes it ({@code iron_chain[axis=y]}). */
     static String chainRef() {
         String ref = chainData().getAsString();
         return ref.startsWith("minecraft:") ? ref.substring("minecraft:".length()) : ref;
     }
 
+    /** BlockData for a link: a Y-axis chain, matching what disassembly will land in the column. */
     private static BlockData chainData() {
         BlockData d = CHAIN_MATERIAL.createBlockData();
         if (d instanceof Orientable o) o.setAxis(Axis.Y);

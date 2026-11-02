@@ -1,27 +1,25 @@
-# headsmith v0.5.0
+# HeadSmith v0.5.0
 
 HeadSmith is now a **DefCoreLib companion plugin** — a rebuild, not an update to the standalone 0.1.4. Its heads register, craft, place and break like any other def block and show up in the core item catalog; the version jumps to 0.5.0 to match the suite. New chimney heads.
 
 ## Update notes
 
-- **Needs DefCoreLib 0.5.0 or newer**, on Paper or Purpur 1.21.11 or newer. Without the core the heads don't load.
+- **Needs DefCoreLib 0.5.0**, on Paper or Purpur 1.21.11, 26.1.2, 26.2 or 26.3. Without the core the plugin won't load.
 - **Remove the standalone HeadSmith jar first** — both are named HeadSmith and can't be installed together.
 - **Its `config.yml` is no longer read** — `excluded-tags`, `excluded-heads`, `custom-head-files` and `tag-order` have no effect.
-- **Existing heads are adopted automatically** — placed heads as their chunks load, head items when they land in an inventory. `/headsmith migrate` re-runs the sweep over loaded chunks by hand.
+- **Commands changed** — `/hs`, `/headsmith show`, `search` and `reload` are gone (browse with `/defcorelib catalog`); `give` is now `<id> [amount] [player]` (was `<id> [player] [amount]`, so old command blocks need updating); `headsmith.admin` and `headsmith.catalog` are replaced by `headsmith.give`, `headsmith.recipes`, `headsmith.recipes.others` and `headsmith.migrate`.
+- **Existing heads are adopted automatically** — placed heads as their chunks load, head items when a player picks one up, joins, or opens an inventory holding it. `/headsmith migrate` re-runs the placed-head sweep over loaded chunks by hand.
 - **Placed heads are matched by skin alone** (the old plugin marked nothing else on them), so a head from another plugin with the exact same skin (HeadDatabase, a head shop) is taken over as a HeadSmith head whenever its chunk loads, and then drops as a HeadSmith item without its original name or lore. Head *items* are matched by the old plugin's own marker and are never converted by mistake.
 
 ## New features
 
 - **A big catalog of decorative heads** in families — the alphabet (letters, numbers, greek, cyrillic, runes, galactic, zodiac, arrows and symbols in many materials), mini-blocks, candles, books, barrels, bundles, buckets, pumpkins, chalices, bottles and more — plus a colour axis, so you can browse by shape or by colour in `/defcorelib catalog`.
+- **Barrel heads are containers** — each holds 27 slots (the standalone barrels held nothing).
 - **Crafting** — most heads are carved in the stonecutter from mini-blocks (a mini birch-planks block cuts into birch letters), with some shaped and shapeless recipes.
-- **Chimney heads** in stone, brick, cobblestone, sandstone, nether brick, metal and more. Light one with flint & steel for a rising smoke plume (smoke only, no light); right-click again to snuff it.
+- **Chimney heads** in stone, brick, cobblestone, sandstone, nether brick, metal and more. Light one with flint & steel for a rising smoke plume (smoke only, no light); right-click again to snuff it. Lighting and snuffing ask your protection plugin. **Craft:** stonecutter, from the matching block (e.g. bricks).
+- **Pistons pop heads** — a pushed head breaks and drops as itself (or its usual block drop), like any def block.
 - **Commands:**
   - `/headsmith` or `/headsmith help` — what HeadSmith does, your commands, and the GitHub and Discord links.
-  - `/headsmith give <id> [amount] [player]` — give a head to yourself or another player (op).
+  - `/headsmith give <id> [amount] [player]` — give a head to yourself or another player (needs `headsmith.give`). Only HeadSmith heads; other def items use `/defcorelib give`.
   - `/headsmith recipes <give|take> [player]` — reveal or hide HeadSmith recipes in a recipe book; they stay out of it by default. Anyone may run it for themselves; another player needs `headsmith.recipes.others`.
-  - `/headsmith migrate` — re-run the adoption sweep (op).
-
-## Fixes
-
-- **Pistons no longer strip heads** — a pushed head dropped as a plain player head; it now drops as itself.
-- **Lighting a chimney respects land claims.**
+  - `/headsmith migrate` — re-run the adoption sweep (needs `headsmith.migrate`).

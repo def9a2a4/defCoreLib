@@ -1,32 +1,32 @@
-# pipes v0.5.0
+# Pipes v0.5.0
 
 The first release since 0.3.2 (0.4.0 was never published). Three **filter pipes** that only pass the items you choose, land-claim checks, and pipe fixes.
 
 ## Update notes
 
-- **Needs DefCoreLib 0.5.0 or newer**, on Paper or Purpur 1.21.11 or newer.
-- **`config.yml` is migrated on first start.** Pipe types are now defined by the plugin, so the `variants:` and `cauldron-conversions:` sections are removed (your old file is kept as `config-pre-0.5.0.yml`); without this, an upgraded server's old type list left the new filter pipes dead once placed. Per-type transfer-rate tuning is no longer read. To turn a pipe type off, list it under the new `disabled-pipes:` — it becomes uncraftable and leaves `/pipes give`, while placed ones keep working.
+- **Needs DefCoreLib 0.5.0**, on Paper or Purpur 1.21.11, 26.1.2, 26.2 or 26.3.
+- **`config.yml` is migrated on first start.** Pipe types now come from the plugin itself, so the `variants:`, `cauldron-conversions:` and `conversion-recipes:` sections are removed (your old file is kept as `config-pre-0.5.0.yml`), and per-type transfer rates are no longer read. To turn a pipe type off, list it under the new `disabled-pipes:` — after a restart it is uncraftable and leaves `/pipes give`, while placed ones keep working.
+- **`/pipes recipes` and the `pipes.recipes` permission are gone** — pipe recipes are discovered automatically, and the oxidized-pipe water-bucket recipes are built in.
 - **Permissions:** `/pipes` itself no longer requires `pipes.admin`; each subcommand checks its own (`pipes.give`, `pipes.info`, `pipes.reload`, `pipes.migrate`, `pipes.delete_all`; `pipes.admin` still grants them all). Someone granted only `pipes.give` can now use `/pipes give`, including to other players.
 
 ## New features
 
 - **Filter pipes** — **Copper**, **Iron** and **Gold Filter Pipe** pass only the items you choose. Put one at a container to pull only matching items, or mid-line to block the rest; two in series must both allow an item. Several on one chest, each feeding a different destination, sort items with no extra machinery.
   - **Copper:** 5 slots, whitelist, match by type. **Iron:** 9 slots, whitelist/blacklist toggle. **Gold:** 18 slots, plus exact matching (names, enchants, components).
-  - Right-click to open the filter and drop items into the slots; they're consumed into the pipe and drop back when it's broken. One player at a time can have a filter open.
+  - Right-click to open the filter. Click an item into a slot to add a copy of it to the filter — your item isn't used up — and click a slot with an empty hand to clear it. Nothing is stored in the pipe, so breaking or moving it never drops or loses anything, and several players can edit one filter.
   - Redstone next to the pipe switches it **off**, stopping its whole line; the ring around the pipe goes dark to show it.
-  - Throughput matches the plain pipe of the same metal (4 / 8 / 16 items per transfer).
-  - **Craft:** the metal's plain-pipe pattern with a hopper in the centre → 2 filter pipes.
+  - Throughput matches the plain pipe of the same metal (4 / 8 / 16 items per transfer). Filter pipes carry items only, not fluids.
+  - **Craft:** the metal's plain-pipe pattern with a hopper in place of the redstone → 2 filter pipes.
   - An unconfigured filter (empty whitelist) blocks **everything**, so a fresh filter dropped into a working line stops it until set up. A machine pushing straight down into a filter backs up instead of leaking past it — to gate a machine's output, send it into a chest and filter from there. Filtering isn't applied yet while a filter pipe rides a moving mechanism.
+- **Machines can feed machines through a pipe** — output dropped into a pipe reaches a mech machine at the end of the line, not just a chest.
 - **`/pipes` and `/pipes help`** show what Pipes does, the commands you may use, and the GitHub and Discord links.
 - **`/pipes give <item|ALL> [amount] [player]`** gives to another player and works from the console; with `ALL` the amount applies to each pipe type.
-- **Pipes respect land claims** — a pipe can't be placed against a container you aren't allowed to open.
+- **Pipes respect land claims** — a pipe can't be placed against a container you aren't allowed to open, so a claimed chest can't be drained or stuffed from outside.
 
 ## Fixes
 
 - **Pipes in a cauldron with a hopper underneath** — converting copper pipes to oxidized converted items the hopper had already pulled out a second time.
-- **Crafting an oxidized pipe or corner with a water bucket** now returns the empty bucket and makes one at a time, instead of not consuming the bucket.
-- **Filter slots hold one item each** — extras are handed back when you close the menu (or dropped at your feet if your inventory is full).
-- **Filter edits are saved** when the pipe is broken or moved while its menu is open, or the server stops.
+- **A dead-end pipe stops spilling as soon as you put a container at its end** — it kept dropping items until a stale timer ran out.
 - **No water in the Nether** — a fluid pipe no longer pours water where water evaporates.
 - **No shulker boxes inside shulker boxes.**
 - A server error when the pipe set changed while the network was ticking.

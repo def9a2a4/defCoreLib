@@ -1681,7 +1681,10 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         if (transition != null) {
             event.setCancelled(true);
             // Lighting / toggling a head changes the block: ask the claim plugins' build rule first.
-            if (!BuildProbe.mayBuild(event.getPlayer(), block, new ItemStack(block.getType()))) return;
+            // Probe with the block's own item, not the held one (a held slab would read as a slab placement);
+            // a wall head has no item form.
+            Material probe = block.getType().isItem() ? block.getType() : Material.PLAYER_HEAD;
+            if (!BuildProbe.mayBuild(event.getPlayer(), block, new ItemStack(probe))) return;
 
             // Consume held item if transition requires it
             if (transition.consumeItem()) {

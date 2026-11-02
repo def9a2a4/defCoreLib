@@ -13,7 +13,7 @@
 #
 # Reserved top-level keys:
 #   default: <n>        fallback mass for any material not listed (built-in default 1.0)
-#   custom-blocks:      section mapping custom-block type ids -> mass (Phase 6 hook; empty for now)
+#   custom-blocks:      section mapping custom-block type ids -> mass (see the section at the end)
 
 default: 1.0
 

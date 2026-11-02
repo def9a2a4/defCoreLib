@@ -1,8 +1,4 @@
 max-network-size: 256
-# Max blocks a mechanism structure (door / drawbridge / minecart) can grab.
-# Hitting the cap logs a warning + shows smoke at the anchor (no longer silent).
-max-structure-size: 256
-
 # Emit dynamic light from light-emitting blocks carried by a moving mechanism (torch, glowstone,
 # sea lantern, …), using each block's vanilla light level, via the optional DynLight plugin
 # (https://github.com/def9a2a4/dynlight). Purely a scoreboard-tag integration — no dependency;
@@ -11,9 +7,9 @@ dynamic-lights: true
 
 # "Glue": author-controlled block selection for doors/rotators (replaces same-material flood-fill).
 glue:
-  # Cap on a glued selection. Independent of max-structure-size and deliberately much larger: a
-  # vehicle-sized anchor (a BlockShips ship, own limit 1000 blocks) needs to glue extras across a
-  # whole hull, while max-structure-size bounds a door or drawbridge.
+  # Cap on a glued selection — and so on what a door, drawbridge or other mover can carry. Large
+  # because a vehicle-sized anchor (a BlockShips ship, own limit 1000 blocks) needs to glue extras
+  # across a whole hull.
   max-size: 1024
   # The glue item itself is declared in corelib-items.yml (corelib:glue_item, SLIME_BALL).
   outline-interval: 5     # ticks between particle-outline refreshes during authoring
@@ -186,7 +182,7 @@ power:
 #                     blows upward off the floor). Affects the reported actuation direction only.
 #   mech_power_scale: multiplier on this block's SUPPLY while riding, and only supply — the same
 #                     `power:` value also feeds demand, so scaling the raw number would quietly make
-#                     consumers cheaper aboard too. Rounded UP, so a tier-1 source never falls to 0.
+#                     consumers cheaper aboard too. Rounded DOWN, so a windmill (1/5/15) supplies 0/2/7 aboard.
 # Notes: world redstone can't reach a block riding a mechanism, so the reverser/clutch pass
 # through unlocked, and the (inverted) redstone motor runs as a constant source. The water
 # wheel can't check for water while moving, so it only transmits.

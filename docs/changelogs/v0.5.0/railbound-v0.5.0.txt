@@ -1,28 +1,28 @@
-# railbound v0.5.0
+# Railbound v0.5.0
 
-The first release since 0.3.2 (0.4.0 was never published). Land-claim checks for carts, and fixes for trains, custom rails and cart contents. The carts and rails live in DefCoreLib, so these changes come from the core.
+The first release since 0.3.2 (0.4.0 was never published). Land-claim checks for carts, and fixes for trains, custom rails and cart contents. The carts and rails live in DefCoreLib, so these changes come from the core; this jar alone changes nothing.
 
 ## Update notes
 
-- **Needs DefCoreLib 0.5.0 or newer**, on Paper or Purpur 1.21.11 or newer.
-- **Trains stop outside simulation distance**, as vanilla carts do. An unridden train used to keep driving and load chunks ahead of itself; it now pauses when its front cart leaves the active area and resumes where it stopped.
+- **Needs DefCoreLib 0.5.0**, on Paper or Purpur 1.21.11, 26.1.2, 26.2 or 26.3.
+- **Trains stop outside simulation distance**, as vanilla carts do. An unridden train used to keep driving and load chunks ahead of itself; it now pauses when its front cart leaves the active area and resumes when it comes back.
 
 ## New features
 
-- **Land claims are respected** — placing a custom cart, assembling a mechanism cart, coupling and uncoupling, and opening a cart's inventory all ask your protection plugin.
+- **Land claims are respected** — placing a custom cart, coupling and uncoupling, and opening a cart's inventory all ask your protection plugin.
 - **Catalog** — the carts and rails show up, with recipes, in `/defcorelib catalog`.
-- **Pick-block** selects a custom cart or rail you carry instead of minting one in survival or adventure (creative still gives it).
 
 ## Fixes
 
-- **Breaking a cart inside a claim** where the break was refused still removed the cart and dropped its item and contents.
+- **Pick-block no longer creates a custom cart or rail** in survival or adventure — it selects one you carry (creative still gives it).
+- **Breaking a cart inside a claim** where the break was refused still removed the cart and dropped its item and contents. If the break is refused, its chains stay too.
 - **The dispenser cart can't drain sealed machines** — under a Redstone Dynamo it pulled out the dynamo's internal redstone, an endless supply. It now skips sealed containers and respects chest-lock plugins.
-- **Cart contents are saved at every world save** — a crash could duplicate or lose items moved since the cart was last closed or unloaded.
-- **Logging out on a cart** no longer duplicates its contents or brings the cart back broken.
-- **Trains no longer stall the server** — once a coupled cart was gone (rider logged out, `/kill`, the void), every train restarted each tick and the broken one froze.
+- **Cart contents are saved at every world save** — a crash could duplicate or lose items moved since the cart was last closed or unloaded. This applies to every custom cart.
+- **Logging out on a cart, or the server stopping while you ride one,** no longer duplicates its contents or brings the cart back broken — you're stepped off and rejoin standing beside it.
+- **Trains no longer stall the server or each other** — once a coupled cart was gone (a rider logged out, `/kill`, the void), every train restarted each tick and the broken one froze. A train stopped at a controller rail now departs when it's powered again, even after its chunk or another train's has loaded or unloaded.
 - **Custom rails drop as themselves when their support goes**, and placing a plain rail back no longer revives the custom one.
-- **Hopper minecarts survive the destructor rail** instead of coming back as plain minecarts.
+- **Hopper, chest and other special minecarts** sent over a destructor rail drop as their own item instead of a plain minecart.
 - **A cart parked on a powered activator rail** no longer fires again every time its chunk loads.
-- **Coal tenders don't waste fuel** — an item is only taken when the engine has room.
+- **Coal tenders don't waste fuel** — an engine fed a coal block threw away the burn above its cap; it now gets the whole burn, and smaller fuel is used first.
 - **Server hang under pulse storms** — a re-pulsed junction, controller or destructor rail is handled once per tick.
-- A cart's light no longer lingers after it unloads.
+- A lit blast cart's dynamic light no longer lingers after it unloads.

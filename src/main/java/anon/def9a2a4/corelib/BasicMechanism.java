@@ -768,8 +768,6 @@ final class BasicMechanism implements Mechanism {
     void setBlockFree(boolean blockFree) { this.blockFree = blockFree; }
     boolean isBlockFree() { return blockFree; }
 
-    /** Build a serializable snapshot of this mechanism for persistence/recovery. Main thread only
-     *  (reads live entity/block state). Display/particle configs are re-derived on recovery. */
     /** The entities this mechanism is built from (frame, displays, banners, colliders), by UUID. */
     Set<UUID> boundEntityIds() {
         Set<UUID> ids = new HashSet<>();
@@ -806,6 +804,8 @@ final class BasicMechanism implements Mechanism {
         }
     }
 
+    /** Build a serializable snapshot of this mechanism for persistence/recovery. Main thread only
+     *  (reads live entity/block state). Display/particle configs are re-derived on recovery. */
     MechanismState snapshotState() {
         MechanismState st = new MechanismState();
         st.mechId = id;

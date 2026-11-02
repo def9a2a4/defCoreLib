@@ -120,7 +120,7 @@ final class MechanismRotationDriver {
         final Map<Integer, Boolean> engineRunning = new HashMap<>();  // blockIndex → supplying?
         final Map<Integer, DrillTrack> drills = new HashMap<>();      // blockIndex → break progress
         // Burn-on-load (see tickEngines): demand a consumer plugin reports per block (DEMAND-mode
-        // consumers, and thrusters — 1 when unset), the tickAge a WORK-mode machine last processed at,
+        // consumers, and thrusters — 0 when unset), the tickAge a WORK-mode machine last processed at,
         // and each engine's fractional burn carried between engine ticks. None of it is solver input,
         // so none of it dirties the solve.
         final Map<Integer, Double> demand = new HashMap<>();
