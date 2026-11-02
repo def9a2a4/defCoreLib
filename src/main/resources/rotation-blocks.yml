@@ -3908,6 +3908,7 @@ blocks:
       - "&fMounted on the floor or ceiling it fires downward and lifts a ship; on a wall it drives"
       - "&fthe ship along or turns it, depending which way it faces."
       - "&7It produces no rotational power — it only pushes."
+      - "&7It burns only while a moving ship uses it; placed on its own it burns nothing."
       - "&7Craft from a Fan, four iron ingots, two blaze rods and a blast furnace."
     recipes:
       craft:
