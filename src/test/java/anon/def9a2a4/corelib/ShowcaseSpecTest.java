@@ -1,0 +1,78 @@
+package anon.def9a2a4.corelib;
+
+import org.junit.jupiter.api.Test;
+
+import java.io.InputStream;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.logging.Handler;
+import java.util.logging.LogRecord;
+import java.util.logging.Logger;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+/**
+ * The shipped {@code showcases.yml} parses cleanly, and every scenario only uses assertion/action kinds
+ * {@link ShowcaseRunner} knows. A typo here otherwise surfaces only as an in-game {@code [FAIL]} (or a
+ * silently skipped entry) on the CI server matrix.
+ */
+class ShowcaseSpecTest {
+
+    // Keep in step with ShowcaseRunner.check / runAction.
+    private static final Set<String> EXPECT_TYPES = Set.of("spinning", "network_powered", "state",
+            "mechanism_swung", "hoist_moved", "piston_stroked", "block_type", "persisted_mechanism_intact");
+    private static final Set<String> ACTION_KINDS = Set.of("set", "corrupt_persisted_mechanism");
+    private static final long DEFAULT_ASSERT_AT = 80;
+
+    private static Map<String, ShowcaseSpec> load(List<String> warnings) throws Exception {
+        Logger log = Logger.getAnonymousLogger();
+        log.setUseParentHandlers(false);
+        log.addHandler(new Handler() {
+            @Override public void publish(LogRecord r) { warnings.add(r.getMessage()); }
+            @Override public void flush() { }
+            @Override public void close() { }
+        });
+        try (InputStream in = ShowcaseSpec.class.getClassLoader().getResourceAsStream("showcases.yml")) {
+            assertNotNull(in, "showcases.yml on the classpath");
+            return ShowcaseSpec.load(in, log);
+        }
+    }
+
+    @Test
+    void everyEntryParsesWithKnownKinds() throws Exception {
+        List<String> warnings = new java.util.ArrayList<>();
+        Map<String, ShowcaseSpec> specs = load(warnings);
+        assertEquals(List.of(), warnings, "showcases.yml parse warnings (a skipped entry)");
+        assertFalse(specs.isEmpty());
+        for (ShowcaseSpec s : specs.values()) {
+            long assertAt = s.assertAt > 0 ? s.assertAt : DEFAULT_ASSERT_AT;
+            for (ShowcaseSpec.Expect e : s.expect) {
+                assertTrue(EXPECT_TYPES.contains(e.type()), s.id + ": unknown expect type " + e.type());
+            }
+            for (ShowcaseSpec.Action a : s.actions) {
+                assertTrue(ACTION_KINDS.contains(a.kind()), s.id + ": unknown action " + a.kind());
+                assertTrue(a.tick() < assertAt, s.id + ": action at " + a.tick() + " is not before " + assertAt);
+            }
+            // A demo must not lean on test-only machinery the docs world never runs.
+            if (!s.testOnly) assertTrue(s.actions.isEmpty(), s.id + ": actions on a public showcase");
+        }
+    }
+
+    @Test
+    void regressionScenariosAreTestOnly() throws Exception {
+        Map<String, ShowcaseSpec> specs = load(new java.util.ArrayList<>());
+        for (String id : List.of("test_ceiling_mounts", "test_hoist_reel_in",
+                "test_hoist_rising_ghost_no_dupe", "test_corrupt_state_file_kept")) {
+            ShowcaseSpec s = specs.get(id);
+            assertNotNull(s, id);
+            assertTrue(s.testOnly, id + " must be test_only (kept out of the docs)");
+            assertFalse(s.expect.isEmpty(), id + " asserts nothing");
+        }
+        ShowcaseSpec dupe = specs.get("test_hoist_rising_ghost_no_dupe");
+        assertEquals(110, dupe.assertAt);
+        assertEquals(2, dupe.actions.size());
+        assertNotNull(dupe.actions.get(0).to());
+        assertNotNull(dupe.actions.get(0).only());
+    }
+}

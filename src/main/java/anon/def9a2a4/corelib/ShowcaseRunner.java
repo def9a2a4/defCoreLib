@@ -27,6 +27,11 @@ import java.util.logging.Logger;
  *   <li><b>captures</b> ({@code -Ddefcorelib.showcaseCapture=<path>}) — reads the running displays + bakes
  *   animations into {@code showcase-spec.json} for the docs.</li></ul>
  * Builds at fresh, far coords (untouched chunks ⇒ deterministic). Inert when neither property is set.
+ *
+ * <p>A spec may also carry {@code test_only: true} (a regression scenario, not a demo: skipped entirely
+ * when only capturing, and never written into the capture), scripted {@code actions} run at a given tick,
+ * and an {@code assert_at} tick for scenarios that need longer than {@link #FINISH_AT}. The run halts at
+ * the latest assertion tick; capture still reads the machines at {@link #FINISH_AT}.
  */
 final class ShowcaseRunner implements Listener {
 
@@ -35,7 +40,7 @@ final class ShowcaseRunner implements Listener {
     private static final int SPACING = 16;      // machines spaced along z
 
     private static final long ACTIVATE_AT = 20; // ticks after build
-    private static final long FINISH_AT = 80;
+    private static final long FINISH_AT = 80;   // default assertion tick, and the capture tick
 
     private final CoreLibPlugin plugin;
     private final CustomBlockRegistry registry;
@@ -48,14 +53,24 @@ final class ShowcaseRunner implements Listener {
     private final RotationRotator rotator;   // for the `mechanism_swung` assertion
     private final ChainHoistManager hoists;  // for `hoist_moved`
     private final ExtendablePistonManager pistons; // for `piston_stroked`
+    private final MechanismRegistry mechRegistry;  // for the corrupt-state probe
     private final Map<ShowcaseSpec, Location> origins = new LinkedHashMap<>();
+    // Each spec's verdicts, recorded at its own assert tick and printed together (in spec order) at the end.
+    private final Map<ShowcaseSpec, List<String>> results = new LinkedHashMap<>();
+    private int pass, fail;
+    // `corrupt_persisted_mechanism` probes, keyed by "<spec id>@<world cell>" — read by `persisted_mechanism_intact`.
+    private final Map<String, Probe> probes = new LinkedHashMap<>();
     private boolean done;
+
+    /** What a corrupt-state probe parked: the mechanism, how many tagged entities it had once parked,
+     *  and the state file it corrupted. */
+    private record Probe(java.util.UUID id, String world, org.bukkit.Chunk chunk, int entities, java.io.File file) {}
 
     private ShowcaseRunner(CoreLibPlugin plugin, CustomBlockRegistry registry, RotationNetwork network,
                            EngineFuelManager fuelManager, ShowcaseBuilder builder,
                            java.util.Collection<ShowcaseSpec> showcases, boolean testMode, Path capturePath,
                            RotationRotator rotator, ChainHoistManager hoists,
-                           ExtendablePistonManager pistons) {
+                           ExtendablePistonManager pistons, MechanismRegistry mechRegistry) {
         this.plugin = plugin;
         this.registry = registry;
         this.network = network;
@@ -67,18 +82,20 @@ final class ShowcaseRunner implements Listener {
         this.rotator = rotator;
         this.hoists = hoists;
         this.pistons = pistons;
+        this.mechRegistry = mechRegistry;
     }
 
     static boolean armIfRequested(CoreLibPlugin plugin, CustomBlockRegistry registry, RotationNetwork network,
                                   EngineFuelManager fuelManager, ShowcaseBuilder builder,
                                   java.util.Collection<ShowcaseSpec> showcases, RotationRotator rotator,
-                                  ChainHoistManager hoists, ExtendablePistonManager pistons) {
+                                  ChainHoistManager hoists, ExtendablePistonManager pistons,
+                                  MechanismRegistry mechRegistry) {
         boolean test = Boolean.getBoolean("defcorelib.showcaseTest");
         String capture = System.getProperty("defcorelib.showcaseCapture");
         if (!test && (capture == null || capture.isBlank())) return false;
         Path capturePath = (capture == null || capture.isBlank()) ? null : Path.of(capture);
         ShowcaseRunner runner = new ShowcaseRunner(plugin, registry, network, fuelManager, builder,
-                showcases, test, capturePath, rotator, hoists, pistons);
+                showcases, test, capturePath, rotator, hoists, pistons, mechRegistry);
         Bukkit.getPluginManager().registerEvents(runner, plugin);
         plugin.getLogger().info("ShowcaseRunner armed (" + (test ? "test " : "") + (capturePath != null
                 ? "capture→" + capturePath : "") + ") — " + showcases.size() + " showcases.");
@@ -93,6 +110,7 @@ final class ShowcaseRunner implements Listener {
         World world = Bukkit.getWorlds().get(0);
         int i = 0;
         for (ShowcaseSpec spec : showcases) {
+            if (spec.testOnly && !testMode) continue;   // capture-only run: regression scenarios aren't demos
             // Place the origin so the machine's lowest cell sits at FLOOR_Y (blocks extend up from there).
             int originY = FLOOR_Y - lowestOffsetY(spec);
             Location origin = new Location(world, TEST_X, originY, i * SPACING);
@@ -109,7 +127,26 @@ final class ShowcaseRunner implements Listener {
             i++;
         }
         Bukkit.getScheduler().runTaskLater(plugin, this::activateAll, ACTIVATE_AT);
-        Bukkit.getScheduler().runTaskLater(plugin, this::finish, FINISH_AT);
+        long finishAt = FINISH_AT;
+        if (capturePath != null) Bukkit.getScheduler().runTaskLater(plugin, this::capture, FINISH_AT);
+        for (Map.Entry<ShowcaseSpec, Location> e : origins.entrySet()) {
+            ShowcaseSpec spec = e.getKey();
+            Location origin = e.getValue();
+            if (!testMode) continue;   // actions and assertions are test-only; capture reads the plain build
+            long assertAt = spec.assertAt > 0 ? spec.assertAt : FINISH_AT;
+            for (ShowcaseSpec.Action a : spec.actions) {
+                if (a.tick() >= assertAt) {
+                    plugin.getLogger().warning("[showcase] " + spec.id + ": action '" + a.kind() + "' at tick "
+                            + a.tick() + " is not before its assertion tick " + assertAt + " — skipped");
+                    continue;
+                }
+                Bukkit.getScheduler().runTaskLater(plugin, () -> runAction(spec, origin, a), a.tick());
+            }
+            Bukkit.getScheduler().runTaskLater(plugin, () -> assertSpec(spec, origin), assertAt);
+            finishAt = Math.max(finishAt, assertAt);
+        }
+        // +1: every assertion task scheduled for the same tick has run before the report + halt.
+        Bukkit.getScheduler().runTaskLater(plugin, this::finish, finishAt + 1);
     }
 
     private void activateAll() {
@@ -119,8 +156,8 @@ final class ShowcaseRunner implements Listener {
     }
 
     private void finish() {
-        if (capturePath != null) capture();
-        int fail = testMode ? assertAll() : 0;
+        int fail = testMode ? report() : 0;
+        cleanupProbes();
         System.out.flush();
         System.err.flush();
         Runtime.getRuntime().halt(fail == 0 ? 0 : 1);
@@ -128,22 +165,41 @@ final class ShowcaseRunner implements Listener {
 
     // ── Test ─────────────────────────────────────────────────────────────────
 
-    private int assertAll() {
-        Logger log = plugin.getLogger();
-        int pass = 0, fail = 0;
-        log.info("──────── showcase tests ────────");
-        for (Map.Entry<ShowcaseSpec, Location> e : origins.entrySet()) {
-            for (ShowcaseSpec.Expect ex : e.getKey().expect) {
-                boolean ok = check(ex, blockAt(e.getValue(), ex.at()));
-                log.info("  [" + (ok ? "PASS" : "FAIL") + "] " + e.getKey().id + " " + describe(ex));
-                if (ok) pass++; else fail++;
+    /** Evaluate one spec's expects now (its assert tick); the verdicts are printed by {@link #report}. */
+    private void assertSpec(ShowcaseSpec spec, Location origin) {
+        List<String> lines = results.computeIfAbsent(spec, k -> new ArrayList<>());
+        for (ShowcaseSpec.Expect ex : spec.expect) {
+            boolean ok;
+            try {
+                ok = check(spec, origin, ex, blockAt(origin, ex.at()));
+            } catch (RuntimeException t) {
+                plugin.getLogger().warning("[showcase] " + spec.id + " " + describe(ex) + " threw: " + t);
+                ok = false;
             }
+            lines.add("  [" + (ok ? "PASS" : "FAIL") + "] " + spec.id + " " + describe(ex));
+            if (ok) pass++; else fail++;
+        }
+    }
+
+    private int report() {
+        Logger log = plugin.getLogger();
+        log.info("──────── showcase tests ────────");
+        for (ShowcaseSpec spec : origins.keySet()) {
+            List<String> lines = results.get(spec);
+            if (lines == null) {   // its assertion task never ran — count every expect as a failure
+                for (ShowcaseSpec.Expect ex : spec.expect) {
+                    log.info("  [FAIL] " + spec.id + " " + describe(ex) + " (never evaluated)");
+                    fail++;
+                }
+                continue;
+            }
+            lines.forEach(log::info);
         }
         log.info("──────── " + pass + " passed, " + fail + " failed ────────");
         return fail;
     }
 
-    private boolean check(ShowcaseSpec.Expect ex, Block block) {
+    private boolean check(ShowcaseSpec spec, Location origin, ShowcaseSpec.Expect ex, Block block) {
         switch (ex.type()) {
             case "spinning" -> {
                 String s = registry.getState(block);
@@ -167,11 +223,130 @@ final class ShowcaseRunner implements Listener {
             case "piston_stroked" -> {
                 return pistons != null && pistons.strokeCount(block) > 0;
             }
+            // Material of a cell — or, with `to`, of EVERY cell in the inclusive box. A leading '!' negates
+            // (`!IRON_CHAIN` over a column = "no chain anywhere in it").
+            case "block_type" -> {
+                String v = ex.value();
+                if (v == null) return false;
+                boolean negate = v.startsWith("!");
+                org.bukkit.Material m = org.bukkit.Material.matchMaterial(negate ? v.substring(1) : v);
+                if (m == null) {
+                    plugin.getLogger().warning("[showcase] " + spec.id + ": unknown material in block_type: " + v);
+                    return false;
+                }
+                for (Block b : cells(origin, ex.at(), ex.to())) {
+                    if ((b.getType() == m) == negate) return false;
+                }
+                return true;
+            }
+            case "persisted_mechanism_intact" -> {
+                Probe p = probes.get(probeKey(spec, block));
+                return p != null && p.entities() > 0 && p.file().exists()
+                        && mechRegistry.hasPersistedState(origin.getWorld(), p.id())
+                        && countTagged(p.chunk(), p.id()) == p.entities();
+            }
             default -> {
                 plugin.getLogger().warning("[showcase] unknown expect type: " + ex.type());
                 return false;
             }
         }
+    }
+
+    // ── Scripted actions ─────────────────────────────────────────────────────
+
+    private void runAction(ShowcaseSpec spec, Location origin, ShowcaseSpec.Action a) {
+        try {
+            switch (a.kind()) {
+                case "set" -> {
+                    for (Block b : cells(origin, a.at(), a.to())) {
+                        if (a.only() != null && b.getType() != a.only()) continue;
+                        b.setType(a.block(), a.physics());
+                    }
+                }
+                case "corrupt_persisted_mechanism" -> corruptPersistedMechanism(spec, blockAt(origin, a.at()));
+                default -> plugin.getLogger().warning("[showcase] " + spec.id + ": unknown action: " + a.kind());
+            }
+        } catch (RuntimeException t) {
+            plugin.getLogger().warning("[showcase] " + spec.id + ": action '" + a.kind() + "' failed: " + t);
+        }
+    }
+
+    /**
+     * Regression probe for 8d75a15 (a corrupt mechanism state file must never be culled). Lifts
+     * {@code block} into a persisted mechanism, parks it exactly as a chunk unload does (state saved, dropped
+     * from the live set, its persistent entities left in place), overwrites the state file with garbage, then
+     * runs the chunk-load recovery pass over it — the same {@code recoverMechanismsInChunk} an
+     * {@code EntitiesLoadEvent} drives. The bug deleted the file there and the same pass's orphan sweep reaped
+     * every entity; {@code persisted_mechanism_intact} checks both survived. The chunk is never really
+     * unloaded (the harness force-loads it): what is under test is the recovery pass, not Paper's entity I/O.
+     */
+    private void corruptPersistedMechanism(ShowcaseSpec spec, Block block) {
+        if (mechRegistry == null || block.getType().isAir()) {
+            plugin.getLogger().warning("[showcase] " + spec.id + ": nothing to persist at " + block);
+            return;
+        }
+        Mechanism mech = mechRegistry.assembleMechanism("corelib:showcase_probe", List.of(block),
+                block.getLocation().add(0.5, 0.5, 0.5), null);
+        mechRegistry.persist(mech);
+        org.bukkit.entity.Entity vehicle = mech.vehicle();
+        org.bukkit.Chunk chunk = (vehicle != null ? vehicle.getLocation() : mech.pivot()).getChunk();
+        mechRegistry.onEntitiesUnload(chunk);   // park: save + drop from the live set, entities stay
+        int entities = countTagged(chunk, mech.id());
+        String world = chunk.getWorld().getName();
+        java.io.File file = mechRegistry.persistedStateFile(world, mech.id());
+        try {
+            Files.writeString(file.toPath(), "foo: bar\n", StandardCharsets.UTF_8);   // parses, but is no state
+        } catch (java.io.IOException e) {
+            plugin.getLogger().warning("[showcase] " + spec.id + ": could not corrupt " + file + ": " + e);
+            return;
+        }
+        plugin.getLogger().info("[showcase] " + spec.id + ": corrupted " + file.getName()
+                + " — the 'corrupt or unreadable state file' warning that follows is expected");
+        mechRegistry.recoverMechanismsInChunk(chunk);
+        probes.put(probeKey(spec, block), new Probe(mech.id(), world, chunk, entities, file));
+    }
+
+    /** Remove what the probes left: the parked entities and the corrupt file (and its in-memory shield). */
+    private void cleanupProbes() {
+        for (Probe p : probes.values()) {
+            try {
+                for (org.bukkit.entity.Entity e : p.chunk().getEntities()) {
+                    if (isTagged(e, p.id())) e.remove();
+                }
+                mechRegistry.forgetPersistedState(p.world(), p.id());
+            } catch (RuntimeException t) {
+                plugin.getLogger().warning("[showcase] probe cleanup failed for " + p.id() + ": " + t);
+            }
+        }
+    }
+
+    private static int countTagged(org.bukkit.Chunk chunk, java.util.UUID id) {
+        int n = 0;
+        for (org.bukkit.entity.Entity e : chunk.getEntities()) if (isTagged(e, id)) n++;
+        return n;
+    }
+
+    private static boolean isTagged(org.bukkit.entity.Entity e, java.util.UUID id) {
+        String prefix = "corelib:mech:" + id;
+        for (String tag : e.getScoreboardTags()) {
+            if (tag.equals(prefix) || tag.startsWith(prefix + ":")) return true;
+        }
+        return false;
+    }
+
+    private static String probeKey(ShowcaseSpec spec, Block block) {
+        return spec.id + "@" + block.getX() + "," + block.getY() + "," + block.getZ();
+    }
+
+    /** Every cell of the inclusive box {@code at}..{@code to} (just {@code at} when {@code to} is null). */
+    private static List<Block> cells(Location origin, int[] at, int[] to) {
+        if (to == null) return List.of(blockAt(origin, at));
+        List<Block> out = new ArrayList<>();
+        for (int x = Math.min(at[0], to[0]); x <= Math.max(at[0], to[0]); x++)
+            for (int y = Math.min(at[1], to[1]); y <= Math.max(at[1], to[1]); y++)
+                for (int z = Math.min(at[2], to[2]); z <= Math.max(at[2], to[2]); z++)
+                    out.add(blockAt(origin, new int[]{x, y, z}));
+        return out;
     }
 
     // ── Capture ────────────────────────────────────────────────────────────
@@ -181,6 +356,7 @@ final class ShowcaseRunner implements Listener {
         List<Map<String, Object>> out = new ArrayList<>();
         for (Map.Entry<ShowcaseSpec, Location> e : origins.entrySet()) {
             ShowcaseSpec spec = e.getKey();
+            if (spec.testOnly) continue;   // regression scenario — never published to the docs
             Location origin = e.getValue();
             List<Map<String, Object>> blocks = new ArrayList<>();
             for (ShowcaseSpec.BlockSpec bs : spec.blocks) {
@@ -346,6 +522,7 @@ final class ShowcaseRunner implements Listener {
 
     private static String describe(ShowcaseSpec.Expect ex) {
         String at = "[" + ex.at()[0] + "," + ex.at()[1] + "," + ex.at()[2] + "]";
+        if (ex.to() != null) at += ".." + "[" + ex.to()[0] + "," + ex.to()[1] + "," + ex.to()[2] + "]";
         return ex.type() + (ex.value() != null ? "=" + ex.value() : "") + " @ " + at;
     }
 

@@ -56,8 +56,17 @@ final class ShowcaseSpec {
     record BannerSpec(Material item, String mode, int[] host, @Nullable BlockFace face, int step,
                        float scale, List<PatternSpec> patterns) {}
 
-    /** A behavioural assertion (phase 2). {@code at} = offset from the build origin. */
-    record Expect(String type, int[] at, @Nullable String value) {}
+    /** A behavioural assertion (phase 2). {@code at} = offset from the build origin; {@code to} is an
+     *  optional opposite corner (inclusive box) for types that check a region ({@code block_type}). */
+    record Expect(String type, int[] at, @Nullable String value, int @Nullable [] to) {}
+
+    /** A scripted mid-test step, run {@code tick} ticks after the build (test harness only — the docs
+     *  keep-alive world ignores it). {@code kind}: {@code set} writes {@code block} into every cell of
+     *  {@code at}..{@code to} (or just {@code at}), optionally only where the cell is currently
+     *  {@code only}, with block updates iff {@code physics}; {@code corrupt_persisted_mechanism} is a
+     *  Java-side probe (see {@code ShowcaseRunner}). */
+    record Action(long tick, String kind, int[] at, int @Nullable [] to, @Nullable Material block,
+                  @Nullable Material only, boolean physics) {}
 
     final String id;
     final String name;
@@ -69,10 +78,18 @@ final class ShowcaseSpec {
     final List<BannerSpec> banners;
     final Activate activate;
     final List<Expect> expect;
+    /** Regression scenario, not a demo: built and asserted only by the test harness; never captured into
+     *  the docs ({@code showcases.json}) nor placed in the keep-alive docs world. */
+    final boolean testOnly;
+    /** Scripted mid-test steps (test harness only). */
+    final List<Action> actions;
+    /** Ticks after the build at which this spec's {@code expect}s are checked; 0 = the harness default. */
+    final long assertAt;
 
     ShowcaseSpec(String id, String name, String blurb, String description, List<String> images,
                  List<BlockSpec> blocks, List<VanillaSpec> vanilla, List<BannerSpec> banners,
-                 Activate activate, List<Expect> expect) {
+                 Activate activate, List<Expect> expect, boolean testOnly, List<Action> actions,
+                 long assertAt) {
         this.id = id;
         this.name = name;
         this.blurb = blurb;
@@ -83,6 +100,9 @@ final class ShowcaseSpec {
         this.banners = banners;
         this.activate = activate;
         this.expect = expect;
+        this.testOnly = testOnly;
+        this.actions = actions;
+        this.assertAt = assertAt;
     }
 
     /** Parse {@code showcases.yml} into an insertion-ordered id → spec map. Malformed entries are
@@ -167,11 +187,33 @@ final class ShowcaseSpec {
                         log.warning("showcases.yml [" + id + "]: expect entry needs type + at, skipped");
                         continue;
                     }
-                    expect.add(new Expect(type, at, str(m.get("value"))));
+                    expect.add(new Expect(type, at, str(m.get("value")), vec(m.get("to"))));
                 }
+                List<Action> actions = new ArrayList<>();
+                for (Object o : asList(entry.get("actions"))) {
+                    if (!(o instanceof Map<?, ?> m)) continue;
+                    String kind = str(m.get("do"));
+                    int[] at = vec(m.get("at"));
+                    if (kind == null || at == null || !(m.get("tick") instanceof Number tick)) {
+                        log.warning("showcases.yml [" + id + "]: action entry needs do + tick + at, skipped");
+                        continue;
+                    }
+                    Material block = m.get("block") == null ? null : Material.matchMaterial(str(m.get("block")));
+                    Material only = m.get("only") == null ? null : Material.matchMaterial(str(m.get("only")));
+                    if ((m.get("block") != null && block == null) || (m.get("only") != null && only == null)
+                            || ("set".equals(kind) && block == null)) {
+                        log.warning("showcases.yml [" + id + "]: action has a missing/unknown block, skipped");
+                        continue;
+                    }
+                    actions.add(new Action(tick.longValue(), kind, at, vec(m.get("to")), block, only,
+                            Boolean.TRUE.equals(m.get("physics"))));
+                }
+                boolean testOnly = Boolean.TRUE.equals(entry.get("test_only"));
+                long assertAt = (entry.get("assert_at") instanceof Number n) ? n.longValue() : 0;
                 String shortBlurb = blurb == null ? "" : blurb;
                 out.put(id, new ShowcaseSpec(id, name == null ? id : name, shortBlurb,
-                        description == null ? shortBlurb : description, images, blocks, vanilla, banners, activate, expect));
+                        description == null ? shortBlurb : description, images, blocks, vanilla, banners, activate, expect,
+                        testOnly, actions, assertAt));
             } catch (Exception e) {
                 log.warning("showcases.yml: failed to parse an entry: " + e);
             }

@@ -214,6 +214,18 @@ public class MechanismRegistry {
         return world != null && persistence.hasMetadata(world.getName(), id);
     }
 
+    /** The on-disk state file a persisted mechanism uses. Showcase-test hook only: the corrupt-state probe
+     *  overwrites it to prove recovery never culls a mechanism whose file it cannot read. */
+    java.io.File persistedStateFile(String world, UUID id) {
+        return persistence.stateFile(world, id);
+    }
+
+    /** Delete a persisted mechanism's state file and drop its shield — the probe's cleanup, so a test run
+     *  never leaves a corrupt file behind in the server's data folder. */
+    void forgetPersistedState(String world, UUID id) {
+        persistence.remove(world, id);
+    }
+
     /**
      * True if disassembling onto this cell would take the <em>solid wins</em> branch — i.e. the mechanism's
      * block is NOT placed here, an explosion effect plays, and the block is dropped as an item instead.

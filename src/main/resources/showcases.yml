@@ -58,6 +58,11 @@ showcases:
       - { block: "BARREL",       at: [-1, -3, -1], data: "[facing=up,open=false]" }
       - { block: "SAND",         at: [1, -3, -1] }
     activate: passive
+    # No expects, and not an oversight to fix blind: `activate: passive` never fuels the engine, so the
+    # "25 supply vs 17 demand" arithmetic above doesn't hold at test time (the huge windmill's 15 alone is
+    # short of 17) — and the powered lever at [-1,0,1] sits beside the clutch at [-1,0,0], which may
+    # disengage it and cut the drill's 5 out of the demand. Which of those wins needs an in-game look;
+    # switching to `activate: { fuel: [0, 0, 2] }` would also change what the docs capture shows.
     expect: []
 
   # ── Engine-powered (fuel source; static until the runner fuels them) ────
@@ -318,7 +323,14 @@ showcases:
       - { block: "WATER", at: [3, 1, 0], data: "[level=0]", physics: true }
       - { block: "WATER", at: [3, 1, 1], data: "[level=1]", physics: true }
     activate: passive
-    expect: []
+    # Asserts the windmill half only. The windmill is a passive source (no water, fuel or redstone
+    # needed) and nothing on this network draws power, so it is powered on the windmill's 1 alone and the
+    # far shaft proves that power crossed the bevel corner. The water wheel is deliberately NOT asserted:
+    # flowing-water power is unreliable in the test window (see water_wheel_fan). It cannot jam the
+    # network either way — only stored-direction sources are compared, and the windmill stores none.
+    expect:
+      - { type: network_powered, at: [2, 0, 0] }
+      - { type: spinning, at: [2, 0, 0] }
 
   # ── Mechanical piston: rotation slides a rod; sticky head shoves the payload ──
   - id: double_extender_piston
@@ -893,3 +905,123 @@ showcases:
     # `network_powered, at: [0, 1, 10]` plus only the power fixes is the cheaper half-measure.
     # expect:
     #   - { type: hoist_moved, at: [0, 1, 10] }
+
+  # ══ Test-only regression scenarios ═══════════════════════════════════════════════════════════════
+  # `test_only: true`: built and asserted by `make showcase-test*` only. The docs capture never builds or
+  # writes them (no entry in showcase-spec.json / showcases.json), the keep-alive docs world skips them,
+  # and they have no blurb. `actions` are scripted mid-test steps; `assert_at` moves a spec's assertion
+  # tick past the default 80 (the run halts at the latest one).
+  #   actions: - { tick: N, do: set, block: MAT, at: [..], to: [..]?, only: MAT?, physics: bool? }
+  #            - { tick: N, do: corrupt_persisted_mechanism, at: [..] }
+  #   expect type block_type: value MAT (or !MAT), at + optional `to` box — every cell must match.
+
+  # Ceiling mounts (743863d). A hung windmill is a Y-axis passive source on its `ceiling` state, so the
+  # shaft ABOVE it picks it up exactly as one above a floor windmill would; a hung propeller is a Y-axis
+  # consumer whose powered state must come out as `spinning_ceiling` (RotationNetwork re-prefixes the
+  # idle_/spinning_ token, so this also pins that the swap keeps the ceiling suffix). Two separate
+  # networks, three blocks apart.
+  - id: test_ceiling_mounts
+    name: "Test: ceiling windmill + propeller"
+    test_only: true
+    blocks:
+      # Large windmill (5) hung under a shaft column, driving a fan (2) on top.
+      - { id: "mech:large_windmill", facing: up,   at: [0, 0, 0] }   # → state `ceiling`
+      - { id: "mech:shaft",          facing: down, at: [0, 1, 0] }
+      - { id: "mech:fan",            facing: down, at: [0, 2, 0] }
+      # Propeller (demand 5) hung under five co-axial motors (1 each).
+      - { id: "mech:propeller",      facing: up,   at: [3, 0, 0] }   # → state `idle_ceiling`
+      - { id: "mech:redstone_motor", facing: down, at: [3, 1, 0] }
+      - { id: "mech:redstone_motor", facing: down, at: [3, 2, 0] }
+      - { id: "mech:redstone_motor", facing: down, at: [3, 3, 0] }
+      - { id: "mech:redstone_motor", facing: down, at: [3, 4, 0] }
+      - { id: "mech:redstone_motor", facing: down, at: [3, 5, 0] }
+    activate: passive
+    expect:
+      - { type: state, value: ceiling, at: [0, 0, 0] }
+      - { type: network_powered, at: [0, 1, 0] }
+      - { type: spinning, at: [0, 2, 0] }
+      - { type: network_powered, at: [3, 0, 0] }
+      - { type: state, value: spinning_ceiling, at: [3, 0, 0] }
+
+  # Chain hoist, full reel-in. The crane can't assert hoist_moved (see its note); this one can. The hoist
+  # needs CCW to reel in, and a motor-anchored domain resolves CW, so the drive goes through ONE same-axis
+  # gear mesh (a reversing edge): motor [1,3,2] → gear [1,3,1] ⇄ gear [0,3,1] → hoist [0,3,0], all Z.
+  # Two chain links hang below the hoist with a plank load under them. Span = 2 (the plank's upward
+  # clearance is all our own rope), so the load rises 2 into [0,2,0] and both links are swallowed.
+  # Speed: 1 motor vs the hoist's demand 1 → power 1, mass 1 + planks 2 → 1/12 block/tick → ~24 ticks
+  # of travel; it starts within a few ticks of the build, so it has long finished by tick 80.
+  - id: test_hoist_reel_in
+    name: "Test: chain hoist reels in"
+    test_only: true
+    blocks:
+      - { id: "mech:chain_hoist",    facing: down,  state: idle_z, at: [0, 3, 0] }   # builder heads face N → Z axle
+      - { id: "mech:gear",           facing: north, at: [0, 3, 1] }
+      - { id: "mech:gear",           facing: north, at: [1, 3, 1] }   # same-axis mesh → reverses → CCW
+      - { id: "mech:redstone_motor", facing: north, at: [1, 3, 2] }
+    vanilla:
+      - { block: "IRON_CHAIN", at: [0, 2, 0], data: "[axis=y]" }
+      - { block: "IRON_CHAIN", at: [0, 1, 0], data: "[axis=y]" }
+      - { block: "OAK_PLANKS", at: [0, 0, 0] }   # the load
+    activate: passive
+    expect:
+      - { type: hoist_moved, at: [0, 3, 0] }
+      - { type: block_type, value: OAK_PLANKS, at: [0, 2, 0] }        # load landed under the hoist
+      - { type: block_type, value: AIR, at: [0, 0, 0], to: [0, 1, 0] } # vacated; no link left behind
+
+  # Regression for the rising-hoist ghost dupe (0e2a799). Reeling in, the stroke carries a GHOST link just
+  # above the load; cut short at M blocks it lands on the swallowed link at [0,M+1,0]. If that link had
+  # been mined, landing used to mint a real chain into the empty cell from nothing. Same drive as above
+  # with an 8-link column (a full stroke would take ~100 ticks). At tick 40 — ~3 blocks in — every
+  # remaining link is aired (the "player mined it") and a redstone block switches the motor off, so the
+  # stroke stops at the next whole cell. Afterwards the column must hold no chain at all.
+  # Guards against a vacuous pass: hoist_moved, and the load must have left [0,0,0] (the stroke ran) but
+  # NOT reached [0,8,0] (it really was cut short — a full stroke lands its ghost on the protected hoist
+  # cell and would pass whether or not the fix works).
+  # assert_at 110: once unpowered the hoist crawls at its 0.025 block/tick floor, so finishing the last
+  # partial block can take up to 40 ticks after the cut (+3 settle) — tick ~83 worst case.
+  - id: test_hoist_rising_ghost_no_dupe
+    name: "Test: interrupted hoist reel-in mints no chain"
+    test_only: true
+    assert_at: 110
+    blocks:
+      - { id: "mech:chain_hoist",    facing: down,  state: idle_z, at: [0, 9, 0] }
+      - { id: "mech:gear",           facing: north, at: [0, 9, 1] }
+      - { id: "mech:gear",           facing: north, at: [1, 9, 1] }
+      - { id: "mech:redstone_motor", facing: north, at: [1, 9, 2] }
+    vanilla:
+      - { block: "IRON_CHAIN", at: [0, 8, 0], data: "[axis=y]" }
+      - { block: "IRON_CHAIN", at: [0, 7, 0], data: "[axis=y]" }
+      - { block: "IRON_CHAIN", at: [0, 6, 0], data: "[axis=y]" }
+      - { block: "IRON_CHAIN", at: [0, 5, 0], data: "[axis=y]" }
+      - { block: "IRON_CHAIN", at: [0, 4, 0], data: "[axis=y]" }
+      - { block: "IRON_CHAIN", at: [0, 3, 0], data: "[axis=y]" }
+      - { block: "IRON_CHAIN", at: [0, 2, 0], data: "[axis=y]" }
+      - { block: "IRON_CHAIN", at: [0, 1, 0], data: "[axis=y]" }
+      - { block: "OAK_PLANKS", at: [0, 0, 0] }   # the load
+    activate: passive
+    actions:
+      - { tick: 40, do: set, block: AIR, only: IRON_CHAIN, at: [0, 1, 0], to: [0, 8, 0] }   # "mined" links
+      - { tick: 40, do: set, block: REDSTONE_BLOCK, physics: true, at: [2, 9, 2] }          # motor off
+    expect:
+      - { type: hoist_moved, at: [0, 9, 0] }
+      - { type: block_type, value: "!OAK_PLANKS", at: [0, 0, 0] }   # the load moved…
+      - { type: block_type, value: "!OAK_PLANKS", at: [0, 8, 0] }   # …but stopped short
+      - { type: block_type, value: "!IRON_CHAIN", at: [0, 1, 0], to: [0, 8, 0] }   # nothing minted
+
+  # Regression for 8d75a15: a corrupt mechanism state file must never be culled, or the recovery pass's
+  # orphan sweep reaps the mechanism's entities and its blocks are gone for good. The probe lifts the plank
+  # into a persisted mechanism, parks it as a chunk unload would, overwrites its state file with garbage
+  # and runs the chunk-load recovery pass (the chunk itself stays loaded — what's under test is the
+  # recovery pass, not Paper's entity I/O). Expect: same tagged-entity count as when parked, and the file
+  # (and its shield) still there. Logs one expected "corrupt or unreadable state file" WARNING. The probe
+  # deletes the file and the entities after the report.
+  - id: test_corrupt_state_file_kept
+    name: "Test: corrupt mechanism state file is never culled"
+    test_only: true
+    vanilla:
+      - { block: "OAK_PLANKS", at: [0, 0, 0] }
+    activate: passive
+    actions:
+      - { tick: 30, do: corrupt_persisted_mechanism, at: [0, 0, 0] }
+    expect:
+      - { type: persisted_mechanism_intact, at: [0, 0, 0] }

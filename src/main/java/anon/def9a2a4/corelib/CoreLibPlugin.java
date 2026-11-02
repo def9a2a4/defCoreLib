@@ -272,7 +272,7 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
 
         // Headless showcase integration tests (-Ddefcorelib.showcaseTest=true): build, run, assert, exit.
         ShowcaseRunner.armIfRequested(this, registry, rotationNetwork, fuelManager, showcaseBuilder,
-                showcases.values(), rotationRotator, chainHoistManager, pistonManager);
+                showcases.values(), rotationRotator, chainHoistManager, pistonManager, mechanismRegistry);
 
         getLogger().info("DefCoreLib enabled: " + registry.allTypes().size()
                 + " block types, " + showcases.size() + " showcases");
@@ -2814,7 +2814,8 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
                 } else {
                     sender.sendMessage(Component.text("Showcases:", NamedTextColor.GOLD));
                     for (ShowcaseSpec s : showcases.values()) {
-                        sender.sendMessage(Component.text("  " + s.id + " — " + s.name, NamedTextColor.WHITE));
+                        sender.sendMessage(Component.text("  " + s.id + " — " + s.name
+                            + (s.testOnly ? " (test-only)" : ""), NamedTextColor.WHITE));
                     }
                     sender.sendMessage(Component.text("Build: showcase build <id>  |  Export a built machine: "
                         + "showcase anchor (look at origin) → glue-mark → showcase export <id>", NamedTextColor.GRAY));

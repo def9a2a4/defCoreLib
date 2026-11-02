@@ -63,7 +63,7 @@ final class MechanismPersistence {
     }
 
     private File worldDir(String world) { return new File(root, world); }
-    private File stateFile(String world, UUID id) { return new File(worldDir(world), id + ".yml"); }
+    File stateFile(String world, UUID id) { return new File(worldDir(world), id + ".yml"); }
 
     /** Snapshot (already done by the caller on the main thread) → write the state file (SYNC) and record the
      *  id as persisted. Written atomically (tmp sibling + atomic rename) so a crash mid-write can never leave a

@@ -1,3 +1,54 @@
+## Next up (review of 2026-11-01)
+
+Ordered by priority. Done this round: 26.3 in the CI matrix + datapack max_format 109, glue-brush
+sessionless hint (GitHub #3), hoist reel-in ghost dupe, corrupt-state re-parse cache, first unit tests.
+
+- **reply to GitHub #3** (glue brush / minecart) — draft written; post it, close after the release ships.
+- **BlockShips** (../BlockShips; verified against 7bb2e37 on 2026-11-01, none fixed yet):
+  - **locked ship absorbs a foreign wheel** — `scanFrozen` has no foreign-wheel exclusion; the frozen glue
+    set can gain a victim's head after the lock (brush glue isn't refused). Leads to wheel-menu hijack.
+    Fix: give `scanFrozen` the same `preCapture` hook as `scanStructure`. S, exploit.
+  - **`forceclearwheel` on a sailing ship** dumps the hull, ejects riders, deletes the sidecar — no LOADED
+    check (`ShipWheelManager.forceClearWheelLink` → `reconcileOrphan`). Refuse when LOADED. S, data loss.
+  - **foreign wheel still bridges the flood fill** — exclusion drops the head's cell after the fill
+    already expanded through it. Pass a predicate into `detectShipInternal`. M.
+  - **bad recipe pattern disables the plugin** (`ItemUtil` `recipe.shape` uncaught; on reload after all
+    recipes were removed). S.
+  - **empty block-config override fails open** on reload, and CHANGELOG-v0.0.18:78 claims otherwise. S.
+  - **quarantined (world-not-loaded) wheel records** are invisible to the foreign-wheel guard. S.
+  - **reload has no per-step guards** — one throw skips the remaining steps. S.
+  - **corrupt-sidecar message** says "move it aside", which doesn't release the wheel; name
+    `forceclearwheel` and the restart. S.
+  - **`stats.enabled` default flip** is deliberate but in no changelog. S.
+  - **`wheel_decoy`/`wheel_reserved` bot tests are manual-only** — run them as their own CI step. M.
+  - `loadConfig` has no tests; local bot run shows `double_chest` and `cannon_tnt_disabled` failing.
+- **in-game regression scenarios** — ceiling propeller/windmill, a hoist that actually moves (the `crane`
+  showcase's `hoist_moved` is commented out), the rising-hoist dupe, corrupt-state recovery; plus
+  assertions for the showcases that have none (sand_generator, icon_machine, steam_sieve, water_wheel_fan).
+- **asymmetric carts jam on curves** — cart rotation is frozen (`BasicMechanism` `// rotate(delta);`
+  ~:1763). Most player-visible remaining bug. M–L.
+- **protection plugins (WorldGuard etc.)** — mechanism, glue, hoist and piston writes ignore regions; no
+  hook exists. Design first: docs/todo/mechanism/protection-awareness.md. L.
+- **locked chain pulley still draws power** on a loop — `RotationNetwork` demand (~:538) has no
+  `isLocked(partner)` check (docs/todo/mechanism/chain-pulley.md:71). S–M.
+- **owned-vehicle ArmorStand removed by /kill or a lag-clearer** loses the structure's aired-out blocks —
+  no `EntityRemoveEvent` handling for mechanisms (deferred-from-glue-landing-round §3). S.
+- **network-size cap fails silently** — `RotationNetwork` BFS stops at the cap with no warning (~:526). S.
+- **particles don't tick on assembled mechanism blocks** — `MechanismRegistry` `// TODO: particle ticking`. S.
+- **glue-brush hint** fires on every sessionless left-click, including plain block breaking — add a
+  cooldown if players find it noisy.
+- **unit-test gaps** — inject a clock into `MechanismPersistence` to cover the 60s corrupt-read retry;
+  `BlockLoader` parsing (6 past fixes), `MassRegistry`, `RotationSolver.solve`, `TeleportCompat` version
+  parse (needs extracting from its static init).
+- **cleanup** — dead `MechanismSerializer`; `reloadbanners` tooling; dead `pipes/.github/workflows`
+  (GitHub never runs workflows in subdirectories); move windmill banner capture onto `IngredientCapture`.
+- **stale TODO docs** — `docs/todo/TODO.md` is almost all done (archive it); also out of date: roadmap's
+  "cart coupling not built", vertical-slabs.md part 3, plugin-split.md, rotation-and-mechanism-fixes.md
+  C1/C10/B2, chain-pulley.md fix 1, TODO-minecart-visuals.md (passenger-mount plan was rejected; check in
+  game whether trains still jitter).
+
+## Older items
+
 - textures/recipes -- agent has all info
 - hoist glue authoring — follow-ups (from review of the authoring commit):
   - **dual glue sources aren't reconciled.** `resolveGroup` takes hoist-held glue OR legacy
@@ -22,7 +73,7 @@
     otherwise they don't belong with hoist glue.
 - fix displays for redstone dynamo
 - fixes for extender pistons
-  - shared movability guards: apply `MovableBlocks.isMovable` to the minecart default seed (block above cart), the rotator default seed (attachment block), and the glue brush (single + cuboid, with a rejection message) — was de-scoped to piston-only to avoid regressing shared glue/authoring
+  - DONE: shared movability guards: apply `MovableBlocks.isMovable` to the minecart default seed (block above cart), the rotator default seed (attachment block), and the glue brush (single + cuboid, with a rejection message) — was de-scoped to piston-only to avoid regressing shared glue/authoring
   - crash-mid-slide persistence: a hard crash (not graceful /stop) while the rod is moving loses the rod blocks — mechanisms aren't persisted across restarts (engine-wide, affects all mechanisms)
   - display-entity lighting: moving mechanism displays sample block-light at the vehicle height (pivot + rideOffset), so a sliding structure can be lit as if up in the air — spawn/anchor the light sample lower (at the core/block cell). Interacts with the ride-offset display chain in MechanismRegistry.assembleCore / BasicMechanism.rotate
 - more showcases?

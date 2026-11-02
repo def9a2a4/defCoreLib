@@ -30,6 +30,7 @@ final class ShowcaseWorld {
         Map<ShowcaseSpec, Location> origins = new LinkedHashMap<>();
         int i = 0;
         for (ShowcaseSpec spec : showcases) {
+            if (spec.testOnly) continue;   // regression scenarios aren't demos — keep them out of the docs world
             int z = Z0 - i * SPACING;
             Location origin = new Location(world, LANE_X, GRID_Y, z);
             origin.getChunk().load(true);
