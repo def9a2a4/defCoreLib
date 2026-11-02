@@ -258,13 +258,15 @@ showcases:
       through a ratchet set clockwise on the east and one set counter-clockwise on the west. Both see
       the same spin, so exactly one of the two shafts beyond them turns. Wrench a ratchet to flip it.
     blocks:
-      - { id: "mech:redstone_motor", facing: west, at: [0, 0, 0] }   # X-axis source, both faces
-      - { id: "mech:ratchet", facing: east, state: idle_cw_x,  at: [1, 0, 0] }
-      - { id: "mech:shaft",   facing: east, at: [2, 0, 0] }
+      # Order matters: a ratchet placed onto a line that's already turning adopts its direction, so the motor
+      # goes down LAST — each ratchet keeps the direction set here.
       - { id: "mech:shaft",   facing: east, at: [3, 0, 0] }
-      - { id: "mech:ratchet", facing: west, state: idle_ccw_x, at: [-1, 0, 0] }
-      - { id: "mech:shaft",   facing: west, at: [-2, 0, 0] }
+      - { id: "mech:shaft",   facing: east, at: [2, 0, 0] }
+      - { id: "mech:ratchet", facing: east, state: idle_cw_x,  at: [1, 0, 0] }
       - { id: "mech:shaft",   facing: west, at: [-3, 0, 0] }
+      - { id: "mech:shaft",   facing: west, at: [-2, 0, 0] }
+      - { id: "mech:ratchet", facing: west, state: idle_ccw_x, at: [-1, 0, 0] }
+      - { id: "mech:redstone_motor", facing: west, at: [0, 0, 0] }   # X-axis source, both faces
     activate: passive
     expect:
       - { type: spinning, at: [3, 0, 0] }                    # the clockwise ratchet's side turns…
@@ -496,7 +498,11 @@ showcases:
     activate: passive
     expect:
       - { type: piston_stroked, at: [2, 1, 0] }
-      - { type: block_type, value: AIR, at: [1, 1, -2], to: [3, 2, -2] }          # the wall left…
+      # The wall left its cells — all but [2,1,-2], where the pole that slides out of the core now fills the rod.
+      - { type: block_type, value: AIR, at: [1, 1, -2], to: [1, 2, -2] }
+      - { type: block_type, value: AIR, at: [3, 1, -2], to: [3, 2, -2] }
+      - { type: block_type, value: AIR, at: [2, 2, -2] }
+      - { type: block_type, value: "!AIR", at: [2, 1, -2] }
       - { type: material_total, value: "OAK_PLANKS=4", at: [1, 1, -4], to: [3, 2, -4] }   # …and stands two out
       - { type: block_type, value: SLIME_BLOCK, at: [2, 1, -4], to: [2, 2, -4] }
 

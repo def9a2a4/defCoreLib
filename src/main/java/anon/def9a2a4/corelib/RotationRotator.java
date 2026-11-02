@@ -217,6 +217,15 @@ final class RotationRotator implements Listener {
         Block busy = mechRegistry.firstMovingCapturedAnchor(planks);
         if (busy != null) { MoverExclusion.blockedParticle(null, busy); return; }
 
+        // Docs capture: record the swing instead of making it, so the capture reads the build at rest (a carried
+        // custom block's displays are gone mid-swing) and the docs page plays it back.
+        if (ShowcaseMode.CAPTURE_ONLY) {
+            int deg = readTarget(head);
+            lastSwing.putIfAbsent(key, new Swing(List.copyOf(planks), head, new Vector3f(axis),
+                (dir == RotationNetwork.SpinDirection.CW) ? -deg : deg));
+            return;
+        }
+
         Mechanism mech = mechRegistry.assembleMechanism(ROTATOR_ID, planks,
             head.getLocation().add(0.5, 0, 0.5), axis, null);
         if (glued) mech.setOnDisassembled(p ->
