@@ -1,10 +1,10 @@
 # Vertical Slabs!!1!
 
+[![Download on Modrinth](https://img.shields.io/badge/download-modrinth-00AF5C?style=for-the-badge&logo=modrinth&logoColor=white)](https://modrinth.com/plugin/vslab) [![Join the Discord](https://img.shields.io/badge/discord-join-5865F2?style=for-the-badge&logo=discord&logoColor=white)](https://def9a2a4.github.io/discord.html)
+
 Don't you ever wish you had slabs, but vertical? But on an unmodded minecraft server, as a plugin?
 
 See [the catalog of vertical slabs](https://def9a2a4.github.io/defCoreLib-docs/index.html?q=slab).
-
-[Download on Modrinth](https://modrinth.com/plugin/vslab)
 
 ![Vertical slabs](https://def9a2a4.github.io/defCoreLib-docs/readmes/assets/vslab/vslabs.png)
 
@@ -24,7 +24,6 @@ See [the catalog of vertical slabs](https://def9a2a4.github.io/defCoreLib-docs/i
 ## Links
 
 - Full type list & recipes: https://def9a2a4.github.io/defCoreLib-docs/index.html?q=slab
-- Download on Modrinth: https://modrinth.com/plugin/vslab
 - Repository: https://github.com/def9a2a4/defCoreLib/
 - Issues: https://github.com/def9a2a4/defCoreLib/issues
 

@@ -97,6 +97,7 @@ NAMESPACE_PLUGIN = {
     "verticalslabs":    ("VerticalSlabs", "vslab"),
     "redstonedisplays": ("RedstoneDisplays", "redstonedisplays"),
     "pipes":            ("Pipes", "pipes"),
+    "railbound":        ("Railbound", "railbound"),
     "corelib":          ("DefCoreLib", "defcorelib"),
     "demo":             ("DefCoreLib", "defcorelib"),
 }

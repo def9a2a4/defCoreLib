@@ -1,10 +1,10 @@
 # Mechanism
 
+[![Download on Modrinth](https://img.shields.io/badge/download-modrinth-00AF5C?style=for-the-badge&logo=modrinth&logoColor=white)](https://modrinth.com/plugin/mechanism) [![Join the Discord](https://img.shields.io/badge/discord-join-5865F2?style=for-the-badge&logo=discord&logoColor=white)](https://def9a2a4.github.io/discord.html)
+
 Kinetic rotation mechanisms - build power networks that drive machines, doors, and vehicles. Inspired by Create mod, loosely also inspired by slimefun, pylon, and classic minecraft tekkit/technic/buildcraft/industrialcraft. *Purely server-side paper plugin, **no mods or resource packs!***
 
 See the [items and their recipes](https://def9a2a4.github.io/defCoreLib-docs/index.html?ns=mech), or the [things you can build](https://def9a2a4.github.io/defCoreLib-docs/showcases.html).
-
-[Download on Modrinth](https://modrinth.com/plugin/mechanism)
 
 [![Windmill-driven sand generator](https://def9a2a4.github.io/defCoreLib-docs/readmes/assets/mech/mech.gif)](https://def9a2a4.github.io/defCoreLib-docs/showcase.html?id=sand_generator)
 [![Mechanisms in-game](https://def9a2a4.github.io/defCoreLib-docs/readmes/assets/mech/mech-ingame.gif)](https://def9a2a4.github.io/defCoreLib-docs/readmes/assets/mech/mech-ingame.webm)
@@ -115,6 +115,5 @@ structure size caps, machine tick rates, fuel and power tables) and `mill-recipe
 ## Links
 
 - Items, recipes & showcases: https://def9a2a4.github.io/defCoreLib-docs/index.html?ns=mech
-- Download on Modrinth: https://modrinth.com/plugin/mechanism
 - Repository: https://github.com/def9a2a4/defCoreLib/
 - Issues: https://github.com/def9a2a4/defCoreLib/issues

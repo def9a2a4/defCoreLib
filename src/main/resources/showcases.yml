@@ -911,7 +911,7 @@ showcases:
   # writes them (no entry in showcase-spec.json / showcases.json), the keep-alive docs world skips them,
   # and they have no blurb. `actions` are scripted mid-test steps; `assert_at` moves a spec's assertion
   # tick past the default 80 (the run halts at the latest one).
-  #   actions: - { tick: N, do: set, block: MAT, at: [..], to: [..]?, only: MAT?, physics: bool? }
+  #   actions: - { tick: N, do: set, block: MAT, at: [..], to: [..]?, only: MAT?, physics: bool?, data: "[..]"? }
   #            - { tick: N, do: corrupt_persisted_mechanism, at: [..] }
   #            - { tick: N, do: summon, entity: KEY, at: [..], face: F?, item: MAT?, art: KEY?, rider: KEY? }
   #   expect type block_type: value MAT (or !MAT), at + optional `to` box — every cell must match.
@@ -919,8 +919,7 @@ showcases:
   #   expect type riding: value RIDER/VEHICLE — some RIDER in the box rides a VEHICLE. A spec naming an
   #   entity this server lacks (cushion before 26.3) reports SKIP instead of running.
   # Items: "MAT" / "MAT xN", or { material: MAT, count: N?, name: "..."?, contents: [items]? } (a filled shulker).
-  #   setup:   `contents: [items]` on a blocks/vanilla entry fills its storage, container half, lectern or pot;
-  #            `data:` on a physical_material custom block pins its block data (a double-chest half).
+  #   setup:   `contents: [items]` on a blocks/vanilla entry fills its storage, container half, lectern or pot.
   #   actions: - { tick: N, do: break, at: [..], to: [..]? }  — player-less break: a custom block spills its
   #              storage, drops itself and runs its removal callbacks (as an explosion would); vanilla blocks
   #              breakNaturally(). No BlockBreakEvent: tool/silk drop rules and break listeners don't run.
@@ -1217,19 +1216,21 @@ showcases:
       - { type: entity_count, value: "item:BUCKET=1", at: [2, -1, -2], to: [4, 2, 2] }
 
   # Breaking a copper-chest machine must not wipe the chest it is paired with. The water wheel IS a waxed
-  # copper chest (physical_material); placed against a full one as the two halves of a double chest, its
-  # removal hook used to clear the COMBINED inventory, deleting the neighbour's contents. (Pairing is pinned
-  # through `data`: facing north, the left half's partner is east of it.)
+  # copper chest (physical_material). Its placement unpairs it, but a vanilla chest placed beside it later
+  # merges the two into a double chest — and the wheel's removal hook used to clear the COMBINED inventory,
+  # deleting the neighbour's contents. The tick-20 `set` is that later merge (facing north, the left half's
+  # partner is east of it; same block, so the wheel keeps its tile + identity).
   - id: test_water_wheel_break_keeps_chest
     name: "Test: breaking a water wheel keeps the paired chest's contents"
     test_only: true
     blocks:
-      - { id: "mech:water_wheel", facing: north, at: [0, 0, 0], data: "[facing=north,type=right]" }
+      - { id: "mech:water_wheel", facing: north, at: [0, 0, 0] }
     vanilla:
       - { block: "WAXED_COPPER_CHEST", at: [-1, 0, 0], data: "[facing=north,type=left]",
           contents: ["COBBLESTONE x64", "DIAMOND x5"] }
     activate: passive
     actions:
+      - { tick: 20, do: set, block: WAXED_COPPER_CHEST, data: "[facing=north,type=right]", at: [0, 0, 0] }
       - { tick: 30, do: break, at: [0, 0, 0] }
     expect:
       - { type: block_type, value: AIR, at: [0, 0, 0] }

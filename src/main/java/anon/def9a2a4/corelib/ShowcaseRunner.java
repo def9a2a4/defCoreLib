@@ -490,9 +490,12 @@ final class ShowcaseRunner implements Listener {
         try {
             switch (a.kind()) {
                 case "set" -> {
+                    String data = a.extra().get("data");
                     for (Block b : cells(origin, a.at(), a.to())) {
                         if (a.only() != null && b.getType() != a.only()) continue;
-                        b.setType(a.block(), a.physics());
+                        // Same block, new data (a chest's pairing) keeps its tile entity, as a vanilla shape update does.
+                        if (data != null) b.setBlockData(Bukkit.createBlockData(a.block(), data), a.physics());
+                        else b.setType(a.block(), a.physics());
                     }
                 }
                 case "corrupt_persisted_mechanism" -> corruptPersistedMechanism(spec, blockAt(origin, a.at()));

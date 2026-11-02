@@ -26,11 +26,10 @@ final class ShowcaseSpec {
      *  is the placement face (DOWN = floor). {@code state} is optional (defaults to the placement map).
      *  {@code link} is an optional [dx,dy,dz] offset of a chain-pulley partner (only meaningful for
      *  {@code mech:chain_pulley}): the builder writes it into the pulley's chain-link PDC so the pair
-     *  transmits power, mirroring an in-game chain link. {@code data} pins a {@code physical_material}
-     *  block's block data (e.g. {@code "[facing=north,type=right]"} for one half of a double chest);
-     *  {@code contents} fills its storage or real container. */
+     *  transmits power, mirroring an in-game chain link. {@code contents} fills its storage or real
+     *  ({@code physical_material}) container. */
     record BlockSpec(String id, BlockFace facing, int[] at, @Nullable String state, int @Nullable [] link,
-                     @Nullable String data, List<ItemSpec> contents) {}
+                     List<ItemSpec> contents) {}
 
     /** One vanilla support block (redstone, planks, container, …) at an offset. {@code data} is an
      *  optional Bukkit block-data string (e.g. {@code "[face=floor,powered=true]"} for a lit lever).
@@ -87,7 +86,8 @@ final class ShowcaseSpec {
     /** A scripted mid-test step, run {@code tick} ticks after the build (test harness only — the docs
      *  keep-alive world ignores it). {@code kind}: {@code set} writes {@code block} into every cell of
      *  {@code at}..{@code to} (or just {@code at}), optionally only where the cell is currently
-     *  {@code only}, with block updates iff {@code physics}; {@code corrupt_persisted_mechanism} is a
+     *  {@code only}, with block updates iff {@code physics} (and block data {@code data} from {@code extra}, if
+     *  given); {@code corrupt_persisted_mechanism} is a
      *  Java-side probe (see {@code ShowcaseRunner}); {@code summon} spawns {@code entity} (a vanilla entity
      *  key) in cell {@code at} — hanging on {@code face}, holding {@code item}, painted {@code art}, ridden by a
      *  still {@code rider} — all optional keys of {@code extra}; {@code drop} spawns {@code items} in cell
@@ -167,7 +167,7 @@ final class ShowcaseSpec {
                         continue;
                     }
                     blocks.add(new BlockSpec(bid, face, at, str(m.get("state")), vec(m.get("link")),
-                            str(m.get("data")), items(m.get("contents"))));
+                            items(m.get("contents"))));
                 }
                 List<VanillaSpec> vanilla = new ArrayList<>();
                 for (Object o : asList(entry.get("vanilla"))) {
@@ -231,7 +231,7 @@ final class ShowcaseSpec {
                         continue;
                     }
                     Map<String, String> extra = new java.util.LinkedHashMap<>();
-                    for (String k : new String[]{"entity", "face", "item", "art", "rider"}) {
+                    for (String k : new String[]{"entity", "face", "item", "art", "rider", "data"}) {
                         if (m.get(k) != null) extra.put(k, str(m.get(k)));
                     }
                     if ("summon".equals(kind) && !extra.containsKey("entity")) {

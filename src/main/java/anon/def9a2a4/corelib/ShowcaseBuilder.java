@@ -78,7 +78,7 @@ final class ShowcaseBuilder {
         boolean floor = placedOn == BlockFace.DOWN || placedOn == BlockFace.UP;
 
         if (type.physicalMaterial() != null) {
-            placePhysical(block, type.physicalMaterial(), placedOn.getOppositeFace(), bs.data());
+            placePhysical(block, type.physicalMaterial(), placedOn.getOppositeFace());
         } else {
             placeHead(block, floor, floor ? null : placedOn.getOppositeFace());
         }
@@ -166,14 +166,9 @@ final class ShowcaseBuilder {
     }
 
     /** A {@code physical_material} block (dispenser, dynamo barrel, boiler / water-wheel chest) is the real
-     *  block, as {@code CoreLibPlugin.onBlockPlace} sets it: pinned {@code data} if given, else facing the
-     *  clicked face (the spec's {@code facing} is the opposite) when the material allows — a horizontal-only
-     *  chest keeps its default on a floor placement. */
-    private void placePhysical(Block block, Material material, BlockFace clickedFace, String data) {
-        if (data != null) {
-            block.setBlockData(Bukkit.createBlockData(material, data), false);
-            return;
-        }
+     *  block, as {@code CoreLibPlugin.onBlockPlace} sets it, facing the clicked face (the spec's {@code facing}
+     *  is the opposite) when the material allows — a horizontal-only chest keeps its default on a floor. */
+    private void placePhysical(Block block, Material material, BlockFace clickedFace) {
         block.setType(material, false);
         if (block.getBlockData() instanceof Directional d && d.getFaces().contains(clickedFace)) {
             d.setFacing(clickedFace);

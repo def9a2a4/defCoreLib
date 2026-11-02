@@ -1,5 +1,7 @@
 # Railbound
 
+[![Download on Modrinth](https://img.shields.io/badge/download-modrinth-00AF5C?style=for-the-badge&logo=modrinth&logoColor=white)](https://modrinth.com/plugin/railbound) [![Join the Discord](https://img.shields.io/badge/discord-join-5865F2?style=for-the-badge&logo=discord&logoColor=white)](https://def9a2a4.github.io/discord.html)
+
 Minecart trains, better powered minecarts, dispenser carts, junction rails, and more.
 
 See [the catalog of carts & rails](https://def9a2a4.github.io/defCoreLib-docs/index.html?ns=railbound).
@@ -25,6 +27,5 @@ See [the catalog of carts & rails](https://def9a2a4.github.io/defCoreLib-docs/in
 ## Links
 
 - Full type list & recipes: https://def9a2a4.github.io/defCoreLib-docs/index.html?ns=railbound
-- Download on Modrinth: https://modrinth.com/plugin/railbound
 - Repository: https://github.com/def9a2a4/defCoreLib/
 - Issues: https://github.com/def9a2a4/defCoreLib/issues

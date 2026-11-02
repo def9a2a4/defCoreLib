@@ -1,8 +1,8 @@
 # BetterBanners
 
-Flag banners, larger size banner tiers, and bed banners. Purely server-side paper plugin, no mods or resource packs required.
+[![Download on Modrinth](https://img.shields.io/badge/download-modrinth-00AF5C?style=for-the-badge&logo=modrinth&logoColor=white)](https://modrinth.com/plugin/betterbanners) [![Join the Discord](https://img.shields.io/badge/discord-join-5865F2?style=for-the-badge&logo=discord&logoColor=white)](https://def9a2a4.github.io/discord.html)
 
-[Download on Modrinth](https://modrinth.com/plugin/betterbanners)
+Flag banners, larger size banner tiers, and bed banners. Purely server-side paper plugin, no mods or resource packs required.
 
 [![Normal and large banner tiers](https://def9a2a4.github.io/defCoreLib-docs/readmes/assets/bbanners/large.png)](https://def9a2a4.github.io/defCoreLib-docs/index.html?q=banner)
 
@@ -39,6 +39,5 @@ Banners placed on blocks that get moved by a [Mechanism](https://github.com/def9
 ## Links
 
 - Recipes & details: https://def9a2a4.github.io/defCoreLib-docs/index.html?q=banner
-- Download on Modrinth: https://modrinth.com/plugin/betterbanners
 - Repository: https://github.com/def9a2a4/defCoreLib/
 - Issues: https://github.com/def9a2a4/defCoreLib/issues

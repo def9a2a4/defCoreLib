@@ -1,12 +1,12 @@
 # HeadSmith
 
+[![Download on Modrinth](https://img.shields.io/badge/download-modrinth-00AF5C?style=for-the-badge&logo=modrinth&logoColor=white)](https://modrinth.com/plugin/headsmith) [![Join the Discord](https://img.shields.io/badge/discord-join-5865F2?style=for-the-badge&logo=discord&logoColor=white)](https://def9a2a4.github.io/discord.html)
+
 Thousands of decorative player-head blocks — the full alphabet, candles, chimneys, barrels, books,
 pumpkins, mini-blocks and more. Purely server-side Paper plugin, no mods or resource packs required.
 
-Browse every head in-game with `/defcorelib catalog`. (The web catalog does not carry the HeadSmith
-namespace yet.)
-
-[Download on Modrinth](https://modrinth.com/plugin/headsmith)
+Browse every head in the [head catalog](https://def9a2a4.github.io/HeadSmith/), or in-game with
+`/defcorelib catalog`.
 
 ## Features
 
@@ -46,6 +46,7 @@ the legacy migration. Without it the heads are unavailable.
 
 ## Links
 
+- Head catalog: https://def9a2a4.github.io/HeadSmith/
 - Full type list & recipes: in-game, `/defcorelib catalog`
 - Download on Modrinth: https://modrinth.com/plugin/headsmith
 - Repository: https://github.com/def9a2a4/defCoreLib/

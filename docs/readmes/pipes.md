@@ -1,11 +1,11 @@
 # Pipes
 
+[![Download on Modrinth](https://img.shields.io/badge/download-modrinth-00AF5C?style=for-the-badge&logo=modrinth&logoColor=white)](https://modrinth.com/plugin/pipes) [![Join the Discord](https://img.shields.io/badge/discord-join-5865F2?style=for-the-badge&logo=discord&logoColor=white)](https://def9a2a4.github.io/discord.html)
+
 Item-transport pipes for moving items between containers — build hoppers-at-a-distance and
 sorting networks. Purely server-side Paper plugin, no mods or resource packs required.
 
 See [the catalog of pipes](https://def9a2a4.github.io/defCoreLib-docs/index.html?ns=pipes).
-
-[Download on Modrinth](https://modrinth.com/plugin/pipes)
 
 ![Pipes moving items between containers.](https://def9a2a4.github.io/defCoreLib-docs/readmes/assets/pipes/demo-1.png)
 
@@ -53,7 +53,6 @@ item-transfer logic. Without it the blocks still exist (obtainable via
 ## Links
 
 - Full type list & recipes: https://def9a2a4.github.io/defCoreLib-docs/index.html?ns=pipes
-- Download on Modrinth: https://modrinth.com/plugin/pipes
 - Repository: https://github.com/def9a2a4/defCoreLib/
 - Issues: https://github.com/def9a2a4/defCoreLib/issues
 
