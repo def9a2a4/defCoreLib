@@ -1981,7 +1981,9 @@ final class BasicMechanism implements Mechanism {
         cushion.eject();
         cushion.remove();
         World w = at.getWorld();
-        if (item != null && w != null) w.dropItemNaturally(at.getBlock().getLocation().add(0.5, 0.5, 0.5), item);
+        if (item != null && w != null) {
+            w.dropItemNaturally(AttachedEntities.openCellNear(at.getBlock()).getLocation().add(0.5, 0.5, 0.5), item);
+        }
     }
 
     /** destroy(): pay each carried frame/painting's fallback items at this block's cell. */

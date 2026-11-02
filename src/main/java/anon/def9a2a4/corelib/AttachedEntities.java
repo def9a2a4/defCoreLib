@@ -444,8 +444,20 @@ final class AttachedEntities {
     static void dropFallbacks(CarriedEntity ce, Location at, Logger log) {
         World w = at.getWorld();
         if (w == null) return;
-        Location c = at.getBlock().getLocation().add(0.5, 0.5, 0.5);
+        Location c = openCellNear(at.getBlock()).getLocation().add(0.5, 0.5, 0.5);
         for (ItemStack it : ce.fallbackItems(log)) w.dropItemNaturally(c, it);
+    }
+
+    /** Where to drop items meant for {@code cell}: the cell itself when open, else its first open neighbour
+     *  (above first). An item dropped inside a solid block is shoved out at speed and can fly off. */
+    static Block openCellNear(Block cell) {
+        if (MovableBlocks.isEmptyOrPassable(cell.getType())) return cell;
+        for (BlockFace f : new BlockFace[]{BlockFace.UP, BlockFace.NORTH, BlockFace.SOUTH, BlockFace.EAST,
+                BlockFace.WEST, BlockFace.DOWN}) {
+            Block n = cell.getRelative(f);
+            if (MovableBlocks.isEmptyOrPassable(n.getType())) return n;
+        }
+        return cell;
     }
 
     private static @Nullable BlockFace faceOf(int x, int y, int z) {

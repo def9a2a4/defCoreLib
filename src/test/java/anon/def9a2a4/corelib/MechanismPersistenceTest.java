@@ -79,6 +79,23 @@ class MechanismPersistenceTest {
         assertFalse(stateFile(st).exists());
     }
 
+    /** A teardown marks the file it keeps, so after a crash recovery redoes the teardown instead of reviving
+     *  the mechanism; a restart reads it back as persisted, carrying the mark. */
+    @Test
+    void aTeardownMarksTheFileItKeeps() {
+        MechanismState st = MechanismStateTest.sample();
+        p.save(st);
+        p.removeAfterSave(st.worldName, st.mechId, 0, MechanismState.LANDED);
+        assertFalse(p.hasMetadata(st.worldName, st.mechId));
+        MechanismPersistence afterCrash = new MechanismPersistence(dataFolder.toFile(), log);
+        assertTrue(afterCrash.hasMetadata(st.worldName, st.mechId));
+        MechanismState r = afterCrash.load(st.worldName, st.mechId);
+        assertNotNull(r);
+        assertEquals(MechanismState.LANDED, r.teardown);
+        assertEquals(2, r.blocks.size());
+        assertNull(MechanismStateTest.sample().teardown);
+    }
+
     @Test
     void removeAfterSaveNeedsEnoughAutosaveEvents() {
         MechanismState st = MechanismStateTest.sample();

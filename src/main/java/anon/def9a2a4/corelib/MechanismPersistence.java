@@ -242,7 +242,12 @@ final class MechanismPersistence {
                     return; // unreadable: leave it as it is; recovery will not touch a file it cannot read
                 }
                 y.set(MechanismState.TEARDOWN_KEY, teardown);
-                writeFile(world, id, y.saveToString());
+                try {
+                    writeFile(world, id, y.saveToString());
+                } catch (UncheckedIOException e) {
+                    // Called from inside a teardown, which must finish. Unmarked, a crash revives it as before.
+                    log.warning("mechanism persistence: could not mark " + id + " as " + teardown + ": " + e.getMessage());
+                }
             });
         }
         pendingDeletes.computeIfAbsent(world, k -> new HashMap<>()).put(id, new PendingDelete(nowTick));
