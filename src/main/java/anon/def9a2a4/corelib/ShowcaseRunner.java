@@ -824,7 +824,8 @@ final class ShowcaseRunner implements Listener {
 
     /**
      * Bake every move a capture recorded into whole-block loops: each rotator swing, piston stroke and hoist lift
-     * gets its own slot of {@link #SWING_PERIOD} ticks (open, hold, close, hold), played one after another, so a
+     * (and each drill's target block breaking) gets its own slot of {@link #SWING_PERIOD} ticks (open, hold, close,
+     * hold), played one after another, so a
      * build with several movers (the crane) shows them in sequence and a single mover loops as before. A record
      * a slot doesn't move sits at its first move's rest pose. A swing next to a lever + reverser plays twice, the
      * lever flipped and the swing reversed the second time.
@@ -925,6 +926,20 @@ final class ShowcaseRunner implements Listener {
                 }
                 slots.add(slot);
             }
+        }
+        // A drill's target (drawn as built, though the drill has already chewed through it): ground down a little,
+        // then gone while the slot holds open, back for the rest of the loop.
+        for (ShowcaseSpec.BlockSpec bs : spec.blocks) {
+            if (!"mech:drill".equals(bs.id())) continue;
+            BlockFace bore = bs.facing().getOppositeFace();   // `facing` is the clicked face; the bit points away
+            int[] at = {bs.at()[0] + bore.getModX(), bs.at()[1] + bore.getModY(), bs.at()[2] + bore.getModZ()};
+            Map<Map<String, Object>, Pose> slot = new java.util.IdentityHashMap<>();
+            for (Map<String, Object> rec : recordsIn(blocks, java.util.Set.of(cellKey(at)))) {
+                if (rec.get("id") != null) continue;   // only a plain block is mined
+                slot.put(rec, open -> open >= 1 ? hidden(at) : new org.joml.Matrix4f().translation(at[0], at[1], at[2])
+                        .scale(1 - 0.12f * (float) open));
+            }
+            if (!slot.isEmpty()) slots.add(slot);
         }
         blocks.addAll(added);
         if (slots.isEmpty()) return;
