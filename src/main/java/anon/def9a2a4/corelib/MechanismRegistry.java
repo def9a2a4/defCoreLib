@@ -392,31 +392,8 @@ public class MechanismRegistry implements org.bukkit.event.Listener {
         return applyWallHeadShift(custom != null ? custom : colliderRegistry.get(bd.getMaterial(), bd), bd);
     }
 
-    /**
-     * A player leaving while seated on something a mechanism carries (a cushion on a collider, or a collider
-     * itself) must step off first: vanilla saves the player's whole vehicle stack into their player file when it
-     * holds exactly one player, which would pull the collider out of the moving body and bring a stale copy back
-     * on rejoin. Quit/kick fire before that save.
-     */
-    @org.bukkit.event.EventHandler(priority = org.bukkit.event.EventPriority.HIGHEST)
-    public void onPlayerQuit(org.bukkit.event.player.PlayerQuitEvent e) { stepOffMechanism(e.getPlayer()); }
-
-    @org.bukkit.event.EventHandler(priority = org.bukkit.event.EventPriority.HIGHEST)
-    public void onPlayerKick(org.bukkit.event.player.PlayerKickEvent e) { stepOffMechanism(e.getPlayer()); }
-
-    private static void stepOffMechanism(org.bukkit.entity.Player p) {
-        for (Entity v = p.getVehicle(); v != null; v = v.getVehicle()) {
-            if (AttachedEntities.carriedTagOf(v) != null || isMechTagged(v)) {
-                p.leaveVehicle();
-                return;
-            }
-        }
-    }
-
-    private static boolean isMechTagged(Entity e) {
-        for (String t : e.getScoreboardTags()) if (t.startsWith("corelib:mech:")) return true;
-        return false;
-    }
+    // A player leaving while aboard a mechanism (seated, riding a collider, or standing on a deck) is stepped off and
+    // recorded for the join-time resolver by MechanismRiderLogout (quit at LOWEST; shutdown() below).
 
     private static CollisionConfig applyWallHeadShift(CollisionConfig collision, BlockData bd) {
         if (collision.size() <= 0.5f && bd instanceof org.bukkit.block.data.Directional dir) {
@@ -1602,7 +1579,7 @@ public class MechanismRegistry implements org.bukkit.event.Listener {
     public void shutdown() {
         if (tickTask != null) tickTask.cancel();
         // /stop disables plugins before players are saved, so the quit hook never runs: step them off here.
-        for (org.bukkit.entity.Player p : Bukkit.getOnlinePlayers()) stepOffMechanism(p);
+        for (org.bukkit.entity.Player p : Bukkit.getOnlinePlayers()) MechanismRiderLogout.stepOff(p);
         // Restore real blocks for any still-assembled mechanism (e.g. an open door) so the structure
         // isn't lost on /stop. Per-mechanism guarded: a failure falls back to removeAllEntities so we
         // never leak persistent entities. (Full restart recovery is the deferred persistence work.)

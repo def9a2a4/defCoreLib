@@ -989,13 +989,7 @@ final class BasicMechanism implements Mechanism {
 
         Set<Entity> riders = new HashSet<>();
         for (ColliderPair cp : colliders) {
-            BoundingBox box = cp.shulker().getBoundingBox();
-            // A thin slab straddling THIS collider's TOP face (whatever its real height is): catches an
-            // entity whose feet rest on it (feet Y ~= box.maxY) without dragging along something merely
-            // beside it.
-            BoundingBox top = new BoundingBox(
-                box.getMinX(), box.getMaxY() - 0.05, box.getMinZ(),
-                box.getMaxX(), box.getMaxY() + 0.30, box.getMaxZ());
+            BoundingBox top = colliderTopSlab(cp.shulker().getBoundingBox());
             for (Entity e : w.getNearbyEntities(top)) {
                 if (isMechanismEntity(e)) continue;   // never lift ANY mechanism's own colliders/carriers/etc.
                 // A passenger (e.g. a player SEATED on a seat shulker) is already carried up by its vehicle;
@@ -1012,6 +1006,15 @@ final class BasicMechanism implements Mechanism {
             Location to = e.getLocation().add(0, dy, 0);
             e.teleport(to, PlayerTeleportEvent.TeleportCause.PLUGIN, CARRY_FLAGS);
         }
+    }
+
+    /** A thin slab straddling a collider's TOP face (whatever its real height is): catches an entity whose feet
+     *  rest on it (feet Y ~= box.maxY) without catching something merely beside it. Shared by carryRidersUp and
+     *  the logout check for a player standing on a deck (MechanismRiderLogout). */
+    static BoundingBox colliderTopSlab(BoundingBox box) {
+        return new BoundingBox(
+            box.getMinX(), box.getMaxY() - 0.05, box.getMinZ(),
+            box.getMaxX(), box.getMaxY() + 0.30, box.getMaxZ());
     }
 
     /** True for any DefCoreLib mechanism entity — collider shulker, carrier, vehicle, parent, or display —
@@ -1506,6 +1509,7 @@ final class BasicMechanism implements Mechanism {
         // Carried cushions step off their colliders onto the landed blocks, riders still seated. After the
         // consumer hook, so a consumer (BlockShips) can first move a seat's player back onto its cushion.
         landCarriedCushions(landedCells, landingCells, rotation, upright);
+        MechanismRiderLogout.noteLanding(id, landingCells);   // only if a logged-out rider's record names us
 
         // Unregister now so the tick loop won't re-touch this disassembled mech. For an owned vehicle, DEFER
         // removing the mech's display entities one tick so the just-placed blocks' own displays get a frame to

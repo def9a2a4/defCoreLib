@@ -1584,7 +1584,7 @@ showcases:
   - id: test_engine_returns_lava_bucket
     name: "Test: engine returns the lava bucket's bucket"
     test_only: true
-    assert_at: 140
+    assert_at: 300   # a fan is a light load (2 of 10): the first burn, which pulls the lava, comes ~5 s in
     blocks:
       # A fan above each engine: it draws power whenever it has it, so the engine burns (a drill with
       # nothing to bore counts as no load at all and the lava would never be burned).
