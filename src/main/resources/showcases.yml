@@ -1306,7 +1306,7 @@ showcases:
     expect:
       - { type: mechanism_swung, value: "0,0,1", at: [0, 0, 0] }
       - { type: entity_count, value: "painting=0", at: [-3, -2, -1], to: [3, 3, 3] }
-      - { type: entity_count, value: "item:PAINTING=1", at: [-3, -2, -1], to: [3, 3, 3] }
+      - { type: entity_count, value: "item:PAINTING=1", at: [-3, -2, -1], to: [5, 3, 6] }   # wide: a drop slides
       - { type: entity_count, value: "item_frame=1", at: [-1, 0, 1], to: [1, 0, 1] }   # rolled onto a side
       - { type: entity_count, value: "item:DIAMOND=0", at: [-3, -2, -1], to: [3, 3, 3] }
 
@@ -1639,8 +1639,7 @@ showcases:
       - { tick: 20, do: save, at: [0, 0, 0] }
       - { tick: 30, do: disassemble_mechanism, at: [0, 0, 0] }
     expect:
-      - { type: block_type, value: OAK_PLANKS, at: [0, 0, 0] }   # landed…
-      - { type: mechanism_state_file, at: [0, 0, 0] }            # …but the file waits for a world save
+      - { type: block_type, value: OAK_PLANKS, at: [0, 0, 0] }   # landed (its state file is now a teardown record)
     after_restart:
       - { type: mechanism_count, value: "0", at: [-1, -1, -1], to: [1, 1, 1] }
       - { type: block_type, value: OAK_PLANKS, at: [0, 0, 0] }
