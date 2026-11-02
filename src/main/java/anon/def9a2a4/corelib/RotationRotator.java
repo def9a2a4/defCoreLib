@@ -78,6 +78,7 @@ final class RotationRotator implements Listener {
     // Swings committed per hinge — survives a swing's transient teardown so the showcase harness can
     // assert a swing actually happened.
     private final Map<CustomBlockRegistry.LocationKey, Integer> swingCount = new HashMap<>();
+    private final Map<CustomBlockRegistry.LocationKey, List<Block>> lastSwung = new HashMap<>();
 
     RotationRotator(JavaPlugin plugin, CustomBlockRegistry registry,
                     RotationNetwork network, MechanismRegistry mechRegistry,
@@ -118,6 +119,11 @@ final class RotationRotator implements Listener {
     /** Number of swings this hinge has committed since load (for the showcase test harness). */
     int swingCount(Block head) {
         return swingCount.getOrDefault(CustomBlockRegistry.LocationKey.of(head), 0);
+    }
+
+    /** The blocks this hinge's latest swing carried (for the showcase test harness); empty if none. */
+    List<Block> lastSwungBlocks(Block head) {
+        return lastSwung.getOrDefault(CustomBlockRegistry.LocationKey.of(head), List.of());
     }
 
     /** Whether this rotator's pivot head is mid-swing — its head stays in-world during a swing, so an
@@ -213,6 +219,7 @@ final class RotationRotator implements Listener {
         network.addTransientDemand(key, SWING_DEMAND);
 
         swingCount.merge(key, 1, Integer::sum);
+        lastSwung.put(key, List.copyOf(planks));
         startSwing(key, mech, speed, target);
     }
 

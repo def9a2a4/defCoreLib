@@ -186,7 +186,7 @@ showcases:
       - { block: "LEVER", at: [-1, 0, -1], data: "[face=floor,facing=north,powered=true]" }
     activate: { pulse: [1, 0, 0] }   # redstone east of the hinge → rising edge → swing (not near the motor)
     expect:
-      - { type: mechanism_swung, at: [0, 0, 0] }
+      - { type: mechanism_swung, value: "0,0,1", at: [0, 0, 0] }
 
   - id: redstone_motor_ceiling_rotator
     name: "Motor → Ceiling Rotator"
@@ -206,7 +206,7 @@ showcases:
       - { block: "OAK_PLANKS", at: [0, 1, 0] }
     activate: { pulse: [1, 0, 0] }   # redstone east of the hinge → rising edge → swing
     expect:
-      - { type: mechanism_swung, at: [0, 0, 0] }
+      - { type: mechanism_swung, value: "0,1,0", at: [0, 0, 0] }
 
   # ── Gears: power turning a 90° corner ───────────────────────────────────
   - id: gear_corner
@@ -1064,12 +1064,13 @@ showcases:
       - { tick: 5, do: summon, entity: item_frame, face: east, item: DIAMOND, at: [1, 1, 0] }
       - { tick: 5, do: summon, entity: painting, face: west, art: kebab, at: [-1, 1, 0] }
     expect:
-      - { type: mechanism_swung, at: [0, 0, 0] }
+      - { type: mechanism_swung, value: "0,1,0", at: [0, 0, 0] }
       - { type: entity_count, value: "item_frame=1", at: [-1, 1, -1], to: [1, 1, 1] }
       - { type: entity_count, value: "painting=1", at: [-1, 1, -1], to: [1, 1, 1] }
       - { type: entity_count, value: "item_frame=0", at: [1, 1, 0] }   # it turned with the plank…
       - { type: entity_count, value: "painting=0", at: [-1, 1, 0] }    # …and so did the painting
       - { type: entity_count, value: "item=0", at: [-3, -1, -3], to: [3, 3, 3] }   # nothing dropped
+      - { type: frame_rotation, value: "DIAMOND=NONE", at: [-1, 1, -1], to: [1, 1, 1] }   # a wall frame's item doesn't turn
 
   # Cushion seat (26.3+; SKIPs on older servers). A cushion on the same turning plank, with a still pig
   # seated on it, must ride the turn (mounted on the plank's collider) and step back onto the plank with
@@ -1086,7 +1087,7 @@ showcases:
     actions:
       - { tick: 5, do: summon, entity: cushion, rider: pig, at: [0, 2, 0] }
     expect:
-      - { type: mechanism_swung, at: [0, 0, 0] }
+      - { type: mechanism_swung, value: "0,1,0", at: [0, 0, 0] }
       - { type: entity_count, value: "cushion=1", at: [0, 2, 0] }
       - { type: riding, value: "pig/cushion", at: [0, 2, 0], to: [0, 3, 0] }
       - { type: entity_count, value: "item=0", at: [-3, -1, -3], to: [3, 4, 3] }
@@ -1111,11 +1112,180 @@ showcases:
       - { tick: 5, do: summon, entity: painting, face: east, art: kebab, at: [1, 0, 1] }
       - { tick: 5, do: summon, entity: item_frame, face: up, item: DIAMOND, at: [0, 1, 1] }
     expect:
-      - { type: mechanism_swung, at: [0, 0, 0] }
+      - { type: mechanism_swung, value: "0,0,1", at: [0, 0, 0] }
       - { type: entity_count, value: "painting=0", at: [-3, -2, -1], to: [3, 3, 3] }
       - { type: entity_count, value: "item:PAINTING=1", at: [-3, -2, -1], to: [3, 3, 3] }
       - { type: entity_count, value: "item_frame=1", at: [-1, 0, 1], to: [1, 0, 1] }   # rolled onto a side
       - { type: entity_count, value: "item:DIAMOND=0", at: [-3, -2, -1], to: [3, 3, 3] }
+
+  # The floor hinge (the ceiling test's mirror): a rotator sitting ON the plank turns it in place, and the frame
+  # and painting on its east/west faces must land on its new north/south faces. Power comes down from the motor
+  # above; the pulse is beside the hinge, above the frame's cell.
+  - id: test_carried_frame_painting_floor
+    name: "Test: item frame + painting ride a floor rotator"
+    test_only: true
+    blocks:
+      - { id: "mech:redstone_motor", facing: down, at: [0, 2, 0] }
+      - { id: "mech:rotator",        facing: down, at: [0, 1, 0] }   # floor hinge, Y axis → turns [0,0,0]
+    vanilla:
+      - { block: "OAK_PLANKS", at: [0, 0, 0] }
+    activate: { pulse: [1, 1, 0] }
+    actions:
+      - { tick: 5, do: summon, entity: item_frame, face: east, item: DIAMOND, at: [1, 0, 0] }
+      - { tick: 5, do: summon, entity: painting, face: west, art: kebab, at: [-1, 0, 0] }
+    expect:
+      - { type: mechanism_swung, value: "0,0,0", at: [0, 1, 0] }
+      - { type: entity_count, value: "item_frame=1", at: [-1, 0, -1], to: [1, 0, 1] }
+      - { type: entity_count, value: "painting=1", at: [-1, 0, -1], to: [1, 0, 1] }
+      - { type: entity_count, value: "item_frame:EAST=0", at: [-1, 0, -1], to: [1, 0, 1] }   # turned to N/S
+      - { type: entity_count, value: "painting:WEST=0", at: [-1, 0, -1], to: [1, 0, 1] }
+      - { type: frame_rotation, value: "DIAMOND=NONE", at: [-1, 0, -1], to: [1, 0, 1] }
+      - { type: entity_count, value: "item=0", at: [-3, -1, -3], to: [3, 3, 3] }
+
+  # A 2×2 painting (even width AND height, so its centre sits on a cell edge, not mid-cell) on the north face of a
+  # 3×2 wall. The two slime blocks bond the wall to the ceiling hinge, which turns it 90° about its middle column:
+  # the wall ends up along Z and the painting on its east or west face (by spin direction), never still facing
+  # north, with the same art and nothing dropped. The wall is 3 wide so the painting is fully backed whichever
+  # side of the summon cell its second column falls.
+  - id: test_carried_painting_2x2
+    name: "Test: 2x2 painting rides a turning wall"
+    test_only: true
+    assert_at: 160
+    blocks:
+      - { id: "mech:redstone_motor", facing: down, at: [0, -1, 0] }
+      - { id: "mech:rotator",        facing: up,   at: [0, 0, 0] }
+    vanilla:
+      - { block: "SLIME_BLOCK", at: [0, 1, 0] }
+      - { block: "SLIME_BLOCK", at: [0, 2, 0] }
+      - { block: "OAK_PLANKS", at: [-1, 1, 0] }
+      - { block: "OAK_PLANKS", at: [1, 1, 0] }
+      - { block: "OAK_PLANKS", at: [-1, 2, 0] }
+      - { block: "OAK_PLANKS", at: [1, 2, 0] }
+    activate: { pulse: [1, 0, 0] }
+    actions:
+      - { tick: 5, do: summon, entity: painting, face: north, art: bust, at: [0, 1, -1] }
+    expect:
+      - { type: mechanism_swung, value: "0,1,0; 0,2,0; -1,1,0; 1,1,0; -1,2,0; 1,2,0", at: [0, 0, 0] }
+      - { type: block_type, value: AIR, at: [-1, 1, 0], to: [-1, 2, 0] }   # the wall turned onto the Z line
+      - { type: block_type, value: AIR, at: [1, 1, 0], to: [1, 2, 0] }
+      - { type: material_total, value: "OAK_PLANKS=4", at: [0, 1, -1], to: [0, 2, 1] }
+      - { type: entity_count, value: "painting:bust=1", at: [-2, 0, -2], to: [2, 3, 2] }
+      - { type: entity_count, value: "painting:NORTH=0", at: [-2, 0, -2], to: [2, 3, 2] }
+      - { type: entity_count, value: "item=0", at: [-3, -1, -3], to: [3, 4, 3] }
+
+  # Off the hinge's axis everything MOVES, not just turns: a slime block bonds a plank to the ceiling hinge, and
+  # the plank swings from [1,1,0] round to [0,1,±1] (by spin direction). What hangs on it must follow to the
+  # matching cells — a floor frame on top, a wall frame on its far (east) face two cells out, a painting on its
+  # south face. Floor frames turn their item a quarter: a map has 4 steps a turn (one step), any other item 8
+  # (two). A wall frame's item doesn't turn at all.
+  - id: test_carried_frames_move_and_turn
+    name: "Test: frames + painting follow a swung plank"
+    test_only: true
+    assert_at: 120
+    blocks:
+      - { id: "mech:redstone_motor", facing: down, at: [0, -1, 0] }
+      - { id: "mech:rotator",        facing: up,   at: [0, 0, 0] }
+    vanilla:
+      - { block: "SLIME_BLOCK", at: [0, 1, 0] }
+      - { block: "OAK_PLANKS", at: [1, 1, 0] }
+    activate: { pulse: [1, 0, 0] }
+    actions:
+      - { tick: 5, do: summon, entity: item_frame, face: up, item: FILLED_MAP, at: [0, 2, 0] }   # on the slime
+      - { tick: 5, do: summon, entity: item_frame, face: up, item: DIAMOND, at: [1, 2, 0] }      # on the plank
+      - { tick: 5, do: summon, entity: item_frame, face: east, item: EMERALD, at: [2, 1, 0] }
+      - { tick: 5, do: summon, entity: painting, face: south, art: kebab, at: [1, 1, 1] }
+    expect:
+      - { type: mechanism_swung, value: "0,1,0; 1,1,0", at: [0, 0, 0] }
+      - { type: block_type, value: SLIME_BLOCK, at: [0, 1, 0] }
+      - { type: block_type, value: AIR, at: [1, 1, 0] }
+      - { type: material_total, value: "OAK_PLANKS=1", at: [0, 1, -1], to: [0, 1, 1] }
+      - { type: frame_rotation, value: "FILLED_MAP=CLOCKWISE_45|COUNTER_CLOCKWISE_45", at: [0, 2, 0] }
+      - { type: frame_rotation, value: "DIAMOND=CLOCKWISE|COUNTER_CLOCKWISE", at: [0, 2, -1], to: [0, 2, 1] }
+      - { type: entity_count, value: "item_frame=0", at: [1, 2, 0] }
+      - { type: frame_rotation, value: "EMERALD=NONE", at: [0, 1, -2], to: [0, 1, 2] }
+      - { type: entity_count, value: "item_frame=0", at: [2, 1, 0] }
+      - { type: entity_count, value: "painting=1", at: [-1, 1, -1], to: [1, 1, 1] }
+      - { type: entity_count, value: "painting:SOUTH=0", at: [-1, 1, -1], to: [1, 1, 1] }
+      - { type: entity_count, value: "item=0", at: [-3, -1, -3], to: [3, 3, 3] }
+
+  # Landing into a filled cell: the plank turns in place, but stone now stands where its frame and painting would
+  # land (its new north and south faces), so neither can hang there. Each must come back as its items exactly
+  # once (frame + diamond, painting) — never vanish, never dupe, never overwrite the stone.
+  - id: test_carried_frame_blocked_drops
+    name: "Test: frame + painting drop when their landing cell is filled"
+    test_only: true
+    blocks:
+      - { id: "mech:redstone_motor", facing: down, at: [0, -1, 0] }
+      - { id: "mech:rotator",        facing: up,   at: [0, 0, 0] }
+    vanilla:
+      - { block: "OAK_PLANKS", at: [0, 1, 0] }
+      - { block: "STONE", at: [0, 1, 1] }
+      - { block: "STONE", at: [0, 1, -1] }
+    activate: { pulse: [1, 0, 0] }
+    actions:
+      - { tick: 5, do: summon, entity: item_frame, face: east, item: DIAMOND, at: [1, 1, 0] }
+      - { tick: 5, do: summon, entity: painting, face: west, art: kebab, at: [-1, 1, 0] }
+    expect:
+      - { type: mechanism_swung, value: "0,1,0", at: [0, 0, 0] }
+      - { type: block_type, value: STONE, at: [0, 1, 1] }
+      - { type: block_type, value: STONE, at: [0, 1, -1] }
+      - { type: entity_count, value: "item_frame=0", at: [-3, -1, -3], to: [3, 3, 3] }
+      - { type: entity_count, value: "painting=0", at: [-3, -1, -3], to: [3, 3, 3] }
+      - { type: entity_count, value: "item:ITEM_FRAME=1", at: [-3, -1, -3], to: [3, 3, 3] }
+      - { type: entity_count, value: "item:DIAMOND=1", at: [-3, -1, -3], to: [3, 3, 3] }
+      - { type: entity_count, value: "item:PAINTING=1", at: [-3, -1, -3], to: [3, 3, 3] }
+
+  # Cushions off the axis and on a carpet (26.3+; SKIPs on older servers). A slime block bonds a carpet on top of
+  # it and a plank beside it to the ceiling hinge. The cushion on the carpet (pig seated) rides the slime's collider
+  # — a carpet has none — and stays put on the carpet; the riderless one on the plank moves round with it to
+  # [0,2,±1]. Neither pops off as an item.
+  - id: test_carried_cushion_carpet_and_moved
+    name: "Test: cushions on a carpet and on a swung plank"
+    test_only: true
+    assert_at: 120
+    blocks:
+      - { id: "mech:redstone_motor", facing: down, at: [0, -1, 0] }
+      - { id: "mech:rotator",        facing: up,   at: [0, 0, 0] }
+    vanilla:
+      - { block: "SLIME_BLOCK", at: [0, 1, 0] }
+      - { block: "WHITE_CARPET", at: [0, 2, 0] }
+      - { block: "OAK_PLANKS", at: [1, 1, 0] }
+    activate: { pulse: [1, 0, 0] }
+    actions:
+      - { tick: 5, do: summon, entity: cushion, rider: pig, at: [0, 2, 0] }   # rests on the carpet
+      - { tick: 5, do: summon, entity: cushion, at: [1, 2, 0] }
+    expect:
+      - { type: mechanism_swung, value: "0,1,0; 0,2,0; 1,1,0", at: [0, 0, 0] }
+      - { type: block_type, value: WHITE_CARPET, at: [0, 2, 0] }
+      - { type: riding, value: "pig/cushion", at: [0, 2, 0], to: [0, 3, 0] }
+      - { type: entity_count, value: "cushion=2", at: [0, 2, -1], to: [0, 2, 1] }
+      - { type: entity_count, value: "cushion=0", at: [1, 2, 0] }
+      - { type: entity_count, value: "item=0", at: [-3, -1, -3], to: [3, 4, 3] }
+
+  # A cushion whose landing cell is filled (26.3+; SKIPs on older servers): the plank swings round under stone, so
+  # the cushion on it can't land on top. It must come back as exactly one item — not teleported into the stone,
+  # not lost.
+  - id: test_carried_cushion_blocked_drops
+    name: "Test: cushion drops when its landing cell is filled"
+    test_only: true
+    assert_at: 120
+    blocks:
+      - { id: "mech:redstone_motor", facing: down, at: [0, -1, 0] }
+      - { id: "mech:rotator",        facing: up,   at: [0, 0, 0] }
+    vanilla:
+      - { block: "SLIME_BLOCK", at: [0, 1, 0] }
+      - { block: "OAK_PLANKS", at: [1, 1, 0] }
+      - { block: "STONE", at: [0, 2, 1] }
+      - { block: "STONE", at: [0, 2, -1] }
+    activate: { pulse: [1, 0, 0] }
+    actions:
+      - { tick: 5, do: summon, entity: cushion, at: [1, 2, 0] }
+    expect:
+      - { type: mechanism_swung, value: "0,1,0; 1,1,0", at: [0, 0, 0] }
+      - { type: block_type, value: STONE, at: [0, 2, 1] }
+      - { type: block_type, value: STONE, at: [0, 2, -1] }
+      - { type: entity_count, value: "cushion=0", at: [-3, -1, -3], to: [3, 4, 3] }
+      - { type: entity_count, value: "item=1", at: [-3, -1, -3], to: [3, 4, 3] }
 
   # A chain hoist broken mid-descent must give back all its chain: a descent reserves its whole budget from
   # storage up front, and breaking the hoist lands the links paid out so far (as blocks) while the dying hoist
@@ -1151,7 +1321,7 @@ showcases:
       - { block: "LECTERN", at: [0, 1, 0], data: "[facing=north]", contents: [WRITABLE_BOOK] }
     activate: { pulse: [1, 0, 0] }
     expect:
-      - { type: mechanism_swung, at: [0, 0, 0] }
+      - { type: mechanism_swung, value: "0,1,0", at: [0, 0, 0] }
       - { type: block_type, value: LECTERN, at: [0, 1, 0] }
       - { type: contents, at: [0, 1, 0], items: [WRITABLE_BOOK] }
       - { type: entity_count, value: "item=0", at: [-3, -1, -3], to: [3, 3, 3] }
@@ -1190,7 +1360,7 @@ showcases:
       - { id: "mech:mechanical_dispenser",  facing: down, at: [0, 1, 0], contents: ["ARROW x16", "DIAMOND x3"] }
     activate: { pulse: [1, 0, 0] }
     expect:
-      - { type: mechanism_swung, at: [0, 0, 0] }
+      - { type: mechanism_swung, value: "0,1,0", at: [0, 0, 0] }
       - { type: block_type, value: DISPENSER, at: [0, 1, 0] }
       - { type: contents, at: [0, 1, 0], items: ["ARROW x16", "DIAMOND x3"] }
       - { type: entity_count, value: "item=0", at: [-3, -2, -3], to: [3, 3, 3] }

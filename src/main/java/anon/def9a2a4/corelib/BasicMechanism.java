@@ -1927,8 +1927,13 @@ final class BasicMechanism implements Mechanism {
                             new Vector3f((float) tag.dx(), 0, (float) tag.dz()), new Vector3f());
                         loc = new Location(anchor.getWorld(), anchor.getX() + 0.5 + off.x,
                             anchor.getY() + tag.dy(), anchor.getZ() + 0.5 + off.z);
-                        // The cushion's own cell gets the same protection check as the blocks and frames.
-                        if (!mayOccupy(loc.getBlock(), anchorData)) loc = null;
+                        // The cushion's own cell gets the same protection check as the blocks and frames, and
+                        // must be open — unless it is the anchor's own cell (a carpet, a slab).
+                        Block cell = loc.getBlock();
+                        if (!mayOccupy(cell, anchorData)
+                                || (!cell.equals(anchor) && !MovableBlocks.isEmptyOrPassable(cell.getType()))) {
+                            loc = null;
+                        }
                     }
                     if (loc == null) {
                         dropCushion(c, c.getLocation()); // where it rides: open air, not inside the landed block

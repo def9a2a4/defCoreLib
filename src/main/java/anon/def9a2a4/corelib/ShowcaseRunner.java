@@ -61,7 +61,7 @@ final class ShowcaseRunner implements Listener {
     static final java.util.Set<String> EXPECT_TYPES = java.util.Set.of("spinning", "network_powered", "state",
             "mechanism_swung", "hoist_moved", "piston_stroked", "block_type", "persisted_mechanism_intact",
             "entity_count", "riding", "contents", "material_total", "mechanism_count", "mechanism_state_file",
-            "engine_fuel");
+            "engine_fuel", "frame_rotation");
     static final java.util.Set<String> ACTION_KINDS = java.util.Set.of("set", "corrupt_persisted_mechanism",
             "summon", "break", "drop", "persist_mechanism", "disassemble_mechanism", "save");
 
@@ -334,8 +334,21 @@ final class ShowcaseRunner implements Listener {
             case "state" -> {
                 return ex.value() != null && ex.value().equals(registry.getState(block));
             }
+            // With a value (`"0,1,0; 1,1,0"`, cells relative to the origin), the latest swing must have carried
+            // exactly those blocks — a hinge that swings the wrong block still "swung".
             case "mechanism_swung" -> {
-                return rotator != null && rotator.swingCount(block) > 0;
+                if (rotator == null || rotator.swingCount(block) == 0) return false;
+                if (ex.value() == null || ex.value().isBlank()) return true;
+                java.util.Set<String> want = new java.util.TreeSet<>();
+                for (String cell : ex.value().split(";")) want.add(cell.replace(" ", ""));
+                java.util.Set<String> got = new java.util.TreeSet<>();
+                for (Block b : rotator.lastSwungBlocks(block)) {
+                    got.add((b.getX() - origin.getBlockX()) + "," + (b.getY() - origin.getBlockY()) + ","
+                            + (b.getZ() - origin.getBlockZ()));
+                }
+                if (!want.equals(got)) plugin.getLogger().info("[showcase] " + spec.id + ": swung " + got
+                        + ", expected " + want);
+                return want.equals(got);
             }
             // Both mirror mechanism_swung: a COUNTER, not a live-state read, because the stroke assembles a
             // mechanism and tears it down again — by assert time the machine is idle either way, so only a
@@ -368,22 +381,35 @@ final class ShowcaseRunner implements Listener {
                 String v = ex.value();
                 int eq = v == null ? -1 : v.indexOf('=');
                 if (eq < 0) return false;
-                // `item:MATERIAL` narrows dropped items to one material.
+                // A `:QUALIFIER` narrows the count: `item:MATERIAL` (dropped items of one material),
+                // `painting:NORTH` / `item_frame:UP` (hanging the way it faces), `painting:bust` (one art).
                 String key = v.substring(0, eq);
-                org.bukkit.Material only = null;
+                String qual = null;
                 int colon = key.indexOf(':');
                 if (colon > 0) {
-                    only = org.bukkit.Material.matchMaterial(key.substring(colon + 1));
+                    qual = key.substring(colon + 1).trim();
                     key = key.substring(0, colon);
-                    if (only == null) return false;
                 }
                 org.bukkit.entity.EntityType t = entityType(key);
                 if (t == null) return false;
+                org.bukkit.Material only = null;
+                org.bukkit.block.BlockFace facing = null;
+                if (qual != null && t == org.bukkit.entity.EntityType.ITEM) {
+                    only = org.bukkit.Material.matchMaterial(qual);
+                    if (only == null) return false;
+                } else if (qual != null) {
+                    try {
+                        facing = org.bukkit.block.BlockFace.valueOf(qual.toUpperCase(java.util.Locale.ROOT));
+                    } catch (IllegalArgumentException notAFace) { /* an art key */ }
+                }
                 int want = Integer.parseInt(v.substring(eq + 1).trim());
                 int n = 0;
                 for (org.bukkit.entity.Entity e : origin.getWorld().getNearbyEntities(box(origin, ex.at(), ex.to()))) {
                     if (e.getType() != t) continue;
                     if (only != null && !(e instanceof org.bukkit.entity.Item it && it.getItemStack().getType() == only)) continue;
+                    if (facing != null && !(e instanceof org.bukkit.entity.Hanging h && h.getFacing() == facing)) continue;
+                    if (qual != null && only == null && facing == null
+                            && !(e instanceof org.bukkit.entity.Painting p && artKey(p).equals(qual))) continue;
                     n += e instanceof org.bukkit.entity.Item it ? it.getItemStack().getAmount() : 1;
                 }
                 if (n != want) plugin.getLogger().info("[showcase] " + spec.id + ": " + v.substring(0, eq)
@@ -402,6 +428,29 @@ final class ShowcaseRunner implements Listener {
                     if (e.getType() == rider && e.getVehicle() != null && e.getVehicle().getType() == vehicle) return true;
                 }
                 return false;
+            }
+            // Item frames in the box holding MAT: value `MAT=ROT|ROT…` (Rotation names). At least one, and every
+            // one turned to one of those — a floor frame on a 90° turntable turns its item one quarter.
+            case "frame_rotation" -> {
+                String v = ex.value();
+                int eq = v == null ? -1 : v.indexOf('=');
+                org.bukkit.Material m = eq < 0 ? null : org.bukkit.Material.matchMaterial(v.substring(0, eq));
+                if (m == null) return false;
+                java.util.Set<org.bukkit.Rotation> allowed = java.util.EnumSet.noneOf(org.bukkit.Rotation.class);
+                for (String r : v.substring(eq + 1).split("\\|")) {
+                    allowed.add(org.bukkit.Rotation.valueOf(r.trim().toUpperCase(java.util.Locale.ROOT)));
+                }
+                int seen = 0;
+                for (org.bukkit.entity.Entity e : origin.getWorld().getNearbyEntities(box(origin, ex.at(), ex.to()))) {
+                    if (!(e instanceof org.bukkit.entity.ItemFrame f) || f.getItem().getType() != m) continue;
+                    seen++;
+                    if (!allowed.contains(f.getRotation())) {
+                        plugin.getLogger().info("[showcase] " + spec.id + ": " + m + " frame at rotation "
+                                + f.getRotation() + ", expected " + allowed);
+                        return false;
+                    }
+                }
+                return seen > 0;
             }
             case "persisted_mechanism_intact" -> {
                 Probe p = probes.get(probeKey(spec, block));
@@ -818,7 +867,9 @@ final class ShowcaseRunner implements Listener {
         Block cell = blockAt(origin, a.at());
         org.bukkit.block.BlockFace face = x.get("face") == null ? null
                 : org.bukkit.block.BlockFace.valueOf(x.get("face").toUpperCase(java.util.Locale.ROOT));
-        Location loc = face != null ? cell.getLocation().add(0.5, 0.5, 0.5) : cell.getLocation().add(0.5, 0, 0.5);
+        // A hanging entity goes mid-cell; anything else rests on whatever is in the cell (a carpet, a slab).
+        Location loc = face != null ? cell.getLocation().add(0.5, 0.5, 0.5)
+                : cell.getLocation().add(0.5, cell.getType().isAir() ? 0 : cell.getBoundingBox().getMaxY() - cell.getY(), 0.5);
         org.bukkit.entity.Entity e = origin.getWorld().spawn(loc,
                 (Class<org.bukkit.entity.Entity>) type.getEntityClass(), ent -> {
             if (face != null && ent instanceof org.bukkit.entity.Hanging h) h.setFacingDirection(face, true);
@@ -863,6 +914,11 @@ final class ShowcaseRunner implements Listener {
             }
         }
         return null;
+    }
+
+    private static String artKey(org.bukkit.entity.Painting p) {
+        org.bukkit.NamespacedKey k = org.bukkit.Registry.ART.getKey(p.getArt());
+        return k == null ? "" : k.getKey();
     }
 
     private static org.bukkit.entity.@Nullable EntityType entityType(@Nullable String key) {
