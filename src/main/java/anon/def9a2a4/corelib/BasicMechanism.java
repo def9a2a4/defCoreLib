@@ -743,6 +743,17 @@ final class BasicMechanism implements Mechanism {
 
     /** Build a serializable snapshot of this mechanism for persistence/recovery. Main thread only
      *  (reads live entity/block state). Display/particle configs are re-derived on recovery. */
+    /** The entities this mechanism is built from (frame, displays, banners, colliders), by UUID. */
+    Set<UUID> boundEntityIds() {
+        Set<UUID> ids = new HashSet<>();
+        if (vehicle != null) ids.add(vehicle.getUniqueId());
+        if (parent != null) ids.add(parent.getUniqueId());
+        for (List<Display> g : displaysPerBlock) for (Display d : g) ids.add(d.getUniqueId());
+        for (List<Display> g : bannerDisplaysPerBlock) for (Display d : g) ids.add(d.getUniqueId());
+        for (ColliderPair cp : colliders) { ids.add(cp.carrier().getUniqueId()); ids.add(cp.shulker().getUniqueId()); }
+        return ids;
+    }
+
     MechanismState snapshotState() {
         MechanismState st = new MechanismState();
         st.mechId = id;
@@ -1296,11 +1307,14 @@ final class BasicMechanism implements Mechanism {
                 if (mb.wasBare) rebareTargets.add(target);
                 landBanners(target, mb, snappedYaw, upright);
                 if (mb.glueOffsets != null) { if (ChainHoistManager.isHoist(target, registry)) { landedHoistTargets.add(target); landedHoistOffsets.add(mb.glueOffsets); } else { landedAnchorTargets.add(target); landedAnchorOffsets.add(mb.glueOffsets); } }
-            } else if (relanding && mb.blockData != null && target.getType() == mb.blockData.getMaterial()) {
+            } else if (relanding && mb.blockData != null
+                    && (target.getType() == mb.blockData.getMaterial() || mb.wasBare)) {
                 // Landed before the crash, contents included; placing again would duplicate it. Ahead of the
                 // fragile branch, which would break (drop) a landed plant and place it again. Still a landed
-                // cell, so a carried frame finds its saved self (spawn's UUID guard) instead of paying again.
+                // cell, so a carried frame finds its saved self (spawn's UUID guard) instead of paying again,
+                // and glue keeps it. A bare shaft is re-bared to a chain once landed, so its material differs.
                 fallbackDrop = false;
+                placed.add(target);
                 landedCells.put(i, target);
             } else if (FragileBlocks.isFragile(target.getType())) {
                 target.breakNaturally();

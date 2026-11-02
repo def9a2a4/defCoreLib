@@ -1144,46 +1144,7 @@ public class MechanismRegistry implements org.bukkit.event.Listener {
 
             // Collider: marker ArmorStand carrier + Shulker passenger
             if (mb.collision.enabled()) {
-                final int blockIdx = i;
-                final MechanismBlockData mbf = mb;
-                final int dynLight = colliderLight.getOrDefault(i, 0); // 0 = no light on this collider
-                Vector3f initOff = mb.localTransform.getTranslation(new Vector3f());
-                Vector3f off = mb.collision.offset();
-                // -0.5 Y: the shulker box (attachedFace DOWN, marker, peek 0) is feet-anchored, so anchor
-                // the carrier at the cell bottom to centre a full box. The block-local collider offset is
-                // added on top; at assembly the mechanism is at identity rotation so it applies directly
-                // (BasicMechanism.rotate rotates it thereafter). The -0.5 is world-space, never rotated.
-                Location carrierLoc = pivot.clone().add(initOff.x + off.x, initOff.y - 0.5 + off.y, initOff.z + off.z);
-
-                ArmorStand carrier = pivot.getWorld().spawn(carrierLoc, ArmorStand.class, as -> {
-                    as.setInvisible(true); as.setGravity(false); as.setSilent(true);
-                    as.setPersistent(true); as.setInvulnerable(true);
-                    as.setMarker(true); // zero height → shulker at exact carrier position
-                    as.addScoreboardTag("corelib:mech:" + mechId + ":" + blockIdx + ":carrier");
-                });
-                Shulker shulker = pivot.getWorld().spawn(carrierLoc, Shulker.class, s -> {
-                    s.setAI(false); s.setInvisible(true); s.setGravity(false);
-                    s.setSilent(true); s.setPersistent(true);
-                    s.setCollidable(true);
-                    s.setPeek(0);
-                    s.setAttachedFace(org.bukkit.block.BlockFace.DOWN);
-                    s.setGlowing(colliderGlowEnabled);
-                    // Resize the hitbox for sub-cube colliders. Only touch the attribute when size != 1.0
-                    // so the full-block path stays byte-identical to before. Set before addPassenger.
-                    if (mbf.collision.size() != 1.0f) {
-                        org.bukkit.attribute.Attribute scaleAttr = ScaleAttributeCompat.getScale();
-                        org.bukkit.attribute.AttributeInstance ai =
-                            scaleAttr != null ? s.getAttribute(scaleAttr) : null;
-                        if (ai != null) ai.setBaseValue(mbf.collision.size());
-                        else warnScaleUnavailable();
-                    }
-                    s.addScoreboardTag("corelib:mech:" + mechId + ":" + blockIdx + ":collider");
-                    // DynLight: tag the collider Shulker (a free carrier at the block's real cell, not
-                    // a mounted display) so its light emits at the block, not the mechanism pivot.
-                    if (dynLight > 0) s.addScoreboardTag(DynLightTags.tag(dynLight));
-                });
-                carrier.addPassenger(shulker);
-                colliders.add(new ColliderPair(carrier, shulker, i));
+                colliders.add(spawnColliderPair(pivot, mechId, i, mb, colliderLight.getOrDefault(i, 0)));
             }
         }
 
@@ -1897,12 +1858,29 @@ public class MechanismRegistry implements org.bukkit.event.Listener {
             }
         }
 
+        // 2b. Teardowns a crash undid: redone from their records (their own entities, having no state file, are
+        //     reaped below as orphans).
+        redoCrashTeardowns(chunk, present, vehiclesHere);
+
         // 3. Reap orphans LAST — after enrollment set mechIdsBeingRecovered and Phase 2 may have gone active —
         //    so a just-adopted mechanism's entities are never culled. All mechanism entities are
         //    setPersistent(true) and never despawn naturally, so this is what prevents a permanent leak of a
         //    tagged entity whose mechanism is gone.
+        Map<UUID, Set<UUID>> bound = new HashMap<>();
         for (int i = 0; i < reapable.size(); i++) {
             UUID id = reapableId.get(i);
+            BasicMechanism live = activeMechanisms.get(id);
+            if (live != null) {
+                // A second copy of a live mechanism's frame or colliders: a crash left the ship on disk in two
+                // chunks written at different times, and recovery bound the other copy. Left alone it stood
+                // there for good as a frozen ghost with invisible colliders. Its displays ride its frame.
+                Entity e = reapable.get(i);
+                if (isFrameOrCollider(e, id)
+                        && !bound.computeIfAbsent(id, k -> live.boundEntityIds()).contains(e.getUniqueId())) {
+                    removeWithPassengers(e);
+                }
+                continue;
+            }
             if (!activeMechanisms.containsKey(id)
                     && !mechIdsBeingRecovered.contains(id)
                     && !persistence.hasMetadata(worldName, id)) {
@@ -1912,32 +1890,179 @@ public class MechanismRegistry implements org.bukkit.event.Listener {
     }
 
     /**
-     * The mechanism was landed or destroyed, but the server stopped before the chunks holding its entities were
-     * written, so they came back without the result. Redo it rather than revive it: a revived mechanism had no
-     * consumer state left (BlockShips had already unlinked the ship's wheel and deleted its save) and sat frozen.
-     * Landing again skips cells whose block did reach disk, so a teardown that was half written is completed,
-     * not duplicated. A destroyed one drops its contents again; those drops were lost with the same chunks.
+     * Spawn one block's collider: a marker ArmorStand carrier with a Shulker riding it, tagged for {@code mechId}.
+     * Placed at the block's assembly-frame cell; a mechanism that is already turned repositions it on its next
+     * rotate.
      */
-    private void redoTeardown(BasicMechanism mech, MechanismState st) {
-        pendingRecoveries.remove(st.mechId);
-        mechIdsBeingRecovered.remove(st.mechId);
-        mech.rotate(st.currentYaw);
-        Entity vehicle = mech.vehicle();
-        try {
-            if (MechanismState.LANDED.equals(st.teardown)) {
-                mech.relanding = true;
-                mech.disassemble();
-            } else {
-                mech.destroy();
+    private ColliderPair spawnColliderPair(Location pivot, UUID mechId, int blockIdx, MechanismBlockData mbf, int dynLight) {
+        Vector3f initOff = mbf.localTransform.getTranslation(new Vector3f());
+        Vector3f off = mbf.collision.offset();
+        // -0.5 Y: the shulker box (attachedFace DOWN, marker, peek 0) is feet-anchored, so anchor
+        // the carrier at the cell bottom to centre a full box. The block-local collider offset is
+        // added on top; at assembly the mechanism is at identity rotation so it applies directly
+        // (BasicMechanism.rotate rotates it thereafter). The -0.5 is world-space, never rotated.
+        Location carrierLoc = pivot.clone().add(initOff.x + off.x, initOff.y - 0.5 + off.y, initOff.z + off.z);
+
+        ArmorStand carrier = pivot.getWorld().spawn(carrierLoc, ArmorStand.class, as -> {
+            as.setInvisible(true); as.setGravity(false); as.setSilent(true);
+            as.setPersistent(true); as.setInvulnerable(true);
+            as.setMarker(true); // zero height → shulker at exact carrier position
+            as.addScoreboardTag("corelib:mech:" + mechId + ":" + blockIdx + ":carrier");
+        });
+        Shulker shulker = pivot.getWorld().spawn(carrierLoc, Shulker.class, s -> {
+            s.setAI(false); s.setInvisible(true); s.setGravity(false);
+            s.setSilent(true); s.setPersistent(true);
+            s.setCollidable(true);
+            s.setPeek(0);
+            s.setAttachedFace(org.bukkit.block.BlockFace.DOWN);
+            s.setGlowing(colliderGlowEnabled);
+            // Resize the hitbox for sub-cube colliders. Only touch the attribute when size != 1.0
+            // so the full-block path stays byte-identical to before. Set before addPassenger.
+            if (mbf.collision.size() != 1.0f) {
+                org.bukkit.attribute.Attribute scaleAttr = ScaleAttributeCompat.getScale();
+                org.bukkit.attribute.AttributeInstance ai =
+                    scaleAttr != null ? s.getAttribute(scaleAttr) : null;
+                if (ai != null) ai.setBaseValue(mbf.collision.size());
+                else warnScaleUnavailable();
             }
-        } finally {
-            // An external vehicle outlives the teardown. A minecart is a real item and stays; a consumer's
-            // ArmorStand (BlockShips' ship vehicle) is only a frame and would be left standing in the water.
-            if (!st.ownsVehicle && vehicle instanceof org.bukkit.entity.ArmorStand && vehicle.isValid()) vehicle.remove();
+            s.addScoreboardTag("corelib:mech:" + mechId + ":" + blockIdx + ":collider");
+            // DynLight: tag the collider Shulker (a free carrier at the block's real cell, not
+            // a mounted display) so its light emits at the block, not the mechanism pivot.
+            if (dynLight > 0) s.addScoreboardTag(DynLightTags.tag(dynLight));
+        });
+        carrier.addPassenger(shulker);
+        return new ColliderPair(carrier, shulker, blockIdx);
+    }
+
+    private static boolean isFrameOrCollider(Entity e, UUID id) {
+        String prefix = "corelib:mech:" + id + ":";
+        for (String t : e.getScoreboardTags()) {
+            if (!t.startsWith(prefix)) continue;
+            String role = t.substring(prefix.length());
+            if (role.equals("vehicle") || role.equals("parent") || role.endsWith(":carrier") || role.endsWith(":collider")) {
+                return true;
+            }
         }
-        plugin.getLogger().info("Mechanism " + st.mechId + " had been " + st.teardown + " before the server stopped,"
-            + " but its entities came back; " + (MechanismState.LANDED.equals(st.teardown) ? "landed" : "destroyed")
-            + " it again.");
+        return false;
+    }
+
+    private static void removeWithPassengers(Entity e) {
+        for (Entity p : new ArrayList<>(e.getPassengers())) removeWithPassengers(p);
+        e.remove();
+    }
+
+    /** Crash-undone teardowns whose own entities have turned up since boot (see {@link #redoCrashTeardowns}). */
+    private final Set<UUID> teardownEntitiesSeen = new HashSet<>();
+
+    /**
+     * Redo the teardowns a crash undid, near a chunk that just loaded. A mechanism was landed or destroyed, and its
+     * state file replaced by a record of that (MechanismPersistence.markTeardown); the server stopped before the
+     * chunks holding the result were written. Its entities, if they come back, are reaped as orphans (it has no
+     * state file); the record is what is redone, at the pose it was torn down at, once its whole footprint has
+     * loaded.
+     *
+     * <ul>
+     *   <li>Landed: land it again from the record. Cells already holding their block are the part that reached
+     *       disk and are left alone, so a half-written landing is completed, not duplicated.</li>
+     *   <li>Landed, then assembled again before the crash (a ship docked and relaunched): the new mechanism took
+     *       those blocks. Redo the landing only if the new one never reached disk (it is neither live nor
+     *       recovering once the footprint is loaded) and this one's own entities did come back, i.e. this area's
+     *       chunks predate the landing. Otherwise the relaunch is what is on disk, and landing again would be a
+     *       second ship.</li>
+     *   <li>Destroyed: its contents dropped where it was. Drop them again only where its vehicle came back,
+     *       which means that chunk predates the destroy, drops included.</li>
+     * </ul>
+     */
+    private void redoCrashTeardowns(org.bukkit.Chunk chunk, Set<UUID> present, Map<UUID, Entity> vehiclesHere) {
+        org.bukkit.World world = chunk.getWorld();
+        List<MechanismPersistence.Teardown> ts = persistence.crashTeardowns(world.getName());
+        for (MechanismPersistence.Teardown t : ts) {
+            UUID id = t.st.mechId;
+            if (present.contains(id)) teardownEntitiesSeen.add(id);
+            int pcx = (int) Math.floor(t.st.px) >> 4, pcz = (int) Math.floor(t.st.pz) >> 4;
+            int radius = t.st.recoveryChunkRadius();
+            if (Math.abs(chunk.getX() - pcx) > radius || Math.abs(chunk.getZ() - pcz) > radius) continue;
+            try {
+                if (MechanismState.DESTROYED.equals(t.mode)) {
+                    Entity v = vehiclesHere.get(id);
+                    if (v != null) {
+                        dropStoredItems(t.st, v.getLocation());
+                        plugin.getLogger().info("Mechanism " + id + " was destroyed just before the server stopped;"
+                            + " its contents were lost with the unsaved chunk, so they were dropped again.");
+                        persistence.dropTeardown(world.getName(), id);
+                    } else if (footprintLoaded(world, t.st)) {
+                        persistence.dropTeardown(world.getName(), id);
+                    }
+                    continue;
+                }
+                UUID by = t.supersededBy;
+                if (by != null && activeMechanisms.containsKey(by)) {
+                    persistence.dropTeardown(world.getName(), id);
+                    continue;
+                }
+                if (!footprintLoaded(world, t.st)) continue;
+                if (by != null) {
+                    if (pendingRecoveries.containsKey(by)) continue;   // the relaunch may still come back
+                    if (!teardownEntitiesSeen.contains(id)) {
+                        persistence.dropTeardown(world.getName(), id);
+                        continue;
+                    }
+                }
+                relandFromRecord(world, t.st);
+                persistence.dropTeardown(world.getName(), id);
+                plugin.getLogger().info("Mechanism " + id + " had landed just before the server stopped, but the"
+                    + " landing had not been saved; landed it again.");
+            } catch (RuntimeException e) {
+                plugin.getLogger().log(java.util.logging.Level.WARNING, "Could not redo the teardown of mechanism " + id
+                    + "; its record is kept for the next boot", e);
+            }
+        }
+    }
+
+    private boolean footprintLoaded(org.bukkit.World world, MechanismState st) {
+        int pcx = (int) Math.floor(st.px) >> 4, pcz = (int) Math.floor(st.pz) >> 4;
+        int radius = st.recoveryChunkRadius();
+        for (int dx = -radius; dx <= radius; dx++) {
+            for (int dz = -radius; dz <= radius; dz++) {
+                if (!world.isChunkLoaded(pcx + dx, pcz + dz) || !world.getChunkAt(pcx + dx, pcz + dz).isEntitiesLoaded()) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    /** Land a recorded mechanism again: a stand-in with no displays or colliders, at the recorded pose. */
+    private void relandFromRecord(org.bukkit.World world, MechanismState st) {
+        List<MechanismBlockData> blocks = rebuildBlocks(st);
+        Location pivot = new Location(world, st.px, st.py, st.pz);
+        org.bukkit.entity.ArmorStand vehicle = world.spawn(pivot, org.bukkit.entity.ArmorStand.class, a -> {
+            a.setInvisible(true); a.setMarker(true); a.setGravity(false); a.setPersistent(false);
+        });
+        org.bukkit.entity.BlockDisplay parent = world.spawn(pivot, org.bukkit.entity.BlockDisplay.class,
+            d -> d.setPersistent(false));
+        List<List<Display>> none = new ArrayList<>(), noBanners = new ArrayList<>();
+        for (int i = 0; i < blocks.size(); i++) { none.add(new ArrayList<>()); noBanners.add(new ArrayList<>()); }
+        BasicMechanism mech = new BasicMechanism(st.mechId, st.type, pivot, new Vector3f(st.axisX, st.axisY, st.axisZ),
+            vehicle, parent, st.rideOffset, true, none, noBanners, new ArrayList<>(), blocks, registry, null);
+        mech.mechanismRegistry = this;   // not persisted, so tearing it down records nothing
+        mech.relanding = true;
+        mech.rotate(st.currentYaw);
+        try {
+            Bukkit.getPluginManager().callEvent(new MechanismTeardownRedoEvent(mech));
+        } catch (RuntimeException e) {
+            plugin.getLogger().warning("A MechanismTeardownRedoEvent listener threw for " + st.mechId + " (" + e.getMessage() + ")");
+        }
+        mech.disassemble();
+    }
+
+    private void dropStoredItems(MechanismState st, Location at) {
+        for (MechanismBlockData mb : rebuildBlocks(st)) {
+            if (mb.storage() == null) continue;
+            for (org.bukkit.inventory.ItemStack item : mb.storage().getContents()) {
+                if (item != null && !item.getType().isAir()) at.getWorld().dropItemNaturally(at, item);
+            }
+        }
     }
 
     /**
@@ -2060,13 +2185,6 @@ public class MechanismRegistry implements org.bukkit.event.Listener {
         // gone) — leaving the state file for a future full reload. Never remove entities here; the hasMetadata
         // guard keeps strays alive. Mirrors ShipInstance.recoverEntities returning false on a missing vehicle.
         if (vehicle == null || parent == null) {
-            if (allLoaded && st.teardown != null) {
-                // Torn down before the crash, and the teardown reached disk: nothing to redo. Drop the file.
-                pendingRecoveries.remove(st.mechId);
-                mechIdsBeingRecovered.remove(st.mechId);
-                persistence.remove(world.getName(), st.mechId);
-                return;
-            }
             if (allLoaded) {
                 pendingRecoveries.remove(st.mechId);
                 mechIdsBeingRecovered.remove(st.mechId);
@@ -2178,6 +2296,20 @@ public class MechanismRegistry implements org.bukkit.event.Listener {
             pivot.setY(Math.floor(pivot.getY()) + 0.5);
             pivot.setZ(Math.floor(pivot.getZ()) + 0.5);
         }
+        // Colliders that did not come back (their carriers are separate entities, each saved with its own chunk, so
+        // a crash can leave some outside the search or lose them): spawn them again, or the ship sails with holes
+        // in its deck. rotate() below puts them in place.
+        if (!complete) {
+            Set<Integer> have = new HashSet<>();
+            for (ColliderPair cp : colliders) have.add(cp.blockIndex());
+            int respawned = 0;
+            for (int i = 0; i < n; i++) {
+                if (have.contains(i) || !blocks.get(i).collision.enabled()) continue;
+                colliders.add(spawnColliderPair(pivot, st.mechId, i, blocks.get(i), 0));
+                respawned++;
+            }
+            if (respawned > 0) plugin.getLogger().info("Mechanism " + st.mechId + ": respawned " + respawned + " lost colliders");
+        }
         Vector3f axis = new Vector3f(st.axisX, st.axisY, st.axisZ);
         BasicMechanism mech = new BasicMechanism(st.mechId, st.type, pivot, axis, vehicle, parent,
             st.rideOffset, st.ownsVehicle, displaysPerBlock, bannerDisplaysPerBlock, colliders, blocks,
@@ -2222,11 +2354,6 @@ public class MechanismRegistry implements org.bukkit.event.Listener {
         activeMechanisms.put(st.mechId, mech);
         for (ColliderPair cp : colliders) {
             colliderIndex.put(cp.shulker().getUniqueId(), new ColliderRef(mech, cp.blockIndex()));
-        }
-
-        if (st.teardown != null) {
-            redoTeardown(mech, st);
-            return;
         }
 
         // Re-adopt seats from the shulker tags detected above, then notify the consumer so it can re-mirror

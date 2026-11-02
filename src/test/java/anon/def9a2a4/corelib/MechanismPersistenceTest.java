@@ -8,6 +8,8 @@ import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Logger;
 
@@ -79,21 +81,34 @@ class MechanismPersistenceTest {
         assertFalse(stateFile(st).exists());
     }
 
-    /** A teardown marks the file it keeps, so after a crash recovery redoes the teardown instead of reviving
-     *  the mechanism; a restart reads it back as persisted, carrying the mark. */
+    /** A teardown replaces the state file with a record: the id stops being persisted (its entities are orphans),
+     *  and after a crash the record comes back as due to be redone, with the state it was torn down in. A clean stop
+     *  deletes it; an assembly from its cells marks it superseded. */
     @Test
-    void aTeardownMarksTheFileItKeeps() {
+    void aTeardownRecordSurvivesACrashButNotACleanStop() {
         MechanismState st = MechanismStateTest.sample();
         p.save(st);
-        p.removeAfterSave(st.worldName, st.mechId, 0, MechanismState.LANDED);
+        UUID w = UUID.randomUUID();
+        Set<CustomBlockRegistry.LocationKey> cells = Set.of(new CustomBlockRegistry.LocationKey(w, 1, 2, 3));
+        p.markTeardown(st, MechanismState.LANDED, cells, 0);
         assertFalse(p.hasMetadata(st.worldName, st.mechId));
+        assertFalse(stateFile(st).exists());
+        assertTrue(p.crashTeardowns(st.worldName).isEmpty());          // in session: not due
+
+        UUID relaunch = UUID.randomUUID();
+        p.supersedeTeardowns(st.worldName, relaunch, Set.of(new CustomBlockRegistry.LocationKey(w, 9, 9, 9)));
+        p.supersedeTeardowns(st.worldName, relaunch, cells);
+
         MechanismPersistence afterCrash = new MechanismPersistence(dataFolder.toFile(), log);
-        assertTrue(afterCrash.hasMetadata(st.worldName, st.mechId));
-        MechanismState r = afterCrash.load(st.worldName, st.mechId);
-        assertNotNull(r);
-        assertEquals(MechanismState.LANDED, r.teardown);
-        assertEquals(2, r.blocks.size());
-        assertNull(MechanismStateTest.sample().teardown);
+        assertFalse(afterCrash.hasMetadata(st.worldName, st.mechId));
+        List<MechanismPersistence.Teardown> due = afterCrash.crashTeardowns(st.worldName);
+        assertEquals(1, due.size());
+        assertEquals(MechanismState.LANDED, due.get(0).mode);
+        assertEquals(relaunch, due.get(0).supersededBy);
+        assertEquals(2, due.get(0).st.blocks.size());
+
+        p.deletePending();                                              // a clean stop
+        assertTrue(new MechanismPersistence(dataFolder.toFile(), log).crashTeardowns(st.worldName).isEmpty());
     }
 
     @Test
