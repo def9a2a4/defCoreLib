@@ -1576,21 +1576,16 @@ public class MechanismRegistry implements org.bukkit.event.Listener {
     }
 
     /**
-     * A world is saving (autosave, /save-all): re-snapshot every live persisted mechanism in it, so a crash
-     * recovers it where it is NOW rather than where it was last parked/persisted — the region file about to
-     * be written holds its entities at their current positions, and a state file from an older pose would
-     * rebuild the ship against the wrong frame. Also advances the queued state-file deletes. Snapshot +
-     * serialize happen here; the file write is queued on the persistence writer thread and skipped when
-     * unchanged (saveAsync). One failing write must not cost the others theirs: each is only logged.
-     */
-    /**
-     * A container on a persisted mechanism closed (by a player, or their logout): write its state now. Its
-     * contents are otherwise saved only at the next autosave, while the player's own file is saved at once on
-     * logout — so a crash in between lost what they had just put in from both. Mechanism storages are the
+     * A player logged out with a container on a persisted mechanism open: write its state now. Its contents are
+     * otherwise saved only at the next autosave, while the player's own file is saved at once on logout, so a
+     * crash in between lost what they had just put in from both. Mechanism storages are the
      * holderless inventories (createTypedInventory(null, …)), which keeps this off every vanilla chest close.
      */
     @org.bukkit.event.EventHandler
     public void onMechanismStorageClose(org.bukkit.event.inventory.InventoryCloseEvent event) {
+        // Only on logout, when the player's file is written too. On any other close the player's file waits for
+        // its own autosave, so writing the cargo now made a crash in between duplicate what was put in.
+        if (event.getReason() != org.bukkit.event.inventory.InventoryCloseEvent.Reason.DISCONNECT) return;
         Inventory inv = event.getInventory();
         if (inv.getHolder(false) != null) return;
         for (BasicMechanism mech : activeMechanisms.values()) {
@@ -1608,6 +1603,14 @@ public class MechanismRegistry implements org.bukkit.event.Listener {
         }
     }
 
+    /**
+     * A world is saving (autosave, /save-all): re-snapshot every live persisted mechanism in it, so a crash
+     * brings back its cargo and blocks as of the same autosave that saved the players. Not its position: Paper's
+     * autosave event writes no chunks (each chunk saves on its own timer), so recovery takes the position from the
+     * vehicle it finds, not from this file. Also advances the queued state-file deletes. Snapshot +
+     * serialize happen here; the file write is queued on the persistence writer thread and skipped when
+     * unchanged (saveAsync). One failing write must not cost the others theirs: each is only logged.
+     */
     @org.bukkit.event.EventHandler
     public void onWorldSave(org.bukkit.event.world.WorldSaveEvent event) {
         org.bukkit.World world = event.getWorld();

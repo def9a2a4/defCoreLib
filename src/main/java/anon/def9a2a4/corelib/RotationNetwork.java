@@ -351,7 +351,9 @@ public class RotationNetwork {
                     active += switch (config.loadMode(node.blockTypeId())) {
                         case ALWAYS -> node.powerUnits();
                         case WORK -> activeUntil.getOrDefault(m, Long.MIN_VALUE) >= now ? node.powerUnits() : 0;
-                        case DEMAND -> node.powerUnits() * blockDemand.getOrDefault(m, 1.0);
+                        // Nothing reports demand for a placed block: a propeller or wheel on a docked ship pushes
+                        // nothing, so it costs nothing (it defaulted to full load, and the engine burned nonstop).
+                        case DEMAND -> node.powerUnits() * blockDemand.getOrDefault(m, 0.0);
                     };
                 }
                 Integer t = transientDemand.get(m);

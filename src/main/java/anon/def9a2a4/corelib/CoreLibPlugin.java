@@ -38,6 +38,20 @@ import java.util.Map;
 
 public class CoreLibPlugin extends JavaPlugin implements Listener {
 
+    /**
+     * What a consumer can rely on, raised whenever a consumer-visible API or behaviour is added. Every build of a
+     * release reports the same version string, so this is the only way a consumer can tell a build that has what
+     * it needs. Read it reflectively ({@code getField("API_LEVEL")}): a compiled-in constant would be the
+     * consumer's own copy.
+     *
+     * <ul>
+     *   <li>1 — 0.5.0: crash recovery from the found vehicle; a crash-undone teardown is redone from the state
+     *       file; {@link MechanismRegistry#discardPersistedState}, {@link MechanismRegistry#isRecoveryPending};
+     *       {@link MechanismTeardownRedoEvent}; fuel burned by use.</li>
+     * </ul>
+     */
+    public static final int API_LEVEL = 1;
+
     private static CoreLibPlugin instance;
     private CustomBlockRegistry registry;
     private MechanismRegistry mechanismRegistry;

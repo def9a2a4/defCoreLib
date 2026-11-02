@@ -103,6 +103,23 @@ def display_line(slab: str, tag: str, angle: float, length: float, width: float,
                fmt(deg), ", ".join(fmt(v) for v in ax), fmt(WALL_OFFSET)))
 
 
+# The way the head faces in each wall state (placement_state_map: the clicked face is the facing).
+STATE_FACING = {"n": (0, 0, 1), "s": (0, 0, -1), "e": (1, 0, 0), "w": (-1, 0, 0)}
+
+
+def collider_line(d: float, face: str) -> str:
+    # Aboard a ship the wheel collides as a cube the size of the tyre (a little smaller, so it never
+    # touches the ground the land physics rests the hull on). wall_offset draws the tyre a quarter
+    # block toward the wall, so its outer face is 0.05 short of the cell centre; the cube sits flush
+    # with that face and reaches back into the hull rather than sticking out past the tyre.
+    # Offset: x/z move the cube's centre, y is its bottom.
+    size = round(d * 0.9, 4)
+    f = STATE_FACING[face]
+    back = THICK / 2 - WALL_OFFSET + 0.0 - size / 2   # centre along the facing: -0.05 - size/2
+    off = [f[0] * back, 0.5 - size / 2, f[2] * back]
+    return "collision: { size: %s, offset: [%s] }" % (fmt(size), ", ".join(fmt(v) for v in off))
+
+
 def block(size, wood: str) -> str:
     sid, sname, d, power, step, reach, speed, core, core_name = size
     core = core.format(wood=wood)
@@ -125,7 +142,7 @@ def block(size, wood: str) -> str:
            f'      - "&7Climbs steps up to {step} high. The tyre reaches {reach} below the block it hangs on."',
            f'      - "&7Craft from {core_name} with four {title(wood).lower()} planks around it."',
            '      - "&7Wall placement only."']
-    if (sid, wood) != ("wheel", "oak"):
+    if wood != "oak":   # the oak wheel of each size is the catalog card the other woods fold into
         out.append(f"    catalog_variant_of: {sid}_oak")
     out += ["    recipes:",
             "      craft:",
@@ -155,10 +172,12 @@ def block(size, wood: str) -> str:
                              ("e", "x", "[1, 0, 0]"), ("w", "x", "[1, 0, 0]")):
         out += [f"      idle_wall_{face}:",
                 '        texture: "@prop_bearing_fwd"',
+                "        " + collider_line(d, face),
                 "        display_entities:"]
         out += [display_line(slab, tag, ang, ln, wd, nudge, axle) for tag, ang, ln, wd, nudge in parts(d)]
+        # copy_from carries only the displays, so the spinning state repeats the collider.
         out.append(f'      spinning_wall_{face}: {{ copy_from: idle_wall_{face}, texture: "@prop_bearing_fwd", '
-                   f'animation: {{ type: rotate, axis: {axis}, speed: {speed} }} }}')
+                   f'{collider_line(d, face)}, animation: {{ type: rotate, axis: {axis}, speed: {speed} }} }}')
     return "\n".join(out)
 
 

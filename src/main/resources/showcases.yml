@@ -1577,7 +1577,8 @@ showcases:
       - { type: contents, at: [0, 0, 0], items: ["LAVA_BUCKET x0", "BUCKET x2"] }
       - { type: entity_count, value: "item:BUCKET=0", at: [-2, -1, -2], to: [2, 2, 2] }
       - { type: contents, at: [6, 0, 0], items: ["LAVA_BUCKET x0", "BUCKET x0"] }
-      - { type: entity_count, value: "item:BUCKET=1", at: [4, -1, -2], to: [8, 2, 2] }
+      # Wide: the bucket is dropped with the vanilla scatter and was seen 3 blocks off (x=9.2) on purpur.
+      - { type: entity_count, value: "item:BUCKET=1", at: [3, -1, -4], to: [12, 2, 4] }
 
   # Breaking a copper-chest machine must not wipe the chest it is paired with. The water wheel IS a waxed
   # copper chest (physical_material). Its placement unpairs it, but a vanilla chest placed beside it later

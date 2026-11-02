@@ -130,9 +130,9 @@ final class RotationConfig {
         /** This block's supply while riding, from its configured power. */
         int scaledSupply(int power) {
             if (mechPowerScale >= 1.0) return power;
-            // Ceil so a tier-1 windmill (power 1) at 0.5 still supplies 1 rather than silently
-            // becoming dead weight aboard.
-            return power <= 0 ? power : (int) Math.ceil(power * mechPowerScale);
+            // Floor: rounding up left a small windmill (power 1) at full power aboard, so ten of them ran a ship
+            // for nothing. A small windmill supplies nothing aboard; the scale is the point.
+            return power <= 0 ? power : (int) Math.floor(power * mechPowerScale);
         }
     }
 

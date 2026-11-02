@@ -4124,36 +4124,40 @@ blocks:
     states:
       idle_wall_n:
         texture: "@prop_bearing_fwd"
+        collision: { size: 0.9, offset: [0, 0.05, -0.5] }
         display_entities:
           - { material: OAK_SLAB, tag: tyre_0, transform: { translation: [0, 0, 0.197], scale: [1, 0.8, 0.4142], left_rotation: [90, 1, 0, 0] }, wall_offset: 0.25 }
           - { material: OAK_SLAB, tag: tyre_1, transform: { translation: [0, 0, 0.199], scale: [1, 0.8, 0.4142], left_rotation: [98.4211, 0.8629, 0.3574, 0.3574] }, wall_offset: 0.25 }
           - { material: OAK_SLAB, tag: tyre_2, transform: { translation: [0, 0, 0.201], scale: [1, 0.8, 0.4142], left_rotation: [120, 0.5774, 0.5774, 0.5774] }, wall_offset: 0.25 }
           - { material: OAK_SLAB, tag: tyre_3, transform: { translation: [0, 0, 0.203], scale: [1, 0.8, 0.4142], left_rotation: [148.6003, 0.2811, 0.6786, 0.6786] }, wall_offset: 0.25 }
-      spinning_wall_n: { copy_from: idle_wall_n, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [0, 0, 1], speed: 6 } }
+      spinning_wall_n: { copy_from: idle_wall_n, texture: "@prop_bearing_fwd", collision: { size: 0.9, offset: [0, 0.05, -0.5] }, animation: { type: rotate, axis: [0, 0, 1], speed: 6 } }
       idle_wall_s:
         texture: "@prop_bearing_fwd"
+        collision: { size: 0.9, offset: [0, 0.05, 0.5] }
         display_entities:
           - { material: OAK_SLAB, tag: tyre_0, transform: { translation: [0, 0, 0.197], scale: [1, 0.8, 0.4142], left_rotation: [90, 1, 0, 0] }, wall_offset: 0.25 }
           - { material: OAK_SLAB, tag: tyre_1, transform: { translation: [0, 0, 0.199], scale: [1, 0.8, 0.4142], left_rotation: [98.4211, 0.8629, 0.3574, 0.3574] }, wall_offset: 0.25 }
           - { material: OAK_SLAB, tag: tyre_2, transform: { translation: [0, 0, 0.201], scale: [1, 0.8, 0.4142], left_rotation: [120, 0.5774, 0.5774, 0.5774] }, wall_offset: 0.25 }
           - { material: OAK_SLAB, tag: tyre_3, transform: { translation: [0, 0, 0.203], scale: [1, 0.8, 0.4142], left_rotation: [148.6003, 0.2811, 0.6786, 0.6786] }, wall_offset: 0.25 }
-      spinning_wall_s: { copy_from: idle_wall_s, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [0, 0, 1], speed: 6 } }
+      spinning_wall_s: { copy_from: idle_wall_s, texture: "@prop_bearing_fwd", collision: { size: 0.9, offset: [0, 0.05, 0.5] }, animation: { type: rotate, axis: [0, 0, 1], speed: 6 } }
       idle_wall_e:
         texture: "@prop_bearing_fwd"
+        collision: { size: 0.9, offset: [-0.5, 0.05, 0] }
         display_entities:
           - { material: OAK_SLAB, tag: tyre_0, transform: { translation: [0.197, 0, 0], scale: [1, 0.8, 0.4142], left_rotation: [90, 0, 0, -1] }, wall_offset: 0.25 }
           - { material: OAK_SLAB, tag: tyre_1, transform: { translation: [0.199, 0, 0], scale: [1, 0.8, 0.4142], left_rotation: [98.4211, 0.3574, 0.3574, -0.8629] }, wall_offset: 0.25 }
           - { material: OAK_SLAB, tag: tyre_2, transform: { translation: [0.201, 0, 0], scale: [1, 0.8, 0.4142], left_rotation: [120, 0.5774, 0.5774, -0.5774] }, wall_offset: 0.25 }
           - { material: OAK_SLAB, tag: tyre_3, transform: { translation: [0.203, 0, 0], scale: [1, 0.8, 0.4142], left_rotation: [148.6003, 0.6786, 0.6786, -0.2811] }, wall_offset: 0.25 }
-      spinning_wall_e: { copy_from: idle_wall_e, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [1, 0, 0], speed: 6 } }
+      spinning_wall_e: { copy_from: idle_wall_e, texture: "@prop_bearing_fwd", collision: { size: 0.9, offset: [-0.5, 0.05, 0] }, animation: { type: rotate, axis: [1, 0, 0], speed: 6 } }
       idle_wall_w:
         texture: "@prop_bearing_fwd"
+        collision: { size: 0.9, offset: [0.5, 0.05, 0] }
         display_entities:
           - { material: OAK_SLAB, tag: tyre_0, transform: { translation: [0.197, 0, 0], scale: [1, 0.8, 0.4142], left_rotation: [90, 0, 0, -1] }, wall_offset: 0.25 }
           - { material: OAK_SLAB, tag: tyre_1, transform: { translation: [0.199, 0, 0], scale: [1, 0.8, 0.4142], left_rotation: [98.4211, 0.3574, 0.3574, -0.8629] }, wall_offset: 0.25 }
           - { material: OAK_SLAB, tag: tyre_2, transform: { translation: [0.201, 0, 0], scale: [1, 0.8, 0.4142], left_rotation: [120, 0.5774, 0.5774, -0.5774] }, wall_offset: 0.25 }
           - { material: OAK_SLAB, tag: tyre_3, transform: { translation: [0.203, 0, 0], scale: [1, 0.8, 0.4142], left_rotation: [148.6003, 0.6786, 0.6786, -0.2811] }, wall_offset: 0.25 }
-      spinning_wall_w: { copy_from: idle_wall_w, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [1, 0, 0], speed: 6 } }
+      spinning_wall_w: { copy_from: idle_wall_w, texture: "@prop_bearing_fwd", collision: { size: 0.9, offset: [0.5, 0.05, 0] }, animation: { type: rotate, axis: [1, 0, 0], speed: 6 } }
 
   wheel_acacia:
     cancel_pistons: true
@@ -4197,36 +4201,40 @@ blocks:
     states:
       idle_wall_n:
         texture: "@prop_bearing_fwd"
+        collision: { size: 0.9, offset: [0, 0.05, -0.5] }
         display_entities:
           - { material: ACACIA_SLAB, tag: tyre_0, transform: { translation: [0, 0, 0.197], scale: [1, 0.8, 0.4142], left_rotation: [90, 1, 0, 0] }, wall_offset: 0.25 }
           - { material: ACACIA_SLAB, tag: tyre_1, transform: { translation: [0, 0, 0.199], scale: [1, 0.8, 0.4142], left_rotation: [98.4211, 0.8629, 0.3574, 0.3574] }, wall_offset: 0.25 }
           - { material: ACACIA_SLAB, tag: tyre_2, transform: { translation: [0, 0, 0.201], scale: [1, 0.8, 0.4142], left_rotation: [120, 0.5774, 0.5774, 0.5774] }, wall_offset: 0.25 }
           - { material: ACACIA_SLAB, tag: tyre_3, transform: { translation: [0, 0, 0.203], scale: [1, 0.8, 0.4142], left_rotation: [148.6003, 0.2811, 0.6786, 0.6786] }, wall_offset: 0.25 }
-      spinning_wall_n: { copy_from: idle_wall_n, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [0, 0, 1], speed: 6 } }
+      spinning_wall_n: { copy_from: idle_wall_n, texture: "@prop_bearing_fwd", collision: { size: 0.9, offset: [0, 0.05, -0.5] }, animation: { type: rotate, axis: [0, 0, 1], speed: 6 } }
       idle_wall_s:
         texture: "@prop_bearing_fwd"
+        collision: { size: 0.9, offset: [0, 0.05, 0.5] }
         display_entities:
           - { material: ACACIA_SLAB, tag: tyre_0, transform: { translation: [0, 0, 0.197], scale: [1, 0.8, 0.4142], left_rotation: [90, 1, 0, 0] }, wall_offset: 0.25 }
           - { material: ACACIA_SLAB, tag: tyre_1, transform: { translation: [0, 0, 0.199], scale: [1, 0.8, 0.4142], left_rotation: [98.4211, 0.8629, 0.3574, 0.3574] }, wall_offset: 0.25 }
           - { material: ACACIA_SLAB, tag: tyre_2, transform: { translation: [0, 0, 0.201], scale: [1, 0.8, 0.4142], left_rotation: [120, 0.5774, 0.5774, 0.5774] }, wall_offset: 0.25 }
           - { material: ACACIA_SLAB, tag: tyre_3, transform: { translation: [0, 0, 0.203], scale: [1, 0.8, 0.4142], left_rotation: [148.6003, 0.2811, 0.6786, 0.6786] }, wall_offset: 0.25 }
-      spinning_wall_s: { copy_from: idle_wall_s, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [0, 0, 1], speed: 6 } }
+      spinning_wall_s: { copy_from: idle_wall_s, texture: "@prop_bearing_fwd", collision: { size: 0.9, offset: [0, 0.05, 0.5] }, animation: { type: rotate, axis: [0, 0, 1], speed: 6 } }
       idle_wall_e:
         texture: "@prop_bearing_fwd"
+        collision: { size: 0.9, offset: [-0.5, 0.05, 0] }
         display_entities:
           - { material: ACACIA_SLAB, tag: tyre_0, transform: { translation: [0.197, 0, 0], scale: [1, 0.8, 0.4142], left_rotation: [90, 0, 0, -1] }, wall_offset: 0.25 }
           - { material: ACACIA_SLAB, tag: tyre_1, transform: { translation: [0.199, 0, 0], scale: [1, 0.8, 0.4142], left_rotation: [98.4211, 0.3574, 0.3574, -0.8629] }, wall_offset: 0.25 }
           - { material: ACACIA_SLAB, tag: tyre_2, transform: { translation: [0.201, 0, 0], scale: [1, 0.8, 0.4142], left_rotation: [120, 0.5774, 0.5774, -0.5774] }, wall_offset: 0.25 }
           - { material: ACACIA_SLAB, tag: tyre_3, transform: { translation: [0.203, 0, 0], scale: [1, 0.8, 0.4142], left_rotation: [148.6003, 0.6786, 0.6786, -0.2811] }, wall_offset: 0.25 }
-      spinning_wall_e: { copy_from: idle_wall_e, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [1, 0, 0], speed: 6 } }
+      spinning_wall_e: { copy_from: idle_wall_e, texture: "@prop_bearing_fwd", collision: { size: 0.9, offset: [-0.5, 0.05, 0] }, animation: { type: rotate, axis: [1, 0, 0], speed: 6 } }
       idle_wall_w:
         texture: "@prop_bearing_fwd"
+        collision: { size: 0.9, offset: [0.5, 0.05, 0] }
         display_entities:
           - { material: ACACIA_SLAB, tag: tyre_0, transform: { translation: [0.197, 0, 0], scale: [1, 0.8, 0.4142], left_rotation: [90, 0, 0, -1] }, wall_offset: 0.25 }
           - { material: ACACIA_SLAB, tag: tyre_1, transform: { translation: [0.199, 0, 0], scale: [1, 0.8, 0.4142], left_rotation: [98.4211, 0.3574, 0.3574, -0.8629] }, wall_offset: 0.25 }
           - { material: ACACIA_SLAB, tag: tyre_2, transform: { translation: [0.201, 0, 0], scale: [1, 0.8, 0.4142], left_rotation: [120, 0.5774, 0.5774, -0.5774] }, wall_offset: 0.25 }
           - { material: ACACIA_SLAB, tag: tyre_3, transform: { translation: [0.203, 0, 0], scale: [1, 0.8, 0.4142], left_rotation: [148.6003, 0.6786, 0.6786, -0.2811] }, wall_offset: 0.25 }
-      spinning_wall_w: { copy_from: idle_wall_w, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [1, 0, 0], speed: 6 } }
+      spinning_wall_w: { copy_from: idle_wall_w, texture: "@prop_bearing_fwd", collision: { size: 0.9, offset: [0.5, 0.05, 0] }, animation: { type: rotate, axis: [1, 0, 0], speed: 6 } }
 
   wheel_bamboo:
     cancel_pistons: true
@@ -4270,36 +4278,40 @@ blocks:
     states:
       idle_wall_n:
         texture: "@prop_bearing_fwd"
+        collision: { size: 0.9, offset: [0, 0.05, -0.5] }
         display_entities:
           - { material: BAMBOO_SLAB, tag: tyre_0, transform: { translation: [0, 0, 0.197], scale: [1, 0.8, 0.4142], left_rotation: [90, 1, 0, 0] }, wall_offset: 0.25 }
           - { material: BAMBOO_SLAB, tag: tyre_1, transform: { translation: [0, 0, 0.199], scale: [1, 0.8, 0.4142], left_rotation: [98.4211, 0.8629, 0.3574, 0.3574] }, wall_offset: 0.25 }
           - { material: BAMBOO_SLAB, tag: tyre_2, transform: { translation: [0, 0, 0.201], scale: [1, 0.8, 0.4142], left_rotation: [120, 0.5774, 0.5774, 0.5774] }, wall_offset: 0.25 }
           - { material: BAMBOO_SLAB, tag: tyre_3, transform: { translation: [0, 0, 0.203], scale: [1, 0.8, 0.4142], left_rotation: [148.6003, 0.2811, 0.6786, 0.6786] }, wall_offset: 0.25 }
-      spinning_wall_n: { copy_from: idle_wall_n, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [0, 0, 1], speed: 6 } }
+      spinning_wall_n: { copy_from: idle_wall_n, texture: "@prop_bearing_fwd", collision: { size: 0.9, offset: [0, 0.05, -0.5] }, animation: { type: rotate, axis: [0, 0, 1], speed: 6 } }
       idle_wall_s:
         texture: "@prop_bearing_fwd"
+        collision: { size: 0.9, offset: [0, 0.05, 0.5] }
         display_entities:
           - { material: BAMBOO_SLAB, tag: tyre_0, transform: { translation: [0, 0, 0.197], scale: [1, 0.8, 0.4142], left_rotation: [90, 1, 0, 0] }, wall_offset: 0.25 }
           - { material: BAMBOO_SLAB, tag: tyre_1, transform: { translation: [0, 0, 0.199], scale: [1, 0.8, 0.4142], left_rotation: [98.4211, 0.8629, 0.3574, 0.3574] }, wall_offset: 0.25 }
           - { material: BAMBOO_SLAB, tag: tyre_2, transform: { translation: [0, 0, 0.201], scale: [1, 0.8, 0.4142], left_rotation: [120, 0.5774, 0.5774, 0.5774] }, wall_offset: 0.25 }
           - { material: BAMBOO_SLAB, tag: tyre_3, transform: { translation: [0, 0, 0.203], scale: [1, 0.8, 0.4142], left_rotation: [148.6003, 0.2811, 0.6786, 0.6786] }, wall_offset: 0.25 }
-      spinning_wall_s: { copy_from: idle_wall_s, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [0, 0, 1], speed: 6 } }
+      spinning_wall_s: { copy_from: idle_wall_s, texture: "@prop_bearing_fwd", collision: { size: 0.9, offset: [0, 0.05, 0.5] }, animation: { type: rotate, axis: [0, 0, 1], speed: 6 } }
       idle_wall_e:
         texture: "@prop_bearing_fwd"
+        collision: { size: 0.9, offset: [-0.5, 0.05, 0] }
         display_entities:
           - { material: BAMBOO_SLAB, tag: tyre_0, transform: { translation: [0.197, 0, 0], scale: [1, 0.8, 0.4142], left_rotation: [90, 0, 0, -1] }, wall_offset: 0.25 }
           - { material: BAMBOO_SLAB, tag: tyre_1, transform: { translation: [0.199, 0, 0], scale: [1, 0.8, 0.4142], left_rotation: [98.4211, 0.3574, 0.3574, -0.8629] }, wall_offset: 0.25 }
           - { material: BAMBOO_SLAB, tag: tyre_2, transform: { translation: [0.201, 0, 0], scale: [1, 0.8, 0.4142], left_rotation: [120, 0.5774, 0.5774, -0.5774] }, wall_offset: 0.25 }
           - { material: BAMBOO_SLAB, tag: tyre_3, transform: { translation: [0.203, 0, 0], scale: [1, 0.8, 0.4142], left_rotation: [148.6003, 0.6786, 0.6786, -0.2811] }, wall_offset: 0.25 }
-      spinning_wall_e: { copy_from: idle_wall_e, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [1, 0, 0], speed: 6 } }
+      spinning_wall_e: { copy_from: idle_wall_e, texture: "@prop_bearing_fwd", collision: { size: 0.9, offset: [-0.5, 0.05, 0] }, animation: { type: rotate, axis: [1, 0, 0], speed: 6 } }
       idle_wall_w:
         texture: "@prop_bearing_fwd"
+        collision: { size: 0.9, offset: [0.5, 0.05, 0] }
         display_entities:
           - { material: BAMBOO_SLAB, tag: tyre_0, transform: { translation: [0.197, 0, 0], scale: [1, 0.8, 0.4142], left_rotation: [90, 0, 0, -1] }, wall_offset: 0.25 }
           - { material: BAMBOO_SLAB, tag: tyre_1, transform: { translation: [0.199, 0, 0], scale: [1, 0.8, 0.4142], left_rotation: [98.4211, 0.3574, 0.3574, -0.8629] }, wall_offset: 0.25 }
           - { material: BAMBOO_SLAB, tag: tyre_2, transform: { translation: [0.201, 0, 0], scale: [1, 0.8, 0.4142], left_rotation: [120, 0.5774, 0.5774, -0.5774] }, wall_offset: 0.25 }
           - { material: BAMBOO_SLAB, tag: tyre_3, transform: { translation: [0.203, 0, 0], scale: [1, 0.8, 0.4142], left_rotation: [148.6003, 0.6786, 0.6786, -0.2811] }, wall_offset: 0.25 }
-      spinning_wall_w: { copy_from: idle_wall_w, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [1, 0, 0], speed: 6 } }
+      spinning_wall_w: { copy_from: idle_wall_w, texture: "@prop_bearing_fwd", collision: { size: 0.9, offset: [0.5, 0.05, 0] }, animation: { type: rotate, axis: [1, 0, 0], speed: 6 } }
 
   wheel_birch:
     cancel_pistons: true
@@ -4343,36 +4355,40 @@ blocks:
     states:
       idle_wall_n:
         texture: "@prop_bearing_fwd"
+        collision: { size: 0.9, offset: [0, 0.05, -0.5] }
         display_entities:
           - { material: BIRCH_SLAB, tag: tyre_0, transform: { translation: [0, 0, 0.197], scale: [1, 0.8, 0.4142], left_rotation: [90, 1, 0, 0] }, wall_offset: 0.25 }
           - { material: BIRCH_SLAB, tag: tyre_1, transform: { translation: [0, 0, 0.199], scale: [1, 0.8, 0.4142], left_rotation: [98.4211, 0.8629, 0.3574, 0.3574] }, wall_offset: 0.25 }
           - { material: BIRCH_SLAB, tag: tyre_2, transform: { translation: [0, 0, 0.201], scale: [1, 0.8, 0.4142], left_rotation: [120, 0.5774, 0.5774, 0.5774] }, wall_offset: 0.25 }
           - { material: BIRCH_SLAB, tag: tyre_3, transform: { translation: [0, 0, 0.203], scale: [1, 0.8, 0.4142], left_rotation: [148.6003, 0.2811, 0.6786, 0.6786] }, wall_offset: 0.25 }
-      spinning_wall_n: { copy_from: idle_wall_n, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [0, 0, 1], speed: 6 } }
+      spinning_wall_n: { copy_from: idle_wall_n, texture: "@prop_bearing_fwd", collision: { size: 0.9, offset: [0, 0.05, -0.5] }, animation: { type: rotate, axis: [0, 0, 1], speed: 6 } }
       idle_wall_s:
         texture: "@prop_bearing_fwd"
+        collision: { size: 0.9, offset: [0, 0.05, 0.5] }
         display_entities:
           - { material: BIRCH_SLAB, tag: tyre_0, transform: { translation: [0, 0, 0.197], scale: [1, 0.8, 0.4142], left_rotation: [90, 1, 0, 0] }, wall_offset: 0.25 }
           - { material: BIRCH_SLAB, tag: tyre_1, transform: { translation: [0, 0, 0.199], scale: [1, 0.8, 0.4142], left_rotation: [98.4211, 0.8629, 0.3574, 0.3574] }, wall_offset: 0.25 }
           - { material: BIRCH_SLAB, tag: tyre_2, transform: { translation: [0, 0, 0.201], scale: [1, 0.8, 0.4142], left_rotation: [120, 0.5774, 0.5774, 0.5774] }, wall_offset: 0.25 }
           - { material: BIRCH_SLAB, tag: tyre_3, transform: { translation: [0, 0, 0.203], scale: [1, 0.8, 0.4142], left_rotation: [148.6003, 0.2811, 0.6786, 0.6786] }, wall_offset: 0.25 }
-      spinning_wall_s: { copy_from: idle_wall_s, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [0, 0, 1], speed: 6 } }
+      spinning_wall_s: { copy_from: idle_wall_s, texture: "@prop_bearing_fwd", collision: { size: 0.9, offset: [0, 0.05, 0.5] }, animation: { type: rotate, axis: [0, 0, 1], speed: 6 } }
       idle_wall_e:
         texture: "@prop_bearing_fwd"
+        collision: { size: 0.9, offset: [-0.5, 0.05, 0] }
         display_entities:
           - { material: BIRCH_SLAB, tag: tyre_0, transform: { translation: [0.197, 0, 0], scale: [1, 0.8, 0.4142], left_rotation: [90, 0, 0, -1] }, wall_offset: 0.25 }
           - { material: BIRCH_SLAB, tag: tyre_1, transform: { translation: [0.199, 0, 0], scale: [1, 0.8, 0.4142], left_rotation: [98.4211, 0.3574, 0.3574, -0.8629] }, wall_offset: 0.25 }
           - { material: BIRCH_SLAB, tag: tyre_2, transform: { translation: [0.201, 0, 0], scale: [1, 0.8, 0.4142], left_rotation: [120, 0.5774, 0.5774, -0.5774] }, wall_offset: 0.25 }
           - { material: BIRCH_SLAB, tag: tyre_3, transform: { translation: [0.203, 0, 0], scale: [1, 0.8, 0.4142], left_rotation: [148.6003, 0.6786, 0.6786, -0.2811] }, wall_offset: 0.25 }
-      spinning_wall_e: { copy_from: idle_wall_e, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [1, 0, 0], speed: 6 } }
+      spinning_wall_e: { copy_from: idle_wall_e, texture: "@prop_bearing_fwd", collision: { size: 0.9, offset: [-0.5, 0.05, 0] }, animation: { type: rotate, axis: [1, 0, 0], speed: 6 } }
       idle_wall_w:
         texture: "@prop_bearing_fwd"
+        collision: { size: 0.9, offset: [0.5, 0.05, 0] }
         display_entities:
           - { material: BIRCH_SLAB, tag: tyre_0, transform: { translation: [0.197, 0, 0], scale: [1, 0.8, 0.4142], left_rotation: [90, 0, 0, -1] }, wall_offset: 0.25 }
           - { material: BIRCH_SLAB, tag: tyre_1, transform: { translation: [0.199, 0, 0], scale: [1, 0.8, 0.4142], left_rotation: [98.4211, 0.3574, 0.3574, -0.8629] }, wall_offset: 0.25 }
           - { material: BIRCH_SLAB, tag: tyre_2, transform: { translation: [0.201, 0, 0], scale: [1, 0.8, 0.4142], left_rotation: [120, 0.5774, 0.5774, -0.5774] }, wall_offset: 0.25 }
           - { material: BIRCH_SLAB, tag: tyre_3, transform: { translation: [0.203, 0, 0], scale: [1, 0.8, 0.4142], left_rotation: [148.6003, 0.6786, 0.6786, -0.2811] }, wall_offset: 0.25 }
-      spinning_wall_w: { copy_from: idle_wall_w, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [1, 0, 0], speed: 6 } }
+      spinning_wall_w: { copy_from: idle_wall_w, texture: "@prop_bearing_fwd", collision: { size: 0.9, offset: [0.5, 0.05, 0] }, animation: { type: rotate, axis: [1, 0, 0], speed: 6 } }
 
   wheel_cherry:
     cancel_pistons: true
@@ -4416,36 +4432,40 @@ blocks:
     states:
       idle_wall_n:
         texture: "@prop_bearing_fwd"
+        collision: { size: 0.9, offset: [0, 0.05, -0.5] }
         display_entities:
           - { material: CHERRY_SLAB, tag: tyre_0, transform: { translation: [0, 0, 0.197], scale: [1, 0.8, 0.4142], left_rotation: [90, 1, 0, 0] }, wall_offset: 0.25 }
           - { material: CHERRY_SLAB, tag: tyre_1, transform: { translation: [0, 0, 0.199], scale: [1, 0.8, 0.4142], left_rotation: [98.4211, 0.8629, 0.3574, 0.3574] }, wall_offset: 0.25 }
           - { material: CHERRY_SLAB, tag: tyre_2, transform: { translation: [0, 0, 0.201], scale: [1, 0.8, 0.4142], left_rotation: [120, 0.5774, 0.5774, 0.5774] }, wall_offset: 0.25 }
           - { material: CHERRY_SLAB, tag: tyre_3, transform: { translation: [0, 0, 0.203], scale: [1, 0.8, 0.4142], left_rotation: [148.6003, 0.2811, 0.6786, 0.6786] }, wall_offset: 0.25 }
-      spinning_wall_n: { copy_from: idle_wall_n, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [0, 0, 1], speed: 6 } }
+      spinning_wall_n: { copy_from: idle_wall_n, texture: "@prop_bearing_fwd", collision: { size: 0.9, offset: [0, 0.05, -0.5] }, animation: { type: rotate, axis: [0, 0, 1], speed: 6 } }
       idle_wall_s:
         texture: "@prop_bearing_fwd"
+        collision: { size: 0.9, offset: [0, 0.05, 0.5] }
         display_entities:
           - { material: CHERRY_SLAB, tag: tyre_0, transform: { translation: [0, 0, 0.197], scale: [1, 0.8, 0.4142], left_rotation: [90, 1, 0, 0] }, wall_offset: 0.25 }
           - { material: CHERRY_SLAB, tag: tyre_1, transform: { translation: [0, 0, 0.199], scale: [1, 0.8, 0.4142], left_rotation: [98.4211, 0.8629, 0.3574, 0.3574] }, wall_offset: 0.25 }
           - { material: CHERRY_SLAB, tag: tyre_2, transform: { translation: [0, 0, 0.201], scale: [1, 0.8, 0.4142], left_rotation: [120, 0.5774, 0.5774, 0.5774] }, wall_offset: 0.25 }
           - { material: CHERRY_SLAB, tag: tyre_3, transform: { translation: [0, 0, 0.203], scale: [1, 0.8, 0.4142], left_rotation: [148.6003, 0.2811, 0.6786, 0.6786] }, wall_offset: 0.25 }
-      spinning_wall_s: { copy_from: idle_wall_s, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [0, 0, 1], speed: 6 } }
+      spinning_wall_s: { copy_from: idle_wall_s, texture: "@prop_bearing_fwd", collision: { size: 0.9, offset: [0, 0.05, 0.5] }, animation: { type: rotate, axis: [0, 0, 1], speed: 6 } }
       idle_wall_e:
         texture: "@prop_bearing_fwd"
+        collision: { size: 0.9, offset: [-0.5, 0.05, 0] }
         display_entities:
           - { material: CHERRY_SLAB, tag: tyre_0, transform: { translation: [0.197, 0, 0], scale: [1, 0.8, 0.4142], left_rotation: [90, 0, 0, -1] }, wall_offset: 0.25 }
           - { material: CHERRY_SLAB, tag: tyre_1, transform: { translation: [0.199, 0, 0], scale: [1, 0.8, 0.4142], left_rotation: [98.4211, 0.3574, 0.3574, -0.8629] }, wall_offset: 0.25 }
           - { material: CHERRY_SLAB, tag: tyre_2, transform: { translation: [0.201, 0, 0], scale: [1, 0.8, 0.4142], left_rotation: [120, 0.5774, 0.5774, -0.5774] }, wall_offset: 0.25 }
           - { material: CHERRY_SLAB, tag: tyre_3, transform: { translation: [0.203, 0, 0], scale: [1, 0.8, 0.4142], left_rotation: [148.6003, 0.6786, 0.6786, -0.2811] }, wall_offset: 0.25 }
-      spinning_wall_e: { copy_from: idle_wall_e, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [1, 0, 0], speed: 6 } }
+      spinning_wall_e: { copy_from: idle_wall_e, texture: "@prop_bearing_fwd", collision: { size: 0.9, offset: [-0.5, 0.05, 0] }, animation: { type: rotate, axis: [1, 0, 0], speed: 6 } }
       idle_wall_w:
         texture: "@prop_bearing_fwd"
+        collision: { size: 0.9, offset: [0.5, 0.05, 0] }
         display_entities:
           - { material: CHERRY_SLAB, tag: tyre_0, transform: { translation: [0.197, 0, 0], scale: [1, 0.8, 0.4142], left_rotation: [90, 0, 0, -1] }, wall_offset: 0.25 }
           - { material: CHERRY_SLAB, tag: tyre_1, transform: { translation: [0.199, 0, 0], scale: [1, 0.8, 0.4142], left_rotation: [98.4211, 0.3574, 0.3574, -0.8629] }, wall_offset: 0.25 }
           - { material: CHERRY_SLAB, tag: tyre_2, transform: { translation: [0.201, 0, 0], scale: [1, 0.8, 0.4142], left_rotation: [120, 0.5774, 0.5774, -0.5774] }, wall_offset: 0.25 }
           - { material: CHERRY_SLAB, tag: tyre_3, transform: { translation: [0.203, 0, 0], scale: [1, 0.8, 0.4142], left_rotation: [148.6003, 0.6786, 0.6786, -0.2811] }, wall_offset: 0.25 }
-      spinning_wall_w: { copy_from: idle_wall_w, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [1, 0, 0], speed: 6 } }
+      spinning_wall_w: { copy_from: idle_wall_w, texture: "@prop_bearing_fwd", collision: { size: 0.9, offset: [0.5, 0.05, 0] }, animation: { type: rotate, axis: [1, 0, 0], speed: 6 } }
 
   wheel_crimson:
     cancel_pistons: true
@@ -4489,36 +4509,40 @@ blocks:
     states:
       idle_wall_n:
         texture: "@prop_bearing_fwd"
+        collision: { size: 0.9, offset: [0, 0.05, -0.5] }
         display_entities:
           - { material: CRIMSON_SLAB, tag: tyre_0, transform: { translation: [0, 0, 0.197], scale: [1, 0.8, 0.4142], left_rotation: [90, 1, 0, 0] }, wall_offset: 0.25 }
           - { material: CRIMSON_SLAB, tag: tyre_1, transform: { translation: [0, 0, 0.199], scale: [1, 0.8, 0.4142], left_rotation: [98.4211, 0.8629, 0.3574, 0.3574] }, wall_offset: 0.25 }
           - { material: CRIMSON_SLAB, tag: tyre_2, transform: { translation: [0, 0, 0.201], scale: [1, 0.8, 0.4142], left_rotation: [120, 0.5774, 0.5774, 0.5774] }, wall_offset: 0.25 }
           - { material: CRIMSON_SLAB, tag: tyre_3, transform: { translation: [0, 0, 0.203], scale: [1, 0.8, 0.4142], left_rotation: [148.6003, 0.2811, 0.6786, 0.6786] }, wall_offset: 0.25 }
-      spinning_wall_n: { copy_from: idle_wall_n, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [0, 0, 1], speed: 6 } }
+      spinning_wall_n: { copy_from: idle_wall_n, texture: "@prop_bearing_fwd", collision: { size: 0.9, offset: [0, 0.05, -0.5] }, animation: { type: rotate, axis: [0, 0, 1], speed: 6 } }
       idle_wall_s:
         texture: "@prop_bearing_fwd"
+        collision: { size: 0.9, offset: [0, 0.05, 0.5] }
         display_entities:
           - { material: CRIMSON_SLAB, tag: tyre_0, transform: { translation: [0, 0, 0.197], scale: [1, 0.8, 0.4142], left_rotation: [90, 1, 0, 0] }, wall_offset: 0.25 }
           - { material: CRIMSON_SLAB, tag: tyre_1, transform: { translation: [0, 0, 0.199], scale: [1, 0.8, 0.4142], left_rotation: [98.4211, 0.8629, 0.3574, 0.3574] }, wall_offset: 0.25 }
           - { material: CRIMSON_SLAB, tag: tyre_2, transform: { translation: [0, 0, 0.201], scale: [1, 0.8, 0.4142], left_rotation: [120, 0.5774, 0.5774, 0.5774] }, wall_offset: 0.25 }
           - { material: CRIMSON_SLAB, tag: tyre_3, transform: { translation: [0, 0, 0.203], scale: [1, 0.8, 0.4142], left_rotation: [148.6003, 0.2811, 0.6786, 0.6786] }, wall_offset: 0.25 }
-      spinning_wall_s: { copy_from: idle_wall_s, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [0, 0, 1], speed: 6 } }
+      spinning_wall_s: { copy_from: idle_wall_s, texture: "@prop_bearing_fwd", collision: { size: 0.9, offset: [0, 0.05, 0.5] }, animation: { type: rotate, axis: [0, 0, 1], speed: 6 } }
       idle_wall_e:
         texture: "@prop_bearing_fwd"
+        collision: { size: 0.9, offset: [-0.5, 0.05, 0] }
         display_entities:
           - { material: CRIMSON_SLAB, tag: tyre_0, transform: { translation: [0.197, 0, 0], scale: [1, 0.8, 0.4142], left_rotation: [90, 0, 0, -1] }, wall_offset: 0.25 }
           - { material: CRIMSON_SLAB, tag: tyre_1, transform: { translation: [0.199, 0, 0], scale: [1, 0.8, 0.4142], left_rotation: [98.4211, 0.3574, 0.3574, -0.8629] }, wall_offset: 0.25 }
           - { material: CRIMSON_SLAB, tag: tyre_2, transform: { translation: [0.201, 0, 0], scale: [1, 0.8, 0.4142], left_rotation: [120, 0.5774, 0.5774, -0.5774] }, wall_offset: 0.25 }
           - { material: CRIMSON_SLAB, tag: tyre_3, transform: { translation: [0.203, 0, 0], scale: [1, 0.8, 0.4142], left_rotation: [148.6003, 0.6786, 0.6786, -0.2811] }, wall_offset: 0.25 }
-      spinning_wall_e: { copy_from: idle_wall_e, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [1, 0, 0], speed: 6 } }
+      spinning_wall_e: { copy_from: idle_wall_e, texture: "@prop_bearing_fwd", collision: { size: 0.9, offset: [-0.5, 0.05, 0] }, animation: { type: rotate, axis: [1, 0, 0], speed: 6 } }
       idle_wall_w:
         texture: "@prop_bearing_fwd"
+        collision: { size: 0.9, offset: [0.5, 0.05, 0] }
         display_entities:
           - { material: CRIMSON_SLAB, tag: tyre_0, transform: { translation: [0.197, 0, 0], scale: [1, 0.8, 0.4142], left_rotation: [90, 0, 0, -1] }, wall_offset: 0.25 }
           - { material: CRIMSON_SLAB, tag: tyre_1, transform: { translation: [0.199, 0, 0], scale: [1, 0.8, 0.4142], left_rotation: [98.4211, 0.3574, 0.3574, -0.8629] }, wall_offset: 0.25 }
           - { material: CRIMSON_SLAB, tag: tyre_2, transform: { translation: [0.201, 0, 0], scale: [1, 0.8, 0.4142], left_rotation: [120, 0.5774, 0.5774, -0.5774] }, wall_offset: 0.25 }
           - { material: CRIMSON_SLAB, tag: tyre_3, transform: { translation: [0.203, 0, 0], scale: [1, 0.8, 0.4142], left_rotation: [148.6003, 0.6786, 0.6786, -0.2811] }, wall_offset: 0.25 }
-      spinning_wall_w: { copy_from: idle_wall_w, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [1, 0, 0], speed: 6 } }
+      spinning_wall_w: { copy_from: idle_wall_w, texture: "@prop_bearing_fwd", collision: { size: 0.9, offset: [0.5, 0.05, 0] }, animation: { type: rotate, axis: [1, 0, 0], speed: 6 } }
 
   wheel_dark_oak:
     cancel_pistons: true
@@ -4562,36 +4586,40 @@ blocks:
     states:
       idle_wall_n:
         texture: "@prop_bearing_fwd"
+        collision: { size: 0.9, offset: [0, 0.05, -0.5] }
         display_entities:
           - { material: DARK_OAK_SLAB, tag: tyre_0, transform: { translation: [0, 0, 0.197], scale: [1, 0.8, 0.4142], left_rotation: [90, 1, 0, 0] }, wall_offset: 0.25 }
           - { material: DARK_OAK_SLAB, tag: tyre_1, transform: { translation: [0, 0, 0.199], scale: [1, 0.8, 0.4142], left_rotation: [98.4211, 0.8629, 0.3574, 0.3574] }, wall_offset: 0.25 }
           - { material: DARK_OAK_SLAB, tag: tyre_2, transform: { translation: [0, 0, 0.201], scale: [1, 0.8, 0.4142], left_rotation: [120, 0.5774, 0.5774, 0.5774] }, wall_offset: 0.25 }
           - { material: DARK_OAK_SLAB, tag: tyre_3, transform: { translation: [0, 0, 0.203], scale: [1, 0.8, 0.4142], left_rotation: [148.6003, 0.2811, 0.6786, 0.6786] }, wall_offset: 0.25 }
-      spinning_wall_n: { copy_from: idle_wall_n, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [0, 0, 1], speed: 6 } }
+      spinning_wall_n: { copy_from: idle_wall_n, texture: "@prop_bearing_fwd", collision: { size: 0.9, offset: [0, 0.05, -0.5] }, animation: { type: rotate, axis: [0, 0, 1], speed: 6 } }
       idle_wall_s:
         texture: "@prop_bearing_fwd"
+        collision: { size: 0.9, offset: [0, 0.05, 0.5] }
         display_entities:
           - { material: DARK_OAK_SLAB, tag: tyre_0, transform: { translation: [0, 0, 0.197], scale: [1, 0.8, 0.4142], left_rotation: [90, 1, 0, 0] }, wall_offset: 0.25 }
           - { material: DARK_OAK_SLAB, tag: tyre_1, transform: { translation: [0, 0, 0.199], scale: [1, 0.8, 0.4142], left_rotation: [98.4211, 0.8629, 0.3574, 0.3574] }, wall_offset: 0.25 }
           - { material: DARK_OAK_SLAB, tag: tyre_2, transform: { translation: [0, 0, 0.201], scale: [1, 0.8, 0.4142], left_rotation: [120, 0.5774, 0.5774, 0.5774] }, wall_offset: 0.25 }
           - { material: DARK_OAK_SLAB, tag: tyre_3, transform: { translation: [0, 0, 0.203], scale: [1, 0.8, 0.4142], left_rotation: [148.6003, 0.2811, 0.6786, 0.6786] }, wall_offset: 0.25 }
-      spinning_wall_s: { copy_from: idle_wall_s, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [0, 0, 1], speed: 6 } }
+      spinning_wall_s: { copy_from: idle_wall_s, texture: "@prop_bearing_fwd", collision: { size: 0.9, offset: [0, 0.05, 0.5] }, animation: { type: rotate, axis: [0, 0, 1], speed: 6 } }
       idle_wall_e:
         texture: "@prop_bearing_fwd"
+        collision: { size: 0.9, offset: [-0.5, 0.05, 0] }
         display_entities:
           - { material: DARK_OAK_SLAB, tag: tyre_0, transform: { translation: [0.197, 0, 0], scale: [1, 0.8, 0.4142], left_rotation: [90, 0, 0, -1] }, wall_offset: 0.25 }
           - { material: DARK_OAK_SLAB, tag: tyre_1, transform: { translation: [0.199, 0, 0], scale: [1, 0.8, 0.4142], left_rotation: [98.4211, 0.3574, 0.3574, -0.8629] }, wall_offset: 0.25 }
           - { material: DARK_OAK_SLAB, tag: tyre_2, transform: { translation: [0.201, 0, 0], scale: [1, 0.8, 0.4142], left_rotation: [120, 0.5774, 0.5774, -0.5774] }, wall_offset: 0.25 }
           - { material: DARK_OAK_SLAB, tag: tyre_3, transform: { translation: [0.203, 0, 0], scale: [1, 0.8, 0.4142], left_rotation: [148.6003, 0.6786, 0.6786, -0.2811] }, wall_offset: 0.25 }
-      spinning_wall_e: { copy_from: idle_wall_e, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [1, 0, 0], speed: 6 } }
+      spinning_wall_e: { copy_from: idle_wall_e, texture: "@prop_bearing_fwd", collision: { size: 0.9, offset: [-0.5, 0.05, 0] }, animation: { type: rotate, axis: [1, 0, 0], speed: 6 } }
       idle_wall_w:
         texture: "@prop_bearing_fwd"
+        collision: { size: 0.9, offset: [0.5, 0.05, 0] }
         display_entities:
           - { material: DARK_OAK_SLAB, tag: tyre_0, transform: { translation: [0.197, 0, 0], scale: [1, 0.8, 0.4142], left_rotation: [90, 0, 0, -1] }, wall_offset: 0.25 }
           - { material: DARK_OAK_SLAB, tag: tyre_1, transform: { translation: [0.199, 0, 0], scale: [1, 0.8, 0.4142], left_rotation: [98.4211, 0.3574, 0.3574, -0.8629] }, wall_offset: 0.25 }
           - { material: DARK_OAK_SLAB, tag: tyre_2, transform: { translation: [0.201, 0, 0], scale: [1, 0.8, 0.4142], left_rotation: [120, 0.5774, 0.5774, -0.5774] }, wall_offset: 0.25 }
           - { material: DARK_OAK_SLAB, tag: tyre_3, transform: { translation: [0.203, 0, 0], scale: [1, 0.8, 0.4142], left_rotation: [148.6003, 0.6786, 0.6786, -0.2811] }, wall_offset: 0.25 }
-      spinning_wall_w: { copy_from: idle_wall_w, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [1, 0, 0], speed: 6 } }
+      spinning_wall_w: { copy_from: idle_wall_w, texture: "@prop_bearing_fwd", collision: { size: 0.9, offset: [0.5, 0.05, 0] }, animation: { type: rotate, axis: [1, 0, 0], speed: 6 } }
 
   wheel_jungle:
     cancel_pistons: true
@@ -4635,36 +4663,40 @@ blocks:
     states:
       idle_wall_n:
         texture: "@prop_bearing_fwd"
+        collision: { size: 0.9, offset: [0, 0.05, -0.5] }
         display_entities:
           - { material: JUNGLE_SLAB, tag: tyre_0, transform: { translation: [0, 0, 0.197], scale: [1, 0.8, 0.4142], left_rotation: [90, 1, 0, 0] }, wall_offset: 0.25 }
           - { material: JUNGLE_SLAB, tag: tyre_1, transform: { translation: [0, 0, 0.199], scale: [1, 0.8, 0.4142], left_rotation: [98.4211, 0.8629, 0.3574, 0.3574] }, wall_offset: 0.25 }
           - { material: JUNGLE_SLAB, tag: tyre_2, transform: { translation: [0, 0, 0.201], scale: [1, 0.8, 0.4142], left_rotation: [120, 0.5774, 0.5774, 0.5774] }, wall_offset: 0.25 }
           - { material: JUNGLE_SLAB, tag: tyre_3, transform: { translation: [0, 0, 0.203], scale: [1, 0.8, 0.4142], left_rotation: [148.6003, 0.2811, 0.6786, 0.6786] }, wall_offset: 0.25 }
-      spinning_wall_n: { copy_from: idle_wall_n, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [0, 0, 1], speed: 6 } }
+      spinning_wall_n: { copy_from: idle_wall_n, texture: "@prop_bearing_fwd", collision: { size: 0.9, offset: [0, 0.05, -0.5] }, animation: { type: rotate, axis: [0, 0, 1], speed: 6 } }
       idle_wall_s:
         texture: "@prop_bearing_fwd"
+        collision: { size: 0.9, offset: [0, 0.05, 0.5] }
         display_entities:
           - { material: JUNGLE_SLAB, tag: tyre_0, transform: { translation: [0, 0, 0.197], scale: [1, 0.8, 0.4142], left_rotation: [90, 1, 0, 0] }, wall_offset: 0.25 }
           - { material: JUNGLE_SLAB, tag: tyre_1, transform: { translation: [0, 0, 0.199], scale: [1, 0.8, 0.4142], left_rotation: [98.4211, 0.8629, 0.3574, 0.3574] }, wall_offset: 0.25 }
           - { material: JUNGLE_SLAB, tag: tyre_2, transform: { translation: [0, 0, 0.201], scale: [1, 0.8, 0.4142], left_rotation: [120, 0.5774, 0.5774, 0.5774] }, wall_offset: 0.25 }
           - { material: JUNGLE_SLAB, tag: tyre_3, transform: { translation: [0, 0, 0.203], scale: [1, 0.8, 0.4142], left_rotation: [148.6003, 0.2811, 0.6786, 0.6786] }, wall_offset: 0.25 }
-      spinning_wall_s: { copy_from: idle_wall_s, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [0, 0, 1], speed: 6 } }
+      spinning_wall_s: { copy_from: idle_wall_s, texture: "@prop_bearing_fwd", collision: { size: 0.9, offset: [0, 0.05, 0.5] }, animation: { type: rotate, axis: [0, 0, 1], speed: 6 } }
       idle_wall_e:
         texture: "@prop_bearing_fwd"
+        collision: { size: 0.9, offset: [-0.5, 0.05, 0] }
         display_entities:
           - { material: JUNGLE_SLAB, tag: tyre_0, transform: { translation: [0.197, 0, 0], scale: [1, 0.8, 0.4142], left_rotation: [90, 0, 0, -1] }, wall_offset: 0.25 }
           - { material: JUNGLE_SLAB, tag: tyre_1, transform: { translation: [0.199, 0, 0], scale: [1, 0.8, 0.4142], left_rotation: [98.4211, 0.3574, 0.3574, -0.8629] }, wall_offset: 0.25 }
           - { material: JUNGLE_SLAB, tag: tyre_2, transform: { translation: [0.201, 0, 0], scale: [1, 0.8, 0.4142], left_rotation: [120, 0.5774, 0.5774, -0.5774] }, wall_offset: 0.25 }
           - { material: JUNGLE_SLAB, tag: tyre_3, transform: { translation: [0.203, 0, 0], scale: [1, 0.8, 0.4142], left_rotation: [148.6003, 0.6786, 0.6786, -0.2811] }, wall_offset: 0.25 }
-      spinning_wall_e: { copy_from: idle_wall_e, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [1, 0, 0], speed: 6 } }
+      spinning_wall_e: { copy_from: idle_wall_e, texture: "@prop_bearing_fwd", collision: { size: 0.9, offset: [-0.5, 0.05, 0] }, animation: { type: rotate, axis: [1, 0, 0], speed: 6 } }
       idle_wall_w:
         texture: "@prop_bearing_fwd"
+        collision: { size: 0.9, offset: [0.5, 0.05, 0] }
         display_entities:
           - { material: JUNGLE_SLAB, tag: tyre_0, transform: { translation: [0.197, 0, 0], scale: [1, 0.8, 0.4142], left_rotation: [90, 0, 0, -1] }, wall_offset: 0.25 }
           - { material: JUNGLE_SLAB, tag: tyre_1, transform: { translation: [0.199, 0, 0], scale: [1, 0.8, 0.4142], left_rotation: [98.4211, 0.3574, 0.3574, -0.8629] }, wall_offset: 0.25 }
           - { material: JUNGLE_SLAB, tag: tyre_2, transform: { translation: [0.201, 0, 0], scale: [1, 0.8, 0.4142], left_rotation: [120, 0.5774, 0.5774, -0.5774] }, wall_offset: 0.25 }
           - { material: JUNGLE_SLAB, tag: tyre_3, transform: { translation: [0.203, 0, 0], scale: [1, 0.8, 0.4142], left_rotation: [148.6003, 0.6786, 0.6786, -0.2811] }, wall_offset: 0.25 }
-      spinning_wall_w: { copy_from: idle_wall_w, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [1, 0, 0], speed: 6 } }
+      spinning_wall_w: { copy_from: idle_wall_w, texture: "@prop_bearing_fwd", collision: { size: 0.9, offset: [0.5, 0.05, 0] }, animation: { type: rotate, axis: [1, 0, 0], speed: 6 } }
 
   wheel_mangrove:
     cancel_pistons: true
@@ -4708,36 +4740,40 @@ blocks:
     states:
       idle_wall_n:
         texture: "@prop_bearing_fwd"
+        collision: { size: 0.9, offset: [0, 0.05, -0.5] }
         display_entities:
           - { material: MANGROVE_SLAB, tag: tyre_0, transform: { translation: [0, 0, 0.197], scale: [1, 0.8, 0.4142], left_rotation: [90, 1, 0, 0] }, wall_offset: 0.25 }
           - { material: MANGROVE_SLAB, tag: tyre_1, transform: { translation: [0, 0, 0.199], scale: [1, 0.8, 0.4142], left_rotation: [98.4211, 0.8629, 0.3574, 0.3574] }, wall_offset: 0.25 }
           - { material: MANGROVE_SLAB, tag: tyre_2, transform: { translation: [0, 0, 0.201], scale: [1, 0.8, 0.4142], left_rotation: [120, 0.5774, 0.5774, 0.5774] }, wall_offset: 0.25 }
           - { material: MANGROVE_SLAB, tag: tyre_3, transform: { translation: [0, 0, 0.203], scale: [1, 0.8, 0.4142], left_rotation: [148.6003, 0.2811, 0.6786, 0.6786] }, wall_offset: 0.25 }
-      spinning_wall_n: { copy_from: idle_wall_n, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [0, 0, 1], speed: 6 } }
+      spinning_wall_n: { copy_from: idle_wall_n, texture: "@prop_bearing_fwd", collision: { size: 0.9, offset: [0, 0.05, -0.5] }, animation: { type: rotate, axis: [0, 0, 1], speed: 6 } }
       idle_wall_s:
         texture: "@prop_bearing_fwd"
+        collision: { size: 0.9, offset: [0, 0.05, 0.5] }
         display_entities:
           - { material: MANGROVE_SLAB, tag: tyre_0, transform: { translation: [0, 0, 0.197], scale: [1, 0.8, 0.4142], left_rotation: [90, 1, 0, 0] }, wall_offset: 0.25 }
           - { material: MANGROVE_SLAB, tag: tyre_1, transform: { translation: [0, 0, 0.199], scale: [1, 0.8, 0.4142], left_rotation: [98.4211, 0.8629, 0.3574, 0.3574] }, wall_offset: 0.25 }
           - { material: MANGROVE_SLAB, tag: tyre_2, transform: { translation: [0, 0, 0.201], scale: [1, 0.8, 0.4142], left_rotation: [120, 0.5774, 0.5774, 0.5774] }, wall_offset: 0.25 }
           - { material: MANGROVE_SLAB, tag: tyre_3, transform: { translation: [0, 0, 0.203], scale: [1, 0.8, 0.4142], left_rotation: [148.6003, 0.2811, 0.6786, 0.6786] }, wall_offset: 0.25 }
-      spinning_wall_s: { copy_from: idle_wall_s, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [0, 0, 1], speed: 6 } }
+      spinning_wall_s: { copy_from: idle_wall_s, texture: "@prop_bearing_fwd", collision: { size: 0.9, offset: [0, 0.05, 0.5] }, animation: { type: rotate, axis: [0, 0, 1], speed: 6 } }
       idle_wall_e:
         texture: "@prop_bearing_fwd"
+        collision: { size: 0.9, offset: [-0.5, 0.05, 0] }
         display_entities:
           - { material: MANGROVE_SLAB, tag: tyre_0, transform: { translation: [0.197, 0, 0], scale: [1, 0.8, 0.4142], left_rotation: [90, 0, 0, -1] }, wall_offset: 0.25 }
           - { material: MANGROVE_SLAB, tag: tyre_1, transform: { translation: [0.199, 0, 0], scale: [1, 0.8, 0.4142], left_rotation: [98.4211, 0.3574, 0.3574, -0.8629] }, wall_offset: 0.25 }
           - { material: MANGROVE_SLAB, tag: tyre_2, transform: { translation: [0.201, 0, 0], scale: [1, 0.8, 0.4142], left_rotation: [120, 0.5774, 0.5774, -0.5774] }, wall_offset: 0.25 }
           - { material: MANGROVE_SLAB, tag: tyre_3, transform: { translation: [0.203, 0, 0], scale: [1, 0.8, 0.4142], left_rotation: [148.6003, 0.6786, 0.6786, -0.2811] }, wall_offset: 0.25 }
-      spinning_wall_e: { copy_from: idle_wall_e, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [1, 0, 0], speed: 6 } }
+      spinning_wall_e: { copy_from: idle_wall_e, texture: "@prop_bearing_fwd", collision: { size: 0.9, offset: [-0.5, 0.05, 0] }, animation: { type: rotate, axis: [1, 0, 0], speed: 6 } }
       idle_wall_w:
         texture: "@prop_bearing_fwd"
+        collision: { size: 0.9, offset: [0.5, 0.05, 0] }
         display_entities:
           - { material: MANGROVE_SLAB, tag: tyre_0, transform: { translation: [0.197, 0, 0], scale: [1, 0.8, 0.4142], left_rotation: [90, 0, 0, -1] }, wall_offset: 0.25 }
           - { material: MANGROVE_SLAB, tag: tyre_1, transform: { translation: [0.199, 0, 0], scale: [1, 0.8, 0.4142], left_rotation: [98.4211, 0.3574, 0.3574, -0.8629] }, wall_offset: 0.25 }
           - { material: MANGROVE_SLAB, tag: tyre_2, transform: { translation: [0.201, 0, 0], scale: [1, 0.8, 0.4142], left_rotation: [120, 0.5774, 0.5774, -0.5774] }, wall_offset: 0.25 }
           - { material: MANGROVE_SLAB, tag: tyre_3, transform: { translation: [0.203, 0, 0], scale: [1, 0.8, 0.4142], left_rotation: [148.6003, 0.6786, 0.6786, -0.2811] }, wall_offset: 0.25 }
-      spinning_wall_w: { copy_from: idle_wall_w, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [1, 0, 0], speed: 6 } }
+      spinning_wall_w: { copy_from: idle_wall_w, texture: "@prop_bearing_fwd", collision: { size: 0.9, offset: [0.5, 0.05, 0] }, animation: { type: rotate, axis: [1, 0, 0], speed: 6 } }
 
   wheel_pale_oak:
     cancel_pistons: true
@@ -4781,36 +4817,40 @@ blocks:
     states:
       idle_wall_n:
         texture: "@prop_bearing_fwd"
+        collision: { size: 0.9, offset: [0, 0.05, -0.5] }
         display_entities:
           - { material: PALE_OAK_SLAB, tag: tyre_0, transform: { translation: [0, 0, 0.197], scale: [1, 0.8, 0.4142], left_rotation: [90, 1, 0, 0] }, wall_offset: 0.25 }
           - { material: PALE_OAK_SLAB, tag: tyre_1, transform: { translation: [0, 0, 0.199], scale: [1, 0.8, 0.4142], left_rotation: [98.4211, 0.8629, 0.3574, 0.3574] }, wall_offset: 0.25 }
           - { material: PALE_OAK_SLAB, tag: tyre_2, transform: { translation: [0, 0, 0.201], scale: [1, 0.8, 0.4142], left_rotation: [120, 0.5774, 0.5774, 0.5774] }, wall_offset: 0.25 }
           - { material: PALE_OAK_SLAB, tag: tyre_3, transform: { translation: [0, 0, 0.203], scale: [1, 0.8, 0.4142], left_rotation: [148.6003, 0.2811, 0.6786, 0.6786] }, wall_offset: 0.25 }
-      spinning_wall_n: { copy_from: idle_wall_n, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [0, 0, 1], speed: 6 } }
+      spinning_wall_n: { copy_from: idle_wall_n, texture: "@prop_bearing_fwd", collision: { size: 0.9, offset: [0, 0.05, -0.5] }, animation: { type: rotate, axis: [0, 0, 1], speed: 6 } }
       idle_wall_s:
         texture: "@prop_bearing_fwd"
+        collision: { size: 0.9, offset: [0, 0.05, 0.5] }
         display_entities:
           - { material: PALE_OAK_SLAB, tag: tyre_0, transform: { translation: [0, 0, 0.197], scale: [1, 0.8, 0.4142], left_rotation: [90, 1, 0, 0] }, wall_offset: 0.25 }
           - { material: PALE_OAK_SLAB, tag: tyre_1, transform: { translation: [0, 0, 0.199], scale: [1, 0.8, 0.4142], left_rotation: [98.4211, 0.8629, 0.3574, 0.3574] }, wall_offset: 0.25 }
           - { material: PALE_OAK_SLAB, tag: tyre_2, transform: { translation: [0, 0, 0.201], scale: [1, 0.8, 0.4142], left_rotation: [120, 0.5774, 0.5774, 0.5774] }, wall_offset: 0.25 }
           - { material: PALE_OAK_SLAB, tag: tyre_3, transform: { translation: [0, 0, 0.203], scale: [1, 0.8, 0.4142], left_rotation: [148.6003, 0.2811, 0.6786, 0.6786] }, wall_offset: 0.25 }
-      spinning_wall_s: { copy_from: idle_wall_s, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [0, 0, 1], speed: 6 } }
+      spinning_wall_s: { copy_from: idle_wall_s, texture: "@prop_bearing_fwd", collision: { size: 0.9, offset: [0, 0.05, 0.5] }, animation: { type: rotate, axis: [0, 0, 1], speed: 6 } }
       idle_wall_e:
         texture: "@prop_bearing_fwd"
+        collision: { size: 0.9, offset: [-0.5, 0.05, 0] }
         display_entities:
           - { material: PALE_OAK_SLAB, tag: tyre_0, transform: { translation: [0.197, 0, 0], scale: [1, 0.8, 0.4142], left_rotation: [90, 0, 0, -1] }, wall_offset: 0.25 }
           - { material: PALE_OAK_SLAB, tag: tyre_1, transform: { translation: [0.199, 0, 0], scale: [1, 0.8, 0.4142], left_rotation: [98.4211, 0.3574, 0.3574, -0.8629] }, wall_offset: 0.25 }
           - { material: PALE_OAK_SLAB, tag: tyre_2, transform: { translation: [0.201, 0, 0], scale: [1, 0.8, 0.4142], left_rotation: [120, 0.5774, 0.5774, -0.5774] }, wall_offset: 0.25 }
           - { material: PALE_OAK_SLAB, tag: tyre_3, transform: { translation: [0.203, 0, 0], scale: [1, 0.8, 0.4142], left_rotation: [148.6003, 0.6786, 0.6786, -0.2811] }, wall_offset: 0.25 }
-      spinning_wall_e: { copy_from: idle_wall_e, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [1, 0, 0], speed: 6 } }
+      spinning_wall_e: { copy_from: idle_wall_e, texture: "@prop_bearing_fwd", collision: { size: 0.9, offset: [-0.5, 0.05, 0] }, animation: { type: rotate, axis: [1, 0, 0], speed: 6 } }
       idle_wall_w:
         texture: "@prop_bearing_fwd"
+        collision: { size: 0.9, offset: [0.5, 0.05, 0] }
         display_entities:
           - { material: PALE_OAK_SLAB, tag: tyre_0, transform: { translation: [0.197, 0, 0], scale: [1, 0.8, 0.4142], left_rotation: [90, 0, 0, -1] }, wall_offset: 0.25 }
           - { material: PALE_OAK_SLAB, tag: tyre_1, transform: { translation: [0.199, 0, 0], scale: [1, 0.8, 0.4142], left_rotation: [98.4211, 0.3574, 0.3574, -0.8629] }, wall_offset: 0.25 }
           - { material: PALE_OAK_SLAB, tag: tyre_2, transform: { translation: [0.201, 0, 0], scale: [1, 0.8, 0.4142], left_rotation: [120, 0.5774, 0.5774, -0.5774] }, wall_offset: 0.25 }
           - { material: PALE_OAK_SLAB, tag: tyre_3, transform: { translation: [0.203, 0, 0], scale: [1, 0.8, 0.4142], left_rotation: [148.6003, 0.6786, 0.6786, -0.2811] }, wall_offset: 0.25 }
-      spinning_wall_w: { copy_from: idle_wall_w, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [1, 0, 0], speed: 6 } }
+      spinning_wall_w: { copy_from: idle_wall_w, texture: "@prop_bearing_fwd", collision: { size: 0.9, offset: [0.5, 0.05, 0] }, animation: { type: rotate, axis: [1, 0, 0], speed: 6 } }
 
   wheel_spruce:
     cancel_pistons: true
@@ -4854,36 +4894,40 @@ blocks:
     states:
       idle_wall_n:
         texture: "@prop_bearing_fwd"
+        collision: { size: 0.9, offset: [0, 0.05, -0.5] }
         display_entities:
           - { material: SPRUCE_SLAB, tag: tyre_0, transform: { translation: [0, 0, 0.197], scale: [1, 0.8, 0.4142], left_rotation: [90, 1, 0, 0] }, wall_offset: 0.25 }
           - { material: SPRUCE_SLAB, tag: tyre_1, transform: { translation: [0, 0, 0.199], scale: [1, 0.8, 0.4142], left_rotation: [98.4211, 0.8629, 0.3574, 0.3574] }, wall_offset: 0.25 }
           - { material: SPRUCE_SLAB, tag: tyre_2, transform: { translation: [0, 0, 0.201], scale: [1, 0.8, 0.4142], left_rotation: [120, 0.5774, 0.5774, 0.5774] }, wall_offset: 0.25 }
           - { material: SPRUCE_SLAB, tag: tyre_3, transform: { translation: [0, 0, 0.203], scale: [1, 0.8, 0.4142], left_rotation: [148.6003, 0.2811, 0.6786, 0.6786] }, wall_offset: 0.25 }
-      spinning_wall_n: { copy_from: idle_wall_n, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [0, 0, 1], speed: 6 } }
+      spinning_wall_n: { copy_from: idle_wall_n, texture: "@prop_bearing_fwd", collision: { size: 0.9, offset: [0, 0.05, -0.5] }, animation: { type: rotate, axis: [0, 0, 1], speed: 6 } }
       idle_wall_s:
         texture: "@prop_bearing_fwd"
+        collision: { size: 0.9, offset: [0, 0.05, 0.5] }
         display_entities:
           - { material: SPRUCE_SLAB, tag: tyre_0, transform: { translation: [0, 0, 0.197], scale: [1, 0.8, 0.4142], left_rotation: [90, 1, 0, 0] }, wall_offset: 0.25 }
           - { material: SPRUCE_SLAB, tag: tyre_1, transform: { translation: [0, 0, 0.199], scale: [1, 0.8, 0.4142], left_rotation: [98.4211, 0.8629, 0.3574, 0.3574] }, wall_offset: 0.25 }
           - { material: SPRUCE_SLAB, tag: tyre_2, transform: { translation: [0, 0, 0.201], scale: [1, 0.8, 0.4142], left_rotation: [120, 0.5774, 0.5774, 0.5774] }, wall_offset: 0.25 }
           - { material: SPRUCE_SLAB, tag: tyre_3, transform: { translation: [0, 0, 0.203], scale: [1, 0.8, 0.4142], left_rotation: [148.6003, 0.2811, 0.6786, 0.6786] }, wall_offset: 0.25 }
-      spinning_wall_s: { copy_from: idle_wall_s, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [0, 0, 1], speed: 6 } }
+      spinning_wall_s: { copy_from: idle_wall_s, texture: "@prop_bearing_fwd", collision: { size: 0.9, offset: [0, 0.05, 0.5] }, animation: { type: rotate, axis: [0, 0, 1], speed: 6 } }
       idle_wall_e:
         texture: "@prop_bearing_fwd"
+        collision: { size: 0.9, offset: [-0.5, 0.05, 0] }
         display_entities:
           - { material: SPRUCE_SLAB, tag: tyre_0, transform: { translation: [0.197, 0, 0], scale: [1, 0.8, 0.4142], left_rotation: [90, 0, 0, -1] }, wall_offset: 0.25 }
           - { material: SPRUCE_SLAB, tag: tyre_1, transform: { translation: [0.199, 0, 0], scale: [1, 0.8, 0.4142], left_rotation: [98.4211, 0.3574, 0.3574, -0.8629] }, wall_offset: 0.25 }
           - { material: SPRUCE_SLAB, tag: tyre_2, transform: { translation: [0.201, 0, 0], scale: [1, 0.8, 0.4142], left_rotation: [120, 0.5774, 0.5774, -0.5774] }, wall_offset: 0.25 }
           - { material: SPRUCE_SLAB, tag: tyre_3, transform: { translation: [0.203, 0, 0], scale: [1, 0.8, 0.4142], left_rotation: [148.6003, 0.6786, 0.6786, -0.2811] }, wall_offset: 0.25 }
-      spinning_wall_e: { copy_from: idle_wall_e, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [1, 0, 0], speed: 6 } }
+      spinning_wall_e: { copy_from: idle_wall_e, texture: "@prop_bearing_fwd", collision: { size: 0.9, offset: [-0.5, 0.05, 0] }, animation: { type: rotate, axis: [1, 0, 0], speed: 6 } }
       idle_wall_w:
         texture: "@prop_bearing_fwd"
+        collision: { size: 0.9, offset: [0.5, 0.05, 0] }
         display_entities:
           - { material: SPRUCE_SLAB, tag: tyre_0, transform: { translation: [0.197, 0, 0], scale: [1, 0.8, 0.4142], left_rotation: [90, 0, 0, -1] }, wall_offset: 0.25 }
           - { material: SPRUCE_SLAB, tag: tyre_1, transform: { translation: [0.199, 0, 0], scale: [1, 0.8, 0.4142], left_rotation: [98.4211, 0.3574, 0.3574, -0.8629] }, wall_offset: 0.25 }
           - { material: SPRUCE_SLAB, tag: tyre_2, transform: { translation: [0.201, 0, 0], scale: [1, 0.8, 0.4142], left_rotation: [120, 0.5774, 0.5774, -0.5774] }, wall_offset: 0.25 }
           - { material: SPRUCE_SLAB, tag: tyre_3, transform: { translation: [0.203, 0, 0], scale: [1, 0.8, 0.4142], left_rotation: [148.6003, 0.6786, 0.6786, -0.2811] }, wall_offset: 0.25 }
-      spinning_wall_w: { copy_from: idle_wall_w, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [1, 0, 0], speed: 6 } }
+      spinning_wall_w: { copy_from: idle_wall_w, texture: "@prop_bearing_fwd", collision: { size: 0.9, offset: [0.5, 0.05, 0] }, animation: { type: rotate, axis: [1, 0, 0], speed: 6 } }
 
   wheel_warped:
     cancel_pistons: true
@@ -4927,36 +4971,40 @@ blocks:
     states:
       idle_wall_n:
         texture: "@prop_bearing_fwd"
+        collision: { size: 0.9, offset: [0, 0.05, -0.5] }
         display_entities:
           - { material: WARPED_SLAB, tag: tyre_0, transform: { translation: [0, 0, 0.197], scale: [1, 0.8, 0.4142], left_rotation: [90, 1, 0, 0] }, wall_offset: 0.25 }
           - { material: WARPED_SLAB, tag: tyre_1, transform: { translation: [0, 0, 0.199], scale: [1, 0.8, 0.4142], left_rotation: [98.4211, 0.8629, 0.3574, 0.3574] }, wall_offset: 0.25 }
           - { material: WARPED_SLAB, tag: tyre_2, transform: { translation: [0, 0, 0.201], scale: [1, 0.8, 0.4142], left_rotation: [120, 0.5774, 0.5774, 0.5774] }, wall_offset: 0.25 }
           - { material: WARPED_SLAB, tag: tyre_3, transform: { translation: [0, 0, 0.203], scale: [1, 0.8, 0.4142], left_rotation: [148.6003, 0.2811, 0.6786, 0.6786] }, wall_offset: 0.25 }
-      spinning_wall_n: { copy_from: idle_wall_n, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [0, 0, 1], speed: 6 } }
+      spinning_wall_n: { copy_from: idle_wall_n, texture: "@prop_bearing_fwd", collision: { size: 0.9, offset: [0, 0.05, -0.5] }, animation: { type: rotate, axis: [0, 0, 1], speed: 6 } }
       idle_wall_s:
         texture: "@prop_bearing_fwd"
+        collision: { size: 0.9, offset: [0, 0.05, 0.5] }
         display_entities:
           - { material: WARPED_SLAB, tag: tyre_0, transform: { translation: [0, 0, 0.197], scale: [1, 0.8, 0.4142], left_rotation: [90, 1, 0, 0] }, wall_offset: 0.25 }
           - { material: WARPED_SLAB, tag: tyre_1, transform: { translation: [0, 0, 0.199], scale: [1, 0.8, 0.4142], left_rotation: [98.4211, 0.8629, 0.3574, 0.3574] }, wall_offset: 0.25 }
           - { material: WARPED_SLAB, tag: tyre_2, transform: { translation: [0, 0, 0.201], scale: [1, 0.8, 0.4142], left_rotation: [120, 0.5774, 0.5774, 0.5774] }, wall_offset: 0.25 }
           - { material: WARPED_SLAB, tag: tyre_3, transform: { translation: [0, 0, 0.203], scale: [1, 0.8, 0.4142], left_rotation: [148.6003, 0.2811, 0.6786, 0.6786] }, wall_offset: 0.25 }
-      spinning_wall_s: { copy_from: idle_wall_s, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [0, 0, 1], speed: 6 } }
+      spinning_wall_s: { copy_from: idle_wall_s, texture: "@prop_bearing_fwd", collision: { size: 0.9, offset: [0, 0.05, 0.5] }, animation: { type: rotate, axis: [0, 0, 1], speed: 6 } }
       idle_wall_e:
         texture: "@prop_bearing_fwd"
+        collision: { size: 0.9, offset: [-0.5, 0.05, 0] }
         display_entities:
           - { material: WARPED_SLAB, tag: tyre_0, transform: { translation: [0.197, 0, 0], scale: [1, 0.8, 0.4142], left_rotation: [90, 0, 0, -1] }, wall_offset: 0.25 }
           - { material: WARPED_SLAB, tag: tyre_1, transform: { translation: [0.199, 0, 0], scale: [1, 0.8, 0.4142], left_rotation: [98.4211, 0.3574, 0.3574, -0.8629] }, wall_offset: 0.25 }
           - { material: WARPED_SLAB, tag: tyre_2, transform: { translation: [0.201, 0, 0], scale: [1, 0.8, 0.4142], left_rotation: [120, 0.5774, 0.5774, -0.5774] }, wall_offset: 0.25 }
           - { material: WARPED_SLAB, tag: tyre_3, transform: { translation: [0.203, 0, 0], scale: [1, 0.8, 0.4142], left_rotation: [148.6003, 0.6786, 0.6786, -0.2811] }, wall_offset: 0.25 }
-      spinning_wall_e: { copy_from: idle_wall_e, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [1, 0, 0], speed: 6 } }
+      spinning_wall_e: { copy_from: idle_wall_e, texture: "@prop_bearing_fwd", collision: { size: 0.9, offset: [-0.5, 0.05, 0] }, animation: { type: rotate, axis: [1, 0, 0], speed: 6 } }
       idle_wall_w:
         texture: "@prop_bearing_fwd"
+        collision: { size: 0.9, offset: [0.5, 0.05, 0] }
         display_entities:
           - { material: WARPED_SLAB, tag: tyre_0, transform: { translation: [0.197, 0, 0], scale: [1, 0.8, 0.4142], left_rotation: [90, 0, 0, -1] }, wall_offset: 0.25 }
           - { material: WARPED_SLAB, tag: tyre_1, transform: { translation: [0.199, 0, 0], scale: [1, 0.8, 0.4142], left_rotation: [98.4211, 0.3574, 0.3574, -0.8629] }, wall_offset: 0.25 }
           - { material: WARPED_SLAB, tag: tyre_2, transform: { translation: [0.201, 0, 0], scale: [1, 0.8, 0.4142], left_rotation: [120, 0.5774, 0.5774, -0.5774] }, wall_offset: 0.25 }
           - { material: WARPED_SLAB, tag: tyre_3, transform: { translation: [0.203, 0, 0], scale: [1, 0.8, 0.4142], left_rotation: [148.6003, 0.6786, 0.6786, -0.2811] }, wall_offset: 0.25 }
-      spinning_wall_w: { copy_from: idle_wall_w, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [1, 0, 0], speed: 6 } }
+      spinning_wall_w: { copy_from: idle_wall_w, texture: "@prop_bearing_fwd", collision: { size: 0.9, offset: [0.5, 0.05, 0] }, animation: { type: rotate, axis: [1, 0, 0], speed: 6 } }
 
   large_wheel_oak:
     cancel_pistons: true
@@ -4973,7 +5021,6 @@ blocks:
       - "&7Climbs steps up to 1.5 blocks high. The tyre reaches 0.5 blocks below the block it hangs on."
       - "&7Craft from a Oak Wheel with four oak planks around it."
       - "&7Wall placement only."
-    catalog_variant_of: large_wheel_oak
     recipes:
       craft:
         shaped:
@@ -5000,36 +5047,40 @@ blocks:
     states:
       idle_wall_n:
         texture: "@prop_bearing_fwd"
+        collision: { size: 1.8, offset: [0, -0.4, -0.95] }
         display_entities:
           - { material: OAK_SLAB, tag: tyre_0, transform: { translation: [0, 0, 0.197], scale: [2, 0.8, 0.8284], left_rotation: [90, 1, 0, 0] }, wall_offset: 0.25 }
           - { material: OAK_SLAB, tag: tyre_1, transform: { translation: [0, 0, 0.199], scale: [2, 0.8, 0.8284], left_rotation: [98.4211, 0.8629, 0.3574, 0.3574] }, wall_offset: 0.25 }
           - { material: OAK_SLAB, tag: tyre_2, transform: { translation: [0, 0, 0.201], scale: [2, 0.8, 0.8284], left_rotation: [120, 0.5774, 0.5774, 0.5774] }, wall_offset: 0.25 }
           - { material: OAK_SLAB, tag: tyre_3, transform: { translation: [0, 0, 0.203], scale: [2, 0.8, 0.8284], left_rotation: [148.6003, 0.2811, 0.6786, 0.6786] }, wall_offset: 0.25 }
-      spinning_wall_n: { copy_from: idle_wall_n, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [0, 0, 1], speed: 3 } }
+      spinning_wall_n: { copy_from: idle_wall_n, texture: "@prop_bearing_fwd", collision: { size: 1.8, offset: [0, -0.4, -0.95] }, animation: { type: rotate, axis: [0, 0, 1], speed: 3 } }
       idle_wall_s:
         texture: "@prop_bearing_fwd"
+        collision: { size: 1.8, offset: [0, -0.4, 0.95] }
         display_entities:
           - { material: OAK_SLAB, tag: tyre_0, transform: { translation: [0, 0, 0.197], scale: [2, 0.8, 0.8284], left_rotation: [90, 1, 0, 0] }, wall_offset: 0.25 }
           - { material: OAK_SLAB, tag: tyre_1, transform: { translation: [0, 0, 0.199], scale: [2, 0.8, 0.8284], left_rotation: [98.4211, 0.8629, 0.3574, 0.3574] }, wall_offset: 0.25 }
           - { material: OAK_SLAB, tag: tyre_2, transform: { translation: [0, 0, 0.201], scale: [2, 0.8, 0.8284], left_rotation: [120, 0.5774, 0.5774, 0.5774] }, wall_offset: 0.25 }
           - { material: OAK_SLAB, tag: tyre_3, transform: { translation: [0, 0, 0.203], scale: [2, 0.8, 0.8284], left_rotation: [148.6003, 0.2811, 0.6786, 0.6786] }, wall_offset: 0.25 }
-      spinning_wall_s: { copy_from: idle_wall_s, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [0, 0, 1], speed: 3 } }
+      spinning_wall_s: { copy_from: idle_wall_s, texture: "@prop_bearing_fwd", collision: { size: 1.8, offset: [0, -0.4, 0.95] }, animation: { type: rotate, axis: [0, 0, 1], speed: 3 } }
       idle_wall_e:
         texture: "@prop_bearing_fwd"
+        collision: { size: 1.8, offset: [-0.95, -0.4, 0] }
         display_entities:
           - { material: OAK_SLAB, tag: tyre_0, transform: { translation: [0.197, 0, 0], scale: [2, 0.8, 0.8284], left_rotation: [90, 0, 0, -1] }, wall_offset: 0.25 }
           - { material: OAK_SLAB, tag: tyre_1, transform: { translation: [0.199, 0, 0], scale: [2, 0.8, 0.8284], left_rotation: [98.4211, 0.3574, 0.3574, -0.8629] }, wall_offset: 0.25 }
           - { material: OAK_SLAB, tag: tyre_2, transform: { translation: [0.201, 0, 0], scale: [2, 0.8, 0.8284], left_rotation: [120, 0.5774, 0.5774, -0.5774] }, wall_offset: 0.25 }
           - { material: OAK_SLAB, tag: tyre_3, transform: { translation: [0.203, 0, 0], scale: [2, 0.8, 0.8284], left_rotation: [148.6003, 0.6786, 0.6786, -0.2811] }, wall_offset: 0.25 }
-      spinning_wall_e: { copy_from: idle_wall_e, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [1, 0, 0], speed: 3 } }
+      spinning_wall_e: { copy_from: idle_wall_e, texture: "@prop_bearing_fwd", collision: { size: 1.8, offset: [-0.95, -0.4, 0] }, animation: { type: rotate, axis: [1, 0, 0], speed: 3 } }
       idle_wall_w:
         texture: "@prop_bearing_fwd"
+        collision: { size: 1.8, offset: [0.95, -0.4, 0] }
         display_entities:
           - { material: OAK_SLAB, tag: tyre_0, transform: { translation: [0.197, 0, 0], scale: [2, 0.8, 0.8284], left_rotation: [90, 0, 0, -1] }, wall_offset: 0.25 }
           - { material: OAK_SLAB, tag: tyre_1, transform: { translation: [0.199, 0, 0], scale: [2, 0.8, 0.8284], left_rotation: [98.4211, 0.3574, 0.3574, -0.8629] }, wall_offset: 0.25 }
           - { material: OAK_SLAB, tag: tyre_2, transform: { translation: [0.201, 0, 0], scale: [2, 0.8, 0.8284], left_rotation: [120, 0.5774, 0.5774, -0.5774] }, wall_offset: 0.25 }
           - { material: OAK_SLAB, tag: tyre_3, transform: { translation: [0.203, 0, 0], scale: [2, 0.8, 0.8284], left_rotation: [148.6003, 0.6786, 0.6786, -0.2811] }, wall_offset: 0.25 }
-      spinning_wall_w: { copy_from: idle_wall_w, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [1, 0, 0], speed: 3 } }
+      spinning_wall_w: { copy_from: idle_wall_w, texture: "@prop_bearing_fwd", collision: { size: 1.8, offset: [0.95, -0.4, 0] }, animation: { type: rotate, axis: [1, 0, 0], speed: 3 } }
 
   large_wheel_acacia:
     cancel_pistons: true
@@ -5073,36 +5124,40 @@ blocks:
     states:
       idle_wall_n:
         texture: "@prop_bearing_fwd"
+        collision: { size: 1.8, offset: [0, -0.4, -0.95] }
         display_entities:
           - { material: ACACIA_SLAB, tag: tyre_0, transform: { translation: [0, 0, 0.197], scale: [2, 0.8, 0.8284], left_rotation: [90, 1, 0, 0] }, wall_offset: 0.25 }
           - { material: ACACIA_SLAB, tag: tyre_1, transform: { translation: [0, 0, 0.199], scale: [2, 0.8, 0.8284], left_rotation: [98.4211, 0.8629, 0.3574, 0.3574] }, wall_offset: 0.25 }
           - { material: ACACIA_SLAB, tag: tyre_2, transform: { translation: [0, 0, 0.201], scale: [2, 0.8, 0.8284], left_rotation: [120, 0.5774, 0.5774, 0.5774] }, wall_offset: 0.25 }
           - { material: ACACIA_SLAB, tag: tyre_3, transform: { translation: [0, 0, 0.203], scale: [2, 0.8, 0.8284], left_rotation: [148.6003, 0.2811, 0.6786, 0.6786] }, wall_offset: 0.25 }
-      spinning_wall_n: { copy_from: idle_wall_n, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [0, 0, 1], speed: 3 } }
+      spinning_wall_n: { copy_from: idle_wall_n, texture: "@prop_bearing_fwd", collision: { size: 1.8, offset: [0, -0.4, -0.95] }, animation: { type: rotate, axis: [0, 0, 1], speed: 3 } }
       idle_wall_s:
         texture: "@prop_bearing_fwd"
+        collision: { size: 1.8, offset: [0, -0.4, 0.95] }
         display_entities:
           - { material: ACACIA_SLAB, tag: tyre_0, transform: { translation: [0, 0, 0.197], scale: [2, 0.8, 0.8284], left_rotation: [90, 1, 0, 0] }, wall_offset: 0.25 }
           - { material: ACACIA_SLAB, tag: tyre_1, transform: { translation: [0, 0, 0.199], scale: [2, 0.8, 0.8284], left_rotation: [98.4211, 0.8629, 0.3574, 0.3574] }, wall_offset: 0.25 }
           - { material: ACACIA_SLAB, tag: tyre_2, transform: { translation: [0, 0, 0.201], scale: [2, 0.8, 0.8284], left_rotation: [120, 0.5774, 0.5774, 0.5774] }, wall_offset: 0.25 }
           - { material: ACACIA_SLAB, tag: tyre_3, transform: { translation: [0, 0, 0.203], scale: [2, 0.8, 0.8284], left_rotation: [148.6003, 0.2811, 0.6786, 0.6786] }, wall_offset: 0.25 }
-      spinning_wall_s: { copy_from: idle_wall_s, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [0, 0, 1], speed: 3 } }
+      spinning_wall_s: { copy_from: idle_wall_s, texture: "@prop_bearing_fwd", collision: { size: 1.8, offset: [0, -0.4, 0.95] }, animation: { type: rotate, axis: [0, 0, 1], speed: 3 } }
       idle_wall_e:
         texture: "@prop_bearing_fwd"
+        collision: { size: 1.8, offset: [-0.95, -0.4, 0] }
         display_entities:
           - { material: ACACIA_SLAB, tag: tyre_0, transform: { translation: [0.197, 0, 0], scale: [2, 0.8, 0.8284], left_rotation: [90, 0, 0, -1] }, wall_offset: 0.25 }
           - { material: ACACIA_SLAB, tag: tyre_1, transform: { translation: [0.199, 0, 0], scale: [2, 0.8, 0.8284], left_rotation: [98.4211, 0.3574, 0.3574, -0.8629] }, wall_offset: 0.25 }
           - { material: ACACIA_SLAB, tag: tyre_2, transform: { translation: [0.201, 0, 0], scale: [2, 0.8, 0.8284], left_rotation: [120, 0.5774, 0.5774, -0.5774] }, wall_offset: 0.25 }
           - { material: ACACIA_SLAB, tag: tyre_3, transform: { translation: [0.203, 0, 0], scale: [2, 0.8, 0.8284], left_rotation: [148.6003, 0.6786, 0.6786, -0.2811] }, wall_offset: 0.25 }
-      spinning_wall_e: { copy_from: idle_wall_e, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [1, 0, 0], speed: 3 } }
+      spinning_wall_e: { copy_from: idle_wall_e, texture: "@prop_bearing_fwd", collision: { size: 1.8, offset: [-0.95, -0.4, 0] }, animation: { type: rotate, axis: [1, 0, 0], speed: 3 } }
       idle_wall_w:
         texture: "@prop_bearing_fwd"
+        collision: { size: 1.8, offset: [0.95, -0.4, 0] }
         display_entities:
           - { material: ACACIA_SLAB, tag: tyre_0, transform: { translation: [0.197, 0, 0], scale: [2, 0.8, 0.8284], left_rotation: [90, 0, 0, -1] }, wall_offset: 0.25 }
           - { material: ACACIA_SLAB, tag: tyre_1, transform: { translation: [0.199, 0, 0], scale: [2, 0.8, 0.8284], left_rotation: [98.4211, 0.3574, 0.3574, -0.8629] }, wall_offset: 0.25 }
           - { material: ACACIA_SLAB, tag: tyre_2, transform: { translation: [0.201, 0, 0], scale: [2, 0.8, 0.8284], left_rotation: [120, 0.5774, 0.5774, -0.5774] }, wall_offset: 0.25 }
           - { material: ACACIA_SLAB, tag: tyre_3, transform: { translation: [0.203, 0, 0], scale: [2, 0.8, 0.8284], left_rotation: [148.6003, 0.6786, 0.6786, -0.2811] }, wall_offset: 0.25 }
-      spinning_wall_w: { copy_from: idle_wall_w, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [1, 0, 0], speed: 3 } }
+      spinning_wall_w: { copy_from: idle_wall_w, texture: "@prop_bearing_fwd", collision: { size: 1.8, offset: [0.95, -0.4, 0] }, animation: { type: rotate, axis: [1, 0, 0], speed: 3 } }
 
   large_wheel_bamboo:
     cancel_pistons: true
@@ -5146,36 +5201,40 @@ blocks:
     states:
       idle_wall_n:
         texture: "@prop_bearing_fwd"
+        collision: { size: 1.8, offset: [0, -0.4, -0.95] }
         display_entities:
           - { material: BAMBOO_SLAB, tag: tyre_0, transform: { translation: [0, 0, 0.197], scale: [2, 0.8, 0.8284], left_rotation: [90, 1, 0, 0] }, wall_offset: 0.25 }
           - { material: BAMBOO_SLAB, tag: tyre_1, transform: { translation: [0, 0, 0.199], scale: [2, 0.8, 0.8284], left_rotation: [98.4211, 0.8629, 0.3574, 0.3574] }, wall_offset: 0.25 }
           - { material: BAMBOO_SLAB, tag: tyre_2, transform: { translation: [0, 0, 0.201], scale: [2, 0.8, 0.8284], left_rotation: [120, 0.5774, 0.5774, 0.5774] }, wall_offset: 0.25 }
           - { material: BAMBOO_SLAB, tag: tyre_3, transform: { translation: [0, 0, 0.203], scale: [2, 0.8, 0.8284], left_rotation: [148.6003, 0.2811, 0.6786, 0.6786] }, wall_offset: 0.25 }
-      spinning_wall_n: { copy_from: idle_wall_n, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [0, 0, 1], speed: 3 } }
+      spinning_wall_n: { copy_from: idle_wall_n, texture: "@prop_bearing_fwd", collision: { size: 1.8, offset: [0, -0.4, -0.95] }, animation: { type: rotate, axis: [0, 0, 1], speed: 3 } }
       idle_wall_s:
         texture: "@prop_bearing_fwd"
+        collision: { size: 1.8, offset: [0, -0.4, 0.95] }
         display_entities:
           - { material: BAMBOO_SLAB, tag: tyre_0, transform: { translation: [0, 0, 0.197], scale: [2, 0.8, 0.8284], left_rotation: [90, 1, 0, 0] }, wall_offset: 0.25 }
           - { material: BAMBOO_SLAB, tag: tyre_1, transform: { translation: [0, 0, 0.199], scale: [2, 0.8, 0.8284], left_rotation: [98.4211, 0.8629, 0.3574, 0.3574] }, wall_offset: 0.25 }
           - { material: BAMBOO_SLAB, tag: tyre_2, transform: { translation: [0, 0, 0.201], scale: [2, 0.8, 0.8284], left_rotation: [120, 0.5774, 0.5774, 0.5774] }, wall_offset: 0.25 }
           - { material: BAMBOO_SLAB, tag: tyre_3, transform: { translation: [0, 0, 0.203], scale: [2, 0.8, 0.8284], left_rotation: [148.6003, 0.2811, 0.6786, 0.6786] }, wall_offset: 0.25 }
-      spinning_wall_s: { copy_from: idle_wall_s, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [0, 0, 1], speed: 3 } }
+      spinning_wall_s: { copy_from: idle_wall_s, texture: "@prop_bearing_fwd", collision: { size: 1.8, offset: [0, -0.4, 0.95] }, animation: { type: rotate, axis: [0, 0, 1], speed: 3 } }
       idle_wall_e:
         texture: "@prop_bearing_fwd"
+        collision: { size: 1.8, offset: [-0.95, -0.4, 0] }
         display_entities:
           - { material: BAMBOO_SLAB, tag: tyre_0, transform: { translation: [0.197, 0, 0], scale: [2, 0.8, 0.8284], left_rotation: [90, 0, 0, -1] }, wall_offset: 0.25 }
           - { material: BAMBOO_SLAB, tag: tyre_1, transform: { translation: [0.199, 0, 0], scale: [2, 0.8, 0.8284], left_rotation: [98.4211, 0.3574, 0.3574, -0.8629] }, wall_offset: 0.25 }
           - { material: BAMBOO_SLAB, tag: tyre_2, transform: { translation: [0.201, 0, 0], scale: [2, 0.8, 0.8284], left_rotation: [120, 0.5774, 0.5774, -0.5774] }, wall_offset: 0.25 }
           - { material: BAMBOO_SLAB, tag: tyre_3, transform: { translation: [0.203, 0, 0], scale: [2, 0.8, 0.8284], left_rotation: [148.6003, 0.6786, 0.6786, -0.2811] }, wall_offset: 0.25 }
-      spinning_wall_e: { copy_from: idle_wall_e, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [1, 0, 0], speed: 3 } }
+      spinning_wall_e: { copy_from: idle_wall_e, texture: "@prop_bearing_fwd", collision: { size: 1.8, offset: [-0.95, -0.4, 0] }, animation: { type: rotate, axis: [1, 0, 0], speed: 3 } }
       idle_wall_w:
         texture: "@prop_bearing_fwd"
+        collision: { size: 1.8, offset: [0.95, -0.4, 0] }
         display_entities:
           - { material: BAMBOO_SLAB, tag: tyre_0, transform: { translation: [0.197, 0, 0], scale: [2, 0.8, 0.8284], left_rotation: [90, 0, 0, -1] }, wall_offset: 0.25 }
           - { material: BAMBOO_SLAB, tag: tyre_1, transform: { translation: [0.199, 0, 0], scale: [2, 0.8, 0.8284], left_rotation: [98.4211, 0.3574, 0.3574, -0.8629] }, wall_offset: 0.25 }
           - { material: BAMBOO_SLAB, tag: tyre_2, transform: { translation: [0.201, 0, 0], scale: [2, 0.8, 0.8284], left_rotation: [120, 0.5774, 0.5774, -0.5774] }, wall_offset: 0.25 }
           - { material: BAMBOO_SLAB, tag: tyre_3, transform: { translation: [0.203, 0, 0], scale: [2, 0.8, 0.8284], left_rotation: [148.6003, 0.6786, 0.6786, -0.2811] }, wall_offset: 0.25 }
-      spinning_wall_w: { copy_from: idle_wall_w, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [1, 0, 0], speed: 3 } }
+      spinning_wall_w: { copy_from: idle_wall_w, texture: "@prop_bearing_fwd", collision: { size: 1.8, offset: [0.95, -0.4, 0] }, animation: { type: rotate, axis: [1, 0, 0], speed: 3 } }
 
   large_wheel_birch:
     cancel_pistons: true
@@ -5219,36 +5278,40 @@ blocks:
     states:
       idle_wall_n:
         texture: "@prop_bearing_fwd"
+        collision: { size: 1.8, offset: [0, -0.4, -0.95] }
         display_entities:
           - { material: BIRCH_SLAB, tag: tyre_0, transform: { translation: [0, 0, 0.197], scale: [2, 0.8, 0.8284], left_rotation: [90, 1, 0, 0] }, wall_offset: 0.25 }
           - { material: BIRCH_SLAB, tag: tyre_1, transform: { translation: [0, 0, 0.199], scale: [2, 0.8, 0.8284], left_rotation: [98.4211, 0.8629, 0.3574, 0.3574] }, wall_offset: 0.25 }
           - { material: BIRCH_SLAB, tag: tyre_2, transform: { translation: [0, 0, 0.201], scale: [2, 0.8, 0.8284], left_rotation: [120, 0.5774, 0.5774, 0.5774] }, wall_offset: 0.25 }
           - { material: BIRCH_SLAB, tag: tyre_3, transform: { translation: [0, 0, 0.203], scale: [2, 0.8, 0.8284], left_rotation: [148.6003, 0.2811, 0.6786, 0.6786] }, wall_offset: 0.25 }
-      spinning_wall_n: { copy_from: idle_wall_n, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [0, 0, 1], speed: 3 } }
+      spinning_wall_n: { copy_from: idle_wall_n, texture: "@prop_bearing_fwd", collision: { size: 1.8, offset: [0, -0.4, -0.95] }, animation: { type: rotate, axis: [0, 0, 1], speed: 3 } }
       idle_wall_s:
         texture: "@prop_bearing_fwd"
+        collision: { size: 1.8, offset: [0, -0.4, 0.95] }
         display_entities:
           - { material: BIRCH_SLAB, tag: tyre_0, transform: { translation: [0, 0, 0.197], scale: [2, 0.8, 0.8284], left_rotation: [90, 1, 0, 0] }, wall_offset: 0.25 }
           - { material: BIRCH_SLAB, tag: tyre_1, transform: { translation: [0, 0, 0.199], scale: [2, 0.8, 0.8284], left_rotation: [98.4211, 0.8629, 0.3574, 0.3574] }, wall_offset: 0.25 }
           - { material: BIRCH_SLAB, tag: tyre_2, transform: { translation: [0, 0, 0.201], scale: [2, 0.8, 0.8284], left_rotation: [120, 0.5774, 0.5774, 0.5774] }, wall_offset: 0.25 }
           - { material: BIRCH_SLAB, tag: tyre_3, transform: { translation: [0, 0, 0.203], scale: [2, 0.8, 0.8284], left_rotation: [148.6003, 0.2811, 0.6786, 0.6786] }, wall_offset: 0.25 }
-      spinning_wall_s: { copy_from: idle_wall_s, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [0, 0, 1], speed: 3 } }
+      spinning_wall_s: { copy_from: idle_wall_s, texture: "@prop_bearing_fwd", collision: { size: 1.8, offset: [0, -0.4, 0.95] }, animation: { type: rotate, axis: [0, 0, 1], speed: 3 } }
       idle_wall_e:
         texture: "@prop_bearing_fwd"
+        collision: { size: 1.8, offset: [-0.95, -0.4, 0] }
         display_entities:
           - { material: BIRCH_SLAB, tag: tyre_0, transform: { translation: [0.197, 0, 0], scale: [2, 0.8, 0.8284], left_rotation: [90, 0, 0, -1] }, wall_offset: 0.25 }
           - { material: BIRCH_SLAB, tag: tyre_1, transform: { translation: [0.199, 0, 0], scale: [2, 0.8, 0.8284], left_rotation: [98.4211, 0.3574, 0.3574, -0.8629] }, wall_offset: 0.25 }
           - { material: BIRCH_SLAB, tag: tyre_2, transform: { translation: [0.201, 0, 0], scale: [2, 0.8, 0.8284], left_rotation: [120, 0.5774, 0.5774, -0.5774] }, wall_offset: 0.25 }
           - { material: BIRCH_SLAB, tag: tyre_3, transform: { translation: [0.203, 0, 0], scale: [2, 0.8, 0.8284], left_rotation: [148.6003, 0.6786, 0.6786, -0.2811] }, wall_offset: 0.25 }
-      spinning_wall_e: { copy_from: idle_wall_e, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [1, 0, 0], speed: 3 } }
+      spinning_wall_e: { copy_from: idle_wall_e, texture: "@prop_bearing_fwd", collision: { size: 1.8, offset: [-0.95, -0.4, 0] }, animation: { type: rotate, axis: [1, 0, 0], speed: 3 } }
       idle_wall_w:
         texture: "@prop_bearing_fwd"
+        collision: { size: 1.8, offset: [0.95, -0.4, 0] }
         display_entities:
           - { material: BIRCH_SLAB, tag: tyre_0, transform: { translation: [0.197, 0, 0], scale: [2, 0.8, 0.8284], left_rotation: [90, 0, 0, -1] }, wall_offset: 0.25 }
           - { material: BIRCH_SLAB, tag: tyre_1, transform: { translation: [0.199, 0, 0], scale: [2, 0.8, 0.8284], left_rotation: [98.4211, 0.3574, 0.3574, -0.8629] }, wall_offset: 0.25 }
           - { material: BIRCH_SLAB, tag: tyre_2, transform: { translation: [0.201, 0, 0], scale: [2, 0.8, 0.8284], left_rotation: [120, 0.5774, 0.5774, -0.5774] }, wall_offset: 0.25 }
           - { material: BIRCH_SLAB, tag: tyre_3, transform: { translation: [0.203, 0, 0], scale: [2, 0.8, 0.8284], left_rotation: [148.6003, 0.6786, 0.6786, -0.2811] }, wall_offset: 0.25 }
-      spinning_wall_w: { copy_from: idle_wall_w, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [1, 0, 0], speed: 3 } }
+      spinning_wall_w: { copy_from: idle_wall_w, texture: "@prop_bearing_fwd", collision: { size: 1.8, offset: [0.95, -0.4, 0] }, animation: { type: rotate, axis: [1, 0, 0], speed: 3 } }
 
   large_wheel_cherry:
     cancel_pistons: true
@@ -5292,36 +5355,40 @@ blocks:
     states:
       idle_wall_n:
         texture: "@prop_bearing_fwd"
+        collision: { size: 1.8, offset: [0, -0.4, -0.95] }
         display_entities:
           - { material: CHERRY_SLAB, tag: tyre_0, transform: { translation: [0, 0, 0.197], scale: [2, 0.8, 0.8284], left_rotation: [90, 1, 0, 0] }, wall_offset: 0.25 }
           - { material: CHERRY_SLAB, tag: tyre_1, transform: { translation: [0, 0, 0.199], scale: [2, 0.8, 0.8284], left_rotation: [98.4211, 0.8629, 0.3574, 0.3574] }, wall_offset: 0.25 }
           - { material: CHERRY_SLAB, tag: tyre_2, transform: { translation: [0, 0, 0.201], scale: [2, 0.8, 0.8284], left_rotation: [120, 0.5774, 0.5774, 0.5774] }, wall_offset: 0.25 }
           - { material: CHERRY_SLAB, tag: tyre_3, transform: { translation: [0, 0, 0.203], scale: [2, 0.8, 0.8284], left_rotation: [148.6003, 0.2811, 0.6786, 0.6786] }, wall_offset: 0.25 }
-      spinning_wall_n: { copy_from: idle_wall_n, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [0, 0, 1], speed: 3 } }
+      spinning_wall_n: { copy_from: idle_wall_n, texture: "@prop_bearing_fwd", collision: { size: 1.8, offset: [0, -0.4, -0.95] }, animation: { type: rotate, axis: [0, 0, 1], speed: 3 } }
       idle_wall_s:
         texture: "@prop_bearing_fwd"
+        collision: { size: 1.8, offset: [0, -0.4, 0.95] }
         display_entities:
           - { material: CHERRY_SLAB, tag: tyre_0, transform: { translation: [0, 0, 0.197], scale: [2, 0.8, 0.8284], left_rotation: [90, 1, 0, 0] }, wall_offset: 0.25 }
           - { material: CHERRY_SLAB, tag: tyre_1, transform: { translation: [0, 0, 0.199], scale: [2, 0.8, 0.8284], left_rotation: [98.4211, 0.8629, 0.3574, 0.3574] }, wall_offset: 0.25 }
           - { material: CHERRY_SLAB, tag: tyre_2, transform: { translation: [0, 0, 0.201], scale: [2, 0.8, 0.8284], left_rotation: [120, 0.5774, 0.5774, 0.5774] }, wall_offset: 0.25 }
           - { material: CHERRY_SLAB, tag: tyre_3, transform: { translation: [0, 0, 0.203], scale: [2, 0.8, 0.8284], left_rotation: [148.6003, 0.2811, 0.6786, 0.6786] }, wall_offset: 0.25 }
-      spinning_wall_s: { copy_from: idle_wall_s, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [0, 0, 1], speed: 3 } }
+      spinning_wall_s: { copy_from: idle_wall_s, texture: "@prop_bearing_fwd", collision: { size: 1.8, offset: [0, -0.4, 0.95] }, animation: { type: rotate, axis: [0, 0, 1], speed: 3 } }
       idle_wall_e:
         texture: "@prop_bearing_fwd"
+        collision: { size: 1.8, offset: [-0.95, -0.4, 0] }
         display_entities:
           - { material: CHERRY_SLAB, tag: tyre_0, transform: { translation: [0.197, 0, 0], scale: [2, 0.8, 0.8284], left_rotation: [90, 0, 0, -1] }, wall_offset: 0.25 }
           - { material: CHERRY_SLAB, tag: tyre_1, transform: { translation: [0.199, 0, 0], scale: [2, 0.8, 0.8284], left_rotation: [98.4211, 0.3574, 0.3574, -0.8629] }, wall_offset: 0.25 }
           - { material: CHERRY_SLAB, tag: tyre_2, transform: { translation: [0.201, 0, 0], scale: [2, 0.8, 0.8284], left_rotation: [120, 0.5774, 0.5774, -0.5774] }, wall_offset: 0.25 }
           - { material: CHERRY_SLAB, tag: tyre_3, transform: { translation: [0.203, 0, 0], scale: [2, 0.8, 0.8284], left_rotation: [148.6003, 0.6786, 0.6786, -0.2811] }, wall_offset: 0.25 }
-      spinning_wall_e: { copy_from: idle_wall_e, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [1, 0, 0], speed: 3 } }
+      spinning_wall_e: { copy_from: idle_wall_e, texture: "@prop_bearing_fwd", collision: { size: 1.8, offset: [-0.95, -0.4, 0] }, animation: { type: rotate, axis: [1, 0, 0], speed: 3 } }
       idle_wall_w:
         texture: "@prop_bearing_fwd"
+        collision: { size: 1.8, offset: [0.95, -0.4, 0] }
         display_entities:
           - { material: CHERRY_SLAB, tag: tyre_0, transform: { translation: [0.197, 0, 0], scale: [2, 0.8, 0.8284], left_rotation: [90, 0, 0, -1] }, wall_offset: 0.25 }
           - { material: CHERRY_SLAB, tag: tyre_1, transform: { translation: [0.199, 0, 0], scale: [2, 0.8, 0.8284], left_rotation: [98.4211, 0.3574, 0.3574, -0.8629] }, wall_offset: 0.25 }
           - { material: CHERRY_SLAB, tag: tyre_2, transform: { translation: [0.201, 0, 0], scale: [2, 0.8, 0.8284], left_rotation: [120, 0.5774, 0.5774, -0.5774] }, wall_offset: 0.25 }
           - { material: CHERRY_SLAB, tag: tyre_3, transform: { translation: [0.203, 0, 0], scale: [2, 0.8, 0.8284], left_rotation: [148.6003, 0.6786, 0.6786, -0.2811] }, wall_offset: 0.25 }
-      spinning_wall_w: { copy_from: idle_wall_w, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [1, 0, 0], speed: 3 } }
+      spinning_wall_w: { copy_from: idle_wall_w, texture: "@prop_bearing_fwd", collision: { size: 1.8, offset: [0.95, -0.4, 0] }, animation: { type: rotate, axis: [1, 0, 0], speed: 3 } }
 
   large_wheel_crimson:
     cancel_pistons: true
@@ -5365,36 +5432,40 @@ blocks:
     states:
       idle_wall_n:
         texture: "@prop_bearing_fwd"
+        collision: { size: 1.8, offset: [0, -0.4, -0.95] }
         display_entities:
           - { material: CRIMSON_SLAB, tag: tyre_0, transform: { translation: [0, 0, 0.197], scale: [2, 0.8, 0.8284], left_rotation: [90, 1, 0, 0] }, wall_offset: 0.25 }
           - { material: CRIMSON_SLAB, tag: tyre_1, transform: { translation: [0, 0, 0.199], scale: [2, 0.8, 0.8284], left_rotation: [98.4211, 0.8629, 0.3574, 0.3574] }, wall_offset: 0.25 }
           - { material: CRIMSON_SLAB, tag: tyre_2, transform: { translation: [0, 0, 0.201], scale: [2, 0.8, 0.8284], left_rotation: [120, 0.5774, 0.5774, 0.5774] }, wall_offset: 0.25 }
           - { material: CRIMSON_SLAB, tag: tyre_3, transform: { translation: [0, 0, 0.203], scale: [2, 0.8, 0.8284], left_rotation: [148.6003, 0.2811, 0.6786, 0.6786] }, wall_offset: 0.25 }
-      spinning_wall_n: { copy_from: idle_wall_n, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [0, 0, 1], speed: 3 } }
+      spinning_wall_n: { copy_from: idle_wall_n, texture: "@prop_bearing_fwd", collision: { size: 1.8, offset: [0, -0.4, -0.95] }, animation: { type: rotate, axis: [0, 0, 1], speed: 3 } }
       idle_wall_s:
         texture: "@prop_bearing_fwd"
+        collision: { size: 1.8, offset: [0, -0.4, 0.95] }
         display_entities:
           - { material: CRIMSON_SLAB, tag: tyre_0, transform: { translation: [0, 0, 0.197], scale: [2, 0.8, 0.8284], left_rotation: [90, 1, 0, 0] }, wall_offset: 0.25 }
           - { material: CRIMSON_SLAB, tag: tyre_1, transform: { translation: [0, 0, 0.199], scale: [2, 0.8, 0.8284], left_rotation: [98.4211, 0.8629, 0.3574, 0.3574] }, wall_offset: 0.25 }
           - { material: CRIMSON_SLAB, tag: tyre_2, transform: { translation: [0, 0, 0.201], scale: [2, 0.8, 0.8284], left_rotation: [120, 0.5774, 0.5774, 0.5774] }, wall_offset: 0.25 }
           - { material: CRIMSON_SLAB, tag: tyre_3, transform: { translation: [0, 0, 0.203], scale: [2, 0.8, 0.8284], left_rotation: [148.6003, 0.2811, 0.6786, 0.6786] }, wall_offset: 0.25 }
-      spinning_wall_s: { copy_from: idle_wall_s, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [0, 0, 1], speed: 3 } }
+      spinning_wall_s: { copy_from: idle_wall_s, texture: "@prop_bearing_fwd", collision: { size: 1.8, offset: [0, -0.4, 0.95] }, animation: { type: rotate, axis: [0, 0, 1], speed: 3 } }
       idle_wall_e:
         texture: "@prop_bearing_fwd"
+        collision: { size: 1.8, offset: [-0.95, -0.4, 0] }
         display_entities:
           - { material: CRIMSON_SLAB, tag: tyre_0, transform: { translation: [0.197, 0, 0], scale: [2, 0.8, 0.8284], left_rotation: [90, 0, 0, -1] }, wall_offset: 0.25 }
           - { material: CRIMSON_SLAB, tag: tyre_1, transform: { translation: [0.199, 0, 0], scale: [2, 0.8, 0.8284], left_rotation: [98.4211, 0.3574, 0.3574, -0.8629] }, wall_offset: 0.25 }
           - { material: CRIMSON_SLAB, tag: tyre_2, transform: { translation: [0.201, 0, 0], scale: [2, 0.8, 0.8284], left_rotation: [120, 0.5774, 0.5774, -0.5774] }, wall_offset: 0.25 }
           - { material: CRIMSON_SLAB, tag: tyre_3, transform: { translation: [0.203, 0, 0], scale: [2, 0.8, 0.8284], left_rotation: [148.6003, 0.6786, 0.6786, -0.2811] }, wall_offset: 0.25 }
-      spinning_wall_e: { copy_from: idle_wall_e, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [1, 0, 0], speed: 3 } }
+      spinning_wall_e: { copy_from: idle_wall_e, texture: "@prop_bearing_fwd", collision: { size: 1.8, offset: [-0.95, -0.4, 0] }, animation: { type: rotate, axis: [1, 0, 0], speed: 3 } }
       idle_wall_w:
         texture: "@prop_bearing_fwd"
+        collision: { size: 1.8, offset: [0.95, -0.4, 0] }
         display_entities:
           - { material: CRIMSON_SLAB, tag: tyre_0, transform: { translation: [0.197, 0, 0], scale: [2, 0.8, 0.8284], left_rotation: [90, 0, 0, -1] }, wall_offset: 0.25 }
           - { material: CRIMSON_SLAB, tag: tyre_1, transform: { translation: [0.199, 0, 0], scale: [2, 0.8, 0.8284], left_rotation: [98.4211, 0.3574, 0.3574, -0.8629] }, wall_offset: 0.25 }
           - { material: CRIMSON_SLAB, tag: tyre_2, transform: { translation: [0.201, 0, 0], scale: [2, 0.8, 0.8284], left_rotation: [120, 0.5774, 0.5774, -0.5774] }, wall_offset: 0.25 }
           - { material: CRIMSON_SLAB, tag: tyre_3, transform: { translation: [0.203, 0, 0], scale: [2, 0.8, 0.8284], left_rotation: [148.6003, 0.6786, 0.6786, -0.2811] }, wall_offset: 0.25 }
-      spinning_wall_w: { copy_from: idle_wall_w, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [1, 0, 0], speed: 3 } }
+      spinning_wall_w: { copy_from: idle_wall_w, texture: "@prop_bearing_fwd", collision: { size: 1.8, offset: [0.95, -0.4, 0] }, animation: { type: rotate, axis: [1, 0, 0], speed: 3 } }
 
   large_wheel_dark_oak:
     cancel_pistons: true
@@ -5438,36 +5509,40 @@ blocks:
     states:
       idle_wall_n:
         texture: "@prop_bearing_fwd"
+        collision: { size: 1.8, offset: [0, -0.4, -0.95] }
         display_entities:
           - { material: DARK_OAK_SLAB, tag: tyre_0, transform: { translation: [0, 0, 0.197], scale: [2, 0.8, 0.8284], left_rotation: [90, 1, 0, 0] }, wall_offset: 0.25 }
           - { material: DARK_OAK_SLAB, tag: tyre_1, transform: { translation: [0, 0, 0.199], scale: [2, 0.8, 0.8284], left_rotation: [98.4211, 0.8629, 0.3574, 0.3574] }, wall_offset: 0.25 }
           - { material: DARK_OAK_SLAB, tag: tyre_2, transform: { translation: [0, 0, 0.201], scale: [2, 0.8, 0.8284], left_rotation: [120, 0.5774, 0.5774, 0.5774] }, wall_offset: 0.25 }
           - { material: DARK_OAK_SLAB, tag: tyre_3, transform: { translation: [0, 0, 0.203], scale: [2, 0.8, 0.8284], left_rotation: [148.6003, 0.2811, 0.6786, 0.6786] }, wall_offset: 0.25 }
-      spinning_wall_n: { copy_from: idle_wall_n, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [0, 0, 1], speed: 3 } }
+      spinning_wall_n: { copy_from: idle_wall_n, texture: "@prop_bearing_fwd", collision: { size: 1.8, offset: [0, -0.4, -0.95] }, animation: { type: rotate, axis: [0, 0, 1], speed: 3 } }
       idle_wall_s:
         texture: "@prop_bearing_fwd"
+        collision: { size: 1.8, offset: [0, -0.4, 0.95] }
         display_entities:
           - { material: DARK_OAK_SLAB, tag: tyre_0, transform: { translation: [0, 0, 0.197], scale: [2, 0.8, 0.8284], left_rotation: [90, 1, 0, 0] }, wall_offset: 0.25 }
           - { material: DARK_OAK_SLAB, tag: tyre_1, transform: { translation: [0, 0, 0.199], scale: [2, 0.8, 0.8284], left_rotation: [98.4211, 0.8629, 0.3574, 0.3574] }, wall_offset: 0.25 }
           - { material: DARK_OAK_SLAB, tag: tyre_2, transform: { translation: [0, 0, 0.201], scale: [2, 0.8, 0.8284], left_rotation: [120, 0.5774, 0.5774, 0.5774] }, wall_offset: 0.25 }
           - { material: DARK_OAK_SLAB, tag: tyre_3, transform: { translation: [0, 0, 0.203], scale: [2, 0.8, 0.8284], left_rotation: [148.6003, 0.2811, 0.6786, 0.6786] }, wall_offset: 0.25 }
-      spinning_wall_s: { copy_from: idle_wall_s, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [0, 0, 1], speed: 3 } }
+      spinning_wall_s: { copy_from: idle_wall_s, texture: "@prop_bearing_fwd", collision: { size: 1.8, offset: [0, -0.4, 0.95] }, animation: { type: rotate, axis: [0, 0, 1], speed: 3 } }
       idle_wall_e:
         texture: "@prop_bearing_fwd"
+        collision: { size: 1.8, offset: [-0.95, -0.4, 0] }
         display_entities:
           - { material: DARK_OAK_SLAB, tag: tyre_0, transform: { translation: [0.197, 0, 0], scale: [2, 0.8, 0.8284], left_rotation: [90, 0, 0, -1] }, wall_offset: 0.25 }
           - { material: DARK_OAK_SLAB, tag: tyre_1, transform: { translation: [0.199, 0, 0], scale: [2, 0.8, 0.8284], left_rotation: [98.4211, 0.3574, 0.3574, -0.8629] }, wall_offset: 0.25 }
           - { material: DARK_OAK_SLAB, tag: tyre_2, transform: { translation: [0.201, 0, 0], scale: [2, 0.8, 0.8284], left_rotation: [120, 0.5774, 0.5774, -0.5774] }, wall_offset: 0.25 }
           - { material: DARK_OAK_SLAB, tag: tyre_3, transform: { translation: [0.203, 0, 0], scale: [2, 0.8, 0.8284], left_rotation: [148.6003, 0.6786, 0.6786, -0.2811] }, wall_offset: 0.25 }
-      spinning_wall_e: { copy_from: idle_wall_e, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [1, 0, 0], speed: 3 } }
+      spinning_wall_e: { copy_from: idle_wall_e, texture: "@prop_bearing_fwd", collision: { size: 1.8, offset: [-0.95, -0.4, 0] }, animation: { type: rotate, axis: [1, 0, 0], speed: 3 } }
       idle_wall_w:
         texture: "@prop_bearing_fwd"
+        collision: { size: 1.8, offset: [0.95, -0.4, 0] }
         display_entities:
           - { material: DARK_OAK_SLAB, tag: tyre_0, transform: { translation: [0.197, 0, 0], scale: [2, 0.8, 0.8284], left_rotation: [90, 0, 0, -1] }, wall_offset: 0.25 }
           - { material: DARK_OAK_SLAB, tag: tyre_1, transform: { translation: [0.199, 0, 0], scale: [2, 0.8, 0.8284], left_rotation: [98.4211, 0.3574, 0.3574, -0.8629] }, wall_offset: 0.25 }
           - { material: DARK_OAK_SLAB, tag: tyre_2, transform: { translation: [0.201, 0, 0], scale: [2, 0.8, 0.8284], left_rotation: [120, 0.5774, 0.5774, -0.5774] }, wall_offset: 0.25 }
           - { material: DARK_OAK_SLAB, tag: tyre_3, transform: { translation: [0.203, 0, 0], scale: [2, 0.8, 0.8284], left_rotation: [148.6003, 0.6786, 0.6786, -0.2811] }, wall_offset: 0.25 }
-      spinning_wall_w: { copy_from: idle_wall_w, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [1, 0, 0], speed: 3 } }
+      spinning_wall_w: { copy_from: idle_wall_w, texture: "@prop_bearing_fwd", collision: { size: 1.8, offset: [0.95, -0.4, 0] }, animation: { type: rotate, axis: [1, 0, 0], speed: 3 } }
 
   large_wheel_jungle:
     cancel_pistons: true
@@ -5511,36 +5586,40 @@ blocks:
     states:
       idle_wall_n:
         texture: "@prop_bearing_fwd"
+        collision: { size: 1.8, offset: [0, -0.4, -0.95] }
         display_entities:
           - { material: JUNGLE_SLAB, tag: tyre_0, transform: { translation: [0, 0, 0.197], scale: [2, 0.8, 0.8284], left_rotation: [90, 1, 0, 0] }, wall_offset: 0.25 }
           - { material: JUNGLE_SLAB, tag: tyre_1, transform: { translation: [0, 0, 0.199], scale: [2, 0.8, 0.8284], left_rotation: [98.4211, 0.8629, 0.3574, 0.3574] }, wall_offset: 0.25 }
           - { material: JUNGLE_SLAB, tag: tyre_2, transform: { translation: [0, 0, 0.201], scale: [2, 0.8, 0.8284], left_rotation: [120, 0.5774, 0.5774, 0.5774] }, wall_offset: 0.25 }
           - { material: JUNGLE_SLAB, tag: tyre_3, transform: { translation: [0, 0, 0.203], scale: [2, 0.8, 0.8284], left_rotation: [148.6003, 0.2811, 0.6786, 0.6786] }, wall_offset: 0.25 }
-      spinning_wall_n: { copy_from: idle_wall_n, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [0, 0, 1], speed: 3 } }
+      spinning_wall_n: { copy_from: idle_wall_n, texture: "@prop_bearing_fwd", collision: { size: 1.8, offset: [0, -0.4, -0.95] }, animation: { type: rotate, axis: [0, 0, 1], speed: 3 } }
       idle_wall_s:
         texture: "@prop_bearing_fwd"
+        collision: { size: 1.8, offset: [0, -0.4, 0.95] }
         display_entities:
           - { material: JUNGLE_SLAB, tag: tyre_0, transform: { translation: [0, 0, 0.197], scale: [2, 0.8, 0.8284], left_rotation: [90, 1, 0, 0] }, wall_offset: 0.25 }
           - { material: JUNGLE_SLAB, tag: tyre_1, transform: { translation: [0, 0, 0.199], scale: [2, 0.8, 0.8284], left_rotation: [98.4211, 0.8629, 0.3574, 0.3574] }, wall_offset: 0.25 }
           - { material: JUNGLE_SLAB, tag: tyre_2, transform: { translation: [0, 0, 0.201], scale: [2, 0.8, 0.8284], left_rotation: [120, 0.5774, 0.5774, 0.5774] }, wall_offset: 0.25 }
           - { material: JUNGLE_SLAB, tag: tyre_3, transform: { translation: [0, 0, 0.203], scale: [2, 0.8, 0.8284], left_rotation: [148.6003, 0.2811, 0.6786, 0.6786] }, wall_offset: 0.25 }
-      spinning_wall_s: { copy_from: idle_wall_s, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [0, 0, 1], speed: 3 } }
+      spinning_wall_s: { copy_from: idle_wall_s, texture: "@prop_bearing_fwd", collision: { size: 1.8, offset: [0, -0.4, 0.95] }, animation: { type: rotate, axis: [0, 0, 1], speed: 3 } }
       idle_wall_e:
         texture: "@prop_bearing_fwd"
+        collision: { size: 1.8, offset: [-0.95, -0.4, 0] }
         display_entities:
           - { material: JUNGLE_SLAB, tag: tyre_0, transform: { translation: [0.197, 0, 0], scale: [2, 0.8, 0.8284], left_rotation: [90, 0, 0, -1] }, wall_offset: 0.25 }
           - { material: JUNGLE_SLAB, tag: tyre_1, transform: { translation: [0.199, 0, 0], scale: [2, 0.8, 0.8284], left_rotation: [98.4211, 0.3574, 0.3574, -0.8629] }, wall_offset: 0.25 }
           - { material: JUNGLE_SLAB, tag: tyre_2, transform: { translation: [0.201, 0, 0], scale: [2, 0.8, 0.8284], left_rotation: [120, 0.5774, 0.5774, -0.5774] }, wall_offset: 0.25 }
           - { material: JUNGLE_SLAB, tag: tyre_3, transform: { translation: [0.203, 0, 0], scale: [2, 0.8, 0.8284], left_rotation: [148.6003, 0.6786, 0.6786, -0.2811] }, wall_offset: 0.25 }
-      spinning_wall_e: { copy_from: idle_wall_e, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [1, 0, 0], speed: 3 } }
+      spinning_wall_e: { copy_from: idle_wall_e, texture: "@prop_bearing_fwd", collision: { size: 1.8, offset: [-0.95, -0.4, 0] }, animation: { type: rotate, axis: [1, 0, 0], speed: 3 } }
       idle_wall_w:
         texture: "@prop_bearing_fwd"
+        collision: { size: 1.8, offset: [0.95, -0.4, 0] }
         display_entities:
           - { material: JUNGLE_SLAB, tag: tyre_0, transform: { translation: [0.197, 0, 0], scale: [2, 0.8, 0.8284], left_rotation: [90, 0, 0, -1] }, wall_offset: 0.25 }
           - { material: JUNGLE_SLAB, tag: tyre_1, transform: { translation: [0.199, 0, 0], scale: [2, 0.8, 0.8284], left_rotation: [98.4211, 0.3574, 0.3574, -0.8629] }, wall_offset: 0.25 }
           - { material: JUNGLE_SLAB, tag: tyre_2, transform: { translation: [0.201, 0, 0], scale: [2, 0.8, 0.8284], left_rotation: [120, 0.5774, 0.5774, -0.5774] }, wall_offset: 0.25 }
           - { material: JUNGLE_SLAB, tag: tyre_3, transform: { translation: [0.203, 0, 0], scale: [2, 0.8, 0.8284], left_rotation: [148.6003, 0.6786, 0.6786, -0.2811] }, wall_offset: 0.25 }
-      spinning_wall_w: { copy_from: idle_wall_w, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [1, 0, 0], speed: 3 } }
+      spinning_wall_w: { copy_from: idle_wall_w, texture: "@prop_bearing_fwd", collision: { size: 1.8, offset: [0.95, -0.4, 0] }, animation: { type: rotate, axis: [1, 0, 0], speed: 3 } }
 
   large_wheel_mangrove:
     cancel_pistons: true
@@ -5584,36 +5663,40 @@ blocks:
     states:
       idle_wall_n:
         texture: "@prop_bearing_fwd"
+        collision: { size: 1.8, offset: [0, -0.4, -0.95] }
         display_entities:
           - { material: MANGROVE_SLAB, tag: tyre_0, transform: { translation: [0, 0, 0.197], scale: [2, 0.8, 0.8284], left_rotation: [90, 1, 0, 0] }, wall_offset: 0.25 }
           - { material: MANGROVE_SLAB, tag: tyre_1, transform: { translation: [0, 0, 0.199], scale: [2, 0.8, 0.8284], left_rotation: [98.4211, 0.8629, 0.3574, 0.3574] }, wall_offset: 0.25 }
           - { material: MANGROVE_SLAB, tag: tyre_2, transform: { translation: [0, 0, 0.201], scale: [2, 0.8, 0.8284], left_rotation: [120, 0.5774, 0.5774, 0.5774] }, wall_offset: 0.25 }
           - { material: MANGROVE_SLAB, tag: tyre_3, transform: { translation: [0, 0, 0.203], scale: [2, 0.8, 0.8284], left_rotation: [148.6003, 0.2811, 0.6786, 0.6786] }, wall_offset: 0.25 }
-      spinning_wall_n: { copy_from: idle_wall_n, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [0, 0, 1], speed: 3 } }
+      spinning_wall_n: { copy_from: idle_wall_n, texture: "@prop_bearing_fwd", collision: { size: 1.8, offset: [0, -0.4, -0.95] }, animation: { type: rotate, axis: [0, 0, 1], speed: 3 } }
       idle_wall_s:
         texture: "@prop_bearing_fwd"
+        collision: { size: 1.8, offset: [0, -0.4, 0.95] }
         display_entities:
           - { material: MANGROVE_SLAB, tag: tyre_0, transform: { translation: [0, 0, 0.197], scale: [2, 0.8, 0.8284], left_rotation: [90, 1, 0, 0] }, wall_offset: 0.25 }
           - { material: MANGROVE_SLAB, tag: tyre_1, transform: { translation: [0, 0, 0.199], scale: [2, 0.8, 0.8284], left_rotation: [98.4211, 0.8629, 0.3574, 0.3574] }, wall_offset: 0.25 }
           - { material: MANGROVE_SLAB, tag: tyre_2, transform: { translation: [0, 0, 0.201], scale: [2, 0.8, 0.8284], left_rotation: [120, 0.5774, 0.5774, 0.5774] }, wall_offset: 0.25 }
           - { material: MANGROVE_SLAB, tag: tyre_3, transform: { translation: [0, 0, 0.203], scale: [2, 0.8, 0.8284], left_rotation: [148.6003, 0.2811, 0.6786, 0.6786] }, wall_offset: 0.25 }
-      spinning_wall_s: { copy_from: idle_wall_s, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [0, 0, 1], speed: 3 } }
+      spinning_wall_s: { copy_from: idle_wall_s, texture: "@prop_bearing_fwd", collision: { size: 1.8, offset: [0, -0.4, 0.95] }, animation: { type: rotate, axis: [0, 0, 1], speed: 3 } }
       idle_wall_e:
         texture: "@prop_bearing_fwd"
+        collision: { size: 1.8, offset: [-0.95, -0.4, 0] }
         display_entities:
           - { material: MANGROVE_SLAB, tag: tyre_0, transform: { translation: [0.197, 0, 0], scale: [2, 0.8, 0.8284], left_rotation: [90, 0, 0, -1] }, wall_offset: 0.25 }
           - { material: MANGROVE_SLAB, tag: tyre_1, transform: { translation: [0.199, 0, 0], scale: [2, 0.8, 0.8284], left_rotation: [98.4211, 0.3574, 0.3574, -0.8629] }, wall_offset: 0.25 }
           - { material: MANGROVE_SLAB, tag: tyre_2, transform: { translation: [0.201, 0, 0], scale: [2, 0.8, 0.8284], left_rotation: [120, 0.5774, 0.5774, -0.5774] }, wall_offset: 0.25 }
           - { material: MANGROVE_SLAB, tag: tyre_3, transform: { translation: [0.203, 0, 0], scale: [2, 0.8, 0.8284], left_rotation: [148.6003, 0.6786, 0.6786, -0.2811] }, wall_offset: 0.25 }
-      spinning_wall_e: { copy_from: idle_wall_e, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [1, 0, 0], speed: 3 } }
+      spinning_wall_e: { copy_from: idle_wall_e, texture: "@prop_bearing_fwd", collision: { size: 1.8, offset: [-0.95, -0.4, 0] }, animation: { type: rotate, axis: [1, 0, 0], speed: 3 } }
       idle_wall_w:
         texture: "@prop_bearing_fwd"
+        collision: { size: 1.8, offset: [0.95, -0.4, 0] }
         display_entities:
           - { material: MANGROVE_SLAB, tag: tyre_0, transform: { translation: [0.197, 0, 0], scale: [2, 0.8, 0.8284], left_rotation: [90, 0, 0, -1] }, wall_offset: 0.25 }
           - { material: MANGROVE_SLAB, tag: tyre_1, transform: { translation: [0.199, 0, 0], scale: [2, 0.8, 0.8284], left_rotation: [98.4211, 0.3574, 0.3574, -0.8629] }, wall_offset: 0.25 }
           - { material: MANGROVE_SLAB, tag: tyre_2, transform: { translation: [0.201, 0, 0], scale: [2, 0.8, 0.8284], left_rotation: [120, 0.5774, 0.5774, -0.5774] }, wall_offset: 0.25 }
           - { material: MANGROVE_SLAB, tag: tyre_3, transform: { translation: [0.203, 0, 0], scale: [2, 0.8, 0.8284], left_rotation: [148.6003, 0.6786, 0.6786, -0.2811] }, wall_offset: 0.25 }
-      spinning_wall_w: { copy_from: idle_wall_w, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [1, 0, 0], speed: 3 } }
+      spinning_wall_w: { copy_from: idle_wall_w, texture: "@prop_bearing_fwd", collision: { size: 1.8, offset: [0.95, -0.4, 0] }, animation: { type: rotate, axis: [1, 0, 0], speed: 3 } }
 
   large_wheel_pale_oak:
     cancel_pistons: true
@@ -5657,36 +5740,40 @@ blocks:
     states:
       idle_wall_n:
         texture: "@prop_bearing_fwd"
+        collision: { size: 1.8, offset: [0, -0.4, -0.95] }
         display_entities:
           - { material: PALE_OAK_SLAB, tag: tyre_0, transform: { translation: [0, 0, 0.197], scale: [2, 0.8, 0.8284], left_rotation: [90, 1, 0, 0] }, wall_offset: 0.25 }
           - { material: PALE_OAK_SLAB, tag: tyre_1, transform: { translation: [0, 0, 0.199], scale: [2, 0.8, 0.8284], left_rotation: [98.4211, 0.8629, 0.3574, 0.3574] }, wall_offset: 0.25 }
           - { material: PALE_OAK_SLAB, tag: tyre_2, transform: { translation: [0, 0, 0.201], scale: [2, 0.8, 0.8284], left_rotation: [120, 0.5774, 0.5774, 0.5774] }, wall_offset: 0.25 }
           - { material: PALE_OAK_SLAB, tag: tyre_3, transform: { translation: [0, 0, 0.203], scale: [2, 0.8, 0.8284], left_rotation: [148.6003, 0.2811, 0.6786, 0.6786] }, wall_offset: 0.25 }
-      spinning_wall_n: { copy_from: idle_wall_n, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [0, 0, 1], speed: 3 } }
+      spinning_wall_n: { copy_from: idle_wall_n, texture: "@prop_bearing_fwd", collision: { size: 1.8, offset: [0, -0.4, -0.95] }, animation: { type: rotate, axis: [0, 0, 1], speed: 3 } }
       idle_wall_s:
         texture: "@prop_bearing_fwd"
+        collision: { size: 1.8, offset: [0, -0.4, 0.95] }
         display_entities:
           - { material: PALE_OAK_SLAB, tag: tyre_0, transform: { translation: [0, 0, 0.197], scale: [2, 0.8, 0.8284], left_rotation: [90, 1, 0, 0] }, wall_offset: 0.25 }
           - { material: PALE_OAK_SLAB, tag: tyre_1, transform: { translation: [0, 0, 0.199], scale: [2, 0.8, 0.8284], left_rotation: [98.4211, 0.8629, 0.3574, 0.3574] }, wall_offset: 0.25 }
           - { material: PALE_OAK_SLAB, tag: tyre_2, transform: { translation: [0, 0, 0.201], scale: [2, 0.8, 0.8284], left_rotation: [120, 0.5774, 0.5774, 0.5774] }, wall_offset: 0.25 }
           - { material: PALE_OAK_SLAB, tag: tyre_3, transform: { translation: [0, 0, 0.203], scale: [2, 0.8, 0.8284], left_rotation: [148.6003, 0.2811, 0.6786, 0.6786] }, wall_offset: 0.25 }
-      spinning_wall_s: { copy_from: idle_wall_s, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [0, 0, 1], speed: 3 } }
+      spinning_wall_s: { copy_from: idle_wall_s, texture: "@prop_bearing_fwd", collision: { size: 1.8, offset: [0, -0.4, 0.95] }, animation: { type: rotate, axis: [0, 0, 1], speed: 3 } }
       idle_wall_e:
         texture: "@prop_bearing_fwd"
+        collision: { size: 1.8, offset: [-0.95, -0.4, 0] }
         display_entities:
           - { material: PALE_OAK_SLAB, tag: tyre_0, transform: { translation: [0.197, 0, 0], scale: [2, 0.8, 0.8284], left_rotation: [90, 0, 0, -1] }, wall_offset: 0.25 }
           - { material: PALE_OAK_SLAB, tag: tyre_1, transform: { translation: [0.199, 0, 0], scale: [2, 0.8, 0.8284], left_rotation: [98.4211, 0.3574, 0.3574, -0.8629] }, wall_offset: 0.25 }
           - { material: PALE_OAK_SLAB, tag: tyre_2, transform: { translation: [0.201, 0, 0], scale: [2, 0.8, 0.8284], left_rotation: [120, 0.5774, 0.5774, -0.5774] }, wall_offset: 0.25 }
           - { material: PALE_OAK_SLAB, tag: tyre_3, transform: { translation: [0.203, 0, 0], scale: [2, 0.8, 0.8284], left_rotation: [148.6003, 0.6786, 0.6786, -0.2811] }, wall_offset: 0.25 }
-      spinning_wall_e: { copy_from: idle_wall_e, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [1, 0, 0], speed: 3 } }
+      spinning_wall_e: { copy_from: idle_wall_e, texture: "@prop_bearing_fwd", collision: { size: 1.8, offset: [-0.95, -0.4, 0] }, animation: { type: rotate, axis: [1, 0, 0], speed: 3 } }
       idle_wall_w:
         texture: "@prop_bearing_fwd"
+        collision: { size: 1.8, offset: [0.95, -0.4, 0] }
         display_entities:
           - { material: PALE_OAK_SLAB, tag: tyre_0, transform: { translation: [0.197, 0, 0], scale: [2, 0.8, 0.8284], left_rotation: [90, 0, 0, -1] }, wall_offset: 0.25 }
           - { material: PALE_OAK_SLAB, tag: tyre_1, transform: { translation: [0.199, 0, 0], scale: [2, 0.8, 0.8284], left_rotation: [98.4211, 0.3574, 0.3574, -0.8629] }, wall_offset: 0.25 }
           - { material: PALE_OAK_SLAB, tag: tyre_2, transform: { translation: [0.201, 0, 0], scale: [2, 0.8, 0.8284], left_rotation: [120, 0.5774, 0.5774, -0.5774] }, wall_offset: 0.25 }
           - { material: PALE_OAK_SLAB, tag: tyre_3, transform: { translation: [0.203, 0, 0], scale: [2, 0.8, 0.8284], left_rotation: [148.6003, 0.6786, 0.6786, -0.2811] }, wall_offset: 0.25 }
-      spinning_wall_w: { copy_from: idle_wall_w, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [1, 0, 0], speed: 3 } }
+      spinning_wall_w: { copy_from: idle_wall_w, texture: "@prop_bearing_fwd", collision: { size: 1.8, offset: [0.95, -0.4, 0] }, animation: { type: rotate, axis: [1, 0, 0], speed: 3 } }
 
   large_wheel_spruce:
     cancel_pistons: true
@@ -5730,36 +5817,40 @@ blocks:
     states:
       idle_wall_n:
         texture: "@prop_bearing_fwd"
+        collision: { size: 1.8, offset: [0, -0.4, -0.95] }
         display_entities:
           - { material: SPRUCE_SLAB, tag: tyre_0, transform: { translation: [0, 0, 0.197], scale: [2, 0.8, 0.8284], left_rotation: [90, 1, 0, 0] }, wall_offset: 0.25 }
           - { material: SPRUCE_SLAB, tag: tyre_1, transform: { translation: [0, 0, 0.199], scale: [2, 0.8, 0.8284], left_rotation: [98.4211, 0.8629, 0.3574, 0.3574] }, wall_offset: 0.25 }
           - { material: SPRUCE_SLAB, tag: tyre_2, transform: { translation: [0, 0, 0.201], scale: [2, 0.8, 0.8284], left_rotation: [120, 0.5774, 0.5774, 0.5774] }, wall_offset: 0.25 }
           - { material: SPRUCE_SLAB, tag: tyre_3, transform: { translation: [0, 0, 0.203], scale: [2, 0.8, 0.8284], left_rotation: [148.6003, 0.2811, 0.6786, 0.6786] }, wall_offset: 0.25 }
-      spinning_wall_n: { copy_from: idle_wall_n, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [0, 0, 1], speed: 3 } }
+      spinning_wall_n: { copy_from: idle_wall_n, texture: "@prop_bearing_fwd", collision: { size: 1.8, offset: [0, -0.4, -0.95] }, animation: { type: rotate, axis: [0, 0, 1], speed: 3 } }
       idle_wall_s:
         texture: "@prop_bearing_fwd"
+        collision: { size: 1.8, offset: [0, -0.4, 0.95] }
         display_entities:
           - { material: SPRUCE_SLAB, tag: tyre_0, transform: { translation: [0, 0, 0.197], scale: [2, 0.8, 0.8284], left_rotation: [90, 1, 0, 0] }, wall_offset: 0.25 }
           - { material: SPRUCE_SLAB, tag: tyre_1, transform: { translation: [0, 0, 0.199], scale: [2, 0.8, 0.8284], left_rotation: [98.4211, 0.8629, 0.3574, 0.3574] }, wall_offset: 0.25 }
           - { material: SPRUCE_SLAB, tag: tyre_2, transform: { translation: [0, 0, 0.201], scale: [2, 0.8, 0.8284], left_rotation: [120, 0.5774, 0.5774, 0.5774] }, wall_offset: 0.25 }
           - { material: SPRUCE_SLAB, tag: tyre_3, transform: { translation: [0, 0, 0.203], scale: [2, 0.8, 0.8284], left_rotation: [148.6003, 0.2811, 0.6786, 0.6786] }, wall_offset: 0.25 }
-      spinning_wall_s: { copy_from: idle_wall_s, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [0, 0, 1], speed: 3 } }
+      spinning_wall_s: { copy_from: idle_wall_s, texture: "@prop_bearing_fwd", collision: { size: 1.8, offset: [0, -0.4, 0.95] }, animation: { type: rotate, axis: [0, 0, 1], speed: 3 } }
       idle_wall_e:
         texture: "@prop_bearing_fwd"
+        collision: { size: 1.8, offset: [-0.95, -0.4, 0] }
         display_entities:
           - { material: SPRUCE_SLAB, tag: tyre_0, transform: { translation: [0.197, 0, 0], scale: [2, 0.8, 0.8284], left_rotation: [90, 0, 0, -1] }, wall_offset: 0.25 }
           - { material: SPRUCE_SLAB, tag: tyre_1, transform: { translation: [0.199, 0, 0], scale: [2, 0.8, 0.8284], left_rotation: [98.4211, 0.3574, 0.3574, -0.8629] }, wall_offset: 0.25 }
           - { material: SPRUCE_SLAB, tag: tyre_2, transform: { translation: [0.201, 0, 0], scale: [2, 0.8, 0.8284], left_rotation: [120, 0.5774, 0.5774, -0.5774] }, wall_offset: 0.25 }
           - { material: SPRUCE_SLAB, tag: tyre_3, transform: { translation: [0.203, 0, 0], scale: [2, 0.8, 0.8284], left_rotation: [148.6003, 0.6786, 0.6786, -0.2811] }, wall_offset: 0.25 }
-      spinning_wall_e: { copy_from: idle_wall_e, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [1, 0, 0], speed: 3 } }
+      spinning_wall_e: { copy_from: idle_wall_e, texture: "@prop_bearing_fwd", collision: { size: 1.8, offset: [-0.95, -0.4, 0] }, animation: { type: rotate, axis: [1, 0, 0], speed: 3 } }
       idle_wall_w:
         texture: "@prop_bearing_fwd"
+        collision: { size: 1.8, offset: [0.95, -0.4, 0] }
         display_entities:
           - { material: SPRUCE_SLAB, tag: tyre_0, transform: { translation: [0.197, 0, 0], scale: [2, 0.8, 0.8284], left_rotation: [90, 0, 0, -1] }, wall_offset: 0.25 }
           - { material: SPRUCE_SLAB, tag: tyre_1, transform: { translation: [0.199, 0, 0], scale: [2, 0.8, 0.8284], left_rotation: [98.4211, 0.3574, 0.3574, -0.8629] }, wall_offset: 0.25 }
           - { material: SPRUCE_SLAB, tag: tyre_2, transform: { translation: [0.201, 0, 0], scale: [2, 0.8, 0.8284], left_rotation: [120, 0.5774, 0.5774, -0.5774] }, wall_offset: 0.25 }
           - { material: SPRUCE_SLAB, tag: tyre_3, transform: { translation: [0.203, 0, 0], scale: [2, 0.8, 0.8284], left_rotation: [148.6003, 0.6786, 0.6786, -0.2811] }, wall_offset: 0.25 }
-      spinning_wall_w: { copy_from: idle_wall_w, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [1, 0, 0], speed: 3 } }
+      spinning_wall_w: { copy_from: idle_wall_w, texture: "@prop_bearing_fwd", collision: { size: 1.8, offset: [0.95, -0.4, 0] }, animation: { type: rotate, axis: [1, 0, 0], speed: 3 } }
 
   large_wheel_warped:
     cancel_pistons: true
@@ -5803,36 +5894,40 @@ blocks:
     states:
       idle_wall_n:
         texture: "@prop_bearing_fwd"
+        collision: { size: 1.8, offset: [0, -0.4, -0.95] }
         display_entities:
           - { material: WARPED_SLAB, tag: tyre_0, transform: { translation: [0, 0, 0.197], scale: [2, 0.8, 0.8284], left_rotation: [90, 1, 0, 0] }, wall_offset: 0.25 }
           - { material: WARPED_SLAB, tag: tyre_1, transform: { translation: [0, 0, 0.199], scale: [2, 0.8, 0.8284], left_rotation: [98.4211, 0.8629, 0.3574, 0.3574] }, wall_offset: 0.25 }
           - { material: WARPED_SLAB, tag: tyre_2, transform: { translation: [0, 0, 0.201], scale: [2, 0.8, 0.8284], left_rotation: [120, 0.5774, 0.5774, 0.5774] }, wall_offset: 0.25 }
           - { material: WARPED_SLAB, tag: tyre_3, transform: { translation: [0, 0, 0.203], scale: [2, 0.8, 0.8284], left_rotation: [148.6003, 0.2811, 0.6786, 0.6786] }, wall_offset: 0.25 }
-      spinning_wall_n: { copy_from: idle_wall_n, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [0, 0, 1], speed: 3 } }
+      spinning_wall_n: { copy_from: idle_wall_n, texture: "@prop_bearing_fwd", collision: { size: 1.8, offset: [0, -0.4, -0.95] }, animation: { type: rotate, axis: [0, 0, 1], speed: 3 } }
       idle_wall_s:
         texture: "@prop_bearing_fwd"
+        collision: { size: 1.8, offset: [0, -0.4, 0.95] }
         display_entities:
           - { material: WARPED_SLAB, tag: tyre_0, transform: { translation: [0, 0, 0.197], scale: [2, 0.8, 0.8284], left_rotation: [90, 1, 0, 0] }, wall_offset: 0.25 }
           - { material: WARPED_SLAB, tag: tyre_1, transform: { translation: [0, 0, 0.199], scale: [2, 0.8, 0.8284], left_rotation: [98.4211, 0.8629, 0.3574, 0.3574] }, wall_offset: 0.25 }
           - { material: WARPED_SLAB, tag: tyre_2, transform: { translation: [0, 0, 0.201], scale: [2, 0.8, 0.8284], left_rotation: [120, 0.5774, 0.5774, 0.5774] }, wall_offset: 0.25 }
           - { material: WARPED_SLAB, tag: tyre_3, transform: { translation: [0, 0, 0.203], scale: [2, 0.8, 0.8284], left_rotation: [148.6003, 0.2811, 0.6786, 0.6786] }, wall_offset: 0.25 }
-      spinning_wall_s: { copy_from: idle_wall_s, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [0, 0, 1], speed: 3 } }
+      spinning_wall_s: { copy_from: idle_wall_s, texture: "@prop_bearing_fwd", collision: { size: 1.8, offset: [0, -0.4, 0.95] }, animation: { type: rotate, axis: [0, 0, 1], speed: 3 } }
       idle_wall_e:
         texture: "@prop_bearing_fwd"
+        collision: { size: 1.8, offset: [-0.95, -0.4, 0] }
         display_entities:
           - { material: WARPED_SLAB, tag: tyre_0, transform: { translation: [0.197, 0, 0], scale: [2, 0.8, 0.8284], left_rotation: [90, 0, 0, -1] }, wall_offset: 0.25 }
           - { material: WARPED_SLAB, tag: tyre_1, transform: { translation: [0.199, 0, 0], scale: [2, 0.8, 0.8284], left_rotation: [98.4211, 0.3574, 0.3574, -0.8629] }, wall_offset: 0.25 }
           - { material: WARPED_SLAB, tag: tyre_2, transform: { translation: [0.201, 0, 0], scale: [2, 0.8, 0.8284], left_rotation: [120, 0.5774, 0.5774, -0.5774] }, wall_offset: 0.25 }
           - { material: WARPED_SLAB, tag: tyre_3, transform: { translation: [0.203, 0, 0], scale: [2, 0.8, 0.8284], left_rotation: [148.6003, 0.6786, 0.6786, -0.2811] }, wall_offset: 0.25 }
-      spinning_wall_e: { copy_from: idle_wall_e, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [1, 0, 0], speed: 3 } }
+      spinning_wall_e: { copy_from: idle_wall_e, texture: "@prop_bearing_fwd", collision: { size: 1.8, offset: [-0.95, -0.4, 0] }, animation: { type: rotate, axis: [1, 0, 0], speed: 3 } }
       idle_wall_w:
         texture: "@prop_bearing_fwd"
+        collision: { size: 1.8, offset: [0.95, -0.4, 0] }
         display_entities:
           - { material: WARPED_SLAB, tag: tyre_0, transform: { translation: [0.197, 0, 0], scale: [2, 0.8, 0.8284], left_rotation: [90, 0, 0, -1] }, wall_offset: 0.25 }
           - { material: WARPED_SLAB, tag: tyre_1, transform: { translation: [0.199, 0, 0], scale: [2, 0.8, 0.8284], left_rotation: [98.4211, 0.3574, 0.3574, -0.8629] }, wall_offset: 0.25 }
           - { material: WARPED_SLAB, tag: tyre_2, transform: { translation: [0.201, 0, 0], scale: [2, 0.8, 0.8284], left_rotation: [120, 0.5774, 0.5774, -0.5774] }, wall_offset: 0.25 }
           - { material: WARPED_SLAB, tag: tyre_3, transform: { translation: [0.203, 0, 0], scale: [2, 0.8, 0.8284], left_rotation: [148.6003, 0.6786, 0.6786, -0.2811] }, wall_offset: 0.25 }
-      spinning_wall_w: { copy_from: idle_wall_w, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [1, 0, 0], speed: 3 } }
+      spinning_wall_w: { copy_from: idle_wall_w, texture: "@prop_bearing_fwd", collision: { size: 1.8, offset: [0.95, -0.4, 0] }, animation: { type: rotate, axis: [1, 0, 0], speed: 3 } }
 
   huge_wheel_oak:
     cancel_pistons: true
@@ -5849,7 +5944,6 @@ blocks:
       - "&7Climbs steps up to 2 blocks high. The tyre reaches 1 block below the block it hangs on."
       - "&7Craft from a Large Oak Wheel with four oak planks around it."
       - "&7Wall placement only."
-    catalog_variant_of: huge_wheel_oak
     recipes:
       craft:
         shaped:
@@ -5876,36 +5970,40 @@ blocks:
     states:
       idle_wall_n:
         texture: "@prop_bearing_fwd"
+        collision: { size: 2.7, offset: [0, -0.85, -1.4] }
         display_entities:
           - { material: OAK_SLAB, tag: tyre_0, transform: { translation: [0, 0, 0.197], scale: [3, 0.8, 1.2426], left_rotation: [90, 1, 0, 0] }, wall_offset: 0.25 }
           - { material: OAK_SLAB, tag: tyre_1, transform: { translation: [0, 0, 0.199], scale: [3, 0.8, 1.2426], left_rotation: [98.4211, 0.8629, 0.3574, 0.3574] }, wall_offset: 0.25 }
           - { material: OAK_SLAB, tag: tyre_2, transform: { translation: [0, 0, 0.201], scale: [3, 0.8, 1.2426], left_rotation: [120, 0.5774, 0.5774, 0.5774] }, wall_offset: 0.25 }
           - { material: OAK_SLAB, tag: tyre_3, transform: { translation: [0, 0, 0.203], scale: [3, 0.8, 1.2426], left_rotation: [148.6003, 0.2811, 0.6786, 0.6786] }, wall_offset: 0.25 }
-      spinning_wall_n: { copy_from: idle_wall_n, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [0, 0, 1], speed: 2 } }
+      spinning_wall_n: { copy_from: idle_wall_n, texture: "@prop_bearing_fwd", collision: { size: 2.7, offset: [0, -0.85, -1.4] }, animation: { type: rotate, axis: [0, 0, 1], speed: 2 } }
       idle_wall_s:
         texture: "@prop_bearing_fwd"
+        collision: { size: 2.7, offset: [0, -0.85, 1.4] }
         display_entities:
           - { material: OAK_SLAB, tag: tyre_0, transform: { translation: [0, 0, 0.197], scale: [3, 0.8, 1.2426], left_rotation: [90, 1, 0, 0] }, wall_offset: 0.25 }
           - { material: OAK_SLAB, tag: tyre_1, transform: { translation: [0, 0, 0.199], scale: [3, 0.8, 1.2426], left_rotation: [98.4211, 0.8629, 0.3574, 0.3574] }, wall_offset: 0.25 }
           - { material: OAK_SLAB, tag: tyre_2, transform: { translation: [0, 0, 0.201], scale: [3, 0.8, 1.2426], left_rotation: [120, 0.5774, 0.5774, 0.5774] }, wall_offset: 0.25 }
           - { material: OAK_SLAB, tag: tyre_3, transform: { translation: [0, 0, 0.203], scale: [3, 0.8, 1.2426], left_rotation: [148.6003, 0.2811, 0.6786, 0.6786] }, wall_offset: 0.25 }
-      spinning_wall_s: { copy_from: idle_wall_s, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [0, 0, 1], speed: 2 } }
+      spinning_wall_s: { copy_from: idle_wall_s, texture: "@prop_bearing_fwd", collision: { size: 2.7, offset: [0, -0.85, 1.4] }, animation: { type: rotate, axis: [0, 0, 1], speed: 2 } }
       idle_wall_e:
         texture: "@prop_bearing_fwd"
+        collision: { size: 2.7, offset: [-1.4, -0.85, 0] }
         display_entities:
           - { material: OAK_SLAB, tag: tyre_0, transform: { translation: [0.197, 0, 0], scale: [3, 0.8, 1.2426], left_rotation: [90, 0, 0, -1] }, wall_offset: 0.25 }
           - { material: OAK_SLAB, tag: tyre_1, transform: { translation: [0.199, 0, 0], scale: [3, 0.8, 1.2426], left_rotation: [98.4211, 0.3574, 0.3574, -0.8629] }, wall_offset: 0.25 }
           - { material: OAK_SLAB, tag: tyre_2, transform: { translation: [0.201, 0, 0], scale: [3, 0.8, 1.2426], left_rotation: [120, 0.5774, 0.5774, -0.5774] }, wall_offset: 0.25 }
           - { material: OAK_SLAB, tag: tyre_3, transform: { translation: [0.203, 0, 0], scale: [3, 0.8, 1.2426], left_rotation: [148.6003, 0.6786, 0.6786, -0.2811] }, wall_offset: 0.25 }
-      spinning_wall_e: { copy_from: idle_wall_e, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [1, 0, 0], speed: 2 } }
+      spinning_wall_e: { copy_from: idle_wall_e, texture: "@prop_bearing_fwd", collision: { size: 2.7, offset: [-1.4, -0.85, 0] }, animation: { type: rotate, axis: [1, 0, 0], speed: 2 } }
       idle_wall_w:
         texture: "@prop_bearing_fwd"
+        collision: { size: 2.7, offset: [1.4, -0.85, 0] }
         display_entities:
           - { material: OAK_SLAB, tag: tyre_0, transform: { translation: [0.197, 0, 0], scale: [3, 0.8, 1.2426], left_rotation: [90, 0, 0, -1] }, wall_offset: 0.25 }
           - { material: OAK_SLAB, tag: tyre_1, transform: { translation: [0.199, 0, 0], scale: [3, 0.8, 1.2426], left_rotation: [98.4211, 0.3574, 0.3574, -0.8629] }, wall_offset: 0.25 }
           - { material: OAK_SLAB, tag: tyre_2, transform: { translation: [0.201, 0, 0], scale: [3, 0.8, 1.2426], left_rotation: [120, 0.5774, 0.5774, -0.5774] }, wall_offset: 0.25 }
           - { material: OAK_SLAB, tag: tyre_3, transform: { translation: [0.203, 0, 0], scale: [3, 0.8, 1.2426], left_rotation: [148.6003, 0.6786, 0.6786, -0.2811] }, wall_offset: 0.25 }
-      spinning_wall_w: { copy_from: idle_wall_w, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [1, 0, 0], speed: 2 } }
+      spinning_wall_w: { copy_from: idle_wall_w, texture: "@prop_bearing_fwd", collision: { size: 2.7, offset: [1.4, -0.85, 0] }, animation: { type: rotate, axis: [1, 0, 0], speed: 2 } }
 
   huge_wheel_acacia:
     cancel_pistons: true
@@ -5949,36 +6047,40 @@ blocks:
     states:
       idle_wall_n:
         texture: "@prop_bearing_fwd"
+        collision: { size: 2.7, offset: [0, -0.85, -1.4] }
         display_entities:
           - { material: ACACIA_SLAB, tag: tyre_0, transform: { translation: [0, 0, 0.197], scale: [3, 0.8, 1.2426], left_rotation: [90, 1, 0, 0] }, wall_offset: 0.25 }
           - { material: ACACIA_SLAB, tag: tyre_1, transform: { translation: [0, 0, 0.199], scale: [3, 0.8, 1.2426], left_rotation: [98.4211, 0.8629, 0.3574, 0.3574] }, wall_offset: 0.25 }
           - { material: ACACIA_SLAB, tag: tyre_2, transform: { translation: [0, 0, 0.201], scale: [3, 0.8, 1.2426], left_rotation: [120, 0.5774, 0.5774, 0.5774] }, wall_offset: 0.25 }
           - { material: ACACIA_SLAB, tag: tyre_3, transform: { translation: [0, 0, 0.203], scale: [3, 0.8, 1.2426], left_rotation: [148.6003, 0.2811, 0.6786, 0.6786] }, wall_offset: 0.25 }
-      spinning_wall_n: { copy_from: idle_wall_n, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [0, 0, 1], speed: 2 } }
+      spinning_wall_n: { copy_from: idle_wall_n, texture: "@prop_bearing_fwd", collision: { size: 2.7, offset: [0, -0.85, -1.4] }, animation: { type: rotate, axis: [0, 0, 1], speed: 2 } }
       idle_wall_s:
         texture: "@prop_bearing_fwd"
+        collision: { size: 2.7, offset: [0, -0.85, 1.4] }
         display_entities:
           - { material: ACACIA_SLAB, tag: tyre_0, transform: { translation: [0, 0, 0.197], scale: [3, 0.8, 1.2426], left_rotation: [90, 1, 0, 0] }, wall_offset: 0.25 }
           - { material: ACACIA_SLAB, tag: tyre_1, transform: { translation: [0, 0, 0.199], scale: [3, 0.8, 1.2426], left_rotation: [98.4211, 0.8629, 0.3574, 0.3574] }, wall_offset: 0.25 }
           - { material: ACACIA_SLAB, tag: tyre_2, transform: { translation: [0, 0, 0.201], scale: [3, 0.8, 1.2426], left_rotation: [120, 0.5774, 0.5774, 0.5774] }, wall_offset: 0.25 }
           - { material: ACACIA_SLAB, tag: tyre_3, transform: { translation: [0, 0, 0.203], scale: [3, 0.8, 1.2426], left_rotation: [148.6003, 0.2811, 0.6786, 0.6786] }, wall_offset: 0.25 }
-      spinning_wall_s: { copy_from: idle_wall_s, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [0, 0, 1], speed: 2 } }
+      spinning_wall_s: { copy_from: idle_wall_s, texture: "@prop_bearing_fwd", collision: { size: 2.7, offset: [0, -0.85, 1.4] }, animation: { type: rotate, axis: [0, 0, 1], speed: 2 } }
       idle_wall_e:
         texture: "@prop_bearing_fwd"
+        collision: { size: 2.7, offset: [-1.4, -0.85, 0] }
         display_entities:
           - { material: ACACIA_SLAB, tag: tyre_0, transform: { translation: [0.197, 0, 0], scale: [3, 0.8, 1.2426], left_rotation: [90, 0, 0, -1] }, wall_offset: 0.25 }
           - { material: ACACIA_SLAB, tag: tyre_1, transform: { translation: [0.199, 0, 0], scale: [3, 0.8, 1.2426], left_rotation: [98.4211, 0.3574, 0.3574, -0.8629] }, wall_offset: 0.25 }
           - { material: ACACIA_SLAB, tag: tyre_2, transform: { translation: [0.201, 0, 0], scale: [3, 0.8, 1.2426], left_rotation: [120, 0.5774, 0.5774, -0.5774] }, wall_offset: 0.25 }
           - { material: ACACIA_SLAB, tag: tyre_3, transform: { translation: [0.203, 0, 0], scale: [3, 0.8, 1.2426], left_rotation: [148.6003, 0.6786, 0.6786, -0.2811] }, wall_offset: 0.25 }
-      spinning_wall_e: { copy_from: idle_wall_e, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [1, 0, 0], speed: 2 } }
+      spinning_wall_e: { copy_from: idle_wall_e, texture: "@prop_bearing_fwd", collision: { size: 2.7, offset: [-1.4, -0.85, 0] }, animation: { type: rotate, axis: [1, 0, 0], speed: 2 } }
       idle_wall_w:
         texture: "@prop_bearing_fwd"
+        collision: { size: 2.7, offset: [1.4, -0.85, 0] }
         display_entities:
           - { material: ACACIA_SLAB, tag: tyre_0, transform: { translation: [0.197, 0, 0], scale: [3, 0.8, 1.2426], left_rotation: [90, 0, 0, -1] }, wall_offset: 0.25 }
           - { material: ACACIA_SLAB, tag: tyre_1, transform: { translation: [0.199, 0, 0], scale: [3, 0.8, 1.2426], left_rotation: [98.4211, 0.3574, 0.3574, -0.8629] }, wall_offset: 0.25 }
           - { material: ACACIA_SLAB, tag: tyre_2, transform: { translation: [0.201, 0, 0], scale: [3, 0.8, 1.2426], left_rotation: [120, 0.5774, 0.5774, -0.5774] }, wall_offset: 0.25 }
           - { material: ACACIA_SLAB, tag: tyre_3, transform: { translation: [0.203, 0, 0], scale: [3, 0.8, 1.2426], left_rotation: [148.6003, 0.6786, 0.6786, -0.2811] }, wall_offset: 0.25 }
-      spinning_wall_w: { copy_from: idle_wall_w, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [1, 0, 0], speed: 2 } }
+      spinning_wall_w: { copy_from: idle_wall_w, texture: "@prop_bearing_fwd", collision: { size: 2.7, offset: [1.4, -0.85, 0] }, animation: { type: rotate, axis: [1, 0, 0], speed: 2 } }
 
   huge_wheel_bamboo:
     cancel_pistons: true
@@ -6022,36 +6124,40 @@ blocks:
     states:
       idle_wall_n:
         texture: "@prop_bearing_fwd"
+        collision: { size: 2.7, offset: [0, -0.85, -1.4] }
         display_entities:
           - { material: BAMBOO_SLAB, tag: tyre_0, transform: { translation: [0, 0, 0.197], scale: [3, 0.8, 1.2426], left_rotation: [90, 1, 0, 0] }, wall_offset: 0.25 }
           - { material: BAMBOO_SLAB, tag: tyre_1, transform: { translation: [0, 0, 0.199], scale: [3, 0.8, 1.2426], left_rotation: [98.4211, 0.8629, 0.3574, 0.3574] }, wall_offset: 0.25 }
           - { material: BAMBOO_SLAB, tag: tyre_2, transform: { translation: [0, 0, 0.201], scale: [3, 0.8, 1.2426], left_rotation: [120, 0.5774, 0.5774, 0.5774] }, wall_offset: 0.25 }
           - { material: BAMBOO_SLAB, tag: tyre_3, transform: { translation: [0, 0, 0.203], scale: [3, 0.8, 1.2426], left_rotation: [148.6003, 0.2811, 0.6786, 0.6786] }, wall_offset: 0.25 }
-      spinning_wall_n: { copy_from: idle_wall_n, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [0, 0, 1], speed: 2 } }
+      spinning_wall_n: { copy_from: idle_wall_n, texture: "@prop_bearing_fwd", collision: { size: 2.7, offset: [0, -0.85, -1.4] }, animation: { type: rotate, axis: [0, 0, 1], speed: 2 } }
       idle_wall_s:
         texture: "@prop_bearing_fwd"
+        collision: { size: 2.7, offset: [0, -0.85, 1.4] }
         display_entities:
           - { material: BAMBOO_SLAB, tag: tyre_0, transform: { translation: [0, 0, 0.197], scale: [3, 0.8, 1.2426], left_rotation: [90, 1, 0, 0] }, wall_offset: 0.25 }
           - { material: BAMBOO_SLAB, tag: tyre_1, transform: { translation: [0, 0, 0.199], scale: [3, 0.8, 1.2426], left_rotation: [98.4211, 0.8629, 0.3574, 0.3574] }, wall_offset: 0.25 }
           - { material: BAMBOO_SLAB, tag: tyre_2, transform: { translation: [0, 0, 0.201], scale: [3, 0.8, 1.2426], left_rotation: [120, 0.5774, 0.5774, 0.5774] }, wall_offset: 0.25 }
           - { material: BAMBOO_SLAB, tag: tyre_3, transform: { translation: [0, 0, 0.203], scale: [3, 0.8, 1.2426], left_rotation: [148.6003, 0.2811, 0.6786, 0.6786] }, wall_offset: 0.25 }
-      spinning_wall_s: { copy_from: idle_wall_s, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [0, 0, 1], speed: 2 } }
+      spinning_wall_s: { copy_from: idle_wall_s, texture: "@prop_bearing_fwd", collision: { size: 2.7, offset: [0, -0.85, 1.4] }, animation: { type: rotate, axis: [0, 0, 1], speed: 2 } }
       idle_wall_e:
         texture: "@prop_bearing_fwd"
+        collision: { size: 2.7, offset: [-1.4, -0.85, 0] }
         display_entities:
           - { material: BAMBOO_SLAB, tag: tyre_0, transform: { translation: [0.197, 0, 0], scale: [3, 0.8, 1.2426], left_rotation: [90, 0, 0, -1] }, wall_offset: 0.25 }
           - { material: BAMBOO_SLAB, tag: tyre_1, transform: { translation: [0.199, 0, 0], scale: [3, 0.8, 1.2426], left_rotation: [98.4211, 0.3574, 0.3574, -0.8629] }, wall_offset: 0.25 }
           - { material: BAMBOO_SLAB, tag: tyre_2, transform: { translation: [0.201, 0, 0], scale: [3, 0.8, 1.2426], left_rotation: [120, 0.5774, 0.5774, -0.5774] }, wall_offset: 0.25 }
           - { material: BAMBOO_SLAB, tag: tyre_3, transform: { translation: [0.203, 0, 0], scale: [3, 0.8, 1.2426], left_rotation: [148.6003, 0.6786, 0.6786, -0.2811] }, wall_offset: 0.25 }
-      spinning_wall_e: { copy_from: idle_wall_e, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [1, 0, 0], speed: 2 } }
+      spinning_wall_e: { copy_from: idle_wall_e, texture: "@prop_bearing_fwd", collision: { size: 2.7, offset: [-1.4, -0.85, 0] }, animation: { type: rotate, axis: [1, 0, 0], speed: 2 } }
       idle_wall_w:
         texture: "@prop_bearing_fwd"
+        collision: { size: 2.7, offset: [1.4, -0.85, 0] }
         display_entities:
           - { material: BAMBOO_SLAB, tag: tyre_0, transform: { translation: [0.197, 0, 0], scale: [3, 0.8, 1.2426], left_rotation: [90, 0, 0, -1] }, wall_offset: 0.25 }
           - { material: BAMBOO_SLAB, tag: tyre_1, transform: { translation: [0.199, 0, 0], scale: [3, 0.8, 1.2426], left_rotation: [98.4211, 0.3574, 0.3574, -0.8629] }, wall_offset: 0.25 }
           - { material: BAMBOO_SLAB, tag: tyre_2, transform: { translation: [0.201, 0, 0], scale: [3, 0.8, 1.2426], left_rotation: [120, 0.5774, 0.5774, -0.5774] }, wall_offset: 0.25 }
           - { material: BAMBOO_SLAB, tag: tyre_3, transform: { translation: [0.203, 0, 0], scale: [3, 0.8, 1.2426], left_rotation: [148.6003, 0.6786, 0.6786, -0.2811] }, wall_offset: 0.25 }
-      spinning_wall_w: { copy_from: idle_wall_w, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [1, 0, 0], speed: 2 } }
+      spinning_wall_w: { copy_from: idle_wall_w, texture: "@prop_bearing_fwd", collision: { size: 2.7, offset: [1.4, -0.85, 0] }, animation: { type: rotate, axis: [1, 0, 0], speed: 2 } }
 
   huge_wheel_birch:
     cancel_pistons: true
@@ -6095,36 +6201,40 @@ blocks:
     states:
       idle_wall_n:
         texture: "@prop_bearing_fwd"
+        collision: { size: 2.7, offset: [0, -0.85, -1.4] }
         display_entities:
           - { material: BIRCH_SLAB, tag: tyre_0, transform: { translation: [0, 0, 0.197], scale: [3, 0.8, 1.2426], left_rotation: [90, 1, 0, 0] }, wall_offset: 0.25 }
           - { material: BIRCH_SLAB, tag: tyre_1, transform: { translation: [0, 0, 0.199], scale: [3, 0.8, 1.2426], left_rotation: [98.4211, 0.8629, 0.3574, 0.3574] }, wall_offset: 0.25 }
           - { material: BIRCH_SLAB, tag: tyre_2, transform: { translation: [0, 0, 0.201], scale: [3, 0.8, 1.2426], left_rotation: [120, 0.5774, 0.5774, 0.5774] }, wall_offset: 0.25 }
           - { material: BIRCH_SLAB, tag: tyre_3, transform: { translation: [0, 0, 0.203], scale: [3, 0.8, 1.2426], left_rotation: [148.6003, 0.2811, 0.6786, 0.6786] }, wall_offset: 0.25 }
-      spinning_wall_n: { copy_from: idle_wall_n, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [0, 0, 1], speed: 2 } }
+      spinning_wall_n: { copy_from: idle_wall_n, texture: "@prop_bearing_fwd", collision: { size: 2.7, offset: [0, -0.85, -1.4] }, animation: { type: rotate, axis: [0, 0, 1], speed: 2 } }
       idle_wall_s:
         texture: "@prop_bearing_fwd"
+        collision: { size: 2.7, offset: [0, -0.85, 1.4] }
         display_entities:
           - { material: BIRCH_SLAB, tag: tyre_0, transform: { translation: [0, 0, 0.197], scale: [3, 0.8, 1.2426], left_rotation: [90, 1, 0, 0] }, wall_offset: 0.25 }
           - { material: BIRCH_SLAB, tag: tyre_1, transform: { translation: [0, 0, 0.199], scale: [3, 0.8, 1.2426], left_rotation: [98.4211, 0.8629, 0.3574, 0.3574] }, wall_offset: 0.25 }
           - { material: BIRCH_SLAB, tag: tyre_2, transform: { translation: [0, 0, 0.201], scale: [3, 0.8, 1.2426], left_rotation: [120, 0.5774, 0.5774, 0.5774] }, wall_offset: 0.25 }
           - { material: BIRCH_SLAB, tag: tyre_3, transform: { translation: [0, 0, 0.203], scale: [3, 0.8, 1.2426], left_rotation: [148.6003, 0.2811, 0.6786, 0.6786] }, wall_offset: 0.25 }
-      spinning_wall_s: { copy_from: idle_wall_s, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [0, 0, 1], speed: 2 } }
+      spinning_wall_s: { copy_from: idle_wall_s, texture: "@prop_bearing_fwd", collision: { size: 2.7, offset: [0, -0.85, 1.4] }, animation: { type: rotate, axis: [0, 0, 1], speed: 2 } }
       idle_wall_e:
         texture: "@prop_bearing_fwd"
+        collision: { size: 2.7, offset: [-1.4, -0.85, 0] }
         display_entities:
           - { material: BIRCH_SLAB, tag: tyre_0, transform: { translation: [0.197, 0, 0], scale: [3, 0.8, 1.2426], left_rotation: [90, 0, 0, -1] }, wall_offset: 0.25 }
           - { material: BIRCH_SLAB, tag: tyre_1, transform: { translation: [0.199, 0, 0], scale: [3, 0.8, 1.2426], left_rotation: [98.4211, 0.3574, 0.3574, -0.8629] }, wall_offset: 0.25 }
           - { material: BIRCH_SLAB, tag: tyre_2, transform: { translation: [0.201, 0, 0], scale: [3, 0.8, 1.2426], left_rotation: [120, 0.5774, 0.5774, -0.5774] }, wall_offset: 0.25 }
           - { material: BIRCH_SLAB, tag: tyre_3, transform: { translation: [0.203, 0, 0], scale: [3, 0.8, 1.2426], left_rotation: [148.6003, 0.6786, 0.6786, -0.2811] }, wall_offset: 0.25 }
-      spinning_wall_e: { copy_from: idle_wall_e, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [1, 0, 0], speed: 2 } }
+      spinning_wall_e: { copy_from: idle_wall_e, texture: "@prop_bearing_fwd", collision: { size: 2.7, offset: [-1.4, -0.85, 0] }, animation: { type: rotate, axis: [1, 0, 0], speed: 2 } }
       idle_wall_w:
         texture: "@prop_bearing_fwd"
+        collision: { size: 2.7, offset: [1.4, -0.85, 0] }
         display_entities:
           - { material: BIRCH_SLAB, tag: tyre_0, transform: { translation: [0.197, 0, 0], scale: [3, 0.8, 1.2426], left_rotation: [90, 0, 0, -1] }, wall_offset: 0.25 }
           - { material: BIRCH_SLAB, tag: tyre_1, transform: { translation: [0.199, 0, 0], scale: [3, 0.8, 1.2426], left_rotation: [98.4211, 0.3574, 0.3574, -0.8629] }, wall_offset: 0.25 }
           - { material: BIRCH_SLAB, tag: tyre_2, transform: { translation: [0.201, 0, 0], scale: [3, 0.8, 1.2426], left_rotation: [120, 0.5774, 0.5774, -0.5774] }, wall_offset: 0.25 }
           - { material: BIRCH_SLAB, tag: tyre_3, transform: { translation: [0.203, 0, 0], scale: [3, 0.8, 1.2426], left_rotation: [148.6003, 0.6786, 0.6786, -0.2811] }, wall_offset: 0.25 }
-      spinning_wall_w: { copy_from: idle_wall_w, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [1, 0, 0], speed: 2 } }
+      spinning_wall_w: { copy_from: idle_wall_w, texture: "@prop_bearing_fwd", collision: { size: 2.7, offset: [1.4, -0.85, 0] }, animation: { type: rotate, axis: [1, 0, 0], speed: 2 } }
 
   huge_wheel_cherry:
     cancel_pistons: true
@@ -6168,36 +6278,40 @@ blocks:
     states:
       idle_wall_n:
         texture: "@prop_bearing_fwd"
+        collision: { size: 2.7, offset: [0, -0.85, -1.4] }
         display_entities:
           - { material: CHERRY_SLAB, tag: tyre_0, transform: { translation: [0, 0, 0.197], scale: [3, 0.8, 1.2426], left_rotation: [90, 1, 0, 0] }, wall_offset: 0.25 }
           - { material: CHERRY_SLAB, tag: tyre_1, transform: { translation: [0, 0, 0.199], scale: [3, 0.8, 1.2426], left_rotation: [98.4211, 0.8629, 0.3574, 0.3574] }, wall_offset: 0.25 }
           - { material: CHERRY_SLAB, tag: tyre_2, transform: { translation: [0, 0, 0.201], scale: [3, 0.8, 1.2426], left_rotation: [120, 0.5774, 0.5774, 0.5774] }, wall_offset: 0.25 }
           - { material: CHERRY_SLAB, tag: tyre_3, transform: { translation: [0, 0, 0.203], scale: [3, 0.8, 1.2426], left_rotation: [148.6003, 0.2811, 0.6786, 0.6786] }, wall_offset: 0.25 }
-      spinning_wall_n: { copy_from: idle_wall_n, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [0, 0, 1], speed: 2 } }
+      spinning_wall_n: { copy_from: idle_wall_n, texture: "@prop_bearing_fwd", collision: { size: 2.7, offset: [0, -0.85, -1.4] }, animation: { type: rotate, axis: [0, 0, 1], speed: 2 } }
       idle_wall_s:
         texture: "@prop_bearing_fwd"
+        collision: { size: 2.7, offset: [0, -0.85, 1.4] }
         display_entities:
           - { material: CHERRY_SLAB, tag: tyre_0, transform: { translation: [0, 0, 0.197], scale: [3, 0.8, 1.2426], left_rotation: [90, 1, 0, 0] }, wall_offset: 0.25 }
           - { material: CHERRY_SLAB, tag: tyre_1, transform: { translation: [0, 0, 0.199], scale: [3, 0.8, 1.2426], left_rotation: [98.4211, 0.8629, 0.3574, 0.3574] }, wall_offset: 0.25 }
           - { material: CHERRY_SLAB, tag: tyre_2, transform: { translation: [0, 0, 0.201], scale: [3, 0.8, 1.2426], left_rotation: [120, 0.5774, 0.5774, 0.5774] }, wall_offset: 0.25 }
           - { material: CHERRY_SLAB, tag: tyre_3, transform: { translation: [0, 0, 0.203], scale: [3, 0.8, 1.2426], left_rotation: [148.6003, 0.2811, 0.6786, 0.6786] }, wall_offset: 0.25 }
-      spinning_wall_s: { copy_from: idle_wall_s, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [0, 0, 1], speed: 2 } }
+      spinning_wall_s: { copy_from: idle_wall_s, texture: "@prop_bearing_fwd", collision: { size: 2.7, offset: [0, -0.85, 1.4] }, animation: { type: rotate, axis: [0, 0, 1], speed: 2 } }
       idle_wall_e:
         texture: "@prop_bearing_fwd"
+        collision: { size: 2.7, offset: [-1.4, -0.85, 0] }
         display_entities:
           - { material: CHERRY_SLAB, tag: tyre_0, transform: { translation: [0.197, 0, 0], scale: [3, 0.8, 1.2426], left_rotation: [90, 0, 0, -1] }, wall_offset: 0.25 }
           - { material: CHERRY_SLAB, tag: tyre_1, transform: { translation: [0.199, 0, 0], scale: [3, 0.8, 1.2426], left_rotation: [98.4211, 0.3574, 0.3574, -0.8629] }, wall_offset: 0.25 }
           - { material: CHERRY_SLAB, tag: tyre_2, transform: { translation: [0.201, 0, 0], scale: [3, 0.8, 1.2426], left_rotation: [120, 0.5774, 0.5774, -0.5774] }, wall_offset: 0.25 }
           - { material: CHERRY_SLAB, tag: tyre_3, transform: { translation: [0.203, 0, 0], scale: [3, 0.8, 1.2426], left_rotation: [148.6003, 0.6786, 0.6786, -0.2811] }, wall_offset: 0.25 }
-      spinning_wall_e: { copy_from: idle_wall_e, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [1, 0, 0], speed: 2 } }
+      spinning_wall_e: { copy_from: idle_wall_e, texture: "@prop_bearing_fwd", collision: { size: 2.7, offset: [-1.4, -0.85, 0] }, animation: { type: rotate, axis: [1, 0, 0], speed: 2 } }
       idle_wall_w:
         texture: "@prop_bearing_fwd"
+        collision: { size: 2.7, offset: [1.4, -0.85, 0] }
         display_entities:
           - { material: CHERRY_SLAB, tag: tyre_0, transform: { translation: [0.197, 0, 0], scale: [3, 0.8, 1.2426], left_rotation: [90, 0, 0, -1] }, wall_offset: 0.25 }
           - { material: CHERRY_SLAB, tag: tyre_1, transform: { translation: [0.199, 0, 0], scale: [3, 0.8, 1.2426], left_rotation: [98.4211, 0.3574, 0.3574, -0.8629] }, wall_offset: 0.25 }
           - { material: CHERRY_SLAB, tag: tyre_2, transform: { translation: [0.201, 0, 0], scale: [3, 0.8, 1.2426], left_rotation: [120, 0.5774, 0.5774, -0.5774] }, wall_offset: 0.25 }
           - { material: CHERRY_SLAB, tag: tyre_3, transform: { translation: [0.203, 0, 0], scale: [3, 0.8, 1.2426], left_rotation: [148.6003, 0.6786, 0.6786, -0.2811] }, wall_offset: 0.25 }
-      spinning_wall_w: { copy_from: idle_wall_w, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [1, 0, 0], speed: 2 } }
+      spinning_wall_w: { copy_from: idle_wall_w, texture: "@prop_bearing_fwd", collision: { size: 2.7, offset: [1.4, -0.85, 0] }, animation: { type: rotate, axis: [1, 0, 0], speed: 2 } }
 
   huge_wheel_crimson:
     cancel_pistons: true
@@ -6241,36 +6355,40 @@ blocks:
     states:
       idle_wall_n:
         texture: "@prop_bearing_fwd"
+        collision: { size: 2.7, offset: [0, -0.85, -1.4] }
         display_entities:
           - { material: CRIMSON_SLAB, tag: tyre_0, transform: { translation: [0, 0, 0.197], scale: [3, 0.8, 1.2426], left_rotation: [90, 1, 0, 0] }, wall_offset: 0.25 }
           - { material: CRIMSON_SLAB, tag: tyre_1, transform: { translation: [0, 0, 0.199], scale: [3, 0.8, 1.2426], left_rotation: [98.4211, 0.8629, 0.3574, 0.3574] }, wall_offset: 0.25 }
           - { material: CRIMSON_SLAB, tag: tyre_2, transform: { translation: [0, 0, 0.201], scale: [3, 0.8, 1.2426], left_rotation: [120, 0.5774, 0.5774, 0.5774] }, wall_offset: 0.25 }
           - { material: CRIMSON_SLAB, tag: tyre_3, transform: { translation: [0, 0, 0.203], scale: [3, 0.8, 1.2426], left_rotation: [148.6003, 0.2811, 0.6786, 0.6786] }, wall_offset: 0.25 }
-      spinning_wall_n: { copy_from: idle_wall_n, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [0, 0, 1], speed: 2 } }
+      spinning_wall_n: { copy_from: idle_wall_n, texture: "@prop_bearing_fwd", collision: { size: 2.7, offset: [0, -0.85, -1.4] }, animation: { type: rotate, axis: [0, 0, 1], speed: 2 } }
       idle_wall_s:
         texture: "@prop_bearing_fwd"
+        collision: { size: 2.7, offset: [0, -0.85, 1.4] }
         display_entities:
           - { material: CRIMSON_SLAB, tag: tyre_0, transform: { translation: [0, 0, 0.197], scale: [3, 0.8, 1.2426], left_rotation: [90, 1, 0, 0] }, wall_offset: 0.25 }
           - { material: CRIMSON_SLAB, tag: tyre_1, transform: { translation: [0, 0, 0.199], scale: [3, 0.8, 1.2426], left_rotation: [98.4211, 0.8629, 0.3574, 0.3574] }, wall_offset: 0.25 }
           - { material: CRIMSON_SLAB, tag: tyre_2, transform: { translation: [0, 0, 0.201], scale: [3, 0.8, 1.2426], left_rotation: [120, 0.5774, 0.5774, 0.5774] }, wall_offset: 0.25 }
           - { material: CRIMSON_SLAB, tag: tyre_3, transform: { translation: [0, 0, 0.203], scale: [3, 0.8, 1.2426], left_rotation: [148.6003, 0.2811, 0.6786, 0.6786] }, wall_offset: 0.25 }
-      spinning_wall_s: { copy_from: idle_wall_s, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [0, 0, 1], speed: 2 } }
+      spinning_wall_s: { copy_from: idle_wall_s, texture: "@prop_bearing_fwd", collision: { size: 2.7, offset: [0, -0.85, 1.4] }, animation: { type: rotate, axis: [0, 0, 1], speed: 2 } }
       idle_wall_e:
         texture: "@prop_bearing_fwd"
+        collision: { size: 2.7, offset: [-1.4, -0.85, 0] }
         display_entities:
           - { material: CRIMSON_SLAB, tag: tyre_0, transform: { translation: [0.197, 0, 0], scale: [3, 0.8, 1.2426], left_rotation: [90, 0, 0, -1] }, wall_offset: 0.25 }
           - { material: CRIMSON_SLAB, tag: tyre_1, transform: { translation: [0.199, 0, 0], scale: [3, 0.8, 1.2426], left_rotation: [98.4211, 0.3574, 0.3574, -0.8629] }, wall_offset: 0.25 }
           - { material: CRIMSON_SLAB, tag: tyre_2, transform: { translation: [0.201, 0, 0], scale: [3, 0.8, 1.2426], left_rotation: [120, 0.5774, 0.5774, -0.5774] }, wall_offset: 0.25 }
           - { material: CRIMSON_SLAB, tag: tyre_3, transform: { translation: [0.203, 0, 0], scale: [3, 0.8, 1.2426], left_rotation: [148.6003, 0.6786, 0.6786, -0.2811] }, wall_offset: 0.25 }
-      spinning_wall_e: { copy_from: idle_wall_e, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [1, 0, 0], speed: 2 } }
+      spinning_wall_e: { copy_from: idle_wall_e, texture: "@prop_bearing_fwd", collision: { size: 2.7, offset: [-1.4, -0.85, 0] }, animation: { type: rotate, axis: [1, 0, 0], speed: 2 } }
       idle_wall_w:
         texture: "@prop_bearing_fwd"
+        collision: { size: 2.7, offset: [1.4, -0.85, 0] }
         display_entities:
           - { material: CRIMSON_SLAB, tag: tyre_0, transform: { translation: [0.197, 0, 0], scale: [3, 0.8, 1.2426], left_rotation: [90, 0, 0, -1] }, wall_offset: 0.25 }
           - { material: CRIMSON_SLAB, tag: tyre_1, transform: { translation: [0.199, 0, 0], scale: [3, 0.8, 1.2426], left_rotation: [98.4211, 0.3574, 0.3574, -0.8629] }, wall_offset: 0.25 }
           - { material: CRIMSON_SLAB, tag: tyre_2, transform: { translation: [0.201, 0, 0], scale: [3, 0.8, 1.2426], left_rotation: [120, 0.5774, 0.5774, -0.5774] }, wall_offset: 0.25 }
           - { material: CRIMSON_SLAB, tag: tyre_3, transform: { translation: [0.203, 0, 0], scale: [3, 0.8, 1.2426], left_rotation: [148.6003, 0.6786, 0.6786, -0.2811] }, wall_offset: 0.25 }
-      spinning_wall_w: { copy_from: idle_wall_w, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [1, 0, 0], speed: 2 } }
+      spinning_wall_w: { copy_from: idle_wall_w, texture: "@prop_bearing_fwd", collision: { size: 2.7, offset: [1.4, -0.85, 0] }, animation: { type: rotate, axis: [1, 0, 0], speed: 2 } }
 
   huge_wheel_dark_oak:
     cancel_pistons: true
@@ -6314,36 +6432,40 @@ blocks:
     states:
       idle_wall_n:
         texture: "@prop_bearing_fwd"
+        collision: { size: 2.7, offset: [0, -0.85, -1.4] }
         display_entities:
           - { material: DARK_OAK_SLAB, tag: tyre_0, transform: { translation: [0, 0, 0.197], scale: [3, 0.8, 1.2426], left_rotation: [90, 1, 0, 0] }, wall_offset: 0.25 }
           - { material: DARK_OAK_SLAB, tag: tyre_1, transform: { translation: [0, 0, 0.199], scale: [3, 0.8, 1.2426], left_rotation: [98.4211, 0.8629, 0.3574, 0.3574] }, wall_offset: 0.25 }
           - { material: DARK_OAK_SLAB, tag: tyre_2, transform: { translation: [0, 0, 0.201], scale: [3, 0.8, 1.2426], left_rotation: [120, 0.5774, 0.5774, 0.5774] }, wall_offset: 0.25 }
           - { material: DARK_OAK_SLAB, tag: tyre_3, transform: { translation: [0, 0, 0.203], scale: [3, 0.8, 1.2426], left_rotation: [148.6003, 0.2811, 0.6786, 0.6786] }, wall_offset: 0.25 }
-      spinning_wall_n: { copy_from: idle_wall_n, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [0, 0, 1], speed: 2 } }
+      spinning_wall_n: { copy_from: idle_wall_n, texture: "@prop_bearing_fwd", collision: { size: 2.7, offset: [0, -0.85, -1.4] }, animation: { type: rotate, axis: [0, 0, 1], speed: 2 } }
       idle_wall_s:
         texture: "@prop_bearing_fwd"
+        collision: { size: 2.7, offset: [0, -0.85, 1.4] }
         display_entities:
           - { material: DARK_OAK_SLAB, tag: tyre_0, transform: { translation: [0, 0, 0.197], scale: [3, 0.8, 1.2426], left_rotation: [90, 1, 0, 0] }, wall_offset: 0.25 }
           - { material: DARK_OAK_SLAB, tag: tyre_1, transform: { translation: [0, 0, 0.199], scale: [3, 0.8, 1.2426], left_rotation: [98.4211, 0.8629, 0.3574, 0.3574] }, wall_offset: 0.25 }
           - { material: DARK_OAK_SLAB, tag: tyre_2, transform: { translation: [0, 0, 0.201], scale: [3, 0.8, 1.2426], left_rotation: [120, 0.5774, 0.5774, 0.5774] }, wall_offset: 0.25 }
           - { material: DARK_OAK_SLAB, tag: tyre_3, transform: { translation: [0, 0, 0.203], scale: [3, 0.8, 1.2426], left_rotation: [148.6003, 0.2811, 0.6786, 0.6786] }, wall_offset: 0.25 }
-      spinning_wall_s: { copy_from: idle_wall_s, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [0, 0, 1], speed: 2 } }
+      spinning_wall_s: { copy_from: idle_wall_s, texture: "@prop_bearing_fwd", collision: { size: 2.7, offset: [0, -0.85, 1.4] }, animation: { type: rotate, axis: [0, 0, 1], speed: 2 } }
       idle_wall_e:
         texture: "@prop_bearing_fwd"
+        collision: { size: 2.7, offset: [-1.4, -0.85, 0] }
         display_entities:
           - { material: DARK_OAK_SLAB, tag: tyre_0, transform: { translation: [0.197, 0, 0], scale: [3, 0.8, 1.2426], left_rotation: [90, 0, 0, -1] }, wall_offset: 0.25 }
           - { material: DARK_OAK_SLAB, tag: tyre_1, transform: { translation: [0.199, 0, 0], scale: [3, 0.8, 1.2426], left_rotation: [98.4211, 0.3574, 0.3574, -0.8629] }, wall_offset: 0.25 }
           - { material: DARK_OAK_SLAB, tag: tyre_2, transform: { translation: [0.201, 0, 0], scale: [3, 0.8, 1.2426], left_rotation: [120, 0.5774, 0.5774, -0.5774] }, wall_offset: 0.25 }
           - { material: DARK_OAK_SLAB, tag: tyre_3, transform: { translation: [0.203, 0, 0], scale: [3, 0.8, 1.2426], left_rotation: [148.6003, 0.6786, 0.6786, -0.2811] }, wall_offset: 0.25 }
-      spinning_wall_e: { copy_from: idle_wall_e, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [1, 0, 0], speed: 2 } }
+      spinning_wall_e: { copy_from: idle_wall_e, texture: "@prop_bearing_fwd", collision: { size: 2.7, offset: [-1.4, -0.85, 0] }, animation: { type: rotate, axis: [1, 0, 0], speed: 2 } }
       idle_wall_w:
         texture: "@prop_bearing_fwd"
+        collision: { size: 2.7, offset: [1.4, -0.85, 0] }
         display_entities:
           - { material: DARK_OAK_SLAB, tag: tyre_0, transform: { translation: [0.197, 0, 0], scale: [3, 0.8, 1.2426], left_rotation: [90, 0, 0, -1] }, wall_offset: 0.25 }
           - { material: DARK_OAK_SLAB, tag: tyre_1, transform: { translation: [0.199, 0, 0], scale: [3, 0.8, 1.2426], left_rotation: [98.4211, 0.3574, 0.3574, -0.8629] }, wall_offset: 0.25 }
           - { material: DARK_OAK_SLAB, tag: tyre_2, transform: { translation: [0.201, 0, 0], scale: [3, 0.8, 1.2426], left_rotation: [120, 0.5774, 0.5774, -0.5774] }, wall_offset: 0.25 }
           - { material: DARK_OAK_SLAB, tag: tyre_3, transform: { translation: [0.203, 0, 0], scale: [3, 0.8, 1.2426], left_rotation: [148.6003, 0.6786, 0.6786, -0.2811] }, wall_offset: 0.25 }
-      spinning_wall_w: { copy_from: idle_wall_w, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [1, 0, 0], speed: 2 } }
+      spinning_wall_w: { copy_from: idle_wall_w, texture: "@prop_bearing_fwd", collision: { size: 2.7, offset: [1.4, -0.85, 0] }, animation: { type: rotate, axis: [1, 0, 0], speed: 2 } }
 
   huge_wheel_jungle:
     cancel_pistons: true
@@ -6387,36 +6509,40 @@ blocks:
     states:
       idle_wall_n:
         texture: "@prop_bearing_fwd"
+        collision: { size: 2.7, offset: [0, -0.85, -1.4] }
         display_entities:
           - { material: JUNGLE_SLAB, tag: tyre_0, transform: { translation: [0, 0, 0.197], scale: [3, 0.8, 1.2426], left_rotation: [90, 1, 0, 0] }, wall_offset: 0.25 }
           - { material: JUNGLE_SLAB, tag: tyre_1, transform: { translation: [0, 0, 0.199], scale: [3, 0.8, 1.2426], left_rotation: [98.4211, 0.8629, 0.3574, 0.3574] }, wall_offset: 0.25 }
           - { material: JUNGLE_SLAB, tag: tyre_2, transform: { translation: [0, 0, 0.201], scale: [3, 0.8, 1.2426], left_rotation: [120, 0.5774, 0.5774, 0.5774] }, wall_offset: 0.25 }
           - { material: JUNGLE_SLAB, tag: tyre_3, transform: { translation: [0, 0, 0.203], scale: [3, 0.8, 1.2426], left_rotation: [148.6003, 0.2811, 0.6786, 0.6786] }, wall_offset: 0.25 }
-      spinning_wall_n: { copy_from: idle_wall_n, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [0, 0, 1], speed: 2 } }
+      spinning_wall_n: { copy_from: idle_wall_n, texture: "@prop_bearing_fwd", collision: { size: 2.7, offset: [0, -0.85, -1.4] }, animation: { type: rotate, axis: [0, 0, 1], speed: 2 } }
       idle_wall_s:
         texture: "@prop_bearing_fwd"
+        collision: { size: 2.7, offset: [0, -0.85, 1.4] }
         display_entities:
           - { material: JUNGLE_SLAB, tag: tyre_0, transform: { translation: [0, 0, 0.197], scale: [3, 0.8, 1.2426], left_rotation: [90, 1, 0, 0] }, wall_offset: 0.25 }
           - { material: JUNGLE_SLAB, tag: tyre_1, transform: { translation: [0, 0, 0.199], scale: [3, 0.8, 1.2426], left_rotation: [98.4211, 0.8629, 0.3574, 0.3574] }, wall_offset: 0.25 }
           - { material: JUNGLE_SLAB, tag: tyre_2, transform: { translation: [0, 0, 0.201], scale: [3, 0.8, 1.2426], left_rotation: [120, 0.5774, 0.5774, 0.5774] }, wall_offset: 0.25 }
           - { material: JUNGLE_SLAB, tag: tyre_3, transform: { translation: [0, 0, 0.203], scale: [3, 0.8, 1.2426], left_rotation: [148.6003, 0.2811, 0.6786, 0.6786] }, wall_offset: 0.25 }
-      spinning_wall_s: { copy_from: idle_wall_s, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [0, 0, 1], speed: 2 } }
+      spinning_wall_s: { copy_from: idle_wall_s, texture: "@prop_bearing_fwd", collision: { size: 2.7, offset: [0, -0.85, 1.4] }, animation: { type: rotate, axis: [0, 0, 1], speed: 2 } }
       idle_wall_e:
         texture: "@prop_bearing_fwd"
+        collision: { size: 2.7, offset: [-1.4, -0.85, 0] }
         display_entities:
           - { material: JUNGLE_SLAB, tag: tyre_0, transform: { translation: [0.197, 0, 0], scale: [3, 0.8, 1.2426], left_rotation: [90, 0, 0, -1] }, wall_offset: 0.25 }
           - { material: JUNGLE_SLAB, tag: tyre_1, transform: { translation: [0.199, 0, 0], scale: [3, 0.8, 1.2426], left_rotation: [98.4211, 0.3574, 0.3574, -0.8629] }, wall_offset: 0.25 }
           - { material: JUNGLE_SLAB, tag: tyre_2, transform: { translation: [0.201, 0, 0], scale: [3, 0.8, 1.2426], left_rotation: [120, 0.5774, 0.5774, -0.5774] }, wall_offset: 0.25 }
           - { material: JUNGLE_SLAB, tag: tyre_3, transform: { translation: [0.203, 0, 0], scale: [3, 0.8, 1.2426], left_rotation: [148.6003, 0.6786, 0.6786, -0.2811] }, wall_offset: 0.25 }
-      spinning_wall_e: { copy_from: idle_wall_e, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [1, 0, 0], speed: 2 } }
+      spinning_wall_e: { copy_from: idle_wall_e, texture: "@prop_bearing_fwd", collision: { size: 2.7, offset: [-1.4, -0.85, 0] }, animation: { type: rotate, axis: [1, 0, 0], speed: 2 } }
       idle_wall_w:
         texture: "@prop_bearing_fwd"
+        collision: { size: 2.7, offset: [1.4, -0.85, 0] }
         display_entities:
           - { material: JUNGLE_SLAB, tag: tyre_0, transform: { translation: [0.197, 0, 0], scale: [3, 0.8, 1.2426], left_rotation: [90, 0, 0, -1] }, wall_offset: 0.25 }
           - { material: JUNGLE_SLAB, tag: tyre_1, transform: { translation: [0.199, 0, 0], scale: [3, 0.8, 1.2426], left_rotation: [98.4211, 0.3574, 0.3574, -0.8629] }, wall_offset: 0.25 }
           - { material: JUNGLE_SLAB, tag: tyre_2, transform: { translation: [0.201, 0, 0], scale: [3, 0.8, 1.2426], left_rotation: [120, 0.5774, 0.5774, -0.5774] }, wall_offset: 0.25 }
           - { material: JUNGLE_SLAB, tag: tyre_3, transform: { translation: [0.203, 0, 0], scale: [3, 0.8, 1.2426], left_rotation: [148.6003, 0.6786, 0.6786, -0.2811] }, wall_offset: 0.25 }
-      spinning_wall_w: { copy_from: idle_wall_w, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [1, 0, 0], speed: 2 } }
+      spinning_wall_w: { copy_from: idle_wall_w, texture: "@prop_bearing_fwd", collision: { size: 2.7, offset: [1.4, -0.85, 0] }, animation: { type: rotate, axis: [1, 0, 0], speed: 2 } }
 
   huge_wheel_mangrove:
     cancel_pistons: true
@@ -6460,36 +6586,40 @@ blocks:
     states:
       idle_wall_n:
         texture: "@prop_bearing_fwd"
+        collision: { size: 2.7, offset: [0, -0.85, -1.4] }
         display_entities:
           - { material: MANGROVE_SLAB, tag: tyre_0, transform: { translation: [0, 0, 0.197], scale: [3, 0.8, 1.2426], left_rotation: [90, 1, 0, 0] }, wall_offset: 0.25 }
           - { material: MANGROVE_SLAB, tag: tyre_1, transform: { translation: [0, 0, 0.199], scale: [3, 0.8, 1.2426], left_rotation: [98.4211, 0.8629, 0.3574, 0.3574] }, wall_offset: 0.25 }
           - { material: MANGROVE_SLAB, tag: tyre_2, transform: { translation: [0, 0, 0.201], scale: [3, 0.8, 1.2426], left_rotation: [120, 0.5774, 0.5774, 0.5774] }, wall_offset: 0.25 }
           - { material: MANGROVE_SLAB, tag: tyre_3, transform: { translation: [0, 0, 0.203], scale: [3, 0.8, 1.2426], left_rotation: [148.6003, 0.2811, 0.6786, 0.6786] }, wall_offset: 0.25 }
-      spinning_wall_n: { copy_from: idle_wall_n, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [0, 0, 1], speed: 2 } }
+      spinning_wall_n: { copy_from: idle_wall_n, texture: "@prop_bearing_fwd", collision: { size: 2.7, offset: [0, -0.85, -1.4] }, animation: { type: rotate, axis: [0, 0, 1], speed: 2 } }
       idle_wall_s:
         texture: "@prop_bearing_fwd"
+        collision: { size: 2.7, offset: [0, -0.85, 1.4] }
         display_entities:
           - { material: MANGROVE_SLAB, tag: tyre_0, transform: { translation: [0, 0, 0.197], scale: [3, 0.8, 1.2426], left_rotation: [90, 1, 0, 0] }, wall_offset: 0.25 }
           - { material: MANGROVE_SLAB, tag: tyre_1, transform: { translation: [0, 0, 0.199], scale: [3, 0.8, 1.2426], left_rotation: [98.4211, 0.8629, 0.3574, 0.3574] }, wall_offset: 0.25 }
           - { material: MANGROVE_SLAB, tag: tyre_2, transform: { translation: [0, 0, 0.201], scale: [3, 0.8, 1.2426], left_rotation: [120, 0.5774, 0.5774, 0.5774] }, wall_offset: 0.25 }
           - { material: MANGROVE_SLAB, tag: tyre_3, transform: { translation: [0, 0, 0.203], scale: [3, 0.8, 1.2426], left_rotation: [148.6003, 0.2811, 0.6786, 0.6786] }, wall_offset: 0.25 }
-      spinning_wall_s: { copy_from: idle_wall_s, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [0, 0, 1], speed: 2 } }
+      spinning_wall_s: { copy_from: idle_wall_s, texture: "@prop_bearing_fwd", collision: { size: 2.7, offset: [0, -0.85, 1.4] }, animation: { type: rotate, axis: [0, 0, 1], speed: 2 } }
       idle_wall_e:
         texture: "@prop_bearing_fwd"
+        collision: { size: 2.7, offset: [-1.4, -0.85, 0] }
         display_entities:
           - { material: MANGROVE_SLAB, tag: tyre_0, transform: { translation: [0.197, 0, 0], scale: [3, 0.8, 1.2426], left_rotation: [90, 0, 0, -1] }, wall_offset: 0.25 }
           - { material: MANGROVE_SLAB, tag: tyre_1, transform: { translation: [0.199, 0, 0], scale: [3, 0.8, 1.2426], left_rotation: [98.4211, 0.3574, 0.3574, -0.8629] }, wall_offset: 0.25 }
           - { material: MANGROVE_SLAB, tag: tyre_2, transform: { translation: [0.201, 0, 0], scale: [3, 0.8, 1.2426], left_rotation: [120, 0.5774, 0.5774, -0.5774] }, wall_offset: 0.25 }
           - { material: MANGROVE_SLAB, tag: tyre_3, transform: { translation: [0.203, 0, 0], scale: [3, 0.8, 1.2426], left_rotation: [148.6003, 0.6786, 0.6786, -0.2811] }, wall_offset: 0.25 }
-      spinning_wall_e: { copy_from: idle_wall_e, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [1, 0, 0], speed: 2 } }
+      spinning_wall_e: { copy_from: idle_wall_e, texture: "@prop_bearing_fwd", collision: { size: 2.7, offset: [-1.4, -0.85, 0] }, animation: { type: rotate, axis: [1, 0, 0], speed: 2 } }
       idle_wall_w:
         texture: "@prop_bearing_fwd"
+        collision: { size: 2.7, offset: [1.4, -0.85, 0] }
         display_entities:
           - { material: MANGROVE_SLAB, tag: tyre_0, transform: { translation: [0.197, 0, 0], scale: [3, 0.8, 1.2426], left_rotation: [90, 0, 0, -1] }, wall_offset: 0.25 }
           - { material: MANGROVE_SLAB, tag: tyre_1, transform: { translation: [0.199, 0, 0], scale: [3, 0.8, 1.2426], left_rotation: [98.4211, 0.3574, 0.3574, -0.8629] }, wall_offset: 0.25 }
           - { material: MANGROVE_SLAB, tag: tyre_2, transform: { translation: [0.201, 0, 0], scale: [3, 0.8, 1.2426], left_rotation: [120, 0.5774, 0.5774, -0.5774] }, wall_offset: 0.25 }
           - { material: MANGROVE_SLAB, tag: tyre_3, transform: { translation: [0.203, 0, 0], scale: [3, 0.8, 1.2426], left_rotation: [148.6003, 0.6786, 0.6786, -0.2811] }, wall_offset: 0.25 }
-      spinning_wall_w: { copy_from: idle_wall_w, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [1, 0, 0], speed: 2 } }
+      spinning_wall_w: { copy_from: idle_wall_w, texture: "@prop_bearing_fwd", collision: { size: 2.7, offset: [1.4, -0.85, 0] }, animation: { type: rotate, axis: [1, 0, 0], speed: 2 } }
 
   huge_wheel_pale_oak:
     cancel_pistons: true
@@ -6533,36 +6663,40 @@ blocks:
     states:
       idle_wall_n:
         texture: "@prop_bearing_fwd"
+        collision: { size: 2.7, offset: [0, -0.85, -1.4] }
         display_entities:
           - { material: PALE_OAK_SLAB, tag: tyre_0, transform: { translation: [0, 0, 0.197], scale: [3, 0.8, 1.2426], left_rotation: [90, 1, 0, 0] }, wall_offset: 0.25 }
           - { material: PALE_OAK_SLAB, tag: tyre_1, transform: { translation: [0, 0, 0.199], scale: [3, 0.8, 1.2426], left_rotation: [98.4211, 0.8629, 0.3574, 0.3574] }, wall_offset: 0.25 }
           - { material: PALE_OAK_SLAB, tag: tyre_2, transform: { translation: [0, 0, 0.201], scale: [3, 0.8, 1.2426], left_rotation: [120, 0.5774, 0.5774, 0.5774] }, wall_offset: 0.25 }
           - { material: PALE_OAK_SLAB, tag: tyre_3, transform: { translation: [0, 0, 0.203], scale: [3, 0.8, 1.2426], left_rotation: [148.6003, 0.2811, 0.6786, 0.6786] }, wall_offset: 0.25 }
-      spinning_wall_n: { copy_from: idle_wall_n, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [0, 0, 1], speed: 2 } }
+      spinning_wall_n: { copy_from: idle_wall_n, texture: "@prop_bearing_fwd", collision: { size: 2.7, offset: [0, -0.85, -1.4] }, animation: { type: rotate, axis: [0, 0, 1], speed: 2 } }
       idle_wall_s:
         texture: "@prop_bearing_fwd"
+        collision: { size: 2.7, offset: [0, -0.85, 1.4] }
         display_entities:
           - { material: PALE_OAK_SLAB, tag: tyre_0, transform: { translation: [0, 0, 0.197], scale: [3, 0.8, 1.2426], left_rotation: [90, 1, 0, 0] }, wall_offset: 0.25 }
           - { material: PALE_OAK_SLAB, tag: tyre_1, transform: { translation: [0, 0, 0.199], scale: [3, 0.8, 1.2426], left_rotation: [98.4211, 0.8629, 0.3574, 0.3574] }, wall_offset: 0.25 }
           - { material: PALE_OAK_SLAB, tag: tyre_2, transform: { translation: [0, 0, 0.201], scale: [3, 0.8, 1.2426], left_rotation: [120, 0.5774, 0.5774, 0.5774] }, wall_offset: 0.25 }
           - { material: PALE_OAK_SLAB, tag: tyre_3, transform: { translation: [0, 0, 0.203], scale: [3, 0.8, 1.2426], left_rotation: [148.6003, 0.2811, 0.6786, 0.6786] }, wall_offset: 0.25 }
-      spinning_wall_s: { copy_from: idle_wall_s, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [0, 0, 1], speed: 2 } }
+      spinning_wall_s: { copy_from: idle_wall_s, texture: "@prop_bearing_fwd", collision: { size: 2.7, offset: [0, -0.85, 1.4] }, animation: { type: rotate, axis: [0, 0, 1], speed: 2 } }
       idle_wall_e:
         texture: "@prop_bearing_fwd"
+        collision: { size: 2.7, offset: [-1.4, -0.85, 0] }
         display_entities:
           - { material: PALE_OAK_SLAB, tag: tyre_0, transform: { translation: [0.197, 0, 0], scale: [3, 0.8, 1.2426], left_rotation: [90, 0, 0, -1] }, wall_offset: 0.25 }
           - { material: PALE_OAK_SLAB, tag: tyre_1, transform: { translation: [0.199, 0, 0], scale: [3, 0.8, 1.2426], left_rotation: [98.4211, 0.3574, 0.3574, -0.8629] }, wall_offset: 0.25 }
           - { material: PALE_OAK_SLAB, tag: tyre_2, transform: { translation: [0.201, 0, 0], scale: [3, 0.8, 1.2426], left_rotation: [120, 0.5774, 0.5774, -0.5774] }, wall_offset: 0.25 }
           - { material: PALE_OAK_SLAB, tag: tyre_3, transform: { translation: [0.203, 0, 0], scale: [3, 0.8, 1.2426], left_rotation: [148.6003, 0.6786, 0.6786, -0.2811] }, wall_offset: 0.25 }
-      spinning_wall_e: { copy_from: idle_wall_e, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [1, 0, 0], speed: 2 } }
+      spinning_wall_e: { copy_from: idle_wall_e, texture: "@prop_bearing_fwd", collision: { size: 2.7, offset: [-1.4, -0.85, 0] }, animation: { type: rotate, axis: [1, 0, 0], speed: 2 } }
       idle_wall_w:
         texture: "@prop_bearing_fwd"
+        collision: { size: 2.7, offset: [1.4, -0.85, 0] }
         display_entities:
           - { material: PALE_OAK_SLAB, tag: tyre_0, transform: { translation: [0.197, 0, 0], scale: [3, 0.8, 1.2426], left_rotation: [90, 0, 0, -1] }, wall_offset: 0.25 }
           - { material: PALE_OAK_SLAB, tag: tyre_1, transform: { translation: [0.199, 0, 0], scale: [3, 0.8, 1.2426], left_rotation: [98.4211, 0.3574, 0.3574, -0.8629] }, wall_offset: 0.25 }
           - { material: PALE_OAK_SLAB, tag: tyre_2, transform: { translation: [0.201, 0, 0], scale: [3, 0.8, 1.2426], left_rotation: [120, 0.5774, 0.5774, -0.5774] }, wall_offset: 0.25 }
           - { material: PALE_OAK_SLAB, tag: tyre_3, transform: { translation: [0.203, 0, 0], scale: [3, 0.8, 1.2426], left_rotation: [148.6003, 0.6786, 0.6786, -0.2811] }, wall_offset: 0.25 }
-      spinning_wall_w: { copy_from: idle_wall_w, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [1, 0, 0], speed: 2 } }
+      spinning_wall_w: { copy_from: idle_wall_w, texture: "@prop_bearing_fwd", collision: { size: 2.7, offset: [1.4, -0.85, 0] }, animation: { type: rotate, axis: [1, 0, 0], speed: 2 } }
 
   huge_wheel_spruce:
     cancel_pistons: true
@@ -6606,36 +6740,40 @@ blocks:
     states:
       idle_wall_n:
         texture: "@prop_bearing_fwd"
+        collision: { size: 2.7, offset: [0, -0.85, -1.4] }
         display_entities:
           - { material: SPRUCE_SLAB, tag: tyre_0, transform: { translation: [0, 0, 0.197], scale: [3, 0.8, 1.2426], left_rotation: [90, 1, 0, 0] }, wall_offset: 0.25 }
           - { material: SPRUCE_SLAB, tag: tyre_1, transform: { translation: [0, 0, 0.199], scale: [3, 0.8, 1.2426], left_rotation: [98.4211, 0.8629, 0.3574, 0.3574] }, wall_offset: 0.25 }
           - { material: SPRUCE_SLAB, tag: tyre_2, transform: { translation: [0, 0, 0.201], scale: [3, 0.8, 1.2426], left_rotation: [120, 0.5774, 0.5774, 0.5774] }, wall_offset: 0.25 }
           - { material: SPRUCE_SLAB, tag: tyre_3, transform: { translation: [0, 0, 0.203], scale: [3, 0.8, 1.2426], left_rotation: [148.6003, 0.2811, 0.6786, 0.6786] }, wall_offset: 0.25 }
-      spinning_wall_n: { copy_from: idle_wall_n, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [0, 0, 1], speed: 2 } }
+      spinning_wall_n: { copy_from: idle_wall_n, texture: "@prop_bearing_fwd", collision: { size: 2.7, offset: [0, -0.85, -1.4] }, animation: { type: rotate, axis: [0, 0, 1], speed: 2 } }
       idle_wall_s:
         texture: "@prop_bearing_fwd"
+        collision: { size: 2.7, offset: [0, -0.85, 1.4] }
         display_entities:
           - { material: SPRUCE_SLAB, tag: tyre_0, transform: { translation: [0, 0, 0.197], scale: [3, 0.8, 1.2426], left_rotation: [90, 1, 0, 0] }, wall_offset: 0.25 }
           - { material: SPRUCE_SLAB, tag: tyre_1, transform: { translation: [0, 0, 0.199], scale: [3, 0.8, 1.2426], left_rotation: [98.4211, 0.8629, 0.3574, 0.3574] }, wall_offset: 0.25 }
           - { material: SPRUCE_SLAB, tag: tyre_2, transform: { translation: [0, 0, 0.201], scale: [3, 0.8, 1.2426], left_rotation: [120, 0.5774, 0.5774, 0.5774] }, wall_offset: 0.25 }
           - { material: SPRUCE_SLAB, tag: tyre_3, transform: { translation: [0, 0, 0.203], scale: [3, 0.8, 1.2426], left_rotation: [148.6003, 0.2811, 0.6786, 0.6786] }, wall_offset: 0.25 }
-      spinning_wall_s: { copy_from: idle_wall_s, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [0, 0, 1], speed: 2 } }
+      spinning_wall_s: { copy_from: idle_wall_s, texture: "@prop_bearing_fwd", collision: { size: 2.7, offset: [0, -0.85, 1.4] }, animation: { type: rotate, axis: [0, 0, 1], speed: 2 } }
       idle_wall_e:
         texture: "@prop_bearing_fwd"
+        collision: { size: 2.7, offset: [-1.4, -0.85, 0] }
         display_entities:
           - { material: SPRUCE_SLAB, tag: tyre_0, transform: { translation: [0.197, 0, 0], scale: [3, 0.8, 1.2426], left_rotation: [90, 0, 0, -1] }, wall_offset: 0.25 }
           - { material: SPRUCE_SLAB, tag: tyre_1, transform: { translation: [0.199, 0, 0], scale: [3, 0.8, 1.2426], left_rotation: [98.4211, 0.3574, 0.3574, -0.8629] }, wall_offset: 0.25 }
           - { material: SPRUCE_SLAB, tag: tyre_2, transform: { translation: [0.201, 0, 0], scale: [3, 0.8, 1.2426], left_rotation: [120, 0.5774, 0.5774, -0.5774] }, wall_offset: 0.25 }
           - { material: SPRUCE_SLAB, tag: tyre_3, transform: { translation: [0.203, 0, 0], scale: [3, 0.8, 1.2426], left_rotation: [148.6003, 0.6786, 0.6786, -0.2811] }, wall_offset: 0.25 }
-      spinning_wall_e: { copy_from: idle_wall_e, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [1, 0, 0], speed: 2 } }
+      spinning_wall_e: { copy_from: idle_wall_e, texture: "@prop_bearing_fwd", collision: { size: 2.7, offset: [-1.4, -0.85, 0] }, animation: { type: rotate, axis: [1, 0, 0], speed: 2 } }
       idle_wall_w:
         texture: "@prop_bearing_fwd"
+        collision: { size: 2.7, offset: [1.4, -0.85, 0] }
         display_entities:
           - { material: SPRUCE_SLAB, tag: tyre_0, transform: { translation: [0.197, 0, 0], scale: [3, 0.8, 1.2426], left_rotation: [90, 0, 0, -1] }, wall_offset: 0.25 }
           - { material: SPRUCE_SLAB, tag: tyre_1, transform: { translation: [0.199, 0, 0], scale: [3, 0.8, 1.2426], left_rotation: [98.4211, 0.3574, 0.3574, -0.8629] }, wall_offset: 0.25 }
           - { material: SPRUCE_SLAB, tag: tyre_2, transform: { translation: [0.201, 0, 0], scale: [3, 0.8, 1.2426], left_rotation: [120, 0.5774, 0.5774, -0.5774] }, wall_offset: 0.25 }
           - { material: SPRUCE_SLAB, tag: tyre_3, transform: { translation: [0.203, 0, 0], scale: [3, 0.8, 1.2426], left_rotation: [148.6003, 0.6786, 0.6786, -0.2811] }, wall_offset: 0.25 }
-      spinning_wall_w: { copy_from: idle_wall_w, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [1, 0, 0], speed: 2 } }
+      spinning_wall_w: { copy_from: idle_wall_w, texture: "@prop_bearing_fwd", collision: { size: 2.7, offset: [1.4, -0.85, 0] }, animation: { type: rotate, axis: [1, 0, 0], speed: 2 } }
 
   huge_wheel_warped:
     cancel_pistons: true
@@ -6679,33 +6817,37 @@ blocks:
     states:
       idle_wall_n:
         texture: "@prop_bearing_fwd"
+        collision: { size: 2.7, offset: [0, -0.85, -1.4] }
         display_entities:
           - { material: WARPED_SLAB, tag: tyre_0, transform: { translation: [0, 0, 0.197], scale: [3, 0.8, 1.2426], left_rotation: [90, 1, 0, 0] }, wall_offset: 0.25 }
           - { material: WARPED_SLAB, tag: tyre_1, transform: { translation: [0, 0, 0.199], scale: [3, 0.8, 1.2426], left_rotation: [98.4211, 0.8629, 0.3574, 0.3574] }, wall_offset: 0.25 }
           - { material: WARPED_SLAB, tag: tyre_2, transform: { translation: [0, 0, 0.201], scale: [3, 0.8, 1.2426], left_rotation: [120, 0.5774, 0.5774, 0.5774] }, wall_offset: 0.25 }
           - { material: WARPED_SLAB, tag: tyre_3, transform: { translation: [0, 0, 0.203], scale: [3, 0.8, 1.2426], left_rotation: [148.6003, 0.2811, 0.6786, 0.6786] }, wall_offset: 0.25 }
-      spinning_wall_n: { copy_from: idle_wall_n, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [0, 0, 1], speed: 2 } }
+      spinning_wall_n: { copy_from: idle_wall_n, texture: "@prop_bearing_fwd", collision: { size: 2.7, offset: [0, -0.85, -1.4] }, animation: { type: rotate, axis: [0, 0, 1], speed: 2 } }
       idle_wall_s:
         texture: "@prop_bearing_fwd"
+        collision: { size: 2.7, offset: [0, -0.85, 1.4] }
         display_entities:
           - { material: WARPED_SLAB, tag: tyre_0, transform: { translation: [0, 0, 0.197], scale: [3, 0.8, 1.2426], left_rotation: [90, 1, 0, 0] }, wall_offset: 0.25 }
           - { material: WARPED_SLAB, tag: tyre_1, transform: { translation: [0, 0, 0.199], scale: [3, 0.8, 1.2426], left_rotation: [98.4211, 0.8629, 0.3574, 0.3574] }, wall_offset: 0.25 }
           - { material: WARPED_SLAB, tag: tyre_2, transform: { translation: [0, 0, 0.201], scale: [3, 0.8, 1.2426], left_rotation: [120, 0.5774, 0.5774, 0.5774] }, wall_offset: 0.25 }
           - { material: WARPED_SLAB, tag: tyre_3, transform: { translation: [0, 0, 0.203], scale: [3, 0.8, 1.2426], left_rotation: [148.6003, 0.2811, 0.6786, 0.6786] }, wall_offset: 0.25 }
-      spinning_wall_s: { copy_from: idle_wall_s, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [0, 0, 1], speed: 2 } }
+      spinning_wall_s: { copy_from: idle_wall_s, texture: "@prop_bearing_fwd", collision: { size: 2.7, offset: [0, -0.85, 1.4] }, animation: { type: rotate, axis: [0, 0, 1], speed: 2 } }
       idle_wall_e:
         texture: "@prop_bearing_fwd"
+        collision: { size: 2.7, offset: [-1.4, -0.85, 0] }
         display_entities:
           - { material: WARPED_SLAB, tag: tyre_0, transform: { translation: [0.197, 0, 0], scale: [3, 0.8, 1.2426], left_rotation: [90, 0, 0, -1] }, wall_offset: 0.25 }
           - { material: WARPED_SLAB, tag: tyre_1, transform: { translation: [0.199, 0, 0], scale: [3, 0.8, 1.2426], left_rotation: [98.4211, 0.3574, 0.3574, -0.8629] }, wall_offset: 0.25 }
           - { material: WARPED_SLAB, tag: tyre_2, transform: { translation: [0.201, 0, 0], scale: [3, 0.8, 1.2426], left_rotation: [120, 0.5774, 0.5774, -0.5774] }, wall_offset: 0.25 }
           - { material: WARPED_SLAB, tag: tyre_3, transform: { translation: [0.203, 0, 0], scale: [3, 0.8, 1.2426], left_rotation: [148.6003, 0.6786, 0.6786, -0.2811] }, wall_offset: 0.25 }
-      spinning_wall_e: { copy_from: idle_wall_e, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [1, 0, 0], speed: 2 } }
+      spinning_wall_e: { copy_from: idle_wall_e, texture: "@prop_bearing_fwd", collision: { size: 2.7, offset: [-1.4, -0.85, 0] }, animation: { type: rotate, axis: [1, 0, 0], speed: 2 } }
       idle_wall_w:
         texture: "@prop_bearing_fwd"
+        collision: { size: 2.7, offset: [1.4, -0.85, 0] }
         display_entities:
           - { material: WARPED_SLAB, tag: tyre_0, transform: { translation: [0.197, 0, 0], scale: [3, 0.8, 1.2426], left_rotation: [90, 0, 0, -1] }, wall_offset: 0.25 }
           - { material: WARPED_SLAB, tag: tyre_1, transform: { translation: [0.199, 0, 0], scale: [3, 0.8, 1.2426], left_rotation: [98.4211, 0.3574, 0.3574, -0.8629] }, wall_offset: 0.25 }
           - { material: WARPED_SLAB, tag: tyre_2, transform: { translation: [0.201, 0, 0], scale: [3, 0.8, 1.2426], left_rotation: [120, 0.5774, 0.5774, -0.5774] }, wall_offset: 0.25 }
           - { material: WARPED_SLAB, tag: tyre_3, transform: { translation: [0.203, 0, 0], scale: [3, 0.8, 1.2426], left_rotation: [148.6003, 0.6786, 0.6786, -0.2811] }, wall_offset: 0.25 }
-      spinning_wall_w: { copy_from: idle_wall_w, texture: "@prop_bearing_fwd", animation: { type: rotate, axis: [1, 0, 0], speed: 2 } }
+      spinning_wall_w: { copy_from: idle_wall_w, texture: "@prop_bearing_fwd", collision: { size: 2.7, offset: [1.4, -0.85, 0] }, animation: { type: rotate, axis: [1, 0, 0], speed: 2 } }
