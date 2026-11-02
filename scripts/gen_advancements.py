@@ -20,13 +20,13 @@ NS = "mech"
 
 # pack.mcmeta version range. `supported_formats` was removed in 1.21.9 (25w31a); the current fields
 # are min_format / max_format. Data-pack formats of the target versions: 1.21.11 = 94, 26.1 = 101,
-# 26.2 = 107. A bare-integer max_format means "any minor of that major", so 94..107 spans all three
-# and leaves headroom for future 26.2 minors. Do NOT add a legacy `pack_format` (only for formats <82).
+# 26.2 = 107, 26.3 = 109. A bare-integer max_format means "any minor of that major", so 94..109 spans
+# all four and leaves headroom for future 26.3 minors. Do NOT add a legacy `pack_format` (only for formats <82).
 PACK_MCMETA = {
     "pack": {
         "description": "Mechanism advancements",
         "min_format": 94,
-        "max_format": 107,
+        "max_format": 109,
     }
 }
 

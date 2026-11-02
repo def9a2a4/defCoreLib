@@ -43,6 +43,12 @@ final class MechanismPersistence {
     // Once-per-file guard for the corrupt-state warning: load() re-runs on every nearby chunk load and the
     // bad file is deliberately never culled (see remove()), so an unguarded warning floods the console.
     private final Set<String> corruptWarned = new HashSet<>();
+    // world:id → the failed read of a corrupt file: its lastModified then, and when we tried. load() skips
+    // the full YAML re-parse while the file is unchanged and the retry window hasn't passed — the window
+    // exists because loadConfiguration also reports a transient IOException as an unreadable file, and
+    // that must still recover in-session rather than waiting for the operator to touch the file.
+    private final Map<String, long[]> corruptReads = new HashMap<>();
+    private static final long CORRUPT_RETRY_MS = 60_000;
 
     MechanismPersistence(JavaPlugin plugin) {
         this.plugin = plugin;
@@ -81,6 +87,7 @@ final class MechanismPersistence {
             return; // target (if any) is untouched and still correctly reflected in persistedIds
         }
         persistedIds.computeIfAbsent(st.worldName, k -> new HashSet<>()).add(st.mechId);
+        corruptReads.remove(st.worldName + ":" + st.mechId);
     }
 
     /** Delete a mechanism's state file + drop it from the persisted-id set. Real disassembly only — a
@@ -89,6 +96,7 @@ final class MechanismPersistence {
     void remove(String world, UUID id) {
         File f = stateFile(world, id);
         if (f.exists() && !f.delete()) plugin.getLogger().warning("mechanism persistence: cannot delete " + f);
+        corruptReads.remove(world + ":" + id);
         Set<UUID> ids = persistedIds.get(world);
         if (ids != null) {
             ids.remove(id);
@@ -105,8 +113,15 @@ final class MechanismPersistence {
     @Nullable MechanismState load(String world, UUID id) {
         File f = stateFile(world, id);
         if (!f.exists()) return null;
+        String key = world + ":" + id;
+        long mtime = f.lastModified();
+        long now = System.currentTimeMillis();
+        long[] failed = corruptReads.get(key);
+        if (failed != null && failed[0] == mtime && now - failed[1] < CORRUPT_RETRY_MS) return null;
         MechanismState st = MechanismState.read(YamlConfiguration.loadConfiguration(f));
-        if (st == null && corruptWarned.add(world + ":" + id)) {
+        if (st != null) corruptReads.remove(key);
+        else corruptReads.put(key, new long[] {mtime, now});
+        if (st == null && corruptWarned.add(key)) {
             plugin.getLogger().warning("mechanism persistence: corrupt or unreadable state file " + f
                 + " — this mechanism's recovery is paused and nothing will be deleted while the file exists."
                 + " Restore or repair the file by hand, then restart (or move it aside and restart to give"

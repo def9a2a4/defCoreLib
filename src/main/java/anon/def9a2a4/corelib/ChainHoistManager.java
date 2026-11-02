@@ -557,6 +557,15 @@ final class ChainHoistManager implements Listener {
         final int[] linksDeleted = new int[1];
         try {
             ((BasicMechanism) mech).setProtectedCells(Set.of(hoistKey));
+            // Rising, the ghost is purely visual — the link being swallowed — and must never land as a
+            // block. A full stroke lands it on the protected hoist cell (consumed above); a stroke cut short
+            // lands it on a swallowed link's cell, and if a player mined that link it would otherwise
+            // place a real chain there from nothing (repeatable by pulsing power). Descending ghosts are
+            // real paid-out chain, covered by the reservation, and keep landing normally.
+            if (!descend) {
+                mech.setCellPlacePolicy((target, block) ->
+                    block.ghost ? Mechanism.PlaceDecision.SKIP : Mechanism.PlaceDecision.PLACE);
+            }
             setSpin(hoist, true);
 
             mech.setOnDisassembled(placed -> {

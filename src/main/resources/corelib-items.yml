@@ -10,7 +10,7 @@ blocks:
   glue_item:
     name: "&aGlue Brush"
     lore:
-      - "&7Right-click a door/rotator hinge to edit"
+      - "&7Right-click a hinge or minecart to edit"
       - "&7Left-click: glue  ·  Shift-left-click: unglue"
       - "&7Right-click two blocks: cuboid fill"
       - "&7Right-click air: reset corner  ·  Sneak-right hinge: clear"

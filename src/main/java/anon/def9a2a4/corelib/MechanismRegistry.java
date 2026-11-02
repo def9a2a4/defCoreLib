@@ -1683,7 +1683,8 @@ public class MechanismRegistry {
                 // even transient IOExceptions into an empty config) into permanent loss of the mechanism's
                 // blocks. The operator repairs or removes the file by hand; nothing is deleted while it
                 // exists. The continue alone prevents the null-NPE in attemptRecover (a null st never
-                // enters pendingRecoveries); the cost is one fast failed re-parse per nearby chunk load.
+                // enters pendingRecoveries). load() caches the failed read, so a chunk load re-parses the
+                // file only once it has changed or a minute has passed.
                 continue;
             }
             pendingRecoveries.put(id, st);

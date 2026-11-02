@@ -40,7 +40,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        minecraft: ['1.21.11', '26.1.2', '26.2']
+        minecraft: ['1.21.11', '26.1.2', '26.2', '26.3']
         server: ['paper', 'purpur']
 
     name: ${{ matrix.server }} ${{ matrix.minecraft }}

@@ -1,15 +1,4 @@
 - textures/recipes -- agent has all info
-- **hoist reel-in chain dupe (farmable).** Reeling a load up, if a player mines a swallowed chain
-  link and then stops the reel-in partway (cut power / redstone clock), the emerging "swallowed"
-  ghost link lands on the now-air cell via `placeBlock` and mints a real chain from nothing — rising
-  has no reservation to pay for it. Repeatable by pulsing power. The 5aced89 ghost discard-on-identical
-  only handles the case where that cell still holds an identical real chain
-  (`BasicMechanism.disassemble`: `mb.ghost && target.getBlockData().equals(mb.blockData)`); the
-  mined-to-air case falls through to `placeBlock`. Fix: a RISING emerging-ghost is visual-only (it
-  represents a link being swallowed into the hoist) and must NEVER materialize — discard it at landing
-  regardless of the target cell (on a full reel it already lands on the protected hoist cell; on a
-  partial reel it currently mints). Descending ghosts are unaffected — they are real paid-out chain
-  covered by the descend reservation.
 - hoist glue authoring — follow-ups (from review of the authoring commit):
   - **dual glue sources aren't reconciled.** `resolveGroup` takes hoist-held glue OR legacy
     seed-skull glue either-or, but `startMove` still separately reads and rebinds the seed skull's
