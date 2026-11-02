@@ -217,6 +217,23 @@ public class MechanismRegistry implements org.bukkit.event.Listener {
         return world != null && persistence.hasMetadata(world.getName(), id);
     }
 
+    /**
+     * Delete a mechanism's state file because the consumer knows it is stale: the mechanism it describes never
+     * reached disk (BlockShips: a crash right after a ship launched, whose wheel is still standing at the dock).
+     * Without the file, any of its entities that did reach disk are reaped as orphans instead of recovered next
+     * to the blocks they were made from. Not for a live mechanism; use {@link Mechanism#disassemble()}.
+     */
+    public void discardPersistedState(org.bukkit.World world, UUID id) {
+        if (world == null || activeMechanisms.containsKey(id)) return;
+        pendingRecoveries.remove(id);
+        persistence.remove(world.getName(), id);
+    }
+
+    /** True while some of this mechanism's entities have loaded and recovery is waiting for the rest. */
+    public boolean isRecoveryPending(UUID id) {
+        return pendingRecoveries.containsKey(id);
+    }
+
     /** The on-disk state file a persisted mechanism uses. Showcase-test hook only: the corrupt-state probe
      *  overwrites it to prove recovery never culls a mechanism whose file it cannot read. */
     java.io.File persistedStateFile(String world, UUID id) {
@@ -1758,6 +1775,7 @@ public class MechanismRegistry implements org.bukkit.event.Listener {
         // once recovery has had its chance to claim them. Peel the id with substring/indexOf — a UUID has
         // hyphens but no colons, so the first ':' after the "corelib:mech:" prefix terminates it.
         Set<UUID> present = new HashSet<>();
+        Map<UUID, Entity> vehiclesHere = new HashMap<>();
         List<Entity> reapable = new ArrayList<>();
         List<UUID> reapableId = new ArrayList<>();
         for (Entity entity : chunk.getEntities()) {
@@ -1775,6 +1793,7 @@ public class MechanismRegistry implements org.bukkit.event.Listener {
                 try { mechId = UUID.fromString(idStr); } catch (IllegalArgumentException ignored) { continue; }
                 present.add(mechId);
                 if (first == null) first = mechId;
+                if (c >= 0 && rest.substring(c + 1).equals("vehicle")) vehiclesHere.put(mechId, entity);
             }
             if (first != null && !minecart) { reapable.add(entity); reapableId.add(first); }
         }
@@ -1797,6 +1816,20 @@ public class MechanismRegistry implements org.bukkit.event.Listener {
             }
             pendingRecoveries.put(id, st);
             mechIdsBeingRecovered.add(id); // guards its entities from the orphan sweep while recovery is in flight
+        }
+
+        // 1b. Re-centre on the vehicle. The state file's pivot is from its last save, but Paper writes each chunk on
+        //     its own timer, so after a crash a ship that was moving has its vehicle on disk wherever its chunk was
+        //     last written, often far outside a footprint centred on that pivot, and it never recovered. The
+        //     vehicle carries the frame (position comes from it anyway), so search around it once it is found.
+        for (Map.Entry<UUID, Entity> v : vehiclesHere.entrySet()) {
+            MechanismState st = pendingRecoveries.get(v.getKey());
+            if (st == null) continue;
+            if (st.vehicleUuid != null && !st.vehicleUuid.equals(v.getValue().getUniqueId())) continue;
+            Location at = v.getValue().getLocation();
+            st.px = at.getX() + (st.hasPivotDelta ? st.dpx : 0.5);
+            st.py = at.getY() + (st.hasPivotDelta ? st.dpy : 0.5);
+            st.pz = at.getZ() + (st.hasPivotDelta ? st.dpz : 0.5);
         }
 
         // 2. (Re-)attempt each pending recovery whose footprint contains THIS chunk: the load may have brought
@@ -1915,7 +1948,12 @@ public class MechanismRegistry implements org.bukkit.event.Listener {
             for (String tag : e.getScoreboardTags()) {
                 if (!tag.startsWith(prefix)) continue;
                 String rest = tag.substring(prefix.length());
-                if (rest.equals("vehicle")) { vehicle = e; continue; }
+                if (rest.equals("vehicle")) {
+                    // Two copies can survive a crash (the chunk it left and the one it entered, written at different
+                    // times). Prefer the one the state file names.
+                    if (vehicle == null || e.getUniqueId().equals(st.vehicleUuid)) vehicle = e;
+                    continue;
+                }
                 if (rest.equals("parent")) { if (e instanceof org.bukkit.entity.BlockDisplay bd) parent = bd; continue; }
                 int c = rest.indexOf(':');
                 if (c < 0) continue;
@@ -1931,6 +1969,16 @@ public class MechanismRegistry implements org.bukkit.event.Listener {
                 else if (role.equals("seat")) seatFlags.merge(i, false, (a, b) -> a); // keep an earlier driver=true
                 else if (role.equals("driver_seat")) seatFlags.put(i, true);
                 // no break: an entity (a seat shulker) legitimately carries several mech tags
+            }
+        }
+
+        // The parent rides the vehicle and is saved with it, so take the one riding the chosen vehicle: a parent
+        // from the other copy would pair one copy's frame with the other's position.
+        if (vehicle != null) {
+            for (Entity p : vehicle.getPassengers()) {
+                if (p instanceof org.bukkit.entity.BlockDisplay bd && p.getScoreboardTags().contains(prefix + "parent")) {
+                    parent = bd;
+                }
             }
         }
 
