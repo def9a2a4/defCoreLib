@@ -1899,11 +1899,6 @@ final class BasicMechanism implements Mechanism {
                         + ce.uuid() + "; dropping its items", ex);
                 }
                 if (!handled && payAt != null) AttachedEntities.dropFallbacks(ce, payAt, log);
-                if (AttachedEntities.TRACE) {
-                    log.info("[carry] landed " + ce.kind() + " " + ce.uuid() + " anchor=" + (anchor != null
-                        ? anchor.getLocation().toVector() : "none") + " handled=" + handled + " payAt="
-                        + (payAt != null ? payAt.toVector() : null) + " yaw=" + currentYaw + " upright=" + upright);
-                }
             }
             mb.attached = null; // landed or paid — never twice
         }

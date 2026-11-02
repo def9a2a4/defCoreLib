@@ -3149,7 +3149,7 @@ public class CustomBlockRegistry {
             }
             if (scratch.getKeys().isEmpty()) return;
             scratch.copyTo(pdc, true);   // merge config keys; leaves the tile's restored keys untouched
-            tile.update();
+            tile.update(false, false);   // physics-suppressed, like the other mid-landing writes
         } catch (java.io.IOException ignored) {
             // Corrupt/unreadable snapshot: leave the freshly-restored block as-is.
         }

@@ -639,7 +639,13 @@ public class RotationNetwork {
                                 if (passiveState != null && axisFromState(passiveState) == nodeAxis) {
                                     // Dedup AFTER axis validation: a wrong-axis probe must not block a
                                     // valid one. Counts each windmill's power exactly once.
-                                    if (!countedSources.add(neighbor)) continue;
+                                    if (!countedSources.add(neighbor)) {
+                                        // Already counted from another member: keep the lowest attach, so the
+                                        // windmill's spin doesn't depend on `members`' hash iteration order.
+                                        CustomBlockRegistry.LocationKey prev = passiveAttach.get(neighbor);
+                                        if (prev != null && lowerKey(loc, prev)) passiveAttach.put(neighbor, loc);
+                                        continue;
+                                    }
                                     supply += passivePower;
                                     passiveSources.add(neighbor);
                                     passiveAttach.put(neighbor, loc);
@@ -1113,6 +1119,13 @@ public class RotationNetwork {
     // ──────────────────────────────────────────────────────────────────────
     // Helpers
     // ──────────────────────────────────────────────────────────────────────
+
+    /** A fixed total order on keys (one network shares a world): x, then y, then z. */
+    private static boolean lowerKey(CustomBlockRegistry.LocationKey a, CustomBlockRegistry.LocationKey b) {
+        if (a.x() != b.x()) return a.x() < b.x();
+        if (a.y() != b.y()) return a.y() < b.y();
+        return a.z() < b.z();
+    }
 
     private static CustomBlockRegistry.LocationKey faceNeighbor(CustomBlockRegistry.LocationKey k, BlockFace face) {
         return new CustomBlockRegistry.LocationKey(k.worldId(),
