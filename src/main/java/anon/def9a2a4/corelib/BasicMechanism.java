@@ -276,12 +276,12 @@ final class BasicMechanism implements Mechanism {
         mb.spinOverride = value;
         mb.spinOverrideAbsolute = absolute;
         if (value == 0) {
-            // Stopped: hand a borrowed block back to the static pose, so a parked vehicle's idle wheels don't
-            // re-send their transforms every tick.
+            // Stopped: stop animating a borrowed block, so a parked vehicle's idle wheels don't re-send their
+            // transforms every tick. The spin angle is kept (spinSeeded stays), so rolling off again carries on
+            // from where the wheel stopped instead of jumping.
             if (mb.borrowedItemAnims != null || mb.borrowedBlockAnims != null) {
                 mb.borrowedItemAnims = null;
                 mb.borrowedBlockAnims = null;
-                mb.spinSeeded = false;
                 recomputeAnimatedBlockIndices();
             }
             return;

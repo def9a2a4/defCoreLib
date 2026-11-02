@@ -163,6 +163,7 @@ public class RotationNetwork {
         nodes.remove(key);
         transientDemand.remove(key);
         activeUntil.remove(key);
+        workExtra.remove(key);
         blockDemand.remove(key);
         recalculate(key);
     }
@@ -308,6 +309,9 @@ public class RotationNetwork {
     // Read by fuel-burning sources to burn for use; never part of the solve, so changing it costs no
     // recalculation (same idea as transientDemand).
     private final Map<CustomBlockRegistry.LocationKey, Long> activeUntil = new HashMap<>();
+    // Power a WORK machine drew above its rating at its last cycle: a millstone or press batches more
+    // with spare power, so the extra speed is charged too.
+    private final Map<CustomBlockRegistry.LocationKey, Integer> workExtra = new HashMap<>();
     private final Map<CustomBlockRegistry.LocationKey, Double> blockDemand = new HashMap<>();
     private final Map<Integer, Double> loadMemo = new HashMap<>();
     private int loadMemoTick = Integer.MIN_VALUE;
@@ -315,11 +319,19 @@ public class RotationNetwork {
 
     /** A WORK-mode consumer just did work: count it as load until {@code untilTick} (server tick). */
     public void markWorked(CustomBlockRegistry.LocationKey key, long untilTick) {
+        markWorked(key, untilTick, 0);
+    }
+
+    /** As {@link #markWorked(CustomBlockRegistry.LocationKey, long)}, drawing {@code extraPower} above the
+     *  machine's rating (the surplus it batched with). */
+    public void markWorked(CustomBlockRegistry.LocationKey key, long untilTick, int extraPower) {
         activeUntil.merge(key, untilTick, Math::max);
+        if (extraPower > 0) workExtra.put(key, extraPower); else workExtra.remove(key);
     }
 
     /** Demand, 0..1, for a DEMAND-mode consumer (1 when never set). */
     public void setDemand(CustomBlockRegistry.LocationKey key, double demand) {
+        if (Double.isNaN(demand)) return;   // a NaN would poison the burn accumulator: free power forever
         blockDemand.put(key, Math.max(0, Math.min(1, demand)));
     }
 
@@ -350,7 +362,8 @@ public class RotationNetwork {
                 } else if (node.role() == NodeRole.CONSUMER) {
                     active += switch (config.loadMode(node.blockTypeId())) {
                         case ALWAYS -> node.powerUnits();
-                        case WORK -> activeUntil.getOrDefault(m, Long.MIN_VALUE) >= now ? node.powerUnits() : 0;
+                        case WORK -> activeUntil.getOrDefault(m, Long.MIN_VALUE) >= now
+                            ? node.powerUnits() + workExtra.getOrDefault(m, 0) : 0;
                         // Nothing reports demand for a placed block: a propeller or wheel on a docked ship pushes
                         // nothing, so it costs nothing (it defaulted to full load, and the engine burned nonstop).
                         case DEMAND -> node.powerUnits() * blockDemand.getOrDefault(m, 0.0);

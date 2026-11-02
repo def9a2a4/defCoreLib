@@ -2689,8 +2689,12 @@ public class MechanismRegistry implements org.bukkit.event.Listener {
         } else {
             mb.spinVirtualAge += mb.spinReversed ? -mb.spinOverride : mb.spinOverride;
         }
-        // Keep the magnitude bounded so a long voyage doesn't lose float precision in the angle.
-        if (Math.abs(mb.spinVirtualAge) > 1e7) mb.spinVirtualAge %= 1e7;
+        // Keep the magnitude bounded so a long voyage doesn't lose float precision, wrapping by whole turns
+        // of the block's first spin so the pose doesn't jump.
+        if (Math.abs(mb.spinVirtualAge) > 1e5) {
+            float deg = Math.abs(authoredSpinDegrees(mb));
+            if (deg > 0f && !Float.isNaN(deg)) mb.spinVirtualAge %= 360.0 / deg * Math.ceil(1e4 * deg / 360.0);
+        }
         return mb.spinVirtualAge;
     }
 

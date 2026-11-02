@@ -1503,7 +1503,8 @@ final class RotationBlocks {
         // Burn-on-load, as the engine: a running piston burns its burner's fuel and drinks boiler water
         // only for the share of its output the network uses, and counts as fuelled while the burner holds
         // an unburned item. burn-on-load: false gives frac 1 and the old refill-on-empty timing.
-        double frac = running ? network.loadFraction(key, config) * config.engineBurnMultiplier : 0;
+        double load = running ? network.loadFraction(key, config) : 0;   // share of output in use
+        double frac = load * config.engineBurnMultiplier;                 // fuel scales with the multiplier
         boolean hasFuel = false;
         if (stackOk) {
             var burnerKey = CustomBlockRegistry.LocationKey.of(burner);
@@ -1528,8 +1529,9 @@ final class RotationBlocks {
 
         if (shouldRun && running) {
             // Drink one boiler unit per configured interval of loaded running time.
-            double accrued = steamWaterTicks.merge(key, 20 * frac, Double::sum);
-            if (accrued >= config.steamWaterIntervalTicks) {
+            // Water follows the load alone (burn-multiplier is a fuel knob), and none is drunk at zero load.
+            double accrued = steamWaterTicks.merge(key, 20 * load, Double::sum);
+            if (load > 0 && accrued >= config.steamWaterIntervalTicks) {
                 steamWaterTicks.put(key, accrued - config.steamWaterIntervalTicks);
                 anon.def9a2a4.corelib.fluid.FluidTanks.takeUnit(boiler);
             }
@@ -1855,7 +1857,7 @@ final class RotationBlocks {
             machine.getWorld().playSound(machine.getLocation().add(0.5, 0.5, 0.5), sound, 0.6f, 1f);
             // Counts as engine load for a while after real work (a WORK-mode consumer) — long enough
             // to span the slowest machine's cycle, so a busy line reads as busy between cycles.
-            network.markWorked(key, org.bukkit.Bukkit.getCurrentTick() + WORK_LOAD_WINDOW_TICKS);
+            network.markWorked(key, org.bukkit.Bukkit.getCurrentTick() + WORK_LOAD_WINDOW_TICKS, batch - 1);
         }
         return processed;
     }

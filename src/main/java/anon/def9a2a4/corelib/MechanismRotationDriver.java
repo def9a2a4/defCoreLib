@@ -125,6 +125,7 @@ final class MechanismRotationDriver {
         // so none of it dirties the solve.
         final Map<Integer, Double> demand = new HashMap<>();
         final Map<Integer, Long> lastWorked = new HashMap<>();
+        final Map<Integer, Integer> workExtra = new HashMap<>();   // power drawn above rating (batching)
         final Map<Integer, double[]> burnAcc = new HashMap<>();
         // Engines that are running (fuelled) but burned nothing at the last engine tick — their smoke
         // or flame is muted, so a parked ship doesn't look like it is burning fuel.
@@ -429,7 +430,7 @@ final class MechanismRotationDriver {
                 case CONSUMER -> agg[0] += switch (config.loadMode(s.typeId())) {
                     case ALWAYS -> s.power();
                     case WORK -> st.lastTickAge - st.lastWorked.getOrDefault(s.blockIndex(), Long.MIN_VALUE / 2) <= window
-                        ? s.power() : 0;
+                        ? s.power() + st.workExtra.getOrDefault(s.blockIndex(), 0) : 0;
                     case DEMAND -> s.power() * st.demand.getOrDefault(s.blockIndex(), 1.0);
                 };
                 case CONSTANT_SOURCE -> agg[1] += s.meta().scaledSupply(s.power());
@@ -700,6 +701,7 @@ final class MechanismRotationDriver {
 
         if (RotationBlocks.processingEffect(in, batch, recipes, registry, eject)) {
             st.lastWorked.put(s.blockIndex(), st.lastTickAge);  // WORK-mode load, for engine burn
+            st.workExtra.put(s.blockIndex(), batch - 1);         // the surplus it batched with is load too
             Vector3i cell = mech.liveCell(s.blockIndex());
             if (world.isChunkLoaded(cell.x >> 4, cell.z >> 4)) {
                 world.playSound(new Location(world, cell.x + 0.5, cell.y + 0.5, cell.z + 0.5),
