@@ -73,6 +73,7 @@ final class ShowcaseRunner implements Listener {
     private final java.util.Collection<ShowcaseSpec> showcases;
     private final boolean testMode;
     private final Path capturePath;   // null if not capturing
+    private final Map<ShowcaseSpec, Map<String, String>> restRefs = new java.util.HashMap<>();   // capture: pre-swing refs
     private final RotationRotator rotator;   // for the `mechanism_swung` assertion
     private final ChainHoistManager hoists;  // for `hoist_moved`
     private final ExtendablePistonManager pistons; // for `piston_stroked`
@@ -205,6 +206,17 @@ final class ShowcaseRunner implements Listener {
     }
 
     private void activateAll() {
+        // Capture: remember each build's vanilla blocks as they stand before anything moves, so a demo whose
+        // blocks a hinge swings away is still drawn closed (and animated) — see capture().
+        if (capturePath != null) {
+            for (Map.Entry<ShowcaseSpec, Location> e : origins.entrySet()) {
+                Map<String, String> refs = new java.util.HashMap<>();
+                for (ShowcaseSpec.VanillaSpec vs : e.getKey().vanilla) {
+                    refs.put(cellKey(vs.at()), blockRef(blockAt(e.getValue(), vs.at())));
+                }
+                restRefs.put(e.getKey(), refs);
+            }
+        }
         for (Map.Entry<ShowcaseSpec, Location> e : origins.entrySet()) {
             ShowcaseActivation.activate(e.getKey(), e.getValue(), network, fuelManager);
         }
@@ -736,12 +748,29 @@ final class ShowcaseRunner implements Listener {
             // placed3d parses it to orient the block (slab half, lever/sign facing, stairs, …).
             // Fluids are skipped here: `physics: true` water/lava spreads after placement, so the spec
             // cells aren't the render truth — the world scan below captures the settled extent instead.
+            // A block a rotator swung is drawn at rest (its pre-swing blockstate) with a baked open/close loop.
+            Map<String, RotationRotator.Swing> swung = new java.util.HashMap<>();
+            if (rotator != null) {
+                for (ShowcaseSpec.BlockSpec bs : spec.blocks) {
+                    if (!RotationRotator.ROTATOR_ID.equals(bs.id())) continue;
+                    RotationRotator.Swing sw = rotator.lastSwing(blockAt(origin, bs.at()));
+                    if (sw == null) continue;
+                    for (Block b : sw.blocks()) swung.put(cellKey(relative(origin, b)), sw);
+                }
+            }
+            Map<String, String> rest = restRefs.getOrDefault(spec, Map.of());
             for (ShowcaseSpec.VanillaSpec vs : spec.vanilla) {
                 if (isFluid(vs.material())) continue;
                 Block b = blockAt(origin, vs.at());
-                String ref = b.getBlockData().getAsString();
-                if (ref.startsWith("minecraft:")) ref = ref.substring("minecraft:".length());
-                blocks.add(vanillaRecord(ref, vs.at()[0], vs.at()[1], vs.at()[2], signLines(b)));
+                RotationRotator.Swing sw = swung.get(cellKey(vs.at()));
+                String ref = sw != null && rest.containsKey(cellKey(vs.at())) ? rest.get(cellKey(vs.at())) : blockRef(b);
+                Map<String, Object> rec = vanillaRecord(ref, vs.at()[0], vs.at()[1], vs.at()[2], signLines(b));
+                if (sw != null) {
+                    @SuppressWarnings("unchecked")
+                    List<Map<String, Object>> ds = (List<Map<String, Object>>) rec.get("displays");
+                    ds.get(0).put("animation", swingTrack(sw, relative(origin, sw.hinge()), vs.at()));
+                }
+                blocks.add(rec);
             }
             // World fluids: scan the build's bounding box (padded 3 out/down, 1 up — well inside the
             // 16-block z spacing between showcases) and emit every water/lava cell with its level so
@@ -773,6 +802,50 @@ final class ShowcaseRunner implements Listener {
 
     private static boolean isFluid(org.bukkit.Material m) {
         return m == org.bukkit.Material.WATER || m == org.bukkit.Material.LAVA;
+    }
+
+    private static String blockRef(Block b) {
+        String ref = b.getBlockData().getAsString();
+        return ref.startsWith("minecraft:") ? ref.substring("minecraft:".length()) : ref;
+    }
+
+    private static String cellKey(int[] at) { return at[0] + "," + at[1] + "," + at[2]; }
+
+    private static int[] relative(Location origin, Block b) {
+        return new int[]{b.getX() - origin.getBlockX(), b.getY() - origin.getBlockY(), b.getZ() - origin.getBlockZ()};
+    }
+
+    /** Swing loop period and length of each phase (open, hold open, close, hold closed), in ticks. */
+    private static final int SWING_PHASE = 25, SWING_PERIOD = 4 * SWING_PHASE, SWING_STEP = 2;
+
+    /**
+     * A baked keyframe loop for one block of a rotator swing: open to the swing's target angle, hold, swing
+     * shut, hold. Each frame turns the block about the hinge cell's centre exactly as
+     * {@code BasicMechanism.rotate} does (−angle about the axis), expressed in the display's frame (its origin is
+     * the cell's min corner, the cell centre sitting at the block's offset).
+     */
+    private static Map<String, Object> swingTrack(RotationRotator.Swing sw, int[] hinge, int[] at) {
+        org.joml.Vector3f corner = new org.joml.Vector3f(at[0] - 0.5f, at[1] - 0.5f, at[2] - 0.5f);
+        org.joml.Vector3f pivot = new org.joml.Vector3f(hinge[0], hinge[1], hinge[2]);
+        List<float[]> frames = new ArrayList<>();
+        for (int t = 0; t < SWING_PERIOD; t += SWING_STEP) {
+            int phase = t / SWING_PHASE;
+            double f = (double) (t % SWING_PHASE) / SWING_PHASE;
+            double eased = f * f * (3 - 2 * f);
+            double open = switch (phase) { case 0 -> eased; case 1 -> 1; case 2 -> 1 - eased; default -> 0; };
+            float rad = (float) Math.toRadians(-sw.targetDeg() * open);
+            org.joml.Matrix4f m = new org.joml.Matrix4f()
+                    .translate(-corner.x, -corner.y, -corner.z)
+                    .translate(pivot)
+                    .rotate(rad, sw.axis().x, sw.axis().y, sw.axis().z)
+                    .translate(-pivot.x, -pivot.y, -pivot.z)
+                    .translate(corner);
+            frames.add(m.get(new float[16]));
+        }
+        Map<String, Object> a = new LinkedHashMap<>();
+        a.put("period", SWING_PERIOD);
+        a.put("frames", frames);
+        return a;
     }
 
     private static Map<String, Object> vanillaRecord(String ref, int dx, int dy, int dz) {

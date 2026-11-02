@@ -161,23 +161,27 @@ showcases:
 
   - id: redstone_motor_drawbridge
     name: "Motor → Reverser → Drawbridge"
-    blurb: "A motor drives a rotator hinge through a lever-switched reverser; a pulse swings the drawbridge."
+    blurb: "A motor drives a rotator hinge through a lever-switched reverser; a pulse swings the glued panel down like a drawbridge."
     description: >
-      The rotator is a hinge: on a redstone pulse it gathers the connected planks into a moving structure
-      and swings them as one — a drawbridge. Power reaches it from the motor behind, but passes through
-      a reverser first: a floor lever beside the reverser is switched on, so the swing runs the reversed
-      direction. Unlike the spinning machines, this is the mechanism system at work — real blocks are
-      lifted into display entities, rotated, and set back down at their new orientation.
+      The rotator is a hinge: on a redstone pulse it lifts every block glued to it into one moving
+      structure and swings it a quarter-turn about its axle — here a 2×2 panel standing on the hinge's
+      line, which tips over and lands flat, a drawbridge. (Glue the panel with the Glue Brush; with
+      nothing glued, a hinge swings only the single block it is mounted on.) Power reaches it from the
+      motor behind, through a reverser: the floor lever beside the reverser is on, so the swing runs the
+      reversed direction. This is the mechanism system at work — real blocks are lifted into display
+      entities, rotated, and set back down at their new orientation.
+    assert_at: 160
     blocks:
       # Z-axis chain: motor → reverser → rotator hinge. The motor sits two blocks BEHIND the hinge
       # so neither the swing pulse (east of the hinge) nor the lever (beside the reverser) can disable it.
       - { id: "mech:redstone_motor", facing: north, at: [0, 0, -2] }
       - { id: "mech:reverser",  facing: north, at: [0, 0, -1] }   # lever beside it → reverses the swing
-      - { id: "mech:rotator",   facing: south, at: [0, 0, 0] }    # hinge, Z axis
+      # Hinge, Z axis, with the whole panel glued to it.
+      - { id: "mech:rotator",   facing: south, at: [0, 0, 0],
+          glue: [[0, 0, 1], [0, 1, 1], [0, 0, 2], [0, 1, 2]] }
     vanilla:
-      # Drawbridge leaf: a 2×2 vertical panel standing up BEHIND the hinge (+z), in the ZY plane at x=0.
-      # Seated at floor so the bottom row [0,0,1] is face-adjacent to the hinge — flood-fill reaches it and
-      # the swing still fires. (Capture emits these rest positions statically; no swing is rendered.)
+      # Drawbridge leaf: a 2×2 vertical panel standing up BEHIND the hinge (+z), in the ZY plane at x=0, its
+      # bottom row on the hinge's axle. The swing tips the top row down to lie flat east or west of it.
       - { block: "OAK_PLANKS", at: [0, 0, 1] }
       - { block: "OAK_PLANKS", at: [0, 1, 1] }
       - { block: "OAK_PLANKS", at: [0, 0, 2] }
@@ -186,27 +190,60 @@ showcases:
       - { block: "LEVER", at: [-1, 0, -1], data: "[face=floor,facing=north,powered=true]" }
     activate: { pulse: [1, 0, 0] }   # redstone east of the hinge → rising edge → swing (not near the motor)
     expect:
-      - { type: mechanism_swung, value: "0,0,1", at: [0, 0, 0] }
+      - { type: mechanism_swung, value: "0,0,1; 0,1,1; 0,0,2; 0,1,2", at: [0, 0, 0] }
+      - { type: block_type, value: AIR, at: [0, 1, 1], to: [0, 1, 2] }   # the panel is down…
+      - { type: material_total, value: "OAK_PLANKS=4", at: [-1, 0, 1], to: [1, 0, 2] }   # …flat, all four
+
+  - id: redstone_motor_door
+    name: "Motor → Rotator Door"
+    blurb: "A rotator on the floor is a door hinge: a pulse swings the glued 2×2 door a quarter-turn open."
+    description: >
+      Set on the floor, a rotator hinges about the vertical: everything glued to it swings round the
+      hinge's column like a door. Here a 2×2 spruce door is glued beside the hinge; a redstone pulse
+      swings it a quarter-turn, and the next pulse swings it again — which way is set by the network's
+      spin direction. Power comes down the vertical axle from the motor sitting on top of the hinge.
+    assert_at: 160
+    blocks:
+      - { id: "mech:redstone_motor", facing: down, at: [0, 1, 0] }   # Y-axis source above the hinge
+      - { id: "mech:rotator",        facing: down, at: [0, 0, 0],    # floor hinge, Y axis
+          glue: [[0, 0, 1], [0, 1, 1], [0, 0, 2], [0, 1, 2]] }
+    vanilla:
+      # The door: two wide (z), two tall, its edge against the hinge column.
+      - { block: "SPRUCE_PLANKS", at: [0, 0, 1] }
+      - { block: "SPRUCE_PLANKS", at: [0, 1, 1] }
+      - { block: "SPRUCE_PLANKS", at: [0, 0, 2] }
+      - { block: "SPRUCE_PLANKS", at: [0, 1, 2] }
+    activate: { pulse: [0, 0, -1] }   # behind the hinge, out of the door's sweep
+    expect:
+      - { type: mechanism_swung, value: "0,0,1; 0,1,1; 0,0,2; 0,1,2", at: [0, 0, 0] }
+      - { type: block_type, value: AIR, at: [0, 0, 1], to: [0, 1, 2] }   # swung away…
+      - { type: material_total, value: "SPRUCE_PLANKS=4", at: [-2, 0, 0], to: [2, 1, 0] }   # …to lie along x
 
   - id: redstone_motor_ceiling_rotator
     name: "Motor → Ceiling Rotator"
-    blurb: "A rotator hung from the block above swings it like a hatch when pulsed — the floor door, upside down."
+    blurb: "A rotator hung under a beam turns it — and everything glued to it — a quarter-turn overhead."
     description: >
-      A rotator doesn't only sit on the floor: mounted against the underside of a block it hangs as a
-      ceiling hinge, swinging the block above it (and anything glued to it) like a trapdoor. It's still
-      a Y-axis consumer, so power arrives up the vertical axle from the motor below, while the swung
-      block sits on the opposite (mounting) side above. A redstone pulse gives the rising edge that
-      fires one swing.
+      A rotator doesn't only sit on the floor: mounted against the underside of a block it hangs from
+      it, and turns that block and everything glued to it about the vertical, like a turntable overhead.
+      Here a three-block beam is glued to it; a redstone pulse swings the beam a quarter-turn. It's
+      still a Y-axis consumer, so power arrives up the vertical axle from the motor below, while the
+      swung beam sits on the opposite (mounting) side above.
+    assert_at: 160
     blocks:
       # Vertical (Y) axle: motor BELOW feeds the ceiling hinge; the hinge hangs from the block above it.
       - { id: "mech:redstone_motor", facing: down, at: [0, -1, 0] }
-      - { id: "mech:rotator",   facing: up,   at: [0, 0, 0] }    # ceiling hinge (idle_ceiling), Y axis
+      - { id: "mech:rotator",   facing: up,   at: [0, 0, 0],    # ceiling hinge (idle_ceiling), Y axis
+          glue: [[0, 1, 0], [1, 1, 0], [2, 1, 0]] }
     vanilla:
-      # The block the hinge swings: directly ABOVE it (its mounting block). A single movable plank.
+      # The beam: its first block is the hinge's mounting block, directly above it.
       - { block: "OAK_PLANKS", at: [0, 1, 0] }
+      - { block: "OAK_PLANKS", at: [1, 1, 0] }
+      - { block: "OAK_PLANKS", at: [2, 1, 0] }
     activate: { pulse: [1, 0, 0] }   # redstone east of the hinge → rising edge → swing
     expect:
-      - { type: mechanism_swung, value: "0,1,0", at: [0, 0, 0] }
+      - { type: mechanism_swung, value: "0,1,0; 1,1,0; 2,1,0", at: [0, 0, 0] }
+      - { type: block_type, value: AIR, at: [1, 1, 0], to: [2, 1, 0] }
+      - { type: material_total, value: "OAK_PLANKS=3", at: [0, 1, -2], to: [0, 1, 2] }
 
   # ── Gears: power turning a 90° corner ───────────────────────────────────
   - id: gear_corner

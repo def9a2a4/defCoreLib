@@ -263,13 +263,14 @@ define bot_run
 	cd test-server && rm -rf bot_world bot_world_nether bot_world_the_end plugins/DefCoreLib/mechanisms/bot_world
 	node test-bot/add-op.js test-server/ops.json $(BOT_NAME)
 	rm -f $(BOT_FIFO) $(BOT_LOG) test-bot/test-results.txt && mkfifo $(BOT_FIFO)
-	# The server saves --port/--level-name into server.properties; put the original back afterwards so the
-	# docs server doesn't come up on bot_world.
+	# The server saves --port/--level-name into server.properties; the EXIT trap puts the original back (pass,
+	# fail or Ctrl-C) so the docs server doesn't come up on bot_world.
 	cp test-server/server.properties .temp/bot-server.properties.bak
 	(cd test-server && exec java -Ddefcorelib.botTest=true -Xmx2G -jar $(1) --nogui --port $(BOT_PORT) \
 		--level-name bot_world --online-mode false < ../$(BOT_FIFO) > ../$(BOT_LOG) 2>&1) & \
 	SERVER_PID=$$!; \
-	trap 'kill $$SERVER_PID 2>/dev/null' EXIT; trap 'exit 130' INT TERM; \
+	trap 'kill $$SERVER_PID 2>/dev/null; cp .temp/bot-server.properties.bak test-server/server.properties' EXIT; \
+	trap 'exit 130' INT TERM; \
 	exec 3<> $(BOT_FIFO); \
 	up=0; for i in $$(seq 1 300); do \
 		if grep -q 'Done (' $(BOT_LOG); then up=1; break; fi; \
@@ -286,7 +287,6 @@ define bot_run
 	echo stop >&3; exec 3>&-; \
 	for i in $$(seq 1 60); do kill -0 $$SERVER_PID 2>/dev/null || break; sleep 1; done; \
 	kill $$SERVER_PID 2>/dev/null; sleep 1; \
-	cp .temp/bot-server.properties.bak test-server/server.properties; \
 	ERRS=$$(grep -nE ' (ERROR|FATAL)\]|SEVERE\]|^[[:space:]]+at [A-Za-z]|Caused by:' $(BOT_LOG) \
 		| grep -v 'No key layers in MapLike'); \
 	[ -z "$$ERRS" ] || { echo "ERROR: the server logged errors during the bot run ($(BOT_LOG)):"; echo "$$ERRS"; }; \

@@ -630,7 +630,7 @@ final class ChainHoistManager implements Listener {
             active.put(hoistKey, new ActiveMove(hoistKey, hoist, mech,
                 start, target, descend ? -1f : 1f, mass, spinDir, descend, span, startDepth, frontier,
                 linksDeleted, descend ? List.of() : load));
-            moveCount.merge(hoistKey, 1, Integer::sum);
+            if (ShowcaseMode.ACTIVE) moveCount.merge(hoistKey, 1, Integer::sum);
         } catch (Throwable t) {
             safeDisassemble(mech, hoistKey);
             throw t;

@@ -27,9 +27,15 @@ final class ShowcaseSpec {
      *  {@code link} is an optional [dx,dy,dz] offset of a chain-pulley partner (only meaningful for
      *  {@code mech:chain_pulley}): the builder writes it into the pulley's chain-link PDC so the pair
      *  transmits power, mirroring an in-game chain link. {@code contents} fills its storage or real
-     *  ({@code physical_material}) container. */
+     *  ({@code physical_material}) container. {@code glue} lists the cells (from the build origin, like
+     *  {@code at}) a mover anchor carries, as if brushed with the Glue Brush. */
     record BlockSpec(String id, BlockFace facing, int[] at, @Nullable String state, int @Nullable [] link,
-                     List<ItemSpec> contents) {}
+                     List<ItemSpec> contents, List<int[]> glue) {
+        BlockSpec(String id, BlockFace facing, int[] at, @Nullable String state, int @Nullable [] link,
+                  List<ItemSpec> contents) {
+            this(id, facing, at, state, link, contents, List.of());
+        }
+    }
 
     /** One vanilla support block (redstone, planks, container, …) at an offset. {@code data} is an
      *  optional Bukkit block-data string (e.g. {@code "[face=floor,powered=true]"} for a lit lever).
@@ -166,8 +172,13 @@ final class ShowcaseSpec {
                         log.warning("showcases.yml [" + id + "]: block entry needs id + at, skipped");
                         continue;
                     }
+                    List<int[]> glue = new ArrayList<>();
+                    for (Object g : asList(m.get("glue"))) {
+                        int[] cell = vec(g);
+                        if (cell != null) glue.add(cell);
+                    }
                     blocks.add(new BlockSpec(bid, face, at, str(m.get("state")), vec(m.get("link")),
-                            items(m.get("contents"))));
+                            items(m.get("contents")), glue));
                 }
                 List<VanillaSpec> vanilla = new ArrayList<>();
                 for (Object o : asList(entry.get("vanilla"))) {

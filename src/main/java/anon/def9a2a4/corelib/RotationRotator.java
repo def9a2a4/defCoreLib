@@ -21,6 +21,7 @@ import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
 import org.joml.Vector3f;
+import org.jspecify.annotations.Nullable;
 
 import java.util.*;
 
@@ -78,7 +79,11 @@ final class RotationRotator implements Listener {
     // Swings committed per hinge — survives a swing's transient teardown so the showcase harness can
     // assert a swing actually happened.
     private final Map<CustomBlockRegistry.LocationKey, Integer> swingCount = new HashMap<>();
-    private final Map<CustomBlockRegistry.LocationKey, List<Block>> lastSwung = new HashMap<>();
+    private final Map<CustomBlockRegistry.LocationKey, Swing> lastSwing = new HashMap<>();
+
+    /** One committed swing, for the showcase harness: the blocks carried (at their pre-swing cells), the
+     *  hinge cell, the unit axis and the signed target angle in degrees (as passed to {@code rotate}). */
+    record Swing(List<Block> blocks, Block hinge, Vector3f axis, float targetDeg) {}
 
     RotationRotator(JavaPlugin plugin, CustomBlockRegistry registry,
                     RotationNetwork network, MechanismRegistry mechRegistry,
@@ -123,7 +128,13 @@ final class RotationRotator implements Listener {
 
     /** The blocks this hinge's latest swing carried (for the showcase test harness); empty if none. */
     List<Block> lastSwungBlocks(Block head) {
-        return lastSwung.getOrDefault(CustomBlockRegistry.LocationKey.of(head), List.of());
+        Swing s = lastSwing.get(CustomBlockRegistry.LocationKey.of(head));
+        return s == null ? List.of() : s.blocks();
+    }
+
+    /** This hinge's latest swing (for the showcase capture), or null. */
+    @Nullable Swing lastSwing(Block head) {
+        return lastSwing.get(CustomBlockRegistry.LocationKey.of(head));
     }
 
     /** Whether this rotator's pivot head is mid-swing — its head stays in-world during a swing, so an
@@ -218,8 +229,10 @@ final class RotationRotator implements Listener {
         float target = (dir == RotationNetwork.SpinDirection.CW) ? -targetAngle : targetAngle;
         network.addTransientDemand(key, SWING_DEMAND);
 
-        swingCount.merge(key, 1, Integer::sum);
-        lastSwung.put(key, List.copyOf(planks));
+        if (ShowcaseMode.ACTIVE) {   // harness-only bookkeeping: never grows on a live server
+            swingCount.merge(key, 1, Integer::sum);
+            lastSwing.put(key, new Swing(List.copyOf(planks), head, new Vector3f(axis), target));
+        }
         startSwing(key, mech, speed, target);
     }
 

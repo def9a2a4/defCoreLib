@@ -83,9 +83,10 @@ jobs:
             SERVER_VARIANT=${{ matrix.server }} \
             2>&1 | tee ci-logs/restart-${{ matrix.server }}-${{ matrix.minecraft }}.log
 
-      # In-game mineflayer bot (test-bot/). Mineflayer only speaks 1.21.11 and 26.1.x, so 26.2+ skip it.
+      # In-game mineflayer bot (test-bot/). Mineflayer only speaks 1.21.11 and 26.1.x, so 26.2+ skip it (any 26.1.x
+      # patch still runs it).
       - name: Set up Node
-        if: ${{ !cancelled() && (matrix.minecraft == '1.21.11' || matrix.minecraft == '26.1.2') }}
+        if: ${{ !cancelled() && (matrix.minecraft == '1.21.11' || startsWith(matrix.minecraft, '26.1.')) }}
         uses: actions/setup-node@v4
         with:
           node-version: '22'   # mineflayer 4.39 declares engines.node >= 22
@@ -93,7 +94,7 @@ jobs:
           cache-dependency-path: test-bot/package-lock.json
 
       - name: Bot test
-        if: ${{ !cancelled() && (matrix.minecraft == '1.21.11' || matrix.minecraft == '26.1.2') }}
+        if: ${{ !cancelled() && (matrix.minecraft == '1.21.11' || startsWith(matrix.minecraft, '26.1.')) }}
         shell: bash
         run: |
           set -euo pipefail

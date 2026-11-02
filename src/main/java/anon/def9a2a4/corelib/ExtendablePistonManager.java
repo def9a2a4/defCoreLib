@@ -599,7 +599,7 @@ final class ExtendablePistonManager {
             mowMovers.add(line.core());
             active.put(coreKey, new ActiveMove(coreKey, mech, start, target, dir,
                 mech.totalMass(), spinDir, mowMovers, moveFace, r));
-            strokeCount.merge(coreKey, 1, Integer::sum);
+            if (ShowcaseMode.ACTIVE) strokeCount.merge(coreKey, 1, Integer::sum);
         } catch (Throwable t) {
             safeDisassemble(mech, coreKey);   // restore the aired-out rod instead of leaking the mech
             throw t;

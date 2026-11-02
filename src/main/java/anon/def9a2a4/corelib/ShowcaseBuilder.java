@@ -130,8 +130,22 @@ final class ShowcaseBuilder {
                 type.onChunkLoadCallback().accept(block, fstate);
             }
             fill(block, bs.contents());   // after the callbacks, so no setup step can reset the inventory
+            if (!bs.glue().isEmpty()) writeGlue(block, bs);
         });
         return true;
+    }
+
+    /** Glue {@code bs.glue()} (origin-relative cells) onto the anchor head at {@code block}, as the Glue Brush
+     *  would: offsets relative to the head, stored in its PDC. */
+    private static void writeGlue(Block block, ShowcaseSpec.BlockSpec bs) {
+        int[] packed = new int[bs.glue().size() * 3];
+        for (int i = 0; i < bs.glue().size(); i++) {
+            int[] g = bs.glue().get(i);
+            packed[i * 3] = g[0] - bs.at()[0];
+            packed[i * 3 + 1] = g[1] - bs.at()[1];
+            packed[i * 3 + 2] = g[2] - bs.at()[2];
+        }
+        new BlockAnchor(block, () -> true).writeOffsets(packed);
     }
 
     /** Validate and write a chain-pulley link from {@code source} to its {@code bs.link()} partner.

@@ -226,6 +226,7 @@ public class MechanismRegistry implements org.bukkit.event.Listener {
     public void discardPersistedState(org.bukkit.World world, UUID id) {
         if (world == null || activeMechanisms.containsKey(id)) return;
         pendingRecoveries.remove(id);
+        mechIdsBeingRecovered.remove(id); // else its entities stay shielded from the orphan sweep
         persistence.remove(world.getName(), id);
     }
 
