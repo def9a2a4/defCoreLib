@@ -30,6 +30,8 @@ Needs DefCoreLib 0.5.0 or newer, on Paper 1.21.11 or newer.
 - An unconfigured filter pipe (empty whitelist) blocks **everything** until you set it up — so dropping a fresh filter pipe into a working line stops the flow until you configure it.
 - A machine that pushes its output straight down into a filter pipe is blocked (the machine backs up) when the output isn't allowed, rather than leaking past the filter. To gate a machine's output, send it into a chest and pull from that chest with a filter pipe.
 - Filtering is not yet applied while a filter pipe rides a moving mechanism (cart / platform) — it transfers everything there for now.
+- `/pipes` and `/pipes help` show what Pipes does, the commands you may use, and the GitHub and Discord links. **Permissions:** `/pipes` itself no longer requires `pipes.admin`; each subcommand checks its own permission (`pipes.give`, `pipes.info`, `pipes.reload`, `pipes.migrate`, `pipes.delete_all`; `pipes.admin` still grants them all). Someone granted only `pipes.give` can now use `/pipes give`.
+- `/pipes give <item|ALL> [amount] [player]` can give to another player, and from the console. With `ALL`, the amount now applies to each pipe type.
 
 ## Fixes
 

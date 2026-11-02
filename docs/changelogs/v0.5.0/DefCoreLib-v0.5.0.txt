@@ -45,6 +45,8 @@ Two new frame blocks join the Casing, a Ratchet valve arrives, and mechanisms le
 
 - **In-game item catalog** — `/defcorelib catalog` opens a browsable menu of every registered block across all def plugins, grouped by category, with search (`/defcorelib catalog search <query>`, or `/defcorelib catalog <category>` to jump straight in) and a detail view that drills into each recipe's ingredients — recipe sections with many outputs open a paginated, fully browsable view. Open to everyone via the new `corelib.catalog` permission (default on); an admin can right-click an entry to give the item.
 - **Pick-block** — middle-clicking a custom block or cart no longer mints a free copy in survival or adventure: it only selects a matching item you already carry. Creative still gives the item as before.
+- **Help for every command** — `/defcorelib`, `/mech`, `/pipes` and `/headsmith` (bare, or with `help`) now show the same kind of help: what the plugin does, the subcommands you are allowed to use, and links to the GitHub repository and the Discord. An unknown subcommand shows the help too. Anyone can open the help; the subcommands keep their permissions.
+- **`give` can target a player** — `/defcorelib give`, `/pipes give` and `/headsmith give` all take `<id> [amount] [player]`, work from the console when a player is named, and report the same way (`Gave 4x mech:shaft to Steve`).
 
 ## API
 
@@ -54,6 +56,7 @@ Two new frame blocks join the Casing, a Ratchet valve arrives, and mechanisms le
 - `massRegistry()` — exposes the mass table so a dependent plugin can price blocks its own config does not list.
 - **`requires_plugin` recipe gate** — withhold a block's recipes until a named plugin enables, then register them live.
 - `CushionSeats` (experimental) — 26.3 cushions for a consumer that seats players itself: find the cushions resting on a set of blocks, and the carried cushion riding a seat shulker. Safe on every version: before 26.3 nothing is a cushion and every answer is empty.
+- `CommandHelp` — a companion plugin's command help, usage lines, subcommand tab completion and `give <id> [amount] [player]` from one list of subcommands, in the shared style with the GitHub and Discord links.
 
 ## Behavior
 

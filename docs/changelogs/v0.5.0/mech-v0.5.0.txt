@@ -87,6 +87,7 @@ Two new frame blocks — the **Gearbox** and the **Chassis** — a new **Ratchet
 
 - Browse every mech block — with recipes — in-game via `/defcorelib catalog` (casings, gearboxes, and chassis sort to the end so the machines come first).
 - **Pick-block** — middle-clicking a mech block or a mechanism minecart no longer mints a free copy in survival or adventure; it only selects one you already carry (creative still gives it).
+- `/mech` and `/mech help` show what Mechanism does, its commands, and the GitHub and Discord links (open to everyone; `/mech advance` still needs `mech.admin`).
 
 ## Advancements
 
