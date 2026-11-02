@@ -14,6 +14,8 @@ final class StorageHolder implements InventoryHolder {
 
     private final Location location;
     private @Nullable Inventory inventory;
+    /** The encoding last read from or written to the block's PDC; the periodic flush writes only on change. */
+    @Nullable String saved;
 
     StorageHolder(Location location) {
         this.location = location;

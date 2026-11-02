@@ -1583,6 +1583,31 @@ public class MechanismRegistry implements org.bukkit.event.Listener {
      * serialize happen here; the file write is queued on the persistence writer thread and skipped when
      * unchanged (saveAsync). One failing write must not cost the others theirs: each is only logged.
      */
+    /**
+     * A container on a persisted mechanism closed (by a player, or their logout): write its state now. Its
+     * contents are otherwise saved only at the next autosave, while the player's own file is saved at once on
+     * logout — so a crash in between lost what they had just put in from both. Mechanism storages are the
+     * holderless inventories (createTypedInventory(null, …)), which keeps this off every vanilla chest close.
+     */
+    @org.bukkit.event.EventHandler
+    public void onMechanismStorageClose(org.bukkit.event.inventory.InventoryCloseEvent event) {
+        Inventory inv = event.getInventory();
+        if (inv.getHolder(false) != null) return;
+        for (BasicMechanism mech : activeMechanisms.values()) {
+            if (!mech.isPersisted()) continue;
+            for (MechanismBlockData mb : mech.blocks) {
+                if (mb.storage() != inv) continue;
+                try {
+                    persistence.saveAsync(mech.snapshotState());
+                } catch (RuntimeException e) {
+                    plugin.getLogger().warning("Mechanism " + mech.id() + " failed to snapshot on storage close ("
+                        + e.getMessage() + "); its previous state file is kept");
+                }
+                return;
+            }
+        }
+    }
+
     @org.bukkit.event.EventHandler
     public void onWorldSave(org.bukkit.event.world.WorldSaveEvent event) {
         org.bukkit.World world = event.getWorld();

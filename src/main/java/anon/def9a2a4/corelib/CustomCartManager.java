@@ -455,6 +455,8 @@ final class CustomCartManager implements Listener {
         if (held == Material.SHEARS || isChain(held)) return;
 
         event.setCancelled(true);   // suppress the rideable mount
+        // Claim plugins only guard storage minecarts; this is a plain one, so ask their container rule.
+        if (!ContainerAccess.mayOpen(event.getPlayer(), cart.getLocation())) return;
         org.bukkit.inventory.InventoryView view = event.getPlayer().openInventory(state.inv);
         // A blast cart shows its remembered controller cruise target next to its name (set at open time,
         // like the Engine/Burner fuel readout). Mirrors RotationBlocks' view.setTitle pattern.
@@ -658,6 +660,9 @@ final class CustomCartManager implements Listener {
         // by the filler panes / speed buttons (decorateBlastGui) — that occupancy IS the slot guard here.
         Map<Integer, ItemStack> leftover = state.inv.addItem(one);
         for (ItemStack l : leftover.values()) source.addItem(l);
+        // The source container's chunk saves on its own schedule; write the cart now so a crash can't catch
+        // the item gone from the source but not yet in the cart's saved inventory.
+        if (leftover.isEmpty()) persist(state);
     }
 
     private void tickBlast(CartState state) {

@@ -1,5 +1,6 @@
 package anon.def9a2a4.pipes;
 
+import anon.def9a2a4.corelib.ContainerAccess;
 import anon.def9a2a4.corelib.CustomBlockRegistry;
 import anon.def9a2a4.corelib.CustomHeadBlock;
 import anon.def9a2a4.corelib.HeadUtil;
@@ -69,7 +70,10 @@ public class PipeBlockRegistrar {
         // Filter pipes open their config GUI on right-click (returning true cancels vanilla interaction).
         if (variant.isFilter()) {
             builder.onInteract((block, event) -> {
-                plugin.getFilterGui().open(event.getPlayer(), block, variant);
+                // The menu holds real items: claim plugins' container rule applies (a head isn't a container to them).
+                if (ContainerAccess.mayOpen(event.getPlayer(), block.getLocation())) {
+                    plugin.getFilterGui().open(event.getPlayer(), block, variant);
+                }
                 return true;
             });
             // A mechanism capture snapshots the block's PDC BEFORE onBlockRemoved runs, so close (and save)

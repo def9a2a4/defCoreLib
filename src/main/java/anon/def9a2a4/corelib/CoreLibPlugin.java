@@ -1627,6 +1627,8 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         // Storage interaction
         if (type.storage() != null) {
             event.setCancelled(true);
+            // Claim plugins don't see a head as a container: ask their container rule (not their build rule).
+            if (!ContainerAccess.mayOpen(event.getPlayer(), block.getLocation())) return;
             registry.openStorage(block, event.getPlayer(), type);
             return;
         }
@@ -2608,6 +2610,8 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
             // Already open (a consumer such as BlockShips opened it at a lower priority, or this is the
             // off-hand pass): reopening closes and reopens the view, which jumps the cursor and fires a close.
             if (event.getPlayer().getOpenInventory().getTopInventory() == mb.storage()) return;
+            // A parked ship's cargo sits in someone's claim, and claim plugins never treat a shulker as a container.
+            if (!ContainerAccess.mayOpen(event.getPlayer(), shulker.getLocation())) return;
             event.getPlayer().openInventory(mb.storage());
             return;
         }

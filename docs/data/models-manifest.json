@@ -82,6 +82,7 @@
   "smooth_stone": true,
   "smooth_stone_slab": true,
   "spruce_fence": false,
+  "spruce_planks": true,
   "spruce_slab": true,
   "spruce_stairs": true,
   "stone": true,
