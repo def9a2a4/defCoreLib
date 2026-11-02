@@ -65,11 +65,11 @@ The three propeller tiers match the windmill they are crafted from — base, lar
 
 Wheels drive a ship on land. Mount them on the left or right side of the hull, so the axle points sideways; a wheel on the front or back face does nothing. A wheel takes power through the block it hangs on, so line up a shaft or engine with its axle. Powered wheels push the vehicle while they touch the ground, and unpowered ones still roll, so a sail cart works. Bigger wheels sit the hull higher and climb taller steps.
 
-Every wheel comes in all twelve plank woods, and the tyre is built from that wood's slabs. Craft one from a windmill with four matching planks around it (top, bottom, left and right); the windmill decides the size, the same way it decides a propeller's.
+Every wheel comes in all twelve plank woods, and the tyre is built from that wood's slabs. Craft a wheel from a rotator with four planks around it (top, bottom, left and right); the planks set the wood. Each bigger size is four planks of the same wood around the wheel one size down.
 
-- [**Wheel**](https://def9a2a4.github.io/defCoreLib-docs/item.html?id=mech%3Awheel_oak) - 1 block across; draws 2 power and climbs 1-block steps. Craft from a Windmill.
-- [**Large wheel**](https://def9a2a4.github.io/defCoreLib-docs/item.html?id=mech%3Alarge_wheel_oak) - 2 blocks across; draws 5 power, climbs 1.5-block steps (fences and walls), and its tyre reaches half a block below the block it hangs on. Craft from a Large Windmill.
-- [**Huge wheel**](https://def9a2a4.github.io/defCoreLib-docs/item.html?id=mech%3Ahuge_wheel_oak) - 3 blocks across; draws 10 power, climbs 2-block steps, and its tyre reaches a full block below the block it hangs on. Craft from a Huge Windmill.
+- [**Wheel**](https://def9a2a4.github.io/defCoreLib-docs/item.html?id=mech%3Awheel_oak) - 1 block across; draws 2 power and climbs 1-block steps. Craft from a rotator and four planks.
+- [**Large wheel**](https://def9a2a4.github.io/defCoreLib-docs/item.html?id=mech%3Alarge_wheel_oak) - 2 blocks across; draws 5 power, climbs 1.5-block steps (fences and walls), and its tyre reaches half a block below the block it hangs on. Craft from a wheel and four planks of its wood.
+- [**Huge wheel**](https://def9a2a4.github.io/defCoreLib-docs/item.html?id=mech%3Ahuge_wheel_oak) - 3 blocks across; draws 10 power, climbs 2-block steps, and its tyre reaches a full block below the block it hangs on. Craft from a large wheel and four planks of its wood.
 
 Rotation power is all-or-nothing — an under-supplied network runs nothing — so split large propeller banks across separate networks rather than one that can brown out.
 

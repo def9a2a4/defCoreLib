@@ -90,6 +90,8 @@ public class RotationNetwork {
 
     private static final String REVERSER_ID = "mech:reverser";
     private static final String RATCHET_ID = "mech:ratchet";
+    // Showcase-test-only trace of the ratchet measure pass (why a ratchet did / didn't freewheel).
+    private static final boolean RATCHET_TRACE = Boolean.getBoolean("defcorelib.showcaseTest");
 
     // Ratchets that are freewheeling (fully severed) for the current solve. Non-empty ONLY during
     // doRecalculate's apply pass; reset to an empty set in a finally. Consulted by isSevered.
@@ -539,6 +541,7 @@ public class RotationNetwork {
             SpinDirection allowed = readRatchetAllowed(e.getKey());
             if (allowed != null && e.getValue() != allowed) cut.add(e.getKey());
         }
+        if (RATCHET_TRACE) logger.info("[ratchet] changed=" + changed + " measured=" + ratchetDirs + " cut=" + cut);
 
         // Rewind the measure pass: its ONLY instance-map write is nodeNetworkId (dirMap/supply/
         // anchoring are component-local; every other map + all side effects are gated on commit).
@@ -771,6 +774,16 @@ public class RotationNetwork {
             // A ratchet in a SOURCE-LESS domain (fed only through a gearbox) is likewise left out — its
             // direction is an arbitrary seed, so freewheeling it would sever downstream at random; Option A
             // makes it pass power instead.
+            if (RATCHET_TRACE && ratchetDirsOut != null) {
+                for (CustomBlockRegistry.LocationKey loc : members) {
+                    RotationNode rn = nodes.get(loc);
+                    if (rn != null && RATCHET_ID.equals(rn.blockTypeId())) {
+                        logger.info("[ratchet] " + loc + " dir=" + dirMap.get(loc) + " allowed=" + readRatchetAllowed(loc)
+                                + " supply=" + supply + " jammed=" + jammed
+                                + " sourceless=" + sourcelessDomainMembers.contains(loc) + " members=" + members.size());
+                    }
+                }
+            }
             if (ratchetDirsOut != null && supply > 0 && !jammed) {
                 for (CustomBlockRegistry.LocationKey loc : members) {
                     if (sourcelessDomainMembers.contains(loc)) continue;
