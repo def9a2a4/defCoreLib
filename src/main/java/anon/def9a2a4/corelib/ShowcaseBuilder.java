@@ -139,6 +139,11 @@ final class ShowcaseBuilder {
             if (type.onChunkLoadCallback() != null) {
                 type.onChunkLoadCallback().accept(block, fstate);
             }
+            // …and the entities-loaded pass, as a real chunk load would: a chain pulley spawns its strand
+            // display only there, so without it a linked loop carried power but drew no chain.
+            if (type.onEntitiesLoadCallback() != null && block.getChunk().isEntitiesLoaded()) {
+                type.onEntitiesLoadCallback().accept(block, fstate);
+            }
             fill(block, bs.contents());   // after the callbacks, so no setup step can reset the inventory
             if (!bs.glue().isEmpty()) writeGlue(block, bs);
         });

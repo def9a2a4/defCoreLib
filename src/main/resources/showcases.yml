@@ -202,10 +202,14 @@ showcases:
       the column beneath it like a door. Here it sits on the top of the door's hinge edge, a column of
       three planks, with the rest of a 3×3 spruce door glued beside it. A redstone pulse swings the door
       a quarter-turn, and the next pulse swings it again — which way is set by the network's spin
-      direction. Power comes down the vertical axle from the motor sitting on top of the rotator.
+      direction. Power comes down the vertical axle from the motors stacked on top of the rotator.
     assert_at: 200
     blocks:
-      - { id: "mech:redstone_motor", facing: down, at: [0, 4, 0] }   # Y-axis source above the hinge
+      # Three Y-axis motors stacked above the hinge: swing speed is power over mass, and nine planks on one
+      # motor take ~10 s to turn.
+      - { id: "mech:redstone_motor", facing: down, at: [0, 6, 0] }
+      - { id: "mech:redstone_motor", facing: down, at: [0, 5, 0] }
+      - { id: "mech:redstone_motor", facing: down, at: [0, 4, 0] }
       - { id: "mech:rotator",        facing: down, at: [0, 3, 0],    # sits on the hinge column, Y axis
           glue: [[0, 0, 0], [0, 1, 0], [0, 2, 0],
                  [0, 0, 1], [0, 1, 1], [0, 2, 1],
