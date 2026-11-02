@@ -231,3 +231,9 @@ custom-blocks:
   mech:wheel: 3          # per size: every wood (mech:wheel_<wood>) uses its size's mass
   mech:large_wheel: 6
   mech:huge_wheel: 12
+  # Power aboard: an engine is a heavy machine, and a windmill's sails are what make it big.
+  mech:engine: 8
+  mech:steam_piston: 6
+  mech:windmill: 2
+  mech:large_windmill: 6
+  mech:huge_windmill: 15
