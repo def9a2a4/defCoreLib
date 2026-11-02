@@ -2504,7 +2504,9 @@ public class MechanismRegistry implements org.bukkit.event.Listener {
             if (mb.displayEntityConfigs != null) {
                 for (int d = 0; d < mb.displayEntityConfigs.size(); d++) {
                     var dec = mb.displayEntityConfigs.get(d);
-                    if (dec.animation() == null) continue;
+                    DisplayAnimation anim = dec.animation() != null ? dec.animation()
+                        : overridden && mb.borrowedItemAnims != null ? mb.borrowedItemAnims[d] : null;
+                    if (anim == null) continue;
                     int displayIdx = d + 1;
                     if (displayIdx >= displays.size()) continue;
                     Display display = displays.get(displayIdx);
@@ -2514,9 +2516,9 @@ public class MechanismRegistry implements org.bukkit.event.Listener {
                     // path does — negating the age for a CCW-captured source.
                     long age = mb.spinReversed ? -tickAge : tickAge;
                     if (overridden) {
-                        dec.animation().apply(BasicMechanism.transformToMatrix(dec.transform(), placedMatrix), virtualAge, workMatrix);
+                        anim.apply(BasicMechanism.transformToMatrix(dec.transform(), placedMatrix), virtualAge, workMatrix);
                     } else {
-                        dec.animation().apply(BasicMechanism.transformToMatrix(dec.transform(), placedMatrix), age, workMatrix);
+                        anim.apply(BasicMechanism.transformToMatrix(dec.transform(), placedMatrix), age, workMatrix);
                     }
 
                     // Place: pivot-rotation · block-offset · [wall offset] · animated-local.
@@ -2539,7 +2541,9 @@ public class MechanismRegistry implements org.bukkit.event.Listener {
                 int base = 1 + (mb.displayEntityConfigs != null ? mb.displayEntityConfigs.size() : 0);
                 for (int d = 0; d < mb.blockDisplayEntityConfigs.size(); d++) {
                     var bdc = mb.blockDisplayEntityConfigs.get(d);
-                    if (bdc.animation() == null) continue;
+                    DisplayAnimation anim = bdc.animation() != null ? bdc.animation()
+                        : overridden && mb.borrowedBlockAnims != null ? mb.borrowedBlockAnims[d] : null;
+                    if (anim == null) continue;
                     int idx = base + d;
                     if (idx >= displays.size()) continue;
                     Display display = displays.get(idx);
@@ -2547,9 +2551,9 @@ public class MechanismRegistry implements org.bukkit.event.Listener {
 
                     long age = mb.spinReversed ? -tickAge : tickAge;
                     if (overridden) {
-                        bdc.animation().apply(BasicMechanism.transformToMatrix(bdc.transform(), placedMatrix), virtualAge, workMatrix);
+                        anim.apply(BasicMechanism.transformToMatrix(bdc.transform(), placedMatrix), virtualAge, workMatrix);
                     } else {
-                        bdc.animation().apply(BasicMechanism.transformToMatrix(bdc.transform(), placedMatrix), age, workMatrix);
+                        anim.apply(BasicMechanism.transformToMatrix(bdc.transform(), placedMatrix), age, workMatrix);
                     }
 
                     Matrix4f placed = placedMatrix.set(mech.currentTransform()).mul(mb.localTransform);
@@ -2673,6 +2677,12 @@ public class MechanismRegistry implements org.bukkit.event.Listener {
                 if (bdc.animation() != null && !Float.isNaN(bdc.animation().degreesPerTick())) {
                     return bdc.animation().degreesPerTick();
                 }
+            }
+        }
+        for (DisplayAnimation[] borrowed : new DisplayAnimation[][] {mb.borrowedItemAnims, mb.borrowedBlockAnims}) {
+            if (borrowed == null) continue;
+            for (DisplayAnimation a : borrowed) {
+                if (a != null && !Float.isNaN(a.degreesPerTick())) return a.degreesPerTick();
             }
         }
         return Float.NaN;

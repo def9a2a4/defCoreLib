@@ -263,6 +263,11 @@ final class BasicMechanism implements Mechanism {
         MechanismBlockData mb = blocks.get(blockIndex);
         mb.spinOverride = Double.NaN;
         mb.spinSeeded = false;
+        if (mb.borrowedItemAnims != null || mb.borrowedBlockAnims != null) {
+            mb.borrowedItemAnims = null;
+            mb.borrowedBlockAnims = null;
+            recomputeAnimatedBlockIndices();
+        }
     }
 
     private void setSpin(int blockIndex, double value, boolean absolute) {
@@ -270,6 +275,34 @@ final class BasicMechanism implements Mechanism {
         MechanismBlockData mb = blocks.get(blockIndex);
         mb.spinOverride = value;
         mb.spinOverrideAbsolute = absolute;
+        if (!blockIsAnimated(mb) && borrowSpin(mb)) recomputeAnimatedBlockIndices();
+    }
+
+    /**
+     * Borrow the {@code spinning_} counterpart's animations for a block sitting in an {@code idle_} state
+     * with none of its own, so a spin override can turn it (an unpowered wheel rolling along the ground).
+     * The two states must have the same display layout, which {@code copy_from} gives them. Returns
+     * whether anything was borrowed.
+     */
+    private boolean borrowSpin(MechanismBlockData mb) {
+        if (mb.customTypeId == null || mb.customState == null || !mb.customState.startsWith("idle_")) return false;
+        CustomHeadBlock type = registry.getType(mb.customTypeId);
+        if (type == null) return false;
+        String spinning = "spinning_" + mb.customState.substring("idle_".length());
+        if (!type.states().containsKey(spinning)) return false;
+        var items = type.resolveDisplayEntities(spinning);
+        var blocks = type.resolveBlockDisplayEntities(spinning);
+        int ni = mb.displayEntityConfigs == null ? 0 : mb.displayEntityConfigs.size();
+        int nb = mb.blockDisplayEntityConfigs == null ? 0 : mb.blockDisplayEntityConfigs.size();
+        if (items.size() != ni || blocks.size() != nb) return false;
+        DisplayAnimation[] ia = new DisplayAnimation[ni], ba = new DisplayAnimation[nb];
+        boolean any = false;
+        for (int d = 0; d < ni; d++) { ia[d] = items.get(d).animation(); any |= ia[d] != null; }
+        for (int d = 0; d < nb; d++) { ba[d] = blocks.get(d).animation(); any |= ba[d] != null; }
+        if (!any) return false;
+        mb.borrowedItemAnims = ia;
+        mb.borrowedBlockAnims = ba;
+        return true;
     }
 
     @Override
@@ -554,6 +587,7 @@ final class BasicMechanism implements Mechanism {
 
     /** True if any display or blockDisplay config on this block carries an animation. */
     private static boolean blockIsAnimated(MechanismBlockData mb) {
+        if (mb.borrowedItemAnims != null || mb.borrowedBlockAnims != null) return true;
         if (mb.displayEntityConfigs != null) {
             for (int d = 0; d < mb.displayEntityConfigs.size(); d++) {
                 if (mb.displayEntityConfigs.get(d).animation() != null) return true;
@@ -940,6 +974,10 @@ final class BasicMechanism implements Mechanism {
         mb.particles = type.resolveParticles(newState);
         mb.displayEntityConfigs = type.resolveDisplayEntities(newState);
         mb.blockDisplayEntityConfigs = type.resolveBlockDisplayEntities(newState);
+        // Borrowed animations belong to the old state's layout; re-borrow if an override still drives it.
+        mb.borrowedItemAnims = null;
+        mb.borrowedBlockAnims = null;
+        if (!Double.isNaN(mb.spinOverride) && !blockIsAnimated(mb)) borrowSpin(mb);
 
         // The new state may add or drop an animation on this block; keep the animated-index fast-path cache
         // current, but rebuild only on an actual flip (cheap membership scan otherwise).

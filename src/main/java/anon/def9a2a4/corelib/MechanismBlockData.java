@@ -46,6 +46,12 @@ public final class MechanismBlockData {
     boolean spinOverrideAbsolute;
     double spinVirtualAge;
     boolean spinSeeded;
+    // Animations borrowed from the block's spinning_ state while an override drives an idle_ one, so an
+    // unpowered wheel still rolls with the ground. Indexed like displayEntityConfigs /
+    // blockDisplayEntityConfigs; null = nothing borrowed. Only the animation is borrowed, never the
+    // transform, so the displays keep the pose their own state gave them.
+    @Nullable DisplayAnimation[] borrowedItemAnims;
+    @Nullable DisplayAnimation[] borrowedBlockAnims;
     final @Nullable Vector3f wallFacing;
 
     // Floor-head yaw (radians about +Y, already sign-corrected to the vanilla skull convention),
