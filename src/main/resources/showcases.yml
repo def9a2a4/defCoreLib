@@ -563,6 +563,33 @@ showcases:
       - { type: network_powered, at: [4, 0, 3] }
       - { type: spinning, at: [4, 2, 3] }
 
+  # ── Chain hoist: rotation reels a hanging load up its chain ─────────────
+  - id: chain_hoist
+    name: "Motor → Chain Hoist"
+    blurb: "A chain hoist reels its chain in and lifts the block hanging off the end, swallowing each link as it rises."
+    description: >
+      A chain hoist turns rotation into lifting. Its chain hangs straight down, and whatever block sits
+      at the bottom of the chain is the load: turning one way reels the chain in and the load rises up
+      to the hoist, turning the other way pays it back out and lowers it. Here a motor drives the hoist
+      through a pair of meshed gears — a gear mesh reverses the spin, which is the direction that reels
+      in — and a plank hanging three links down rides up to just under the hoist.
+    blocks:
+      # Z axle: motor [1,4,2] → gear [1,4,1] ⇄ gear [0,4,1] → hoist [0,4,0] (the same-axis mesh reverses → reel in).
+      - { id: "mech:chain_hoist",    facing: down,  state: idle_z, at: [0, 4, 0] }
+      - { id: "mech:gear",           facing: north, at: [0, 4, 1] }
+      - { id: "mech:gear",           facing: north, at: [1, 4, 1] }
+      - { id: "mech:redstone_motor", facing: north, at: [1, 4, 2] }
+    vanilla:
+      - { block: "IRON_CHAIN", at: [0, 3, 0], data: "[axis=y]" }
+      - { block: "IRON_CHAIN", at: [0, 2, 0], data: "[axis=y]" }
+      - { block: "IRON_CHAIN", at: [0, 1, 0], data: "[axis=y]" }
+      - { block: "OAK_PLANKS", at: [0, 0, 0] }   # the load
+    activate: passive
+    expect:
+      - { type: hoist_moved, at: [0, 4, 0] }
+      - { type: block_type, value: OAK_PLANKS, at: [0, 3, 0] }        # the load rose to just under the hoist
+      - { type: block_type, value: AIR, at: [0, 0, 0], to: [0, 2, 0] } # every link swallowed on the way
+
   # ── Steam sieve: water wheels feed a boiler and a wet sieve; steam drives the sieve ──
   # Exported from a live build with ShowcaseExporter; water restored by hand (the glue-based
   # exporter can't capture fluids).
