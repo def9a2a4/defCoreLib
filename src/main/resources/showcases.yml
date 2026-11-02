@@ -947,7 +947,7 @@ showcases:
       - { block: "STONE_BRICKS", at: [1, -2, 0] }
       - { block: "STONE_BRICKS", at: [-1, -2, -1] }
       - { block: "STONE_BRICKS", at: [-1, -2, 0] }
-      - { block: "REDSTONE_TORCH", at: [0, -3, 0], data: "[lit=true]" }
+      - { block: "REDSTONE_TORCH", at: [0, -3, 0], data: "[lit=false]" }   # off, so the hinge sees the pulse as a rising edge
       - { block: "STONE_BRICKS", at: [1, -3, -1] }
       - { block: "STRIPPED_SPRUCE_LOG", at: [1, -3, 0], data: "[axis=y]" }
       - { block: "STONE_BRICKS", at: [1, -2, -2] }

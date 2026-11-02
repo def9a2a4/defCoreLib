@@ -22,6 +22,7 @@ export function toRenderBlock(blk) {
     baseHeadWall: wall,
     baseHeadFacing: wall ? (OPPOSITE[blk.facing.slice(5)] || null) : null,
     displays: blk.displays || [],
+    animation: blk.animation || null,   // whole-block track (swing, stroke, lift)
   };
 }
 
