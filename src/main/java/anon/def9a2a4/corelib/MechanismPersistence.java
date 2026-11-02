@@ -71,8 +71,7 @@ final class MechanismPersistence {
     void save(MechanismState st) {
         File dir = worldDir(st.worldName);
         if (!dir.exists() && !dir.mkdirs()) {
-            log.warning("mechanism persistence: cannot create " + dir);
-            return;
+            throw new java.io.UncheckedIOException(new IOException("mechanism persistence: cannot create " + dir));
         }
         YamlConfiguration y = new YamlConfiguration();
         st.write(y);
@@ -87,9 +86,11 @@ final class MechanismPersistence {
                 Files.move(tmp.toPath(), target.toPath(), StandardCopyOption.REPLACE_EXISTING);
             }
         } catch (IOException e) {
-            log.warning("mechanism persistence: save failed for " + st.mechId + ": " + e.getMessage());
+            // Thrown, not logged: every caller has a fallback for a failed save (an assembly rolls back,
+            // shutdown/unload disassemble instead) and a swallowed failure skipped all of them. The target (if
+            // any) is untouched and still correctly reflected in persistedIds.
             if (tmp.exists() && !tmp.delete()) tmp.deleteOnExit();
-            return; // target (if any) is untouched and still correctly reflected in persistedIds
+            throw new java.io.UncheckedIOException("mechanism persistence: save failed for " + st.mechId, e);
         }
         persistedIds.computeIfAbsent(st.worldName, k -> new HashSet<>()).add(st.mechId);
         corruptMtimes.remove(st.worldName + ":" + st.mechId);

@@ -630,6 +630,11 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
     // Block placement — detect custom block items, write PDC, apply config
     // ──────────────────────────────────────────────────────────────────────
 
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onChestPlaceBesideCustom(BlockPlaceEvent event) {
+        RotationBlocks.unpairFromCustomNeighbors(registry, event.getBlockPlaced());
+    }
+
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onBlockPlace(BlockPlaceEvent event) {
         Block block = event.getBlockPlaced();
@@ -1264,7 +1269,9 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
                 if (block.getType() == Material.WATER_CAULDRON
                         && block.getBlockData() instanceof org.bukkit.block.data.Levelled levelled
                         && levelled.getLevel() > 0) {
-                    performCauldronConversion(itemEntity, item, toId, block, levelled);
+                    // Read the stack NOW, not the spawn-time copy: a hopper or an item merge since spawn
+                    // replaces the entity's stack, and the stale amount would mint (or lose) items.
+                    performCauldronConversion(itemEntity, itemEntity.getItemStack(), toId, block, levelled);
                     cancel();
                 }
             }
@@ -1693,7 +1700,21 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
 
     @EventHandler(ignoreCancelled = true)
     public void onManagedContainerOpen(org.bukkit.event.inventory.InventoryOpenEvent event) {
-        if (isManagedContainer(event.getInventory().getHolder())) event.setCancelled(true);
+        org.bukkit.inventory.InventoryHolder holder = event.getInventory().getHolder();
+        if (!isManagedContainer(holder)) return;
+        event.setCancelled(true);
+        // An old pairing of a vanilla chest with a chest-backed custom block: split it here, so the
+        // player's next open gets their own (single) chest back.
+        if (holder instanceof org.bukkit.block.DoubleChest dc) {
+            for (org.bukkit.inventory.InventoryHolder half : new org.bukkit.inventory.InventoryHolder[]{
+                    dc.getLeftSide(), dc.getRightSide()}) {
+                if (half instanceof org.bukkit.block.Chest c
+                        && c.getBlockData() instanceof org.bukkit.block.data.type.Chest data) {
+                    data.setType(org.bukkit.block.data.type.Chest.Type.SINGLE);
+                    c.getBlock().setBlockData(data, false);
+                }
+            }
+        }
     }
 
     @EventHandler(ignoreCancelled = true)
@@ -1708,6 +1729,11 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
      *  physical_material custom block with the container lock). An event holder implies the chunk
      *  is loaded, satisfying {@link CustomBlockRegistry#isLockedContainer}'s tracking precondition. */
     private boolean isManagedContainer(org.bukkit.inventory.InventoryHolder holder) {
+        // A chest-backed custom block paired into a double chest (placed before the unpair fix existed):
+        // the holder is the DoubleChest, so check both halves.
+        if (holder instanceof org.bukkit.block.DoubleChest dc) {
+            return isManagedContainer(dc.getLeftSide()) || isManagedContainer(dc.getRightSide());
+        }
         if (!(holder instanceof org.bukkit.block.Container c)) return false;
         return registry.isLockedContainer(c.getBlock());
     }

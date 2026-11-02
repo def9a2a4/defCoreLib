@@ -469,7 +469,9 @@ final class MechanismMinecartManager implements Listener {
     // Events
     // ──────────────────────────────────────────────────────────────────────
 
-    @EventHandler(priority = EventPriority.HIGH)
+    // ignoreCancelled: a protection plugin that refused the break (cart in someone else's claim) must win —
+    // otherwise this handler still removes the cart and hands out its item and contents.
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onMinecartDestroyed(VehicleDestroyEvent event) {
         if (!(event.getVehicle() instanceof Minecart minecart)) return;
         MinecartState state = tracked.get(minecart.getUniqueId());

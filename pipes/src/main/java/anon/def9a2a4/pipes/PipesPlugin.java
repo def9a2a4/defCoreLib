@@ -42,12 +42,16 @@ public class PipesPlugin extends JavaPlugin {
     private WorldManager worldManager;
     private LegacyPipeMigrator legacyMigrator;
     private FilterGui filterGui;
+    // pipes.yml from the jar, parsed once: block definitions (for CoreLib) and each pipe type's
+    // transport behaviour (the `pipe:` sections) plus cauldron conversions (read here).
+    private YamlConfiguration pipesYaml;
 
     @Override
     public void onEnable() {
         new Metrics(this, 28844);
 
         variantRegistry = new VariantRegistry(getLogger());
+        pipesYaml = loadPipesYaml();
         loadConfigs();
 
         if (!variantRegistry.hasVariants()) {
@@ -56,16 +60,13 @@ public class PipesPlugin extends JavaPlugin {
 
         CustomBlockRegistry coreLibRegistry = CoreLibPlugin.getInstance().getRegistry();
 
-        // Load static block definitions from YAML, then overlay runtime callbacks
-        try (InputStream stream = getResource("pipes.yml")) {
-            if (stream != null) {
-                BlockLoader.load(stream, coreLibRegistry, getLogger());
-            } else {
-                getLogger().severe("Could not find pipes.yml in JAR!");
-            }
-        } catch (Exception e) {
-            getLogger().severe("Failed to load pipes.yml: " + e.getMessage());
+        // Load static block definitions from YAML, then overlay runtime callbacks. A disabled pipe type
+        // (config.yml disabled-pipes) is registered without its recipes: uncraftable, but any already
+        // placed keep working.
+        for (PipeVariant variant : variantRegistry.getAllVariants()) {
+            if (!variantRegistry.isEnabled(variant.id())) pipesYaml.set("blocks." + variant.id() + ".recipes", null);
         }
+        BlockLoader.load(pipesYaml, coreLibRegistry, getLogger());
         PipeBlockRegistrar.register(coreLibRegistry, this);
 
         // WorldFilter
@@ -239,6 +240,7 @@ public class PipesPlugin extends JavaPlugin {
         if (args[1].equalsIgnoreCase("ALL")) {
             int given = 0;
             for (PipeVariant variant : variantRegistry.getAllVariants()) {
+                if (!variantRegistry.isEnabled(variant.id())) continue;
                 ItemStack item = getPipeItem(variant);
                 if (item != null) {
                     player.getInventory().addItem(item);
@@ -250,7 +252,7 @@ public class PipesPlugin extends JavaPlugin {
         }
 
         PipeVariant variant = variantRegistry.getVariant(args[1]);
-        if (variant == null) {
+        if (variant == null || !variantRegistry.isEnabled(variant.id())) {
             sender.sendMessage(Component.text("Unknown item: " + args[1]).color(NamedTextColor.RED));
             return true;
         }
@@ -329,7 +331,7 @@ public class PipesPlugin extends JavaPlugin {
             List<String> completions = new ArrayList<>();
             completions.add("ALL");
             for (PipeVariant variant : variantRegistry.getAllVariants()) {
-                completions.add(variant.id());
+                if (variantRegistry.isEnabled(variant.id())) completions.add(variant.id());
             }
             return completions.stream().filter(s -> s.toLowerCase().startsWith(prefix)).toList();
         }
@@ -367,9 +369,22 @@ public class PipesPlugin extends JavaPlugin {
         }
     }
 
+    private YamlConfiguration loadPipesYaml() {
+        try (InputStream stream = getResource("pipes.yml")) {
+            if (stream != null) {
+                return YamlConfiguration.loadConfiguration(new InputStreamReader(stream, StandardCharsets.UTF_8));
+            }
+            getLogger().severe("Could not find pipes.yml in JAR!");
+        } catch (Exception e) {
+            getLogger().severe("Failed to load pipes.yml: " + e.getMessage());
+        }
+        return new YamlConfiguration();
+    }
+
     private void loadConfigs() {
         saveDefaultConfig();
         reloadConfig();
+        migrateConfig();
         pipeConfig = new PipeConfig(getConfig());
 
         File externalDisplayConfig = new File(getDataFolder(), "display.yml");
@@ -394,16 +409,55 @@ public class PipesPlugin extends JavaPlugin {
         }
         displayConfig = new DisplayConfig(displayConfigRaw);
 
-        ConfigurationSection variantsSection = getConfig().getConfigurationSection("variants");
-        variantRegistry.loadFromConfig(variantsSection);
+        variantRegistry.loadFromBlocks(pipesYaml.getConfigurationSection("blocks"),
+            getConfig().getStringList("disabled-pipes"));
+    }
+
+    /**
+     * Pre-0.5.0 configs defined every pipe type under {@code variants:} (and {@code cauldron-conversions:}).
+     * Types now come from pipes.yml in the jar, so an old list would silently leave out every type added
+     * since (the filter pipes). Strip those sections, add {@code disabled-pipes}, keep the old file as a
+     * backup. Runs on every load; a no-op once the config is current.
+     */
+    private void migrateConfig() {
+        FileConfiguration cfg = getConfig();
+        boolean legacy = cfg.contains("variants", true) || cfg.contains("cauldron-conversions", true);
+        boolean missingList = !cfg.contains("disabled-pipes", true);
+        if (!legacy && !missingList) return;
+
+        File file = new File(getDataFolder(), "config.yml");
+        if (legacy) {
+            File backup = new File(getDataFolder(), "config-pre-0.5.0.yml");
+            try {
+                if (!backup.exists()) java.nio.file.Files.copy(file.toPath(), backup.toPath());
+            } catch (java.io.IOException e) {
+                getLogger().warning("Could not back up config.yml before migrating it: " + e.getMessage());
+                return;   // leave the file untouched; the old sections are simply not read
+            }
+            cfg.set("variants", null);
+            cfg.set("cauldron-conversions", null);
+        }
+        if (missingList) {
+            cfg.set("disabled-pipes", List.of());
+            cfg.setComments("disabled-pipes", List.of(
+                "Pipe types to turn off. Pipe types themselves are defined by the plugin (pipes.yml in the jar);",
+                "list ids here (e.g. gold_filter_pipe) to make them uncraftable and hide them from /pipes give.",
+                "Pipes already placed in the world keep working. Takes effect on restart."));
+        }
+        saveConfig();
+        if (legacy) {
+            getLogger().info("Migrated config.yml: pipe types now come from the plugin itself, so the old"
+                + " 'variants' and 'cauldron-conversions' sections were removed (to turn a type off, list it"
+                + " under 'disabled-pipes'). The previous file is saved as config-pre-0.5.0.yml.");
+        }
     }
 
     private void registerCauldronConversions(CustomBlockRegistry registry) {
-        ConfigurationSection section = getConfig().getConfigurationSection("cauldron-conversions");
+        ConfigurationSection section = pipesYaml.getConfigurationSection("cauldron_conversions");
         if (section == null) return;
         for (String fromId : section.getKeys(false)) {
             String toId = section.getString(fromId);
-            if (toId == null) continue;
+            if (toId == null || !variantRegistry.isEnabled(toId)) continue;
             String fullFrom = "pipes:" + fromId;
             String fullTo = "pipes:" + toId;
             if (registry.getType(fullFrom) == null) {

@@ -59,6 +59,7 @@ Two new frame blocks join the Casing, a Ratchet valve arrives, and mechanisms le
 
 ## Fixes
 
+- **Land-claim protection now applies to custom carts and banners.** Breaking a custom cart inside a claim a protection plugin refused still removed it and dropped its item and contents; and placing or shearing fence flags, large, huge and bed banners skipped protection plugins entirely, since they are display entities rather than blocks. Both now respect claims.
 - **Server hang under pulse storms** — the rotation network and custom rails now coalesce their recomputes to once per tick, and the plugin's own block writes no longer feed their own physics loop.
 - **Wall heads on mechanisms no longer render backwards** — the head item model's face is a half-turn from the block's, and the mechanism display path now compensates.
 - **Contraptions reliably survive a crash** — a parked mechanism is rediscovered from its own entities when its chunk loads, so a hard crash can no longer strand an invisible, unusable contraption.

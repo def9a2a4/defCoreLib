@@ -6,6 +6,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
@@ -14,25 +15,29 @@ import java.util.logging.Logger;
 public class VariantRegistry {
     private final Logger logger;
     private final Map<String, PipeVariant> variants = new LinkedHashMap<>();
+    private final Set<String> disabled = new HashSet<>();
 
     public VariantRegistry(Logger logger) {
         this.logger = logger;
     }
 
-    public void loadFromConfig(ConfigurationSection variantsSection) {
+    /**
+     * Load every pipe type from pipes.yml's {@code blocks:} — each block with a {@code pipe:} section is a
+     * variant. Disabled ids (config.yml {@code disabled-pipes}) still load, so pipes already in the world
+     * keep working; they are only withheld from crafting and {@code /pipes give} (see {@link #isEnabled}).
+     */
+    public void loadFromBlocks(ConfigurationSection blocks, Collection<String> disabledIds) {
         variants.clear();
+        disabled.clear();
 
-        if (variantsSection == null) {
-            logger.warning("No variants section found in config!");
+        if (blocks == null) {
+            logger.warning("No blocks section found in pipes.yml!");
             return;
         }
 
-        for (String variantId : variantsSection.getKeys(false)) {
-            ConfigurationSection section = variantsSection.getConfigurationSection(variantId);
-            if (section == null) {
-                logger.warning("Invalid variant section: " + variantId);
-                continue;
-            }
+        for (String variantId : blocks.getKeys(false)) {
+            ConfigurationSection section = blocks.getConfigurationSection(variantId + ".pipe");
+            if (section == null) continue;   // not a pipe (no transport behaviour)
 
             try {
                 PipeVariant variant = parseVariant(variantId, section);
@@ -42,7 +47,13 @@ public class VariantRegistry {
             }
         }
 
-        logger.info("Loaded " + variants.size() + " pipe variant(s)");
+        for (String id : disabledIds) {
+            if (variants.containsKey(id)) disabled.add(id);
+            else logger.warning("disabled-pipes: unknown pipe type '" + id + "' — ignored");
+        }
+
+        logger.info("Loaded " + variants.size() + " pipe variant(s)"
+            + (disabled.isEmpty() ? "" : ", " + disabled.size() + " disabled"));
     }
 
     private PipeVariant parseVariant(String id, ConfigurationSection section) {
@@ -92,6 +103,11 @@ public class VariantRegistry {
 
     public Collection<PipeVariant> getAllVariants() {
         return Collections.unmodifiableCollection(variants.values());
+    }
+
+    /** False for a type listed in config.yml {@code disabled-pipes}: uncraftable and not handed out. */
+    public boolean isEnabled(String id) {
+        return variants.containsKey(id) && !disabled.contains(id);
     }
 
     public boolean hasVariants() {

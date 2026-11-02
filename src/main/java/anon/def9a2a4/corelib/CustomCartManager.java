@@ -849,7 +849,9 @@ final class CustomCartManager implements Listener {
 
     // ── Destruction / pick-block ────────────────────────────────────────────
 
-    @EventHandler(priority = EventPriority.HIGH)
+    // ignoreCancelled: a protection plugin that refused the break (cart in someone else's claim) must win —
+    // otherwise this handler still removes the cart and hands out its item and contents.
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onCartDestroyed(VehicleDestroyEvent event) {
         if (!(event.getVehicle() instanceof Minecart cart)) return;
         CartState state = tracked.remove(cart.getUniqueId());

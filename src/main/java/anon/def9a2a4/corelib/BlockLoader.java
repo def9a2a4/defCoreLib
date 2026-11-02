@@ -37,7 +37,15 @@ public final class BlockLoader {
      * @return number of blocks loaded
      */
     public static int load(InputStream input, CustomBlockRegistry registry, Logger logger) {
-        YamlConfiguration yaml = YamlConfiguration.loadConfiguration(new InputStreamReader(input));
+        return load(YamlConfiguration.loadConfiguration(new InputStreamReader(input)), registry, logger);
+    }
+
+    /**
+     * Load all block definitions from an already-parsed YAML document — for a plugin that reads the same
+     * file for its own keys, or adjusts it (e.g. strips a disabled block's recipes) before registering.
+     * @return number of blocks loaded
+     */
+    public static int load(YamlConfiguration yaml, CustomBlockRegistry registry, Logger logger) {
         String namespace = yaml.getString("namespace", "custom");
 
         // Optional named-texture registry: alias -> base64. Display/block textures may

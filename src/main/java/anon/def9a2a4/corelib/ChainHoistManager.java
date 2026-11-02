@@ -585,13 +585,18 @@ final class ChainHoistManager implements Listener {
                 // consumer FIRST — the skull and its PDC are still there, so getTypeFromBlock would say the
                 // hoist is alive and we would bill an inventory dropStorage has already emptied (free
                 // chains) and re-apply state to a block one statement from AIR (orphaned displays). `dying`
-                // is the only signal available at that instant. Descend is already square — the reservation
-                // pre-paid the landed links. Rising banked links into an inventory that just hit the floor:
-                // drop them as items so the matter isn't destroyed.
+                // is the only signal available at that instant. The inventory just hit the floor, so whatever
+                // this stroke owes goes out as items instead: descend reserved its whole budget up front and
+                // owes back the un-travelled remainder (same count as the refund below); rising banked the
+                // links it aired.
                 if (dying.contains(hoistKey)) {
-                    if (!descend && linksDeleted[0] > 0) {
+                    int owed = descend
+                        ? budget - Math.max(0, Math.min(budget,
+                            (int) Math.ceil(hoist.getY() - mech.pivot().getY() - 1e-6)))
+                        : linksDeleted[0];
+                    if (owed > 0) {
                         hoist.getWorld().dropItemNaturally(hoist.getLocation().add(0.5, 1.0, 0.5),
-                            new ItemStack(CHAIN_MATERIAL, linksDeleted[0]));
+                            new ItemStack(CHAIN_MATERIAL, owed));
                     }
                     return;
                 }

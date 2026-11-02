@@ -144,7 +144,7 @@ public class BannerManager implements Listener {
 
     // ── Placement ────────────────────────────────────────────────────────
 
-    @EventHandler(priority = EventPriority.NORMAL)
+    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onPlayerInteract(PlayerInteractEvent event) {
         if (!active) return; // banner placement gated on the bbanners plugin
         if (event.getAction() != Action.RIGHT_CLICK_BLOCK) return;
@@ -168,8 +168,17 @@ public class BannerManager implements Listener {
         boolean isLarge = !isHuge && LargeBannerRecipes.isLargeBanner(held);
         boolean isFenceHost = isFlagHost(clicked.getType());
         boolean sneaking = event.getPlayer().isSneaking();
+        boolean bedBanner = sneaking && isBed(clicked.getType()) && !isLarge && !isHuge;
+        if (!bedBanner && !(isFenceHost && !sneaking) && !isHuge && !isLarge) return;   // vanilla placement
+        // Every branch below spawns display entities instead of placing a block, so no BlockPlaceEvent
+        // ever reaches protection plugins on its own — ask them first.
+        Block probed = bedBanner || (isFenceHost && !sneaking) ? clicked : clicked.getRelative(event.getBlockFace());
+        if (!mayBuild(event.getPlayer(), probed, held)) {
+            event.setCancelled(true);
+            return;
+        }
 
-        if (sneaking && isBed(clicked.getType()) && !isLarge && !isHuge) {
+        if (bedBanner) {
             event.setCancelled(true);
             placeBedBanner(event.getPlayer(), clicked, held);
         } else if (isFenceHost && !sneaking) {
@@ -181,6 +190,19 @@ public class BannerManager implements Listener {
             float scale = isHuge ? HUGE_SCALE : LARGE_SCALE;
             placeLargeBanner(event.getPlayer(), clicked, event.getBlockFace(), held, scale);
         }
+    }
+
+    /**
+     * Whether protection plugins (WorldGuard, GriefPrevention, …) let this player build at {@code block}.
+     * Banners here are display entities, so no real place/break event ever reaches them: fire a probe
+     * BlockPlaceEvent that changes nothing and see if anyone cancels it. A place event, not a break event —
+     * a probe break would run this plugin's own break teardown (and this class's host-break removal).
+     */
+    private static boolean mayBuild(Player player, Block block, ItemStack held) {
+        org.bukkit.event.block.BlockPlaceEvent probe = new org.bukkit.event.block.BlockPlaceEvent(
+            block, block.getState(), block, held, player, true, EquipmentSlot.HAND);
+        org.bukkit.Bukkit.getPluginManager().callEvent(probe);
+        return !probe.isCancelled() && probe.canBuild();
     }
 
     private void placeFlag(Player player, Block block, BlockFace clickedFace, ItemStack banner, float scale) {
@@ -253,6 +275,8 @@ public class BannerManager implements Listener {
         String prefix = TAG_PREFIX + blockKey(clicked) + ":";
         List<Display> entities = DisplayUtil.findByTag(clicked.getLocation(), prefix, SEARCH_RADIUS);
         if (entities.isEmpty()) return false;
+        // Shearing is a display-entity removal — no break event reaches protection plugins on its own.
+        if (!mayBuild(player, clicked, player.getInventory().getItemInMainHand())) return true;   // refused
 
         Set<String> droppedFaces = new HashSet<>();
         for (Display entity : entities) {

@@ -1711,7 +1711,10 @@ public class CustomBlockRegistry {
         // (comparator drive); wipe it on any removal path (break / explosion / piston / burn all funnel
         // through here) so the filler is never dropped or spilled — only the block's own item drops.
         if (type.physicalMaterial() != null && block.getState() instanceof Container container) {
-            container.getInventory().clear();
+            // A chest paired into a double chest returns the COMBINED inventory from getInventory() —
+            // clearing that would wipe the neighbouring chest too. Clear only this block's own half.
+            if (container instanceof org.bukkit.block.Chest chest) chest.getBlockInventory().clear();
+            else container.getInventory().clear();
         }
 
         LocationKey key = LocationKey.of(block);

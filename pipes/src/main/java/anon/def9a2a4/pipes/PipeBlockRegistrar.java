@@ -72,6 +72,10 @@ public class PipeBlockRegistrar {
                 plugin.getFilterGui().open(event.getPlayer(), block, variant);
                 return true;
             });
+            // A mechanism capture snapshots the block's PDC BEFORE onBlockRemoved runs, so close (and save)
+            // any open menu first — else items already dragged out of the menu ride along in the stale
+            // snapshot and come back on landing.
+            builder.onCapture(block -> plugin.getFilterGui().closeFor(block));
             // The ring display entity (tag "ring") shows on/off by live redstone power: return the "off"
             // ring when the pipe is powered (switched off), else null → the YAML @filter_ring_on stands.
             // The "main" pipe body entity is left untouched. Re-invoked whenever applyConfig respawns the

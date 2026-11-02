@@ -82,6 +82,11 @@ textures:
   filter_ring_on:     "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjY4ZGQ5YTdiYjliNmYxNjI4OWE1NzBiZjBmNDc2N2ZjNTMwZjJlMDNjYmEyZmEzMGI0MGNiOWRkZTVmNDE4YSJ9fX0="
   filter_ring_off:    "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZmM5YzUyNTFhN2NmMmJiNjU3YTAyNDcyY2QyNGYyYTRhMjY4ZGNjNGZhNjljYjJiNDdkYTQyNDM1NWU4ZmY5NyJ9fX0="
 
+# Cauldron conversions — throw the pipe item into a water cauldron to convert it.
+cauldron_conversions:
+  copper_pipe: oxidized_copper_pipe
+  copper_corner_pipe: oxidized_copper_corner_pipe
+
 blocks:
 
   # ═══════════════════════════════════════════════════════════════════════
@@ -89,6 +94,10 @@ blocks:
   # ═══════════════════════════════════════════════════════════════════════
 
   copper_pipe:
+    pipe:   # transport behaviour (read by Pipes, ignored by CoreLib)
+      behavior: REGULAR
+      fluids: [water]
+      transfer: { interval-ticks: 10, items-per-transfer: 4 }
     name: "&6Copper Pipe"
     recipe_category: REDSTONE
     lore:
@@ -134,6 +143,10 @@ blocks:
       unlock_advancement: "minecraft:story/smelt_iron"
 
   iron_pipe:
+    pipe:   # transport behaviour (read by Pipes, ignored by CoreLib)
+      behavior: REGULAR
+      fluids: [water, lava]
+      transfer: { interval-ticks: 10, items-per-transfer: 8 }
     name: "&7Iron Pipe"
     recipe_category: REDSTONE
     lore:
@@ -179,6 +192,10 @@ blocks:
       unlock_advancement: "minecraft:story/smelt_iron"
 
   gold_pipe:
+    pipe:   # transport behaviour (read by Pipes, ignored by CoreLib)
+      behavior: REGULAR
+      fluids: [water]
+      transfer: { interval-ticks: 10, items-per-transfer: 16 }
     name: "&eGold Pipe"
     recipe_category: REDSTONE
     lore:
@@ -224,6 +241,10 @@ blocks:
       unlock_advancement: "minecraft:story/smelt_iron"
 
   oxidized_copper_pipe:
+    pipe:   # transport behaviour (read by Pipes, ignored by CoreLib)
+      behavior: REGULAR
+      fluids: [water]
+      transfer: { interval-ticks: 10, items-per-transfer: 1 }
     name: "&2Oxidized Copper Pipe"
     recipe_category: REDSTONE
     lore:
@@ -275,6 +296,11 @@ blocks:
   # ═══════════════════════════════════════════════════════════════════════
 
   copper_filter_pipe:
+    pipe:   # transport behaviour (read by Pipes, ignored by CoreLib)
+      behavior: REGULAR
+      fluids: []
+      transfer: { interval-ticks: 10, items-per-transfer: 4 }
+      filter: { slots: 5, allow-blacklist-toggle: false, allow-exact-toggle: false }
     name: "&6Copper Filter Pipe"
     recipe_category: REDSTONE
     lore:
@@ -329,6 +355,11 @@ blocks:
       unlock_advancement: "minecraft:story/smelt_iron"
 
   iron_filter_pipe:
+    pipe:   # transport behaviour (read by Pipes, ignored by CoreLib)
+      behavior: REGULAR
+      fluids: []
+      transfer: { interval-ticks: 10, items-per-transfer: 8 }
+      filter: { slots: 9, allow-blacklist-toggle: true, allow-exact-toggle: false }
     name: "&7Iron Filter Pipe"
     recipe_category: REDSTONE
     lore:
@@ -383,6 +414,11 @@ blocks:
       unlock_advancement: "minecraft:story/smelt_iron"
 
   gold_filter_pipe:
+    pipe:   # transport behaviour (read by Pipes, ignored by CoreLib)
+      behavior: REGULAR
+      fluids: []
+      transfer: { interval-ticks: 10, items-per-transfer: 16 }
+      filter: { slots: 18, allow-blacklist-toggle: true, allow-exact-toggle: true }
     name: "&eGold Filter Pipe"
     recipe_category: REDSTONE
     lore:
@@ -441,6 +477,10 @@ blocks:
   # ═══════════════════════════════════════════════════════════════════════
 
   copper_corner_pipe:
+    pipe:   # transport behaviour (read by Pipes, ignored by CoreLib)
+      behavior: CORNER
+      fluids: [water]
+      transfer: { interval-ticks: 10, items-per-transfer: 4 }
     name: "&6Copper Corner Pipe"
     recipe_category: REDSTONE
     lore:
@@ -487,6 +527,10 @@ blocks:
       unlock_advancement: "minecraft:story/smelt_iron"
 
   iron_corner_pipe:
+    pipe:   # transport behaviour (read by Pipes, ignored by CoreLib)
+      behavior: CORNER
+      fluids: [water, lava]
+      transfer: { interval-ticks: 10, items-per-transfer: 8 }
     name: "&7Iron Corner Pipe"
     recipe_category: REDSTONE
     lore:
@@ -533,6 +577,10 @@ blocks:
       unlock_advancement: "minecraft:story/smelt_iron"
 
   gold_corner_pipe:
+    pipe:   # transport behaviour (read by Pipes, ignored by CoreLib)
+      behavior: CORNER
+      fluids: [water]
+      transfer: { interval-ticks: 10, items-per-transfer: 16 }
     name: "&eGold Corner Pipe"
     recipe_category: REDSTONE
     lore:
@@ -579,6 +627,10 @@ blocks:
       unlock_advancement: "minecraft:story/smelt_iron"
 
   oxidized_copper_corner_pipe:
+    pipe:   # transport behaviour (read by Pipes, ignored by CoreLib)
+      behavior: CORNER
+      fluids: [water]
+      transfer: { interval-ticks: 10, items-per-transfer: 1 }
     name: "&2Oxidized Copper Corner Pipe"
     recipe_category: REDSTONE
     lore:

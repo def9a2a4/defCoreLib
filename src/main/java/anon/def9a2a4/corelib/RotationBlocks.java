@@ -1279,6 +1279,26 @@ final class RotationBlocks {
         }
     }
 
+    /** The other direction: a VANILLA chest placed beside a chest-backed custom block pairs with it (copper
+     *  chests pair with each other regardless of wax/oxidation). The combined inventory would expose the
+     *  custom block's sealed half to players and hoppers, and its break-time wipe would take the vanilla
+     *  half with it. Custom chests are otherwise always SINGLE, so a non-SINGLE custom neighbour can only be
+     *  paired with the chest just placed — split both. */
+    static void unpairFromCustomNeighbors(CustomBlockRegistry registry, Block placed) {
+        if (!(placed.getBlockData() instanceof org.bukkit.block.data.type.Chest chest)
+                || chest.getType() == org.bukkit.block.data.type.Chest.Type.SINGLE) return;
+        for (BlockFace face : new BlockFace[]{
+                BlockFace.NORTH, BlockFace.SOUTH, BlockFace.EAST, BlockFace.WEST}) {
+            Block n = placed.getRelative(face);
+            if (n.getBlockData() instanceof org.bukkit.block.data.type.Chest nc
+                    && nc.getType() != org.bukkit.block.data.type.Chest.Type.SINGLE
+                    && registry.getTypeFromBlock(n) != null) {
+                unpairChest(n);
+                unpairChest(placed);
+            }
+        }
+    }
+
     /** Belt-and-braces for chest-backed blocks (boiler, water wheel): never let the placed
      *  block merge into a double chest. Vanilla pairs BOTH halves, so heal the cardinal
      *  neighbors too — without this a custom chest next door keeps its paired half and
@@ -1560,14 +1580,24 @@ final class RotationBlocks {
 
     /**
      * One placer work-step: set the first placeable vanilla block from {@code source} into a
-     * replaceable {@code target} cell (with sound + particles). Custom plugin head-blocks and
-     * non-block items are skipped; {@code setType} runs with physics. The caller owns the powered
+     * replaceable {@code target} cell (with sound + particles). Custom plugin head-blocks,
+     * non-block items, items carrying data and two-block-tall blocks are skipped; {@code setType}
+     * runs with physics. The caller owns the powered
      * gate, the target cell, and the source inventory — the static path ({@link #placerTick})
      * passes the facing cell + host storage; a placer riding a mechanism
      * ({@code MechanismRotationDriver}) passes its live facing cell + travelling storage.
      *
      * @return true when a block was placed
      */
+    private static boolean isMultiBlock(Material m) {
+        org.bukkit.block.data.BlockData d = m.createBlockData();
+        if (d instanceof org.bukkit.block.data.type.Bed) return true;
+        // Bisected = top/bottom half; stairs and trapdoors use it for orientation but are single blocks.
+        return d instanceof org.bukkit.block.data.Bisected
+            && !(d instanceof org.bukkit.block.data.type.Stairs)
+            && !(d instanceof org.bukkit.block.data.type.TrapDoor);
+    }
+
     static boolean placerEffect(Block target, Inventory source) {
         if (!target.isReplaceable()) return false; // front occupied → idle
 
@@ -1577,6 +1607,10 @@ final class RotationBlocks {
             Material m = it.getType();
             if (!m.isBlock() || m.isAir()) continue;
             if (CustomBlockRegistry.getItemTypeId(it) != null) continue; // skip custom plugin blocks
+            // setType places a bare block: an item's data (a shulker box's contents, a name, banner
+            // patterns, a head's skin) would be deleted, and a door/bed/tall plant would land as one
+            // half that later breaks with no drop. Leave those in the source.
+            if (it.hasItemMeta() || isMultiBlock(m)) continue;
 
             target.setType(m);
             it.setAmount(it.getAmount() - 1);

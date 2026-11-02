@@ -126,6 +126,9 @@ public class MechanismRegistry {
      * Opt a mechanism into crash-safe persistence: writes its state to disk now (and future saves),
      * so on shutdown/world-unload it is saved-and-left rather than disassembled, then recovered on
      * chunk load. Call after assembly. No-op for a non-{@link BasicMechanism}.
+     *
+     * @throws java.io.UncheckedIOException if the state could not be written. An assembly that cannot be
+     *         persisted should be rolled back: without the file, the next load reaps its entities.
      */
     public void persist(Mechanism mech) {
         if (!(mech instanceof BasicMechanism bm)) return;

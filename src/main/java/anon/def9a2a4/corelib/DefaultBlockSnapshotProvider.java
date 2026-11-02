@@ -221,7 +221,9 @@ final class DefaultBlockSnapshotProvider implements BlockSnapshotProvider {
         // Lectern book + page
         if (block.getState() instanceof Lectern lectern) {
             String book = str(from.get("bs_lectern_book"));
-            if (book != null) lectern.getInventory().setItem(0, decodeItem(book));
+            // Snapshot inventory, not getInventory(): on a placed state that one writes the LIVE tile, and
+            // update() below then copies this (bookless) snapshot over it — erasing the book.
+            if (book != null) lectern.getSnapshotInventory().setItem(0, decodeItem(book));
             Object page = from.get("bs_lectern_page");
             if (page instanceof Number pg) lectern.setPage(pg.intValue());
             lectern.update(true, false);
@@ -254,7 +256,7 @@ final class DefaultBlockSnapshotProvider implements BlockSnapshotProvider {
                 }
             }
             String potItem = str(from.get("bs_pot_item"));
-            if (potItem != null) pot.getInventory().setItem(0, decodeItem(potItem));
+            if (potItem != null) pot.getSnapshotInventory().setItem(0, decodeItem(potItem));   // see lectern
             pot.update(true, false);
         }
 

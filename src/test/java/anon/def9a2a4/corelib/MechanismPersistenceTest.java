@@ -39,6 +39,18 @@ class MechanismPersistenceTest {
         assertEquals(2, r.blocks.size());
     }
 
+    /** A failed write must reach the caller: assembly rolls back on it, shutdown and unload disassemble instead.
+     *  It used to be logged and swallowed, so none of those fallbacks ever ran. */
+    @Test
+    void aFailedSaveThrowsAndRecordsNothing() throws Exception {
+        MechanismState st = MechanismStateTest.sample();
+        File worldDir = dataFolder.resolve("mechanisms").resolve(st.worldName).toFile();
+        assertTrue(worldDir.getParentFile().mkdirs());
+        assertTrue(worldDir.createNewFile());   // a FILE where the world's directory should be: mkdirs fails
+        assertThrows(java.io.UncheckedIOException.class, () -> p.save(st));
+        assertFalse(p.hasMetadata(st.worldName, st.mechId));
+    }
+
     @Test
     void saveLeavesNoTempFile() {
         MechanismState st = MechanismStateTest.sample();

@@ -6,6 +6,10 @@ Three new **filter pipes** that only let the items you choose pass through, plus
 
 Needs DefCoreLib 0.5.0 or newer, on Paper 1.21.11 or newer.
 
+## Read before upgrading
+
+- **`config.yml` is migrated on first start.** Pipe types are now defined by the plugin itself, so the `variants:` and `cauldron-conversions:` sections are removed from your config (your old file is kept as `config-pre-0.5.0.yml`). Without this, an upgraded server's old type list silently left out the new filter pipes: craftable, but dead once placed. Any tuning you made to a type's transfer rate is no longer read. To turn a pipe type off, list it under the new `disabled-pipes:` — it becomes uncraftable and leaves `/pipes give`, while ones already placed keep working.
+
 ## Filter pipes (new)
 
 - Three new pipes — **Copper**, **Iron**, and **Gold Filter Pipe** — that only let the items you choose pass through. A filter gates items anywhere on a run, not just against the source chest: put one at the start to pull only matching items out of a container, or mid-line to block the rest as they flow past. Two filter pipes in series must both allow an item.
@@ -28,6 +32,8 @@ Needs DefCoreLib 0.5.0 or newer, on Paper 1.21.11 or newer.
 
 ## Fixes
 
+- **Filter pipe moved by a mechanism duplicated items** — if a rotator, piston or cart picked up a filter pipe while a player had its menu open, items already taken out of the menu came back when it landed. The menu is now closed and saved before the move.
+- **Pipe items in a cauldron with a hopper underneath** — converting copper pipes to oxidized ones counted the stack as it was when thrown, so items a hopper had already pulled out were converted a second time. It now converts what is actually left.
 - **Filter-menu duplication** — a filter's config menu holds real, draggable copies of the items while the master copy lives in the block, so a second live menu was a dupe. Only one player can have a given filter open at a time now; a second is told it's in use. Breaking a filter pipe while its menu is open force-closes the menu first, so the drop reflects your latest edits instead of leaving a stale copy behind.
 - **Crafting an oxidized copper pipe or corner with a water bucket** now returns the bucket empty (and a single bucket makes only one at a time), instead of leaving the bucket unconsumed.
 - Fixed a server error when the pipe set was modified while the network was ticking.

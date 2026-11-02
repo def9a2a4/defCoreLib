@@ -47,6 +47,11 @@ Two new frame blocks — the **Gearbox** and the **Chassis** — a new **Ratchet
 
 ## Fixes
 
+- **Chain hoist broken while lowering** lost up to 47 chains — the chain set aside for the stroke was never given back. The unused chain now drops with the hoist.
+- **Placer emptied shulker boxes** — a placer fed a filled shulker box placed it empty and deleted the contents; names, banner patterns and head skins were lost the same way, and doors, beds and tall plants were placed as one half that later broke with no drop. The placer now leaves those items in its source and places only plain blocks.
+- **Copper chest beside a Boiler or Water Wheel** — both are copper chests underneath, so a copper chest placed next to one joined it into a double chest; breaking the Boiler then wiped the neighbour's contents, and hoppers could feed the sealed half. Placing a chest there no longer pairs them, an existing pairing splits the first time it is opened, and breaking one never touches the other's items.
+- **Chain pulley glued into a mechanism duplicated chains** — the link's chains dropped when it moved, but the link came back after a restart, so breaking the pulley dropped them again.
+- **A carried lectern lost its book, and a decorated pot its item**, on landing.
 - **Server hang under pulse storms** — the plugin's own block writes no longer re-trigger their own physics/recalc feedback loop, and reactive-neighbor and custom-rail updates now coalesce to a single recompute per network/rail per tick under a comparator or observer pulse storm. A throwing reactive handler is isolated and logged once, never fatal to the tick.
 - **Carried-hoist glue integrity** — a carried hoist that would be tipped off its vertical column (a horizontal-axis drawbridge) or grabbed mid-stroke is now **refused** rather than corrupted, and a hoist's stored platform glue is cleared whenever its chain length changes out of band (a link mined, placed, or blown up, or the hoist landing with a shortened chain), so its offsets can never mis-reference.
 - **Seed oil returns its bottle** — burning a Seed Oil (a bottled fuel) in a fuel-fed machine now returns the empty glass bottle to the fuel storage (dropping it at the block if the storage is full) instead of consuming the container.
