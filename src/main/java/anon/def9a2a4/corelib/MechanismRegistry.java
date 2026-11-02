@@ -2882,6 +2882,11 @@ public class MechanismRegistry implements org.bukkit.event.Listener {
         if (rotationDriver != null) rotationDriver.setDemand(mech, blockIndex, demand);
     }
 
+    /** Seconds of fuel left aboard at the current burn: see the driver's fuelSecondsLeft. For a HUD. */
+    public double fuelSecondsLeft(Mechanism mech) {
+        return mech instanceof BasicMechanism bm && rotationDriver != null ? rotationDriver.fuelSecondsLeft(bm) : -1;
+    }
+
     boolean isEngineFuelled(BasicMechanism mech, int blockIndex) {
         return rotationDriver != null && rotationDriver.isEngineFuelled(mech, blockIndex);
     }

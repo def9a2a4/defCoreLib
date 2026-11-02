@@ -47,7 +47,7 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
      * <ul>
      *   <li>1 — 0.5.0: crash recovery from the found vehicle; a crash-undone teardown is redone from the state
      *       file; {@link MechanismRegistry#discardPersistedState}, {@link MechanismRegistry#isRecoveryPending};
-     *       {@link MechanismTeardownRedoEvent}; fuel burned by use.</li>
+     *       {@link MechanismTeardownRedoEvent}; {@link MechanismRegistry#fuelSecondsLeft}; fuel burned by use.</li>
      * </ul>
      */
     public static final int API_LEVEL = 1;

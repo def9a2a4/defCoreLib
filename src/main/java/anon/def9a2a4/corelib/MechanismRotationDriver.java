@@ -127,6 +127,7 @@ final class MechanismRotationDriver {
         final Map<Integer, Long> lastWorked = new HashMap<>();
         final Map<Integer, Integer> workExtra = new HashMap<>();   // power drawn above rating (batching)
         final Map<Integer, double[]> burnAcc = new HashMap<>();
+        final Map<Integer, Double> lastBurn = new HashMap<>();      // blockIndex → engine-ticks burned per second
         // Engines that are running (fuelled) but burned nothing at the last engine tick — their smoke
         // or flame is muted, so a parked ship doesn't look like it is burning fuel.
         final java.util.Set<Integer> idleEngines = new java.util.HashSet<>();
@@ -382,6 +383,7 @@ final class MechanismRotationDriver {
                         ? st.demand.getOrDefault(idx, 0.0) * config.thrusterBurnMultiplier
                         : fracByComponent[k] * config.engineBurnMultiplier;
                     if (frac <= 0) st.idleEngines.add(idx); else st.idleEngines.remove(idx);
+                    st.lastBurn.put(idx, frac);
                     int burns = EngineBurn.step(st.burnAcc.computeIfAbsent(idx, i -> new double[1]), frac);
                     for (int b = 0; b < burns; b++) {
                         if (fuel <= 0) {
@@ -462,6 +464,34 @@ final class MechanismRotationDriver {
     }
 
     /** Whether an engine aboard has fuel — burning or not. False for anything that isn't an engine. */
+    /**
+     * Seconds until the first burning engine aboard runs dry at its current burn, counting its counter and the
+     * fuel in its storage. {@code +Infinity} when it has engines but none is burning; {@code -1} when it has none.
+     */
+    double fuelSecondsLeft(BasicMechanism mech) {
+        MechState st = states.get(mech.id());
+        if (st == null) return -1;
+        double least = -1;
+        for (NodeSpec spec : st.specs) {
+            if (spec.meta().kind() != RotationConfig.MechKind.ENGINE) continue;
+            int idx = spec.blockIndex();
+            double burn = st.lastBurn.getOrDefault(idx, 0.0);
+            double secs = Double.POSITIVE_INFINITY;
+            if (burn > 0) {
+                double left = st.engineFuel.getOrDefault(idx, 0);
+                Inventory inv = mech.getStorage(idx);
+                if (inv != null) {
+                    for (org.bukkit.inventory.ItemStack it : inv.getContents()) {
+                        if (it != null) left += (double) RotationBlocks.fuelTicksFor(it, fuelManager) * it.getAmount();
+                    }
+                }
+                secs = left / burn;
+            }
+            least = least < 0 ? secs : Math.min(least, secs);
+        }
+        return least;
+    }
+
     boolean isEngineFuelled(BasicMechanism mech, int blockIndex) {
         MechState st = states.get(mech.id());
         if (st == null) return false;
