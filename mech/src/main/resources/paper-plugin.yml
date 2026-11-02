@@ -21,5 +21,5 @@ dependencies:
       required: false
 permissions:
   mech.admin:
-    description: Mechanism admin commands (advance)
+    description: Mechanism admin commands (/mech advance). /mech help is open to everyone.
     default: op

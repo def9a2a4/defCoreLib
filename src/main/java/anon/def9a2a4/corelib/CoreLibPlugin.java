@@ -2640,21 +2640,15 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!command.getName().equalsIgnoreCase("defcorelib")) return false;
-        if (args.length == 0) {
-            sender.sendMessage(Component.text(sender.hasPermission("corelib.admin")
-                    ? "Usage: /defcorelib <catalog|give|give_demo|give_demo_rotation|list|colliders|reloadbanners|cleanorphans|refreshdisplays>"
-                    : "Usage: /defcorelib catalog", NamedTextColor.YELLOW));
+        if (CommandHelp.wantsHelp(args)) {
+            COMMAND_HELP.sendHelp(sender);
             return true;
         }
 
         // Per-subcommand permission: `catalog` is public browse (corelib.catalog, default true); every
         // other subcommand is admin-only (corelib.admin). Replaces the former blanket command-level gate.
         String sub = args[0].toLowerCase(java.util.Locale.ROOT);
-        String needed = sub.equals("catalog") ? "corelib.catalog" : "corelib.admin";
-        if (!sender.hasPermission(needed)) {
-            sender.sendMessage(Component.text("You don't have permission for /defcorelib " + sub + ".", NamedTextColor.RED));
-            return true;
-        }
+        if (!COMMAND_HELP.checkPermission(sender, sub)) return true;
 
         switch (sub) {
             case "catalog" -> {
@@ -2681,24 +2675,11 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
                 }
             }
             case "give" -> {
-                if (!(sender instanceof Player player)) {
-                    sender.sendMessage(Component.text("Must be a player", NamedTextColor.RED));
-                    return true;
-                }
                 if (args.length < 2) {
-                    sender.sendMessage(Component.text("Usage: /defcorelib give <id> [amount]", NamedTextColor.YELLOW));
+                    COMMAND_HELP.sendUsage(sender, "give");
                     return true;
                 }
                 String blockId = args[1];
-                int amount = 1;
-                if (args.length >= 3) {
-                    try {
-                        amount = Math.max(1, Math.min(64, Integer.parseInt(args[2])));
-                    } catch (NumberFormatException e) {
-                        sender.sendMessage(Component.text("Invalid amount: " + args[2], NamedTextColor.RED));
-                        return true;
-                    }
-                }
 
                 // Friendly alias: `give glue` → the registry item mech:glue_item.
                 if (blockId.equalsIgnoreCase("glue") || blockId.equalsIgnoreCase("mech:glue")) {
@@ -2729,13 +2710,7 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
                     return true;
                 }
 
-                ItemStack item = type.createItem(amount);
-
-                var overflow = player.getInventory().addItem(item);
-                for (ItemStack lf : overflow.values()) {
-                    player.getWorld().dropItemNaturally(player.getLocation(), lf);
-                }
-                sender.sendMessage(Component.text("Gave " + amount + "x " + type.fullId(), NamedTextColor.GREEN));
+                COMMAND_HELP.give(sender, "give", args, 2, List.of(type.createItem(1)), type.fullId());
             }
             case "give_demo" -> {
                 if (!(sender instanceof Player player)) {
@@ -2880,7 +2855,7 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
             }
             case "bottest" -> {
                 if (botTest != null) botTest.handle(sender, args);
-                else sender.sendMessage(Component.text("Unknown subcommand: " + args[0], NamedTextColor.RED));
+                else COMMAND_HELP.sendUnknown(sender, args[0]);
             }
             case "gluetest" -> {
                 if (!(sender instanceof Player player)) {
@@ -2925,21 +2900,37 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
                 else if (args.length >= 2 && args[1].equalsIgnoreCase("dropunpark")) drivenDemo.dropUnpark(player);
                 else drivenDemo.toggle(player);
             }
-            default -> sender.sendMessage(Component.text("Unknown subcommand: " + args[0], NamedTextColor.RED));
+            default -> COMMAND_HELP.sendUnknown(sender, args[0]);
         }
         return true;
     }
 
+    /** `/defcorelib` help, usage lines and subcommand completion. Admin-only subcommands need corelib.admin;
+     *  the hidden ones are dev/test tools, usable but kept out of help and tab completion. */
+    private static final CommandHelp COMMAND_HELP = new CommandHelp("defcorelib", "DefCoreLib",
+            "The shared core of the def9a2a4 plugins: custom blocks, mechanisms and the item catalog.")
+        .sub("catalog", "[category|search <query>]", "Browse every block and its recipe", "corelib.catalog")
+        .sub("give", "<id> [amount] [player]", "Give a custom block or item", "corelib.admin")
+        .sub("give_demo", "", "Give yourself one of every registered block", "corelib.admin")
+        .sub("give_demo_rotation", "", "Give yourself one of every Mechanism block", "corelib.admin")
+        .sub("list", "", "List every registered block id", "corelib.admin")
+        .sub("colliders", "", "Toggle the glow on mechanism colliders", "corelib.admin")
+        .sub("reloadbanners", "", "Reload the banner config", "corelib.admin")
+        .sub("cleanorphans", "[confirm]", "Find, or with confirm remove, displays left without a block", "corelib.admin")
+        .sub("refreshdisplays", "[confirm]", "Respawn the displays of every loaded custom block", "corelib.admin")
+        .hidden("showcase", "[build|anchor|export] [id]", "Build or export showcase machines", "corelib.admin")
+        .hidden("gluetest", "[clear]", "Glue connected oak planks to the head you look at", "corelib.admin")
+        .hidden("driventest", "[park|unpark|dropunpark]", "Driven-mechanism demo", "corelib.admin")
+        .hidden("bottest", "<fixture|assert> <name> [arg]", "In-game bot test hooks", "corelib.admin");
+
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         if (!command.getName().equalsIgnoreCase("defcorelib")) return List.of();
-        if (args.length == 1) {
-            List<String> subs = new ArrayList<>();
-            subs.add("catalog"); // public
-            if (sender.hasPermission("corelib.admin")) {
-                subs.addAll(List.of("give", "give_demo", "give_demo_rotation", "list", "colliders", "reloadbanners", "cleanorphans", "refreshdisplays", "gluetest", "showcase", "driventest"));
-            }
-            return subs.stream().filter(s -> s.startsWith(args[0].toLowerCase())).toList();
+        if (args.length == 1) return COMMAND_HELP.completeSubcommand(sender, args[0]);
+        if (!COMMAND_HELP.allows(sender, args[0])) return List.of();
+        if (args[0].equalsIgnoreCase("give")) {
+            List<String> tail = CommandHelp.completeGiveTail(args, 2);
+            if (tail != null) return tail;
         }
         if (args.length == 2 && args[0].equalsIgnoreCase("catalog")) {
             java.util.TreeSet<String> opts = new java.util.TreeSet<>();

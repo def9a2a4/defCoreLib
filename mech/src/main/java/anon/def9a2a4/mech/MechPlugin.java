@@ -1,6 +1,9 @@
 package anon.def9a2a4.mech;
 
+import anon.def9a2a4.corelib.CommandHelp;
 import anon.def9a2a4.corelib.CoreLibPlugin;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -65,10 +68,14 @@ public final class MechPlugin extends JavaPlugin {
         }
     }
 
-    // ── /mech advance <path|*> — op-only, for testing the tree ──────────────
+    // ── /mech: help (everyone) + advance <path|*> (op-only, for testing the tree) ──
+
+    private static final CommandHelp COMMAND_HELP = new CommandHelp("mech", "Mechanism",
+            "Rotation power, machines, moving contraptions and vehicles. Browse them with /defcorelib catalog.")
+        .sub("advance", "<path|*>", "Grant Mechanism advancements (testing)", "mech.admin");
 
     private void registerCommand() {
-        Command cmd = new Command("mech", "Mechanism admin commands", "/mech advance <path|*>", List.of()) {
+        Command cmd = new Command("mech", "Mechanism commands. /mech help lists them.", "/mech help", List.of()) {
             @Override
             public boolean execute(CommandSender sender, String label, String[] args) {
                 return onMechCommand(sender, args);
@@ -79,48 +86,47 @@ public final class MechPlugin extends JavaPlugin {
                 return onMechTab(sender, args);
             }
         };
-        cmd.setPermission("mech.admin");
         Bukkit.getCommandMap().register("mech", cmd);
     }
 
     private boolean onMechCommand(CommandSender sender, String[] args) {
-        if (!sender.hasPermission("mech.admin")) {
-            sender.sendMessage("§cNo permission.");
+        if (CommandHelp.wantsHelp(args)) {
+            COMMAND_HELP.sendHelp(sender);
             return true;
         }
-        if (args.length < 1 || !args[0].equalsIgnoreCase("advance")) {
-            sender.sendMessage("§7Usage: /mech advance <path|*>");
+        if (!args[0].equalsIgnoreCase("advance")) {
+            COMMAND_HELP.sendUnknown(sender, args[0]);
             return true;
         }
+        if (!COMMAND_HELP.checkPermission(sender, "advance")) return true;
         if (!(sender instanceof Player player)) {
-            sender.sendMessage("§cOnly a player can be granted advancements.");
+            sender.sendMessage(Component.text("Only a player can be granted advancements.", NamedTextColor.RED));
             return true;
         }
         if (advancements == null) {
-            sender.sendMessage("§cAdvancements unavailable (DefCoreLib missing).");
+            sender.sendMessage(Component.text("Advancements unavailable (DefCoreLib missing).", NamedTextColor.RED));
             return true;
         }
         if (args.length < 2) {
-            sender.sendMessage("§7Usage: /mech advance <path|*>");
+            COMMAND_HELP.sendUsage(sender, "advance");
             return true;
         }
         if (args[1].equals("*")) {
             int n = advancements.grantAll(player);
-            sender.sendMessage("§aGranted " + n + " mech advancement(s).");
+            sender.sendMessage(Component.text("Granted " + n + " mech advancement(s).", NamedTextColor.GREEN));
         } else if (advancements.grantByPath(player, args[1])) {
-            sender.sendMessage("§aGranted mech:" + args[1] + " (and ancestors).");
+            sender.sendMessage(Component.text("Granted mech:" + args[1] + " (and ancestors).", NamedTextColor.GREEN));
         } else {
-            sender.sendMessage("§cNo such advancement: mech:" + args[1]
-                    + " §7(is the mech datapack loaded?)");
+            sender.sendMessage(Component.text("No such advancement: mech:" + args[1], NamedTextColor.RED)
+                    .append(Component.text(" (is the mech datapack loaded?)", NamedTextColor.GRAY)));
         }
         return true;
     }
 
     private List<String> onMechTab(CommandSender sender, String[] args) {
-        if (args.length == 1) {
-            return "advance".startsWith(args[0].toLowerCase()) ? List.of("advance") : List.of();
-        }
-        if (args.length == 2 && args[0].equalsIgnoreCase("advance") && advancements != null) {
+        if (args.length == 1) return COMMAND_HELP.completeSubcommand(sender, args[0]);
+        if (args.length == 2 && args[0].equalsIgnoreCase("advance") && advancements != null
+                && COMMAND_HELP.allows(sender, "advance")) {
             String prefix = args[1].toLowerCase();
             List<String> paths = advancements.allPaths().stream()
                     .filter(p -> p.startsWith(prefix))

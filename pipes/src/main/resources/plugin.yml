@@ -8,9 +8,10 @@ depend: [DefCoreLib]
 
 commands:
   pipes:
-    description: Pipes admin commands
-    usage: /pipes <help|reload|give|info|delete_all|migrate>
-    permission: pipes.admin
+    description: Pipes commands (give, info, reload, migrate). /pipes help lists them.
+    usage: /pipes help
+    # No command-level permission: /pipes help is open to all, and each subcommand checks its own
+    # pipes.<name> permission (pipes.admin grants them all).
 
 permissions:
   pipes.admin:

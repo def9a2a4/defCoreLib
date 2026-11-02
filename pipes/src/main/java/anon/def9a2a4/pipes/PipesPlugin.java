@@ -16,6 +16,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 
 import anon.def9a2a4.corelib.BlockLoader;
+import anon.def9a2a4.corelib.CommandHelp;
 import anon.def9a2a4.corelib.CoreLibPlugin;
 import anon.def9a2a4.corelib.CustomBlockRegistry;
 import anon.def9a2a4.corelib.CustomHeadBlock;
@@ -30,7 +31,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.WeakHashMap;
-import java.util.stream.Stream;
 
 public class PipesPlugin extends JavaPlugin {
 
@@ -121,10 +121,11 @@ public class PipesPlugin extends JavaPlugin {
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!command.getName().equalsIgnoreCase("pipes")) return false;
 
-        if (args.length == 0 || args[0].equalsIgnoreCase("help")) {
-            sendHelp(sender);
+        if (CommandHelp.wantsHelp(args)) {
+            COMMAND_HELP.sendHelp(sender);
             return true;
         }
+        if (!COMMAND_HELP.checkPermission(sender, args[0])) return true;
 
         if (args[0].equalsIgnoreCase("reload")) {
             return handleReload(sender);
@@ -146,9 +147,19 @@ public class PipesPlugin extends JavaPlugin {
             return handleMigrate(sender);
         }
 
-        sendHelp(sender);
+        COMMAND_HELP.sendUnknown(sender, args[0]);
         return true;
     }
+
+    /** `/pipes` help, usage lines and subcommand completion. Each subcommand has its own permission;
+     *  pipes.admin grants them all. */
+    private static final CommandHelp COMMAND_HELP = new CommandHelp("pipes", "Pipes",
+            "Item pipes that move items between containers, with filter pipes for sorting.")
+        .sub("give", "<item|ALL> [amount] [player]", "Give pipe items", "pipes.give")
+        .sub("info", "", "Show pipe statistics", "pipes.info")
+        .sub("reload", "", "Reload the configuration", "pipes.reload")
+        .sub("migrate", "", "Migrate legacy (v0.2.0) pipes in loaded chunks", "pipes.migrate")
+        .sub("delete_all", "", "Delete every pipe (dangerous!)", "pipes.delete_all");
 
     /** Schedule a one-tick-later legacy sweep for a freshly enabled world. Called from
      *  WorldManager.initWorld so startup, WorldLoadEvent, and /pipes reload all funnel through the
@@ -216,40 +227,19 @@ public class PipesPlugin extends JavaPlugin {
     }
 
     private boolean handleGive(CommandSender sender, String[] args) {
-        if (!sender.hasPermission("pipes.give")) {
-            sender.sendMessage(Component.text("You don't have permission to give items.").color(NamedTextColor.RED));
-            return true;
-        }
-        if (!(sender instanceof Player player)) {
-            sender.sendMessage(Component.text("This command can only be used by players.").color(NamedTextColor.RED));
-            return true;
-        }
         if (args.length < 2) {
-            sender.sendMessage(Component.text("Usage: /pipes give <item> [amount]").color(NamedTextColor.YELLOW));
+            COMMAND_HELP.sendUsage(sender, "give");
             return true;
-        }
-
-        int amount = 1;
-        if (args.length >= 3) {
-            try {
-                amount = Math.max(1, Math.min(64, Integer.parseInt(args[2])));
-            } catch (NumberFormatException e) {
-                sender.sendMessage(Component.text("Invalid amount: " + args[2]).color(NamedTextColor.RED));
-                return true;
-            }
         }
 
         if (args[1].equalsIgnoreCase("ALL")) {
-            int given = 0;
+            List<ItemStack> items = new ArrayList<>();
             for (PipeVariant variant : variantRegistry.getAllVariants()) {
                 if (!variantRegistry.isEnabled(variant.id())) continue;
                 ItemStack item = getPipeItem(variant);
-                if (item != null) {
-                    player.getInventory().addItem(item);
-                    given++;
-                }
+                if (item != null) items.add(item);
             }
-            sender.sendMessage(Component.text("Gave " + given + " pipe item(s)!").color(NamedTextColor.GREEN));
+            COMMAND_HELP.give(sender, "give", args, 2, items, "every pipe (" + items.size() + " kinds)");
             return true;
         }
 
@@ -264,9 +254,7 @@ public class PipesPlugin extends JavaPlugin {
             sender.sendMessage(Component.text("Failed to create item for variant: " + args[1]).color(NamedTextColor.RED));
             return true;
         }
-        item.setAmount(amount);
-        player.getInventory().addItem(item);
-        sender.sendMessage(Component.text("Gave " + amount + "x " + args[1] + "!").color(NamedTextColor.GREEN));
+        COMMAND_HELP.give(sender, "give", args, 2, List.of(item), variant.id());
         return true;
     }
 
@@ -322,11 +310,8 @@ public class PipesPlugin extends JavaPlugin {
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         if (!command.getName().equalsIgnoreCase("pipes")) return List.of();
 
-        if (args.length == 1) {
-            return Stream.of("help", "reload", "give", "info", "delete_all", "migrate")
-                    .filter(s -> s.toLowerCase().startsWith(args[0].toLowerCase()))
-                    .toList();
-        }
+        if (args.length == 1) return COMMAND_HELP.completeSubcommand(sender, args[0]);
+        if (!COMMAND_HELP.allows(sender, args[0])) return List.of();
 
         if (args.length == 2 && args[0].equalsIgnoreCase("give")) {
             String prefix = args[1].toLowerCase();
@@ -338,37 +323,12 @@ public class PipesPlugin extends JavaPlugin {
             return completions.stream().filter(s -> s.toLowerCase().startsWith(prefix)).toList();
         }
 
-        if (args.length == 3 && args[0].equalsIgnoreCase("give")) {
-            return List.of("1", "16", "32", "64").stream().filter(s -> s.startsWith(args[2])).toList();
+        if (args[0].equalsIgnoreCase("give")) {
+            List<String> tail = CommandHelp.completeGiveTail(args, 2);
+            if (tail != null) return tail;
         }
 
         return List.of();
-    }
-
-    private void sendHelp(CommandSender sender) {
-        sender.sendMessage(Component.text("=== Pipes Commands ===").color(NamedTextColor.GOLD));
-        sender.sendMessage(Component.text("/pipes help").color(NamedTextColor.WHITE)
-                .append(Component.text(" - Show this help message").color(NamedTextColor.GRAY)));
-        if (sender.hasPermission("pipes.reload")) {
-            sender.sendMessage(Component.text("/pipes reload").color(NamedTextColor.WHITE)
-                    .append(Component.text(" - Reload configuration").color(NamedTextColor.GRAY)));
-        }
-        if (sender.hasPermission("pipes.give")) {
-            sender.sendMessage(Component.text("/pipes give <item> [amount]").color(NamedTextColor.WHITE)
-                    .append(Component.text(" - Give pipe items").color(NamedTextColor.GRAY)));
-        }
-        if (sender.hasPermission("pipes.info")) {
-            sender.sendMessage(Component.text("/pipes info").color(NamedTextColor.WHITE)
-                    .append(Component.text(" - View pipe statistics").color(NamedTextColor.GRAY)));
-        }
-        if (sender.hasPermission("pipes.delete_all")) {
-            sender.sendMessage(Component.text("/pipes delete_all").color(NamedTextColor.WHITE)
-                    .append(Component.text(" - Delete all pipes (dangerous!)").color(NamedTextColor.GRAY)));
-        }
-        if (sender.hasPermission("pipes.migrate")) {
-            sender.sendMessage(Component.text("/pipes migrate").color(NamedTextColor.WHITE)
-                    .append(Component.text(" - Migrate legacy (v0.2.0) pipes in loaded chunks").color(NamedTextColor.GRAY)));
-        }
     }
 
     private YamlConfiguration loadPipesYaml() {

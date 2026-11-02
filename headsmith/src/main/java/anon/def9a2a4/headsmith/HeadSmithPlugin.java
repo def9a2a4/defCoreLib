@@ -1,6 +1,7 @@
 package anon.def9a2a4.headsmith;
 
 import anon.def9a2a4.corelib.BlockLoader;
+import anon.def9a2a4.corelib.CommandHelp;
 import anon.def9a2a4.corelib.CoreLibPlugin;
 import anon.def9a2a4.corelib.CustomBlockRegistry;
 import anon.def9a2a4.corelib.CustomHeadBlock;
@@ -11,7 +12,6 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.InputStream;
@@ -72,19 +72,17 @@ public final class HeadSmithPlugin extends JavaPlugin {
         }
         CustomBlockRegistry registry = core.getRegistry();
 
-        if (args.length == 0) {
-            sender.sendMessage(Component.text(
-                    "Usage: /headsmith <give|recipes|migrate>", NamedTextColor.YELLOW));
+        if (CommandHelp.wantsHelp(args)) {
+            COMMAND_HELP.sendHelp(sender);
             return true;
         }
+        if (!COMMAND_HELP.checkPermission(sender, args[0])) return true;
 
         switch (args[0].toLowerCase(java.util.Locale.ROOT)) {
             case "give" -> handleGive(sender, registry, args);
             case "recipes" -> handleRecipes(sender, registry, args);
             case "migrate" -> {
-                if (!sender.hasPermission("headsmith.migrate")) {
-                    sender.sendMessage(Component.text("No permission.", NamedTextColor.RED));
-                } else if (migrator == null) {
+                if (migrator == null) {
                     sender.sendMessage(Component.text("Migrator unavailable (DefCoreLib missing at enable).",
                             NamedTextColor.RED));
                 } else {
@@ -93,23 +91,21 @@ public final class HeadSmithPlugin extends JavaPlugin {
                     migrator.sweep(sender);
                 }
             }
-            default -> sender.sendMessage(Component.text(
-                    "Unknown subcommand: " + args[0], NamedTextColor.RED));
+            default -> COMMAND_HELP.sendUnknown(sender, args[0]);
         }
         return true;
     }
 
+    /** `/headsmith` help, usage lines and subcommand completion. */
+    private static final CommandHelp COMMAND_HELP = new CommandHelp("headsmith", "HeadSmith",
+            "Thousands of decorative head blocks. Browse them all with /defcorelib catalog.")
+        .sub("recipes", "<give|take> [player]", "Show or hide HeadSmith recipes in a recipe book", "headsmith.recipes")
+        .sub("give", "<id> [amount] [player]", "Give a HeadSmith head", "headsmith.give")
+        .sub("migrate", "", "Convert legacy placed heads in loaded chunks", "headsmith.migrate");
+
     private void handleGive(CommandSender sender, CustomBlockRegistry registry, String[] args) {
-        if (!sender.hasPermission("headsmith.give")) {
-            sender.sendMessage(Component.text("No permission.", NamedTextColor.RED));
-            return;
-        }
-        if (!(sender instanceof Player player)) {
-            sender.sendMessage(Component.text("Must be a player.", NamedTextColor.RED));
-            return;
-        }
         if (args.length < 2) {
-            sender.sendMessage(Component.text("Usage: /headsmith give <id> [amount]", NamedTextColor.YELLOW));
+            COMMAND_HELP.sendUsage(sender, "give");
             return;
         }
         String id = args[1].contains(":") ? args[1] : NAMESPACE + ":" + args[1];
@@ -118,35 +114,14 @@ public final class HeadSmithPlugin extends JavaPlugin {
             sender.sendMessage(Component.text("Unknown head: " + args[1], NamedTextColor.RED));
             return;
         }
-        int amount = 1;
-        if (args.length >= 3) {
-            try {
-                amount = Math.max(1, Math.min(64, Integer.parseInt(args[2])));
-            } catch (NumberFormatException e) {
-                sender.sendMessage(Component.text("Invalid amount: " + args[2], NamedTextColor.RED));
-                return;
-            }
-        }
-        ItemStack item = type.createItem(amount);
-        for (ItemStack leftover : player.getInventory().addItem(item).values()) {
-            player.getWorld().dropItemNaturally(player.getLocation(), leftover);
-        }
-        sender.sendMessage(Component.text("Gave " + amount + "x " + type.fullId(), NamedTextColor.GREEN));
+        COMMAND_HELP.give(sender, "give", args, 2, List.of(type.createItem(1)), type.fullId());
     }
 
     private void handleRecipes(CommandSender sender, CustomBlockRegistry registry, String[] args) {
-        if (!sender.hasPermission("headsmith.recipes")) {
-            sender.sendMessage(Component.text("No permission.", NamedTextColor.RED));
-            return;
-        }
-        if (args.length < 2) {
-            sender.sendMessage(Component.text("Usage: /headsmith recipes <give|take> [player]", NamedTextColor.YELLOW));
-            return;
-        }
-        boolean give = args[1].equalsIgnoreCase("give");
-        boolean take = args[1].equalsIgnoreCase("take");
+        boolean give = args.length >= 2 && args[1].equalsIgnoreCase("give");
+        boolean take = args.length >= 2 && args[1].equalsIgnoreCase("take");
         if (!give && !take) {
-            sender.sendMessage(Component.text("Usage: /headsmith recipes <give|take> [player]", NamedTextColor.YELLOW));
+            COMMAND_HELP.sendUsage(sender, "recipes");
             return;
         }
         // Target: self, or the named player (another player needs headsmith.recipes.others).
@@ -182,11 +157,14 @@ public final class HeadSmithPlugin extends JavaPlugin {
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         if (!command.getName().equalsIgnoreCase("headsmith")) return List.of();
-        if (args.length == 1) {
-            return filter(List.of("give", "recipes", "migrate"), args[0]);
-        }
+        if (args.length == 1) return COMMAND_HELP.completeSubcommand(sender, args[0]);
+        if (!COMMAND_HELP.allows(sender, args[0])) return List.of();
         if (args.length == 2 && args[0].equalsIgnoreCase("recipes")) {
-            return filter(List.of("give", "take"), args[1]);
+            return CommandHelp.filter(List.of("give", "take"), args[1]);
+        }
+        if (args[0].equalsIgnoreCase("give")) {
+            List<String> tail = CommandHelp.completeGiveTail(args, 2);
+            if (tail != null) return tail;
         }
         if (args.length == 2 && args[0].equalsIgnoreCase("give")) {
             String prefix = args[1].toLowerCase();
@@ -204,12 +182,5 @@ public final class HeadSmithPlugin extends JavaPlugin {
             return out;
         }
         return List.of();
-    }
-
-    private static List<String> filter(List<String> options, String prefix) {
-        String p = prefix.toLowerCase();
-        List<String> out = new ArrayList<>();
-        for (String o : options) if (o.startsWith(p)) out.add(o);
-        return out;
     }
 }

@@ -8,11 +8,8 @@ author: anon.def9a2a4
 
 commands:
   headsmith:
-    description: HeadSmith commands (give, recipes, migrate).
-    usage: |-
-      /headsmith give <id> [amount]
-      /headsmith recipes <give|take> [player]
-      /headsmith migrate
+    description: HeadSmith commands (recipes, give, migrate). /headsmith help lists them.
+    usage: /headsmith help
 
 permissions:
   headsmith.give:
