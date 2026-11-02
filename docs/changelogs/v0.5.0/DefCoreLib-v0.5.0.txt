@@ -1,104 +1,70 @@
 # DefCoreLib v0.5.0
 
-The first release since 0.3.2, and it covers two development cycles at once — 0.4.0 was prepared but never published, so everything below is new to you.
+The first release since 0.3.2 (0.4.0 was never published, so everything here is new to you). Contraptions now carry glued machines, cushions, item frames and paintings; new frame blocks, a ratchet, and ship propulsion and wheels for BlockShips; an in-game item catalog; land-claim checks across the suite; and a long list of item-loss, dupe and crash fixes.
 
-Two new frame blocks join the Casing, a Ratchet valve arrives, and mechanisms learn to carry glued machines as one rigid body. On top of that, five new Mechanism blocks turn the rotation network into ship propulsion — three tiers of Propeller, a fuel-burning Thruster, and a Reaction wheel — and the library grows the API a dependent plugin needs to drive them. Also: an in-game item catalog, a pick-block change, and a fix for a rotation-network server hang under redstone pulse storms.
+## Update notes
 
-## Read before upgrading
+- **Runs on Paper or Purpur 1.21.11, 26.1.2, 26.2 and 26.3** (was 1.21.8). Mechanism needs 1.21.11 or newer. `api-version` is still `1.21`, so an older server loads the plugin and fails at runtime instead of refusing it at startup.
+- **Update BlockShips to 0.0.18 or newer** alongside this release; DefCoreLib warns at startup about an older one.
+- **Bare shafts become waxed copper chains** (were iron chains). Existing worlds convert as chunks load, keeping each shaft's axis.
+- **Carried windmills supply half power** (0 / 2 / 7 instead of 1 / 5 / 15), and **power blocks weigh something on a ship**. A contraption or ship near its power, float or lift limit may need rebalancing. Details in the mech notes.
+- **Mixed-wood casing frames no longer auto-glue.** Rebuild a frame in one wood, or brush-pin the mixed joints.
+- **Mechanism recipes and sieve drop rates changed** — see the mech notes.
 
-- **Built against Paper 1.21.11** (was 1.21.8). Mechanism additionally needs the datapack-discovery bootstrap API, so run 1.21.11 or newer. `api-version` is still `1.21`, so an older server will load the plugin and fail at runtime rather than refuse it cleanly at startup.
-- **Bare shafts change material.** A shaft wrenched to its bare form was an iron chain; it is now a **waxed copper chain**. Existing worlds are converted in place as their chunks load, keeping each shaft's axis — no action needed, but the block in your world will not be the one you left there.
-- **Carried windmills supply half power.** A windmill supplies its full rating on a static build, but riding a mechanism it now gives 0 / 2 / 7 instead of 1 / 5 / 15 (half, rounded down: a small windmill aboard gives nothing). Rotation power is all-or-nothing, so a contraption running near break-even off its own windmills will stop entirely until it gains a windmill or sheds a consumer.
-- **Power blocks weigh something on a ship.** Engines, steam pistons and windmills used to weigh as little as wool aboard a BlockShips vessel. They now weigh 8 (engine), 6 (steam piston) and 2 / 6 / 15 (windmills), so a boat carrying several sits lower, and a design near its float or lift limit may need rebalancing when it is next assembled.
-- **Mixed-wood casing frames no longer auto-glue.** Frame blocks bond by matching wood now. Rebuild a frame in a single wood, or brush-pin the mixed joints.
+## New features
 
-## Highlights
+- **Carried contraptions** — movers (piston, rotator, drawbridge, minecart, chain hoist) carry nested glued machines as one rigid body: a chain hoist glued to a rotator swings with its chain and platform. (mech plugin)
+- **Cushions, item frames and paintings ride along** — a 26.3 cushion keeps its rider seated through the move; frames keep their item and re-hang turned with the block; paintings re-hang too. With nowhere to land they drop as items. Cushion support switches itself off before 26.3. (mech plugin)
+- **New blocks** — Gearbox, Chassis, Ratchet, three Propellers, Thruster, Reaction wheel, and three sizes of Wheel. (mech plugin)
+- **Ceiling mounts** — rotators, propellers and windmills can hang under a block. (mech plugin)
+- **Engines burn fuel for the power actually used**, and fuel settings are admin-editable in `config/fuel.yml`. (mech plugin)
+- **Glued selections up to 1024 blocks** (was 256).
+- **Filter pipes** — three tiers of item filter. (pipes plugin)
+- **HeadSmith joins the suite** as a DefCoreLib companion. (headsmith plugin)
+- **In-game item catalog** — `/defcorelib catalog` browses every registered block across the def plugins, grouped by category, with search and recipe drill-down. Open to everyone (`corelib.catalog`, default on); admins can right-click to give.
+- **Help for every command** — `/defcorelib`, `/mech`, `/pipes` and `/headsmith` show what the plugin does, the subcommands you may use, and the GitHub and Discord links. An unknown subcommand shows the help.
+- **`give` can target a player** — `/defcorelib give`, `/pipes give` and `/headsmith give` take `<id> [amount] [player]`, work from the console, and drop what doesn't fit at the player's feet.
+- **Land-claim checks** — gluing, placing carts and banners, assembling cart mechanisms, opening custom containers (GriefPrevention container trust, WorldGuard chest-access, Towny switch rights), lighting heads and pipes against claimed containers all ask your protection plugin. DefCoreLib soft-depends on GriefPrevention, WorldGuard, Towny, Lands, PlotSquared and Residence so it sees their verdict whatever the load order, and its test placements are invisible to block loggers (CoreProtect, Prism).
+- **Pick-block** no longer mints a free copy of a custom block or cart in survival or adventure; it only selects one you carry. Creative is unchanged.
+- **The BetterBanners tier gate only gates recipes** — without BetterBanners the large and huge windmills are uncraftable, but existing ones keep working and convert to tier propellers tier-for-tier.
 
-- **Gearbox** and **Chassis** — two new mechanical frame blocks, in all 12 woods
-- **Frame rework** — casings, gearboxes, and chassis auto-glue by matching wood, and can be brush-pinned rigidly to anything
-- **Carried contraptions** — mechanisms now move glued machines (a chain hoist rides a rotator, load and all)
-- **Ceiling rotator** — a rotator can mount under a block as a swinging hinge
-- **Ceiling propellers and windmills** — all three tiers of each now mount under a block too, on a shaft running up into it; functionally identical to a floor mount
-- **Ratchet** — a new one-way rotation valve
-- **Ship propulsion** — Propeller (3 tiers), Thruster, Reaction wheel; see the mech changelog
-- **Bigger glued selections** — the cap on one glued assembly rose from 256 blocks to 1024
-- **Item catalog** — browse every registered block in-game with `/defcorelib catalog`
-- **Stability** — fixes a server-thread hang under comparator/observer pulse storms; steadier mover speeds
+### For plugin developers
 
-## Blocks
-
-- **Gearbox** — an omnidirectional power hub: it passes power in every direction, on all six faces, but not spin direction — each side settles its own rotation. Split one input into several outputs, or turn a corner without a gear's counter-rotation.
-- **Chassis** — a slime-reach casing: it grabs every adjacent movable block except honey, so a moving contraption drags its whole payload with no glue brush, while still joining a same-wood casing frame.
-- **Ratchet** — a one-way valve for rotation: it drives one way and freewheels (disconnects) the other, instead of jamming. Wrench to set the direction, sneak-wrench to inspect.
-- **Propeller / Thruster / Reaction wheel** — consumers that push a ship rather than the world. They draw power and produce none, and have no effect on their own; a BlockShips vessel reads their powered state and decides what the thrust does.
-
-## Frame glue
-
-- Casing, gearbox, and chassis are one **frame** family keyed by wood — they auto-glue only to same-wood frame blocks. The glue brush pins one rigidly to anything (any wood, or a plain block).
-
-## Contraptions
-
-- Movers (piston, rotator, drawbridge, minecart, chain hoist) now carry **nested glued machines** — a chain hoist glued onto a rotator swings as one body, head + chain + platform together.
-- Rotators can mount under a block as a **ceiling hinge**, swinging the block above like a hatch.
-- **Cushions, item frames and paintings ride along.** Anything resting on or hanging from an assembled block used to be left behind and pop off as an item. Now a 26.3 **cushion** rides the move with whoever sits on it and lands back on its block with them still seated, and **item frames** (with their item) and **paintings** travel with the structure and re-hang on the landed block, turned with it. If the landing has nowhere for them to go, they drop as items rather than vanish. A painting can't hang sideways, so a drawbridge that rolls one onto its side drops it. Cushion support switches itself off on servers older than 26.3. (mech plugin)
-
-## Items & commands
-
-- **In-game item catalog** — `/defcorelib catalog` opens a browsable menu of every registered block across all def plugins, grouped by category, with search (`/defcorelib catalog search <query>`, or `/defcorelib catalog <category>` to jump straight in) and a detail view that drills into each recipe's ingredients — recipe sections with many outputs open a paginated, fully browsable view. Open to everyone via the new `corelib.catalog` permission (default on); an admin can right-click an entry to give the item.
-- **Pick-block** — middle-clicking a custom block or cart no longer mints a free copy in survival or adventure: it only selects a matching item you already carry. Creative still gives the item as before.
-- **Help for every command** — `/defcorelib`, `/mech`, `/pipes` and `/headsmith` (bare, or with `help`) now show the same kind of help: what the plugin does, the subcommands you are allowed to use, and links to the GitHub repository and the Discord. An unknown subcommand shows the help too. Anyone can open the help; the subcommands keep their permissions.
-- **`give` can target a player** — `/defcorelib give`, `/pipes give` and `/headsmith give` all take `<id> [amount] [player]`, work from the console when a player is named, and report the same way (`Gave 4x mech:shaft to Steve`).
-
-## API
-
-- `isRotationPowered(int)`, `rotationSurplus(int)`, `rotationFacing(int)`, `rotationFacingAt(Block)` — live rotation state. `powered`, `surplus` and `jammed` are **per-network**, identical for every member; do not build a per-block model on them.
-- `MechanismRotationSolvedEvent` — fires when a mechanism's rotation network re-solves. Topology is frozen while assembled and the solver runs at most every 20 ticks, so this is cheap; a windmill-only mechanism never re-solves after assembly.
-- `bannerTiersIn(World, BoundingBox)` — large/huge banner displays by host block. Three things to get right: **expand the region by at least 3 blocks**, because a banner's display entity spawns in the neighbour cell toward the face it hangs on and scales out from there, so a box fitted tightly to a structure misses precisely the banners mounted on its outside; **only chunks whose ENTITIES are loaded are searched** — Paper streams entities in after blocks, so a query made in that window sees the host blocks and none of the banners, and a caller who cannot tolerate a wrong answer should gate on `Chunk.isEntitiesLoaded()` and treat "not yet" as unknown rather than zero; and `BannerTier.NORMAL` entries are **fence flags and bed banners, never banner blocks** — a banner placed as a block creates no display at all, so a material-based count and this API cannot double up.
-- `massRegistry()` — exposes the mass table so a dependent plugin can price blocks its own config does not list.
-- **`requires_plugin` recipe gate** — withhold a block's recipes until a named plugin enables, then register them live.
-- `CushionSeats` (experimental) — 26.3 cushions for a consumer that seats players itself: find the cushions resting on a set of blocks, and the carried cushion riding a seat shulker. Safe on every version: before 26.3 nothing is a cushion and every answer is empty.
-- `fuelSecondsLeft(Mechanism)` — seconds until the first burning engine aboard runs dry at its current burn (for a ship's fuel HUD).
-- `MechanismTeardownRedoEvent` — fires when a crash-undone landing is redone, so a consumer can re-apply its landing rules.
-- `CommandHelp` — a companion plugin's command help, usage lines, subcommand tab completion and `give <id> [amount] [player]` from one list of subcommands, in the shared style with the GitHub and Discord links.
-
-## Behavior
-
-- **The BetterBanners tier gate is a recipe gate and nothing more.** Without that plugin the large and huge **Windmills** are uncraftable, but tier blocks that already exist keep placing, dropping, capturing onto mechanisms, and supplying their full tier power. The gate stops at the windmill: converting a tier Windmill into a tier Propeller is ungated, so one obtained from creative or from a world that used to run BetterBanners still converts tier-for-tier instead of being silently downgraded. The startup log line said "unavailable", which read as though those blocks stopped working; it now says "uncraftable; existing ones still work".
+- Live rotation state: `isRotationPowered(int)`, `rotationSurplus(int)`, `rotationFacing(int)`, `rotationFacingAt(Block)`. `powered`, `surplus` and `jammed` are per network, identical for every member.
+- `MechanismRotationSolvedEvent` — fires when a mechanism's network re-solves (at most every 20 ticks).
+- `bannerTiersIn(World, BoundingBox)` — large/huge banner displays by host block. Expand the region by at least 3 blocks (a banner's display sits in the neighbour cell), only chunks with loaded entities are searched (gate on `Chunk.isEntitiesLoaded()`), and `BannerTier.NORMAL` means fence flags and bed banners, never banner blocks.
+- `massRegistry()` — the mass table, to price blocks your own config doesn't list.
+- `requires_plugin` recipe gate — withhold a block's recipes until a named plugin enables.
+- `CushionSeats` (experimental) — 26.3 cushions for plugins that seat players themselves; empty answers before 26.3.
+- `fuelSecondsLeft(Mechanism)` — seconds until the first burning engine aboard runs dry.
+- `MechanismTeardownRedoEvent` — fires when a crash-undone landing is redone.
+- `CommandHelp` — shared help, usage, tab completion and `give` for companion plugins.
+- `CoreLibPlugin.API_LEVEL` — a feature level, raised whenever consumers can rely on something new (every 0.5.0 build reports the same version).
+- `MachineProducedEvent` now reports the full amount produced when the output merges into a partly full stack.
 
 ## Fixes
 
-- **Land-claim protection now applies to custom carts and banners.** Breaking a custom cart inside a claim a protection plugin refused still removed it and dropped its item and contents; and placing or shearing fence flags, large, huge and bed banners skipped protection plugins entirely, since they are display entities rather than blocks. Both now respect claims.
-- **The glue brush respects land claims.** Gluing changes no block, so protection plugins never saw it: a player could glue someone else's wall to their own rotator, door or minecart and carry it off, or open and clear the glue on a door inside someone else's claim. Each glued block, and the anchor itself, is now checked with your protection plugin first. Glue made before a claim existed, and blocks pulled along by slime, honey or a chassis, are not re-checked.
-- **Ships survive a crash right after docking.** A persisted contraption (a BlockShips ship) deleted its save the moment it was taken apart, before the world had saved the placed blocks — a crash in that window lost the whole ship and its cargo. Its save is now replaced by a record of the landing (where, at what heading, with what cargo). If the server crashes before the landing is written, the next boot lands it again from that record once the area loads; blocks that did reach disk are left alone, so a half-written landing is finished, not duplicated. A contraption landed and assembled again before the crash is landed again only if the new assembly never reached disk. The record is deleted once the world has surely been written, and at a clean stop.
-- **Ships come back where they are after a crash.** A moving contraption's entities reach disk on their chunk's own timer, so after a crash they can be far from where its save last put it; recovery only looked there, and a ship that had sailed on never came back. Recovery now centres on the vehicle it finds. A second copy of the frame or colliders (left by a crash between two chunks' saves) is removed instead of standing there frozen, and colliders that did not come back are spawned again.
-- **Cargo is saved with the world.** Persisted contraptions are saved at every world save, and when a player logs out with their cargo open, so after a crash their cargo matches players' inventories instead of duplicating or losing what was moved in between.
-- **Claim checks are invisible to block loggers.** DefCoreLib asks protection plugins about a cell by firing a test block placement; it is now cancelled once they have answered, so CoreProtect, Prism and the like no longer log a placement for every glued cell (which a rollback would then undo on the owner's own blocks), and claim plugins no longer react to it.
-- **`CoreLibPlugin.API_LEVEL`** — a feature level for consumers, raised whenever they can rely on something new. Every 0.5.0 build reports the same version, so this is how BlockShips tells a build that has the crash fixes from one that doesn't.
-- **Custom containers respect land claims.** Opening a custom container — a storage head, a ship's cargo, a cart's inventory, a filter pipe's menu — now needs the same access a chest would: GriefPrevention container trust, WorldGuard chest-access, or Towny switch rights. If a protection plugin's API doesn't match, the check is skipped with one warning rather than locking everyone out.
-- **Protection plugins load first.** DefCoreLib now soft-depends on GriefPrevention, WorldGuard, Towny, Lands, PlotSquared and Residence, so its claim checks see their verdict regardless of plugin load order.
-- **Machine contents are saved promptly** — a machine's storage is written within a second of changing, instead of only when its chunk unloads, so a crash no longer rolls back what was moved in or out.
-- **Pistons no longer strip custom heads.** A vanilla piston pushing a decorative head, vertical slab or redstone indicator turned it into a plain player head: the custom item, its light or particles, and anything stored in it were lost. It now breaks and drops as itself.
-- **Wind charges and breezes leave custom blocks alone.** Their gusts broke custom heads and spilled their storage, even inside claims; vanilla blocks they never break.
-- **Lighting or toggling a head respects claims** (a chimney, a lamp head).
-- **An unreadable container is never overwritten** — if a custom container's saved contents can't be read (say, after removing a datapack), it is left untouched and a warning is logged, instead of being saved back empty.
-- **Unloading a world** (Multiverse and the like) now saves and releases its custom blocks and containers. Before, they kept running in memory, and reloading the world could duplicate or lose container items.
-- **Moving contraptions leave no invisible walls** — when part of a contraption's chunk unloaded and came back, its colliders stayed behind as invisible walls. They now follow the contraption again.
-- **Carried frames, paintings and drops avoid fire and portals** when they land.
-- Reloading a companion plugin (e.g. with PlugMan) scans the loaded chunks once, not once per block type — HeadSmith registers thousands.
-- `give` never hands out more than an item's stack size in one stack.
-- **Ship cargo dupe** — a cargo menu left open while the ship's chunk unloaded let a player take items that came back when the ship reloaded. The menu now closes.
-- **Unreadable cargo is kept** — one item a ship's save couldn't read (say, after removing a datapack) emptied that container permanently on the next save. The saved contents are now carried over untouched.
-- **Custom blocks placed shortly before a crash are recognised again** — a container-based custom block (water wheel, boiler, mechanical dispenser) could come back as a plain vanilla block: wrong drop, sealed slots open, machine dead.
-- **Refused placements leave nothing behind** — a custom block whose placement a protection plugin refused left an invisible marker that turned the next matching vanilla block placed there into the custom one.
-- **Gluing to a BlockShips ship wheel** now asks your protection plugin first, like every other glue anchor.
-- **Glue can't be pointed at new blocks** — a chain hoist's glue on blocks that are gone is dropped instead of grabbing whatever is at the new depth, and a glued mechanism cart pushed off its cell loses its glue instead of assembling the blocks around its new spot.
-- **Box-gluing is bounded** — only the blocks actually being glued are checked against claims (a big box used to fire tens of thousands of checks in one click), and a box must be under 128 blocks across with every chunk loaded.
-- A rotator whose landing hit an error no longer stays stuck "moving" forever.
-- Chunk unloads and hopper transfers beside custom blocks cost less, and the world-save snapshot of persisted contraptions is written in the background and skipped when nothing changed.
-- **Server hang under pulse storms** — the rotation network and custom rails now coalesce their recomputes to once per tick, and the plugin's own block writes no longer feed their own physics loop.
-- **Wall heads on mechanisms no longer render backwards** — the head item model's face is a half-turn from the block's, and the mechanism display path now compensates.
-- **Contraptions reliably survive a crash** — a parked mechanism is rediscovered from its own entities when its chunk loads, so a hard crash can no longer strand an invisible, unusable contraption.
-- Mover speeds slowed to steadier, more readable rates.
-- **Head-yaw conventions documented.** Four sites in this library orient a head on a display entity (five counting BlockShips', six counting the standing-banner transform that shares the same maths), and they fall into two families differing by a constant half-turn. The javadoc claimed there were three conventions and that the redstone dynamo shared the mechanism spawn path; both were wrong. The remaining open question — whether floor heads need the same half-turn wall heads got — is stated with the one two-block test that settles it, and deliberately left unchanged, since altering it would rotate every floor head on every mechanism in every existing world.
+- **Ships survive a crash right after docking.** A persisted contraption (a BlockShips ship) deleted its save the moment it was taken apart, before the world had saved the placed blocks. Its save is now replaced by a record of the landing; after a crash the next boot finishes the landing from that record, leaving blocks that did reach disk alone.
+- **Ships come back where they are after a crash.** Recovery now centres on the vehicle it finds instead of the last saved position. A second copy of the frame or colliders left by a crash is removed, and missing colliders are spawned again.
+- **Contraptions reliably survive a crash** — a parked mechanism is rediscovered from its own entities when its chunk loads.
+- **Cargo is saved with the world** and when a player logs out with it open, so after a crash cargo matches players' inventories.
+- **Machine contents are saved within a second** of changing, instead of only at chunk unload.
+- **Ship cargo dupe** — a cargo menu left open while the ship's chunk unloaded let a player take items that came back on reload. The menu now closes.
+- **Unreadable containers are never overwritten** — a custom container or ship cargo whose saved contents can't be read (say, after removing a datapack) is left untouched and logged, instead of saved back empty.
+- **Unloading a world** (Multiverse and the like) saves and releases its custom blocks and containers; reloading it could duplicate or lose container items.
+- **Custom blocks placed shortly before a crash are recognised again** — a water wheel, boiler or mechanical dispenser could come back as a plain vanilla block.
+- **Refused placements leave nothing behind** — a refused custom placement left an invisible marker that turned the next matching vanilla block into the custom one.
+- **Pistons no longer strip custom heads** — a pushed decorative head, vertical slab or indicator turned into a plain player head, losing its item, light and storage.
+- **Wind charges and breezes leave custom blocks alone** — their gusts broke custom heads and spilled their storage, even inside claims.
+- **Glue can't be pointed at new blocks** — a chain hoist's glue on vanished blocks is dropped instead of grabbing whatever is at the new depth, and a glued cart pushed off its cell loses its glue.
+- **Box-gluing is bounded** — only the glued blocks are claim-checked (a big box fired tens of thousands of checks), and a box must be under 128 blocks across with every chunk loaded.
+- **Moving contraptions leave no invisible walls** after part of their chunk unloads and reloads.
+- **Carried frames, paintings and drops avoid fire, lava and portals** when they land.
+- **Server hang under pulse storms** — the rotation network and custom rails coalesce recomputes to once per tick, and the plugin's own block writes no longer feed their own physics loop.
+- **Wall heads on mechanisms no longer render backwards.**
+- A rotator whose landing hit an error no longer stays stuck "moving".
+- Reloading a companion plugin (PlugMan) scans loaded chunks once, not once per block type.
+- `give` never hands out more than a stack's size in one stack.
+- Mover speeds are steadier; chunk unloads, hopper transfers beside custom blocks and the persisted-contraption world-save snapshot cost less.
 
-See the per-plugin **mech** notes for full detail, recipes, and advancements.
+See the per-plugin notes (mech, pipes, railbound, headsmith, bbanners, rsd, vslab) for their details.

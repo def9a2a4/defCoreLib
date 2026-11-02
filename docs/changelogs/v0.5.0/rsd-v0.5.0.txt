@@ -1,9 +1,16 @@
 # rsd v0.5.0
 
-The first release since 0.3.2 — 0.4.0 was prepared but never published. The indicators live in DefCoreLib, so these changes come from the core.
+The first release since 0.3.2 (0.4.0 was never published). Catalog support and piston and pick-block fixes. The indicators live in DefCoreLib, so these changes come from the core.
 
-Needs DefCoreLib 0.5.0 or newer, on Paper 1.21.11 or newer.
+## Update notes
 
-- **Pick-block** — middle-clicking a redstone indicator no longer mints a free copy in survival or adventure; it only selects one you already carry (creative still gives it).
-- **Catalog** — the indicators show up, with recipes, in the in-game `/defcorelib catalog`.
-- **Pistons no longer strip indicators** — one pushed by a vanilla piston dropped as a plain player head; it now drops as itself.
+- **Needs DefCoreLib 0.5.0 or newer**, on Paper or Purpur 1.21.11 or newer.
+
+## New features
+
+- **Catalog** — the indicators show up, with recipes, in `/defcorelib catalog`.
+
+## Fixes
+
+- **Pistons no longer strip indicators** — a pushed indicator dropped as a plain player head; it now drops as itself.
+- **Pick-block** selects an indicator you carry instead of minting one in survival or adventure (creative still gives it).
