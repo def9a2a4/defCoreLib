@@ -430,8 +430,17 @@ final class ShowcaseRunner implements Listener {
                             && !(e instanceof org.bukkit.entity.Painting p && artKey(p).equals(qual))) continue;
                     n += e instanceof org.bukkit.entity.Item it ? it.getItemStack().getAmount() : 1;
                 }
-                if (n != want) plugin.getLogger().info("[showcase] " + spec.id + ": " + v.substring(0, eq)
-                        + " count " + n + ", expected " + want);
+                if (n != want) {
+                    plugin.getLogger().info("[showcase] " + spec.id + ": " + v.substring(0, eq)
+                            + " count " + n + ", expected " + want);
+                    // Where did it go? List matches up to 16 blocks out, so a flaky count shows drift vs. loss.
+                    for (org.bukkit.entity.Entity e : origin.getWorld().getNearbyEntities(box(origin, ex.at(), ex.to()).expand(16))) {
+                        if (e.getType() == t && (only == null || e instanceof org.bukkit.entity.Item it && it.getItemStack().getType() == only)) {
+                            plugin.getLogger().info("[showcase]   nearby " + t + " at " + e.getLocation().toVector()
+                                    + " (origin " + origin.toVector() + ")");
+                        }
+                    }
+                }
                 return n == want;
             }
             // Some RIDER in the box is riding a VEHICLE: value `RIDER/VEHICLE` (vanilla entity keys).
