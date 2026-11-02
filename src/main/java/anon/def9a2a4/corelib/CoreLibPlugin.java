@@ -99,6 +99,8 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
     @Override
     public void onEnable() {
         instance = this;
+        saveDefaultConfig();
+        DebugLog.setEnabled(getConfig().getBoolean("debug", false));
         new Metrics(this, 32317);
         registry = new CustomBlockRegistry(this);
         // Preserve decorated block-entity state (sign text, skull profile, container name, …) through a
@@ -2821,6 +2823,20 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
                 sender.sendMessage(Component.text("Collider glow " + (enabled ? "ON" : "OFF"),
                     enabled ? NamedTextColor.GREEN : NamedTextColor.RED));
             }
+            case "debug" -> {
+                if (args.length >= 2) {
+                    String arg = args[1].toLowerCase(java.util.Locale.ROOT);
+                    if (!arg.equals("on") && !arg.equals("off")) {
+                        COMMAND_HELP.sendUsage(sender, "debug");
+                        return true;
+                    }
+                    DebugLog.setEnabled(arg.equals("on"));
+                    getConfig().set("debug", DebugLog.enabled());
+                    saveConfig();
+                }
+                sender.sendMessage(Component.text("Debug logging " + (DebugLog.enabled() ? "ON" : "OFF")
+                        + " (DefCoreLib, Pipes, HeadSmith)", DebugLog.enabled() ? NamedTextColor.GREEN : NamedTextColor.RED));
+            }
             case "reloadbanners" -> {
                 bannerManager.reloadConfig();
                 sender.sendMessage(Component.text("Banner config reloaded", NamedTextColor.GREEN));
@@ -2985,6 +3001,7 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         .sub("give_demo_rotation", "", "Give yourself one of every Mechanism block", "corelib.admin")
         .sub("list", "", "List every registered block id", "corelib.admin")
         .sub("colliders", "", "Toggle the glow on mechanism colliders", "corelib.admin")
+        .sub("debug", "[on|off]", "Show or set verbose [debug] logging", "corelib.admin")
         .sub("reloadbanners", "", "Reload the banner config", "corelib.admin")
         .sub("cleanorphans", "[confirm]", "Find, or with confirm remove, displays left without a block", "corelib.admin")
         .sub("refreshdisplays", "[confirm]", "Respawn the displays of every loaded custom block", "corelib.admin")
@@ -3012,6 +3029,9 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
                 }
             }
             return opts.stream().filter(s -> s.toLowerCase().startsWith(args[1].toLowerCase())).toList();
+        }
+        if (args.length == 2 && args[0].equalsIgnoreCase("debug")) {
+            return CommandHelp.filter(List.of("on", "off"), args[1]);
         }
         if (args.length == 2 && (args[0].equalsIgnoreCase("cleanorphans") || args[0].equalsIgnoreCase("refreshdisplays"))) {
             return List.of("confirm").stream()

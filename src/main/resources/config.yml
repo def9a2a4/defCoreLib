@@ -1,0 +1,4 @@
+# Verbose logging for troubleshooting. When true, DefCoreLib and the plugins built on it (Pipes,
+# HeadSmith, ...) write extra "[debug]" lines to logs/latest.log. Also toggled live with
+# /defcorelib debug on|off, which saves the setting here.
+debug: false

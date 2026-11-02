@@ -20,7 +20,6 @@ public final class VslabPlugin extends JavaPlugin {
             return;
         }
         core.getRegistry().enableRecipes("verticalslabs");
-        getLogger().info("VerticalSlabs recipes enabled.");
     }
 
     @Override

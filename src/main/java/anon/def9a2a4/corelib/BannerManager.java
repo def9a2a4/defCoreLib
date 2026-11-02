@@ -494,7 +494,7 @@ public class BannerManager implements Listener {
      * a tag conflict (something already on that side) or a failed spawn drops the item instead —
      * never silently lost. {@code BLOCK_FACE_KEY} entries are skipped (restored via block placement).
      */
-    void placeLandedBanners(Block host, List<BannerAttachment> attachments, float snappedYaw) {
+    void placeLandedBanners(Block host, List<BannerAttachment> attachments, float snappedYaw, boolean keepExisting) {
         int rotSteps = Math.floorMod(Math.round(snappedYaw / 90f), 4);
         Set<String> handledFaces = new HashSet<>();
         for (BannerAttachment att : attachments) {
@@ -516,7 +516,7 @@ public class BannerManager implements Listener {
                 float yaw = stepToYaw(newStep);
                 String tag = TAG_PREFIX + blockKey(host) + ":rot" + newStep;
                 spawnLandedPair(host, host.getLocation(),
-                        flagTransform(yaw, scale), flagBackTransform(yaw, scale), item, tag);
+                        flagTransform(yaw, scale), flagBackTransform(yaw, scale), item, tag, keepExisting);
             } else if (face.equals("up") || face.equals("down")) {
                 BlockFace clickedFace = face.equals("up") ? BlockFace.UP : BlockFace.DOWN;
                 // standingTransform's left rotation is a pure Y quaternion rotateY(toRadians(-yaw)):
@@ -527,13 +527,13 @@ public class BannerManager implements Listener {
                 float newYaw = stepToYaw(yawToStep(yaw + snappedYaw));
                 String tag = TAG_PREFIX + blockKey(host) + ":" + face;
                 spawnLandedSingle(host, host.getRelative(clickedFace).getLocation(),
-                        standingTransform(newYaw, scale, clickedFace), item, tag);
+                        standingTransform(newYaw, scale, clickedFace), item, tag, keepExisting);
             } else if (face.equals("bed")) {
                 if (host.getBlockData() instanceof org.bukkit.block.data.type.Bed bedData
                         && bedData.getPart() == org.bukkit.block.data.type.Bed.Part.FOOT) {
                     String tag = TAG_PREFIX + blockKey(host) + ":bed";
                     spawnLandedSingle(host, host.getLocation(),
-                            bedBannerTransform(bedData.getFacing()), item, tag);
+                            bedBannerTransform(bedData.getFacing()), item, tag, keepExisting);
                 } else {
                     dropLanded(host, item); // landed host is no longer a bed foot
                 }
@@ -547,7 +547,7 @@ public class BannerManager implements Listener {
                 String tag = TAG_PREFIX + blockKey(host) + ":" + newFace.name().toLowerCase();
                 // Occupied neighbor cell is fine — displays overlap blocks, matching placement.
                 spawnLandedSingle(host, host.getRelative(newFace).getLocation(),
-                        wallTransform(newFace, scale), item, tag);
+                        wallTransform(newFace, scale), item, tag, keepExisting);
             }
         }
     }
@@ -563,8 +563,9 @@ public class BannerManager implements Listener {
     }
 
     private void spawnLandedSingle(Block host, Location anchorLoc, Transformation t,
-                                   ItemStack item, String tag) {
+                                   ItemStack item, String tag, boolean keepExisting) {
         if (!DisplayUtil.findByTag(host.getLocation(), tag, SEARCH_RADIUS).isEmpty()) {
+            if (keepExisting) return;
             dropLanded(host, item); // side already taken (e.g. a player placed one mid-flight)
             return;
         }
@@ -578,8 +579,9 @@ public class BannerManager implements Listener {
     }
 
     private void spawnLandedPair(Block host, Location anchorLoc, Transformation front,
-                                 Transformation back, ItemStack item, String tag) {
+                                 Transformation back, ItemStack item, String tag, boolean keepExisting) {
         if (!DisplayUtil.findByTag(host.getLocation(), tag, SEARCH_RADIUS).isEmpty()) {
+            if (keepExisting) return;
             dropLanded(host, item);
             return;
         }

@@ -20,7 +20,6 @@ public final class BbannersPlugin extends JavaPlugin {
             return;
         }
         core.activateBanners();
-        getLogger().info("BetterBanners functionality enabled.");
     }
 
     @Override

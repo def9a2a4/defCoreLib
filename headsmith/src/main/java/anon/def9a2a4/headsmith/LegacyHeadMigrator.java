@@ -2,6 +2,7 @@ package anon.def9a2a4.headsmith;
 
 import anon.def9a2a4.corelib.CustomBlockRegistry;
 import anon.def9a2a4.corelib.CustomHeadBlock;
+import anon.def9a2a4.corelib.DebugLog;
 import anon.def9a2a4.corelib.HeadUtil;
 import com.destroystokyo.paper.profile.PlayerProfile;
 import org.bukkit.Chunk;
@@ -74,7 +75,7 @@ final class LegacyHeadMigrator implements Listener {
             HeadUtil.parseTexture(t.texture())
                     .ifPresent(info -> byTextureId.putIfAbsent(info.textureId(), t));
         }
-        plugin.getLogger().info("Migrator ready: " + byTextureId.size() + " head textures indexed.");
+        DebugLog.log(plugin, "Migrator ready: " + byTextureId.size() + " head textures indexed.");
     }
 
     // ── block adoption ──────────────────────────────────────────────────────────
@@ -218,7 +219,9 @@ final class LegacyHeadMigrator implements Listener {
                 String msg = "Migration sweep done: adopted " + adopted + " placed head(s) across "
                         + total + " loaded chunk(s); re-stamped " + restampedItems + " item(s); "
                         + uuidDiverged + " head(s) had a diverged profile UUID (still adopted).";
-                plugin.getLogger().info(msg);
+                // A sweep that found nothing to migrate is the steady state on every boot: debug-only.
+                if (adopted > 0 || uuidDiverged > 0) plugin.getLogger().info(msg);
+                else DebugLog.log(plugin, msg);
                 if (sender != null && !(sender instanceof org.bukkit.command.ConsoleCommandSender)) {
                     sender.sendMessage(net.kyori.adventure.text.Component.text(msg,
                             net.kyori.adventure.text.format.NamedTextColor.GREEN));

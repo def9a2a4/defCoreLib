@@ -21,7 +21,6 @@ public final class RsdPlugin extends JavaPlugin {
             return;
         }
         core.getRegistry().enableRecipes("redstonedisplays");
-        getLogger().info("RedstoneDisplays recipes enabled.");
     }
 
     @Override

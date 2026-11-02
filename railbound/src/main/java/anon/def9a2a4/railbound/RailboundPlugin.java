@@ -22,7 +22,6 @@ public final class RailboundPlugin extends JavaPlugin {
         }
         core.getRegistry().enableRecipes("railbound");
         core.enableCarts();
-        getLogger().info("Railbound recipes enabled.");
     }
 
     @Override

@@ -3,6 +3,7 @@ package anon.def9a2a4.pipes;
 import anon.def9a2a4.corelib.ContainerAccess;
 import anon.def9a2a4.corelib.CustomBlockRegistry;
 import anon.def9a2a4.corelib.CustomHeadBlock;
+import anon.def9a2a4.corelib.DebugLog;
 import anon.def9a2a4.corelib.HeadUtil;
 import anon.def9a2a4.corelib.container.ContainerAdapterRegistry;
 import org.bukkit.Material;
@@ -172,7 +173,7 @@ public class PipeBlockRegistrar {
         });
 
         registry.overlayType(builder.build());
-        plugin.getLogger().info("Registered " + variant.id() + " with CoreLib");
+        DebugLog.log(plugin, "Registered " + variant.id() + " with CoreLib");
     }
 
     private static @Nullable String resolveRegularFacing(BlockPlaceEvent event, PipesPlugin plugin) {

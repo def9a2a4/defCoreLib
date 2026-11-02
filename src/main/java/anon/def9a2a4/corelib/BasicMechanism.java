@@ -1378,6 +1378,9 @@ final class BasicMechanism implements Mechanism {
                 fallbackDrop = false;
                 placed.add(target);
                 landedCells.put(i, target);
+                // Its banners are entities, written with the entity chunk, not the block chunk that was: put
+                // back any that did not make it.
+                landBanners(target, mb, snappedYaw, upright);
             } else if (FragileBlocks.isFragile(target.getType())) {
                 target.breakNaturally();
                 placeBlock(target, mb, turn, landing);
@@ -1992,10 +1995,11 @@ final class BasicMechanism implements Mechanism {
         if (!hasEntityBanners) return;
         BannerManager bm = mechanismRegistry != null ? mechanismRegistry.bannerManager() : null;
         if (bm == null || !upright) {
-            dropBannerItems(target.getLocation(), mb);
+            if (!relanding) dropBannerItems(target.getLocation(), mb);   // a relanding's may be on disk already
             return;
         }
-        bm.placeLandedBanners(target, mb.banners, snappedYaw);
+        // Relanding: a banner already there is the one that reached disk, not a player's — keep it, no drop.
+        bm.placeLandedBanners(target, mb.banners, snappedYaw, relanding);
     }
 
     /** Drop one banner item per distinct faceKey (a flag's front/back pair is ONE item — mirrors

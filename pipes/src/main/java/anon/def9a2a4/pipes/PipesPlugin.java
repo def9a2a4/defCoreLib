@@ -100,8 +100,6 @@ public class PipesPlugin extends JavaPlugin {
         for (World world : Bukkit.getWorlds()) {
             worldManager.initWorld(world);
         }
-
-        getLogger().info("Pipes enabled!");
     }
 
     @Override
@@ -117,7 +115,6 @@ public class PipesPlugin extends JavaPlugin {
             manager.shutdown();
         }
         pipeManagers.clear();
-        getLogger().info("Pipes disabled!");
     }
 
     @Override
