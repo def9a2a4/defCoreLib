@@ -38,3 +38,8 @@ Needs DefCoreLib 0.5.0 or newer, on Paper 1.21.11 or newer.
 - **Pipe items in a cauldron with a hopper underneath** — converting copper pipes to oxidized ones counted the stack as it was when thrown, so items a hopper had already pulled out were converted a second time. It now converts what is actually left.
 - **Crafting an oxidized copper pipe or corner with a water bucket** now returns the bucket empty (and a single bucket makes only one at a time), instead of leaving the bucket unconsumed.
 - Fixed a server error when the pipe set was modified while the network was ticking.
+- **Pipes respect land claims.** A pipe can't be placed against a container you aren't allowed to open, so a claimed chest can't be drained or stuffed from outside the claim.
+- **No water in the Nether** — a fluid pipe no longer pours water out in a world where water evaporates.
+- **No shulker boxes inside shulker boxes** — a pipe no longer pushes a shulker box into a shulker box.
+- **Filter slots hold one item each.** Extra items dropped into a filter slot are handed back when you close the menu (or dropped at your feet if your inventory is full).
+- Pipes keep working in a world whose unload another plugin cancelled.

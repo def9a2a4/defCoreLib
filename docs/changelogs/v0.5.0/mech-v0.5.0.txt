@@ -66,7 +66,13 @@ Two new frame blocks — the **Gearbox** and the **Chassis** — a new **Ratchet
 - **A lava bucket burned as fuel returns its bucket** instead of disappearing with the lava. The empty bucket (or Seed Oil bottle) stacks onto one already in the machine, otherwise it drops beside it — so a machine fed lava by pipe never fills up with empty buckets.
 - **Engines on a moving contraption keep their burn** — a part-burned item was lost every time a ship parked or the server restarted, and a landed engine got back the fuel it had at take-off.
 - **The suction hopper leaves protected items alone** — items that can never be picked up (shop displays and the like) are skipped, and other plugins can veto a pickup as they can for a vanilla hopper.
-- **Burners keep their fuel when carried, and fuel survives a restart** — a part-burned item in an engine, burner or thruster was lost on every restart, and a burned-out one could get its old fuel back after a crash.
+- **Burners keep their fuel when carried, and fuel survives a restart** — a part-burned item in an engine, burner or thruster was lost on every restart.
+- **Surplus power costs fuel.** A millstone, press or sieve runs bigger batches with spare power; that extra work now burns fuel too, but only for the cycles it actually ran (one stalled for input or a full output pays for nothing extra).
+- **Only what a ship uses burns fuel.** A propeller or wheel that nothing reports as in use draws nothing — on a door, rotator or cart, as well as an unused spare on a ship.
+- **An engine aboard keeps its empty buckets** — a burned lava bucket or seed-oil bottle goes back into the engine's storage instead of dropping overboard, even when the storage is full.
+- **Steam piston parts go out when it's broken** — the burner and boiler no longer keep showing lit / running.
+- **Machines at the edge of the loaded area** (drill, placer, and machines that pull from or push into a neighbour) no longer load the chunk next door.
+- **A parked contraption's drill stops cracking its block** — the crack overlay is cleared when the contraption parks.
 - **Mechanical dispenser keeps its contents when carried** — glued onto a mechanism, it dropped everything inside where it stood. The contents now ride along and are back in it on landing.
 - **Chain pulley double refund** — breaking one end of a chain link while the other end sat in an unloaded chunk force-loaded that chunk and could give the chains back twice. They're now returned once, at the far pulley, the next time its chunk loads.
 - **A machine placed shortly before a crash** — a water wheel, boiler or mechanical dispenser could come back as a plain copper chest or dispenser: wrong item on break, sealed slots open, machine dead. It's now recognised.

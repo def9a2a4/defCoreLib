@@ -14,3 +14,9 @@ Needs DefCoreLib 0.5.0 or newer, on Paper 1.21.11 or newer.
 - **Trains stop outside simulation distance**, as vanilla carts do. An unridden train kept driving and loaded chunks ahead of itself. A train pauses when its front cart leaves the active area and resumes where it stopped.
 - **Cart contents are saved at every world save** — a crash could duplicate or lose items moved in or out since the cart was last closed or unloaded.
 - **The dispenser cart can't drain sealed machines** — parked under a Redstone Dynamo it pulled out the dynamo's internal redstone, an endless supply. It now skips sealed containers and respects chest-lock plugins.
+- **Logging out on a cart** no longer duplicates its contents or brings the cart back broken — the rider is stepped off as they leave.
+- **Trains no longer stall the server or each other** — once a coupled cart was gone (a rider logged out, `/kill`, the void), every train on the server restarted each tick: none could start from a push, chains were re-spawned constantly, and the broken train froze.
+- **A cart parked on a powered activator rail** no longer fires again every time its chunk loads (a dispenser cart shot one item; a mechanism cart re-assembled).
+- **Coal tenders don't waste fuel** — an item is only taken when the engine has room for it.
+- **Coupling and uncoupling respect land claims**, and so does opening a cart's inventory.
+- A cart's light no longer lingers after it unloads.

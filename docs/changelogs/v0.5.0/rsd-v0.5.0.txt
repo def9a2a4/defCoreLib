@@ -6,3 +6,4 @@ Needs DefCoreLib 0.5.0 or newer, on Paper 1.21.11 or newer.
 
 - **Pick-block** — middle-clicking a redstone indicator no longer mints a free copy in survival or adventure; it only selects one you already carry (creative still gives it).
 - **Catalog** — the indicators show up, with recipes, in the in-game `/defcorelib catalog`.
+- **Pistons no longer strip indicators** — one pushed by a vanilla piston dropped as a plain player head; it now drops as itself.
