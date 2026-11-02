@@ -188,8 +188,12 @@ showcase-test-ci: test-server-download
 # the regular `world` there is never touched. Port 25577, clear of the other targets.
 RESTART_MODES := crash clean
 # $(call restart_boots,SERVER_JAR): both boots of every mode, run inside test-server/.
+# The server writes --level-name back into server.properties, so it's restored on exit (pass or fail) — else
+# the docs server would come up on restart_world.
 define restart_boots
-	cd test-server && for mode in $(RESTART_MODES); do \
+	mkdir -p .temp && cd test-server && cp server.properties ../.temp/restart-server.properties.bak && \
+	trap 'cp ../.temp/restart-server.properties.bak server.properties' EXIT && \
+	for mode in $(RESTART_MODES); do \
 		rm -rf restart_world restart_world_nether restart_world_the_end plugins/DefCoreLib/mechanisms/restart_world; \
 		for phase in 1 2; do \
 			rc=0; timeout --foreground -k 30 180 java -Ddefcorelib.showcaseTest=true \
@@ -233,6 +237,94 @@ showcase-restart-test-ci: test-server-download
 		'motd=DefCoreLib showcase test' \
 		> test-server/server.properties
 	$(call restart_boots,server.jar)
+
+# In-game bot tests (test-bot/, mineflayer): a real client right-clicks, places, breaks and glues
+# DefCoreLib blocks. The server boots in test-server/ on its own throwaway world (bot_world, deleted
+# first; `world` is never touched) and port 25578, with -Ddefcorelib.botTest=true — which is what
+# enables the test-only `/defcorelib bottest` fixtures. Mineflayer speaks 1.21.11 and 26.1.x only.
+#   make bot-install && make bot-test       BOT_ARGS=--only=glue runs a subset.
+BOT_PORT := 25578
+BOT_NAME := TestBot
+BOT_ARGS ?=
+BOT_FIFO := .temp/bot-server-input
+BOT_LOG := .temp/bot-server.log
+
+.PHONY: bot-install
+bot-install:
+	cd test-bot && npm ci
+
+# $(call bot_run,SERVER_JAR,MC_VERSION): run from the repo root with test-server/ prepared. Boots the
+# server in the background with stdin = a FIFO held open on fd 3 (so `stop` can be sent and the console
+# never sees EOF early; opened read-write so it can't block if java never starts), waits for "Done", runs
+# the bot, stops the server, then fails if the bot failed or the log has an error (CI's filter, incl. its
+# 'No key layers in MapLike' exemption). The bot is op'd by merging its offline UUID into ops.json.
+define bot_run
+	mkdir -p .temp
+	cd test-server && rm -rf bot_world bot_world_nether bot_world_the_end plugins/DefCoreLib/mechanisms/bot_world
+	node test-bot/add-op.js test-server/ops.json $(BOT_NAME)
+	rm -f $(BOT_FIFO) $(BOT_LOG) test-bot/test-results.txt && mkfifo $(BOT_FIFO)
+	# The server saves --port/--level-name into server.properties; put the original back afterwards so the
+	# docs server doesn't come up on bot_world.
+	cp test-server/server.properties .temp/bot-server.properties.bak
+	(cd test-server && exec java -Ddefcorelib.botTest=true -Xmx2G -jar $(1) --nogui --port $(BOT_PORT) \
+		--level-name bot_world --online-mode false < ../$(BOT_FIFO) > ../$(BOT_LOG) 2>&1) & \
+	SERVER_PID=$$!; \
+	trap 'kill $$SERVER_PID 2>/dev/null' EXIT; trap 'exit 130' INT TERM; \
+	exec 3<> $(BOT_FIFO); \
+	up=0; for i in $$(seq 1 300); do \
+		if grep -q 'Done (' $(BOT_LOG); then up=1; break; fi; \
+		kill -0 $$SERVER_PID 2>/dev/null || break; \
+		sleep 1; \
+	done; \
+	BOT_EXIT=1; \
+	if [ $$up = 1 ]; then \
+		(cd test-bot && MC_PORT=$(BOT_PORT) MC_USERNAME=$(BOT_NAME) MC_VERSION=$(2) node defcorelib-bot.js $(BOT_ARGS)); \
+		BOT_EXIT=$$?; \
+	else \
+		echo "ERROR: bot-test server did not start"; tail -n 50 $(BOT_LOG); \
+	fi; \
+	echo stop >&3; exec 3>&-; \
+	for i in $$(seq 1 60); do kill -0 $$SERVER_PID 2>/dev/null || break; sleep 1; done; \
+	kill $$SERVER_PID 2>/dev/null; sleep 1; \
+	cp .temp/bot-server.properties.bak test-server/server.properties; \
+	ERRS=$$(grep -nE ' (ERROR|FATAL)\]|SEVERE\]|^[[:space:]]+at [A-Za-z]|Caused by:' $(BOT_LOG) \
+		| grep -v 'No key layers in MapLike'); \
+	[ -z "$$ERRS" ] || { echo "ERROR: the server logged errors during the bot run ($(BOT_LOG)):"; echo "$$ERRS"; }; \
+	[ $$BOT_EXIT -eq 0 ] && [ -z "$$ERRS" ]
+endef
+
+.PHONY: bot-test
+bot-test:
+	@[ -n "$(PAPER_JAR)" ] || { echo "ERROR: no server/paper-*.jar found to copy into test-server/"; exit 1; }
+	@[ -d test-bot/node_modules ] || { echo "ERROR: run 'make bot-install' first"; exit 1; }
+	gradle shadowJar
+	mkdir -p test-server/plugins
+	[ -f test-server/$(PAPER_JAR) ] || cp server/$(PAPER_JAR) test-server/
+	[ -f test-server/eula.txt ] || echo 'eula=true' > test-server/eula.txt
+	[ -f test-server/server.properties ] || printf '%s\n' \
+		'online-mode=false' 'enforce-secure-profile=false' 'gamemode=creative' 'allow-flight=true' \
+		'difficulty=peaceful' 'spawn-monsters=false' 'spawn-protection=0' 'level-type=flat' \
+		'generate-structures=false' 'server-port=25575' 'level-name=world' \
+		'motd=DefCoreLib docs export' \
+		> test-server/server.properties
+	$(call deploy_jars,test-server/plugins)
+	$(call bot_run,$(PAPER_JAR),$(word 2,$(subst -, ,$(PAPER_JAR))))
+
+# CI flavour: bin/ jars + the downloaded server jar, exactly as showcase-test-ci.
+.PHONY: bot-test-ci
+bot-test-ci: test-server-download
+	mkdir -p test-server/plugins
+	rm -f test-server/plugins/*.jar
+	cp bin/*.jar test-server/plugins/
+	cp $(SERVER_JAR) test-server/server.jar
+	[ -f test-server/eula.txt ] || echo 'eula=true' > test-server/eula.txt
+	[ -f test-server/server.properties ] || printf '%s\n' \
+		'online-mode=false' 'enforce-secure-profile=false' 'gamemode=creative' 'allow-flight=true' \
+		'difficulty=peaceful' 'spawn-monsters=false' 'spawn-protection=0' 'level-type=flat' \
+		'generate-structures=false' 'server-port=25576' 'level-name=world' \
+		'motd=DefCoreLib showcase test' \
+		> test-server/server.properties
+	$(call bot_run,server.jar,$(MINECRAFT_VERSION))
 
 # Showcase capture: build the demo machines, run them, read back their live display + animation data
 # into showcase-spec.json (then generate_catalog folds it into showcases.json for the docs page).

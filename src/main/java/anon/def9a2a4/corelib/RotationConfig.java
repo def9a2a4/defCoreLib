@@ -431,9 +431,9 @@ final class RotationConfig {
         powerValues.put("large_propeller", 10);
         powerValues.put("huge_propeller", 20);
         powerValues.put("reaction_wheel", 1);
-        powerValues.put("wheel", 3);
-        powerValues.put("large_wheel", 6);
-        powerValues.put("huge_wheel", 12);
+        powerValues.put("wheel", 2);
+        powerValues.put("large_wheel", 5);
+        powerValues.put("huge_wheel", 10);
     }
 
     private void initDefaultMechMeta() {

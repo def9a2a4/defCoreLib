@@ -155,9 +155,9 @@ power:
   reaction_wheel: 1
   # Land-vehicle wheels. Consumers like the propellers; BlockShips turns a powered wheel into ground
   # thrust. Priced so thrust per power beats the matching propeller (wheels only work on the ground).
-  wheel: 3
-  large_wheel: 6
-  huge_wheel: 12
+  wheel: 2
+  large_wheel: 5
+  huge_wheel: 10
 
 # How each rotation block behaves while assembled into a moving mechanism (minecart, door,
 # drawbridge). Its supply/demand comes from the `power:` map above — not repeated here.

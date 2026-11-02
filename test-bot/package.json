@@ -1,0 +1,15 @@
+{
+  "name": "defcorelib-test-bot",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Mineflayer bot that drives DefCoreLib blocks in-game (GUIs, item use, place/break, glue)",
+  "main": "defcorelib-bot.js",
+  "scripts": {
+    "test": "node defcorelib-bot.js"
+  },
+  "dependencies": {
+    "mineflayer": "^4.39.0",
+    "prismarine-chat": "^1.13.0",
+    "vec3": "^0.1.10"
+  }
+}

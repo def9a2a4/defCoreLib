@@ -83,6 +83,32 @@ jobs:
             SERVER_VARIANT=${{ matrix.server }} \
             2>&1 | tee ci-logs/restart-${{ matrix.server }}-${{ matrix.minecraft }}.log
 
+      # In-game mineflayer bot (test-bot/). Mineflayer only speaks 1.21.11 and 26.1.x, so 26.2+ skip it.
+      - name: Set up Node
+        if: ${{ !cancelled() && (matrix.minecraft == '1.21.11' || matrix.minecraft == '26.1.2') }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'   # mineflayer 4.39 declares engines.node >= 22
+          cache: npm
+          cache-dependency-path: test-bot/package-lock.json
+
+      - name: Bot test
+        if: ${{ !cancelled() && (matrix.minecraft == '1.21.11' || matrix.minecraft == '26.1.2') }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p ci-logs
+          make bot-install
+          rc=0
+          make bot-test-ci \
+            MINECRAFT_VERSION=${{ matrix.minecraft }} \
+            SERVER_VARIANT=${{ matrix.server }} \
+            2>&1 | tee ci-logs/bot-${{ matrix.server }}-${{ matrix.minecraft }}.log || rc=$?
+          # The server log lives in .temp/ (hidden dirs aren't uploaded); copy it beside the other logs.
+          cp .temp/bot-server.log ci-logs/bot-server-${{ matrix.server }}-${{ matrix.minecraft }}.log || true
+          cp test-bot/test-results.txt ci-logs/bot-results-${{ matrix.server }}-${{ matrix.minecraft }}.txt || true
+          exit $rc
+
       - name: Check for logged errors
         if: always()
         run: |

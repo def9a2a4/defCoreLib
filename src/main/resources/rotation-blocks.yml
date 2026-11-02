@@ -4050,23 +4050,24 @@ blocks:
     categories: [blockships]
     name: "&8Wheel"
     lore:
-      - "&7Consumes 3 Power"
+      - "&7Consumes 2 Power"
       - "&7Drives a vehicle on land"
     catalog_notes:
       - "&fA powered wheel. Mount it on the left or right side of a vehicle; wheels on the front"
       - "&for back face do nothing. Powered wheels drive the vehicle on land; unpowered ones still roll."
       - "&fIt takes power through the block it hangs on: run a shaft or engine along its axle."
-      - "&7Draws 3 power while running — it produces none."
+      - "&7Draws 2 power while running — it produces none."
       - "&7Climbs steps up to 1 block high. The tyre reaches 0 blocks below the block it hangs on."
-      - "&7Craft from four dried kelp blocks, four iron ingots and a shaft."
+      - "&7Craft two from four dried kelp blocks, four iron nuggets and a shaft."
       - "&7Wall placement only."
     recipes:
       craft:
         shaped:
-          - pattern: ["KIK", "ISI", "KIK"]
+          - pattern: ["KNK", "NSN", "KNK"]
+            amount: 2
             key:
               K: { material: DRIED_KELP_BLOCK }
-              I: { material: IRON_INGOT }
+              N: { material: IRON_NUGGET }
               S: { block: "mech:shaft" }
     texture: "@prop_bearing_fwd"
     item_texture: "@chainwheel"   # placeholder until a wheel head texture exists
@@ -4116,24 +4117,24 @@ blocks:
     categories: [blockships]
     name: "&8Large Wheel"
     lore:
-      - "&7Consumes 6 Power"
+      - "&7Consumes 5 Power"
       - "&7Drives a vehicle on land"
     catalog_notes:
       - "&fA powered wheel. Mount it on the left or right side of a vehicle; wheels on the front"
       - "&for back face do nothing. Powered wheels drive the vehicle on land; unpowered ones still roll."
       - "&fIt takes power through the block it hangs on: run a shaft or engine along its axle."
-      - "&7Draws 6 power while running — it produces none."
+      - "&7Draws 5 power while running — it produces none."
       - "&7Climbs steps up to 1.5 blocks high. The tyre reaches 0.5 blocks below the block it hangs on."
-      - "&7Craft from two wheels, four dried kelp blocks and an iron block."
+      - "&7Craft from two wheels, four dried kelp blocks and an iron ingot."
       - "&7Wall placement only."
     recipes:
       craft:
         shaped:
-          - pattern: ["KWK", "KBK", "KWK"]
+          - pattern: ["KWK", " I ", "KWK"]
             key:
               K: { material: DRIED_KELP_BLOCK }
               W: { block: "mech:wheel" }
-              B: { material: IRON_BLOCK }
+              I: { material: IRON_INGOT }
     texture: "@prop_bearing_fwd"
     item_texture: "@chainwheel"   # placeholder until a wheel head texture exists
     drops: self
@@ -4182,14 +4183,14 @@ blocks:
     categories: [blockships]
     name: "&8Huge Wheel"
     lore:
-      - "&7Consumes 12 Power"
+      - "&7Consumes 10 Power"
       - "&7Drives a vehicle on land"
     catalog_notes:
       - "&fA powered wheel. Mount it on the left or right side of a vehicle; wheels on the front"
       - "&for back face do nothing. Powered wheels drive the vehicle on land; unpowered ones still roll."
       - "&fIt takes power through the block it hangs on: run a shaft or engine along its axle."
-      - "&7Draws 12 power while running — it produces none."
-      - "&7Climbs steps up to 2.5 blocks high. The tyre reaches 1 block below the block it hangs on."
+      - "&7Draws 10 power while running — it produces none."
+      - "&7Climbs steps up to 2 blocks high. The tyre reaches 1 block below the block it hangs on."
       - "&7Craft from two large wheels, four dried kelp blocks and an iron block."
       - "&7Wall placement only."
     recipes:
