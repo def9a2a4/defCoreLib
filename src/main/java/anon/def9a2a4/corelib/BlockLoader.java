@@ -687,9 +687,11 @@ public final class BlockLoader {
 
         // Optional directional velocity: when present, the particle rises/moves along this vector instead of
         // the default random spread (see tickParticles). Absent/malformed -> null (random-spread path).
-        Vector velocity = parseVector(sec.get("velocity"), null);
+        boolean alongFacing = "facing".equalsIgnoreCase(String.valueOf(sec.get("velocity")));
+        Vector velocity = alongFacing ? null : parseVector(sec.get("velocity"), null);
 
-        return new CustomHeadBlock.ParticleConfig(type, count, speed, interval, floorOffset, wallOffsets, data, velocity);
+        return new CustomHeadBlock.ParticleConfig(type, count, speed, interval, floorOffset, wallOffsets, data, velocity,
+            alongFacing);
     }
 
     private static CustomHeadBlock.Scaling parseScaling(Object obj, double defaultVal) {

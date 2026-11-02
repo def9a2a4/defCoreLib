@@ -90,8 +90,16 @@ public final class CustomHeadBlock {
             Vector floorOffset,
             Map<BlockFace, Vector> wallOffsets,
             @Nullable Object data,  // e.g. Particle.DustOptions for DUST type
-            @Nullable Vector velocity  // directional motion: count-0 spawn, offset args = this vector, speed = magnitude
-    ) {}
+            @Nullable Vector velocity,  // directional motion: count-0 spawn, offset args = this vector, speed = magnitude
+            // `velocity: facing`: out along a wall head's facing (its nozzle). Honoured aboard a mechanism;
+            // the static path has no per-block direction for it and falls back to the random spread.
+            boolean alongFacing
+    ) {
+        public ParticleConfig(Particle type, Scaling count, Scaling speed, int intervalTicks, Vector floorOffset,
+                              Map<BlockFace, Vector> wallOffsets, @Nullable Object data, @Nullable Vector velocity) {
+            this(type, count, speed, intervalTicks, floorOffset, wallOffsets, data, velocity, false);
+        }
+    }
 
     /** An ItemDisplay entity attached to the block.
      *  The {@code displayItem} is resolved at parse time — either from a skull

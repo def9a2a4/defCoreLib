@@ -210,9 +210,8 @@ final class RotationBlocks {
         overlayEngine(registry, network, fuelManager, config);
         // Ship propulsion. These work as ordinary machines on land; BlockShips reads their live
         // powered state to drive a ship. No recipes yet — see the header in rotation-blocks.yml.
-        overlayPropulsionConsumers(registry, network, config);
         overlayThruster(registry, fuelManager);
-        overlayWheels(registry);
+        overlayVehicleSpinners(registry);
         overlayMillstone(registry, network, millRecipes, config);
         overlayPress(registry, network, pressRecipes, config);
         overlaySieve(registry, network, sieveRecipes, config);
@@ -770,65 +769,39 @@ final class RotationBlocks {
     // Ship propulsion: propellers, thruster, reaction wheel
     // ──────────────────────────────────────────────────────────────────────
 
-    /**
-     * Propellers and the reaction wheel: rotation consumers that do no world work.
-     *
-     * <p>They exist to be READ, not to act — BlockShips looks at whether each one is powered and
-     * turns that into thrust. On land they draw their power and spin, which is the whole of their
-     * static-world behaviour, so the tick is deliberately empty and slow. Registering them as real
-     * consumers is still what makes them cost power, jam a starved network, and show
-     * {@code spinning_}/{@code idle_} correctly both on land and aboard a mechanism.
-     */
-    private static void overlayPropulsionConsumers(CustomBlockRegistry registry, RotationNetwork network,
-                                                   RotationConfig config) {
-        // Axis from the stored facing, exactly like the fan — a floor propeller spins about Y, a wall
-        // one about the axis its blades face along.
-        record Tier(String id, String powerKey, int defaultPower) {}
-        List<Tier> tiers = new ArrayList<>(List.of(
-                new Tier("propeller", "propeller", 5),
-                new Tier("large_propeller", "large_propeller", 10),
-                new Tier("huge_propeller", "huge_propeller", 20)));
-        for (Tier t : tiers) {
-            overlayConsumerMachine(registry, network, new ConsumerSpec(
-                "mech:" + t.id(),
-                b -> fanAxis(readFacing(b)),
-                config.getPower(t.powerKey(), t.defaultPower()),
-                100,               // slow: there is no per-tick work to do
-                b -> { },          // no world effect by design
-                null, null, null));
-        }
-
-        // The reaction wheel is driven from a shaft below, so its axis is always Y.
-        overlayConsumerMachine(registry, network, new ConsumerSpec(
-            "mech:reaction_wheel",
-            b -> RotationNetwork.Axis.Y,
-            config.getPower("reaction_wheel", 1),
-            100,
-            b -> { },
-            null, null, null));
+    /** Ship-only spinners: propellers, the reaction wheel and the land-vehicle wheels (any wood). */
+    static boolean isVehicleSpinner(@Nullable String id) {
+        if (id == null) return false;
+        String bare = id.startsWith("mech:") ? id.substring(5) : id;
+        return bare.equals("propeller") || bare.equals("large_propeller") || bare.equals("huge_propeller")
+            || bare.equals("reaction_wheel") || wheelSize(id) != null;
     }
 
     /**
-     * Land-vehicle wheels: no static behaviour at all. They are never added as rotation nodes on land, so
-     * a placed wheel draws no power and never spins; only aboard an assembled vehicle does it join the
-     * mechanism's network (rotation-config.yml {@code mechanism:}) and roll with the road. A wheel left
-     * spinning by an older version, or landed mid-roll, settles back to its idle skin.
+     * Propellers, the reaction wheel and the land-vehicle wheels: no static behaviour at all. They exist
+     * to be read by BlockShips, which turns "powered" into thrust, so they are never added as rotation
+     * nodes on land: a placed one draws no power and never spins. Only aboard an assembled ship do they
+     * join the mechanism's network (rotation-config.yml {@code mechanism:}), and there they keep their idle
+     * skin and turn by use (BlockShips' spin override; see MechanismRotationDriver). One left spinning by
+     * an older version, or landed mid-spin, settles back to its idle skin.
      */
-    private static void overlayWheels(CustomBlockRegistry registry) {
+    private static void overlayVehicleSpinners(CustomBlockRegistry registry) {
+        List<String> ids = new ArrayList<>(List.of("propeller", "large_propeller", "huge_propeller", "reaction_wheel"));
         for (String wood : CASING_WOODS) {
-            for (String size : new String[]{"wheel", "large_wheel", "huge_wheel"}) {
-                String blockId = "mech:" + size + "_" + wood;
-                CustomHeadBlock block = registry.getType(blockId);
-                if (block == null) { warn(registry, blockId); continue; }
-                registry.overlayType(block.toBuilder()
-                    .drillable(false)
-                    .tickInterval(100)
-                    .onTick(b -> {
-                        String state = registry.getState(b);
-                        if (state != null && state.startsWith("spinning_")) setThrusterState(registry, b, state, "idle_");
-                    })
-                    .build());
-            }
+            for (String size : new String[]{"wheel", "large_wheel", "huge_wheel"}) ids.add(size + "_" + wood);
+        }
+        for (String id : ids) {
+            String blockId = "mech:" + id;
+            CustomHeadBlock block = registry.getType(blockId);
+            if (block == null) { warn(registry, blockId); continue; }
+            registry.overlayType(block.toBuilder()
+                .drillable(false)
+                .tickInterval(100)
+                .onTick(b -> {
+                    String state = registry.getState(b);
+                    if (state != null && state.startsWith("spinning_")) setThrusterState(registry, b, state, "idle_");
+                })
+                .build());
         }
     }
 

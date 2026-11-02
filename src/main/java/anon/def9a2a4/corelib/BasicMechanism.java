@@ -45,6 +45,10 @@ final class BasicMechanism implements Mechanism {
     private final String type;
     private Location pivot;
     private float currentYaw = 0f; // rotation angle (degrees) about rotationAxis; "yaw" kept for the Y/minecart path
+    /** Server tick the body last turned (rotate() with a new angle). Read by updateAnimatedDisplays. */
+    long lastTurnTick = Long.MIN_VALUE / 2;
+    /** World-space pivot as of the last particle tick, for the plume's inherited velocity; null until then. */
+    org.joml.@org.jspecify.annotations.Nullable Vector3d particlePrevPivot;
     private final Vector3f rotationAxis; // unit axis to rotate about — Y for doors/minecarts, X/Z for drawbridges
     private Matrix4f currentTransform = new Matrix4f(); // identity
 
@@ -450,6 +454,7 @@ final class BasicMechanism implements Mechanism {
     @Override
     public void rotate(float yaw) {
         checkMainThread();
+        if (yaw != this.currentYaw) lastTurnTick = Bukkit.getServer().getCurrentTick();
         this.currentYaw = yaw;
         // Rotate about the mechanism's axis (Y for doors/minecarts → identical to rotateY).
         // Negated to match Minecraft's CW-from-+axis convention (load-bearing for the Y path).

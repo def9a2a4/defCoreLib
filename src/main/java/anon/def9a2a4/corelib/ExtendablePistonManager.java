@@ -58,7 +58,6 @@ final class ExtendablePistonManager {
     // actually happened. Mirrors RotationRotator.swingCount.
     private final Map<CustomBlockRegistry.LocationKey, Integer> strokeCount = new HashMap<>();
 
-    /** Number of strokes this core has committed since load (for the showcase test harness). */
     /** A stroke a docs capture recorded instead of making (see {@link ShowcaseMode#CAPTURE_ONLY}): the blocks it
      *  would carry (rod + payload, never the core), the pole the ghost copies (or null), and the move. */
     record PlannedStroke(List<Block> moving, Block core, @Nullable Block ghostTemplate, BlockFace face, int distance) {}
@@ -70,6 +69,7 @@ final class ExtendablePistonManager {
         return plannedStrokes.get(CustomBlockRegistry.LocationKey.of(core));
     }
 
+    /** Number of strokes this core has committed since load (for the showcase test harness). */
     int strokeCount(Block core) {
         return strokeCount.getOrDefault(CustomBlockRegistry.LocationKey.of(core), 0);
     }
@@ -370,6 +370,7 @@ final class ExtendablePistonManager {
         boolean cw = dir == RotationNetwork.SpinDirection.CW;
         BlockFace moveFace = cw ? line.frontFace() : line.frontFace().getOppositeFace();
         int reserve = cw ? line.backPoles() : line.frontPoles();
+        if (reserve <= 0) return;                                   // fully stroked this way — skip the payload walk
 
         List<Block> payload = collectPayload(line);
         if (payload == null) return;                                // a glued structure holds an immovable — abort
@@ -478,10 +479,10 @@ final class ExtendablePistonManager {
      * Max forward steps (≤ {@code max}) the whole rigid assembly can advance along {@code face}: the min, over
      * every moving block, of consecutive cells ahead that are clear <em>or</em> part of the assembly's own swept
      * footprint (cells that also vacate). Checking every block — not just the leading column — is what stops a
-     * wide glued payload from shearing off and destroying blocks on landing.
+     * wide glued payload from shearing off and destroying blocks on landing. {@code throughFragile}: count
+     * fragile plants as passable (the stroke will mow them), so the reach reflects the real committed distance
+     * and the mow can be bounded to it.
      */
-    /** {@code throughFragile}: count fragile plants as passable (the stroke will mow them), so the reach
-     *  reflects the real committed distance and the mow can be bounded to it. */
     private int clearForAll(List<Block> moving, Set<Long> footprint, BlockFace face, int max,
                             boolean throughFragile) {
         int best = max;

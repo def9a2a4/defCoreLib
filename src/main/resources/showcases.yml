@@ -1132,9 +1132,8 @@ showcases:
 
   # Ceiling mounts (743863d). A hung windmill is a Y-axis passive source on its `ceiling` state, so the
   # shaft ABOVE it picks it up exactly as one above a floor windmill would; a hung propeller is a Y-axis
-  # consumer whose powered state must come out as `spinning_ceiling` (RotationNetwork re-prefixes the
-  # idle_/spinning_ token, so this also pins that the swap keeps the ceiling suffix). Two separate
-  # networks, three blocks apart.
+  # ship-only consumer: it never joins a network on land, so under five running motors it stays
+  # `idle_ceiling` (it spins only aboard an assembled ship). Two separate lines, three blocks apart.
   - id: test_ceiling_mounts
     name: "Test: ceiling windmill + propeller"
     test_only: true
@@ -1144,7 +1143,7 @@ showcases:
       - { id: "mech:shaft",          facing: down, at: [0, 1, 0] }
       - { id: "mech:fan",            facing: down, at: [0, 2, 0] }
       # Propeller (demand 5) hung under five co-axial motors (1 each).
-      - { id: "mech:propeller",      facing: up,   at: [3, 0, 0] }   # → state `idle_ceiling`
+      - { id: "mech:propeller",      facing: up,   at: [3, 0, 0] }   # → state `idle_ceiling`, and stays there
       - { id: "mech:redstone_motor", facing: down, at: [3, 1, 0] }
       - { id: "mech:redstone_motor", facing: down, at: [3, 2, 0] }
       - { id: "mech:redstone_motor", facing: down, at: [3, 3, 0] }
@@ -1155,8 +1154,7 @@ showcases:
       - { type: state, value: ceiling, at: [0, 0, 0] }
       - { type: network_powered, at: [0, 1, 0] }
       - { type: spinning, at: [0, 2, 0] }
-      - { type: network_powered, at: [3, 0, 0] }
-      - { type: state, value: spinning_ceiling, at: [3, 0, 0] }
+      - { type: state, value: idle_ceiling, at: [3, 0, 0] }
 
   # Chain hoist, full reel-in. The crane can't assert hoist_moved (see its note); this one can. The hoist
   # needs CCW to reel in, and a motor-anchored domain resolves CW, so the drive goes through ONE same-axis

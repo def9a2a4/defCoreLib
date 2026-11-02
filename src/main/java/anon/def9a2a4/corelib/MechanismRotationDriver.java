@@ -462,7 +462,16 @@ final class MechanismRotationDriver {
     void setDemand(BasicMechanism mech, int blockIndex, double demand) {
         MechState st = states.get(mech.id());
         if (st == null || Double.isNaN(demand)) return; // NaN slips through the clamp and would stop engines burning
-        st.demand.put(blockIndex, Math.max(0, Math.min(1, demand)));
+        double d = Math.max(0, Math.min(1, demand));
+        st.demand.put(blockIndex, d);
+        // A running thruster (0-power engine) shows its flame the tick it is asked to push, not at the next
+        // engine tick up to a second later: its idle flag follows its own demand. (A shaft engine's idle
+        // flag is its network load, which only the engine tick computes.)
+        NodeSpec s = st.specByIndex.get(blockIndex);
+        if (s != null && s.meta().kind() == RotationConfig.MechKind.ENGINE && s.power() <= 0
+                && st.engineRunning.getOrDefault(blockIndex, false)) {
+            if (d > 0) st.idleEngines.remove(blockIndex); else st.idleEngines.add(blockIndex);
+        }
     }
 
     /**
@@ -575,11 +584,11 @@ final class MechanismRotationDriver {
             };
             String cur = mb.customState();
             if (cur == null) continue;
-            // A land-vehicle wheel keeps its idle skin powered or not: it rolls with the road (the
-            // vehicle's spin override on the borrowed spinning_ animation), never with the network, so
-            // powered and coasting wheels are drawn by one path and look the same. Powered is still read
-            // from the solve (isRotationPowered), not the state.
-            if (RotationBlocks.wheelSize(s.typeId()) != null) desiredPrefix = "idle";
+            // Ship-only spinners (propellers, reaction wheel, wheels) keep their idle skin powered or not:
+            // they turn by use (the ship's spin override on the borrowed spinning_ animation), never with
+            // the network, so every one is drawn by one path and a still one is never re-sent. Powered is
+            // still read from the solve (isRotationPowered), not the state.
+            if (RotationBlocks.isVehicleSpinner(s.typeId())) desiredPrefix = "idle";
             int us = cur.indexOf('_');
             String curPrefix = us >= 0 ? cur.substring(0, us) : cur;
             if (!SWAPPABLE_PREFIXES.contains(curPrefix)) continue;

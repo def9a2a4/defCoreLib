@@ -2719,7 +2719,12 @@ public class MechanismRegistry implements org.bukkit.event.Listener {
         // minecart mount / recovery. There the extras were spawned moments ago holding an identity transform
         // and have never been posed: arming interpolation would smear them in from a unit cube at the block
         // origin instead of landing on frame 0. Those calls want the snap they get today.
-        boolean rearm = tickAge != 0;
+        // ...and NOT while the body is turning. rotate() poses every other display without re-arming, so the
+        // client snaps them to each new angle; an animated display that interpolated over its 2 ticks would
+        // trail the rest of the hull through every turn. While turning, snap it too, so the whole body moves
+        // as one; the spin goes back to interpolating once the heading holds.
+        boolean turning = Bukkit.getServer().getCurrentTick() - mech.lastTurnTick <= 2;
+        boolean rearm = tickAge != 0 && !turning;
         int[] animated = mech.animatedBlockIndices;
         for (int ai = 0; ai < animated.length; ai++) {
             int i = animated[ai];
@@ -2730,7 +2735,7 @@ public class MechanismRegistry implements org.bukkit.event.Listener {
             // Runtime spin override (Mechanism.setBlockSpinScale/Speed): drive this block's animations
             // from an accumulated virtual age instead of the shared tick age.
             boolean overridden = !Double.isNaN(mb.spinOverride);
-            double virtualAge = overridden ? advanceSpinAge(mb, tickAge, rearm) : 0;
+            double virtualAge = overridden ? advanceSpinAge(mb, tickAge, tickAge != 0) : 0;
 
             if (mb.displayEntityConfigs != null) {
                 for (int d = 0; d < mb.displayEntityConfigs.size(); d++) {
@@ -2816,6 +2821,18 @@ public class MechanismRegistry implements org.bukkit.event.Listener {
         Location pivot = mech.pivot();
         org.bukkit.World world = pivot.getWorld();
         if (world == null) return;
+        // The body's motion this tick, which every plume inherits: a particle that keeps the ship's
+        // velocity stays on its nozzle at speed instead of being left behind (or, on a client still
+        // interpolating the hull, drawn ahead of it). Tracked every tick, viewed or not.
+        org.joml.Vector3d prev = mech.particlePrevPivot;
+        double mvx = 0, mvy = 0, mvz = 0;
+        if (prev != null) {
+            mvx = pivot.getX() - prev.x; mvy = pivot.getY() - prev.y; mvz = pivot.getZ() - prev.z;
+            if (mvx * mvx + mvy * mvy + mvz * mvz > 16) { mvx = 0; mvy = 0; mvz = 0; }  // a teleport, not motion
+            prev.set(pivot.getX(), pivot.getY(), pivot.getZ());
+        } else {
+            mech.particlePrevPivot = new org.joml.Vector3d(pivot.getX(), pivot.getY(), pivot.getZ());
+        }
         boolean viewed = false;
         double r2 = PARTICLE_VIEW_RANGE * PARTICLE_VIEW_RANGE;
         for (org.bukkit.entity.Player p : world.getPlayers()) {
@@ -2833,10 +2850,12 @@ public class MechanismRegistry implements org.bukkit.event.Listener {
             if (rotationDriver != null && rotationDriver.isEngineIdle(mech, i)) continue;
 
             org.bukkit.util.Vector off = pc.floorOffset();
-            if (mb.blockData instanceof org.bukkit.block.data.Directional dir
+            org.bukkit.util.Vector vel = pc.velocity();
+            if (mb.blockData instanceof org.bukkit.block.data.Directional wall
                     && mb.blockData.getMaterial() == org.bukkit.Material.PLAYER_WALL_HEAD) {
-                org.bukkit.util.Vector w = pc.wallOffsets().get(dir.getFacing());
+                org.bukkit.util.Vector w = pc.wallOffsets().get(wall.getFacing());
                 if (w != null) off = w;
+                if (pc.alongFacing()) vel = wall.getFacing().getDirection();
             }
             Vector3f local = mb.localTransform.getTranslation(new Vector3f())
                 .add((float) off.getX(), (float) off.getY() - 0.5f, (float) off.getZ());
@@ -2847,8 +2866,33 @@ public class MechanismRegistry implements org.bukkit.event.Listener {
             int count = pc.count().resolveInt(0);
             double speed = pc.speed().resolve(0);
             try {
-                org.bukkit.util.Vector vel = pc.velocity();
-                if (vel != null) {
+                if (pc.data() == null && pc.type() != org.bukkit.Particle.NOTE) {
+                    // One directed spawn per particle (count 0: the offset IS the velocity), so each can carry
+                    // the ship's motion plus its own scatter: a loose, flickering plume rather than a single
+                    // dotted line. A directed config fans out in a cone about its (rotated) direction; an
+                    // undirected one drifts at random at its speed, as Bukkit's own spread would.
+                    java.util.concurrent.ThreadLocalRandom rnd = java.util.concurrent.ThreadLocalRandom.current();
+                    Vector3f dir = vel != null
+                        ? t.transformDirection(new Vector3f((float) vel.getX(), (float) vel.getY(), (float) vel.getZ()), new Vector3f())
+                        : null;
+                    int n = Math.max(1, count);
+                    for (int p = 0; p < n; p++) {
+                        double vx, vy, vz;
+                        if (dir != null) {
+                            double s = speed * (0.7 + 0.6 * rnd.nextDouble());
+                            vx = (dir.x + (rnd.nextDouble() - 0.5) * 0.35) * s;
+                            vy = (dir.y + (rnd.nextDouble() - 0.5) * 0.35) * s;
+                            vz = (dir.z + (rnd.nextDouble() - 0.5) * 0.35) * s;
+                        } else {
+                            vx = (rnd.nextDouble() - 0.5) * 2 * speed;
+                            vy = (rnd.nextDouble() - 0.5) * 2 * speed;
+                            vz = (rnd.nextDouble() - 0.5) * 2 * speed;
+                        }
+                        world.spawnParticle(pc.type(),
+                            x + (rnd.nextDouble() - 0.5) * 0.15, y + (rnd.nextDouble() - 0.5) * 0.15, z + (rnd.nextDouble() - 0.5) * 0.15,
+                            0, vx + mvx, vy + mvy, vz + mvz, 1.0);
+                    }
+                } else if (vel != null) {
                     Vector3f v = t.transformDirection(
                         new Vector3f((float) vel.getX(), (float) vel.getY(), (float) vel.getZ()), new Vector3f());
                     if (pc.data() != null) world.spawnParticle(pc.type(), x, y, z, 0, v.x, v.y, v.z, speed, pc.data());
