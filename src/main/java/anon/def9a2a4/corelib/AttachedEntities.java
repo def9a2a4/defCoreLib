@@ -63,6 +63,9 @@ final class AttachedEntities {
     /** Depth of a frame/painting's center in front of its anchor face: half a block minus half its 1/16 thickness. */
     private static final double HANG_DEPTH = 0.5 - 1.0 / 32;
 
+    /** Trace captures and landings to the log — on only for {@code make showcase-test} runs. */
+    static final boolean TRACE = Boolean.getBoolean("defcorelib.showcaseTest");
+
     private AttachedEntities() {}
 
     // ──────────────────────────────────────────────────────────────────────
@@ -205,6 +208,12 @@ final class AttachedEntities {
         BoundingBox region = new BoundingBox(minX - 1, minY - 1, minZ - 1, maxX + 2, maxY + 3, maxZ + 2);
         Capture cap = new Capture();
         for (Entity e : w.getNearbyEntities(region)) {
+            if (TRACE && (CushionCompat.isCushion(e) || e instanceof Hanging)) {
+                log.info("[carry] candidate " + e.getType() + " at " + e.getLocation().toVector()
+                    + (e instanceof Hanging h ? " facing " + h.getFacing() + " on "
+                        + e.getLocation().getBlock().getRelative(h.getAttachedFace()).getLocation().toVector() : "")
+                    + " valid=" + e.isValid() + " vehicle=" + e.getVehicle() + " tags=" + e.getScoreboardTags());
+            }
             if (!e.isValid() || e.getVehicle() != null || isMechEntity(e)) continue;
             try {
                 if (CushionCompat.isCushion(e)) {
@@ -219,6 +228,11 @@ final class AttachedEntities {
                 log.log(Level.WARNING, "Mechanism assembly: couldn't capture " + e.getType() + " at "
                     + e.getLocation().toVector() + "; leaving it in place", ex);
             }
+        }
+        if (TRACE) {
+            log.info("[carry] captured over " + blocks.size() + " block(s) " + region + ": "
+                + cap.originals.size() + " frame/painting(s) on blocks " + cap.attached.keySet()
+                + ", " + cap.cushions.size() + " cushion(s)");
         }
         return cap;
     }
