@@ -29,7 +29,7 @@ reversers, and ratchets.
 
 - [**Shaft**](https://def9a2a4.github.io/defCoreLib-docs/item.html?id=mech%3Ashaft) - carries rotation along its axis.
 - [**Gear**](https://def9a2a4.github.io/defCoreLib-docs/item.html?id=mech%3Agear) - meshes with perpendicular or in-line gears to route power around corners and branch it.
-- [**Gearbox**](https://def9a2a4.github.io/defCoreLib-docs/item.html?id=mech%3Agearbox_oak) - an omnidirectional hub: it passes power on all six faces but **not** spin direction (each side settles its own rotation). Split one input several ways, or turn a corner without a gear's counter-rotation. A wood-keyed frame block.
+- [**Gearbox**](https://def9a2a4.github.io/defCoreLib-docs/item.html?id=mech%3Agearbox_oak) - an omnidirectional hub: it passes power and spin on all six faces. Sources on different sides never jam, and an arm with no source of its own follows the nearest one. Split one input several ways, or turn a corner without a gear's counter-rotation. A wood-keyed frame block.
 - [**Clutch**](https://def9a2a4.github.io/defCoreLib-docs/item.html?id=mech%3Aclutch) - disconnects the line while it receives a redstone signal.
 - [**Reverser**](https://def9a2a4.github.io/defCoreLib-docs/item.html?id=mech%3Areverser) - flips spin direction on a redstone signal. Mostly useful for Rotators.
 - [**Ratchet**](https://def9a2a4.github.io/defCoreLib-docs/item.html?id=mech%3Aratchet) - a one-way rotation valve: it drives one direction and freewheels (disconnects) the other instead of jamming. Wrench to set the allowed direction.

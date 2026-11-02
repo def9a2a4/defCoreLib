@@ -181,7 +181,7 @@ power:
 #              facing — spin axis follows the block's facing
 #              omni   — draws from the first aligned neighbor on any non-mounted face
 #   gear_like: meshes with adjacent gears (counter-rotation, bevels)
-#   gearbox:   omnidirectional hub — passes power on all six faces; spin-direction firewall (no CW/CCW across it)
+#   gearbox:   omnidirectional hub — passes power and spin on all six faces; sources on different sides never jam
 #   blows_outward:    the machine acts AWAY from its mount, so a floor-mounted one aims UP (a fan
 #                     blows upward off the floor). Affects the reported actuation direction only.
 #   mech_power_scale: multiplier on this block's SUPPLY while riding, and only supply — the same
