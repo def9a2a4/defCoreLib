@@ -766,32 +766,16 @@ final class ShowcaseRunner implements Listener {
             // placed3d parses it to orient the block (slab half, lever/sign facing, stairs, …).
             // Fluids are skipped here: `physics: true` water/lava spreads after placement, so the spec
             // cells aren't the render truth — the world scan below captures the settled extent instead.
-            // A block a rotator swung is drawn at rest (its pre-swing blockstate) with a baked open/close loop.
-            Map<String, RotationRotator.Swing> swung = new java.util.HashMap<>();
-            if (rotator != null) {
-                for (ShowcaseSpec.BlockSpec bs : spec.blocks) {
-                    if (!RotationRotator.ROTATOR_ID.equals(bs.id())) continue;
-                    RotationRotator.Swing sw = rotator.lastSwing(blockAt(origin, bs.at()));
-                    if (sw == null) continue;
-                    for (Block b : sw.blocks()) swung.put(cellKey(relative(origin, b)), sw);
-                }
-            }
+            // Drawn as built (the pre-activation blockstate), so a block a hinge swings away is still drawn closed.
             Map<String, String> rest = restRefs.getOrDefault(spec, Map.of());
             for (ShowcaseSpec.VanillaSpec vs : spec.vanilla) {
                 if (isFluid(vs.material())) continue;
                 Block b = blockAt(origin, vs.at());
-                RotationRotator.Swing sw = swung.get(cellKey(vs.at()));
-                String ref = sw != null && rest.containsKey(cellKey(vs.at())) ? rest.get(cellKey(vs.at())) : blockRef(b);
-                Map<String, Object> rec = vanillaRecord(ref, vs.at()[0], vs.at()[1], vs.at()[2], signLines(b));
-                if (sw != null) {
-                    @SuppressWarnings("unchecked")
-                    List<Map<String, Object>> ds = (List<Map<String, Object>>) rec.get("displays");
-                    ds.get(0).put("animation", swingTrack(sw, relative(origin, sw.hinge()), vs.at()));
-                }
-                blocks.add(rec);
+                String ref = rest.getOrDefault(cellKey(vs.at()), blockRef(b));
+                blocks.add(vanillaRecord(ref, vs.at()[0], vs.at()[1], vs.at()[2], signLines(b)));
             }
-            // A piston's stroke (recorded, not made, in a capture): every block it carries slides out and back.
-            if (pistons != null) animateStrokes(spec, origin, blocks);
+            // Swings, piston strokes and hoist lifts (recorded, not made, in a capture) play back as baked loops.
+            animateMovers(spec, origin, blocks);
             // World fluids: scan the build's bounding box (padded 3 out/down, 1 up — well inside the
             // 16-block z spacing between showcases) and emit every water/lava cell with its level so
             // the viewer can size flowing water (`water[level=3]`).
@@ -835,54 +819,183 @@ final class ShowcaseRunner implements Listener {
         return new int[]{b.getX() - origin.getBlockX(), b.getY() - origin.getBlockY(), b.getZ() - origin.getBlockZ()};
     }
 
-    /** Give each block record a recorded piston stroke carries a whole-block slide loop (out, hold, back, hold),
-     *  and add the ghost pole that slides out of the core cell to keep the rod whole. */
-    private void animateStrokes(ShowcaseSpec spec, Location origin, List<Map<String, Object>> blocks) {
-        List<Map<String, Object>> ghosts = new ArrayList<>();
-        for (ShowcaseSpec.BlockSpec bs : spec.blocks) {
-            if (!"mech:piston_core".equals(bs.id())) continue;
-            ExtendablePistonManager.PlannedStroke st = pistons.plannedStroke(blockAt(origin, bs.at()));
-            if (st == null) continue;
-            int[] d = {st.face().getModX() * st.distance(), st.face().getModY() * st.distance(),
-                    st.face().getModZ() * st.distance()};
-            java.util.Set<String> carried = new java.util.HashSet<>();
-            for (Block b : st.moving()) carried.add(cellKey(relative(origin, b)));
-            String ghostFrom = st.ghostTemplate() == null ? null : cellKey(relative(origin, st.ghostTemplate()));
-            for (Map<String, Object> rec : blocks) {
-                if (!(rec.get("offset") instanceof int[] off) || !carried.contains(cellKey(off))) continue;
-                rec.put("animation", slideTrack(off, d, false));
-                if (cellKey(off).equals(ghostFrom) && rec.get("id") != null) {
-                    Map<String, Object> ghost = new LinkedHashMap<>(rec);
-                    int[] at = relative(origin, st.core());
-                    ghost.put("offset", at);
-                    ghost.put("id", null);   // not a real block: no item link / highlight
-                    ghost.put("animation", slideTrack(at, d, true));
-                    ghosts.add(ghost);
-                    ghostFrom = null;
+    /** A record's whole-block matrix (its group's, offset included) at {@code open} ∈ [0,1] of one move. */
+    private interface Pose { org.joml.Matrix4f at(double open); }
+
+    /**
+     * Bake every move a capture recorded into whole-block loops: each rotator swing, piston stroke and hoist lift
+     * gets its own slot of {@link #SWING_PERIOD} ticks (open, hold, close, hold), played one after another, so a
+     * build with several movers (the crane) shows them in sequence and a single mover loops as before. A record
+     * a slot doesn't move sits at its first move's rest pose. A swing next to a lever + reverser plays twice, the
+     * lever flipped and the swing reversed the second time.
+     */
+    private void animateMovers(ShowcaseSpec spec, Location origin, List<Map<String, Object>> blocks) {
+        List<Map<Map<String, Object>, Pose>> slots = new ArrayList<>();
+        List<Map<String, Object>> added = new ArrayList<>();
+        // Levers switching a reverser (face-adjacent to one): flipping them reverses a swing.
+        List<Map<String, Object>> levers = new ArrayList<>();
+        for (Map<String, Object> rec : blocks) {
+            if (!ref(rec).startsWith("lever[")) continue;
+            for (ShowcaseSpec.BlockSpec bs : spec.blocks) {
+                int[] o = offset(rec), r = bs.at();
+                if ("mech:reverser".equals(bs.id())
+                        && Math.abs(o[0] - r[0]) + Math.abs(o[1] - r[1]) + Math.abs(o[2] - r[2]) == 1) {
+                    levers.add(rec);
+                    break;
                 }
             }
         }
-        blocks.addAll(ghosts);
-    }
+        boolean reversible = !levers.isEmpty();
 
-    /** A whole-block loop (frames are the block group's full matrix, offset included): slide by {@code d} with
-     *  the swing's phases. A {@code ghost} (the pole filling the core cell) is shrunk away while fully retracted,
-     *  where it would sit inside the core. */
-    private static Map<String, Object> slideTrack(int[] off, int[] d, boolean ghost) {
-        List<float[]> frames = new ArrayList<>();
-        for (int t = 0; t < SWING_PERIOD; t += SWING_STEP) {
-            float open = (float) openFraction(t);
-            float scale = ghost && open == 0 ? 0.001f : 1f;
-            frames.add(new org.joml.Matrix4f().translation(off[0] + d[0] * open, off[1] + d[1] * open,
-                    off[2] + d[2] * open).scale(scale).get(new float[16]));
+        if (rotator != null) {
+            for (ShowcaseSpec.BlockSpec bs : spec.blocks) {
+                if (!RotationRotator.ROTATOR_ID.equals(bs.id())) continue;
+                RotationRotator.Swing sw = rotator.lastSwing(blockAt(origin, bs.at()));
+                if (sw == null) continue;
+                java.util.Set<String> cells = new java.util.HashSet<>();
+                for (Block blk : sw.blocks()) cells.add(cellKey(relative(origin, blk)));
+                int[] hinge = relative(origin, sw.hinge());
+                Map<Map<String, Object>, Pose> slot = new java.util.IdentityHashMap<>();
+                for (Map<String, Object> rec : recordsIn(blocks, cells)) slot.put(rec, swingPose(sw, hinge, offset(rec), 1));
+                slots.add(slot);
+                if (!reversible) continue;
+                // Second pass: the lever flipped, the reverser turns the swing the other way.
+                Map<Map<String, Object>, Pose> back = new java.util.IdentityHashMap<>();
+                for (Map<String, Object> rec : recordsIn(blocks, cells)) back.put(rec, swingPose(sw, hinge, offset(rec), -1));
+                for (Map<String, Object> lever : levers) {
+                    Map<String, Object> flipped = vanillaRecord(flipLever(ref(lever)), offset(lever)[0], offset(lever)[1],
+                            offset(lever)[2]);
+                    added.add(flipped);
+                    slot.put(lever, still(offset(lever), true));
+                    slot.put(flipped, still(offset(flipped), false));
+                    back.put(lever, still(offset(lever), false));
+                    back.put(flipped, still(offset(flipped), true));
+                }
+                slots.add(back);
+                reversible = false;   // one flip per build
+            }
         }
-        Map<String, Object> a = new LinkedHashMap<>();
-        a.put("period", SWING_PERIOD);
-        a.put("frames", frames);
-        return a;
+        if (pistons != null) {
+            for (ShowcaseSpec.BlockSpec bs : spec.blocks) {
+                if (!"mech:piston_core".equals(bs.id())) continue;
+                ExtendablePistonManager.PlannedStroke st = pistons.plannedStroke(blockAt(origin, bs.at()));
+                if (st == null) continue;
+                int[] d = {st.face().getModX() * st.distance(), st.face().getModY() * st.distance(),
+                        st.face().getModZ() * st.distance()};
+                java.util.Set<String> cells = new java.util.HashSet<>();
+                for (Block blk : st.moving()) cells.add(cellKey(relative(origin, blk)));
+                Map<Map<String, Object>, Pose> slot = new java.util.IdentityHashMap<>();
+                for (Map<String, Object> rec : recordsIn(blocks, cells)) slot.put(rec, slide(offset(rec), d, null));
+                // The ghost pole slides out of the core cell to keep the rod whole; hidden while fully retracted.
+                if (st.ghostTemplate() != null) {
+                    for (Map<String, Object> rec : recordsIn(blocks, java.util.Set.of(cellKey(relative(origin, st.ghostTemplate()))))) {
+                        if (rec.get("id") == null) continue;
+                        Map<String, Object> ghost = new LinkedHashMap<>(rec);
+                        int[] at = relative(origin, st.core());
+                        ghost.put("offset", at);
+                        ghost.put("id", null);   // not a real block: no item link / highlight
+                        added.add(ghost);
+                        slot.put(ghost, open -> open == 0 ? hidden(at) : slide(at, d, null).at(open));
+                        break;
+                    }
+                }
+                slots.add(slot);
+            }
+        }
+        if (hoists != null) {
+            for (ShowcaseSpec.BlockSpec bs : spec.blocks) {
+                if (!ChainHoistManager.HOIST_ID.equals(bs.id())) continue;
+                ChainHoistManager.PlannedLift lift = hoists.plannedLift(blockAt(origin, bs.at()));
+                if (lift == null) continue;
+                int[] hoist = relative(origin, lift.hoist());
+                int[] d = {0, lift.distance(), 0};
+                float ceiling = hoist[1] - 0.5f;   // a link slid past here is inside the hoist: hide it
+                Map<Map<String, Object>, Pose> slot = new java.util.IdentityHashMap<>();
+                java.util.Set<String> chain = new java.util.HashSet<>(), load = new java.util.HashSet<>();
+                for (Block blk : lift.chain()) chain.add(cellKey(relative(origin, blk)));
+                for (Block blk : lift.load()) load.add(cellKey(relative(origin, blk)));
+                for (Map<String, Object> rec : recordsIn(blocks, chain)) slot.put(rec, slide(offset(rec), d, ceiling));
+                for (Map<String, Object> rec : recordsIn(blocks, load)) slot.put(rec, slide(offset(rec), d, ceiling));
+                // Paying out, new links come down out of the hoist above the old top link.
+                for (int i = 1; lift.distance() < 0 && i <= -lift.distance(); i++) {
+                    int[] at = {hoist[0], hoist[1] - i - lift.distance(), hoist[2]};
+                    Map<String, Object> link = vanillaRecord(ChainHoistManager.chainRef(), at[0], at[1], at[2]);
+                    added.add(link);
+                    slot.put(link, slide(at, d, ceiling));
+                }
+                slots.add(slot);
+            }
+        }
+        blocks.addAll(added);
+        if (slots.isEmpty()) return;
+
+        // Each record's first pose is its rest pose outside the slots that don't move it.
+        Map<Map<String, Object>, Pose> restPose = new java.util.IdentityHashMap<>();
+        for (Map<Map<String, Object>, Pose> slot : slots) slot.forEach(restPose::putIfAbsent);
+        int period = slots.size() * SWING_PERIOD;
+        for (Map.Entry<Map<String, Object>, Pose> e : restPose.entrySet()) {
+            List<float[]> frames = new ArrayList<>();
+            for (int t = 0; t < period; t += SWING_STEP) {
+                Pose p = slots.get(t / SWING_PERIOD).get(e.getKey());
+                frames.add((p != null ? p.at(openFraction(t % SWING_PERIOD)) : e.getValue().at(0)).get(new float[16]));
+            }
+            Map<String, Object> a = new LinkedHashMap<>();
+            a.put("period", period);
+            a.put("frames", frames);
+            e.getKey().put("animation", a);
+        }
     }
 
-    /** 0 → 1 (eased), hold, 1 → 0, hold — the shared open/close cycle of the swing and stroke loops. */
+    /** The records whose cell is one of {@code cells}. Fluids are captured later and never move. */
+    private static List<Map<String, Object>> recordsIn(List<Map<String, Object>> blocks, java.util.Set<String> cells) {
+        List<Map<String, Object>> out = new ArrayList<>();
+        for (Map<String, Object> rec : blocks) if (cells.contains(cellKey(offset(rec)))) out.add(rec);
+        return out;
+    }
+
+    private static int[] offset(Map<String, Object> rec) { return (int[]) rec.get("offset"); }
+
+    /** A vanilla record's blockstate ref, or "" for a custom block. */
+    @SuppressWarnings("unchecked")
+    private static String ref(Map<String, Object> rec) {
+        if (rec.get("id") != null || !(rec.get("displays") instanceof List<?> ds) || ds.isEmpty()) return "";
+        Object r = ((Map<String, Object>) ds.get(0)).get("ref");
+        return r instanceof String str ? str : "";
+    }
+
+    private static String flipLever(String ref) {
+        return ref.contains("powered=true") ? ref.replace("powered=true", "powered=false")
+                : ref.replace("powered=false", "powered=true");
+    }
+
+    /** Turn about the hinge cell's centre exactly as {@code BasicMechanism.rotate} does (−angle about the axis);
+     *  {@code sign} −1 swings the other way. */
+    private static Pose swingPose(RotationRotator.Swing sw, int[] hinge, int[] at, int sign) {
+        return open -> new org.joml.Matrix4f()
+                .translate(hinge[0], hinge[1], hinge[2])
+                .rotate((float) Math.toRadians(-sw.targetDeg() * sign * open), sw.axis().x, sw.axis().y, sw.axis().z)
+                .translate(at[0] - hinge[0], at[1] - hinge[1], at[2] - hinge[2]);
+    }
+
+    /** Slide by {@code d}; hidden while its centre is above {@code ceiling} (a link inside the hoist), if given. */
+    private static Pose slide(int[] at, int[] d, @org.jspecify.annotations.Nullable Float ceiling) {
+        return open -> {
+            float x = at[0] + (float) (d[0] * open), y = at[1] + (float) (d[1] * open), z = at[2] + (float) (d[2] * open);
+            return ceiling != null && y > ceiling ? hidden(new int[]{at[0], Math.round(y), at[2]})
+                    : new org.joml.Matrix4f().translation(x, y, z);
+        };
+    }
+
+    /** At rest, shown or hidden (a lever's other state). */
+    private static Pose still(int[] at, boolean shown) {
+        return open -> shown ? new org.joml.Matrix4f().translation(at[0], at[1], at[2]) : hidden(at);
+    }
+
+    private static org.joml.Matrix4f hidden(int[] at) {
+        return new org.joml.Matrix4f().translation(at[0], at[1], at[2]).scale(0.001f);
+    }
+
+    /** 0 → 1 (eased), hold, 1 → 0, hold — the shared open/close cycle of every move. */
     private static double openFraction(int t) {
         int phase = t / SWING_PHASE;
         double f = (double) (t % SWING_PHASE) / SWING_PHASE;
@@ -890,35 +1003,8 @@ final class ShowcaseRunner implements Listener {
         return switch (phase) { case 0 -> eased; case 1 -> 1; case 2 -> 1 - eased; default -> 0; };
     }
 
-    /** Swing loop period and length of each phase (open, hold open, close, hold closed), in ticks. */
+    /** One move's loop length and the length of each phase (open, hold open, close, hold closed), in ticks. */
     private static final int SWING_PHASE = 25, SWING_PERIOD = 4 * SWING_PHASE, SWING_STEP = 2;
-
-    /**
-     * A baked keyframe loop for one block of a rotator swing: open to the swing's target angle, hold, swing
-     * shut, hold. Each frame turns the block about the hinge cell's centre exactly as
-     * {@code BasicMechanism.rotate} does (−angle about the axis), expressed in the display's frame (its origin is
-     * the cell's min corner, the cell centre sitting at the block's offset).
-     */
-    private static Map<String, Object> swingTrack(RotationRotator.Swing sw, int[] hinge, int[] at) {
-        org.joml.Vector3f corner = new org.joml.Vector3f(at[0] - 0.5f, at[1] - 0.5f, at[2] - 0.5f);
-        org.joml.Vector3f pivot = new org.joml.Vector3f(hinge[0], hinge[1], hinge[2]);
-        List<float[]> frames = new ArrayList<>();
-        for (int t = 0; t < SWING_PERIOD; t += SWING_STEP) {
-            double open = openFraction(t);
-            float rad = (float) Math.toRadians(-sw.targetDeg() * open);
-            org.joml.Matrix4f m = new org.joml.Matrix4f()
-                    .translate(-corner.x, -corner.y, -corner.z)
-                    .translate(pivot)
-                    .rotate(rad, sw.axis().x, sw.axis().y, sw.axis().z)
-                    .translate(-pivot.x, -pivot.y, -pivot.z)
-                    .translate(corner);
-            frames.add(m.get(new float[16]));
-        }
-        Map<String, Object> a = new LinkedHashMap<>();
-        a.put("period", SWING_PERIOD);
-        a.put("frames", frames);
-        return a;
-    }
 
     private static Map<String, Object> vanillaRecord(String ref, int dx, int dy, int dz) {
         return vanillaRecord(ref, dx, dy, dz, null);

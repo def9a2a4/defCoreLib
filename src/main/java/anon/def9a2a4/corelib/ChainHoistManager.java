@@ -107,6 +107,17 @@ final class ChainHoistManager implements Listener {
     // actually happened. Mirrors RotationRotator.swingCount; see moveCount below.
     private final Map<CustomBlockRegistry.LocationKey, Integer> moveCount = new HashMap<>();
 
+    /** A lift a docs capture recorded instead of making (see {@link ShowcaseMode#CAPTURE_ONLY}): the hoist, its
+     *  chain top-down, the load hanging off it, and how far it would move (+ up / − down) in blocks. */
+    record PlannedLift(Block hoist, List<Block> chain, List<Block> load, int distance) {}
+
+    private final Map<CustomBlockRegistry.LocationKey, PlannedLift> plannedLifts = new HashMap<>();
+
+    /** The lift a docs capture recorded for this hoist, or null. */
+    @Nullable PlannedLift plannedLift(Block hoist) {
+        return plannedLifts.get(CustomBlockRegistry.LocationKey.of(hoist));
+    }
+
     /** Number of lifts this hoist has committed since load (for the showcase test harness). */
     int moveCount(Block hoist) {
         return moveCount.getOrDefault(CustomBlockRegistry.LocationKey.of(hoist), 0);
@@ -501,7 +512,9 @@ final class ChainHoistManager implements Listener {
             // up front — the actual mow is deferred to post-commit (after the busy-anchor + assemble bails
             // below), so an aborted descent destroys nothing. advance's frontierClear mows each deeper cell
             // as the body reaches it (no over-mow past the stop).
-            if (clearForAll(frontier, footprint, BlockFace.DOWN, budget, true) < 1) return;
+            int r0 = clearForAll(frontier, footprint, BlockFace.DOWN, budget, true);
+            if (r0 < 1) return;
+            if (ShowcaseMode.CAPTURE_ONLY) span = r0;   // the capture plays the drop as far as it really goes
         } else {
             // Rising: clamp the WHOLE committed span by the LOAD's upward clearance — a load wider than the
             // rope (a platform under a floor with a 1×1 rope hole) otherwise rises into occupied external
@@ -519,6 +532,11 @@ final class ChainHoistManager implements Listener {
             // is bounded to it (and deferred past the abort checks) so an aborted stroke destroys nothing.
             span = Math.min(span, clearForAll(load, footprint, BlockFace.UP, span, true));
             if (span < 1) return;
+        }
+        if (ShowcaseMode.CAPTURE_ONLY) {   // docs capture: record the lift, leave the build at rest
+            plannedLifts.putIfAbsent(hoistKey, new PlannedLift(hoist, List.copyOf(column), List.copyOf(load),
+                descend ? -span : span));
+            return;
         }
         List<Block> group = new ArrayList<>(column.subList(descend ? 0 : span, column.size()));
         group.addAll(load);
@@ -681,6 +699,12 @@ final class ChainHoistManager implements Listener {
     }
 
     /** BlockData for a link: a Y-axis chain, matching what disassembly will land in the column. */
+    /** The chain link's blockstate as the docs capture writes it ({@code iron_chain[axis=y]}). */
+    static String chainRef() {
+        String ref = chainData().getAsString();
+        return ref.startsWith("minecraft:") ? ref.substring("minecraft:".length()) : ref;
+    }
+
     private static BlockData chainData() {
         BlockData d = CHAIN_MATERIAL.createBlockData();
         if (d instanceof Orientable o) o.setAxis(Axis.Y);

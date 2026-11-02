@@ -842,7 +842,7 @@ showcases:
       - { id: "mech:shaft", facing: south, state: idle_z, at: [0, 1, 6] }
       - { id: "mech:shaft", facing: south, state: idle_z, at: [0, 1, 7] }
       - { id: "mech:shaft", facing: south, state: idle_z, at: [0, 1, 8] }
-      - { id: "mech:chain_hoist", facing: down, state: idle_z, at: [0, 1, 10] }
+      - { id: "mech:chain_hoist", facing: down, state: idle_z, at: [0, 1, 10], contents: ["IRON_CHAIN x16"] }   # chain to pay out
       - { id: "verticalslabs:cut_copper", facing: east, state: east, at: [-1, 1, 9] }
       - { id: "verticalslabs:cut_copper", facing: west, state: west, at: [1, 1, 9] }
       - { id: "verticalslabs:cut_copper", facing: south, state: south, at: [0, 1, -6] }
@@ -853,7 +853,10 @@ showcases:
       - { id: "verticalslabs:cut_copper", facing: west, state: west, at: [1, 1, 0] }
       - { id: "mech:gear", facing: down, state: idle_y, at: [-1, -1, -1] }
       - { id: "mech:gear", facing: down, state: idle_y, at: [-1, -1, 0] }
-      - { id: "mech:rotator", facing: down, state: spinning_ceiling, at: [0, -2, -1] }
+      # The boom (everything from the mast top up, plus the hoist's chain and platform) is glued to the
+      # ceiling rotator, so a pulse swings the whole arm round the mast.
+      - { id: "mech:rotator", facing: down, state: spinning_ceiling, at: [0, -2, -1],
+          glue: [[-1, -7, 9], [0, -7, 9], [1, -7, 9], [-1, -7, 10], [0, -7, 10], [1, -7, 10], [-1, -7, 11], [0, -7, 11], [1, -7, 11], [0, -6, 10], [0, -5, 10], [0, -4, 10], [0, -3, 10], [0, -2, 10], [0, -1, -1], [0, -1, 10], [0, 0, -5], [0, 0, -4], [0, 0, -3], [0, 0, -1], [0, 0, 0], [0, 0, 1], [0, 0, 2], [0, 0, 3], [0, 0, 4], [0, 0, 5], [0, 0, 6], [0, 0, 7], [0, 0, 8], [0, 0, 9], [0, 0, 10], [0, 1, -6], [0, 1, -5], [0, 1, -4], [0, 1, -3], [0, 1, -2], [0, 1, -1], [-1, 1, 0], [0, 1, 0], [1, 1, 0], [-1, 1, 1], [0, 1, 1], [1, 1, 1], [0, 1, 2], [0, 1, 3], [0, 1, 4], [0, 1, 5], [0, 1, 6], [0, 1, 7], [0, 1, 8], [-1, 1, 9], [0, 1, 9], [1, 1, 9], [0, 1, 10], [0, 2, -5], [0, 2, -4], [0, 2, -3], [0, 2, -2], [0, 2, -1], [0, 2, 0], [0, 2, 1], [0, 2, 2], [0, 2, 3], [0, 2, 4], [0, 2, 5], [0, 2, 6], [0, 2, 7], [0, 2, 8], [0, 2, 9]] }
       - { id: "mech:gear", facing: down, state: idle_y, at: [0, -1, -2] }
       - { id: "mech:gear", facing: down, state: idle_y, at: [1, -1, -2] }
       - { id: "mech:gear", facing: down, state: idle_y, at: [-1, -1, -2] }
@@ -879,7 +882,7 @@ showcases:
       - { id: "mech:shaft", facing: down, state: spinning_y, at: [0, -10, -1] }
       - { id: "mech:shaft", facing: down, state: idle_y, at: [0, -11, -2] }
       - { id: "mech:reverser", facing: down, state: spinning_y, at: [0, -11, -1] }
-      - { id: "mech:redstone_motor", facing: down, state: idle_y, at: [0, -12, -2] }
+      - { id: "mech:redstone_motor", facing: down, state: spinning_y, at: [0, -12, -2] }   # the boom column: on
       - { id: "mech:redstone_motor", facing: down, state: spinning_y, at: [0, -12, -1] }
       - { id: "mech:redstone_motor", facing: down, state: spinning_y, at: [0, -13, -1] }
       - { id: "verticalslabs:cut_copper", facing: east, state: east, at: [-1, 1, 1] }
@@ -1031,7 +1034,7 @@ showcases:
       - { block: "STONE_BRICKS", at: [-2, -12, -1] }
       - { block: "SMOOTH_STONE", at: [-2, -12, 0] }
       - { block: "STRIPPED_SPRUCE_LOG", at: [-2, -11, -2], data: "[axis=y]" }
-      - { block: "REDSTONE_WIRE", at: [-1, -12, -2], data: "[east=side,north=side,power=15,south=side,west=side]" }
+      - { block: "REDSTONE_WIRE", at: [-1, -12, -2], data: "[east=side,north=side,power=0,south=side,west=side]" }
       - { block: "REPEATER", at: [-1, -12, 0], data: "[delay=1,facing=west,locked=false,powered=true]" }
       - { block: "STRIPPED_SPRUCE_LOG", at: [-1, -12, 1], data: "[axis=y]" }
       - { block: "REPEATER", at: [0, -12, 0], data: "[delay=1,facing=west,locked=false,powered=true]" }
@@ -1077,7 +1080,7 @@ showcases:
       - { block: "STRIPPED_SPRUCE_LOG", at: [1, -11, -3], data: "[axis=y]" }
       - { block: "STRIPPED_SPRUCE_LOG", at: [1, -10, -3], data: "[axis=y]" }
       - { block: "SPRUCE_STAIRS", at: [1, -9, -3], data: "[facing=south,half=bottom,shape=straight,waterlogged=false]" }
-      - { block: "LEVER", at: [-3, -12, -2], data: "[face=wall,facing=west,powered=true]" }
+      - { block: "LEVER", at: [-3, -12, -2], data: "[face=wall,facing=west,powered=false]" }   # "chain on"
       - { block: "PALE_OAK_WALL_SIGN", at: [-3, -12, -1], data: "[facing=west,waterlogged=false]", text: ["<- chain on", "crane CW ->", "<- chain off", "crane CCW ->"] }
       - { block: "LEVER", at: [-3, -12, 0], data: "[face=wall,facing=west,powered=true]" }
       - { block: "PALE_OAK_WALL_SIGN", at: [-3, -11, -2], data: "[facing=west,waterlogged=false]", text: ["^", "chain control", "v"] }
@@ -1086,19 +1089,12 @@ showcases:
       - { block: "PALE_OAK_WALL_SIGN", at: [-3, -10, -1], data: "[facing=west,waterlogged=false]", text: ["<- extend", "rotate ->", "", "<- retract"] }
       - { block: "DARK_OAK_BUTTON", at: [-3, -10, 0], data: "[face=wall,facing=west,powered=false]" }
       - { block: "STONE_BRICKS", at: [2, -13, -3] }
-    activate: passive
-    # Test disabled: the hoist can't move in this build, for two independent reasons.
-    #  1. The boom motor at [0,-12,-2] is authored `idle_y` (its two neighbours are `spinning_y`) and
-    #     its lever at [-3,-12,-2] is powered=true, which holds the redstone-inverted motor off. That
-    #     is deliberate — the build's own sign says "chain on / chain off" and this is the off column.
-    #  2. Even powered, the gearbox at [0,1,9] sits between the drive and the hoist, and a gearbox is a
-    #     direction firewall. That leaves the hoist a single-node domain seeded CW, i.e. payOut, which
-    #     needs chains already in its storage — and BlockSpec can't seed storage from YAML. It returns
-    #     immediately whatever the power state.
-    # Re-enable once the crane is rebuilt to actually reel in: power the boom column (lever [-3,-12,-2]
-    # → powered=false, wire [0,-12,-3] → power=0, motor [0,-12,-2] → spinning_y) AND give the hoist's
-    # domain an odd number of reversing edges so it resolves CCW. Downgrading to
-    # `network_powered, at: [0, 1, 10]` plus only the power fixes is the cheaper half-measure.
+    # Swing the boom (the stone beside the hinge becomes a redstone block — drawn as stone in the docs), and
+    # with the boom column on, the hoist pays its chain out and back. The docs capture plays them in turn.
+    activate: { pulse: [1, -2, -1] }
+    # No assertions yet. The boom column is switched on (lever [-3,-12,-2] off, its wire unpowered), and the
+    # gearbox at [0,1,9] is a direction firewall, so the hoist is a single-node domain seeded CW: it pays OUT,
+    # from the 16 chains seeded into its storage. Untested in game — once a run shows it moving, assert:
     # expect:
     #   - { type: hoist_moved, at: [0, 1, 10] }
 
