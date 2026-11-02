@@ -275,6 +275,17 @@ final class BasicMechanism implements Mechanism {
         MechanismBlockData mb = blocks.get(blockIndex);
         mb.spinOverride = value;
         mb.spinOverrideAbsolute = absolute;
+        if (value == 0) {
+            // Stopped: hand a borrowed block back to the static pose, so a parked vehicle's idle wheels don't
+            // re-send their transforms every tick.
+            if (mb.borrowedItemAnims != null || mb.borrowedBlockAnims != null) {
+                mb.borrowedItemAnims = null;
+                mb.borrowedBlockAnims = null;
+                mb.spinSeeded = false;
+                recomputeAnimatedBlockIndices();
+            }
+            return;
+        }
         if (!blockIsAnimated(mb) && borrowSpin(mb)) recomputeAnimatedBlockIndices();
     }
 
@@ -489,6 +500,7 @@ final class BasicMechanism implements Mechanism {
                     if (displayIdx >= group.size()) break;
                     var dec = mb.displayEntityConfigs.get(d);
                     if (dec.animation() != null) continue;
+                    if (mb.borrowedItemAnims != null && mb.borrowedItemAnims[d] != null) continue; // spun by tickMechanisms
                     Matrix4f extra = scratchDisplay.set(dm);
                     applyWallOffset(extra, mb.wallFacing, dec.wallOffset());
                     extra.mul(transformToMatrix(dec.transform(), scratchTransform));
@@ -508,6 +520,7 @@ final class BasicMechanism implements Mechanism {
                     if (idx >= group.size()) break;
                     var bdc = mb.blockDisplayEntityConfigs.get(d);
                     if (bdc.animation() != null) continue;
+                    if (mb.borrowedBlockAnims != null && mb.borrowedBlockAnims[d] != null) continue; // spun by tickMechanisms
                     Matrix4f bd = scratchDisplay.set(dm);
                     applyWallOffset(bd, mb.wallFacing, bdc.wallOffset());
                     bd.mul(transformToMatrix(bdc.transform(), scratchTransform));
@@ -1273,6 +1286,12 @@ final class BasicMechanism implements Mechanism {
                 if (mb.wasBare) rebareTargets.add(target);
                 landBanners(target, mb, snappedYaw, upright);
                 if (mb.glueOffsets != null) { if (ChainHoistManager.isHoist(target, registry)) { landedHoistTargets.add(target); landedHoistOffsets.add(mb.glueOffsets); } else { landedAnchorTargets.add(target); landedAnchorOffsets.add(mb.glueOffsets); } }
+            } else if (relanding && mb.blockData != null && target.getType() == mb.blockData.getMaterial()) {
+                // Landed before the crash, contents included; placing again would duplicate it. Ahead of the
+                // fragile branch, which would break (drop) a landed plant and place it again. Still a landed
+                // cell, so a carried frame finds its saved self (spawn's UUID guard) instead of paying again.
+                fallbackDrop = false;
+                landedCells.put(i, target);
             } else if (FragileBlocks.isFragile(target.getType())) {
                 target.breakNaturally();
                 placeBlock(target, mb, snappedYaw);
@@ -1289,8 +1308,6 @@ final class BasicMechanism implements Mechanism {
                 // item from nothing. The concrete case: a hoist reel-in stopped short lands its emerging
                 // ghost link on the still-real swallowed link it was visually duplicating — solid-wins
                 // dropped a phantom chain item on every interrupted rise (farmable by pulsing power).
-            } else if (relanding && mb.blockData != null && target.getType() == mb.blockData.getMaterial()) {
-                fallbackDrop = false; // landed before the crash, contents included; placing again would duplicate it
             } else {
                 // Solid block wins — explosion effect + drop mechanism block as item
                 target.getWorld().spawnParticle(Particle.EXPLOSION,

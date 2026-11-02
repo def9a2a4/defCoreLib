@@ -1625,6 +1625,8 @@ public class MechanismRegistry implements org.bukkit.event.Listener {
 
     public void shutdown() {
         if (tickTask != null) tickTask.cancel();
+        // /stop disables plugins before players are saved, so the quit hook never runs: step them off here.
+        for (org.bukkit.entity.Player p : Bukkit.getOnlinePlayers()) stepOffMechanism(p);
         // Restore real blocks for any still-assembled mechanism (e.g. an open door) so the structure
         // isn't lost on /stop. Per-mechanism guarded: a failure falls back to removeAllEntities so we
         // never leak persistent entities. (Full restart recovery is the deferred persistence work.)

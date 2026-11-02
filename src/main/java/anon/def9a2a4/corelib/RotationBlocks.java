@@ -1460,7 +1460,8 @@ final class RotationBlocks {
             msg = "Steam piston: needs a Boiler directly below";
         } else if (!isType(registry, burner, BURNER_ID)) {
             msg = "Steam piston: needs a Burner below the boiler";
-        } else if (fuelManager.getFuel(CustomBlockRegistry.LocationKey.of(burner)) <= 0) {
+        } else if (fuelManager.getFuel(CustomBlockRegistry.LocationKey.of(burner)) <= 0
+                && !hasFuelItem(registry.getOrCreateStorage(burner), fuelManager)) { // burn-on-load draws items as used
             msg = "Steam piston: burner has no fuel";
         } else if (anon.def9a2a4.corelib.fluid.FluidTanks.units(boiler) <= 0) {
             var spec = anon.def9a2a4.corelib.fluid.FluidTanks.spec(boiler);

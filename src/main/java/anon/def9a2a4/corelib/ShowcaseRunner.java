@@ -133,7 +133,7 @@ final class ShowcaseRunner implements Listener {
         Path capturePath = (capture == null || capture.isBlank()) ? null : Path.of(capture);
         int phase = Integer.getInteger("defcorelib.showcasePhase", 0);
         String mode = System.getProperty("defcorelib.showcaseRestart");
-        if (phase != 0 && (!test || !("clean".equals(mode) || "crash".equals(mode)) || phase > 2)) {
+        if (phase != 0 && (!test || !("clean".equals(mode) || "crash".equals(mode)) || phase < 0 || phase > 2)) {
             plugin.getLogger().warning("ShowcaseRunner: showcasePhase needs showcaseTest=true and "
                     + "showcaseRestart=clean|crash — not armed");
             return false;
@@ -412,7 +412,13 @@ final class ShowcaseRunner implements Listener {
                 } else if (qual != null) {
                     try {
                         facing = org.bukkit.block.BlockFace.valueOf(qual.toUpperCase(java.util.Locale.ROOT));
-                    } catch (IllegalArgumentException notAFace) { /* an art key */ }
+                    } catch (IllegalArgumentException notAFace) {   // an art key — a typo must not count 0 and pass
+                        if (t != org.bukkit.entity.EntityType.PAINTING
+                                || org.bukkit.Registry.ART.get(org.bukkit.NamespacedKey.minecraft(qual.toLowerCase(java.util.Locale.ROOT))) == null) {
+                            plugin.getLogger().warning("[showcase] " + spec.id + ": unknown entity_count qualifier " + qual);
+                            return false;
+                        }
+                    }
                 }
                 int want = Integer.parseInt(v.substring(eq + 1).trim());
                 int n = 0;

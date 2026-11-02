@@ -241,6 +241,9 @@ final class MechanismPersistence {
                 } catch (IOException | InvalidConfigurationException e) {
                     return; // unreadable: leave it as it is; recovery will not touch a file it cannot read
                 }
+                // First mark wins: a teardown that threw after landing re-runs onMechanismRemoved from its error
+                // path, and turning "landed" into "destroyed" would make a crash discard the landed blocks.
+                if (y.contains(MechanismState.TEARDOWN_KEY)) return;
                 y.set(MechanismState.TEARDOWN_KEY, teardown);
                 try {
                     writeFile(world, id, y.saveToString());

@@ -453,7 +453,7 @@ final class MechanismRotationDriver {
     /** Demand 0..1 for a block aboard (BlockShips: propellers, wheels, thrusters by use). */
     void setDemand(BasicMechanism mech, int blockIndex, double demand) {
         MechState st = states.get(mech.id());
-        if (st == null) return;
+        if (st == null || Double.isNaN(demand)) return; // NaN slips through the clamp and would stop engines burning
         st.demand.put(blockIndex, Math.max(0, Math.min(1, demand)));
     }
 

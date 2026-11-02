@@ -96,10 +96,15 @@ public final class CommandHelp {
         return s == null || allowed(sender, s);
     }
 
-    /** False (and tells the sender) when they lack {@code name}'s permission. */
+    /** False (and tells the sender) when they lack {@code name}'s permission. Fails closed: a name missing
+     *  from the table gets the unknown-subcommand help, so a handler case added without a row stays shut. */
     public boolean checkPermission(CommandSender sender, String name) {
         Sub s = find(name);
-        if (s == null || allowed(sender, s)) return true;
+        if (s == null) {
+            sendUnknown(sender, name);
+            return false;
+        }
+        if (allowed(sender, s)) return true;
         sender.sendMessage(Component.text("You don't have permission for /" + command + " " + s.name() + ".",
             NamedTextColor.RED));
         return false;
