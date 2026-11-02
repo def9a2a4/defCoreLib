@@ -350,7 +350,7 @@ final class MechanismRotationDriver {
 
             if (!config.burnOnLoad) {
                 // The old fixed burn: refill when empty, burn one engine-tick while running.
-                if (fuel <= 0 && inv != null) fuel += RotationBlocks.consumeOneFuelItem(inv, fuelManager, liveDropAt(mech, idx));
+                if (fuel <= 0 && inv != null) fuel += RotationBlocks.consumeOneFuelItem(inv, fuelManager, liveDropAt(mech, idx), true);
                 if (!running && fuel > 0) {
                     st.engineRunning.put(idx, true);
                     st.dirty = true;
@@ -358,7 +358,7 @@ final class MechanismRotationDriver {
                     fuel--;
                     if (fuel <= 0) {
                         // Pull the next item in the SAME tick so there is no power gap at an item boundary.
-                        if (inv != null) fuel += RotationBlocks.consumeOneFuelItem(inv, fuelManager, liveDropAt(mech, idx));
+                        if (inv != null) fuel += RotationBlocks.consumeOneFuelItem(inv, fuelManager, liveDropAt(mech, idx), true);
                         if (fuel <= 0) {
                             st.engineRunning.put(idx, false);
                             st.dirty = true;
@@ -385,7 +385,7 @@ final class MechanismRotationDriver {
                     int burns = EngineBurn.step(st.burnAcc.computeIfAbsent(idx, i -> new double[1]), frac);
                     for (int b = 0; b < burns; b++) {
                         if (fuel <= 0) {
-                            if (inv != null) fuel += RotationBlocks.consumeOneFuelItem(inv, fuelManager, liveDropAt(mech, idx));
+                            if (inv != null) fuel += RotationBlocks.consumeOneFuelItem(inv, fuelManager, liveDropAt(mech, idx), true);
                             if (fuel <= 0) break;
                         }
                         fuel--;

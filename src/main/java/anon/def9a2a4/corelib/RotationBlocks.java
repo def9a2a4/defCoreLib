@@ -118,6 +118,13 @@ final class RotationBlocks {
     /** As above, dropping a burned fuel's empty container at {@code dropAt} (mechanism engines pass
      *  their live cell — their storage has no holder location). */
     static int consumeOneFuelItem(Inventory storage, EngineFuelManager fuelManager, @Nullable Location dropAt) {
+        return consumeOneFuelItem(storage, fuelManager, dropAt, false);
+    }
+
+    /** {@code aboard}: a mechanism's engine. Its container may take an empty slot: no pipe feeds a moving engine,
+     *  and dropped at its live cell it fell out of an airship or into the sea. */
+    static int consumeOneFuelItem(Inventory storage, EngineFuelManager fuelManager, @Nullable Location dropAt,
+                                  boolean aboard) {
         for (int i = 0; i < storage.getSize(); i++) {
             ItemStack it = storage.getItem(i);
             if (it == null || it.getType().isAir()) continue;
@@ -129,7 +136,7 @@ final class RotationBlocks {
                     ? Material.GLASS_BOTTLE : it.getType().getCraftingRemainingItem();
                 // Nowhere to put the container (no stack to merge into, no drop location) → don't
                 // burn this unit, so the bucket/bottle is never destroyed.
-                if (container != null && !returnContainer(storage, container, dropAt)) continue;
+                if (container != null && !returnContainer(storage, container, dropAt, aboard)) continue;
                 it.setAmount(it.getAmount() - 1);
                 storage.setItem(i, it.getAmount() <= 0 ? null : it);
                 return fv;
@@ -142,13 +149,21 @@ final class RotationBlocks {
      *  stack of the same item that has room, else drop it at {@code dropAt}. Never claims an empty
      *  slot — pipes can't extract from machine storage, so parked buckets would fill the slots and
      *  starve the engine. Returns false (nothing done) when neither is possible. */
-    private static boolean returnContainer(Inventory storage, Material container, @Nullable Location dropAt) {
+    private static boolean returnContainer(Inventory storage, Material container, @Nullable Location dropAt,
+                                           boolean mayTakeEmptySlot) {
         ItemStack one = new ItemStack(container);
         for (int i = 0; i < storage.getSize(); i++) {
             ItemStack s = storage.getItem(i);
             if (s != null && s.isSimilar(one) && s.getAmount() < s.getMaxStackSize()) {
                 s.setAmount(s.getAmount() + 1);
                 storage.setItem(i, s);
+                return true;
+            }
+        }
+        if (mayTakeEmptySlot) {
+            int empty = storage.firstEmpty();
+            if (empty >= 0) {
+                storage.setItem(empty, one);
                 return true;
             }
         }
