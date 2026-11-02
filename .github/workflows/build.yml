@@ -28,4 +28,6 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: DefCoreLib
-          path: build/libs/DefCoreLib-*.jar
+          # The shaded, deployable jar is lower-case `defCoreLib-<ver>.jar`; `DefCoreLib-<ver>-plain.jar` is
+          # the thin compile-only jar and must not be shipped.
+          path: build/libs/defCoreLib-*.jar

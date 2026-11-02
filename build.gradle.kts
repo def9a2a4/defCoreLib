@@ -36,6 +36,11 @@ dependencies {
 tasks {
     test {
         useJUnitPlatform()
+        // DatapackFormatTest reads these from the repo, not the classpath: declare them so editing only them
+        // re-runs the test, and pass the root so the test doesn't depend on the working directory.
+        inputs.file(".github/workflows/server-test.yml")
+        inputs.file("mech/src/main/resources/mech_datapack/pack.mcmeta")
+        systemProperty("repoRoot", rootDir.absolutePath)
     }
 
     processResources {

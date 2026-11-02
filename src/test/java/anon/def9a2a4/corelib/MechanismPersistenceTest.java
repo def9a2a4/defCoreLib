@@ -132,4 +132,35 @@ class MechanismPersistenceTest {
         f.setLastModified(badMtime); // even with a colliding mtime, a fresh save is trusted
         assertNotNull(p.load(st.worldName, st.mechId));
     }
+
+    @Test
+    void invalidYamlIsTreatedAsCorrupt() throws Exception {
+        MechanismState st = MechanismStateTest.sample();
+        p.save(st);
+        Files.writeString(stateFile(st).toPath(), "id: [unterminated\n");
+        assertNull(p.load(st.worldName, st.mechId));
+        assertTrue(stateFile(st).exists());
+        assertTrue(p.hasMetadata(st.worldName, st.mechId));
+    }
+
+    @Test
+    void aFailedDiskReadIsRetriedNotCached() throws Exception {
+        // A read that throws IOException (here: the path is a directory) must not be remembered as corrupt —
+        // the next load retries even though the mtime is unchanged.
+        MechanismState st = MechanismStateTest.sample();
+        p.save(st);
+        File f = stateFile(st);
+        Path saved = dataFolder.resolve("saved.yml");
+        Files.move(f.toPath(), saved);
+        assertTrue(f.mkdir());
+        long mtime = f.lastModified();
+        assertNull(p.load(st.worldName, st.mechId));
+
+        assertTrue(f.delete());
+        Files.move(saved, f.toPath());
+        assertTrue(f.setLastModified(mtime));
+        MechanismState r = p.load(st.worldName, st.mechId);
+        assertNotNull(r, "a disk-read failure is retried on the next load");
+        assertEquals(st.mechId, r.mechId);
+    }
 }

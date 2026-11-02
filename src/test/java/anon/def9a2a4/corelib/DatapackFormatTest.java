@@ -29,7 +29,7 @@ class DatapackFormatTest {
 
     @Test
     void ciMatrixVersionsAreInsideThePackRange() throws Exception {
-        Path root = Path.of(System.getProperty("user.dir"));
+        Path root = Path.of(System.getProperty("repoRoot", System.getProperty("user.dir")));
         JsonObject pack = JsonParser.parseString(Files.readString(
             root.resolve("mech/src/main/resources/mech_datapack/pack.mcmeta"))).getAsJsonObject().getAsJsonObject("pack");
         int min = pack.get("min_format").getAsInt();
@@ -40,6 +40,7 @@ class DatapackFormatTest {
         Map<String, Object> jobs = (Map<String, Object>) wf.get("jobs");
         @SuppressWarnings("unchecked")
         Map<String, Object> job = (Map<String, Object>) jobs.get("showcase-test");
+        assertNotNull(job, "server-test.yml has no `showcase-test` job — update this test if it was renamed");
         @SuppressWarnings("unchecked")
         Map<String, Object> strategy = (Map<String, Object>) job.get("strategy");
         @SuppressWarnings("unchecked")
@@ -47,6 +48,8 @@ class DatapackFormatTest {
 
         assertFalse(versions.isEmpty());
         for (Object v : versions) {
+            // Unquoted, `26.10` would load as the number 26.1 and look up the wrong version.
+            assertInstanceOf(String.class, v, "quote matrix version " + v + " in server-test.yml");
             Integer fmt = DATA_PACK_FORMAT.get(String.valueOf(v));
             assertNotNull(fmt, "no data-pack format recorded for CI version " + v + " — add it to this test");
             assertTrue(fmt >= min && fmt <= max,

@@ -1,8 +1,11 @@
 package anon.def9a2a4.corelib;
 
 import org.junit.jupiter.api.Test;
+import org.yaml.snakeyaml.Yaml;
 
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -74,5 +77,60 @@ class ShowcaseSpecTest {
         assertEquals(2, dupe.actions.size());
         assertNotNull(dupe.actions.get(0).to());
         assertNotNull(dupe.actions.get(0).only());
+    }
+
+    /** Every custom block a showcase places must exist, and every state it sets or asserts must be one of
+     *  that block's states — checked against the shipped block YAML of every module. */
+    @Test
+    void blockIdsAndStatesExist() throws Exception {
+        Map<String, Set<String>> statesById = new java.util.HashMap<>();
+        Path root = Path.of(System.getProperty("repoRoot", System.getProperty("user.dir")));
+        try (var files = Files.walk(root, 5)) {
+            for (Path f : files.filter(x -> x.toString().endsWith(".yml")
+                    && x.toString().contains("src" + java.io.File.separator + "main" + java.io.File.separator + "resources")).toList()) {
+                org.yaml.snakeyaml.LoaderOptions opts = new org.yaml.snakeyaml.LoaderOptions();
+                opts.setMaxAliasesForCollections(10_000);   // the block YAML shares states via anchors
+                Object doc = new Yaml(opts).load(Files.readString(f));
+                if (!(doc instanceof Map<?, ?> m) || !(m.get("namespace") instanceof String ns)
+                        || !(m.get("blocks") instanceof Map<?, ?> blocks)) continue;
+                for (Map.Entry<?, ?> e : blocks.entrySet()) {
+                    Set<String> states = new java.util.HashSet<>();
+                    if (e.getValue() instanceof Map<?, ?> def && def.get("states") instanceof Map<?, ?> st) {
+                        for (Object k : st.keySet()) states.add(String.valueOf(k));
+                    }
+                    statesById.put(ns + ":" + e.getKey(), states);
+                }
+            }
+        }
+        assertFalse(statesById.isEmpty(), "no block definitions found under " + root);
+
+        List<String> problems = new java.util.ArrayList<>();
+        for (ShowcaseSpec s : load(new java.util.ArrayList<>()).values()) {
+            Map<String, ShowcaseSpec.BlockSpec> byCell = new java.util.HashMap<>();
+            for (ShowcaseSpec.BlockSpec b : s.blocks) {
+                byCell.put(java.util.Arrays.toString(b.at()), b);
+                Set<String> states = statesById.get(b.id());
+                if (states == null) { problems.add(s.id + ": unknown block " + b.id()); continue; }
+                if (b.state() != null && !states.isEmpty() && !states.contains(b.state())) {
+                    problems.add(s.id + ": " + b.id() + " has no state " + b.state());
+                }
+            }
+            for (ShowcaseSpec.Expect e : s.expect) {
+                if (e.type().equals("state") && e.value() != null) {
+                    ShowcaseSpec.BlockSpec b = byCell.get(java.util.Arrays.toString(e.at()));
+                    Set<String> states = b == null ? null : statesById.get(b.id());
+                    if (states != null && !states.isEmpty() && !states.contains(e.value())) {
+                        problems.add(s.id + ": expects state " + e.value() + " but " + b.id() + " has no such state");
+                    }
+                }
+                if (e.type().equals("block_type")) {
+                    String v = e.value() == null ? "" : e.value().replaceFirst("^!", "");
+                    if (org.bukkit.Material.matchMaterial(v) == null) {
+                        problems.add(s.id + ": block_type names unknown material " + e.value());
+                    }
+                }
+            }
+        }
+        assertEquals(List.of(), problems);
     }
 }

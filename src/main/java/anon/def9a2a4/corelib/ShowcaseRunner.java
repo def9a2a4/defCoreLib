@@ -60,6 +60,8 @@ final class ShowcaseRunner implements Listener {
     private int pass, fail;
     // `corrupt_persisted_mechanism` probes, keyed by "<spec id>@<world cell>" — read by `persisted_mechanism_intact`.
     private final Map<String, Probe> probes = new LinkedHashMap<>();
+    // Specs whose build threw: they never reach `origins`, so the report counts their expects as failures.
+    private final List<ShowcaseSpec> buildFailed = new ArrayList<>();
     private boolean done;
 
     /** What a corrupt-state probe parked: the mechanism, how many tagged entities it had once parked,
@@ -123,6 +125,7 @@ final class ShowcaseRunner implements Listener {
                         + TEST_X + " " + originY + " " + (i * SPACING));
             } catch (Throwable t) {
                 plugin.getLogger().warning("[showcase] build " + spec.id + " failed: " + t);
+                buildFailed.add(spec);
             }
             i++;
         }
@@ -194,6 +197,12 @@ final class ShowcaseRunner implements Listener {
                 continue;
             }
             lines.forEach(log::info);
+        }
+        for (ShowcaseSpec spec : buildFailed) {
+            for (ShowcaseSpec.Expect ex : spec.expect) {
+                log.info("  [FAIL] " + spec.id + " " + describe(ex) + " (build failed)");
+                fail++;
+            }
         }
         log.info("──────── " + pass + " passed, " + fail + " failed ────────");
         return fail;
@@ -290,10 +299,21 @@ final class ShowcaseRunner implements Listener {
         mechRegistry.persist(mech);
         org.bukkit.entity.Entity vehicle = mech.vehicle();
         org.bukkit.Chunk chunk = (vehicle != null ? vehicle.getLocation() : mech.pivot()).getChunk();
-        mechRegistry.onEntitiesUnload(chunk);   // park: save + drop from the live set, entities stay
-        int entities = countTagged(chunk, mech.id());
         String world = chunk.getWorld().getName();
         java.io.File file = mechRegistry.persistedStateFile(world, mech.id());
+        // Recorded before anything below can fail, so cleanup always removes the file. Entities 0 until the
+        // park succeeds — persisted_mechanism_intact requires > 0, so an aborted probe FAILs.
+        probes.put(probeKey(spec, block), new Probe(mech.id(), world, chunk, 0, file));
+        mechRegistry.onEntitiesUnload(chunk);   // park: save + drop from the live set, entities stay
+        // Both preconditions are what make this a real test: a mechanism still live is skipped by recovery,
+        // and recovery returns early on a chunk whose entities aren't loaded — either way the check below
+        // would pass on the pre-fix code too.
+        if (mechRegistry.byId(mech.id()) != null || !chunk.isEntitiesLoaded()) {
+            plugin.getLogger().warning("[showcase] " + spec.id + ": probe could not park the mechanism"
+                    + " (still live or entities not loaded) — the check will fail");
+            return;
+        }
+        int entities = countTagged(chunk, mech.id());
         try {
             Files.writeString(file.toPath(), "foo: bar\n", StandardCharsets.UTF_8);   // parses, but is no state
         } catch (java.io.IOException e) {

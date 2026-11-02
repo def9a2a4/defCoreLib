@@ -1,5 +1,6 @@
 package anon.def9a2a4.corelib;
 
+import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jspecify.annotations.Nullable;
@@ -44,12 +45,10 @@ final class MechanismPersistence {
     // Once-per-file guard for the corrupt-state warning: load() re-runs on every nearby chunk load and the
     // bad file is deliberately never culled (see remove()), so an unguarded warning floods the console.
     private final Set<String> corruptWarned = new HashSet<>();
-    // world:id → the failed read of a corrupt file: its lastModified then, and when we tried. load() skips
-    // the full YAML re-parse while the file is unchanged and the retry window hasn't passed — the window
-    // exists because loadConfiguration also reports a transient IOException as an unreadable file, and
-    // that must still recover in-session rather than waiting for the operator to touch the file.
-    private final Map<String, long[]> corruptReads = new HashMap<>();
-    private static final long CORRUPT_RETRY_MS = 60_000;
+    // world:id → lastModified of a file whose CONTENTS were read and found not to be a valid state. load()
+    // skips the re-parse while the file is unchanged. Only content failures are cached: a read that failed
+    // with an IOException (a disk blip) is not, so the next chunk load retries it as before.
+    private final Map<String, Long> corruptMtimes = new HashMap<>();
 
     MechanismPersistence(JavaPlugin plugin) {
         this(plugin.getDataFolder(), plugin.getLogger());
@@ -93,7 +92,7 @@ final class MechanismPersistence {
             return; // target (if any) is untouched and still correctly reflected in persistedIds
         }
         persistedIds.computeIfAbsent(st.worldName, k -> new HashSet<>()).add(st.mechId);
-        corruptReads.remove(st.worldName + ":" + st.mechId);
+        corruptMtimes.remove(st.worldName + ":" + st.mechId);
     }
 
     /** Delete a mechanism's state file + drop it from the persisted-id set. Real disassembly only — a
@@ -102,7 +101,7 @@ final class MechanismPersistence {
     void remove(String world, UUID id) {
         File f = stateFile(world, id);
         if (f.exists() && !f.delete()) log.warning("mechanism persistence: cannot delete " + f);
-        corruptReads.remove(world + ":" + id);
+        corruptMtimes.remove(world + ":" + id);
         Set<UUID> ids = persistedIds.get(world);
         if (ids != null) {
             ids.remove(id);
@@ -121,20 +120,38 @@ final class MechanismPersistence {
         if (!f.exists()) return null;
         String key = world + ":" + id;
         long mtime = f.lastModified();
-        long now = System.currentTimeMillis();
-        long[] failed = corruptReads.get(key);
-        if (failed != null && failed[0] == mtime && now - failed[1] < CORRUPT_RETRY_MS) return null;
-        MechanismState st = MechanismState.read(YamlConfiguration.loadConfiguration(f));
-        if (st != null) corruptReads.remove(key);
-        else corruptReads.put(key, new long[] {mtime, now});
-        if (st == null && corruptWarned.add(key)) {
-            log.warning("mechanism persistence: corrupt or unreadable state file " + f
-                + " — this mechanism's recovery is paused and nothing will be deleted while the file exists."
-                + " Restore or repair the file by hand, then restart (or move it aside and restart to give"
-                + " the mechanism up — the shield is an in-memory set seeded at startup, so removing the"
-                + " file alone does not lift it until then).");
+        Long badMtime = corruptMtimes.get(key);
+        if (badMtime != null && badMtime == mtime) return null;   // known-bad contents, unchanged since
+        // Not YamlConfiguration.loadConfiguration: it folds an IOException into an empty config, which would
+        // make a disk blip indistinguishable from a corrupt file (and cache it as one).
+        YamlConfiguration y = new YamlConfiguration();
+        MechanismState st;
+        try {
+            y.load(f);
+            st = MechanismState.read(y);
+        } catch (IOException e) {
+            if (corruptWarned.add("io:" + key)) {
+                log.warning("mechanism persistence: could not read state file " + f + " (" + e.getMessage()
+                    + ") — this mechanism's recovery is paused and will be retried on the next chunk load.");
+            }
+            return null;
+        } catch (InvalidConfigurationException e) {
+            st = null;
         }
-        return st;
+        if (st != null) {
+            corruptMtimes.remove(key);
+            return st;
+        }
+        corruptMtimes.put(key, mtime);
+        if (corruptWarned.add(key)) {
+            log.warning("mechanism persistence: corrupt state file " + f
+                + " — this mechanism's recovery is paused and nothing will be deleted while the file exists."
+                + " Restore or repair the file by hand; it is re-read once it changes, on the next chunk load"
+                + " near the mechanism. To give the mechanism up instead, move the file aside and restart —"
+                + " the shield is an in-memory set seeded at startup, so removing the file alone does not lift"
+                + " it until then.");
+        }
+        return null;
     }
 
     /** Seed {@link #persistedIds} from disk once, at construction — a filename-only directory walk (each

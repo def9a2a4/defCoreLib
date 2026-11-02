@@ -135,8 +135,8 @@ final class GlueAuthoring implements Listener {
             case LEFT_CLICK_BLOCK -> {
                 if (session == null) {
                     // Don't cancel — the brush can still break blocks outside a session — but say why
-                    // nothing was glued: a left-click only glues once a hinge or cart session is open.
-                    actionBar(player, "Right-click a hinge or minecart first to start gluing", NamedTextColor.YELLOW);
+                    // nothing was glued: a left-click only glues once an anchor or cart session is open.
+                    actionBar(player, "Right-click a hinge, piston, hoist or minecart first to start gluing", NamedTextColor.YELLOW);
                     return;
                 }
                 Block clicked = event.getClickedBlock();
