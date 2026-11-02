@@ -14,6 +14,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.logging.Logger;
 
 /**
  * Crash-safe mechanism persistence: one state file per mechanism ({@code mechanisms/<world>/<mechId>.yml}),
@@ -35,7 +36,7 @@ import java.util.UUID;
  */
 final class MechanismPersistence {
 
-    private final JavaPlugin plugin;
+    private final Logger log;
     private final File root;
     // world → mechIds that have a state file on disk. Seeded eagerly at construction; maintained in
     // save()/remove(). Main-thread only. Backs hasMetadata without touching the filesystem.
@@ -51,8 +52,13 @@ final class MechanismPersistence {
     private static final long CORRUPT_RETRY_MS = 60_000;
 
     MechanismPersistence(JavaPlugin plugin) {
-        this.plugin = plugin;
-        this.root = new File(plugin.getDataFolder(), "mechanisms");
+        this(plugin.getDataFolder(), plugin.getLogger());
+    }
+
+    /** Plugin-free constructor — the plugin only ever supplied these two (also what the unit tests use). */
+    MechanismPersistence(File dataFolder, Logger log) {
+        this.log = log;
+        this.root = new File(dataFolder, "mechanisms");
         loadPersistedIds();
     }
 
@@ -66,7 +72,7 @@ final class MechanismPersistence {
     void save(MechanismState st) {
         File dir = worldDir(st.worldName);
         if (!dir.exists() && !dir.mkdirs()) {
-            plugin.getLogger().warning("mechanism persistence: cannot create " + dir);
+            log.warning("mechanism persistence: cannot create " + dir);
             return;
         }
         YamlConfiguration y = new YamlConfiguration();
@@ -82,7 +88,7 @@ final class MechanismPersistence {
                 Files.move(tmp.toPath(), target.toPath(), StandardCopyOption.REPLACE_EXISTING);
             }
         } catch (IOException e) {
-            plugin.getLogger().warning("mechanism persistence: save failed for " + st.mechId + ": " + e.getMessage());
+            log.warning("mechanism persistence: save failed for " + st.mechId + ": " + e.getMessage());
             if (tmp.exists() && !tmp.delete()) tmp.deleteOnExit();
             return; // target (if any) is untouched and still correctly reflected in persistedIds
         }
@@ -95,7 +101,7 @@ final class MechanismPersistence {
      *  the file's existence is what shields the mechanism's entities from the orphan sweep). */
     void remove(String world, UUID id) {
         File f = stateFile(world, id);
-        if (f.exists() && !f.delete()) plugin.getLogger().warning("mechanism persistence: cannot delete " + f);
+        if (f.exists() && !f.delete()) log.warning("mechanism persistence: cannot delete " + f);
         corruptReads.remove(world + ":" + id);
         Set<UUID> ids = persistedIds.get(world);
         if (ids != null) {
@@ -122,7 +128,7 @@ final class MechanismPersistence {
         if (st != null) corruptReads.remove(key);
         else corruptReads.put(key, new long[] {mtime, now});
         if (st == null && corruptWarned.add(key)) {
-            plugin.getLogger().warning("mechanism persistence: corrupt or unreadable state file " + f
+            log.warning("mechanism persistence: corrupt or unreadable state file " + f
                 + " — this mechanism's recovery is paused and nothing will be deleted while the file exists."
                 + " Restore or repair the file by hand, then restart (or move it aside and restart to give"
                 + " the mechanism up — the shield is an in-memory set seeded at startup, so removing the"
@@ -148,7 +154,7 @@ final class MechanismPersistence {
             for (File f : files) {
                 String name = f.getName();
                 if (name.equals("chunks.yml") || name.endsWith(".yml.tmp")) {
-                    if (!f.delete()) plugin.getLogger().warning("mechanism persistence: cannot delete stale " + f);
+                    if (!f.delete()) log.warning("mechanism persistence: cannot delete stale " + f);
                     continue;
                 }
                 if (!name.endsWith(".yml")) continue;
