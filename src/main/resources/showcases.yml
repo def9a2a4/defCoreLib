@@ -271,6 +271,8 @@ showcases:
     expect:
       - { type: spinning, at: [3, 0, 0] }                    # the clockwise ratchet's side turns…
       - { type: state, value: idle_x, at: [-3, 0, 0] }       # …the counter-clockwise one freewheels
+      - { type: state, value: spinning_cw_x, at: [1, 0, 0] }  # the passing ratchet turns with the line…
+      - { type: state, value: idle_ccw_x, at: [-1, 0, 0] }    # …the freewheeling one keeps its setting, still
 
   - id: redstone_motor_ceiling_rotator
     name: "Motor → Ceiling Rotator"
