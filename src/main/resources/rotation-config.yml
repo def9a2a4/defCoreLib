@@ -72,6 +72,7 @@ steam:
 # they could supply. An engine with fuel stays running — the network stays powered — but a network
 # whose machines are idle burns nothing, and one using half an engine's output burns half as fast.
 # Windmills and water wheels on the same network cover the load first.
+# Like the rest of this file, read from the jar only.
 engines:
   burn-on-load: true        # false = the old behaviour: a fixed burn whenever an engine runs
   burn-multiplier: 1.0      # scales all engine fuel use

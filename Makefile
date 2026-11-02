@@ -181,6 +181,59 @@ showcase-test-ci: test-server-download
 	cd test-server && timeout --foreground -k 30 180 java -Ddefcorelib.showcaseTest=true \
 		-Xmx2G -jar server.jar --nogui --port 25576 < /dev/null
 
+# Restart tests (`restart: crash|clean` scenarios in showcases.yml): two boots of one throwaway world, once
+# per mode. Boot 1 (showcasePhase=1) builds that mode's scenarios, runs them, then stops cleanly or "crashes"
+# (halt with exit 3 — counted as OK, like 0); boot 2 reloads the same world and checks `after_restart`
+# (exit 0/1). Each mode starts from a fresh `restart_world` (plus its mechanism state files) in test-server/;
+# the regular `world` there is never touched. Port 25577, clear of the other targets.
+RESTART_MODES := crash clean
+# $(call restart_boots,SERVER_JAR): both boots of every mode, run inside test-server/.
+define restart_boots
+	cd test-server && for mode in $(RESTART_MODES); do \
+		rm -rf restart_world restart_world_nether restart_world_the_end plugins/DefCoreLib/mechanisms/restart_world; \
+		for phase in 1 2; do \
+			rc=0; timeout --foreground -k 30 180 java -Ddefcorelib.showcaseTest=true \
+				-Ddefcorelib.showcaseRestart=$$mode -Ddefcorelib.showcasePhase=$$phase \
+				-Xmx2G -jar $(1) --nogui --port 25577 --level-name restart_world < /dev/null || rc=$$?; \
+			if [ $$rc -ne 0 ] && ! [ $$phase = 1 -a $$rc -eq 3 ]; then \
+				echo "ERROR: restart test ($$mode, boot $$phase) exited $$rc"; exit 1; \
+			fi; \
+		done; \
+	done
+endef
+
+.PHONY: showcase-restart-test
+showcase-restart-test:
+	@[ -n "$(PAPER_JAR)" ] || { echo "ERROR: no server/paper-*.jar found to copy into test-server/"; exit 1; }
+	gradle shadowJar
+	mkdir -p test-server/plugins
+	[ -f test-server/$(PAPER_JAR) ] || cp server/$(PAPER_JAR) test-server/
+	[ -f test-server/eula.txt ] || echo 'eula=true' > test-server/eula.txt
+	[ -f test-server/server.properties ] || printf '%s\n' \
+		'online-mode=false' 'enforce-secure-profile=false' 'gamemode=creative' 'allow-flight=true' \
+		'difficulty=peaceful' 'spawn-monsters=false' 'spawn-protection=0' 'level-type=flat' \
+		'generate-structures=false' 'server-port=25575' 'level-name=world' \
+		'motd=DefCoreLib docs export' \
+		> test-server/server.properties
+	$(call deploy_jars,test-server/plugins)
+	$(call restart_boots,$(PAPER_JAR))
+
+# CI flavour: bin/ jars + the downloaded server jar, exactly as showcase-test-ci (run that first, or this).
+.PHONY: showcase-restart-test-ci
+showcase-restart-test-ci: test-server-download
+	mkdir -p test-server/plugins
+	rm -f test-server/plugins/*.jar
+	cp bin/*.jar test-server/plugins/
+	cp $(SERVER_JAR) test-server/server.jar
+	[ -f test-server/eula.txt ] || echo 'eula=true' > test-server/eula.txt
+	[ -f test-server/server.properties ] || printf '%s\n' \
+		'online-mode=false' 'enforce-secure-profile=false' 'gamemode=creative' 'allow-flight=true' \
+		'difficulty=peaceful' 'spawn-monsters=false' 'spawn-protection=0' 'level-type=flat' \
+		'generate-structures=false' 'server-port=25576' 'level-name=world' \
+		'motd=DefCoreLib showcase test' \
+		> test-server/server.properties
+	$(call restart_boots,server.jar)
+
 # Showcase capture: build the demo machines, run them, read back their live display + animation data
 # into showcase-spec.json (then generate_catalog folds it into showcases.json for the docs page).
 .PHONY: showcase-capture

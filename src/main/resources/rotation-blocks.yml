@@ -4055,6 +4055,7 @@ blocks:
     catalog_notes:
       - "&fA powered wheel. Mount it on the left or right side of a vehicle; wheels on the front"
       - "&for back face do nothing. Powered wheels drive the vehicle on land; unpowered ones still roll."
+      - "&fIt takes power through the block it hangs on: run a shaft or engine along its axle."
       - "&7Draws 3 power while running — it produces none."
       - "&7Climbs steps up to 1 block high. The tyre reaches 0 blocks below the block it hangs on."
       - "&7Craft from four dried kelp blocks, four iron ingots and a shaft."
@@ -4120,6 +4121,7 @@ blocks:
     catalog_notes:
       - "&fA powered wheel. Mount it on the left or right side of a vehicle; wheels on the front"
       - "&for back face do nothing. Powered wheels drive the vehicle on land; unpowered ones still roll."
+      - "&fIt takes power through the block it hangs on: run a shaft or engine along its axle."
       - "&7Draws 6 power while running — it produces none."
       - "&7Climbs steps up to 1.5 blocks high. The tyre reaches 0.5 blocks below the block it hangs on."
       - "&7Craft from two wheels, four dried kelp blocks and an iron block."
@@ -4185,6 +4187,7 @@ blocks:
     catalog_notes:
       - "&fA powered wheel. Mount it on the left or right side of a vehicle; wheels on the front"
       - "&for back face do nothing. Powered wheels drive the vehicle on land; unpowered ones still roll."
+      - "&fIt takes power through the block it hangs on: run a shaft or engine along its axle."
       - "&7Draws 12 power while running — it produces none."
       - "&7Climbs steps up to 2.5 blocks high. The tyre reaches 1 block below the block it hangs on."
       - "&7Craft from two large wheels, four dried kelp blocks and an iron block."

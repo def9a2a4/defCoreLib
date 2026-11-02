@@ -396,8 +396,9 @@ final class RotationRotator implements Listener {
         }
         // Floor and ceiling heads are both non-directional floating PLAYER_HEADs (no pitch in block
         // data), so disambiguate from the stored custom state: a ceiling hinge swings the block above.
+        // A powered hinge reads spinning_ceiling, so match both.
         String state = registry.getState(head);
-        if (state != null && state.startsWith("idle_ceiling")) {
+        if (state != null && (state.startsWith("idle_ceiling") || state.startsWith("spinning_ceiling"))) {
             return head.getRelative(BlockFace.UP);
         }
         return head.getRelative(BlockFace.DOWN);

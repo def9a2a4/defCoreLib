@@ -33,6 +33,15 @@ import java.util.logging.Logger;
  * when only capturing, and never written into the capture), scripted {@code actions} run at a given tick,
  * and an {@code assert_at} tick for scenarios that need longer than {@link #FINISH_AT}. The run halts at
  * the latest assertion tick; capture still reads the machines at {@link #FINISH_AT}.
+ *
+ * <p><b>Restart scenarios</b> ({@code restart: clean|crash}) run only under {@code make showcase-restart-test},
+ * one mode per pair of boots ({@code -Ddefcorelib.showcaseRestart=clean|crash}) on a throwaway world.
+ * Phase 1 ({@code -Ddefcorelib.showcasePhase=1}) builds that mode's specs, runs their actions and
+ * {@code expect}s, then ends the boot: {@code clean} = {@link Bukkit#shutdown()} (plugins disable, worlds
+ * save); {@code crash} = {@link Runtime#halt} with {@link #CRASH_EXIT} — nothing disabled or saved beyond what
+ * a {@code save} action already wrote. Phase 2 lays the same specs out at the same origins without building,
+ * waits for their chunks' entities, then checks {@code after_restart}. One mode per run because a crash and a
+ * clean stop can't end the same boot.
  */
 final class ShowcaseRunner implements Listener {
 
@@ -42,6 +51,19 @@ final class ShowcaseRunner implements Listener {
 
     private static final long ACTIVATE_AT = 20; // ticks after build
     private static final long FINISH_AT = 80;   // default assertion tick, and the capture tick
+    /** Exit code of a restart phase-1 boot that "crashed" on purpose (all its phase-1 expects passed). */
+    static final int CRASH_EXIT = 3;
+    private static final long RESTART_SETTLE = 40;   // phase 2: ticks after the entities load (recovery runs)
+    private static final long RESTART_GIVE_UP = 200; // phase 2: assert anyway if they still haven't loaded
+
+    /** Every {@code expect} type / action kind {@link #check} / {@link #runAction} know — anything else FAILs
+     *  the spec (ShowcaseSpecTest also checks showcases.yml against these). */
+    static final java.util.Set<String> EXPECT_TYPES = java.util.Set.of("spinning", "network_powered", "state",
+            "mechanism_swung", "hoist_moved", "piston_stroked", "block_type", "persisted_mechanism_intact",
+            "entity_count", "riding", "contents", "material_total", "mechanism_count", "mechanism_state_file",
+            "engine_fuel");
+    static final java.util.Set<String> ACTION_KINDS = java.util.Set.of("set", "corrupt_persisted_mechanism",
+            "summon", "break", "drop", "persist_mechanism", "disassemble_mechanism", "save");
 
     private final CoreLibPlugin plugin;
     private final CustomBlockRegistry registry;
@@ -55,6 +77,8 @@ final class ShowcaseRunner implements Listener {
     private final ChainHoistManager hoists;  // for `hoist_moved`
     private final ExtendablePistonManager pistons; // for `piston_stroked`
     private final MechanismRegistry mechRegistry;  // for the corrupt-state probe
+    private final int phase;                // 0 = a normal run; 1 / 2 = the boots of a restart run
+    private final @Nullable String restartMode;   // clean | crash, restart runs only
     private final Map<ShowcaseSpec, Location> origins = new LinkedHashMap<>();
     // Each spec's verdicts, recorded at its own assert tick and printed together (in spec order) at the end.
     private final Map<ShowcaseSpec, List<String>> results = new LinkedHashMap<>();
@@ -63,6 +87,12 @@ final class ShowcaseRunner implements Listener {
     private final Map<String, Probe> probes = new LinkedHashMap<>();
     // Specs whose build threw: they never reach `origins`, so the report counts their expects as failures.
     private final List<ShowcaseSpec> buildFailed = new ArrayList<>();
+    // Specs whose assertion task ran (an action failure records lines before it, so `results` can't say).
+    private final java.util.Set<ShowcaseSpec> asserted = new java.util.HashSet<>();
+    // `persist_mechanism` ids, keyed like `probes` — read by `disassemble_mechanism` / `mechanism_state_file`.
+    private final Map<String, java.util.UUID> persisted = new LinkedHashMap<>();
+    // Chunks force-loaded for the specs' footprints; released before the boot ends.
+    private final List<org.bukkit.Chunk> forced = new ArrayList<>();
     private boolean done;
 
     /** What a corrupt-state probe parked: the mechanism, how many tagged entities it had once parked,
@@ -73,7 +103,8 @@ final class ShowcaseRunner implements Listener {
                            EngineFuelManager fuelManager, ShowcaseBuilder builder,
                            java.util.Collection<ShowcaseSpec> showcases, boolean testMode, Path capturePath,
                            RotationRotator rotator, ChainHoistManager hoists,
-                           ExtendablePistonManager pistons, MechanismRegistry mechRegistry) {
+                           ExtendablePistonManager pistons, MechanismRegistry mechRegistry,
+                           int phase, @Nullable String restartMode) {
         this.plugin = plugin;
         this.registry = registry;
         this.network = network;
@@ -86,6 +117,8 @@ final class ShowcaseRunner implements Listener {
         this.hoists = hoists;
         this.pistons = pistons;
         this.mechRegistry = mechRegistry;
+        this.phase = phase;
+        this.restartMode = restartMode;
     }
 
     static boolean armIfRequested(CoreLibPlugin plugin, CustomBlockRegistry registry, RotationNetwork network,
@@ -97,11 +130,19 @@ final class ShowcaseRunner implements Listener {
         String capture = System.getProperty("defcorelib.showcaseCapture");
         if (!test && (capture == null || capture.isBlank())) return false;
         Path capturePath = (capture == null || capture.isBlank()) ? null : Path.of(capture);
+        int phase = Integer.getInteger("defcorelib.showcasePhase", 0);
+        String mode = System.getProperty("defcorelib.showcaseRestart");
+        if (phase != 0 && (!test || !("clean".equals(mode) || "crash".equals(mode)) || phase > 2)) {
+            plugin.getLogger().warning("ShowcaseRunner: showcasePhase needs showcaseTest=true and "
+                    + "showcaseRestart=clean|crash — not armed");
+            return false;
+        }
         ShowcaseRunner runner = new ShowcaseRunner(plugin, registry, network, fuelManager, builder,
-                showcases, test, capturePath, rotator, hoists, pistons, mechRegistry);
+                showcases, test, capturePath, rotator, hoists, pistons, mechRegistry, phase, mode);
         Bukkit.getPluginManager().registerEvents(runner, plugin);
         plugin.getLogger().info("ShowcaseRunner armed (" + (test ? "test " : "") + (capturePath != null
-                ? "capture→" + capturePath : "") + ") — " + showcases.size() + " showcases.");
+                ? "capture→" + capturePath : "") + (phase != 0 ? "restart " + mode + " phase " + phase : "")
+                + ") — " + showcases.size() + " showcases.");
         return true;
     }
 
@@ -114,11 +155,17 @@ final class ShowcaseRunner implements Listener {
         int i = 0;
         for (ShowcaseSpec spec : showcases) {
             if (spec.testOnly && !testMode) continue;   // capture-only run: regression scenarios aren't demos
+            // A restart run takes only its mode's restart specs; any other run none of them.
+            if (phase == 0 ? spec.restart != null : !restartMode.equals(spec.restart)) continue;
             // Place the origin so the machine's lowest cell sits at FLOOR_Y (blocks extend up from there).
             int originY = FLOOR_Y - lowestOffsetY(spec);
             Location origin = new Location(world, TEST_X, originY, i * SPACING);
-            origin.getChunk().load(true);
-            origin.getChunk().setForceLoaded(true);   // must tick for the network to run
+            forceLoad(spec, origin);   // must tick for the network to run
+            if (phase == 2) {   // already built (and saved) by phase 1: just find it again
+                origins.put(spec, origin);
+                i++;
+                continue;
+            }
             try {
                 int placed = builder.build(spec, origin);
                 origins.put(spec, origin);
@@ -129,6 +176,10 @@ final class ShowcaseRunner implements Listener {
                 buildFailed.add(spec);
             }
             i++;
+        }
+        if (phase == 2) {
+            awaitEntitiesThenAssert();
+            return;
         }
         Bukkit.getScheduler().runTaskLater(plugin, this::activateAll, ACTIVATE_AT);
         long finishAt = FINISH_AT;
@@ -146,7 +197,7 @@ final class ShowcaseRunner implements Listener {
                 }
                 Bukkit.getScheduler().runTaskLater(plugin, () -> runAction(spec, origin, a), a.tick());
             }
-            Bukkit.getScheduler().runTaskLater(plugin, () -> assertSpec(spec, origin), assertAt);
+            Bukkit.getScheduler().runTaskLater(plugin, () -> assertSpec(spec, origin, spec.expect), assertAt);
             finishAt = Math.max(finishAt, assertAt);
         }
         // +1: every assertion task scheduled for the same tick has run before the report + halt.
@@ -159,28 +210,83 @@ final class ShowcaseRunner implements Listener {
         }
     }
 
+    /** Phase 2: once every footprint chunk's entities are in (persisted mechanisms recover on that load),
+     *  give recovery {@link #RESTART_SETTLE} ticks, then check each spec's {@code after_restart}. */
+    private void awaitEntitiesThenAssert() {
+        long[] waited = {0};
+        Bukkit.getScheduler().runTaskTimer(plugin, task -> {
+            waited[0] += 5;
+            boolean loaded = forced.stream().allMatch(org.bukkit.Chunk::isEntitiesLoaded);
+            if (!loaded && waited[0] < RESTART_GIVE_UP) return;
+            task.cancel();
+            if (!loaded) plugin.getLogger().warning("[showcase] restart: entities still not loaded after "
+                    + waited[0] + " ticks — asserting anyway");
+            Bukkit.getScheduler().runTaskLater(plugin, () -> {
+                origins.forEach((spec, origin) -> assertSpec(spec, origin, spec.afterRestart));
+                finish();
+            }, RESTART_SETTLE);
+        }, 5, 5);
+    }
+
     private void finish() {
         int fail = testMode ? report() : 0;
         cleanupProbes();
+        for (org.bukkit.Chunk c : forced) c.setForceLoaded(false);   // a clean stop must not save them forced
+        if (phase == 1 && fail == 0 && "clean".equals(restartMode)) {
+            plugin.getLogger().info("[showcase] restart phase 1 done — stopping cleanly");
+            Bukkit.shutdown();
+            return;
+        }
+        boolean crash = phase == 1 && fail == 0;
+        if (crash) plugin.getLogger().info("[showcase] restart phase 1 done — crashing (halt " + CRASH_EXIT + ")");
         System.out.flush();
         System.err.flush();
-        Runtime.getRuntime().halt(fail == 0 ? 0 : 1);
+        Runtime.getRuntime().halt(crash ? CRASH_EXIT : fail == 0 ? 0 : 1);
+    }
+
+    /** Force-load every chunk the spec's footprint touches — its blocks, banner hosts, action cells and
+     *  expect boxes — so a machine or check that spills past the origin chunk still ticks / reads loaded. */
+    private void forceLoad(ShowcaseSpec spec, Location origin) {
+        List<int[]> cells = new ArrayList<>();
+        for (ShowcaseSpec.BlockSpec b : spec.blocks) cells.add(b.at());
+        for (ShowcaseSpec.VanillaSpec v : spec.vanilla) cells.add(v.at());
+        for (ShowcaseSpec.BannerSpec b : spec.banners) cells.add(b.host());
+        for (ShowcaseSpec.Action a : spec.actions) { cells.add(a.at()); if (a.to() != null) cells.add(a.to()); }
+        for (List<ShowcaseSpec.Expect> list : List.of(spec.expect, spec.afterRestart)) {
+            for (ShowcaseSpec.Expect e : list) { cells.add(e.at()); if (e.to() != null) cells.add(e.to()); }
+        }
+        cells.add(new int[]{0, 0, 0});
+        int minX = Integer.MAX_VALUE, maxX = Integer.MIN_VALUE, minZ = Integer.MAX_VALUE, maxZ = Integer.MIN_VALUE;
+        for (int[] c : cells) {
+            minX = Math.min(minX, c[0]); maxX = Math.max(maxX, c[0]);
+            minZ = Math.min(minZ, c[2]); maxZ = Math.max(maxZ, c[2]);
+        }
+        World w = origin.getWorld();
+        int ox = origin.getBlockX(), oz = origin.getBlockZ();
+        for (int cx = (ox + minX) >> 4; cx <= (ox + maxX) >> 4; cx++) {
+            for (int cz = (oz + minZ) >> 4; cz <= (oz + maxZ) >> 4; cz++) {
+                org.bukkit.Chunk c = w.getChunkAt(cx, cz);   // loads (generating if new)
+                c.setForceLoaded(true);
+                forced.add(c);
+            }
+        }
     }
 
     // ── Test ─────────────────────────────────────────────────────────────────
 
     /** Evaluate one spec's expects now (its assert tick); the verdicts are printed by {@link #report}. */
-    private void assertSpec(ShowcaseSpec spec, Location origin) {
+    private void assertSpec(ShowcaseSpec spec, Location origin, List<ShowcaseSpec.Expect> expects) {
+        asserted.add(spec);
         List<String> lines = results.computeIfAbsent(spec, k -> new ArrayList<>());
         // A scenario about an entity this server doesn't have (cushions before 26.3) is skipped, not failed.
         String missing = missingEntityKey(spec);
         if (missing != null) {
-            for (ShowcaseSpec.Expect ex : spec.expect) {
+            for (ShowcaseSpec.Expect ex : expects) {
                 lines.add("  [SKIP] " + spec.id + " " + describe(ex) + " (no minecraft:" + missing + " on this server)");
             }
             return;
         }
-        for (ShowcaseSpec.Expect ex : spec.expect) {
+        for (ShowcaseSpec.Expect ex : expects) {
             boolean ok;
             try {
                 ok = check(spec, origin, ex, blockAt(origin, ex.at()));
@@ -197,15 +303,14 @@ final class ShowcaseRunner implements Listener {
         Logger log = plugin.getLogger();
         log.info("──────── showcase tests ────────");
         for (ShowcaseSpec spec : origins.keySet()) {
-            List<String> lines = results.get(spec);
-            if (lines == null) {   // its assertion task never ran — count every expect as a failure
-                for (ShowcaseSpec.Expect ex : spec.expect) {
+            List<String> lines = results.getOrDefault(spec, List.of());
+            lines.forEach(log::info);
+            if (!asserted.contains(spec)) {   // its assertion task never ran — count every expect as a failure
+                for (ShowcaseSpec.Expect ex : phase == 2 ? spec.afterRestart : spec.expect) {
                     log.info("  [FAIL] " + spec.id + " " + describe(ex) + " (never evaluated)");
                     fail++;
                 }
-                continue;
             }
-            lines.forEach(log::info);
         }
         for (ShowcaseSpec spec : buildFailed) {
             for (ShowcaseSpec.Expect ex : spec.expect) {
@@ -304,8 +409,76 @@ final class ShowcaseRunner implements Listener {
                         && mechRegistry.hasPersistedState(origin.getWorld(), p.id())
                         && countTagged(p.chunk(), p.id()) == p.entities();
             }
+            // The inventory at the cell (custom storage, container half, lectern, pot) holds exactly the listed
+            // count of each listed material (`DIAMOND x0` = none); unlisted materials aren't checked.
+            case "contents" -> {
+                org.bukkit.inventory.Inventory inv = ShowcaseBuilder.inventoryAt(registry, block);
+                if (inv == null) return false;
+                Map<org.bukkit.Material, Integer> want = new LinkedHashMap<>();
+                for (ShowcaseSpec.ItemSpec it : ex.items()) want.merge(it.material(), it.count(), Integer::sum);
+                boolean ok = true;
+                for (Map.Entry<org.bukkit.Material, Integer> w : want.entrySet()) {
+                    int n = 0;
+                    for (org.bukkit.inventory.ItemStack s : inv.getContents()) {
+                        if (s != null && s.getType() == w.getKey()) n += s.getAmount();
+                    }
+                    if (n != w.getValue()) {
+                        plugin.getLogger().info("[showcase] " + spec.id + ": " + w.getKey() + " in inventory "
+                                + n + ", expected " + w.getValue());
+                        ok = false;
+                    }
+                }
+                return ok;
+            }
+            // Conservation: dropped items of MAT plus MAT blocks in the box, value `MAT=N` — exactly N. For stock
+            // that may land either as blocks or as items (a hoist's chain broken mid-stroke).
+            case "material_total" -> {
+                String v = ex.value();
+                int eq = v == null ? -1 : v.indexOf('=');
+                org.bukkit.Material m = eq < 0 ? null : org.bukkit.Material.matchMaterial(v.substring(0, eq));
+                if (m == null) return false;
+                int n = 0;
+                for (Block b : cells(origin, ex.at(), ex.to())) if (b.getType() == m) n++;
+                for (org.bukkit.entity.Entity e : origin.getWorld().getNearbyEntities(box(origin, ex.at(), ex.to()))) {
+                    if (e instanceof org.bukkit.entity.Item it && it.getItemStack().getType() == m) {
+                        n += it.getItemStack().getAmount();
+                    }
+                }
+                int want = Integer.parseInt(v.substring(eq + 1).trim());
+                if (n != want) plugin.getLogger().info("[showcase] " + spec.id + ": " + m + " total " + n
+                        + ", expected " + want);
+                return n == want;
+            }
+            // Live (assembled or crash-recovered) mechanisms whose pivot lies in the box: value N — exactly N.
+            case "mechanism_count" -> {
+                org.bukkit.util.BoundingBox bb = box(origin, ex.at(), ex.to());
+                int n = 0;
+                for (Mechanism m : mechRegistry.activeMechanisms()) {
+                    Location p = m.pivot();
+                    if (origin.getWorld().equals(p.getWorld()) && bb.contains(p.toVector())) n++;
+                }
+                if (ex.value() == null || n != Integer.parseInt(ex.value().trim())) {
+                    plugin.getLogger().info("[showcase] " + spec.id + ": " + n + " mechanisms in the box");
+                    return false;
+                }
+                return true;
+            }
+            // The state file of the mechanism `persist_mechanism` lifted at this cell is on disk.
+            case "mechanism_state_file" -> {
+                java.util.UUID id = persisted.get(probeKey(spec, block));
+                return id != null && mechRegistry.persistedStateFile(origin.getWorld().getName(), id).exists();
+            }
+            // An engine's fuel counter (engine-ticks): value N — at least N.
+            case "engine_fuel" -> {
+                int f = fuelManager.getFuel(CustomBlockRegistry.LocationKey.of(block));
+                if (ex.value() == null || f < Integer.parseInt(ex.value().trim())) {
+                    plugin.getLogger().info("[showcase] " + spec.id + ": engine fuel " + f);
+                    return false;
+                }
+                return true;
+            }
             default -> {
-                plugin.getLogger().warning("[showcase] unknown expect type: " + ex.type());
+                plugin.getLogger().warning("[showcase] " + spec.id + ": unknown expect type: " + ex.type());
                 return false;
             }
         }
@@ -326,10 +499,45 @@ final class ShowcaseRunner implements Listener {
                 case "summon" -> {
                     if (missingEntityKey(spec) == null) summon(origin, a);
                 }
-                default -> plugin.getLogger().warning("[showcase] " + spec.id + ": unknown action: " + a.kind());
+                // As an explosion breaks it (no player): a custom block spills its storage, drops its self
+                // item and runs its removal callbacks (CoreLibPlugin.breakWithoutPlayer); a vanilla block
+                // breakNaturally()s (drops + container contents). No BlockBreakEvent fires, so per-player
+                // drop rules (tool / silk touch) and other plugins' break listeners don't run.
+                case "break" -> {
+                    for (Block b : cells(origin, a.at(), a.to())) {
+                        if (!plugin.breakWithoutPlayer(b)) b.breakNaturally();
+                    }
+                }
+                // Spawn the item stacks at the cell's centre, unscattered (for hopper / cauldron intake).
+                case "drop" -> {
+                    Location at = blockAt(origin, a.at()).getLocation().add(0.5, 0.5, 0.5);
+                    for (ShowcaseSpec.ItemSpec it : a.items()) {
+                        origin.getWorld().dropItem(at, it.toStack(), e -> e.setVelocity(new org.bukkit.util.Vector()));
+                    }
+                }
+                // Lift the cell into a crash-safe persisted mechanism (same path as the corrupt probe, no parking).
+                case "persist_mechanism" -> {
+                    Block b = blockAt(origin, a.at());
+                    Mechanism mech = mechRegistry.assembleMechanism("corelib:showcase_probe", List.of(b),
+                            b.getLocation().add(0.5, 0.5, 0.5), null);
+                    mechRegistry.persist(mech);
+                    persisted.put(probeKey(spec, b), mech.id());
+                }
+                case "disassemble_mechanism" -> {
+                    java.util.UUID id = persisted.get(probeKey(spec, blockAt(origin, a.at())));
+                    Mechanism mech = id == null ? null : mechRegistry.byId(id);
+                    if (mech == null) throw new IllegalStateException("no live persist_mechanism at that cell");
+                    mech.disassemble();
+                }
+                // Write the world to disk now (flushing the chunk writer) — what a crash run keeps.
+                case "save" -> origin.getWorld().save(true);
+                default -> throw new IllegalArgumentException("unknown action");
             }
         } catch (RuntimeException t) {
-            plugin.getLogger().warning("[showcase] " + spec.id + ": action '" + a.kind() + "' failed: " + t);
+            // A step that didn't happen invalidates the scenario: FAIL it rather than assert on a half-run.
+            results.computeIfAbsent(spec, k -> new ArrayList<>()).add("  [FAIL] " + spec.id + " action '"
+                    + a.kind() + "' @ tick " + a.tick() + ": " + t);
+            fail++;
         }
     }
 

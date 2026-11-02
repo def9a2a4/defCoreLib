@@ -918,6 +918,24 @@ showcases:
   #   expect type entity_count: value KEY=N (or item:MAT=N — dropped items counted by stack size) in the box.
   #   expect type riding: value RIDER/VEHICLE — some RIDER in the box rides a VEHICLE. A spec naming an
   #   entity this server lacks (cushion before 26.3) reports SKIP instead of running.
+  # Items: "MAT" / "MAT xN", or { material: MAT, count: N?, name: "..."?, contents: [items]? } (a filled shulker).
+  #   setup:   `contents: [items]` on a blocks/vanilla entry fills its storage, container half, lectern or pot;
+  #            `data:` on a physical_material custom block pins its block data (a double-chest half).
+  #   actions: - { tick: N, do: break, at: [..], to: [..]? }  — player-less break: a custom block spills its
+  #              storage, drops itself and runs its removal callbacks (as an explosion would); vanilla blocks
+  #              breakNaturally(). No BlockBreakEvent: tool/silk drop rules and break listeners don't run.
+  #            - { tick: N, do: drop, at: [..], items: [items] }  — item entities at the cell centre
+  #            - { tick: N, do: persist_mechanism | disassemble_mechanism | save, at: [..] }  — lift the cell
+  #              into a crash-safe persisted mechanism / land that mechanism / World.save(flush)
+  #   expect type contents: items [items] at a cell — exact count per listed material (`MAT x0` = none).
+  #   expect type material_total: value MAT=N — dropped MAT items plus MAT blocks in the box, exactly N.
+  #   expect type mechanism_count: value N — live mechanisms whose pivot is in the box.
+  #   expect type mechanism_state_file: the file of the mechanism persist_mechanism lifted at `at` exists.
+  #   expect type engine_fuel: value N — the engine at `at` holds at least N fuel ticks.
+  # An unknown action or expect type, or an action that throws, FAILs the spec.
+  # `restart: crash|clean` (+ `after_restart: [expects]`): run only by `make showcase-restart-test` — boot 1
+  # builds it, runs `actions` + `expect`, then crashes (halt, no save beyond `save` actions) or stops cleanly;
+  # boot 2 reloads the world and checks `after_restart`.
 
   # Ceiling mounts (743863d). A hung windmill is a Y-axis passive source on its `ceiling` state, so the
   # shaft ABOVE it picks it up exactly as one above a floor windmill would; a hung propeller is a Y-axis
@@ -1099,3 +1117,204 @@ showcases:
       - { type: entity_count, value: "item:PAINTING=1", at: [-3, -2, -1], to: [3, 3, 3] }
       - { type: entity_count, value: "item_frame=1", at: [-1, 0, 1], to: [1, 0, 1] }   # rolled onto a side
       - { type: entity_count, value: "item:DIAMOND=0", at: [-3, -2, -1], to: [3, 3, 3] }
+
+  # A chain hoist broken mid-descent must give back all its chain: a descent reserves its whole budget from
+  # storage up front, and breaking the hoist lands the links paid out so far (as blocks) while the dying hoist
+  # drops the un-travelled remainder as items — never billed against the storage that already spilled (free
+  # chain) nor lost. 16 chains in, motor straight on the Z axle (CW = pay out, ~0.25 block/tick unloaded), so
+  # at tick 30 it is a few links down. The STONE only seats the hoist 20 blocks up.
+  - id: test_hoist_broken_mid_descent_refunds
+    name: "Test: hoist broken mid-descent refunds its chain"
+    test_only: true
+    assert_at: 60
+    blocks:
+      - { id: "mech:chain_hoist",    facing: down,  state: idle_z, at: [0, 20, 0], contents: ["IRON_CHAIN x16"] }
+      - { id: "mech:redstone_motor", facing: north, at: [0, 20, 1] }
+    vanilla:
+      - { block: "STONE", at: [0, 0, 0] }
+    activate: passive
+    actions:
+      - { tick: 30, do: break, at: [0, 20, 0] }
+    expect:
+      - { type: block_type, value: IRON_CHAIN, at: [0, 19, 0] }      # the descent had started…
+      - { type: block_type, value: "!IRON_CHAIN", at: [0, 4, 0] }    # …and was cut short of all 16
+      - { type: material_total, value: "IRON_CHAIN=16", at: [-4, 0, -4], to: [4, 21, 4] }
+
+  # A lectern's book rides a mechanism: the ceiling rotator turns the lectern above it 90° in place, and it
+  # must land still holding the book — not empty, and not with the book dropped.
+  - id: test_carried_lectern_book
+    name: "Test: lectern keeps its book on a rotator"
+    test_only: true
+    blocks:
+      - { id: "mech:redstone_motor", facing: down, at: [0, -1, 0] }
+      - { id: "mech:rotator",        facing: up,   at: [0, 0, 0] }
+    vanilla:
+      - { block: "LECTERN", at: [0, 1, 0], data: "[facing=north]", contents: [WRITABLE_BOOK] }
+    activate: { pulse: [1, 0, 0] }
+    expect:
+      - { type: mechanism_swung, at: [0, 0, 0] }
+      - { type: block_type, value: LECTERN, at: [0, 1, 0] }
+      - { type: contents, at: [0, 1, 0], items: [WRITABLE_BOOK] }
+      - { type: entity_count, value: "item=0", at: [-3, -1, -3], to: [3, 3, 3] }
+
+  # The placer sets bare blocks, so it must never place an item carrying data — a filled shulker box would
+  # land EMPTY (its contents deleted). It pulls both items from the barrel behind it into its own storage; the
+  # shulker must stay there while the plain STONE after it is placed (so the skip isn't a stalled placer).
+  - id: test_placer_skips_filled_shulker
+    name: "Test: placer keeps a filled shulker box"
+    test_only: true
+    assert_at: 100
+    blocks:
+      - { id: "mech:redstone_motor", facing: down, at: [0, 3, 0] }   # 2 motors = the placer's demand of 2
+      - { id: "mech:redstone_motor", facing: down, at: [0, 2, 0] }
+      - { id: "mech:shaft",          facing: down, at: [0, 1, 0] }
+      - { id: "mech:placer",         facing: west, at: [0, 0, 0] }   # pulls from [-1,0,0], places into [1,0,0]
+    vanilla:
+      - { block: "BARREL", at: [-1, 0, 0], data: "[facing=up,open=false]",
+          contents: [{ material: SHULKER_BOX, contents: ["DIAMOND x5"] }, STONE] }
+    activate: passive
+    expect:
+      - { type: block_type, value: STONE, at: [1, 0, 0] }
+      - { type: contents, at: [0, 0, 0], items: [SHULKER_BOX, "STONE x0"] }
+
+  # A mechanical dispenser (a real DISPENSER, physical_material) carried by a mechanism must land with its
+  # contents: capture copies them into the mechanism, and the removal hook must not ALSO spill them (dupe) or
+  # the framework wipe them (loss). Unglued, the ceiling rotator carries just the block above it. The
+  # dispenser is an omni consumer on the rotator's network, hence two motors.
+  - id: test_carried_mech_dispenser_contents
+    name: "Test: mechanical dispenser keeps its contents on a rotator"
+    test_only: true
+    blocks:
+      - { id: "mech:redstone_motor",        facing: down, at: [0, -2, 0] }
+      - { id: "mech:redstone_motor",        facing: down, at: [0, -1, 0] }
+      - { id: "mech:rotator",               facing: up,   at: [0, 0, 0] }
+      - { id: "mech:mechanical_dispenser",  facing: down, at: [0, 1, 0], contents: ["ARROW x16", "DIAMOND x3"] }
+    activate: { pulse: [1, 0, 0] }
+    expect:
+      - { type: mechanism_swung, at: [0, 0, 0] }
+      - { type: block_type, value: DISPENSER, at: [0, 1, 0] }
+      - { type: contents, at: [0, 1, 0], items: ["ARROW x16", "DIAMOND x3"] }
+      - { type: entity_count, value: "item=0", at: [-3, -2, -3], to: [3, 3, 3] }
+
+  # Burning a lava bucket gives the empty bucket back: merged into a BUCKET stack in the engine's storage when
+  # there is one (left engine), else dropped beside the engine (right) — never deleted, and never parked in an
+  # empty slot (which would fill the storage and starve the engine). A floor drill (demand 5, always-on load)
+  # makes each engine burn at half rate: the first burn lands around tick 60.
+  - id: test_engine_returns_lava_bucket
+    name: "Test: engine returns the lava bucket's bucket"
+    test_only: true
+    assert_at: 140
+    blocks:
+      - { id: "mech:engine", facing: down, at: [0, 0, 0], contents: [LAVA_BUCKET, BUCKET] }
+      - { id: "mech:drill",  facing: down, at: [0, 1, 0] }
+      - { id: "mech:engine", facing: down, at: [3, 0, 0], contents: [LAVA_BUCKET] }
+      - { id: "mech:drill",  facing: down, at: [3, 1, 0] }
+    activate: passive
+    expect:
+      - { type: contents, at: [0, 0, 0], items: ["LAVA_BUCKET x0", "BUCKET x2"] }
+      - { type: entity_count, value: "item:BUCKET=0", at: [-1, -1, -2], to: [1, 2, 2] }
+      - { type: contents, at: [3, 0, 0], items: ["LAVA_BUCKET x0", "BUCKET x0"] }
+      - { type: entity_count, value: "item:BUCKET=1", at: [2, -1, -2], to: [4, 2, 2] }
+
+  # Breaking a copper-chest machine must not wipe the chest it is paired with. The water wheel IS a waxed
+  # copper chest (physical_material); placed against a full one as the two halves of a double chest, its
+  # removal hook used to clear the COMBINED inventory, deleting the neighbour's contents. (Pairing is pinned
+  # through `data`: facing north, the left half's partner is east of it.)
+  - id: test_water_wheel_break_keeps_chest
+    name: "Test: breaking a water wheel keeps the paired chest's contents"
+    test_only: true
+    blocks:
+      - { id: "mech:water_wheel", facing: north, at: [0, 0, 0], data: "[facing=north,type=right]" }
+    vanilla:
+      - { block: "WAXED_COPPER_CHEST", at: [-1, 0, 0], data: "[facing=north,type=left]",
+          contents: ["COBBLESTONE x64", "DIAMOND x5"] }
+    activate: passive
+    actions:
+      - { tick: 30, do: break, at: [0, 0, 0] }
+    expect:
+      - { type: block_type, value: AIR, at: [0, 0, 0] }
+      - { type: contents, at: [-1, 0, 0], items: ["COBBLESTONE x64", "DIAMOND x5"] }
+      - { type: entity_count, value: "item:COBBLESTONE=0", at: [-3, -1, -3], to: [3, 2, 3] }
+
+  # ── Restart scenarios (make showcase-restart-test) ──────────────────────────────────────────────────────
+
+  # A persisted mechanism survives a crash: lifted and persisted, the world saved (its entities now on disk),
+  # then the server halts without disabling plugins. Boot 2 must recover it from those entities + its state
+  # file — exactly once, and not also as a block.
+  - id: test_restart_crash_persisted_mechanism
+    name: "Test: persisted mechanism survives a crash"
+    test_only: true
+    restart: crash
+    assert_at: 60
+    vanilla:
+      - { block: "OAK_PLANKS", at: [0, 0, 0] }
+    actions:
+      - { tick: 10, do: persist_mechanism, at: [0, 0, 0] }
+      - { tick: 20, do: save, at: [0, 0, 0] }
+    expect:
+      - { type: mechanism_count, value: "1", at: [-1, -1, -1], to: [1, 1, 1] }
+    after_restart:
+      - { type: mechanism_count, value: "1", at: [-1, -1, -1], to: [1, 1, 1] }
+      - { type: block_type, value: AIR, at: [0, 0, 0] }
+
+  # A persisted mechanism's state file must outlive its disassembly until the world saves: the landed plank is
+  # only in memory, the region on disk still holds the parked entities. Deleted at disassembly, a crash here
+  # leaves entities without state, the orphan sweep reaps them, and the plank is gone. Kept, boot 2 recovers
+  # the mechanism (and there is no plank to duplicate it).
+  - id: test_restart_crash_disassembled_state_kept
+    name: "Test: disassembled mechanism's state file survives a crash"
+    test_only: true
+    restart: crash
+    assert_at: 60
+    vanilla:
+      - { block: "OAK_PLANKS", at: [0, 0, 0] }
+    actions:
+      - { tick: 10, do: persist_mechanism, at: [0, 0, 0] }
+      - { tick: 20, do: save, at: [0, 0, 0] }
+      - { tick: 30, do: disassemble_mechanism, at: [0, 0, 0] }
+    expect:
+      - { type: block_type, value: OAK_PLANKS, at: [0, 0, 0] }   # landed…
+      - { type: mechanism_state_file, at: [0, 0, 0] }            # …but the file waits for a world save
+    after_restart:
+      - { type: mechanism_count, value: "1", at: [-1, -1, -1], to: [1, 1, 1] }
+      - { type: block_type, value: AIR, at: [0, 0, 0] }
+
+  # The clean counterpart: disassembled, then a normal stop (which saves the landed plank). Boot 2 must find
+  # the plank and nothing else — no recovered ghost mechanism, no leftover display or collider entities.
+  - id: test_restart_clean_disassembled_no_ghost
+    name: "Test: disassembled mechanism leaves no ghost after a clean stop"
+    test_only: true
+    restart: clean
+    assert_at: 60
+    vanilla:
+      - { block: "OAK_PLANKS", at: [0, 0, 0] }
+    actions:
+      - { tick: 10, do: persist_mechanism, at: [0, 0, 0] }
+      - { tick: 20, do: save, at: [0, 0, 0] }
+      - { tick: 30, do: disassemble_mechanism, at: [0, 0, 0] }
+    expect:
+      - { type: block_type, value: OAK_PLANKS, at: [0, 0, 0] }
+    after_restart:
+      - { type: block_type, value: OAK_PLANKS, at: [0, 0, 0] }
+      - { type: mechanism_count, value: "0", at: [-1, -1, -1], to: [1, 1, 1] }
+      - { type: entity_count, value: "block_display=0", at: [-1, -1, -1], to: [1, 1, 1] }
+      - { type: entity_count, value: "shulker=0", at: [-1, -1, -1], to: [1, 1, 1] }
+
+  # Engine fuel survives a clean restart: the counter lives in memory and is written to the engine's PDC only
+  # on chunk unload / plugin disable — lose that flush and a restart silently empties every engine. Fuelled
+  # with 6000 by `activate`, a fan burns well under 1000 of it before the stop.
+  - id: test_restart_clean_engine_fuel
+    name: "Test: engine fuel survives a clean restart"
+    test_only: true
+    restart: clean
+    blocks:
+      - { id: "mech:engine", facing: down, at: [0, 0, 0] }
+      - { id: "mech:shaft",  facing: down, at: [0, 1, 0] }
+      - { id: "mech:fan",    facing: down, at: [0, 2, 0] }
+    activate: { fuel: [0, 0, 0] }
+    expect:
+      - { type: spinning, at: [0, 2, 0] }
+    after_restart:
+      - { type: engine_fuel, value: "5000", at: [0, 0, 0] }
+      - { type: state, value: running_y, at: [0, 0, 0] }
+      - { type: network_powered, at: [0, 1, 0] }

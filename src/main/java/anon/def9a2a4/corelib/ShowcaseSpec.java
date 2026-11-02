@@ -26,15 +26,38 @@ final class ShowcaseSpec {
      *  is the placement face (DOWN = floor). {@code state} is optional (defaults to the placement map).
      *  {@code link} is an optional [dx,dy,dz] offset of a chain-pulley partner (only meaningful for
      *  {@code mech:chain_pulley}): the builder writes it into the pulley's chain-link PDC so the pair
-     *  transmits power, mirroring an in-game chain link. */
-    record BlockSpec(String id, BlockFace facing, int[] at, @Nullable String state, int @Nullable [] link) {}
+     *  transmits power, mirroring an in-game chain link. {@code data} pins a {@code physical_material}
+     *  block's block data (e.g. {@code "[facing=north,type=right]"} for one half of a double chest);
+     *  {@code contents} fills its storage or real container. */
+    record BlockSpec(String id, BlockFace facing, int[] at, @Nullable String state, int @Nullable [] link,
+                     @Nullable String data, List<ItemSpec> contents) {}
 
     /** One vanilla support block (redstone, planks, container, …) at an offset. {@code data} is an
      *  optional Bukkit block-data string (e.g. {@code "[face=floor,powered=true]"} for a lit lever).
      *  {@code physics} places with block-updates on (e.g. so a {@code WATER} source actually flows).
-     *  {@code text} is the front-side lines for a sign (up to 4); null/empty for non-signs. */
+     *  {@code text} is the front-side lines for a sign (up to 4); null/empty for non-signs.
+     *  {@code contents} fills a container / lectern / decorated pot. */
     record VanillaSpec(Material material, int[] at, @Nullable String data, boolean physics,
-                       @Nullable List<String> text) {}
+                       @Nullable List<String> text, List<ItemSpec> contents) {}
+
+    /** An item stack: YAML {@code "MATERIAL"} / {@code "MATERIAL xN"}, or a map
+     *  {@code { material: M, count: N?, name: "..."?, contents: [item, ...]? }} — {@code name} is a custom
+     *  display name, {@code contents} fills a shulker box (or any other block item that holds items). */
+    record ItemSpec(Material material, int count, @Nullable String name, List<ItemSpec> contents) {
+        org.bukkit.inventory.ItemStack toStack() {
+            org.bukkit.inventory.ItemStack stack = new org.bukkit.inventory.ItemStack(material, count);
+            if (name == null && contents.isEmpty()) return stack;
+            org.bukkit.inventory.meta.ItemMeta meta = stack.getItemMeta();
+            if (name != null) meta.displayName(net.kyori.adventure.text.Component.text(name));
+            if (!contents.isEmpty() && meta instanceof org.bukkit.inventory.meta.BlockStateMeta bsm
+                    && bsm.getBlockState() instanceof org.bukkit.block.Container box) {
+                for (ItemSpec c : contents) box.getInventory().addItem(c.toStack());
+                bsm.setBlockState(box);
+            }
+            stack.setItemMeta(meta);
+            return stack;
+        }
+    }
 
     /** How the runner powers the machine: {@code passive} (no-op / recalc), {@code pulse} (redstone at
      *  {@code at}), or {@code fuel} (insert fuel into the block at {@code at}). */
@@ -57,8 +80,9 @@ final class ShowcaseSpec {
                        float scale, List<PatternSpec> patterns) {}
 
     /** A behavioural assertion (phase 2). {@code at} = offset from the build origin; {@code to} is an
-     *  optional opposite corner (inclusive box) for types that check a region ({@code block_type}). */
-    record Expect(String type, int[] at, @Nullable String value, int @Nullable [] to) {}
+     *  optional opposite corner (inclusive box) for types that check a region ({@code block_type}).
+     *  {@code items} is the expected inventory of a {@code contents} check. */
+    record Expect(String type, int[] at, @Nullable String value, int @Nullable [] to, List<ItemSpec> items) {}
 
     /** A scripted mid-test step, run {@code tick} ticks after the build (test harness only — the docs
      *  keep-alive world ignores it). {@code kind}: {@code set} writes {@code block} into every cell of
@@ -66,9 +90,10 @@ final class ShowcaseSpec {
      *  {@code only}, with block updates iff {@code physics}; {@code corrupt_persisted_mechanism} is a
      *  Java-side probe (see {@code ShowcaseRunner}); {@code summon} spawns {@code entity} (a vanilla entity
      *  key) in cell {@code at} — hanging on {@code face}, holding {@code item}, painted {@code art}, ridden by a
-     *  still {@code rider} — all optional keys of {@code extra}. */
+     *  still {@code rider} — all optional keys of {@code extra}; {@code drop} spawns {@code items} in cell
+     *  {@code at}; the rest are Java-side (see {@code ShowcaseRunner.runAction}). */
     record Action(long tick, String kind, int[] at, int @Nullable [] to, @Nullable Material block,
-                  @Nullable Material only, boolean physics, Map<String, String> extra) {}
+                  @Nullable Material only, boolean physics, Map<String, String> extra, List<ItemSpec> items) {}
 
     final String id;
     final String name;
@@ -87,11 +112,16 @@ final class ShowcaseSpec {
     final List<Action> actions;
     /** Ticks after the build at which this spec's {@code expect}s are checked; 0 = the harness default. */
     final long assertAt;
+    /** Restart scenario ({@code clean} | {@code crash}), or null. Such a spec runs only under
+     *  {@code make showcase-restart-test}: boot 1 builds it, runs its actions and {@code expect}s, then
+     *  ends the boot that way; boot 2 reloads the same world and checks {@link #afterRestart}. */
+    final @Nullable String restart;
+    final List<Expect> afterRestart;
 
     ShowcaseSpec(String id, String name, String blurb, String description, List<String> images,
                  List<BlockSpec> blocks, List<VanillaSpec> vanilla, List<BannerSpec> banners,
                  Activate activate, List<Expect> expect, boolean testOnly, List<Action> actions,
-                 long assertAt) {
+                 long assertAt, @Nullable String restart, List<Expect> afterRestart) {
         this.id = id;
         this.name = name;
         this.blurb = blurb;
@@ -105,6 +135,8 @@ final class ShowcaseSpec {
         this.testOnly = testOnly;
         this.actions = actions;
         this.assertAt = assertAt;
+        this.restart = restart;
+        this.afterRestart = afterRestart;
     }
 
     /** Parse {@code showcases.yml} into an insertion-ordered id → spec map. Malformed entries are
@@ -134,7 +166,8 @@ final class ShowcaseSpec {
                         log.warning("showcases.yml [" + id + "]: block entry needs id + at, skipped");
                         continue;
                     }
-                    blocks.add(new BlockSpec(bid, face, at, str(m.get("state")), vec(m.get("link"))));
+                    blocks.add(new BlockSpec(bid, face, at, str(m.get("state")), vec(m.get("link")),
+                            str(m.get("data")), items(m.get("contents"))));
                 }
                 List<VanillaSpec> vanilla = new ArrayList<>();
                 for (Object o : asList(entry.get("vanilla"))) {
@@ -151,7 +184,7 @@ final class ShowcaseSpec {
                         for (Object o2 : asList(m.get("text"))) text.add(str(o2) == null ? "" : str(o2));
                     }
                     vanilla.add(new VanillaSpec(mat, at, str(m.get("data")),
-                            Boolean.TRUE.equals(m.get("physics")), text));
+                            Boolean.TRUE.equals(m.get("physics")), text, items(m.get("contents"))));
                 }
                 List<BannerSpec> banners = new ArrayList<>();
                 for (Object o : asList(entry.get("banners"))) {
@@ -180,17 +213,7 @@ final class ShowcaseSpec {
                     banners.add(new BannerSpec(item, mode, host, bface, step, scale, patterns));
                 }
                 Activate activate = parseActivate(entry.get("activate"));
-                List<Expect> expect = new ArrayList<>();
-                for (Object o : asList(entry.get("expect"))) {
-                    if (!(o instanceof Map<?, ?> m)) continue;
-                    String type = str(m.get("type"));
-                    int[] at = vec(m.get("at"));
-                    if (type == null || at == null) {
-                        log.warning("showcases.yml [" + id + "]: expect entry needs type + at, skipped");
-                        continue;
-                    }
-                    expect.add(new Expect(type, at, str(m.get("value")), vec(m.get("to"))));
-                }
+                List<Expect> expect = expects(id, entry.get("expect"), log);
                 List<Action> actions = new ArrayList<>();
                 for (Object o : asList(entry.get("actions"))) {
                     if (!(o instanceof Map<?, ?> m)) continue;
@@ -216,14 +239,19 @@ final class ShowcaseSpec {
                         continue;
                     }
                     actions.add(new Action(tick.longValue(), kind, at, vec(m.get("to")), block, only,
-                            Boolean.TRUE.equals(m.get("physics")), extra));
+                            Boolean.TRUE.equals(m.get("physics")), extra, items(m.get("items"))));
                 }
                 boolean testOnly = Boolean.TRUE.equals(entry.get("test_only"));
                 long assertAt = (entry.get("assert_at") instanceof Number n) ? n.longValue() : 0;
+                String restart = str(entry.get("restart"));
+                if (restart != null && !restart.equals("clean") && !restart.equals("crash")) {
+                    log.warning("showcases.yml [" + id + "]: restart must be clean or crash, skipped");
+                    continue;
+                }
                 String shortBlurb = blurb == null ? "" : blurb;
                 out.put(id, new ShowcaseSpec(id, name == null ? id : name, shortBlurb,
                         description == null ? shortBlurb : description, images, blocks, vanilla, banners, activate, expect,
-                        testOnly, actions, assertAt));
+                        testOnly, actions, assertAt, restart, expects(id, entry.get("after_restart"), log)));
             } catch (Exception e) {
                 log.warning("showcases.yml: failed to parse an entry: " + e);
             }
@@ -242,6 +270,49 @@ final class ShowcaseSpec {
     }
 
     // ── parsing helpers ──────────────────────────────────────────────────────
+
+    private static List<Expect> expects(String id, @Nullable Object o, Logger log) {
+        List<Expect> out = new ArrayList<>();
+        for (Object e : asList(o)) {
+            if (!(e instanceof Map<?, ?> m)) continue;
+            String type = str(m.get("type"));
+            int[] at = vec(m.get("at"));
+            if (type == null || at == null) {
+                log.warning("showcases.yml [" + id + "]: expect entry needs type + at, skipped");
+                continue;
+            }
+            out.add(new Expect(type, at, str(m.get("value")), vec(m.get("to")), items(m.get("items"))));
+        }
+        return out;
+    }
+
+    /** A list of {@link ItemSpec}s; malformed entries throw, so the whole spec is reported and skipped. */
+    private static List<ItemSpec> items(@Nullable Object o) {
+        List<ItemSpec> out = new ArrayList<>();
+        for (Object e : asList(o)) out.add(item(e));
+        return out;
+    }
+
+    private static ItemSpec item(Object o) {
+        String mat;
+        int count = 1;
+        String name = null;
+        List<ItemSpec> contents = List.of();
+        if (o instanceof Map<?, ?> m) {
+            mat = str(m.get("material"));
+            if (m.get("count") instanceof Number n) count = n.intValue();
+            name = str(m.get("name"));
+            contents = items(m.get("contents"));
+        } else {
+            // "IRON_CHAIN x16" — the count suffix is optional.
+            String[] parts = String.valueOf(o).trim().split("\\s+x", 2);
+            mat = parts[0];
+            if (parts.length > 1) count = Integer.parseInt(parts[1].trim());
+        }
+        Material m = mat == null ? null : Material.matchMaterial(mat);
+        if (m == null || count < 0) throw new IllegalArgumentException("bad item spec: " + o);
+        return new ItemSpec(m, count, name, contents);
+    }
 
     private static @Nullable String str(@Nullable Object o) {
         return o == null ? null : o.toString();

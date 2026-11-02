@@ -22,11 +22,8 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 class ShowcaseSpecTest {
 
-    // Keep in step with ShowcaseRunner.check / runAction.
-    private static final Set<String> EXPECT_TYPES = Set.of("spinning", "network_powered", "state",
-            "mechanism_swung", "hoist_moved", "piston_stroked", "block_type", "persisted_mechanism_intact",
-            "entity_count", "riding");
-    private static final Set<String> ACTION_KINDS = Set.of("set", "corrupt_persisted_mechanism", "summon");
+    private static final Set<String> EXPECT_TYPES = ShowcaseRunner.EXPECT_TYPES;
+    private static final Set<String> ACTION_KINDS = ShowcaseRunner.ACTION_KINDS;
     private static final long DEFAULT_ASSERT_AT = 80;
 
     private static Map<String, ShowcaseSpec> load(List<String> warnings) throws Exception {
@@ -51,8 +48,15 @@ class ShowcaseSpecTest {
         assertFalse(specs.isEmpty());
         for (ShowcaseSpec s : specs.values()) {
             long assertAt = s.assertAt > 0 ? s.assertAt : DEFAULT_ASSERT_AT;
-            for (ShowcaseSpec.Expect e : s.expect) {
+            for (ShowcaseSpec.Expect e : allExpects(s)) {
                 assertTrue(EXPECT_TYPES.contains(e.type()), s.id + ": unknown expect type " + e.type());
+            }
+            // A restart scenario is a test (never a demo) and must check something after the restart.
+            if (s.restart != null) {
+                assertTrue(s.testOnly, s.id + ": restart scenarios must be test_only");
+                assertFalse(s.afterRestart.isEmpty(), s.id + ": restart scenario has no after_restart");
+            } else {
+                assertTrue(s.afterRestart.isEmpty(), s.id + ": after_restart without restart: clean|crash");
             }
             for (ShowcaseSpec.Action a : s.actions) {
                 assertTrue(ACTION_KINDS.contains(a.kind()), s.id + ": unknown action " + a.kind());
@@ -63,12 +67,35 @@ class ShowcaseSpecTest {
         }
     }
 
+    private static List<ShowcaseSpec.Expect> allExpects(ShowcaseSpec s) {
+        List<ShowcaseSpec.Expect> all = new java.util.ArrayList<>(s.expect);
+        all.addAll(s.afterRestart);
+        return all;
+    }
+
+    /** The item-spec shorthand: {@code "MAT xN"}, a bare material, and the map form with nested contents. */
+    @Test
+    void itemSpecsParse() throws Exception {
+        ShowcaseSpec s = load(new java.util.ArrayList<>()).get("test_placer_skips_filled_shulker");
+        assertNotNull(s);
+        List<ShowcaseSpec.ItemSpec> items = s.vanilla.get(0).contents();
+        assertEquals(org.bukkit.Material.SHULKER_BOX, items.get(0).material());
+        assertEquals(5, items.get(0).contents().get(0).count());
+        assertEquals(org.bukkit.Material.STONE, items.get(1).material());
+        assertEquals(1, items.get(1).count());
+    }
+
     @Test
     void regressionScenariosAreTestOnly() throws Exception {
         Map<String, ShowcaseSpec> specs = load(new java.util.ArrayList<>());
         for (String id : List.of("test_ceiling_mounts", "test_hoist_reel_in",
                 "test_hoist_rising_ghost_no_dupe", "test_corrupt_state_file_kept",
-                "test_carried_frame_painting", "test_carried_cushion", "test_painting_drops_on_roll")) {
+                "test_carried_frame_painting", "test_carried_cushion", "test_painting_drops_on_roll",
+                "test_hoist_broken_mid_descent_refunds", "test_carried_lectern_book",
+                "test_placer_skips_filled_shulker", "test_carried_mech_dispenser_contents",
+                "test_engine_returns_lava_bucket", "test_water_wheel_break_keeps_chest",
+                "test_restart_crash_persisted_mechanism", "test_restart_crash_disassembled_state_kept",
+                "test_restart_clean_engine_fuel", "test_restart_clean_disassembled_no_ghost")) {
             ShowcaseSpec s = specs.get(id);
             assertNotNull(s, id);
             assertTrue(s.testOnly, id + " must be test_only (kept out of the docs)");
@@ -117,7 +144,7 @@ class ShowcaseSpecTest {
                     problems.add(s.id + ": " + b.id() + " has no state " + b.state());
                 }
             }
-            for (ShowcaseSpec.Expect e : s.expect) {
+            for (ShowcaseSpec.Expect e : allExpects(s)) {
                 if (e.type().equals("state") && e.value() != null) {
                     ShowcaseSpec.BlockSpec b = byCell.get(java.util.Arrays.toString(e.at()));
                     Set<String> states = b == null ? null : statesById.get(b.id());

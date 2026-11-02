@@ -71,6 +71,18 @@ jobs:
             SERVER_VARIANT=${{ matrix.server }} \
             2>&1 | tee ci-logs/showcase-${{ matrix.server }}-${{ matrix.minecraft }}.log
 
+      # Two boots of one world per mode (crash, clean); the crash boot halts without logging an error.
+      - name: Restart test
+        if: ${{ !cancelled() }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p ci-logs
+          make showcase-restart-test-ci \
+            MINECRAFT_VERSION=${{ matrix.minecraft }} \
+            SERVER_VARIANT=${{ matrix.server }} \
+            2>&1 | tee ci-logs/restart-${{ matrix.server }}-${{ matrix.minecraft }}.log
+
       - name: Check for logged errors
         if: always()
         run: |

@@ -52,6 +52,7 @@ final class ShowcaseBuilder {
             }
             if (!placed) b.setType(v.material(), physics);
             applySignText(b, v.text());
+            fill(b, v.contents());
         }
 
         // Custom blocks: place + markBlock now; defer applyConfig + callbacks to next tick (batched),
@@ -76,7 +77,11 @@ final class ShowcaseBuilder {
         BlockFace placedOn = bs.facing();
         boolean floor = placedOn == BlockFace.DOWN || placedOn == BlockFace.UP;
 
-        placeHead(block, floor, floor ? null : placedOn.getOppositeFace());
+        if (type.physicalMaterial() != null) {
+            placePhysical(block, type.physicalMaterial(), placedOn.getOppositeFace(), bs.data());
+        } else {
+            placeHead(block, floor, floor ? null : placedOn.getOppositeFace());
+        }
 
         // Resolve state: explicit > placement_state_map[face] > default.
         String state = bs.state();
@@ -124,6 +129,7 @@ final class ShowcaseBuilder {
             if (type.onChunkLoadCallback() != null) {
                 type.onChunkLoadCallback().accept(block, fstate);
             }
+            fill(block, bs.contents());   // after the callbacks, so no setup step can reset the inventory
         });
         return true;
     }
@@ -157,6 +163,50 @@ final class ShowcaseBuilder {
         var side = sign.getSide(Side.FRONT);
         for (int i = 0; i < Math.min(4, text.size()); i++) side.setLine(i, text.get(i));
         sign.update(true, false);
+    }
+
+    /** A {@code physical_material} block (dispenser, dynamo barrel, boiler / water-wheel chest) is the real
+     *  block, as {@code CoreLibPlugin.onBlockPlace} sets it: pinned {@code data} if given, else facing the
+     *  clicked face (the spec's {@code facing} is the opposite) when the material allows — a horizontal-only
+     *  chest keeps its default on a floor placement. */
+    private void placePhysical(Block block, Material material, BlockFace clickedFace, String data) {
+        if (data != null) {
+            block.setBlockData(Bukkit.createBlockData(material, data), false);
+            return;
+        }
+        block.setType(material, false);
+        if (block.getBlockData() instanceof Directional d && d.getFaces().contains(clickedFace)) {
+            d.setFacing(clickedFace);
+            block.setBlockData(d, false);
+        }
+    }
+
+    /** Put {@code items} into the inventory at {@code b} (see {@link #inventoryAt}); a no-op when empty. */
+    private void fill(Block b, List<ShowcaseSpec.ItemSpec> items) {
+        if (items.isEmpty()) return;
+        org.bukkit.inventory.Inventory inv = inventoryAt(registry, b);
+        if (inv == null) {
+            plugin.getLogger().warning("showcase: contents at " + b + " — no inventory there");
+            return;
+        }
+        for (ShowcaseSpec.ItemSpec it : items) {
+            if (!inv.addItem(it.toStack()).isEmpty()) {
+                plugin.getLogger().warning("showcase: contents at " + b + " — no room for " + it.material());
+            }
+        }
+    }
+
+    /** The inventory a showcase fills / asserts at {@code b}: a custom block's virtual storage, else the real
+     *  block's own (a chest's single half, never the combined double chest; a lectern's book slot; a
+     *  decorated pot's), else null. */
+    static org.bukkit.inventory.@org.jspecify.annotations.Nullable Inventory inventoryAt(
+            CustomBlockRegistry registry, Block b) {
+        org.bukkit.inventory.Inventory storage = registry.getOrCreateStorage(b);
+        if (storage != null) return storage;
+        org.bukkit.block.BlockState st = b.getState();
+        if (st instanceof org.bukkit.block.Chest chest) return chest.getBlockInventory();
+        if (st instanceof io.papermc.paper.block.TileStateInventoryHolder h) return h.getInventory();
+        return null;
     }
 
     private void placeHead(Block block, boolean floor, BlockFace headFacing) {

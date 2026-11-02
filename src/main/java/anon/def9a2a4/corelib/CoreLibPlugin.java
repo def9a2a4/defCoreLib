@@ -1024,20 +1024,21 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
     }
 
     private void handleExplosion(List<Block> blockList) {
-        java.util.Iterator<Block> it = blockList.iterator();
-        while (it.hasNext()) {
-            Block block = it.next();
-            CustomHeadBlock type = registry.getTypeFromBlock(block);
-            if (type != null) {
-                it.remove(); // prevent vanilla skull drop
-                if (type.storage() != null) registry.dropStorage(block);
-                ItemStack drop = enrichDrop(block, type, type.createItem(1));
-                block.getWorld().dropItemNaturally(
-                        block.getLocation().add(0.5, 0.5, 0.5), drop);
-                registry.onBlockRemoved(block, type);
-                block.setType(Material.AIR); // actually remove the block from the world
-            }
-        }
+        blockList.removeIf(this::breakWithoutPlayer); // custom blocks leave the list: no vanilla skull drop
+    }
+
+    /** A custom block's player-less break: spill its storage, drop its self item, clean up, then air it.
+     *  Explosions use it, and so does the showcase harness's {@code break} action. False for a non-custom block. */
+    boolean breakWithoutPlayer(Block block) {
+        CustomHeadBlock type = registry.getTypeFromBlock(block);
+        if (type == null) return false;
+        if (type.storage() != null) registry.dropStorage(block);
+        ItemStack drop = enrichDrop(block, type, type.createItem(1));
+        block.getWorld().dropItemNaturally(
+                block.getLocation().add(0.5, 0.5, 0.5), drop);
+        registry.onBlockRemoved(block, type);
+        block.setType(Material.AIR); // actually remove the block from the world
+        return true;
     }
 
     // Piston handling
