@@ -149,12 +149,16 @@ public final class HeadSmithPlugin extends JavaPlugin {
             sender.sendMessage(Component.text("Usage: /headsmith recipes <give|take> [player]", NamedTextColor.YELLOW));
             return;
         }
-        // Target: the named player (requires the base perm) or self.
+        // Target: self, or the named player (another player needs headsmith.recipes.others).
         Player target;
         if (args.length >= 3) {
             target = getServer().getPlayerExact(args[2]);
             if (target == null) {
                 sender.sendMessage(Component.text("Player not found: " + args[2], NamedTextColor.RED));
+                return;
+            }
+            if (target != sender && !sender.hasPermission("headsmith.recipes.others")) {
+                sender.sendMessage(Component.text("No permission.", NamedTextColor.RED));
                 return;
             }
         } else if (sender instanceof Player p) {

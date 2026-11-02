@@ -1,0 +1,8 @@
+# bbanners v0.5.0
+
+The first release since 0.3.2 — 0.4.0 was prepared but never published. The banner logic lives in DefCoreLib, so these changes come from the core.
+
+Needs DefCoreLib 0.5.0 or newer, on Paper 1.21.11 or newer.
+
+- **Land claims are respected for banners.** Fence flags, bed banners and large/huge banners are display entities rather than blocks, so placing or shearing them skipped protection plugins entirely. Both now ask first, and a refused player can't place or shear inside someone else's claim.
+- **Banners ride mechanisms** — large and huge banners (and vanilla ones) on a mechanism now keep their patterns, tier and orientation as it moves and re-land with the contraption, instead of vanishing when it's taken apart. See the mech notes for details.

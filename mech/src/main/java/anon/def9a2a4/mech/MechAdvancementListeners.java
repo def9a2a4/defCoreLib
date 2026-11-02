@@ -48,6 +48,7 @@ public final class MechAdvancementListeners implements Listener {
      *  written the block-type PDC; cheap PDC lookup + early return keeps the hot block-place path clean. */
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onBlockPlace(BlockPlaceEvent event) {
+        if (anon.def9a2a4.corelib.BuildProbe.isProbing()) return;   // protection probe, nothing placed
         CustomHeadBlock type = registry.getTypeFromBlock(event.getBlockPlaced());
         if (type == null) return;
         String id = type.fullId();

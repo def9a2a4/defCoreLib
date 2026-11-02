@@ -217,6 +217,15 @@ final class CustomCartManager implements Listener {
         }
     }
 
+    /** Flush every tracked cart in the saving world to its PDC (live inventory incl. an open GUI), so a
+     *  crash after an autosave can't roll back or dupe cart contents saved only on close/unload. */
+    @EventHandler
+    public void onWorldSave(org.bukkit.event.world.WorldSaveEvent event) {
+        for (CartState state : tracked.values()) {
+            if (state.cart.getWorld().equals(event.getWorld())) persist(state);
+        }
+    }
+
     /** Build (or rebuild) a cart's plugin inventory from its declared layout + PDC contents. */
     private void buildInv(CartState state) {
         CustomHeadBlock type = registry.getType(state.type.itemId);

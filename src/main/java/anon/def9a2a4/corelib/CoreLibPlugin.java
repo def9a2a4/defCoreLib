@@ -293,6 +293,9 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         if (mechanismRegistry != null) {
             mechanismRegistry.shutdown();
         }
+        // Plugins disable before worlds save, so no chunk-unload write runs at shutdown: flush the
+        // in-memory fuel counters to their blocks now, or a part-burned item is lost on every restart.
+        if (fuelManager != null) fuelManager.flushAll();
         if (registry != null) {
             registry.shutdown();
         }
@@ -659,6 +662,14 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
             return;
         }
 
+        // A custom item whose material merges in place (a vertical slab is a real OAK_SLAB item) clicked
+        // onto a vanilla block of that material: vanilla merged it into a double slab, and converting the
+        // cell below would destroy the existing slab. Refuse the merge; air/water/replaceable cells differ.
+        if (event.getBlockReplacedState().getType() == item.getType()) {
+            event.setCancelled(true);
+            return;
+        }
+
         boolean isAlreadySkull = block.getType() == Material.PLAYER_HEAD
                 || block.getType() == Material.PLAYER_WALL_HEAD;
 
@@ -851,8 +862,13 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
 
         // Schedule for next tick to ensure block state is fully initialized
         getServer().getScheduler().runTask(this, () -> {
-            // Guard: block may have been broken between placement and this tick
-            if (registry.getTypeFromBlock(block) == null) return;
+            // Guard: block may have been broken between placement and this tick — or a later (HIGHEST)
+            // handler cancelled the place and the cell reverted. addBareBlock indexed the cell eagerly,
+            // so drop that identity, else a vanilla base block put here later would become this type.
+            if (registry.getTypeFromBlock(block) == null) {
+                if (type.baseBlock() != null) registry.removeBareBlock(block);
+                return;
+            }
 
             registry.applyConfig(block, type, state, power);
 
@@ -1719,8 +1735,10 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
 
     @EventHandler(ignoreCancelled = true)
     public void onManagedContainerMove(org.bukkit.event.inventory.InventoryMoveItemEvent event) {
-        if (isManagedContainer(event.getSource().getHolder())
-                || isManagedContainer(event.getDestination().getHolder())) {
+        // Non-snapshot holders: this fires on every hopper transfer, and isManagedContainer only needs
+        // the block position, so a full block-state copy per side is wasted work.
+        if (isManagedContainer(event.getSource().getHolder(false))
+                || isManagedContainer(event.getDestination().getHolder(false))) {
             event.setCancelled(true);
         }
     }
@@ -1732,7 +1750,7 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         // A chest-backed custom block paired into a double chest (placed before the unpair fix existed):
         // the holder is the DoubleChest, so check both halves.
         if (holder instanceof org.bukkit.block.DoubleChest dc) {
-            return isManagedContainer(dc.getLeftSide()) || isManagedContainer(dc.getRightSide());
+            return isManagedContainer(dc.getLeftSide(false)) || isManagedContainer(dc.getRightSide(false));
         }
         if (!(holder instanceof org.bukkit.block.Container c)) return false;
         return registry.isLockedContainer(c.getBlock());

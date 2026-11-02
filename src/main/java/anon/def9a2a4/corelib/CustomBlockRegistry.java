@@ -223,6 +223,9 @@ public class CustomBlockRegistry {
     private boolean bareRestorerRegistered = false;  // register the generalized chunk restorer exactly once
     // Chunk PDC key holding this chunk's durable bare-block index: "x,y,z=ns:id;…" (survives a hard crash).
     static final NamespacedKey BARE_BLOCKS_KEY = new NamespacedKey("corelib", "bare_blocks");
+    // Chunk PDC flag: this chunk holds ≥1 tile-hosted custom block. Saved with the chunk itself, so it
+    // survives a crash that loses the ~5-min hint file — the tile-hosted analogue of BARE_BLOCKS_KEY.
+    static final NamespacedKey TILE_BLOCKS_KEY = new NamespacedKey("corelib", "tile_blocks");
 
     // Pluggable per-chunk restorers for custom blocks whose identity lives on an attached display
     // entity rather than a skull PDC (e.g. bare chain shafts). Run for hinted chunks in onChunkLoad;
@@ -753,6 +756,7 @@ public class CustomBlockRegistry {
             tile.update(false, false); // physics-suppressed; neighbors are notified via notifyBlockAppearedOrMoved
             customBlockLocations.add(LocationKey.of(block));
             markChunkDirty(block);
+            flagTileChunk(block.getChunk());
             if (type.reactsToNeighbors()) {
                 neighborReactiveBlocks.add(LocationKey.of(block));
             }
@@ -1222,8 +1226,18 @@ public class CustomBlockRegistry {
         // Durable fallback: a bare block persists its identity in the chunk PDC, which survives a hard
         // crash even when the in-memory hint (saved only every ~5 min) was lost. This makes the chunk-PDC
         // index authoritative for bare-block restore, so onEntitiesLoad still runs restoreBareBlocksInChunk.
-        return !bareTypes.isEmpty()
-                && chunk.getPersistentDataContainer().has(BARE_BLOCKS_KEY, PersistentDataType.STRING);
+        // TILE_BLOCKS_KEY is the same fallback for tile-hosted blocks (water wheel, boiler, …).
+        PersistentDataContainer pdc = chunk.getPersistentDataContainer();
+        return pdc.has(TILE_BLOCKS_KEY, PersistentDataType.BYTE)
+                || (!bareTypes.isEmpty() && pdc.has(BARE_BLOCKS_KEY, PersistentDataType.STRING));
+    }
+
+    /** Set {@link #TILE_BLOCKS_KEY} if absent — the check avoids dirtying the chunk on every load. */
+    private static void flagTileChunk(Chunk chunk) {
+        PersistentDataContainer pdc = chunk.getPersistentDataContainer();
+        if (!pdc.has(TILE_BLOCKS_KEY, PersistentDataType.BYTE)) {
+            pdc.set(TILE_BLOCKS_KEY, PersistentDataType.BYTE, (byte) 1);
+        }
     }
 
     void markChunkDirty(Block block) {
@@ -1234,6 +1248,7 @@ public class CustomBlockRegistry {
     }
 
     void removeChunkHint(Chunk chunk) {
+        chunk.getPersistentDataContainer().remove(TILE_BLOCKS_KEY);
         Set<String> hints = chunkHints.get(chunk.getWorld().getUID());
         if (hints != null) {
             hints.remove(chunkKey(chunk));
@@ -1259,6 +1274,7 @@ public class CustomBlockRegistry {
             if (!(tile instanceof TileState ts)) continue;
             String typeId = ts.getPersistentDataContainer().get(BLOCK_TYPE_KEY, PersistentDataType.STRING);
             if (typeId == null) continue;
+            flagTileChunk(chunk);   // backfills chunks indexed before the flag existed
 
             CustomHeadBlock type = types.get(typeId);
             if (type == null) continue;
@@ -1463,14 +1479,19 @@ public class CustomBlockRegistry {
         int chunkZ = chunk.getZ();
         World world = chunk.getWorld();
 
-        // Dispatch chunk unload callbacks (material-agnostic — recognition is the PDC itself)
-        for (BlockState tile : chunk.getTileEntities()) {
-            if (!(tile instanceof TileState ts)) continue;
-            String typeId = ts.getPersistentDataContainer().get(BLOCK_TYPE_KEY, PersistentDataType.STRING);
-            if (typeId == null) continue;
-            CustomHeadBlock type = types.get(typeId);
-            if (type != null && type.onChunkUnloadCallback() != null) {
-                type.onChunkUnloadCallback().accept(ts.getBlock());
+        // Dispatch chunk unload callbacks (material-agnostic — recognition is the PDC itself). Gated like
+        // onChunkLoad: every tile block indexed this session (markBlock, or a load-time restore) left its
+        // chunk hinted/flagged, so an ungated walk only pays for vanilla chunks. Non-snapshot states:
+        // the loop just reads the live PDC and position.
+        if (chunkMayHaveCustomBlocks(chunk)) {
+            for (BlockState tile : chunk.getTileEntities(false)) {
+                if (!(tile instanceof TileState ts)) continue;
+                String typeId = ts.getPersistentDataContainer().get(BLOCK_TYPE_KEY, PersistentDataType.STRING);
+                if (typeId == null) continue;
+                CustomHeadBlock type = types.get(typeId);
+                if (type != null && type.onChunkUnloadCallback() != null) {
+                    type.onChunkUnloadCallback().accept(ts.getBlock());
+                }
             }
         }
 

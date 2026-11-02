@@ -198,7 +198,10 @@ final class LegacyHeadMigrator implements Listener {
         int total = queue.size();
         plugin.getServer().getScheduler().runTaskTimer(plugin, task -> {
             for (int i = 0; i < CHUNKS_PER_TICK && !queue.isEmpty(); i++) {
-                adoptChunk(queue.poll());
+                // A chunk that unloaded since queueing is skipped — reading it would sync-load it again,
+                // and onChunkLoad adopts it if it comes back.
+                Chunk c = queue.poll();
+                if (c.isLoaded()) adoptChunk(c);
             }
             if (queue.isEmpty()) {
                 int adopted = adoptedBlocks - before;

@@ -143,8 +143,11 @@ final class MechanicalDispenser implements Listener {
         return Component.text("Mechanical Dispenser — no power");
     }
 
-    /** Break/explosion: spill the dispenser's contents before the framework wipes the inventory. */
+    /** Break/explosion: spill the dispenser's contents before the framework wipes the inventory. Not when a
+     *  mechanism is picking the block up: its contents were already copied into the mechanism's storage and
+     *  land with it (MechanismRegistry capture), so spilling them here too would duplicate them. */
     private void dropContents(Block b) {
+        if (registry.isCapturingForMechanism()) return;
         if (!(b.getState() instanceof Container c)) return;
         Inventory inv = c.getInventory();
         Location loc = b.getLocation().add(0.5, 0.5, 0.5);

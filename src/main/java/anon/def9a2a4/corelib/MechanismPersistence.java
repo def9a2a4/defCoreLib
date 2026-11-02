@@ -49,6 +49,13 @@ final class MechanismPersistence {
     // skips the re-parse while the file is unchanged. Only content failures are cached: a read that failed
     // with an IOException (a disk blip) is not, so the next chunk load retries it as before.
     private final Map<String, Long> corruptMtimes = new HashMap<>();
+    // world → (mechId → WorldSaveEvents still to pass before the state file may go). A disassembled
+    // mechanism's file must outlive the world save that writes its landed blocks: until then a crash restores
+    // the region with the entities still in it and the blocks NOT placed, and only the file lets recovery
+    // re-adopt the ship (without it the entities are reaped as orphans → the whole structure is lost). The
+    // event fires BEFORE chunks are written, so the first save after removal isn't proof — wait for the
+    // second. Not persisted: a crash leaves queued files behind (inert without their entities); /stop deletes them.
+    private final Map<String, Map<UUID, Integer>> pendingDeletes = new HashMap<>();
 
     MechanismPersistence(JavaPlugin plugin) {
         this(plugin.getDataFolder(), plugin.getLogger());
@@ -94,6 +101,8 @@ final class MechanismPersistence {
         }
         persistedIds.computeIfAbsent(st.worldName, k -> new HashSet<>()).add(st.mechId);
         corruptMtimes.remove(st.worldName + ":" + st.mechId);
+        Map<UUID, Integer> pending = pendingDeletes.get(st.worldName);
+        if (pending != null) pending.remove(st.mechId);   // re-persisted before its queued delete: keep the file
     }
 
     /** Delete a mechanism's state file + drop it from the persisted-id set. Real disassembly only — a
@@ -102,6 +111,42 @@ final class MechanismPersistence {
     void remove(String world, UUID id) {
         File f = stateFile(world, id);
         if (f.exists() && !f.delete()) log.warning("mechanism persistence: cannot delete " + f);
+        forget(world, id);
+        Map<UUID, Integer> pending = pendingDeletes.get(world);
+        if (pending != null) pending.remove(id);
+    }
+
+    /** {@link #remove} for a real disassembly: the id stops being persisted NOW (hasMetadata answers false, so
+     *  the orphan sweep and the migration probe behave exactly as after remove), but the file itself is only
+     *  deleted on the second {@link #onWorldSaved} — see {@link #pendingDeletes}. */
+    void removeAfterSave(String world, UUID id) {
+        forget(world, id);
+        pendingDeletes.computeIfAbsent(world, k -> new HashMap<>()).put(id, 2);
+    }
+
+    /** A WorldSaveEvent for {@code world}: count down the queued deletes and delete the files that are due. */
+    void onWorldSaved(String world) {
+        Map<UUID, Integer> pending = pendingDeletes.get(world);
+        if (pending == null) return;
+        pending.entrySet().removeIf(e -> {
+            if (e.getValue() > 1) { e.setValue(e.getValue() - 1); return false; }
+            File f = stateFile(world, e.getKey());
+            if (f.exists() && !f.delete()) log.warning("mechanism persistence: cannot delete " + f);
+            return true;
+        });
+        if (pending.isEmpty()) pendingDeletes.remove(world);
+    }
+
+    /** Delete every queued file now — server stop only, see {@code MechanismRegistry.shutdown}. */
+    void deletePending() {
+        pendingDeletes.forEach((world, ids) -> ids.keySet().forEach(id -> {
+            File f = stateFile(world, id);
+            if (f.exists() && !f.delete()) log.warning("mechanism persistence: cannot delete " + f);
+        }));
+        pendingDeletes.clear();
+    }
+
+    private void forget(String world, UUID id) {
         corruptMtimes.remove(world + ":" + id);
         Set<UUID> ids = persistedIds.get(world);
         if (ids != null) {

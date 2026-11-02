@@ -60,6 +60,33 @@ class MechanismPersistenceTest {
         assertEquals(0, left.length);
     }
 
+    /** A disassembly unshields the id at once but keeps the file until the world has saved twice (the event
+     *  fires before the chunks are written), so a crash in between can still recover the ship. */
+    @Test
+    void removeAfterSaveDeletesOnTheSecondWorldSave() {
+        MechanismState st = MechanismStateTest.sample();
+        p.save(st);
+        p.removeAfterSave(st.worldName, st.mechId);
+        assertFalse(p.hasMetadata(st.worldName, st.mechId));
+        p.onWorldSaved("some_other_world");
+        p.onWorldSaved(st.worldName);
+        assertTrue(stateFile(st).exists());
+        p.onWorldSaved(st.worldName);
+        assertFalse(stateFile(st).exists());
+    }
+
+    @Test
+    void aSaveCancelsTheQueuedDelete() {
+        MechanismState st = MechanismStateTest.sample();
+        p.save(st);
+        p.removeAfterSave(st.worldName, st.mechId);
+        p.save(st);
+        p.onWorldSaved(st.worldName);
+        p.onWorldSaved(st.worldName);
+        assertTrue(stateFile(st).exists());
+        assertTrue(p.hasMetadata(st.worldName, st.mechId));
+    }
+
     @Test
     void missingFileLoadsAsNull() {
         assertNull(p.load("world", UUID.randomUUID()));

@@ -1,0 +1,14 @@
+# railbound v0.5.0
+
+The first release since 0.3.2 — 0.4.0 was prepared but never published. The carts and rails live in DefCoreLib, so these changes come from the core.
+
+Needs DefCoreLib 0.5.0 or newer, on Paper 1.21.11 or newer.
+
+- **Land claims are respected when breaking carts.** Breaking a blast-furnace cart, coal tender or dispenser cart inside a claim where a protection plugin refused the break still removed the cart and dropped its item and contents. The refusal now wins.
+- **Pick-block** — middle-clicking a custom cart or rail no longer mints a free copy in survival or adventure; it only selects one you already carry (creative still gives it).
+- **Server hang under pulse storms** — a comparator or observer re-pulsing a junction, controller or destructor rail is now handled once per rail per tick instead of queuing a flood of redundant checks.
+- **Catalog** — the carts and rails show up, with recipes, in the in-game `/defcorelib catalog`.
+- **Custom rails drop as themselves when their support goes** — breaking the block under a junction, controller or destructor rail popped it off as a plain rail (losing the custom item), and placing a plain rail back there revived the custom one.
+- **Hopper minecarts survive the destructor rail** — one sent through came back as a plain minecart.
+- **Trains stop outside simulation distance**, as vanilla carts do. An unridden train kept driving and loaded chunks ahead of itself.
+- **Cart contents are saved at every world save** — a crash could duplicate or lose items moved in or out since the cart was last closed or unloaded.

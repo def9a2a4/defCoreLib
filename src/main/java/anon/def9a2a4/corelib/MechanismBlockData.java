@@ -113,6 +113,11 @@ public final class MechanismBlockData {
     // from storageTitle so formatting survives without having to guess whether that plain-text field
     // happens to contain JSON. Null for an unnamed container.
     @Nullable String storageTitleJson;
+    // The saved storage bytes (+ their InventoryType name) when recovery could NOT decode them (e.g. one item
+    // from a removed plugin/version). storage is null then; snapshotState writes these back verbatim so the
+    // next save doesn't erase the contents for good — they stay on disk until a decoder can read them.
+    byte @Nullable [] undecodedStorage;
+    @Nullable String undecodedStorageType;
 
     MechanismBlockData(@Nullable BlockData blockData, Matrix4f localTransform,
                        CollisionConfig collision,

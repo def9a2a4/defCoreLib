@@ -21,6 +21,9 @@ permissions:
   headsmith.recipes:
     description: Reveal/hide HeadSmith recipes in your recipe book.
     default: true
+  headsmith.recipes.others:
+    description: Reveal/hide HeadSmith recipes for another player.
+    default: op
   headsmith.migrate:
     description: Run the legacy placed-head migration sweep.
     default: op

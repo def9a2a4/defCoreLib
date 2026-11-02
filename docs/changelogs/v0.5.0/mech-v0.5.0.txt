@@ -48,13 +48,18 @@ Two new frame blocks — the **Gearbox** and the **Chassis** — a new **Ratchet
 ## Fixes
 
 - **Chain hoist broken while lowering** lost up to 47 chains — the chain set aside for the stroke was never given back. The unused chain now drops with the hoist.
-- **Placer emptied shulker boxes** — a placer fed a filled shulker box placed it empty and deleted the contents; names, banner patterns and head skins were lost the same way, and doors, beds and tall plants were placed as one half that later broke with no drop. The placer now leaves those items in its source and places only plain blocks.
+- **Placer emptied shulker boxes** — a placer fed a filled shulker box placed it empty and deleted the contents; names, banner patterns and head skins were lost the same way, and doors, beds and tall plants were placed as one half that later broke with no drop. The placer now leaves those items in its source; a plain renamed block is still placed (its name is lost, as with vanilla placement).
 - **Copper chest beside a Boiler or Water Wheel** — both are copper chests underneath, so a copper chest placed next to one joined it into a double chest; breaking the Boiler then wiped the neighbour's contents, and hoppers could feed the sealed half. Placing a chest there no longer pairs them, an existing pairing splits the first time it is opened, and breaking one never touches the other's items.
 - **Chain pulley glued into a mechanism duplicated chains** — the link's chains dropped when it moved, but the link came back after a restart, so breaking the pulley dropped them again.
 - **A carried lectern lost its book, and a decorated pot its item**, on landing.
 - **Server hang under pulse storms** — the plugin's own block writes no longer re-trigger their own physics/recalc feedback loop, and reactive-neighbor and custom-rail updates now coalesce to a single recompute per network/rail per tick under a comparator or observer pulse storm. A throwing reactive handler is isolated and logged once, never fatal to the tick.
 - **Carried-hoist glue integrity** — a carried hoist that would be tipped off its vertical column (a horizontal-axis drawbridge) or grabbed mid-stroke is now **refused** rather than corrupted, and a hoist's stored platform glue is cleared whenever its chain length changes out of band (a link mined, placed, or blown up, or the hoist landing with a shortened chain), so its offsets can never mis-reference.
 - **Seed oil returns its bottle** — burning a Seed Oil (a bottled fuel) in a fuel-fed machine now returns the empty glass bottle to the fuel storage (dropping it at the block if the storage is full) instead of consuming the container.
+- **A lava bucket burned as fuel returns its bucket** instead of disappearing with the lava.
+- **Burners keep their fuel when carried, and fuel survives a restart** — a part-burned item in an engine, burner or thruster was lost on every restart, and a burned-out one could get its old fuel back after a crash.
+- **Mechanical dispenser keeps its contents when carried** — glued onto a mechanism, it dropped everything inside where it stood. The contents now ride along and are back in it on landing.
+- **Chain pulley double refund** — breaking one end of a chain link while the other end sat in an unloaded chunk force-loaded that chunk and could give the chains back twice. They're now returned once, at the far pulley, the next time its chunk loads.
+- **A machine placed shortly before a crash** — a water wheel, boiler or mechanical dispenser could come back as a plain copper chest or dispenser: wrong item on break, sealed slots open, machine dead. It's now recognised.
 - **Bare shafts stay bare when carried** — a shaft wrenched to its bare chain form now stays bare after a rotator (or any mechanism) swings it, instead of silently reverting to the encased shaft on landing. A shaft carried while encased still lands encased.
 - **Bare shafts ride bare** — a shaft carried in its bare chain form now renders as a spinning chain while the contraption moves, instead of showing the boxed shaft head until it lands.
 - **Wall-mounted heads rendered backwards on a moving mechanism**, on all four walls. The head item model's face is a half-turn from the block's, and the mechanism display path was not compensating.
@@ -82,5 +87,6 @@ Two new frame blocks — the **Gearbox** and the **Chassis** — a new **Ratchet
 
 ## Internal
 
+- `MachineProducedEvent` reported a smaller amount than was produced whenever the output merged into a partly full stack.
 - Rotation-network reactive recalcs coalesce through a per-tick flush drain, and the read-only lock/ratchet-direction predicates are memoized per recalc — collapsing a comparator storm from many full O(component) rebuilds to one.
 - Mechanism crash-recovery is now driven entirely by the entities' own `corelib:mech:<id>` tags scanned per chunk load (unified with the orphan sweep into one entity pass), replacing the persisted per-world `chunks.yml` index and its async flush thread. The state files remain the sole source of truth; a lightweight in-memory per-world id-set (seeded from the state-file directory at enable) backs the persisted-state guard with no per-entity filesystem stat.

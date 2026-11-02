@@ -82,21 +82,23 @@ final class RotationBlocks {
             if (it == null || it.getType().isAir()) continue;
             int fv = fuelTicksFor(it, fuelManager);
             if (fv > 0) {
-                // Seed Oil is a bottled fuel — burning one unit returns the empty glass bottle.
-                boolean leavesBottle = "mech:seed_oil".equals(CustomBlockRegistry.getItemTypeId(it));
+                // Burning one unit leaves its container: the vanilla crafting remainder (lava bucket →
+                // bucket), or the glass bottle for Seed Oil (a custom item on a magma-cream skin).
+                Material container = "mech:seed_oil".equals(CustomBlockRegistry.getItemTypeId(it))
+                    ? Material.GLASS_BOTTLE : it.getType().getCraftingRemainingItem();
                 it.setAmount(it.getAmount() - 1);
                 storage.setItem(i, it.getAmount() <= 0 ? null : it);
-                if (leavesBottle) returnEmptyBottle(storage);
+                if (container != null) returnContainer(storage, container);
                 return fv;
             }
         }
         return 0;
     }
 
-    /** Put an empty glass bottle back into {@code storage} after a bottled fuel (seed oil) is
-     *  burned; if the storage is full, drop it at the storage block's location. */
-    private static void returnEmptyBottle(Inventory storage) {
-        Map<Integer, ItemStack> leftover = storage.addItem(new ItemStack(Material.GLASS_BOTTLE));
+    /** Put a burned fuel's empty container (bucket, glass bottle) back into {@code storage}; if the
+     *  storage is full, drop it at the storage block's location. */
+    private static void returnContainer(Inventory storage, Material container) {
+        Map<Integer, ItemStack> leftover = storage.addItem(new ItemStack(container));
         if (leftover.isEmpty()) return;
         // Engine/burner storage is a virtual inventory (Bukkit.createInventory), whose getLocation()
         // is null — take the block location from the StorageHolder so the overflow actually drops.
@@ -1263,6 +1265,9 @@ final class RotationBlocks {
                 fuelManager.remove(CustomBlockRegistry.LocationKey.of(b));
             })
             .onBlockRemoved((b, state) -> fuelManager.remove(CustomBlockRegistry.LocationKey.of(b)))
+            // Same capture/landing flush as the engine and thruster, so a voyage keeps the burn.
+            .onCapture(b -> fuelManager.writeToPDC(b))
+            .onRestore(b -> fuelManager.readFromPDC(b))
             .build());
     }
 
@@ -1607,10 +1612,19 @@ final class RotationBlocks {
             Material m = it.getType();
             if (!m.isBlock() || m.isAir()) continue;
             if (CustomBlockRegistry.getItemTypeId(it) != null) continue; // skip custom plugin blocks
-            // setType places a bare block: an item's data (a shulker box's contents, a name, banner
-            // patterns, a head's skin) would be deleted, and a door/bed/tall plant would land as one
-            // half that later breaks with no drop. Leave those in the source.
-            if (it.hasItemMeta() || isMultiBlock(m)) continue;
+            // setType places a bare block: an item's data (a shulker box's contents, banner patterns,
+            // a head's skin, another plugin's custom-block tag/model) would be deleted, and a
+            // door/bed/tall plant would land as one half that later breaks with no drop. Leave those
+            // in the source. A plain name/lore is lost on placement, as in vanilla.
+            if (isMultiBlock(m)) continue;
+            if (it.hasItemMeta()) {
+                var meta = it.getItemMeta();
+                if ((meta instanceof org.bukkit.inventory.meta.BlockStateMeta bsm && bsm.hasBlockState())
+                        || meta instanceof org.bukkit.inventory.meta.BannerMeta
+                        || meta instanceof org.bukkit.inventory.meta.SkullMeta
+                        || !meta.getPersistentDataContainer().isEmpty()
+                        || meta.hasItemModel() || meta.hasCustomModelData()) continue;
+            }
 
             target.setType(m);
             it.setAmount(it.getAmount() - 1);
@@ -1687,7 +1701,9 @@ final class RotationBlocks {
             ItemStack[] snapshot = java.util.Arrays.stream(inv.getContents())
                 .map(s -> s == null ? null : s.clone()).toArray(ItemStack[]::new);
             for (ItemStack out : outputs) {
-                if (!inv.addItem(out).isEmpty()) { // didn't fully fit → roll back, stall
+                // Clone: addItem shrinks the stack it's handed as it merges, and `outputs` still
+                // feeds MachineProducedEvent below.
+                if (!inv.addItem(out.clone()).isEmpty()) { // didn't fully fit → roll back, stall
                     inv.setContents(snapshot);
                     return false;
                 }

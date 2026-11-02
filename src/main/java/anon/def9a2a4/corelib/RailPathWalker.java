@@ -151,6 +151,8 @@ final class RailPathWalker {
     /** Move to the neighbouring rail out of {@code exit}, trying same-level, then up (climb a slope),
      *  then down (descend). Returns the new state entering that rail, or null if none. */
     private static RailState hop(RailState s, BlockFace exit) {
+        int cx = s.rail.getX() + exit.getModX(), cz = s.rail.getZ() + exit.getModZ();
+        if (!s.rail.getWorld().isChunkLoaded(cx >> 4, cz >> 4)) return null;   // unloaded = no rail; never sync-load
         for (int dy : new int[]{0, 1, -1}) {
             Block cand = s.rail.getRelative(exit.getModX(), dy, exit.getModZ());
             Rail nd = railData(cand);

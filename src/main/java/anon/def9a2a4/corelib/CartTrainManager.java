@@ -557,6 +557,11 @@ final class CartTrainManager implements Listener {
             boolean ok = true;
             for (Member m : train.order) if (m.cart.isDead() || !m.cart.isValid()) { ok = false; break; }
             if (!ok) { dirty = true; continue; }
+            // Freeze a train any of whose carts is outside simulation distance, as vanilla freezes carts
+            // there — else an unridden train would drive on (and sync-load chunks ahead of it).
+            boolean ticking = true;
+            for (Member m : train.order) if (!m.cart.isTicking()) { ticking = false; break; }
+            if (!ticking) continue;
             // Snap any coupling stretched past the break distance (a parked/pushed/teleported train can
             // drift apart; a powered one is re-placed at spacing each tick so it never trips this).
             if (breakOverstretched(train)) { dirty = true; continue; }   // train changed — rebuild next tick

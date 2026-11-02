@@ -43,6 +43,7 @@ final class DoorDemo {
                 if ("open".equals(newState)) openDoor(block);
                 else if ("closed".equals(newState)) closeDoor(block);
             })
+            .onChunkUnload(this::cleanupDoor)   // land a mid-swing door while its chunk is still loaded
             .onBlockRemoved((block, state) -> cleanupDoor(block))
             .build());
     }

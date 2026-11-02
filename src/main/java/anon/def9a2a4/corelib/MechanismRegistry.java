@@ -28,7 +28,7 @@ import java.util.function.Predicate;
  * Manages active mechanisms: assembly, ticking (particles + animations),
  * collider lookup, and cleanup.
  */
-public class MechanismRegistry {
+public class MechanismRegistry implements org.bukkit.event.Listener {
 
     private final JavaPlugin plugin;
     private final CustomBlockRegistry registry;
@@ -678,12 +678,19 @@ public class MechanismRegistry {
                     // it — the block is leaving the world. Deep-cloned inside takeStorageSnapshot.
                     storage = registry.takeStorageSnapshot(block);
                 }
-            } else if (block.getState() instanceof Container c) {
-                // Vanilla containers only: this is the non-custom branch, so a custom block's REAL
-                // tile inventory is never snapshotted here. That invariant is what keeps a locked
-                // container (e.g. the dynamo's comparator-drive barrel) safe when a glued structure
-                // carries it — its plugin-owned filler is wiped by onBlockRemoved on pickup (via
-                // airOutSourceBlocks) and refilled by its own tick on landing, never copied/restored.
+            }
+            // Vanilla containers, plus an UNLOCKED physical_material custom block with no corelib storage
+            // (the mechanical dispenser: a real dispenser whose GUI/hoppers stay open, so its slots are
+            // the player's cargo). A LOCKED custom container's real tile inventory is never snapshotted
+            // here — that invariant is what keeps e.g. the dynamo's comparator-drive barrel or a boiler
+            // safe when a glued structure carries it: its plugin-owned filler is wiped by onBlockRemoved on
+            // pickup (via airOutSourceBlocks) and refilled by its own tick on landing, never copied/restored.
+            // (Checked on chb, not isLockedContainer: that one answers false for a block missing from the
+            // location index, which here would mean carrying filler.) The unlocked block's own break-drop
+            // (MechanicalDispenser.dropContents) stands down during capture, so this copy is the only one.
+            boolean realContainerCargo = chb == null
+                || (chb.storage() == null && chb.physicalMaterial() != null && !chb.lockContainer());
+            if (realContainerCargo && block.getState() instanceof Container c) {
                 // A DOUBLE chest's getInventory() returns the COMBINED 54-slot inventory, and a mechanism
                 // scans BOTH halves — so each half would snapshot all 54 items and restore them, duplicating
                 // the cargo. getBlockInventory() returns just THIS chest block's own 27 slots (identical to
@@ -1494,6 +1501,29 @@ public class MechanismRegistry {
 
     public void startTasks() {
         tickTask = Bukkit.getScheduler().runTaskTimer(plugin, this::tickMechanisms, 1L, 1L);
+        plugin.getServer().getPluginManager().registerEvents(this, plugin);   // onWorldSave
+    }
+
+    /**
+     * A world is saving (autosave, /save-all): re-snapshot every live persisted mechanism in it, so a crash
+     * recovers it where it is NOW rather than where it was last parked/persisted — the region file about to
+     * be written holds its entities at their current positions, and a state file from an older pose would
+     * rebuild the ship against the wrong frame. Also advances the queued state-file deletes. One failing save
+     * must not cost the others their snapshot, so each is isolated and only logged (the previous file stays).
+     */
+    @org.bukkit.event.EventHandler
+    public void onWorldSave(org.bukkit.event.world.WorldSaveEvent event) {
+        org.bukkit.World world = event.getWorld();
+        persistence.onWorldSaved(world.getName());
+        for (BasicMechanism mech : activeMechanisms.values()) {
+            if (!mech.isPersisted() || !world.equals(mech.pivot().getWorld())) continue;
+            try {
+                persistence.save(mech.snapshotState());
+            } catch (java.io.UncheckedIOException e) {
+                plugin.getLogger().warning("Mechanism " + mech.id() + " failed to persist on world save ("
+                    + e.getMessage() + "); its previous state file is kept");
+            }
+        }
     }
 
     public void shutdown() {
@@ -1529,6 +1559,10 @@ public class MechanismRegistry {
         }
         activeMechanisms.clear();
         colliderIndex.clear();
+        // On /stop the final world save runs right after plugins disable, so the queued state files are
+        // safe to drop now — waiting for WorldSaveEvents that will never reach us would strand them forever.
+        // A crash never gets here (files stay for recovery), nor does a bare plugin disable (no save follows).
+        if (org.bukkit.Bukkit.isStopping()) persistence.deletePending();
     }
 
     /**
@@ -1545,6 +1579,7 @@ public class MechanismRegistry {
             // entities); recovery re-adopts them when the world reloads. Mirrors the branched shutdown().
             if (mech.isPersisted()) {
                 try {
+                    mech.closeStorageViewers();   // parked: a view still open after this snapshot dupes
                     persistence.save(mech.snapshotState());
                     activeMechanisms.remove(mech.id());
                     for (ColliderPair cp : mech.colliders) colliderIndex.remove(cp.shulker().getUniqueId());
@@ -1628,6 +1663,9 @@ public class MechanismRegistry {
             Location anchor = (veh != null) ? veh.getLocation() : mech.pivot();
             if (!chunk.getWorld().equals(anchor.getWorld())) continue;
             if ((anchor.getBlockX() >> 4) != chunk.getX() || (anchor.getBlockZ() >> 4) != chunk.getZ()) continue;
+            // Close open cargo GUIs first: once parked, the live Inventory is never saved again, so items
+            // taken through a still-open view would also come back from this snapshot on recovery (dupe).
+            mech.closeStorageViewers();
             try {
                 persistence.save(mech.snapshotState());
             } catch (Exception e) {
@@ -1782,12 +1820,17 @@ public class MechanismRegistry {
 
         // Whether the WHOLE footprint is loaded — the fallback that finalizes an under-count so a mechanism
         // that permanently lost an entity still recovers instead of hanging pending forever. Cheap boolean
-        // sweep: isChunkLoaded() only, NO getEntities().
+        // sweep, NO getEntities(). "Loaded" must include the chunk's ENTITIES: Paper loads them after the
+        // blocks, so a block-loaded chunk can still be hiding colliders — finalizing then under-counts and
+        // never adopts the late arrivals. getChunkAt behind the isChunkLoaded check never loads.
         boolean allLoaded = true;
         outer:
         for (int dx = -radius; dx <= radius; dx++) {
             for (int dz = -radius; dz <= radius; dz++) {
-                if (!world.isChunkLoaded(pcx + dx, pcz + dz)) { allLoaded = false; break outer; }
+                int cx = pcx + dx, cz = pcz + dz;
+                if (!world.isChunkLoaded(cx, cz) || !world.getChunkAt(cx, cz).isEntitiesLoaded()) {
+                    allLoaded = false; break outer;
+                }
             }
         }
 
@@ -2080,6 +2123,7 @@ public class MechanismRegistry {
             CollisionConfig col = new CollisionConfig(b.colEnabled, b.colSize,
                 new Vector3f(b.colOffX, b.colOffY, b.colOffZ));
             Inventory storage = null;
+            boolean undecoded = false;
             if (b.storage != null) {
                 try {
                     ItemStack[] items = ItemStack.deserializeItemsFromBytes(b.storage);
@@ -2127,8 +2171,11 @@ public class MechanismRegistry {
                             ? java.util.Arrays.copyOf(items, storage.getSize()) : items);
                     }
                 } catch (Throwable t) {
+                    storage = null;   // a partial build (decode ok, setContents threw) must not half-restore
+                    undecoded = true;
                     plugin.getLogger().warning("Mechanism recovery: unreadable storage for a block in "
-                        + st.mechId + " (" + t.getMessage() + "); it will restore empty");
+                        + st.mechId + " (" + t.getMessage() + "); it will restore empty in-world, but the"
+                        + " saved contents are kept in the state file");
                 }
             }
             // Re-derive the display/particle configs from the (static) state — the neighbour-aware
@@ -2164,6 +2211,10 @@ public class MechanismRegistry {
             // drops the title permanently — correct for one session, blank ever after.
             mbd.storageTitle = b.storageTitle;
             mbd.storageTitleJson = b.storageTitleJson;
+            if (undecoded) {
+                mbd.undecodedStorage = b.storage;
+                mbd.undecodedStorageType = b.storageType;
+            }
             if (b.banners != null) mbd.banners = rebuildBanners(b.banners, st.mechId);
             out.add(mbd);
         }
@@ -2367,10 +2418,12 @@ public class MechanismRegistry {
             colliderIndex.remove(cp.shulker().getUniqueId());
         }
         // A persisted mechanism that is genuinely disassembled (blocks returned to the world) no longer
-        // needs its state file. (Shutdown/world-unload of a persisted mechanism must NOT disassemble —
-        // see the branched shutdown — so this only fires on a real teardown.)
+        // needs its state file — but only once the world has SAVED those blocks; until then the file is what
+        // lets a crash recover the ship from the entities still in the region (see pendingDeletes).
+        // (Shutdown/world-unload of a persisted mechanism must NOT disassemble — see the branched shutdown —
+        // so this only fires on a real teardown.)
         if (mech.isPersisted() && mech.pivot().getWorld() != null) {
-            persistence.remove(mech.pivot().getWorld().getName(), mech.id());
+            persistence.removeAfterSave(mech.pivot().getWorld().getName(), mech.id());
         }
     }
 

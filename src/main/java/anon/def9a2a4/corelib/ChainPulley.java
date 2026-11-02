@@ -101,7 +101,14 @@ final class ChainPulley {
             .onInteract(this::handleInteract)
             .onChunkLoad(this::handleChunkLoad)
             .onEntitiesLoad(this::handleEntitiesLoad)
-            .onChunkUnload(b -> network.removeNode(CustomBlockRegistry.LocationKey.of(b)))
+            // Drop the in-memory link too (the PDC keeps it; handleChunkLoad re-forms it). chainOut then
+            // only ever holds LOADED pulleys, so handleBlockRemoved never reaches into an unloaded chunk
+            // (a sync load there re-linked the source in memory while wiping its PDC → double refund).
+            .onChunkUnload(b -> {
+                CustomBlockRegistry.LocationKey key = CustomBlockRegistry.LocationKey.of(b);
+                network.unlinkChain(key);
+                network.removeNode(key);
+            })
             .onBlockRemoved((b, state) -> handleBlockRemoved(b))
             // A captured pulley's link never survives the move — handleBlockRemoved drops its chains — so
             // strip the link from the PDC before the capture snapshots it. Otherwise the landed pulley
@@ -127,17 +134,18 @@ final class ChainPulley {
             RotationNetwork.NodeRole.TRANSMITTER, 0, false);
         CustomBlockRegistry.LocationKey partner = readPartner(b);
         if (partner != null) {
-            // The partner may have been removed while this chunk was unloaded (its
-            // handleBlockRemoved couldn't reach our skull PDC) — relinking blindly re-forms a
-            // powerless ghost strand to dead coordinates. If the partner's chunk is loaded,
-            // verify it still holds a pulley; if it doesn't, drop the stale link (the chains
-            // were already refunded/dropped when the partner was broken). A partner in an
-            // UNLOADED chunk keeps the current lazy-link behavior — onClosedLoop gates power.
+            // The partner may have been removed while this chunk was unloaded (an unloaded pulley
+            // isn't in chainOut, so its handleBlockRemoved neither cleared our PDC nor refunded this
+            // link) — relinking blindly re-forms a powerless ghost strand to dead coordinates. If the
+            // partner's chunk is loaded, verify it still holds a pulley; if it doesn't, drop the stale
+            // link and its chains here (this side's only refund). A partner in an UNLOADED chunk keeps
+            // the lazy link — onClosedLoop gates power, and breaking/unlinking this pulley refunds it.
             if (b.getWorld().isChunkLoaded(partner.x() >> 4, partner.z() >> 4)) {
                 Block pb = b.getWorld().getBlockAt(partner.x(), partner.y(), partner.z());
                 CustomHeadBlock ptype = registry.getTypeFromBlock(pb);
                 if (ptype == null || !PULLEY_ID.equals(ptype.fullId())) {
                     clearPartner(b);
+                    dropChains(b, chainCost(key, partner));
                     // Strand removal is deferred to handleEntitiesLoad: removeByTag can't see the
                     // not-yet-loaded display here anyway. Clearing OUT_KEY is the signal — the
                     // entities pass reads partner==null and reaps the stale strand there.
@@ -184,6 +192,7 @@ final class ChainPulley {
             dropChains(b, chainCost(key, outPartner));
         }
         // Any pulley whose link targets this one is now dangling — clear it and return its chains.
+        // chainOut holds only loaded pulleys (unlinked on chunk unload), so blockOf never loads a chunk.
         for (CustomBlockRegistry.LocationKey src : network.chainIntoOf(key)) {
             network.unlinkChain(src);
             Block srcBlock = blockOf(src);

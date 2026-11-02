@@ -4,6 +4,7 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.joml.Vector3i;
 import org.jspecify.annotations.Nullable;
 
@@ -48,14 +49,20 @@ interface Anchor {
     default boolean canAuthor(Player player) { return true; }
 
     /**
-     * Whether {@code player} may glue this particular world cell to the anchor. Defaults to the
-     * anchor-level answer.
+     * Whether {@code player} may glue this particular world cell to the anchor (also asked about the
+     * anchor's own cell before opening a session or clearing its glue). Defaults to the anchor-level
+     * answer plus a {@link BuildProbe} of the cell — fires an event, so callers run cheap filters first.
      *
      * <p>The per-cell form is the one that matters for protection: gluing modifies no block, so no
      * {@code BlockBreakEvent} fires and no region plugin can see it — without this, a player could
      * park an anchor beside someone else's build, glue their wall to it and drive off with it.
      */
-    default boolean canAuthorCell(Player player, Block cell) { return canAuthor(player); }
+    default boolean canAuthorCell(Player player, Block cell) {
+        // Probe with a plain item of the held type: the brush's custom identity would reach our own
+        // custom-block placement handler, which refuses non-placeable items — failing every probe.
+        return canAuthor(player) && BuildProbe.mayBuild(player, cell,
+            new ItemStack(player.getInventory().getItemInMainHand().getType()));
+    }
 
     /**
      * Whether {@link GlueManager#rebindLanded} may prune landed offsets that are no longer cardinally

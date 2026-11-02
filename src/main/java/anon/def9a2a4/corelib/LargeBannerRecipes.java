@@ -68,8 +68,10 @@ public class LargeBannerRecipes implements Listener {
     /** Remove the recipe and undiscover it. Idempotent. Called on bbanners disable / core shutdown. */
     void deactivate() {
         if (!active) return;
-        Bukkit.removeRecipe(recipeKey);
         active = false;
+        // Full server stop: the recipe dies with the process and clients are disconnecting — nothing to resync.
+        if (Bukkit.isStopping()) return;
+        Bukkit.removeRecipe(recipeKey, false);   // suppress the per-key resend; one updateRecipes below
         if (!Bukkit.getOnlinePlayers().isEmpty()) {
             for (org.bukkit.entity.Player p : Bukkit.getOnlinePlayers()) p.undiscoverRecipe(recipeKey);
             Bukkit.updateRecipes();

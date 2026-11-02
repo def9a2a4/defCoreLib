@@ -802,7 +802,8 @@ final class ChainHoistManager implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onChainPlace(BlockPlaceEvent e) {
-        if (isOwnRope(e.getBlock(), registry)) invalidateGlueForChain(e.getBlock());
+        // A BuildProbe on an existing link (box-gluing past a hoist's chain) placed nothing.
+        if (!BuildProbe.isProbing() && isOwnRope(e.getBlock(), registry)) invalidateGlueForChain(e.getBlock());
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

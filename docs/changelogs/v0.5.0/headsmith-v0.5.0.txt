@@ -22,5 +22,5 @@
 ## Commands
 
 - `/headsmith give <id> [amount]` — give yourself a head by id (op).
-- `/headsmith recipes <give|take> [player]` — reveal or hide HeadSmith recipes in a recipe book (anyone may run it for themselves; an operator can run it for another player).
+- `/headsmith recipes <give|take> [player]` — reveal or hide HeadSmith recipes in a recipe book (anyone may run it for themselves; running it for another player needs `headsmith.recipes.others`, operators by default).
 - `/headsmith migrate` — adopt already-placed heads from the old standalone HeadSmith plugin (op).

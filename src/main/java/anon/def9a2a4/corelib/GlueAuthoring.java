@@ -269,6 +269,14 @@ final class GlueAuthoring implements Listener {
         return true;
     }
 
+    /** {@link #denied} plus a build check at {@code cell} — for opening a session and clearing all glue,
+     *  so a stranger can't edit or strip a structure inside someone else's claim. */
+    private boolean denied(Player player, Anchor anchor, Block cell) {
+        if (anchor.canAuthorCell(player, cell)) return false;
+        actionBar(player, "You can't glue here", NamedTextColor.RED);
+        return true;
+    }
+
     private void toggleSession(Player player, Block anchorBlock) {
         UUID id = player.getUniqueId();
         Object key = CustomBlockRegistry.LocationKey.of(anchorBlock);
@@ -285,7 +293,7 @@ final class GlueAuthoring implements Listener {
             }
         }
         Anchor anchor = anchorFor(anchorBlock);
-        if (denied(player, anchor)) return;
+        if (denied(player, anchor, anchorBlock)) return;
         // Mid-stroke a hoist's origin is meaningless (its column is aired out) — mirror the minecart
         // overload's settled-first gate. Plain BlockAnchors always read at rest here.
         if (!anchor.isAtRest()) {
@@ -325,13 +333,14 @@ final class GlueAuthoring implements Listener {
                 return;
             }
         }
-        // Snap the cart to its cell center BEFORE anchoring: offsets resolve against the cart's
-        // live cell, and a cart parked straddling a cell boundary would author the whole selection
-        // against a cell the player didn't intend — assembling one block off.
-        if (minecartManager != null) minecartManager.snapAndStop(cart);
         // Offsets are relative to the cart's current cell, so the glued structure must be assembled in
         // place (power the rail under the stationary cart). isAtRest gates edits while it's active/moving.
         Anchor anchor = new EntityAnchor(cart, () -> minecartCanAuthor(cart));
+        if (denied(player, anchor, anchor.originBlock())) return;
+        // Snap the cart to its cell center BEFORE the session opens: offsets resolve against the cart's
+        // live cell, and a cart parked straddling a cell boundary would author the whole selection
+        // against a cell the player didn't intend — assembling one block off.
+        if (minecartManager != null) minecartManager.snapAndStop(cart);
         sessions.put(id, new GlueSession(anchor, id, now()));
         player.playSound(player.getLocation(), Sound.BLOCK_SLIME_BLOCK_PLACE, 0.6f, 1.4f);
         actionBar(player, "Glue: editing (" + glue.offsets(anchor).size() + " blocks)", NamedTextColor.GREEN);
@@ -349,7 +358,7 @@ final class GlueAuthoring implements Listener {
 
     private void unglueAllAt(Player player, Block anchorBlock) {
         Anchor anchor = anchorFor(anchorBlock);
-        if (denied(player, anchor)) return;
+        if (denied(player, anchor, anchorBlock)) return;
         glue.unglueAll(anchor);
         GlueSession s = sessions.get(player.getUniqueId());
         if (s != null && s.anchor.identityKey().equals(anchor.identityKey())) s.cornerA = null;
@@ -359,6 +368,7 @@ final class GlueAuthoring implements Listener {
     /** Clear a mechanism minecart's glue — the manager's tick() lifts the freeze once it's empty. */
     private void unglueAllAt(Player player, Minecart cart) {
         Anchor anchor = new EntityAnchor(cart, () -> true);
+        if (denied(player, anchor, anchor.originBlock())) return;
         glue.unglueAll(anchor);
         GlueSession s = sessions.get(player.getUniqueId());
         if (s != null && s.anchor.identityKey().equals(anchor.identityKey())) s.cornerA = null;
@@ -389,12 +399,12 @@ final class GlueAuthoring implements Listener {
         List<Block> movable = boxBlocks(a, clicked).stream()
             .filter(b -> MovableBlocks.isMovable(b, registry))
             .filter(b -> !StickySpread.isSlimeOrHoney(b))
-            // Per-cell protection, same gate as the single-block path — a box drag must not be a way
-            // around it. Filtered rather than refused, like every other per-cell rule here, so one
-            // protected corner doesn't reject the whole selection.
-            .filter(b -> s.anchor.canAuthorCell(player, b))
             .filter(b -> ropeOrigin == null || b.getX() != ropeOrigin.getX()
                 || b.getZ() != ropeOrigin.getZ() || b.getY() <= ropeOrigin.getY())
+            // Per-cell protection, same gate as the single-block path — a box drag must not be a way
+            // around it. Filtered rather than refused, like every other per-cell rule here, so one
+            // protected corner doesn't reject the whole selection. Last: it fires a probe event per cell.
+            .filter(b -> s.anchor.canAuthorCell(player, b))
             .toList();
         GlueManager.FillResult r = glue.glueCuboid(s.anchor, movable,
             isDrawbridgeAnchor(s.anchor.originBlock()));

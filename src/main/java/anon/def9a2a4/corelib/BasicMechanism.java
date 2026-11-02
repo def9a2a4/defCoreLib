@@ -257,8 +257,10 @@ final class BasicMechanism implements Mechanism {
     /** Force-close any player viewing a captured block's storage before its contents are copied back to
      *  the world (disassemble/destroy/drop). Otherwise the open view aliases a snapshot that is ALSO
      *  written to the landed block → the viewer extracts a duplicate. One chokepoint covers every
-     *  teardown caller (RC-1). Viewer-count-agnostic; iterates a snapshot of getViewers(). */
-    private void closeStorageViewers() {
+     *  teardown caller (RC-1). Viewer-count-agnostic; iterates a snapshot of getViewers(). Also called by
+     *  MechanismRegistry before PARKING a persisted mechanism (save + drop): a view left open past that
+     *  snapshot edits an inventory nobody saves again, and recovery rebuilds the pre-edit copy → dupe. */
+    void closeStorageViewers() {
         for (MechanismBlockData mb : blocks) {
             if (mb.storage == null) continue;
             for (org.bukkit.entity.HumanEntity viewer : new ArrayList<>(mb.storage.getViewers())) {
@@ -716,6 +718,12 @@ final class BasicMechanism implements Mechanism {
                 } catch (Throwable ignored) {
                     // unserializable inventory — skip storage (block still restores, just empty)
                 }
+            } else if (mb.undecodedStorage != null) {
+                // Recovery couldn't decode the saved contents: re-write them verbatim, or this save erases them.
+                b.storage = mb.undecodedStorage;
+                b.storageType = mb.undecodedStorageType;
+                b.storageTitle = mb.storageTitle;
+                b.storageTitleJson = mb.storageTitleJson;
             }
             b.glueOffsets = mb.glueOffsets;
             b.configPdc = mb.configPdc;
@@ -1429,6 +1437,9 @@ final class BasicMechanism implements Mechanism {
             }
         }
 
+        // Whether mb.storage (if any) was captured from a REAL container tile and goes back into one (the
+        // Container write at the end) — every vanilla block; for a custom block decided in its arm below.
+        boolean realContainerCargo = mb.customTypeId == null;
         if (mb.customTypeId != null) {
             CustomHeadBlock type = registry.getType(mb.customTypeId);
             if (type != null && type.baseBlock() != null) {
@@ -1478,6 +1489,10 @@ final class BasicMechanism implements Mechanism {
                 // onChunkLoad above ran BEFORE restoreConfigPdc, so it read a stale/empty counter.
                 if (type.onRestore() != null) type.onRestore().accept(target);
                 flipLandedSpinDir(target, mb, snappedYaw);
+                // No corelib storage but a captured inventory: an unlocked physical_material container (the
+                // mechanical dispenser) whose real tile slots were captured — write them back into the tile.
+                // (restoreStorageSnapshot above is a no-op for it: no storage() → no corelib inventory.)
+                realContainerCargo = type.storage() == null;
             } else {
                 // The type was registered when this block was CAPTURED but is not registered NOW — the
                 // owning plugin failed to register on this boot (a missing texture, a load-order problem),
@@ -1499,7 +1514,8 @@ final class BasicMechanism implements Mechanism {
                 // still answers to its owner. That is the recoverable outcome; losing the key is not.
                 registry.restoreConfigPdc(target, mb.configPdc);
             }
-        } else if (mb.storage != null && target.getState() instanceof Container c) {
+        }
+        if (realContainerCargo && mb.storage != null && target.getState() instanceof Container c) {
             Inventory dest = c.getSnapshotInventory();
             ItemStack[] saved = mb.storage.getContents();
             // setContents throws when the array is LONGER than the destination, and the caller's catch

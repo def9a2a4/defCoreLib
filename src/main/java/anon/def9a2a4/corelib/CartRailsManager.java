@@ -14,10 +14,6 @@ import org.bukkit.entity.Display;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Minecart;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.minecart.CommandMinecart;
-import org.bukkit.entity.minecart.ExplosiveMinecart;
-import org.bukkit.entity.minecart.PoweredMinecart;
-import org.bukkit.entity.minecart.StorageMinecart;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -177,7 +173,9 @@ final class CartRailsManager implements Listener {
         h.normalize();
         int steps = (int) Math.ceil(Math.max(1.0, lookBlocks));
         for (int d = 0; d <= steps; d++) {
-            Block b = pos.clone().add(h.clone().multiply(d)).toLocation(world).getBlock();
+            Vector p = pos.clone().add(h.clone().multiply(d));
+            if (!world.isChunkLoaded(p.getBlockX() >> 4, p.getBlockZ() >> 4)) return;   // never sync-load ahead
+            Block b = p.toLocation(world).getBlock();
             if (isJunction(b)) alignJunction(b, heading);
         }
     }
@@ -217,7 +215,7 @@ final class CartRailsManager implements Listener {
     /** Drops for a plain vanilla minecart the cart managers don't own: its item + any inventory. */
     private List<ItemStack> vanillaCartDrops(Minecart cart) {
         List<ItemStack> out = new ArrayList<>();
-        out.add(new ItemStack(vanillaCartItem(cart)));
+        out.add(new ItemStack(cart.getMinecartMaterial()));
         if (cart instanceof InventoryHolder holder) {
             for (ItemStack s : holder.getInventory().getContents()) {
                 if (s != null && !s.getType().isAir()) out.add(s);
@@ -225,14 +223,6 @@ final class CartRailsManager implements Listener {
             holder.getInventory().clear();
         }
         return out;
-    }
-
-    private static Material vanillaCartItem(Minecart cart) {
-        if (cart instanceof StorageMinecart) return Material.CHEST_MINECART;
-        if (cart instanceof PoweredMinecart) return Material.FURNACE_MINECART;
-        if (cart instanceof ExplosiveMinecart) return Material.TNT_MINECART;
-        if (cart instanceof CommandMinecart) return Material.COMMAND_BLOCK_MINECART;
-        return Material.MINECART;
     }
 
     // ── Physics-moved carts (vanilla / mechanism / unmanaged) ─────────────────
@@ -276,6 +266,23 @@ final class CartRailsManager implements Listener {
         if (ourRailType(b) == null) return;   // cheap at mark time (rails resolve via in-memory bareLocations)
         // The re-shape may not be applied at event time; act next tick once the shape has settled — and
         // coalesce a re-pulse storm to ONE settle-check per rail per tick.
+        markDirty(b);
+    }
+
+    /** A custom rail whose support block is gone would be popped by vanilla as a plain rail item (custom
+     *  item lost, display + bare identity orphaned). Cancel the pop so it floats until the next-tick flush,
+     *  which breaks it properly via {@link #breakRail}. Fires for every block update — material check first. */
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    public void onRailUnsupported(BlockPhysicsEvent event) {
+        Block b = event.getBlock();
+        Material m = b.getType();
+        if (m != Material.RAIL && m != Material.DETECTOR_RAIL) return;
+        if (ourRailType(b) == null || b.getBlockData().isSupported(b)) return;
+        event.setCancelled(true);
+        markDirty(b);
+    }
+
+    private void markDirty(Block b) {
         dirtyRails.add(CustomBlockRegistry.LocationKey.of(b));
         // During onDisable the scheduler rejects new tasks: landing a custom rail from a disassembling
         // mechanism emits a physics event on a shutting-down server, and scheduling here would throw the
@@ -310,7 +317,8 @@ final class CartRailsManager implements Listener {
                 // Slopes: break any custom rail. Curves: break only ORIENTABLE rails (destructor + controller —
                 // their flat square shell can't depict a curve). A junction is a 4-way crossing whose vanilla
                 // RAIL rests curved at a real intersection, so it must NOT be curve-broken.
-                if (RailPathWalker.isAscending(shape) || (isOrientableRail(cur) && RailPathWalker.isCurve(shape))) {
+                if (!cur.getBlockData().isSupported(cur) || RailPathWalker.isAscending(shape)
+                        || (isOrientableRail(cur) && RailPathWalker.isCurve(shape))) {
                     breakRail(cur, type);
                 } else if (isOrientableRail(cur)) {
                     reorientDisplays(cur, shapeFace(cur));   // settle-correction: follow the rail's new axis
@@ -341,6 +349,7 @@ final class CartRailsManager implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onPlaceOrientedRail(BlockPlaceEvent event) {
+        if (BuildProbe.isProbing()) return;   // a protection probe on an existing rail — nothing was placed
         Block b = event.getBlockPlaced();
         if (!isOrientableRail(b)) return;
         rememberFacing(b, horizontalFacing(event.getPlayer()));   // captures the cosmetic head/tail tiebreak

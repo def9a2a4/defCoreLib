@@ -1,7 +1,9 @@
 package anon.def9a2a4.corelib;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.Skull;
 import org.bukkit.inventory.ItemStack;
@@ -12,8 +14,8 @@ import java.util.Map;
 
 /**
  * Manages fuel for rotation engine blocks.
- * Fuel is stored in memory and only written to PDC on chunk unload
- * to avoid expensive skull.update() calls every tick.
+ * Fuel is stored in memory and only written to PDC on chunk unload, mechanism capture and
+ * plugin disable ({@link #flushAll}) to avoid expensive skull.update() calls every tick.
  */
 final class EngineFuelManager {
 
@@ -45,11 +47,9 @@ final class EngineFuelManager {
     int tick(CustomBlockRegistry.LocationKey key) {
         int current = fuel.getOrDefault(key, 0);
         if (current <= 0) return 0;
-        int remaining = current - 1;
-        if (remaining <= 0) {
-            fuel.remove(key);
-            return 0;
-        }
+        // Keep a burned-out entry at 0 rather than dropping it: the next writeToPDC (unload, capture,
+        // flushAll) must still see the key to clear the stored count, or it resurrects on reload.
+        int remaining = Math.max(current - 1, 0);
         fuel.put(key, remaining);
         return remaining;
     }
@@ -70,6 +70,16 @@ final class EngineFuelManager {
             skull.getPersistentDataContainer().remove(FUEL_KEY);
         }
         skull.update();
+    }
+
+    /** Write every tracked counter whose chunk is loaded to its block's PDC (plugin disable —
+     *  no chunk-unload callback runs at shutdown, so partly burned fuel would otherwise be lost). */
+    void flushAll() {
+        for (CustomBlockRegistry.LocationKey key : fuel.keySet()) {
+            World world = Bukkit.getWorld(key.worldId());
+            if (world == null || !world.isChunkLoaded(key.x() >> 4, key.z() >> 4)) continue;
+            writeToPDC(world.getBlockAt(key.x(), key.y(), key.z()));
+        }
     }
 
     /** Read fuel from PDC (called on chunk load). */
