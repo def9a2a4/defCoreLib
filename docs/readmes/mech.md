@@ -63,7 +63,7 @@ The three propeller tiers match the windmill they are crafted from — base, lar
 
 ### Wheels
 
-Wheels drive a ship on land. Mount them on the left or right side of the hull, so the axle points sideways; a wheel on the front or back face does nothing. A wheel takes power through the block it hangs on, so line up a shaft or engine with its axle. Powered wheels push the vehicle while they touch the ground, and unpowered ones still roll, so a sail cart works. Bigger wheels sit the hull higher and climb taller steps.
+Wheels drive a ship on land. Mount them on the left or right side of the hull, so the axle points sideways; a wheel on the front or back face does nothing. A wheel takes power through the block it hangs on, so line up a shaft or engine with its axle. It draws power only while its vehicle is assembled: a placed wheel draws none and stays still. Powered wheels push the vehicle while they touch the ground, and unpowered ones still roll, so a sail cart works. Bigger wheels sit the hull higher and climb taller steps.
 
 Every wheel comes in all twelve plank woods, and the tyre is built from that wood's slabs. Craft a wheel from a rotator with four planks around it (top, bottom, left and right); the planks set the wood. Each bigger size is four planks of the same wood around the wheel one size down.
 

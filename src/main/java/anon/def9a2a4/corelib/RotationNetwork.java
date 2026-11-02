@@ -330,7 +330,7 @@ public class RotationNetwork {
         if (extraPower > 0) workExtra.put(key, extraPower); else workExtra.remove(key);
     }
 
-    /** Demand, 0..1, for a DEMAND-mode consumer (1 when never set). */
+    /** Demand, 0..1, for a DEMAND-mode consumer (0 when never set). */
     public void setDemand(CustomBlockRegistry.LocationKey key, double demand) {
         if (Double.isNaN(demand)) return;   // a NaN would poison the burn accumulator: free power forever
         blockDemand.put(key, Math.max(0, Math.min(1, demand)));

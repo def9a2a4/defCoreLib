@@ -212,6 +212,7 @@ final class RotationBlocks {
         // powered state to drive a ship. No recipes yet — see the header in rotation-blocks.yml.
         overlayPropulsionConsumers(registry, network, config);
         overlayThruster(registry, fuelManager);
+        overlayWheels(registry);
         overlayMillstone(registry, network, millRecipes, config);
         overlayPress(registry, network, pressRecipes, config);
         overlaySieve(registry, network, sieveRecipes, config);
@@ -787,13 +788,6 @@ final class RotationBlocks {
                 new Tier("propeller", "propeller", 5),
                 new Tier("large_propeller", "large_propeller", 10),
                 new Tier("huge_propeller", "huge_propeller", 20)));
-        // Wheels: wall-only, so the stored facing always gives a horizontal axle. One block per size
-        // and wood, all priced by size.
-        for (String wood : CASING_WOODS) {
-            tiers.add(new Tier("wheel_" + wood, "wheel", 2));
-            tiers.add(new Tier("large_wheel_" + wood, "large_wheel", 5));
-            tiers.add(new Tier("huge_wheel_" + wood, "huge_wheel", 10));
-        }
         for (Tier t : tiers) {
             overlayConsumerMachine(registry, network, new ConsumerSpec(
                 "mech:" + t.id(),
@@ -812,6 +806,30 @@ final class RotationBlocks {
             100,
             b -> { },
             null, null, null));
+    }
+
+    /**
+     * Land-vehicle wheels: no static behaviour at all. They are never added as rotation nodes on land, so
+     * a placed wheel draws no power and never spins; only aboard an assembled vehicle does it join the
+     * mechanism's network (rotation-config.yml {@code mechanism:}) and roll with the road. A wheel left
+     * spinning by an older version, or landed mid-roll, settles back to its idle skin.
+     */
+    private static void overlayWheels(CustomBlockRegistry registry) {
+        for (String wood : CASING_WOODS) {
+            for (String size : new String[]{"wheel", "large_wheel", "huge_wheel"}) {
+                String blockId = "mech:" + size + "_" + wood;
+                CustomHeadBlock block = registry.getType(blockId);
+                if (block == null) { warn(registry, blockId); continue; }
+                registry.overlayType(block.toBuilder()
+                    .drillable(false)
+                    .tickInterval(100)
+                    .onTick(b -> {
+                        String state = registry.getState(b);
+                        if (state != null && state.startsWith("spinning_")) setThrusterState(registry, b, state, "idle_");
+                    })
+                    .build());
+            }
+        }
     }
 
     /**
@@ -859,7 +877,7 @@ final class RotationBlocks {
             .build());
     }
 
-    /** Swap a thruster between its idle_/running_ pair, keeping the orientation suffix. */
+    /** Swap a block's state prefix (thruster idle_/running_, wheel idle_/spinning_), keeping the orientation suffix. */
     private static void setThrusterState(CustomBlockRegistry registry, Block b, String state, String prefix) {
         String target = prefix + state.substring(state.indexOf('_') + 1);
         CustomHeadBlock type = registry.getTypeFromBlock(b);

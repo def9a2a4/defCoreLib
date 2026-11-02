@@ -88,8 +88,8 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         for (int i = 0; i < 3; i++) {
             if (have[i] != need[i]) {
                 if (have[i] < need[i]) {
-                    getLogger().warning("BlockShips " + v + " is older than 0.0.18: its thrusters, propellers and wheels"
-                        + " will run without burning fuel on this DefCoreLib. Update BlockShips.");
+                    getLogger().warning("BlockShips " + v + " is older than 0.0.18: it does not use"
+                        + " DefCoreLib, so its ships stay native. Update to 0.0.18 or newer for DefCoreLib ships and propulsion.");
                 }
                 return;
             }

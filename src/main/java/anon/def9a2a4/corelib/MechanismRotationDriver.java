@@ -575,6 +575,11 @@ final class MechanismRotationDriver {
             };
             String cur = mb.customState();
             if (cur == null) continue;
+            // A land-vehicle wheel keeps its idle skin powered or not: it rolls with the road (the
+            // vehicle's spin override on the borrowed spinning_ animation), never with the network, so
+            // powered and coasting wheels are drawn by one path and look the same. Powered is still read
+            // from the solve (isRotationPowered), not the state.
+            if (RotationBlocks.wheelSize(s.typeId()) != null) desiredPrefix = "idle";
             int us = cur.indexOf('_');
             String curPrefix = us >= 0 ? cur.substring(0, us) : cur;
             if (!SWAPPABLE_PREFIXES.contains(curPrefix)) continue;

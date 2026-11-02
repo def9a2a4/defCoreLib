@@ -4090,12 +4090,13 @@ blocks:
     name: "&fOak Wheel"
     lore:
       - "&7Consumes 2 Power"
+      - "&7Climbs 1 block"
       - "&7Drives a vehicle on land"
     catalog_notes:
       - "&fA powered wheel. Mount it on the left or right side of a vehicle; wheels on the front"
       - "&for back face do nothing. Powered wheels drive the vehicle on land; unpowered ones still roll."
       - "&fIt takes power through the block it hangs on: run a shaft or engine along its axle."
-      - "&7Draws 2 power while running — it produces none."
+      - "&7Draws 2 power, only while its vehicle is assembled — a placed wheel draws none and stays still."
       - "&7Climbs steps up to 1 block high. The tyre reaches 0 blocks below the block it hangs on."
       - "&7Craft from a Rotator with four oak planks around it."
       - "&7Wall placement only."
@@ -4163,12 +4164,13 @@ blocks:
     name: "&fAcacia Wheel"
     lore:
       - "&7Consumes 2 Power"
+      - "&7Climbs 1 block"
       - "&7Drives a vehicle on land"
     catalog_notes:
       - "&fA powered wheel. Mount it on the left or right side of a vehicle; wheels on the front"
       - "&for back face do nothing. Powered wheels drive the vehicle on land; unpowered ones still roll."
       - "&fIt takes power through the block it hangs on: run a shaft or engine along its axle."
-      - "&7Draws 2 power while running — it produces none."
+      - "&7Draws 2 power, only while its vehicle is assembled — a placed wheel draws none and stays still."
       - "&7Climbs steps up to 1 block high. The tyre reaches 0 blocks below the block it hangs on."
       - "&7Craft from a Rotator with four acacia planks around it."
       - "&7Wall placement only."
@@ -4237,12 +4239,13 @@ blocks:
     name: "&fBamboo Wheel"
     lore:
       - "&7Consumes 2 Power"
+      - "&7Climbs 1 block"
       - "&7Drives a vehicle on land"
     catalog_notes:
       - "&fA powered wheel. Mount it on the left or right side of a vehicle; wheels on the front"
       - "&for back face do nothing. Powered wheels drive the vehicle on land; unpowered ones still roll."
       - "&fIt takes power through the block it hangs on: run a shaft or engine along its axle."
-      - "&7Draws 2 power while running — it produces none."
+      - "&7Draws 2 power, only while its vehicle is assembled — a placed wheel draws none and stays still."
       - "&7Climbs steps up to 1 block high. The tyre reaches 0 blocks below the block it hangs on."
       - "&7Craft from a Rotator with four bamboo planks around it."
       - "&7Wall placement only."
@@ -4311,12 +4314,13 @@ blocks:
     name: "&fBirch Wheel"
     lore:
       - "&7Consumes 2 Power"
+      - "&7Climbs 1 block"
       - "&7Drives a vehicle on land"
     catalog_notes:
       - "&fA powered wheel. Mount it on the left or right side of a vehicle; wheels on the front"
       - "&for back face do nothing. Powered wheels drive the vehicle on land; unpowered ones still roll."
       - "&fIt takes power through the block it hangs on: run a shaft or engine along its axle."
-      - "&7Draws 2 power while running — it produces none."
+      - "&7Draws 2 power, only while its vehicle is assembled — a placed wheel draws none and stays still."
       - "&7Climbs steps up to 1 block high. The tyre reaches 0 blocks below the block it hangs on."
       - "&7Craft from a Rotator with four birch planks around it."
       - "&7Wall placement only."
@@ -4385,12 +4389,13 @@ blocks:
     name: "&fCherry Wheel"
     lore:
       - "&7Consumes 2 Power"
+      - "&7Climbs 1 block"
       - "&7Drives a vehicle on land"
     catalog_notes:
       - "&fA powered wheel. Mount it on the left or right side of a vehicle; wheels on the front"
       - "&for back face do nothing. Powered wheels drive the vehicle on land; unpowered ones still roll."
       - "&fIt takes power through the block it hangs on: run a shaft or engine along its axle."
-      - "&7Draws 2 power while running — it produces none."
+      - "&7Draws 2 power, only while its vehicle is assembled — a placed wheel draws none and stays still."
       - "&7Climbs steps up to 1 block high. The tyre reaches 0 blocks below the block it hangs on."
       - "&7Craft from a Rotator with four cherry planks around it."
       - "&7Wall placement only."
@@ -4459,12 +4464,13 @@ blocks:
     name: "&fCrimson Wheel"
     lore:
       - "&7Consumes 2 Power"
+      - "&7Climbs 1 block"
       - "&7Drives a vehicle on land"
     catalog_notes:
       - "&fA powered wheel. Mount it on the left or right side of a vehicle; wheels on the front"
       - "&for back face do nothing. Powered wheels drive the vehicle on land; unpowered ones still roll."
       - "&fIt takes power through the block it hangs on: run a shaft or engine along its axle."
-      - "&7Draws 2 power while running — it produces none."
+      - "&7Draws 2 power, only while its vehicle is assembled — a placed wheel draws none and stays still."
       - "&7Climbs steps up to 1 block high. The tyre reaches 0 blocks below the block it hangs on."
       - "&7Craft from a Rotator with four crimson planks around it."
       - "&7Wall placement only."
@@ -4533,12 +4539,13 @@ blocks:
     name: "&fDark Oak Wheel"
     lore:
       - "&7Consumes 2 Power"
+      - "&7Climbs 1 block"
       - "&7Drives a vehicle on land"
     catalog_notes:
       - "&fA powered wheel. Mount it on the left or right side of a vehicle; wheels on the front"
       - "&for back face do nothing. Powered wheels drive the vehicle on land; unpowered ones still roll."
       - "&fIt takes power through the block it hangs on: run a shaft or engine along its axle."
-      - "&7Draws 2 power while running — it produces none."
+      - "&7Draws 2 power, only while its vehicle is assembled — a placed wheel draws none and stays still."
       - "&7Climbs steps up to 1 block high. The tyre reaches 0 blocks below the block it hangs on."
       - "&7Craft from a Rotator with four dark oak planks around it."
       - "&7Wall placement only."
@@ -4607,12 +4614,13 @@ blocks:
     name: "&fJungle Wheel"
     lore:
       - "&7Consumes 2 Power"
+      - "&7Climbs 1 block"
       - "&7Drives a vehicle on land"
     catalog_notes:
       - "&fA powered wheel. Mount it on the left or right side of a vehicle; wheels on the front"
       - "&for back face do nothing. Powered wheels drive the vehicle on land; unpowered ones still roll."
       - "&fIt takes power through the block it hangs on: run a shaft or engine along its axle."
-      - "&7Draws 2 power while running — it produces none."
+      - "&7Draws 2 power, only while its vehicle is assembled — a placed wheel draws none and stays still."
       - "&7Climbs steps up to 1 block high. The tyre reaches 0 blocks below the block it hangs on."
       - "&7Craft from a Rotator with four jungle planks around it."
       - "&7Wall placement only."
@@ -4681,12 +4689,13 @@ blocks:
     name: "&fMangrove Wheel"
     lore:
       - "&7Consumes 2 Power"
+      - "&7Climbs 1 block"
       - "&7Drives a vehicle on land"
     catalog_notes:
       - "&fA powered wheel. Mount it on the left or right side of a vehicle; wheels on the front"
       - "&for back face do nothing. Powered wheels drive the vehicle on land; unpowered ones still roll."
       - "&fIt takes power through the block it hangs on: run a shaft or engine along its axle."
-      - "&7Draws 2 power while running — it produces none."
+      - "&7Draws 2 power, only while its vehicle is assembled — a placed wheel draws none and stays still."
       - "&7Climbs steps up to 1 block high. The tyre reaches 0 blocks below the block it hangs on."
       - "&7Craft from a Rotator with four mangrove planks around it."
       - "&7Wall placement only."
@@ -4755,12 +4764,13 @@ blocks:
     name: "&fPale Oak Wheel"
     lore:
       - "&7Consumes 2 Power"
+      - "&7Climbs 1 block"
       - "&7Drives a vehicle on land"
     catalog_notes:
       - "&fA powered wheel. Mount it on the left or right side of a vehicle; wheels on the front"
       - "&for back face do nothing. Powered wheels drive the vehicle on land; unpowered ones still roll."
       - "&fIt takes power through the block it hangs on: run a shaft or engine along its axle."
-      - "&7Draws 2 power while running — it produces none."
+      - "&7Draws 2 power, only while its vehicle is assembled — a placed wheel draws none and stays still."
       - "&7Climbs steps up to 1 block high. The tyre reaches 0 blocks below the block it hangs on."
       - "&7Craft from a Rotator with four pale oak planks around it."
       - "&7Wall placement only."
@@ -4829,12 +4839,13 @@ blocks:
     name: "&fSpruce Wheel"
     lore:
       - "&7Consumes 2 Power"
+      - "&7Climbs 1 block"
       - "&7Drives a vehicle on land"
     catalog_notes:
       - "&fA powered wheel. Mount it on the left or right side of a vehicle; wheels on the front"
       - "&for back face do nothing. Powered wheels drive the vehicle on land; unpowered ones still roll."
       - "&fIt takes power through the block it hangs on: run a shaft or engine along its axle."
-      - "&7Draws 2 power while running — it produces none."
+      - "&7Draws 2 power, only while its vehicle is assembled — a placed wheel draws none and stays still."
       - "&7Climbs steps up to 1 block high. The tyre reaches 0 blocks below the block it hangs on."
       - "&7Craft from a Rotator with four spruce planks around it."
       - "&7Wall placement only."
@@ -4903,12 +4914,13 @@ blocks:
     name: "&fWarped Wheel"
     lore:
       - "&7Consumes 2 Power"
+      - "&7Climbs 1 block"
       - "&7Drives a vehicle on land"
     catalog_notes:
       - "&fA powered wheel. Mount it on the left or right side of a vehicle; wheels on the front"
       - "&for back face do nothing. Powered wheels drive the vehicle on land; unpowered ones still roll."
       - "&fIt takes power through the block it hangs on: run a shaft or engine along its axle."
-      - "&7Draws 2 power while running — it produces none."
+      - "&7Draws 2 power, only while its vehicle is assembled — a placed wheel draws none and stays still."
       - "&7Climbs steps up to 1 block high. The tyre reaches 0 blocks below the block it hangs on."
       - "&7Craft from a Rotator with four warped planks around it."
       - "&7Wall placement only."
@@ -4977,12 +4989,13 @@ blocks:
     name: "&fLarge Oak Wheel"
     lore:
       - "&7Consumes 5 Power"
+      - "&7Climbs 1.5 blocks"
       - "&7Drives a vehicle on land"
     catalog_notes:
       - "&fA powered wheel. Mount it on the left or right side of a vehicle; wheels on the front"
       - "&for back face do nothing. Powered wheels drive the vehicle on land; unpowered ones still roll."
       - "&fIt takes power through the block it hangs on: run a shaft or engine along its axle."
-      - "&7Draws 5 power while running — it produces none."
+      - "&7Draws 5 power, only while its vehicle is assembled — a placed wheel draws none and stays still."
       - "&7Climbs steps up to 1.5 blocks high. The tyre reaches 0.5 blocks below the block it hangs on."
       - "&7Craft from a Oak Wheel with four oak planks around it."
       - "&7Wall placement only."
@@ -5050,12 +5063,13 @@ blocks:
     name: "&fLarge Acacia Wheel"
     lore:
       - "&7Consumes 5 Power"
+      - "&7Climbs 1.5 blocks"
       - "&7Drives a vehicle on land"
     catalog_notes:
       - "&fA powered wheel. Mount it on the left or right side of a vehicle; wheels on the front"
       - "&for back face do nothing. Powered wheels drive the vehicle on land; unpowered ones still roll."
       - "&fIt takes power through the block it hangs on: run a shaft or engine along its axle."
-      - "&7Draws 5 power while running — it produces none."
+      - "&7Draws 5 power, only while its vehicle is assembled — a placed wheel draws none and stays still."
       - "&7Climbs steps up to 1.5 blocks high. The tyre reaches 0.5 blocks below the block it hangs on."
       - "&7Craft from a Acacia Wheel with four acacia planks around it."
       - "&7Wall placement only."
@@ -5124,12 +5138,13 @@ blocks:
     name: "&fLarge Bamboo Wheel"
     lore:
       - "&7Consumes 5 Power"
+      - "&7Climbs 1.5 blocks"
       - "&7Drives a vehicle on land"
     catalog_notes:
       - "&fA powered wheel. Mount it on the left or right side of a vehicle; wheels on the front"
       - "&for back face do nothing. Powered wheels drive the vehicle on land; unpowered ones still roll."
       - "&fIt takes power through the block it hangs on: run a shaft or engine along its axle."
-      - "&7Draws 5 power while running — it produces none."
+      - "&7Draws 5 power, only while its vehicle is assembled — a placed wheel draws none and stays still."
       - "&7Climbs steps up to 1.5 blocks high. The tyre reaches 0.5 blocks below the block it hangs on."
       - "&7Craft from a Bamboo Wheel with four bamboo planks around it."
       - "&7Wall placement only."
@@ -5198,12 +5213,13 @@ blocks:
     name: "&fLarge Birch Wheel"
     lore:
       - "&7Consumes 5 Power"
+      - "&7Climbs 1.5 blocks"
       - "&7Drives a vehicle on land"
     catalog_notes:
       - "&fA powered wheel. Mount it on the left or right side of a vehicle; wheels on the front"
       - "&for back face do nothing. Powered wheels drive the vehicle on land; unpowered ones still roll."
       - "&fIt takes power through the block it hangs on: run a shaft or engine along its axle."
-      - "&7Draws 5 power while running — it produces none."
+      - "&7Draws 5 power, only while its vehicle is assembled — a placed wheel draws none and stays still."
       - "&7Climbs steps up to 1.5 blocks high. The tyre reaches 0.5 blocks below the block it hangs on."
       - "&7Craft from a Birch Wheel with four birch planks around it."
       - "&7Wall placement only."
@@ -5272,12 +5288,13 @@ blocks:
     name: "&fLarge Cherry Wheel"
     lore:
       - "&7Consumes 5 Power"
+      - "&7Climbs 1.5 blocks"
       - "&7Drives a vehicle on land"
     catalog_notes:
       - "&fA powered wheel. Mount it on the left or right side of a vehicle; wheels on the front"
       - "&for back face do nothing. Powered wheels drive the vehicle on land; unpowered ones still roll."
       - "&fIt takes power through the block it hangs on: run a shaft or engine along its axle."
-      - "&7Draws 5 power while running — it produces none."
+      - "&7Draws 5 power, only while its vehicle is assembled — a placed wheel draws none and stays still."
       - "&7Climbs steps up to 1.5 blocks high. The tyre reaches 0.5 blocks below the block it hangs on."
       - "&7Craft from a Cherry Wheel with four cherry planks around it."
       - "&7Wall placement only."
@@ -5346,12 +5363,13 @@ blocks:
     name: "&fLarge Crimson Wheel"
     lore:
       - "&7Consumes 5 Power"
+      - "&7Climbs 1.5 blocks"
       - "&7Drives a vehicle on land"
     catalog_notes:
       - "&fA powered wheel. Mount it on the left or right side of a vehicle; wheels on the front"
       - "&for back face do nothing. Powered wheels drive the vehicle on land; unpowered ones still roll."
       - "&fIt takes power through the block it hangs on: run a shaft or engine along its axle."
-      - "&7Draws 5 power while running — it produces none."
+      - "&7Draws 5 power, only while its vehicle is assembled — a placed wheel draws none and stays still."
       - "&7Climbs steps up to 1.5 blocks high. The tyre reaches 0.5 blocks below the block it hangs on."
       - "&7Craft from a Crimson Wheel with four crimson planks around it."
       - "&7Wall placement only."
@@ -5420,12 +5438,13 @@ blocks:
     name: "&fLarge Dark Oak Wheel"
     lore:
       - "&7Consumes 5 Power"
+      - "&7Climbs 1.5 blocks"
       - "&7Drives a vehicle on land"
     catalog_notes:
       - "&fA powered wheel. Mount it on the left or right side of a vehicle; wheels on the front"
       - "&for back face do nothing. Powered wheels drive the vehicle on land; unpowered ones still roll."
       - "&fIt takes power through the block it hangs on: run a shaft or engine along its axle."
-      - "&7Draws 5 power while running — it produces none."
+      - "&7Draws 5 power, only while its vehicle is assembled — a placed wheel draws none and stays still."
       - "&7Climbs steps up to 1.5 blocks high. The tyre reaches 0.5 blocks below the block it hangs on."
       - "&7Craft from a Dark Oak Wheel with four dark oak planks around it."
       - "&7Wall placement only."
@@ -5494,12 +5513,13 @@ blocks:
     name: "&fLarge Jungle Wheel"
     lore:
       - "&7Consumes 5 Power"
+      - "&7Climbs 1.5 blocks"
       - "&7Drives a vehicle on land"
     catalog_notes:
       - "&fA powered wheel. Mount it on the left or right side of a vehicle; wheels on the front"
       - "&for back face do nothing. Powered wheels drive the vehicle on land; unpowered ones still roll."
       - "&fIt takes power through the block it hangs on: run a shaft or engine along its axle."
-      - "&7Draws 5 power while running — it produces none."
+      - "&7Draws 5 power, only while its vehicle is assembled — a placed wheel draws none and stays still."
       - "&7Climbs steps up to 1.5 blocks high. The tyre reaches 0.5 blocks below the block it hangs on."
       - "&7Craft from a Jungle Wheel with four jungle planks around it."
       - "&7Wall placement only."
@@ -5568,12 +5588,13 @@ blocks:
     name: "&fLarge Mangrove Wheel"
     lore:
       - "&7Consumes 5 Power"
+      - "&7Climbs 1.5 blocks"
       - "&7Drives a vehicle on land"
     catalog_notes:
       - "&fA powered wheel. Mount it on the left or right side of a vehicle; wheels on the front"
       - "&for back face do nothing. Powered wheels drive the vehicle on land; unpowered ones still roll."
       - "&fIt takes power through the block it hangs on: run a shaft or engine along its axle."
-      - "&7Draws 5 power while running — it produces none."
+      - "&7Draws 5 power, only while its vehicle is assembled — a placed wheel draws none and stays still."
       - "&7Climbs steps up to 1.5 blocks high. The tyre reaches 0.5 blocks below the block it hangs on."
       - "&7Craft from a Mangrove Wheel with four mangrove planks around it."
       - "&7Wall placement only."
@@ -5642,12 +5663,13 @@ blocks:
     name: "&fLarge Pale Oak Wheel"
     lore:
       - "&7Consumes 5 Power"
+      - "&7Climbs 1.5 blocks"
       - "&7Drives a vehicle on land"
     catalog_notes:
       - "&fA powered wheel. Mount it on the left or right side of a vehicle; wheels on the front"
       - "&for back face do nothing. Powered wheels drive the vehicle on land; unpowered ones still roll."
       - "&fIt takes power through the block it hangs on: run a shaft or engine along its axle."
-      - "&7Draws 5 power while running — it produces none."
+      - "&7Draws 5 power, only while its vehicle is assembled — a placed wheel draws none and stays still."
       - "&7Climbs steps up to 1.5 blocks high. The tyre reaches 0.5 blocks below the block it hangs on."
       - "&7Craft from a Pale Oak Wheel with four pale oak planks around it."
       - "&7Wall placement only."
@@ -5716,12 +5738,13 @@ blocks:
     name: "&fLarge Spruce Wheel"
     lore:
       - "&7Consumes 5 Power"
+      - "&7Climbs 1.5 blocks"
       - "&7Drives a vehicle on land"
     catalog_notes:
       - "&fA powered wheel. Mount it on the left or right side of a vehicle; wheels on the front"
       - "&for back face do nothing. Powered wheels drive the vehicle on land; unpowered ones still roll."
       - "&fIt takes power through the block it hangs on: run a shaft or engine along its axle."
-      - "&7Draws 5 power while running — it produces none."
+      - "&7Draws 5 power, only while its vehicle is assembled — a placed wheel draws none and stays still."
       - "&7Climbs steps up to 1.5 blocks high. The tyre reaches 0.5 blocks below the block it hangs on."
       - "&7Craft from a Spruce Wheel with four spruce planks around it."
       - "&7Wall placement only."
@@ -5790,12 +5813,13 @@ blocks:
     name: "&fLarge Warped Wheel"
     lore:
       - "&7Consumes 5 Power"
+      - "&7Climbs 1.5 blocks"
       - "&7Drives a vehicle on land"
     catalog_notes:
       - "&fA powered wheel. Mount it on the left or right side of a vehicle; wheels on the front"
       - "&for back face do nothing. Powered wheels drive the vehicle on land; unpowered ones still roll."
       - "&fIt takes power through the block it hangs on: run a shaft or engine along its axle."
-      - "&7Draws 5 power while running — it produces none."
+      - "&7Draws 5 power, only while its vehicle is assembled — a placed wheel draws none and stays still."
       - "&7Climbs steps up to 1.5 blocks high. The tyre reaches 0.5 blocks below the block it hangs on."
       - "&7Craft from a Warped Wheel with four warped planks around it."
       - "&7Wall placement only."
@@ -5864,12 +5888,13 @@ blocks:
     name: "&fHuge Oak Wheel"
     lore:
       - "&7Consumes 10 Power"
+      - "&7Climbs 2 blocks"
       - "&7Drives a vehicle on land"
     catalog_notes:
       - "&fA powered wheel. Mount it on the left or right side of a vehicle; wheels on the front"
       - "&for back face do nothing. Powered wheels drive the vehicle on land; unpowered ones still roll."
       - "&fIt takes power through the block it hangs on: run a shaft or engine along its axle."
-      - "&7Draws 10 power while running — it produces none."
+      - "&7Draws 10 power, only while its vehicle is assembled — a placed wheel draws none and stays still."
       - "&7Climbs steps up to 2 blocks high. The tyre reaches 1 block below the block it hangs on."
       - "&7Craft from a Large Oak Wheel with four oak planks around it."
       - "&7Wall placement only."
@@ -5937,12 +5962,13 @@ blocks:
     name: "&fHuge Acacia Wheel"
     lore:
       - "&7Consumes 10 Power"
+      - "&7Climbs 2 blocks"
       - "&7Drives a vehicle on land"
     catalog_notes:
       - "&fA powered wheel. Mount it on the left or right side of a vehicle; wheels on the front"
       - "&for back face do nothing. Powered wheels drive the vehicle on land; unpowered ones still roll."
       - "&fIt takes power through the block it hangs on: run a shaft or engine along its axle."
-      - "&7Draws 10 power while running — it produces none."
+      - "&7Draws 10 power, only while its vehicle is assembled — a placed wheel draws none and stays still."
       - "&7Climbs steps up to 2 blocks high. The tyre reaches 1 block below the block it hangs on."
       - "&7Craft from a Large Acacia Wheel with four acacia planks around it."
       - "&7Wall placement only."
@@ -6011,12 +6037,13 @@ blocks:
     name: "&fHuge Bamboo Wheel"
     lore:
       - "&7Consumes 10 Power"
+      - "&7Climbs 2 blocks"
       - "&7Drives a vehicle on land"
     catalog_notes:
       - "&fA powered wheel. Mount it on the left or right side of a vehicle; wheels on the front"
       - "&for back face do nothing. Powered wheels drive the vehicle on land; unpowered ones still roll."
       - "&fIt takes power through the block it hangs on: run a shaft or engine along its axle."
-      - "&7Draws 10 power while running — it produces none."
+      - "&7Draws 10 power, only while its vehicle is assembled — a placed wheel draws none and stays still."
       - "&7Climbs steps up to 2 blocks high. The tyre reaches 1 block below the block it hangs on."
       - "&7Craft from a Large Bamboo Wheel with four bamboo planks around it."
       - "&7Wall placement only."
@@ -6085,12 +6112,13 @@ blocks:
     name: "&fHuge Birch Wheel"
     lore:
       - "&7Consumes 10 Power"
+      - "&7Climbs 2 blocks"
       - "&7Drives a vehicle on land"
     catalog_notes:
       - "&fA powered wheel. Mount it on the left or right side of a vehicle; wheels on the front"
       - "&for back face do nothing. Powered wheels drive the vehicle on land; unpowered ones still roll."
       - "&fIt takes power through the block it hangs on: run a shaft or engine along its axle."
-      - "&7Draws 10 power while running — it produces none."
+      - "&7Draws 10 power, only while its vehicle is assembled — a placed wheel draws none and stays still."
       - "&7Climbs steps up to 2 blocks high. The tyre reaches 1 block below the block it hangs on."
       - "&7Craft from a Large Birch Wheel with four birch planks around it."
       - "&7Wall placement only."
@@ -6159,12 +6187,13 @@ blocks:
     name: "&fHuge Cherry Wheel"
     lore:
       - "&7Consumes 10 Power"
+      - "&7Climbs 2 blocks"
       - "&7Drives a vehicle on land"
     catalog_notes:
       - "&fA powered wheel. Mount it on the left or right side of a vehicle; wheels on the front"
       - "&for back face do nothing. Powered wheels drive the vehicle on land; unpowered ones still roll."
       - "&fIt takes power through the block it hangs on: run a shaft or engine along its axle."
-      - "&7Draws 10 power while running — it produces none."
+      - "&7Draws 10 power, only while its vehicle is assembled — a placed wheel draws none and stays still."
       - "&7Climbs steps up to 2 blocks high. The tyre reaches 1 block below the block it hangs on."
       - "&7Craft from a Large Cherry Wheel with four cherry planks around it."
       - "&7Wall placement only."
@@ -6233,12 +6262,13 @@ blocks:
     name: "&fHuge Crimson Wheel"
     lore:
       - "&7Consumes 10 Power"
+      - "&7Climbs 2 blocks"
       - "&7Drives a vehicle on land"
     catalog_notes:
       - "&fA powered wheel. Mount it on the left or right side of a vehicle; wheels on the front"
       - "&for back face do nothing. Powered wheels drive the vehicle on land; unpowered ones still roll."
       - "&fIt takes power through the block it hangs on: run a shaft or engine along its axle."
-      - "&7Draws 10 power while running — it produces none."
+      - "&7Draws 10 power, only while its vehicle is assembled — a placed wheel draws none and stays still."
       - "&7Climbs steps up to 2 blocks high. The tyre reaches 1 block below the block it hangs on."
       - "&7Craft from a Large Crimson Wheel with four crimson planks around it."
       - "&7Wall placement only."
@@ -6307,12 +6337,13 @@ blocks:
     name: "&fHuge Dark Oak Wheel"
     lore:
       - "&7Consumes 10 Power"
+      - "&7Climbs 2 blocks"
       - "&7Drives a vehicle on land"
     catalog_notes:
       - "&fA powered wheel. Mount it on the left or right side of a vehicle; wheels on the front"
       - "&for back face do nothing. Powered wheels drive the vehicle on land; unpowered ones still roll."
       - "&fIt takes power through the block it hangs on: run a shaft or engine along its axle."
-      - "&7Draws 10 power while running — it produces none."
+      - "&7Draws 10 power, only while its vehicle is assembled — a placed wheel draws none and stays still."
       - "&7Climbs steps up to 2 blocks high. The tyre reaches 1 block below the block it hangs on."
       - "&7Craft from a Large Dark Oak Wheel with four dark oak planks around it."
       - "&7Wall placement only."
@@ -6381,12 +6412,13 @@ blocks:
     name: "&fHuge Jungle Wheel"
     lore:
       - "&7Consumes 10 Power"
+      - "&7Climbs 2 blocks"
       - "&7Drives a vehicle on land"
     catalog_notes:
       - "&fA powered wheel. Mount it on the left or right side of a vehicle; wheels on the front"
       - "&for back face do nothing. Powered wheels drive the vehicle on land; unpowered ones still roll."
       - "&fIt takes power through the block it hangs on: run a shaft or engine along its axle."
-      - "&7Draws 10 power while running — it produces none."
+      - "&7Draws 10 power, only while its vehicle is assembled — a placed wheel draws none and stays still."
       - "&7Climbs steps up to 2 blocks high. The tyre reaches 1 block below the block it hangs on."
       - "&7Craft from a Large Jungle Wheel with four jungle planks around it."
       - "&7Wall placement only."
@@ -6455,12 +6487,13 @@ blocks:
     name: "&fHuge Mangrove Wheel"
     lore:
       - "&7Consumes 10 Power"
+      - "&7Climbs 2 blocks"
       - "&7Drives a vehicle on land"
     catalog_notes:
       - "&fA powered wheel. Mount it on the left or right side of a vehicle; wheels on the front"
       - "&for back face do nothing. Powered wheels drive the vehicle on land; unpowered ones still roll."
       - "&fIt takes power through the block it hangs on: run a shaft or engine along its axle."
-      - "&7Draws 10 power while running — it produces none."
+      - "&7Draws 10 power, only while its vehicle is assembled — a placed wheel draws none and stays still."
       - "&7Climbs steps up to 2 blocks high. The tyre reaches 1 block below the block it hangs on."
       - "&7Craft from a Large Mangrove Wheel with four mangrove planks around it."
       - "&7Wall placement only."
@@ -6529,12 +6562,13 @@ blocks:
     name: "&fHuge Pale Oak Wheel"
     lore:
       - "&7Consumes 10 Power"
+      - "&7Climbs 2 blocks"
       - "&7Drives a vehicle on land"
     catalog_notes:
       - "&fA powered wheel. Mount it on the left or right side of a vehicle; wheels on the front"
       - "&for back face do nothing. Powered wheels drive the vehicle on land; unpowered ones still roll."
       - "&fIt takes power through the block it hangs on: run a shaft or engine along its axle."
-      - "&7Draws 10 power while running — it produces none."
+      - "&7Draws 10 power, only while its vehicle is assembled — a placed wheel draws none and stays still."
       - "&7Climbs steps up to 2 blocks high. The tyre reaches 1 block below the block it hangs on."
       - "&7Craft from a Large Pale Oak Wheel with four pale oak planks around it."
       - "&7Wall placement only."
@@ -6603,12 +6637,13 @@ blocks:
     name: "&fHuge Spruce Wheel"
     lore:
       - "&7Consumes 10 Power"
+      - "&7Climbs 2 blocks"
       - "&7Drives a vehicle on land"
     catalog_notes:
       - "&fA powered wheel. Mount it on the left or right side of a vehicle; wheels on the front"
       - "&for back face do nothing. Powered wheels drive the vehicle on land; unpowered ones still roll."
       - "&fIt takes power through the block it hangs on: run a shaft or engine along its axle."
-      - "&7Draws 10 power while running — it produces none."
+      - "&7Draws 10 power, only while its vehicle is assembled — a placed wheel draws none and stays still."
       - "&7Climbs steps up to 2 blocks high. The tyre reaches 1 block below the block it hangs on."
       - "&7Craft from a Large Spruce Wheel with four spruce planks around it."
       - "&7Wall placement only."
@@ -6677,12 +6712,13 @@ blocks:
     name: "&fHuge Warped Wheel"
     lore:
       - "&7Consumes 10 Power"
+      - "&7Climbs 2 blocks"
       - "&7Drives a vehicle on land"
     catalog_notes:
       - "&fA powered wheel. Mount it on the left or right side of a vehicle; wheels on the front"
       - "&for back face do nothing. Powered wheels drive the vehicle on land; unpowered ones still roll."
       - "&fIt takes power through the block it hangs on: run a shaft or engine along its axle."
-      - "&7Draws 10 power while running — it produces none."
+      - "&7Draws 10 power, only while its vehicle is assembled — a placed wheel draws none and stays still."
       - "&7Climbs steps up to 2 blocks high. The tyre reaches 1 block below the block it hangs on."
       - "&7Craft from a Large Warped Wheel with four warped planks around it."
       - "&7Wall placement only."

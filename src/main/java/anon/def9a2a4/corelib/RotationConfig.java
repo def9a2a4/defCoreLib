@@ -58,7 +58,7 @@ final class RotationConfig {
         /** Its full power only for a short window after it actually did work (a millstone with input). */
         WORK,
         /** Its power times a demand a consumer plugin sets (BlockShips: propellers with the throttle).
-         *  1 when nothing has set one, so an unmanaged block costs what it always did. */
+         *  0 when nothing has set one: an unmanaged block burns nothing. */
         DEMAND
     }
     /** Load mode by short type id (no {@code mech:} prefix); see {@link #loadMode}. */
@@ -185,7 +185,8 @@ final class RotationConfig {
             for (String key : load.getKeys(false)) {
                 String v = String.valueOf(load.getString(key)).toUpperCase(Locale.ROOT);
                 try {
-                    loadModes.put(key, LoadMode.valueOf(v));
+                    String id = key.toLowerCase(Locale.ROOT);   // stored like loadMode() looks it up: no mech:
+                    loadModes.put(id.startsWith("mech:") ? id.substring(5) : id, LoadMode.valueOf(v));
                 } catch (IllegalArgumentException e) {
                     logger.warning("rotation-config: load." + key + ": unknown mode '" + v + "' (always/work/demand)");
                 }
