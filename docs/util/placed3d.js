@@ -73,8 +73,22 @@ const SWITCH_ROT = {
   'ceiling:north': [180, 180], 'ceiling:east': [180, 270], 'ceiling:south': [180, 0], 'ceiling:west': [180, 90],
 };
 
+// Models whose front faces north by default (dispenser, furnace, …): `facing` turns them about Y, and up/down
+// tip them over (the vertical dispenser/dropper models aren't bundled, so the side model stands in).
+const NORTH_FRONT = new Set(['dispenser', 'dropper', 'furnace', 'smoker', 'blast_furnace', 'carved_pumpkin',
+  'jack_o_lantern', 'beehive', 'bee_nest', 'loom', 'stonecutter']);
+const FACING_N = { north: [0, 0], east: [0, 90], south: [0, 180], west: [0, 270], up: [270, 0], down: [90, 0] };
+// Models whose front faces up by default (piston, barrel): `facing` tips them toward it.
+const UP_FRONT = new Set(['piston', 'sticky_piston', 'barrel']);
+const FACING_UP = { up: [0, 0], down: [180, 0], north: [90, 0], east: [90, 90], south: [90, 180], west: [90, 270] };
+// Pillar-like blocks (logs, chains, basalt, …): `axis` lays the vertical model over.
+const AXIS_ROT = { y: null, z: [90, 0], x: [90, 90] };
+
 // MC [x°, y°] for one vanilla block id + parsed state, or null when nothing to rotate.
 function blockRotation(id, st) {
+  if (st.facing && NORTH_FRONT.has(id)) return FACING_N[st.facing] || null;
+  if (st.facing && UP_FRONT.has(id)) return FACING_UP[st.facing] || null;
+  if (st.axis && !id.endsWith('_slab')) return AXIS_ROT[st.axis] ?? null;
   if (id.endsWith('_stairs')) return [st.half === 'top' ? 180 : 0, STAIR_Y[st.facing] ?? 0];
   if (id === 'lever' || id.endsWith('_button')) return SWITCH_ROT[`${st.face || 'wall'}:${st.facing || 'north'}`] || null;
   if (id.endsWith('_wall_torch')) return [0, TORCH_Y[st.facing] ?? 0];
@@ -83,10 +97,9 @@ function blockRotation(id, st) {
   return null;
 }
 
-// Apply the blockstate orientation to a centred block display. `parent` holds the corner-origin mesh
-// shifted by de.position (-0.5) so the cube is centred on the cell; we rotate/translate about that
-// centre. Only synthetic vanilla records (identity matrix) are oriented — custom-block sub-displays
-// carry their own read-back matrix and must be left untouched. Returns the object to add to the group.
+// Slab halves for a centred vanilla block display: `parent` holds the corner-origin mesh shifted by
+// de.position (-0.5). Only synthetic vanilla records (identity matrix) — a custom block's sub-display carries
+// its own read-back matrix. Returns the object to add to the group.
 function orientBlock(de, parent) {
   if (de.kind !== 'block' || !isIdentityMatrix(de.matrix)) return parent;
   const id = canonical(de.ref);
@@ -94,16 +107,24 @@ function orientBlock(de, parent) {
   if (id.endsWith('_slab') && id !== 'slab') {
     if (st.type === 'top') parent.position.y += 0.5;          // default model is the bottom half
     else if (st.type === 'double') parent.scale.y = 2;         // corner-origin: grows up to a full block
-    return parent;
   }
-  const rot = blockRotation(id, st);
-  if (!rot) return parent;
+  return parent;
+}
+
+// Turn a corner-origin block model ([0,1]³) about its own centre by its blockstate rotation, as MC does
+// before the display's transform applies — so it holds for a custom block's scaled/shifted BlockDisplay
+// (a placer's dispenser body) as much as for a plain vanilla cell.
+function turnModel(mesh, rot) {
+  const outer = new THREE.Group();
   const pivY = new THREE.Group();     // outer: Y (applied last)
   const pivX = new THREE.Group();     // inner: X
-  pivY.add(pivX); pivX.add(parent);
+  const back = new THREE.Group();
+  pivY.position.set(0.5, 0.5, 0.5);
+  back.position.set(-0.5, -0.5, -0.5);
   pivY.rotation.y = -THREE.MathUtils.degToRad(rot[1]);
   pivX.rotation.x = -THREE.MathUtils.degToRad(rot[0]);
-  return pivY;
+  outer.add(pivY); pivY.add(pivX); pivX.add(back); back.add(mesh);
+  return outer;
 }
 
 function makeViewer(container, { dist = 3.4, target = [0, 0, 0] } = {}) {
@@ -208,7 +229,9 @@ async function buildBlockGroup(blk, models, animated) {
   }
 
   for (const de of blk.displays || []) {
-    const obj = await buildDisplayObject(de, models);
+    let obj = await buildDisplayObject(de, models);
+    const rot = de.kind === 'block' ? blockRotation(canonical(de.ref), parseState(de.ref)) : null;
+    if (rot) obj = turnModel(obj, rot);   // vanilla blockstate orientation (facing, axis, lever, …)
     obj.matrixAutoUpdate = false;
     obj.matrix.fromArray(de.matrix || IDENTITY);
     obj.matrixWorldNeedsUpdate = true;
@@ -217,7 +240,7 @@ async function buildBlockGroup(blk, models, animated) {
     const p = de.position || [0, 0, 0];
     parent.position.set(p[0], p[1], p[2]);
     parent.add(obj);
-    group.add(orientBlock(de, parent));   // vanilla blockstate orientation (slab half, facing, …)
+    group.add(orientBlock(de, parent));   // slab half
 
     if (de.animation && de.animation.frames && de.animation.frames.length) {
       animated.push({ obj, track: prepareTrack(de.animation.frames), period: de.animation.period || de.animation.frames.length });
