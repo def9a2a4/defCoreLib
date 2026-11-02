@@ -53,6 +53,7 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
     private java.util.Map<String, ShowcaseSpec> showcases = java.util.Map.of();
     private RotationNetwork rotationNetwork;
     private EngineFuelManager fuelManager;
+    private BotTestCommands botTest; // null unless -Ddefcorelib.botTest=true (test-bot/ only)
     private BannerManager bannerManager;
     private LargeBannerRecipes largeBannerRecipes;
 
@@ -273,6 +274,11 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         // Headless showcase integration tests (-Ddefcorelib.showcaseTest=true): build, run, assert, exit.
         ShowcaseRunner.armIfRequested(this, registry, rotationNetwork, fuelManager, showcaseBuilder,
                 showcases.values(), rotationRotator, chainHoistManager, pistonManager, mechanismRegistry);
+
+        // In-game bot tests (test-bot/, -Ddefcorelib.botTest=true): enables `/defcorelib bottest`.
+        if (BotTestCommands.enabled()) {
+            botTest = new BotTestCommands(this, registry, showcaseBuilder, glueManager, fuelManager);
+        }
 
         getLogger().info("DefCoreLib enabled: " + registry.allTypes().size()
                 + " block types, " + showcases.size() + " showcases");
@@ -2871,6 +2877,10 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
                     sender.sendMessage(Component.text("Build: showcase build <id>  |  Export a built machine: "
                         + "showcase anchor (look at origin) → glue-mark → showcase export <id>", NamedTextColor.GRAY));
                 }
+            }
+            case "bottest" -> {
+                if (botTest != null) botTest.handle(sender, args);
+                else sender.sendMessage(Component.text("Unknown subcommand: " + args[0], NamedTextColor.RED));
             }
             case "gluetest" -> {
                 if (!(sender instanceof Player player)) {
