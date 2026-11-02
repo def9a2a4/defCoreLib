@@ -801,9 +801,11 @@ final class RotationBlocks {
      * also exactly the powered/unpowered skin swap, and a 0-power engine contributes nothing to the
      * network. That is why it is an engine rather than a new kind.
      *
-     * <p>On land it does the same thing minus the network: burns fuel, shows its flame. It is never
-     * added as a rotation node in the static world, because it neither produces nor consumes
-     * rotational power — a thruster next to a shaft should do nothing to it.
+     * <p>On land it does nothing and burns nothing: it only pushes a ship, so a placed thruster (or one on
+     * a docked, disassembled ship) keeps its fuel and shows its idle skin. Aboard, it burns by the demand
+     * the ship reports for it (see MechanismRotationDriver). It is never added as a rotation node in the
+     * static world, because it neither produces nor consumes rotational power — a thruster next to a
+     * shaft should do nothing to it.
      */
     private static void overlayThruster(CustomBlockRegistry registry, EngineFuelManager fuelManager) {
         String blockId = "mech:thruster";
@@ -817,31 +819,11 @@ final class RotationBlocks {
             // takes the four horizontal faces.
             .playerHeadStates("idle_down", "running_down")
             .tickInterval(20)
+            // Burns nothing on land. A thruster that was running when it landed (or was placed by an older
+            // version, which burned on land) settles back to its idle skin.
             .onTick(b -> {
-                var key = CustomBlockRegistry.LocationKey.of(b);
                 String state = registry.getState(b);
-                if (state == null) return;
-                if (state.startsWith("idle_")) {
-                    if (fuelManager.getFuel(key) <= 0) {
-                        Inventory storage = registry.getOrCreateStorage(b);
-                        if (storage == null) return;
-                        int fv = consumeOneFuelItem(storage, fuelManager);
-                        if (fv <= 0) return;
-                        fuelManager.addFuel(key, fv);
-                    }
-                    setThrusterState(registry, b, state, "running_");
-                    return;
-                }
-                if (!state.startsWith("running_")) return;
-                if (fuelManager.tick(key) > 0) return;
-                // Counter hit zero: pull the next item in the SAME tick so a fuelled thruster doesn't
-                // flicker off at every item boundary (mirrors the engine).
-                Inventory storage = registry.getOrCreateStorage(b);
-                if (storage != null) {
-                    int fv = consumeOneFuelItem(storage, fuelManager);
-                    if (fv > 0) { fuelManager.addFuel(key, fv); return; }
-                }
-                setThrusterState(registry, b, state, "idle_");
+                if (state != null && state.startsWith("running_")) setThrusterState(registry, b, state, "idle_");
             })
             .onChunkLoad((b, state) -> fuelManager.readFromPDC(b))
             .onChunkUnload(b -> {

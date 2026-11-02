@@ -374,8 +374,11 @@ final class MechanismRotationDriver {
                     st.engineRunning.put(idx, true);
                     st.dirty = true;
                 } else if (running) {
+                    // A thruster burns only for demand a consumer reports (BlockShips: by throttle, steering,
+                    // and the lift that holds a flier up). Unreported (a thruster on a rotator, cart, or a ship
+                    // before its first update) is 0: it isn't pushing anything.
                     double frac = s.power() <= 0
-                        ? st.demand.getOrDefault(idx, 1.0) * config.thrusterBurnMultiplier
+                        ? st.demand.getOrDefault(idx, 0.0) * config.thrusterBurnMultiplier
                         : fracByComponent[k] * config.engineBurnMultiplier;
                     if (frac <= 0) st.idleEngines.add(idx); else st.idleEngines.remove(idx);
                     int burns = EngineBurn.step(st.burnAcc.computeIfAbsent(idx, i -> new double[1]), frac);

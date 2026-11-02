@@ -81,7 +81,8 @@ engines:
   min-burn-fraction: 0.0    # floor on the used fraction whenever anything draws power at all
   idle-smoke: false         # aboard a ship: keep the smoke/flame on an engine that is burning nothing
 
-# A thruster burns by its own use (BlockShips sets it from the throttle, steering and lift).
+# A thruster burns by its own use (BlockShips sets it from the throttle, steering and lift), and only
+# aboard a moving mechanism: a placed thruster, or one on a docked ship, burns nothing.
 thruster:
   burn-multiplier: 1.0
 
