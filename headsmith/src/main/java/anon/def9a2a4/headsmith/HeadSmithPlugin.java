@@ -110,7 +110,7 @@ public final class HeadSmithPlugin extends JavaPlugin {
         }
         String id = args[1].contains(":") ? args[1] : NAMESPACE + ":" + args[1];
         CustomHeadBlock type = registry.getType(id);
-        if (type == null) {
+        if (type == null || !NAMESPACE.equals(type.namespace())) {   // only HeadSmith's own heads
             sender.sendMessage(Component.text("Unknown head: " + args[1], NamedTextColor.RED));
             return;
         }

@@ -1075,15 +1075,17 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
     // is appropriate.
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onEntityExplode(EntityExplodeEvent event) {
-        handleExplosion(event.blockList());
+        handleExplosion(event.getExplosionResult(), event.blockList());
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onBlockExplode(BlockExplodeEvent event) {
-        handleExplosion(event.blockList());
+        handleExplosion(event.getExplosionResult(), event.blockList());
     }
 
-    private void handleExplosion(List<Block> blockList) {
+    private void handleExplosion(org.bukkit.ExplosionResult result, List<Block> blockList) {
+        // Wind charges / breezes (TRIGGER_BLOCK) and KEEP list blocks they don't destroy.
+        if (result != org.bukkit.ExplosionResult.DESTROY && result != org.bukkit.ExplosionResult.DESTROY_WITH_DECAY) return;
         blockList.removeIf(this::breakWithoutPlayer); // custom blocks leave the list: no vanilla skull drop
     }
 
@@ -1134,7 +1136,9 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
                 event.setCancelled(true);
                 return;
             }
-            if (type.breakOnPiston()) {
+            // Any other custom head breaks too: a pushed skull would carry no identity, displays or storage.
+            if (type.breakOnPiston() || block.getType() == Material.PLAYER_HEAD
+                    || block.getType() == Material.PLAYER_WALL_HEAD) {
                 String state = registry.getState(block);
                 if (type.storage() != null) registry.dropStorage(block);
                 ItemStack drop = enrichDrop(block, type, type.createItem(1));
@@ -1596,16 +1600,17 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         registry.loadHintsForWorld(event.getWorld().getUID());
     }
 
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onWorldUnload(org.bukkit.event.world.WorldUnloadEvent event) {
-        registry.saveHintsForWorld(event.getWorld().getUID());   // idempotent — fine even if cancelled below
-        // WorldUnloadEvent is Cancellable — a later handler may keep the world loaded, so don't tear its
-        // mechanisms down. This path (Bukkit.unloadWorld / Multiverse /mvunload) may not fire per-chunk
-        // EntitiesUnloadEvent, so disassemble assembled carts + mid-stroke mechanisms here (blocks still
-        // writable) to avoid orphaning them. Idempotent with the EntitiesUnload path.
-        if (event.isCancelled()) return;
+        registry.saveHintsForWorld(event.getWorld().getUID());
+        // ignoreCancelled: a cancelling handler keeps the world loaded, so nothing is torn down. This path
+        // (Bukkit.unloadWorld / Multiverse /mvunload) may not fire per-chunk EntitiesUnloadEvent or
+        // ChunkUnloadEvent, so disassemble assembled carts + mid-stroke mechanisms here (blocks still
+        // writable) to avoid orphaning them, then run the per-chunk unload (callbacks, tracking, open
+        // storages saved). Idempotent with the per-chunk paths.
         if (mechanismMinecartManager != null) mechanismMinecartManager.onWorldUnload(event.getWorld());
         if (mechanismRegistry != null) mechanismRegistry.onWorldUnload(event.getWorld());
+        for (org.bukkit.Chunk chunk : event.getWorld().getLoadedChunks()) registry.onChunkUnload(chunk);
     }
 
     // ──────────────────────────────────────────────────────────────────────
@@ -1704,6 +1709,9 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
 
         if (transition != null) {
             event.setCancelled(true);
+            // Lighting / toggling a head changes the block: ask the claim plugins' build rule first.
+            if (!BuildProbe.mayBuild(event.getPlayer(), block,
+                    event.getPlayer().getInventory().getItemInMainHand())) return;
 
             // Consume held item if transition requires it
             if (transition.consumeItem()) {

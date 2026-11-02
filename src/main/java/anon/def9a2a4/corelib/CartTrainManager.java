@@ -193,9 +193,11 @@ final class CartTrainManager implements Listener {
         Player player = event.getPlayer();
         ItemStack held = player.getInventory().getItemInMainHand();
 
+        // Couplings live on the carts like their contents, so claims guard them by the container rule.
         if (held.getType() == Material.SHEARS) {
             if (linkCount(cart) > 0) {
                 event.setCancelled(true);
+                if (!ContainerAccess.mayOpen(player, cart.getLocation())) return;
                 unlinkAll(cart);
                 player.sendActionBar(Component.text("Uncoupled.", NamedTextColor.YELLOW));
             }
@@ -203,6 +205,7 @@ final class CartTrainManager implements Listener {
         }
         if (held.getType() != CHAIN_MATERIAL) return;
         event.setCancelled(true);   // don't mount while coupling
+        if (!ContainerAccess.mayOpen(player, cart.getLocation())) return;   // both ends are clicked → both checked
         handleChainClick(player, cart, held);
     }
 
@@ -453,6 +456,7 @@ final class CartTrainManager implements Listener {
 
     private void rebuildTrains() {
         dirty = false;
+        members.values().removeIf(m -> m.cart.isDead());
         // Snapshot old speeds so a rebuild keeps momentum (keyed by any surviving member).
         Map<UUID, Double> oldSpeed = new HashMap<>();
         Set<UUID> oldMembers = new HashSet<>();
@@ -553,10 +557,12 @@ final class CartTrainManager implements Listener {
         if (dirty) rebuildTrains();
         boolean feed = tickCount % 20 == 0;
         for (CartTrain train : trains) {
-            // Drop trains whose carts died/unloaded out from under us.
-            boolean ok = true;
-            for (Member m : train.order) if (m.cart.isDead() || !m.cart.isValid()) { ok = false; break; }
-            if (!ok) { dirty = true; continue; }
+            // Rebuild around carts that died out from under us (rebuildTrains prunes them); skip a train
+            // with an unloading cart — onEntitiesUnload drops it.
+            boolean dead = false, valid = true;
+            for (Member m : train.order) { dead |= m.cart.isDead(); valid &= m.cart.isValid(); }
+            if (dead) { dirty = true; continue; }
+            if (!valid) continue;
             // Freeze a train at the simulation-distance edge, as vanilla freezes carts there — else an
             // unridden train would drive on (and sync-load chunks ahead of it). A moving train freezes
             // only when its FRONT (index 0, the driven leader) stops ticking: followers trail it through
@@ -902,8 +908,8 @@ final class CartTrainManager implements Listener {
         return carts.isBlastCart(cart) ? config.blastFurnaceCartSpeed : config.furnaceCartSpeed;
     }
 
-    /** Cap on an engine's stored fuel from tender feeding — a coal block (8000) shouldn't dump its
-     *  whole burn into a cart that only needed a top-up. */
+    /** Soft cap on an engine's stored fuel from tender feeding: fuel whose burn fits under it is fed first,
+     *  so a coal block (8000) isn't dumped into a cart that only needed a top-up while coal is on hand. */
     private static final int MAX_ENGINE_FUEL = 6000;
 
     /** Top up under-fuelled engines from any tender (coal cart) in the same train. */
@@ -916,20 +922,23 @@ final class CartTrainManager implements Listener {
             int level = blast ? carts.burnTicks(cart) : ((PoweredMinecart) cart).getFuel();
             if (level >= config.feedThresholdTicks) continue;
 
-            ItemStack fuel = takeTenderFuel(train);
+            ItemStack fuel = takeTenderFuel(train, MAX_ENGINE_FUEL - level);
             if (fuel == null) return;   // no tender fuel left this cycle
-            int add = Math.min(carts.fuelBurnTicks(fuel.getType()), MAX_ENGINE_FUEL - level);
-            if (add <= 0) continue;
+            int add = carts.fuelBurnTicks(fuel.getType());   // whole burn: a taken item is never discarded
             if (blast) carts.addBurnTicks(cart, add);
             else ((PoweredMinecart) cart).setFuel(level + add);
         }
     }
 
-    private ItemStack takeTenderFuel(CartTrain train) {
-        for (Member m : train.order) {
-            if (!carts.isCoalCart(m.cart)) continue;
-            ItemStack item = carts.takeOneFuelFrom(m.cart);
-            if (item != null) return item;
+    /** Take one tender fuel item, preferring one whose burn fits {@code room}; an over-cap item (a coal
+     *  block) only when nothing smaller is left, so it isn't stranded. */
+    private ItemStack takeTenderFuel(CartTrain train, int room) {
+        for (int max : new int[] {room, Integer.MAX_VALUE}) {
+            for (Member m : train.order) {
+                if (!carts.isCoalCart(m.cart)) continue;
+                ItemStack item = carts.takeOneFuelFrom(m.cart, max);
+                if (item != null) return item;
+            }
         }
         return null;
     }

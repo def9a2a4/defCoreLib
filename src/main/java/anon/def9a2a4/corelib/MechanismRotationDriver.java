@@ -395,6 +395,7 @@ final class MechanismRotationDriver {
                     if (fuel <= 0 && !RotationBlocks.hasFuelItem(inv, fuelManager)) {
                         st.engineRunning.put(idx, false);
                         st.burnAcc.remove(idx);
+                        st.lastBurn.remove(idx);     // stopped: no longer burning for fuelSecondsLeft
                         st.dirty = true;
                     }
                 }
@@ -433,7 +434,8 @@ final class MechanismRotationDriver {
                     case ALWAYS -> s.power();
                     case WORK -> st.lastTickAge - st.lastWorked.getOrDefault(s.blockIndex(), Long.MIN_VALUE / 2) <= window
                         ? s.power() + st.workExtra.getOrDefault(s.blockIndex(), 0) : 0;
-                    case DEMAND -> s.power() * st.demand.getOrDefault(s.blockIndex(), 1.0);
+                    // Unreported demand is 0, as for a placed block: nothing is using it (a plugin reports what it uses).
+                    case DEMAND -> s.power() * st.demand.getOrDefault(s.blockIndex(), 0.0);
                 };
                 case CONSTANT_SOURCE -> agg[1] += s.meta().scaledSupply(s.power());
                 case ENGINE -> {
@@ -463,7 +465,6 @@ final class MechanismRotationDriver {
         st.demand.put(blockIndex, Math.max(0, Math.min(1, demand)));
     }
 
-    /** Whether an engine aboard has fuel — burning or not. False for anything that isn't an engine. */
     /**
      * Seconds until the first burning engine aboard runs dry at its current burn, counting its counter and the
      * fuel in its storage. {@code +Infinity} when it has engines but none is burning; {@code -1} when it has none.
@@ -472,6 +473,7 @@ final class MechanismRotationDriver {
         MechState st = states.get(mech.id());
         if (st == null) return -1;
         double least = -1;
+        boolean any = false;
         for (NodeSpec spec : st.specs) {
             if (spec.meta().kind() != RotationConfig.MechKind.ENGINE) continue;
             int idx = spec.blockIndex();
@@ -482,16 +484,19 @@ final class MechanismRotationDriver {
                 Inventory inv = mech.getStorage(idx);
                 if (inv != null) {
                     for (org.bukkit.inventory.ItemStack it : inv.getContents()) {
-                        if (it != null) left += (double) RotationBlocks.fuelTicksFor(it, fuelManager) * it.getAmount();
+                        // fuelTicksFor is -1 for non-fuel (an empty bucket): count it as nothing.
+                        if (it != null) left += (double) Math.max(0, RotationBlocks.fuelTicksFor(it, fuelManager)) * it.getAmount();
                     }
                 }
                 secs = left / burn;
             }
-            least = least < 0 ? secs : Math.min(least, secs);
+            least = any ? Math.min(least, secs) : secs;
+            any = true;
         }
         return least;
     }
 
+    /** Whether an engine aboard has fuel — burning or not. False for anything that isn't an engine. */
     boolean isEngineFuelled(BasicMechanism mech, int blockIndex) {
         MechState st = states.get(mech.id());
         if (st == null) return false;
@@ -729,9 +734,10 @@ final class MechanismRotationDriver {
             return; // no on-board sink and mid-turn: hold until the next straight
         }
 
-        if (RotationBlocks.processingEffect(in, batch, recipes, registry, eject)) {
+        int done = RotationBlocks.processingEffect(in, batch, recipes, registry, eject);
+        if (done > 0) {
             st.lastWorked.put(s.blockIndex(), st.lastTickAge);  // WORK-mode load, for engine burn
-            st.workExtra.put(s.blockIndex(), batch - 1);         // the surplus it batched with is load too
+            st.workExtra.put(s.blockIndex(), done - 1);          // the surplus cycles it ran are load too
             Vector3i cell = mech.liveCell(s.blockIndex());
             if (world.isChunkLoaded(cell.x >> 4, cell.z >> 4)) {
                 world.playSound(new Location(world, cell.x + 0.5, cell.y + 0.5, cell.z + 0.5),

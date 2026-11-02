@@ -92,12 +92,13 @@ class MechanismPersistenceTest {
         Set<CustomBlockRegistry.LocationKey> cells = Set.of(new CustomBlockRegistry.LocationKey(w, 1, 2, 3));
         p.markTeardown(st, MechanismState.LANDED, cells, 0);
         assertFalse(p.hasMetadata(st.worldName, st.mechId));
-        assertFalse(stateFile(st).exists());
         assertTrue(p.crashTeardowns(st.worldName).isEmpty());          // in session: not due
 
         UUID relaunch = UUID.randomUUID();
         p.supersedeTeardowns(st.worldName, relaunch, Set.of(new CustomBlockRegistry.LocationKey(w, 9, 9, 9)));
         p.supersedeTeardowns(st.worldName, relaunch, cells);
+        p.close();                                                      // the record writes are queued: drain them
+        assertFalse(stateFile(st).exists());
 
         MechanismPersistence afterCrash = new MechanismPersistence(dataFolder.toFile(), log);
         assertFalse(afterCrash.hasMetadata(st.worldName, st.mechId));

@@ -88,7 +88,7 @@ thruster:
 
 # How each consumer counts toward engine load. always = its full power whenever powered (the default
 # for anything not listed); work = only just after it actually processed something; demand = scaled
-# by what a plugin reports (BlockShips: propellers and wheels by throttle/steering/lift; 1 if unset).
+# by what a plugin reports (BlockShips: propellers and wheels by throttle/steering/lift; 0 if unset).
 load:
   millstone: work
   press: work

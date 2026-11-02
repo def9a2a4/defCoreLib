@@ -134,6 +134,12 @@ final class RotationBlocks {
                 // bucket), or the glass bottle for Seed Oil (a custom item on a magma-cream skin).
                 Material container = "mech:seed_oil".equals(CustomBlockRegistry.getItemTypeId(it))
                     ? Material.GLASS_BOTTLE : it.getType().getCraftingRemainingItem();
+                // Aboard, the last unit's own slot takes its container (a storage full of lava buckets
+                // would else drop the first empty overboard: returnContainer runs before the slot empties).
+                if (aboard && container != null && it.getAmount() == 1) {
+                    storage.setItem(i, new ItemStack(container));
+                    return fv;
+                }
                 // Nowhere to put the container (no stack to merge into, no drop location) → don't
                 // burn this unit, so the bucket/bottle is never destroyed.
                 if (container != null && !returnContainer(storage, container, dropAt, aboard)) continue;
@@ -1457,6 +1463,13 @@ final class RotationBlocks {
                 network.removeNode(key);
                 steamWaterTicks.remove(key);
                 steamBurnAcc.remove(key);
+                // The stack below loses its controller: put the burner/boiler skins out (not on capture —
+                // the stack rides along and the piston's next tick aboard drives them).
+                Block boiler = b.getRelative(BlockFace.DOWN);
+                Block burner = boiler.getRelative(BlockFace.DOWN);
+                if (!registry.isCapturingForMechanism()
+                        && isType(registry, boiler, BOILER_ID) && isType(registry, burner, BURNER_ID))
+                    applySteamPartStates(registry, burner, boiler, false);
             })
             .build());
     }
@@ -1866,15 +1879,16 @@ final class RotationBlocks {
         // stats = {supply, demand, count}; surplus headroom = supply - demand.
         int batch = Math.min(maxBatch, Math.max(1, stats[0] - stats[1]));
 
-        boolean processed =
+        int done =
             processingEffect(in, batch, recipes, registry, outputs -> ejectOutputs(machine, outputs));
-        if (processed) {
+        if (done > 0) {
             machine.getWorld().playSound(machine.getLocation().add(0.5, 0.5, 0.5), sound, 0.6f, 1f);
             // Counts as engine load for a while after real work (a WORK-mode consumer) — long enough
-            // to span the slowest machine's cycle, so a busy line reads as busy between cycles.
-            network.markWorked(key, org.bukkit.Bukkit.getCurrentTick() + WORK_LOAD_WINDOW_TICKS, batch - 1);
+            // to span the slowest machine's cycle, so a busy line reads as busy between cycles. Only the
+            // cycles actually run count as batched surplus (a batch cut short by input/output is not load).
+            network.markWorked(key, org.bukkit.Bukkit.getCurrentTick() + WORK_LOAD_WINDOW_TICKS, done - 1);
         }
-        return processed;
+        return done > 0;
     }
 
     /** How long a WORK-mode consumer counts as engine load after it last did work. */
@@ -1891,12 +1905,12 @@ final class RotationBlocks {
      * millstones/presses riding a mechanism run the identical loop against travelling inventories
      * ({@code MechanismRotationDriver}).
      *
-     * @return true when at least one cycle processed
+     * @return the number of cycles processed (0..batch)
      */
-    static boolean processingEffect(Inventory in, int batch, MachineRecipes recipes,
+    static int processingEffect(Inventory in, int batch, MachineRecipes recipes,
             CustomBlockRegistry registry, java.util.function.Function<List<ItemStack>, Boolean> eject) {
-        boolean processed = false;
-        for (int done = 0; done < batch; done++) {
+        int done = 0;
+        for (; done < batch; done++) {
             MachineRecipes.Recipe recipe = null;
             for (int i = 0; i < in.getSize(); i++) {
                 ItemStack it = in.getItem(i);
@@ -1927,9 +1941,8 @@ final class RotationBlocks {
 
             removeCount(in, recipe.input(), recipe.inputAmount());
             for (var e : empties.entrySet()) removeCount(in, e.getKey(), e.getValue());
-            processed = true;
         }
-        return processed;
+        return done;
     }
 
     // ──────────────────────────────────────────────────────────────────────

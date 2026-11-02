@@ -35,10 +35,11 @@ final class InventoryUtil {
 
     /**
      * Restore inventory contents from a string produced by {@link #encode(Inventory)}. No-op if
-     * {@code data} is null. Logs (via {@code log}) and swallows any failure, leaving {@code inv} as-is.
+     * {@code data} is null. Logs (via {@code log}) and swallows any failure, leaving {@code inv} as-is;
+     * returns false on such a failure (true when {@code data} is null or decoded fully).
      */
-    static void decode(String data, Inventory inv, Logger log) {
-        if (data == null) return;
+    static boolean decode(String data, Inventory inv, Logger log) {
+        if (data == null) return true;
         try {
             byte[] bytes = java.util.Base64.getDecoder().decode(data);
             var stream = new java.io.ByteArrayInputStream(bytes);
@@ -48,8 +49,10 @@ final class InventoryUtil {
                 inv.setItem(i, (ItemStack) ois.readObject());
             }
             ois.close();
+            return true;
         } catch (Exception e) {
             if (log != null) log.warning("Failed to load inventory: " + e.getMessage());
+            return false;
         }
     }
 

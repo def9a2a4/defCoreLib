@@ -250,6 +250,9 @@ public class CustomBlockRegistry {
     // first tick, or a /reload) has missed the bulk pass and self-scans via rescanLoadedChunks. Plain
     // boolean, not volatile: register / finalizeLoading / the sweep are all main-thread (cf. finalized).
     private boolean chunkSweepComplete;
+    // Ids registered after the sweep, awaiting the one coalesced next-tick rescan (a headsmith reload
+    // registers thousands of types in one go; one loaded-chunk walk covers them all).
+    private final Set<String> pendingRescanIds = new HashSet<>();
 
     // Reusable work matrix for animation tick (avoids allocation per frame)
     private final Matrix4f animationWorkMatrix = new Matrix4f();
@@ -379,7 +382,8 @@ public class CustomBlockRegistry {
         // all types registered before it (core + companions' onEnable). Only a type registered AFTER the
         // sweep — a runtime /reload or a late companion enable — has missed it and needs its own catch-up.
         if (chunkSweepComplete) {
-            rescanLoadedChunks(type);
+            if (pendingRescanIds.isEmpty()) Bukkit.getScheduler().runTask(plugin, this::rescanLoadedChunks);
+            pendingRescanIds.add(type.fullId());
         }
         if (finalized) {
             registerRecipesForType(type);
@@ -387,13 +391,14 @@ public class CustomBlockRegistry {
     }
 
     /**
-     * Per-type catch-up scan: restore tile-hosted blocks of {@code type} in loaded, hinted chunks.
+     * Catch-up scan: restore tile-hosted blocks of the pending late-registered types in loaded, hinted chunks.
      * Only for types registered AFTER the one-shot startup sweep ({@link #restoreLoadedChunks}) has
      * run — a runtime /reload or a companion re-enabling past the first tick. Types present during the
      * sweep are restored there in a single pass, so register() skips this (see {@code chunkSweepComplete}).
      */
-    private void rescanLoadedChunks(CustomHeadBlock type) {
-        boolean hasEntitiesHook = type.onEntitiesLoadCallback() != null;
+    private void rescanLoadedChunks() {
+        Set<String> ids = new HashSet<>(pendingRescanIds);
+        pendingRescanIds.clear();
         for (World world : Bukkit.getWorlds()) {
             Set<String> hints = chunkHints.get(world.getUID());
             if (hints == null) continue;
@@ -406,7 +411,9 @@ public class CustomBlockRegistry {
                 for (BlockState tile : chunk.getTileEntities()) {
                     if (!(tile instanceof TileState ts)) continue;
                     String id = ts.getPersistentDataContainer().get(BLOCK_TYPE_KEY, PersistentDataType.STRING);
-                    if (!type.fullId().equals(id)) continue;
+                    if (id == null || !ids.contains(id)) continue;
+                    CustomHeadBlock type = types.get(id);
+                    if (type == null) continue;   // unregistered before the rescan ran
 
                     Block block = ts.getBlock();
                     String state = ts.getPersistentDataContainer().get(STATE_KEY, PersistentDataType.STRING);
@@ -421,7 +428,7 @@ public class CustomBlockRegistry {
                     // Entities-load pass, mirroring the startup sweep's onChunkLoad→onEntitiesLoad order.
                     // Without this a type registered after the first-tick sweep that uses onEntitiesLoad
                     // would get no entities pass over already-loaded chunks until each next reloads.
-                    if (hasEntitiesHook && entitiesLoaded) {
+                    if (type.onEntitiesLoadCallback() != null && entitiesLoaded) {
                         try {
                             type.onEntitiesLoadCallback().accept(block, state);
                         } catch (Throwable t) {
@@ -2925,6 +2932,9 @@ public class CustomBlockRegistry {
 
     static final org.bukkit.NamespacedKey INVENTORY_KEY = new org.bukkit.NamespacedKey("corelib", "inventory");
     private final Map<LocationKey, StorageHolder> openStorages = new HashMap<>();
+    // StorageHolder.saved for a block whose PDC encoding failed to decode: the holder's inventory is partial,
+    // so no save path may write it back over the original (still-recoverable) data. Compared by identity.
+    private static final String UNDECODABLE = new String("<undecodable>");
 
     /**
      * Get or create the storage inventory for a block without opening a GUI.
@@ -2967,7 +2977,7 @@ public class CustomBlockRegistry {
 
     /** Save storage inventory to PDC. Called on every close; remove from cache when last viewer gone. */
     void onStorageClosed(StorageHolder holder) {
-        saveInventoryToPDC(holder.location(), holder.getInventory());
+        if (holder.saved != UNDECODABLE) saveInventoryToPDC(holder.location(), holder.getInventory());
         if (holder.getInventory().getViewers().isEmpty()) {
             openStorages.remove(LocationKey.of(holder.location()));
         }
@@ -2980,7 +2990,7 @@ public class CustomBlockRegistry {
         // map is not structurally mutated during this loop. That deferral is LOAD-BEARING for CME safety
         // here and in saveStoragesInChunk; making onInventoryClose remove synchronously reintroduces a CME.
         for (var holder : openStorages.values()) {
-            saveInventoryToPDC(holder.location(), holder.getInventory());
+            if (holder.saved != UNDECODABLE) saveInventoryToPDC(holder.location(), holder.getInventory());
             new ArrayList<>(holder.getInventory().getViewers()).forEach(v -> v.closeInventory());
         }
         openStorages.clear();
@@ -2996,7 +3006,7 @@ public class CustomBlockRegistry {
             if (loc.worldId().equals(world.getUID())
                     && (loc.x() >> 4) == chunkX && (loc.z() >> 4) == chunkZ) {
                 StorageHolder holder = e.getValue();
-                saveInventoryToPDC(holder.location(), holder.getInventory());
+                if (holder.saved != UNDECODABLE) saveInventoryToPDC(holder.location(), holder.getInventory());
                 new ArrayList<>(holder.getInventory().getViewers()).forEach(v -> v.closeInventory());
                 return true;
             }
@@ -3042,11 +3052,14 @@ public class CustomBlockRegistry {
         };
     }
 
-    /** Fill {@code inv} from the block's PDC; returns the stored encoding (null if none). */
+    /** Fill {@code inv} from the block's PDC; returns the stored encoding (null if none, UNDECODABLE if it failed). */
     public @Nullable String loadInventoryFromPDC(Block block, org.bukkit.inventory.Inventory inv) {
         if (!(block.getState() instanceof org.bukkit.block.Skull skull)) return null;
         String data = skull.getPersistentDataContainer().get(INVENTORY_KEY, PersistentDataType.STRING);
-        InventoryUtil.decode(data, inv, plugin.getLogger());
+        if (!InventoryUtil.decode(data, inv, plugin.getLogger())) {
+            plugin.getLogger().warning("Storage at " + block.getLocation() + " is undecodable; its data is left untouched.");
+            return UNDECODABLE;
+        }
         return data;
     }
 
@@ -3062,6 +3075,7 @@ public class CustomBlockRegistry {
             if (loc.getWorld() == null || !loc.getWorld().isChunkLoaded(loc.getBlockX() >> 4, loc.getBlockZ() >> 4)) {
                 continue;
             }
+            if (holder.saved == UNDECODABLE) continue;
             String data = InventoryUtil.encode(holder.getInventory());
             if (data == null || data.equals(holder.saved)) continue;
             Block block = loc.getBlock();

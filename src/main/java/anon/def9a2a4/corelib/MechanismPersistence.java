@@ -265,13 +265,19 @@ final class MechanismPersistence {
     File teardownFile(String world, UUID id) { return new File(new File(worldDir(world), "teardown"), id + ".yml"); }
 
     /** Replace the mechanism's state file with a teardown record. Called from inside the teardown, so a failed
-     *  write is only logged: the teardown must finish, and without the record a crash just loses the redo. */
+     *  write is only logged: the teardown must finish, and without the record a crash just loses the redo. The
+     *  record write and the state-file delete are queued, not waited on (the FIFO writer keeps their order). */
     void markTeardown(MechanismState st, String mode, @Nullable Set<CustomBlockRegistry.LocationKey> cells, long nowTick) {
         String world = st.worldName;
         Teardown t = new Teardown(st, mode, cells, false, nowTick);
         teardowns.computeIfAbsent(world, k -> new HashMap<>()).put(st.mechId, t);
         writeTeardown(world, t);
-        remove(world, st.mechId);   // after the record: a kill in between keeps one of the two
+        // remove(), without the wait: after the record, so a kill in between keeps one of the two.
+        File f = stateFile(world, st.mechId);
+        submit(() -> deleteFile(f));
+        forget(world, st.mechId);
+        Map<UUID, PendingDelete> pending = pendingDeletes.get(world);
+        if (pending != null) pending.remove(st.mechId);
     }
 
     private void writeTeardown(String world, Teardown t) {
@@ -281,11 +287,14 @@ final class MechanismPersistence {
         if (t.supersededBy != null) y.set("superseded_by", t.supersededBy.toString());
         String data = y.saveToString();
         File f = teardownFile(world, t.st.mechId);
-        try {
-            ordered(() -> writeFile(f, t.st.mechId, data));
-        } catch (UncheckedIOException e) {
-            log.warning("mechanism persistence: could not record the teardown of " + t.st.mechId + ": " + e.getMessage());
-        }
+        UUID id = t.st.mechId;
+        submit(() -> {
+            try {
+                writeFile(f, id, data);
+            } catch (UncheckedIOException e) {
+                log.warning("mechanism persistence: could not record the teardown of " + id + ": " + e.getMessage());
+            }
+        });
     }
 
     /** A new mechanism assembled from cells an in-session teardown landed in: it took those blocks, so a crash must
@@ -314,7 +323,7 @@ final class MechanismPersistence {
         Map<UUID, Teardown> ts = teardowns.get(world);
         if (ts != null && ts.remove(id) != null && ts.isEmpty()) teardowns.remove(world);
         File f = teardownFile(world, id);
-        ordered(() -> deleteFile(f));
+        submit(() -> deleteFile(f));
     }
 
     private void loadTeardowns() {

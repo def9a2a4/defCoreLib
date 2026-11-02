@@ -351,9 +351,10 @@ final class CustomCartManager implements Listener {
     }
 
     /** Remove and return one whitelisted fuel item from this cart's inventory (tender feeding), or null. */
-    ItemStack takeOneFuelFrom(Minecart cart) {
+    ItemStack takeOneFuelFrom(Minecart cart, int maxBurnTicks) {
         CartState s = tracked.get(cart.getUniqueId());
-        return (s != null && s.inv != null) ? takeOneFuel(s.inv) : null;
+        return (s != null && s.inv != null)
+            ? takeOne(s.inv, m -> config.isFuel(m) && config.burnTicks(m) <= maxBurnTicks) : null;
     }
 
     /** Stop tracking a railbound cart and return its drops (the custom cart item + every inventory item), or
