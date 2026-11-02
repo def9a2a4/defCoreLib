@@ -108,7 +108,9 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         mechanismRegistry = new MechanismRegistry(this, registry);
         mechanismRegistry.startTasks();
         getServer().getPluginManager().registerEvents(this, this);
-        BuildProbe.register(this);
+        // Next tick, after every plugin that enables at startup: same-priority listeners run in registration
+        // order, so a claim plugin deciding at HIGHEST then decides before the probe reads its verdict.
+        getServer().getScheduler().runTask(this, () -> BuildProbe.register(this));
 
         // Load vanilla-block collider shapes (slabs, stairs, fences, ...) for mechanism assembly.
         try (InputStream colliderStream = getResource("colliders.yml")) {

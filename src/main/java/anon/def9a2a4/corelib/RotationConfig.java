@@ -405,7 +405,12 @@ final class RotationConfig {
     }
 
     int getPower(String blockName, int defaultValue) {
-        return powerValues.getOrDefault(blockName, defaultValue);
+        Integer p = powerValues.get(blockName);
+        if (p == null) {
+            String wheel = RotationBlocks.wheelSize(blockName);   // every wood of a wheel size draws the same
+            if (wheel != null) p = powerValues.get(wheel);
+        }
+        return p != null ? p : defaultValue;
     }
 
     private void initDefaultFuel() {

@@ -268,10 +268,10 @@ final class MechanismPersistence {
      *  write is only logged: the teardown must finish, and without the record a crash just loses the redo. */
     void markTeardown(MechanismState st, String mode, @Nullable Set<CustomBlockRegistry.LocationKey> cells, long nowTick) {
         String world = st.worldName;
-        remove(world, st.mechId);
         Teardown t = new Teardown(st, mode, cells, false, nowTick);
         teardowns.computeIfAbsent(world, k -> new HashMap<>()).put(st.mechId, t);
         writeTeardown(world, t);
+        remove(world, st.mechId);   // after the record: a kill in between keeps one of the two
     }
 
     private void writeTeardown(String world, Teardown t) {
@@ -327,10 +327,13 @@ final class MechanismPersistence {
             for (File f : files) {
                 YamlConfiguration y = new YamlConfiguration();
                 MechanismState st;
+                UUID by = null;
                 try {
                     y.load(f);
                     st = MechanismState.read(y);
-                } catch (IOException | InvalidConfigurationException e) {
+                    String s = y.getString("superseded_by");
+                    if (s != null) by = UUID.fromString(s);
+                } catch (IOException | InvalidConfigurationException | IllegalArgumentException e) {
                     st = null;
                 }
                 String mode = y.getString(MechanismState.TEARDOWN_KEY);
@@ -339,8 +342,7 @@ final class MechanismPersistence {
                     continue;
                 }
                 Teardown t = new Teardown(st, mode, null, true, 0);
-                String by = y.getString("superseded_by");
-                if (by != null) t.supersededBy = UUID.fromString(by);
+                t.supersededBy = by;
                 teardowns.computeIfAbsent(wd.getName(), k -> new HashMap<>()).put(st.mechId, t);
             }
         }

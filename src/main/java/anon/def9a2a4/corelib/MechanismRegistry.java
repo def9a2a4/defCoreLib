@@ -134,7 +134,6 @@ public class MechanismRegistry implements org.bukkit.event.Listener {
         if (!(mech instanceof BasicMechanism bm)) return;
         boolean first = !bm.isPersisted();
         bm.setPersisted(true);
-        persistence.save(bm.snapshotState());
         // Assembled from blocks a recent teardown landed (a ship docked, then launched again): that landing must
         // not be redone after a crash unless this one never reached disk.
         if (first && bm.pivot().getWorld() != null) {
@@ -145,6 +144,8 @@ public class MechanismRegistry implements org.bukkit.event.Listener {
             }
             persistence.supersedeTeardowns(bm.pivot().getWorld().getName(), bm.id(), cells);
         }
+        // After the supersede mark: a kill in between then leaves the landing un-redone and no second copy.
+        persistence.save(bm.snapshotState());
     }
 
     /**
@@ -1633,10 +1634,11 @@ public class MechanismRegistry implements org.bukkit.event.Listener {
         }
         activeMechanisms.clear();
         colliderIndex.clear();
-        // On /stop the final world save runs right after plugins disable, so the queued state files are
-        // safe to drop now — waiting for WorldSaveEvents that will never reach us would strand them forever.
-        // A crash never gets here (files stay for recovery), nor does a bare plugin disable (no save follows).
-        if (org.bukkit.Bukkit.isStopping()) persistence.deletePending();
+        // Drop this session's queued files on any disable. On /stop the final world save runs right after; on a
+        // bare disable (/reload, PlugMan) the world stays loaded and saves as usual — and a kept teardown record
+        // would load on the next enable as a crash leftover and redo a landing the world still holds. Only a
+        // crash keeps them (it never gets here).
+        persistence.deletePending();
         persistence.close();   // drain queued world-save writes (the sync saves above already waited on them)
     }
 
@@ -1953,6 +1955,8 @@ public class MechanismRegistry implements org.bukkit.event.Listener {
 
     /** Crash-undone teardowns whose own entities have turned up since boot (see {@link #redoCrashTeardowns}). */
     private final Set<UUID> teardownEntitiesSeen = new HashSet<>();
+    /** Where those teardowns' vehicles turned up (they are reaped as orphans right after). */
+    private final Map<UUID, Location> teardownVehicleAt = new HashMap<>();
 
     /**
      * Redo the teardowns a crash undid, near a chunk that just loaded. A mechanism was landed or destroyed, and its
@@ -1979,14 +1983,17 @@ public class MechanismRegistry implements org.bukkit.event.Listener {
         for (MechanismPersistence.Teardown t : ts) {
             UUID id = t.st.mechId;
             if (present.contains(id)) teardownEntitiesSeen.add(id);
+            Entity seenVehicle = vehiclesHere.get(id);
+            if (seenVehicle != null) teardownVehicleAt.put(id, seenVehicle.getLocation());
             int pcx = (int) Math.floor(t.st.px) >> 4, pcz = (int) Math.floor(t.st.pz) >> 4;
             int radius = t.st.recoveryChunkRadius();
             if (Math.abs(chunk.getX() - pcx) > radius || Math.abs(chunk.getZ() - pcz) > radius) continue;
             try {
                 if (MechanismState.DESTROYED.equals(t.mode)) {
-                    Entity v = vehiclesHere.get(id);
-                    if (v != null) {
-                        dropStoredItems(t.st, v.getLocation());
+                    if (!teardownVehicleAt.containsKey(id) && footprintLoaded(world, t.st)) noteOwnEntities(world, t.st);
+                    Location at = teardownVehicleAt.get(id);
+                    if (at != null) {
+                        dropStoredItems(t.st, at);
                         plugin.getLogger().info("Mechanism " + id + " was destroyed just before the server stopped;"
                             + " its contents were lost with the unsaved chunk, so they were dropped again.");
                         persistence.dropTeardown(world.getName(), id);
@@ -2003,6 +2010,9 @@ public class MechanismRegistry implements org.bukkit.event.Listener {
                 if (!footprintLoaded(world, t.st)) continue;
                 if (by != null) {
                     if (pendingRecoveries.containsKey(by)) continue;   // the relaunch may still come back
+                    // The boot sweep and chunk loads visit one chunk at a time: the chunk holding its entities
+                    // may not have had its turn yet.
+                    if (!teardownEntitiesSeen.contains(id)) noteOwnEntities(world, t.st);
                     if (!teardownEntitiesSeen.contains(id)) {
                         persistence.dropTeardown(world.getName(), id);
                         continue;
@@ -2013,8 +2023,28 @@ public class MechanismRegistry implements org.bukkit.event.Listener {
                 plugin.getLogger().info("Mechanism " + id + " had landed just before the server stopped, but the"
                     + " landing had not been saved; landed it again.");
             } catch (RuntimeException e) {
+                // Give up: retrying on every chunk load would repeat whatever it already dropped, and log this each time.
+                persistence.dropTeardown(world.getName(), id);
                 plugin.getLogger().log(java.util.logging.Level.WARNING, "Could not redo the teardown of mechanism " + id
-                    + "; its record is kept for the next boot", e);
+                    + "; giving it up", e);
+            }
+        }
+    }
+
+    /** Record any of this torn-down mechanism's own entities in its (loaded) footprint as seen. */
+    private void noteOwnEntities(org.bukkit.World world, MechanismState st) {
+        String prefix = "corelib:mech:" + st.mechId + ":";
+        int pcx = (int) Math.floor(st.px) >> 4, pcz = (int) Math.floor(st.pz) >> 4;
+        int radius = st.recoveryChunkRadius();
+        for (int dx = -radius; dx <= radius; dx++) {
+            for (int dz = -radius; dz <= radius; dz++) {
+                for (Entity e : world.getChunkAt(pcx + dx, pcz + dz).getEntities()) {
+                    for (String tag : e.getScoreboardTags()) {
+                        if (!tag.startsWith(prefix)) continue;
+                        teardownEntitiesSeen.add(st.mechId);
+                        if (tag.equals(prefix + "vehicle")) teardownVehicleAt.put(st.mechId, e.getLocation());
+                    }
+                }
             }
         }
     }
