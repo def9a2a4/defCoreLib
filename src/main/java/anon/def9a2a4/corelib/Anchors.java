@@ -6,6 +6,8 @@ import org.jspecify.annotations.Nullable;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.BooleanSupplier;
+import java.util.function.Predicate;
 
 /**
  * Factory and registry of glueable anchor block types — shared by {@link GlueAuthoring} (which
@@ -50,21 +52,19 @@ final class Anchors {
 
     /** The right {@link Anchor} for an anchor block: hoists get the dynamic-origin {@link HoistAnchor}
      *  (PDC on the skull, offsets relative to the platform seed below the chain end), a foreign plugin's
-     *  block a {@link ProvidedAnchor}, everything else a plain {@link BlockAnchor}. {@code hoistManager}
-     *  supplies the mid-stroke gate (null-safe: a null manager means the hoist always reads at rest).
+     *  block a {@link ProvidedAnchor}, everything else a plain {@link BlockAnchor}. {@code inMotion}
+     *  supplies the at-rest gate (null-safe: null means the anchor always reads at rest).
      *
      *  <p>Engine types are checked FIRST so a provider can never shadow a rotator or hoist. */
     static Anchor forBlock(Block block, CustomBlockRegistry registry,
-                           @Nullable ChainHoistManager hoistManager) {
-        if (ChainHoistManager.isHoist(block, registry)) {
-            return new HoistAnchor(block, registry,
-                () -> hoistManager == null || !hoistManager.isMoving(block));
-        }
+                           @Nullable Predicate<Block> inMotion) {
+        BooleanSupplier atRest = () -> inMotion == null || !inMotion.test(block);
+        if (ChainHoistManager.isHoist(block, registry)) return new HoistAnchor(block, registry, atRest);
         CustomHeadBlock type = registry.getTypeFromBlock(block);
         if (type == null || !ANCHOR_IDS.contains(type.fullId())) {
             ExternalAnchor ext = externalFor(block);
             if (ext != null) return new ProvidedAnchor(ext);
         }
-        return new BlockAnchor(block, () -> true);
+        return new BlockAnchor(block, atRest);
     }
 }

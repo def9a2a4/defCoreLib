@@ -109,10 +109,18 @@ Rotation power is all-or-nothing — an under-supplied network runs nothing — 
 
 ## Configuration
 
-There is none to edit. Nothing is written to your plugin folder: `rotation-config.yml` (network and
-structure size caps, machine tick rates, fuel and power tables) and `mill-recipes.yml` /
-`press-recipes.yml` all live inside the DefCoreLib jar and are read only from there. A copy placed in
-`plugins/mech/` or `plugins/DefCoreLib/` is not read.
+Only fuel and burn rates can be changed. Create `plugins/DefCoreLib/config/fuel.yml` (it isn't
+generated for you) and copy into it any of these sections from the jar's `rotation-config.yml`:
+`fuel` (burn value per item), `engines` (burn-on-load, burn multiplier, idle smoke), `thruster`
+(burn multiplier), `steam` (boiler tank size and water use) and `load` (how each machine counts
+toward engine load). A section you leave out keeps the jar's values; a `fuel:` section replaces the
+whole fuel table, so list every fuel you want (logs and planks stay fuels regardless). Anything else
+in the file is ignored, and it is read once at server startup.
+
+Everything else - network and structure size caps, machine tick rates, the power table, and the
+`mill-recipes.yml` / `press-recipes.yml` / `sieve-recipes.yml` machine recipes - lives inside the
+DefCoreLib jar and is read only from there. A copy placed in `plugins/mech/` or `plugins/DefCoreLib/`
+is not read.
 
 ## Links
 

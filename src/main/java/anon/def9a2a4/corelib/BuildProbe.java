@@ -29,6 +29,7 @@ public final class BuildProbe implements org.bukkit.event.Listener {
         Bukkit.getPluginManager().registerEvents(new BuildProbe(), plugin);
     }
 
+    /** Whether {@code player} may build at {@code block} holding {@code held} (pass a plain item of the block's material). */
     public static boolean mayBuild(Player player, Block block, ItemStack held) {
         BlockPlaceEvent probe = new BlockPlaceEvent(
             block, block.getState(), block, held, player, true, EquipmentSlot.HAND);

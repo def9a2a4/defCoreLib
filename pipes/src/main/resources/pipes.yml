@@ -281,7 +281,7 @@ blocks:
             transform: { translation: [0, 0, 0], scale: [1, 1, 1] }
     # Craft copper_pipe + a water bucket → oxidized. The bucket is left behind as an empty BUCKET
     # (vanilla crafting remainder); a single bucket also caps a shift-craft at one. (Also obtainable
-    # via cauldron — see config.yml cauldron-conversions.)
+    # via cauldron — see cauldron_conversions above.)
     recipes:
       craft:
         shapeless:

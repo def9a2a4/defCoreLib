@@ -72,16 +72,12 @@ public class PipeBlockRegistrar {
         // Filter pipes open their config GUI on right-click (returning true cancels vanilla interaction).
         if (variant.isFilter()) {
             builder.onInteract((block, event) -> {
-                // The menu holds real items: claim plugins' container rule applies (a head isn't a container to them).
+                // Configuring a filter is container-like access: apply claim plugins' container rule (a head isn't a container to them).
                 if (ContainerAccess.mayOpen(event.getPlayer(), block.getLocation())) {
                     plugin.getFilterGui().open(event.getPlayer(), block, variant);
                 }
                 return true;
             });
-            // A mechanism capture snapshots the block's PDC BEFORE onBlockRemoved runs, so close (and save)
-            // any open menu first — else items already dragged out of the menu ride along in the stale
-            // snapshot and come back on landing.
-            builder.onCapture(block -> plugin.getFilterGui().closeFor(block));
             // The ring display entity (tag "ring") shows on/off by live redstone power: return the "off"
             // ring when the pipe is powered (switched off), else null → the YAML @filter_ring_on stands.
             // The "main" pipe body entity is left untouched. Re-invoked whenever applyConfig respawns the
@@ -112,20 +108,8 @@ public class PipeBlockRegistrar {
 
         builder.onBlockRemoved((block, state) -> {
             PipeManager manager = plugin.getPipeManager(block.getWorld());
-            if (variant.isFilter()) {
-                // Close any open config menu FIRST so its (real) items can't be dragged out of a stale menu
-                // after we drop them (a dupe); the close saves current contents to the still-intact PDC.
-                plugin.getFilterGui().closeFor(block);
-                // Filter items were consumed from the player — return them on a real break. But during a
-                // mechanism CAPTURE the items ride along in the block's configPdc and are restored on
-                // landing, so dropping them here would duplicate them (A10a) — suppress the drop then.
-                if (!registry.isCapturingForMechanism()) {
-                    for (var item : PipeFilterStore.read(block).dropContents()) {
-                        block.getWorld().dropItemNaturally(block.getLocation().add(0.5, 0.5, 0.5), item);
-                    }
-                }
-            }
-            // Filter items above are dropped even in a world without pipes enabled (no manager).
+            // Close any open config menu so a stale one can't write into whatever later occupies the cell.
+            if (variant.isFilter()) plugin.getFilterGui().closeFor(block);
             if (manager == null) return;
             manager.removePipeData(block.getLocation());
             // Same physics-suppression gap on removal — refresh neighbors next tick, once this pipe's

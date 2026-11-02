@@ -104,8 +104,8 @@ public class PipesPlugin extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        // First, while worlds and managers are intact: open filter menus hold real items (see FilterGui).
-        if (filterGui != null) filterGui.saveAndCloseAll();
+        // Close open filter menus: once our listener is gone their template items could be taken out.
+        if (filterGui != null) filterGui.closeFor(null);
         CoreLibPlugin core = CoreLibPlugin.getInstance();   // null if the core is already gone
         if (core != null) {
             core.getRegistry().unregisterForeignOrphanDetector("pipes-legacy");
@@ -383,7 +383,8 @@ public class PipesPlugin extends JavaPlugin {
      */
     private void migrateConfig() {
         FileConfiguration cfg = getConfig();
-        boolean legacy = cfg.contains("variants", true) || cfg.contains("cauldron-conversions", true);
+        boolean legacy = cfg.contains("variants", true) || cfg.contains("cauldron-conversions", true)
+            || cfg.contains("conversion-recipes", true);
         boolean missingList = !cfg.contains("disabled-pipes", true);
         if (!legacy && !missingList) return;
 
@@ -405,6 +406,7 @@ public class PipesPlugin extends JavaPlugin {
             }
             cfg.set("variants", null);
             cfg.set("cauldron-conversions", null);
+            cfg.set("conversion-recipes", null);
         }
         if (missingList) {
             cfg.set("disabled-pipes", List.of());

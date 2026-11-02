@@ -88,6 +88,7 @@ final class CartTrainManager implements Listener {
     private final CartConfig config;
     private final CustomCartManager carts;
     private final NamespacedKey linksKey;   // entity PDC: comma-joined partner UUIDs (≤2)
+    private final NamespacedKey headingKey; // entity PDC (leader): saved travel yaw (radians) of a moving train
 
     private final Map<UUID, Member> members = new HashMap<>();
     private final List<CartTrain> trains = new ArrayList<>();
@@ -104,6 +105,7 @@ final class CartTrainManager implements Listener {
         this.config = config;
         this.carts = carts;
         this.linksKey = new NamespacedKey(plugin, "cart_links");
+        this.headingKey = new NamespacedKey(plugin, "cart_heading");
     }
 
     private static final class Member {
@@ -134,7 +136,12 @@ final class CartTrainManager implements Listener {
 
     void shutdown() {
         if (tickTask != null) tickTask.cancel();
-        for (CartTrain t : trains) { park(t); clearChainDisplays(t); }   // park first: no runaway on /reload
+        // Step riders off as on quit (plugins disable before players are saved); custom carts do it in their own shutdown.
+        for (Player p : Bukkit.getOnlinePlayers()) stepOffCart(p);
+        for (CartTrain t : trains) {
+            if (t.moving) saveHeading(t);
+            park(t); clearChainDisplays(t);   // park: no runaway on /reload
+        }
         members.clear();
         trains.clear();
         pending.clear();
@@ -180,8 +187,21 @@ final class CartTrainManager implements Listener {
 
     void onEntitiesUnload(List<Entity> entities) {
         for (Entity e : entities) {
-            if (members.remove(e.getUniqueId()) != null) dirty = true;
+            Member m = members.remove(e.getUniqueId());
+            if (m == null) continue;
+            dirty = true;
+            CartTrain t = trainContaining(m.cart);
+            if (t != null && t.moving) saveHeading(t);
         }
+    }
+
+    /** Remember a moving train's heading on its leader: a train held at a stopped controller or frozen at the
+     *  sim-distance edge has zero velocity, so after its chunks reload establishHeading reads this instead. */
+    private void saveHeading(CartTrain t) {
+        if (t.leaderState == null) return;
+        Vector h = RailPathWalker.advance(t.leaderState, 0, config.subStep).heading;
+        t.order.get(0).cart.getPersistentDataContainer()
+            .set(headingKey, PersistentDataType.DOUBLE, Math.atan2(h.getZ(), h.getX()));
     }
 
     /** A player riding a custom cart or train member steps off before quitting: vanilla saves a vehicle
@@ -362,11 +382,13 @@ final class CartTrainManager implements Listener {
 
     // ── Destruction ──────────────────────────────────────────────────────────
 
-    // NORMAL priority: runs before CustomCartManager's HIGH handler (which drops the custom item and
-    // removes the cart) and before vanilla drops a plain minecart. We only sever links + drop chains.
-    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
+    // MONITOR: only sever links + drop chains once the break is final, so a protection plugin cancelling it
+    // leaves the coupling intact. CustomCartManager's HIGH handler cancels the event itself but removes the
+    // cart, so "cancelled" alone isn't a refusal: skip only while the cart is still alive.
+    @EventHandler(priority = EventPriority.MONITOR)
     public void onDestroyed(VehicleDestroyEvent event) {
         if (!(event.getVehicle() instanceof Minecart cart)) return;
+        if (event.isCancelled() && !cart.isDead()) return;
         // A mechanism minecart never couples (frozen-cart contract), so it can never sever/drop train
         // chains. Guard defensively — mirrors CartRailsManager.destroy — so a future contract slip can't
         // make a destroyed mechanism cart spray chain items.
@@ -475,11 +497,16 @@ final class CartTrainManager implements Listener {
         // Snapshot old speeds so a rebuild keeps momentum (keyed by any surviving member).
         Map<UUID, Double> oldSpeed = new HashMap<>();
         Set<UUID> oldMembers = new HashSet<>();
-        for (CartTrain t : trains) for (Member m : t.order) {
-            oldSpeed.put(m.cart.getUniqueId(), t.speed);
-            oldMembers.add(m.cart.getUniqueId());
+        Map<Set<UUID>, CartTrain> oldBySet = new HashMap<>();
+        for (CartTrain t : trains) {
+            Set<UUID> ids = new HashSet<>();
+            for (Member m : t.order) {
+                oldSpeed.put(m.cart.getUniqueId(), t.speed);
+                oldMembers.add(m.cart.getUniqueId());
+                ids.add(m.cart.getUniqueId());
+            }
+            oldBySet.put(ids, t);
         }
-        for (CartTrain t : trains) clearChainDisplays(t);   // fresh trains respawn their own chains
         trains.clear();
 
         Set<UUID> visited = new HashSet<>();
@@ -501,6 +528,17 @@ final class CartTrainManager implements Listener {
             boolean lone = comp.size() == 1;
             if (lone && !carts.isBlastCart(comp.get(0).cart)) continue;
 
+            // Unchanged consist: keep its train as-is (speed, heading, chain displays) — a held/frozen train
+            // has zero velocity, so a fresh one could never re-establish its heading.
+            Set<UUID> ids = new HashSet<>();
+            for (Member m : comp) ids.add(m.cart.getUniqueId());
+            CartTrain kept = oldBySet.remove(ids);
+            if (kept != null) {
+                kept.order.replaceAll(m -> members.get(m.cart.getUniqueId()));   // current entity handles
+                trains.add(kept);
+                continue;
+            }
+
             CartTrain train = new CartTrain();
             train.order = orderComponent(comp);
             // Inherit speed (momentum) but not moving/leaderState: a rebuilt train re-establishes its
@@ -520,12 +558,12 @@ final class CartTrainManager implements Listener {
             }
             train.speed = (moving && inherited != Double.MAX_VALUE) ? inherited : 0.0d;
             trains.add(train);
+            // A new train starts moving=false; until drive() re-establishes heading and re-raises the
+            // clamp via place(), damp its carts to the vanilla maxSpeed (keeping velocity direction) so they
+            // don't coast on vanilla physics at the leaked 100 → "instant max speed".
+            for (Member m : train.order) undriveCart(m.cart);
         }
-
-        // A rebuilt train starts moving=false; until drive() re-establishes heading and re-raises the
-        // clamp via place(), damp its carts to the vanilla maxSpeed (keeping velocity direction) so they
-        // don't coast on vanilla physics at the leaked 100 → "instant max speed".
-        for (CartTrain t : trains) for (Member m : t.order) undriveCart(m.cart);
+        for (CartTrain t : oldBySet.values()) clearChainDisplays(t);   // trains that went away; new ones spawn their own
 
         // Park any cart that was in a driven train but no longer is (uncoupled / split off / lone
         // non-engine) — otherwise it keeps maxSpeed 100 + residual velocity and rockets away.
@@ -831,7 +869,13 @@ final class CartTrainManager implements Listener {
                 break;
             }
         }
+        // No push: a powered train that was moving when it unloaded resumes on its saved heading.
+        for (int i = 0; heading == null && hasEngine && i < ord.size(); i++) {
+            Double yaw = ord.get(i).cart.getPersistentDataContainer().get(headingKey, PersistentDataType.DOUBLE);
+            if (yaw != null) heading = new Vector(Math.cos(yaw), 0, Math.sin(yaw));
+        }
         if (heading == null) return false;
+        for (Member m : ord) m.cart.getPersistentDataContainer().remove(headingKey);   // consumed; re-saved on unload
         // The push establishes DIRECTION. Only an engineless train adopts its magnitude as speed — it has
         // no other source and must roll at the push speed, then decay via rolling drag. A powered train
         // ignores the shove speed and accelerates from its current speed (0 on a fresh start, or the value

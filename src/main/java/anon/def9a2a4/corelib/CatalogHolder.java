@@ -17,7 +17,7 @@ import java.util.Map;
  *
  * <p>Per-slot click actions are filled in while the inventory is populated: {@link #branchSlots} open a
  * deeper category tree, {@link #leafSlots} open a filtered item list, {@link #itemSlots} open an item's
- * detail (or give it on an admin right-click), and {@link #drillSlots} open a recipe ingredient's detail.
+ * detail (or give it on an admin right-click; in a detail view, the item shown gives on an admin right-click), and {@link #drillSlots} open a recipe ingredient's detail.
  */
 final class CatalogHolder implements InventoryHolder, ReadOnlyGuiHolder {
 
@@ -33,7 +33,7 @@ final class CatalogHolder implements InventoryHolder, ReadOnlyGuiHolder {
     // slot → action payloads (filled during populate)
     final Map<Integer, String> branchSlots = new HashMap<>(); // → category path to open as a deeper TREE
     final Map<Integer, String> leafSlots   = new HashMap<>(); // → category path to open as ITEMS
-    final Map<Integer, String> itemSlots   = new HashMap<>(); // → fullId (left: detail, right: give)
+    final Map<Integer, String> itemSlots   = new HashMap<>(); // → fullId (left: detail, right: give; DETAIL: the shown item, right: give)
     final Map<Integer, String> drillSlots  = new HashMap<>(); // → fullId (detail of a recipe ingredient)
     final Map<Integer, String> viewAllSlots = new HashMap<>(); // → input fullId: open the paginated stonecutter menu
 

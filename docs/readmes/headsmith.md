@@ -33,9 +33,10 @@ Browse every head in the [head catalog](https://def9a2a4.github.io/HeadSmith/), 
 
 | Command | Permission | Description |
 | --- | --- | --- |
-| `/headsmith give <id> [amount]` | `headsmith.give` (op) | Give a head item by id |
-| `/headsmith recipes <give\|take> [player]` | `headsmith.recipes` (default) | Reveal/hide head recipes in the recipe book |
-| `/headsmith migrate` | `headsmith.migrate` (op) | Adopt heads placed by the old standalone plugin |
+| `/headsmith help` | everyone | List the commands |
+| `/headsmith give <id> [amount] [player]` | `headsmith.give` (op) | Give a head item by id |
+| `/headsmith recipes <give\|take> [player]` | `headsmith.recipes` (everyone); `headsmith.recipes.others` (op) to target another player | Reveal/hide head recipes in the recipe book |
+| `/headsmith migrate` | `headsmith.migrate` (op) | Adopt heads placed by the old standalone plugin (sweeps loaded chunks) |
 
 ## Requires
 

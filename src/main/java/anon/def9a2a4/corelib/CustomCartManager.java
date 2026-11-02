@@ -171,6 +171,9 @@ final class CustomCartManager implements Listener {
             if (state.inv != null) {
                 for (var v : new ArrayList<>(state.inv.getViewers())) v.closeInventory();
             }
+            // Step riders off (as on quit): plugins disable before players are saved, and vanilla would save
+            // the cart into the player file and bring it back untracked.
+            for (Entity p : state.cart.getPassengers()) if (p instanceof org.bukkit.entity.Player) p.leaveVehicle();
             persist(state);
         }
         for (BlockDisplay marker : burnLight.values()) {

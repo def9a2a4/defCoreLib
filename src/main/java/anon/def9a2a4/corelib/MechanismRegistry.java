@@ -183,7 +183,7 @@ public class MechanismRegistry implements org.bukkit.event.Listener {
         }
     }
 
-    /** Fire onSeatRecovered (called from {@link #recoverOne}). */
+    /** Fire onSeatRecovered (called from {@link #attemptRecover}). */
     void fireSeatRecovered(Mechanism mech, int seatIndex, Shulker seat) {
         if (seatListener == null) return;
         try {
@@ -375,14 +375,6 @@ public class MechanismRegistry implements org.bukkit.event.Listener {
             + "(slabs, heads, fences, ...) will collide as full blocks. Requires MC 1.20.5+.");
     }
 
-    /**
-     * Wall-mounted head/skull colliders: shift the ≤0.5 box toward the wall + up so it sits where the
-     * head renders instead of floating at the cell centre. Mirrors BlockShips' BlockStructureScanner
-     * wall-skull special case. The offset is block-local (rotates with the block via the reposition
-     * path). Gated on size ≤ 0.5 so a dragon head's full-block collider stays centred (shifting a full
-     * box toward the wall would push it out of the cell). The shift is ADDED to any author-supplied
-     * offset so a custom wall-head block keeps its configured offset.
-     */
     /** The collider a live block would get if assembled now — the same resolution assembleCore uses (custom
      *  block config → vanilla shape registry → full block, plus the wall-head shift). */
     CollisionConfig collisionOf(Block block) {
@@ -443,6 +435,14 @@ public class MechanismRegistry implements org.bukkit.event.Listener {
         return false;
     }
 
+    /**
+     * Wall-mounted head/skull colliders: shift the ≤0.5 box toward the wall + up so it sits where the
+     * head renders instead of floating at the cell centre. Mirrors BlockShips' BlockStructureScanner
+     * wall-skull special case. The offset is block-local (rotates with the block via the reposition
+     * path). Gated on size ≤ 0.5 so a dragon head's full-block collider stays centred (shifting a full
+     * box toward the wall would push it out of the cell). The shift is ADDED to any author-supplied
+     * offset so a custom wall-head block keeps its configured offset.
+     */
     private static CollisionConfig applyWallHeadShift(CollisionConfig collision, BlockData bd) {
         if (collision.size() <= 0.5f && bd instanceof org.bukkit.block.data.Directional dir) {
             String name = bd.getMaterial().name();
@@ -1425,12 +1425,6 @@ public class MechanismRegistry implements org.bukkit.event.Listener {
     }
 
     /**
-     * Tear down custom-block tracking (which removes each block's OWN display entities) and air out the source
-     * blocks. Must run AFTER the snapshot — {@code onBlockRemoved} triggers a synchronous rotation-network
-     * recalc that rewrites downstream transmitters {@code spinning_*→idle_*}, so doing it during capture would
-     * snapshot later blocks as idle. Two-pass removal handles attachables before their supports.
-     */
-    /**
      * The face on which a paired chest half meets its partner — vanilla's {@code
      * ChestBlock#getConnectedDirection}: clockwise of {@code facing} for a LEFT half, counter-clockwise
      * for a RIGHT one. Null for a SINGLE chest or a non-horizontal facing.
@@ -1447,6 +1441,12 @@ public class MechanismRegistry implements org.bukkit.event.Listener {
         };
     }
 
+    /**
+     * Tear down custom-block tracking (which removes each block's OWN display entities) and air out the source
+     * blocks. Must run AFTER the snapshot — {@code onBlockRemoved} triggers a synchronous rotation-network
+     * recalc that rewrites downstream transmitters {@code spinning_*→idle_*}, so doing it during capture would
+     * snapshot later blocks as idle. Two-pass removal handles attachables before their supports.
+     */
     private void airOutSourceBlocks(List<Block> blocks) {
         for (Block b : blocks) {
             CustomHeadBlock chb = registry.getTypeFromBlock(b);
@@ -1627,7 +1627,11 @@ public class MechanismRegistry implements org.bukkit.event.Listener {
     public void shutdown() {
         if (tickTask != null) tickTask.cancel();
         // /stop disables plugins before players are saved, so the quit hook never runs: step them off here.
-        for (org.bukkit.entity.Player p : Bukkit.getOnlinePlayers()) stepOffMechanism(p);
+        // Only on a real stop: a /reload or plugin-manager disable keeps everyone online, so stepping them
+        // off would just strand them and leave a stale logout seat to teleport them into on a later rejoin.
+        if (Bukkit.isStopping()) {
+            for (org.bukkit.entity.Player p : Bukkit.getOnlinePlayers()) stepOffMechanism(p);
+        }
         // Restore real blocks for any still-assembled mechanism (e.g. an open door) so the structure
         // isn't lost on /stop. Per-mechanism guarded: a failure falls back to removeAllEntities so we
         // never leak persistent entities. (Full restart recovery is the deferred persistence work.)

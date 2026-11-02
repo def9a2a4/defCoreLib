@@ -22,6 +22,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.joml.Vector3i;
+import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -31,6 +32,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.function.Predicate;
 
 /**
  * Slime-glue authoring UX. Owns every glue-item interaction at {@link EventPriority#LOWEST} and cancels
@@ -66,16 +68,16 @@ final class GlueAuthoring implements Listener {
         this.sessionTimeout = sessionTimeout;
     }
 
-    /** Set post-construction like {@link #setMinecartManager} — supplies the mid-stroke gate for hoist
-     *  anchors. Null-safe throughout (a null manager just means hoist anchors always read at rest). */
-    private ChainHoistManager hoistManager;
+    /** Set post-construction like {@link #setMinecartManager} — the mid-motion gate for engine anchors
+     *  (rotator/door swing, piston/hoist stroke). Null-safe (null: every anchor reads at rest). */
+    private @Nullable Predicate<Block> anchorInMotion;
 
     void setMinecartManager(MechanismMinecartManager minecartManager) {
         this.minecartManager = minecartManager;
     }
 
-    void setChainHoistManager(ChainHoistManager hoistManager) {
-        this.hoistManager = hoistManager;
+    void setAnchorInMotion(Predicate<Block> anchorInMotion) {
+        this.anchorInMotion = anchorInMotion;
     }
 
     void start() {
@@ -192,8 +194,7 @@ final class GlueAuthoring implements Listener {
                         reject(player, clicked, "You can't build there");
                         return;
                     }
-                    GlueManager.Result res = glue.glue(session.anchor, clicked,
-                        isDrawbridgeAnchor(session.anchor.originBlock()));
+                    GlueManager.Result res = glue.glue(session.anchor, clicked);
                     reportGlue(player, clicked, res, session.anchor);
                     if (res == GlueManager.Result.OK) {
                         damageBrush(player, 1);
@@ -415,7 +416,7 @@ final class GlueAuthoring implements Listener {
         // protected corner doesn't reject the whole selection. Asked inside glueCuboid only for cells
         // about to be accepted: it fires a probe event per cell, so it must be bounded by the cap.
         GlueManager.FillResult r = glue.glueCuboid(s.anchor, movable,
-            isDrawbridgeAnchor(s.anchor.originBlock()), b -> s.anchor.canAuthorCell(player, b));
+            b -> s.anchor.canAuthorCell(player, b));
         damageBrush(player, r.added());
         if (r.added() > 0 && GlueAppliedEvent.hasListeners()) {
             Bukkit.getPluginManager().callEvent(
@@ -598,7 +599,7 @@ final class GlueAuthoring implements Listener {
      *  (PDC on the skull, offsets relative to the platform seed below the chain end) — including via
      *  {@link #startBlockSession}, whose hoist exports become seed-relative (intended). */
     private Anchor anchorFor(Block block) {
-        return Anchors.forBlock(block, registry, hoistManager);
+        return Anchors.forBlock(block, registry, anchorInMotion);
     }
 
     /** The hoist owning {@code clicked} as its platform seed, or null: walk up the chain column and
@@ -619,16 +620,6 @@ final class GlueAuthoring implements Listener {
         return true;
     }
 
-    /** Whether this anchor's mechanism rotates about a horizontal (X/Z drawbridge) axis. */
-    private boolean isDrawbridgeAnchor(Block anchorBlock) {
-        CustomHeadBlock type = registry.getTypeFromBlock(anchorBlock);
-        if (type == null || !"mech:rotator".equals(type.fullId())) return false; // doors are Y
-        String state = registry.getState(anchorBlock);
-        if (state == null) return false;
-        RotationNetwork.Axis axis = RotationNetwork.axisFromState(state);
-        return axis == RotationNetwork.Axis.X || axis == RotationNetwork.Axis.Z;
-    }
-
     private void reportGlue(Player player, Block block, GlueManager.Result r, Anchor anchor) {
         switch (r) {
             case OK -> feedback(player, block, true);
@@ -644,7 +635,6 @@ final class GlueAuthoring implements Listener {
                     actionBar(player, "That's the hinge", NamedTextColor.RED);
                 }
             }
-            case AXIS_INCOMPATIBLE -> reject(player, block, "Won't rotate on a drawbridge");
         }
     }
 

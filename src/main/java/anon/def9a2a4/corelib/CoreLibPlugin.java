@@ -71,31 +71,6 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
     private BannerManager bannerManager;
     private LargeBannerRecipes largeBannerRecipes;
 
-    /**
-     * Thrusters, propellers and wheels aboard a mechanism cost fuel only by the demand their consumer reports.
-     * BlockShips before 0.0.18 never reports it, so with this DefCoreLib they would run for free. Say so once.
-     */
-    private void warnOldBlockShips() {
-        org.bukkit.plugin.Plugin bs = getServer().getPluginManager().getPlugin("BlockShips");
-        if (bs == null) return;
-        String v = bs.getPluginMeta().getVersion();
-        int[] have = new int[3];
-        String[] parts = v.split("[^0-9]+");
-        for (int i = 0, j = 0; i < parts.length && j < 3; i++) {
-            if (!parts[i].isEmpty()) have[j++] = Integer.parseInt(parts[i]);
-        }
-        int[] need = {0, 0, 18};
-        for (int i = 0; i < 3; i++) {
-            if (have[i] != need[i]) {
-                if (have[i] < need[i]) {
-                    getLogger().warning("BlockShips " + v + " is older than 0.0.18: it does not use"
-                        + " DefCoreLib, so its ships stay native. Update to 0.0.18 or newer for DefCoreLib ships and propulsion.");
-                }
-                return;
-            }
-        }
-    }
-
     @Override
     public void onEnable() {
         instance = this;
@@ -264,18 +239,20 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
             new ChainHoistManager(this, registry, rotationNetwork, mechanismRegistry, glueManager, rotConfig);
         chainHoistManager.register();
         getServer().getPluginManager().registerEvents(chainHoistManager, this);
-        glueAuthoring.setChainHoistManager(chainHoistManager);
-        // Transitive glue capture needs to recognise a nested anchor and build the right Anchor for it
-        // (hoists get the dynamic-origin HoistAnchor). Wired here, after the hoist manager exists.
-        glueManager.setAnchorFactory(b ->
-            Anchors.isAnchorType(b, registry) ? Anchors.forBlock(b, registry, chainHoistManager) : null);
         // Refuse to CARRY a mid-motion anchor into another mechanism (a swinging rotator/door head, a
         // mid-stroke piston core, a moving hoist head all stay in-world and would be force-disassembled if
         // an outer mover aired them out). Each mover checks its final captured list against this before any
         // side effect. Minecart is absent by design — its cargo all airs out, leaving no in-world anchor.
-        mechanismRegistry.setAnchorInMotion(b ->
+        // The same test is every engine anchor's at-rest gate for glue authoring.
+        java.util.function.Predicate<Block> anchorInMotion = b ->
             rotationRotator.isMoving(b) || doorDemo.isMoving(b)
-                || chainHoistManager.isMoving(b) || pistonManager.isMoving(b));
+                || chainHoistManager.isMoving(b) || pistonManager.isMoving(b);
+        mechanismRegistry.setAnchorInMotion(anchorInMotion);
+        glueAuthoring.setAnchorInMotion(anchorInMotion);
+        // Transitive glue capture needs to recognise a nested anchor and build the right Anchor for it
+        // (hoists get the dynamic-origin HoistAnchor). Wired here, after the movers exist.
+        glueManager.setAnchorFactory(b ->
+            Anchors.isAnchorType(b, registry) ? Anchors.forBlock(b, registry, anchorInMotion) : null);
         mechanismMinecartManager = new MechanismMinecartManager(this, registry, mechanismRegistry, glueManager);
         glueAuthoring.setMinecartManager(mechanismMinecartManager);
         mechanismMinecartManager.register();
@@ -302,7 +279,6 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         // and force-loaded chunks load before plugins enable, and being resident never fire
         // ChunkLoad/EntitiesLoad again). Deferred to the first tick on purpose: mech/pipes register
         // their types in their own onEnable, which runs after ours, so sweeping inline would miss them.
-        getServer().getScheduler().runTask(this, this::warnOldBlockShips);
         getServer().getScheduler().runTask(this, () -> {
             int swept = registry.restoreLoadedChunks();
             if (swept > 0) {
@@ -703,6 +679,7 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onBlockPlace(BlockPlaceEvent event) {
+        if (BuildProbe.isProbing()) return;   // a protection probe: nothing was placed
         Block block = event.getBlockPlaced();
         ItemStack item = event.getItemInHand();
         org.bukkit.inventory.meta.ItemMeta meta = item.getItemMeta();
@@ -1199,8 +1176,7 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         Block to = event.getToBlock();
         Material t = to.getType();
         // Bare blocks are real world blocks and several are waterloggable (the shaft's CHAIN, the casing's
-        // stair); water flowing in would otherwise trip the MONITOR handler below into tearing down their
-        // node/display even though the block isn't destroyed. Cancelling also keeps them un-waterlogged,
+        // stair); water flowing in would waterlog them. Cancelling keeps them un-waterlogged,
         // which is why the casing's pinned data can trust waterlogged=false to stay false.
         if (registry.isBareBlock(to)) {
             event.setCancelled(true);
@@ -1244,17 +1220,6 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         }
         registry.onBlockRemoved(to, type);
         to.setType(Material.AIR, false);
-    }
-
-    // Water/lava flow destroying custom heads
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    public void onBlockFromTo(org.bukkit.event.block.BlockFromToEvent event) {
-        Block to = event.getToBlock();
-        CustomHeadBlock type = registry.getTypeFromBlock(to);
-        if (type != null) {
-            if (type.storage() != null) registry.dropStorage(to);
-            registry.onBlockRemoved(to, type);
-        }
     }
 
     // /fill, /setblock, physics-based destruction — cleanup without drops. setWillDrop(false)
@@ -1716,8 +1681,7 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         if (transition != null) {
             event.setCancelled(true);
             // Lighting / toggling a head changes the block: ask the claim plugins' build rule first.
-            if (!BuildProbe.mayBuild(event.getPlayer(), block,
-                    event.getPlayer().getInventory().getItemInMainHand())) return;
+            if (!BuildProbe.mayBuild(event.getPlayer(), block, new ItemStack(block.getType()))) return;
 
             // Consume held item if transition requires it
             if (transition.consumeItem()) {
@@ -1780,7 +1744,9 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
             // Delay by 1 tick so Bukkit finishes removing the viewer first. LOAD-BEARING beyond that:
             // this deferral keeps openStorages.remove out of saveAllOpenStorages/saveStoragesInChunk's
             // iteration — making it synchronous reintroduces a ConcurrentModificationException there.
-            getServer().getScheduler().runTask(this, () -> registry.onStorageClosed(holder));
+            // Disabled (/stop, /reload): this close comes from onDisable's saveAllOpenStorages, which already
+            // saved the holder and clears the cache; the scheduler would refuse the task anyway.
+            if (isEnabled()) getServer().getScheduler().runTask(this, () -> registry.onStorageClosed(holder));
         }
     }
 
@@ -2146,8 +2112,12 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         }
     }
 
-    /** A renderable catalog row reduced to an id + display icon — a registered type or a contribution. */
-    private record CatalogListing(String id, ItemStack icon) {}
+    /** A renderable catalog row reduced to an id + display icon — a registered type or a contribution.
+     *  The icon is built only for the rows on the shown page. */
+    private record CatalogListing(String id, java.util.function.Supplier<ItemStack> icon) {}
+
+    /** A listed type with its lowercased plain name, cached for sorting and search. */
+    private record CatalogEntry(CustomHeadBlock type, String name) {}
 
     /** Within the mech namespace, these id-prefixes sort to the END of the catalog list, in this order. */
     private static final List<String> MECH_TRAILING_PREFIXES = List.of("casing_", "gearbox_", "chassis_");
@@ -2163,12 +2133,29 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         return 0;
     }
 
-    private List<CustomHeadBlock> catalogSortedTypes() {
-        List<CustomHeadBlock> list = new ArrayList<>(registry.allTypes());
-        list.sort(java.util.Comparator.comparing(CustomHeadBlock::namespace)
-                .thenComparingInt(CoreLibPlugin::catalogSortRank)
-                .thenComparing(t -> catalogPlainName(t).toLowerCase(java.util.Locale.ROOT)));
-        return list;
+    /** Non-oak wheels (every size) stay registered but are left out of the catalog: they differ only in wood. */
+    private static boolean catalogHidden(CustomHeadBlock t) {
+        String size = t.namespace().equals("mech") ? RotationBlocks.wheelSize(t.typeId()) : null;
+        return size != null && !t.typeId().equals(size + "_oak");
+    }
+
+    private List<CatalogEntry> catalogSorted = List.of();
+    private int catalogSortedVersion = -1;
+
+    /** Every listed type in catalog order; re-sorted only when a type is registered or removed. */
+    private List<CatalogEntry> catalogSortedTypes() {
+        if (catalogSortedVersion != registry.typesVersion()) {
+            List<CatalogEntry> list = new ArrayList<>();
+            for (CustomHeadBlock t : registry.allTypes()) {
+                if (!catalogHidden(t)) list.add(new CatalogEntry(t, catalogPlainName(t).toLowerCase(java.util.Locale.ROOT)));
+            }
+            list.sort(java.util.Comparator.comparing((CatalogEntry e) -> e.type().namespace())
+                    .thenComparingInt(e -> catalogSortRank(e.type()))
+                    .thenComparing(CatalogEntry::name));
+            catalogSorted = List.copyOf(list);
+            catalogSortedVersion = registry.typesVersion();
+        }
+        return catalogSorted;
     }
 
     private static String catalogLastSegment(String path) {
@@ -2222,7 +2209,7 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         org.bukkit.inventory.Inventory inv = getServer().createInventory(holder, 54, title);
         holder.setInventory(inv);
 
-        List<CustomHeadBlock> sorted = catalogSortedTypes();
+        List<CatalogEntry> sorted = catalogSortedTypes();
         int start = page * CATALOG_PAGE, end = Math.min(start + CATALOG_PAGE, total), slot = 0;
         for (int idx = start; idx < end; idx++, slot++) {
             String childPath = children.get(idx);
@@ -2230,7 +2217,8 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
             boolean isBranch = false;
             int count = 0;
             CustomHeadBlock rep = null;
-            for (CustomHeadBlock t : sorted) {
+            for (CatalogEntry e : sorted) {
+                CustomHeadBlock t = e.type();
                 if (!catalogInSubtree(t, childPath)) continue;
                 count++;
                 if (rep == null) rep = t;
@@ -2264,14 +2252,12 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
                      int page, @org.jspecify.annotations.Nullable CatalogHolder parent) {
         String q = search == null ? null : search.toLowerCase(java.util.Locale.ROOT);
         List<CatalogListing> matches = new ArrayList<>();
-        for (CustomHeadBlock t : catalogSortedTypes()) {
-            if (q != null) {
-                if (catalogPlainName(t).toLowerCase(java.util.Locale.ROOT).contains(q)
-                        || t.fullId().toLowerCase(java.util.Locale.ROOT).contains(q))
-                    matches.add(new CatalogListing(t.fullId(), t.createItem(1)));
-            } else if (catalogInSubtree(t, path)) {
-                matches.add(new CatalogListing(t.fullId(), t.createItem(1)));
-            }
+        for (CatalogEntry e : catalogSortedTypes()) {
+            CustomHeadBlock t = e.type();
+            boolean hit = q != null
+                    ? e.name().contains(q) || t.fullId().toLowerCase(java.util.Locale.ROOT).contains(q)
+                    : catalogInSubtree(t, path);
+            if (hit) matches.add(new CatalogListing(t.fullId(), () -> t.createItem(1)));
         }
         // Contributed entries (e.g. prefab-ship kits) list alongside real blocks, after the types.
         for (CustomBlockRegistry.CatalogContribution c : registry.catalogContributions()) {
@@ -2279,7 +2265,7 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
                     ? catalogPlain(c.displayName()).toLowerCase(java.util.Locale.ROOT).contains(q)
                         || c.id().toLowerCase(java.util.Locale.ROOT).contains(q)
                     : catalogCategoryInSubtree(c.category(), path);
-            if (hit) matches.add(new CatalogListing(c.id(), c.icon().clone()));
+            if (hit) matches.add(new CatalogListing(c.id(), () -> c.icon().clone()));
         }
         int total = matches.size();
         int maxPage = Math.max(0, (total - 1) / CATALOG_PAGE);
@@ -2294,7 +2280,7 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         int start = page * CATALOG_PAGE, end = Math.min(start + CATALOG_PAGE, total), slot = 0;
         for (int i = start; i < end; i++, slot++) {
             CatalogListing t = matches.get(i);
-            inv.setItem(slot, catalogItemCell(t.icon(), canGive));
+            inv.setItem(slot, catalogItemCell(t.icon().get(), canGive));
             holder.itemSlots.put(slot, t.id());
         }
         if (total == 0) inv.setItem(22, catalogNavItem(Material.BARRIER, search != null ? "No matches" : "Empty"));
@@ -2339,6 +2325,7 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
             }
             inv.setItem(13, catalogNavItem(Material.ARROW, "→"));
             inv.setItem(15, catalogResult(type, r.output(), r.amount()));
+            holder.itemSlots.put(15, id);
             rendered = true;
         } else if (!type.shapelessRecipes().isEmpty()) {
             // Shapeless → fill the grid area left-to-right (no positions); same arrow + result.
@@ -2355,9 +2342,13 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
             }
             inv.setItem(13, catalogNavItem(Material.ARROW, "→ (shapeless)"));
             inv.setItem(15, catalogResult(type, r.output(), r.amount()));
+            holder.itemSlots.put(15, id);
             rendered = true;
         }
-        if (!rendered) inv.setItem(4, catalogDetailHeader(type, 1)); // stonecutter-only / no craft recipe → header
+        if (!rendered) { // stonecutter-only / no craft recipe → header
+            inv.setItem(4, catalogDetailHeader(type, 1));
+            holder.itemSlots.put(4, id);
+        }
 
         // Stonecutter relations on lower rows (disjoint from the grid above).
         List<CustomHeadBlock.StonecutterRecipeDef> cutFrom = type.stonecutterRecipes();
@@ -2403,7 +2394,7 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
     }
 
     /** Detail view for a contributed entry: no recipe grid, just the icon + its lore (a give hint for
-     *  admins). Selecting it in the list is what gives the item; this is the browse/inspect view. */
+     *  admins, who get one by right-clicking it here or in the list). */
     private void openCatalogContribDetail(Player player, CustomBlockRegistry.CatalogContribution c,
                                           @org.jspecify.annotations.Nullable CatalogHolder parent) {
         CatalogHolder holder = new CatalogHolder(CatalogHolder.View.DETAIL, "", null, 0, c.id(), parent);
@@ -2416,13 +2407,14 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
             List<Component> lore = new ArrayList<>(c.lore());
             if (player.hasPermission("corelib.admin")) {
                 lore.add(Component.empty());
-                lore.add(Component.text("In the list, right-click to get one.", NamedTextColor.DARK_GRAY)
+                lore.add(Component.text("Right-click to get one.", NamedTextColor.DARK_GRAY)
                         .decoration(TextDecoration.ITALIC, false));
             }
             if (!lore.isEmpty()) m.lore(lore);
             icon.setItemMeta(m);
         }
         inv.setItem(4, icon);
+        holder.itemSlots.put(4, c.id());
         catalogNavBar(inv, holder, false, false, false);
         player.openInventory(inv);
     }
@@ -2598,7 +2590,7 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         String itemId = h.itemSlots.get(slot);
         if (itemId != null) {
             if (event.isRightClick() && player.hasPermission("corelib.admin")) catalogGive(player, itemId);
-            else openCatalogDetail(player, itemId, h);
+            else if (h.view != CatalogHolder.View.DETAIL) openCatalogDetail(player, itemId, h);   // detail: the item shown
         }
     }
 

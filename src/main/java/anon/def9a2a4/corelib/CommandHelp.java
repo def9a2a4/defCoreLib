@@ -141,8 +141,8 @@ public final class CommandHelp {
 
     /**
      * The shared tail of every {@code give <id> [amount] [player]}: read the amount ({@code args[idx]},
-     * 1..64 capped at each item's max stack size, default 1) and the target ({@code args[idx + 1]}, default the sender), hand over {@code items}
-     * with {@code perItem} copies each (overflow drops at the target's feet) and report
+     * 1..64, default 1) and the target ({@code args[idx + 1]}, default the sender), hand over that many of each
+     * of {@code items}, capped at its max stack size (overflow drops at the target's feet), and report
      * "Gave 4x mech:shaft to Steve". {@code what} names the items; for one item, it is prefixed with the
      * amount. Errors (bad amount, unknown player, console without a target) are reported here.
      */

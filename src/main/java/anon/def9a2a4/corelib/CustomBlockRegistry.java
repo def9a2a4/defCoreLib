@@ -172,6 +172,8 @@ public class CustomBlockRegistry {
 
     // Type registration: fullId → definition
     private final Map<String, CustomHeadBlock> types = new HashMap<>();
+    // Bumped on every change to types, so views derived from allTypes() (the catalog's sort) can be cached.
+    private int typesVersion;
 
     // Chunk hint store: worldId → set of "chunkX,chunkZ" strings
     private final Map<UUID, Set<String>> chunkHints = new ConcurrentHashMap<>();
@@ -361,6 +363,7 @@ public class CustomBlockRegistry {
 
     private void put(CustomHeadBlock type, boolean overlay) {
         CustomHeadBlock existing = types.put(type.fullId(), type);
+        typesVersion++;
         if (!overlay && existing != null && existing != type) {
             // A6b: duplicate ids silently corrupt identity resolution (and the migrator's texture→id
             // adoption table). Warn instead of overwriting silently.
@@ -442,7 +445,10 @@ public class CustomBlockRegistry {
 
     public void unregister(String fullId) {
         types.remove(fullId);
+        typesVersion++;
     }
+
+    int typesVersion() { return typesVersion; }
 
     public @Nullable CustomHeadBlock getType(String fullId) {
         return types.get(fullId);
@@ -1772,14 +1778,8 @@ public class CustomBlockRegistry {
     }
 
     /**
-     * Recompute display transforms (and fire onNeighborChange) for every reactive custom block
-     * adjacent to {@code changed}. This mirrors {@link CoreLibPlugin#onBlockPhysics} for the case
-     * where a BlockPhysicsEvent is NOT emitted — i.e. when a custom block is placed/removed with
-     * physics suppressed, so neighbors never hear about the change on their own.
-     */
-    /**
      * Notify already-settled reactive neighbors that a custom block just appeared or moved into
-     * {@code block}'s cell. This is the explicit replacement for the {@link BlockPhysicsEvent} we now
+     * {@code block}'s cell. This is the explicit replacement for the {@link org.bukkit.event.block.BlockPhysicsEvent} we now
      * suppress on the plugin's own writes: call it after a physics-suppressed placement / mechanism
      * landing / piston move so pipes recompute their connection and rotation nodes re-scan and pick up
      * an adjacent passive windmill. The block must already be present in the world when this is called.
@@ -1788,6 +1788,12 @@ public class CustomBlockRegistry {
         refreshReactiveNeighbors(block);
     }
 
+    /**
+     * Recompute display transforms (and fire onNeighborChange) for every reactive custom block
+     * adjacent to {@code changed}. This mirrors {@link CoreLibPlugin#onBlockPhysics} for the case
+     * where a BlockPhysicsEvent is NOT emitted — i.e. when a custom block is placed/removed with
+     * physics suppressed, so neighbors never hear about the change on their own.
+     */
     public void refreshReactiveNeighbors(Block changed) {
         // During onDisable the scheduler rejects the coalesced-flush task below, and this runs mid-way through
         // BasicMechanism.disassemble()'s shutdown restore — a throw here trips shutdown()'s false "removing
@@ -2932,13 +2938,15 @@ public class CustomBlockRegistry {
 
     static final org.bukkit.NamespacedKey INVENTORY_KEY = new org.bukkit.NamespacedKey("corelib", "inventory");
     private final Map<LocationKey, StorageHolder> openStorages = new HashMap<>();
-    // StorageHolder.saved for a block whose PDC encoding failed to decode: the holder's inventory is partial,
-    // so no save path may write it back over the original (still-recoverable) data. Compared by identity.
+    // StorageHolder.saved for a block whose PDC encoding failed to decode: the holder's inventory is left empty
+    // and refused to every caller (getOrCreateStorage/openStorage return nothing), and no save path may write it
+    // back over the original (still-recoverable) data. Cached so the warning is logged once. Compared by identity.
     private static final String UNDECODABLE = new String("<undecodable>");
 
     /**
      * Get or create the storage inventory for a block without opening a GUI.
      * Uses the same cache as {@link #openStorage} so ticks and viewers share one Inventory instance.
+     * Null if the block has no storage, or its stored contents can't be read.
      */
     public org.bukkit.inventory.@org.jspecify.annotations.Nullable Inventory getOrCreateStorage(Block block) {
         CustomHeadBlock type = getTypeFromBlock(block);
@@ -2950,10 +2958,10 @@ public class CustomBlockRegistry {
             holder = new StorageHolder(block.getLocation());
             org.bukkit.inventory.Inventory inv = createStorageInventory(type.storage(), type, holder);
             holder.setInventory(inv);
-            holder.saved = loadInventoryFromPDC(block, inv);
+            holder.saved = readInventoryFromPDC(block, inv);
             openStorages.put(key, holder);
         }
-        return holder.getInventory();
+        return holder.saved == UNDECODABLE ? null : holder.getInventory();
     }
 
     /** Open the storage inventory for a block. Supports multiple viewers. */
@@ -2968,10 +2976,15 @@ public class CustomBlockRegistry {
             holder = new StorageHolder(block.getLocation());
             org.bukkit.inventory.Inventory inv = createStorageInventory(config, type, holder);
             holder.setInventory(inv);
-            holder.saved = loadInventoryFromPDC(block, inv);
+            holder.saved = readInventoryFromPDC(block, inv);
             openStorages.put(key, holder);
         }
 
+        if (holder.saved == UNDECODABLE) {
+            player.sendMessage(net.kyori.adventure.text.Component.text(
+                "This container's contents can't be read", net.kyori.adventure.text.format.NamedTextColor.RED));
+            return;
+        }
         player.openInventory(holder.getInventory());
     }
 
@@ -3052,11 +3065,17 @@ public class CustomBlockRegistry {
         };
     }
 
-    /** Fill {@code inv} from the block's PDC; returns the stored encoding (null if none, UNDECODABLE if it failed). */
-    public @Nullable String loadInventoryFromPDC(Block block, org.bukkit.inventory.Inventory inv) {
+    /** Fill {@code inv} from the block's PDC (left empty if the stored contents can't be read). */
+    public void loadInventoryFromPDC(Block block, org.bukkit.inventory.Inventory inv) {
+        readInventoryFromPDC(block, inv);
+    }
+
+    /** {@link #loadInventoryFromPDC}, returning the stored encoding (null if none, UNDECODABLE if it failed). */
+    private @Nullable String readInventoryFromPDC(Block block, org.bukkit.inventory.Inventory inv) {
         if (!(block.getState() instanceof org.bukkit.block.Skull skull)) return null;
         String data = skull.getPersistentDataContainer().get(INVENTORY_KEY, PersistentDataType.STRING);
         if (!InventoryUtil.decode(data, inv, plugin.getLogger())) {
+            inv.clear();   // decode stops at the first bad item: a partial copy is a dupe once taken out
             plugin.getLogger().warning("Storage at " + block.getLocation() + " is undecodable; its data is left untouched.");
             return UNDECODABLE;
         }

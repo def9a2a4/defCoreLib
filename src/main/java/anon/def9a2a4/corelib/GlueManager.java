@@ -3,14 +3,6 @@ package anon.def9a2a4.corelib;
 import org.bukkit.NamespacedKey;
 import org.bukkit.World;
 import org.bukkit.block.Block;
-import org.bukkit.block.data.Bisected;
-import org.bukkit.block.data.BlockData;
-import org.bukkit.block.data.Directional;
-import org.bukkit.block.data.MultipleFacing;
-import org.bukkit.block.data.Orientable;
-import org.bukkit.block.data.Rail;
-import org.bukkit.block.data.Rotatable;
-import org.bukkit.block.data.type.Slab;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.joml.Vector3i;
@@ -38,7 +30,7 @@ final class GlueManager {
     static final NamespacedKey GLUE_KEY = new NamespacedKey("corelib", "glue_offsets");
 
     /** Outcome of a single-block {@link #glue} authoring op. */
-    enum Result { OK, NOT_CONNECTED, CAP_HIT, ALREADY_GLUED, IS_ANCHOR, AXIS_INCOMPATIBLE }
+    enum Result { OK, NOT_CONNECTED, CAP_HIT, ALREADY_GLUED, IS_ANCHOR }
 
     private final int maxSize;
     // For sticky-block detection (derived auto-glue) — see StickySpread. Nullable only for
@@ -432,22 +424,13 @@ final class GlueManager {
      * connectivity (a same-wood frame bridges authored glue — it rides at resolve, so brushing a block
      * on its far side is connected). NB since plain/anchor cells no longer auto-attract frames, a frame
      * bridges connectivity only once ONE of its blocks is glued adjacent to the anchor (or is the
-     * mount seed). On a horizontal-axis (drawbridge) anchor, orientation-bearing blocks are rejected —
-     * {@code BlockRotation} only rotates about Y — EXCEPT frame blocks, which re-pin their fixed
-     * base_block_data on landing and so ride any axis.
+     * mount seed).
      */
-    Result glue(Anchor a, Block b, boolean horizontalAxis) {
+    Result glue(Anchor a, Block b) {
         Block origin = a.originBlock();
         Vector3i off = new Vector3i(b.getX() - origin.getX(), b.getY() - origin.getY(),
             b.getZ() - origin.getZ());
         if (off.x == 0 && off.y == 0 && off.z == 0) return Result.IS_ANCHOR;
-        // Frame blocks are orientation-bearing stairs, but they re-pin their fixed base_block_data on
-        // landing (BasicMechanism), so they ride a drawbridge fine — exempt by TYPE, not by loosening
-        // the shared BlockData predicate (which other stair/slab custom blocks depend on).
-        if (horizontalAxis && isOrientationBearing(b.getBlockData())
-                && !(registry != null && StickySpread.isFrameBlock(b, registry))) {
-            return Result.AXIS_INCOMPATIBLE;
-        }
         Set<Vector3i> set = offsets(a);
         if (set.contains(off)) return Result.ALREADY_GLUED;
         if (set.size() >= maxSize) return Result.CAP_HIT;
@@ -465,8 +448,7 @@ final class GlueManager {
 
     /**
      * Authoring: glue the anchor-connected subset of an explicit candidate block list (a cuboid). Filters
-     * out air, the anchor cell, already-glued cells, and (on a horizontal-axis drawbridge) orientation-
-     * bearing blocks; then grows the set by fixpoint from the origin / existing glued cells until nothing
+     * out air, the anchor cell and already-glued cells; then grows the set by fixpoint from the origin / existing glued cells until nothing
      * more connects or the cap is hit. The derived sticky closure counts as connectivity, and is
      * recomputed per pass — an accepted block can attract a new casing frame that in turn bridges to
      * candidates on its far side.
@@ -475,7 +457,7 @@ final class GlueManager {
      * costly per-cell checks (protection probes) are bounded by the cap, not the box volume. A refused
      * cell is dropped like the other filters — not counted as skipped, not re-asked.
      */
-    FillResult glueCuboid(Anchor a, List<Block> candidates, boolean horizontalAxis, Predicate<Block> mayGlue) {
+    FillResult glueCuboid(Anchor a, List<Block> candidates, Predicate<Block> mayGlue) {
         Block origin = a.originBlock();
         int ox = origin.getX(), oy = origin.getY(), oz = origin.getZ();
         Set<Vector3i> accepted = offsets(a);
@@ -486,8 +468,6 @@ final class GlueManager {
             if (off.x == 0 && off.y == 0 && off.z == 0) continue;     // the anchor itself
             if (accepted.contains(off)) continue;                    // already glued
             if (b.getType().isAir()) continue;
-            if (horizontalAxis && isOrientationBearing(b.getBlockData())
-                    && !(registry != null && StickySpread.isFrameBlock(b, registry))) continue; // can't rotate on X/Z
             pending.add(off);
         }
         // Hoisted out of the loop: extraConnectors is contractually cached by the anchor, but the fill
@@ -550,22 +530,6 @@ final class GlueManager {
 
     private static boolean cardinallyAdjacent(Vector3i o, int x, int y, int z) {
         return Math.abs(o.x - x) + Math.abs(o.y - y) + Math.abs(o.z - z) == 1;
-    }
-
-    /**
-     * Whether a block's appearance depends on an orientation that a Y-only {@code BlockRotation} can't
-     * fix after an X/Z (drawbridge) rotation — stairs, slabs, logs, fences/panes, rails, and custom
-     * skull blocks (PLAYER_HEAD is Rotatable, PLAYER_WALL_HEAD is Directional). Such blocks can only be
-     * glued to a Y-axis mechanism (floor door / Y rotator).
-     */
-    private static boolean isOrientationBearing(BlockData bd) {
-        return bd instanceof Directional
-            || bd instanceof Orientable
-            || bd instanceof Rotatable
-            || bd instanceof MultipleFacing
-            || bd instanceof Bisected
-            || bd instanceof Slab
-            || bd instanceof Rail;
     }
 
     private static int[] packBlocks(Anchor a, List<Block> blocks) {

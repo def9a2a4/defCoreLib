@@ -13,11 +13,10 @@ import java.util.List;
 /**
  * Per-block filter state for filter pipes, stored on the head block's PDC.
  *
- * <p>Filter items are REAL items consumed from the player into the config GUI — we keep the
- * actual items so the pipe can drop them back verbatim when broken. Closing the GUI trims each slot
- * to one item and returns the rest (older data may still hold whole stacks; they drop as-is). Matching
- * itself ignores amount: a stack passes when its type (or full identity, in exact mode) matches
- * any filter item, XORed with the whitelist/blacklist mode.
+ * <p>Filter items are one-item ghost templates copied in the config GUI (never real items taken from
+ * the player, so nothing drops when the pipe breaks); full meta is kept for exact matching. Matching
+ * ignores amount: a stack passes when its type (or full identity, in exact mode) matches any filter
+ * item, XORed with the whitelist/blacklist mode.
  *
  * <p>Items serialize via Paper's {@link ItemStack#serializeItemsAsBytes} into a PDC byte array;
  * the two mode flags are single PDC bytes.
@@ -49,14 +48,6 @@ public final class PipeFilterStore {
             return matches != blacklist; // XOR: whitelist keeps matches, blacklist inverts
         }
 
-        /** The stacks to drop when the pipe is broken (non-empty entries only). */
-        public List<ItemStack> dropContents() {
-            List<ItemStack> out = new ArrayList<>();
-            for (ItemStack it : items) {
-                if (it != null && !it.getType().isAir()) out.add(it);
-            }
-            return out;
-        }
     }
 
     public static FilterData read(Block block) {

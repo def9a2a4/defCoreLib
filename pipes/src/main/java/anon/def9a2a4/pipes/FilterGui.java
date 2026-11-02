@@ -5,7 +5,6 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
@@ -18,15 +17,15 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 /**
  * Right-click config GUI for filter pipes: a 54-slot (double-chest) inventory whose first
- * {@code FilterSpec.slots} slots hold the filter items (real, consumed from the player), the
+ * {@code FilterSpec.slots} slots hold one-item ghost templates (copied from the cursor, never consumed), the
  * rest of the top rows are locked filler, and the bottom row carries tier-gated toggle buttons.
  * State persists via {@link PipeFilterStore}; edits refresh {@link PipeManager}'s filter cache.
  *
@@ -49,32 +48,13 @@ final class FilterGui implements Listener {
 
     private final PipesPlugin plugin;
 
-    // Filter items are real, draggable copies while the master copy lives in the block PDC. Two live copies
-    // = a dupe. Enforce a single live menu per block: key → the one viewing player. Added on open, removed on
-    // close (quitting fires the close event, so this also covers disconnects); the whole map is gone on a
-    // server restart, so a stale lock can never persist.
-    private final Map<String, Player> openFilters = new HashMap<>();
-
     FilterGui(PipesPlugin plugin) {
         this.plugin = plugin;
-    }
-
-    private static String key(Location loc) {
-        return loc.getWorld().getUID() + ":" + loc.getBlockX() + ":" + loc.getBlockY() + ":" + loc.getBlockZ();
     }
 
     void open(Player player, Block block, PipeVariant variant) {
         PipeVariant.FilterSpec spec = variant.filter();
         if (spec == null) return;
-
-        // One live menu per block (the menu holds real items — a second copy would dupe).
-        String key = key(block.getLocation());
-        if (openFilters.containsKey(key)) {
-            player.sendMessage(Component.text("This filter is being configured by someone else.",
-                NamedTextColor.RED));
-            return;
-        }
-        openFilters.put(key, player);
 
         PipeFilterStore.FilterData data = PipeFilterStore.read(block);
         FilterHolder holder = new FilterHolder(block.getLocation(), spec, data.blacklist(), data.exactMatch());
@@ -84,18 +64,13 @@ final class FilterGui implements Listener {
 
         paintDecorations(inv, holder);
 
-        // Load saved filter items into the editable slots.
+        // Load the saved templates into the filter slots.
         List<ItemStack> items = data.items();
         for (int i = 0; i < spec.slots() && i < items.size(); i++) {
             inv.setItem(i, items.get(i));
         }
 
-        // Reserve the lock (above) before opening; release it only if the open was vetoed. A cancelled
-        // InventoryOpenEvent returns null and fires no close, so we must clear the reservation ourselves; a
-        // same-tick close returns non-null and its onClose already removed the key (remove is idempotent).
-        if (player.openInventory(inv) == null) {
-            openFilters.remove(key);
-        }
+        player.openInventory(inv);
     }
 
     // ── Painting ─────────────────────────────────────────────────────────────────────────────────
@@ -185,34 +160,58 @@ final class FilterGui implements Listener {
         return raw >= 0 && raw < spec.slots();
     }
 
+    /** A filter slot holds a one-item template of {@code item} (full meta kept for exact matching). */
+    private static ItemStack template(ItemStack item) {
+        ItemStack copy = item.clone();
+        copy.setAmount(1);
+        return copy;
+    }
+
     // ── Events ────────────────────────────────────────────────────────────────────────────────────
 
+    // Filter slots are ghost templates: setting one copies the cursor item without consuming it, and no
+    // click/drag ever moves a real item into or out of the menu (every top-inventory interaction is cancelled).
     @EventHandler
     public void onClick(InventoryClickEvent event) {
         if (!(event.getInventory().getHolder() instanceof FilterHolder holder)) return;
         PipeVariant.FilterSpec spec = holder.spec();
+        Inventory inv = event.getInventory();
         int raw = event.getRawSlot();
         int topSize = event.getView().getTopInventory().getSize();
-
-        // Shift-click / collect-to-cursor can scatter items into locked or button slots. Allow it only
-        // when it moves an item OUT of a filter slot; otherwise cancel.
         InventoryAction action = event.getAction();
-        if (action == InventoryAction.MOVE_TO_OTHER_INVENTORY
-                || action == InventoryAction.COLLECT_TO_CURSOR) {
-            if (!(raw >= 0 && raw < topSize && isFilterSlot(spec, raw))) {
+
+        // The player's own inventory (or outside the window): free, except actions that reach into the menu.
+        if (raw < 0 || raw >= topSize) {
+            if (action == InventoryAction.COLLECT_TO_CURSOR) {
                 event.setCancelled(true);
+            } else if (action == InventoryAction.MOVE_TO_OTHER_INVENTORY) {
+                // Shift-click: template the item into the first empty filter slot; nothing leaves the player.
+                event.setCancelled(true);
+                ItemStack item = event.getCurrentItem();
+                if (item == null || item.getType().isAir()) return;
+                for (int i = 0; i < spec.slots(); i++) {
+                    ItemStack cur = inv.getItem(i);
+                    if (cur == null || cur.getType().isAir()) {
+                        inv.setItem(i, template(item));
+                        save(holder);
+                        return;
+                    }
+                }
             }
             return;
         }
 
-        // Clicks in the player's own inventory (below the top) are unrestricted.
-        if (raw < 0 || raw >= topSize) return;
-
-        if (isFilterSlot(spec, raw)) return; // editable — allow the item move
-
-        // Otherwise it's a locked filler or a toggle button: never let items land here.
         event.setCancelled(true);
 
+        if (isFilterSlot(spec, raw)) {
+            // Cursor item → set a template copy; empty cursor → clear the slot.
+            ItemStack cursor = event.getCursor();
+            inv.setItem(raw, cursor.getType().isAir() ? null : template(cursor));
+            save(holder);
+            return;
+        }
+
+        // Otherwise it's a locked filler or a toggle button.
         Block block = holder.location().getBlock();
         boolean changed = false;
         if (spec.allowBlacklistToggle() && raw == MODE_SLOT) {
@@ -225,7 +224,7 @@ final class FilterGui implements Listener {
         }
 
         if (changed) {
-            repaintButtons(event.getInventory(), holder);
+            repaintButtons(inv, holder);
             save(holder);
             block.getWorld().playSound(block.getLocation().add(0.5, 0.5, 0.5),
                 Sound.BLOCK_COPPER_PLACE, 0.6f, 1.4f);
@@ -237,63 +236,39 @@ final class FilterGui implements Listener {
         if (!(event.getInventory().getHolder() instanceof FilterHolder holder)) return;
         PipeVariant.FilterSpec spec = holder.spec();
         int topSize = event.getView().getTopInventory().getSize();
+        boolean touched = false;
         for (int raw : event.getRawSlots()) {
-            if (raw >= 0 && raw < topSize && !isFilterSlot(spec, raw)) {
-                event.setCancelled(true);
-                return;
-            }
+            if (raw >= topSize) continue;
+            touched = true;
+            if (isFilterSlot(spec, raw)) event.getInventory().setItem(raw, template(event.getOldCursor()));
+        }
+        // Any drag into the menu only sets templates; the dragged items stay on the cursor.
+        if (touched) {
+            event.setCancelled(true);
+            save(holder);
         }
     }
 
     @EventHandler
     public void onClose(InventoryCloseEvent event) {
         if (!(event.getInventory().getHolder() instanceof FilterHolder holder)) return;
-        // Not in the map → saveAndCloseAll already saved this menu and is closing it; nothing to do.
-        if (openFilters.remove(key(holder.location())) == null) return;
-        // A filter slot is a one-item template: hand the rest of a stack back instead of storing it in the PDC.
-        Inventory inv = event.getInventory();
-        for (int i = 0; i < holder.spec().slots(); i++) {
-            ItemStack it = inv.getItem(i);
-            if (it == null || it.getAmount() <= 1) continue;
-            ItemStack extra = it.clone();
-            extra.setAmount(it.getAmount() - 1);
-            it.setAmount(1);
-            inv.setItem(i, it);
-            for (ItemStack left : event.getPlayer().getInventory().addItem(extra).values()) {
-                event.getPlayer().getWorld().dropItem(event.getPlayer().getLocation(), left);
-            }
-        }
-        save(holder);
-        // A mid-chain filter edit may need to wake an upstream extractor that slept while everything was
-        // blocked; do it once on close rather than on every toggle-click save.
+        // Every edit already saved. A mid-chain filter edit may need to wake an upstream extractor that
+        // slept while everything was blocked; do it once on close rather than on every click.
         PipeManager manager = plugin.getPipeManager(holder.location().getWorld());
         if (manager != null) manager.wakeAll();
     }
 
     /**
-     * Force-close this block's filter menu if one is open (called when the pipe is broken). Closing fires
-     * {@link #onClose}, which saves the current contents to the still-intact PDC and clears the lock — so the
-     * caller's subsequent drop reflects the latest edits and no draggable copy is left behind to dupe.
+     * Close every open menu for {@code block} (all menus when null): on a break, so a stale menu can't write
+     * into whatever later occupies the cell; on plugin disable, because a disabled plugin's listener no longer
+     * cancels clicks and the template items would become takeable.
      */
-    void closeFor(Block block) {
-        Player viewer = openFilters.get(key(block.getLocation()));
-        if (viewer != null) viewer.closeInventory();
-    }
-
-    /**
-     * Plugin disable: save every open menu's contents to its block PDC, then close it. Must run directly —
-     * a disabling plugin receives no events, so {@link #onClose} won't fire (on /stop players are still
-     * online at this point). The close just discards the menu; the saved items live on in the PDC and nothing
-     * is handed to the player (an item already on their cursor was taken out of the menu, so it's theirs).
-     */
-    void saveAndCloseAll() {
-        List<Player> viewers = new ArrayList<>(openFilters.values());
-        openFilters.clear();   // before closing, so an onClose that does fire skips (no double save)
-        for (Player viewer : viewers) {
-            if (viewer.getOpenInventory().getTopInventory().getHolder() instanceof FilterHolder holder) {
-                save(holder);
+    void closeFor(@Nullable Block block) {
+        for (Player p : Bukkit.getOnlinePlayers()) {
+            if (p.getOpenInventory().getTopInventory().getHolder() instanceof FilterHolder holder
+                    && (block == null || holder.location().equals(block.getLocation()))) {
+                p.closeInventory();
             }
-            viewer.closeInventory();
         }
     }
 
