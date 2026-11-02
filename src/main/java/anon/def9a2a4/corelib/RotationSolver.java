@@ -29,10 +29,12 @@ import java.util.Map;
  *       {@link Faces#CARDINAL} order, skipping its excluded (mounted) face. Never reverses.</li>
  * </ul>
  *
- * <p>Direction: BFS seeds each component CW, flips across reversing edges, and jams the component
- * on a contradiction (odd gear loop). A post-pass re-anchors the component to its sources'
- * direction preferences (lowest-cell source wins, deterministically); a second source whose
- * preference still disagrees also jams. Jammed ⇒ unpowered.
+ * <p>Direction: BFS seeds each gearbox-free domain CW, flips across reversing edges, and jams the
+ * component on a contradiction (odd gear loop). A post-pass re-anchors the domain to its sources'
+ * direction preferences (lowest-cell source wins, deterministically); a second source in the same
+ * domain whose preference still disagrees also jams. Jammed ⇒ unpowered. Domains with no source of
+ * their own then take their direction across gearboxes from the nearest sourced domain
+ * ({@link #deriveAcrossGearboxes}); sources on different sides of a gearbox are never compared.
  *
  * <p>TODO(later): migrate the static {@link RotationNetwork#doRecalculate} onto this solver so the
  * direction/jam logic lives in one place. Not done in the same change that introduced this class —
@@ -97,11 +99,15 @@ final class RotationSolver {
                 }
             }
 
-            // Pass B: spin direction per gearbox-free DOMAIN. A gearbox is a direction firewall — it
-            // carries power but couples no CW/CCW across itself, so two sources on perpendicular axes
-            // feeding one gearbox never false-jam. Each domain is seeded from its lowest-cell member so
-            // a powered-but-sourceless domain (fed only through a gearbox) resolves to a stable direction.
+            // Pass B: spin direction per gearbox-free DOMAIN. Sources are only compared inside one
+            // domain, so two sources on different sides of a gearbox never jam. Each domain is seeded
+            // from its lowest-cell member; a domain with no source of its own is then oriented from the
+            // nearest sourced domain across the gearbox edges skipped here (deriveAcrossGearboxes).
             boolean compJammed = false;
+            List<List<Integer>> domains = new ArrayList<>();
+            Map<Integer, Integer> domainOf = new HashMap<>();
+            List<int[]> skipped = new ArrayList<>();          // {from, to, reverses}
+            List<int[]> sourcedAnchors = new ArrayList<>();   // {domainId, anchorNode}
             List<Integer> sorted = new ArrayList<>(members);
             sorted.sort(Comparator.comparingInt((Integer i) -> nodes.get(i).x())
                 .thenComparingInt(i -> nodes.get(i).y())
@@ -121,7 +127,11 @@ final class RotationSolver {
                     for (Edge e : edges(nodes, byCell, cur)) {
                         int other = e.to();
                         if (component[other] != comp) continue;
-                        if (curGear || nodes.get(other).gearbox()) continue;   // firewall
+                        if (curGear || nodes.get(other).gearbox()) {
+                            // Domain boundary: oriented later by deriveAcrossGearboxes.
+                            skipped.add(new int[]{cur, other, e.reverses() ? 1 : 0});
+                            continue;
+                        }
                         RotationNetwork.SpinDirection want =
                             e.reverses() ? direction[cur].reversed() : direction[cur];
                         if (direction[other] == null) {
@@ -142,8 +152,12 @@ final class RotationSolver {
                         .thenComparingInt(i -> nodes.get(i).y())
                         .thenComparingInt(i -> nodes.get(i).z()))
                     .toList();
+                int domId = domains.size();
+                domains.add(domain);
+                for (int i : domain) domainOf.put(i, domId);
                 if (!prefSources.isEmpty()) {
                     int anchor = prefSources.get(0);
+                    sourcedAnchors.add(new int[]{domId, anchor});
                     if (direction[anchor] != nodes.get(anchor).dirPref()) {
                         for (int i : domain) direction[i] = direction[i].reversed();
                     }
@@ -153,6 +167,22 @@ final class RotationSolver {
                     }
                 }
                 compJammed |= domainJam;
+            }
+
+            // Orient source-less domains across the gearboxes from the nearest sourced domain.
+            sourcedAnchors.sort(Comparator.comparingInt((int[] a) -> nodes.get(a[1]).x())
+                .thenComparingInt(a -> nodes.get(a[1]).y())
+                .thenComparingInt(a -> nodes.get(a[1]).z()));
+            int[] sourcedOrder = sourcedAnchors.stream().mapToInt(a -> a[0]).toArray();
+            int[][] dEdges = new int[skipped.size()][];
+            for (int k = 0; k < skipped.size(); k++) {
+                int[] sk = skipped.get(k);
+                int parity = ((direction[sk[0]] != direction[sk[1]]) ? 1 : 0) ^ sk[2];
+                dEdges[k] = new int[]{domainOf.get(sk[0]), domainOf.get(sk[1]), parity};
+            }
+            Derivation der = deriveAcrossGearboxes(domains.size(), sourcedOrder, dEdges);
+            for (int d = 0; d < domains.size(); d++) {
+                if (der.flip()[d]) for (int i : domains.get(d)) direction[i] = direction[i].reversed();
             }
 
             int supply = 0, demand = 0;
@@ -171,6 +201,79 @@ final class RotationSolver {
         return new Result(component, powered, direction, jammed, surplus);
     }
 
+    /** Result of {@link #deriveAcrossGearboxes}, indexed by domain id. {@code flip[d]}: reverse every
+     *  member of domain d. {@code reached[d]}: d has a real frame (sourced, or derived from one).
+     *  {@code contested[d]}: d's derived frame came from a tie-break between sources that disagree. */
+    record Derivation(boolean[] flip, boolean[] reached, boolean[] contested) {}
+
+    /**
+     * Orient the source-less gearbox-free domains from the sourced ones, across the gearbox edges the
+     * domain flood skipped. Pure and world-free; shared by {@link #solve} and
+     * {@link RotationNetwork}'s decomposition.
+     *
+     * <p>An edge {@code {a, b, parity}} holds when {@code flip[a] ^ flip[b] == parity}, where parity is
+     * {@code (dir(u) != dir(v)) ^ reverses} for the member pair (u in a, v in b) as the domain flood
+     * left them. Multi-source FIFO BFS seeded in {@code sourcedOrder} (callers sort it by anchor key):
+     * each unreached domain is assigned once, so the edge to its BFS parent holds, and a reached domain
+     * is never compared or reassigned — a jam is impossible, and sourced domains are never flipped.
+     * Afterwards, any violated edge marks its source-less endpoint(s) contested (edges between two
+     * sourced domains are ignored: those sources are deliberately not compared), and contested is
+     * inherited down the derivation tree. Adjacency is sorted by (neighbour id, parity), so the result
+     * doesn't depend on edge order or orientation. Domains no source reaches stay unreached/unflipped.
+     */
+    static Derivation deriveAcrossGearboxes(int nDomains, int[] sourcedOrder, int[][] edges) {
+        boolean[] flip = new boolean[nDomains];
+        boolean[] reached = new boolean[nDomains];
+        boolean[] sourced = new boolean[nDomains];
+        boolean[] contested = new boolean[nDomains];
+        int[] parent = new int[nDomains];
+        java.util.Arrays.fill(parent, -1);
+
+        // Adjacency packed as (neighbour << 1 | parity), sorted → independent of edge input order.
+        @SuppressWarnings("unchecked")
+        List<Long>[] adj = new List[nDomains];
+        for (int[] e : edges) {
+            int a = e[0], b = e[1], p = e[2] & 1;
+            if (a == b) continue;
+            (adj[a] == null ? adj[a] = new ArrayList<>() : adj[a]).add(((long) b << 1) | p);
+            (adj[b] == null ? adj[b] = new ArrayList<>() : adj[b]).add(((long) a << 1) | p);
+        }
+        for (List<Long> l : adj) if (l != null) l.sort(null);
+
+        ArrayDeque<Integer> q = new ArrayDeque<>();
+        for (int s : sourcedOrder) {
+            if (sourced[s]) continue;
+            sourced[s] = reached[s] = true;
+            q.add(s);
+        }
+        List<Integer> derivedOrder = new ArrayList<>();
+        while (!q.isEmpty()) {
+            int d = q.poll();
+            if (adj[d] == null) continue;
+            for (long packed : adj[d]) {
+                int nb = (int) (packed >>> 1);
+                if (reached[nb]) continue;   // never re-compare or reassign → no jam possible
+                reached[nb] = true;
+                flip[nb] = flip[d] ^ ((packed & 1) == 1);
+                parent[nb] = d;
+                derivedOrder.add(nb);
+                q.add(nb);
+            }
+        }
+
+        for (int[] e : edges) {
+            int a = e[0], b = e[1];
+            if (a == b || !reached[a] || !reached[b]) continue;
+            if ((flip[a] ^ flip[b]) != ((e[2] & 1) == 1)) {
+                if (!sourced[a]) contested[a] = true;
+                if (!sourced[b]) contested[b] = true;
+            }
+        }
+        for (int nb : derivedOrder) if (contested[parent[nb]]) contested[nb] = true;   // BFS order: parent first
+
+        return new Derivation(flip, reached, contested);
+    }
+
     private record Edge(int to, boolean reverses) {}
 
     private static List<Edge> edges(List<Node> nodes, Map<Long, Integer> byCell, int idx) {
@@ -184,9 +287,10 @@ final class RotationSolver {
             return result;
         }
 
-        // Gearbox: omnidirectional hub — mirrors RotationNetwork.getConnections. Couples (reverses=false)
-        // on each face to another gearbox or a node aligned with that face; emits an omni back-edge only
-        // if that omni chose us. Early-return before along-axis/gearLike (nominal axis is meaningless).
+        // Gearbox: omnidirectional hub — mirrors RotationNetwork.getConnections. Couples (reverses=false;
+        // no reversers aboard) on each face to another gearbox or a node aligned with that face; emits an
+        // omni back-edge only if that omni chose us. Early-return before along-axis/gearLike (nominal axis
+        // is meaningless).
         if (node.gearbox()) {
             for (BlockFace face : Faces.CARDINAL) {
                 Integer oi = neighborAt(byCell, node, face);

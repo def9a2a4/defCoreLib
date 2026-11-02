@@ -136,8 +136,9 @@ public class RotationNetwork {
 
     /** As {@link #addNode(Block, String, Axis, NodeRole, int, boolean)} but flagged as a
      *  <b>gearbox</b> — an omnidirectional transmitter that couples to any aligned shaft/gear (or
-     *  another gearbox) on all six faces, passing power but not spin direction (a direction firewall
-     *  — each side resolves its own rotation; see {@link #getConnections}). */
+     *  another gearbox) on all six faces, passing power and spin direction. Sources on different sides
+     *  are never compared (no jam); a side with no source follows the nearest one (see
+     *  {@link #getConnections}, {@link RotationSolver#deriveAcrossGearboxes}). */
     public void addNode(Block block, String blockTypeId, Axis axis,
                         NodeRole role, int powerUnits, boolean gearLike, boolean gearbox) {
         addNode(block, blockTypeId, axis, role, powerUnits, gearLike, gearbox, false, null);
@@ -597,8 +598,8 @@ public class RotationNetwork {
             boolean chainLoop = false;  // set when a member pulley transmits on a closed loop
 
             // ── Pass A: membership flood across ALL edges (gearboxes included) so supply/demand pool
-            // across the whole component. Spin direction is resolved separately in pass B, because a
-            // gearbox is a DIRECTION FIREWALL — it carries power but couples no CW/CCW across itself.
+            // across the whole component. Spin direction is resolved separately in pass B, per
+            // gearbox-free domain, then carried across gearboxes into domains with no source.
             Queue<CustomBlockRegistry.LocationKey> queue = new ArrayDeque<>();
             Set<CustomBlockRegistry.LocationKey> enqueued = new HashSet<>();
             queue.add(start);
@@ -677,9 +678,10 @@ public class RotationNetwork {
             // ── Pass B: resolve spin direction per gearbox-free DOMAIN. Membership (hence power) already
             // spans gearboxes; here each maximal gearbox-free region floods on its own, gets its own
             // source anchor, and its own jam verdict — so two sources on perpendicular axes feeding one
-            // gearbox never compare frame-less CW/CCW tokens across it (the false-jam this fixes). Each
-            // domain is seeded from its lowest LocationKey member, so a powered-but-sourceless domain
-            // (fed only through a gearbox) still resolves to a STABLE direction across recalcs.
+            // gearbox are never compared across it (no false jam). Each domain is seeded from its lowest
+            // LocationKey member; afterwards a domain with no source of its own takes its direction from
+            // the nearest sourced domain across the skipped gearbox edges (RotationSolver
+            // .deriveAcrossGearboxes), so a hoist/piston/rotator behind a gearbox follows its source.
             Map<CustomBlockRegistry.LocationKey, SpinDirection> dirMap = new HashMap<>();
             Comparator<Map.Entry<CustomBlockRegistry.LocationKey, SpinDirection>> byKey = Comparator
                     .comparing((Map.Entry<CustomBlockRegistry.LocationKey, SpinDirection> e) -> e.getKey().worldId())
@@ -693,17 +695,26 @@ public class RotationNetwork {
                     .thenComparingInt(CustomBlockRegistry.LocationKey::y)
                     .thenComparingInt(CustomBlockRegistry.LocationKey::z));
 
-            // Members whose gearbox-free DOMAIN has no source of its own (it is powered only THROUGH a
-            // gearbox firewall). Such a domain's CW/CCW is an arbitrary-but-stable geometry seed, so a
-            // ratchet there has no meaningful "against its allowed direction" and must NOT freewheel — it
-            // just passes power. Tracked per-domain here because `allSources` is local to the domain loop;
-            // the component-level `supply` pools across gearboxes and cannot see this.
+            // Members whose direction is not a real spin: their domain has no source of its own and either
+            // no source reaches it across gearboxes, or the sources that do disagree (contested — the
+            // winner is a tie-break). A ratchet there has no meaningful "against its allowed direction"
+            // and must NOT freewheel — it just passes power. Filled after the derivation below; the
+            // component-level `supply` pools across gearboxes and cannot see this.
             Set<CustomBlockRegistry.LocationKey> sourcelessDomainMembers = new HashSet<>();
+
+            // Per-domain bookkeeping for the cross-gearbox derivation. Domain ids follow root order
+            // (sortedMembers), so they are deterministic.
+            List<List<CustomBlockRegistry.LocationKey>> domains = new ArrayList<>();
+            Map<CustomBlockRegistry.LocationKey, Integer> domainOf = new HashMap<>();
+            record AnchoredDomain(Map.Entry<CustomBlockRegistry.LocationKey, SpinDirection> anchor, int domain) {}
+            List<AnchoredDomain> sourcedDomains = new ArrayList<>();
+            record SkippedEdge(CustomBlockRegistry.LocationKey from, CustomBlockRegistry.LocationKey to, boolean reverses) {}
+            List<SkippedEdge> skipped = new ArrayList<>();
 
             for (CustomBlockRegistry.LocationKey root : sortedMembers) {
                 if (dirMap.containsKey(root)) continue;
 
-                // Flood one domain over NON-gearbox edges only (the firewall boundary).
+                // Flood one domain over NON-gearbox edges only (gearbox edges are the domain boundary).
                 List<CustomBlockRegistry.LocationKey> domain = new ArrayList<>();
                 boolean domainJam = false;
                 Queue<CustomBlockRegistry.LocationKey> dq = new ArrayDeque<>();
@@ -719,7 +730,11 @@ public class RotationNetwork {
                         CustomBlockRegistry.LocationKey nk = conn.neighbor();
                         if (!members.contains(nk)) continue;
                         RotationNode other = nodes.get(nk);
-                        if (node.gearbox() || (other != null && other.gearbox())) continue;  // firewall
+                        if (node.gearbox() || (other != null && other.gearbox())) {
+                            // Domain boundary: recorded for the cross-gearbox derivation below.
+                            skipped.add(new SkippedEdge(loc, nk, conn.reverses()));
+                            continue;
+                        }
                         SpinDirection neighborDir = conn.reverses() ? myDir.reversed() : myDir;
                         SpinDirection existing = dirMap.get(nk);
                         if (existing != null) {
@@ -745,6 +760,9 @@ public class RotationNetwork {
                 // toggle / reload; a SECOND stored-direction source in the SAME domain that still
                 // disagrees is a real jam. (Cross-gearbox source pairs are in different domains and are
                 // never compared — that is the point.)
+                int domId = domains.size();
+                domains.add(domain);
+                for (CustomBlockRegistry.LocationKey loc : domain) domainOf.put(loc, domId);
                 List<Map.Entry<CustomBlockRegistry.LocationKey, SpinDirection>> allSources = new ArrayList<>();
                 List<Map.Entry<CustomBlockRegistry.LocationKey, SpinDirection>> storedSources = new ArrayList<>();
                 for (CustomBlockRegistry.LocationKey loc : domain) {
@@ -760,6 +778,7 @@ public class RotationNetwork {
                 if (!allSources.isEmpty()) {
                     var anchor = (storedSources.isEmpty() ? allSources : storedSources)
                             .stream().min(byKey).orElseThrow();
+                    sourcedDomains.add(new AnchoredDomain(anchor, domId));
                     SpinDirection bfsDir = dirMap.getOrDefault(anchor.getKey(), SpinDirection.CW);
                     if (bfsDir != anchor.getValue()) {
                         for (CustomBlockRegistry.LocationKey loc : domain) {
@@ -773,22 +792,43 @@ public class RotationNetwork {
                             break;
                         }
                     }
-                } else if (ratchetDirsOut != null) {
-                    // Source-less domain (powered only through a gearbox): its direction is a seed, not a
-                    // physical spin, so any ratchet in it must pass rather than freewheel (see above). Only
-                    // the measure pass reads this set, so skip the copy on the fast/apply passes.
-                    sourcelessDomainMembers.addAll(domain);
                 }
 
                 jammed |= domainJam;
             }
 
+            // Cross-gearbox derivation: orient each source-less domain from the nearest sourced one.
+            // Sourced domains keep their own anchor and are never compared across a gearbox (no jam).
+            sourcedDomains.sort(Comparator.comparing(AnchoredDomain::anchor, byKey));
+            int[] sourcedOrder = sourcedDomains.stream().mapToInt(AnchoredDomain::domain).toArray();
+            int[][] dEdges = new int[skipped.size()][];
+            for (int i = 0; i < dEdges.length; i++) {
+                SkippedEdge se = skipped.get(i);
+                boolean differ = dirMap.get(se.from()) != dirMap.get(se.to());
+                dEdges[i] = new int[]{domainOf.get(se.from()), domainOf.get(se.to()),
+                        (differ ^ se.reverses()) ? 1 : 0};
+            }
+            RotationSolver.Derivation der =
+                    RotationSolver.deriveAcrossGearboxes(domains.size(), sourcedOrder, dEdges);
+            for (int d = 0; d < domains.size(); d++) {
+                if (der.flip()[d]) {
+                    for (CustomBlockRegistry.LocationKey loc : domains.get(d)) {
+                        dirMap.computeIfPresent(loc, (k, v) -> v.reversed());
+                    }
+                }
+                // Only the measure pass reads this set, so skip the copy on the fast/apply passes.
+                if (ratchetDirsOut != null && (der.contested()[d] || !der.reached()[d])) {
+                    sourcelessDomainMembers.addAll(domains.get(d));
+                }
+            }
+
             // Measure pass: record each powered, non-jammed ratchet's resolved (post-anchor)
             // direction, then stop before any side effect. A ratchet in a jammed/unpowered component
             // has no well-defined direction, so it is left out of the cut set (never freewheels there).
-            // A ratchet in a SOURCE-LESS domain (fed only through a gearbox) is likewise left out — its
-            // direction is an arbitrary seed, so freewheeling it would sever downstream at random; Option A
-            // makes it pass power instead.
+            // A ratchet whose domain has no real direction (no source reaches it, or it is contested
+            // between disagreeing sources across gearboxes) is likewise left out — freewheeling it would
+            // sever downstream at random, so it passes power instead. A ratchet in a domain that derives
+            // its direction cleanly from one side of a gearbox freewheels normally.
             if (RATCHET_TRACE && ratchetDirsOut != null) {
                 for (CustomBlockRegistry.LocationKey loc : members) {
                     RotationNode rn = nodes.get(loc);
@@ -944,9 +984,11 @@ public class RotationNetwork {
 
         // Gearbox: an omnidirectional hub. On each face it couples (spin-preserving) to the neighbor
         // there iff that neighbor is another gearbox OR a node whose axis runs along that face (a shaft
-        // or gear aligned with the face). Every edge is reverses=false, so the hub and its aligned
-        // shafts share one spin label (a tree — no false jams). Symmetric from the neighbor side: an
-        // aligned shaft's along-axis probe lands on the gearbox and checkAxisNeighbor connects back.
+        // or gear aligned with the face). An edge reverses only when the neighbor is a powered reverser
+        // whose output face points into the gearbox — the same XOR rule as an along-axis edge, so both
+        // half-edges agree (an aligned shaft's along-axis probe lands on the gearbox and
+        // checkAxisNeighbor connects back with the same flag). Pass B never floods across a gearbox
+        // edge, so a reversing one can't false-jam; the cross-gearbox derivation reads the flag.
         // Early-return before along-axis/gearLike/chain — the gearbox's nominal axis is meaningless.
         if (node.gearbox()) {
             List<Connection> res = new ArrayList<>(6);
@@ -960,8 +1002,13 @@ public class RotationNetwork {
                     // mirrors checkAxisNeighbor, so a non-chosen omni isn't pulled in (and one that DID
                     // choose us isn't orphaned).
                     if (gk.equals(omniAttachKey(other))) res.add(new Connection(nk, false));
-                } else if (other.gearbox() || other.axis() == axisFromFace(face)) {
+                } else if (other.gearbox()) {
                     res.add(new Connection(nk, false));
+                } else if (other.axis() == axisFromFace(face)) {
+                    // The neighbor sits at +face; its direction toward the gearbox is −face.
+                    int intoGearbox = -axisComponent(other.axis(), face.getModX(), face.getModY(), face.getModZ());
+                    int sign = poweredReverserSign(other, other.axis());
+                    res.add(new Connection(nk, sign != 0 && sign == intoGearbox));
                 }
             }
             return res;
@@ -1030,9 +1077,10 @@ public class RotationNetwork {
         if (other.gearbox()) {
             // A gearbox couples to any aligned neighbour on all six faces; since this probe runs along
             // the caller's axis, the gearbox lies on the caller's ±axis and its face loop emits the
-            // matching reverses=false edge back — symmetric. (Intentionally drops a reverser flip into
-            // the hub: matching a true on only this side would create a false jam. See gearbox docs.)
-            result.add(new Connection(neighborKey, false));
+            // matching edge back. Keep the caller's reverser flag (true only when the caller is a powered
+            // reverser whose output faces the gearbox) — the face loop computes the same value, and
+            // pass B skips gearbox edges, so it can't false-jam; the cross-gearbox derivation uses it.
+            result.add(new Connection(neighborKey, reverses));
             return;
         }
         if (other.axis() == requiredAxis) {
