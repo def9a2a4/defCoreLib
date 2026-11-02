@@ -278,12 +278,70 @@ async function testGlueBrush() {
   pass(NAME)
 }
 
+// f. Cart rider logout: ride a Railbound dispenser cart (shears in hand = mount, not GUI), quit while
+//    riding, rejoin as the same player. The quit handler must have stepped the bot off first: the cart
+//    stays in the world, still tracked, with its live contents; the bot comes back riding nothing.
+//    (Without it vanilla saves the cart into the player file and respawns it untracked with stale contents.)
+async function testCartLogout() {
+  const NAME = 'Cart rider logout keeps contents'
+  const ITEMS = 20   // BotTestCommands.CART_ITEMS
+  await setupFixture('cart', new Vec3(2, 0, 0))
+  if (await giveVanilla('shears', 1) !== 1) return fail(NAME, 'no shears from /give')
+  const shears = bot.inventory.items().find(it => it.name === 'shears')
+  await bot.equip(shears, 'hand')
+  const cart = bot.nearestEntity(e => e.name === 'minecart')
+  if (!cart) return fail(NAME, 'client sees no minecart near the fixture')
+
+  bot.mount(cart)
+  for (let i = 0; i < 20 && !bot.vehicle; i++) await sleep(100)
+  if (!bot.vehicle) return fail(NAME, 'right-clicking the cart with shears did not mount it')
+  let err = await serverAssert('cart_ridden')
+  if (err) return fail(NAME, err)
+
+  await reconnect()
+  await sleep(1000)   // entities around the rejoin point reach the client
+  if (bot.vehicle) return fail(NAME, `bot rejoined riding entity ${bot.vehicle.id}`)
+  err = await serverAssert('cart_kept', ITEMS)
+  if (err) return fail(NAME, err)
+  pass(NAME)
+}
+
 const TESTS = {
   engine_gui: { name: 'Engine fuel GUI', fn: testEngineGui },
   wrench_readout: { name: 'Wrench network readout', fn: testWrenchReadout },
   place_break: { name: 'Place and break a shaft', fn: testPlaceBreak },
   filter_menu: { name: 'Filter pipe menu round trip', fn: testFilterMenu },
-  glue_brush: { name: 'Glue brush marks a block', fn: testGlueBrush }
+  glue_brush: { name: 'Glue brush marks a block', fn: testGlueBrush },
+  cart_logout: { name: 'Cart rider logout keeps contents', fn: testCartLogout }
+}
+
+// =============================================================================
+// Connection
+// =============================================================================
+
+/** Connect a bot (same MC_USERNAME every time) and resolve once it has spawned and settled. */
+function connect() {
+  const b = createBot()
+  bot = b
+  // A drop mid-run must fail fast — never let an emptied event loop exit 0 with scenarios unrun.
+  // A deliberate quit (reconnect) marks its bot first; a replaced bot's late 'end' is ignored too.
+  b.on('end', () => {
+    if (!finished && !b._expectedQuit && b === bot) { log('Disconnected before the run finished'); process.exit(1) }
+  })
+  return new Promise((resolve) => setupBotEvents(b, log, resolve))
+}
+
+/** Quit and log back in as the same player; `bot` is the new connection afterwards. */
+async function reconnect() {
+  const old = bot
+  old._expectedQuit = true
+  const ended = new Promise((resolve) => old.once('end', resolve))
+  old.quit()
+  await Promise.race([ended, sleep(5000)])
+  // Bukkit's connection-throttle (4 s default) would refuse an immediate rejoin from the same address.
+  await sleep(4500)
+  await connect()
+  log(`Reconnected as ${bot.username}`)
 }
 
 // =============================================================================
@@ -324,10 +382,7 @@ async function main() {
 }
 
 let finished = false
-bot = createBot()
-setupBotEvents(bot, log, () => main().catch((e) => { log(e.stack); process.exit(1) }))
-// A drop mid-run must fail fast — never let an emptied event loop exit 0 with scenarios unrun.
-bot.on('end', () => { if (!finished) { log('Disconnected before the run finished'); process.exit(1) } })
+connect().then(main).catch((e) => { log(e.stack); process.exit(1) })
 
 setTimeout(() => {
   log(`Overall timeout (${OVERALL_TIMEOUT_MS / 1000}s) reached`)

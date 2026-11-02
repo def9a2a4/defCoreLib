@@ -409,7 +409,10 @@ final class ShowcaseRunner implements Listener {
                 if (t == null) return false;
                 org.bukkit.Material only = null;
                 org.bukkit.block.BlockFace facing = null;
-                if (qual != null && t == org.bukkit.entity.EntityType.ITEM) {
+                String customId = null;   // `item:ns:id` — dropped items of one custom type
+                if (qual != null && t == org.bukkit.entity.EntityType.ITEM && qual.indexOf(':') > 0) {
+                    customId = qual;
+                } else if (qual != null && t == org.bukkit.entity.EntityType.ITEM) {
                     only = org.bukkit.Material.matchMaterial(qual);
                     if (only == null) return false;
                 } else if (qual != null) {
@@ -428,8 +431,10 @@ final class ShowcaseRunner implements Listener {
                 for (org.bukkit.entity.Entity e : origin.getWorld().getNearbyEntities(box(origin, ex.at(), ex.to()))) {
                     if (e.getType() != t) continue;
                     if (only != null && !(e instanceof org.bukkit.entity.Item it && it.getItemStack().getType() == only)) continue;
+                    if (customId != null && !(e instanceof org.bukkit.entity.Item it
+                            && customId.equals(CustomBlockRegistry.getItemTypeId(it.getItemStack())))) continue;
                     if (facing != null && !(e instanceof org.bukkit.entity.Hanging h && h.getFacing() == facing)) continue;
-                    if (qual != null && only == null && facing == null
+                    if (qual != null && only == null && facing == null && customId == null
                             && !(e instanceof org.bukkit.entity.Painting p && artKey(p).equals(qual))) continue;
                     n += e instanceof org.bukkit.entity.Item it ? it.getItemStack().getAmount() : 1;
                 }
@@ -1138,6 +1143,8 @@ final class ShowcaseRunner implements Listener {
             });
             e.addPassenger(r);
         }
+        // `explode: true` sets a summoned wind charge off where it stands (a gust, not a block-breaking blast).
+        if ("true".equals(x.get("explode")) && e instanceof org.bukkit.entity.AbstractWindCharge w) w.explode();
     }
 
     /** The first entity key a spec summons or asserts on that this server doesn't have, else null. */

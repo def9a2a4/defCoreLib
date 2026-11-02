@@ -1105,9 +1105,11 @@ showcases:
   # tick past the default 80 (the run halts at the latest one).
   #   actions: - { tick: N, do: set, block: MAT, at: [..], to: [..]?, only: MAT?, physics: bool?, data: "[..]"? }
   #            - { tick: N, do: corrupt_persisted_mechanism, at: [..] }
-  #            - { tick: N, do: summon, entity: KEY, at: [..], face: F?, item: MAT?, art: KEY?, rider: KEY? }
+  #            - { tick: N, do: summon, entity: KEY, at: [..], face: F?, item: MAT?, art: KEY?, rider: KEY?, explode: true? }
+  #              (`explode: true` sets a summoned wind charge off where it stands)
   #   expect type block_type: value MAT (or !MAT), at + optional `to` box — every cell must match.
-  #   expect type entity_count: value KEY=N (or item:MAT=N — dropped items counted by stack size) in the box.
+  #   expect type entity_count: value KEY=N (or item:MAT=N / item:ns:id=N — dropped items, by material or
+  #   custom type, counted by stack size) in the box.
   #   expect type riding: value RIDER/VEHICLE — some RIDER in the box rides a VEHICLE. A spec naming an
   #   entity this server lacks (cushion before 26.3) reports SKIP instead of running.
   # Items: "MAT" / "MAT xN", or { material: MAT, count: N?, name: "..."?, contents: [items]? } (a filled shulker).
@@ -1683,3 +1685,35 @@ showcases:
       - { type: engine_fuel, value: "5000", at: [0, 0, 0] }
       - { type: state, value: running_y, at: [0, 0, 0] }
       - { type: network_powered, at: [0, 1, 0] }
+
+  # A vanilla piston pushing a custom head (here a vertical slab) breaks it as itself: the custom item drops,
+  # not a plain player head. Before the fix only cancelPistons / breakOnPiston types were handled, and every
+  # other custom head popped off as a skinned PLAYER_HEAD, losing the item and orphaning its displays.
+  - id: test_piston_breaks_custom_head_as_itself
+    name: "Test: piston-pushed custom head drops as itself"
+    test_only: true
+    assert_at: 40
+    blocks:
+      - { id: "verticalslabs:oak", facing: north, state: north, at: [1, 0, 0] }
+    vanilla:
+      - { block: "PISTON", at: [0, 0, 0], data: "[facing=east]" }
+    actions:
+      - { tick: 20, do: set, block: REDSTONE_BLOCK, physics: true, at: [-1, 0, 0] }
+    expect:
+      - { type: block_type, value: "!PLAYER_HEAD", at: [1, 0, 0] }
+      - { type: entity_count, value: "item:verticalslabs:oak=1", at: [-2, -1, -2], to: [4, 2, 2] }
+      - { type: entity_count, value: "item:PLAYER_HEAD=0", at: [-2, -1, -2], to: [4, 2, 2] }
+
+  # A wind charge's gust (ExplosionResult TRIGGER_BLOCK) breaks nothing in vanilla, and must not break a
+  # custom head either. It used to: the head popped and spilled its storage, even inside claims.
+  - id: test_wind_charge_spares_custom_head
+    name: "Test: wind charge leaves a custom head alone"
+    test_only: true
+    assert_at: 40
+    blocks:
+      - { id: "verticalslabs:oak", facing: north, state: north, at: [0, 0, 0] }
+    actions:
+      - { tick: 20, do: summon, entity: wind_charge, explode: true, at: [0, 0, 1] }
+    expect:
+      - { type: block_type, value: PLAYER_HEAD, at: [0, 0, 0] }
+      - { type: entity_count, value: "item:verticalslabs:oak=0", at: [-2, -1, -2], to: [2, 2, 3] }

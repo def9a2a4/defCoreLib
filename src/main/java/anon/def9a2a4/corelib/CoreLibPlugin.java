@@ -72,8 +72,8 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
     private LargeBannerRecipes largeBannerRecipes;
 
     /**
-     * A thruster aboard a mechanism burns only by the demand its consumer reports. BlockShips before 0.0.18
-     * never reports it, so with this DefCoreLib its thrusters would push for free. Say so once at startup.
+     * Thrusters, propellers and wheels aboard a mechanism cost fuel only by the demand their consumer reports.
+     * BlockShips before 0.0.18 never reports it, so with this DefCoreLib they would run for free. Say so once.
      */
     private void warnOldBlockShips() {
         org.bukkit.plugin.Plugin bs = getServer().getPluginManager().getPlugin("BlockShips");
@@ -88,8 +88,8 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         for (int i = 0; i < 3; i++) {
             if (have[i] != need[i]) {
                 if (have[i] < need[i]) {
-                    getLogger().warning("BlockShips " + v + " is older than 0.0.18: its thrusters will push without"
-                        + " burning fuel on this DefCoreLib. Update BlockShips.");
+                    getLogger().warning("BlockShips " + v + " is older than 0.0.18: its thrusters, propellers and wheels"
+                        + " will run without burning fuel on this DefCoreLib. Update BlockShips.");
                 }
                 return;
             }
@@ -331,7 +331,8 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
 
         // In-game bot tests (test-bot/, -Ddefcorelib.botTest=true): enables `/defcorelib bottest`.
         if (BotTestCommands.enabled()) {
-            botTest = new BotTestCommands(this, registry, showcaseBuilder, glueManager, fuelManager);
+            botTest = new BotTestCommands(this, registry, showcaseBuilder, glueManager, fuelManager,
+                () -> customCartManager);
         }
 
         getLogger().info("DefCoreLib enabled: " + registry.allTypes().size()

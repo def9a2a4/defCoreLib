@@ -624,10 +624,12 @@ final class MechanismRotationDriver {
                     if (inv == null) continue;
                     Vector3i cell = mech.liveCell(s.blockIndex());
                     if (!world.isChunkLoaded(cell.x >> 4, cell.z >> 4)) continue;
-                    RotationBlocks.suctionEffect(world,
-                        new Location(world, cell.x + 0.5, cell.y + 0.5, cell.z + 0.5),
-                        cell.x, cell.y, cell.z, inv,
-                        config.suctionPullRange, config.suctionPullStrength);
+                    if (RotationBlocks.suctionEffect(world,
+                            new Location(world, cell.x + 0.5, cell.y + 0.5, cell.z + 0.5),
+                            cell.x, cell.y, cell.z, inv,
+                            config.suctionPullRange, config.suctionPullStrength)) {
+                        st.lastWorked.put(s.blockIndex(), st.lastTickAge);   // WORK-mode load
+                    }
                     // Feed ONE collected item into the travelling inventory this hopper is mounted
                     // on (never drops — mirror of pushToMount, against the on-board container).
                     BlockFace mount = s.localFacing() == BlockFace.DOWN
@@ -657,7 +659,9 @@ final class MechanismRotationDriver {
                     int tx = cell.x + facing.getModX(), ty = cell.y + facing.getModY(),
                         tz = cell.z + facing.getModZ();
                     if (!world.isChunkLoaded(tx >> 4, tz >> 4)) continue;
-                    RotationBlocks.placerEffect(world.getBlockAt(tx, ty, tz), inv);
+                    if (RotationBlocks.placerEffect(world.getBlockAt(tx, ty, tz), inv)) {
+                        st.lastWorked.put(s.blockIndex(), st.lastTickAge);   // WORK-mode load
+                    }
                 }
                 case "mech:millstone" -> tickProcessing(mech, st, s, k, world, powered, cardinal,
                     millRecipes, org.bukkit.Sound.BLOCK_GRINDSTONE_USE, config.millstoneMaxBatch);
@@ -788,6 +792,7 @@ final class MechanismRotationDriver {
         RotationBlocks.DrillOutcome out = RotationBlocks.drillEffect(registry, target, facing,
             track.state, sourceId, config.drillBreakStages, config.drillBlacklist, fastBore);
         track.state = out.next();
+        if (out.next() != null || out.broke()) st.lastWorked.put(s.blockIndex(), st.lastTickAge);   // WORK load
     }
 
     // ──────────────────────────────────────────────────────────────────────

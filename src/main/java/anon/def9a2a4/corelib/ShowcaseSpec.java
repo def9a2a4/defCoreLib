@@ -242,7 +242,7 @@ final class ShowcaseSpec {
                         continue;
                     }
                     Map<String, String> extra = new java.util.LinkedHashMap<>();
-                    for (String k : new String[]{"entity", "face", "item", "art", "rider", "data"}) {
+                    for (String k : new String[]{"entity", "face", "item", "art", "rider", "data", "explode"}) {
                         if (m.get(k) != null) extra.put(k, str(m.get(k)));
                     }
                     if ("summon".equals(kind) && !extra.containsKey("entity")) {

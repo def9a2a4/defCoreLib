@@ -1285,6 +1285,7 @@ final class RotationBlocks {
             return;
         }
         if (!delivered || !provider.drain(intake, fluid)) return;
+        network.markWorked(key, org.bukkit.Bukkit.getCurrentTick() + WORK_LOAD_WINDOW_TICKS);   // engine load only while pumping
 
         var center = pump.getLocation().add(0.5, 0.5, 0.5);
         pump.getWorld().playSound(center, org.bukkit.Sound.ITEM_BUCKET_FILL, 0.5f, 1.1f);
@@ -1664,8 +1665,11 @@ final class RotationBlocks {
         if (host == null) return;
         Block target = placer.getRelative(facing);
         if (!placer.getWorld().isChunkLoaded(target.getX() >> 4, target.getZ() >> 4)) return; // never sync-load
-        if (placerEffect(target, host) && MachineActedEvent.hasListeners()) {
-            org.bukkit.Bukkit.getPluginManager().callEvent(new MachineActedEvent(placer, "mech:placer"));
+        if (placerEffect(target, host)) {
+            network.markWorked(key, org.bukkit.Bukkit.getCurrentTick() + WORK_LOAD_WINDOW_TICKS);   // engine load only while placing
+            if (MachineActedEvent.hasListeners()) {
+                org.bukkit.Bukkit.getPluginManager().callEvent(new MachineActedEvent(placer, "mech:placer"));
+            }
         }
     }
 
@@ -2087,8 +2091,11 @@ final class RotationBlocks {
         boolean captured = suctionEffect(hopper.getWorld(), hopper.getLocation().add(0.5, 0.5, 0.5),
             hopper.getX(), hopper.getY(), hopper.getZ(),
             internal, suctionPullRange, suctionPullStrength);
-        if (captured && MachineActedEvent.hasListeners()) {
-            Bukkit.getPluginManager().callEvent(new MachineActedEvent(hopper, "mech:suction_hopper"));
+        if (captured) {
+            network.markWorked(key, org.bukkit.Bukkit.getCurrentTick() + WORK_LOAD_WINDOW_TICKS);   // engine load only while catching items
+            if (MachineActedEvent.hasListeners()) {
+                Bukkit.getPluginManager().callEvent(new MachineActedEvent(hopper, "mech:suction_hopper"));
+            }
         }
 
         pushToMount(hopper, internal);
@@ -2366,6 +2373,7 @@ final class RotationBlocks {
             drillProgress.get(key), key.hashCode(), drillBreakStages, drillBlacklist, false); // static: normal speed
         if (out.next() == null) drillProgress.remove(key);
         else drillProgress.put(key, out.next());
+        if (out.next() != null || out.broke()) network.markWorked(key, org.bukkit.Bukkit.getCurrentTick() + WORK_LOAD_WINDOW_TICKS);   // load only while boring
         if (out.broke() && MachineActedEvent.hasListeners()) {
             Bukkit.getPluginManager().callEvent(new MachineActedEvent(drill, "mech:drill"));
         }

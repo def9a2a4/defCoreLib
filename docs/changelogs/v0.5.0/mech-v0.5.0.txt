@@ -27,7 +27,7 @@ The first release since 0.3.2 (0.4.0 was never published, so everything here is 
 - **Ceiling mounts** — a rotator under a block swings it like a hatch; propellers and windmills of every tier hang under a block on a shaft running up into it, working exactly like a floor mount.
 - **Frame blocks are wood-keyed** — casing, gearbox and chassis auto-glue only to same-wood frame blocks, and a plain block no longer drags an adjacent frame. The glue brush **pins** a frame to anything, any wood.
 - **Glued selections up to 1024 blocks** (was 256).
-- **Engines burn fuel for the power actually used** — an idle millstone, press or sieve line burns nothing, half load burns half as fast, and windmills and water wheels cover the load first. Ship propellers, wheels and thrusters burn by how hard BlockShips uses them, and nothing on a docked ship. Steam pistons drink boiler water the same way.
+- **Engines burn fuel for the power actually used** — a machine burns fuel only while it is working (a millstone, press or sieve processing, a drill boring, a pump pumping, a placer placing, a suction hopper catching items, a dispenser firing, a mechanical piston or chain hoist moving), so an idle line burns nothing, half load burns half as fast, and windmills and water wheels cover the load first. Ship propellers, wheels and thrusters burn by how hard BlockShips uses them, and nothing on a docked ship. Steam pistons drink boiler water the same way.
 - **Fuel settings are admin-editable** — copy the `fuel`, `engines`, `thruster`, `steam` or `load` sections of rotation-config.yml into `plugins/DefCoreLib/config/fuel.yml`.
 - **Mounted drill mines mid-swing** — a drill on a rotator bores through the whole arc, at 2× speed while swinging.
 - **Heavier contraptions move slower** — speed scales with the carried blocks' mass, not their count.
@@ -47,7 +47,7 @@ The first release since 0.3.2 (0.4.0 was never published, so everything here is 
 - **Carried banners survive** — vanilla, large and huge banners keep their patterns, tier and orientation and re-land with the contraption, with no ghost copy.
 - **Engines and burners keep their fuel** — a part-burned item survives being carried and restarts, and a landed engine no longer gets back the fuel it had at take-off.
 - **A burned lava bucket or seed-oil bottle returns its container** — stacked onto one already in the machine, otherwise dropped beside it (an engine aboard keeps it in its storage instead of dropping it overboard).
-- **Surplus power costs fuel** — a millstone, press or sieve running bigger batches with spare power pays for the extra cycles it actually ran.
+- **Surplus power costs fuel** — a millstone, press or sieve running bigger batches with spare power pays for the extra cycles it actually ran, and a mechanical piston or chain hoist pays for the speed spare power gives it.
 - **The suction hopper leaves protected items alone** (shop displays), and plugins can veto its pickups like a vanilla hopper's.
 - **Steam piston parts go out when it's broken**, and its status readout no longer says "no fuel" while the burner holds fuel.
 - **Machines at the edge of the loaded area** no longer load the chunk next door.

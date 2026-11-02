@@ -93,6 +93,13 @@ load:
   millstone: work
   press: work
   sieve: work
+  drill: work
+  placer: work
+  pump: work
+  suction_hopper: work
+  mechanical_dispenser: work
+  piston_core: work
+  chain_hoist: work
   propeller: demand
   large_propeller: demand
   huge_propeller: demand

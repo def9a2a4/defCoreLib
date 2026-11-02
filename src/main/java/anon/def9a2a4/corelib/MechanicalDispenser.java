@@ -208,6 +208,7 @@ final class MechanicalDispenser implements Listener {
 
         Boost boost = boostFor(key);
         BlockFace facing = facingOf(b);
+        network.markWorked(key, Bukkit.getCurrentTick() + RotationBlocks.WORK_LOAD_WINDOW_TICKS);   // load only when firing
         Bukkit.getScheduler().runTask(registry.getPlugin(), () -> scanAndBoost(b, facing, boost));
         cue(b, facing);
     }

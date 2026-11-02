@@ -685,6 +685,10 @@ final class ExtendablePistonManager {
         // Whole-mechanism inertial mass (whole rod — fully materialized at assembly, does NOT grow), cached
         // at move-start: a heavier piston extends slower. Fixed for the stroke, so read the cached field.
         float step = clamp((float) (SPEED_K * power / Math.max(1.0, m.mass)), MIN_STEP, (float) config.pistonMaxStep);
+        // Engine load while moving: the power this step's speed actually takes (capped speed wastes none).
+        int used = (int) Math.ceil(step * Math.max(1.0, m.mass) / SPEED_K);
+        network.markWorked(m.coreKey, org.bukkit.Bukkit.getCurrentTick() + RotationBlocks.WORK_LOAD_WINDOW_TICKS,
+            Math.max(0, Math.min(power, used) - base));
 
         if (remaining <= step + 1e-3) {
             // Rising: carry riders up by the final delta BEFORE the colliders teleport up (see below).

@@ -760,6 +760,10 @@ final class ChainHoistManager implements Listener {
         // per-block probe above assumes the body crosses at most one whole cell per tick.
         float ceil = Math.min((float) config.pistonMaxStep, HOIST_MAX_STEP);
         float step = clamp((float) (SPEED_K * power / Math.max(1.0, m.mass)), MIN_STEP, ceil);
+        // Engine load while moving: the power this step's speed actually takes (capped speed wastes none).
+        int used = (int) Math.ceil(step * Math.max(1.0, m.mass) / SPEED_K);
+        network.markWorked(m.hoistKey, org.bukkit.Bukkit.getCurrentTick() + RotationBlocks.WORK_LOAD_WINDOW_TICKS,
+            Math.max(0, Math.min(power, used) - base));
 
         boolean arrived = remaining <= step + 1e-3;
         Location next = arrived ? m.target : cur.clone().add(0, m.dirY * step, 0);
