@@ -182,6 +182,10 @@ final class LegacyHeadMigrator implements Listener {
     @EventHandler(ignoreCancelled = true)
     public void onPickup(EntityPickupItemEvent event) {
         if (!(event.getEntity() instanceof Player)) return;
+        // A partial pickup: the server has cut the item's stack down to what fits and restores the rest onto
+        // THAT stack after the event. Swapping in a fresh stack here would lose the remainder, so leave it;
+        // it is restamped on a later full pickup or when the inventory is opened.
+        if (event.getRemaining() > 0) return;
         ItemStack fresh = restamp(event.getItem().getItemStack());
         if (fresh != null) event.getItem().setItemStack(fresh);
     }

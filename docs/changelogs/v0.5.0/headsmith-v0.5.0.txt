@@ -9,7 +9,7 @@
 - Remove the old standalone HeadSmith jar first — both are named HeadSmith and can't be installed together.
 - Its `config.yml` is no longer read: `excluded-tags`, `excluded-heads`, `custom-head-files` and `tag-order` have no effect.
 - Heads you already placed are adopted automatically as their chunks load, and old head items convert when they land in an inventory. `/headsmith migrate` only re-runs the sweep over loaded chunks by hand.
-- Placed heads are recognized by their skin alone (the old plugin marked nothing else on them), so a head from another plugin that uses the exact same skin, already placed in the world, is taken over as a HeadSmith head too and drops as one. Head items are matched by the old plugin's own marker, so newly placing another plugin's head is never affected.
+- Placed heads are recognized by their skin alone (the old plugin marked nothing else on them), so a head from another plugin that uses the exact same skin, already placed in the world, is taken over as a HeadSmith head too and drops as one. This keeps happening as chunks load, not only once at upgrade: a same-skin head from another plugin (HeadDatabase, a head shop) placed at any time becomes a HeadSmith head the next time its chunk loads, and then drops as a HeadSmith item without its original name or lore. Head *items* are matched by the old plugin's own marker, so an item in an inventory is never converted.
 
 ## Heads
 

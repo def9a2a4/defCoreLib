@@ -493,7 +493,10 @@ final class ChainPulley {
 
     private static void refundChain(Player player, int count) {
         if (player.getGameMode() == GameMode.CREATIVE) return;
-        player.getInventory().addItem(new ItemStack(CHAIN_MATERIAL, count));
+        // A full inventory returns the rest: drop it at the player's feet rather than delete it.
+        for (ItemStack rest : player.getInventory().addItem(new ItemStack(CHAIN_MATERIAL, count)).values()) {
+            player.getWorld().dropItemNaturally(player.getLocation(), rest);
+        }
     }
 
     /** Drop {@code count} chains into the world at a removed pulley (no player context on removal). */

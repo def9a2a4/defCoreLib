@@ -44,12 +44,16 @@ jobs:
         run: make build
 
       - name: Docs export (headless boot, blocks placed, spec exported)
+        shell: bash
         run: |
+          set -euo pipefail   # so make's failure survives the tee pipe
           mkdir -p ci-logs
           make docs CATALOG_ARGS=--no-assets 2>&1 | tee ci-logs/docs.log
 
       - name: Showcase capture (demo machines run, live data captured)
+        shell: bash
         run: |
+          set -euo pipefail   # so make's failure survives the tee pipe
           mkdir -p ci-logs
           make showcase-capture CATALOG_ARGS=--no-assets 2>&1 | tee ci-logs/capture.log
 
