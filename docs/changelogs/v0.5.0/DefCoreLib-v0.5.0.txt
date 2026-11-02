@@ -39,6 +39,7 @@ Two new frame blocks join the Casing, a Ratchet valve arrives, and mechanisms le
 
 - Movers (piston, rotator, drawbridge, minecart, chain hoist) now carry **nested glued machines** — a chain hoist glued onto a rotator swings as one body, head + chain + platform together.
 - Rotators can mount under a block as a **ceiling hinge**, swinging the block above like a hatch.
+- **Cushions, item frames and paintings ride along.** Anything resting on or hanging from an assembled block used to be left behind and pop off as an item. Now a 26.3 **cushion** rides the move with whoever sits on it and lands back on its block with them still seated, and **item frames** (with their item) and **paintings** travel with the structure and re-hang on the landed block, turned with it. If the landing has nowhere for them to go, they drop as items rather than vanish. A painting can't hang sideways, so a drawbridge that rolls one onto its side drops it. Cushion support switches itself off on servers older than 26.3. (mech plugin)
 
 ## Items & commands
 
@@ -52,6 +53,7 @@ Two new frame blocks join the Casing, a Ratchet valve arrives, and mechanisms le
 - `bannerTiersIn(World, BoundingBox)` — large/huge banner displays by host block. Three things to get right: **expand the region by at least 3 blocks**, because a banner's display entity spawns in the neighbour cell toward the face it hangs on and scales out from there, so a box fitted tightly to a structure misses precisely the banners mounted on its outside; **only chunks whose ENTITIES are loaded are searched** — Paper streams entities in after blocks, so a query made in that window sees the host blocks and none of the banners, and a caller who cannot tolerate a wrong answer should gate on `Chunk.isEntitiesLoaded()` and treat "not yet" as unknown rather than zero; and `BannerTier.NORMAL` entries are **fence flags and bed banners, never banner blocks** — a banner placed as a block creates no display at all, so a material-based count and this API cannot double up.
 - `massRegistry()` — exposes the mass table so a dependent plugin can price blocks its own config does not list.
 - **`requires_plugin` recipe gate** — withhold a block's recipes until a named plugin enables, then register them live.
+- `CushionSeats` (experimental) — 26.3 cushions for a consumer that seats players itself: find the cushions resting on a set of blocks, and the carried cushion riding a seat shulker. Safe on every version: before 26.3 nothing is a cushion and every answer is empty.
 
 ## Behavior
 

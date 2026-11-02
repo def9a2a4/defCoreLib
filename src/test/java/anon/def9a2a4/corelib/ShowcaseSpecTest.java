@@ -24,8 +24,9 @@ class ShowcaseSpecTest {
 
     // Keep in step with ShowcaseRunner.check / runAction.
     private static final Set<String> EXPECT_TYPES = Set.of("spinning", "network_powered", "state",
-            "mechanism_swung", "hoist_moved", "piston_stroked", "block_type", "persisted_mechanism_intact");
-    private static final Set<String> ACTION_KINDS = Set.of("set", "corrupt_persisted_mechanism");
+            "mechanism_swung", "hoist_moved", "piston_stroked", "block_type", "persisted_mechanism_intact",
+            "entity_count", "riding");
+    private static final Set<String> ACTION_KINDS = Set.of("set", "corrupt_persisted_mechanism", "summon");
     private static final long DEFAULT_ASSERT_AT = 80;
 
     private static Map<String, ShowcaseSpec> load(List<String> warnings) throws Exception {
@@ -66,7 +67,8 @@ class ShowcaseSpecTest {
     void regressionScenariosAreTestOnly() throws Exception {
         Map<String, ShowcaseSpec> specs = load(new java.util.ArrayList<>());
         for (String id : List.of("test_ceiling_mounts", "test_hoist_reel_in",
-                "test_hoist_rising_ghost_no_dupe", "test_corrupt_state_file_kept")) {
+                "test_hoist_rising_ghost_no_dupe", "test_corrupt_state_file_kept",
+                "test_carried_frame_painting", "test_carried_cushion", "test_painting_drops_on_roll")) {
             ShowcaseSpec s = specs.get(id);
             assertNotNull(s, id);
             assertTrue(s.testOnly, id + " must be test_only (kept out of the docs)");

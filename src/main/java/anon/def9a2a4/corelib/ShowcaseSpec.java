@@ -64,9 +64,11 @@ final class ShowcaseSpec {
      *  keep-alive world ignores it). {@code kind}: {@code set} writes {@code block} into every cell of
      *  {@code at}..{@code to} (or just {@code at}), optionally only where the cell is currently
      *  {@code only}, with block updates iff {@code physics}; {@code corrupt_persisted_mechanism} is a
-     *  Java-side probe (see {@code ShowcaseRunner}). */
+     *  Java-side probe (see {@code ShowcaseRunner}); {@code summon} spawns {@code entity} (a vanilla entity
+     *  key) in cell {@code at} — hanging on {@code face}, holding {@code item}, painted {@code art}, ridden by a
+     *  still {@code rider} — all optional keys of {@code extra}. */
     record Action(long tick, String kind, int[] at, int @Nullable [] to, @Nullable Material block,
-                  @Nullable Material only, boolean physics) {}
+                  @Nullable Material only, boolean physics, Map<String, String> extra) {}
 
     final String id;
     final String name;
@@ -205,8 +207,16 @@ final class ShowcaseSpec {
                         log.warning("showcases.yml [" + id + "]: action has a missing/unknown block, skipped");
                         continue;
                     }
+                    Map<String, String> extra = new java.util.LinkedHashMap<>();
+                    for (String k : new String[]{"entity", "face", "item", "art", "rider"}) {
+                        if (m.get(k) != null) extra.put(k, str(m.get(k)));
+                    }
+                    if ("summon".equals(kind) && !extra.containsKey("entity")) {
+                        log.warning("showcases.yml [" + id + "]: summon needs an entity, skipped");
+                        continue;
+                    }
                     actions.add(new Action(tick.longValue(), kind, at, vec(m.get("to")), block, only,
-                            Boolean.TRUE.equals(m.get("physics"))));
+                            Boolean.TRUE.equals(m.get("physics")), extra));
                 }
                 boolean testOnly = Boolean.TRUE.equals(entry.get("test_only"));
                 long assertAt = (entry.get("assert_at") instanceof Number n) ? n.longValue() : 0;

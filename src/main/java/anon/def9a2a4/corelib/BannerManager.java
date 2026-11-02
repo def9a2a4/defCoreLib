@@ -489,7 +489,7 @@ public class BannerManager implements Listener {
         int rotSteps = Math.floorMod(Math.round(snappedYaw / 90f), 4);
         Set<String> handledFaces = new HashSet<>();
         for (BannerAttachment att : attachments) {
-            if (att.isBlockBanner() || !handledFaces.add(att.faceKey())) continue;
+            if (att.isBlockBanner() || att.isStandIn() || !handledFaces.add(att.faceKey())) continue;
             ItemStack item = att.item().asQuantity(1);
             float scale = LargeBannerRecipes.isHugeBanner(item) ? HUGE_SCALE
                     : LargeBannerRecipes.isLargeBanner(item) ? LARGE_SCALE : NORMAL_SCALE;

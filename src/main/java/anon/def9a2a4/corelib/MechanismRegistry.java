@@ -564,7 +564,7 @@ public class MechanismRegistry implements org.bukkit.event.Listener {
                 blockData.add(mb);
             }
             return spawnMechanismEntities(mechId, type, blockData, pivot, AXIS_Y, vehicle, rideOffset,
-                false, true, null, List.of(), List.of(), parts.size(), true);
+                false, true, null, List.of(), List.of(), AttachedEntities.Capture.EMPTY, parts.size(), true);
         } catch (RuntimeException e) {
             vehicle.removeScoreboardTag(vehicleTag);
             throw e;
@@ -609,6 +609,9 @@ public class MechanismRegistry implements org.bukkit.event.Listener {
         // Live BetterBanners world displays captured below. Removed only AFTER airOutSourceBlocks
         // succeeds — any assembly throw before that leaves the world banners (and their items) intact.
         List<Display> capturedWorldBanners = new ArrayList<>();
+        // Cushions / item frames / paintings on these blocks (read-only here): frames and paintings become
+        // per-block data + a stand-in banner display; cushions are mounted on colliders after the air-out.
+        AttachedEntities.Capture attachedCap = AttachedEntities.capture(blocks, plugin.getLogger());
         for (Block block : blocks) {
             // A bare block WITH a revert handler (the shaft) can't carry its identity through a move as
             // bare, so revert it to an encased head first. A bare block WITHOUT one (the casing) is
@@ -766,6 +769,14 @@ public class MechanismRegistry implements org.bukkit.event.Listener {
                     capturedWorldBanners.addAll(cap.worldDisplays());
                 }
             }
+            // Stand-ins for this block's carried frames/paintings (index = this block's position in `blocks`).
+            List<BannerAttachment> standIns = attachedCap.standIns.get(blockData.size());
+            if (standIns != null) {
+                if (banners == null) banners = new ArrayList<>();
+                banners.addAll(standIns);
+            }
+            List<AttachedEntities.CarriedEntity> carried = attachedCap.attached.get(blockData.size());
+            if (carried != null) mbd.attached = new ArrayList<>(carried);
             if (chb == null && block.getState() instanceof org.bukkit.block.Banner bannerState) {
                 BannerAttachment blockBanner = vanillaBannerAttachment(bannerState, bd);
                 if (blockBanner != null) {
@@ -857,7 +868,7 @@ public class MechanismRegistry implements org.bukkit.event.Listener {
         }
 
         return spawnMechanismEntities(mechId, type, blockData, pivot, rotationAxis, vehicle, rideOffset,
-            ownsVehicle, driven, serializer, blocks, capturedWorldBanners, blocks.size(), false);
+            ownsVehicle, driven, serializer, blocks, capturedWorldBanners, attachedCap, blocks.size(), false);
     }
 
     /**
@@ -871,7 +882,8 @@ public class MechanismRegistry implements org.bukkit.event.Listener {
     private BasicMechanism spawnMechanismEntities(UUID mechId, String type, List<MechanismBlockData> blockData,
             Location pivot, Vector3f rotationAxis, Entity vehicle, float rideOffset, boolean ownsVehicle,
             boolean driven, @Nullable MechanismSerializer serializer, List<Block> blocks,
-            List<Display> capturedWorldBanners, int realBlockCount, boolean blockFree) {
+            List<Display> capturedWorldBanners, AttachedEntities.Capture attachedCap, int realBlockCount,
+            boolean blockFree) {
 
         // Steps 2-3 (tear down custom-block tracking + air out the source blocks) are deferred to AFTER the
         // display spawn — see airOutSourceBlocks(). For owned vehicles the mech displays are mounted and
@@ -1150,6 +1162,9 @@ public class MechanismRegistry implements org.bukkit.event.Listener {
             // double-render frame), and any throw up to here — including inside airOutSourceBlocks'
             // rotation-network recalc — leaves the world banners (and their items) untouched.
             for (Display d : capturedWorldBanners) d.remove();
+            // Same rule for carried frames/paintings; cushions mount now, before any entity tick could pop them.
+            attachedCap.removeOriginals();
+            attachedCap.mountCushions(mech);
         } else {
             // External vehicle (minecart): remove the real blocks now, then defer the DISPLAY→PARENT mounts
             // one tick. NOTE the previous justification here — "minecarts silently reject addPassenger for
@@ -1161,6 +1176,8 @@ public class MechanismRegistry implements org.bukkit.event.Listener {
             firePreAirOut(mech, blocks); // 3a-ii: source blocks still LIVE + colliders spawned (leads seam)
             airOutSourceBlocks(blocks);
             for (Display d : capturedWorldBanners) d.remove(); // see owned branch — after air-out
+            attachedCap.removeOriginals();
+            attachedCap.mountCushions(mech);
             Bukkit.getScheduler().runTaskLater(plugin, () -> {
                 // Skip if the vehicle died OR the mechanism was disassembled during the delay tick — in the
                 // latter case removeAllEntities() already removed parentDisplay, so re-adding passengers would
@@ -1502,6 +1519,7 @@ public class MechanismRegistry implements org.bukkit.event.Listener {
     public void startTasks() {
         tickTask = Bukkit.getScheduler().runTaskTimer(plugin, this::tickMechanisms, 1L, 1L);
         plugin.getServer().getPluginManager().registerEvents(this, plugin);   // onWorldSave
+        CarriedCushionGuard.register(plugin);   // 26.3+ only (reflective — no-op on servers without cushions)
     }
 
     /**
@@ -2216,6 +2234,7 @@ public class MechanismRegistry implements org.bukkit.event.Listener {
                 mbd.undecodedStorageType = b.storageType;
             }
             if (b.banners != null) mbd.banners = rebuildBanners(b.banners, st.mechId);
+            if (b.attached != null) rebuildAttached(mbd, b.attached, st.mechId);
             out.add(mbd);
         }
         return out;
@@ -2252,6 +2271,23 @@ public class MechanismRegistry implements org.bukkit.event.Listener {
             }
         }
         return out.isEmpty() ? null : out;
+    }
+
+    /** Reconstruct carried frames/paintings per entry. An entry that won't parse is kept verbatim in
+     *  {@code undecodedAttached} (re-saved as-is, never dropped or deleted) instead of failing the block. */
+    private void rebuildAttached(MechanismBlockData mbd, List<Map<String, Object>> raw, UUID mechId) {
+        for (Map<String, Object> m : raw) {
+            try {
+                AttachedEntities.CarriedEntity ce = AttachedEntities.CarriedEntity.fromMap(m);
+                if (mbd.attached == null) mbd.attached = new ArrayList<>();
+                mbd.attached.add(ce);
+            } catch (RuntimeException e) {
+                plugin.getLogger().warning("Mechanism recovery: unreadable carried entity for " + mechId
+                    + " (" + e.getMessage() + "); keeping it in the state file untouched");
+                if (mbd.undecodedAttached == null) mbd.undecodedAttached = new ArrayList<>();
+                mbd.undecodedAttached.add(m);
+            }
+        }
     }
 
     private static float bf(List<?> l, int i) { return ((Number) l.get(i)).floatValue(); }

@@ -141,6 +141,10 @@ final class MechanismState {
         // without a live block, so the resolver output is lost. One map per resolved display: {i: index,
         // xf: 14 doubles}. Only emitted for blocks whose type has a displayTransformResolver.
         @Nullable List<Map<String, Object>> displayXf;
+        // Carried item frames / paintings (AttachedEntities.CarriedEntity.toMap), plus any entries a previous
+        // recovery couldn't parse, verbatim. Parsed per entry in rebuildBlocks — never here — so one bad entry
+        // can't make read() reject the whole file.
+        @Nullable List<Map<String, Object>> attached;
     }
 
     void write(ConfigurationSection s) {
@@ -192,6 +196,7 @@ final class MechanismState {
             if (b.blockEntity != null && !b.blockEntity.isEmpty()) m.put("be", b.blockEntity);
             if (b.banners != null && !b.banners.isEmpty()) m.put("banners", b.banners);
             if (b.displayXf != null && !b.displayXf.isEmpty()) m.put("dxf", b.displayXf);
+            if (b.attached != null && !b.attached.isEmpty()) m.put("attached", b.attached);
             blockList.add(m);
         }
         s.set("blocks", blockList);
@@ -279,6 +284,7 @@ final class MechanismState {
                     }
                     if (!out.isEmpty()) b.banners = out;
                 }
+                b.attached = mapList(raw.get("attached"));
                 Object dxf = raw.get("dxf");
                 if (dxf instanceof List<?> dxfList) {
                     List<Map<String, Object>> out = new ArrayList<>();
@@ -299,4 +305,17 @@ final class MechanismState {
     }
 
     private static @Nullable String str(@Nullable Object o) { return o == null ? null : String.valueOf(o); }
+
+    /** A YAML list of maps with String keys; non-map elements are skipped. Null if absent or empty. */
+    private static @Nullable List<Map<String, Object>> mapList(@Nullable Object raw) {
+        if (!(raw instanceof List<?> list)) return null;
+        List<Map<String, Object>> out = new ArrayList<>();
+        for (Object el : list) {
+            if (!(el instanceof Map<?, ?> em)) continue;
+            Map<String, Object> m = new LinkedHashMap<>();
+            for (Map.Entry<?, ?> e : em.entrySet()) m.put(String.valueOf(e.getKey()), e.getValue());
+            out.add(m);
+        }
+        return out.isEmpty() ? null : out;
+    }
 }

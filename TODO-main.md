@@ -22,6 +22,12 @@ sessionless hint (GitHub #3), hoist reel-in ghost dupe, corrupt-state re-parse c
   - **`stats.enabled` default flip** is deliberate but in no changelog. S.
   - **`wheel_decoy`/`wheel_reserved` bot tests are manual-only** — run them as their own CI step. M.
   - `loadConfig` has no tests; local bot run shows `double_chest` and `cannon_tnt_disabled` failing.
+  - **seat never freed on dismount** — `VehicleExitEvent` never fires for a Shulker vehicle (not a `Vehicle`),
+    so `DisplayShip.onPlayerExitVehicle` has never run for a seat: no `freeSeat`, no safe-dismount teleport, no
+    momentum hand-off. `hasDriver` hides it (recomputed per tick). Move it to `EntityDismountEvent`. S–M.
+  - **cushion seats (26.3)** — in-game check still owed: sit on the driver cushion → assemble → steer → dock
+    seated; restart mid-voyage with cushions + frames aboard. Camera distance isn't applied to a rider moved
+    off a cushion at assembly (only on click). S.
 - **in-game regression scenarios** — ceiling propeller/windmill, a hoist that actually moves (the `crane`
   showcase's `hoist_moved` is commented out), the rising-hoist dupe, corrupt-state recovery; plus
   assertions for the showcases that have none (sand_generator, icon_machine, steam_sieve, water_wheel_fan).

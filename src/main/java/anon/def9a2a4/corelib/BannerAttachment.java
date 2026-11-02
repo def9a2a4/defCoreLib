@@ -11,7 +11,8 @@ import org.joml.Vector3f;
  *
  * @param item           cloned banner item (patterns + large/huge tier PDC intact)
  * @param faceKey        {@code rot{0..15}} (flag) | {@code north/south/east/west/up/down}
- *                       (large/huge) | {@code bed} | {@link #BLOCK_FACE_KEY}
+ *                       (large/huge) | {@code bed} | {@link #BLOCK_FACE_KEY} |
+ *                       {@link AttachedEntities#STAND_IN_FACE_KEY}
  * @param transformation the captured display transformation, relative to its anchor cell center
  * @param anchorOffset   host-block-local offset of the anchor cell: (0,0,0) for flag/bed/block,
  *                       the face unit vector for large/huge (they anchor in the neighbor cell)
@@ -27,4 +28,11 @@ record BannerAttachment(ItemStack item, String faceKey, Transformation transform
     static final String BLOCK_FACE_KEY = "block";
 
     boolean isBlockBanner() { return BLOCK_FACE_KEY.equals(faceKey); }
+
+    /**
+     * A render-only stand-in for a carried item frame / painting ({@link AttachedEntities}). Rides, rotates,
+     * persists and recovers exactly like a banner display, but is NEVER landed or dropped as a banner: the real
+     * entity travels as data in {@link MechanismBlockData#attached} and lands (or drops) through that path.
+     */
+    boolean isStandIn() { return AttachedEntities.STAND_IN_FACE_KEY.equals(faceKey); }
 }

@@ -750,6 +750,14 @@ final class BasicMechanism implements Mechanism {
                 }
                 b.banners = bl;
             }
+            // Carried frames/paintings, plus any entries recovery couldn't parse (re-written verbatim, or this
+            // save would erase them).
+            if (mb.attached != null || mb.undecodedAttached != null) {
+                List<Map<String, Object>> al = new ArrayList<>();
+                if (mb.attached != null) for (AttachedEntities.CarriedEntity ce : mb.attached) al.add(ce.toMap());
+                if (mb.undecodedAttached != null) al.addAll(mb.undecodedAttached);
+                if (!al.isEmpty()) b.attached = al;
+            }
             // Facing-RESOLVED item-display transforms: only for a type with a displayTransformResolver
             // (recovery's static resolveDisplayEntities can't reproduce them without a live block). {i, xf:[14]}.
             if (mb.customTypeId != null && mb.displayEntityConfigs != null && !mb.displayEntityConfigs.isEmpty()) {
@@ -927,6 +935,13 @@ final class BasicMechanism implements Mechanism {
     private final Set<Integer> driverSeatIndices = new HashSet<>();
     private final Map<Integer, UUID> seatOccupants = new HashMap<>();
 
+    /** The live collider shulker for a block index, or null (no collider, or it's gone). Package-private for
+     *  {@link AttachedEntities.Capture#mountCushions}. */
+    @Nullable Shulker colliderShulker(int blockIndex) {
+        ColliderPair cp = colliderByBlock.get(blockIndex);
+        return cp != null && cp.shulker().isValid() ? cp.shulker() : null;
+    }
+
     /** The collider (carrier+shulker) for a block index, or null if that block has none. */
     private @Nullable ColliderPair colliderForBlock(int blockIndex) {
         return colliderByBlock.get(blockIndex);
@@ -1085,6 +1100,11 @@ final class BasicMechanism implements Mechanism {
         // Two-pass landing, mirroring airOutSourceBlocks' two-pass removal in reverse: supports
         // first, attachables second — an attachable (banner/torch/sign/…) placed before its support
         // exists pops during setBlockData and drops WITHOUT its captured block-entity data.
+        // Where each block index landed (PLACE only) and the cell it was bound for (every index): the carried
+        // frame/painting/cushion pass after the loop lands on the first and pays its items at the second.
+        Map<Integer, Block> landedCells = new HashMap<>();
+        Map<Integer, Location> landingCells = new HashMap<>();
+
         List<Integer> landingOrder = new ArrayList<>(blocks.size());
         for (int i = 0; i < blocks.size(); i++) {
             if (!FragileBlocks.isAttachable(blocks.get(i).blockData.getMaterial())) landingOrder.add(i);
@@ -1101,6 +1121,7 @@ final class BasicMechanism implements Mechanism {
             // rotation maps integers to integers; Math.round handles trig epsilon (1.9999999f → 2).
             Location blockLoc = pivot.clone().add(
                 Math.round(worldOffset.x), Math.round(worldOffset.y), Math.round(worldOffset.z));
+            landingCells.put(i, blockLoc);
 
             // Per-block failure isolation: a throw landing ONE block (setBlockData, a restore provider,
             // onRestore…) must not strand blocks k+1..n — the outer finally only deregisters + removes
@@ -1170,6 +1191,7 @@ final class BasicMechanism implements Mechanism {
                 placeBlock(target, mb, snappedYaw);
                 fallbackDrop = false; // committed to the world (placeBlock is post-commit-safe)
                 placed.add(target);
+                landedCells.put(i, target);
                 if (mb.wasBare) rebareTargets.add(target);
                 landBanners(target, mb, snappedYaw, upright);
                 if (mb.glueOffsets != null) { if (ChainHoistManager.isHoist(target, registry)) { landedHoistTargets.add(target); landedHoistOffsets.add(mb.glueOffsets); } else { landedAnchorTargets.add(target); landedAnchorOffsets.add(mb.glueOffsets); } }
@@ -1178,6 +1200,7 @@ final class BasicMechanism implements Mechanism {
                 placeBlock(target, mb, snappedYaw);
                 fallbackDrop = false; // committed to the world (placeBlock is post-commit-safe)
                 placed.add(target);
+                landedCells.put(i, target);
                 if (mb.wasBare) rebareTargets.add(target);
                 landBanners(target, mb, snappedYaw, upright);
                 if (mb.glueOffsets != null) { if (ChainHoistManager.isHoist(target, registry)) { landedHoistTargets.add(target); landedHoistOffsets.add(mb.glueOffsets); } else { landedAnchorTargets.add(target); landedAnchorOffsets.add(mb.glueOffsets); } }
@@ -1272,6 +1295,10 @@ final class BasicMechanism implements Mechanism {
             }
         }
 
+        // Carried item frames / paintings: one pass now that every block is down (so a frame's support exists),
+        // in the same tick their stand-in displays are removed just below.
+        landAttached(landedCells, landingCells, rotation, upright);
+
         // Banner mech-displays go NOW, not via the 1-tick deferral below: the re-attached world
         // banner's spawn packet renders this same tick, so deferring would only z-fight two
         // coincident banners for a frame. (removeAllEntities re-visits them — Entity.remove is
@@ -1292,6 +1319,10 @@ final class BasicMechanism implements Mechanism {
                 // consumer hook failed; proceed with entity removal so nothing leaks
             }
         }
+
+        // Carried cushions step off their colliders onto the landed blocks, riders still seated. After the
+        // consumer hook, so a consumer (BlockShips) can first move a seat's player back onto its cushion.
+        landCarriedCushions(landedCells, landingCells, rotation, upright);
 
         // Unregister now so the tick loop won't re-touch this disassembled mech. For an owned vehicle, DEFER
         // removing the mech's display entities one tick so the just-placed blocks' own displays get a frame to
@@ -1371,7 +1402,8 @@ final class BasicMechanism implements Mechanism {
                     // blockEntitySnapshot is in the guard because it can carry player items too (a lectern's
                     // book, a chiseled bookshelf's contents) — skipping on it would delete exactly the cargo
                     // dropStorageItems was widened to save.
-                    if (mb.banners == null && mb.storage == null && mb.blockEntitySnapshot == null) continue;
+                    if (mb.banners == null && mb.storage == null && mb.blockEntitySnapshot == null
+                            && mb.attached == null) continue;
                     // Per-block isolation (mirrors disassemble()'s landing loop): one failed drop must not
                     // skip the rest, and — with the latch set — must not escape into the finally either.
                     try {
@@ -1379,12 +1411,16 @@ final class BasicMechanism implements Mechanism {
                         Location loc = new Location(w, cell.x, cell.y, cell.z);
                         if (mb.banners != null) dropBannerItems(loc, mb);
                         dropStorageItems(loc, mb);   // null-safe: no-op when this block carried no items
+                        dropAttachedItems(loc, mb);  // carried frames/paintings (never via DropItemHook)
                     } catch (RuntimeException ex) {
                         registry.getPlugin().getLogger().log(Level.WARNING,
                             "destroy: drop failed for block " + i + " (continuing)", ex);
                     }
                 }
             }
+            // Carried cushions would otherwise be ejected mid-air by removeAllEntities and pop later — drop them
+            // now, where they are.
+            dropCarriedCushions();
         } finally {
             // Deregister BEFORE removing entities: if removeAllEntities threw first, the mech would linger
             // in activeMechanisms as a ghost. Order between the two is independent (onMechanismRemoved reads
@@ -1684,7 +1720,7 @@ final class BasicMechanism implements Mechanism {
         if (mb.banners == null) return;
         boolean hasEntityBanners = false;
         for (BannerAttachment att : mb.banners) {
-            if (!att.isBlockBanner()) { hasEntityBanners = true; break; }
+            if (!att.isBlockBanner() && !att.isStandIn()) { hasEntityBanners = true; break; }
         }
         if (!hasEntityBanners) return;
         BannerManager bm = mechanismRegistry != null ? mechanismRegistry.bannerManager() : null;
@@ -1703,9 +1739,147 @@ final class BasicMechanism implements Mechanism {
         if (w == null) return;
         Set<String> droppedFaces = new HashSet<>();
         for (BannerAttachment att : mb.banners) {
-            if (att.isBlockBanner() || !droppedFaces.add(att.faceKey())) continue;
+            // A stand-in is only a picture of a carried frame/painting — its real items drop via dropAttachedItems.
+            if (att.isBlockBanner() || att.isStandIn() || !droppedFaces.add(att.faceKey())) continue;
             w.dropItemNaturally(loc.clone().add(0.5, 0.5, 0.5), att.item().asQuantity(1));
         }
+    }
+
+    // ── Carried frames / paintings / cushions (AttachedEntities) ────────────────────────────
+
+    /**
+     * Respawn each block's carried frames/paintings on its landed block, rotated with the landing. A block that
+     * didn't land (protected / DROP / SKIP / off-world / solid-win / failed) pays the entity's fallback items at
+     * the cell it was bound for. Paintings need an upright landing (a sideways roll has no valid hang);
+     * frames follow any 90° turn. The entity's OWN cell is checked against the protected cells and the
+     * consumer's place policy too — it sits next to its anchor and could otherwise be smuggled into a denied
+     * cell. Each entity is isolated: a throw never yields both a live entity and a drop.
+     */
+    private void landAttached(Map<Integer, Block> landedCells, Map<Integer, Location> landingCells,
+                              Matrix4f rotation, boolean upright) {
+        java.util.logging.Logger log = registry.getPlugin().getLogger();
+        int quarterTurns = quarterTurnsCcw(rotation);
+        for (int i = 0; i < blocks.size(); i++) {
+            MechanismBlockData mb = blocks.get(i);
+            if (mb.attached == null) continue;
+            Block anchor = landedCells.get(i);
+            Location payAt = anchor != null ? anchor.getLocation() : landingCells.get(i);
+            for (AttachedEntities.CarriedEntity ce : mb.attached) {
+                boolean handled = false;
+                try {
+                    if (anchor != null && (upright || AttachedEntities.KIND_FRAME.equals(ce.kind()))) {
+                        AttachedEntities.Pose pose = AttachedEntities.landingPose(ce, anchor, rotation);
+                        if (pose != null && mayOccupy(pose.cell(), mb)) {
+                            handled = AttachedEntities.spawn(ce, pose, quarterTurns)
+                                != AttachedEntities.SpawnResult.FAILED;
+                        }
+                    }
+                } catch (RuntimeException ex) {
+                    log.log(Level.WARNING, "disassemble: couldn't respawn carried " + ce.kind() + " "
+                        + ce.uuid() + "; dropping its items", ex);
+                }
+                if (!handled && payAt != null) AttachedEntities.dropFallbacks(ce, payAt, log);
+            }
+            mb.attached = null; // landed or paid — never twice
+        }
+    }
+
+    /** May a carried entity occupy {@code cell}? Not a protected cell, and the consumer's policy says PLACE. */
+    private boolean mayOccupy(Block cell, MechanismBlockData anchorData) {
+        if (protectedCells != null && protectedCells.contains(CustomBlockRegistry.LocationKey.of(cell))) return false;
+        if (cellPlacePolicy == null) return true;
+        try {
+            return cellPlacePolicy.decide(cell, anchorData) == PlaceDecision.PLACE;
+        } catch (RuntimeException ex) {
+            return true; // same default as the block path: a misbehaving policy means PLACE
+        }
+    }
+
+    /** A Y-axis landing's net turn in counter-clockwise quarter turns seen from above; 0 for X/Z axes. */
+    private int quarterTurnsCcw(Matrix4f rotation) {
+        if (Math.abs(rotationAxis.y) < 0.5f) return 0;
+        Vector3f east = rotation.transformDirection(new Vector3f(1, 0, 0), new Vector3f());
+        int x = Math.round(east.x), z = Math.round(east.z);
+        if (x == 1) return 0;
+        if (z == -1) return 1; // east → north
+        if (x == -1) return 2;
+        return 3;
+    }
+
+    /**
+     * Step each carried cushion off its collider onto its landed anchor block, keeping its rider seated and
+     * its offset/yaw turned with the landing. A cushion whose anchor didn't land, or that landed on its side,
+     * drops its item where its anchor was bound (the rider is left standing). Vanilla's own survival check then
+     * decides as usual — a cushion with nothing under it pops with its correct item.
+     */
+    private void landCarriedCushions(Map<Integer, Block> landedCells, Map<Integer, Location> landingCells,
+                                     Matrix4f rotation, boolean upright) {
+        for (ColliderPair cp : colliders) {
+            Shulker s = cp.shulker();
+            if (!s.isValid()) continue;
+            for (Entity c : new ArrayList<>(s.getPassengers())) {
+                AttachedEntities.CarriedTag tag = AttachedEntities.carriedTagOf(c);
+                if (tag == null) continue;
+                try {
+                    c.removeScoreboardTag(tag.raw());
+                    s.removePassenger(c);
+                    Block anchor = landedCells.get(tag.anchorIdx());
+                    if (anchor == null || !upright) {
+                        Location at = landingCells.get(tag.anchorIdx());
+                        dropCushion(c, at != null ? at : c.getLocation());
+                        continue;
+                    }
+                    Vector3f off = rotation.transformDirection(
+                        new Vector3f((float) tag.dx(), 0, (float) tag.dz()), new Vector3f());
+                    Location loc = new Location(anchor.getWorld(), anchor.getX() + 0.5 + off.x,
+                        anchor.getY() + tag.dy(), anchor.getZ() + 0.5 + off.z);
+                    org.bukkit.util.Vector look = c.getLocation().getDirection();
+                    Vector3f turned = rotation.transformDirection(
+                        new Vector3f((float) look.getX(), 0, (float) look.getZ()), new Vector3f());
+                    if (turned.lengthSquared() > 1e-6f) loc.setDirection(new org.bukkit.util.Vector(turned.x, 0, turned.z));
+                    TeleportCompat.teleport(c, loc);
+                } catch (RuntimeException ex) {
+                    registry.getPlugin().getLogger().log(Level.WARNING,
+                        "disassemble: couldn't land carried cushion " + c.getUniqueId() + "; dropping it", ex);
+                    try { dropCushion(c, c.getLocation()); } catch (RuntimeException ignore) { /* keep going */ }
+                }
+            }
+        }
+    }
+
+    /** destroy(): drop every cushion still riding this mechanism's colliders, where it is. */
+    private void dropCarriedCushions() {
+        for (ColliderPair cp : colliders) {
+            Shulker s = cp.shulker();
+            if (!s.isValid()) continue;
+            for (Entity c : new ArrayList<>(s.getPassengers())) {
+                if (AttachedEntities.carriedTagOf(c) == null) continue;
+                try {
+                    dropCushion(c, c.getLocation());
+                } catch (RuntimeException ex) {
+                    registry.getPlugin().getLogger().log(Level.WARNING,
+                        "destroy: couldn't drop carried cushion " + c.getUniqueId(), ex);
+                }
+            }
+        }
+    }
+
+    /** Replace a cushion with its item at {@code at}; its rider just stands up. */
+    private static void dropCushion(Entity cushion, Location at) {
+        ItemStack item = CushionCompat.pickItem(cushion);
+        cushion.eject();
+        cushion.remove();
+        World w = at.getWorld();
+        if (item != null && w != null) w.dropItemNaturally(at.getBlock().getLocation().add(0.5, 0.5, 0.5), item);
+    }
+
+    /** destroy(): pay each carried frame/painting's fallback items at this block's cell. */
+    private void dropAttachedItems(Location loc, MechanismBlockData mb) {
+        if (mb.attached == null) return;
+        for (AttachedEntities.CarriedEntity ce : mb.attached) {
+            AttachedEntities.dropFallbacks(ce, loc, registry.getPlugin().getLogger());
+        }
+        mb.attached = null;
     }
 
     void removeAllEntities() {

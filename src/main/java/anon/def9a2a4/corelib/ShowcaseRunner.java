@@ -9,6 +9,7 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.server.ServerLoadEvent;
+import org.jspecify.annotations.Nullable;
 
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -171,6 +172,14 @@ final class ShowcaseRunner implements Listener {
     /** Evaluate one spec's expects now (its assert tick); the verdicts are printed by {@link #report}. */
     private void assertSpec(ShowcaseSpec spec, Location origin) {
         List<String> lines = results.computeIfAbsent(spec, k -> new ArrayList<>());
+        // A scenario about an entity this server doesn't have (cushions before 26.3) is skipped, not failed.
+        String missing = missingEntityKey(spec);
+        if (missing != null) {
+            for (ShowcaseSpec.Expect ex : spec.expect) {
+                lines.add("  [SKIP] " + spec.id + " " + describe(ex) + " (no minecraft:" + missing + " on this server)");
+            }
+            return;
+        }
         for (ShowcaseSpec.Expect ex : spec.expect) {
             boolean ok;
             try {
@@ -248,6 +257,47 @@ final class ShowcaseRunner implements Listener {
                 }
                 return true;
             }
+            // Entities of a vanilla type (or `item` for dropped items) inside the inclusive box at..to:
+            // value `KEY=N` — exactly N.
+            case "entity_count" -> {
+                String v = ex.value();
+                int eq = v == null ? -1 : v.indexOf('=');
+                if (eq < 0) return false;
+                // `item:MATERIAL` narrows dropped items to one material.
+                String key = v.substring(0, eq);
+                org.bukkit.Material only = null;
+                int colon = key.indexOf(':');
+                if (colon > 0) {
+                    only = org.bukkit.Material.matchMaterial(key.substring(colon + 1));
+                    key = key.substring(0, colon);
+                    if (only == null) return false;
+                }
+                org.bukkit.entity.EntityType t = entityType(key);
+                if (t == null) return false;
+                int want = Integer.parseInt(v.substring(eq + 1).trim());
+                int n = 0;
+                for (org.bukkit.entity.Entity e : origin.getWorld().getNearbyEntities(box(origin, ex.at(), ex.to()))) {
+                    if (e.getType() != t) continue;
+                    if (only != null && !(e instanceof org.bukkit.entity.Item it && it.getItemStack().getType() == only)) continue;
+                    n += e instanceof org.bukkit.entity.Item it ? it.getItemStack().getAmount() : 1;
+                }
+                if (n != want) plugin.getLogger().info("[showcase] " + spec.id + ": " + v.substring(0, eq)
+                        + " count " + n + ", expected " + want);
+                return n == want;
+            }
+            // Some RIDER in the box is riding a VEHICLE: value `RIDER/VEHICLE` (vanilla entity keys).
+            case "riding" -> {
+                String v = ex.value();
+                int sl = v == null ? -1 : v.indexOf('/');
+                if (sl < 0) return false;
+                org.bukkit.entity.EntityType rider = entityType(v.substring(0, sl));
+                org.bukkit.entity.EntityType vehicle = entityType(v.substring(sl + 1));
+                if (rider == null || vehicle == null) return false;
+                for (org.bukkit.entity.Entity e : origin.getWorld().getNearbyEntities(box(origin, ex.at(), ex.to()))) {
+                    if (e.getType() == rider && e.getVehicle() != null && e.getVehicle().getType() == vehicle) return true;
+                }
+                return false;
+            }
             case "persisted_mechanism_intact" -> {
                 Probe p = probes.get(probeKey(spec, block));
                 return p != null && p.entities() > 0 && p.file().exists()
@@ -273,6 +323,9 @@ final class ShowcaseRunner implements Listener {
                     }
                 }
                 case "corrupt_persisted_mechanism" -> corruptPersistedMechanism(spec, blockAt(origin, a.at()));
+                case "summon" -> {
+                    if (missingEntityKey(spec) == null) summon(origin, a);
+                }
                 default -> plugin.getLogger().warning("[showcase] " + spec.id + ": unknown action: " + a.kind());
             }
         } catch (RuntimeException t) {
@@ -539,6 +592,85 @@ final class ShowcaseRunner implements Listener {
     }
 
     // ── Helpers ──────────────────────────────────────────────────────────────
+
+    /**
+     * Spawn {@code a.extra().entity} in cell {@code at}: a hanging entity on face {@code face} (its outward
+     * normal) of the block behind it, holding {@code item} / painted {@code art}; anything else at the cell's
+     * bottom center — so a cushion summoned into the air cell above a block rests on it. {@code rider} seats a
+     * still, silent mob on it.
+     */
+    @SuppressWarnings("unchecked")
+    private void summon(Location origin, ShowcaseSpec.Action a) {
+        Map<String, String> x = a.extra();
+        org.bukkit.entity.EntityType type = entityType(x.get("entity"));
+        if (type == null || type.getEntityClass() == null) return;
+        Block cell = blockAt(origin, a.at());
+        org.bukkit.block.BlockFace face = x.get("face") == null ? null
+                : org.bukkit.block.BlockFace.valueOf(x.get("face").toUpperCase(java.util.Locale.ROOT));
+        Location loc = face != null ? cell.getLocation().add(0.5, 0.5, 0.5) : cell.getLocation().add(0.5, 0, 0.5);
+        org.bukkit.entity.Entity e = origin.getWorld().spawn(loc,
+                (Class<org.bukkit.entity.Entity>) type.getEntityClass(), ent -> {
+            if (face != null && ent instanceof org.bukkit.entity.Hanging h) h.setFacingDirection(face, true);
+            if (x.get("item") != null && ent instanceof org.bukkit.entity.ItemFrame f) {
+                org.bukkit.Material m = org.bukkit.Material.matchMaterial(x.get("item"));
+                if (m != null) f.setItem(new org.bukkit.inventory.ItemStack(m));
+            }
+            if (x.get("art") != null && ent instanceof org.bukkit.entity.Painting p) {
+                org.bukkit.Art art = org.bukkit.Registry.ART.get(org.bukkit.NamespacedKey.minecraft(x.get("art")));
+                if (art != null) p.setArt(art, true);
+            }
+        });
+        org.bukkit.entity.EntityType riderType = entityType(x.get("rider"));
+        if (riderType != null && riderType.getEntityClass() != null) {
+            org.bukkit.entity.Entity r = origin.getWorld().spawn(loc,
+                    (Class<org.bukkit.entity.Entity>) riderType.getEntityClass(), ent -> {
+                if (ent instanceof org.bukkit.entity.LivingEntity le) le.setAI(false);
+                ent.setSilent(true);
+                ent.setPersistent(true);
+            });
+            e.addPassenger(r);
+        }
+    }
+
+    /** The first entity key a spec summons or asserts on that this server doesn't have, else null. */
+    private static @Nullable String missingEntityKey(ShowcaseSpec spec) {
+        for (ShowcaseSpec.Action a : spec.actions) {
+            if (!"summon".equals(a.kind())) continue;
+            for (String k : new String[]{"entity", "rider"}) {
+                String v = a.extra().get(k);
+                if (v != null && entityType(v) == null) return v;
+            }
+        }
+        for (ShowcaseSpec.Expect ex : spec.expect) {
+            String v = ex.value();
+            if (v == null) continue;
+            if ("entity_count".equals(ex.type()) && v.indexOf('=') > 0) {
+                String k = v.substring(0, v.indexOf('=')).split(":")[0];
+                if (entityType(k) == null) return k;
+            } else if ("riding".equals(ex.type()) && v.indexOf('/') > 0) {
+                for (String k : v.split("/")) if (entityType(k) == null) return k;
+            }
+        }
+        return null;
+    }
+
+    private static org.bukkit.entity.@Nullable EntityType entityType(@Nullable String key) {
+        if (key == null) return null;
+        try {
+            return org.bukkit.Registry.ENTITY_TYPE.get(org.bukkit.NamespacedKey.minecraft(key.trim().toLowerCase(java.util.Locale.ROOT)));
+        } catch (IllegalArgumentException e) {
+            return null;
+        }
+    }
+
+    /** The inclusive cell box at..to (or the single cell at) as a world bounding box. */
+    private static org.bukkit.util.BoundingBox box(Location origin, int[] at, int @Nullable [] to) {
+        int[] b = to != null ? to : at;
+        int ox = origin.getBlockX(), oy = origin.getBlockY(), oz = origin.getBlockZ();
+        return new org.bukkit.util.BoundingBox(
+                ox + Math.min(at[0], b[0]), oy + Math.min(at[1], b[1]), oz + Math.min(at[2], b[2]),
+                ox + Math.max(at[0], b[0]) + 1, oy + Math.max(at[1], b[1]) + 1, oz + Math.max(at[2], b[2]) + 1);
+    }
 
     private static String describe(ShowcaseSpec.Expect ex) {
         String at = "[" + ex.at()[0] + "," + ex.at()[1] + "," + ex.at()[2] + "]";

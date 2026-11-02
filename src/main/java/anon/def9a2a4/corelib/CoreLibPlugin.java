@@ -2595,6 +2595,9 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
 
         // Storage access
         if (mb.storage() != null) {
+            // Already open (a consumer such as BlockShips opened it at a lower priority, or this is the
+            // off-hand pass): reopening closes and reopens the view, which jumps the cursor and fires a close.
+            if (event.getPlayer().getOpenInventory().getTopInventory() == mb.storage()) return;
             event.getPlayer().openInventory(mb.storage());
             return;
         }
