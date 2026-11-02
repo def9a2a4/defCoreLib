@@ -121,6 +121,11 @@ final class BasicMechanism implements Mechanism {
     /** Redoing a teardown a crash undid (see MechanismRegistry's recovery of a disassembled state file): a cell
      *  that already holds this block's material is the earlier landing, which reached disk, and is left alone. */
     boolean relanding;
+    /** Taken as a teardown starts (persisted mechanisms only): pivot and yaw as it lands, storage before it is
+     *  emptied into the world. What MechanismRegistry records so a crash can redo the teardown. */
+    @Nullable MechanismState teardownSnapshot;
+    /** The cells a landing put (or meant to put) each block in. */
+    @Nullable Set<CustomBlockRegistry.LocationKey> landingCellKeys;
 
     BasicMechanism(UUID id, String type, Location pivot, Vector3f rotationAxis,
                    Entity vehicle, org.bukkit.entity.BlockDisplay parent,
@@ -1147,6 +1152,7 @@ final class BasicMechanism implements Mechanism {
         // displays, colliders, glue and placement all coincide. No-op for a mechanism already at a
         // cardinal angle (currentYaw == 0 for every non-rotating type).
         if (currentYaw != snappedYaw) rotate(snappedYaw);
+        if (persisted && !relanding) teardownSnapshot = snapshotState();
         Matrix4f rotation = landingRotation();
 
         // Banner landing frame: quarter-turns about the rotation axis. Only a Y-axis landing (or a
@@ -1213,6 +1219,10 @@ final class BasicMechanism implements Mechanism {
             Location blockLoc = pivot.clone().add(
                 Math.round(worldOffset.x), Math.round(worldOffset.y), Math.round(worldOffset.z));
             landingCells.put(i, blockLoc);
+            if (persisted) {
+                if (landingCellKeys == null) landingCellKeys = new HashSet<>();
+                landingCellKeys.add(CustomBlockRegistry.LocationKey.of(blockLoc));
+            }
 
             // Per-block failure isolation: a throw landing ONE block (setBlockData, a restore provider,
             // onRestore…) must not strand blocks k+1..n — the outer finally only deregisters + removes
@@ -1455,7 +1465,8 @@ final class BasicMechanism implements Mechanism {
                 // harmlessly. Remove entities synchronously — this is an error path where a 1-frame
                 // owned-vehicle flicker is irrelevant, and we may have thrown before the deferral was
                 // ever scheduled, so the deferred removal can't be relied on.
-                if (mechanismRegistry != null) mechanismRegistry.onMechanismRemoved(this);
+                // Still a landing: a crash redoes it from the snapshot, skipping whatever did land.
+                if (mechanismRegistry != null) mechanismRegistry.onMechanismRemoved(this, true);
                 // Carried frames/paintings/cushions not yet landed would vanish with the entities: pay them now.
                 try {
                     salvageCarried();
@@ -1496,6 +1507,7 @@ final class BasicMechanism implements Mechanism {
         try {
             // RC-1: sever any open storage view before contents are dropped to the world (see disassemble()).
             closeStorageViewers();
+            if (persisted && !blockFree) teardownSnapshot = snapshotState();
             // destroy() discards the blocks by design, but the riding banners AND captured storage would
             // otherwise vanish with them — their world displays/contents are already gone (removed at capture),
             // so dropping nothing here would delete the items with no trace. Drop both at each block's live cell.

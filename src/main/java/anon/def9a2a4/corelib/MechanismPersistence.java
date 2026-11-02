@@ -102,6 +102,7 @@ final class MechanismPersistence {
         this.log = log;
         this.root = new File(dataFolder, "mechanisms");
         loadPersistedIds();
+        loadTeardowns();
     }
 
     private File worldDir(String world) { return new File(root, world); }
@@ -150,11 +151,14 @@ final class MechanismPersistence {
 
     /** Writer thread (or inline after {@link #close}): tmp sibling + atomic rename. */
     private void writeFile(String world, UUID id, String data) {
-        File dir = worldDir(world);
+        writeFile(stateFile(world, id), id, data);
+    }
+
+    private void writeFile(File target, UUID id, String data) {
+        File dir = target.getParentFile();
         if (!dir.exists() && !dir.mkdirs()) {
             throw new UncheckedIOException(new IOException("mechanism persistence: cannot create " + dir));
         }
-        File target = stateFile(world, id);
         File tmp = new File(dir, id + ".yml.tmp");
         try {
             Files.writeString(tmp.toPath(), data, StandardCharsets.UTF_8);
@@ -226,39 +230,135 @@ final class MechanismPersistence {
      *  deleted once the chunks holding its landed blocks have surely been written — see {@link #pendingDeletes}.
      *  {@code nowTick} is the server tick ({@code Bukkit.getCurrentTick()}). */
     void removeAfterSave(String world, UUID id, long nowTick) {
-        removeAfterSave(world, id, nowTick, null);
+        forget(world, id);
+        pendingDeletes.computeIfAbsent(world, k -> new HashMap<>()).put(id, new PendingDelete(nowTick));
     }
 
-    void removeAfterSave(String world, UUID id, long nowTick, @Nullable String teardown) {
-        forget(world, id);
-        if (teardown != null) {
-            File f = stateFile(world, id);
-            ordered(() -> {
-                if (!f.exists()) return;
+    // ── Teardown records ─────────────────────────────────────────────────────────────────────────────────────
+    // A landed or destroyed mechanism's state file is replaced by a record of the teardown in teardown/<id>.yml:
+    // its state as it was torn down (pivot and yaw as landed, storage before it was emptied into the world), and
+    // "landed" or "destroyed". A crash before the chunks holding the result are written brings the entities
+    // back without the result; on the next boot the record redoes it (MechanismRegistry), from the record
+    // alone, whatever entities turn up. In session the record waits like pendingDeletes and is deleted when
+    // due, and at a clean stop.
+
+    static final class Teardown {
+        final MechanismState st;
+        final String mode;
+        /** Cells it landed in (in session only): a later assembly from any of them supersedes it. */
+        final @Nullable Set<CustomBlockRegistry.LocationKey> cells;
+        /** The mechanism assembled from its landed blocks before the crash. */
+        @Nullable UUID supersededBy;
+        /** Loaded at boot, so a crash undid it: due to be redone. */
+        final boolean fromCrash;
+        long since;
+        int saves;
+
+        Teardown(MechanismState st, String mode, @Nullable Set<CustomBlockRegistry.LocationKey> cells,
+                 boolean fromCrash, long since) {
+            this.st = st; this.mode = mode; this.cells = cells; this.fromCrash = fromCrash; this.since = since;
+        }
+    }
+
+    private final Map<String, Map<UUID, Teardown>> teardowns = new HashMap<>();
+
+    File teardownFile(String world, UUID id) { return new File(new File(worldDir(world), "teardown"), id + ".yml"); }
+
+    /** Replace the mechanism's state file with a teardown record. Called from inside the teardown, so a failed
+     *  write is only logged: the teardown must finish, and without the record a crash just loses the redo. */
+    void markTeardown(MechanismState st, String mode, @Nullable Set<CustomBlockRegistry.LocationKey> cells, long nowTick) {
+        String world = st.worldName;
+        remove(world, st.mechId);
+        Teardown t = new Teardown(st, mode, cells, false, nowTick);
+        teardowns.computeIfAbsent(world, k -> new HashMap<>()).put(st.mechId, t);
+        writeTeardown(world, t);
+    }
+
+    private void writeTeardown(String world, Teardown t) {
+        YamlConfiguration y = new YamlConfiguration();
+        t.st.write(y);
+        y.set(MechanismState.TEARDOWN_KEY, t.mode);
+        if (t.supersededBy != null) y.set("superseded_by", t.supersededBy.toString());
+        String data = y.saveToString();
+        File f = teardownFile(world, t.st.mechId);
+        try {
+            ordered(() -> writeFile(f, t.st.mechId, data));
+        } catch (UncheckedIOException e) {
+            log.warning("mechanism persistence: could not record the teardown of " + t.st.mechId + ": " + e.getMessage());
+        }
+    }
+
+    /** A new mechanism assembled from cells an in-session teardown landed in: it took those blocks, so a crash must
+     *  not land them again unless it, too, never reached disk. */
+    void supersedeTeardowns(String world, UUID by, Set<CustomBlockRegistry.LocationKey> cells) {
+        Map<UUID, Teardown> ts = teardowns.get(world);
+        if (ts == null) return;
+        for (Teardown t : ts.values()) {
+            if (t.fromCrash || t.cells == null || t.supersededBy != null) continue;
+            if (java.util.Collections.disjoint(t.cells, cells)) continue;
+            t.supersededBy = by;
+            writeTeardown(world, t);
+        }
+    }
+
+    /** The teardowns a crash undid, for this world (copy). */
+    List<Teardown> crashTeardowns(String world) {
+        Map<UUID, Teardown> ts = teardowns.get(world);
+        if (ts == null) return List.of();
+        List<Teardown> out = new ArrayList<>();
+        for (Teardown t : ts.values()) if (t.fromCrash) out.add(t);
+        return out;
+    }
+
+    void dropTeardown(String world, UUID id) {
+        Map<UUID, Teardown> ts = teardowns.get(world);
+        if (ts != null && ts.remove(id) != null && ts.isEmpty()) teardowns.remove(world);
+        File f = teardownFile(world, id);
+        ordered(() -> deleteFile(f));
+    }
+
+    private void loadTeardowns() {
+        if (!root.exists()) return;
+        File[] worlds = root.listFiles(File::isDirectory);
+        if (worlds == null) return;
+        for (File wd : worlds) {
+            File[] files = new File(wd, "teardown").listFiles((d, n) -> n.endsWith(".yml"));
+            if (files == null) continue;
+            for (File f : files) {
                 YamlConfiguration y = new YamlConfiguration();
+                MechanismState st;
                 try {
                     y.load(f);
+                    st = MechanismState.read(y);
                 } catch (IOException | InvalidConfigurationException e) {
-                    return; // unreadable: leave it as it is; recovery will not touch a file it cannot read
+                    st = null;
                 }
-                // First mark wins: a teardown that threw after landing re-runs onMechanismRemoved from its error
-                // path, and turning "landed" into "destroyed" would make a crash discard the landed blocks.
-                if (y.contains(MechanismState.TEARDOWN_KEY)) return;
-                y.set(MechanismState.TEARDOWN_KEY, teardown);
-                try {
-                    writeFile(world, id, y.saveToString());
-                } catch (UncheckedIOException e) {
-                    // Called from inside a teardown, which must finish. Unmarked, a crash revives it as before.
-                    log.warning("mechanism persistence: could not mark " + id + " as " + teardown + ": " + e.getMessage());
+                String mode = y.getString(MechanismState.TEARDOWN_KEY);
+                if (st == null || mode == null) {
+                    log.warning("mechanism persistence: unreadable teardown record " + f + "; left in place");
+                    continue;
                 }
-            });
+                Teardown t = new Teardown(st, mode, null, true, 0);
+                String by = y.getString("superseded_by");
+                if (by != null) t.supersededBy = UUID.fromString(by);
+                teardowns.computeIfAbsent(wd.getName(), k -> new HashMap<>()).put(st.mechId, t);
+            }
         }
-        pendingDeletes.computeIfAbsent(world, k -> new HashMap<>()).put(id, new PendingDelete(nowTick));
     }
 
     /** A WorldSaveEvent for {@code world}. With autosave on ({@code World#isAutoSave}) count it and delete the
      *  files that are due; with it off (/save-off) nothing has been written since, so restart their wait. */
     void onWorldSaved(String world, boolean autoSave, long nowTick) {
+        Map<UUID, Teardown> ts = teardowns.get(world);
+        if (ts != null) {
+            List<UUID> dueTeardowns = new ArrayList<>();
+            for (Teardown t : ts.values()) {
+                if (t.fromCrash) continue;   // waits for its redo, not for time
+                if (!autoSave) { t.since = nowTick; t.saves = 0; continue; }
+                if (++t.saves >= DELETE_AFTER_SAVES && nowTick - t.since >= DELETE_AFTER_TICKS) dueTeardowns.add(t.st.mechId);
+            }
+            dueTeardowns.forEach(id -> dropTeardown(world, id));
+        }
         Map<UUID, PendingDelete> pending = pendingDeletes.get(world);
         if (pending == null) return;
         List<File> due = new ArrayList<>();
@@ -276,6 +376,11 @@ final class MechanismPersistence {
     /** Delete every queued file now — server stop only, see {@code MechanismRegistry.shutdown}. The stop save
      *  writes every world even under /save-off (MinecraftServer.stopServer clears noSave before saveAllChunks). */
     void deletePending() {
+        for (String world : new ArrayList<>(teardowns.keySet())) {
+            for (Teardown t : new ArrayList<>(teardowns.get(world).values())) {
+                if (!t.fromCrash) dropTeardown(world, t.st.mechId);
+            }
+        }
         List<File> due = new ArrayList<>();
         pendingDeletes.forEach((world, ids) -> ids.keySet().forEach(id -> due.add(stateFile(world, id))));
         pendingDeletes.clear();

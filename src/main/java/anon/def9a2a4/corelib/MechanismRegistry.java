@@ -132,8 +132,19 @@ public class MechanismRegistry implements org.bukkit.event.Listener {
      */
     public void persist(Mechanism mech) {
         if (!(mech instanceof BasicMechanism bm)) return;
+        boolean first = !bm.isPersisted();
         bm.setPersisted(true);
         persistence.save(bm.snapshotState());
+        // Assembled from blocks a recent teardown landed (a ship docked, then launched again): that landing must
+        // not be redone after a crash unless this one never reached disk.
+        if (first && bm.pivot().getWorld() != null) {
+            Set<CustomBlockRegistry.LocationKey> cells = new HashSet<>();
+            for (int i = 0; i < bm.blocks.size(); i++) {
+                org.joml.Vector3i c = bm.liveCell(i);
+                cells.add(new CustomBlockRegistry.LocationKey(bm.pivot().getWorld().getUID(), c.x, c.y, c.z));
+            }
+            persistence.supersedeTeardowns(bm.pivot().getWorld().getName(), bm.id(), cells);
+        }
     }
 
     /**
@@ -2769,12 +2780,16 @@ public class MechanismRegistry implements org.bukkit.event.Listener {
         // (Shutdown/world-unload of a persisted mechanism must NOT disassemble — see the branched shutdown —
         // so this only fires on a real teardown.)
         if (mech.isPersisted() && mech.pivot().getWorld() != null) {
-            // Mark the file with what happened, so a crash that brings the entities back without the landed
-            // blocks redoes the teardown instead of reviving the mechanism (see attemptRecover). Not for a
+            // Record what happened, so a crash that brings the entities back without the result redoes the
+            // teardown from the record instead of reviving the mechanism (see redoCrashTeardowns). Not for a
             // block-free one: there is nothing to land, and its consumer may need it back (BlockShips drops a
-            // prefab ship's kit itself, which a crash would also have undone).
-            String teardown = mech.blockFree ? null : landed ? MechanismState.LANDED : MechanismState.DESTROYED;
-            persistence.removeAfterSave(mech.pivot().getWorld().getName(), mech.id(), Bukkit.getCurrentTick(), teardown);
+            // prefab ship's kit itself, which a crash would also have undone), so its file just waits.
+            if (!mech.blockFree && mech.teardownSnapshot != null) {
+                persistence.markTeardown(mech.teardownSnapshot, landed ? MechanismState.LANDED : MechanismState.DESTROYED,
+                    mech.landingCellKeys, Bukkit.getCurrentTick());
+            } else {
+                persistence.removeAfterSave(mech.pivot().getWorld().getName(), mech.id(), Bukkit.getCurrentTick());
+            }
         }
     }
 
