@@ -223,6 +223,12 @@ async function buildBlockGroup(blk, models, animated) {
       animated.push({ obj, track: prepareTrack(de.animation.frames), period: de.animation.period || de.animation.frames.length });
     }
   }
+  // Whole-block track (a piston stroke): frames are the group's full matrix, offset included.
+  if (blk.animation && blk.animation.frames && blk.animation.frames.length) {
+    group.matrixAutoUpdate = false;
+    group.matrix.fromArray(blk.animation.frames[0]);
+    animated.push({ obj: group, track: prepareTrack(blk.animation.frames), period: blk.animation.period || blk.animation.frames.length });
+  }
   return group;
 }
 

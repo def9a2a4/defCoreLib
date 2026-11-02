@@ -228,6 +228,6 @@ custom-blocks:
   mech:huge_propeller: 10
   mech:thruster: 6
   mech:reaction_wheel: 4
-  mech:wheel: 3
+  mech:wheel: 3          # per size: every wood (mech:wheel_<wood>) uses its size's mass
   mech:large_wheel: 6
   mech:huge_wheel: 12

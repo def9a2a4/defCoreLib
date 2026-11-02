@@ -461,6 +461,45 @@ showcases:
       - { type: network_powered, at: [1, 0, 0] }
       - { type: piston_stroked, at: [2, 0, 0] }
 
+  - id: piston_slime_wall
+    name: "Motor → Mechanical Piston → Slime Wall"
+    blurb: "A mechanical piston shoves a whole wall: the slime blocks on its head bond the planks around them."
+    description: >
+      A mechanical piston's head is sticky — it carries the block in front of it — and when that block is
+      slime, the slime grabs every movable block touching it, and any slime it grabs does the same. So a
+      column of two slime blocks in the middle of a 3×2 wall turns the whole wall into the piston's load:
+      the two poles behind the core give a reach of two, and the wall travels two blocks out. The machine
+      stands on stone so the slime can't reach — and drag along — the ground.
+    assert_at: 200
+    blocks:
+      - { id: "mech:redstone_motor", facing: west,  at: [0, 1, 0] }    # passive X source
+      - { id: "mech:shaft",          facing: east,  at: [1, 1, 0] }
+      - { id: "mech:piston_core",    facing: south, at: [2, 1, 0] }    # forward = north
+      - { id: "mech:piston_head",    facing: south, at: [2, 1, -1] }   # sticky front head
+      - { id: "mech:piston_pole",    facing: north, at: [2, 1, 1] }    # back poles → reach 2
+      - { id: "mech:piston_pole",    facing: north, at: [2, 1, 2] }
+    vanilla:
+      # Stone under the machine only — never under the wall, or the slime would grab the ground.
+      - { block: "STONE", at: [0, 0, 0] }
+      - { block: "STONE", at: [1, 0, 0] }
+      - { block: "STONE", at: [2, 0, -1] }
+      - { block: "STONE", at: [2, 0, 0] }
+      - { block: "STONE", at: [2, 0, 1] }
+      - { block: "STONE", at: [2, 0, 2] }
+      # The wall, one block in front of the head: slime down the middle, planks either side.
+      - { block: "SLIME_BLOCK", at: [2, 1, -2] }
+      - { block: "SLIME_BLOCK", at: [2, 2, -2] }
+      - { block: "OAK_PLANKS",  at: [1, 1, -2] }
+      - { block: "OAK_PLANKS",  at: [3, 1, -2] }
+      - { block: "OAK_PLANKS",  at: [1, 2, -2] }
+      - { block: "OAK_PLANKS",  at: [3, 2, -2] }
+    activate: passive
+    expect:
+      - { type: piston_stroked, at: [2, 1, 0] }
+      - { type: block_type, value: AIR, at: [1, 1, -2], to: [3, 2, -2] }          # the wall left…
+      - { type: material_total, value: "OAK_PLANKS=4", at: [1, 1, -4], to: [3, 2, -4] }   # …and stands two out
+      - { type: block_type, value: SLIME_BLOCK, at: [2, 1, -4], to: [2, 2, -4] }
+
   # ── Chain pulleys: power jumps a gap by chain, only around a CLOSED loop ────
   - id: chain_pulley_relay
     name: "Windmill → Chain Pulleys → Fan"

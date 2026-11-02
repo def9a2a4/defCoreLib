@@ -29,6 +29,16 @@ build:
 	
 	$(call deploy_jars,bin)
 
+# Upload this version's jars + docs/changelogs/v$(VERSION)/ to Modrinth (scripts/publish_modrinth.py).
+# publish needs MODRINTH_TOKEN and a clean tree; re-running skips plugins already published.
+.PHONY: publish-dry
+publish-dry: build
+	uv run scripts/publish_modrinth.py --dry-run
+
+.PHONY: publish
+publish: build
+	uv run scripts/publish_modrinth.py
+
 # Docs build: compile the plugin, boot a SEPARATE server (test-server/, not the playtest server/)
 # that exports the ground-truth placed-display data (-Ddefcorelib.export), then generate the catalog
 # + vendor assets. Single command. test-server/ is created (gitignored) with a joinable, peaceful,

@@ -778,6 +778,8 @@ final class ShowcaseRunner implements Listener {
                 }
                 blocks.add(rec);
             }
+            // A piston's stroke (recorded, not made, in a capture): every block it carries slides out and back.
+            if (pistons != null) animateStrokes(spec, origin, blocks);
             // World fluids: scan the build's bounding box (padded 3 out/down, 1 up — well inside the
             // 16-block z spacing between showcases) and emit every water/lava cell with its level so
             // the viewer can size flowing water (`water[level=3]`).
@@ -821,6 +823,61 @@ final class ShowcaseRunner implements Listener {
         return new int[]{b.getX() - origin.getBlockX(), b.getY() - origin.getBlockY(), b.getZ() - origin.getBlockZ()};
     }
 
+    /** Give each block record a recorded piston stroke carries a whole-block slide loop (out, hold, back, hold),
+     *  and add the ghost pole that slides out of the core cell to keep the rod whole. */
+    private void animateStrokes(ShowcaseSpec spec, Location origin, List<Map<String, Object>> blocks) {
+        List<Map<String, Object>> ghosts = new ArrayList<>();
+        for (ShowcaseSpec.BlockSpec bs : spec.blocks) {
+            if (!"mech:piston_core".equals(bs.id())) continue;
+            ExtendablePistonManager.PlannedStroke st = pistons.plannedStroke(blockAt(origin, bs.at()));
+            if (st == null) continue;
+            int[] d = {st.face().getModX() * st.distance(), st.face().getModY() * st.distance(),
+                    st.face().getModZ() * st.distance()};
+            java.util.Set<String> carried = new java.util.HashSet<>();
+            for (Block b : st.moving()) carried.add(cellKey(relative(origin, b)));
+            String ghostFrom = st.ghostTemplate() == null ? null : cellKey(relative(origin, st.ghostTemplate()));
+            for (Map<String, Object> rec : blocks) {
+                if (!(rec.get("offset") instanceof int[] off) || !carried.contains(cellKey(off))) continue;
+                rec.put("animation", slideTrack(off, d, false));
+                if (cellKey(off).equals(ghostFrom) && rec.get("id") != null) {
+                    Map<String, Object> ghost = new LinkedHashMap<>(rec);
+                    int[] at = relative(origin, st.core());
+                    ghost.put("offset", at);
+                    ghost.put("id", null);   // not a real block: no item link / highlight
+                    ghost.put("animation", slideTrack(at, d, true));
+                    ghosts.add(ghost);
+                    ghostFrom = null;
+                }
+            }
+        }
+        blocks.addAll(ghosts);
+    }
+
+    /** A whole-block loop (frames are the block group's full matrix, offset included): slide by {@code d} with
+     *  the swing's phases. A {@code ghost} (the pole filling the core cell) is shrunk away while fully retracted,
+     *  where it would sit inside the core. */
+    private static Map<String, Object> slideTrack(int[] off, int[] d, boolean ghost) {
+        List<float[]> frames = new ArrayList<>();
+        for (int t = 0; t < SWING_PERIOD; t += SWING_STEP) {
+            float open = (float) openFraction(t);
+            float scale = ghost && open == 0 ? 0.001f : 1f;
+            frames.add(new org.joml.Matrix4f().translation(off[0] + d[0] * open, off[1] + d[1] * open,
+                    off[2] + d[2] * open).scale(scale).get(new float[16]));
+        }
+        Map<String, Object> a = new LinkedHashMap<>();
+        a.put("period", SWING_PERIOD);
+        a.put("frames", frames);
+        return a;
+    }
+
+    /** 0 → 1 (eased), hold, 1 → 0, hold — the shared open/close cycle of the swing and stroke loops. */
+    private static double openFraction(int t) {
+        int phase = t / SWING_PHASE;
+        double f = (double) (t % SWING_PHASE) / SWING_PHASE;
+        double eased = f * f * (3 - 2 * f);
+        return switch (phase) { case 0 -> eased; case 1 -> 1; case 2 -> 1 - eased; default -> 0; };
+    }
+
     /** Swing loop period and length of each phase (open, hold open, close, hold closed), in ticks. */
     private static final int SWING_PHASE = 25, SWING_PERIOD = 4 * SWING_PHASE, SWING_STEP = 2;
 
@@ -835,10 +892,7 @@ final class ShowcaseRunner implements Listener {
         org.joml.Vector3f pivot = new org.joml.Vector3f(hinge[0], hinge[1], hinge[2]);
         List<float[]> frames = new ArrayList<>();
         for (int t = 0; t < SWING_PERIOD; t += SWING_STEP) {
-            int phase = t / SWING_PHASE;
-            double f = (double) (t % SWING_PHASE) / SWING_PHASE;
-            double eased = f * f * (3 - 2 * f);
-            double open = switch (phase) { case 0 -> eased; case 1 -> 1; case 2 -> 1 - eased; default -> 0; };
+            double open = openFraction(t);
             float rad = (float) Math.toRadians(-sw.targetDeg() * open);
             org.joml.Matrix4f m = new org.joml.Matrix4f()
                     .translate(-corner.x, -corner.y, -corner.z)
