@@ -1396,6 +1396,13 @@ final class BasicMechanism implements Mechanism {
                 // owned-vehicle flicker is irrelevant, and we may have thrown before the deferral was
                 // ever scheduled, so the deferred removal can't be relied on.
                 if (mechanismRegistry != null) mechanismRegistry.onMechanismRemoved(this);
+                // Carried frames/paintings/cushions not yet landed would vanish with the entities: pay them now.
+                try {
+                    salvageCarried();
+                } catch (RuntimeException ex) {
+                    registry.getPlugin().getLogger().log(Level.WARNING,
+                        "disassemble: couldn't salvage carried entities after a failed teardown", ex);
+                }
                 removeAllEntities();
             }
         }
@@ -1440,7 +1447,7 @@ final class BasicMechanism implements Mechanism {
                     // book, a chiseled bookshelf's contents) — skipping on it would delete exactly the cargo
                     // dropStorageItems was widened to save.
                     if (mb.banners == null && mb.storage == null && mb.blockEntitySnapshot == null
-                            && mb.attached == null) continue;
+                            && mb.attached == null && mb.undecodedAttached == null) continue;
                     // Per-block isolation (mirrors disassemble()'s landing loop): one failed drop must not
                     // skip the rest, and — with the latch set — must not escape into the finally either.
                     try {
@@ -1809,18 +1816,23 @@ final class BasicMechanism implements Mechanism {
         int quarterTurns = quarterTurnsCcw(rotation);
         for (int i = 0; i < blocks.size(); i++) {
             MechanismBlockData mb = blocks.get(i);
+            warnUndecodedAttached(mb);
             if (mb.attached == null) continue;
             Block anchor = landedCells.get(i);
-            Location payAt = anchor != null ? anchor.getLocation() : landingCells.get(i);
             for (AttachedEntities.CarriedEntity ce : mb.attached) {
                 boolean handled = false;
+                // Items pay in front of the face they hung on (the entity's own cell), not inside the landed
+                // block; an anchor that never landed pays at the cell it was bound for.
+                Location payAt = landingCells.get(i);
                 try {
-                    if (anchor != null && (upright || AttachedEntities.KIND_FRAME.equals(ce.kind()))) {
-                        AttachedEntities.Pose pose = AttachedEntities.landingPose(ce, anchor, rotation);
-                        if (pose != null && mayOccupy(pose.cell(), mb)) {
-                            handled = AttachedEntities.spawn(ce, pose, quarterTurns)
-                                != AttachedEntities.SpawnResult.FAILED;
-                        }
+                    AttachedEntities.Pose pose = anchor != null ? AttachedEntities.landingPose(ce, anchor, rotation) : null;
+                    if (pose != null) payAt = pose.cell().getLocation();
+                    // A painting can't hang sideways; a frame follows any turn. Its cell must be open — a roll can
+                    // turn a face into terrain or another landed block, where vanilla would pop it later anyway.
+                    if (pose != null && (upright || AttachedEntities.KIND_FRAME.equals(ce.kind()))
+                            && MovableBlocks.isEmptyOrPassable(pose.cell().getType()) && mayOccupy(pose.cell(), mb)) {
+                        handled = AttachedEntities.spawn(ce, pose, quarterTurns)
+                            != AttachedEntities.SpawnResult.FAILED;
                     }
                 } catch (RuntimeException ex) {
                     log.log(Level.WARNING, "disassemble: couldn't respawn carried " + ce.kind() + " "
@@ -1830,6 +1842,33 @@ final class BasicMechanism implements Mechanism {
             }
             mb.attached = null; // landed or paid — never twice
         }
+    }
+
+    /** Saved carried entries recovery couldn't decode are lost when the mechanism is torn down — say so. */
+    private void warnUndecodedAttached(MechanismBlockData mb) {
+        if (mb.undecodedAttached == null || mb.undecodedAttached.isEmpty()) return;
+        registry.getPlugin().getLogger().warning("Mechanism " + id + ": " + mb.undecodedAttached.size()
+            + " carried frame/painting entr" + (mb.undecodedAttached.size() == 1 ? "y" : "ies")
+            + " could not be decoded on this server and are lost with this teardown: " + mb.undecodedAttached);
+        mb.undecodedAttached = null;
+    }
+
+    /**
+     * Failed-teardown salvage: pay every carried frame/painting still on board at its block's live cell, and
+     * drop every carried cushion where it is. Each is idempotent with the normal path (it nulls / untags as it
+     * goes), so whatever already landed isn't paid twice.
+     */
+    private void salvageCarried() {
+        World w = pivot.getWorld();
+        if (w != null) {
+            for (int i = 0; i < blocks.size(); i++) {
+                MechanismBlockData mb = blocks.get(i);
+                if (mb.attached == null) continue;
+                org.joml.Vector3i cell = liveCell(i);
+                dropAttachedItems(new Location(w, cell.x, cell.y, cell.z), mb);
+            }
+        }
+        dropCarriedCushions();
     }
 
     /** May a carried entity occupy {@code cell}? Not a protected cell, and the consumer's policy says PLACE. */
@@ -1871,16 +1910,25 @@ final class BasicMechanism implements Mechanism {
                 try {
                     c.removeScoreboardTag(tag.raw());
                     s.removePassenger(c);
+                    // removePassenger always reports success; a plugin can still cancel the dismount. Then the
+                    // cushion stays on the collider and is ejected (and pops, item and all) when it goes.
+                    if (c.getVehicle() == s) continue;
                     Block anchor = landedCells.get(tag.anchorIdx());
-                    if (anchor == null || !upright) {
-                        Location at = landingCells.get(tag.anchorIdx());
-                        dropCushion(c, at != null ? at : c.getLocation());
+                    MechanismBlockData anchorData = tag.anchorIdx() >= 0 && tag.anchorIdx() < blocks.size()
+                        ? blocks.get(tag.anchorIdx()) : null;
+                    Location loc = null;
+                    if (anchor != null && upright && anchorData != null) {
+                        Vector3f off = rotation.transformDirection(
+                            new Vector3f((float) tag.dx(), 0, (float) tag.dz()), new Vector3f());
+                        loc = new Location(anchor.getWorld(), anchor.getX() + 0.5 + off.x,
+                            anchor.getY() + tag.dy(), anchor.getZ() + 0.5 + off.z);
+                        // The cushion's own cell gets the same protection check as the blocks and frames.
+                        if (!mayOccupy(loc.getBlock(), anchorData)) loc = null;
+                    }
+                    if (loc == null) {
+                        dropCushion(c, c.getLocation()); // where it rides: open air, not inside the landed block
                         continue;
                     }
-                    Vector3f off = rotation.transformDirection(
-                        new Vector3f((float) tag.dx(), 0, (float) tag.dz()), new Vector3f());
-                    Location loc = new Location(anchor.getWorld(), anchor.getX() + 0.5 + off.x,
-                        anchor.getY() + tag.dy(), anchor.getZ() + 0.5 + off.z);
                     org.bukkit.util.Vector look = c.getLocation().getDirection();
                     Vector3f turned = rotation.transformDirection(
                         new Vector3f((float) look.getX(), 0, (float) look.getZ()), new Vector3f());
@@ -1923,6 +1971,7 @@ final class BasicMechanism implements Mechanism {
 
     /** destroy(): pay each carried frame/painting's fallback items at this block's cell. */
     private void dropAttachedItems(Location loc, MechanismBlockData mb) {
+        warnUndecodedAttached(mb);
         if (mb.attached == null) return;
         for (AttachedEntities.CarriedEntity ce : mb.attached) {
             AttachedEntities.dropFallbacks(ce, loc, registry.getPlugin().getLogger());

@@ -146,15 +146,12 @@ final class AttachedEntities {
 
     /** Everything found on a structure at assembly. Mutated only on the main thread during one assembly. */
     static final class Capture {
-        static final Capture EMPTY = new Capture();
 
         final Map<Integer, List<CarriedEntity>> attached = new HashMap<>();
         final Map<Integer, List<BannerAttachment>> standIns = new HashMap<>();
         /** The live frames/paintings captured above — removed only once the blocks are aired out. */
         final List<Entity> originals = new ArrayList<>();
         final List<CushionRef> cushions = new ArrayList<>();
-
-        boolean isEmpty() { return attached.isEmpty() && cushions.isEmpty(); }
 
         /** Remove the captured frames/paintings. Call AFTER the source blocks are aired out, so any assembly
          *  throw before that leaves the originals in the world (the captured copy dies with the mechanism). */
@@ -193,7 +190,7 @@ final class AttachedEntities {
      * position in {@code blocks}.
      */
     static Capture capture(List<Block> blocks, Logger log) {
-        if (blocks.isEmpty()) return Capture.EMPTY;
+        if (blocks.isEmpty()) return new Capture();
         World w = blocks.get(0).getWorld();
         Map<CustomBlockRegistry.LocationKey, Integer> index = new HashMap<>(blocks.size() * 2);
         int minX = Integer.MAX_VALUE, minY = Integer.MAX_VALUE, minZ = Integer.MAX_VALUE;
@@ -228,12 +225,16 @@ final class AttachedEntities {
 
     private static boolean isMechEntity(Entity e) {
         for (String t : e.getScoreboardTags()) {
-            if (t.startsWith("corelib:mech:") || t.startsWith(CARRIED_TAG)) return true;
+            if (t.startsWith("corelib:mech:")) return true;
         }
         return false;
     }
 
     private static void captureCushion(Capture cap, Entity c, Map<CustomBlockRegistry.LocationKey, Integer> index) {
+        // A resting cushion (no vehicle — the caller skips riding ones) still tagged as carried lost its ride
+        // without landing (its collider was reaped, or a teardown threw). The tag is stale: drop it.
+        AttachedEntities.CarriedTag stale = carriedTagOf(c);
+        if (stale != null) c.removeScoreboardTag(stale.raw());
         Block anchor = cushionAnchor(c);
         if (anchor == null) return;
         Integer ai = index.get(CustomBlockRegistry.LocationKey.of(anchor));
@@ -300,7 +301,8 @@ final class AttachedEntities {
      * The block a cushion rests on — mirrors vanilla {@code Cushion.hasAnchorBelow}: the block whose OUTLINE
      * (not collision) shape reaches the thin probe just under the cushion's feet. Checks the cell containing the
      * probe first (covers slabs/stairs, where the cushion sits inside the anchor's own cell, and cauldron-like
-     * blocks), then the cell below (a fence/wall is 1.5 tall, so its cushion sits in the air cell above it).
+     * blocks), then the cell below as a fallback. Only the footprint's center column is probed: exact for a
+     * placed cushion (the item centers it on the block), approximate for an off-center summoned one.
      */
     static @Nullable Block cushionAnchor(Entity cushion) {
         BoundingBox bb = cushion.getBoundingBox();
@@ -344,7 +346,10 @@ final class AttachedEntities {
     private static BannerAttachment standIn(CarriedEntity ce, ItemStack shown, boolean frameItem) {
         Quaternionf face = facingRotation(ce.fx(), ce.fy(), ce.fz());
         if (KIND_FRAME.equals(ce.kind()) && frameItem) {
-            face.mul(new Quaternionf().rotationZ((float) (-ce.rotation() * Math.PI / 4)));
+            // A framed map turns in 90° steps (the client renders rotation % 4), any other item in 45° steps.
+            double step = shown.getType() == Material.FILLED_MAP ? Math.PI / 2 : Math.PI / 4;
+            int rot = shown.getType() == Material.FILLED_MAP ? ce.rotation() % 4 : ce.rotation();
+            face.mul(new Quaternionf().rotationZ((float) (-rot * step)));
         }
         Vector3f scale = KIND_PAINTING.equals(ce.kind())
             ? new Vector3f(Math.max(1, ce.artW()), Math.max(1, ce.artH()), 1f)
@@ -413,7 +418,9 @@ final class AttachedEntities {
         Entity e = Bukkit.getUnsafe().deserializeEntity(ce.nbt(), pose.cell().getWorld(), true);
         if (e instanceof Hanging h) h.setFacingDirection(pose.facing(), true);
         if (e instanceof ItemFrame f && pose.facing().getModY() != 0 && quarterTurnsCcw != 0) {
-            int steps = pose.facing() == BlockFace.UP ? -2 * quarterTurnsCcw : 2 * quarterTurnsCcw;
+            // Rotation steps are 45° for an item but 90° for a map (the client renders rotation % 4).
+            int perQuarter = f.getItem().getType() == Material.FILLED_MAP ? 1 : 2;
+            int steps = (pose.facing() == BlockFace.UP ? -perQuarter : perQuarter) * quarterTurnsCcw;
             Rotation[] all = Rotation.values();
             f.setRotation(all[Math.floorMod(f.getRotation().ordinal() + steps, all.length)]);
         }
@@ -456,6 +463,19 @@ final class AttachedEntities {
 
     /** Parsed {@link #carriedTag}: anchor block index + offset from the anchor cell's bottom center. */
     record CarriedTag(String raw, UUID mechId, int anchorIdx, double dx, double dy, double dz) {}
+
+    /**
+     * True only for a cushion that is really being carried right now: tagged, and riding a collider of the very
+     * mechanism the tag names. A tag alone isn't enough — it can outlive the ride (see captureCushion).
+     */
+    static boolean isCarriedNow(@Nullable Entity e) {
+        if (!CushionCompat.isCushion(e)) return false;
+        CarriedTag tag = carriedTagOf(e);
+        if (tag == null || !(e.getVehicle() instanceof org.bukkit.entity.Shulker s) || !s.isValid()) return false;
+        String prefix = "corelib:mech:" + tag.mechId() + ":";
+        for (String t : s.getScoreboardTags()) if (t.startsWith(prefix)) return true;
+        return false;
+    }
 
     static @Nullable CarriedTag carriedTagOf(Entity e) {
         for (String t : e.getScoreboardTags()) {

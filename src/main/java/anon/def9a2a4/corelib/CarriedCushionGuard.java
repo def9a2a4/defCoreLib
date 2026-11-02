@@ -1,7 +1,6 @@
 package anon.def9a2a4.corelib;
 
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.Shulker;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventPriority;
@@ -55,8 +54,7 @@ final class CarriedCushionGuard implements Listener {
         if (byEntityClass.isInstance(event) || !(event instanceof EntityEvent ee)
                 || !(event instanceof Cancellable c)) return;
         Entity e = ee.getEntity();
-        if (!CushionCompat.isCushion(e) || AttachedEntities.carriedTagOf(e) == null) return;
-        if (!(e.getVehicle() instanceof Shulker s) || !s.isValid() || !isMechCollider(s)) return;
+        if (!AttachedEntities.isCarriedNow(e)) return;
         String cause;
         try {
             cause = String.valueOf(getCause.invoke(event));
@@ -64,12 +62,5 @@ final class CarriedCushionGuard implements Listener {
             return;
         }
         if ("PHYSICS".equals(cause) || "OBSTRUCTION".equals(cause)) c.setCancelled(true);
-    }
-
-    private static boolean isMechCollider(Shulker s) {
-        for (String t : s.getScoreboardTags()) {
-            if (t.startsWith("corelib:mech:")) return true;
-        }
-        return false;
     }
 }

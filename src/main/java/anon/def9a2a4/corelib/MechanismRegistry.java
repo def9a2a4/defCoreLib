@@ -353,6 +353,41 @@ public class MechanismRegistry implements org.bukkit.event.Listener {
      * box toward the wall would push it out of the cell). The shift is ADDED to any author-supplied
      * offset so a custom wall-head block keeps its configured offset.
      */
+    /** The collider a live block would get if assembled now — the same resolution assembleCore uses (custom
+     *  block config → vanilla shape registry → full block, plus the wall-head shift). */
+    CollisionConfig collisionOf(Block block) {
+        BlockData bd = block.getBlockData();
+        CustomHeadBlock chb = registry.getTypeFromBlock(block);
+        CollisionConfig custom = chb != null ? chb.resolveCollision(registry.getState(block)) : null;
+        return applyWallHeadShift(custom != null ? custom : colliderRegistry.get(bd.getMaterial(), bd), bd);
+    }
+
+    /**
+     * A player leaving while seated on something a mechanism carries (a cushion on a collider, or a collider
+     * itself) must step off first: vanilla saves the player's whole vehicle stack into their player file when it
+     * holds exactly one player, which would pull the collider out of the moving body and bring a stale copy back
+     * on rejoin. Quit/kick fire before that save.
+     */
+    @org.bukkit.event.EventHandler(priority = org.bukkit.event.EventPriority.HIGHEST)
+    public void onPlayerQuit(org.bukkit.event.player.PlayerQuitEvent e) { stepOffMechanism(e.getPlayer()); }
+
+    @org.bukkit.event.EventHandler(priority = org.bukkit.event.EventPriority.HIGHEST)
+    public void onPlayerKick(org.bukkit.event.player.PlayerKickEvent e) { stepOffMechanism(e.getPlayer()); }
+
+    private static void stepOffMechanism(org.bukkit.entity.Player p) {
+        for (Entity v = p.getVehicle(); v != null; v = v.getVehicle()) {
+            if (AttachedEntities.carriedTagOf(v) != null || isMechTagged(v)) {
+                p.leaveVehicle();
+                return;
+            }
+        }
+    }
+
+    private static boolean isMechTagged(Entity e) {
+        for (String t : e.getScoreboardTags()) if (t.startsWith("corelib:mech:")) return true;
+        return false;
+    }
+
     private static CollisionConfig applyWallHeadShift(CollisionConfig collision, BlockData bd) {
         if (collision.size() <= 0.5f && bd instanceof org.bukkit.block.data.Directional dir) {
             String name = bd.getMaterial().name();
@@ -564,7 +599,7 @@ public class MechanismRegistry implements org.bukkit.event.Listener {
                 blockData.add(mb);
             }
             return spawnMechanismEntities(mechId, type, blockData, pivot, AXIS_Y, vehicle, rideOffset,
-                false, true, null, List.of(), List.of(), AttachedEntities.Capture.EMPTY, parts.size(), true);
+                false, true, null, List.of(), List.of(), new AttachedEntities.Capture(), parts.size(), true);
         } catch (RuntimeException e) {
             vehicle.removeScoreboardTag(vehicleTag);
             throw e;
@@ -2276,7 +2311,7 @@ public class MechanismRegistry implements org.bukkit.event.Listener {
     }
 
     /** Reconstruct carried frames/paintings per entry. An entry that won't parse is kept verbatim in
-     *  {@code undecodedAttached} (re-saved as-is, never dropped or deleted) instead of failing the block. */
+     *  {@code undecodedAttached} — re-saved as-is instead of failing the block; a teardown logs it in full. */
     private void rebuildAttached(MechanismBlockData mbd, List<Map<String, Object>> raw, UUID mechId) {
         for (Map<String, Object> m : raw) {
             try {
@@ -2285,7 +2320,7 @@ public class MechanismRegistry implements org.bukkit.event.Listener {
                 mbd.attached.add(ce);
             } catch (RuntimeException e) {
                 plugin.getLogger().warning("Mechanism recovery: unreadable carried entity for " + mechId
-                    + " (" + e.getMessage() + "); keeping it in the state file untouched");
+                    + " (" + e.getMessage() + "); keeping it in the state file as-is");
                 if (mbd.undecodedAttached == null) mbd.undecodedAttached = new ArrayList<>();
                 mbd.undecodedAttached.add(m);
             }

@@ -80,7 +80,8 @@ public final class MechanismBlockData {
     // Item frames / paintings hanging from this block, carried as data (set post-construction like banners):
     // serialized at assembly, respawned on landing or dropped as their fallback items — see AttachedEntities.
     // Each also has a render-only stand-in in `banners` (isStandIn). undecodedAttached holds saved entries
-    // recovery couldn't parse, kept verbatim so a re-save doesn't erase them.
+    // recovery couldn't parse, kept verbatim so a re-save doesn't erase them; a teardown can't pay them, so it
+    // logs them (with their data) instead.
     @Nullable List<AttachedEntities.CarriedEntity> attached;
     @Nullable List<Map<String, Object>> undecodedAttached;
 

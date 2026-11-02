@@ -9,7 +9,9 @@ import org.jspecify.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Public view of the 26.3 cushion for mechanism consumers (BlockShips seats). Every method is safe on servers
@@ -31,9 +33,7 @@ public final class CushionSeats {
     public static boolean isCushion(@Nullable Entity e) { return CushionCompat.isCushion(e); }
 
     /** True for a cushion the engine is carrying on a mechanism collider. */
-    public static boolean isCarried(@Nullable Entity e) {
-        return CushionCompat.isCushion(e) && AttachedEntities.carriedTagOf(e) != null;
-    }
+    public static boolean isCarried(@Nullable Entity e) { return AttachedEntities.isCarriedNow(e); }
 
     /** The carried cushion riding {@code seat}, or null. */
     public static @Nullable Entity carriedCushionOn(@Nullable Shulker seat) {
@@ -50,6 +50,21 @@ public final class CushionSeats {
     }
 
     /**
+     * The block whose collider a cushion resting on {@code anchor} will ride when the structure assembles: the
+     * anchor itself, or — when it has no collider (carpets, pressure plates, trapdoors, doors, fence gates) — the
+     * block directly below it. That is the block to seat a player on. Null when neither has a collider (the
+     * cushion is then left behind) or the engine isn't running.
+     */
+    public static @Nullable Block carrierBlockFor(Block anchor) {
+        CoreLibPlugin core = CoreLibPlugin.getInstance();
+        MechanismRegistry mr = core != null ? core.getMechanismRegistry() : null;
+        if (mr == null) return null;
+        if (mr.collisionOf(anchor).enabled()) return anchor;
+        Block below = anchor.getRelative(org.bukkit.block.BlockFace.DOWN);
+        return below.getType().isAir() || !mr.collisionOf(below).enabled() ? null : below;
+    }
+
+    /**
      * The resting cushions whose support block is in {@code blocks}, keyed by that block (first one wins if two
      * share a block). Empty on servers without cushions.
      */
@@ -61,8 +76,8 @@ public final class CushionSeats {
             BoundingBox bb = BoundingBox.of(b);
             if (region == null) region = bb; else region.union(bb);
         }
-        region.expand(0, 0, 0, 0, 2, 0); // a cushion on a 1.5-tall fence sits in the cell above it
-        java.util.Set<Block> set = new java.util.HashSet<>(blocks);
+        region.expand(0, 0, 0, 0, 1, 0); // a cushion on a full block sits in the cell above it
+        Set<Block> set = new HashSet<>(blocks);
         Block first = blocks.iterator().next();
         for (Entity e : first.getWorld().getNearbyEntities(region)) {
             if (!CushionCompat.isCushion(e) || e.getVehicle() != null) continue;
