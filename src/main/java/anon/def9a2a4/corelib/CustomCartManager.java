@@ -194,6 +194,8 @@ final class CustomCartManager implements Listener {
             if (stored != null) state.burnTicks = stored;
             Double target = pdc.get(cartTargetKey, PersistentDataType.DOUBLE);
             if (target != null) state.targetSpeed = target;
+            // Already on a powered activator rail when it loads → not a rising edge, so don't re-fire.
+            state.wasOnActivator = type == CartType.DISPENSER && isOnPoweredActivatorRail(cart);
             tracked.put(cart.getUniqueId(), state);
             if (type == CartType.DISPENSER) applyDispenserFacing(state);   // render the fixed up-facing dispenser
         }
@@ -213,8 +215,8 @@ final class CustomCartManager implements Listener {
                 persist(state);
             }
             tracked.remove(entity.getUniqueId());
-            // Drop tracking of the marker too; it is non-persistent and despawns with the chunk.
-            burnLight.remove(entity.getUniqueId());
+            // Drop the marker too (non-persistent, so it would only vanish with its own chunk).
+            removeBurnLight(entity.getUniqueId());
         }
     }
 
@@ -728,6 +730,9 @@ final class CustomCartManager implements Listener {
 
     /** True if this minecart is our blast-furnace cart (a train engine). */
     boolean isBlastCart(Minecart cart) { return typeOf(cart) == CartType.BLAST; }
+
+    /** True if this minecart is one of our tracked railbound carts. */
+    boolean isTracked(Minecart cart) { return tracked.containsKey(cart.getUniqueId()); }
 
     /** True if this minecart is our coal tender. */
     boolean isCoalCart(Minecart cart) { return typeOf(cart) == CartType.COAL; }

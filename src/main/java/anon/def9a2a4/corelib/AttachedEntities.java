@@ -447,10 +447,13 @@ final class AttachedEntities {
     }
 
     /** Room for a frame, painting, cushion or dropped item: nothing in the cell collides (air, grass, flowers, a
-     *  torch, water — what vanilla lets a hanging entity share) and it isn't lava, which would burn it. Looser than
+     *  torch, water — what vanilla lets a hanging entity share) and it isn't lava, fire or a portal, which would burn
+     *  or carry it off. Looser than
      *  {@link MovableBlocks#isEmptyOrPassable}, which decides where a landing BLOCK may go. */
     static boolean isOpen(Block b) {
-        return b.getType() != Material.LAVA && b.isPassable();
+        Material m = b.getType();
+        return m != Material.LAVA && m != Material.FIRE && m != Material.SOUL_FIRE
+                && m != Material.END_PORTAL && m != Material.NETHER_PORTAL && b.isPassable();
     }
 
     private static @Nullable BlockFace faceOf(int x, int y, int z) {

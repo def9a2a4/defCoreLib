@@ -22,6 +22,8 @@ public class VanillaContainerAdapter implements ContainerAdapter {
     @Override
     public ItemStack insert(Block block, ItemStack item) {
         if (!(block.getState() instanceof Container container)) return item;
+        // addItem skips canPlaceItem: refuse what vanilla's shulker slots would (a shulker inside a shulker).
+        if (container instanceof org.bukkit.block.ShulkerBox && org.bukkit.Tag.SHULKER_BOXES.isTagged(item.getType())) return item;
         HashMap<Integer, ItemStack> leftover = container.getInventory().addItem(item.clone());
         if (leftover.isEmpty()) return null;
         return leftover.values().iterator().next();

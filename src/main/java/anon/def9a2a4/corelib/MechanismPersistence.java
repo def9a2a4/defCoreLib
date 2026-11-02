@@ -43,7 +43,8 @@ import java.util.logging.Logger;
  *
  * <p>All bookkeeping is on the main thread (the maps are unsynchronized by design). Every file write and
  * delete runs on ONE writer thread, in submission order: {@link #save}/{@link #remove} submit and wait (their
- * synchronous contract is unchanged), only the world-save re-snapshot ({@link #saveAsync}) is fire-and-forget.
+ * synchronous contract is unchanged), only the world-save re-snapshot ({@link #saveAsync}) and the teardown records
+ * ({@link #markTeardown} and friends) are fire-and-forget.
  * Because the queue is FIFO, an async write can never land after a later save or delete of the same id.
  * Recovery reads synchronously on the main thread; the atomic rename means it never sees a half-written file.
  */

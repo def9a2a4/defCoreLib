@@ -1662,7 +1662,9 @@ final class RotationBlocks {
         if (facing == null) return;
         Inventory host = hostContainer(placer);
         if (host == null) return;
-        if (placerEffect(placer.getRelative(facing), host) && MachineActedEvent.hasListeners()) {
+        Block target = placer.getRelative(facing);
+        if (!placer.getWorld().isChunkLoaded(target.getX() >> 4, target.getZ() >> 4)) return; // never sync-load
+        if (placerEffect(target, host) && MachineActedEvent.hasListeners()) {
             org.bukkit.Bukkit.getPluginManager().callEvent(new MachineActedEvent(placer, "mech:placer"));
         }
     }
@@ -1735,6 +1737,7 @@ final class RotationBlocks {
         Inventory internal = CoreLibPlugin.getInstance().getRegistry().getOrCreateStorage(machine);
         if (internal == null) return;
         Block host = machine.getRelative(facing.getOppositeFace());
+        if (!machine.getWorld().isChunkLoaded(host.getX() >> 4, host.getZ() >> 4)) return; // never sync-load
         // Gateway resolution: null for non-containers AND locked plugin-owned ones (e.g. a dynamo).
         Container c = ContainerAdapterRegistry.findVanillaContainer(host);
         if (c == null) return;
@@ -2167,6 +2170,7 @@ final class RotationBlocks {
     private static void pushToMount(Block hopper, Inventory internal) {
         BlockFace mount = mountFace(hopper);
         Block target = hopper.getRelative(mount);
+        if (!hopper.getWorld().isChunkLoaded(target.getX() >> 4, target.getZ() >> 4)) return; // never sync-load
         // Gateway resolution: a locked container (e.g. a dynamo) resolves to null → the item is
         // offered to listeners and otherwise RETAINED (this method's never-drop contract).
         Container targetContainer = ContainerAdapterRegistry.findVanillaContainer(target);
@@ -2356,7 +2360,9 @@ final class RotationBlocks {
 
         BlockFace facing = readFacing(drill);
         if (facing == null) return;
-        DrillOutcome out = drillEffect(registry, drill.getRelative(facing), facing,
+        Block target = drill.getRelative(facing);
+        if (!drill.getWorld().isChunkLoaded(target.getX() >> 4, target.getZ() >> 4)) return; // never sync-load
+        DrillOutcome out = drillEffect(registry, target, facing,
             drillProgress.get(key), key.hashCode(), drillBreakStages, drillBlacklist, false); // static: normal speed
         if (out.next() == null) drillProgress.remove(key);
         else drillProgress.put(key, out.next());

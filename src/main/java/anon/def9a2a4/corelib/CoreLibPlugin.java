@@ -1099,6 +1099,9 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         block.getWorld().dropItemNaturally(
                 block.getLocation().add(0.5, 0.5, 0.5), drop);
         registry.onBlockRemoved(block, type);
+        // The block leaves the blast list, so BannerManager's (also MONITOR, later-registered) explode
+        // handler never sees it: drop the banners hung on it here.
+        if (bannerManager != null) bannerManager.handleRemoval(block, true);
         block.setType(Material.AIR); // actually remove the block from the world
         return true;
     }

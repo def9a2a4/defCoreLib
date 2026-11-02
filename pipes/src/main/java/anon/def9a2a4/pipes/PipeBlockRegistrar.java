@@ -4,6 +4,7 @@ import anon.def9a2a4.corelib.ContainerAccess;
 import anon.def9a2a4.corelib.CustomBlockRegistry;
 import anon.def9a2a4.corelib.CustomHeadBlock;
 import anon.def9a2a4.corelib.HeadUtil;
+import anon.def9a2a4.corelib.container.ContainerAdapterRegistry;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -181,6 +182,7 @@ public class PipeBlockRegistrar {
         BlockFace clickedFace = against.getFace(event.getBlockPlaced());
         BlockFace facing = clickedFace != null ? clickedFace
                 : getPlayerFacing(event.getPlayer().getLocation().getYaw());
+        if (!mayConnect(event, facing)) return null;
         return facing.name().toLowerCase();
     }
 
@@ -194,7 +196,19 @@ public class PipeBlockRegistrar {
 
         if (facing == BlockFace.DOWN) return null;
         facing = facing.getOppositeFace();
+        if (!mayConnect(event, facing)) return null;
         return facing.name().toLowerCase();
+    }
+
+    /** Claims: a pipe pulls from the container behind it and pushes into the one ahead, so refuse placing one
+     *  against a container the placer may not open (draining or stuffing a claimed chest from outside). */
+    private static boolean mayConnect(BlockPlaceEvent event, BlockFace facing) {
+        for (BlockFace f : new BlockFace[] {facing, facing.getOppositeFace()}) {
+            Block n = event.getBlockPlaced().getRelative(f);
+            if (ContainerAdapterRegistry.findAdapter(n).isPresent()
+                    && !ContainerAccess.mayOpen(event.getPlayer(), n.getLocation())) return false;
+        }
+        return true;
     }
 
     private static boolean isWorldEnabled(PipesPlugin plugin, Block block) {

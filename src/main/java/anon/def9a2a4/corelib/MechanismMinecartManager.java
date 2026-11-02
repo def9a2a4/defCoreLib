@@ -121,7 +121,10 @@ final class MechanismMinecartManager implements Listener {
             for (String tag : new ArrayList<>(minecart.getScoreboardTags())) {
                 if (tag.startsWith("corelib:mech:") && tag.endsWith(":vehicle")) minecart.removeScoreboardTag(tag);
             }
-            tracked.put(minecart.getUniqueId(), new MinecartState(minecart));
+            MinecartState state = new MinecartState(minecart);
+            // Already on a powered activator rail when it loads → not a rising edge, so don't re-toggle.
+            state.wasOnPoweredRail = isOnPoweredActivatorRail(minecart);
+            tracked.put(minecart.getUniqueId(), state);
         }
     }
 

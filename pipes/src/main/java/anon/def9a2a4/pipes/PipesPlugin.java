@@ -108,8 +108,11 @@ public class PipesPlugin extends JavaPlugin {
     public void onDisable() {
         // First, while worlds and managers are intact: open filter menus hold real items (see FilterGui).
         if (filterGui != null) filterGui.saveAndCloseAll();
-        CoreLibPlugin.getInstance().getRegistry().unregisterForeignOrphanDetector("pipes-legacy");
-        CoreLibPlugin.getInstance().getRegistry().clearCauldronConversions("pipes");
+        CoreLibPlugin core = CoreLibPlugin.getInstance();   // null if the core is already gone
+        if (core != null) {
+            core.getRegistry().unregisterForeignOrphanDetector("pipes-legacy");
+            core.getRegistry().clearCauldronConversions("pipes");
+        }
         for (PipeManager manager : pipeManagers.values()) {
             manager.shutdown();
         }

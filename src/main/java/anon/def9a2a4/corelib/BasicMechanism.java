@@ -754,6 +754,31 @@ final class BasicMechanism implements Mechanism {
         return ids;
     }
 
+    /** A chunk reload brought one of this mechanism's collider carriers/shulkers back as a NEW entity object with
+     *  the same UUID. The old reference is dead (teleport/remove no-op), so the wall would stand where it was:
+     *  swap the live one in. No-op for anything else, or while the held reference is still valid. */
+    void readoptCollider(Entity live) {
+        String prefix = "corelib:mech:" + id + ":";
+        for (String t : live.getScoreboardTags()) {
+            if (!t.startsWith(prefix) || !(t.endsWith(":carrier") || t.endsWith(":collider"))) continue;
+            String role = t.substring(prefix.length());
+            int bi;
+            try { bi = Integer.parseInt(role.substring(0, role.indexOf(':'))); } catch (NumberFormatException e) { return; }
+            ColliderPair cp = colliderByBlock.get(bi);
+            if (cp == null) return;
+            Entity carrier = cp.carrier();
+            Shulker shulker = cp.shulker();
+            if (carrier.getUniqueId().equals(live.getUniqueId()) && !carrier.isValid()) carrier = live;
+            else if (shulker.getUniqueId().equals(live.getUniqueId()) && !shulker.isValid() && live instanceof Shulker s) shulker = s;
+            else return;
+            ColliderPair np = new ColliderPair(carrier, shulker, bi);
+            for (int i = 0; i < colliders.size(); i++) if (colliders.get(i) == cp) colliders.set(i, np);
+            colliderByBlock.put(bi, np);
+            if (carrier.isValid() && shulker.isValid() && !carrier.getPassengers().contains(shulker)) carrier.addPassenger(shulker);
+            return;
+        }
+    }
+
     MechanismState snapshotState() {
         MechanismState st = new MechanismState();
         st.mechId = id;

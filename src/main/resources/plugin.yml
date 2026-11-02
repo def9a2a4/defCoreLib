@@ -4,6 +4,8 @@ version: ${version}
 api-version: 1.21
 author: def9a2a4
 description: Shared core library for def plugins
+# Protection plugins load first so their HIGHEST BlockPlaceEvent handlers register before ours (BuildProbe).
+softdepend: [GriefPrevention, WorldGuard, Towny, Lands, PlotSquared, Residence]
 commands:
   defcorelib:
     description: DefCoreLib commands (catalog, give, admin tools). /defcorelib help lists them.

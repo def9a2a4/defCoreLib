@@ -944,6 +944,10 @@ public class PipeManager {
             Location nextLoc = normalizeLocation(nextBlock.getLocation());
             if (visited.contains(nextLoc)) return false;                  // loop
 
+            // Water can't be placed as a world source in an ultrawarm (Nether) dimension, as with a bucket.
+            if (fluid == FluidType.WATER && nextBlock.getType() == Material.AIR && nextBlock.getWorld().isUltraWarm()) {
+                return false;
+            }
             FluidEndpoint endpoint = FluidEndpoints.accepting(nextBlock, fluid);
             if (endpoint != null) return endpoint.fill(nextBlock, fluid);
 

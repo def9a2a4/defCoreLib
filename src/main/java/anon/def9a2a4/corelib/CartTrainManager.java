@@ -184,6 +184,21 @@ final class CartTrainManager implements Listener {
         }
     }
 
+    /** A player riding a custom cart or train member steps off before quitting: vanilla saves a vehicle
+     *  holding exactly one player into the player file, which would pull the cart out of the world with its
+     *  PDC stale (contents dupe) and bring it back untracked. Quit/kick fire before that save. */
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onPlayerQuit(org.bukkit.event.player.PlayerQuitEvent e) { stepOffCart(e.getPlayer()); }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onPlayerKick(org.bukkit.event.player.PlayerKickEvent e) { stepOffCart(e.getPlayer()); }
+
+    private void stepOffCart(Player p) {
+        if (p.getVehicle() instanceof Minecart c && (members.containsKey(c.getUniqueId()) || carts.isTracked(c))) {
+            p.leaveVehicle();
+        }
+    }
+
     // ── Linking / unlinking ─────────────────────────────────────────────────
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)

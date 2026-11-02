@@ -349,7 +349,8 @@ public class BannerManager implements Listener {
 
     // ── Cleanup ──────────────────────────────────────────────────────────
 
-    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    // MONITOR: a later-priority cancel must not leave the banners dropped off a block that stays.
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onBlockBreak(BlockBreakEvent event) {
         boolean drop = event.getPlayer().getGameMode() != GameMode.CREATIVE;
         if (isBed(event.getBlock().getType())) {
@@ -359,8 +360,9 @@ public class BannerManager implements Listener {
         handleRemoval(event.getBlock(), drop);
     }
 
-    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onEntityExplode(EntityExplodeEvent event) {
+        if (!destroys(event.getExplosionResult())) return;   // wind charge / breeze
         for (Block block : event.blockList()) {
             if (isBed(block.getType())) {
                 Block foot = resolveBedFoot(block);
@@ -370,8 +372,9 @@ public class BannerManager implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onBlockExplode(BlockExplodeEvent event) {
+        if (!destroys(event.getExplosionResult())) return;
         for (Block block : event.blockList()) {
             if (isBed(block.getType())) {
                 Block foot = resolveBedFoot(block);
@@ -388,24 +391,30 @@ public class BannerManager implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onBlockFromTo(BlockFromToEvent event) {
-        handleRemoval(event.getToBlock(), true);
+        Block to = event.getToBlock();
+        if (to.getType().isAir() || to.isLiquid()) return;   // nothing a banner hangs on: skip the entity scan
+        handleRemoval(to, true);
     }
 
-    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPistonExtend(BlockPistonExtendEvent event) {
         for (Block block : event.getBlocks()) {
             handleRemoval(block, true);
         }
     }
 
-    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPistonRetract(BlockPistonRetractEvent event) {
         for (Block block : event.getBlocks()) {
             handleRemoval(block, true);
         }
     }
 
-    private void handleRemoval(Block block, boolean drop) {
+    private static boolean destroys(org.bukkit.ExplosionResult r) {
+        return r == org.bukkit.ExplosionResult.DESTROY || r == org.bukkit.ExplosionResult.DESTROY_WITH_DECAY;
+    }
+
+    void handleRemoval(Block block, boolean drop) {
         String prefix = TAG_PREFIX + blockKey(block) + ":";
         List<Display> entities = DisplayUtil.findByTag(block.getLocation(), prefix, SEARCH_RADIUS);
         if (entities.isEmpty()) return;

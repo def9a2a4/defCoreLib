@@ -1660,6 +1660,7 @@ public class MechanismRegistry implements org.bukkit.event.Listener {
                     persistence.save(mech.snapshotState());
                     activeMechanisms.remove(mech.id());
                     for (ColliderPair cp : mech.colliders) colliderIndex.remove(cp.shulker().getUniqueId());
+                    if (rotationDriver != null) rotationDriver.onRemoved(mech);   // recovery re-runs onAssembled
                     continue;
                 } catch (Exception e) {
                     plugin.getLogger().warning("Mechanism " + mech.id() + " failed to persist on world "
@@ -1752,6 +1753,8 @@ public class MechanismRegistry implements org.bukkit.event.Listener {
             }
             activeMechanisms.remove(mech.id());
             for (ColliderPair cp : mech.colliders) colliderIndex.remove(cp.shulker().getUniqueId());
+            // Drop the driver state and a drill's crack overlay; recovery rebuilds it (onAssembled).
+            if (rotationDriver != null) rotationDriver.onRemoved(mech);
         }
         // Each parked mechanism's state file was written synchronously by persistence.save() above; recovery
         // re-discovers it by entity scan when the chunk reloads. No index to flush.
@@ -1880,6 +1883,10 @@ public class MechanismRegistry implements org.bukkit.event.Listener {
                 if (isFrameOrCollider(e, id)
                         && !bound.computeIfAbsent(id, k -> live.boundEntityIds()).contains(e.getUniqueId())) {
                     removeWithPassengers(e);
+                } else {
+                    // Its own collider, reloaded with its chunk as a new entity object: swap it in for the dead
+                    // reference, else the wall stays where the chunk unloaded it (invisible walls).
+                    live.readoptCollider(e);
                 }
                 continue;
             }

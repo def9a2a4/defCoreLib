@@ -3,6 +3,7 @@ package anon.def9a2a4.pipes;
 import anon.def9a2a4.corelib.WorldFilter;
 import org.bukkit.World;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.world.WorldLoadEvent;
 import org.bukkit.event.world.WorldUnloadEvent;
@@ -48,7 +49,7 @@ public class WorldManager implements Listener {
         initWorld(event.getWorld());
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onWorldUnload(WorldUnloadEvent event) {
         removeWorld(event.getWorld());
     }

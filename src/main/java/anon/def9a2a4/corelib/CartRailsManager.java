@@ -371,6 +371,14 @@ final class CartRailsManager implements Listener {
         loadChunkFacings(event.getChunk());
     }
 
+    /** Drop an unloading chunk's facings; the chunk PDC already holds them (written on every change). */
+    @EventHandler
+    public void onChunkUnload(org.bukkit.event.world.ChunkUnloadEvent event) {
+        Chunk c = event.getChunk();
+        UUID w = c.getWorld().getUID();
+        facings.keySet().removeIf(k -> k.worldId().equals(w) && (k.x() >> 4) == c.getX() && (k.z() >> 4) == c.getZ());
+    }
+
     /** Re-point an already-spawned shell to {@code face} in place (keeps its authored translation+scale). */
     private void reorientDisplays(Block b, BlockFace face) {
         CustomHeadBlock type = registry.getTypeFromBlock(b);
