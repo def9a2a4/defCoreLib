@@ -884,6 +884,8 @@ public class CustomBlockRegistry {
             bareLocations.remove(fromKey);
             bareRenderedState.remove(fromKey);
             removeBareCellFromChunkPdc(mv.from());
+            // Deregister the old cell (a gearbox's network node) — restoreBlock below registers the new one.
+            if (type.onChunkUnloadCallback() != null) type.onChunkUnloadCallback().accept(mv.from());
             if (type.hasDisplayEntities()) {
                 String tagPrefix = DisplayUtil.blockTagPrefix(type.namespace(), type.typeId(),
                     mv.from().getLocation());
