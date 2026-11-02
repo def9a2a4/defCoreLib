@@ -392,8 +392,56 @@ public class MechanismRegistry implements org.bukkit.event.Listener {
         return applyWallHeadShift(custom != null ? custom : colliderRegistry.get(bd.getMaterial(), bd), bd);
     }
 
-    // A player leaving while aboard a mechanism (seated, riding a collider, or standing on a deck) is stepped off and
-    // recorded for the join-time resolver by MechanismRiderLogout (quit at LOWEST; shutdown() below).
+    /** The seat (collider shulker or carried cushion) a player logged out on, so they can be put back in it. */
+    private static final org.bukkit.NamespacedKey SEAT_KEY = new org.bukkit.NamespacedKey("corelib", "logout_seat");
+
+    /**
+     * A player leaving while seated on something a mechanism carries (a cushion on a collider, or a collider
+     * itself) must step off first: vanilla saves the player's whole vehicle stack into their player file when it
+     * holds exactly one player, which would pull the collider out of the moving body and bring a stale copy back
+     * on rejoin. Quit fires before that save (a kick is always followed by a quit). LOWEST: before BlockShips
+     * dismounts its own seat riders, so the seat is still known here.
+     */
+    @org.bukkit.event.EventHandler(priority = org.bukkit.event.EventPriority.LOWEST)
+    public void onPlayerQuit(org.bukkit.event.player.PlayerQuitEvent e) { stepOffMechanism(e.getPlayer()); }
+
+    private static void stepOffMechanism(org.bukkit.entity.Player p) {
+        for (Entity v = p.getVehicle(); v != null; v = v.getVehicle()) {
+            if (AttachedEntities.carriedTagOf(v) != null || isMechTagged(v)) {
+                p.getPersistentDataContainer().set(SEAT_KEY, org.bukkit.persistence.PersistentDataType.STRING,
+                        p.getVehicle().getUniqueId().toString());
+                p.leaveVehicle();
+                return;
+            }
+        }
+    }
+
+    /** Back into the seat they logged out on, if it still exists (a landed or destroyed mechanism has removed it)
+     *  and no other player took it. Otherwise they stay where they logged out. Polls while the seat's chunk
+     *  entities load. */
+    @org.bukkit.event.EventHandler
+    public void onPlayerJoin(org.bukkit.event.player.PlayerJoinEvent e) {
+        org.bukkit.entity.Player p = e.getPlayer();
+        String id = p.getPersistentDataContainer().get(SEAT_KEY, org.bukkit.persistence.PersistentDataType.STRING);
+        if (id == null) return;
+        p.getPersistentDataContainer().remove(SEAT_KEY);
+        UUID seatId = UUID.fromString(id);
+        int[] tries = {0};
+        Bukkit.getScheduler().runTaskTimer(plugin, task -> {
+            Entity seat = Bukkit.getEntity(seatId);
+            if (seat == null && p.isOnline() && ++tries[0] < 60) return;
+            task.cancel();
+            if (seat != null && p.isOnline() && seat.isValid() && seat.getWorld().equals(p.getWorld())
+                    && seat.getPassengers().stream().noneMatch(org.bukkit.entity.Player.class::isInstance)) {
+                seat.addPassenger(p);
+            }
+        }, 1L, 1L);
+    }
+
+    private static boolean isMechTagged(Entity e) {
+        for (String t : e.getScoreboardTags()) if (t.startsWith("corelib:mech:")) return true;
+        return false;
+    }
 
     private static CollisionConfig applyWallHeadShift(CollisionConfig collision, BlockData bd) {
         if (collision.size() <= 0.5f && bd instanceof org.bukkit.block.data.Directional dir) {
@@ -1579,7 +1627,7 @@ public class MechanismRegistry implements org.bukkit.event.Listener {
     public void shutdown() {
         if (tickTask != null) tickTask.cancel();
         // /stop disables plugins before players are saved, so the quit hook never runs: step them off here.
-        for (org.bukkit.entity.Player p : Bukkit.getOnlinePlayers()) MechanismRiderLogout.stepOff(p);
+        for (org.bukkit.entity.Player p : Bukkit.getOnlinePlayers()) stepOffMechanism(p);
         // Restore real blocks for any still-assembled mechanism (e.g. an open door) so the structure
         // isn't lost on /stop. Per-mechanism guarded: a failure falls back to removeAllEntities so we
         // never leak persistent entities. (Full restart recovery is the deferred persistence work.)

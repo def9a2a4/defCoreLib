@@ -39,6 +39,7 @@ The first release since 0.3.2 (0.4.0 was never published, so everything here is 
 
 ## Fixes
 
+- **Log out while seated on a contraption** and you're back in your seat when you rejoin, if it's still there; otherwise you rejoin where you left.
 - **Chain hoist broken while lowering** lost up to 47 chains; the unused chain now drops with the hoist.
 - **Placer emptied shulker boxes** — a filled shulker box was placed empty; names, banner patterns and head skins were lost the same way, and doors, beds and tall plants were placed as one half. The placer now leaves those in its source.
 - **Copper chest beside a Boiler or Water Wheel** joined it into a double chest; breaking the machine wiped the neighbour's contents. They no longer pair, and breaking one never touches the other's items.
