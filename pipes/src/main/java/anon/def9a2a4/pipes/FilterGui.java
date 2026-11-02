@@ -250,6 +250,19 @@ final class FilterGui implements Listener {
         if (!(event.getInventory().getHolder() instanceof FilterHolder holder)) return;
         // Not in the map → saveAndCloseAll already saved this menu and is closing it; nothing to do.
         if (openFilters.remove(key(holder.location())) == null) return;
+        // A filter slot is a one-item template: hand the rest of a stack back instead of storing it in the PDC.
+        Inventory inv = event.getInventory();
+        for (int i = 0; i < holder.spec().slots(); i++) {
+            ItemStack it = inv.getItem(i);
+            if (it == null || it.getAmount() <= 1) continue;
+            ItemStack extra = it.clone();
+            extra.setAmount(it.getAmount() - 1);
+            it.setAmount(1);
+            inv.setItem(i, it);
+            for (ItemStack left : event.getPlayer().getInventory().addItem(extra).values()) {
+                event.getPlayer().getWorld().dropItem(event.getPlayer().getLocation(), left);
+            }
+        }
         save(holder);
         // A mid-chain filter edit may need to wake an upstream extractor that slept while everything was
         // blocked; do it once on close rather than on every toggle-click save.

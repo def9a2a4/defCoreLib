@@ -14,7 +14,8 @@ import java.util.List;
  * Per-block filter state for filter pipes, stored on the head block's PDC.
  *
  * <p>Filter items are REAL items consumed from the player into the config GUI — we keep the
- * actual stacks (with amounts) so the pipe can drop them back verbatim when broken. Matching
+ * actual items so the pipe can drop them back verbatim when broken. Closing the GUI trims each slot
+ * to one item and returns the rest (older data may still hold whole stacks; they drop as-is). Matching
  * itself ignores amount: a stack passes when its type (or full identity, in exact mode) matches
  * any filter item, XORed with the whitelist/blacklist mode.
  *

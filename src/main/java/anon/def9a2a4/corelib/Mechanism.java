@@ -243,8 +243,8 @@ public interface Mechanism {
 
     /**
      * How much of its power this block is using right now, 0..1. Honoured by DEMAND-mode consumers
-     * (propellers, wheels, the reaction wheel) and 0-power engines (the thruster). Defaults to 1 for any
-     * block never set, so an unmanaged mechanism costs what it always did. No re-solve.
+     * (propellers, wheels, the reaction wheel) and 0-power engines (the thruster). Defaults to 0 for any
+     * block never set, so a block nobody reports burns nothing. No re-solve.
      */
     @ApiStatus.Experimental
     default void setBlockDemand(int blockIndex, double demand) {}
