@@ -4,7 +4,7 @@ The first release since 0.3.2 — 0.4.0 was prepared but never published. The ca
 
 Needs DefCoreLib 0.5.0 or newer, on Paper 1.21.11 or newer.
 
-- **Land claims are respected for carts** — placing a custom cart, opening a cart's inventory, and right-click assembling a mechanism cart now ask your protection plugin first.
+- **Land claims are respected for carts** — placing a custom cart and right-click assembling a mechanism cart now ask your protection plugin first.
 - **Land claims are respected when breaking carts.** Breaking a blast-furnace cart, coal tender or dispenser cart inside a claim where a protection plugin refused the break still removed the cart and dropped its item and contents. The refusal now wins.
 - **Pick-block** — middle-clicking a custom cart or rail no longer mints a free copy in survival or adventure; it only selects one you already carry (creative still gives it).
 - **Server hang under pulse storms** — a comparator or observer re-pulsing a junction, controller or destructor rail is now handled once per rail per tick instead of queuing a flood of redundant checks.

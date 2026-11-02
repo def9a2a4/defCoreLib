@@ -455,9 +455,6 @@ final class CustomCartManager implements Listener {
         if (held == Material.SHEARS || isChain(held)) return;
 
         event.setCancelled(true);   // suppress the rideable mount
-        // Claim plugins don't know this is a container cart → probe its cell like any storage access.
-        // Plain item of the held type: the cell's own type may have no item form.
-        if (!BuildProbe.mayBuild(event.getPlayer(), cart.getLocation().getBlock(), new ItemStack(held))) return;
         org.bukkit.inventory.InventoryView view = event.getPlayer().openInventory(state.inv);
         // A blast cart shows its remembered controller cruise target next to its name (set at open time,
         // like the Engine/Burner fuel readout). Mirrors RotationBlocks' view.setTitle pattern.

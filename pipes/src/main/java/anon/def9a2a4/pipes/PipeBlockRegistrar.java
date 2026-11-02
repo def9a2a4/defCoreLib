@@ -1,6 +1,5 @@
 package anon.def9a2a4.pipes;
 
-import anon.def9a2a4.corelib.BuildProbe;
 import anon.def9a2a4.corelib.CustomBlockRegistry;
 import anon.def9a2a4.corelib.CustomHeadBlock;
 import anon.def9a2a4.corelib.HeadUtil;
@@ -70,11 +69,7 @@ public class PipeBlockRegistrar {
         // Filter pipes open their config GUI on right-click (returning true cancels vanilla interaction).
         if (variant.isFilter()) {
             builder.onInteract((block, event) -> {
-                // The menu edits the block (its filter items are real), so respect protection plugins. Probe
-                // with a plain head: a held corelib item would reach our own placement handler and fail.
-                if (BuildProbe.mayBuild(event.getPlayer(), block, new ItemStack(Material.PLAYER_HEAD))) {
-                    plugin.getFilterGui().open(event.getPlayer(), block, variant);
-                }
+                plugin.getFilterGui().open(event.getPlayer(), block, variant);
                 return true;
             });
             // A mechanism capture snapshots the block's PDC BEFORE onBlockRemoved runs, so close (and save)
