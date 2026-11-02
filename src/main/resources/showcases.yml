@@ -1312,6 +1312,24 @@ showcases:
       - { type: entity_count, value: "item_frame=1", at: [-1, 0, 1], to: [1, 0, 1] }   # rolled onto a side
       - { type: entity_count, value: "item:DIAMOND=0", at: [-3, -2, -1], to: [3, 3, 3] }
 
+  # A drawbridge orients what it swings about ITS axis, not as a yaw: the Z-axis hinge rolls the upright log on
+  # its axle (the log stays in its cell) and it must land lying along X. (Before v0.5.0 it was turned as a yaw
+  # about Y — which leaves a Y log upright, against the position the roll gave it.)
+  - id: test_log_axis_rolls_with_drawbridge
+    name: "Test: drawbridge roll turns a log's axis"
+    test_only: true
+    blocks:
+      - { id: "mech:redstone_motor", facing: north, at: [0, 0, -2] }
+      - { id: "mech:reverser",  facing: north, at: [0, 0, -1] }
+      - { id: "mech:rotator",   facing: south, at: [0, 0, 0] }
+    vanilla:
+      - { block: "OAK_LOG", at: [0, 0, 1], data: "[axis=y]" }
+      - { block: "LEVER", at: [-1, 0, -1], data: "[face=floor,facing=north,powered=true]" }
+    activate: { pulse: [1, 0, 0] }
+    expect:
+      - { type: mechanism_swung, value: "0,0,1", at: [0, 0, 0] }
+      - { type: block_data, value: "minecraft:oak_log[axis=x]", at: [0, 0, 1] }
+
   # The floor hinge (the ceiling test's mirror): a rotator sitting ON the plank turns it in place, and the frame
   # and painting on its east/west faces must land on its new north/south faces. Power comes down from the motor
   # above; the pulse is beside the hinge, above the frame's cell.

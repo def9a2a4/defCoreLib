@@ -103,21 +103,14 @@ def display_line(slab: str, tag: str, angle: float, length: float, width: float,
                fmt(deg), ", ".join(fmt(v) for v in ax), fmt(WALL_OFFSET)))
 
 
-# The way the head faces in each wall state (placement_state_map: the clicked face is the facing).
-STATE_FACING = {"n": (0, 0, 1), "s": (0, 0, -1), "e": (1, 0, 0), "w": (-1, 0, 0)}
-
-
-def collider_line(d: float, face: str) -> str:
-    # Aboard a ship the wheel collides as a cube the size of the tyre (a little smaller, so it never
-    # touches the ground the land physics rests the hull on). wall_offset draws the tyre a quarter
-    # block toward the wall, so its outer face is 0.05 short of the cell centre; the cube sits flush
-    # with that face and reaches back into the hull rather than sticking out past the tyre.
-    # Offset: x/z move the cube's centre, y is its bottom.
-    size = round(d * 0.9, 4)
-    f = STATE_FACING[face]
-    back = THICK / 2 - WALL_OFFSET + 0.0 - size / 2   # centre along the facing: -0.05 - size/2
-    off = [f[0] * back, 0.5 - size / 2, f[2] * back]
-    return "collision: { size: %s, offset: [%s] }" % (fmt(size), ", ".join(fmt(v) for v in off))
+def collider_line(d: float) -> str:
+    # Aboard a ship the wheel collides as a half-block box sitting in the bottom of the tyre, a hair off
+    # the ground the land physics rests the hull on. Offset y is the box's bottom. A collider this small
+    # on a wall head gets defCoreLib's wall-head shift (MechanismRegistry.applyWallHeadShift: a quarter
+    # block toward the wall, +0.25 up), which lands it on the tyre's centre along the axle — the tyre is
+    # drawn there too (wall_offset 0.25) — so no per-facing offset is needed; y is written net of the +0.25.
+    bottom = 0.5 - d / 2 + 0.05
+    return "collision: { size: 0.5, offset: [0, %s, 0] }" % fmt(bottom - 0.25)
 
 
 def block(size, wood: str) -> str:
@@ -154,6 +147,7 @@ def block(size, wood: str) -> str:
             f"              P: {{ material: {planks} }}",
             f'              C: {{ block: "{core}" }}']
     out += ['    texture: "@prop_bearing_fwd"',
+            "    " + collider_line(d),
             f'    item_texture: "@{bid}_item"',
             "    drops: self",
             "    break_sound: { sound: block.wood.break, volume: 0.8, pitch: 0.8 }",
@@ -172,12 +166,10 @@ def block(size, wood: str) -> str:
                              ("e", "x", "[1, 0, 0]"), ("w", "x", "[1, 0, 0]")):
         out += [f"      idle_wall_{face}:",
                 '        texture: "@prop_bearing_fwd"',
-                "        " + collider_line(d, face),
                 "        display_entities:"]
         out += [display_line(slab, tag, ang, ln, wd, nudge, axle) for tag, ang, ln, wd, nudge in parts(d)]
-        # copy_from carries only the displays, so the spinning state repeats the collider.
         out.append(f'      spinning_wall_{face}: {{ copy_from: idle_wall_{face}, texture: "@prop_bearing_fwd", '
-                   f'{collider_line(d, face)}, animation: {{ type: rotate, axis: {axis}, speed: {speed} }} }}')
+                   f'animation: {{ type: rotate, axis: {axis}, speed: {speed} }} }}')
     return "\n".join(out)
 
 

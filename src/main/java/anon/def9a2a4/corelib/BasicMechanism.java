@@ -56,6 +56,7 @@ final class BasicMechanism implements Mechanism {
     private final Matrix4f scratchBase = new Matrix4f();      // the per-block base dm
     private final Matrix4f scratchDisplay = new Matrix4f();   // each derived per-display matrix
     private final Matrix4f scratchTransform = new Matrix4f(); // transformToMatrix dest in the hot loop
+    private final Matrix4f scratchAnim = new Matrix4f();      // a frozen borrowed spin's posed transform
     private final Vector3f scratchLocal = new Vector3f();
     private final Vector3f scratchWorld = new Vector3f();
     private @Nullable Location scratchColliderTarget;         // reused collider teleport target (lazy)
@@ -268,6 +269,7 @@ final class BasicMechanism implements Mechanism {
         MechanismBlockData mb = blocks.get(blockIndex);
         mb.spinOverride = Double.NaN;
         mb.spinSeeded = false;
+        mb.spinFrozen = false;
         if (mb.borrowedItemAnims != null || mb.borrowedBlockAnims != null) {
             mb.borrowedItemAnims = null;
             mb.borrowedBlockAnims = null;
@@ -280,18 +282,26 @@ final class BasicMechanism implements Mechanism {
         MechanismBlockData mb = blocks.get(blockIndex);
         mb.spinOverride = value;
         mb.spinOverrideAbsolute = absolute;
+        boolean borrowed = mb.borrowedItemAnims != null || mb.borrowedBlockAnims != null;
         if (value == 0) {
-            // Stopped: stop animating a borrowed block, so a parked vehicle's idle wheels don't re-send their
-            // transforms every tick. The spin angle is kept (spinSeeded stays), so rolling off again carries on
-            // from where the wheel stopped instead of jumping.
-            if (mb.borrowedItemAnims != null || mb.borrowedBlockAnims != null) {
-                mb.borrowedItemAnims = null;
-                mb.borrowedBlockAnims = null;
+            // Stopped: freeze a borrowed block where it is. It leaves the per-tick animated set (a parked
+            // vehicle's idle wheels don't re-send their transforms every tick) but keeps its animations and
+            // angle, and rotate() poses it at that angle, so both paths always agree — no snapping between
+            // the rest pose and the rolled pose, and rolling off again carries on from where it stopped.
+            if (borrowed && !mb.spinFrozen) {
+                mb.spinFrozen = true;
                 recomputeAnimatedBlockIndices();
             }
             return;
         }
-        if (!blockIsAnimated(mb) && borrowSpin(mb)) recomputeAnimatedBlockIndices();
+        if (borrowed) {
+            if (mb.spinFrozen) {
+                mb.spinFrozen = false;
+                recomputeAnimatedBlockIndices();
+            }
+        } else if (!blockIsAnimated(mb) && borrowSpin(mb)) {
+            recomputeAnimatedBlockIndices();
+        }
     }
 
     /**
@@ -505,10 +515,16 @@ final class BasicMechanism implements Mechanism {
                     if (displayIdx >= group.size()) break;
                     var dec = mb.displayEntityConfigs.get(d);
                     if (dec.animation() != null) continue;
-                    if (mb.borrowedItemAnims != null && mb.borrowedItemAnims[d] != null) continue; // spun by tickMechanisms
+                    DisplayAnimation borrowedAnim = mb.borrowedItemAnims != null ? mb.borrowedItemAnims[d] : null;
+                    if (borrowedAnim != null && !mb.spinFrozen) continue; // spun by tickMechanisms
                     Matrix4f extra = scratchDisplay.set(dm);
                     applyWallOffset(extra, mb.wallFacing, dec.wallOffset());
-                    extra.mul(transformToMatrix(dec.transform(), scratchTransform));
+                    if (borrowedAnim != null) {   // frozen: hold the angle the borrowed spin stopped at
+                        borrowedAnim.apply(transformToMatrix(dec.transform(), scratchTransform), mb.spinVirtualAge, scratchAnim);
+                        extra.mul(scratchAnim);
+                    } else {
+                        extra.mul(transformToMatrix(dec.transform(), scratchTransform));
+                    }
                     group.get(displayIdx).setTransformationMatrix(extra);
                 }
             }
@@ -525,10 +541,16 @@ final class BasicMechanism implements Mechanism {
                     if (idx >= group.size()) break;
                     var bdc = mb.blockDisplayEntityConfigs.get(d);
                     if (bdc.animation() != null) continue;
-                    if (mb.borrowedBlockAnims != null && mb.borrowedBlockAnims[d] != null) continue; // spun by tickMechanisms
+                    DisplayAnimation borrowedAnim = mb.borrowedBlockAnims != null ? mb.borrowedBlockAnims[d] : null;
+                    if (borrowedAnim != null && !mb.spinFrozen) continue; // spun by tickMechanisms
                     Matrix4f bd = scratchDisplay.set(dm);
                     applyWallOffset(bd, mb.wallFacing, bdc.wallOffset());
-                    bd.mul(transformToMatrix(bdc.transform(), scratchTransform));
+                    if (borrowedAnim != null) {   // frozen: hold the angle the borrowed spin stopped at
+                        borrowedAnim.apply(transformToMatrix(bdc.transform(), scratchTransform), mb.spinVirtualAge, scratchAnim);
+                        bd.mul(scratchAnim);
+                    } else {
+                        bd.mul(transformToMatrix(bdc.transform(), scratchTransform));
+                    }
                     group.get(idx).setTransformationMatrix(bd);
                 }
             }
@@ -605,7 +627,7 @@ final class BasicMechanism implements Mechanism {
 
     /** True if any display or blockDisplay config on this block carries an animation. */
     private static boolean blockIsAnimated(MechanismBlockData mb) {
-        if (mb.borrowedItemAnims != null || mb.borrowedBlockAnims != null) return true;
+        if (mb.borrowedItemAnims != null || mb.borrowedBlockAnims != null) return !mb.spinFrozen;
         if (mb.displayEntityConfigs != null) {
             for (int d = 0; d < mb.displayEntityConfigs.size(); d++) {
                 if (mb.displayEntityConfigs.get(d).animation() != null) return true;
@@ -1031,6 +1053,7 @@ final class BasicMechanism implements Mechanism {
         // Borrowed animations belong to the old state's layout; re-borrow if an override still drives it.
         mb.borrowedItemAnims = null;
         mb.borrowedBlockAnims = null;
+        mb.spinFrozen = mb.spinOverride == 0;   // a wheel at rest re-borrows frozen, a rolling one live
         if (!Double.isNaN(mb.spinOverride) && !blockIsAnimated(mb)) borrowSpin(mb);
 
         // The new state may add or drop an animation on this block; keep the animated-index fast-path cache
@@ -1330,7 +1353,7 @@ final class BasicMechanism implements Mechanism {
             if (landing == null) {
                 droppedChainCells = noteIfChain(droppedChainCells, mb, blockLoc);
                 fallbackDrop = false; // this branch owns the drop
-                dropBlockAsItem(blockLoc, mb);
+                dropBlockAsItem(blockLoc, mb, true);   // both halves of a door/bed land null: one item
                 continue;
             }
 
@@ -1864,6 +1887,13 @@ final class BasicMechanism implements Mechanism {
     }
 
     private void dropBlockAsItem(Location loc, MechanismBlockData mb) {
+        dropBlockAsItem(loc, mb, false);
+    }
+
+    /** @param wholeBlockDropped true only when every half of a two-cell block is being dropped (an orientation it
+     *  can't take): then the secondary half drops nothing so the block pays one item. Otherwise (this half was
+     *  blocked, off-world, denied) the other half may have landed alone and vanish, so this half pays the item. */
+    private void dropBlockAsItem(Location loc, MechanismBlockData mb, boolean wholeBlockDropped) {
         ItemStack drop;
         if (mb.customTypeId != null) {
             CustomHeadBlock type = registry.getType(mb.customTypeId);
@@ -1872,7 +1902,7 @@ final class BasicMechanism implements Mechanism {
             // A vanilla banner block drops its captured pattern-carrying item. Also load-bearing for
             // wall banners: *_WALL_BANNER has no item form, so new ItemStack() below would throw.
             drop = blockBannerItem(mb).asQuantity(1);
-        } else if (isSecondaryHalf(mb.blockData)) {
+        } else if (wholeBlockDropped && isSecondaryHalf(mb.blockData)) {
             drop = null; // a door's upper half / a bed's head: the other half carries the one item
         } else {
             // getPlacementMaterial maps block-only variants to their item (wall torch → torch, wall head → head,

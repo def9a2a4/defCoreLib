@@ -97,6 +97,7 @@ class ShowcaseSpecTest {
                 "test_hoist_broken_mid_descent_refunds", "test_carried_lectern_book",
                 "test_placer_skips_filled_shulker", "test_carried_mech_dispenser_contents",
                 "test_engine_returns_lava_bucket", "test_water_wheel_break_keeps_chest",
+                "test_log_axis_rolls_with_drawbridge",
                 "test_restart_crash_persisted_mechanism", "test_restart_crash_disassembled_state_kept",
                 "test_restart_clean_engine_fuel", "test_restart_clean_disassembled_no_ghost")) {
             ShowcaseSpec s = specs.get(id);

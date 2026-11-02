@@ -61,7 +61,7 @@ final class ShowcaseRunner implements Listener {
     static final java.util.Set<String> EXPECT_TYPES = java.util.Set.of("spinning", "network_powered", "state",
             "mechanism_swung", "hoist_moved", "piston_stroked", "block_type", "persisted_mechanism_intact",
             "entity_count", "riding", "contents", "material_total", "mechanism_count", "mechanism_state_file",
-            "engine_fuel", "frame_rotation");
+            "engine_fuel", "frame_rotation", "block_data");
     static final java.util.Set<String> ACTION_KINDS = java.util.Set.of("set", "corrupt_persisted_mechanism",
             "summon", "break", "drop", "persist_mechanism", "disassemble_mechanism", "save");
 
@@ -387,6 +387,27 @@ final class ShowcaseRunner implements Listener {
                 }
                 for (Block b : cells(origin, ex.at(), ex.to())) {
                     if ((b.getType() == m) == negate) return false;
+                }
+                return true;
+            }
+            // Block state of a cell (or every cell of an inclusive box): value is a block-data string, and only
+            // the states it names are compared (`minecraft:oak_log[axis=x]` ignores everything else).
+            case "block_data" -> {
+                String v = ex.value();
+                if (v == null) return false;
+                org.bukkit.block.data.BlockData want;
+                try {
+                    want = org.bukkit.Bukkit.createBlockData(v);
+                } catch (IllegalArgumentException bad) {
+                    plugin.getLogger().warning("[showcase] " + spec.id + ": bad block_data " + v);
+                    return false;
+                }
+                for (Block b : cells(origin, ex.at(), ex.to())) {
+                    if (!b.getBlockData().matches(want)) {
+                        plugin.getLogger().info("[showcase] " + spec.id + ": block_data " + b.getBlockData().getAsString()
+                                + ", expected " + v);
+                        return false;
+                    }
                 }
                 return true;
             }

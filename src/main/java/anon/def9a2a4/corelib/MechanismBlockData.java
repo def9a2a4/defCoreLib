@@ -51,6 +51,9 @@ public final class MechanismBlockData {
     // blockDisplayEntityConfigs; null = nothing borrowed. Only the animation is borrowed, never the
     // transform, so the displays keep the pose their own state gave them.
     @Nullable DisplayAnimation[] borrowedItemAnims;
+    // A borrowed block whose override is 0 (a wheel at rest): it keeps the borrowed animations and its angle,
+    // but leaves the per-tick animated set; rotate() poses it at that frozen angle instead.
+    boolean spinFrozen;
     @Nullable DisplayAnimation[] borrowedBlockAnims;
     final @Nullable Vector3f wallFacing;
 

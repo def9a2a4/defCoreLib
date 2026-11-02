@@ -2853,11 +2853,17 @@ public class MechanismRegistry implements org.bukkit.event.Listener {
      */
     private static double advanceSpinAge(MechanismBlockData mb, long tickAge, boolean rearm) {
         if (!mb.spinSeeded) {
-            mb.spinVirtualAge = mb.spinReversed ? -tickAge : tickAge;
+            // A borrowed (idle) block was last posed at rest, which is animation age 0; a block with its own
+            // spin was last posed at the live tick age. Seed from whichever it shows, so nothing snaps.
+            boolean borrowed = mb.borrowedItemAnims != null || mb.borrowedBlockAnims != null;
+            mb.spinVirtualAge = borrowed ? 0 : (mb.spinReversed ? -tickAge : tickAge);
             mb.spinSeeded = true;
             return mb.spinVirtualAge;
         }
         if (!rearm) return mb.spinVirtualAge;
+        if (Boolean.getBoolean("blockships.debugUse") && tickAge % 40 == 0) org.bukkit.Bukkit.getLogger().info(   // TEMP DEBUG
+            "[spin] " + mb.customTypeId + " borrowed=" + (mb.borrowedItemAnims != null) + " frozen=" + mb.spinFrozen
+            + " override=" + mb.spinOverride + " age=" + mb.spinVirtualAge);
         if (mb.spinOverrideAbsolute) {
             float authored = authoredSpinDegrees(mb);
             if (authored != 0f && !Float.isNaN(authored)) mb.spinVirtualAge += mb.spinOverride / authored;
