@@ -344,7 +344,10 @@ final class ShowcaseRunner implements Listener {
                 return network.isPowered(CustomBlockRegistry.LocationKey.of(block));
             }
             case "state" -> {
-                return ex.value() != null && ex.value().equals(registry.getState(block));
+                String actual = registry.getState(block);
+                boolean ok = ex.value() != null && ex.value().equals(actual);
+                if (!ok) plugin.getLogger().info("[showcase] " + spec.id + ": state " + actual + ", expected " + ex.value());
+                return ok;
             }
             // With a value (`"0,1,0; 1,1,0"`, cells relative to the origin), the latest swing must have carried
             // exactly those blocks — a hinge that swings the wrong block still "swung".
