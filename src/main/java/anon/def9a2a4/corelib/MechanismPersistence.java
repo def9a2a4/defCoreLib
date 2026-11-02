@@ -226,7 +226,25 @@ final class MechanismPersistence {
      *  deleted once the chunks holding its landed blocks have surely been written — see {@link #pendingDeletes}.
      *  {@code nowTick} is the server tick ({@code Bukkit.getCurrentTick()}). */
     void removeAfterSave(String world, UUID id, long nowTick) {
+        removeAfterSave(world, id, nowTick, null);
+    }
+
+    void removeAfterSave(String world, UUID id, long nowTick, @Nullable String teardown) {
         forget(world, id);
+        if (teardown != null) {
+            File f = stateFile(world, id);
+            ordered(() -> {
+                if (!f.exists()) return;
+                YamlConfiguration y = new YamlConfiguration();
+                try {
+                    y.load(f);
+                } catch (IOException | InvalidConfigurationException e) {
+                    return; // unreadable: leave it as it is; recovery will not touch a file it cannot read
+                }
+                y.set(MechanismState.TEARDOWN_KEY, teardown);
+                writeFile(world, id, y.saveToString());
+            });
+        }
         pendingDeletes.computeIfAbsent(world, k -> new HashMap<>()).put(id, new PendingDelete(nowTick));
     }
 

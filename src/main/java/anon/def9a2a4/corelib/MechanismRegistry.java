@@ -1870,6 +1870,35 @@ public class MechanismRegistry implements org.bukkit.event.Listener {
     }
 
     /**
+     * The mechanism was landed or destroyed, but the server stopped before the chunks holding its entities were
+     * written, so they came back without the result. Redo it rather than revive it: a revived mechanism had no
+     * consumer state left (BlockShips had already unlinked the ship's wheel and deleted its save) and sat frozen.
+     * Landing again skips cells whose block did reach disk, so a teardown that was half written is completed,
+     * not duplicated. A destroyed one drops its contents again; those drops were lost with the same chunks.
+     */
+    private void redoTeardown(BasicMechanism mech, MechanismState st) {
+        pendingRecoveries.remove(st.mechId);
+        mechIdsBeingRecovered.remove(st.mechId);
+        mech.rotate(st.currentYaw);
+        Entity vehicle = mech.vehicle();
+        try {
+            if (MechanismState.LANDED.equals(st.teardown)) {
+                mech.relanding = true;
+                mech.disassemble();
+            } else {
+                mech.destroy();
+            }
+        } finally {
+            // An external vehicle outlives the teardown. A minecart is a real item and stays; a consumer's
+            // ArmorStand (BlockShips' ship vehicle) is only a frame and would be left standing in the water.
+            if (!st.ownsVehicle && vehicle instanceof org.bukkit.entity.ArmorStand && vehicle.isValid()) vehicle.remove();
+        }
+        plugin.getLogger().info("Mechanism " + st.mechId + " had been " + st.teardown + " before the server stopped,"
+            + " but its entities came back; " + (MechanismState.LANDED.equals(st.teardown) ? "landed" : "destroyed")
+            + " it again.");
+    }
+
+    /**
      * Enable-time sweep: recover (and orphan-sweep) persisted mechanisms in every already-loaded chunk. Chunks
      * resident before the plugin enabled never re-fire {@code EntitiesLoad}, so without this their mechanisms
      * would sit unrecovered (and their orphans unswept) until a reload. Mirrors
@@ -1989,6 +2018,13 @@ public class MechanismRegistry implements org.bukkit.event.Listener {
         // gone) — leaving the state file for a future full reload. Never remove entities here; the hasMetadata
         // guard keeps strays alive. Mirrors ShipInstance.recoverEntities returning false on a missing vehicle.
         if (vehicle == null || parent == null) {
+            if (allLoaded && st.teardown != null) {
+                // Torn down before the crash, and the teardown reached disk: nothing to redo. Drop the file.
+                pendingRecoveries.remove(st.mechId);
+                mechIdsBeingRecovered.remove(st.mechId);
+                persistence.remove(world.getName(), st.mechId);
+                return;
+            }
             if (allLoaded) {
                 pendingRecoveries.remove(st.mechId);
                 mechIdsBeingRecovered.remove(st.mechId);
@@ -2144,6 +2180,11 @@ public class MechanismRegistry implements org.bukkit.event.Listener {
         activeMechanisms.put(st.mechId, mech);
         for (ColliderPair cp : colliders) {
             colliderIndex.put(cp.shulker().getUniqueId(), new ColliderRef(mech, cp.blockIndex()));
+        }
+
+        if (st.teardown != null) {
+            redoTeardown(mech, st);
+            return;
         }
 
         // Re-adopt seats from the shulker tags detected above, then notify the consumer so it can re-mirror
@@ -2667,6 +2708,11 @@ public class MechanismRegistry implements org.bukkit.event.Listener {
     // ──────────────────────────────────────────────────────────────────────
 
     void onMechanismRemoved(BasicMechanism mech) {
+        onMechanismRemoved(mech, false);
+    }
+
+    /** @param landed its blocks were put back (disassemble), as opposed to discarded (destroy) */
+    void onMechanismRemoved(BasicMechanism mech, boolean landed) {
         activeMechanisms.remove(mech.id());
         if (rotationDriver != null) rotationDriver.onRemoved(mech);
         for (ColliderPair cp : mech.colliders) {
@@ -2678,7 +2724,12 @@ public class MechanismRegistry implements org.bukkit.event.Listener {
         // (Shutdown/world-unload of a persisted mechanism must NOT disassemble — see the branched shutdown —
         // so this only fires on a real teardown.)
         if (mech.isPersisted() && mech.pivot().getWorld() != null) {
-            persistence.removeAfterSave(mech.pivot().getWorld().getName(), mech.id(), Bukkit.getCurrentTick());
+            // Mark the file with what happened, so a crash that brings the entities back without the landed
+            // blocks redoes the teardown instead of reviving the mechanism (see attemptRecover). Not for a
+            // block-free one: there is nothing to land, and its consumer may need it back (BlockShips drops a
+            // prefab ship's kit itself, which a crash would also have undone).
+            String teardown = mech.blockFree ? null : landed ? MechanismState.LANDED : MechanismState.DESTROYED;
+            persistence.removeAfterSave(mech.pivot().getWorld().getName(), mech.id(), Bukkit.getCurrentTick(), teardown);
         }
     }
 

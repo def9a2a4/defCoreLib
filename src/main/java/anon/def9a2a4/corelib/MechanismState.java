@@ -42,6 +42,12 @@ final class MechanismState {
     int entityCount;                // total persistent entities at save time (vehicle+parent+displays+banners+
                                     // colliders×2) — a recovery-completeness check (BlockShips' entity_count).
     @Nullable UUID vehicleUuid;     // recovery hint (owned marker ArmorStand, or external cart/ship vehicle)
+
+    /** Written over the state file when the mechanism is torn down (never by a snapshot): {@link #LANDED} or
+     *  {@link #DESTROYED}. A file carrying it, whose entities still turn up, is a teardown a crash undid. */
+    static final String TEARDOWN_KEY = "teardown";
+    static final String LANDED = "landed", DESTROYED = "destroyed";
+    @Nullable String teardown;
     // (pivot − vehicle) at save time — the frame constant addDrivenBaseOffset reads LIVE, so recovery must
     // reproduce it EXACTLY. It is RECORDED rather than re-derived because the saved PIVOT is untrustworthy in
     // a way this constant is not: a state file can be minutes stale, while the vehicle's own NBT is always
@@ -224,6 +230,7 @@ final class MechanismState {
                 st.dpx = pd.get(0); st.dpy = pd.get(1); st.dpz = pd.get(2);
             }
             st.entityCount = s.getInt("entity_count");
+            st.teardown = s.getString(TEARDOWN_KEY);
             String vu = s.getString("vehicle_uuid");
             if (vu != null) st.vehicleUuid = UUID.fromString(vu);
             for (Map<?, ?> raw : s.getMapList("blocks")) {

@@ -118,6 +118,9 @@ final class BasicMechanism implements Mechanism {
     // Guards against a second disassemble() (out-of-band teardown + a manager retry): a re-run would
     // find the just-placed blocks solid and drop the whole structure as duplicate items.
     private boolean disassembled;
+    /** Redoing a teardown a crash undid (see MechanismRegistry's recovery of a disassembled state file): a cell
+     *  that already holds this block's material is the earlier landing, which reached disk, and is left alone. */
+    boolean relanding;
 
     BasicMechanism(UUID id, String type, Location pivot, Vector3f rotationAxis,
                    Entity vehicle, org.bukkit.entity.BlockDisplay parent,
@@ -1248,6 +1251,8 @@ final class BasicMechanism implements Mechanism {
                 // item from nothing. The concrete case: a hoist reel-in stopped short lands its emerging
                 // ghost link on the still-real swallowed link it was visually duplicating — solid-wins
                 // dropped a phantom chain item on every interrupted rise (farmable by pulsing power).
+            } else if (relanding && mb.blockData != null && target.getType() == mb.blockData.getMaterial()) {
+                fallbackDrop = false; // landed before the crash, contents included; placing again would duplicate it
             } else {
                 // Solid block wins — explosion effect + drop mechanism block as item
                 target.getWorld().spawnParticle(Particle.EXPLOSION,
@@ -1366,7 +1371,7 @@ final class BasicMechanism implements Mechanism {
         // render first — else custom-block displays blink as the mech displays vanish (the landing flicker).
         // The mech is already unregistered, so the lingering entities are never ticked. External (minecart)
         // vehicles remove synchronously (their landed payload is vanilla and renders same-tick).
-        if (mechanismRegistry != null) mechanismRegistry.onMechanismRemoved(this);
+        if (mechanismRegistry != null) mechanismRegistry.onMechanismRemoved(this, true);
         if (ownsVehicle && mechanismRegistry != null) {
             mechanismRegistry.deferEntityRemoval(this);
         } else {
