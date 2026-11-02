@@ -1400,6 +1400,26 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         IngredientCapture.capture(event.getInventory(), registry);
     }
 
+    /** A Crafter block fires neither event above, so their matrix checks never run there: refuse a custom craft
+     *  that relies on them (a wildcard head ingredient whose real identity is checked in the matrix, or banner /
+     *  ingredient capture onto the result). Without this a Crafter made a propeller from any head. */
+    @EventHandler(ignoreCancelled = true)
+    public void onCrafterCraft(org.bukkit.event.block.CrafterCraftEvent event) {
+        String typeId = headBlockType(event.getResult());
+        CustomHeadBlock type = typeId != null ? registry.getType(typeId) : null;
+        if (type == null) return;
+        java.util.Collection<org.bukkit.inventory.RecipeChoice> choices = switch (event.getRecipe()) {
+            case org.bukkit.inventory.ShapedRecipe s -> s.getChoiceMap().values();
+            case org.bukkit.inventory.ShapelessRecipe s -> s.getChoiceList();
+            default -> java.util.List.of();
+        };
+        boolean wildcardHead = choices.stream().anyMatch(c -> c instanceof org.bukkit.inventory.RecipeChoice.MaterialChoice m
+                && m.getChoices().contains(Material.PLAYER_HEAD));
+        if (wildcardHead || type.displayItemResolver() != null || type.ingredientCapture() != null) {
+            event.setCancelled(true);
+        }
+    }
+
     /** Capture the crafting matrix's banner ingredients onto a windmill/fan result's blade PDC,
      *  so the placed blades show those banners (patterns included). For windmills (which carry a
      *  bannerTier) also derive the tier from the banners and swap the result to the matching
@@ -1596,6 +1616,42 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         if (largeBannerRecipes != null && largeBannerRecipes.isActive()) {
             event.getPlayer().discoverRecipe(largeBannerRecipes.recipeKey());
         }
+        refreshStaleLore(event.getPlayer().getInventory());
+    }
+
+    // Recipe ingredients match custom items exactly, lore included, so an item made before its lore text changed
+    // (e.g. a 0.3.2 casing) stopped crafting. Refresh it to the current lore whenever it's seen.
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onOpenRefreshLore(org.bukkit.event.inventory.InventoryOpenEvent event) {
+        refreshStaleLore(event.getView().getTopInventory());
+        refreshStaleLore(event.getView().getBottomInventory());
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onPickupRefreshLore(org.bukkit.event.entity.EntityPickupItemEvent event) {
+        ItemStack it = event.getItem().getItemStack();
+        if (refreshStaleLore(it)) event.getItem().setItemStack(it);
+    }
+
+    private void refreshStaleLore(org.bukkit.inventory.Inventory inv) {
+        ItemStack[] contents = inv.getContents();
+        for (int i = 0; i < contents.length; i++) {
+            if (refreshStaleLore(contents[i])) inv.setItem(i, contents[i]);
+        }
+    }
+
+    /** Rewrite a plain custom item's lore (identity key only — nothing per-item to lose) if it's out of date. */
+    private boolean refreshStaleLore(@Nullable ItemStack it) {
+        if (it == null || !it.hasItemMeta()) return false;
+        var meta = it.getItemMeta();
+        var pdc = meta.getPersistentDataContainer();
+        String id = pdc.get(CustomBlockRegistry.BLOCK_TYPE_KEY, PersistentDataType.STRING);
+        if (id == null || pdc.getKeys().size() != 1) return false;
+        CustomHeadBlock type = registry.getType(id);
+        if (type == null || type.lore().isEmpty() || type.lore().equals(meta.lore())) return false;
+        meta.lore(type.lore());
+        it.setItemMeta(meta);
+        return true;
     }
 
     @EventHandler

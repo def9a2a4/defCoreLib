@@ -38,7 +38,7 @@ The first release since 0.3.2 (0.4.0 was never published, so everything here is 
 - **Mounted drill mines mid-swing** — a drill on a rotator bores through the whole arc, at 2× speed while swinging.
 - **Wrench-inspect a moving network** — the wrench readout (supply, demand, direction, jam, highlighted members) works on a network riding a contraption.
 - **Movers mow plants** — a mechanical piston or chain hoist breaks grass, flowers and similar blocks ahead of it instead of stalling.
-- **The glue brush says how to start** — left-clicking with no session open tells you to right-click a hinge, piston, hoist or minecart first.
+- **The glue brush says how to start** — left-clicking with no session open tells you to right-click a hinge, piston, hoist or minecart first. Glue on a rotator, door or piston can't be edited while it moves (edits made mid-swing used to be overwritten when it landed).
 - **Smoother animations** — spinning parts tween between frames instead of snapping.
 - **Catalog and help** — every mech block, with recipes, in `/defcorelib catalog`; `/mech` and `/mech help` show the commands and links (`/mech advance` still needs `mech.admin`).
 - **Advancements** — "One-Way Street" (craft a Ratchet) and "Every Which Way" (craft a Gearbox).
@@ -71,7 +71,7 @@ The first release since 0.3.2 (0.4.0 was never published, so everything here is 
 - **Redstone motors and clutches catch up on load** — redstone changed while their chunk was unloaded no longer leaves a motor running as a phantom source or a clutch stuck locked.
 - **The suction hopper leaves protected items alone** (shop displays), and plugins can veto its pickups like a vanilla hopper's.
 - **Steam piston parts go out when it's broken**, and its status readout no longer says "no fuel" while the burner holds fuel.
-- **Machines at the edge of the loaded area** no longer load the chunk next door, and an idle, fully extended piston or resting hoist no longer re-checks its whole load every few ticks.
+- **Machines at the edge of the loaded area** no longer load the chunk next door, and an idle, fully extended piston no longer re-checks its whole load every few ticks.
 - **A parked contraption's drill stops cracking its block.**
 - **A machine placed shortly before a crash** (water wheel, boiler, mechanical dispenser) is recognised again instead of coming back as a plain block.
 - **Bare shafts stay bare** while carried and on landing.

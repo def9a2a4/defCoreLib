@@ -36,8 +36,9 @@ import java.util.UUID;
 /**
  * Adopts already-placed heads (and stored head items) from the standalone HeadSmith plugin into the
  * DefCoreLib registry. HeadSmith stored no block-identity PDC — a placed head is only recognizable by its
- * skull texture — so detection is texture-primary: match the skull's skin-URL hash against the runtime
- * {@code textureId → headsmith:<id>} table. The old plugin and this companion are both named "HeadSmith"
+ * skull — so a head is adopted when its skin-URL hash is in the runtime {@code textureId → headsmith:<id>} table
+ * AND its profile UUID is the one the old plugin derived from that hash (so same-skin heads from other plugins
+ * are left alone). The old plugin and this companion are both named "HeadSmith"
  * → namespace {@code headsmith}, so the legacy {@code headsmith:lit} (block) and {@code headsmith:head_id}
  * (item) PDC keys are read directly.
  *
@@ -98,10 +99,11 @@ final class LegacyHeadMigrator implements Listener {
 
         if (!(block.getState() instanceof Skull skull)) return false;
 
-        // Confidence signal only (texture-primary; NOT a veto): HeadSmith's deterministic profile UUID.
+        // Only heads the standalone HeadSmith made: it always gave a head this deterministic profile UUID. The same
+        // skin from another plugin (HeadDatabase, a head shop) has a different UUID and is left alone.
         PlayerProfile profile = skull.getPlayerProfile();
         UUID expected = UUID.nameUUIDFromBytes(textureId.getBytes(StandardCharsets.UTF_8));
-        if (profile == null || !expected.equals(profile.getId())) uuidDiverged++;
+        if (profile == null || !expected.equals(profile.getId())) { uuidDiverged++; return false; }
 
         // Lit-candle state carried over from the legacy PDC.
         Byte lit = skull.getPersistentDataContainer().get(litKey, PersistentDataType.BYTE);
@@ -148,8 +150,7 @@ final class LegacyHeadMigrator implements Listener {
 
     // ── triggers ─────────────────────────────────────────────────────────────────
 
-    /** Adopt as chunks load. Texture-only (a placed legacy head carries no marker): a same-skin head placed by
-     *  another plugin is adopted too — the accepted cost of finding the old plugin's heads at all. LATE, so core's own onChunkLoad (which restores already-marked heads) has run;
+    /** Adopt as chunks load: a known texture with the old plugin's profile UUID (see {@link #adopt}). LATE, so core's own onChunkLoad (which restores already-marked heads) has run;
      *  freshly-marked heads are handled here, and the getTypeFromBlock skip keeps it idempotent. */
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onChunkLoad(ChunkLoadEvent event) {
@@ -218,9 +219,9 @@ final class LegacyHeadMigrator implements Listener {
                 int adopted = adoptedBlocks - before;
                 String msg = "Migration sweep done: adopted " + adopted + " placed head(s) across "
                         + total + " loaded chunk(s); re-stamped " + restampedItems + " item(s); "
-                        + uuidDiverged + " head(s) had a diverged profile UUID (still adopted).";
+                        + uuidDiverged + " same-skin head(s) from other plugins left alone.";
                 // A sweep that found nothing to migrate is the steady state on every boot: debug-only.
-                if (adopted > 0 || uuidDiverged > 0) plugin.getLogger().info(msg);
+                if (adopted > 0) plugin.getLogger().info(msg);
                 else DebugLog.log(plugin, msg);
                 if (sender != null && !(sender instanceof org.bukkit.command.ConsoleCommandSender)) {
                     sender.sendMessage(net.kyori.adventure.text.Component.text(msg,
