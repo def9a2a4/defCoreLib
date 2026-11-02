@@ -95,8 +95,10 @@ final class RotationBlocks {
     static int consumeOneFuelItem(Inventory storage, EngineFuelManager fuelManager) {
         // Engine/burner storage is a virtual inventory (Bukkit.createInventory), whose getLocation()
         // is null — take the block location from the StorageHolder so a returned container can drop.
-        return consumeOneFuelItem(storage, fuelManager,
-            storage.getHolder() instanceof StorageHolder sh ? sh.location() : storage.getLocation());
+        // Drop at the block's centre: at its corner, dropItemNaturally's jitter can start the bucket inside the
+        // floor, and the push-out slides it blocks away (seen as a flaky test).
+        Location at = storage.getHolder() instanceof StorageHolder sh ? sh.location() : storage.getLocation();
+        return consumeOneFuelItem(storage, fuelManager, at == null ? null : at.toBlockLocation().add(0.5, 0.5, 0.5));
     }
 
     /** Whether {@code storage} holds anything an engine could burn — without burning it. */
