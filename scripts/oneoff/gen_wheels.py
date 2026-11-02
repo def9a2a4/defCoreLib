@@ -2,8 +2,8 @@
 
 Three sizes (mech:wheel_<wood>, mech:large_wheel_<wood>, mech:huge_wheel_<wood>) in the 12 casing
 woods. The planks in the recipe pick the wood, and the wood picks the slab the tyre is built from.
-The windmill in the recipe picks the size, the same way it picks the propeller tier
-(CoreLibPlugin.capturePropulsionResult), so only the small wheels carry a YAML recipe.
+A wheel is four planks around a rotator; each bigger size is four planks around the size below,
+same wood.
 
 Rewrites everything from the "Wheels" section header to the end of the file, so it is safe to
 re-run after editing the template below.
@@ -20,12 +20,13 @@ WOODS = ["oak", "acacia", "bamboo", "birch", "cherry", "crimson", "dark_oak",
          "jungle", "mangrove", "pale_oak", "spruce", "warped"]
 
 # size id prefix, display prefix, diameter, power, step height, tyre reach below the block, spin
-# speed (deg/tick, falls with diameter so the tread speed reads the same), windmill that crafts it.
+# speed (deg/tick, falls with diameter so the tread speed reads the same), recipe core (the block the
+# four planks go around; {wood} is filled in), and its name for the catalog note.
 # The in-hand skin is per size AND wood: @<id>_item (assets/rotation/wheels/make_wheels.py).
 SIZES = [
-    ("wheel",       "",       1, 2,  "1 block",    "0 blocks",   6, "Windmill"),
-    ("large_wheel", "Large ", 2, 5,  "1.5 blocks", "0.5 blocks", 3, "Large Windmill"),
-    ("huge_wheel",  "Huge ",  3, 10, "2 blocks",   "1 block",    2, "Huge Windmill"),
+    ("wheel",       "",       1, 2,  "1 block",    "0 blocks",   6, "mech:rotator",             "a Rotator"),
+    ("large_wheel", "Large ", 2, 5,  "1.5 blocks", "0.5 blocks", 3, "mech:wheel_{wood}",        "a {title} Wheel"),
+    ("huge_wheel",  "Huge ",  3, 10, "2 blocks",   "1 block",    2, "mech:large_wheel_{wood}",  "a Large {title} Wheel"),
 ]
 
 THICK = 0.4        # tyre thickness along the axle
@@ -103,7 +104,9 @@ def display_line(slab: str, tag: str, angle: float, length: float, width: float,
 
 
 def block(size, wood: str) -> str:
-    sid, sname, d, power, step, reach, speed, windmill = size
+    sid, sname, d, power, step, reach, speed, core, core_name = size
+    core = core.format(wood=wood)
+    core_name = core_name.format(title=title(wood))
     bid = f"{sid}_{wood}"
     slab = f"{wood.upper()}_SLAB"
     planks = f"{wood.upper()}_PLANKS"
@@ -120,21 +123,19 @@ def block(size, wood: str) -> str:
            '      - "&fIt takes power through the block it hangs on: run a shaft or engine along its axle."',
            f'      - "&7Draws {power} power while running — it produces none."',
            f'      - "&7Climbs steps up to {step} high. The tyre reaches {reach} below the block it hangs on."',
-           f'      - "&7Craft from a {windmill} with four matching planks around it; the planks pick the wood."',
+           f'      - "&7Craft from {core_name} with four {title(wood).lower()} planks around it."',
            '      - "&7Wall placement only."']
     if (sid, wood) != ("wheel", "oak"):
         out.append(f"    catalog_variant_of: {sid}_oak")
-    if sid == "wheel":
-        out += ["    recipes:",
-                "      craft:",
-                "        shaped:",
-                "          # The windmill decides the size (windmill / large / huge, swapped in",
-                "          # CoreLibPlugin.capturePropulsionResult); block_type is the tolerant match a",
-                "          # bladed windmill needs. The planks must all be this wood.",
-                '          - pattern: [" P ", "PWP", " P "]',
-                "            key:",
-                f"              P: {{ material: {planks} }}",
-                '              W: { block_type: "mech:windmill" }']
+    out += ["    recipes:",
+            "      craft:",
+            "        shaped:",
+            "          # Four planks of this wood around the core: a rotator for the small wheel, the",
+            "          # same-wood wheel one size down for the others.",
+            '          - pattern: [" P ", "PCP", " P "]',
+            "            key:",
+            f"              P: {{ material: {planks} }}",
+            f'              C: {{ block: "{core}" }}']
     out += ['    texture: "@prop_bearing_fwd"',
             f'    item_texture: "@{bid}_item"',
             "    drops: self",

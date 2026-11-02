@@ -1492,26 +1492,6 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
             return;
         }
 
-        // Wheels: one recipe per wood, registered on the small wheel; the windmill decides the size.
-        String wheelSize = RotationBlocks.wheelSize(resultType);
-        if (wheelSize != null) {
-            String windmillType = null;
-            for (ItemStack it : inv.getMatrix()) {
-                String t = headBlockType(it);
-                if (t != null && isWindmillType(t)) { windmillType = t; break; }
-            }
-            if (windmillType == null) { inv.setResult(null); return; }
-            String wood = resultType.substring(("mech:" + wheelSize + "_").length());
-            String size = switch (windmillType) {
-                case "mech:large_windmill" -> "large_wheel";
-                case "mech:huge_windmill"  -> "huge_wheel";
-                default                    -> "wheel";
-            };
-            CustomHeadBlock wheelType = registry.getType("mech:" + size + "_" + wood);
-            inv.setResult(wheelType == null ? null : wheelType.createItem(result.getAmount()));
-            return;
-        }
-
         if ("mech:thruster".equals(resultType)) {
             for (ItemStack it : inv.getMatrix()) {
                 if ("mech:fan".equals(headBlockType(it))) return;   // valid — a fan is present

@@ -4095,18 +4095,17 @@ blocks:
       - "&fIt takes power through the block it hangs on: run a shaft or engine along its axle."
       - "&7Draws 2 power while running — it produces none."
       - "&7Climbs steps up to 1 block high. The tyre reaches 0 blocks below the block it hangs on."
-      - "&7Craft from a Windmill with four matching planks around it; the planks pick the wood."
+      - "&7Craft from a Rotator with four oak planks around it."
       - "&7Wall placement only."
     recipes:
       craft:
         shaped:
-          # The windmill decides the size (windmill / large / huge, swapped in
-          # CoreLibPlugin.capturePropulsionResult); block_type is the tolerant match a
-          # bladed windmill needs. The planks must all be this wood.
-          - pattern: [" P ", "PWP", " P "]
+          # Four planks of this wood around the core: a rotator for the small wheel, the
+          # same-wood wheel one size down for the others.
+          - pattern: [" P ", "PCP", " P "]
             key:
               P: { material: OAK_PLANKS }
-              W: { block_type: "mech:windmill" }
+              C: { block: "mech:rotator" }
     texture: "@prop_bearing_fwd"
     item_texture: "@wheel_oak_item"
     drops: self
@@ -4168,19 +4167,18 @@ blocks:
       - "&fIt takes power through the block it hangs on: run a shaft or engine along its axle."
       - "&7Draws 2 power while running — it produces none."
       - "&7Climbs steps up to 1 block high. The tyre reaches 0 blocks below the block it hangs on."
-      - "&7Craft from a Windmill with four matching planks around it; the planks pick the wood."
+      - "&7Craft from a Rotator with four acacia planks around it."
       - "&7Wall placement only."
     catalog_variant_of: wheel_oak
     recipes:
       craft:
         shaped:
-          # The windmill decides the size (windmill / large / huge, swapped in
-          # CoreLibPlugin.capturePropulsionResult); block_type is the tolerant match a
-          # bladed windmill needs. The planks must all be this wood.
-          - pattern: [" P ", "PWP", " P "]
+          # Four planks of this wood around the core: a rotator for the small wheel, the
+          # same-wood wheel one size down for the others.
+          - pattern: [" P ", "PCP", " P "]
             key:
               P: { material: ACACIA_PLANKS }
-              W: { block_type: "mech:windmill" }
+              C: { block: "mech:rotator" }
     texture: "@prop_bearing_fwd"
     item_texture: "@wheel_acacia_item"
     drops: self
@@ -4242,19 +4240,18 @@ blocks:
       - "&fIt takes power through the block it hangs on: run a shaft or engine along its axle."
       - "&7Draws 2 power while running — it produces none."
       - "&7Climbs steps up to 1 block high. The tyre reaches 0 blocks below the block it hangs on."
-      - "&7Craft from a Windmill with four matching planks around it; the planks pick the wood."
+      - "&7Craft from a Rotator with four bamboo planks around it."
       - "&7Wall placement only."
     catalog_variant_of: wheel_oak
     recipes:
       craft:
         shaped:
-          # The windmill decides the size (windmill / large / huge, swapped in
-          # CoreLibPlugin.capturePropulsionResult); block_type is the tolerant match a
-          # bladed windmill needs. The planks must all be this wood.
-          - pattern: [" P ", "PWP", " P "]
+          # Four planks of this wood around the core: a rotator for the small wheel, the
+          # same-wood wheel one size down for the others.
+          - pattern: [" P ", "PCP", " P "]
             key:
               P: { material: BAMBOO_PLANKS }
-              W: { block_type: "mech:windmill" }
+              C: { block: "mech:rotator" }
     texture: "@prop_bearing_fwd"
     item_texture: "@wheel_bamboo_item"
     drops: self
@@ -4316,19 +4313,18 @@ blocks:
       - "&fIt takes power through the block it hangs on: run a shaft or engine along its axle."
       - "&7Draws 2 power while running — it produces none."
       - "&7Climbs steps up to 1 block high. The tyre reaches 0 blocks below the block it hangs on."
-      - "&7Craft from a Windmill with four matching planks around it; the planks pick the wood."
+      - "&7Craft from a Rotator with four birch planks around it."
       - "&7Wall placement only."
     catalog_variant_of: wheel_oak
     recipes:
       craft:
         shaped:
-          # The windmill decides the size (windmill / large / huge, swapped in
-          # CoreLibPlugin.capturePropulsionResult); block_type is the tolerant match a
-          # bladed windmill needs. The planks must all be this wood.
-          - pattern: [" P ", "PWP", " P "]
+          # Four planks of this wood around the core: a rotator for the small wheel, the
+          # same-wood wheel one size down for the others.
+          - pattern: [" P ", "PCP", " P "]
             key:
               P: { material: BIRCH_PLANKS }
-              W: { block_type: "mech:windmill" }
+              C: { block: "mech:rotator" }
     texture: "@prop_bearing_fwd"
     item_texture: "@wheel_birch_item"
     drops: self
@@ -4390,19 +4386,18 @@ blocks:
       - "&fIt takes power through the block it hangs on: run a shaft or engine along its axle."
       - "&7Draws 2 power while running — it produces none."
       - "&7Climbs steps up to 1 block high. The tyre reaches 0 blocks below the block it hangs on."
-      - "&7Craft from a Windmill with four matching planks around it; the planks pick the wood."
+      - "&7Craft from a Rotator with four cherry planks around it."
       - "&7Wall placement only."
     catalog_variant_of: wheel_oak
     recipes:
       craft:
         shaped:
-          # The windmill decides the size (windmill / large / huge, swapped in
-          # CoreLibPlugin.capturePropulsionResult); block_type is the tolerant match a
-          # bladed windmill needs. The planks must all be this wood.
-          - pattern: [" P ", "PWP", " P "]
+          # Four planks of this wood around the core: a rotator for the small wheel, the
+          # same-wood wheel one size down for the others.
+          - pattern: [" P ", "PCP", " P "]
             key:
               P: { material: CHERRY_PLANKS }
-              W: { block_type: "mech:windmill" }
+              C: { block: "mech:rotator" }
     texture: "@prop_bearing_fwd"
     item_texture: "@wheel_cherry_item"
     drops: self
@@ -4464,19 +4459,18 @@ blocks:
       - "&fIt takes power through the block it hangs on: run a shaft or engine along its axle."
       - "&7Draws 2 power while running — it produces none."
       - "&7Climbs steps up to 1 block high. The tyre reaches 0 blocks below the block it hangs on."
-      - "&7Craft from a Windmill with four matching planks around it; the planks pick the wood."
+      - "&7Craft from a Rotator with four crimson planks around it."
       - "&7Wall placement only."
     catalog_variant_of: wheel_oak
     recipes:
       craft:
         shaped:
-          # The windmill decides the size (windmill / large / huge, swapped in
-          # CoreLibPlugin.capturePropulsionResult); block_type is the tolerant match a
-          # bladed windmill needs. The planks must all be this wood.
-          - pattern: [" P ", "PWP", " P "]
+          # Four planks of this wood around the core: a rotator for the small wheel, the
+          # same-wood wheel one size down for the others.
+          - pattern: [" P ", "PCP", " P "]
             key:
               P: { material: CRIMSON_PLANKS }
-              W: { block_type: "mech:windmill" }
+              C: { block: "mech:rotator" }
     texture: "@prop_bearing_fwd"
     item_texture: "@wheel_crimson_item"
     drops: self
@@ -4538,19 +4532,18 @@ blocks:
       - "&fIt takes power through the block it hangs on: run a shaft or engine along its axle."
       - "&7Draws 2 power while running — it produces none."
       - "&7Climbs steps up to 1 block high. The tyre reaches 0 blocks below the block it hangs on."
-      - "&7Craft from a Windmill with four matching planks around it; the planks pick the wood."
+      - "&7Craft from a Rotator with four dark oak planks around it."
       - "&7Wall placement only."
     catalog_variant_of: wheel_oak
     recipes:
       craft:
         shaped:
-          # The windmill decides the size (windmill / large / huge, swapped in
-          # CoreLibPlugin.capturePropulsionResult); block_type is the tolerant match a
-          # bladed windmill needs. The planks must all be this wood.
-          - pattern: [" P ", "PWP", " P "]
+          # Four planks of this wood around the core: a rotator for the small wheel, the
+          # same-wood wheel one size down for the others.
+          - pattern: [" P ", "PCP", " P "]
             key:
               P: { material: DARK_OAK_PLANKS }
-              W: { block_type: "mech:windmill" }
+              C: { block: "mech:rotator" }
     texture: "@prop_bearing_fwd"
     item_texture: "@wheel_dark_oak_item"
     drops: self
@@ -4612,19 +4605,18 @@ blocks:
       - "&fIt takes power through the block it hangs on: run a shaft or engine along its axle."
       - "&7Draws 2 power while running — it produces none."
       - "&7Climbs steps up to 1 block high. The tyre reaches 0 blocks below the block it hangs on."
-      - "&7Craft from a Windmill with four matching planks around it; the planks pick the wood."
+      - "&7Craft from a Rotator with four jungle planks around it."
       - "&7Wall placement only."
     catalog_variant_of: wheel_oak
     recipes:
       craft:
         shaped:
-          # The windmill decides the size (windmill / large / huge, swapped in
-          # CoreLibPlugin.capturePropulsionResult); block_type is the tolerant match a
-          # bladed windmill needs. The planks must all be this wood.
-          - pattern: [" P ", "PWP", " P "]
+          # Four planks of this wood around the core: a rotator for the small wheel, the
+          # same-wood wheel one size down for the others.
+          - pattern: [" P ", "PCP", " P "]
             key:
               P: { material: JUNGLE_PLANKS }
-              W: { block_type: "mech:windmill" }
+              C: { block: "mech:rotator" }
     texture: "@prop_bearing_fwd"
     item_texture: "@wheel_jungle_item"
     drops: self
@@ -4686,19 +4678,18 @@ blocks:
       - "&fIt takes power through the block it hangs on: run a shaft or engine along its axle."
       - "&7Draws 2 power while running — it produces none."
       - "&7Climbs steps up to 1 block high. The tyre reaches 0 blocks below the block it hangs on."
-      - "&7Craft from a Windmill with four matching planks around it; the planks pick the wood."
+      - "&7Craft from a Rotator with four mangrove planks around it."
       - "&7Wall placement only."
     catalog_variant_of: wheel_oak
     recipes:
       craft:
         shaped:
-          # The windmill decides the size (windmill / large / huge, swapped in
-          # CoreLibPlugin.capturePropulsionResult); block_type is the tolerant match a
-          # bladed windmill needs. The planks must all be this wood.
-          - pattern: [" P ", "PWP", " P "]
+          # Four planks of this wood around the core: a rotator for the small wheel, the
+          # same-wood wheel one size down for the others.
+          - pattern: [" P ", "PCP", " P "]
             key:
               P: { material: MANGROVE_PLANKS }
-              W: { block_type: "mech:windmill" }
+              C: { block: "mech:rotator" }
     texture: "@prop_bearing_fwd"
     item_texture: "@wheel_mangrove_item"
     drops: self
@@ -4760,19 +4751,18 @@ blocks:
       - "&fIt takes power through the block it hangs on: run a shaft or engine along its axle."
       - "&7Draws 2 power while running — it produces none."
       - "&7Climbs steps up to 1 block high. The tyre reaches 0 blocks below the block it hangs on."
-      - "&7Craft from a Windmill with four matching planks around it; the planks pick the wood."
+      - "&7Craft from a Rotator with four pale oak planks around it."
       - "&7Wall placement only."
     catalog_variant_of: wheel_oak
     recipes:
       craft:
         shaped:
-          # The windmill decides the size (windmill / large / huge, swapped in
-          # CoreLibPlugin.capturePropulsionResult); block_type is the tolerant match a
-          # bladed windmill needs. The planks must all be this wood.
-          - pattern: [" P ", "PWP", " P "]
+          # Four planks of this wood around the core: a rotator for the small wheel, the
+          # same-wood wheel one size down for the others.
+          - pattern: [" P ", "PCP", " P "]
             key:
               P: { material: PALE_OAK_PLANKS }
-              W: { block_type: "mech:windmill" }
+              C: { block: "mech:rotator" }
     texture: "@prop_bearing_fwd"
     item_texture: "@wheel_pale_oak_item"
     drops: self
@@ -4834,19 +4824,18 @@ blocks:
       - "&fIt takes power through the block it hangs on: run a shaft or engine along its axle."
       - "&7Draws 2 power while running — it produces none."
       - "&7Climbs steps up to 1 block high. The tyre reaches 0 blocks below the block it hangs on."
-      - "&7Craft from a Windmill with four matching planks around it; the planks pick the wood."
+      - "&7Craft from a Rotator with four spruce planks around it."
       - "&7Wall placement only."
     catalog_variant_of: wheel_oak
     recipes:
       craft:
         shaped:
-          # The windmill decides the size (windmill / large / huge, swapped in
-          # CoreLibPlugin.capturePropulsionResult); block_type is the tolerant match a
-          # bladed windmill needs. The planks must all be this wood.
-          - pattern: [" P ", "PWP", " P "]
+          # Four planks of this wood around the core: a rotator for the small wheel, the
+          # same-wood wheel one size down for the others.
+          - pattern: [" P ", "PCP", " P "]
             key:
               P: { material: SPRUCE_PLANKS }
-              W: { block_type: "mech:windmill" }
+              C: { block: "mech:rotator" }
     texture: "@prop_bearing_fwd"
     item_texture: "@wheel_spruce_item"
     drops: self
@@ -4908,19 +4897,18 @@ blocks:
       - "&fIt takes power through the block it hangs on: run a shaft or engine along its axle."
       - "&7Draws 2 power while running — it produces none."
       - "&7Climbs steps up to 1 block high. The tyre reaches 0 blocks below the block it hangs on."
-      - "&7Craft from a Windmill with four matching planks around it; the planks pick the wood."
+      - "&7Craft from a Rotator with four warped planks around it."
       - "&7Wall placement only."
     catalog_variant_of: wheel_oak
     recipes:
       craft:
         shaped:
-          # The windmill decides the size (windmill / large / huge, swapped in
-          # CoreLibPlugin.capturePropulsionResult); block_type is the tolerant match a
-          # bladed windmill needs. The planks must all be this wood.
-          - pattern: [" P ", "PWP", " P "]
+          # Four planks of this wood around the core: a rotator for the small wheel, the
+          # same-wood wheel one size down for the others.
+          - pattern: [" P ", "PCP", " P "]
             key:
               P: { material: WARPED_PLANKS }
-              W: { block_type: "mech:windmill" }
+              C: { block: "mech:rotator" }
     texture: "@prop_bearing_fwd"
     item_texture: "@wheel_warped_item"
     drops: self
@@ -4982,9 +4970,18 @@ blocks:
       - "&fIt takes power through the block it hangs on: run a shaft or engine along its axle."
       - "&7Draws 5 power while running — it produces none."
       - "&7Climbs steps up to 1.5 blocks high. The tyre reaches 0.5 blocks below the block it hangs on."
-      - "&7Craft from a Large Windmill with four matching planks around it; the planks pick the wood."
+      - "&7Craft from a Oak Wheel with four oak planks around it."
       - "&7Wall placement only."
     catalog_variant_of: large_wheel_oak
+    recipes:
+      craft:
+        shaped:
+          # Four planks of this wood around the core: a rotator for the small wheel, the
+          # same-wood wheel one size down for the others.
+          - pattern: [" P ", "PCP", " P "]
+            key:
+              P: { material: OAK_PLANKS }
+              C: { block: "mech:wheel_oak" }
     texture: "@prop_bearing_fwd"
     item_texture: "@large_wheel_oak_item"
     drops: self
@@ -5046,9 +5043,18 @@ blocks:
       - "&fIt takes power through the block it hangs on: run a shaft or engine along its axle."
       - "&7Draws 5 power while running — it produces none."
       - "&7Climbs steps up to 1.5 blocks high. The tyre reaches 0.5 blocks below the block it hangs on."
-      - "&7Craft from a Large Windmill with four matching planks around it; the planks pick the wood."
+      - "&7Craft from a Acacia Wheel with four acacia planks around it."
       - "&7Wall placement only."
     catalog_variant_of: large_wheel_oak
+    recipes:
+      craft:
+        shaped:
+          # Four planks of this wood around the core: a rotator for the small wheel, the
+          # same-wood wheel one size down for the others.
+          - pattern: [" P ", "PCP", " P "]
+            key:
+              P: { material: ACACIA_PLANKS }
+              C: { block: "mech:wheel_acacia" }
     texture: "@prop_bearing_fwd"
     item_texture: "@large_wheel_acacia_item"
     drops: self
@@ -5110,9 +5116,18 @@ blocks:
       - "&fIt takes power through the block it hangs on: run a shaft or engine along its axle."
       - "&7Draws 5 power while running — it produces none."
       - "&7Climbs steps up to 1.5 blocks high. The tyre reaches 0.5 blocks below the block it hangs on."
-      - "&7Craft from a Large Windmill with four matching planks around it; the planks pick the wood."
+      - "&7Craft from a Bamboo Wheel with four bamboo planks around it."
       - "&7Wall placement only."
     catalog_variant_of: large_wheel_oak
+    recipes:
+      craft:
+        shaped:
+          # Four planks of this wood around the core: a rotator for the small wheel, the
+          # same-wood wheel one size down for the others.
+          - pattern: [" P ", "PCP", " P "]
+            key:
+              P: { material: BAMBOO_PLANKS }
+              C: { block: "mech:wheel_bamboo" }
     texture: "@prop_bearing_fwd"
     item_texture: "@large_wheel_bamboo_item"
     drops: self
@@ -5174,9 +5189,18 @@ blocks:
       - "&fIt takes power through the block it hangs on: run a shaft or engine along its axle."
       - "&7Draws 5 power while running — it produces none."
       - "&7Climbs steps up to 1.5 blocks high. The tyre reaches 0.5 blocks below the block it hangs on."
-      - "&7Craft from a Large Windmill with four matching planks around it; the planks pick the wood."
+      - "&7Craft from a Birch Wheel with four birch planks around it."
       - "&7Wall placement only."
     catalog_variant_of: large_wheel_oak
+    recipes:
+      craft:
+        shaped:
+          # Four planks of this wood around the core: a rotator for the small wheel, the
+          # same-wood wheel one size down for the others.
+          - pattern: [" P ", "PCP", " P "]
+            key:
+              P: { material: BIRCH_PLANKS }
+              C: { block: "mech:wheel_birch" }
     texture: "@prop_bearing_fwd"
     item_texture: "@large_wheel_birch_item"
     drops: self
@@ -5238,9 +5262,18 @@ blocks:
       - "&fIt takes power through the block it hangs on: run a shaft or engine along its axle."
       - "&7Draws 5 power while running — it produces none."
       - "&7Climbs steps up to 1.5 blocks high. The tyre reaches 0.5 blocks below the block it hangs on."
-      - "&7Craft from a Large Windmill with four matching planks around it; the planks pick the wood."
+      - "&7Craft from a Cherry Wheel with four cherry planks around it."
       - "&7Wall placement only."
     catalog_variant_of: large_wheel_oak
+    recipes:
+      craft:
+        shaped:
+          # Four planks of this wood around the core: a rotator for the small wheel, the
+          # same-wood wheel one size down for the others.
+          - pattern: [" P ", "PCP", " P "]
+            key:
+              P: { material: CHERRY_PLANKS }
+              C: { block: "mech:wheel_cherry" }
     texture: "@prop_bearing_fwd"
     item_texture: "@large_wheel_cherry_item"
     drops: self
@@ -5302,9 +5335,18 @@ blocks:
       - "&fIt takes power through the block it hangs on: run a shaft or engine along its axle."
       - "&7Draws 5 power while running — it produces none."
       - "&7Climbs steps up to 1.5 blocks high. The tyre reaches 0.5 blocks below the block it hangs on."
-      - "&7Craft from a Large Windmill with four matching planks around it; the planks pick the wood."
+      - "&7Craft from a Crimson Wheel with four crimson planks around it."
       - "&7Wall placement only."
     catalog_variant_of: large_wheel_oak
+    recipes:
+      craft:
+        shaped:
+          # Four planks of this wood around the core: a rotator for the small wheel, the
+          # same-wood wheel one size down for the others.
+          - pattern: [" P ", "PCP", " P "]
+            key:
+              P: { material: CRIMSON_PLANKS }
+              C: { block: "mech:wheel_crimson" }
     texture: "@prop_bearing_fwd"
     item_texture: "@large_wheel_crimson_item"
     drops: self
@@ -5366,9 +5408,18 @@ blocks:
       - "&fIt takes power through the block it hangs on: run a shaft or engine along its axle."
       - "&7Draws 5 power while running — it produces none."
       - "&7Climbs steps up to 1.5 blocks high. The tyre reaches 0.5 blocks below the block it hangs on."
-      - "&7Craft from a Large Windmill with four matching planks around it; the planks pick the wood."
+      - "&7Craft from a Dark Oak Wheel with four dark oak planks around it."
       - "&7Wall placement only."
     catalog_variant_of: large_wheel_oak
+    recipes:
+      craft:
+        shaped:
+          # Four planks of this wood around the core: a rotator for the small wheel, the
+          # same-wood wheel one size down for the others.
+          - pattern: [" P ", "PCP", " P "]
+            key:
+              P: { material: DARK_OAK_PLANKS }
+              C: { block: "mech:wheel_dark_oak" }
     texture: "@prop_bearing_fwd"
     item_texture: "@large_wheel_dark_oak_item"
     drops: self
@@ -5430,9 +5481,18 @@ blocks:
       - "&fIt takes power through the block it hangs on: run a shaft or engine along its axle."
       - "&7Draws 5 power while running — it produces none."
       - "&7Climbs steps up to 1.5 blocks high. The tyre reaches 0.5 blocks below the block it hangs on."
-      - "&7Craft from a Large Windmill with four matching planks around it; the planks pick the wood."
+      - "&7Craft from a Jungle Wheel with four jungle planks around it."
       - "&7Wall placement only."
     catalog_variant_of: large_wheel_oak
+    recipes:
+      craft:
+        shaped:
+          # Four planks of this wood around the core: a rotator for the small wheel, the
+          # same-wood wheel one size down for the others.
+          - pattern: [" P ", "PCP", " P "]
+            key:
+              P: { material: JUNGLE_PLANKS }
+              C: { block: "mech:wheel_jungle" }
     texture: "@prop_bearing_fwd"
     item_texture: "@large_wheel_jungle_item"
     drops: self
@@ -5494,9 +5554,18 @@ blocks:
       - "&fIt takes power through the block it hangs on: run a shaft or engine along its axle."
       - "&7Draws 5 power while running — it produces none."
       - "&7Climbs steps up to 1.5 blocks high. The tyre reaches 0.5 blocks below the block it hangs on."
-      - "&7Craft from a Large Windmill with four matching planks around it; the planks pick the wood."
+      - "&7Craft from a Mangrove Wheel with four mangrove planks around it."
       - "&7Wall placement only."
     catalog_variant_of: large_wheel_oak
+    recipes:
+      craft:
+        shaped:
+          # Four planks of this wood around the core: a rotator for the small wheel, the
+          # same-wood wheel one size down for the others.
+          - pattern: [" P ", "PCP", " P "]
+            key:
+              P: { material: MANGROVE_PLANKS }
+              C: { block: "mech:wheel_mangrove" }
     texture: "@prop_bearing_fwd"
     item_texture: "@large_wheel_mangrove_item"
     drops: self
@@ -5558,9 +5627,18 @@ blocks:
       - "&fIt takes power through the block it hangs on: run a shaft or engine along its axle."
       - "&7Draws 5 power while running — it produces none."
       - "&7Climbs steps up to 1.5 blocks high. The tyre reaches 0.5 blocks below the block it hangs on."
-      - "&7Craft from a Large Windmill with four matching planks around it; the planks pick the wood."
+      - "&7Craft from a Pale Oak Wheel with four pale oak planks around it."
       - "&7Wall placement only."
     catalog_variant_of: large_wheel_oak
+    recipes:
+      craft:
+        shaped:
+          # Four planks of this wood around the core: a rotator for the small wheel, the
+          # same-wood wheel one size down for the others.
+          - pattern: [" P ", "PCP", " P "]
+            key:
+              P: { material: PALE_OAK_PLANKS }
+              C: { block: "mech:wheel_pale_oak" }
     texture: "@prop_bearing_fwd"
     item_texture: "@large_wheel_pale_oak_item"
     drops: self
@@ -5622,9 +5700,18 @@ blocks:
       - "&fIt takes power through the block it hangs on: run a shaft or engine along its axle."
       - "&7Draws 5 power while running — it produces none."
       - "&7Climbs steps up to 1.5 blocks high. The tyre reaches 0.5 blocks below the block it hangs on."
-      - "&7Craft from a Large Windmill with four matching planks around it; the planks pick the wood."
+      - "&7Craft from a Spruce Wheel with four spruce planks around it."
       - "&7Wall placement only."
     catalog_variant_of: large_wheel_oak
+    recipes:
+      craft:
+        shaped:
+          # Four planks of this wood around the core: a rotator for the small wheel, the
+          # same-wood wheel one size down for the others.
+          - pattern: [" P ", "PCP", " P "]
+            key:
+              P: { material: SPRUCE_PLANKS }
+              C: { block: "mech:wheel_spruce" }
     texture: "@prop_bearing_fwd"
     item_texture: "@large_wheel_spruce_item"
     drops: self
@@ -5686,9 +5773,18 @@ blocks:
       - "&fIt takes power through the block it hangs on: run a shaft or engine along its axle."
       - "&7Draws 5 power while running — it produces none."
       - "&7Climbs steps up to 1.5 blocks high. The tyre reaches 0.5 blocks below the block it hangs on."
-      - "&7Craft from a Large Windmill with four matching planks around it; the planks pick the wood."
+      - "&7Craft from a Warped Wheel with four warped planks around it."
       - "&7Wall placement only."
     catalog_variant_of: large_wheel_oak
+    recipes:
+      craft:
+        shaped:
+          # Four planks of this wood around the core: a rotator for the small wheel, the
+          # same-wood wheel one size down for the others.
+          - pattern: [" P ", "PCP", " P "]
+            key:
+              P: { material: WARPED_PLANKS }
+              C: { block: "mech:wheel_warped" }
     texture: "@prop_bearing_fwd"
     item_texture: "@large_wheel_warped_item"
     drops: self
@@ -5750,9 +5846,18 @@ blocks:
       - "&fIt takes power through the block it hangs on: run a shaft or engine along its axle."
       - "&7Draws 10 power while running — it produces none."
       - "&7Climbs steps up to 2 blocks high. The tyre reaches 1 block below the block it hangs on."
-      - "&7Craft from a Huge Windmill with four matching planks around it; the planks pick the wood."
+      - "&7Craft from a Large Oak Wheel with four oak planks around it."
       - "&7Wall placement only."
     catalog_variant_of: huge_wheel_oak
+    recipes:
+      craft:
+        shaped:
+          # Four planks of this wood around the core: a rotator for the small wheel, the
+          # same-wood wheel one size down for the others.
+          - pattern: [" P ", "PCP", " P "]
+            key:
+              P: { material: OAK_PLANKS }
+              C: { block: "mech:large_wheel_oak" }
     texture: "@prop_bearing_fwd"
     item_texture: "@huge_wheel_oak_item"
     drops: self
@@ -5814,9 +5919,18 @@ blocks:
       - "&fIt takes power through the block it hangs on: run a shaft or engine along its axle."
       - "&7Draws 10 power while running — it produces none."
       - "&7Climbs steps up to 2 blocks high. The tyre reaches 1 block below the block it hangs on."
-      - "&7Craft from a Huge Windmill with four matching planks around it; the planks pick the wood."
+      - "&7Craft from a Large Acacia Wheel with four acacia planks around it."
       - "&7Wall placement only."
     catalog_variant_of: huge_wheel_oak
+    recipes:
+      craft:
+        shaped:
+          # Four planks of this wood around the core: a rotator for the small wheel, the
+          # same-wood wheel one size down for the others.
+          - pattern: [" P ", "PCP", " P "]
+            key:
+              P: { material: ACACIA_PLANKS }
+              C: { block: "mech:large_wheel_acacia" }
     texture: "@prop_bearing_fwd"
     item_texture: "@huge_wheel_acacia_item"
     drops: self
@@ -5878,9 +5992,18 @@ blocks:
       - "&fIt takes power through the block it hangs on: run a shaft or engine along its axle."
       - "&7Draws 10 power while running — it produces none."
       - "&7Climbs steps up to 2 blocks high. The tyre reaches 1 block below the block it hangs on."
-      - "&7Craft from a Huge Windmill with four matching planks around it; the planks pick the wood."
+      - "&7Craft from a Large Bamboo Wheel with four bamboo planks around it."
       - "&7Wall placement only."
     catalog_variant_of: huge_wheel_oak
+    recipes:
+      craft:
+        shaped:
+          # Four planks of this wood around the core: a rotator for the small wheel, the
+          # same-wood wheel one size down for the others.
+          - pattern: [" P ", "PCP", " P "]
+            key:
+              P: { material: BAMBOO_PLANKS }
+              C: { block: "mech:large_wheel_bamboo" }
     texture: "@prop_bearing_fwd"
     item_texture: "@huge_wheel_bamboo_item"
     drops: self
@@ -5942,9 +6065,18 @@ blocks:
       - "&fIt takes power through the block it hangs on: run a shaft or engine along its axle."
       - "&7Draws 10 power while running — it produces none."
       - "&7Climbs steps up to 2 blocks high. The tyre reaches 1 block below the block it hangs on."
-      - "&7Craft from a Huge Windmill with four matching planks around it; the planks pick the wood."
+      - "&7Craft from a Large Birch Wheel with four birch planks around it."
       - "&7Wall placement only."
     catalog_variant_of: huge_wheel_oak
+    recipes:
+      craft:
+        shaped:
+          # Four planks of this wood around the core: a rotator for the small wheel, the
+          # same-wood wheel one size down for the others.
+          - pattern: [" P ", "PCP", " P "]
+            key:
+              P: { material: BIRCH_PLANKS }
+              C: { block: "mech:large_wheel_birch" }
     texture: "@prop_bearing_fwd"
     item_texture: "@huge_wheel_birch_item"
     drops: self
@@ -6006,9 +6138,18 @@ blocks:
       - "&fIt takes power through the block it hangs on: run a shaft or engine along its axle."
       - "&7Draws 10 power while running — it produces none."
       - "&7Climbs steps up to 2 blocks high. The tyre reaches 1 block below the block it hangs on."
-      - "&7Craft from a Huge Windmill with four matching planks around it; the planks pick the wood."
+      - "&7Craft from a Large Cherry Wheel with four cherry planks around it."
       - "&7Wall placement only."
     catalog_variant_of: huge_wheel_oak
+    recipes:
+      craft:
+        shaped:
+          # Four planks of this wood around the core: a rotator for the small wheel, the
+          # same-wood wheel one size down for the others.
+          - pattern: [" P ", "PCP", " P "]
+            key:
+              P: { material: CHERRY_PLANKS }
+              C: { block: "mech:large_wheel_cherry" }
     texture: "@prop_bearing_fwd"
     item_texture: "@huge_wheel_cherry_item"
     drops: self
@@ -6070,9 +6211,18 @@ blocks:
       - "&fIt takes power through the block it hangs on: run a shaft or engine along its axle."
       - "&7Draws 10 power while running — it produces none."
       - "&7Climbs steps up to 2 blocks high. The tyre reaches 1 block below the block it hangs on."
-      - "&7Craft from a Huge Windmill with four matching planks around it; the planks pick the wood."
+      - "&7Craft from a Large Crimson Wheel with four crimson planks around it."
       - "&7Wall placement only."
     catalog_variant_of: huge_wheel_oak
+    recipes:
+      craft:
+        shaped:
+          # Four planks of this wood around the core: a rotator for the small wheel, the
+          # same-wood wheel one size down for the others.
+          - pattern: [" P ", "PCP", " P "]
+            key:
+              P: { material: CRIMSON_PLANKS }
+              C: { block: "mech:large_wheel_crimson" }
     texture: "@prop_bearing_fwd"
     item_texture: "@huge_wheel_crimson_item"
     drops: self
@@ -6134,9 +6284,18 @@ blocks:
       - "&fIt takes power through the block it hangs on: run a shaft or engine along its axle."
       - "&7Draws 10 power while running — it produces none."
       - "&7Climbs steps up to 2 blocks high. The tyre reaches 1 block below the block it hangs on."
-      - "&7Craft from a Huge Windmill with four matching planks around it; the planks pick the wood."
+      - "&7Craft from a Large Dark Oak Wheel with four dark oak planks around it."
       - "&7Wall placement only."
     catalog_variant_of: huge_wheel_oak
+    recipes:
+      craft:
+        shaped:
+          # Four planks of this wood around the core: a rotator for the small wheel, the
+          # same-wood wheel one size down for the others.
+          - pattern: [" P ", "PCP", " P "]
+            key:
+              P: { material: DARK_OAK_PLANKS }
+              C: { block: "mech:large_wheel_dark_oak" }
     texture: "@prop_bearing_fwd"
     item_texture: "@huge_wheel_dark_oak_item"
     drops: self
@@ -6198,9 +6357,18 @@ blocks:
       - "&fIt takes power through the block it hangs on: run a shaft or engine along its axle."
       - "&7Draws 10 power while running — it produces none."
       - "&7Climbs steps up to 2 blocks high. The tyre reaches 1 block below the block it hangs on."
-      - "&7Craft from a Huge Windmill with four matching planks around it; the planks pick the wood."
+      - "&7Craft from a Large Jungle Wheel with four jungle planks around it."
       - "&7Wall placement only."
     catalog_variant_of: huge_wheel_oak
+    recipes:
+      craft:
+        shaped:
+          # Four planks of this wood around the core: a rotator for the small wheel, the
+          # same-wood wheel one size down for the others.
+          - pattern: [" P ", "PCP", " P "]
+            key:
+              P: { material: JUNGLE_PLANKS }
+              C: { block: "mech:large_wheel_jungle" }
     texture: "@prop_bearing_fwd"
     item_texture: "@huge_wheel_jungle_item"
     drops: self
@@ -6262,9 +6430,18 @@ blocks:
       - "&fIt takes power through the block it hangs on: run a shaft or engine along its axle."
       - "&7Draws 10 power while running — it produces none."
       - "&7Climbs steps up to 2 blocks high. The tyre reaches 1 block below the block it hangs on."
-      - "&7Craft from a Huge Windmill with four matching planks around it; the planks pick the wood."
+      - "&7Craft from a Large Mangrove Wheel with four mangrove planks around it."
       - "&7Wall placement only."
     catalog_variant_of: huge_wheel_oak
+    recipes:
+      craft:
+        shaped:
+          # Four planks of this wood around the core: a rotator for the small wheel, the
+          # same-wood wheel one size down for the others.
+          - pattern: [" P ", "PCP", " P "]
+            key:
+              P: { material: MANGROVE_PLANKS }
+              C: { block: "mech:large_wheel_mangrove" }
     texture: "@prop_bearing_fwd"
     item_texture: "@huge_wheel_mangrove_item"
     drops: self
@@ -6326,9 +6503,18 @@ blocks:
       - "&fIt takes power through the block it hangs on: run a shaft or engine along its axle."
       - "&7Draws 10 power while running — it produces none."
       - "&7Climbs steps up to 2 blocks high. The tyre reaches 1 block below the block it hangs on."
-      - "&7Craft from a Huge Windmill with four matching planks around it; the planks pick the wood."
+      - "&7Craft from a Large Pale Oak Wheel with four pale oak planks around it."
       - "&7Wall placement only."
     catalog_variant_of: huge_wheel_oak
+    recipes:
+      craft:
+        shaped:
+          # Four planks of this wood around the core: a rotator for the small wheel, the
+          # same-wood wheel one size down for the others.
+          - pattern: [" P ", "PCP", " P "]
+            key:
+              P: { material: PALE_OAK_PLANKS }
+              C: { block: "mech:large_wheel_pale_oak" }
     texture: "@prop_bearing_fwd"
     item_texture: "@huge_wheel_pale_oak_item"
     drops: self
@@ -6390,9 +6576,18 @@ blocks:
       - "&fIt takes power through the block it hangs on: run a shaft or engine along its axle."
       - "&7Draws 10 power while running — it produces none."
       - "&7Climbs steps up to 2 blocks high. The tyre reaches 1 block below the block it hangs on."
-      - "&7Craft from a Huge Windmill with four matching planks around it; the planks pick the wood."
+      - "&7Craft from a Large Spruce Wheel with four spruce planks around it."
       - "&7Wall placement only."
     catalog_variant_of: huge_wheel_oak
+    recipes:
+      craft:
+        shaped:
+          # Four planks of this wood around the core: a rotator for the small wheel, the
+          # same-wood wheel one size down for the others.
+          - pattern: [" P ", "PCP", " P "]
+            key:
+              P: { material: SPRUCE_PLANKS }
+              C: { block: "mech:large_wheel_spruce" }
     texture: "@prop_bearing_fwd"
     item_texture: "@huge_wheel_spruce_item"
     drops: self
@@ -6454,9 +6649,18 @@ blocks:
       - "&fIt takes power through the block it hangs on: run a shaft or engine along its axle."
       - "&7Draws 10 power while running — it produces none."
       - "&7Climbs steps up to 2 blocks high. The tyre reaches 1 block below the block it hangs on."
-      - "&7Craft from a Huge Windmill with four matching planks around it; the planks pick the wood."
+      - "&7Craft from a Large Warped Wheel with four warped planks around it."
       - "&7Wall placement only."
     catalog_variant_of: huge_wheel_oak
+    recipes:
+      craft:
+        shaped:
+          # Four planks of this wood around the core: a rotator for the small wheel, the
+          # same-wood wheel one size down for the others.
+          - pattern: [" P ", "PCP", " P "]
+            key:
+              P: { material: WARPED_PLANKS }
+              C: { block: "mech:large_wheel_warped" }
     texture: "@prop_bearing_fwd"
     item_texture: "@huge_wheel_warped_item"
     drops: self
