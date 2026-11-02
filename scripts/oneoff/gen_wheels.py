@@ -10,6 +10,7 @@ re-run after editing the template below.
 
 Run from the repo root:  python3 scripts/oneoff/gen_wheels.py
 """
+import math
 from pathlib import Path
 
 YML = Path(__file__).resolve().parents[2] / "src/main/resources/rotation-blocks.yml"
@@ -28,7 +29,7 @@ SIZES = [
 ]
 
 THICK = 0.4        # tyre thickness along the axle
-NUDGE = 0.01       # axle offset between the three parts, so their flat faces never z-fight
+NUDGE = 0.002      # axle offset between neighbouring parts, so their flat faces never z-fight
 WALL_OFFSET = 0.25
 
 
@@ -41,27 +42,64 @@ def fmt(x: float) -> str:
     return "0" if s in ("-0", "") else s
 
 
+# ── tiny quaternion helpers (w, x, y, z) ──
+def q_axis(deg, ax):
+    h = math.radians(deg) / 2
+    return (math.cos(h), ax[0] * math.sin(h), ax[1] * math.sin(h), ax[2] * math.sin(h))
+
+
+def q_mul(a, b):
+    aw, ax, ay, az = a
+    bw, bx, by, bz = b
+    return (aw * bw - ax * bx - ay * by - az * bz,
+            aw * bx + ax * bw + ay * bz - az * by,
+            aw * by - ax * bz + ay * bw + az * bx,
+            aw * bz + ax * by - ay * bx + az * bw)
+
+
+def q_rot(q, v):
+    w, x, y, z = q
+    p = q_mul(q_mul(q, (0, *v)), (w, -x, -y, -z))
+    return p[1:]
+
+
+def q_axis_angle(q):
+    w = max(-1.0, min(1.0, q[0]))
+    ang = 2 * math.acos(w)
+    s = math.sqrt(max(0.0, 1 - w * w))
+    if s < 1e-9:
+        return 0.0, (0.0, 0.0, 1.0)
+    return math.degrees(ang), (q[1] / s, q[2] / s, q[3] / s)
+
+
 def parts(d: float):
-    """The tyre as three slabs in the wheel plane: a horizontal bar, a vertical bar and a centre
-    square. Bars are as wide as an octagon side (d / (1 + sqrt 2)) so their ends are the octagon's
-    four straight edges; the square's corners sit on its four diagonal edges."""
-    side = d * 0.4142
-    sq = d * 0.7071
-    return [("tyre_h", d, side, -NUDGE), ("tyre_v", side, d, 0.0), ("tyre_c", sq, sq, NUDGE)]
+    """The tyre as four slab bars through the axle at 0, 45, 90 and 135 degrees. Each is as long as the
+    wheel is wide and as wide as an octagon side (d / (1 + sqrt 2)), so each bar's two ends are two
+    opposite edges of the octagon and the four together fill it exactly."""
+    side = d / (1 + math.sqrt(2))
+    return [(f"tyre_{i}", i * 45, d, side, (i - 1.5) * NUDGE) for i in range(4)]
 
 
-def display_line(slab: str, tag: str, w: float, h: float, nudge: float, axle: str) -> str:
-    # A slab item renders in the bottom half of its cell (y -0.5..0). Its thin axis is turned onto
-    # the axle so the plank face shows on the side of the wheel; scale 2*THICK on that axis gives the
-    # thickness, and the translation re-centres it on the axle (plus the z-fight nudge).
-    c = THICK / 2 + nudge
+def display_line(slab: str, tag: str, angle: float, length: float, width: float, nudge: float,
+                 axle: str) -> str:
+    # A slab item renders in the bottom half of its cell (y -0.5..0). Scale it in its own frame (x the
+    # bar's length, y its thickness: 2*THICK since the slab is half a block, z its width), then one
+    # rotation stands its thin axis on the axle and turns the bar to its angle about the axle. The
+    # translation re-centres the bar on the axle, plus its z-fight nudge.
     if axle == "z":   # n/s walls: wheel plane XY
-        tr, sc, rot = [0, 0, c], [w, THICK * 2, h], "[90, 1, 0, 0]"
+        axis = (0, 0, 1)
+        q = q_mul(q_axis(angle, axis), q_axis(90, (1, 0, 0)))
     else:             # e/w walls: wheel plane YZ
-        tr, sc, rot = [c, 0, 0], [h, THICK * 2, w], "[-90, 0, 0, 1]"
+        axis = (1, 0, 0)
+        q = q_mul(q_axis(angle, axis), q_axis(-90, (0, 0, 1)))
+    centre = q_rot(q, (0, -THICK / 2, 0))
+    tr = [-centre[k] + axis[k] * nudge for k in range(3)]
+    deg, ax = q_axis_angle(q)
     return ("          - { material: %s, tag: %s, transform: { translation: [%s], scale: [%s], "
-            "left_rotation: %s }, wall_offset: %s }"
-            % (slab, tag, ", ".join(fmt(v) for v in tr), ", ".join(fmt(v) for v in sc), rot, fmt(WALL_OFFSET)))
+            "left_rotation: [%s, %s] }, wall_offset: %s }"
+            % (slab, tag, ", ".join(fmt(v) for v in tr),
+               ", ".join(fmt(v) for v in (length, THICK * 2, width)),
+               fmt(deg), ", ".join(fmt(v) for v in ax), fmt(WALL_OFFSET)))
 
 
 def block(size, wood: str) -> str:
@@ -117,7 +155,7 @@ def block(size, wood: str) -> str:
         out += [f"      idle_wall_{face}:",
                 '        texture: "@prop_bearing_fwd"',
                 "        display_entities:"]
-        out += [display_line(slab, tag, w, h, nudge, axle) for tag, w, h, nudge in parts(d)]
+        out += [display_line(slab, tag, ang, ln, wd, nudge, axle) for tag, ang, ln, wd, nudge in parts(d)]
         out.append(f'      spinning_wall_{face}: {{ copy_from: idle_wall_{face}, texture: "@prop_bearing_fwd", '
                    f'animation: {{ type: rotate, axis: {axis}, speed: {speed} }} }}')
     return "\n".join(out)
@@ -132,9 +170,10 @@ SECTION_COMMENT = """\
   # Every size comes in the 12 casing woods; Java strips the wood (RotationBlocks.wheelSize) wherever
   # power, mass, load mode or mechanism metadata are looked up, so those are set once per size.
   #
-  # Model: the propeller's placed head, plus a tyre of three wooden slabs (a horizontal bar, a vertical
-  # bar and a centre square) whose outline is an octagon, 0.4 thick along the axle so the head stays
-  # visible behind it. The parts are nudged 0.01 apart along the axle so their faces don't z-fight.
+  # Model: the propeller's placed head, plus a tyre of four wooden slab bars through the axle at 0, 45,
+  # 90 and 135 degrees. Each is an octagon side wide, so their ends are the eight edges of an octagon.
+  # 0.4 thick along the axle so the head stays visible behind it; the bars are nudged 0.002 apart
+  # along the axle so their faces don't z-fight.
   # Every part is centred ON the spin axis, so it spins in place; wall_offset (applied outside the
   # animation) pushes the wheel outboard of the hull.
 """
