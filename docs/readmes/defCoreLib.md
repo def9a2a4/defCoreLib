@@ -46,7 +46,7 @@ DefCoreLib is a dependency other plugins install alongside:
 | `/defcorelib give_demo_rotation` | Give yourself one of every Mechanism block | `corelib.admin` |
 | `/defcorelib list` | List all registered block ids | `corelib.admin` |
 | `/defcorelib colliders` | Toggle mechanism collider glow visualization | `corelib.admin` |
-| `/defcorelib debug [on\|off]` | Show or set verbose `[debug]` logging (DefCoreLib, Pipes, HeadSmith); saved to `config.yml` | `corelib.admin` |
+| `/defcorelib debug [on\|off]` | Show or set verbose `[debug]` logging (DefCoreLib, Pipes, HeadSmith) until restart; `debug` in `config.yml` keeps it on | `corelib.admin` |
 | `/defcorelib refreshdisplays [confirm]` | Report (and, with `confirm`, respawn) the displays of every loaded custom block, removing orphans | `corelib.admin` |
 | `/defcorelib reloadbanners` | Reload banner configuration | `corelib.admin` |
 | `/defcorelib cleanorphans [confirm]` | Find (and, with `confirm`, remove) orphaned display entities | `corelib.admin` |
@@ -56,7 +56,7 @@ DefCoreLib is a dependency other plugins install alongside:
 
 ## Configuration
 
-`plugins/DefCoreLib/config.yml` holds a single setting, `debug` (default `false`), also set live with
+`plugins/DefCoreLib/config.yml` holds a single setting, `debug` (default `false`), also switched live, until restart, with
 `/defcorelib debug on|off`. Mechanism fuel rates can be overridden in
 `plugins/DefCoreLib/config/fuel.yml` - see [Mechanism](https://github.com/def9a2a4/defCoreLib/blob/main/docs/readmes/mech.md#configuration).
 

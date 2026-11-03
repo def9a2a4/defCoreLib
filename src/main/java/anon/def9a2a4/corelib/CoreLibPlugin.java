@@ -1623,14 +1623,16 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
     // (e.g. a 0.3.2 casing) stopped crafting. Refresh it to the current lore whenever it's seen.
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onOpenRefreshLore(org.bukkit.event.inventory.InventoryOpenEvent event) {
-        refreshStaleLore(event.getView().getTopInventory());
+        // Only real containers: a plugin menu (the catalog, a shop) has no location, and its items' lore is its own.
+        if (event.getView().getTopInventory().getLocation() != null) refreshStaleLore(event.getView().getTopInventory());
         refreshStaleLore(event.getView().getBottomInventory());
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPickupRefreshLore(org.bukkit.event.entity.EntityPickupItemEvent event) {
-        ItemStack it = event.getItem().getItemStack();
-        if (refreshStaleLore(it)) event.getItem().setItemStack(it);
+        // getItemStack is a live mirror: edit it in place. setItemStack here would swap in a copy holding only the
+        // picked-up count, and the rest of a partly picked-up stack would vanish.
+        refreshStaleLore(event.getItem().getItemStack());
     }
 
     private void refreshStaleLore(org.bukkit.inventory.Inventory inv) {
@@ -2881,12 +2883,12 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
                         COMMAND_HELP.sendUsage(sender, "debug");
                         return true;
                     }
+                    // Not saved: saveConfig would write the in-memory copy (defaults, if config.yml failed to
+                    // parse) over the admin's file. `debug: true` in config.yml keeps it on across restarts.
                     DebugLog.setEnabled(arg.equals("on"));
-                    getConfig().set("debug", DebugLog.enabled());
-                    saveConfig();
                 }
                 sender.sendMessage(Component.text("Debug logging " + (DebugLog.enabled() ? "ON" : "OFF")
-                        + " (DefCoreLib, Pipes, HeadSmith)", DebugLog.enabled() ? NamedTextColor.GREEN : NamedTextColor.RED));
+                        + " until restart (DefCoreLib, Pipes, HeadSmith)", DebugLog.enabled() ? NamedTextColor.GREEN : NamedTextColor.RED));
             }
             case "reloadbanners" -> {
                 bannerManager.reloadConfig();

@@ -45,8 +45,12 @@ final class MovableBlocks {
         // 1.21 additions — resolve by name so a differing runtime doesn't hard-fail at class load.
         addByName(s, "TRIAL_SPAWNER");
         addByName(s, "VAULT");
+        // Doors stay put: a two-cell block whose landing is half-blocked can't pay exactly one item.
+        for (Material m : Material.values()) if (isDoor(m)) s.add(m);
         return s;
     }
+
+    static boolean isDoor(Material m) { return m.name().endsWith("_DOOR"); }
 
     private static void addByName(Set<Material> s, String id) {
         Material m = Material.matchMaterial(id);

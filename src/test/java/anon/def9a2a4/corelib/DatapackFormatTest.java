@@ -25,7 +25,7 @@ class DatapackFormatTest {
         "1.21.11", 94,
         "26.1.2", 101,
         "26.2", 107,
-        "26.3", 109);
+        "26.3", 121);
 
     @Test
     void ciMatrixVersionsAreInsideThePackRange() throws Exception {

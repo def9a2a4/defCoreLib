@@ -1448,8 +1448,6 @@ public class MechanismRegistry implements org.bukkit.event.Listener {
      * snapshot later blocks as idle. Two-pass removal handles attachables before their supports.
      */
     private void airOutSourceBlocks(List<Block> blocks) {
-        // Read before anything is cleared: which cells leave water behind (see waterFillCells).
-        List<Block> refill = waterFillCells(blocks);
         for (Block b : blocks) {
             CustomHeadBlock chb = registry.getTypeFromBlock(b);
             // Capture (not break): consumers keep per-block state in the mechanism (e.g. filter items in
@@ -1520,53 +1518,6 @@ public class MechanismRegistry implements org.bukkit.event.Listener {
         for (Block b : blocks) {
             if (b.getType() != Material.AIR) b.setType(Material.AIR, false);
         }
-        // Then water back in, with physics, so it also flows into whatever air the structure enclosed.
-        for (Block b : refill) {
-            if (b.getType() == Material.AIR) b.setType(Material.WATER, true);
-        }
-    }
-
-    /**
-     * The captured cells that should hold water once the structure leaves, rather than air: every block
-     * that was waterlogged, and every cell at or below the waterline. The waterline is the highest still
-     * water (a source block, or a waterlogged block) directly beside the structure, outside it — so a
-     * hull lifted out of the sea leaves the sea behind instead of a hull-shaped hole in it, and a
-     * structure with no water beside it leaves only its waterlogged cells. Assembly-time only.
-     */
-    private static List<Block> waterFillCells(List<Block> blocks) {
-        Set<Long> cells = new HashSet<>(blocks.size() * 2);
-        for (Block b : blocks) cells.add(packCell(b.getX(), b.getY(), b.getZ()));
-        int waterline = Integer.MIN_VALUE;
-        org.bukkit.block.BlockFace[] sides = {org.bukkit.block.BlockFace.NORTH, org.bukkit.block.BlockFace.SOUTH,
-            org.bukkit.block.BlockFace.EAST, org.bukkit.block.BlockFace.WEST};
-        for (Block b : blocks) {
-            if (b.getY() <= waterline) continue;   // can't raise it
-            for (org.bukkit.block.BlockFace f : sides) {
-                int nx = b.getX() + f.getModX(), nz = b.getZ() + f.getModZ();
-                if (cells.contains(packCell(nx, b.getY(), nz))) continue;
-                if (!b.getWorld().isChunkLoaded(nx >> 4, nz >> 4)) continue;   // never sync-load
-                if (isStillWater(b.getWorld().getBlockAt(nx, b.getY(), nz).getBlockData())) {
-                    waterline = b.getY();
-                    break;
-                }
-            }
-        }
-        List<Block> out = new ArrayList<>();
-        for (Block b : blocks) {
-            if (b.getY() <= waterline || (b.getBlockData() instanceof org.bukkit.block.data.Waterlogged w && w.isWaterlogged())) {
-                out.add(b);
-            }
-        }
-        return out;
-    }
-
-    private static boolean isStillWater(BlockData d) {
-        if (d.getMaterial() == Material.WATER) return d instanceof org.bukkit.block.data.Levelled l && l.getLevel() == 0;
-        return d instanceof org.bukkit.block.data.Waterlogged w && w.isWaterlogged();
-    }
-
-    private static long packCell(int x, int y, int z) {
-        return ((long) (x & 0x3FFFFFF) << 38) | ((long) (z & 0x3FFFFFF) << 12) | (y & 0xFFF);
     }
 
     /**

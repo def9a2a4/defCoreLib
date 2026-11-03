@@ -107,6 +107,7 @@ final class GlueManager {
             // brush-glued frame is authored and rides rigidly; its same-wood auto-glue still augments via
             // the derived append below (deduped by present/seen).
             if (registry != null && StickySpread.isSlimeOrHoney(b)) continue;
+            if (MovableBlocks.isDoor(b.getType())) continue;   // doors never ride (MovableBlocks); a glued one stays put
             if (excluded.contains(CustomBlockRegistry.LocationKey.of(b))) { // mover self cell — never captured
                 if (onBlocked != null) onBlocked.accept(null, b);
                 continue;
