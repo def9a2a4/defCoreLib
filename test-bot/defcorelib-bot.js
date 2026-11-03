@@ -200,8 +200,9 @@ async function testPlaceBreak() {
   }
 }
 
-// d. Filter pipe menu: put an item in a filter slot, close, reopen (it must still be there and gone
-//    from the bot), shift-click it back out, reopen (filter empty, bot holds exactly one).
+// d. Filter pipe menu: shift-click an item into a filter slot, close, reopen (a one-item template is there and
+//    the bot still holds its item: filter slots are ghost templates), click the slot to clear it, reopen (filter
+//    empty, bot still holds exactly one, no item minted).
 async function testFilterMenu() {
   const NAME = 'Filter pipe menu round trip'
   const o = await setupFixture('filter', new Vec3(2, 0, 0))
@@ -222,12 +223,10 @@ async function testFilterMenu() {
     if (win.slots[i] && win.slots[i].name === 'cobblestone') { src = i; break }
   }
   if (src < 0) { await closeWindow(bot); return fail(NAME, 'cobblestone not in the window\'s player half') }
-  await bot.clickWindow(src, 0, 0)   // pick the stack up onto the cursor
-  await sleep(200)
-  await bot.clickWindow(0, 0, 0)     // put it down in filter slot 0
+  await bot.clickWindow(src, 0, 1)   // shift-click: templates it into the first empty filter slot
   await sleep(300)
   await closeWindow(bot)
-  if (countItem(bot, 'cobblestone') !== 0) return fail(NAME, 'cobblestone still in the bot\'s inventory after filing it')
+  if (countItem(bot, 'cobblestone') !== 1) return fail(NAME, `bot holds ${countItem(bot, 'cobblestone')} cobblestone after filing it (want 1: a template is a copy)`)
 
   win = await openWindowAt(bot, pipe)
   if (!win) return fail(NAME, 'filter pipe did not reopen')
@@ -236,17 +235,17 @@ async function testFilterMenu() {
     await closeWindow(bot)
     return fail(NAME, `filter slot 0 after reopen: ${slot0 ? `${slot0.count}x ${slot0.name}` : 'empty'}`)
   }
-  await bot.clickWindow(0, 0, 1)     // shift-click it back into the bot's inventory
+  await bot.clickWindow(0, 0, 0)     // click with an empty cursor: clears the template
   await sleep(300)
   await closeWindow(bot)
   const held = countItem(bot, 'cobblestone')
-  if (held !== 1) return fail(NAME, `bot holds ${held} cobblestone after taking it out (want 1)`)
+  if (held !== 1) return fail(NAME, `bot holds ${held} cobblestone after clearing the filter (want 1)`)
 
   win = await openWindowAt(bot, pipe)
   if (!win) return fail(NAME, 'filter pipe did not reopen the second time')
   const after = win.slots[0]
   await closeWindow(bot)
-  if (after) return fail(NAME, `filter slot 0 still holds ${after.count}x ${after.name} after taking it out`)
+  if (after) return fail(NAME, `filter slot 0 still holds ${after.count}x ${after.name} after clearing it`)
   pass(NAME)
 }
 
