@@ -23,6 +23,6 @@ Land-claim checks for carts, and fixes for trains, custom rails and cart content
 - **Custom rails drop as themselves when their support goes**, and placing a plain rail back no longer revives the custom one.
 - **Hopper, chest and other special minecarts** sent over a destructor rail drop as their own item instead of a plain minecart.
 - **A cart parked on a powered activator rail** no longer fires again every time its chunk loads.
-- **Coal tenders don't waste fuel** — an engine fed a coal block threw away the burn above its cap; it now gets the whole burn, and smaller fuel is used first.
+- **Coal tenders don't waste fuel** — an engine fed a coal block threw away the burn above its cap; it now gets the whole burn, and smaller fuel is used first. A parked train no longer feeds its furnace minecart, which burned the coal standing still.
 - **Server hang under pulse storms** — a re-pulsed junction, controller or destructor rail is handled once per tick.
 - A lit blast cart's dynamic light no longer lingers after it unloads.

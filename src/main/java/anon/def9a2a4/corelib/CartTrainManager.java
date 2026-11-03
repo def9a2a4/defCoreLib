@@ -979,6 +979,9 @@ final class CartTrainManager implements Listener {
             boolean blast = carts.isBlastCart(cart);
             boolean furnace = cart instanceof PoweredMinecart;
             if (!blast && !furnace) continue;
+            // Vanilla burns a furnace cart's fuel every tick, moving or not (and a fed one parked here never
+            // gets a push to start): feeding a parked one just drains the tender. Blast carts burn only while moving.
+            if (furnace && !train.moving) continue;
             int level = blast ? carts.burnTicks(cart) : ((PoweredMinecart) cart).getFuel();
             if (level >= config.feedThresholdTicks) continue;
 
