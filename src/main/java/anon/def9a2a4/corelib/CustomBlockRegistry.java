@@ -242,7 +242,6 @@ public class CustomBlockRegistry {
     private @Nullable BukkitTask customTickTask;
     private @Nullable BukkitTask animationTask;
     private @Nullable BukkitTask hintSaveTask;
-    private @Nullable BukkitTask storageFlushTask;
     private boolean finalized;
 
     // Set once, at the end of the first-tick restoreLoadedChunks() sweep. Before it flips, a type's
@@ -2344,9 +2343,6 @@ public class CustomBlockRegistry {
 
         // Hint save — every 5 minutes
         hintSaveTask = Bukkit.getScheduler().runTaskTimer(plugin, this::saveAllHints, 6000L, 6000L);
-
-        // Storage flush — every second, see flushChangedStorages
-        storageFlushTask = Bukkit.getScheduler().runTaskTimer(plugin, this::flushChangedStorages, 20L, 20L);
     }
 
     /** Call after all blocks are loaded to register recipes with Bukkit. */
@@ -2361,7 +2357,6 @@ public class CustomBlockRegistry {
         if (customTickTask != null) customTickTask.cancel();
         if (animationTask != null) animationTask.cancel();
         if (hintSaveTask != null) hintSaveTask.cancel();
-        if (storageFlushTask != null) storageFlushTask.cancel();
         saveAllOpenStorages();
         unregisterRecipes();
         saveAllHints();
@@ -3085,15 +3080,15 @@ public class CustomBlockRegistry {
     }
 
     /**
-     * Write every cached storage whose contents changed since its last write. The cache is otherwise written
-     * only when a viewer closes it or its chunk unloads — possibly hours for a machine in a loaded area —
-     * while machines keep moving items in from chests, pipes and the ground, which the chunk saves on its own
-     * schedule. A crash in between lost those items from both ends; now the gap is at most a second.
+     * On a world save (CoreLibPlugin.onWorldSave, before the chunks are written): write every cached storage in
+     * {@code world} whose contents changed since its last write. The cache is otherwise written only when a viewer
+     * closes it or its chunk unloads — possibly hours for a machine in a loaded area — so a save (autosave,
+     * save-all before a backup) would hold stale contents.
      */
-    private void flushChangedStorages() {
+    void flushChangedStorages(World world) {
         for (StorageHolder holder : openStorages.values()) {
             org.bukkit.Location loc = holder.location();
-            if (loc.getWorld() == null || !loc.getWorld().isChunkLoaded(loc.getBlockX() >> 4, loc.getBlockZ() >> 4)) {
+            if (loc.getWorld() != world || !world.isChunkLoaded(loc.getBlockX() >> 4, loc.getBlockZ() >> 4)) {
                 continue;
             }
             if (holder.saved == UNDECODABLE) continue;

@@ -1591,6 +1591,11 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         registry.loadHintsForWorld(event.getWorld().getUID());
     }
 
+    @EventHandler
+    public void onWorldSave(org.bukkit.event.world.WorldSaveEvent event) {
+        registry.flushChangedStorages(event.getWorld());   // machine contents into their blocks before the chunks save
+    }
+
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onWorldUnload(org.bukkit.event.world.WorldUnloadEvent event) {
         registry.saveHintsForWorld(event.getWorld().getUID());

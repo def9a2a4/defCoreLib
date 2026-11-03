@@ -54,7 +54,7 @@ Contraptions now carry glued machines, cushions, item frames and paintings; new 
 - **Pick-block no longer creates custom blocks** — middle-clicking a custom block or cart in survival or adventure selects one you carry instead of minting one (creative still gives it).
 - **Older custom items work in recipes again** — items made before their description changed (0.3.2 casings, rotators, fans, chain pulleys, corner pipes…) are refreshed when you open an inventory, join or pick them up.
 - **Custom blocks stay intact when a protection plugin refuses a break or explosion** — they used to drop their item and contents anyway, duplicating them.
-- **Machine contents are saved within a second** of changing, instead of only at chunk unload.
+- **Machine contents are saved on every world save** (autosave, `save-all`), instead of only at chunk unload.
 - **Ship cargo dupe** — a cargo menu left open while the ship's chunk unloaded let a player take items that came back on reload. The menu now closes.
 - **Unreadable containers are sealed** — a custom container or ship cargo whose saved contents can't be read (say, after removing a datapack) won't open and is never saved over; the data is kept as it was and a warning is logged.
 - **One unreadable block no longer stops a saved ship from coming back** — a carried block whose saved form no longer loads (say, after a datapack or version change) comes back as that block's plain default, or air if the block is gone, with a warning; the ship used to stay stuck unrecovered.

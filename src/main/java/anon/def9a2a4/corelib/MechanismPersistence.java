@@ -19,7 +19,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -90,9 +89,9 @@ final class MechanismPersistence {
         t.setDaemon(true);
         return t;
     });
-    // mechId → the YAML last handed to the writer, so saveAsync skips an unchanged snapshot. Main thread
-    // writes it; the writer only drops a FAILED write's entry (so the next world save retries it).
-    private final Map<UUID, String> lastWritten = new ConcurrentHashMap<>();
+    // mechId → the YAML last written, so saveAsync skips an unchanged snapshot. Writer thread only (every access is
+    // a queued task, so FIFO keeps a forget() from being undone by an earlier-queued saveAsync).
+    private final Map<UUID, String> lastWritten = new HashMap<>();
 
     MechanismPersistence(JavaPlugin plugin) {
         this(plugin.getDataFolder(), plugin.getLogger());
@@ -115,29 +114,29 @@ final class MechanismPersistence {
      *  operator intervened. */
     void save(MechanismState st) {
         String data = serialize(st);
-        ordered(() -> writeFile(st.worldName, st.mechId, data));
-        lastWritten.put(st.mechId, data);
+        ordered(() -> { writeFile(st.worldName, st.mechId, data); lastWritten.put(st.mechId, data); });
         persistedIds.computeIfAbsent(st.worldName, k -> new HashSet<>()).add(st.mechId);
         corruptMtimes.remove(st.worldName + ":" + st.mechId);
         Map<UUID, PendingDelete> pending = pendingDeletes.get(st.worldName);
         if (pending != null) pending.remove(st.mechId);   // re-persisted before its queued delete: keep the file
     }
 
-    /** The world-save re-snapshot of a LIVE persisted mechanism: serialized here (main thread), written on the
-     *  writer thread without waiting, and skipped when identical to the last write. A failed write is only
-     *  logged — the previous file stays. The id is already persisted (persist() wrote it synchronously). */
+    /** The world-save re-snapshot of a LIVE persisted mechanism: snapshotted by the caller (main thread), then
+     *  serialized and written on the writer thread without waiting — the YAML is the expensive part (~30 ms per
+     *  1k blocks) — and skipped when identical to the last write. MechanismState is plain data once built, so
+     *  serializing it off-thread touches no Bukkit API. A failed write is only logged — the previous file stays.
+     *  The id is already persisted (persist() wrote it synchronously). */
     void saveAsync(MechanismState st) {
-        String data = serialize(st);
         UUID id = st.mechId;
-        if (data.equals(lastWritten.get(id))) return;
-        lastWritten.put(id, data);
         String world = st.worldName;
         corruptMtimes.remove(world + ":" + id);
         submit(() -> {
             try {
+                String data = serialize(st);
+                if (data.equals(lastWritten.get(id))) return;
                 writeFile(world, id, data);
+                lastWritten.put(id, data);
             } catch (RuntimeException e) {
-                lastWritten.remove(id, data);
                 log.warning("Mechanism " + id + " failed to persist on world save (" + e.getMessage()
                     + "); its previous state file is kept");
             }
@@ -400,7 +399,7 @@ final class MechanismPersistence {
     }
 
     private void forget(String world, UUID id) {
-        lastWritten.remove(id);
+        submit(() -> lastWritten.remove(id));
         corruptMtimes.remove(world + ":" + id);
         Set<UUID> ids = persistedIds.get(world);
         if (ids != null) {
