@@ -18,8 +18,8 @@ import requests
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 API = "https://api.modrinth.com/v2"
-# Same list as the server-test.yml version matrix.
-GAME_VERSIONS = ["1.21.11", "26.1.2", "26.2", "26.3"]
+# 1.21.11 and up (the changelog floor); server-test.yml tests a subset.
+GAME_VERSIONS = ["1.21.11", "26.1", "26.1.1", "26.1.2", "26.2", "26.3"]
 LOADERS = ["paper", "purpur"]
 
 # (slug, jar path with {v}, changelog name, required deps, optional deps) — upload order.
@@ -80,8 +80,8 @@ def main():
                           + [{"project_id": project_id(d), "dependency_type": "optional"} for d in opt],
             "game_versions": GAME_VERSIONS,
             "loaders": LOADERS,
-            "version_type": "release",
-            "featured": True,
+            "version_type": "alpha",
+            "featured": False,
             "file_parts": ["file"],
             "primary_file": "file",
         }
