@@ -10,7 +10,8 @@ Publish every plugin jar of the current version to Modrinth.
 
 Re-runnable: a project that already has this version is skipped, so a run that dies halfway
 just resumes. Uploads go in PLUGINS order (core first) so a companion is never live before
-the core it requires. The version name is the changelog's `# ...` heading line.
+the core it requires. Required deps pin the dependency's version of this same release; optional
+deps are project-level. The version name is the changelog's `# ...` heading line.
 """
 import json, os, pathlib, re, subprocess, sys
 
@@ -65,10 +66,13 @@ def main():
             ids[slug] = r.json()["id"]
         return ids[slug]
 
+    version_ids = {}  # slug -> Modrinth version ID of `ver`, for pinning required deps
     for slug, jar, name, changelog, req, opt in jobs:
         r = s.get(f"{API}/project/{slug}/version")
         r.raise_for_status()
-        if any(v["version_number"] == ver for v in r.json()):
+        existing = [v["id"] for v in r.json() if v["version_number"] == ver]
+        if existing:
+            version_ids[slug] = existing[0]
             print(f"skip {slug}: {ver} already published")
             continue
         data = {
@@ -76,7 +80,8 @@ def main():
             "name": name,
             "version_number": ver,
             "changelog": changelog,
-            "dependencies": [{"project_id": project_id(d), "dependency_type": "required"} for d in req]
+            "dependencies": [{"project_id": project_id(d), "dependency_type": "required",
+                              "version_id": version_ids.get(d, f"<{d} {ver} once uploaded>")} for d in req]
                           + [{"project_id": project_id(d), "dependency_type": "optional"} for d in opt],
             "game_versions": GAME_VERSIONS,
             "loaders": LOADERS,
@@ -93,6 +98,7 @@ def main():
             r = s.post(f"{API}/version", data={"data": json.dumps(data)},
                        files={"file": (jar.name, f, "application/java-archive")})
         assert r.ok, f"{slug}: {r.status_code} {r.text}"
+        version_ids[slug] = r.json()["id"]
         print(f"published {slug} {ver}")
 
 

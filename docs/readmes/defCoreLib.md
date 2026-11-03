@@ -12,17 +12,29 @@ Shared core library for the [*def9a2a4*](https://def9a2a4.github.io/) plugin fam
 - **Recipe gating** - companion plugins switch their content's recipes on by namespace, so installing one adds a coherent, craftable feature set.
 - ~20 **command-only** demo blocks (candles, redstone/binary displays, storage barrels, alarms, spinning/pulsing decorations) - grab them with `/defcorelib give`. Not meant to be useful, just there for testing the functionality.
 
-## Used by
+## Plugins built on DefCoreLib
 
-DefCoreLib is a dependency other plugins install alongside:
+### In this repository
 
-- **[VerticalSlabs](https://github.com/def9a2a4/defCoreLib/blob/main/docs/readmes/vslab.md)** - vertical slabs
-- **[BetterBanners](https://github.com/def9a2a4/defCoreLib/blob/main/docs/readmes/bbanners.md)** - flag banners + large/huge banners
-- **[Mechanism](https://github.com/def9a2a4/defCoreLib/blob/main/docs/readmes/mech.md)** - rotation mechanisms, glue, mechanical minecarts
-- **[RedstoneDisplays](https://github.com/def9a2a4/defCoreLib/blob/main/docs/readmes/redstonedisplays.md)** - redstone power indicator heads
-- **[Pipes](https://github.com/def9a2a4/defCoreLib/blob/main/docs/readmes/pipes.md)** - item-transport pipes
-- **[Railbound](https://github.com/def9a2a4/defCoreLib/blob/main/docs/readmes/railbound.md)** - self-driving minecart trains, fuel carts, and junction/controller/destructor rails
-- **[HeadSmith](https://github.com/def9a2a4/defCoreLib/blob/main/docs/readmes/headsmith.md)** - decorative player-head blocks (alphabet, candles, chimneys, barrels, and more)
+These companion plugins live in this repo as Gradle subprojects and are released alongside
+DefCoreLib at the same version. Each one is a thin jar that switches on its content (mostly
+crafting recipes) in the core, so install DefCoreLib plus whichever companions you want:
+
+| Plugin | What it adds | Download | Docs |
+| --- | --- | --- | --- |
+| **VerticalSlabs** | vertical slabs | [Modrinth](https://modrinth.com/plugin/vslab) | [readme](https://github.com/def9a2a4/defCoreLib/blob/main/docs/readmes/vslab.md) |
+| **BetterBanners** | flag banners + large/huge banners | [Modrinth](https://modrinth.com/plugin/betterbanners) | [readme](https://github.com/def9a2a4/defCoreLib/blob/main/docs/readmes/bbanners.md) |
+| **Mechanism** | rotation mechanisms, glue, mechanical minecarts | [Modrinth](https://modrinth.com/plugin/mechanism) | [readme](https://github.com/def9a2a4/defCoreLib/blob/main/docs/readmes/mech.md) |
+| **RedstoneDisplays** | redstone power indicator heads | [Modrinth](https://modrinth.com/plugin/redstonedisplays) | [readme](https://github.com/def9a2a4/defCoreLib/blob/main/docs/readmes/redstonedisplays.md) |
+| **Pipes** | item-transport pipes | [Modrinth](https://modrinth.com/plugin/pipes) | [readme](https://github.com/def9a2a4/defCoreLib/blob/main/docs/readmes/pipes.md) |
+| **Railbound** | self-driving minecart trains, fuel carts, and junction/controller/destructor rails | [Modrinth](https://modrinth.com/plugin/railbound) | [readme](https://github.com/def9a2a4/defCoreLib/blob/main/docs/readmes/railbound.md) |
+| **HeadSmith** | decorative player-head blocks (alphabet, candles, chimneys, barrels, and more) | [Modrinth](https://modrinth.com/plugin/headsmith) | [readme](https://github.com/def9a2a4/defCoreLib/blob/main/docs/readmes/headsmith.md) |
+
+### Elsewhere
+
+- **[BlockShips](https://modrinth.com/plugin/blockships)** ([repo](https://github.com/def9a2a4/BlockShips)) - rideable,
+  physics-enabled ships and land vehicles, without client mods or resource packs. Hard-depends on
+  DefCoreLib; with Mechanism and BetterBanners installed it also unlocks their crafting recipes.
 
 ## Gallery
 
@@ -33,7 +45,9 @@ DefCoreLib is a dependency other plugins install alongside:
 | [Mechanism](https://github.com/def9a2a4/defCoreLib/blob/main/docs/readmes/mech.md) | <img src="https://def9a2a4.github.io/defCoreLib-docs/readmes/assets/mech/mech.gif" width="220"> <img src="https://def9a2a4.github.io/defCoreLib-docs/readmes/assets/mech/mech-ingame.gif" width="220"> <img src="https://def9a2a4.github.io/defCoreLib-docs/readmes/assets/mech/catalog-1.png" width="220"> |
 | [RedstoneDisplays](https://github.com/def9a2a4/defCoreLib/blob/main/docs/readmes/redstonedisplays.md) | <img src="https://def9a2a4.github.io/defCoreLib-docs/readmes/assets/rsd/indicators-wall.png" width="220"> <img src="https://def9a2a4.github.io/defCoreLib-docs/readmes/assets/rsd/indicators-lectern.png" width="220"> |
 | [Pipes](https://github.com/def9a2a4/defCoreLib/blob/main/docs/readmes/pipes.md) | <img src="https://def9a2a4.github.io/defCoreLib-docs/readmes/assets/pipes/demo-1.png" width="220"> <img src="https://def9a2a4.github.io/defCoreLib-docs/readmes/assets/pipes/demo-2.png" width="220"> |
-| [Railbound](https://github.com/def9a2a4/defCoreLib/blob/main/docs/readmes/railbound.md) | _preview coming soon_ <!-- <img src="https://def9a2a4.github.io/defCoreLib-docs/readmes/assets/railbound/hero.gif" width="220"> <img src="https://def9a2a4.github.io/defCoreLib-docs/readmes/assets/railbound/catalog.png" width="220"> --> |
+| [Railbound](https://github.com/def9a2a4/defCoreLib/blob/main/docs/readmes/railbound.md) | <img src="https://def9a2a4.github.io/defCoreLib-docs/readmes/assets/railbound/railbound.png" width="220"> <img src="https://def9a2a4.github.io/defCoreLib-docs/readmes/assets/railbound/catalog.png" width="220"> |
+| [HeadSmith](https://github.com/def9a2a4/defCoreLib/blob/main/docs/readmes/headsmith.md) | <img src="https://def9a2a4.github.io/HeadSmith/assets/header.png" width="220"> <img src="https://def9a2a4.github.io/HeadSmith/assets/mini-blocks.png" width="220"> |
+| [BlockShips](https://modrinth.com/plugin/blockships) | <img src="https://raw.githubusercontent.com/def9a2a4/BlockShips/main/docs/assets/demo_vid.gif" width="220"> <img src="https://raw.githubusercontent.com/def9a2a4/BlockShips/main/docs/assets/main.png" width="220"> <img src="https://raw.githubusercontent.com/def9a2a4/BlockShips/main/docs/assets/small_ships.png" width="220"> |
 
 ## Commands
 
@@ -66,6 +80,7 @@ Nothing - this is the base plugin.
 
 ## Links
 
+- Modrinth: https://modrinth.com/plugin/defcorelib
 - Docs & item catalog: https://def9a2a4.github.io/defCoreLib-docs/
 - Repository: https://github.com/def9a2a4/defCoreLib/
 - Issues: https://github.com/def9a2a4/defCoreLib/issues
