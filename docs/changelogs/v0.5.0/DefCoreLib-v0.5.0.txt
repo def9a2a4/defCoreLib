@@ -57,6 +57,7 @@ The first release since 0.3.2 (0.4.0 was never published, so everything here is 
 - **Machine contents are saved within a second** of changing, instead of only at chunk unload.
 - **Ship cargo dupe** — a cargo menu left open while the ship's chunk unloaded let a player take items that came back on reload. The menu now closes.
 - **Unreadable containers are sealed** — a custom container or ship cargo whose saved contents can't be read (say, after removing a datapack) won't open and is never saved over; the data is kept as it was and a warning is logged.
+- **One unreadable block no longer stops a saved ship from coming back** — a carried block whose saved form no longer loads (say, after a datapack or version change) comes back as that block's plain default, or air if the block is gone, with a warning; the ship used to stay stuck unrecovered.
 - **Unloading a world** (Multiverse and the like) saves and releases its custom blocks and containers, and lands any moving contraption or loaded mechanism cart; reloading the world could duplicate or lose container items.
 - **Custom blocks placed shortly before a crash are recognised again** — a water wheel, boiler or mechanical dispenser could come back as a plain vanilla block.
 - **Refused placements leave nothing behind** — a refused custom placement left an invisible marker that turned the next matching vanilla block into the custom one.

@@ -29,5 +29,6 @@ The first release since 0.3.2 (0.4.0 was never published). Three **filter pipes*
 - **A dead-end pipe stops spilling as soon as you put a container at its end** — it kept dropping items until a stale timer ran out.
 - **No water in the Nether** — a fluid pipe no longer pours water where water evaporates.
 - **No shulker boxes inside shulker boxes.**
+- **Redstone beside a pipe no longer costs the whole world** — any redstone change next to any pipe made every pipe recompute its route, and a filter pipe switching back on woke every idle pipe. Now only the pipes it affects react, so a redstone clock next to a filter pipe stays cheap.
 - A server error when the pipe set changed while the network was ticking.
 - Pipes keep working in a world whose unload another plugin cancelled.
