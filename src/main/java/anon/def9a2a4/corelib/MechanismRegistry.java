@@ -2541,12 +2541,27 @@ public class MechanismRegistry implements org.bukkit.event.Listener {
      *  {@link BasicMechanism#snapshotState}. Display/particle configs are RE-RESOLVED from the type registry
      *  via {@code customState} (in-memory, no world access) so a recovered custom block still animates; banners,
      *  {@code wasBare}, and the floor-head yaw are restored from the saved record. */
+    /** A saved block string that no longer parses (e.g. a property renamed by a Minecraft update) falls back to
+     *  the material's default state, or air if the material itself is gone — one wrong block, not a mechanism
+     *  that can never be recovered. */
+    private BlockData parseSavedBlockData(String saved, UUID mechId) {
+        try {
+            return Bukkit.createBlockData(saved);
+        } catch (IllegalArgumentException e) {
+            int bracket = saved.indexOf('[');
+            Material m = Material.matchMaterial(bracket < 0 ? saved : saved.substring(0, bracket));
+            plugin.getLogger().warning("Mechanism " + mechId + ": saved block '" + saved + "' no longer parses; using "
+                + (m != null && m.isBlock() ? m.getKey() + " defaults" : "air"));
+            return (m != null && m.isBlock() ? m : Material.AIR).createBlockData();
+        }
+    }
+
     private List<MechanismBlockData> rebuildBlocks(MechanismState st) {
         List<MechanismBlockData> out = new ArrayList<>(st.blocks.size());
         for (MechanismState.BlockRec b : st.blocks) {
             // Null for a block-free / standalone display part (P7.B): recovery re-adopts its persistent
             // ItemDisplay by tag, so the reconstructed part only needs its transform, not a block appearance.
-            BlockData bd = b.blockData != null ? Bukkit.createBlockData(b.blockData) : null;
+            BlockData bd = b.blockData != null ? parseSavedBlockData(b.blockData, st.mechId) : null;
             Matrix4f local = new Matrix4f().set(b.localTransform); // column-major (matches snapshotState's get())
             CollisionConfig col = new CollisionConfig(b.colEnabled, b.colSize,
                 new Vector3f(b.colOffX, b.colOffY, b.colOffZ));

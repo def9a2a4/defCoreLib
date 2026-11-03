@@ -130,7 +130,11 @@ public class PipeManager {
         Boolean was = filterPowered.put(key, now);
         boolean changed = was == null ? now : was != now;
         if (Boolean.TRUE.equals(was) && !now) {
-            wakeAll();
+            // Wake only the extractors routed through this filter (a redstone clock beside one filter used to
+            // wake every pipe in the world). One with no cached route re-checks within its sleep window anyway.
+            pathCache.forEach((source, path) -> {
+                if (path.filterPipes().contains(key)) sleepUntil.remove(source);
+            });
         }
         return changed;
     }

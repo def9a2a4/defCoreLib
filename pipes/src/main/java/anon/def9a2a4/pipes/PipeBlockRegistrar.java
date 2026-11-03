@@ -136,7 +136,6 @@ public class PipeBlockRegistrar {
         builder.onNeighborChange((block, changedFace) -> {
             PipeManager manager = plugin.getPipeManager(block.getWorld());
             if (manager == null) return;
-            manager.invalidatePathCache();
             // A filter pipe's redstone off-switch can toggle from any face. Edge-detect it: on the
             // powered→unpowered edge this wakes sleeping upstream extractors (resume); on EITHER edge it
             // returns true, so we respawn the block's displays via applyConfig — re-invoking the ring's
@@ -150,6 +149,10 @@ public class PipeBlockRegistrar {
             PipeManager.PipeData data = manager.getPipeData(block.getLocation());
             if (data != null) {
                 BlockFace facing = data.facing();
+                // Routes only change when something appears/vanishes in front of a pipe (a container at a
+                // dead end; adding/removing a pipe clears them itself), so redstone beside it no longer
+                // clears every pipe's route in the world.
+                if (changedFace == facing) manager.invalidatePathCache();
                 if (changedFace == facing || changedFace == facing.getOppositeFace()) {
                     manager.wakeUpPipe(block.getLocation());
                 }
