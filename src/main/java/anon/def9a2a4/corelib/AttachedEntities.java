@@ -424,7 +424,11 @@ final class AttachedEntities {
             Rotation[] all = Rotation.values();
             f.setRotation(all[Math.floorMod(f.getRotation().ordinal() + steps, all.length)]);
         }
-        return e.spawnAt(pose.spawnAt()) ? SpawnResult.SPAWNED : SpawnResult.FAILED;
+        if (!e.spawnAt(pose.spawnAt())) return SpawnResult.FAILED;
+        // Landing from a chunk-unload disassemble: an entity spawned after the entity-save point can silently miss
+        // the save (as BannerManager.spawnLandedSingle). FAILED pays the fallback items instead of losing them.
+        if (!e.isValid()) { e.remove(); return SpawnResult.FAILED; }
+        return SpawnResult.SPAWNED;
     }
 
     static void dropFallbacks(CarriedEntity ce, Location at, Logger log) {
