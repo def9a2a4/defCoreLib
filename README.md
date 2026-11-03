@@ -53,13 +53,11 @@ Nothing - this is the base plugin.
 
 ## Requirements
 
-- Java 21
-- Paper 1.21.9 or newer for DefCoreLib itself. `api-version` is still `1.21`, so an older server
-  will load the plugin and then fail at runtime rather than refusing it cleanly: the rotation shafts
-  use the copper chain blocks added in 1.21.9.
-- **Paper 1.21.11 or newer if you run the Mechanism jar** — its bootstrapper registers the
-  advancement datapack through the 1.21.11 datapack-discovery API. Since that is the usual setup,
-  treat 1.21.11 as the practical floor for the suite.
+- Paper or Purpur 1.21.11, 26.1.2, 26.2 or 26.3. `api-version` is still `1.21`, so an older server
+  will load the plugins and then fail at runtime rather than refusing them cleanly.
+- Java 21 for 1.21.11; Java 25 for 26.x.
+- The companion plugins need DefCoreLib 0.5.0; BlockShips needs 0.0.18 or newer.
+- Cushions riding contraptions need 26.3.
 
 ## Build
 

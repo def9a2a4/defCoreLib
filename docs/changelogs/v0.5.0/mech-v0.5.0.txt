@@ -35,6 +35,7 @@ The first release since 0.3.2 (0.4.0 was never published, so everything here is 
 - **Fuel settings are admin-editable** — copy the `fuel`, `engines`, `thruster`, `steam` or `load` sections of rotation-config.yml into `plugins/DefCoreLib/config/fuel.yml`. It's read at startup and isn't created for you; a `fuel:` section there replaces the whole fuel table.
 - **Carried machines show their particles** — engine smoke and burner flame follow the moving block; an engine aboard that burns nothing shows no smoke (`engines: { idle-smoke: true }` in fuel.yml restores it).
 - **Moving contraptions light up** with the optional DynLight plugin — torches, glowstone, lit candles and glowing heads keep lighting their surroundings in transit.
+- **BlockShips ships survive restarts and crashes** — a ship is saved with the world and rediscovered from its own entities when its chunk loads. Doors, rotators, pistons, hoists and minecart contraptions aren't saved: they land when their chunk unloads or the server stops.
 - **Mounted drill mines mid-swing** — a drill on a rotator bores through the whole arc, at 2× speed while swinging.
 - **Wrench-inspect a moving network** — the wrench readout (supply, demand, direction, jam, highlighted members) works on a network riding a contraption.
 - **Movers mow plants** — a mechanical piston or chain hoist breaks grass, flowers and similar blocks ahead of it instead of stalling.
@@ -47,6 +48,7 @@ The first release since 0.3.2 (0.4.0 was never published, so everything here is 
 
 - **Carried containers no longer duplicate their contents** — a moved chest's items were spilled into the world while a copy rode along, and a carried double chest landed with both halves' items in each half. Each half now carries and lands its own 27 slots, and a menu left open on a carried block closes when it moves or lands.
 - **Pick-block no longer creates mech blocks** — middle-clicking a mech block or mechanism cart in survival or adventure selects one you carry instead of minting one (creative still gives it).
+- **A Crafter can't make propellers, thrusters, windmills, fans or water wheels** — it skipped the check on what goes in, so any head made a propeller; those need a crafting table.
 - **Mode menus no longer eat items** — dragging an item into a Redstone Dynamo or Rotator mode menu destroyed it on close.
 - **Chain hoist reel-in dupe** — a rising hoist whose stroke was cut short could place a chain from nothing in a mined-out link; pulsing power repeated it.
 - **Chain hoist broken while lowering** lost up to 47 chains; the unused chain now drops with the hoist.
@@ -79,7 +81,7 @@ The first release since 0.3.2 (0.4.0 was never published, so everything here is 
 - **No blocks lost when stopping the server** with a contraption carrying a throttle lever assembled; a misleading shutdown warning is gone.
 - **Server hang under pulse storms** — reactive and custom-rail updates coalesce to one recompute per tick, and a throwing handler is logged once instead of stalling the tick.
 - **Light blocks no longer stop a piston or hoist.**
+- **A gearbox pushed by a piston** no longer leaves an invisible power link at its old spot.
 - **Chunk-boundary crash** when a mechanism minecart crossed a chunk boundary mid-tick.
-- **Contraptions reliably survive a crash** — a parked mechanism (and a BlockShips ship) is rediscovered from its own entities when its chunk loads.
 - **A rotator whose landing hit an error** no longer stays stuck "moving".
 - **Glue can't be pointed at new blocks** — a chain hoist's glue on vanished blocks is dropped instead of grabbing whatever is at the new depth, and a glued cart moved off its cell loses its glue. Box-gluing only claim-checks the glued blocks, and a box may span at most 128 blocks horizontally, with every chunk loaded.

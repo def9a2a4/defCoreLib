@@ -9,7 +9,7 @@ HeadSmith is now a **DefCoreLib companion plugin** — a rebuild, not an update 
 - **Its `config.yml` is no longer read** — `excluded-tags`, `excluded-heads`, `custom-head-files` and `tag-order` have no effect.
 - **Commands changed** — `/hs`, `/headsmith show`, `search` and `reload` are gone (browse with `/defcorelib catalog`); `give` is now `<id> [amount] [player]` (was `<id> [player] [amount]`, so old command blocks need updating); `headsmith.admin` and `headsmith.catalog` are replaced by `headsmith.give`, `headsmith.recipes`, `headsmith.recipes.others` and `headsmith.migrate`.
 - **Existing heads are adopted automatically** — placed heads as their chunks load, head items when a player picks one up, joins, or opens an inventory holding it. `/headsmith migrate` re-runs the placed-head sweep over loaded chunks by hand.
-- **Placed heads are matched by skin alone** (the old plugin marked nothing else on them), so a head from another plugin with the exact same skin (HeadDatabase, a head shop) is taken over as a HeadSmith head whenever its chunk loads, and then drops as a HeadSmith item without its original name or lore. Head *items* are matched by the old plugin's own marker and are never converted by mistake.
+- **Only heads the old HeadSmith made are converted** — a placed head from another plugin with the same skin (HeadDatabase, a head shop) is left alone.
 
 ## New features
 

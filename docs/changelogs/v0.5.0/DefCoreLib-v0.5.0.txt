@@ -16,6 +16,7 @@ The first release since 0.3.2 (0.4.0 was never published, so everything here is 
 ## New features
 
 - **Carried contraptions, new blocks and ceiling mounts** — movers carry nested glued machines as one rigid body; cushions, item frames and paintings ride along; Gearbox, Chassis, Ratchet, three Propellers, Thruster, Reaction wheel and three sizes of Wheel; rotators, propellers and windmills can hang under a block; engines burn fuel only for the power used, with admin overrides in `config/fuel.yml`; glued selections up to 1024 blocks. (mech plugin)
+- **Ships are saved with the world** — a BlockShips ship (any persisted contraption) is rediscovered from its own entities when its chunk loads; a damaged save is never deleted, recovery pauses with one warning until the file is repaired or moved aside. Other contraptions aren't saved and land when their chunk unloads or the server stops.
 - **Filter pipes** — three tiers of item filter. (pipes plugin)
 - **HeadSmith joins the suite** as a DefCoreLib companion. (headsmith plugin)
 - **In-game item catalog** — `/defcorelib catalog` browses every registered block across the def plugins, grouped by category, with search and recipe drill-down. Open to everyone (`corelib.catalog`, default on). Admins (`corelib.admin`) can right-click an entry, or the item in its detail view, to give themselves one.
@@ -49,9 +50,9 @@ The first release since 0.3.2 (0.4.0 was never published, so everything here is 
 
 - **Ships survive a crash right after docking.** A persisted contraption (a BlockShips ship) deleted its save the moment it was taken apart, before the world had saved the placed blocks. Its save is now replaced by a record of the landing; after a crash the next boot finishes the landing from that record, leaving blocks that did reach disk alone.
 - **Ships come back where they are after a crash.** Recovery now centres on the vehicle it finds instead of the last saved position. A second copy of the frame or colliders left by a crash is removed, and missing colliders are spawned again.
-- **Contraptions reliably survive a crash** — a parked ship is rediscovered from its own entities when its chunk loads. A damaged contraption save is never deleted: recovery pauses with one warning until the file is repaired or moved aside.
 - **Cargo is saved with the world** and when a player logs out with it open, so after a crash cargo matches players' inventories.
 - **Pick-block no longer creates custom blocks** — middle-clicking a custom block or cart in survival or adventure selects one you carry instead of minting one (creative still gives it).
+- **Older custom items work in recipes again** — items made before their description changed (0.3.2 casings, rotators, fans, chain pulleys, corner pipes…) are refreshed when you open an inventory, join or pick them up.
 - **Custom blocks stay intact when a protection plugin refuses a break or explosion** — they used to drop their item and contents anyway, duplicating them.
 - **Machine contents are saved within a second** of changing, instead of only at chunk unload.
 - **Ship cargo dupe** — a cargo menu left open while the ship's chunk unloaded let a player take items that came back on reload. The menu now closes.
