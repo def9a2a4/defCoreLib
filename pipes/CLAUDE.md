@@ -111,7 +111,7 @@ pattern (several filter pipes on one chest, each feeding a different destination
   powered/locked **source container** doesn't switch the filter off (a strongly-powered solid-block source
   is the only residual case). No `RedstoneConfig`, no cached power state. `PipeBlockRegistrar.onNeighborChange`
   calls `PipeManager.onFilterPowerEdge(block)` for filter variants, which edge-detects (via the
-  `filterPowered` map), wakes sleeping extractors on the powered→unpowered transition, and returns true on
+  `filterPowered` map), wakes the sleeping extractors routed through it on the powered→unpowered transition, and returns true on
   either transition so the registrar respawns the block's displays to flip the ring on/off texture.
 - **Tiers** (config.yml `variants:` → `filter:` section):
 
