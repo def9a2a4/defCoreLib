@@ -1,6 +1,6 @@
 # HeadSmith v0.5.0
 
-HeadSmith is now a **DefCoreLib companion plugin** — a rebuild, not an update to the standalone 0.1.4. Its heads register, craft, place and break like any other def block and show up in the core item catalog; the version jumps to 0.5.0 to match the suite. New chimney heads.
+HeadSmith is now a **DefCoreLib companion plugin** — a rebuild, not an update to the standalone 0.1.4. Its heads register, craft, place and break like any other defCoreLib block and show up in the core item catalog; the version jumps to 0.5.0 to match the suite. New chimney heads.
 
 ## Update notes
 

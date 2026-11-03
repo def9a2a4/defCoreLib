@@ -1,6 +1,6 @@
 # DefCoreLib v0.5.0
 
-The first release since 0.3.2 (0.4.0 was never published, so everything here is new to you). Contraptions now carry glued machines, cushions, item frames and paintings; new frame blocks, a ratchet, and ship propulsion and wheels for BlockShips; an in-game item catalog; land-claim checks across the suite; and a long list of item-loss, dupe and crash fixes.
+Contraptions now carry glued machines, cushions, item frames and paintings; new frame blocks, a ratchet, and ship propulsion and wheels for BlockShips; an in-game item catalog; land-claim checks across the suite; and a long list of item-loss, dupe and crash fixes.
 
 ## Update notes
 

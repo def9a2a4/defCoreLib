@@ -1,6 +1,6 @@
 # Mechanism v0.5.0
 
-The first release since 0.3.2 (0.4.0 was never published, so everything here is new to you). New frame blocks (Gearbox, Chassis), a Ratchet valve, and ship propulsion for BlockShips — Propellers, a Thruster, a Reaction wheel and Wheels. Contraptions now carry glued machines, cushions, item frames and paintings; engines burn fuel only for the power used; and many item-loss and crash fixes.
+New frame blocks (Gearbox, Chassis), a Ratchet valve, and ship propulsion for BlockShips — Propellers, a Thruster, a Reaction wheel and Wheels. Contraptions now carry glued machines, cushions, item frames and paintings; engines burn fuel only for the power used; and many item-loss and crash fixes.
 
 ## Update notes
 

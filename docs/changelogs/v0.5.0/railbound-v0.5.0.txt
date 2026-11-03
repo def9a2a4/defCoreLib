@@ -1,6 +1,6 @@
 # Railbound v0.5.0
 
-The first release since 0.3.2 (0.4.0 was never published). Land-claim checks for carts, and fixes for trains, custom rails and cart contents. The carts and rails live in DefCoreLib, so these changes come from the core; this jar alone changes nothing.
+Land-claim checks for carts, and fixes for trains, custom rails and cart contents.
 
 ## Update notes
 
