@@ -14,17 +14,17 @@ public class BrewingStandContainerAdapter implements ContainerAdapter {
 
     @Override
     public boolean canReceive(Block block) {
-        return block.getState() instanceof BrewingStand;
+        return block.getState(false) instanceof BrewingStand;
     }
 
     @Override
     public org.bukkit.inventory.Inventory backingInventory(Block block) {
-        return block.getState() instanceof BrewingStand stand ? stand.getInventory() : null;
+        return block.getState(false) instanceof BrewingStand stand ? stand.getInventory() : null;
     }
 
     @Override
     public ItemStack insert(Block block, ItemStack item) {
-        if (!(block.getState() instanceof BrewingStand stand)) return item;
+        if (!(block.getState(false) instanceof BrewingStand stand)) return item;
         BrewerInventory inv = stand.getInventory();
 
         if (item.getType() == Material.BLAZE_POWDER) {
@@ -44,7 +44,7 @@ public class BrewingStandContainerAdapter implements ContainerAdapter {
 
     @Override
     public ItemStack peekExtract(Block block, int maxAmount) {
-        if (!(block.getState() instanceof BrewingStand stand)) return null;
+        if (!(block.getState(false) instanceof BrewingStand stand)) return null;
         if (stand.getBrewingTime() > 0) return null;
 
         BrewerInventory inv = stand.getInventory();
@@ -61,7 +61,7 @@ public class BrewingStandContainerAdapter implements ContainerAdapter {
 
     @Override
     public ItemStack peekExtract(Block block, int maxAmount, java.util.function.Predicate<ItemStack> accept) {
-        if (!(block.getState() instanceof BrewingStand stand)) return null;
+        if (!(block.getState(false) instanceof BrewingStand stand)) return null;
         if (stand.getBrewingTime() > 0) return null;
 
         // Scan all bottle slots for the first matching potion so a filter can see past a non-matching
@@ -80,13 +80,13 @@ public class BrewingStandContainerAdapter implements ContainerAdapter {
 
     @Override
     public void commitExtract(Block block, ItemStack extracted) {
-        if (!(block.getState() instanceof BrewingStand stand)) return;
+        if (!(block.getState(false) instanceof BrewingStand stand)) return;
         ContainerAdapter.removeFromSlots(stand.getInventory(), extracted, 0, BOTTLE_SLOTS);
     }
 
     @Override
     public boolean hasItems(Block block) {
-        if (!(block.getState() instanceof BrewingStand stand)) return false;
+        if (!(block.getState(false) instanceof BrewingStand stand)) return false;
         if (stand.getBrewingTime() > 0) return false;
         BrewerInventory inv = stand.getInventory();
         for (int i = 0; i < BOTTLE_SLOTS; i++) {

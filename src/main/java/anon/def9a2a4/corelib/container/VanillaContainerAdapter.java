@@ -11,17 +11,17 @@ public class VanillaContainerAdapter implements ContainerAdapter {
 
     @Override
     public boolean canReceive(Block block) {
-        return block.getState() instanceof Container;
+        return block.getState(false) instanceof Container;
     }
 
     @Override
     public org.bukkit.inventory.Inventory backingInventory(Block block) {
-        return block.getState() instanceof Container container ? container.getInventory() : null;
+        return block.getState(false) instanceof Container container ? container.getInventory() : null;
     }
 
     @Override
     public ItemStack insert(Block block, ItemStack item) {
-        if (!(block.getState() instanceof Container container)) return item;
+        if (!(block.getState(false) instanceof Container container)) return item;
         // addItem skips canPlaceItem: refuse what vanilla's shulker slots would (a shulker inside a shulker).
         if (container instanceof org.bukkit.block.ShulkerBox && org.bukkit.Tag.SHULKER_BOXES.isTagged(item.getType())) return item;
         HashMap<Integer, ItemStack> leftover = container.getInventory().addItem(item.clone());
@@ -31,7 +31,7 @@ public class VanillaContainerAdapter implements ContainerAdapter {
 
     @Override
     public ItemStack peekExtract(Block block, int maxAmount) {
-        if (!(block.getState() instanceof Container container)) return null;
+        if (!(block.getState(false) instanceof Container container)) return null;
         Inventory inv = container.getInventory();
         for (int i = 0; i < inv.getSize(); i++) {
             ItemStack item = inv.getItem(i);
@@ -46,7 +46,7 @@ public class VanillaContainerAdapter implements ContainerAdapter {
 
     @Override
     public ItemStack peekExtract(Block block, int maxAmount, java.util.function.Predicate<ItemStack> accept) {
-        if (!(block.getState() instanceof Container container)) return null;
+        if (!(block.getState(false) instanceof Container container)) return null;
         Inventory inv = container.getInventory();
         for (int i = 0; i < inv.getSize(); i++) {
             ItemStack item = inv.getItem(i);
@@ -61,14 +61,14 @@ public class VanillaContainerAdapter implements ContainerAdapter {
 
     @Override
     public void commitExtract(Block block, ItemStack extracted) {
-        if (!(block.getState() instanceof Container container)) return;
+        if (!(block.getState(false) instanceof Container container)) return;
         Inventory inv = container.getInventory();
         ContainerAdapter.removeFromSlots(inv, extracted, 0, inv.getSize());
     }
 
     @Override
     public boolean hasItems(Block block) {
-        if (!(block.getState() instanceof Container container)) return false;
+        if (!(block.getState(false) instanceof Container container)) return false;
         Inventory inv = container.getInventory();
         for (int i = 0; i < inv.getSize(); i++) {
             ItemStack item = inv.getItem(i);

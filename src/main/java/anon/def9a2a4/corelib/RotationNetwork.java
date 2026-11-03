@@ -157,7 +157,9 @@ public class RotationNetwork {
         int reverserOutSign = reverserOutSign(block, blockTypeId, axis);
         nodes.put(key, new RotationNode(key, blockTypeId, axis, role, powerUnits, gearLike, gearbox,
                 reverserOutSign, omni, omniExcludedFace));
-        recalculate(key);
+        // A loading chunk adds a whole base's nodes: rebuild each network once when the restore ends.
+        if (registry.isBatchingChunkLoad()) pendingReactiveRecalc.add(key);
+        else recalculate(key);
     }
 
     public void removeNode(CustomBlockRegistry.LocationKey key) {

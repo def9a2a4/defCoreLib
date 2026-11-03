@@ -37,7 +37,7 @@ public class RotationMachineAdapter implements ContainerAdapter {
     @Override
     public boolean canReceiveFrom(Block block, BlockFace approachFace) {
         if (getStorageType(block) == null) return false;
-        if (!(block.getState() instanceof Skull skull)) return false;
+        if (!(block.getState(false) instanceof Skull skull)) return false;
         String typeId = skull.getPersistentDataContainer().get(
                 new NamespacedKey("corelib", "block_type"), PersistentDataType.STRING);
         if ("mech:engine".equals(typeId)) return true;

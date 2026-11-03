@@ -299,6 +299,25 @@ public class CustomBlockRegistry {
     /** True while the reactive-flush dispatch loop is running (false during its post-hooks). */
     public boolean isFlushingReactive() { return flushingReactive; }
 
+    // Depth of chunk / entities-load restores in progress. While > 0, reactive features coalesce like during the
+    // flush (a machine base's chunk adds hundreds of rotation nodes; recalculating the network after each one is
+    // quadratic), and the post-hooks run once when the outermost restore ends.
+    private int chunkLoadDepth;
+
+    /** True while a chunk / entities-load restore is running (rotation nodes added now recalc once at its end). */
+    public boolean isBatchingChunkLoad() { return chunkLoadDepth > 0; }
+
+    private void endChunkLoadBatch() {
+        if (--chunkLoadDepth > 0) return;
+        for (Runnable hook : reactiveFlushPostHooks) {
+            try {
+                hook.run();
+            } catch (Exception e) {
+                plugin.getLogger().log(Level.SEVERE, "Chunk-load post-hook threw", e);
+            }
+        }
+    }
+
     // A buggy reactive handler under a comparator/observer storm would re-throw every tick; log the full
     // stack ONCE per site, then suppress, so we surface the error loudly without spamming ~20 traces/s.
     private final Set<LocationKey> loggedReactiveFailures = new HashSet<>();
@@ -410,7 +429,7 @@ public class CustomBlockRegistry {
                 // real EntitiesLoadEvent will dispatch the callback via onEntitiesLoad(chunk) — so skipping
                 // here never drops it. restoreBlock below needs no entities and runs regardless.
                 boolean entitiesLoaded = chunk.isEntitiesLoaded();
-                for (BlockState tile : chunk.getTileEntities()) {
+                for (BlockState tile : chunk.getTileEntities(false)) {
                     if (!(tile instanceof TileState ts)) continue;
                     String id = ts.getPersistentDataContainer().get(BLOCK_TYPE_KEY, PersistentDataType.STRING);
                     if (id == null || !ids.contains(id)) continue;
@@ -463,7 +482,7 @@ public class CustomBlockRegistry {
         Material m = block.getType();
         // Heads (the common case) store identity in the skull's tile-entity PDC.
         if (m == Material.PLAYER_HEAD || m == Material.PLAYER_WALL_HEAD) {
-            if (!(block.getState() instanceof TileState tile)) return null;
+            if (!(block.getState(false) instanceof TileState tile)) return null;   // read-only: no tile copy
             String typeId = tile.getPersistentDataContainer().get(BLOCK_TYPE_KEY, PersistentDataType.STRING);
             if (typeId == null) return null;
             return types.get(typeId);
@@ -481,7 +500,7 @@ public class CustomBlockRegistry {
         // location index BEFORE taking a tile snapshot, so explosion/piston/break sweeps over vanilla
         // chests/furnaces/barrels never pay a getState() here.
         if (!customBlockLocations.isEmpty() && customBlockLocations.contains(LocationKey.of(block))) {
-            if (!(block.getState() instanceof TileState tile)) return null;
+            if (!(block.getState(false) instanceof TileState tile)) return null;   // read-only: no tile copy
             String typeId = tile.getPersistentDataContainer().get(BLOCK_TYPE_KEY, PersistentDataType.STRING);
             if (typeId == null) return null;
             return types.get(typeId);
@@ -780,7 +799,7 @@ public class CustomBlockRegistry {
 
     /** Read current state from a skull's PDC, or synthesize it for a bare (display-backed) block. */
     public @Nullable String getState(Block block) {
-        if (block.getState() instanceof TileState tile) {
+        if (block.getState(false) instanceof TileState tile) {   // read-only: no tile copy
             return tile.getPersistentDataContainer().get(STATE_KEY, PersistentDataType.STRING);
         }
         LocationKey key = LocationKey.of(block);
@@ -1281,11 +1300,20 @@ public class CustomBlockRegistry {
 
     void onChunkLoad(Chunk chunk) {
         if (!chunkMayHaveCustomBlocks(chunk)) return;
+        chunkLoadDepth++;
+        try {
+            restoreTileBlocks(chunk);
+        } finally {
+            endChunkLoadBatch();
+        }
+    }
+
+    private void restoreTileBlocks(Chunk chunk) {
 
         // Tile-hosted custom blocks (skulls / physical_material): tile entities ARE available at
         // ChunkLoadEvent, so restore them here. Material-agnostic: recognition is the PDC itself,
         // so a physical_material block keeps its hint even if its plugin hasn't registered yet.
-        for (BlockState tile : chunk.getTileEntities()) {
+        for (BlockState tile : chunk.getTileEntities(false)) {
             if (!(tile instanceof TileState ts)) continue;
             String typeId = ts.getPersistentDataContainer().get(BLOCK_TYPE_KEY, PersistentDataType.STRING);
             if (typeId == null) continue;
@@ -1319,13 +1347,22 @@ public class CustomBlockRegistry {
      */
     void onEntitiesLoad(Chunk chunk) {
         if (!chunkMayHaveCustomBlocks(chunk)) return;
+        chunkLoadDepth++;
+        try {
+            restoreEntityBlocks(chunk);
+        } finally {
+            endChunkLoadBatch();
+        }
+    }
+
+    private void restoreEntityBlocks(Chunk chunk) {
 
         // Per-type onEntitiesLoad callbacks for tile-hosted (skull) blocks: the entities-are-loaded
         // analogue of the onChunkLoad restore loop above. Dispatched HERE — not from CoreLibPlugin's
         // EntitiesLoadEvent handler — so it also fires on the enable-time startup sweep, which reaches
         // this method (restoreLoadedChunks → onEntitiesLoad) but not that event handler. Idempotent:
         // may re-fire on an entities unload/reload cycle, so callbacks must reuse-by-tag, never blind-spawn.
-        for (BlockState tile : chunk.getTileEntities()) {
+        for (BlockState tile : chunk.getTileEntities(false)) {
             if (!(tile instanceof TileState ts)) continue;
             String typeId = ts.getPersistentDataContainer().get(BLOCK_TYPE_KEY, PersistentDataType.STRING);
             if (typeId == null) continue;
@@ -1359,7 +1396,7 @@ public class CustomBlockRegistry {
         // Tile-hosted blocks were restored in onChunkLoad, but the wipe decision lives here — re-check
         // the tile PDCs so a chunk holding only skulls/physical_material blocks keeps its hint.
         if (!foundAny) {
-            for (BlockState tile : chunk.getTileEntities()) {
+            for (BlockState tile : chunk.getTileEntities(false)) {
                 if (tile instanceof TileState ts
                         && ts.getPersistentDataContainer().has(BLOCK_TYPE_KEY, PersistentDataType.STRING)) {
                     foundAny = true;

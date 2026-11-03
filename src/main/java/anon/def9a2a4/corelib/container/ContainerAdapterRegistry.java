@@ -56,7 +56,7 @@ public class ContainerAdapterRegistry {
      * FIRST, so the lock check is order-safe by construction (see {@code isLockedContainer}).
      */
     public static @Nullable Container findVanillaContainer(Block block) {
-        if (!(block.getState() instanceof Container container)) return null;
+        if (!(block.getState(false) instanceof Container container)) return null;
         return isLocked(block) ? null : container;
     }
 

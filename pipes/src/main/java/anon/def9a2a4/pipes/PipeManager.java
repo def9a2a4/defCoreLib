@@ -607,8 +607,14 @@ public class PipeManager {
         deadEndRecheckAt.clear();
     }
 
-    public void invalidatePathCache() {
-        clearPathCaches();
+    /** The block in front of {@code pipe} changed: only routes that END at this pipe look at that block. */
+    public void invalidateRoutesEndingAt(Location pipe) {
+        Location end = normalizeLocation(pipe);
+        pathCache.entrySet().removeIf(e -> {
+            if (!e.getValue().lastPipeLocation().equals(end)) return false;
+            deadEndRecheckAt.remove(e.getKey());
+            return true;
+        });
     }
 
     /**
@@ -632,6 +638,7 @@ public class PipeManager {
         BlockFace sourceDirection = facing.getOppositeFace();
 
         Block sourceBlock = pipeBlock.getRelative(sourceDirection);
+        if (!isLoaded(sourceBlock)) return false;   // never sync-load: wait until the source's chunk is loaded
         ContainerAdapter sourceAdapter = ContainerAdapterRegistry.findAdapter(sourceBlock).orElse(null);
         if (sourceAdapter == null) {
             return false;
@@ -640,6 +647,7 @@ public class PipeManager {
         // Start with this pipe's items per transfer and find minimum along path
         int startingMax = data.variant().itemsPerTransfer();
         CachedPath path = getOrBuildPath(pipeLocation, facing, startingMax);
+        if (path == null) return false;   // the route runs into an unloaded chunk: try again later, spill nothing
 
         int maxToExtract = path.minItemsPerTransfer();
 
@@ -737,8 +745,14 @@ public class PipeManager {
         }
 
         CachedPath fresh = findDestination(pipeLocation, facing, new HashSet<>(), new ArrayList<>(), startingMax);
-        pathCache.put(key, fresh);
+        if (fresh != null) pathCache.put(key, fresh);
         return fresh;
+    }
+
+    /** Whether {@code b}'s chunk is loaded. Pipes never sync-load: a chunk at the loaded edge would load, register
+     *  its pipes (clearing every route) and unload again on every transfer. */
+    private static boolean isLoaded(Block b) {
+        return b.getWorld().isChunkLoaded(b.getX() >> 4, b.getZ() >> 4);
     }
 
     private boolean isPathStillValid(Location key, CachedPath path) {
@@ -762,6 +776,7 @@ public class PipeManager {
             PipeData lastPipeData = getPipeData(path.lastPipeLocation());
             if (lastPipeData != null) {
                 Block endBlock = path.lastPipeLocation().getBlock().getRelative(lastPipeData.facing());
+                if (!isLoaded(endBlock)) return false;   // rebuild → null → skipped until it loads
                 if (ContainerAdapterRegistry.findAdapter(endBlock).isPresent()) return false;
                 if (getPipeData(normalizeLocation(endBlock.getLocation())) != null) return false;
             }
@@ -775,6 +790,7 @@ public class PipeManager {
 
         // Verify destination still has a container
         Block destBlock = path.destination().getBlock();
+        if (!isLoaded(destBlock)) return false;   // rebuild → null → skipped until it loads
         return ContainerAdapterRegistry.findAdapter(destBlock).isPresent();
     }
 
@@ -806,6 +822,7 @@ public class PipeManager {
             if (visited.contains(nextLoc)) {
                 return new CachedPath(null, normalized, chain, currentMinItems, filterPipes);
             }
+            if (!isLoaded(nextBlock)) return null;   // not a dead end: the rest of the route just isn't loaded
 
             Optional<ContainerAdapter> adapterOpt = ContainerAdapterRegistry.findAdapter(nextBlock);
             if (adapterOpt.isPresent()) {
@@ -872,6 +889,7 @@ public class PipeManager {
 
         CachedPath path = getOrBuildPath(pipeBlock.getLocation(), data.facing(),
             data.variant().itemsPerTransfer());
+        if (path == null) return false;   // route runs into an unloaded chunk: the machine holds its output
         if (path.destination() == null) return null;
 
         // A machine push is atomic (all-or-nothing) and can't partially deliver, so if any output is

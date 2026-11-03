@@ -616,7 +616,7 @@ public class CoreLibPlugin extends JavaPlugin implements Listener {
         // Re-resolve dynamic display transforms now that entities are available
         org.bukkit.Chunk chunk = event.getChunk();
         if (registry.chunkMayHaveCustomBlocks(chunk)) {
-            for (org.bukkit.block.BlockState tile : chunk.getTileEntities()) {
+            for (org.bukkit.block.BlockState tile : chunk.getTileEntities(false)) {
                 if (!(tile instanceof org.bukkit.block.Skull skull)) continue;
                 String typeId = skull.getPersistentDataContainer()
                         .get(CustomBlockRegistry.BLOCK_TYPE_KEY, PersistentDataType.STRING);

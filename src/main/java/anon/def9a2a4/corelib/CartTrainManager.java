@@ -942,8 +942,9 @@ final class CartTrainManager implements Listener {
      *  shutdown) — otherwise it keeps maxSpeed 100 + residual velocity and vanilla launches it away. */
     private void parkCart(Minecart cart) {
         if (cart == null || cart.isDead()) return;
-        cart.setMaxSpeed(0.4d);
-        cart.setVelocity(new Vector(0, 0, 0));
+        // Write only what differs: a parked train runs this every tick, and setVelocity sends a motion packet.
+        if (cart.getMaxSpeed() != 0.4d) cart.setMaxSpeed(0.4d);
+        if (cart.getVelocity().lengthSquared() > 0) cart.setVelocity(new Vector(0, 0, 0));
     }
 
     /** Reset the maxSpeed clamp WITHOUT zeroing velocity. A rebuilt train starts {@code moving=false} and

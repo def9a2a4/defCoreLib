@@ -9,17 +9,17 @@ public class FurnaceContainerAdapter implements ContainerAdapter {
 
     @Override
     public boolean canReceive(Block block) {
-        return block.getState() instanceof Furnace;
+        return block.getState(false) instanceof Furnace;
     }
 
     @Override
     public org.bukkit.inventory.Inventory backingInventory(Block block) {
-        return block.getState() instanceof Furnace furnace ? furnace.getInventory() : null;
+        return block.getState(false) instanceof Furnace furnace ? furnace.getInventory() : null;
     }
 
     @Override
     public ItemStack insert(Block block, ItemStack item) {
-        if (!(block.getState() instanceof Furnace furnace)) return item;
+        if (!(block.getState(false) instanceof Furnace furnace)) return item;
         FurnaceInventory inv = furnace.getInventory();
 
         ItemStack fuel = inv.getFuel();
@@ -59,7 +59,7 @@ public class FurnaceContainerAdapter implements ContainerAdapter {
 
     @Override
     public ItemStack peekExtract(Block block, int maxAmount) {
-        if (!(block.getState() instanceof Furnace furnace)) return null;
+        if (!(block.getState(false) instanceof Furnace furnace)) return null;
         ItemStack result = furnace.getInventory().getResult();
         if (result == null || result.getType().isAir()) return null;
         ItemStack extracted = result.clone();
@@ -69,7 +69,7 @@ public class FurnaceContainerAdapter implements ContainerAdapter {
 
     @Override
     public void commitExtract(Block block, ItemStack extracted) {
-        if (!(block.getState() instanceof Furnace furnace)) return;
+        if (!(block.getState(false) instanceof Furnace furnace)) return;
         FurnaceInventory inv = furnace.getInventory();
         ItemStack result = inv.getResult();
         if (result == null) return;
@@ -83,7 +83,7 @@ public class FurnaceContainerAdapter implements ContainerAdapter {
 
     @Override
     public boolean hasItems(Block block) {
-        if (!(block.getState() instanceof Furnace furnace)) return false;
+        if (!(block.getState(false) instanceof Furnace furnace)) return false;
         ItemStack result = furnace.getInventory().getResult();
         return result != null && !result.getType().isAir();
     }

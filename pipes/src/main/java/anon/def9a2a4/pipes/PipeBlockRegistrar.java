@@ -150,9 +150,9 @@ public class PipeBlockRegistrar {
             if (data != null) {
                 BlockFace facing = data.facing();
                 // Routes only change when something appears/vanishes in front of a pipe (a container at a
-                // dead end; adding/removing a pipe clears them itself), so redstone beside it no longer
-                // clears every pipe's route in the world.
-                if (changedFace == facing) manager.invalidatePathCache();
+                // dead end; adding/removing a pipe clears them itself), and only routes ending at this pipe look
+                // there — a furnace lighting in front of one pipe no longer clears every route in the world.
+                if (changedFace == facing) manager.invalidateRoutesEndingAt(block.getLocation());
                 if (changedFace == facing || changedFace == facing.getOppositeFace()) {
                     manager.wakeUpPipe(block.getLocation());
                 }
